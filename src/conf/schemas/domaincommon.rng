@@ -2461,6 +2461,11 @@
           <data type="integer"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="discard_granularity">
+          <data type="integer"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   <!--

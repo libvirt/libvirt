@@ -8073,6 +8073,10 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         if (virXMLPropUInt(blockioNode, "physical_block_size", 10, VIR_XML_PROP_NONE,
                            &def->blockio.physical_block_size) < 0)
             return NULL;
+
+        if (virXMLPropUInt(blockioNode, "discard_granularity", 10, VIR_XML_PROP_NONE,
+                           &def->blockio.discard_granularity) < 0)
+            return NULL;
     }
 
     if ((driverNode = virXPathNode("./driver", ctxt))) {
@@ -19836,6 +19840,13 @@ virDomainDiskBlockIoCheckABIStability(virDomainDiskDef *src,
                        dst->blockio.physical_block_size, src->blockio.physical_block_size);
         return false;
     }
+
+    if (src->blockio.discard_granularity != dst->blockio.discard_granularity) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk discard_granularity %1$u does not match source %2$u"),
+                       dst->blockio.discard_granularity, src->blockio.discard_granularity);
+        return false;
+    }
     return true;
 }
 
@@ -22132,7 +22143,8 @@ virDomainDiskBlockIoDefFormat(virBuffer *buf,
                               virDomainDiskDef *def)
 {
     if (def->blockio.logical_block_size > 0 ||
-        def->blockio.physical_block_size > 0) {
+        def->blockio.physical_block_size > 0 ||
+        def->blockio.discard_granularity > 0) {
         virBufferAddLit(buf, "<blockio");
         if (def->blockio.logical_block_size > 0) {
             virBufferAsprintf(buf,
@@ -22143,6 +22155,11 @@ virDomainDiskBlockIoDefFormat(virBuffer *buf,
             virBufferAsprintf(buf,
                               " physical_block_size='%u'",
                               def->blockio.physical_block_size);
+        }
+        if (def->blockio.discard_granularity > 0) {
+            virBufferAsprintf(buf,
+                              " discard_granularity='%u'",
+                              def->blockio.discard_granularity);
         }
         virBufferAddLit(buf, "/>\n");
     }

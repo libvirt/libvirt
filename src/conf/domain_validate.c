@@ -466,7 +466,8 @@ virDomainDiskVhostUserValidate(const virDomainDiskDef *disk)
     }
 
     if (disk->blockio.logical_block_size > 0 ||
-        disk->blockio.physical_block_size > 0) {
+        disk->blockio.physical_block_size > 0 ||
+        disk->blockio.discard_granularity > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("blockio is not supported with vhostuser disk"));
         return -1;

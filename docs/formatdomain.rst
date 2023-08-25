@@ -2588,7 +2588,7 @@ paravirtualized driver is specified via the ``disk`` element.
        <driver name='qemu' type='raw'/>
        <source dev='/dev/sda'/>
        <geometry cyls='16383' heads='16' secs='63' trans='lba'/>
-       <blockio logical_block_size='512' physical_block_size='4096'/>
+       <blockio logical_block_size='512' physical_block_size='4096' discard_granularity='4096'/>
        <target dev='hdj' bus='ide'/>
      </disk>
      <disk type='volume' device='disk'>
@@ -3453,6 +3453,11 @@ paravirtualized driver is specified via the ``disk`` element.
       this would be the value returned by the BLKPBSZGET ioctl and describes the
       disk's hardware sector size which can be relevant for the alignment of
       disk data.
+   ``discard_granularity``
+      The smallest amount of data that can be discarded in a single operation.
+      It impacts the unmap operations and it must be a multiple of a
+      ``logical_block_size``. This is usually properly configured by the
+      hypervisor.
 
 Filesystems
 ~~~~~~~~~~~

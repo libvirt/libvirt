@@ -279,7 +279,8 @@ vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
     }
 
     if (disk->blockio.logical_block_size ||
-        disk->blockio.physical_block_size) {
+        disk->blockio.physical_block_size ||
+        disk->blockio.discard_granularity) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk block sizes is not "
                          "supported by vz driver."));
