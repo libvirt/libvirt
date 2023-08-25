@@ -112,8 +112,7 @@ vah_usage(void)
             "    -F | --append-file <file>      append file to an existing profile\n"
             "\n"), progname);
 
-    puts(_("This command is intended to be used by libvirtd "
-           "and not used directly.\n"));
+    puts(_("This command is intended to be used by libvirtd and not used directly.\n"));
     return;
 }
 

@@ -2320,8 +2320,7 @@ virSecurityDACGenLabel(virSecurityManager *mgr,
 
     if (seclabel->imagelabel) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("security image label already "
-                         "defined for VM"));
+                       _("security image label already defined for VM"));
         return rc;
     }
 
