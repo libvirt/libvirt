@@ -2634,6 +2634,12 @@ paravirtualized driver is specified via the ``disk`` element.
        </source>
        <target dev='sdb' bus='scsi'/>
      </disk>
+     <disk type='dir' device='floppy'>
+       <driver name='qemu' type='fat'/>
+       <source dir='/var/somefiles'>
+       <target dev='fda'/>
+       <readonly/>
+     </disk>
      <disk type='volume' device='disk'>
        <driver name='qemu' type='raw'/>
        <source pool='iscsi-pool' volume='unit:0:0:1' mode='host'/>
@@ -2757,6 +2763,18 @@ paravirtualized driver is specified via the ``disk`` element.
    ``dir``
       The ``dir`` attribute specifies the fully-qualified path to the directory
       to use as the disk. :since:`Since 0.7.5`
+
+      Note that most hypervisors that support ``dir`` disks do that by exposing
+      an emulated block device with an emulated filesystem populated with
+      contents of the configured directory. As guest operating system may cache
+      the filesystem metadata, outside changes to the directory may not appear
+      in the guest and/or may result in corrupted data being observable from
+      the VM.
+
+      The format of the emulated filesystem is controlled by the ``format``
+      attribute of the ``<driver>`` driver element. Currently only the ``fat``
+      format is supported. Hypervisors may only support ``<readonly/>`` mode.
+
    ``network``
       The ``protocol`` attribute specifies the protocol to access to the
       requested image. Possible values are "nbd", "iscsi", "rbd", "sheepdog",
