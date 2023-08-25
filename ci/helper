@@ -75,21 +75,6 @@ class Parser:
             help="path to lcitool (default: $PATH)",
         )
 
-        # Options that are common to all actions that call the
-        # project's build system
-        mesonparser = argparse.ArgumentParser(add_help=False)
-        mesonparser.add_argument(
-            "--meson-args",
-            default="",
-            help="additional arguments passed to meson "
-                 "(eg --meson-args='-Dopt1=enabled -Dopt2=disabled')",
-        )
-        mesonparser.add_argument(
-            "--ninja-args",
-            default="",
-            help="additional arguments passed to ninja",
-        )
-
         # Options that are common to actions communicating with a GitLab
         # instance
         gitlabparser = argparse.ArgumentParser(add_help=False)
