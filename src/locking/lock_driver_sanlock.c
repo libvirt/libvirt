@@ -831,8 +831,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
             VIR_FREE(err);
         } else {
             virReportSystemError(-rv, "%s",
-                                 _("Failed to register lock failure"
-                                   " action"));
+                                 _("Failed to register lock failure action"));
         }
         return -1;
     }
