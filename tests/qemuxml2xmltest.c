@@ -288,6 +288,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-floppy");
     DO_TEST_CAPS_LATEST("disk-usb-device");
     DO_TEST_CAPS_LATEST("disk-virtio");
+    DO_TEST_CAPS_LATEST("disk-blockio");
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_CAPS_LATEST("disk-boot-disk");

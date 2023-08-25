@@ -1760,6 +1760,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     unsigned int bootindex = 0;
     unsigned int logical_block_size = disk->blockio.logical_block_size;
     unsigned int physical_block_size = disk->blockio.physical_block_size;
+    unsigned int discard_granularity = disk->blockio.discard_granularity;
     g_autoptr(virJSONValue) wwn = NULL;
     g_autofree char *serial = NULL;
     virTristateSwitch removable = VIR_TRISTATE_SWITCH_ABSENT;
@@ -1939,6 +1940,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "p:bootindex", bootindex,
                               "p:logical_block_size", logical_block_size,
                               "p:physical_block_size", physical_block_size,
+                              "p:discard_granularity", discard_granularity,
                               "A:wwn", &wwn,
                               "p:rotation_rate", disk->rotation_rate,
                               "S:vendor", disk->vendor,
