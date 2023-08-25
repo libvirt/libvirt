@@ -14,6 +14,8 @@ if ! [ -t 1 ]; then
     export VIR_TEST_DEBUG="1"
 fi
 
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+
 # $MESON_OPTS is an env that can optionally be set in the container,
 # populated at build time from the Dockerfile. A typical use case would
 # be to pass options to trigger cross-compilation
