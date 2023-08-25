@@ -940,7 +940,7 @@ class LibvirtConfidentialVM(ConfidentialVM):
                     "kernel/initrd/cmdline not provided but kernel "
                     "measurement is enabled")
 
-    def load_domain(self, uri, id_name_uuid, secure, ignore_config):
+    def load_domain(self, uri, id_name_uuid, build_vmsa, secure, ignore_config):
         self.conn = libvirt.open(uri)
 
         remote = socket.getfqdn() != self.conn.getHostname()
@@ -1049,7 +1049,7 @@ class LibvirtConfidentialVM(ConfidentialVM):
         capsxml = self.conn.getCapabilities()
         capsdoc = etree.fromstring(capsxml)
 
-        if self.is_sev_es() and self.vmsa_cpu0 is None:
+        if self.is_sev_es() and build_vmsa:
             if secure:
                 raise InsecureUsageException(
                     "Using CPU SKU from capabilities is not secure")
@@ -1263,16 +1263,18 @@ def attest(args):
     if args.vmsa_cpu1 is not None:
         cvm.load_vmsa_cpu1(args.vmsa_cpu1)
 
+    if args.domain is not None:
+        build_vmsa = args.vmsa_cpu0 is None and args.cpu_family is None
+        cvm.load_domain(args.connect,
+                        args.domain,
+                        build_vmsa,
+                        not args.insecure,
+                        args.ignore_config)
+
     if args.cpu_family is not None:
         cvm.build_vmsas(args.cpu_family,
                         args.cpu_model,
                         args.cpu_stepping)
-
-    if args.domain is not None:
-        cvm.load_domain(args.connect,
-                        args.domain,
-                        not args.insecure,
-                        args.ignore_config)
 
     cvm.attest()
     if not args.quiet:
