@@ -13,16 +13,6 @@ if ! [ -t 1 ]; then
 fi
 
 GIT_ROOT="$(git rev-parse --show-toplevel)"
-
-# $MESON_OPTS is an env that can optionally be set in the container,
-# populated at build time from the Dockerfile. A typical use case would
-# be to pass options to trigger cross-compilation
-#
-# $MESON_ARGS correspond to meson's setup args, i.e. configure args. It's
-# populated from a GitLab's job configuration
-
-MESON_ARGS="$MESON_ARGS $MESON_OPTS"
-
 run_cmd() {
     printf "\e[32m[RUN COMMAND]: '%s'\e[0m\n" "$*"
     "$@"
