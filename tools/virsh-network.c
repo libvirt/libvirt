@@ -597,7 +597,6 @@ static bool
 cmdNetworkMetadata(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshNetwork) net = NULL;
-    g_autoptr(xmlXPathContext) ctxt = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -661,7 +660,7 @@ cmdNetworkMetadata(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, "%s\n", _("Metadata modified"));
     } else {
         g_autofree char *data = NULL;
-        g_autoptr(xmlDoc) doc = NULL;
+
         /* get */
         if (!(data = virNetworkGetMetadata(net, VIR_NETWORK_METADATA_ELEMENT,
                                            uri, flags)))
