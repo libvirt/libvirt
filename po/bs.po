@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -1073,6 +1073,9 @@ msgstr ""
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr ""
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1650,6 +1653,9 @@ msgstr ""
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr ""
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr ""
 
@@ -1769,9 +1775,6 @@ msgstr ""
 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
-msgstr ""
-
-msgid "Attempting to use unknown stub driver"
 msgstr ""
 
 msgid ""
@@ -6931,6 +6934,9 @@ msgstr "Pokretanje domene %1$s nije uspjelo"
 msgid "Failed to get network autostart state"
 msgstr "dohvaćanje vrste hypervisora nije uspjelo"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to get network persistence info"
 msgstr "dohvaćanje hypervisor verzije nije uspjelo"
@@ -7156,12 +7162,12 @@ msgstr ""
 msgid "Failed to list volumes"
 msgstr "Ispisivanje aktivnih domena nije uspjelo"
 
-#, fuzzy, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "Spremanje domene %s na lokaciju %s nije uspjelo"
+#, c-format
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
 
 #, fuzzy, c-format
@@ -7433,6 +7439,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "Nastavljanje domene %1$s nije uspjelo"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -7949,6 +7958,12 @@ msgstr "Obustavljanje domene %s nije uspjelo"
 msgid "Failed to set new domain title"
 msgstr "Obustavljanje domene %s nije uspjelo"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
 
@@ -8402,6 +8417,11 @@ msgstr ""
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
+msgstr ""
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
 
 #, c-format
@@ -10071,9 +10091,6 @@ msgstr ""
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
 
-msgid "KVM device assignment is no longer supported on this system"
-msgstr ""
-
 msgid "KVM is not supported on this platform"
 msgstr ""
 
@@ -11467,6 +11484,12 @@ msgstr ""
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr ""
@@ -11550,6 +11573,15 @@ msgstr ""
 
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
+msgstr ""
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
 msgstr ""
 
 #, c-format
@@ -11671,6 +11703,10 @@ msgstr "Nije pružena poruka o pogrešci"
 #, fuzzy, c-format
 msgid "No description for domain: %1$s"
 msgstr "operacija nije uspjela: %1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr ""
@@ -11885,6 +11921,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No title for domain: %1$s"
 msgstr "Pokretanje domene %1$s nije uspjelo"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr ""
@@ -13933,6 +13973,9 @@ msgstr ""
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr ""
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 #, fuzzy
 msgid "Shutdown"
 msgstr "u gašenju"
@@ -14718,7 +14761,19 @@ msgid "Target disk device %1$s does not match source %2$s"
 msgstr ""
 
 #, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
 msgid "Target disk model %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
 msgstr ""
 
 #, c-format
@@ -16029,6 +16084,9 @@ msgstr ""
 msgid "Unable to allocate lockspace %1$s"
 msgstr ""
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr ""
@@ -16992,6 +17050,14 @@ msgid "Unable to make dir %1$s"
 msgstr "Nastavljanje domene %1$s nije uspjelo"
 
 msgid "Unable to mark loop device as autoclear"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
 msgstr ""
 
 msgid "Unable to modify live devices"
@@ -21106,15 +21172,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr ""
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -21123,10 +21186,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -21139,17 +21198,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -23086,13 +23134,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -23941,6 +24004,9 @@ msgstr ""
 
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
+msgstr ""
+
+msgid "driver type not set"
 msgstr ""
 
 msgid "dropped"
@@ -27999,7 +28065,7 @@ msgstr ""
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-msgid "ivshmem device is not supported with this QEMU binary"
+msgid "ivshmem device is no longer supported"
 msgstr ""
 
 #, c-format
@@ -28553,10 +28619,6 @@ msgstr ""
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr ""
-
-#, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
 msgstr ""
 
 #, c-format
@@ -29218,9 +29280,6 @@ msgid "migration was active, but RAM 'total' data was missing"
 msgstr ""
 
 msgid "migration was active, but RAM 'transferred' data was missing"
-msgstr ""
-
-msgid "migration with legacy shmem device is not supported"
 msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
@@ -33277,9 +33336,6 @@ msgstr ""
 msgid "revert to current snapshot"
 msgstr ""
 
-msgid "revert to external snapshot not supported yet"
-msgstr ""
-
 msgid "rollback to previous restore point"
 msgstr ""
 
@@ -33768,10 +33824,19 @@ msgstr ""
 msgid "show inactive defined XML"
 msgstr "ispiši neaktivne domene"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr ""
 
 msgid "show or set domain's description or title"
+msgstr ""
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
 msgstr ""
 
 msgid "show timestamp for each printed event"
@@ -36285,10 +36350,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "nepoznata naredba: '%1$s'"
 
 #, fuzzy, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "nepoznata naredba: '%1$s'"
-
-#, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "nepoznata vrsta OS %s"
 
@@ -37069,6 +37130,11 @@ msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
 
 msgid "use multifunction pci under specified address"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
 msgid "use of <server> requires pull mode backup"
@@ -38027,6 +38093,14 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <niz>"
+
+#, fuzzy, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "Spremanje domene %s na lokaciju %s nije uspjelo"
+
+#, fuzzy, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "nepoznata naredba: '%1$s'"
 
 #, fuzzy, c-format
 #~ msgid "could not convert bandwidth average value '%1$s'"

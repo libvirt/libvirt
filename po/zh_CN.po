@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1284,6 +1284,9 @@ msgstr "virtio scsi 控制器仅支持'iothread'属性"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread' 只支持 virtio-scsi 控制器"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus 的回复中缺少 'logical-id'"
 
@@ -1860,6 +1863,9 @@ msgstr "分配："
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "允许设置或修改域的描述或标题。"
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "出错，但原因不明"
 
@@ -1979,9 +1985,6 @@ msgstr "尝试使用同步回复发送异步信息"
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "曾尝试重复使用 PCI 地址 %1$s"
-
-msgid "Attempting to use unknown stub driver"
-msgstr "尝试使用未知的 stub 驱动程序"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7071,6 +7074,9 @@ msgstr "获取域 %1$s 的内存统计失败"
 msgid "Failed to get network autostart state"
 msgstr "获取网络自动启动状态失败"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "获取域持久信息失败"
 
@@ -7261,12 +7267,12 @@ msgid "Failed to list volumes"
 msgstr "列出卷失败"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "载入 PCI 短截模式 %1$s 失败"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
-msgstr "加载 PCI stub 模块 %1$s 失败: 禁止管理"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
+msgstr ""
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7530,6 +7536,9 @@ msgstr "解析内存失败：大小不匹配"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "解析模式 '%1$s' 失败"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8022,6 +8031,12 @@ msgstr "设定新域描述失败"
 msgid "Failed to set new domain title"
 msgstr "设置新的域标题失败"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "设定非块文件描述符标记失败"
 
@@ -8467,6 +8482,11 @@ msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
 msgstr "标记 'VIR_DOMAIN_AFFECT_LIVE' 和 'VIR_DOMAIN_AFFECT_CONFIG' 是互斥的"
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
+msgstr ""
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -10153,9 +10173,6 @@ msgstr "任务类型："
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr "提示：忽略小于这个数值（字节）的连续可用范围"
 
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "这个系统上不再支持 KVM 设备分配"
-
 msgid "KVM is not supported on this platform"
 msgstr "在这个平台上不支持 KVM"
 
@@ -11531,6 +11548,12 @@ msgstr "已开始网络配置更改事务\n"
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr "网络配置文件 '%1$s' 与网络名称 '%2$s' 不匹配"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "桥接设备 %1$s 已存在"
@@ -11615,6 +11638,15 @@ msgstr "UUID 为 %1$s 的网络端口已存在"
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "UUID 为 %1$s 的网络端口不存在"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -11732,6 +11764,10 @@ msgstr "没有提供默认的服务器名称"
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "没有域描述：%1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr "没有指定设备型号命令行参数"
@@ -11945,6 +11981,10 @@ msgstr "不支持多个视频设备"
 #, c-format
 msgid "No title for domain: %1$s"
 msgstr "没有域的标题：%1$s"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "没有可用的总体统计数据"
@@ -13988,6 +14028,9 @@ msgstr "显示/设置日程安排变量"
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "显示或修改域的 XML 元数据。"
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 msgid "Shutdown"
 msgstr "关机"
 
@@ -14780,8 +14823,20 @@ msgid "Target disk device %1$s does not match source %2$s"
 msgstr "目标磁盘设备 %1$s 与源 %2$s 不匹配"
 
 #, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "目标磁盘型号 %1$s 与源 %2$s 不匹配"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16096,6 +16151,9 @@ msgstr "无法分配租赁 %1$s"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "无法分配锁空间 %1$s"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "无法分配 x509 凭据：%1$s"
@@ -17043,6 +17101,14 @@ msgstr "无法创建目录 %1$s"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "无法将回路设备标记为 autoclear"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "无法修改实时设备"
@@ -21145,16 +21211,13 @@ msgstr "无法修改 MTU"
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "无法修改磁盘的 '%1$s' 字段"
 
-msgid "cannot modify memory UUID"
-msgstr "无法修改内存 UUID"
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr "无法将内存访问从 '%1$s' 修改为 '%2$s'"
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
-msgstr "无法将内存对齐大小从 '%1$llu' 修改为 '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory block size from '%1$llu' to '%2$llu'"
@@ -21163,10 +21226,6 @@ msgstr "无法将内存块大小从 '%1$llu' 修改为 '%2$llu'"
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
 msgstr "无法将内存丢弃从 '%1$s' 修改为 '%2$s'"
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
-msgstr "无法将内存标签大小从 '%1$llu' 修改为 '%2$llu'"
 
 #, c-format
 msgid "cannot modify memory model from '%1$s' to '%2$s'"
@@ -21179,17 +21238,6 @@ msgstr "无法修改型号为 '%1$s' 的内存"
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
 msgstr "无法将内存页大小从 '%1$llu' 修改为 '%2$llu'"
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr "无法将内存路径从 '%1$s' 修改为 '%2$s'"
-
-msgid "cannot modify memory pmem flag"
-msgstr "无法修改内存 pmem 标记"
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
-msgstr "无法将内存 pmem 从 '%1$d' 修改为 '%2$d'"
 
 #, c-format
 msgid "cannot modify memory size from '%1$llu' to '%2$llu'"
@@ -23097,14 +23145,29 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr "删除具有内部快照作为父快照的外部快照不被支持"
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr "删除外部和内部子磁盘快照不被支持"
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr "删除外部子磁盘快照不被支持"
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "删除带有子磁盘的外部磁盘快照不被支持"
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -23926,6 +23989,9 @@ msgstr "磁盘设备驱动"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "驱动器序列号 '%1$s' 包含不安全字符"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr "丢弃的"
@@ -27887,8 +27953,8 @@ msgstr "iscsi-direct 池仅支持 'chap' 验证类型"
 msgid "ivgen element found, but cipher is missing"
 msgstr "找到了 ivgen 元素，但密码丢失"
 
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 ivshmem 设备"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -28419,10 +28485,6 @@ msgstr "live"
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
 msgstr "不支持即时附加 '%1$s' 设备"
-
-#, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
-msgstr "不支持实时附加 shmem 型号 '%1$s'"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
@@ -29079,9 +29141,6 @@ msgstr "迁移是活跃的但缺少 RAM 'total' 数据"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "迁移是活跃的但缺少 RAM 'transferred' 数据"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr "不支持带有传统 shmem 设备的迁移"
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr "使用全磁盘复制的非共享存储进行迁移"
@@ -33052,9 +33111,6 @@ msgstr "转换请求强制：%1$s"
 msgid "revert to current snapshot"
 msgstr "转换为当前快照"
 
-msgid "revert to external snapshot not supported yet"
-msgstr "尚未支持恢复到外部快照"
-
 msgid "rollback to previous restore point"
 msgstr "返回到之前的恢复点"
 
@@ -33541,11 +33597,20 @@ msgstr "显示所有 NUMA 单元的空闲页面"
 msgid "show inactive defined XML"
 msgstr "显示不活跃定义的 XML"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr "显示或设置域的自定义 XML 元数据"
 
 msgid "show or set domain's description or title"
 msgstr "显示或者设定域描述或者标题"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr "显示每个打印事件的时间戳"
@@ -36082,10 +36147,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "未知的驱动程序格式值 '%1$s'"
 
 #, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "未知的驱动程序名称 '%1$s'"
-
-#, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "未知的'%1$s' 的 drm 类型 '%2$s'"
 
@@ -36858,6 +36919,11 @@ msgstr "使用网络为 delta 到当前大小，而不是新大小。"
 
 msgid "use multifunction pci under specified address"
 msgstr "在指定地址中使用多功能 pci"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "使用 <server> 需要 pull 模式备份"
@@ -37816,6 +37882,59 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "Attempting to use unknown stub driver"
+#~ msgstr "尝试使用未知的 stub 驱动程序"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "载入 PCI 短截模式 %1$s 失败"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr "加载 PCI stub 模块 %1$s 失败: 禁止管理"
+
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "这个系统上不再支持 KVM 设备分配"
+
+#~ msgid "cannot modify memory UUID"
+#~ msgstr "无法修改内存 UUID"
+
+#, c-format
+#~ msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+#~ msgstr "无法将内存对齐大小从 '%1$llu' 修改为 '%2$llu'"
+
+#, c-format
+#~ msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
+#~ msgstr "无法将内存标签大小从 '%1$llu' 修改为 '%2$llu'"
+
+#, c-format
+#~ msgid "cannot modify memory path from '%1$s' to '%2$s'"
+#~ msgstr "无法将内存路径从 '%1$s' 修改为 '%2$s'"
+
+#~ msgid "cannot modify memory pmem flag"
+#~ msgstr "无法修改内存 pmem 标记"
+
+#, c-format
+#~ msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
+#~ msgstr "无法将内存 pmem 从 '%1$d' 修改为 '%2$d'"
+
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 ivshmem 设备"
+
+#, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "不支持实时附加 shmem 型号 '%1$s'"
+
+#~ msgid "migration with legacy shmem device is not supported"
+#~ msgstr "不支持带有传统 shmem 设备的迁移"
+
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "尚未支持恢复到外部快照"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "未知的驱动程序名称 '%1$s'"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

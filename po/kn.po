@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1187,6 +1187,9 @@ msgstr "'queues' ಕೇವಲ virtio-scsi ನಿಯಂತ್ರಕದಿಂದ �
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'queues' ಕೇವಲ virtio-scsi ನಿಯಂತ್ರಕದಿಂದ ಮಾತ್ರ ಬೆಂಬಲಿತವಾಗಿದೆ"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus ನ ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ 'logical-id' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -1819,6 +1822,9 @@ msgstr "ನಿಯೋಜನೆ:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "ಒಂದು ಡೊಮೇನ್‌ನ ಸ್ಥಿರ ಸಂರಚನೆಯನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "ಒಂದು ದೋಷ ಎದುರಾಗಿದೆ, ಆದರೆ ಕಾರಣ ತಿಳಿದಿಲ್ಲ"
 
@@ -1944,9 +1950,6 @@ msgstr ""
 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
-msgstr ""
-
-msgid "Attempting to use unknown stub driver"
 msgstr ""
 
 msgid ""
@@ -7337,6 +7340,9 @@ msgstr "%1$s ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿ ಅಂಕಿ �
 msgid "Failed to get network autostart state"
 msgstr "ಜಾಲಬಂಧದ ಸ್ಥಿತಿಯ ಸ್ವಯಂಆರಂಭವನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "ಜಾಲಬಂಧ ಸ್ಥಿರ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -7537,12 +7543,12 @@ msgid "Failed to list volumes"
 msgstr "ಪರಿಮಾಣಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "%1$s ಮಾಡ್ಯೂಲ್ ಅನ್ನು PCI ತುಣುಕಿನಿಂದ ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
-msgstr "%1$s ಮಾಡ್ಯೂಲ್ ಅನ್ನು PCI ತುಣುಕಿನಿಂದ ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+#, c-format
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7812,6 +7818,9 @@ msgstr "qemu ಸಾಧನ ಪಟ್ಟಿಯನ್ನು ಪಾರ್ಸ್ ಮ�
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "'%1$s' ಕ್ರಮವನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8323,6 +8332,12 @@ msgstr "ಹೊಸ ಡೊಮೇನ್‌ ವಿವರಣೆಯನ್ನು ಹೊ
 msgid "Failed to set new domain title"
 msgstr "ಡೊಮೇನ್‌ ಸ್ಥಿತಿಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "non-blocking ಕಡತದ ವಿವರಣಾ ಗುರುತನ್ನು ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -8790,6 +8805,11 @@ msgstr "--%1$s ಮತ್ತು --%2$s ಆಯ್ಕೆಗಳು ಎರಡೂ ಪ�
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
+msgstr ""
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
 
 #, c-format
@@ -10552,10 +10572,6 @@ msgstr ""
 "ಸುಳಿವಷ್ಟೆ"
 
 #, fuzzy
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "VFIO PCI ಸಾಧನ ನಿಯೋಜನೆಯು qemu ಈ ಆವೃತ್ತಿಯಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
-
-#, fuzzy
 msgid "KVM is not supported on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಕಚ್ಛಾ I/O ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
@@ -12039,6 +12055,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "ಜಾಲಬಂಧ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%1$s', '%2$s' ಜಾಲಬಂಧ ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "'%1$s' ಎಂಬ ಜಾಲಬಂಧ ಸಾಧನವು ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ"
@@ -12124,6 +12146,15 @@ msgstr "'%1$s' ಎಂಬ ಜಾಲಬಂಧ ಸಾಧನವು ಈಗಾಗಲ�
 #, fuzzy, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "%1$s ಮಾರ್ಗಕ್ಕಾಗಿನ ಲಾಕ್‌ಸ್ಪೇಸ್ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12251,6 +12282,10 @@ msgstr "ಯಾವುದೆ ದೋಷ ಸಂದೇಶ ಒದಗಿಸಿಲ್ಲ
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "ಡೊಮೇನ್‌ಗಾಗಿ ಯಾವುದೆ ವಿವರಣೆ ಇಲ್ಲ: %1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr ""
@@ -12476,6 +12511,10 @@ msgstr "ಅನೇಕ ವೀಡಿಯೊ ಸಾಧನಗಳಿಗೆ ಬೆಂಬ
 #, fuzzy, c-format
 msgid "No title for domain: %1$s"
 msgstr "ಡೊಮೇನ್‌ಗಾಗಿ ಯಾವುದೆ ವಿವರಣೆ ಇಲ್ಲ: %1$s"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "ಒಟ್ಟಾರೆ ಅಂಕಿಅಂಶಗಳು ಲಭ್ಯವಿಲ್ಲ"
@@ -14674,6 +14713,9 @@ msgstr "ಅನುಸೂಚಕ(scheduler) ನಿಯತಾಂಕಗಳನ್ನು
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr ""
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 #, fuzzy
 msgid "Shutdown"
 msgstr "ಮುಚ್ಚಲಾಗುತ್ತಿದೆ"
@@ -15521,9 +15563,21 @@ msgstr "%1$s ಎಂಬ ಗುರಿ ಡಿಸ್ಕ್‍ ಬಸ್ %2$s ಮೂ�
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "%1$s ಎಂಬ ಗುರಿ ಡಿಸ್ಕ್‍ ಸಾಧನವು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
+#, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "%1$s ಎಂಬ ಗುರಿ ಡಿಸ್ಕ್‍ %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16905,6 +16959,9 @@ msgstr "%1$s ಲೀಸ್‌ ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾ�
 msgid "Unable to allocate lockspace %1$s"
 msgstr "%1$s ಲಾಕ್‌ಸ್ಪೇಸ್ ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "x509 ಪರಿಚಯಪತ್ರಗಳನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %1$s"
@@ -17918,6 +17975,14 @@ msgstr "%1$s ಅನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "ಲೂಪ್‌ ಸಾಧನವನ್ನು ಸ್ವಯಂಅಳಿಸಲ್ಪಡು ಎಂದು ಗುರುತುಹಾಕಲಾಗಿಲ್ಲ"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "ಲೈವ್ ಸಾಧನಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -22194,15 +22259,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "fd %d ಅನ್ನು ಮಾರ್ಗದಿಂದ ಹೊರಹಾಕಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -22211,10 +22273,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -22227,17 +22285,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -24234,13 +24281,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -25107,6 +25169,9 @@ msgstr "ಡಿಸ್ಕ್‍ ಸಾಧನದ ಚಾಲಕ"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "ಚಾಲಕದ ಅನುಕ್ರಮ '%1$s' ಅಸುರಕ್ಷಿತವಾದ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr ""
@@ -29258,9 +29323,8 @@ msgstr "iscsi ಪೂಲ್ ಕೇವಲ 'chap' auth ಬಗೆಯನ್ನು ಮ
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-#, fuzzy
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29836,10 +29900,6 @@ msgstr "ಲೈವ್"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr "'%1$s' ಸಾಧನದ ಲೈವ್ ಲಗತ್ತು ಮಾಡಲು ಬೆಂಬಲವಿಲ್ಲ"
-
-#, fuzzy, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
 msgstr "'%1$s' ಸಾಧನದ ಲೈವ್ ಲಗತ್ತು ಮಾಡಲು ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
@@ -30527,9 +30587,6 @@ msgstr "ವರ್ಗಾವಣೆಯು ಸಕ್ರಿಯವಾಗಿದೆ ಆ�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "ವರ್ಗಾವಣೆಯು ಸಕ್ರಿಯವಾಗಿದೆ ಆದರೆ RAM 'transferred' ದತ್ತಾಂಶವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr "ಸಂಪೂರ್ಣ ಡಿಸ್ಕ್ ಹೊಂದಿರುವ ಹಂಚದೆ ಇರುವ ಶೇಖರಣೆಯೊಂದಿಗೆ ವರ್ಗಾವಣೆ"
@@ -34784,10 +34841,6 @@ msgstr "ಹಿಮ್ಮರಳಿಸಲು ಬಲದ ಅಗತ್ಯವಿದೆ:
 msgid "revert to current snapshot"
 msgstr "ಪ್ರಸ್ತುತ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗೆ ಮರಳಿಸು"
 
-#, fuzzy
-msgid "revert to external snapshot not supported yet"
-msgstr "%d ಬಾಹ್ಯ ಡಿಸ್ಕ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳನ್ನು ಅಳಿಸುವಿಕೆಯು ಇನ್ನೂ ಸಹ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
-
 msgid "rollback to previous restore point"
 msgstr "ಹಿಂದಿನ ಮರಳಿಸ್ಥಾಪಿಸುವ ಸ್ಥಳಕ್ಕೆ ಹಿಮ್ಮರಳಿಸು"
 
@@ -35294,12 +35347,21 @@ msgstr "NUMA ಸೆಲ್‌ಗಳಿಗಾಗಿ ಮುಕ್ತ ಮೆಮೊ�
 msgid "show inactive defined XML"
 msgstr "ನಿಷ್ಕ್ರಿಯ ಡೊಮೇನ್‌ ಆಗಿಲ್ಲ"
 
+msgid "show network title"
+msgstr ""
+
 #, fuzzy
 msgid "show or set domain's custom XML metadata"
 msgstr "ಡೊಮೇನ್‌ನ ವಿವರಣೆ ಅಥವ ಶೀರ್ಷಿಕೆಯನ್ನು ತೋರಿಸು ಅಥವ ಹೊಂದಿಸು"
 
 msgid "show or set domain's description or title"
 msgstr "ಡೊಮೇನ್‌ನ ವಿವರಣೆ ಅಥವ ಶೀರ್ಷಿಕೆಯನ್ನು ತೋರಿಸು ಅಥವ ಹೊಂದಿಸು"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr ""
@@ -37915,10 +37977,6 @@ msgstr "ಅಜ್ಞಾತ ಡಿಸ್ಕಿನ ಸ್ನಾಪ್‌ಶಾಟ�
 msgid "unknown driver format value '%1$s'"
 msgstr "ಅಜ್ಞಾತವಾದ ಚಾಲಕದ ವಿನ್ಯಾಸದ ಮೌಲ್ಯ '%1$s'"
 
-#, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "'%1$s' ಅಜ್ಞಾತವಾದ ಚಾಲಕದ ಹೆಸರು"
-
 #, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "ಅಜ್ಞಾತ ಸಾಮರ್ಥ್ಯದ ಬಗೆ '%d', '%s' ಗಾಗಿ"
@@ -38707,6 +38765,11 @@ msgstr "ಹೊಸ ಗಾತ್ರದ ಬದಲಿಗೆ ಪ್ರಸಕ್ತ �
 
 msgid "use multifunction pci under specified address"
 msgstr "ಸೂಚಿಸಲಾದ ವಿಳಾಸದ ಅಡಿಯಲ್ಲಿ ಬಹುಕ್ರಿಯೆಯ pci ಅನ್ನು ಬಳಸು"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr ""
@@ -39710,6 +39773,34 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "%1$s ಮಾಡ್ಯೂಲ್ ಅನ್ನು PCI ತುಣುಕಿನಿಂದ ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, fuzzy, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr "%1$s ಮಾಡ್ಯೂಲ್ ಅನ್ನು PCI ತುಣುಕಿನಿಂದ ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, fuzzy
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "VFIO PCI ಸಾಧನ ನಿಯೋಜನೆಯು qemu ಈ ಆವೃತ್ತಿಯಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "'%1$s' ಸಾಧನದ ಲೈವ್ ಲಗತ್ತು ಮಾಡಲು ಬೆಂಬಲವಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "%d ಬಾಹ್ಯ ಡಿಸ್ಕ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳನ್ನು ಅಳಿಸುವಿಕೆಯು ಇನ್ನೂ ಸಹ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "'%1$s' ಅಜ್ಞಾತವಾದ ಚಾಲಕದ ಹೆಸರು"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

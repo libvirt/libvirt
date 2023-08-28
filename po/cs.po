@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1323,6 +1323,9 @@ msgstr "atribut 'iothread' je podporován pouze pro virtio scsi řadiče"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread' je podporováno pouze pro řadič virtio-scsi"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "v odpovědi guest-get-vcpus chybí 'logical-id'"
 
@@ -1937,6 +1940,9 @@ msgstr "Přidělení:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "Umožňuje nastavení nebo změnu popisu či názvu domény."
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "Došlo k chybě, ale příčina není známa"
 
@@ -2070,9 +2076,6 @@ msgstr "Pokus o odeslání asynchronní zprávy se synchronní odpovědí"
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "Pokus o použití PCI adresy %1$s dvakrát"
-
-msgid "Attempting to use unknown stub driver"
-msgstr "Pokus o použití neznámého pahýlového ovladače"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7432,6 +7435,9 @@ msgstr "Nepodařilo se získat statistiky paměti pro doménu %1$s"
 msgid "Failed to get network autostart state"
 msgstr "Nepodařilo se zjistit stav automatického spouštění sítě"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "Nepodařilo se získat informace o trvalosti sítě"
 
@@ -7626,12 +7632,12 @@ msgid "Failed to list volumes"
 msgstr "Nepodařilo se vypsat svazky"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "Nepodařilo se načíst pahýl PCI modulu %1$s"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
-msgstr "Nepodařilo se načíst pahýl PCI modulu %1$s: administrativně zakázáno"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
+msgstr ""
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7902,6 +7908,9 @@ msgstr "Nepodařilo se zpracovat paměť: neshoda ve velikosti"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "Nepodařilo se vyhodnotit režim „%1$s“"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8411,6 +8420,12 @@ msgstr "Nepodařilo se nastavit nový popis domény"
 msgid "Failed to set new domain title"
 msgstr "Nepodařilo se nastavit nový název domény"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Nepodařilo se nastavit neblokující příznak popisovače souboru"
 
@@ -8874,6 +8889,11 @@ msgid ""
 msgstr ""
 "Příznaky „VIR_DOMAIN_AFFECT_LIVE“ a „VIR_DOMAIN_AFFECT_CONFIG“ nelze použít "
 "naráz"
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
+msgstr ""
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -10673,9 +10693,6 @@ msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
 "Jen rada pro ignorování souvislých volných rozsahů menších než toto (bajty)"
 
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "Přiřazování KVM zařízení už není na tomto systému podporováno"
-
 msgid "KVM is not supported on this platform"
 msgstr "KVM není na této platformě podporováno"
 
@@ -12117,6 +12134,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "Název souboru s nastaveními sítě „%1$s“ nesouhlasí s názvem sítě „%2$s“"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "Síťové zařízení %1$s už existuje"
@@ -12201,6 +12224,15 @@ msgstr "Sítový port s nikde se neopakujícím identifikátorem %1$s už existu
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "Sítový port s nikde se neopakujícím identifikátorem %1$s neexistuje"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12321,6 +12353,10 @@ msgstr "Nezadány žádné názvy výchozích serverů"
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "Žádný popis pro doménu: %1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr "Nezadán žádný argument příkazového řádku ohledně modelu zařízení"
@@ -12540,6 +12576,10 @@ msgstr "Vícero videozařízení není podporováno"
 #, c-format
 msgid "No title for domain: %1$s"
 msgstr "Žádný nadpis pro doménu: %1$s"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "Nejsou k dispozici žádné celkové statistiky"
@@ -14707,6 +14747,9 @@ msgstr "Zobrazit/Nastavit parametry plánovače."
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "Zobrazí nebo změní XML metadata domény."
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 msgid "Shutdown"
 msgstr "Vypnout"
 
@@ -15532,8 +15575,20 @@ msgid "Target disk device %1$s does not match source %2$s"
 msgstr "Diskové zařízení %1$s cíle se neshoduje se zdrojovým %2$s"
 
 #, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "Model „%1$s“ cílového disku se neshoduje se zdrojovým %2$s"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16953,6 +17008,9 @@ msgstr "Nedaří se přidělit zápůjčku %1$s"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "Nedaří se přidělit zámkový prostor %1$s"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "Nedaří se přidělit x509 přihlašovací údaje: %1$s"
@@ -17914,6 +17972,14 @@ msgstr "Nedaří se vytvořit složku %1$s"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "Nedaří se označit zařízení zpětné smyčky jako autoclear"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "Nedaří se změnit živá zařízení"
@@ -22201,16 +22267,13 @@ msgstr "MTU není možné měnit"
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "nedaří se změnit kolonku „%1$s“ disku"
 
-msgid "cannot modify memory UUID"
-msgstr "není možné změnit UUID paměti"
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr "nedaří se změnit přístup k paměti z '%1$s' na '%2$s'"
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
-msgstr "není možné změnit velikost zarovnání paměti z '%1$llu' na '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory block size from '%1$llu' to '%2$llu'"
@@ -22219,10 +22282,6 @@ msgstr "není možné změnit velikost bloku paměti z '%1$llu' na '%2$llu'"
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
 msgstr "není možné změnit zahazování paměti z '%1$s' na '%2$s'"
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
-msgstr "není možné změnit velikost popisku paměti z '%1$llu' na '%2$llu'"
 
 #, c-format
 msgid "cannot modify memory model from '%1$s' to '%2$s'"
@@ -22235,17 +22294,6 @@ msgstr "není možné změnit paměť modelu '%1$s'"
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
 msgstr "není možné změnit velikost stránky paměti z '%1$llu' na '%2$llu'"
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr "není možné změnit popis umístění paměti z '%1$s' na '%2$s'"
-
-msgid "cannot modify memory pmem flag"
-msgstr "není možné změnit pmem příznak paměti"
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
-msgstr "není možné změnit pmem z '%1$d' na '%2$d'"
 
 #, c-format
 msgid "cannot modify memory size from '%1$llu' to '%2$llu'"
@@ -24236,6 +24284,11 @@ msgstr ""
 "mazání externího zachyceného stavu, který má interní zachycený stav jako "
 "nadřazený, není podporováno"
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 "mazání externích a interních podřízených zachycených stavů disků není "
@@ -24244,10 +24297,20 @@ msgstr ""
 msgid "deletion of external children disk snapshots not supported"
 msgstr "mazání externích podřízených zachycených stavů disků není podporováno"
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 "mazání externích zachycených stavů disků, které mají podřízené, není "
 "podporováno"
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -25096,6 +25159,9 @@ msgstr "ovladač diskového zařízení"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "sériové číslo ovladače „%1$s“ obsahuje nebezpečné znaky"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr "zahozeno"
@@ -29223,8 +29289,8 @@ msgstr "iscsi-direct fond podporuje pouze typ ověřování 'chap'"
 msgid "ivgen element found, but cipher is missing"
 msgstr "ivgen prvek nalezen, ale chybí šifra"
 
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "zařízení ivshmem není tímto sestavením QEMU podporováno"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29769,10 +29835,6 @@ msgstr "živá"
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
 msgstr "připojení zařízení „%1$s“ za chodu není podporováno"
-
-#, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
-msgstr "připojení za chodu shmem modelu „%1$s“ není podporováno"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
@@ -30486,9 +30548,6 @@ msgstr "stěhování bylo aktivní, ale data RAM 'total' (celkem) chyběla"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "stěhování bylo aktivní, ale data RAM 'transfered' (přeneseno) chyběla"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr "stěhování s původním shmem zařízením není podporováno"
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr "migrace s nesdíleným úložištěm s plnou úplnou kopií disku"
@@ -34675,9 +34734,6 @@ msgstr "vrácení vyžaduje sílu: %1$s"
 msgid "revert to current snapshot"
 msgstr "vrátit do podoby stávajícího zachyceného stavu"
 
-msgid "revert to external snapshot not supported yet"
-msgstr "návrat k vnějšímu zachycenému stavu zatím není podporován"
-
 msgid "rollback to previous restore point"
 msgstr "vrátit zpět na předchozí bod obnovení"
 
@@ -35198,11 +35254,20 @@ msgstr "zobrazit volné stránky všech NUMA buněk"
 msgid "show inactive defined XML"
 msgstr "zobrazit neaktivní, ale nadefinované XML"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr "zobrazit nebo nastavit uživatelsky určená XML metadata domény"
 
 msgid "show or set domain's description or title"
 msgstr "zobrazit nebo nastavit popis či název domény"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr "u každého z vypsaných událostí zobrazit časové razítko"
@@ -37830,10 +37895,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "neznámá hodnota formátu ovladače „%1$s“"
 
 #, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "neznámý název ovladače „%1$s“"
-
-#, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "neznámý typ drm „%1$s“ pro „%2$s“"
 
@@ -38613,6 +38674,11 @@ msgstr ""
 
 msgid "use multifunction pci under specified address"
 msgstr "použít multifunkční pci pod zadanou adresou"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "použití <server> vyžaduje režim zálohy pull"
@@ -39632,6 +39698,60 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <řetězec>}…"
+
+#~ msgid "Attempting to use unknown stub driver"
+#~ msgstr "Pokus o použití neznámého pahýlového ovladače"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "Nepodařilo se načíst pahýl PCI modulu %1$s"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr ""
+#~ "Nepodařilo se načíst pahýl PCI modulu %1$s: administrativně zakázáno"
+
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "Přiřazování KVM zařízení už není na tomto systému podporováno"
+
+#~ msgid "cannot modify memory UUID"
+#~ msgstr "není možné změnit UUID paměti"
+
+#, c-format
+#~ msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+#~ msgstr "není možné změnit velikost zarovnání paměti z '%1$llu' na '%2$llu'"
+
+#, c-format
+#~ msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
+#~ msgstr "není možné změnit velikost popisku paměti z '%1$llu' na '%2$llu'"
+
+#, c-format
+#~ msgid "cannot modify memory path from '%1$s' to '%2$s'"
+#~ msgstr "není možné změnit popis umístění paměti z '%1$s' na '%2$s'"
+
+#~ msgid "cannot modify memory pmem flag"
+#~ msgstr "není možné změnit pmem příznak paměti"
+
+#, c-format
+#~ msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
+#~ msgstr "není možné změnit pmem z '%1$d' na '%2$d'"
+
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "zařízení ivshmem není tímto sestavením QEMU podporováno"
+
+#, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "připojení za chodu shmem modelu „%1$s“ není podporováno"
+
+#~ msgid "migration with legacy shmem device is not supported"
+#~ msgstr "stěhování s původním shmem zařízením není podporováno"
+
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "návrat k vnějšímu zachycenému stavu zatím není podporován"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "neznámý název ovladače „%1$s“"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

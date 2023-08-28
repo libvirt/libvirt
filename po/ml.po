@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1166,6 +1166,9 @@ msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമ�
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "'logical-id', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
 
@@ -1788,6 +1791,9 @@ msgstr "അനുവദിക്കുന്നവ:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "ഡൊമെയിനുള്ള ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "ഒരു പിശകു് പറ്റി, പക്ഷേ കാരണമറിയില്ല"
 
@@ -1911,9 +1917,6 @@ msgstr "ഒരു സിന്‍ക്രൊണസ് മറുപടിയ്�
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "പിസിഐ വിലാസം %1$s രണ്ടു് തവണ ഉപയോഗിയ്ക്കുവാന്‍ ശ്രമിച്ചിരിയ്ക്കുന്നു"
-
-msgid "Attempting to use unknown stub driver"
-msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7246,6 +7249,9 @@ msgstr "ഡൊമെയിന്‍ %1$s-നുള്ള മെമ്മറി �
 msgid "Failed to get network autostart state"
 msgstr "നെറ്റ്‌വര്‍ക്ക് തനിയെ തുടങ്ങുന്നതാണോ എന്ന് അറിയാന്‍ പറ്റുന്നില്ല"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "നെറ്റ്‌വര്‍ക്ക് പെര്‍സിസ്റ്റന്‍സ് വിവരം കാണിക്കുന്നതില്‍ പരാജയം"
 
@@ -7443,12 +7449,12 @@ msgid "Failed to list volumes"
 msgstr "വോള്യം പട്ടിക ലഭ്യമായില്ല"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "പിസിഐ സ്റ്റബ് ഘടകം %1$s ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
-msgstr "പിസിഐ സ്റ്റബ് ഘടകം %1$s ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു"
+#, c-format
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7719,6 +7725,9 @@ msgstr "qemu ഡിവൈസ് പട്ടിക പാഴ്സ് ചെയ�
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "മോഡ് '%1$s' പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8228,6 +8237,12 @@ msgstr "ഡൊമൈന്‍ വിവരണം ക്രമീകരിക്�
 msgid "Failed to set new domain title"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "നോണ്‍-ബ്ലോക്കിങ് ഫയല്‍ വിവരണ ഫ്ലാഗ് സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
@@ -8688,6 +8703,11 @@ msgstr "--%1$s, --%2$s ഐച്ഛികങ്ങള്‍ പരസ്പര �
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
+msgstr ""
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
 
 #, c-format
@@ -10437,10 +10457,6 @@ msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr "ഇതിനേക്കാള്‍ (ബൈറ്റുകള്‍) ചെറിയ പരിധികള്‍ അവഗണിയ്ക്കുന്നതിനുള്ളൊരു സൂചന "
 
 #, fuzzy
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നതു് qemu-ന്റെ ഈ പതിപ്പു് പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
 msgid "KVM is not supported on this platform"
 msgstr "റോ ഐ/ഒ ഈ പ്ലാറ്റ്ഫോമില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -11914,6 +11930,12 @@ msgstr "ശ്രംഖല ക്രമീകരണങ്ങള്‍ മാറ�
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr "നെറ്റ്‌വര്‍ക്ക് കോണ്‍ഫിഗ് നാമം '%1$s' നെറ്റ്‌വര്‍ക്ക് നാമവുമായി '%2$s' ചേരുന്നില്ല"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "%1$s നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ഇപ്പോഴെ നിലവിലുണ്ട്"
@@ -11999,6 +12021,15 @@ msgstr "%1$s നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് �
 #, fuzzy, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "പാഥ് %1$s-നുള്ള ലോക്ക്സ്പെയിസ് നിലവിലില്ല"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12126,6 +12157,10 @@ msgstr "പിശക് കാണിക്കുന്ന സന്ദേശം 
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "%1$s :ഡൊമൈനിനുള്ള വിവരണം ലഭ്യമല്ല"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr ""
@@ -12350,6 +12385,10 @@ msgstr "അനവധി വീഡിയോ ഡിവൈസുകള്‍ക്�
 #, fuzzy, c-format
 msgid "No title for domain: %1$s"
 msgstr "%1$s :ഡൊമൈനിനുള്ള വിവരണം ലഭ്യമല്ല"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "മൊത്തം സ്ഥിതി ലഭ്യമല്ല"
@@ -14537,6 +14576,9 @@ msgstr "ഷെഡ്യൂളറ്‍ പാരമീറ്ററുകള്�
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr ""
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 #, fuzzy
 msgid "Shutdown"
 msgstr "നിര്‍ത്തി വയ്ക്കുക"
@@ -15372,9 +15414,21 @@ msgstr "ലക്ഷ്യമായ ഡിസ്ക് ബസ്‌ %1$s ഉറ�
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "ലക്ഷ്യമായ ഡിസ്ക് ഡിവൈസ് %1$s ഉറവിടം %2$s-ഉമായി യോജിക്കുന്നില്ല"
 
+#, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "ലക്ഷ്യമായ ഡിസ്ക് %1$s ഉറവിടം %2$s-ഉമായി യോജിക്കുന്നില്ല"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16747,6 +16801,9 @@ msgstr "ലീസ് %1$s അനുവദിയ്ക്കുവാന്‍ �
 msgid "Unable to allocate lockspace %1$s"
 msgstr "ലോക്ക്സ്പെയിസ് %1$s അനുവദിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "x509 അനുമതികള്‍ അനുവദിയ്ക്കുവാന്‍ സാധ്യമല്ല: %1$s"
@@ -17760,6 +17817,14 @@ msgstr "%1$s ലഭ്യമാക്കുവാന്‍ സാധ്യമല
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "ഓട്ടോക്ലിയറായി ലൂപ് ഉപകരണം അടയാളപ്പെടുത്താന്‍ സാധിച്ചില്ല"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "ലൈവ് ഡിവൈസുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
@@ -22022,15 +22087,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "fd %d നീക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -22039,10 +22101,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -22055,17 +22113,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -24062,13 +24109,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -24933,6 +24995,9 @@ msgstr "ഡിസ്ക് ഡിവൈസിന്റെ ഡ്രൈവര്�
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "ഡ്രൈവര്‍ സീരിയല്‍ '%1$s'-ല്‍ സുരക്ഷിതമല്ലാത്ത അക്ഷരങ്ങള്‍"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr ""
@@ -29060,9 +29125,8 @@ msgstr "iscsi പൂള്‍ 'chap' ആധികാരികത തരം മ�
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-#, fuzzy
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29630,10 +29694,6 @@ msgstr "ലൈവ്"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr "'%1$s' ഡിവൈസിന്റെ ലൈവ് അറ്റാച്ച് പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
 msgstr "'%1$s' ഡിവൈസിന്റെ ലൈവ് അറ്റാച്ച് പിന്തുണയ്ക്കുന്നില്ല"
 
 #, c-format
@@ -30317,9 +30377,6 @@ msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പ�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പക്ഷേ നീക്കിയ RAM ഡേറ്റാ ലഭ്യമല്ല"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr "മുഴുവന്‍ ഡിസ്ക്ക് കോപ്പി ഉപയോഗിച്ചുള്ള മൈഗ്രേഷന്‍"
@@ -34538,10 +34595,6 @@ msgstr "തിരിച്ചുപോകണമെങ്കില്‍ നി�
 msgid "revert to current snapshot"
 msgstr "ഇപ്പോഴത്തെ സ്നാപ്പ്ഷോട്ടിലേക്ക് തിരിച്ച് പോവുക"
 
-#, fuzzy
-msgid "revert to external snapshot not supported yet"
-msgstr "പുറമേയുള്ള ഡിസ്ക് സ്നാപ്പ്ഷോട്ടുകള്‍ %d വെട്ടി നീക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
-
 msgid "rollback to previous restore point"
 msgstr "പഴയ ഇടത്തേക്ക് തിരിച്ച് പോവുക"
 
@@ -35049,12 +35102,21 @@ msgstr "എല്ലാ NUMA സെല്ലിലെയും ഒഴിവു�
 msgid "show inactive defined XML"
 msgstr "സജീവമല്ലാത്ത XML കാണിക്കുക"
 
+msgid "show network title"
+msgstr ""
+
 #, fuzzy
 msgid "show or set domain's custom XML metadata"
 msgstr "ഡൊമൈനിന്റെ വിവരണം അല്ലെങ്കില്‍ തലക്കെട്ട് മാറ്റുക/ക്രമീകരിക്കുക"
 
 msgid "show or set domain's description or title"
 msgstr "ഡൊമൈനിന്റെ വിവരണം അല്ലെങ്കില്‍ തലക്കെട്ട് മാറ്റുക/ക്രമീകരിക്കുക"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr ""
@@ -37647,10 +37709,6 @@ msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ�
 msgid "unknown driver format value '%1$s'"
 msgstr "അപരിചിതമായ ഡ്രൈവര്‍ ഫോര്‍മാറ്റ് മൂല്ല്യം '%1$s'"
 
-#, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "അപരിചിതമായ ഡ്രൈവര്‍ നാമം '%1$s'"
-
 #, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "അപരിചിതമായ വിശേഷത രീതി '%d','%s'-യ്ക്കുള്ളതു്"
@@ -38437,6 +38495,11 @@ msgstr "പുതിയ വലിപ്പത്തിന് പകരം ഇപ
 
 msgid "use multifunction pci under specified address"
 msgstr "വ്യക്തമാക്കിയ വിലാസത്തില്‍ മള്‍ട്ടിഫംഗ്ഷന്‍ പിസിഐ ഉപയോഗിയ്ക്കുക"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr ""
@@ -39430,6 +39493,34 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "പിസിഐ സ്റ്റബ് ഘടകം %1$s ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു"
+
+#, fuzzy, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr "പിസിഐ സ്റ്റബ് ഘടകം %1$s ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു"
+
+#, fuzzy
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നതു് qemu-ന്റെ ഈ പതിപ്പു് പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "'%1$s' ഡിവൈസിന്റെ ലൈവ് അറ്റാച്ച് പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "പുറമേയുള്ള ഡിസ്ക് സ്നാപ്പ്ഷോട്ടുകള്‍ %d വെട്ടി നീക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "അപരിചിതമായ ഡ്രൈവര്‍ നാമം '%1$s'"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

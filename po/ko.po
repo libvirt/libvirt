@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2023-08-08 05:41+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1295,6 +1295,9 @@ msgstr "virtio scisi 제어기를 위해 'iothread' 속성만 지원함"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread'는 virtio-scsi 제어기에서만 지원됩니다"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus의 응답에서 'logical-id'가 누락"
 
@@ -1915,6 +1918,9 @@ msgstr "할당:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "도메인의 영구 설정을 변경 할 수 없음."
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "오류가 발생하였으나 원인은 알지 못합니다"
 
@@ -2046,9 +2052,6 @@ msgstr "비동기 메시지를 동기화식 대답을 사용하여 보내려고 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "PCI 주소 %1$s를 이중으로 사용하려고 시도했습니다"
-
-msgid "Attempting to use unknown stub driver"
-msgstr "알수없는 스텁 드라이버 (stub driver)를 사용하려고 시도하고 있습니다"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7283,6 +7286,9 @@ msgstr "도메인 %1$s의 메모리 통계를 얻는 데 실패했습니다"
 msgid "Failed to get network autostart state"
 msgstr "네트워크 자동 시작 상태를 가져오지 못했습니다"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "네트워크 지속성 정보를 가져오지 못했습니다"
 
@@ -7477,12 +7483,12 @@ msgid "Failed to list volumes"
 msgstr "볼륨 목록화에 실패"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "PCI 스텁 모듈 %1$s를 적재하는데 실패했습니다"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
-msgstr "PCI 스텁 모듈 %1$s를 적재하는데 실패했습니다: 관리상 금지됨"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
+msgstr ""
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7749,6 +7755,9 @@ msgstr "메모리 구문 분석 실패: 크기 불일치"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "모드 '%1$s'의 구문분석에 실패했습니다"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8249,6 +8258,12 @@ msgstr "새로운 도메인 설명을 설정하는데 실패"
 msgid "Failed to set new domain title"
 msgstr "새 도메인 제목을 설정하지 못했습니다"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "비-블러킹 파일 디스크립터 플래그를 설정하는 데 실패했습니다"
 
@@ -8710,6 +8725,11 @@ msgid ""
 msgstr ""
 "플래그 'VIR_DOMAIN_AFFECT_LIVE' 및 'VIR_DOMAIN_AFFECT_CONFIG'는 상호 배타적입"
 "니다"
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
+msgstr ""
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -10457,9 +10477,6 @@ msgstr "작업 유형:"
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr "이보다 작은 연속 사용 가능한 범위(바이트)를 무시하라는 힌트입니다"
 
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "이 시스템에서는 KVM 장치 할당이 더 이상 지원되지 않습니다"
-
 msgid "KVM is not supported on this platform"
 msgstr "KVM은 이 기술환경에서 지원되지 않습니다"
 
@@ -11869,6 +11886,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "네트워크 설정 파일 이름 '%1$s'은 네트워크 이름 '%2$s'에 부합하지 않습니다ㅓ"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "네트워크 장치 %1$s이(가) 이미 있습니다"
@@ -11953,6 +11976,15 @@ msgstr "UUID와 함께 네트워크 경로 %1$s는 이미 존재합니다"
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "UUID %1$s와 함께 네트워크 포트가 존재하지 않습니다"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12071,6 +12103,10 @@ msgstr "기본 서버 이름이 제공되지 않았습니다"
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "도메인 설명이 없음: %1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr "장치 모델 명령줄 인수가 지정되지 않았습니다"
@@ -12285,6 +12321,10 @@ msgstr "다중 비디오 장치를 위한 지원이 없습니다"
 #, c-format
 msgid "No title for domain: %1$s"
 msgstr "도메인 제목 없음: %1$s"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "사용 가능한 총 통계가 없습니다"
@@ -14396,6 +14436,9 @@ msgstr "스케줄러 매개 변수 보기/설정."
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "도메인의 XML 메타데이터를 표시하거나 수정합니다."
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 msgid "Shutdown"
 msgstr "종료"
 
@@ -15210,8 +15253,20 @@ msgid "Target disk device %1$s does not match source %2$s"
 msgstr "대상 디스크 장치 %1$s가 소스%2$s와 일치하지 않음"
 
 #, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "대상 디스크 모델 %1$s가 소스 %2$s와 일치하지 않습니다"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16589,6 +16644,9 @@ msgstr "임대 %1$s을 할당 할 수 없습니다"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "잠금공간 %1$s를 할당 할 수 없습니다"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "x509 인증 할당을 할 수 없음: %1$s"
@@ -17540,6 +17598,14 @@ msgstr "디렉토리 %1$s를 만들 수 없습니다"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "루프 장치를 자동 지우기로 표시할 수 없음"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "라이브 장치를 수정 할 수 없습니다"
@@ -21712,16 +21778,13 @@ msgstr "MTU를 수정할 수 없습니다"
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "디스크의 '%1$s' 필드를 수정할 수 없습니다"
 
-msgid "cannot modify memory UUID"
-msgstr "메모리 UUID를 수정 할 수 없습니다"
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr "'%1$s'에서 '%2$s'로 메모리 접근을 수정 할 수 없습니다"
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
-msgstr "'%1$llu'에서 '%2$llu'로 메모리 정렬 크기를 수정 할 수 없습니다"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory block size from '%1$llu' to '%2$llu'"
@@ -21730,10 +21793,6 @@ msgstr "'%1$llu'에서 '%2$llu'로 메모리 블록 크기를 수정 할 수 없
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
 msgstr "'%1$s'에서 '%2$s'로 메모리 버림을 수정 할 수 없습니다"
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
-msgstr "'%1$llu'에서 '%2$llu'로 메모리 이름표 크기를 수정 할 수 없습니다"
 
 #, c-format
 msgid "cannot modify memory model from '%1$s' to '%2$s'"
@@ -21746,17 +21805,6 @@ msgstr "모델 '%1$s'의 메모리를 수정 할 수 없습니다"
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
 msgstr "'%1$llu'에서 '%2$llu'로 메모리 페이지 크기를 수정 할 수 없습니다"
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr "'%1$s'에서 '%2$s'로 메모리 경로를 수정 할 수 없습니다"
-
-msgid "cannot modify memory pmem flag"
-msgstr "메모리 pnmem 플래그를 수정 할 수 없습니다"
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
-msgstr "'%1$d'에서 '%2$d'로 메모리 pnmem을 수정 할 수 없습니다"
 
 #, c-format
 msgid "cannot modify memory size from '%1$llu' to '%2$llu'"
@@ -23349,8 +23397,9 @@ msgstr "인증 방법 목록을 검색할 수 없음: %1$s"
 msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %1$d in "
 "network '%2$s'"
-msgstr "dhcp 호스트 항목을 최신화 할 수 없음 - <ip> 요소를 찾을 수 없음 (인덱스 %1$"
-"d, 네트워크 '%2$s'에서)"
+msgstr ""
+"dhcp 호스트 항목을 최신화 할 수 없음 - <ip> 요소를 찾을 수 없음 (인덱스 "
+"%1$d, 네트워크 '%2$s'에서)"
 
 #, c-format
 msgid ""
@@ -23452,7 +23501,8 @@ msgstr "매개변수로부터 볼륨을 생성합니다"
 msgid ""
 "creating a new group/updating existing with all tune parameters zero is not "
 "supported"
-msgstr "신규 그룹 생성/모든 조정 매개변수가 0인 기존 최신화는 지원되지 않습니다"
+msgstr ""
+"신규 그룹 생성/모든 조정 매개변수가 0인 기존 최신화는 지원되지 않습니다"
 
 msgid "creating checkpoint for incremental backup is not supported yet"
 msgstr "증분 백업에 대한 체크포인트 생성은 아직 지원되지 않습니다"
@@ -23695,14 +23745,29 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr "내부 스냅샷이 상위로 있는 외부 스냅샷 삭제하기는 지원되지 않음"
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr "외부와 내부 하위 디스크 스냅샷 삭제가 지원되지 않음"
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr "외부 하위 디스크 스냅샷의 삭제는 지원되지 않습니다"
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "하위에 있는 외부 디스크 스냅샷의 삭제는 지원되지 않습니다"
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -24334,7 +24399,8 @@ msgid "domain checkpoint XML"
 msgstr "도메인 체크포인트 XML"
 
 msgid "domain config update needs VIR_DOMAIN_AFFECT_CONFIG flag to be set"
-msgstr "도메인 구성 최신화에는 VIR_DOMAIN_AFFECT_CONFIG 플래그를 설정해야 합니다"
+msgstr ""
+"도메인 구성 최신화에는 VIR_DOMAIN_AFFECT_CONFIG 플래그를 설정해야 합니다"
 
 #, c-format
 msgid "domain configuration does not support rng model '%1$s'"
@@ -24539,6 +24605,9 @@ msgstr "디스크 장치의 드라이버"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "드라이브 시리얼 '%1$s'에 안전하지 않은 문자가 포함되어 있습니다"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr "드랍됨"
@@ -28581,8 +28650,8 @@ msgstr "iscsi-direct 풀은 'chap' 인증 유형만 지원합니다"
 msgid "ivgen element found, but cipher is missing"
 msgstr "ivgen 요소를 찾았지만 암호가 없습니다"
 
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "ivshmem 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29117,10 +29186,6 @@ msgstr "라이브"
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
 msgstr "장치 '%1$s'의 라이브 연결이 지원되지 않습니다"
-
-#, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
-msgstr "shmem 모델 '%1$s'의 라이브 연결이 지원되지 않습니다"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
@@ -29784,9 +29849,6 @@ msgstr "이전이 작동 중이지만, RAM '전체' 자료가 누락되었습니
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "이전이 작동 중이지만, RAM에 '전송된' 자료를 잃어버렸습니다"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr "레거시 shmem 장치를 사용한 이전은 지원되지 않습니다"
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr "전체 디스크 복사본이 있는 비-공유된 저장소를 갖는 이전"
@@ -31921,8 +31983,8 @@ msgid ""
 "notify server to update the CA cert, CA CRL, server cert / key without "
 "restarts. See OPTIONS for currently supported attributes."
 msgstr ""
-"다시 시작하지 않고 CA 인증서, CA CRL, 서버 인증서/키를 최신화하도록 서버에 "
-"알립니다. 현재 지원되는 속성은 OPTIONS를 참조하세요."
+"다시 시작하지 않고 CA 인증서, CA CRL, 서버 인증서/키를 최신화하도록 서버에 알"
+"립니다. 현재 지원되는 속성은 OPTIONS를 참조하세요."
 
 #, c-format
 msgid "nparams count exceeds maximum: %1$u > %2$u"
@@ -33828,9 +33890,6 @@ msgstr "되돌리려면 강제 실행이 필요합니다. %1$s"
 msgid "revert to current snapshot"
 msgstr "현재 스냅샷으로 되돌리기"
 
-msgid "revert to external snapshot not supported yet"
-msgstr "아직 지원되지 않는 외부 스냅샷으로 되돌리기"
-
 msgid "rollback to previous restore point"
 msgstr "이전 복원 지점으로 롤백"
 
@@ -34329,11 +34388,20 @@ msgstr "모든 NUMA 셀의 여유 부분 보기"
 msgid "show inactive defined XML"
 msgstr "비활성화로 정의된 XML을 보여줌"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr "도메인의 사용자 지정 XML 메타데이터 표시 또는 설정"
 
 msgid "show or set domain's description or title"
 msgstr "도메인 설명 또는 제목 보기 또는 설정"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr "인쇄된 각 이벤트에 대한 타임스탬프 표시"
@@ -36927,10 +36995,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "알 수 없는 드라이버 형식 값 '%1$s'"
 
 #, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "알 수 없는 드라이버 이름 '%1$s'"
-
-#, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "'%1$s'에 대한 알 수 없는 drm 유형 '%2$s'"
 
@@ -37708,6 +37772,11 @@ msgstr "용량을 새 크기가 아닌 현재 크기에 대한 델타로 사용�
 
 msgid "use multifunction pci under specified address"
 msgstr "지정된 주소에서 다기능 PCI 사용하십시오"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "<server>를 사용하려면 풀 모드 백업이 필요합니다"
@@ -38701,6 +38770,59 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "Attempting to use unknown stub driver"
+#~ msgstr "알수없는 스텁 드라이버 (stub driver)를 사용하려고 시도하고 있습니다"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "PCI 스텁 모듈 %1$s를 적재하는데 실패했습니다"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr "PCI 스텁 모듈 %1$s를 적재하는데 실패했습니다: 관리상 금지됨"
+
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "이 시스템에서는 KVM 장치 할당이 더 이상 지원되지 않습니다"
+
+#~ msgid "cannot modify memory UUID"
+#~ msgstr "메모리 UUID를 수정 할 수 없습니다"
+
+#, c-format
+#~ msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+#~ msgstr "'%1$llu'에서 '%2$llu'로 메모리 정렬 크기를 수정 할 수 없습니다"
+
+#, c-format
+#~ msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
+#~ msgstr "'%1$llu'에서 '%2$llu'로 메모리 이름표 크기를 수정 할 수 없습니다"
+
+#, c-format
+#~ msgid "cannot modify memory path from '%1$s' to '%2$s'"
+#~ msgstr "'%1$s'에서 '%2$s'로 메모리 경로를 수정 할 수 없습니다"
+
+#~ msgid "cannot modify memory pmem flag"
+#~ msgstr "메모리 pnmem 플래그를 수정 할 수 없습니다"
+
+#, c-format
+#~ msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
+#~ msgstr "'%1$d'에서 '%2$d'로 메모리 pnmem을 수정 할 수 없습니다"
+
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "ivshmem 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "shmem 모델 '%1$s'의 라이브 연결이 지원되지 않습니다"
+
+#~ msgid "migration with legacy shmem device is not supported"
+#~ msgstr "레거시 shmem 장치를 사용한 이전은 지원되지 않습니다"
+
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "아직 지원되지 않는 외부 스냅샷으로 되돌리기"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "알 수 없는 드라이버 이름 '%1$s'"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

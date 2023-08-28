@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1355,6 +1355,9 @@ msgstr ""
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "підтримку «iothread» передбачено лише для контролерів virtio-scsi"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "у відповіді guest-get-vcpus пропущено «logical-id»"
 
@@ -1989,6 +1992,9 @@ msgstr "Розподіл:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "Уможливлює встановлення опису або заголовка домену або його зміну."
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "Сталася помилка, але її причина невідома"
 
@@ -2127,9 +2133,6 @@ msgstr "Спроба надсилання асинхронного повідо�
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "Спроба подвійного використання адреси PCI %1$s"
-
-msgid "Attempting to use unknown stub driver"
-msgstr "Спроба використання невідомого фіктивного драйвера"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7591,6 +7594,9 @@ msgstr "Не вдалося отримати статистичні дані щ�
 msgid "Failed to get network autostart state"
 msgstr "Не вдалося отримати дані щодо стану автоматичного запуску мережі"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "Не вдалося отримати дані щодо сталості мереж"
 
@@ -7787,14 +7793,12 @@ msgid "Failed to list volumes"
 msgstr "Не вдалося побудувати список томів"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "Не вдалося завантажити фіктивний модуль PCI %1$s"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
-"Не вдалося завантажити фіктивний модуль PCI %1$s: це заборонено "
-"адміністративно"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -8063,6 +8067,9 @@ msgstr "Не вдалося обробити значення об'єму пам
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "Не вдається обробити режим «%1$s»"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8590,6 +8597,12 @@ msgstr "Не вдалося встановити новий опис домен�
 msgid "Failed to set new domain title"
 msgstr "Не вдалося встановити новий заголовок домену"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Не вдалося встановити прапорець «без блокування» дескриптора файла"
 
@@ -9063,6 +9076,11 @@ msgid ""
 msgstr ""
 "Прапорці «VIR_DOMAIN_AFFECT_LIVE» і «VIR_DOMAIN_AFFECT_CONFIG» не можна "
 "використовувати одночасно"
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
+msgstr ""
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -10903,9 +10921,6 @@ msgstr ""
 "Просто орієнтир для ігнорування неперервних вільних діапазонів з довжиною, "
 "меншою за цю (у байтах)"
 
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "у цій системі більше не передбачено призначення пристроїв KVM"
-
 msgid "KVM is not supported on this platform"
 msgstr "підтримки KVM на цій платформі не передбачено"
 
@@ -12404,6 +12419,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "Назва файла конфігурації мережі «%1$s» не відповідає назві мережі «%2$s»"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "Мережевий пристрій %1$s вже існує"
@@ -12489,6 +12510,15 @@ msgstr "Порт мережі із UUID %1$s вже існує"
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "Порту мережі із UUID %1$s не існує"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12610,6 +12640,10 @@ msgstr "Не вказано типових назв серверів"
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "Немає опису домену: %1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr "У командному рядку не вказано аргумент моделі пристрою"
@@ -12830,6 +12864,10 @@ msgstr "Підтримки декількох відеопристроїв не 
 #, c-format
 msgid "No title for domain: %1$s"
 msgstr "Немає заголовка домену: %1$s"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "Загальні статистичні дані недоступні"
@@ -15106,6 +15144,9 @@ msgstr "Показати/встановити параметри планува�
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "Показати або внести зміни до метаданих XML домену."
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 msgid "Shutdown"
 msgstr "Вимикання"
 
@@ -16017,8 +16058,20 @@ msgstr ""
 "Дисковий пристрій призначення, %1$s, не відповідає пристрою джерела, %2$s"
 
 #, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "Модель диска призначення, %1$s, не збігається з диском джерела, %2$s"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -17564,6 +17617,9 @@ msgstr "Не вдалося розмістити %1$s"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "Не вдалося розмістити простір блокувань %1$s"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "Не вдалося розмістити реєстраційні дані x509: %1$s"
@@ -18535,6 +18591,14 @@ msgstr "Не вдалося створити каталог %1$s"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "Не вдалося позначити пристрій петлі (loop) прапорцем autoclear"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "Внесення змін до інтерактивних пристроїв неможливе"
@@ -22911,16 +22975,13 @@ msgstr "не можна змінювати MTU"
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "не вдалося внести зміни до поля «%1$s» диска"
 
-msgid "cannot modify memory UUID"
-msgstr "неможливо змінити UUID пам'яті"
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr "неможливо змінити доступ до пам'яті з «%1$s» на «%2$s»"
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
-msgstr "неможливо змінити розмір вирівнювання пам'яті з «%1$llu» на «%2$llu»"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory block size from '%1$llu' to '%2$llu'"
@@ -22929,10 +22990,6 @@ msgstr "неможливо змінити розмір блоку пам'яті 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
 msgstr "неможливо змінити відкидання пам'яті з «%1$s» на «%2$s»"
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
-msgstr "неможливо змінити розмір мітки пам'яті з «%1$llu» на «%2$llu»"
 
 #, c-format
 msgid "cannot modify memory model from '%1$s' to '%2$s'"
@@ -22945,17 +23002,6 @@ msgstr "неможливо змінити пам'ять моделі «%1$s»"
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
 msgstr "неможливо змінити розмір сторінки пам'яті з «%1$llu» на «%2$llu»"
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr "неможливо змінити шлях пам'яті з «%1$s» на «%2$s»"
-
-msgid "cannot modify memory pmem flag"
-msgstr "неможливо змінити прапорець pmem пам'яті"
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
-msgstr "неможливо змінити прапорець pmem пам'яті з «%1$d» на «%2$d»"
 
 #, c-format
 msgid "cannot modify memory size from '%1$llu' to '%2$llu'"
@@ -24989,6 +25035,11 @@ msgstr ""
 "підтримки вилучення зовнішнього знімка, для якого внутрішній знімок є "
 "батьківським, не передбачено"
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 "підтримки вилучення зовнішнього і внутрішнього дочірніх знімків диска не "
@@ -24997,10 +25048,20 @@ msgstr ""
 msgid "deletion of external children disk snapshots not supported"
 msgstr "підтримки вилучення зовнішніх дочірніх знімків дисків не передбачено"
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 "підтримки вилучення зовнішніх знімків дисків із дочірніми елементами не "
 "передбачено"
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
+msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -25866,6 +25927,9 @@ msgstr "драйвер для дискового пристрою"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "«%1$s» містить небезпечні символи"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr "скинуто"
@@ -30086,8 +30150,8 @@ msgstr ""
 msgid "ivgen element found, but cipher is missing"
 msgstr "знайдено елемент ivgen, але пропущено запис cipher"
 
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "пристрій ivshmem підтримується цим бінарним компонентом QEMU"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -30649,11 +30713,6 @@ msgstr "live"
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
 msgstr "підтримки інтерактивного під'єднання пристрою «%1$s» не передбачено"
-
-#, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
-msgstr ""
-"підтримки долучення у «гарячому» режимі моделі shmem «%1$s» не передбачено"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
@@ -31402,9 +31461,6 @@ msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr ""
 "виконується перенесення, але даних щодо переданих до оперативної пам'яті "
 "даних не вказано"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr "підтримки перенесення із застарілим пристроєм shmem не передбачено"
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr ""
@@ -35709,9 +35765,6 @@ msgstr "повернення має бути виконано у примусо�
 msgid "revert to current snapshot"
 msgstr "повернутися до поточного знімка"
 
-msgid "revert to external snapshot not supported yet"
-msgstr "підтримки повернення до зовнішнього знімка ще не передбачено"
-
 msgid "rollback to previous restore point"
 msgstr "повернення до попередньої точки відновлення"
 
@@ -36246,11 +36299,20 @@ msgstr "вивести вільні сторінки для усіх комір�
 msgid "show inactive defined XML"
 msgstr "показати неактивний визначений XML"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr "показати або встановити нетипові метадані XML домену"
 
 msgid "show or set domain's description or title"
 msgstr "показати або встановити опис або заголовок домену"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr "показувати часову позначку для кожного виведеного запису події"
@@ -38915,10 +38977,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "невідоме значення формату драйвера, «%1$s»"
 
 #, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "невідома назва драйвера «%1$s»"
-
-#, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "невідомий тип drm, «%1$s», для «%2$s»"
 
@@ -39709,6 +39767,11 @@ msgstr ""
 
 msgid "use multifunction pci under specified address"
 msgstr "використовувати багатофункціональний пристрій PCI з вказаною адресою"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "використання <server> потребує резервного копіювання у режимі pull"
@@ -40776,6 +40839,63 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
+
+#~ msgid "Attempting to use unknown stub driver"
+#~ msgstr "Спроба використання невідомого фіктивного драйвера"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "Не вдалося завантажити фіктивний модуль PCI %1$s"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr ""
+#~ "Не вдалося завантажити фіктивний модуль PCI %1$s: це заборонено "
+#~ "адміністративно"
+
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "у цій системі більше не передбачено призначення пристроїв KVM"
+
+#~ msgid "cannot modify memory UUID"
+#~ msgstr "неможливо змінити UUID пам'яті"
+
+#, c-format
+#~ msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+#~ msgstr ""
+#~ "неможливо змінити розмір вирівнювання пам'яті з «%1$llu» на «%2$llu»"
+
+#, c-format
+#~ msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
+#~ msgstr "неможливо змінити розмір мітки пам'яті з «%1$llu» на «%2$llu»"
+
+#, c-format
+#~ msgid "cannot modify memory path from '%1$s' to '%2$s'"
+#~ msgstr "неможливо змінити шлях пам'яті з «%1$s» на «%2$s»"
+
+#~ msgid "cannot modify memory pmem flag"
+#~ msgstr "неможливо змінити прапорець pmem пам'яті"
+
+#, c-format
+#~ msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
+#~ msgstr "неможливо змінити прапорець pmem пам'яті з «%1$d» на «%2$d»"
+
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "пристрій ivshmem підтримується цим бінарним компонентом QEMU"
+
+#, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr ""
+#~ "підтримки долучення у «гарячому» режимі моделі shmem «%1$s» не передбачено"
+
+#~ msgid "migration with legacy shmem device is not supported"
+#~ msgstr "підтримки перенесення із застарілим пристроєм shmem не передбачено"
+
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "підтримки повернення до зовнішнього знімка ще не передбачено"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "невідома назва драйвера «%1$s»"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

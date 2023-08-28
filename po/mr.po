@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1226,6 +1226,9 @@ msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'queues
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'queues' समर्थीत आहे"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpusच्या प्रतिसादात 'logical-id' आढळले नाही"
 
@@ -1843,6 +1846,9 @@ msgstr "वाटप:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "डोमेनचा XML मेटाडाटा दाखवितो किंवा संपादित करतो."
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "त्रुटी आढळली, परंतु कारण अपरिचीत आहे"
 
@@ -1967,9 +1973,6 @@ msgstr "सिंक्रोनस प्रतिसादसह सिंक�
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "PCI पत्ता %1$s चे दोनवेळा वापरकरिता प्रयत्न केले"
-
-msgid "Attempting to use unknown stub driver"
-msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7231,6 +7234,9 @@ msgstr "क्षेत्र %1$s करिता स्मृतीची आ�
 msgid "Failed to get network autostart state"
 msgstr "नेटवर्क स्वयंसुरूवात स्तर प्राप्त करण्यास अपयशी"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "नेटवर्क पर्सिस्टंस् माहिती प्राप्त करण्यास अपयशी"
 
@@ -7426,12 +7432,12 @@ msgid "Failed to list volumes"
 msgstr "खंडांची सूची दाखवण्यास अपयशी"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "PCI स्टब मॉड्युल %1$s लोड करण्यास अपयशी"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
-msgstr "PCI स्टब मॉड्युल %1$s: प्रशासकीयरित्या प्रतिबंधीत"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7702,6 +7708,9 @@ msgstr "qemu साधन सूची वाचणे अपयशी"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "पद्धती '%1$s' वाचण्यास अपयशी"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8200,6 +8209,12 @@ msgstr "नवीन डोमेन वर्णन निश्चित क�
 msgid "Failed to set new domain title"
 msgstr "नवीन डोमेन शीर्षक सेट करण्यास अपयशी"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "विना-ब्लॉक करणारे फाइल वर्णन बाब निश्चित करण्यास अपयशी"
 
@@ -8651,6 +8666,11 @@ msgstr "पर्याय --%1$s व --%2$s परस्पर भिन्न 
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
+msgstr ""
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
 
 #, c-format
@@ -10385,10 +10405,6 @@ msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr "यापेक्षा (बाइट्स) लहान सतत मोकळ्या व्याप्तिकडे दुर्लक्ष करण्यासाठी टिप"
 
 #, fuzzy
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "VFIO साधन वाटप आत्ता या प्रणालीवर समर्थीत नाही"
-
-#, fuzzy
 msgid "KVM is not supported on this platform"
 msgstr "ह्या प्लॅटफॉर्मवरील रॉ I/O समर्थीत नाही"
 
@@ -11851,6 +11867,12 @@ msgstr "नेटवर्क संरचना बदल ट्रांजॅ
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr "नेटवर्क संयोजना फाइलनाव '%1$s' नेटवर्क नाव '%2$s' सह जुळत नाही"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "नेटवर्क '%1$s' आधिपासूनच अस्तित्वात आहे"
@@ -11936,6 +11958,15 @@ msgstr "नेटवर्क '%1$s' आधिपासूनच अस्ति
 #, fuzzy, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "मार्ग %1$sकरिता लॉकस्पेस अस्तित्वात नाही"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12063,6 +12094,10 @@ msgstr "चूक संदेश पुरवला नाही"
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "डोमेन: %1$s करिता वर्णन आढळले नाही"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr ""
@@ -12287,6 +12322,10 @@ msgstr "एकापेक्षाजास्त व्हिडिओ सा�
 #, c-format
 msgid "No title for domain: %1$s"
 msgstr "डोमेन: %1$s करिता शीर्षक नाही"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "एकूण आकडेवारि अनुपलब्ध"
@@ -14428,6 +14467,9 @@ msgstr "वेळनियंत्र गुणधर्म दर्शवा/
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "डोमेनचा XML मेटाडाटा दाखवितो किंवा संपादित करतो."
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 msgid "Shutdown"
 msgstr "पूर्णपणे बंद करा"
 
@@ -15249,9 +15291,21 @@ msgstr "लक्ष्य डिस्क बस %1$s स्रोत %2$s स�
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "लक्ष्य डिस्क साधन %1$s स्रोत %2$s सह जुळत नाही"
 
+#, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "लक्ष्य डिस्क %1$s स्रोत %2$s सह जुळत नाही"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16577,6 +16631,9 @@ msgstr "लिज %1$s लागू करणे अशक्य"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "लॉकस्पेस् %1$s चे वाटप करणे अशक्य"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "x509 श्रेय: %1$s चे वाटप अशक्य"
@@ -17562,6 +17619,14 @@ msgstr "%1$s वाचणे अशक्य"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "लूप साधनला स्वयंनष्ट म्हणून चिन्ह लावणे अशक्य"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "लाइव्ह साधनांना संपादित करणे अशक्य"
@@ -21779,15 +21844,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "fd %d ला बाहेर स्थानांतरित करणे अशक्य"
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -21796,10 +21858,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -21812,17 +21870,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -23797,13 +23844,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -24660,6 +24722,9 @@ msgstr "डीस्क साधनाचे ड्राइवर"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "ड्राइव्हर सिरीअल '%1$s' मध्ये असुरक्षीत अक्षरे आढळले"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr "वगळले"
@@ -28747,9 +28812,8 @@ msgstr "iscsi पूल फक्त 'chap' ऑथ प्रकारकरि�
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-#, fuzzy
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29301,10 +29365,6 @@ msgstr "लाइव्ह"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr "साधन '%1$s'चे लाइव्ह अटॅच समर्थीत नाही"
-
-#, fuzzy, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
 msgstr "साधन '%1$s'चे लाइव्ह अटॅच समर्थीत नाही"
 
 #, c-format
@@ -29991,9 +30051,6 @@ msgstr "स्थानांतरन सक्रिय होते, पर�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "स्थानांतरन सक्रिय होते, परंतु RAM 'transferred' डाटा आढळले नाही"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr "संपूर्ण डिस्क कॉपिसह नॉन-शेअर्ड स्टोरेजसह माइग्रेशन"
@@ -34171,9 +34228,6 @@ msgstr "पूर्वस्थितीतकरिता फोर्स् �
 msgid "revert to current snapshot"
 msgstr "सध्याच्या स्नॅपशॉटकरिता पूर्वस्थितीत आणा"
 
-msgid "revert to external snapshot not supported yet"
-msgstr "बाहेरिल स्नॅपशॉटकरिता पूवस्थितीत आणणे अजूनही समर्थीत नाही"
-
 msgid "rollback to previous restore point"
 msgstr "मागील मूळस्थिती पॉइंटकरिता रॉलबॅक करा"
 
@@ -34681,11 +34735,20 @@ msgstr "सर्व NUMA कप्प्यांकरिता मोकळ�
 msgid "show inactive defined XML"
 msgstr "निष्क्रीय वर्णीत XML दाखवा"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr "डोमेनच्या पसंतीचे XML मेटाडाटा दाखवा किंवा सेट करा"
 
 msgid "show or set domain's description or title"
 msgstr "डोमेन वर्णन किंवा शीर्षक दाखवा किंवा निश्चित करा"
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
+msgstr ""
 
 msgid "show timestamp for each printed event"
 msgstr ""
@@ -37256,10 +37319,6 @@ msgstr "अपरिचीत डिस्क स्नॅपशॉट ड्र
 msgid "unknown driver format value '%1$s'"
 msgstr "अपरिचीत ड्राइव्हर रूपण मूल्य '%1$s'"
 
-#, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "अपरिचीत ड्राइव्हर नाव '%1$s'"
-
 #, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "'%2$s' करिता अपरिचीत क्षमता प्रकार '%1$d'"
@@ -38043,6 +38102,11 @@ msgstr "नवीन आकारऐवजी क्षमतेचा सध्
 
 msgid "use multifunction pci under specified address"
 msgstr "निर्देशीत पत्ता अंतर्गत मल्टिफंक्शन pci चा वापर करा"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr ""
@@ -39034,6 +39098,33 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "PCI स्टब मॉड्युल %1$s लोड करण्यास अपयशी"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr "PCI स्टब मॉड्युल %1$s: प्रशासकीयरित्या प्रतिबंधीत"
+
+#, fuzzy
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "VFIO साधन वाटप आत्ता या प्रणालीवर समर्थीत नाही"
+
+#, fuzzy
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
+
+#, fuzzy, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "साधन '%1$s'चे लाइव्ह अटॅच समर्थीत नाही"
+
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "बाहेरिल स्नॅपशॉटकरिता पूवस्थितीत आणणे अजूनही समर्थीत नाही"
+
+#, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "अपरिचीत ड्राइव्हर नाव '%1$s'"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

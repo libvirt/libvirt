@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2023-08-17 21:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1317,6 +1317,9 @@ msgstr "attributet ”iothread” stödjs endast för styrenheten virtio scsi"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "attributet ”iothread” stödjs endast för styrenheten virtio-scsi"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "”logical-id” saknas i svaret på guest-get-vcpus"
 
@@ -1928,6 +1931,9 @@ msgid "Allows setting or modifying the description or title of a domain."
 msgstr ""
 "Tillåt inställning eller ändring av beskrivningen eller titeln för en domän."
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "Ett fel inträffade, men orsaken är okänd"
 
@@ -2065,9 +2071,6 @@ msgstr "Försök att skicka ett asynkront meddelanden med ett synkront svar"
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "Försök att dubbelanvända PCI-adressen %1$s"
-
-msgid "Attempting to use unknown stub driver"
-msgstr "Försök att använda en okänd stubb-drivrutin"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -7382,6 +7385,9 @@ msgstr "Misslyckades att hämta minnesstatistik för domänen %1$s"
 msgid "Failed to get network autostart state"
 msgstr "Misslyckades att få tillståndet för nätverksautostart"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 msgid "Failed to get network persistence info"
 msgstr "Misslyckades att hämta information om nätverkvaraktighet"
 
@@ -7573,13 +7579,12 @@ msgid "Failed to list volumes"
 msgstr "Misslyckades med att lista volymer"
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "Misslyckades med att ladda PCI-stubbmodulen %1$s"
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
-"Misslyckades med att lista PCI-stubbmodulen %1$s: administrativt förhindrat"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7848,6 +7853,9 @@ msgstr "Misslyckades med att tolka minnet: storleken stämmer inte"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "Misslyckades med att tolka läget ”%1$s”"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8368,6 +8376,12 @@ msgstr "Misslyckades med att sätta en ny domänbeskrivning"
 msgid "Failed to set new domain title"
 msgstr "Misslyckades med att sätta en ny domäntitel"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Misslyckades med att sätta filbeskrivarflaggan för icke blockerande"
 
@@ -8837,6 +8851,11 @@ msgid ""
 msgstr ""
 "Flaggan ”VIR_DOMAIN_AFFECT_LIVE” och ”VIR_DOMAIN_AFFECT_CONFIG” är "
 "ömsesidigt uteslutande"
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
+msgstr ""
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -10615,9 +10634,6 @@ msgstr ""
 "Bara ett tips att ignorera sammanhängande fria intervall mindre än detta "
 "(byte)"
 
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "KVM-enhetstilldelning stödjs inte längre på detta system"
-
 msgid "KVM is not supported on this platform"
 msgstr "KVM stödjs inte på denna plattform"
 
@@ -12041,6 +12057,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "Nätverkskonfigurationsfilnamnet ”%1$s” matchar inte nätverksnamnet ”%2$s”"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "Nätverksenheten %1$s finns redan"
@@ -12125,6 +12147,15 @@ msgstr "Nätverksporten med UUID %1$s finns redan"
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "Nätverksporten med UUID %1$s finns inte"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12243,6 +12274,10 @@ msgstr "Inget standardservernam gavs"
 #, c-format
 msgid "No description for domain: %1$s"
 msgstr "Ingen beskrivning för domänen: %1$s"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr "Inget kommandoradsargument till enhetsmodellen angivet"
@@ -12458,6 +12493,10 @@ msgstr "Inget stöd för flera videoenheter"
 #, c-format
 msgid "No title for domain: %1$s"
 msgstr "Ingen titel på domänen: %1$s"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr "Ingen total statistik tillgänglig"
@@ -14592,6 +14631,9 @@ msgstr "Visa/sätt parametrar för schemaläggare."
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "Visar eller ändrar XML-metadatan för en domän."
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 msgid "Shutdown"
 msgstr "Stäng av"
 
@@ -15427,8 +15469,20 @@ msgid "Target disk device %1$s does not match source %2$s"
 msgstr "Måldiskenheten %1$s stämmer inte med källan %2$s"
 
 #, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "Måldiskmodellen %1$s stämmer inte med källan %2$s"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16810,6 +16864,9 @@ msgstr "Kan inte allokera hyran %1$s"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "Kan inte allokera låsutrymmet %1$s"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "Kan inte allokera x509-kreditiv: %1$s"
@@ -17763,6 +17820,14 @@ msgstr "Kan inte skapa katalogen %1$s"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "Kan inte markera slingenheten som autoclear"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "Kan inte ändra aktiva enheter"
@@ -21913,15 +21978,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr ""
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -21930,10 +21992,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -21946,17 +22004,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -23905,13 +23952,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -24762,6 +24824,9 @@ msgstr "drivrutin för diskenhet"
 #, fuzzy, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "Modellnamnet innehåller ogiltiga tecken"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr "kastad"
@@ -28858,7 +28923,7 @@ msgstr ""
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-msgid "ivshmem device is not supported with this QEMU binary"
+msgid "ivshmem device is no longer supported"
 msgstr ""
 
 #, c-format
@@ -29432,10 +29497,6 @@ msgstr ""
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr ""
-
-#, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
 msgstr ""
 
 #, c-format
@@ -30116,9 +30177,6 @@ msgid "migration was active, but RAM 'total' data was missing"
 msgstr ""
 
 msgid "migration was active, but RAM 'transferred' data was missing"
-msgstr ""
-
-msgid "migration with legacy shmem device is not supported"
 msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
@@ -34247,9 +34305,6 @@ msgstr ""
 msgid "revert to current snapshot"
 msgstr ""
 
-msgid "revert to external snapshot not supported yet"
-msgstr ""
-
 msgid "rollback to previous restore point"
 msgstr ""
 
@@ -34748,10 +34803,19 @@ msgstr "visa ledigt sidor för alla NUMA-celler"
 msgid "show inactive defined XML"
 msgstr "lista inaktiva domäner"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr ""
 
 msgid "show or set domain's description or title"
+msgstr ""
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
 msgstr ""
 
 msgid "show timestamp for each printed event"
@@ -37306,10 +37370,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "okän gränssnittstyp ”%1$s”"
 
 #, fuzzy, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "okänd disktyp ”%1$s”"
-
-#, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "okänd disktyp ”%s”"
 
@@ -38095,6 +38155,11 @@ msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
 
 msgid "use multifunction pci under specified address"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
 msgid "use of <server> requires pull mode backup"
@@ -39060,6 +39125,26 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
+
+#~ msgid "Attempting to use unknown stub driver"
+#~ msgstr "Försök att använda en okänd stubb-drivrutin"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "Misslyckades med att ladda PCI-stubbmodulen %1$s"
+
+#, c-format
+#~ msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+#~ msgstr ""
+#~ "Misslyckades med att lista PCI-stubbmodulen %1$s: administrativt "
+#~ "förhindrat"
+
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "KVM-enhetstilldelning stödjs inte längre på detta system"
+
+#, fuzzy, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "okänd disktyp ”%1$s”"
 
 #~ msgid ""
 #~ "Setting vendor or product for scsi disk is not supported by this QEMU"

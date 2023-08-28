@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2023-02-13 12:20+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1149,6 +1149,9 @@ msgstr "vhost-net jest obsługiwane tylko dla interfejsów sieciowych virtio"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "vhost-net jest obsługiwane tylko dla interfejsów sieciowych virtio"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1757,6 +1760,9 @@ msgstr "Przydział:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "nie można zmodyfikować trwałej konfiguracji domeny"
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr "Wystąpił błąd, ale przyczyna jest nieznana"
 
@@ -1877,9 +1883,6 @@ msgstr ""
 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
-msgstr ""
-
-msgid "Attempting to use unknown stub driver"
 msgstr ""
 
 msgid ""
@@ -7314,6 +7317,9 @@ msgstr "Uzyskanie statystyk pamięci domeny %1$s się nie powiodło"
 msgid "Failed to get network autostart state"
 msgstr "oznaczenie sieci %s jako automatycznie uruchamianej się nie powiodło"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to get network persistence info"
 msgstr "uzyskanie sieci „%s” się nie powiodło"
@@ -7539,12 +7545,12 @@ msgstr ""
 msgid "Failed to list volumes"
 msgstr "Wyświetlenie listy woluminów pamięci masowej się nie powiodło"
 
-#, fuzzy, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "Przetworzenie trybu „%1$s” się nie powiodło"
+#, c-format
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
 
 #, fuzzy, c-format
@@ -7822,6 +7828,9 @@ msgstr "Przetworzenie trybu „%s” się nie powiodło"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "Przetworzenie trybu „%1$s” się nie powiodło"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8365,6 +8374,12 @@ msgstr "plik zawierający opis XML domeny"
 msgid "Failed to set new domain title"
 msgstr "Zapisanie stanu domeny %s się nie powiodło"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Ustawienie nieblokującej flagi deskryptora pliku się nie powiodło"
 
@@ -8846,6 +8861,11 @@ msgstr "Opcje --%1$s i --%2$s wzajemnie się wykluczają"
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
+msgstr ""
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
 
 #, c-format
@@ -10612,10 +10632,6 @@ msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
 
 #, fuzzy
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "Pokrewieństwo procesora procesu jest nieobsługiwane na tej platformie"
-
-#, fuzzy
 msgid "KVM is not supported on this platform"
 msgstr "Pokrewieństwo procesora procesu jest nieobsługiwane na tej platformie"
 
@@ -12085,6 +12101,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "Nazwa pliku konfiguracji sieci „%1$s” nie zgadza się z nazwą sieci „%2$s”"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Network device %1$s already exists"
 msgstr "cel %1$s już istnieje"
@@ -12172,6 +12194,15 @@ msgstr "cel %1$s już istnieje"
 #, fuzzy, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "szablon „%1$s” nie istnieje"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12300,6 +12331,10 @@ msgstr "Nie podano komunikatu o błędzie"
 #, fuzzy, c-format
 msgid "No description for domain: %1$s"
 msgstr "nie można odczytać czasu procesora dla domeny %d"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr ""
@@ -12523,6 +12558,10 @@ msgstr "Brak obsługi wielu urządzeń graficznych"
 #, fuzzy, c-format
 msgid "No title for domain: %1$s"
 msgstr "Uruchomienie domeny %1$s się nie powiodło"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "No total stats available"
@@ -14689,6 +14728,9 @@ msgstr "Wyświetla/ustawia parametry planisty."
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr ""
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 #, fuzzy
 msgid "Shutdown"
 msgstr "wyłącza się"
@@ -15524,10 +15566,22 @@ msgstr ""
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "Urządzenie dysku „%s” nie obsługuje migawek"
 
+#, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr ""
 "Nazwa pliku konfiguracji sieci „%1$s” nie zgadza się z nazwą sieci „%2$s”"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16889,6 +16943,9 @@ msgstr "Nie można zamknąć %1$s"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "Nie można zamknąć %1$s"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "Zgromadzenie danych uwierzytelniających się nie powiodło"
@@ -17958,6 +18015,14 @@ msgstr "Nie można odczytać %1$s"
 #, fuzzy
 msgid "Unable to mark loop device as autoclear"
 msgstr "oznaczenie puli %s jako automatycznie uruchamianej się nie powiodło"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to modify live devices"
@@ -22276,15 +22341,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "Nie można odnaleźć „%1$s” w ścieżce"
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -22293,10 +22355,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -22309,17 +22367,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -24326,13 +24373,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -25206,6 +25268,9 @@ msgstr "sterownik urządzenia dyskowego"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "numer seryjny sterownika „%1$s” zawiera niebezpieczne znaki"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr ""
@@ -29370,9 +29435,8 @@ msgstr ""
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-#, fuzzy
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29977,10 +30041,6 @@ msgstr "działa"
 #, fuzzy, c-format
 msgid "live attach of device '%1$s' is not supported"
 msgstr "obsługiwane jest tylko pojedyncze urządzenie watchdog"
-
-#, fuzzy, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
-msgstr "tryb „hostdev” „%1$s” jest nieobsługiwany"
 
 #, fuzzy, c-format
 msgid "live detach of device '%1$s' is not supported"
@@ -30695,9 +30755,6 @@ msgstr "migracja była aktywna, ale brak danych RAM „razem”"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "migracja była aktywna, ale brak danych RAM „przeniesiono”"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr ""
@@ -34935,10 +34992,6 @@ msgstr ""
 msgid "revert to current snapshot"
 msgstr "nie można uzyskać bieżącej migawki"
 
-#, fuzzy
-msgid "revert to external snapshot not supported yet"
-msgstr "przyłączanie napędu w czasie działania jest nieobsługiwane"
-
 msgid "rollback to previous restore point"
 msgstr ""
 
@@ -35457,10 +35510,19 @@ msgstr "wyświetla wolną pamięć dla wszystkich komórek NUMA"
 msgid "show inactive defined XML"
 msgstr "wyświetla nieaktywny określony XML"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr ""
 
 msgid "show or set domain's description or title"
+msgstr ""
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
 msgstr ""
 
 msgid "show timestamp for each printed event"
@@ -38049,10 +38111,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "nieznana obecna wartość stopera „%1$s”"
 
 #, fuzzy, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "Nieznana nazwa sterownika „%1$s”"
-
-#, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "nieznany typ możliwości „%d” dla „%s”"
 
@@ -38844,6 +38902,11 @@ msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
 
 msgid "use multifunction pci under specified address"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
 msgid "use of <server> requires pull mode backup"
@@ -39837,6 +39900,31 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <ciąg>}…"
+
+#, fuzzy, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "Przetworzenie trybu „%1$s” się nie powiodło"
+
+#, fuzzy
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr ""
+#~ "Pokrewieństwo procesora procesu jest nieobsługiwane na tej platformie"
+
+#, fuzzy
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
+
+#, fuzzy, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "tryb „hostdev” „%1$s” jest nieobsługiwany"
+
+#, fuzzy
+#~ msgid "revert to external snapshot not supported yet"
+#~ msgstr "przyłączanie napędu w czasie działania jest nieobsługiwane"
+
+#, fuzzy, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "Nieznana nazwa sterownika „%1$s”"
 
 #, fuzzy
 #~ msgid "Setting wwn for ide disk is not supported by this QEMU"

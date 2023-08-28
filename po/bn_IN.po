@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-07-26 08:28+0000\n"
+"POT-Creation-Date: 2023-08-25 19:26+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -1109,6 +1109,9 @@ msgstr "ram অ্যাট্রিবিউট শুধুমাত্র qxl
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
 
+msgid "'legacy KVM' device assignment is no longer supported on this system"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1719,6 +1722,9 @@ msgstr "বরাদ্দকরণ:"
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "ডোমেইনের স্থায়ী কনফিগারেশন পরিবর্তন করা সম্ভব নয়"
 
+msgid "Allows setting or modifying the description or title of a network."
+msgstr ""
+
 msgid "An error occurred, but the cause is unknown"
 msgstr ""
 
@@ -1839,9 +1845,6 @@ msgstr ""
 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
-msgstr ""
-
-msgid "Attempting to use unknown stub driver"
 msgstr ""
 
 msgid ""
@@ -7173,6 +7176,9 @@ msgstr "%1$s ডোমেইনের জন্য মেমরি সংক্�
 msgid "Failed to get network autostart state"
 msgstr "নেটওয়ার্ক %s, স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
 
+msgid "Failed to get network description xml"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to get network persistence info"
 msgstr "নেটওয়ার্ক '%s' প্রাপ্ত করতে ব্যর্থ"
@@ -7396,12 +7402,12 @@ msgstr ""
 msgid "Failed to list volumes"
 msgstr "সক্রিয় পুলের তালিকা নির্মাণে ব্যর্থ"
 
-#, fuzzy, c-format
-msgid "Failed to load PCI stub module %1$s"
-msgstr "মোড '%1$s' পার্স করতে ব্যর্থ"
+#, c-format
+msgid "Failed to load PCI driver module %1$s"
+msgstr ""
 
 #, c-format
-msgid "Failed to load PCI stub module %1$s: administratively prohibited"
+msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
 
 #, fuzzy, c-format
@@ -7674,6 +7680,9 @@ msgstr "মোড '%s' পার্স করতে ব্যর্থ"
 #, c-format
 msgid "Failed to parse mode '%1$s'"
 msgstr "মোড '%1$s' পার্স করতে ব্যর্থ"
+
+msgid "Failed to parse network description xml"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8191,6 +8200,12 @@ msgstr "XML ডোমেইনের বিবরণসহ একটি ফা�
 msgid "Failed to set new domain title"
 msgstr "ডোমেইন xml প্রাপ্ত করতে ব্যর্থ"
 
+msgid "Failed to set new network description"
+msgstr ""
+
+msgid "Failed to set new network title"
+msgstr ""
+
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "non-blocking ফাইল ডেস্ক্রিপটর ফ্ল্যাগের মান নির্ধারণ করতে ব্যর্থ"
 
@@ -8658,6 +8673,11 @@ msgstr ""
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
+msgstr ""
+
+msgid ""
+"Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
 
 #, c-format
@@ -10383,10 +10403,6 @@ msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
 
 #, fuzzy
-msgid "KVM device assignment is no longer supported on this system"
-msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
-
-#, fuzzy
 msgid "KVM is not supported on this platform"
 msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
 
@@ -11844,6 +11860,12 @@ msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
 "নেটওয়ার্ক কনফিগারেশনের ফাইল '%1$s'-র নাম নেটওয়ার্কের নাম '%2$s'-র সাথে সুসংগত নয়"
 
+msgid "Network description not changed\n"
+msgstr ""
+
+msgid "Network description updated successfully"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Network device %1$s already exists"
 msgstr "%1$s টার্গেট বর্তমানে উপস্থিত রয়েছে"
@@ -11932,6 +11954,15 @@ msgstr "%1$s টার্গেট বর্তমানে উপস্থি�
 #, fuzzy, c-format
 msgid "Network port with UUID %1$s does not exist"
 msgstr "'%1$s' টেমপ্লেট বর্তমানে উপস্থিত নেই"
+
+msgid "Network title can't contain newlines"
+msgstr ""
+
+msgid "Network title not changed\n"
+msgstr ""
+
+msgid "Network title updated successfully"
+msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12059,6 +12090,10 @@ msgstr "কোনো ত্রুটির বার্তা উপস্থি
 #, fuzzy, c-format
 msgid "No description for domain: %1$s"
 msgstr "%d ডোমেইনের জন্য cputime পড়তে ব্যর্থ"
+
+#, c-format
+msgid "No description for network: %1$s"
+msgstr ""
 
 msgid "No device model command-line argument specified"
 msgstr ""
@@ -12283,6 +12318,10 @@ msgstr "চিহ্নিত ডিভাইসের ঊর্ধ্বে ক
 #, fuzzy, c-format
 msgid "No title for domain: %1$s"
 msgstr "ডোমেইন %1$s আরম্ভ করতে ব্যর্থ"
+
+#, c-format
+msgid "No title for network: %1$s"
+msgstr ""
 
 msgid "No total stats available"
 msgstr ""
@@ -14412,6 +14451,9 @@ msgstr "সময় নির্ধারণকারী সংক্রান্�
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr ""
 
+msgid "Shows or modifies the XML metadata of a network."
+msgstr ""
+
 #, fuzzy
 msgid "Shutdown"
 msgstr "shutdown অবস্থায়"
@@ -15235,9 +15277,21 @@ msgstr "টার্গেট ডিস্ক বাস %1$s %2$s সোর্�
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "টার্গেট ডিস্ক ডিভাইস %1$s %2$s সোর্সের সংগে মেলে না"
 
+#, c-format
+msgid "Target disk discard_granularity %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target disk logical_block_size %1$u does not match source %2$u"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "টার্গেট ডিস্ক %1$s %2$s সোর্সের সংগে মেলে না"
+
+#, c-format
+msgid "Target disk physical_block_size %1$u does not match source %2$u"
+msgstr ""
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16580,6 +16634,9 @@ msgstr "%1$s খুলতে ব্যর্থ"
 msgid "Unable to allocate lockspace %1$s"
 msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 
+msgid "Unable to allocate stack"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
 msgstr "auth পরিচয় সংগ্রহ করতে ব্যর্থ"
@@ -17642,6 +17699,14 @@ msgstr "mkdir %1$s করতে ব্যর্থ"
 #, fuzzy
 msgid "Unable to mark loop device as autoclear"
 msgstr "পুল %s, স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
+msgstr ""
+
+#, c-format
+msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to modify live devices"
@@ -21932,15 +21997,12 @@ msgstr ""
 msgid "cannot modify field '%1$s' of the disk"
 msgstr ""
 
-msgid "cannot modify memory UUID"
-msgstr ""
-
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
 msgstr ""
 
 #, c-format
-msgid "cannot modify memory align size from '%1$llu' to '%2$llu'"
+msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
 msgstr ""
 
 #, c-format
@@ -21949,10 +22011,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory discard from '%1$s' to '%2$s'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory label size from '%1$llu' to '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -21965,17 +22023,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot modify memory pagesize from '%1$llu' to '%2$llu'"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory path from '%1$s' to '%2$s'"
-msgstr ""
-
-msgid "cannot modify memory pmem flag"
-msgstr ""
-
-#, c-format
-msgid "cannot modify memory pmem from '%1$d' to '%2$d'"
 msgstr ""
 
 #, c-format
@@ -23990,13 +24037,28 @@ msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
 
+msgid ""
+"deletion of active external snapshot that is not a leaf snapshot is not "
+"supported"
+msgstr ""
+
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
 
 msgid "deletion of external children disk snapshots not supported"
 msgstr ""
 
+msgid ""
+"deletion of external disk snapshot with multiple children snapshots not "
+"supported"
+msgstr ""
+
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+msgid ""
+"deletion of non-leaf external snapshot that is not in active chain is not "
+"supported"
 msgstr ""
 
 #, c-format
@@ -24869,6 +24931,9 @@ msgstr "ডিস্ক ডিভাইসের ড্রাইভার"
 #, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "ড্রাইভারের ক্রমিক সংখ্যা '%1$s'-র মধ্যে উপস্থিত কিছু অক্ষর নিরাপদ নয়"
+
+msgid "driver type not set"
+msgstr ""
 
 msgid "dropped"
 msgstr ""
@@ -29029,9 +29094,8 @@ msgstr ""
 msgid "ivgen element found, but cipher is missing"
 msgstr ""
 
-#, fuzzy
-msgid "ivshmem device is not supported with this QEMU binary"
-msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
+msgid "ivshmem device is no longer supported"
+msgstr ""
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -29613,10 +29677,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "live attach of device '%1$s' is not supported"
 msgstr "শুধুমাত্র একটি watchdog ডিভাইস সমর্থিত হবে"
-
-#, fuzzy, c-format
-msgid "live attach of shmem model '%1$s' is not supported"
-msgstr "hostdev মোড '%1$s' সমর্থিত নয়"
 
 #, fuzzy, c-format
 msgid "live detach of device '%1$s' is not supported"
@@ -30316,9 +30376,6 @@ msgstr "মাইগ্রেশন সক্রিয় অবস্থায়, �
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "মাইগ্রেশন সক্রিয় অবস্থায়, কিন্তু RAM সংক্রান্ত 'transferred' তথ্য অনুপস্থিত"
-
-msgid "migration with legacy shmem device is not supported"
-msgstr ""
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr ""
@@ -34544,9 +34601,6 @@ msgstr "মিররের ফাইল নামের প্রয়োজন
 msgid "revert to current snapshot"
 msgstr ""
 
-msgid "revert to external snapshot not supported yet"
-msgstr ""
-
 msgid "rollback to previous restore point"
 msgstr ""
 
@@ -35061,10 +35115,19 @@ msgstr ""
 msgid "show inactive defined XML"
 msgstr "ব্যাখ্যা করা নিষ্ক্রিয় XML প্রদর্শন করা হবে"
 
+msgid "show network title"
+msgstr ""
+
 msgid "show or set domain's custom XML metadata"
 msgstr ""
 
 msgid "show or set domain's description or title"
+msgstr ""
+
+msgid "show or set network's custom XML metadata"
+msgstr ""
+
+msgid "show or set network's description or title"
 msgstr ""
 
 msgid "show timestamp for each printed event"
@@ -37669,10 +37732,6 @@ msgid "unknown driver format value '%1$s'"
 msgstr "অজানা ড্রাইভার ফর্ম্যাট মান '%1$s'"
 
 #, fuzzy, c-format
-msgid "unknown driver name '%1$s'"
-msgstr "অজানা টাইমার নাম '%1$s'"
-
-#, fuzzy, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
 msgstr "ক্ষমতার অজানা ধরন '%d', '%s'-র জন্য উল্লিখিত"
 
@@ -38470,6 +38529,11 @@ msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
 
 msgid "use multifunction pci under specified address"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
 msgid "use of <server> requires pull mode backup"
@@ -39459,6 +39523,26 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s <string>]"
+
+#, fuzzy, c-format
+#~ msgid "Failed to load PCI stub module %1$s"
+#~ msgstr "মোড '%1$s' পার্স করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "KVM device assignment is no longer supported on this system"
+#~ msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
+
+#, fuzzy
+#~ msgid "ivshmem device is not supported with this QEMU binary"
+#~ msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
+
+#, fuzzy, c-format
+#~ msgid "live attach of shmem model '%1$s' is not supported"
+#~ msgstr "hostdev মোড '%1$s' সমর্থিত নয়"
+
+#, fuzzy, c-format
+#~ msgid "unknown driver name '%1$s'"
+#~ msgstr "অজানা টাইমার নাম '%1$s'"
 
 #, fuzzy
 #~ msgid "Setting wwn for ide disk is not supported by this QEMU"
