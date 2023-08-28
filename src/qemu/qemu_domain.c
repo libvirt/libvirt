@@ -9985,7 +9985,9 @@ qemuDomainSupportsVcpuHotplug(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
-    return virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
+    return virQEMUCapsGetMachineHotplugCpus(priv->qemuCaps,
+                                            vm->def->virtType,
+                                            vm->def->os.machine);
 }
 
 
