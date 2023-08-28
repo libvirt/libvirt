@@ -1242,8 +1242,10 @@ vshAdmUsage(void)
     const vshCmdGrp *grp;
     const vshCmdDef *cmd;
 
-    fprintf(stdout, _("\n%1$s [options]... [<command_string>]"
-                      "\n%2$s [options]... <command> [args...]\n\n"
+    fprintf(stdout, _("\n"
+                      "%1$s [options]... [<command_string>]\n"
+                      "%2$s [options]... <command> [args...]\n"
+                      "\n"
                       "  options:\n"
                       "    -c | --connect=URI      daemon admin connection URI\n"
                       "    -d | --debug=NUM        debug level [0-4]\n"
