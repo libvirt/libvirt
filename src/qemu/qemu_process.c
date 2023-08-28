@@ -8809,6 +8809,38 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
 }
 
 
+/**
+ * qemuProcessReloadMachineTypes:
+ *
+ * Reload machine type information into the 'qemuCaps' object from the current
+ * qemu.
+ */
+static int
+qemuProcessReloadMachineTypes(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    bool fail = false;
+
+    qemuDomainObjEnterMonitor(vm);
+
+    if (virQEMUCapsInitQMPArch(priv->qemuCaps, priv->mon) < 0)
+        fail = true;
+
+    if (!fail &&
+        virQEMUCapsProbeQMPMachineTypes(priv->qemuCaps,
+                                        vm->def->virtType,
+                                        priv->mon) < 0)
+        fail = true;
+
+    qemuDomainObjExitMonitor(vm);
+
+    if (fail)
+        return -1;
+
+    return 0;
+}
+
+
 struct qemuProcessReconnectData {
     virQEMUDriver *driver;
     virDomainObj *obj;
@@ -8942,6 +8974,11 @@ qemuProcessReconnect(void *opaque)
                        obj->def->name);
         goto error;
     }
+
+    /* Reload and populate machine type data into 'qemuCaps' as that is not
+     * serialized into the status XML. */
+    if (qemuProcessReloadMachineTypes(obj) < 0)
+        goto error;
 
     if (qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
                                   driver, obj, false) < 0) {
