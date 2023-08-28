@@ -276,7 +276,6 @@ struct testQemuHotplugCpuData {
 
     virDomainObj *vm;
     qemuMonitorTest *mon;
-    bool modern;
 };
 
 
@@ -317,7 +316,6 @@ struct testQemuHotplugCpuParams {
     int newcpus;
     const char *cpumap;
     bool state;
-    bool modern;
     bool fail;
     const char *arch;
     GHashTable *capsLatestFiles;
@@ -337,8 +335,6 @@ testQemuHotplugCpuPrepare(const struct testQemuHotplugCpuParams *params)
     prefix = g_strdup_printf("%s/qemuhotplugtestcpus/%s", abs_srcdir, params->test);
 
     data = g_new0(struct testQemuHotplugCpuData, 1);
-
-    data->modern = params->modern;
 
     data->file_xml_dom = g_strdup_printf("%s-domain.xml", prefix);
     data->file_xml_res_live = g_strdup_printf("%s-result-live.xml", prefix);
@@ -360,18 +356,12 @@ testQemuHotplugCpuPrepare(const struct testQemuHotplugCpuParams *params)
 
     priv = data->vm->privateData;
 
-    if (data->modern)
-        virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
-
     if (!(data->mon = qemuMonitorTestNewFromFileFull(data->file_json_monitor,
                                                      &driver, data->vm, schema)))
         goto error;
 
     if (params->fail)
         qemuMonitorTestAllowUnusedCommands(data->mon);
-
-    if (!data->modern)
-        qemuMonitorTestSkipDeprecatedValidation(data->mon, true);
 
     priv->mon = qemuMonitorTestGetMonitor(data->mon);
     virObjectUnlock(priv->mon);
@@ -429,7 +419,7 @@ testQemuHotplugCpuGroup(const void *opaque)
 
     rc = qemuDomainSetVcpusInternal(&driver, data->vm, data->vm->def,
                                     data->vm->newDef, params->newcpus,
-                                    params->modern);
+                                    true);
 
     if (params->fail) {
         if (rc == 0)
@@ -799,44 +789,42 @@ mymain(void)
                    "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
-#define DO_TEST_CPU_GROUP(archname, prefix, vcpus, modernhp, expectfail) \
+#define DO_TEST_CPU_GROUP(archname, prefix, vcpus, expectfail) \
     do { \
         cpudata.test = prefix; \
         cpudata.arch = archname; \
         cpudata.newcpus = vcpus; \
-        cpudata.modern = modernhp; \
         cpudata.fail = expectfail; \
         if (virTestRun("hotplug vcpus group " prefix, \
                        testQemuHotplugCpuGroup, &cpudata) < 0) \
             ret = -1; \
     } while (0)
 
-    DO_TEST_CPU_GROUP("x86_64", "x86-modern-bulk", 7, true, false);
-    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 24, true, false);
-    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 15, true, true);
-    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 23, true, true);
-    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 25, true, true);
+    DO_TEST_CPU_GROUP("x86_64", "x86-modern-bulk", 7, false);
+    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 24, false);
+    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 15, true);
+    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 23, true);
+    DO_TEST_CPU_GROUP("ppc64", "ppc64-modern-bulk", 25, true);
 
-#define DO_TEST_CPU_INDIVIDUAL(archname, prefix, mapstr, statefl, modernhp, expectfail) \
+#define DO_TEST_CPU_INDIVIDUAL(archname, prefix, mapstr, statefl, expectfail) \
     do { \
         cpudata.test = prefix; \
         cpudata.arch = archname; \
         cpudata.cpumap = mapstr; \
         cpudata.state = statefl; \
-        cpudata.modern = modernhp; \
         cpudata.fail = expectfail; \
         if (virTestRun("hotplug vcpus group " prefix, \
                        testQemuHotplugCpuIndividual, &cpudata) < 0) \
             ret = -1; \
     } while (0)
 
-    DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "7", true, true, false);
-    DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "6,7", true, true, true);
-    DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "7", false, true, true);
+    DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "7", true, false);
+    DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "6,7", true, true);
+    DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "7", false, true);
 
-    DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "16-23", true, true, false);
-    DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "16-22", true, true, true);
-    DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "17", true, true, true);
+    DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "16-23", true, false);
+    DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "16-22", true, true);
+    DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "17", true, true);
 
     qemuTestDriverFree(&driver);
     virObjectUnref(data.vm);
