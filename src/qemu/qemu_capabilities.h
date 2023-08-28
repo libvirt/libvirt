@@ -783,9 +783,6 @@ const char *virQEMUCapsGetMachineDefaultRAMid(virQEMUCaps *qemuCaps,
                                               virDomainVirtType virtType,
                                               const char *name);
 
-void virQEMUCapsFilterByMachineType(virQEMUCaps *qemuCaps,
-                                    virDomainVirtType virtType,
-                                    const char *machineType);
 char * virQEMUCapsGetDefaultEmulator(virArch hostarch,
                                      virArch guestarch);
 
@@ -796,9 +793,7 @@ virFileCache *virQEMUCapsCacheNew(const char *libDir,
 virQEMUCaps *virQEMUCapsCacheLookup(virFileCache *cache,
                                       const char *binary);
 virQEMUCaps *virQEMUCapsCacheLookupCopy(virFileCache *cache,
-                                          virDomainVirtType virtType,
-                                          const char *binary,
-                                          const char *machineType);
+                                          const char *binary);
 virQEMUCaps *virQEMUCapsCacheLookupDefault(virFileCache *cache,
                                              const char *binary,
                                              const char *archStr,

@@ -5652,9 +5652,7 @@ qemuProcessPrepareQEMUCaps(virDomainObj *vm,
 
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(qemuCapsCache,
-                                                      vm->def->virtType,
-                                                      vm->def->emulator,
-                                                      vm->def->os.machine)))
+                                                      vm->def->emulator)))
         return -1;
 
     /* Update qemu capabilities according to lists passed in via namespace */

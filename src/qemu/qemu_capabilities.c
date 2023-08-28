@@ -5820,42 +5820,6 @@ virQEMUCapsLoadFile(const char *filename,
 }
 
 
-struct virQEMUCapsMachineTypeFilter {
-    const char *machineType;
-    virQEMUCapsFlags *flags;
-    size_t nflags;
-};
-
-static const struct virQEMUCapsMachineTypeFilter virQEMUCapsMachineFilter[] = {
-    /* { "blah", virQEMUCapsMachineBLAHFilter,
-         G_N_ELEMENTS(virQEMUCapsMachineBLAHFilter) }, */
-    { "", NULL, 0 },
-};
-
-
-void
-virQEMUCapsFilterByMachineType(virQEMUCaps *qemuCaps,
-                               virDomainVirtType virtType G_GNUC_UNUSED,
-                               const char *machineType)
-{
-    size_t i;
-
-    if (!machineType)
-        return;
-
-    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsMachineFilter); i++) {
-        const struct virQEMUCapsMachineTypeFilter *filter = &virQEMUCapsMachineFilter[i];
-        size_t j;
-
-        if (STRNEQ(filter->machineType, machineType))
-            continue;
-
-        for (j = 0; j < filter->nflags; j++)
-            virQEMUCapsClear(qemuCaps, filter->flags[j]);
-    }
-}
-
-
 virFileCacheHandlers qemuCapsCacheHandlers = {
     .isValid = virQEMUCapsIsValid,
     .newData = virQEMUCapsNewData,
@@ -5925,9 +5889,7 @@ virQEMUCapsCacheLookup(virFileCache *cache,
 
 virQEMUCaps *
 virQEMUCapsCacheLookupCopy(virFileCache *cache,
-                           virDomainVirtType virtType,
-                           const char *binary,
-                           const char *machineType)
+                           const char *binary)
 {
     virQEMUCaps *qemuCaps = virQEMUCapsCacheLookup(cache, binary);
     virQEMUCaps *ret;
@@ -5938,7 +5900,6 @@ virQEMUCapsCacheLookupCopy(virFileCache *cache,
     ret = virQEMUCapsNewCopy(qemuCaps);
     virObjectUnref(qemuCaps);
 
-    virQEMUCapsFilterByMachineType(ret, virtType, machineType);
     return ret;
 }
 

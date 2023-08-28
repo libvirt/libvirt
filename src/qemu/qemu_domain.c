@@ -6612,9 +6612,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
             qCaps = virObjectRef(qemuCaps);
         } else {
             if (!(qCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                     def->virtType,
-                                                     def->emulator,
-                                                     def->os.machine)))
+                                                     def->emulator)))
                 return -1;
         }
 
