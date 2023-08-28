@@ -440,6 +440,14 @@ sc_prohibit_newline_at_end_of_diagnostic:
 	  && { echo 'newline at end of message(s)' 1>&2; \
 	    exit 1; } || :
 
+# Disallow translated messages on multiple lines, except when
+# they end with '\n'.
+sc_prohibit_error_message_on_multiple_lines:
+	@prohibit='[^N]_\(".*"$$' \
+    exclude='\\n"$$' \
+	halt='found error message on multiple lines' \
+	$(_sc_search_regexp)
+
 # Look for diagnostics that lack a % in the format string, except that we
 # allow VIR_ERROR to do this, and ignore functions that take a single
 # string rather than a format argument.
@@ -1385,6 +1393,9 @@ exclude_file_name_regexp--sc_prohibit_raw_virclassnew = \
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
+
+exclude_file_name_regexp--sc_prohibit_error_message_on_multiple_lines = \
+  ^(build-aux/syntax-check\.mk|docs/coding-style.rst)
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests|examples)/|docs/.*(py|js|html\.in|.rst)|run.in$$|tools/wireshark/util/genxdrstub\.pl|tools/virt-login-shell\.c$$)
