@@ -478,8 +478,7 @@ virExecCommon(virCommand *cmd, gid_t *groups, int ngroups)
  * onto child process (well, the one we will exec soon since this
  * is called from the child). */
 static int
-virCommandMassCloseGetFDsLinux(virCommand *cmd G_GNUC_UNUSED,
-                               virBitmap *fds)
+virCommandMassCloseGetFDsLinux(virBitmap *fds)
 {
     g_autoptr(DIR) dp = NULL;
     struct dirent *entry;
@@ -511,8 +510,7 @@ virCommandMassCloseGetFDsLinux(virCommand *cmd G_GNUC_UNUSED,
 # else /* !__linux__ */
 
 static int
-virCommandMassCloseGetFDsGeneric(virCommand *cmd G_GNUC_UNUSED,
-                                 virBitmap *fds)
+virCommandMassCloseGetFDsGeneric(virBitmap *fds)
 {
     virBitmapSetAll(fds);
     return 0;
@@ -547,10 +545,10 @@ virCommandMassCloseFrom(virCommand *cmd,
     fds = virBitmapNew(openmax);
 
 # ifdef __linux__
-    if (virCommandMassCloseGetFDsLinux(cmd, fds) < 0)
+    if (virCommandMassCloseGetFDsLinux(fds) < 0)
         return -1;
 # else
-    if (virCommandMassCloseGetFDsGeneric(cmd, fds) < 0)
+    if (virCommandMassCloseGetFDsGeneric(fds) < 0)
         return -1;
 # endif
 
