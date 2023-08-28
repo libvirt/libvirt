@@ -39,11 +39,11 @@
     <vcpu id='31' enabled='no' hotpluggable='yes'/>
   </vcpus>
   <os>
-    <type arch='x86_64' machine='pc'>hvm</type>
+    <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='network'/>
   </os>
   <cpu mode='custom' match='exact' check='none'>
-    <model fallback='forbid'>qemu64</model>
+    <model fallback='forbid'>POWER9</model>
     <topology sockets='1' dies='1' cores='4' threads='8'/>
   </cpu>
   <clock offset='utc'/>
@@ -51,24 +51,21 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <controller type='usb' index='0' model='piix3-uhci'>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <controller type='usb' index='0' model='pci-ohci'>
       <alias name='usb'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
       <alias name='pci.0'/>
     </controller>
-    <input type='mouse' bus='ps2'>
-      <alias name='input0'/>
-    </input>
-    <input type='keyboard' bus='ps2'>
-      <alias name='input1'/>
-    </input>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <alias name='balloon0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>
+    <panic model='pseries'/>
   </devices>
 </domain>

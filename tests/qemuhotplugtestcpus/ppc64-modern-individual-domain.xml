@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static' current='8'>32</vcpu>
   <os>
-    <type arch='x86_64' machine='pc'>hvm</type>
+    <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='network'/>
   </os>
   <cpu>
@@ -15,6 +15,6 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <emulator>/usr/bin/qemu-system-ppc64</emulator>
   </devices>
 </domain>
