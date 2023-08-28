@@ -895,3 +895,12 @@ virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) G_NO_INLINE;
 
 virArch virQEMUCapsArchFromString(const char *arch);
 const char *virQEMUCapsArchToString(virArch arch);
+
+int
+virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
+                       qemuMonitor *mon);
+
+int
+virQEMUCapsProbeQMPMachineTypes(virQEMUCaps *qemuCaps,
+                                virDomainVirtType virtType,
+                                qemuMonitor *mon);

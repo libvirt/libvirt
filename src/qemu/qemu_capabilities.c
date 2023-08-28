@@ -2797,7 +2797,7 @@ virQEMUCapsHasMachines(virQEMUCaps *qemuCaps)
 }
 
 
-static int
+int
 virQEMUCapsProbeQMPMachineTypes(virQEMUCaps *qemuCaps,
                                 virDomainVirtType virtType,
                                 qemuMonitor *mon)
@@ -5391,9 +5391,9 @@ virQEMUCapsIsValid(void *data,
  *
  * Returns: 0 on success, <0 on failure
  */
-static int
+int
 virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
-                            qemuMonitor *mon)
+                       qemuMonitor *mon)
 {
     g_autofree char *archstr = NULL;
 
