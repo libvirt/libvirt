@@ -16,7 +16,6 @@
   <flag name='enable-fips'/>
   <flag name='migrate-rdma'/>
   <flag name='spice-gl'/>
-  <flag name='query-hotpluggable-cpus'/>
   <flag name='spice-rendernode'/>
   <flag name='chardev-reconnect'/>
   <flag name='isa-serial'/>

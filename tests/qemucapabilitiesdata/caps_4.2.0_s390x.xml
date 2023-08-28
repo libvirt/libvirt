@@ -30,7 +30,6 @@
   <flag name='virtio-tablet'/>
   <flag name='virtio-input-host'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
-  <flag name='query-hotpluggable-cpus'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='query-cpu-definitions'/>

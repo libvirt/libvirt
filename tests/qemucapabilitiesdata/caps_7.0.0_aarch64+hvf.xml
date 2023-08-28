@@ -66,7 +66,6 @@
   <flag name='spice-gl'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
-  <flag name='query-hotpluggable-cpus'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
   <flag name='vhost-scsi'/>

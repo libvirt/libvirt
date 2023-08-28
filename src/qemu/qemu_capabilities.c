@@ -390,7 +390,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 230 */
               "smm", /* X_QEMU_CAPS_MACHINE_SMM_OPT */
               "virtio-pci-disable-legacy", /* X_QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY */
-              "query-hotpluggable-cpus", /* QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS */
+              "query-hotpluggable-cpus", /* X_QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS */
               "virtio-net.rx_queue_size", /* X_QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE */
               "machine-iommu", /* X_QEMU_CAPS_MACHINE_IOMMU */
 
@@ -1208,7 +1208,6 @@ struct virQEMUCapsStringFlags {
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-vnc", QEMU_CAPS_VNC },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
-    { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },
@@ -5836,7 +5835,7 @@ static const struct virQEMUCapsMachineTypeFilter virQEMUCapsMachineFilter[] = {
 
 void
 virQEMUCapsFilterByMachineType(virQEMUCaps *qemuCaps,
-                               virDomainVirtType virtType,
+                               virDomainVirtType virtType G_GNUC_UNUSED,
                                const char *machineType)
 {
     size_t i;
@@ -5854,9 +5853,6 @@ virQEMUCapsFilterByMachineType(virQEMUCaps *qemuCaps,
         for (j = 0; j < filter->nflags; j++)
             virQEMUCapsClear(qemuCaps, filter->flags[j]);
     }
-
-    if (!virQEMUCapsGetMachineHotplugCpus(qemuCaps, virtType, machineType))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 }
 
 

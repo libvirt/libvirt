@@ -79,7 +79,6 @@
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
   <flag name='intel-iommu'/>
-  <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-vga'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
