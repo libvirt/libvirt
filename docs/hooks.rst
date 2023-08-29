@@ -89,7 +89,7 @@ Script arguments
 The hook scripts are called with specific command line arguments, depending upon
 the script, and the operation being performed.
 
-The guest hook scripts, qemu and lxc, are also given the **full** XML
+The guest hook scripts, qemu, lxc and libxl are also given the **full** XML
 description for the domain on their stdin. This includes items such the UUID of
 the domain and its storage information, and is intended to provide all the
 libvirt information the script needs.
@@ -126,8 +126,8 @@ followed with the full XML description of the port:
    </hookData>
 
 Please note that this approach is different from other cases such as ``daemon``,
-``qemu`` or ``lxc`` hook scripts, because two XMLs may be passed here, while in
-the other cases only a single XML is passed.
+``qemu``, ``lxc`` or ``libxl`` hook scripts, because two XMLs may be passed
+here, while in the other cases only a single XML is passed.
 
 The command line arguments take this approach:
 
