@@ -20,6 +20,7 @@ occur:
 -  A QEMU guest is started or stopped ( :since:`since 0.8.0` )
 -  An LXC guest is started or stopped ( :since:`since 0.8.0` )
 -  A libxl-handled Xen guest is started or stopped ( :since:`since 2.1.0` )
+-  An bhyve guest is started or stopped ( :since:`since 6.1.0` )
 -  A network is started or stopped or an interface is plugged/unplugged to/from
    the network ( :since:`since 1.2.2` )
 
@@ -53,6 +54,8 @@ At present, there are five hook scripts that can be called:
    Executed when an LXC guest is started or stopped
 -  ``/etc/libvirt/hooks/libxl``
    Executed when a libxl-handled Xen guest is started, stopped, or migrated
+-  ``/etc/libvirt/hooks/bhyve``
+   Executed when an bhyve guest is started or stopped
 -  ``/etc/libvirt/hooks/network``
    Executed when a network is started or stopped or an interface is
    plugged/unplugged to/from the network
@@ -392,6 +395,49 @@ operation. There is no specific operation to indicate a "restart" is occurring.
    ::
 
       /etc/libvirt/hooks/libxl guest_name reconnect begin -
+
+/etc/libvirt/hooks/bhyve
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+-  | Before an bhyve guest is started, the bhyve hook script is called in three
+     locations; if any location fails, the guest is not started. The first
+     location, :since:`since 6.1.0` , is before libvirt performs any resource
+     labeling, and the hook can allocate resources not managed by libvirt. This is
+     called as:
+
+   ::
+
+      /etc/libvirt/hooks/bhyve guest_name prepare begin -
+
+   | The second location, available :since:`Since 6.1.0` , occurs after libvirt
+     has finished labeling all resources, but has not yet started the guest,
+     called as:
+
+   ::
+
+      /etc/libvirt/hooks/bhyve guest_name start begin -
+
+   | The third location, :since:`6.1.0` , occurs after the bhyve process has
+     successfully started up:
+
+   ::
+
+      /etc/libvirt/hooks/bhyve guest_name started begin -
+
+-  | When an bhyve guest is stopped, the bhyve hook script is called in two
+     locations, to match the startup. First, :since:`since 6.1.0` , the hook is
+     called before libvirt restores any labels:
+
+   ::
+
+      /etc/libvirt/hooks/bhyve guest_name stopped end -
+
+   | Then, after libvirt has released all resources, the hook is called again,
+     :since:`since 6.1.0` , to allow any additional resource cleanup:
+
+   ::
+
+      /etc/libvirt/hooks/bhyve guest_name release end -
 
 /etc/libvirt/hooks/network
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
