@@ -473,16 +473,12 @@ virExecCommon(virCommand *cmd, gid_t *groups, int ngroups)
 }
 
 # ifdef __linux__
-/* On Linux, we can utilize procfs and read the table of opened
- * FDs and selectively close only those FDs we don't want to pass
- * onto child process (well, the one we will exec soon since this
- * is called from the child). */
 static int
-virCommandMassCloseGetFDsLinux(virBitmap *fds)
+virCommandMassCloseGetFDsDir(virBitmap *fds,
+                             const char *dirName)
 {
     g_autoptr(DIR) dp = NULL;
     struct dirent *entry;
-    const char *dirName = "/proc/self/fd";
     int rc;
 
     if (virDirOpen(&dp, dirName) < 0)
@@ -506,16 +502,22 @@ virCommandMassCloseGetFDsLinux(virBitmap *fds)
 
     return 0;
 }
-
-# else /* !__linux__ */
+# endif /* __linux__ */
 
 static int
-virCommandMassCloseGetFDsGeneric(virBitmap *fds)
+virCommandMassCloseGetFDs(virBitmap *fds)
 {
+# ifdef __linux__
+    /* On Linux, we can utilize procfs and read the table of opened
+     * FDs and selectively close only those FDs we don't want to pass
+     * onto child process (well, the one we will exec soon since this
+     * is called from the child). */
+    return virCommandMassCloseGetFDsDir(fds, "/proc/self/fd");
+# else
     virBitmapSetAll(fds);
     return 0;
+# endif
 }
-# endif /* !__linux__ */
 
 static int
 virCommandMassCloseFrom(virCommand *cmd,
@@ -544,13 +546,8 @@ virCommandMassCloseFrom(virCommand *cmd,
 
     fds = virBitmapNew(openmax);
 
-# ifdef __linux__
-    if (virCommandMassCloseGetFDsLinux(fds) < 0)
+    if (virCommandMassCloseGetFDs(fds) < 0)
         return -1;
-# else
-    if (virCommandMassCloseGetFDsGeneric(fds) < 0)
-        return -1;
-# endif
 
     lastfd = MAX(lastfd, childin);
     lastfd = MAX(lastfd, childout);
