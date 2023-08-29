@@ -472,7 +472,7 @@ virExecCommon(virCommand *cmd, gid_t *groups, int ngroups)
     return 0;
 }
 
-# ifdef __linux__
+# if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
 static int
 virCommandMassCloseGetFDsDir(virBitmap *fds,
                              const char *dirName)
@@ -502,7 +502,7 @@ virCommandMassCloseGetFDsDir(virBitmap *fds,
 
     return 0;
 }
-# endif /* __linux__ */
+# endif /* defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) */
 
 static int
 virCommandMassCloseGetFDs(virBitmap *fds)
@@ -513,6 +513,8 @@ virCommandMassCloseGetFDs(virBitmap *fds)
      * onto child process (well, the one we will exec soon since this
      * is called from the child). */
     return virCommandMassCloseGetFDsDir(fds, "/proc/self/fd");
+# elif defined(__APPLE__) || defined(__FreeBSD__)
+    return virCommandMassCloseGetFDsDir(fds, "/dev/fd");
 # else
     virBitmapSetAll(fds);
     return 0;
