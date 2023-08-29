@@ -94,21 +94,34 @@ virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
 }
 
 static int
-bhyveProcessStartHook(virDomainObj *vm, virHookBhyveOpType op)
+bhyveProcessStartHook(struct _bhyveConn *driver,
+                      virDomainObj *vm,
+                      virHookBhyveOpType op)
 {
+    g_autofree char *xml = NULL;
+
     if (!virHookPresent(VIR_HOOK_DRIVER_BHYVE))
         return 0;
 
+    xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
+
     return virHookCall(VIR_HOOK_DRIVER_BHYVE, vm->def->name, op,
-                       VIR_HOOK_SUBOP_BEGIN, NULL, NULL, NULL);
+                       VIR_HOOK_SUBOP_BEGIN, NULL, xml, NULL);
 }
 
 static void
-bhyveProcessStopHook(virDomainObj *vm, virHookBhyveOpType op)
+bhyveProcessStopHook(struct _bhyveConn *driver,
+                     virDomainObj *vm,
+                     virHookBhyveOpType op)
 {
-    if (virHookPresent(VIR_HOOK_DRIVER_BHYVE))
-        virHookCall(VIR_HOOK_DRIVER_BHYVE, vm->def->name, op,
-                    VIR_HOOK_SUBOP_END, NULL, NULL, NULL);
+    g_autofree char *xml = NULL;
+    if (!virHookPresent(VIR_HOOK_DRIVER_BHYVE))
+        return;
+
+    xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
+
+    virHookCall(VIR_HOOK_DRIVER_BHYVE, vm->def->name, op,
+                VIR_HOOK_SUBOP_END, NULL, xml, NULL);
 }
 
 static int
@@ -194,7 +207,7 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
             goto cleanup;
     }
 
-    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_START) < 0)
+    if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_START) < 0)
         goto cleanup;
 
     /* Now we can start the domain */
@@ -216,7 +229,7 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
                          BHYVE_STATE_DIR) < 0)
         goto cleanup;
 
-    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_STARTED) < 0)
+    if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_STARTED) < 0)
         goto cleanup;
 
     ret = 0;
@@ -265,7 +278,7 @@ virBhyveProcessStart(virConnectPtr conn,
     struct _bhyveConn *driver = conn->privateData;
 
     /* Run an early hook to setup missing devices. */
-    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
+    if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
         return -1;
 
     if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY)
@@ -307,7 +320,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
     if ((priv != NULL) && (priv->mon != NULL))
          bhyveMonitorClose(priv->mon);
 
-    bhyveProcessStopHook(vm, VIR_HOOK_BHYVE_OP_STOPPED);
+    bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_STOPPED);
 
     /* Cleanup network interfaces */
     bhyveNetCleanup(vm);
@@ -329,7 +342,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
     vm->pid = 0;
     vm->def->id = -1;
 
-    bhyveProcessStopHook(vm, VIR_HOOK_BHYVE_OP_RELEASE);
+    bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
 
  cleanup:
     virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
