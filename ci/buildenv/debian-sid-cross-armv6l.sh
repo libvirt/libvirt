@@ -27,6 +27,7 @@ function install_buildenv() {
             iptables \
             kmod \
             libc-dev-bin \
+            libnbd-dev \
             libxml2-utils \
             locales \
             lvm2 \

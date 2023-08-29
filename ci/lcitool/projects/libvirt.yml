@@ -36,6 +36,7 @@ packages:
   - libcap-ng
   - libcurl
   - libiscsi
+  - libnbd
   - libnl3
   - libnlroute3
   - libnuma

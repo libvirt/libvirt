@@ -38,6 +38,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                iptables \
                iscsi-initiator-utils \
                kmod \
+               libnbd-devel \
                libxml2 \
                libxslt \
                lvm2 \

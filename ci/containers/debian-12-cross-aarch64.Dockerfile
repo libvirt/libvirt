@@ -29,6 +29,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       iptables \
                       kmod \
                       libc-dev-bin \
+                      libnbd-dev \
                       libxml2-utils \
                       locales \
                       lvm2 \

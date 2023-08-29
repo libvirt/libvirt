@@ -43,6 +43,7 @@ RUN zypper update -y && \
            libcurl-devel \
            libgnutls-devel \
            libiscsi-devel \
+           libnbd-devel \
            libnl3-devel \
            libnuma-devel \
            libpcap-devel \

@@ -26,6 +26,7 @@ function install_buildenv() {
         iptables \
         iscsi-initiator-utils \
         kmod \
+        libnbd-devel \
         libxml2 \
         libxslt \
         lvm2 \

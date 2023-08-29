@@ -46,6 +46,7 @@ RUN dnf update -y && \
         libcap-ng-devel \
         libcurl-devel \
         libiscsi-devel \
+        libnbd-devel \
         libnl3-devel \
         libpcap-devel \
         libpciaccess-devel \

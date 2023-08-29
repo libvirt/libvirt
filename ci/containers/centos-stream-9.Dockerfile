@@ -44,6 +44,7 @@ RUN dnf distro-sync -y && \
         libblkid-devel \
         libcap-ng-devel \
         libcurl-devel \
+        libnbd-devel \
         libnl3-devel \
         libpcap-devel \
         libpciaccess-devel \

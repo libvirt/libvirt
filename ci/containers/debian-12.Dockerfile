@@ -45,6 +45,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libglusterfs-dev \
                       libgnutls28-dev \
                       libiscsi-dev \
+                      libnbd-dev \
                       libnl-3-dev \
                       libnl-route-3-dev \
                       libnuma-dev \
