@@ -1716,14 +1716,14 @@ exit 0
 
 %pre daemon-driver-secret
 %libvirt_sysconfig_pre virtsecretd
-%libvirt_systemd_unix_pre virsecretd
+%libvirt_systemd_unix_pre virtsecretd
 
 %posttrans daemon-driver-secret
 %libvirt_sysconfig_posttrans virtsecretd
-%libvirt_systemd_unix_posttrans virsecretd
+%libvirt_systemd_unix_posttrans virtsecretd
 
 %preun daemon-driver-secret
-%libvirt_systemd_unix_preun virsecretd
+%libvirt_systemd_unix_preun virtsecretd
 
 %pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
