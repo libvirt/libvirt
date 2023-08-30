@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-08-25 19:26+0000\n"
-"PO-Revision-Date: 2023-08-08 05:41+0000\n"
+"PO-Revision-Date: 2023-08-30 12:21+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1296,7 +1296,7 @@ msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread'는 virtio-scsi 제어기에서만 지원됩니다"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
-msgstr ""
+msgstr "'legacy KVM' 장치 할당은 이 시스템에서 더 이상 지원되지 않습니다"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus의 응답에서 'logical-id'가 누락"
@@ -31668,7 +31668,7 @@ msgid "no model provided for USB controller"
 msgstr "USB 컨트롤러에 제공되는 모델 없음"
 
 msgid "no monitor path"
-msgstr "모이터 경로가 없음"
+msgstr "모니터 경로가 없음"
 
 #, c-format
 msgid "no network interface supplied for '%1$s'"
