@@ -464,13 +464,19 @@ ns_mtab methods[] = {
 };
 
 static void
-aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
+aiforaf(const char *name,
+        int af,
+        struct addrinfo *pai,
+        struct addrinfo **aip)
 {
     int ret;
     struct hostent resolved;
     char buf[1024] = { 0 };
-    int err, herr;
-    struct addrinfo hints, *res0, *res;
+    int err;
+    int herr;
+    struct addrinfo hints;
+    struct addrinfo *res0;
+    struct addrinfo *res;
     char **addrList;
 
     if ((ret = NSS_NAME(gethostbyname2)(name, af, &resolved,
