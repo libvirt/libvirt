@@ -830,6 +830,7 @@ Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
     %else
 Requires: libvirt-daemon = %{version}-%{release}
     %endif
@@ -857,6 +858,7 @@ Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
     %else
 Requires: libvirt-daemon = %{version}-%{release}
     %endif
@@ -881,6 +883,7 @@ Summary: Server side daemon & driver required to run LXC guests
     %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
     %else
 Requires: libvirt-daemon = %{version}-%{release}
     %endif
@@ -906,6 +909,7 @@ Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
     %else
 Requires: libvirt-daemon = %{version}-%{release}
     %endif
@@ -930,6 +934,7 @@ Summary: Server side daemon & driver required to run VirtualBox guests
     %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
     %else
 Requires: libvirt-daemon = %{version}-%{release}
     %endif
