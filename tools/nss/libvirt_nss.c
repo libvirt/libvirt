@@ -493,7 +493,6 @@ aiforaf(const char *name,
         socklen_t salen;
         void *address = *addrList;
         char host[NI_MAXHOST];
-        char port[NI_MAXSERV];
 
         if (resolved.h_addrtype == AF_INET) {
             sa.sin.sin_family = AF_INET;
@@ -511,7 +510,7 @@ aiforaf(const char *name,
 
         if ((err = getnameinfo(&sa.sa, salen,
                                host, sizeof(host),
-                               port, sizeof(port),
+                               NULL, 0,
                                NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
             ERROR("Cannot convert socket address to string: %s",
                   gai_strerror(err));
