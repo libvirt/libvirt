@@ -2000,6 +2000,21 @@ qemuSnapshotRevertWriteMetadata(virDomainObj *vm,
 }
 
 
+typedef struct _qemuSnapshotRevertMemoryData {
+    int fd;
+    char *path;
+    virQEMUSaveData *data;
+} qemuSnapshotRevertMemoryData;
+
+static void
+qemuSnapshotClearRevertMemoryData(qemuSnapshotRevertMemoryData *memdata)
+{
+    VIR_FORCE_CLOSE(memdata->fd);
+    virQEMUSaveDataFree(memdata->data);
+}
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(qemuSnapshotRevertMemoryData, qemuSnapshotClearRevertMemoryData);
+
+
 /**
  * qemuSnapshotRevertExternalPrepare:
  * @vm: domain object
@@ -2007,15 +2022,13 @@ qemuSnapshotRevertWriteMetadata(virDomainObj *vm,
  * @snap: snapshot object we are reverting to
  * @config: live domain definition
  * @inactiveConfig: offline domain definition
- * memsnapFD: pointer to store memory state file FD or NULL
- * memsnapPath: pointer to store memory state file path or NULL
+ * @memdata: struct with data to load memory state
  *
  * Prepare new temporary snapshot definition @tmpsnapdef that will
  * be used while creating new overlay files after reverting to snapshot
  * @snap. In case we are reverting to snapshot with memory state it will
- * open it and pass FD via @memsnapFD and path to the file via
- * @memsnapPath, caller is responsible for freeing both @memsnapFD and
- * memsnapPath.
+ * open it and store necessary data in @memdata. Caller is responsible
+ * to clear the data by using qemuSnapshotClearRevertMemoryData().
  *
  * Returns 0 in success, -1 on error.
  */
@@ -2025,8 +2038,7 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
                                   virDomainMomentObj *snap,
                                   virDomainDef *config,
                                   virDomainDef *inactiveConfig,
-                                  int *memsnapFD,
-                                  char **memsnapPath)
+                                  qemuSnapshotRevertMemoryData *memdata)
 {
     size_t i;
     bool active = virDomainObjIsActive(vm);
@@ -2061,12 +2073,21 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
             return -1;
     }
 
-    if (memsnapFD && memsnapPath && snapdef->memorysnapshotfile) {
+    if (memdata && snapdef->memorysnapshotfile) {
         virQEMUDriver *driver = ((qemuDomainObjPrivate *) vm->privateData)->driver;
-        g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+        g_autoptr(virDomainDef) savedef = NULL;
 
-        *memsnapPath = snapdef->memorysnapshotfile;
-        *memsnapFD = qemuDomainOpenFile(cfg, NULL, *memsnapPath, O_RDONLY, NULL);
+        memdata->path = snapdef->memorysnapshotfile;
+        memdata->fd = qemuSaveImageOpen(driver, NULL, memdata->path,
+                                        &savedef, &memdata->data,
+                                        false, NULL,
+                                        false, false);
+
+        if (memdata->fd < 0)
+            return -1;
+
+        if (!virDomainDefCheckABIStability(savedef, domdef, driver->xmlopt))
+            return -1;
     }
 
     return 0;
@@ -2250,13 +2271,12 @@ qemuSnapshotRevertActive(virDomainObj *vm,
     virObjectEvent *event = NULL;
     virObjectEvent *event2 = NULL;
     virDomainMomentObj *loadSnap = NULL;
-    VIR_AUTOCLOSE memsnapFD = -1;
-    char *memsnapPath = NULL;
     int detail;
     bool defined = false;
-    qemuDomainSaveCookie *cookie = (qemuDomainSaveCookie *) snapdef->cookie;
     int rc;
     g_autoptr(virDomainSnapshotDef) tmpsnapdef = NULL;
+    g_auto(qemuSnapshotRevertMemoryData) memdata = { -1, NULL, NULL };
+    bool started = false;
 
     start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
 
@@ -2280,7 +2300,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
         if (qemuSnapshotRevertExternalPrepare(vm, tmpsnapdef, snap,
                                               *config, *inactiveConfig,
-                                              &memsnapFD, &memsnapPath) < 0) {
+                                              &memdata) < 0) {
             return -1;
         }
     } else {
@@ -2294,28 +2314,24 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     virDomainObjAssignDef(vm, config, true, NULL);
 
-    /* No cookie means libvirt which saved the domain was too old to
-     * mess up the CPU definitions.
-     */
-    if (cookie &&
-        qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
+    if (qemuProcessStartWithMemoryState(snapshot->domain->conn, driver, vm,
+                                        &memdata.fd, memdata.path, loadSnap,
+                                        memdata.data, VIR_ASYNC_JOB_SNAPSHOT,
+                                        start_flags, "from-snapshot",
+                                        &started) < 0) {
+        if (started) {
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                            VIR_ASYNC_JOB_SNAPSHOT,
+                            VIR_QEMU_PROCESS_STOP_MIGRATED);
+        }
         return -1;
+    }
 
-    rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
-                          cookie ? cookie->cpu : NULL,
-                          VIR_ASYNC_JOB_SNAPSHOT, NULL, memsnapFD,
-                          memsnapPath, loadSnap,
-                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-                          start_flags);
-    virDomainAuditStart(vm, "from-snapshot", rc >= 0);
     detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      detail);
     virObjectEventStateQueue(driver->domainEventState, event);
-    if (rc < 0)
-        return -1;
-
 
     if (virDomainSnapshotIsExternal(snap)) {
         if (qemuSnapshotRevertExternalActive(vm, tmpsnapdef) < 0)
@@ -2423,8 +2439,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
             return -1;
 
         if (qemuSnapshotRevertExternalPrepare(vm, tmpsnapdef, snap,
-                                              NULL, *inactiveConfig,
-                                              NULL, NULL) < 0) {
+                                              NULL, *inactiveConfig, NULL) < 0) {
             return -1;
         }
 
