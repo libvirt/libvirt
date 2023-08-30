@@ -2054,6 +2054,9 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
         virDomainSnapshotDiskDef *snapdisk = &tmpsnapdef->disks[i];
         virDomainDiskDef *domdisk = domdef->disks[i];
 
+        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
+
         if (qemuSnapshotPrepareDiskExternal(domdisk, snapdisk, active, false) < 0)
             return -1;
     }
@@ -2094,6 +2097,9 @@ qemuSnapshotRevertExternalActive(virDomainObj *vm,
         return -1;
 
     for (i = 0; i < tmpsnapdef->ndisks; i++) {
+        if (tmpsnapdef->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
+
         if (qemuSnapshotDiskPrepareOne(snapctxt,
                                        vm->def->disks[i],
                                        tmpsnapdef->disks + i,
@@ -2184,6 +2190,9 @@ qemuSnapshotRevertExternalFinish(virDomainObj *vm,
         for (i = 0; i < curdef->nrevertdisks; i++) {
             virDomainSnapshotDiskDef *snapdisk = &(curdef->revertdisks[i]);
 
+            if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+                continue;
+
             if (virStorageSourceInit(snapdisk->src) < 0 ||
                 virStorageSourceUnlink(snapdisk->src) < 0) {
                 VIR_WARN("Failed to remove snapshot image '%s'",
@@ -2198,6 +2207,9 @@ qemuSnapshotRevertExternalFinish(virDomainObj *vm,
     } else {
         for (i = 0; i < curdef->ndisks; i++) {
             virDomainSnapshotDiskDef *snapdisk = &(curdef->disks[i]);
+
+            if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+                continue;
 
             if (virStorageSourceInit(snapdisk->src) < 0 ||
                 virStorageSourceUnlink(snapdisk->src) < 0) {
