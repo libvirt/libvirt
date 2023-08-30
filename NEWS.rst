@@ -38,6 +38,17 @@ v9.7.0 (2023-09-01)
     2) pre-binding the variant driver using the ``--driver`` option of
        ``virsh nodedev-detach``.
 
+  * network: Support for ``<title>`` and ``<description>`` fields in Network XML
+
+    The network object adds two more user defined metadata fields ``<title>``
+    and ``<description>``.
+    Two new APIs ``virNetworkGetMetadata()`` and ``virNetworkSetMetadata()`` can be
+    used to view and modify the above including the existing ``<metadata>`` field.
+
+    virsh adds two new commands ``net-desc`` and ``net-metadata`` to view/modify the same.
+    ``net-list`` adds a new option ``--title`` that prints the content of ``<title>``
+    in an extra column within the default ``--table`` output.
+
 * **Bug fixes**
 
   * qemu: Various fixes to firmware selection
