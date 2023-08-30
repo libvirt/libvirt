@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-08-25 19:26+0000\n"
-"PO-Revision-Date: 2023-07-27 16:21+0000\n"
+"PO-Revision-Date: 2023-08-30 12:21+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -1356,7 +1356,7 @@ msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "підтримку «iothread» передбачено лише для контролерів virtio-scsi"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
-msgstr ""
+msgstr "Підтримку прив'язки пристроїв «Застарілий KVM» на цій системі припинено"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "у відповіді guest-get-vcpus пропущено «logical-id»"
@@ -1993,7 +1993,7 @@ msgid "Allows setting or modifying the description or title of a domain."
 msgstr "Уможливлює встановлення опису або заголовка домену або його зміну."
 
 msgid "Allows setting or modifying the description or title of a network."
-msgstr ""
+msgstr "Надає змогу встановлювати або змінювати опис або заголовок мережі."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Сталася помилка, але її причина невідома"
@@ -7595,7 +7595,7 @@ msgid "Failed to get network autostart state"
 msgstr "Не вдалося отримати дані щодо стану автоматичного запуску мережі"
 
 msgid "Failed to get network description xml"
-msgstr ""
+msgstr "Не вдалося отримати опис XML мережі"
 
 msgid "Failed to get network persistence info"
 msgstr "Не вдалося отримати дані щодо сталості мереж"
@@ -7794,11 +7794,12 @@ msgstr "Не вдалося побудувати список томів"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s"
-msgstr ""
+msgstr "Не вдалося завантажити модуль драйвера PCI %1$s"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
+"Не вдалося завантажити модуль драйвера PCI %1$s: заборонено адміністративно"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -8069,7 +8070,7 @@ msgid "Failed to parse mode '%1$s'"
 msgstr "Не вдається обробити режим «%1$s»"
 
 msgid "Failed to parse network description xml"
-msgstr ""
+msgstr "Не вдалося обробити опис мережі у XML"
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8598,10 +8599,10 @@ msgid "Failed to set new domain title"
 msgstr "Не вдалося встановити новий заголовок домену"
 
 msgid "Failed to set new network description"
-msgstr ""
+msgstr "Не вдалося встановити новий опис мережі"
 
 msgid "Failed to set new network title"
-msgstr ""
+msgstr "Не вдалося встановити новий заголовок мережі"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Не вдалося встановити прапорець «без блокування» дескриптора файла"
@@ -9081,6 +9082,8 @@ msgid ""
 "Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
 "'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
+"Не можна одночасно використовувати прапорці «VIR_NETWORK_UPDATE_AFFECT_LIVE» "
+"та «VIR_NETWORK_UPDATE_AFFECT_CONFIG»"
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -12420,10 +12423,10 @@ msgstr ""
 "Назва файла конфігурації мережі «%1$s» не відповідає назві мережі «%2$s»"
 
 msgid "Network description not changed\n"
-msgstr ""
+msgstr "Опис мережі не змінено\n"
 
 msgid "Network description updated successfully"
-msgstr ""
+msgstr "Опис мережі успішно оновлено"
 
 #, c-format
 msgid "Network device %1$s already exists"
@@ -12512,13 +12515,13 @@ msgid "Network port with UUID %1$s does not exist"
 msgstr "Порту мережі із UUID %1$s не існує"
 
 msgid "Network title can't contain newlines"
-msgstr ""
+msgstr "Заголовок мережі не може містити символів розриву рядків"
 
 msgid "Network title not changed\n"
-msgstr ""
+msgstr "Заголовок мережі не змінено\n"
 
 msgid "Network title updated successfully"
-msgstr ""
+msgstr "Заголовок мережі успішно оновлено"
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12643,7 +12646,7 @@ msgstr "Немає опису домену: %1$s"
 
 #, c-format
 msgid "No description for network: %1$s"
-msgstr ""
+msgstr "Немає опису для мережі: %1$s"
 
 msgid "No device model command-line argument specified"
 msgstr "У командному рядку не вказано аргумент моделі пристрою"
@@ -12867,7 +12870,7 @@ msgstr "Немає заголовка домену: %1$s"
 
 #, c-format
 msgid "No title for network: %1$s"
-msgstr ""
+msgstr "Немає заголовка для мережі: %1$s"
 
 msgid "No total stats available"
 msgstr "Загальні статистичні дані недоступні"
@@ -15145,7 +15148,7 @@ msgid "Shows or modifies the XML metadata of a domain."
 msgstr "Показати або внести зміни до метаданих XML домену."
 
 msgid "Shows or modifies the XML metadata of a network."
-msgstr ""
+msgstr "Виводить або змінює метадані XML мережі."
 
 msgid "Shutdown"
 msgstr "Вимикання"
@@ -16059,11 +16062,11 @@ msgstr ""
 
 #, c-format
 msgid "Target disk discard_granularity %1$u does not match source %2$u"
-msgstr ""
+msgstr "discard_granularity %1$u диска призначення не відповідає джерелу, %2$u"
 
 #, c-format
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "logical_block_size %1$u диска призначення не відповідає джерелу %2$u"
 
 #, c-format
 msgid "Target disk model %1$s does not match source %2$s"
@@ -16071,7 +16074,7 @@ msgstr "Модель диска призначення, %1$s, не збігає�
 
 #, c-format
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "physical_block_size %1$u диска призначення не відповідає джерелу %2$u"
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -17618,7 +17621,7 @@ msgid "Unable to allocate lockspace %1$s"
 msgstr "Не вдалося розмістити простір блокувань %1$s"
 
 msgid "Unable to allocate stack"
-msgstr ""
+msgstr "Не вдалося розмістити стек"
 
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
@@ -18595,10 +18598,12 @@ msgstr "Не вдалося позначити пристрій петлі (loop
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
 msgstr ""
+"Не вдалося пакетно закрити дескриптори файлів (перший=%1$zd, останній=%2$d"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
 msgstr ""
+"Не вдалося пакетно закрити дескриптори файлів (перший=%1$zd, останній=%2$zd)"
 
 msgid "Unable to modify live devices"
 msgstr "Внесення змін до інтерактивних пристроїв неможливе"
@@ -22981,7 +22986,7 @@ msgstr "неможливо змінити доступ до пам'яті з «%
 
 #, c-format
 msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
-msgstr ""
+msgstr "не вдалося змінити адресу у пам'яті з «0x%1$llx» на «0x%2$llx»"
 
 #, c-format
 msgid "cannot modify memory block size from '%1$llu' to '%2$llu'"
@@ -25039,6 +25044,8 @@ msgid ""
 "deletion of active external snapshot that is not a leaf snapshot is not "
 "supported"
 msgstr ""
+"підтримки вилучення активного зовнішнього знімка, який не є знімком-"
+"відгалуженням, не передбачено"
 
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
@@ -25052,6 +25059,8 @@ msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
 msgstr ""
+"підтримки вилучення зовнішнього знімка диска з декількома дочірніми знімками "
+"не передбачено"
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
@@ -25062,6 +25071,8 @@ msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
 "supported"
 msgstr ""
+"підтримки вилучення зовнішніх знімків, які не є відгалуженнями і не "
+"перебувають в активному ланцюжку, не передбачено"
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -25929,7 +25940,7 @@ msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "«%1$s» містить небезпечні символи"
 
 msgid "driver type not set"
-msgstr ""
+msgstr "тип драйвера не встановлено"
 
 msgid "dropped"
 msgstr "скинуто"
@@ -30151,7 +30162,7 @@ msgid "ivgen element found, but cipher is missing"
 msgstr "знайдено елемент ivgen, але пропущено запис cipher"
 
 msgid "ivshmem device is no longer supported"
-msgstr ""
+msgstr "підтримку пристроїв ivshmem припинено"
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -36300,7 +36311,7 @@ msgid "show inactive defined XML"
 msgstr "показати неактивний визначений XML"
 
 msgid "show network title"
-msgstr ""
+msgstr "показати заголовок мережі"
 
 msgid "show or set domain's custom XML metadata"
 msgstr "показати або встановити нетипові метадані XML домену"
@@ -36309,10 +36320,10 @@ msgid "show or set domain's description or title"
 msgstr "показати або встановити опис або заголовок домену"
 
 msgid "show or set network's custom XML metadata"
-msgstr ""
+msgstr "показати або встановити нетипові метадані XML"
 
 msgid "show or set network's description or title"
-msgstr ""
+msgstr "показати або встановити опис або заголовок мережі"
 
 msgid "show timestamp for each printed event"
 msgstr "показувати часову позначку для кожного виведеного запису події"
@@ -39772,6 +39783,8 @@ msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"використання «VIR_MIGRATE_PARAM_MIGRATE_DISKS» потребує використання "
+"прапорця «VIR_MIGRATE_NON_SHARED_DISK» або «VIR_MIGRATE_NON_SHARED_INC»"
 
 msgid "use of <server> requires pull mode backup"
 msgstr "використання <server> потребує резервного копіювання у режимі pull"
