@@ -469,7 +469,6 @@ aiforaf(const char *name,
         struct addrinfo *pai,
         struct addrinfo **aip)
 {
-    int ret;
     struct hostent resolved;
     char buf[1024] = { 0 };
     int err;
@@ -479,9 +478,9 @@ aiforaf(const char *name,
     struct addrinfo *res;
     char **addrList;
 
-    if ((ret = NSS_NAME(gethostbyname2)(name, af, &resolved,
-                                        buf, sizeof(buf),
-                                        &err, &herr)) != NS_SUCCESS)
+    if (NSS_NAME(gethostbyname2)(name, af, &resolved,
+                                 buf, sizeof(buf),
+                                 &err, &herr) != NS_SUCCESS)
         return;
 
     addrList = resolved.h_addr_list;
