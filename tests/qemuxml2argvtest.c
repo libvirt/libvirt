@@ -1500,6 +1500,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("chardev-reconnect-generated-path",
                         QEMU_CAPS_CHARDEV_RECONNECT);
 
+    DO_TEST_CAPS_LATEST("usb-controller-implicit-isapc");
+    DO_TEST_CAPS_LATEST("usb-controller-implicit-i440fx");
+    DO_TEST_CAPS_LATEST("usb-controller-implicit-q35");
     DO_TEST_NOCAPS("usb-none");
 
     DO_TEST_NOCAPS("usb-controller");

@@ -482,6 +482,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-lun");
 
     DO_TEST_CAPS_LATEST("usb-none");
+    DO_TEST_CAPS_LATEST("usb-controller-implicit-isapc");
+    DO_TEST_CAPS_LATEST("usb-controller-implicit-i440fx");
+    DO_TEST_CAPS_LATEST("usb-controller-implicit-q35");
     DO_TEST_CAPS_LATEST("usb-controller");
     DO_TEST_CAPS_LATEST("usb-controller-piix3");
     DO_TEST_CAPS_LATEST("usb-controller-ich9-ehci-addr");
