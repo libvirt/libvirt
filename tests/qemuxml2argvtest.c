@@ -270,15 +270,6 @@ testAddCPUModels(virQEMUCaps *caps, bool skipLegacy)
         "486", "coreduo", "kvm32", "qemu32", "kvm64",
         "core2duo", "phenom", "qemu64",
     };
-    const char *armModels[] = {
-        "cortex-a9", "cortex-a8", "cortex-a57", "cortex-a53",
-    };
-    const char *ppc64Models[] = {
-        "POWER8", "POWER7",
-    };
-    const char *s390xModels[] = {
-        "z990", "zEC12", "z13",
-    };
 
     if (ARCH_IS_X86(arch)) {
         if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, x86Models,
@@ -300,27 +291,6 @@ testAddCPUModels(virQEMUCaps *caps, bool skipLegacy)
                                              VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
                 return -1;
         }
-    } else if (ARCH_IS_ARM(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, armModels,
-                                         G_N_ELEMENTS(armModels),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
-            virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, armModels,
-                                         G_N_ELEMENTS(armModels),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
-            return -1;
-    } else if (ARCH_IS_PPC64(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, ppc64Models,
-                                         G_N_ELEMENTS(ppc64Models),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
-            virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, ppc64Models,
-                                         G_N_ELEMENTS(ppc64Models),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
-            return -1;
-    } else if (ARCH_IS_S390(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, s390xModels,
-                                         G_N_ELEMENTS(s390xModels),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
-            return -1;
     }
 
     return 0;
