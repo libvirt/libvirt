@@ -23,13 +23,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     g_autofree char *actual = NULL;
     int ret = -1;
 
-    if (testQemuInfoInitArgs((struct testQemuInfo *) data) < 0)
-        return -1;
-
-    virFileCacheClear(driver.qemuCapsCache);
-
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, data->qemuCaps) < 0)
-        return -1;
+    /* this test suite doesn't yet need testQemuInfoInitArgs() */
 
     if (!(obj = virDomainObjParseFile(data->infile, driver.xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
@@ -76,15 +70,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
-    g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     g_autoptr(virConnect) conn = NULL;
-    struct testQemuConf testConf = { .capslatest = capslatest,
-                                     .capscache = capscache,
-                                     .qapiSchemaCache = NULL };
-
-    if (!capslatest)
-        return EXIT_FAILURE;
+    struct testQemuConf testConf = { NULL, NULL, NULL };
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
