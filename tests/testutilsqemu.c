@@ -109,7 +109,7 @@ virHostCPUX86GetCPUID(uint32_t leaf,
     }
 }
 
-virCaps *
+static virCaps *
 testQemuCapsInit(void)
 {
     virCaps *caps;

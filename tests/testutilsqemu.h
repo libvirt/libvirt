@@ -105,7 +105,6 @@ struct testQemuInfo {
     struct testQemuConf *conf;
 };
 
-virCaps *testQemuCapsInit(void);
 virDomainXMLOption *testQemuXMLConfInit(void);
 
 
