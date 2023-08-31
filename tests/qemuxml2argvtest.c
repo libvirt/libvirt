@@ -1137,7 +1137,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hugepages-default-2M");
     DO_TEST_CAPS_LATEST("hugepages-default-system-size");
     DO_TEST_CAPS_LATEST_FAILURE("hugepages-default-5M");
-    DO_TEST_PARSE_ERROR_NOCAPS("hugepages-default-1G-nodeset-2M");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("hugepages-default-1G-nodeset-2M");
     DO_TEST_CAPS_LATEST("hugepages-nodeset");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hugepages-nodeset-nonexist");
     DO_TEST_CAPS_LATEST("hugepages-numa-default");
@@ -1147,10 +1147,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hugepages-numa-nodeset-part");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hugepages-numa-nodeset-nonexist");
     DO_TEST_CAPS_LATEST("hugepages-shared");
-    DO_TEST_PARSE_ERROR_NOCAPS("hugepages-memaccess-invalid");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("hugepages-memaccess-invalid");
     DO_TEST_CAPS_LATEST("hugepages-memaccess");
     DO_TEST_CAPS_LATEST("hugepages-memaccess2");
-    DO_TEST_PARSE_ERROR_NOCAPS("hugepages-memaccess3");
+    DO_TEST_CAPS_VER_PARSE_ERROR("hugepages-memaccess3", "5.1.0");
     DO_TEST_CAPS_LATEST("hugepages-memaccess3");
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
     DO_TEST_NOCAPS("nosharepages");
