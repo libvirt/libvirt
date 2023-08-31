@@ -9,7 +9,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=foo,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-foo/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-foo/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -m size=2097152k \
@@ -28,5 +28,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo/.config \
 -global i440FX-pcihost.pci-hole64-size=1048576K \
 -usb \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -msg timestamp=on

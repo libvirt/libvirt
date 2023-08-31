@@ -856,9 +856,22 @@ mymain(void)
  * at the end of the argument list, or the NONE placeholder.
  * */
 # define DO_TEST(name, ...) \
-    DO_TEST_FULL(name, "", ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
+    DO_TEST_FULL(name, "", \
+                 ARG_QEMU_CAPS, \
+                 QEMU_CAPS_DEVICE_JSON, \
+                 QEMU_CAPS_OBJECT_JSON, \
+                 QEMU_CAPS_NETDEV_JSON, \
+                 __VA_ARGS__, \
+                 QEMU_CAPS_LAST, \
+                 ARG_END)
 # define DO_TEST_NOCAPS(name) \
-    DO_TEST_FULL(name, "",  ARG_END)
+    DO_TEST_FULL(name, "", \
+                 ARG_QEMU_CAPS, \
+                 QEMU_CAPS_DEVICE_JSON, \
+                 QEMU_CAPS_OBJECT_JSON, \
+                 QEMU_CAPS_NETDEV_JSON, \
+                 QEMU_CAPS_LAST, \
+                 ARG_END)
 
 # define DO_TEST_GIC(name, ver, gic) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, "aarch64", ver, ARG_GIC, gic, ARG_END)

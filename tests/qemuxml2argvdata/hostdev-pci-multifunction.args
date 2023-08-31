@@ -9,7 +9,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-delete/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=delete,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-delete/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-delete/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
 -m size=262144k \
@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-delete/.config \
 -boot strict=on \
 -usb \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device vfio-pci,host=0005:90:01.0,id=hostdev0,bus=pci.0,addr=0x2 \
--device vfio-pci,host=0001:01:00.1,id=hostdev1,bus=pci.0,addr=0x3 \
--device vfio-pci,host=0001:01:00.0,id=hostdev2,bus=pci.0,addr=0x4 \
--device vfio-pci,host=0005:90:01.2,id=hostdev3,bus=pci.0,addr=0x5 \
--device vfio-pci,host=0005:90:01.3,id=hostdev4,bus=pci.0,addr=0x6 \
--device vfio-pci,host=0000:06:12.1,id=hostdev5,bus=pci.0,addr=0x7 \
--device vfio-pci,host=0000:06:12.2,id=hostdev6,bus=pci.0,addr=0x8 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x9 \
+-device '{"driver":"vfio-pci","host":"0005:90:01.0","id":"hostdev0","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"vfio-pci","host":"0001:01:00.1","id":"hostdev1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"vfio-pci","host":"0001:01:00.0","id":"hostdev2","bus":"pci.0","addr":"0x4"}' \
+-device '{"driver":"vfio-pci","host":"0005:90:01.2","id":"hostdev3","bus":"pci.0","addr":"0x5"}' \
+-device '{"driver":"vfio-pci","host":"0005:90:01.3","id":"hostdev4","bus":"pci.0","addr":"0x6"}' \
+-device '{"driver":"vfio-pci","host":"0000:06:12.1","id":"hostdev5","bus":"pci.0","addr":"0x7"}' \
+-device '{"driver":"vfio-pci","host":"0000:06:12.2","id":"hostdev6","bus":"pci.0","addr":"0x8"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x9"}' \
 -msg timestamp=on

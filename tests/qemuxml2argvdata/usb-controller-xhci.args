@@ -9,7 +9,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -m size=219136k \
@@ -25,6 +25,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device nec-usb-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x2 \
+-device '{"driver":"nec-usb-xhci","p2":8,"p3":8,"id":"usb","bus":"pci.0","addr":"0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

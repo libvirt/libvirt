@@ -9,7 +9,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest2/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -m size=219136k \
@@ -25,12 +25,12 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
+-device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.0","addr":"0x3"}' \
 -usb \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device vhost-scsi-pci,wwpn=naa.5123456789abcde0,vhostfd=3,id=hostdev0,bus=pci.0,addr=0x2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-device '{"driver":"vhost-scsi-pci","wwpn":"naa.5123456789abcde0","vhostfd":"3","id":"hostdev0","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
 -msg timestamp=on

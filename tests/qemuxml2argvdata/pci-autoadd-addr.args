@@ -9,7 +9,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-fdr-br/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fdr-br,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-fdr-br/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-fdr-br/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -m size=2097152k \
@@ -24,18 +24,18 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-fdr-br/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x3 \
--device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.0,addr=0x4 \
--device pci-bridge,chassis_nr=3,id=pci.3,bus=pci.0,addr=0x5 \
--device pci-bridge,chassis_nr=4,id=pci.4,bus=pci.0,addr=0x6 \
--device pci-bridge,chassis_nr=5,id=pci.5,bus=pci.0,addr=0x7 \
--device pci-bridge,chassis_nr=6,id=pci.6,bus=pci.0,addr=0x8 \
--device pci-bridge,chassis_nr=7,id=pci.7,bus=pci.0,addr=0x9 \
+-device '{"driver":"pci-bridge","chassis_nr":1,"id":"pci.1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"pci-bridge","chassis_nr":2,"id":"pci.2","bus":"pci.0","addr":"0x4"}' \
+-device '{"driver":"pci-bridge","chassis_nr":3,"id":"pci.3","bus":"pci.0","addr":"0x5"}' \
+-device '{"driver":"pci-bridge","chassis_nr":4,"id":"pci.4","bus":"pci.0","addr":"0x6"}' \
+-device '{"driver":"pci-bridge","chassis_nr":5,"id":"pci.5","bus":"pci.0","addr":"0x7"}' \
+-device '{"driver":"pci-bridge","chassis_nr":6,"id":"pci.6","bus":"pci.0","addr":"0x8"}' \
+-device '{"driver":"pci-bridge","chassis_nr":7,"id":"pci.7","bus":"pci.0","addr":"0x9"}' \
 -usb \
 -blockdev '{"driver":"file","filename":"/var/iso/f18kde.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
--device ide-cd,bus=ide.1,unit=0,drive=libvirt-1-format,id=ide0-1-0 \
+-device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-1-format","id":"ide0-1-0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.7,addr=0x6 \
+-device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.7","addr":"0x6"}' \
 -msg timestamp=on

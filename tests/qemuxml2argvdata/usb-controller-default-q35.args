@@ -9,7 +9,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=q35-test,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-q35-test/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-q35-test/master-key.aes"}' \
 -machine q35,usb=off,dump-guest-core=off \
 -accel tcg \
 -m size=2097152k \
@@ -25,7 +25,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pcie.0,addr=0x1 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pcie.0","addr":"0x1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action reset \
