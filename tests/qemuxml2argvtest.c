@@ -257,18 +257,16 @@ static virNWFilterDriver fakeNWFilterDriver = {
 
 
 static int
-testAddCPUModels(virQEMUCaps *caps, bool skipLegacy)
+testAddCPUModels(virQEMUCaps *caps)
 {
     virArch arch = virQEMUCapsGetArch(caps);
     const char *x86Models[] = {
-        "Opteron_G3", "Opteron_G2", "Opteron_G1",
-        "Nehalem", "Penryn", "Conroe",
-        "Haswell-noTSX", "Haswell",
-    };
-    const char *x86LegacyModels[] = {
         "n270", "athlon", "pentium3", "pentium2", "pentium",
         "486", "coreduo", "kvm32", "qemu32", "kvm64",
         "core2duo", "phenom", "qemu64",
+        "Opteron_G3", "Opteron_G2", "Opteron_G1",
+        "Nehalem", "Penryn", "Conroe",
+        "Haswell-noTSX", "Haswell",
     };
 
     if (ARCH_IS_X86(arch)) {
@@ -279,18 +277,6 @@ testAddCPUModels(virQEMUCaps *caps, bool skipLegacy)
                                          G_N_ELEMENTS(x86Models),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
             return -1;
-
-        if (!skipLegacy) {
-            if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM,
-                                             x86LegacyModels,
-                                             G_N_ELEMENTS(x86LegacyModels),
-                                             VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
-                virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU,
-                                             x86LegacyModels,
-                                             G_N_ELEMENTS(x86LegacyModels),
-                                             VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
-                return -1;
-        }
     }
 
     return 0;
@@ -313,8 +299,7 @@ testUpdateQEMUCaps(const struct testQemuInfo *info,
 
     virQEMUCapsSetArch(info->qemuCaps, arch);
 
-    if (testAddCPUModels(info->qemuCaps,
-                         !!(info->flags & FLAG_SKIP_LEGACY_CPUS)) < 0)
+    if (testAddCPUModels(info->qemuCaps) < 0)
         return -1;
 
     testUpdateQEMUCapsHostCPUModel(info->qemuCaps, caps->host.arch);
@@ -330,11 +315,9 @@ testCheckExclusiveFlags(int flags)
                   FLAG_EXPECT_PARSE_ERROR |
                   FLAG_FIPS_HOST |
                   FLAG_REAL_CAPS |
-                  FLAG_SKIP_LEGACY_CPUS |
                   FLAG_SLIRP_HELPER |
                   0, -1);
 
-    VIR_EXCLUSIVE_FLAGS_RET(FLAG_REAL_CAPS, FLAG_SKIP_LEGACY_CPUS, -1);
     return 0;
 }
 
