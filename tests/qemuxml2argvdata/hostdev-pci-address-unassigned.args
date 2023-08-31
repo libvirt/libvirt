@@ -10,9 +10,11 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-delete/.config \
 -name guest=delete,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-delete/master-key.aes"}' \
--machine pc,usb=off,dump-guest-core=off \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel kvm \
+-cpu qemu64 \
 -m size=262144k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":268435456}' \
 -overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -uuid 583a8e8e-f0ce-4f53-89ab-092862148b25 \
@@ -23,7 +25,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-delete/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -usb \
 -audiodev '{"id":"audio1","driver":"none"}' \

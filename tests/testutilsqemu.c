@@ -302,13 +302,6 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                                  virArch arch)
 {
     size_t i;
-    const char *defaultRAMid = NULL;
-
-    /* default-ram-id appeared in QEMU 5.2.0. Reflect
-     * this in our capabilities, i.e. set it for new
-     * enough versions only. */
-    if (virQEMUCapsGetVersion(caps) >= 5002000)
-        defaultRAMid = qemu_default_ram_id[arch];
 
     virQEMUCapsSetArch(caps, arch);
 
@@ -317,28 +310,28 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
                               VIR_DOMAIN_VIRT_QEMU,
                               qemu_machines[arch][i],
                               NULL,
-                              NULL,
+                              "qemu64",
                               0,
                               false,
                               false,
-                              true,
-                              defaultRAMid,
                               false,
-                              VIR_TRISTATE_BOOL_ABSENT);
+                              qemu_default_ram_id[arch],
+                              false,
+                              VIR_TRISTATE_BOOL_YES);
         virQEMUCapsSet(caps, QEMU_CAPS_TCG);
 
         virQEMUCapsAddMachine(caps,
                               VIR_DOMAIN_VIRT_KVM,
                               qemu_machines[arch][i],
                               NULL,
-                              NULL,
+                              "qemu64",
                               0,
                               false,
                               false,
-                              true,
-                              defaultRAMid,
                               false,
-                              VIR_TRISTATE_BOOL_ABSENT);
+                              qemu_default_ram_id[arch],
+                              false,
+                              VIR_TRISTATE_BOOL_YES);
         virQEMUCapsSet(caps, QEMU_CAPS_KVM);
     }
 }
