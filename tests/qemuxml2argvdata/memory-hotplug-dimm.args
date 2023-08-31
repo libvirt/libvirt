@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--usb \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -object '{"qom-type":"memory-backend-ram","id":"memdimm0","size":536870912}' \
 -device '{"driver":"pc-dimm","node":0,"memdev":"memdimm0","id":"dimm0","slot":0}' \
 -object '{"qom-type":"memory-backend-file","id":"memdimm1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","prealloc":true,"size":536870912,"host-nodes":[1,2,3],"policy":"bind"}' \

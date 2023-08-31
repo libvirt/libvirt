@@ -862,6 +862,7 @@ mymain(void)
                  QEMU_CAPS_OBJECT_JSON, \
                  QEMU_CAPS_NETDEV_JSON, \
                  QEMU_CAPS_SECCOMP_SANDBOX, \
+                 QEMU_CAPS_PIIX3_USB_UHCI, \
                  __VA_ARGS__, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
@@ -872,6 +873,7 @@ mymain(void)
                  QEMU_CAPS_OBJECT_JSON, \
                  QEMU_CAPS_NETDEV_JSON, \
                  QEMU_CAPS_SECCOMP_SANDBOX, \
+                 QEMU_CAPS_PIIX3_USB_UHCI, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
 

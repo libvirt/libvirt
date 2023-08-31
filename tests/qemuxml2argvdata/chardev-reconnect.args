@@ -26,9 +26,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial1","bus":"pci.0","addr":"0xa"}' \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x2"}' \
--usb \
 -device '{"driver":"usb-ccid","id":"ccid0","bus":"usb.0","port":"1"}' \
 -chardev socket,id=charsmartcard0,path=/var/lib/libvirt/qemu/channel/target/asdf,reconnect=20 \
 -device '{"driver":"ccid-card-passthru","chardev":"charsmartcard0","id":"smartcard0","bus":"ccid0.0"}' \

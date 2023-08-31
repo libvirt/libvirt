@@ -26,7 +26,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--usb \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -device '{"driver":"usb-ccid","id":"ccid0","bus":"usb.0","port":"1"}' \
 -device '{"driver":"ccid-card-emulated","backend":"certificates","cert1":"cert1","cert2":"cert2","cert3":"cert3","db":"/tmp/foo","id":"smartcard0","bus":"ccid0.0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

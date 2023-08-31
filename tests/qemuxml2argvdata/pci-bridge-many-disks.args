@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-lots-of-disks/.config \
 -device '{"driver":"pci-bridge","chassis_nr":1,"id":"pci.1","bus":"pci.0","addr":"0x2"}' \
 -device '{"driver":"pci-bridge","chassis_nr":2,"id":"pci.2","bus":"pci.0","addr":"0x3"}' \
 -device '{"driver":"pci-bridge","chassis_nr":3,"id":"pci.3","bus":"pci.0","addr":"0x4"}' \
--usb \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test.img","node-name":"libvirt-105-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-105-format","read-only":false,"driver":"raw","file":"libvirt-105-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-105-format","id":"virtio-disk0","bootindex":1}' \

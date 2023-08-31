@@ -26,7 +26,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-fdr-br/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--usb \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/var/iso/f18kde.iso","node-name":"libvirt-29-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-29-format","read-only":true,"driver":"raw","file":"libvirt-29-storage"}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-29-format","id":"ide0-1-0"}' \

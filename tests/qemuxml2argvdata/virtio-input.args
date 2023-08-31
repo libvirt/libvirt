@@ -26,7 +26,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--usb \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -device '{"driver":"virtio-mouse-pci","id":"input0","bus":"pci.0","addr":"0x3"}' \
 -device '{"driver":"virtio-keyboard-pci","id":"input1","bus":"pci.0","addr":"0xa"}' \
 -device '{"driver":"virtio-tablet-pci","id":"input2","bus":"pci.0","addr":"0x4"}' \
