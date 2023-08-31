@@ -1757,13 +1757,24 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model", "8.0.0");
 
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "4.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "5.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "5.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "5.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "6.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "6.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "6.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "7.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "7.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "7.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model-fallback", "8.0.0");
+
     /* For this specific test we accept the increased likelihood of changes
      * if qemu updates the CPU model */
     DO_TEST_CAPS_LATEST("cpu-host-model");
+    DO_TEST_CAPS_LATEST("cpu-host-model-fallback");
 
     DO_TEST_NOCAPS("cpu-host-model-vendor");
-    DO_TEST_FULL("cpu-host-model-fallback", "",
-                 ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS, ARG_END);
     DO_TEST_FULL("cpu-host-model-nofallback", "",
                  ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS | FLAG_EXPECT_FAILURE,
                  ARG_END);

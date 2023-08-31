@@ -1,0 +1,33 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes \
+-machine pc-i440fx-5.1,usb=off,dump-guest-core=off \
+-accel tcg \
+-cpu Opteron_G3,acpi=on,ss=on,pclmulqdq=on,monitor=on,ssse3=on,sse4.1=on,sse4.2=on,movbe=on,aes=on,xsave=on,rdrand=on,hypervisor=on,arat=on,fsgsbase=on,bmi1=on,smep=on,bmi2=on,erms=on,mpx=on,adx=on,smap=on,pcommit=on,clflushopt=on,clwb=on,pku=on,la57=on,xsaveopt=on,xgetbv1=on,mmxext=on,pdpe1gb=on,3dnowext=on,3dnow=on,cr8legacy=on,npt=on,misalignsse=off \
+-m size=219136k \
+-overcommit mem-lock=off \
+-smp 6,sockets=6,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
