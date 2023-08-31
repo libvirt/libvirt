@@ -366,7 +366,8 @@ static const vshCmdOptDef opts_network_desc[] = {
 /* extract description or title from network xml */
 static char *
 virshGetNetworkDescription(vshControl *ctl, virNetworkPtr net,
-                           bool title, unsigned int flags)
+                           bool title, unsigned int flags,
+                           unsigned int queryflags)
 {
     char *desc = NULL;
     g_autoptr(xmlDoc) doc = NULL;
@@ -394,7 +395,7 @@ virshGetNetworkDescription(vshControl *ctl, virNetworkPtr net,
     }
 
     /* fall back to xml */
-    if (virshNetworkGetXMLFromNet(ctl, net, flags, &doc, &ctxt) < 0)
+    if (virshNetworkGetXMLFromNet(ctl, net, queryflags, &doc, &ctxt) < 0)
         return NULL;
 
     if (title)
@@ -454,7 +455,7 @@ cmdNetworkDesc(vshControl *ctl, const vshCmd *cmd)
         g_autofree char *descNet = NULL;
         g_autofree char *descNew = NULL;
 
-        if (!(descNet = virshGetNetworkDescription(ctl, net, title, queryflags)))
+        if (!(descNet = virshGetNetworkDescription(ctl, net, title, flags, queryflags)))
             return false;
 
         if (!descArg)
@@ -515,7 +516,7 @@ cmdNetworkDesc(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, "%s", _("Network description updated successfully"));
 
     } else {
-        g_autofree char *desc = virshGetNetworkDescription(ctl, net, title, queryflags);
+        g_autofree char *desc = virshGetNetworkDescription(ctl, net, title, flags, queryflags);
         if (!desc)
             return false;
 
@@ -1128,7 +1129,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
             if (optTitle) {
                 g_autofree char *title = NULL;
 
-                if (!(title = virshGetNetworkDescription(ctl, network, true, 0)))
+                if (!(title = virshGetNetworkDescription(ctl, network, true, 0, 0)))
                     goto cleanup;
                 if (vshTableRowAppend(table,
                             virNetworkGetName(network),
