@@ -2119,46 +2119,6 @@ bool virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
 }
 
 
-/* Note that this function is invoked only by test code for faking supported cpu
- * models */
-int
-virQEMUCapsAddCPUDefinitions(virQEMUCaps *qemuCaps,
-                             virDomainVirtType type,
-                             const char **name,
-                             size_t count,
-                             virDomainCapsCPUUsable usable)
-{
-    size_t i;
-    size_t start;
-    virQEMUCapsAccel *accel = virQEMUCapsGetAccel(qemuCaps, type);
-    qemuMonitorCPUDefs *defs = accel->cpuModels;
-
-    if (defs) {
-        start = defs->ncpus;
-
-        VIR_EXPAND_N(defs->cpus, defs->ncpus, count);
-    } else {
-        start = 0;
-
-        if (!(defs = qemuMonitorCPUDefsNew(count)))
-            return -1;
-
-        accel->cpuModels = defs;
-    }
-
-    for (i = 0; i < count; i++) {
-        qemuMonitorCPUDefInfo *cpu = defs->cpus + start + i;
-
-        cpu->usable = usable;
-        cpu->name = g_strdup(name[i]);
-        /* while the type name doesn't correspond with reality, this is just for fake cpu models */
-        cpu->type = g_strdup(name[i]);
-    }
-
-    return 0;
-}
-
-
 static virDomainCapsCPUModels *
 virQEMUCapsCPUDefsToModels(virArch arch,
                            qemuMonitorCPUDefs *defs,
