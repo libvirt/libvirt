@@ -256,55 +256,11 @@ static virNWFilterDriver fakeNWFilterDriver = {
 };
 
 
-static int
-testAddCPUModels(virQEMUCaps *caps)
-{
-    virArch arch = virQEMUCapsGetArch(caps);
-    const char *x86Models[] = {
-        "n270", "athlon", "pentium3", "pentium2", "pentium",
-        "486", "coreduo", "kvm32", "qemu32", "kvm64",
-        "core2duo", "phenom", "qemu64",
-        "Opteron_G3", "Opteron_G2", "Opteron_G1",
-        "Nehalem", "Penryn", "Conroe",
-        "Haswell-noTSX", "Haswell",
-    };
-
-    if (ARCH_IS_X86(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, x86Models,
-                                         G_N_ELEMENTS(x86Models),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
-            virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, x86Models,
-                                         G_N_ELEMENTS(x86Models),
-                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
 static void
 testUpdateQEMUCapsHostCPUModel(virQEMUCaps *qemuCaps, virArch hostArch)
 {
     virQEMUCapsUpdateHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsUpdateHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
-}
-
-static int
-testUpdateQEMUCaps(const struct testQemuInfo *info,
-                   virArch arch,
-                   virCaps *caps)
-{
-    if (!caps)
-        return -1;
-
-    virQEMUCapsSetArch(info->qemuCaps, arch);
-
-    if (testAddCPUModels(info->qemuCaps) < 0)
-        return -1;
-
-    testUpdateQEMUCapsHostCPUModel(info->qemuCaps, caps->host.arch);
-
-    return 0;
 }
 
 
@@ -553,11 +509,6 @@ testCompareXMLToArgv(const void *data)
 
     if (arch == VIR_ARCH_NONE)
         arch = virArchFromHost();
-
-    if (!(info->flags & FLAG_REAL_CAPS)) {
-        if (testUpdateQEMUCaps(info, arch, driver.caps) < 0)
-            goto cleanup;
-    }
 
     virFileCacheClear(driver.qemuCapsCache);
 
