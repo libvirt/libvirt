@@ -483,7 +483,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("usb-none");
     DO_TEST_CAPS_LATEST("usb-controller");
-    DO_TEST_CAPS_LATEST("usb-piix3-controller");
+    DO_TEST_CAPS_LATEST("usb-controller-piix3");
+    DO_TEST_CAPS_LATEST("usb-controller-ich9-ehci-addr");
     DO_TEST_CAPS_LATEST("usb-controller-default-q35");
     DO_TEST_CAPS_LATEST("usb-controller-explicit-q35");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
@@ -573,7 +574,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("numad-auto-vcpu-no-numatune");
     DO_TEST_CAPS_LATEST("numad-auto-memory-vcpu-no-cpuset-and-placement");
     DO_TEST_CAPS_LATEST("numad-auto-memory-vcpu-cpuset");
-    DO_TEST_CAPS_LATEST("usb-ich9-ehci-addr");
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
     DO_TEST_CAPS_LATEST("tpm-passthrough");
     DO_TEST_CAPS_LATEST("tpm-passthrough-crb");

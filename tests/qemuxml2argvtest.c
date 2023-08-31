@@ -1500,19 +1500,59 @@ mymain(void)
     DO_TEST_PARSE_ERROR("chardev-reconnect-generated-path",
                         QEMU_CAPS_CHARDEV_RECONNECT);
 
+    DO_TEST_NOCAPS("usb-none");
+
     DO_TEST_NOCAPS("usb-controller");
-    DO_TEST("usb-piix3-controller",
+    DO_TEST("usb-controller-piix3",
             QEMU_CAPS_PIIX3_USB_UHCI);
-    DO_TEST("usb-ich9-ehci-addr",
+    DO_TEST("usb-controller-ich9-ehci-addr",
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST_NOCAPS("input-usbmouse-addr");
-    DO_TEST("usb-ich9-companion",
+    DO_TEST("usb-controller-ich9-companion",
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST_PARSE_ERROR("usb-ich9-no-companion",
+    DO_TEST_PARSE_ERROR("usb-controller-ich9-no-companion",
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST("usb-ich9-autoassign",
+    DO_TEST("usb-controller-ich9-autoassign",
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_HUB);
+    DO_TEST("usb1-usb2",
+            QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_ICH9_USB_EHCI1);
+
+    DO_TEST("usb-controller-default-q35",
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_PCI_OHCI,
+            QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_FAILURE("usb-controller-default-unavailable-q35",
+                    QEMU_CAPS_DEVICE_IOH3420,
+                    QEMU_CAPS_PCI_OHCI,
+                    QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST("usb-controller-explicit-q35",
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_PCI_OHCI,
+            QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_FAILURE("usb-controller-explicit-unavailable-q35",
+                    QEMU_CAPS_DEVICE_IOH3420,
+                    QEMU_CAPS_PCI_OHCI,
+                    QEMU_CAPS_PIIX3_USB_UHCI);
+    DO_TEST("usb-controller-xhci",
+            QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST("usb-xhci-autoassign",
+            QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI,
+            QEMU_CAPS_USB_HUB);
+    DO_TEST_PARSE_ERROR("usb-controller-xhci-limit",
+            QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST("usb-controller-qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI);
+    DO_TEST_FAILURE_NOCAPS("usb-controller-qemu-xhci-unavailable");
+    DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
+                        QEMU_CAPS_DEVICE_QEMU_XHCI);
+
+    DO_TEST_NOCAPS("input-usbmouse-addr");
     DO_TEST("usb-hub",
             QEMU_CAPS_USB_HUB);
     DO_TEST("usb-hub-autoadd",
@@ -1558,47 +1598,10 @@ mymain(void)
             QEMU_CAPS_USB_REDIR_FILTER,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_CAPS_LATEST("usb-redir-unix");
-    DO_TEST("usb1-usb2",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST_NOCAPS("usb-none");
     DO_TEST_PARSE_ERROR_NOCAPS("usb-none-other");
     DO_TEST_PARSE_ERROR("usb-none-hub",
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR_NOCAPS("usb-none-usbtablet");
-    DO_TEST("usb-controller-default-q35",
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_PCI_OHCI,
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST_FAILURE("usb-controller-default-unavailable-q35",
-                    QEMU_CAPS_DEVICE_IOH3420,
-                    QEMU_CAPS_PCI_OHCI,
-                    QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST("usb-controller-explicit-q35",
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_PCI_OHCI,
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST_FAILURE("usb-controller-explicit-unavailable-q35",
-                    QEMU_CAPS_DEVICE_IOH3420,
-                    QEMU_CAPS_PCI_OHCI,
-                    QEMU_CAPS_PIIX3_USB_UHCI);
-    DO_TEST("usb-controller-xhci",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST("usb-xhci-autoassign",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_USB_HUB);
-    DO_TEST_PARSE_ERROR("usb-controller-xhci-limit",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST("usb-controller-qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI);
-    DO_TEST_FAILURE_NOCAPS("usb-controller-qemu-xhci-unavailable");
-    DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
-                        QEMU_CAPS_DEVICE_QEMU_XHCI);
 
     DO_TEST_NOCAPS("smbios");
     DO_TEST_PARSE_ERROR_NOCAPS("smbios-date");
