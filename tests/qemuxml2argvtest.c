@@ -1892,8 +1892,6 @@ mymain(void)
     DO_TEST("multifunction-pci-device",
             QEMU_CAPS_SCSI_LSI);
 
-    DO_TEST_NOCAPS("monitor-json");
-
     DO_TEST_NOCAPS("seclabel-dynamic");
     DO_TEST_NOCAPS("seclabel-dynamic-baselabel");
     DO_TEST_NOCAPS("seclabel-dynamic-override");
