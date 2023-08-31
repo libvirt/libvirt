@@ -2738,7 +2738,7 @@ static const char *preferredMachines[] =
 G_STATIC_ASSERT(G_N_ELEMENTS(preferredMachines) == VIR_ARCH_LAST);
 
 
-void
+static void
 virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
                       virDomainVirtType virtType,
                       const char *name,

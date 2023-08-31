@@ -103,19 +103,5 @@ virQEMUCapsStripMachineAliases(virQEMUCaps *qemuCaps);
 bool
 virQEMUCapsHasMachines(virQEMUCaps *qemuCaps);
 
-void
-virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
-                      virDomainVirtType virtType,
-                      const char *name,
-                      const char *alias,
-                      const char *defaultCPU,
-                      int maxCpus,
-                      bool hotplugCpus,
-                      bool isDefault,
-                      bool numaMemSupported,
-                      const char *defaultRAMid,
-                      bool deprecated,
-                      virTristateBool acpi);
-
 bool
 virQEMUCapsHaveAccel(virQEMUCaps *qemuCaps);
