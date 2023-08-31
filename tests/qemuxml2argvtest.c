@@ -1537,29 +1537,17 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1);
 
-    DO_TEST("usb-controller-explicit-q35",
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_PCI_OHCI,
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST_FAILURE("usb-controller-explicit-unavailable-q35",
-                    QEMU_CAPS_DEVICE_IOH3420,
-                    QEMU_CAPS_PCI_OHCI,
-                    QEMU_CAPS_PIIX3_USB_UHCI);
-    DO_TEST("usb-controller-xhci",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST("usb-xhci-autoassign",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_USB_HUB);
-    DO_TEST_PARSE_ERROR("usb-controller-xhci-limit",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST("usb-controller-qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI);
-    DO_TEST_FAILURE_NOCAPS("usb-controller-qemu-xhci-unavailable");
-    DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
-                        QEMU_CAPS_DEVICE_QEMU_XHCI);
+    DO_TEST_CAPS_LATEST("usb-controller-nec-xhci");
+    DO_TEST_FULL("usb-controller-nec-xhci-unavailable", ".x86_64-latest",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_CAPS_LATEST("usb-controller-nex-xhci-autoassign");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-nec-xhci-limit");
+    DO_TEST_CAPS_LATEST("usb-controller-qemu-xhci");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-qemu-xhci-limit");
 
     DO_TEST_NOCAPS("input-usbmouse-addr");
     DO_TEST("usb-hub",

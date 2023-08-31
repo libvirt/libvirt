@@ -489,7 +489,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("usb-controller-default-q35");
     DO_TEST_CAPS_LATEST("usb-controller-piix3");
     DO_TEST_CAPS_LATEST("usb-controller-ich9-ehci-addr");
-    DO_TEST_CAPS_LATEST("usb-controller-explicit-q35");
+    DO_TEST_CAPS_LATEST("usb-controller-nec-xhci");
     DO_TEST_CAPS_ARCH_LATEST_FULL("usb-controller-default-unavailable-i440fx", "x86_64",
                                   ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST);
     DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
