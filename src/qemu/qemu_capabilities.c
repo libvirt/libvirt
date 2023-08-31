@@ -2119,6 +2119,8 @@ bool virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
 }
 
 
+/* Note that this function is invoked only by test code for faking supported cpu
+ * models */
 int
 virQEMUCapsAddCPUDefinitions(virQEMUCaps *qemuCaps,
                              virDomainVirtType type,
@@ -2149,6 +2151,8 @@ virQEMUCapsAddCPUDefinitions(virQEMUCaps *qemuCaps,
 
         cpu->usable = usable;
         cpu->name = g_strdup(name[i]);
+        /* while the type name doesn't correspond with reality, this is just for fake cpu models */
+        cpu->type = g_strdup(name[i]);
     }
 
     return 0;
