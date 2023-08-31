@@ -1813,6 +1813,11 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model", "6.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "6.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "7.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "7.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "7.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "8.0.0");
 
     /* For this specific test we accept the increased likelihood of changes
      * if qemu updates the CPU model */
