@@ -1503,9 +1503,24 @@ mymain(void)
     DO_TEST_CAPS_LATEST("usb-controller-implicit-isapc");
     DO_TEST_CAPS_LATEST("usb-controller-implicit-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-implicit-q35");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-isapc");
+    DO_TEST_CAPS_LATEST("usb-controller-default-i440fx");
+    DO_TEST_CAPS_LATEST("usb-controller-default-q35");
+    /* i440fx downgrades to use '-usb' if the explicit controller is not present */
+    DO_TEST_FULL("usb-controller-default-unavailable-i440fx", ".x86_64-latest",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-default-unavailable-q35", ".x86_64-latest",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
     DO_TEST_NOCAPS("usb-none");
 
-    DO_TEST_NOCAPS("usb-controller");
     DO_TEST("usb-controller-piix3",
             QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-controller-ich9-ehci-addr",
@@ -1522,15 +1537,6 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1);
 
-    DO_TEST("usb-controller-default-q35",
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_PCI_OHCI,
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NEC_USB_XHCI);
-    DO_TEST_FAILURE("usb-controller-default-unavailable-q35",
-                    QEMU_CAPS_DEVICE_IOH3420,
-                    QEMU_CAPS_PCI_OHCI,
-                    QEMU_CAPS_NEC_USB_XHCI);
     DO_TEST("usb-controller-explicit-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_PCI_OHCI,
