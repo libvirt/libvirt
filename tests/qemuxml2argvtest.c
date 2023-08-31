@@ -1813,30 +1813,29 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vcpu-placement-static");
     DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
 
-    DO_TEST_NOCAPS("numatune-memory");
-    DO_TEST_PARSE_ERROR_NOCAPS("numatune-memory-invalid-nodeset");
-    DO_TEST_NOCAPS("numatune-memnode");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memory-invalid-nodeset");
     DO_TEST_CAPS_VER("numatune-memnode", "5.2.0");
     DO_TEST_CAPS_LATEST("numatune-memnode");
-    DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode-invalid-mode");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memnode-invalid-mode");
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memnode-restrictive-mode-err-mixed");
     DO_TEST_CAPS_LATEST("numatune-system-memory");
 
-    DO_TEST_NOCAPS("numatune-memnode-no-memory");
+    DO_TEST_CAPS_LATEST("numatune-memnode-no-memory");
 
-    DO_TEST_NOCAPS("numatune-distances");
+    DO_TEST_CAPS_LATEST("numatune-distances");
     DO_TEST_CAPS_LATEST("numatune-no-vcpu");
     DO_TEST_CAPS_LATEST("numatune-hmat");
     DO_TEST_CAPS_LATEST("numatune-hmat-none");
 
-    DO_TEST_NOCAPS("numatune-auto-nodeset-invalid");
-    DO_TEST_NOCAPS("numatune-auto-prefer");
-    DO_TEST_FAILURE_NOCAPS("numatune-static-nodeset-exceed-hostnode");
-    DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnode-nocpu");
-    DO_TEST_PARSE_ERROR_NOCAPS("numatune-memnodes-problematic");
+    DO_TEST_CAPS_LATEST("numatune-auto-nodeset-invalid");
+    DO_TEST_CAPS_LATEST("numatune-auto-prefer");
+    DO_TEST_CAPS_LATEST_FAILURE("numatune-static-nodeset-exceed-hostnode");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memnode-nocpu");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memnodes-problematic");
     DO_TEST_CAPS_LATEST_FAILURE("numatune-memnode-unavailable-strict");
     DO_TEST_CAPS_LATEST_FAILURE("numatune-memnode-unavailable-restrictive");
+
     DO_TEST_NOCAPS("numad");
     DO_TEST_NOCAPS("numad-auto-vcpu-static-numatune");
     DO_TEST_PARSE_ERROR_NOCAPS("numad-auto-vcpu-static-numatune-no-nodeset");
