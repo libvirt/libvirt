@@ -25,17 +25,6 @@ static virCPUDef *cpuPower8;
 static virCPUDef *cpuPower9;
 static virCPUDef *cpuPower10;
 
-
-static const char *qemu_emulators[VIR_ARCH_LAST] = {
-};
-
-static const char *const *qemu_machines[VIR_ARCH_LAST] = {
-};
-
-static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
-};
-
-
 char *
 virFindFileInPath(const char *file)
 {
@@ -120,44 +109,10 @@ virHostCPUX86GetCPUID(uint32_t leaf,
     }
 }
 
-static int
-testQemuAddGuest(virCaps *caps,
-                 virArch arch)
-{
-    int nmachines;
-    virCapsGuestMachine **machines = NULL;
-    virCapsGuest *guest;
-    virArch emu_arch = arch;
-
-    if (qemu_emulators[emu_arch] == NULL)
-        return 0;
-
-    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch], &nmachines);
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                    arch, qemu_emulators[emu_arch],
-                                    NULL, nmachines, machines);
-
-    if (arch == VIR_ARCH_I686 ||
-        arch == VIR_ARCH_X86_64)
-        virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
-
-    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
-                                  NULL, NULL, 0, NULL);
-
-    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch], &nmachines);
-    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                  qemu_emulators[emu_arch],
-                                  NULL, nmachines, machines);
-
-    return 0;
-}
-
-
 virCaps *
 testQemuCapsInit(void)
 {
     virCaps *caps;
-    size_t i;
 
     if (!(caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)))
         return NULL;
@@ -172,11 +127,6 @@ testQemuCapsInit(void)
 
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
         goto cleanup;
-
-    for (i = 0; i < VIR_ARCH_LAST; i++) {
-        if (testQemuAddGuest(caps, i) < 0)
-            goto cleanup;
-    }
 
     if (virTestGetDebug()) {
         g_autofree char *caps_str = NULL;
@@ -291,46 +241,6 @@ void qemuTestDriverFree(virQEMUDriver *driver)
 }
 
 
-static void
-qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
-                                 virArch arch)
-{
-    size_t i;
-
-    virQEMUCapsSetArch(caps, arch);
-
-    for (i = 0; qemu_machines[arch][i] != NULL; i++) {
-        virQEMUCapsAddMachine(caps,
-                              VIR_DOMAIN_VIRT_QEMU,
-                              qemu_machines[arch][i],
-                              NULL,
-                              "qemu64",
-                              0,
-                              false,
-                              false,
-                              false,
-                              qemu_default_ram_id[arch],
-                              false,
-                              VIR_TRISTATE_BOOL_YES);
-        virQEMUCapsSet(caps, QEMU_CAPS_TCG);
-
-        virQEMUCapsAddMachine(caps,
-                              VIR_DOMAIN_VIRT_KVM,
-                              qemu_machines[arch][i],
-                              NULL,
-                              "qemu64",
-                              0,
-                              false,
-                              false,
-                              false,
-                              qemu_default_ram_id[arch],
-                              false,
-                              VIR_TRISTATE_BOOL_YES);
-        virQEMUCapsSet(caps, QEMU_CAPS_KVM);
-    }
-}
-
-
 static int
 qemuTestCapsCacheInsertData(virFileCache *cache,
                             const char *binary,
@@ -349,52 +259,16 @@ int
 qemuTestCapsCacheInsert(virFileCache *cache,
                         virQEMUCaps *caps)
 {
-    size_t i;
-
-    if (virQEMUCapsGetArch(caps) != VIR_ARCH_NONE) {
-        /* all tests using real caps or architecture are expected to call:
-         *
-         *  virFileCacheClear(driver.qemuCapsCache);
-         *
-         * before populating the cache;
-         */
-        /* caps->binary is populated only for real capabilities */
-        if (virQEMUCapsGetBinary(caps)) {
-            if (qemuTestCapsCacheInsertData(cache, virQEMUCapsGetBinary(caps), caps) < 0)
-                return -1;
-        } else {
-            virArch arch = virQEMUCapsGetArch(caps);
-            g_autoptr(virQEMUCaps) copyCaps = NULL;
-            virQEMUCaps *effCaps = caps;
-
-            if (qemu_emulators[arch]) {
-                /* if we are dealing with fake caps we need to populate machine types */
-                if (!virQEMUCapsHasMachines(caps)) {
-                    copyCaps = effCaps = virQEMUCapsNewCopy(caps);
-                    qemuTestCapsPopulateFakeMachines(copyCaps, arch);
-                }
-
-                if (qemuTestCapsCacheInsertData(cache, qemu_emulators[arch], effCaps) < 0)
-                    return -1;
-            }
-        }
-    } else {
-        /* in case when caps are missing or are missing architecture, we populate
-         * everything */
-        for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
-            g_autoptr(virQEMUCaps) tmp = NULL;
-
-            if (qemu_emulators[i] == NULL)
-                continue;
-
-            tmp = virQEMUCapsNewCopy(caps);
-
-            qemuTestCapsPopulateFakeMachines(tmp, i);
-
-            if (qemuTestCapsCacheInsertData(cache, qemu_emulators[i], tmp) < 0)
-                return -1;
-        }
+    /* At this point we support only real capabilities. */
+    if (virQEMUCapsGetArch(caps) == VIR_ARCH_NONE ||
+        !virQEMUCapsGetBinary(caps)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "missing 'arch' or 'binary' in qemuCaps to be inserted into testing cache");
+        return -1;
     }
+
+    if (qemuTestCapsCacheInsertData(cache, virQEMUCapsGetBinary(caps), caps) < 0)
+        return -1;
 
     return 0;
 }
