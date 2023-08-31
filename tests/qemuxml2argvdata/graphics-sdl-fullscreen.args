@@ -34,4 +34,5 @@ DISPLAY=:0.1 \
 -full-screen \
 -display sdl \
 -device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

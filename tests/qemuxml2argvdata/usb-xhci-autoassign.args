@@ -33,4 +33,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"usb-mouse","id":"input1","bus":"usb.0","port":"4"}' \
 -device '{"driver":"usb-mouse","id":"input2","bus":"usb.0","port":"5"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

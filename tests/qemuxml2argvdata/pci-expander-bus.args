@@ -97,4 +97,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-expander-test/.config \
 -device '{"driver":"e1000","netdev":"hostnet31","id":"net31","mac":"52:54:00:7e:6e:c8","bus":"pci.1","addr":"0x4"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x6"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

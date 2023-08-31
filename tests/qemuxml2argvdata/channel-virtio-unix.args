@@ -41,4 +41,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -chardev socket,id=charchannel3,fd=1729,server=on,wait=off \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":4,"chardev":"charchannel3","id":"channel3","name":"fdsa"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -32,4 +32,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -chardev socket,id=charrng0,host=1.2.3.4,port=1234 \
 -object '{"qom-type":"rng-egd","id":"objrng0","chardev":"charrng0"}' \
 -device '{"driver":"virtio-rng-pci","rng":"objrng0","id":"rng0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -39,4 +39,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -device '{"driver":"qxl-vga","id":"video0","max_outputs":1,"ram_size":67108864,"vram_size":33554432,"bus":"pcie.0","addr":"0x1"}' \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action reset \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
