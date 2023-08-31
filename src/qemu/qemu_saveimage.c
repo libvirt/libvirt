@@ -565,42 +565,50 @@ qemuSaveImageOpen(virQEMUDriver *driver,
     return ret;
 }
 
+/**
+ * qemuSaveImageStartProcess:
+ * @conn: connection object
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @fd: FD pointer of memory state file
+ * @path: path to memory state file
+ * @data: data from memory state file
+ * @asyncJob: type of asynchronous job
+ * @start_flags: flags to start QEMU process with
+ * @started: boolean to store if QEMU process was started
+ *
+ * Start VM with existing memory state. Make sure that the stored memory state
+ * is correctly decompressed so it can be loaded by QEMU process.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
-qemuSaveImageStartVM(virConnectPtr conn,
-                     virQEMUDriver *driver,
-                     virDomainObj *vm,
-                     int *fd,
-                     virQEMUSaveData *data,
-                     const char *path,
-                     bool start_paused,
-                     bool reset_nvram,
-                     virDomainAsyncJob asyncJob)
+qemuSaveImageStartProcess(virConnectPtr conn,
+                          virQEMUDriver *driver,
+                          virDomainObj *vm,
+                          int *fd,
+                          const char *path,
+                          virQEMUSaveData *data,
+                          virDomainAsyncJob asyncJob,
+                          unsigned int start_flags,
+                          bool *started)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int ret = -1;
-    bool started = false;
-    virObjectEvent *event;
+    g_autoptr(qemuDomainSaveCookie) cookie = NULL;
+    virQEMUSaveHeader *header = &data->header;
     VIR_AUTOCLOSE intermediatefd = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virQEMUSaveHeader *header = &data->header;
-    g_autoptr(qemuDomainSaveCookie) cookie = NULL;
     int rc = 0;
-    unsigned int start_flags = VIR_QEMU_PROCESS_START_PAUSED |
-        VIR_QEMU_PROCESS_START_GEN_VMID;
-
-    if (reset_nvram)
-        start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
     if (virSaveCookieParseString(data->cookie, (virObject **)&cookie,
                                  virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
-        goto cleanup;
+        return -1;
 
     if ((header->version == 2) &&
         (header->compressed != QEMU_SAVE_FORMAT_RAW)) {
         if (!(cmd = qemuSaveImageGetCompressionCommand(header->compressed)))
-            goto cleanup;
+            return -1;
 
         intermediatefd = *fd;
         *fd = -1;
@@ -613,7 +621,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
         if (virCommandRunAsync(cmd, NULL) < 0) {
             *fd = intermediatefd;
             intermediatefd = -1;
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -622,7 +630,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
      */
     if (cookie &&
         qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
-        goto cleanup;
+        return -1;
 
     if (cookie && !cookie->slirpHelper)
         priv->disableSlirp = true;
@@ -631,12 +639,12 @@ qemuSaveImageStartVM(virConnectPtr conn,
                          asyncJob, "stdio", *fd, path, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          start_flags) == 0)
-        started = true;
+        *started = true;
 
     if (intermediatefd != -1) {
         virErrorPtr orig_err = NULL;
 
-        if (!started) {
+        if (!*started) {
             /* if there was an error setting up qemu, the intermediate
              * process will wait forever to write to stdout, so we
              * must manually kill it and ignore any error related to
@@ -656,14 +664,44 @@ qemuSaveImageStartVM(virConnectPtr conn,
         rc = -1;
     }
 
-    virDomainAuditStart(vm, "restored", started);
-    if (!started || rc < 0)
-        goto cleanup;
+    virDomainAuditStart(vm, "restored", *started);
+    if (!*started || rc < 0)
+        return -1;
 
     /* qemuProcessStart doesn't unset the qemu error reporting infrastructure
      * in case of migration (which is used in this case) so we need to reset it
      * so that the handle to virtlogd is not held open unnecessarily */
     qemuMonitorSetDomainLog(qemuDomainGetMonitor(vm), NULL, NULL, NULL);
+
+    return 0;
+}
+
+int
+qemuSaveImageStartVM(virConnectPtr conn,
+                     virQEMUDriver *driver,
+                     virDomainObj *vm,
+                     int *fd,
+                     virQEMUSaveData *data,
+                     const char *path,
+                     bool start_paused,
+                     bool reset_nvram,
+                     virDomainAsyncJob asyncJob)
+{
+    int ret = -1;
+    bool started = false;
+    virObjectEvent *event;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virQEMUSaveHeader *header = &data->header;
+    unsigned int start_flags = VIR_QEMU_PROCESS_START_PAUSED |
+        VIR_QEMU_PROCESS_START_GEN_VMID;
+
+    if (reset_nvram)
+        start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
+
+    if (qemuSaveImageStartProcess(conn, driver, vm, fd, path, data,
+                                  asyncJob, start_flags, &started) < 0) {
+        goto cleanup;
+    }
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
