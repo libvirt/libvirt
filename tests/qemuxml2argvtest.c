@@ -1372,7 +1372,6 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("vhost_queues-invalid");
 
     DO_TEST_CAPS_LATEST("net-vhostuser");
-    DO_TEST_CAPS_LATEST("net-vhostuser");
     DO_TEST_CAPS_LATEST("net-vhostuser-multiq");
     DO_TEST_CAPS_LATEST_FAILURE("net-vhostuser-fail");
     DO_TEST_CAPS_LATEST("net-user");
@@ -1432,7 +1431,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("serial-dev-chardev");
     DO_TEST_CAPS_LATEST("serial-dev-chardev-iobase");
     DO_TEST_CAPS_LATEST("serial-file-chardev");
-    DO_TEST_CAPS_LATEST("serial-unix-chardev");
     DO_TEST_CAPS_LATEST("serial-unix-chardev");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("serial-unix-missing-source");
     DO_TEST_CAPS_LATEST("serial-tcp-chardev");
@@ -2313,7 +2311,6 @@ mymain(void)
     DO_TEST_FAILURE_NOCAPS("memory-align-fail");
     DO_TEST_PARSE_ERROR("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_PARSE_ERROR_NOCAPS("memory-hotplug-invalid-targetnode");
-    DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
