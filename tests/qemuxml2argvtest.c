@@ -1723,9 +1723,6 @@ mymain(void)
     DO_TEST_NOCAPS("qemu-ns-no-env");
     DO_TEST_NOCAPS("qemu-ns-alt");
 
-    DO_TEST_NOCAPS("smp");
-    DO_TEST("smp-dies", QEMU_CAPS_SMP_DIES);
-
     DO_TEST_CAPS_LATEST("iothreads-ids");
     DO_TEST_CAPS_LATEST("iothreads-ids-partial");
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
@@ -1735,9 +1732,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
 
-    DO_TEST_NOCAPS("cpu-topology1");
-    DO_TEST_NOCAPS("cpu-topology2");
-    DO_TEST_NOCAPS("cpu-topology3");
+    DO_TEST_CAPS_LATEST("cpu-topology1");
+    DO_TEST_CAPS_LATEST("cpu-topology2");
+    DO_TEST_CAPS_LATEST("cpu-topology3");
+    DO_TEST_CAPS_LATEST("cpu-topology4");
+
     DO_TEST("cpu-minimum1", QEMU_CAPS_KVM);
     DO_TEST("cpu-minimum2", QEMU_CAPS_KVM);
     DO_TEST("cpu-exact1", QEMU_CAPS_KVM);
