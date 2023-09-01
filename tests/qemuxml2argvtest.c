@@ -713,6 +713,9 @@ testCompareXMLToArgv(const void *data)
     ret = 0;
 
  cleanup:
+    /* clear overriden host cpu */
+    if (info->args.capsHostCPUModel)
+        qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
     virDomainChrSourceDefClear(&monitor_chr);
     virObjectUnref(vm);
     virIdentitySetCurrent(NULL);
