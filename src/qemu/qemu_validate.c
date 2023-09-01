@@ -4256,7 +4256,7 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 static int
 qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                               const virDomainDef *def,
-                              virQEMUDriver *driver,
+                              virQEMUDriver *driver G_GNUC_UNUSED,
                               virQEMUCaps *qemuCaps)
 {
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
@@ -4318,11 +4318,6 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
             if (fs->readonly) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("virtiofs does not yet support read-only mode"));
-                return -1;
-            }
-            if (!driver->privileged) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtiofs is not yet supported in session mode"));
                 return -1;
             }
             if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
