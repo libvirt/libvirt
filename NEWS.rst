@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v9.7.0 (unreleased)
+v9.7.0 (2023-09-01)
 ===================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -27,8 +23,6 @@ v9.7.0 (unreleased)
     1) setting ``managed='no'`` in the XML configuration for the device
     2) pre-binding the variant driver using the ``--driver`` option of
        ``virsh nodedev-detach``.
-
-* **Improvements**
 
 * **Bug fixes**
 
