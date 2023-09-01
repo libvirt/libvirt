@@ -877,13 +877,8 @@ mymain(void)
 # define DO_TEST_NOCAPS(name) \
     DO_TEST_FULL(name, "",  ARG_END)
 
-/* GIC tests use 'latest' capabilities */
-# define DO_TEST_GIC(name, gic) \
-    DO_TEST_FULL(name, "", \
-                 ARG_GIC, gic, \
-                 ARG_CAPS_ARCH, "aarch64", \
-                 ARG_CAPS_VER, "latest", \
-                 ARG_END)
+# define DO_TEST_GIC(name, ver, gic) \
+    DO_TEST_CAPS_ARCH_VER_FULL(name, "aarch64", ver, ARG_GIC, gic, ARG_END)
 
 # define DO_TEST_FAILURE(name, ...) \
     DO_TEST_FULL(name, "", \
@@ -2249,50 +2244,32 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-aavmf-virtio-mmio", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-default-nic", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-cpu-passthrough", "aarch64");
-    DO_TEST_FULL("aarch64-gic-none", ".aarch64-4.2.0",
-                 ARG_GIC, GIC_NONE,
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "4.2.0",
-                 ARG_END);
-    DO_TEST_FULL("aarch64-gic-none", ".aarch64-latest",
-                 ARG_GIC, GIC_NONE,
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_END);
-    DO_TEST_GIC("aarch64-gic-none-v2", GIC_V2);
-    DO_TEST_GIC("aarch64-gic-none-v3", GIC_V3);
-    DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH);
-    DO_TEST_FULL("aarch64-gic-none-tcg", "",
-                 ARG_GIC, GIC_BOTH,
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_KVM, QEMU_CAPS_LAST,
-                 ARG_END);
-    DO_TEST_FULL("aarch64-gic-default", ".aarch64-4.2.0",
-                 ARG_GIC, GIC_NONE,
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "4.2.0",
-                 ARG_END);
-    DO_TEST_FULL("aarch64-gic-default", ".aarch64-latest",
-                 ARG_GIC, GIC_NONE,
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_END);
-    DO_TEST_GIC("aarch64-gic-default-v2", GIC_V2);
-    DO_TEST_GIC("aarch64-gic-default-v3", GIC_V3);
-    DO_TEST_GIC("aarch64-gic-default-both", GIC_BOTH);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_NONE);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_V2);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_V3);
-    DO_TEST_GIC("aarch64-gic-v2", GIC_BOTH);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_NONE);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_V2);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_V3);
-    DO_TEST_GIC("aarch64-gic-v3", GIC_BOTH);
-    DO_TEST_GIC("aarch64-gic-host", GIC_NONE);
-    DO_TEST_GIC("aarch64-gic-host", GIC_V2);
-    DO_TEST_GIC("aarch64-gic-host", GIC_V3);
-    DO_TEST_GIC("aarch64-gic-host", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-none", "4.2.0", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-none", "latest", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-none-v2", "latest", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-none-v3", "latest", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-none-both", "latest", GIC_BOTH);
+    DO_TEST_CAPS_ARCH_VER_FULL("aarch64-gic-none-tcg", "aarch64", "latest",
+                               ARG_GIC, GIC_BOTH,
+                               ARG_QEMU_CAPS_DEL, QEMU_CAPS_KVM, QEMU_CAPS_LAST,
+                               ARG_END);
+    DO_TEST_GIC("aarch64-gic-default", "4.2.0", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-default", "latest", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-default-v2", "latest", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-default-v3", "latest", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-default-both", "latest", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-v2", "latest", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-v2", "latest", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-v2", "latest", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-v2", "latest", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-v3", "latest", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-v3", "latest", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-v3", "latest", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-v3", "latest", GIC_BOTH);
+    DO_TEST_GIC("aarch64-gic-host", "latest", GIC_NONE);
+    DO_TEST_GIC("aarch64-gic-host", "latest", GIC_V2);
+    DO_TEST_GIC("aarch64-gic-host", "latest", GIC_V3);
+    DO_TEST_GIC("aarch64-gic-host", "latest", GIC_BOTH);
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-invalid", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-virt", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-gic-not-arm", "ppc64");
