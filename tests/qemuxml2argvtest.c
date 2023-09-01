@@ -1704,26 +1704,20 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("hostdev-subsys-mdev-vfio-ap", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ap-boot-fail", "s390x");
 
-    DO_TEST_FULL("restore-v2", "",
-                 ARG_MIGRATE_FROM, "exec:cat",
-                 ARG_MIGRATE_FD, 7,
-                 ARG_END);
-    DO_TEST_FULL("restore-v2-fd", "",
-                 ARG_MIGRATE_FROM, "stdio",
-                 ARG_MIGRATE_FD, 7,
-                 ARG_END);
-    DO_TEST_FULL("restore-v2-fd", "",
-                 ARG_MIGRATE_FROM, "fd:7",
-                 ARG_MIGRATE_FD, 7, ARG_END);
-    DO_TEST_FULL("migrate", "",
-                 ARG_MIGRATE_FROM, "tcp:10.0.0.1:5000", ARG_END);
-
-    DO_TEST_FULL("migrate-numa-unaligned", "",
-                 ARG_MIGRATE_FROM, "stdio",
-                 ARG_MIGRATE_FD, 7,
-                 ARG_QEMU_CAPS,
-                 QEMU_CAPS_LAST,
-                 ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("restore-v2", "x86_64",
+                                  ARG_MIGRATE_FROM, "exec:cat",
+                                  ARG_MIGRATE_FD, 7);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("restore-v2-fd", "x86_64",
+                                  ARG_MIGRATE_FROM, "stdio",
+                                  ARG_MIGRATE_FD, 7);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("restore-v2-fd", "x86_64",
+                                  ARG_MIGRATE_FROM, "fd:7",
+                                  ARG_MIGRATE_FD, 7);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("migrate", "x86_64",
+                                  ARG_MIGRATE_FROM, "tcp:10.0.0.1:5000");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("migrate-numa-unaligned", "x86_64",
+                                  ARG_MIGRATE_FROM, "stdio",
+                                  ARG_MIGRATE_FD, 7);
 
     DO_TEST_CAPS_LATEST("qemu-ns");
     DO_TEST_NOCAPS("qemu-ns-no-env");
