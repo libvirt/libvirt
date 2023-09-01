@@ -876,17 +876,17 @@
                 <element name="poll">
                   <optional>
                     <attribute name="max">
-                      <ref name="unsignedInt"/>
+                      <ref name="unsignedLong"/>
                     </attribute>
                   </optional>
                   <optional>
                     <attribute name="grow">
-                      <ref name="unsignedInt"/>
+                      <ref name="unsignedLong"/>
                     </attribute>
                   </optional>
                   <optional>
                     <attribute name="shrink">
-                      <ref name="unsignedInt"/>
+                      <ref name="unsignedLong"/>
                     </attribute>
                   </optional>
                 </element>

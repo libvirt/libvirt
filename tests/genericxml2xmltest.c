@@ -249,6 +249,8 @@ mymain(void)
     DO_TEST("cpu-phys-bits-emulate");
     DO_TEST("cpu-phys-bits-passthrough");
 
+    DO_TEST("iothreadids");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 
