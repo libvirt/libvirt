@@ -1805,14 +1805,12 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("cpu-s390-zEC12", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("cpu-s390-features", "s390x");
 
-    qemuTestSetHostCPU(&driver, driver.hostarch, qemuTestGetCPUDef(QEMU_CPU_DEF_HASWELL));
-    DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
-    DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
-    DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
-    DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
-    DO_TEST_NOCAPS("cpu-host-model-cmt");
-    DO_TEST("cpu-tsc-frequency", QEMU_CAPS_KVM);
-    qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-Haswell", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-Haswell2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-Haswell3", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-Haswell-noTSX", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-host-model-cmt", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-tsc-frequency", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
 
     DO_TEST_CAPS_LATEST("cpu-translation");
 
