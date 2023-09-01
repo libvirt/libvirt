@@ -208,8 +208,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 100 */
               "virtio-scsi-pci", /* QEMU_CAPS_VIRTIO_SCSI */
               "blockio", /* X_QEMU_CAPS_BLOCKIO */
-              "disable-s3", /* QEMU_CAPS_PIIX_DISABLE_S3 */
-              "disable-s4", /* QEMU_CAPS_PIIX_DISABLE_S4 */
+              "disable-s3", /* X_QEMU_CAPS_PIIX_DISABLE_S3 */
+              "disable-s4", /* X_QEMU_CAPS_PIIX_DISABLE_S4 */
               "usb-redir.filter", /* QEMU_CAPS_USB_REDIR_FILTER */
 
               /* 105 */
@@ -354,8 +354,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 205 */
               "chardev-file-append", /* X_QEMU_CAPS_CHARDEV_FILE_APPEND */
-              "ich9-disable-s3", /* QEMU_CAPS_ICH9_DISABLE_S3 */
-              "ich9-disable-s4", /* QEMU_CAPS_ICH9_DISABLE_S4 */
+              "ich9-disable-s3", /* X_QEMU_CAPS_ICH9_DISABLE_S3 */
+              "ich9-disable-s4", /* X_QEMU_CAPS_ICH9_DISABLE_S4 */
               "vserport-change-event", /* X_QEMU_CAPS_VSERPORT_CHANGE */
               "virtio-balloon-pci.deflate-on-oom", /* QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE */
 
@@ -1457,8 +1457,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPiix4PM[] = {
-    { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3, NULL },
-    { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4, NULL },
     { "acpi-root-pci-hotplug", QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG, NULL },
 };
 
@@ -1493,8 +1491,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioGpu[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsICH9[] = {
-    { "disable_s3", QEMU_CAPS_ICH9_DISABLE_S3, NULL },
-    { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {

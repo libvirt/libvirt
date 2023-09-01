@@ -23,8 +23,6 @@
   <flag name='nec-usb-xhci'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
-  <flag name='disable-s3'/>
-  <flag name='disable-s4'/>
   <flag name='usb-redir.filter'/>
   <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>

@@ -24,8 +24,6 @@
   <flag name='nec-usb-xhci'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
-  <flag name='disable-s3'/>
-  <flag name='disable-s4'/>
   <flag name='usb-redir.filter'/>
   <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>
@@ -71,8 +69,6 @@
   <flag name='virtio-mouse'/>
   <flag name='virtio-tablet'/>
   <flag name='virtio-input-host'/>
-  <flag name='ich9-disable-s3'/>
-  <flag name='ich9-disable-s4'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
   <flag name='spice-gl'/>

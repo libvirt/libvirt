@@ -20,8 +20,6 @@
   <flag name='nec-usb-xhci'/>
   <flag name='lsi'/>
   <flag name='virtio-scsi-pci'/>
-  <flag name='disable-s3'/>
-  <flag name='disable-s4'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
   <flag name='cirrus-vga'/>
