@@ -1739,11 +1739,11 @@ mymain(void)
 
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-minimum1", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-minimum2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
-    DO_TEST("cpu-exact1", QEMU_CAPS_KVM);
-    DO_TEST("cpu-exact2", QEMU_CAPS_KVM);
-    DO_TEST("cpu-exact2-nofallback", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-exact1", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-exact2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-exact2-nofallback", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-strict1", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
-    DO_TEST("cpu-no-removed-features", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-no-removed-features", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
 
     /* EPYC-Milan became available in qemu-6.0, use it for the fallback tests */
     DO_TEST_CAPS_VER_FAILURE("cpu-nofallback", "5.2.0");
