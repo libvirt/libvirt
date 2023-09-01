@@ -1394,10 +1394,9 @@ mymain(void)
     DO_TEST_NOCAPS("input-usbmouse");
     DO_TEST_NOCAPS("input-usbtablet");
     DO_TEST_NOCAPS("misc-acpi");
-    DO_TEST("misc-disable-s3", QEMU_CAPS_PIIX_DISABLE_S3);
-    DO_TEST("misc-disable-suspends", QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
-    DO_TEST("misc-enable-s4", QEMU_CAPS_PIIX_DISABLE_S4);
-    DO_TEST_PARSE_ERROR_NOCAPS("misc-enable-s4");
+    DO_TEST_NOCAPS("misc-disable-s3");
+    DO_TEST_NOCAPS("misc-disable-suspends");
+    DO_TEST_NOCAPS("misc-enable-s4");
     DO_TEST_CAPS_VER("misc-no-reboot", "5.2.0");
     DO_TEST_CAPS_LATEST("misc-no-reboot");
     DO_TEST_NOCAPS("misc-uuid");
@@ -2135,17 +2134,6 @@ mymain(void)
                         QEMU_CAPS_DEVICE_PCI_BRIDGE,
                         QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
                         QEMU_CAPS_DEVICE_IOH3420);
-    DO_TEST("q35-pm-disable",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
-            QEMU_CAPS_ICH9_DISABLE_S3, QEMU_CAPS_ICH9_DISABLE_S4);
-    DO_TEST("q35-pm-disable-fallback",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-disable");
     DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-enable");
     DO_TEST_CAPS_VER_PARSE_ERROR("pc-i440fx-acpi-root-hotplug-disable", "5.1.0");

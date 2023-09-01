@@ -589,38 +589,6 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
 
 
 static int
-qemuValidateDomainDefPM(const virDomainDef *def,
-                        virQEMUCaps *qemuCaps)
-{
-    bool q35Dom = qemuDomainIsQ35(def);
-
-    if (def->pm.s3) {
-        bool q35ICH9_S3 = q35Dom &&
-                          virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3);
-
-        if (!q35ICH9_S3 && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("setting ACPI S3 not supported"));
-            return -1;
-        }
-    }
-
-    if (def->pm.s4) {
-        bool q35ICH9_S4 = q35Dom &&
-                          virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4);
-
-        if (!q35ICH9_S4 && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("setting ACPI S4 not supported"));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
 qemuValidateDomainDefNvram(const virDomainDef *def,
                            virQEMUCaps *qemuCaps)
 {
@@ -1279,8 +1247,11 @@ qemuValidateDomainDef(const virDomainDef *def,
     if (qemuValidateDomainDefClockTimers(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuValidateDomainDefPM(def, qemuCaps) < 0)
+    if ((def->pm.s3 || def->pm.s4) && !ARCH_IS_X86(def->os.arch)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("setting ACPI S3/S4 not supported"));
         return -1;
+    }
 
     if (qemuValidateDomainDefBoot(def, qemuCaps) < 0)
         return -1;

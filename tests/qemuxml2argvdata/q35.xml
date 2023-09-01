@@ -8,6 +8,10 @@
     <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='yes'/>
+  </pm>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

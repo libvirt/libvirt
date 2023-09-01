@@ -24,6 +24,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-global ICH9-LPC.disable_s3=1 \
+-global ICH9-LPC.disable_s4=0 \
 -boot strict=on \
 -device ich9-usb-ehci1,id=usb,bus=pcie.0,addr=0x1d.0x7 \
 -device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,addr=0x1d \

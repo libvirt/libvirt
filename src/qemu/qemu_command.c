@@ -6047,7 +6047,7 @@ qemuBuildClockCommandLine(virCommand *cmd,
 }
 
 
-static int
+static void
 qemuBuildPMCommandLine(virCommand *cmd,
                        const virDomainDef *def,
                        qemuDomainObjPrivate *priv)
@@ -6075,35 +6075,24 @@ qemuBuildPMCommandLine(virCommand *cmd,
             virCommandAddArg(cmd, "-no-acpi");
     }
 
-    /* We fall back to PIIX4_PM even for q35, since it's what we did
-       pre-q35-pm support. QEMU starts up fine (with a warning) if
-       mixing PIIX PM and -M q35. Starting to reject things here
-       could mean we refuse to start existing configs in the wild.*/
-    if (def->pm.s3) {
+    if (def->pm.s3 || def->pm.s4) {
         const char *pm_object = "PIIX4_PM";
 
-        if (qemuDomainIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3))
+        if (qemuDomainIsQ35(def))
             pm_object = "ICH9-LPC";
 
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "%s.disable_s3=%d",
-                               pm_object, def->pm.s3 == VIR_TRISTATE_BOOL_NO);
+        if (def->pm.s3) {
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "%s.disable_s3=%d",
+                                   pm_object, def->pm.s3 == VIR_TRISTATE_BOOL_NO);
+        }
+
+        if (def->pm.s4) {
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "%s.disable_s4=%d",
+                                   pm_object, def->pm.s4 == VIR_TRISTATE_BOOL_NO);
+        }
     }
-
-    if (def->pm.s4) {
-        const char *pm_object = "PIIX4_PM";
-
-        if (qemuDomainIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4))
-            pm_object = "ICH9-LPC";
-
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "%s.disable_s4=%d",
-                               pm_object, def->pm.s4 == VIR_TRISTATE_BOOL_NO);
-    }
-
-    return 0;
 }
 
 
@@ -10444,8 +10433,7 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildClockCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildPMCommandLine(cmd, def, priv) < 0)
-        return NULL;
+    qemuBuildPMCommandLine(cmd, def, priv);
 
     if (qemuBuildBootCommandLine(cmd, def) < 0)
         return NULL;
