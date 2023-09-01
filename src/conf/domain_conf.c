@@ -9665,7 +9665,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
     }
 
-    if (!macaddr) {
+    if (!macaddr || virMacAddrIsAllClear(&def->mac)) {
         virDomainNetGenerateMAC(xmlopt, &def->mac);
         def->mac_generated = true;
     }

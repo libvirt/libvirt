@@ -187,6 +187,7 @@ mymain(void)
     DO_TEST("cpu-cache-disable");
 
     DO_TEST("network-interface-mac-check");
+    DO_TEST_DIFFERENT("network-interface-mac-clear");
 
     DO_TEST_DIFFERENT("chardev-tcp");
     DO_TEST_FAIL_ACTIVE("chardev-tcp-missing-host");
@@ -257,4 +258,5 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      VIR_TEST_MOCK("virrandom"))

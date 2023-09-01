@@ -246,6 +246,11 @@ virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN])
     return memcmp(virMacAddrBroadcastAddrRaw, s, sizeof(*s)) == 0;
 }
 
+bool virMacAddrIsAllClear(const virMacAddr *addr)
+{
+    return !virMacAddrCmpRaw(addr, (const unsigned char[VIR_MAC_BUFLEN]){0});
+}
+
 void
 virMacAddrFree(virMacAddr *addr)
 {
