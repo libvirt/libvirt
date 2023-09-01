@@ -1292,9 +1292,6 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "5.2.0");
     DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
-    DO_TEST("graphics-egl-headless",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_EGL_HEADLESS);
     DO_TEST_CAPS_LATEST("graphics-egl-headless");
     DO_TEST_CAPS_LATEST("graphics-egl-headless-rendernode");
 
@@ -1745,12 +1742,6 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("cpu-numa3");
     DO_TEST_NOCAPS("cpu-numa-disjoint");
     DO_TEST_NOCAPS("cpu-numa-memshared");
-    DO_TEST("cpu-host-model",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1);
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
