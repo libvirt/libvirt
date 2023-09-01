@@ -1744,7 +1744,7 @@ mymain(void)
     DO_TEST("cpu-exact2-nofallback", QEMU_CAPS_KVM);
     DO_TEST("cpu-fallback", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-nofallback", QEMU_CAPS_KVM);
-    DO_TEST("cpu-strict1", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-strict1", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST("cpu-no-removed-features", QEMU_CAPS_KVM);
     DO_TEST_NOCAPS("cpu-numa1");
     DO_TEST_NOCAPS("cpu-numa2");

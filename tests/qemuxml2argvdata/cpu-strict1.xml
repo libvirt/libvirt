@@ -9,7 +9,7 @@
     <boot dev='network'/>
   </os>
   <cpu match='strict'>
-    <model>core2duo</model>
+    <model>Haswell</model>
     <feature name='ds' policy='require'/>
     <feature name='acpi' policy='optional'/>
     <feature name='ht' policy='require'/>
@@ -27,6 +27,16 @@
     <feature name='ss' policy='disable'/>
     <feature name='sse4a' policy='optional'/>
     <feature name='wdt' policy='forbid'/>
+    <feature name='vme' policy='disable'/>
+    <feature name='invtsc' policy='disable'/>
+    <feature name='abm' policy='disable'/>
+    <feature name='pdpe1gb' policy='disable'/>
+    <feature name='rdrand' policy='disable'/>
+    <feature name='f16c' policy='disable'/>
+    <feature name='pdcm' policy='disable'/>
+    <feature name='smx' policy='disable'/>
+    <feature name='monitor' policy='disable'/>
+    <feature name='dtes64' policy='disable'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
