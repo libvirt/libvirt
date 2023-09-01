@@ -6756,11 +6756,21 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCaps *qemuCaps,
 
     for (i = 0; i < accel->nmachineTypes; i++) {
         virQEMUCapsMachineType *mach = &accel->machineTypes[i];
-        g_autofree char *name = g_steal_pointer(&mach->alias);
 
-        if (name) {
-            virQEMUCapsAddMachine(qemuCaps, virtType, name, NULL, mach->defaultCPU,
-                                  mach->maxCpus, mach->hotplugCpus, mach->qemuDefault,
+        if (mach->alias) {
+            g_autofree char *origName = g_steal_pointer(&mach->name);
+
+            /* The preferred machine type, which is generally the default by qemu
+             * in most cases but also generally an alias needs to be kept at the
+             * first entry in the list, because virQEMUCapsGetPreferredMachine
+             * picks the first element. Thus we create a new entry for the
+             * original machine name and replace the existing one by the alias. */
+            mach->name = g_steal_pointer(&mach->alias);
+
+            /* also de-assert the copy's default flag, to ensure we don't have multiple
+             * machines with it */
+            virQEMUCapsAddMachine(qemuCaps, virtType, origName, NULL, mach->defaultCPU,
+                                  mach->maxCpus, mach->hotplugCpus, false,
                                   mach->numaMemSupported, mach->defaultRAMid,
                                   mach->deprecated, mach->acpi);
         }
@@ -6778,6 +6788,9 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCaps *qemuCaps,
  *
  * Remove all aliases so that the tests depending on the latest capabilities
  * file can be stable when new files are added.
+ *
+ * Additionally if a machine type is default, only the copy created for the
+ * alias will be kept as default to eliminate churn in output files.
  */
 void
 virQEMUCapsStripMachineAliases(virQEMUCaps *qemuCaps)
