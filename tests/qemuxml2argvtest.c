@@ -2421,10 +2421,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-options-input-packed");
     DO_TEST_CAPS_LATEST("virtio-options-memballoon-packed");
     DO_TEST_CAPS_LATEST("virtio-options-memballoon-freepage-reporting");
+    DO_TEST_CAPS_VER_PARSE_ERROR("virtio-options-memballoon-freepage-reporting", "5.0.0");
     DO_TEST_CAPS_LATEST("virtio-options-net-packed");
     DO_TEST_CAPS_LATEST("virtio-options-rng-packed");
     DO_TEST_CAPS_LATEST("virtio-options-video-packed");
-    DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-memballoon-freepage-reporting");
 
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology2");
