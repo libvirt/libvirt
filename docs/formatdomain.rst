@@ -4902,14 +4902,23 @@ When the passt backend is used, the ``<backend>`` attribute
 ``logFile`` can be used to tell the passt process for this interface
 where to write its message log, and the ``<source>`` attribute ``dev``
 can tell it to use a particular host interface to derive the routes
-given to the guest for forwarding traffic upstream.
+given to the guest for forwarding traffic upstream.  Due to the design
+decisions of passt, if using SELinux, the log file is recommended to
+reside in the runtime directory of a user under which the passt
+process will run, most probably ``/run/user/$UID`` where ``$UID`` is
+the UID of the user, e.g. ``qemu``.  Beware that libvirt does not
+create this directory if it does not already exist to avoid possible,
+however unlikely, issues, especially since this logfile attribute is
+meant mostly for debugging.
 
 Additionally, when passt is used, multiple ``<portForward>`` elements
 can be added to forward incoming network traffic for the host to this
 guest interface. Each ``<portForward>`` must have a ``proto``
-attribute (set to ``tcp`` or ``udp``) and optional original
-``address`` (if not specified, then all incoming sessions to any host
-IP for the given proto/port(s) will be forwarded to the guest).
+attribute (set to ``tcp`` or ``udp``), optional original ``address``
+(if not specified, then all incoming sessions to any host IP for the
+given proto/port(s) will be forwarded to the guest), and an optional
+``dev`` attribute to limit the forwarded traffic to a specific host
+interface.
 
 The decision of which ports to forward is described with zero or more
 ``<range>`` subelements of ``<portForward>`` (if there is no
@@ -4934,7 +4943,7 @@ ports **with the exception of some subset**.
    <devices>
      ...
      <interface type='user'>
-       <backend type='passt' logFile='/tmp/passt.log'/>
+       <backend type='passt' logFile='/run/user/$UID/passt-domain.log'/>
        <mac address="00:11:22:33:44:55"/>
        <source dev='eth0'/>
        <ip family='ipv4' address='172.17.2.4' prefix='24'/>
@@ -4946,7 +4955,7 @@ ports **with the exception of some subset**.
          <range start='5000' end='5020' to='6000'/>
          <range start='5010' end='5015' exclude='yes'/>
        </portForward>
-       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10'>
+       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10' dev='eth0'>
          <range start='80'/>
          <range start='443' to='344'/>
        </portForward>
