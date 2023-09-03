@@ -3323,6 +3323,13 @@ struct remote_network_event_lifecycle_msg {
     int detail;
 };
 
+struct remote_network_event_callback_metadata_change_msg {
+    int callbackID;
+    remote_nonnull_network net;
+    int type;
+    remote_string nsuri;
+};
+
 struct remote_network_set_metadata_args {
     remote_nonnull_network network;
     int type;
@@ -7008,5 +7015,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: network:read
      */
-    REMOTE_PROC_NETWORK_GET_METADATA = 445
+    REMOTE_PROC_NETWORK_GET_METADATA = 445,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_NETWORK_EVENT_CALLBACK_METADATA_CHANGE = 446
 };

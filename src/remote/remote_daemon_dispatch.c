@@ -1385,8 +1385,46 @@ remoteRelayNetworkEventLifecycle(virConnectPtr conn,
     return 0;
 }
 
+static int
+remoteRelayNetworkEventMetadataChange(virConnectPtr conn,
+                                      virNetworkPtr net,
+                                      int type,
+                                      const char *nsuri,
+                                      void *opaque)
+{
+    daemonClientEventCallback *callback = opaque;
+    remote_network_event_callback_metadata_change_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayNetworkEventCheckACL(callback->client, conn, net))
+        return -1;
+
+    VIR_DEBUG("Relaying network metadata change %s %d %s, callback %d",
+              net->name, type, NULLSTR(nsuri), callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+
+    data.type = type;
+    if (nsuri) {
+        data.nsuri = g_new0(remote_nonnull_string, 1);
+        *(data.nsuri) = g_strdup(nsuri);
+    }
+
+    make_nonnull_network(&data.net, net);
+    data.callbackID = callback->callbackID;
+
+    remoteDispatchObjectEventSend(callback->client, callback->program,
+                                  REMOTE_PROC_NETWORK_EVENT_CALLBACK_METADATA_CHANGE,
+                                  (xdrproc_t)xdr_remote_network_event_callback_metadata_change_msg,
+                                  &data);
+    return 0;
+}
+
+
 static virConnectNetworkEventGenericCallback networkEventCallbacks[] = {
     VIR_NETWORK_EVENT_CALLBACK(remoteRelayNetworkEventLifecycle),
+    VIR_NETWORK_EVENT_CALLBACK(remoteRelayNetworkEventMetadataChange),
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);

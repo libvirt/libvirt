@@ -330,6 +330,7 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  */
 typedef enum {
     VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback (Since: 1.2.1) */
+    VIR_NETWORK_EVENT_ID_METADATA_CHANGE = 1,   /* virConnectNetworkEventMetadataChangeCallback (Since: 9.8.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_NETWORK_EVENT_ID_LAST
@@ -575,5 +576,26 @@ virNetworkGetMetadata(virNetworkPtr network,
                       int type,
                       const char *uri,
                       unsigned int flags);
+
+/**
+ * virConnectNetworkEventMetadataChangeCallback:
+ * @conn: connection object
+ * @net: network on which the event occurred
+ * @type: a value from virNetworkMetadataType
+ * @nsuri: XML namespace URI
+ * @opaque: application specified data
+ *
+ * This callback is triggered when the Network XML metadata changes
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_NETWORK_EVENT_ID_METADATA_CHANGE with virConnectNetworkEventRegisterAny().
+ *
+ * Since: 9.8.0
+ */
+typedef void (*virConnectNetworkEventMetadataChangeCallback)(virConnectPtr conn,
+                                                             virNetworkPtr net,
+                                                             int type,
+                                                             const char *nsuri,
+                                                             void *opaque);
 
 #endif /* LIBVIRT_NETWORK_H */

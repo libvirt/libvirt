@@ -45,10 +45,21 @@ struct _virNetworkEventLifecycle {
 };
 typedef struct _virNetworkEventLifecycle virNetworkEventLifecycle;
 
+struct _virNetworkEventMetadataChange {
+    virNetworkEvent parent;
+
+    int type;
+    char *nsuri;
+};
+typedef struct _virNetworkEventMetadataChange virNetworkEventMetadataChange;
+
 static virClass *virNetworkEventClass;
 static virClass *virNetworkEventLifecycleClass;
+static virClass *virNetworkEventMetadataChangeClass;
+
 static void virNetworkEventDispose(void *obj);
 static void virNetworkEventLifecycleDispose(void *obj);
+static void virNetworkEventMetadataChangeDispose(void *obj);
 
 static int
 virNetworkEventsOnceInit(void)
@@ -57,6 +68,9 @@ virNetworkEventsOnceInit(void)
         return -1;
 
     if (!VIR_CLASS_NEW(virNetworkEventLifecycle, virNetworkEventClass))
+        return -1;
+
+    if (!VIR_CLASS_NEW(virNetworkEventMetadataChange, virNetworkEventClass))
         return -1;
 
     return 0;
@@ -101,6 +115,18 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
                                                           networkLifecycleEvent->type,
                                                           networkLifecycleEvent->detail,
                                                           cbopaque);
+            return;
+        }
+
+    case VIR_NETWORK_EVENT_ID_METADATA_CHANGE:
+        {
+            virNetworkEventMetadataChange *metadataChangeEvent;
+
+            metadataChangeEvent = (virNetworkEventMetadataChange *)event;
+            ((virConnectNetworkEventMetadataChangeCallback)cb)(conn, net,
+                                                               metadataChangeEvent->type,
+                                                               metadataChangeEvent->nsuri,
+                                                               cbopaque);
             return;
         }
 
@@ -230,4 +256,14 @@ virNetworkEventLifecycleNew(const char *name,
     event->detail = detail;
 
     return (virObjectEvent *)event;
+}
+
+
+static void
+virNetworkEventMetadataChangeDispose(void *obj)
+{
+    virNetworkEventMetadataChange *event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    g_free(event->nsuri);
 }
