@@ -5143,6 +5143,12 @@ networkSetMetadata(virNetworkPtr net,
                                    driver->xmlopt, cfg->stateDir,
                                    cfg->networkConfigDir, flags);
 
+    if (ret == 0) {
+        virObjectEvent *event = NULL;
+        event = virNetworkEventMetadataChangeNewFromObj(obj, type, uri);
+        virObjectEventStateQueue(driver->networkEventState, event);
+    }
+
  cleanup:
     virNetworkObjEndAPI(&obj);
     return ret;
