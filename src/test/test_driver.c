@@ -9976,6 +9976,7 @@ testNetworkSetMetadata(virNetworkPtr net,
                        const char *uri,
                        unsigned int flags)
 {
+    testDriver *privconn = net->conn->privateData;
     virNetworkObj *privnet;
     int ret;
 
@@ -9988,6 +9989,12 @@ testNetworkSetMetadata(virNetworkPtr net,
     ret = virNetworkObjSetMetadata(privnet, type, metadata,
                                    key, uri, NULL,
                                    NULL, NULL, flags);
+
+    if (ret == 0) {
+        virObjectEvent *ev = NULL;
+        ev = virNetworkEventMetadataChangeNewFromObj(privnet, type, uri);
+        virObjectEventStateQueue(privconn->eventState, ev);
+    }
 
     virNetworkObjEndAPI(&privnet);
     return ret;
