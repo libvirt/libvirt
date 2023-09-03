@@ -861,6 +861,8 @@ virPortGroupFindByName;
 
 # conf/network_event.h
 virNetworkEventLifecycleNew;
+virNetworkEventMetadataChangeNewFromNet;
+virNetworkEventMetadataChangeNewFromObj;
 virNetworkEventStateRegisterID;
 
 

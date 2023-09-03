@@ -267,3 +267,50 @@ virNetworkEventMetadataChangeDispose(void *obj)
 
     g_free(event->nsuri);
 }
+
+
+static virObjectEvent *
+virNetworkEventMetadataChangeNew(const char *name,
+                                 unsigned char *uuid,
+                                 int type,
+                                 const char *nsuri)
+{
+    virNetworkEventMetadataChange *event;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (virNetworkEventsInitialize() < 0)
+        return NULL;
+
+    virUUIDFormat(uuid, uuidstr);
+    if (!(event = virObjectEventNew(virNetworkEventMetadataChangeClass,
+                                    virNetworkEventDispatchDefaultFunc,
+                                    VIR_NETWORK_EVENT_ID_METADATA_CHANGE,
+                                    0, name, uuid, uuidstr)))
+        return NULL;
+
+    event->type = type;
+    event->nsuri = g_strdup(nsuri);
+
+    return (virObjectEvent *)event;
+}
+
+
+virObjectEvent *
+virNetworkEventMetadataChangeNewFromObj(virNetworkObj *obj,
+                                        int type,
+                                        const char *nsuri)
+{
+    virNetworkDef *def = virNetworkObjGetDef(obj);
+    return virNetworkEventMetadataChangeNew(def->name, def->uuid,
+                                            type, nsuri);
+}
+
+
+virObjectEvent *
+virNetworkEventMetadataChangeNewFromNet(virNetworkPtr net,
+                                        int type,
+                                        const char *nsuri)
+{
+    return virNetworkEventMetadataChangeNew(net->name, net->uuid,
+                                            type, nsuri);
+}

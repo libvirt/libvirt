@@ -23,6 +23,7 @@
 
 #include "internal.h"
 #include "object_event.h"
+#include "virnetworkobj.h"
 
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,
@@ -53,3 +54,13 @@ virNetworkEventLifecycleNew(const char *name,
                             const unsigned char *uuid,
                             int type,
                             int detail);
+
+virObjectEvent *
+virNetworkEventMetadataChangeNewFromObj(virNetworkObj *obj,
+                                        int type,
+                                        const char *nsuri);
+
+virObjectEvent *
+virNetworkEventMetadataChangeNewFromNet(virNetworkPtr net,
+                                        int type,
+                                        const char *nsuri);
