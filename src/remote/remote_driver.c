@@ -379,6 +379,11 @@ remoteNetworkBuildEventLifecycle(virNetClientProgram *prog G_GNUC_UNUSED,
                                  void *evdata, void *opaque);
 
 static void
+remoteNetworkBuildEventCallbackMetadataChange(virNetClientProgram *prog,
+                                              virNetClient *client,
+                                              void *evdata, void *opaque);
+
+static void
 remoteStoragePoolBuildEventLifecycle(virNetClientProgram *prog G_GNUC_UNUSED,
                                      virNetClient *client G_GNUC_UNUSED,
                                      void *evdata, void *opaque);
@@ -505,6 +510,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteNetworkBuildEventLifecycle,
       sizeof(remote_network_event_lifecycle_msg),
       (xdrproc_t)xdr_remote_network_event_lifecycle_msg },
+    { REMOTE_PROC_NETWORK_EVENT_CALLBACK_METADATA_CHANGE,
+      remoteNetworkBuildEventCallbackMetadataChange,
+      sizeof(remote_network_event_callback_metadata_change_msg),
+      (xdrproc_t)xdr_remote_network_event_callback_metadata_change_msg },
     { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_LIFECYCLE,
       remoteDomainBuildEventCallbackLifecycle,
       sizeof(remote_domain_event_callback_lifecycle_msg),
@@ -4938,6 +4947,28 @@ remoteNetworkBuildEventLifecycle(virNetClientProgram *prog G_GNUC_UNUSED,
 
     virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
+
+static void
+remoteNetworkBuildEventCallbackMetadataChange(virNetClientProgram *prog G_GNUC_UNUSED,
+                                              virNetClient *client G_GNUC_UNUSED,
+                                              void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_network_event_callback_metadata_change_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virNetworkPtr net;
+    virObjectEvent *event = NULL;
+
+    if (!(net = get_nonnull_network(conn, msg->net)))
+        return;
+
+    event = virNetworkEventMetadataChangeNewFromNet(net, msg->type, msg->nsuri ? *msg->nsuri : NULL);
+
+    virObjectUnref(net);
+
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
+}
+
 
 static void
 remoteStoragePoolBuildEventLifecycle(virNetClientProgram *prog G_GNUC_UNUSED,
