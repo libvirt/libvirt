@@ -1797,7 +1797,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cpu-host-model-fallback");
     DO_TEST_CAPS_LATEST("cpu-host-model-nofallback");
 
-    DO_TEST_NOCAPS("cpu-host-model-vendor");
+    /* this test case uses 'cpu="host-model"', run it with Haswell host cpu to prevent test case churn */
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-host-model-vendor", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
@@ -2471,11 +2472,13 @@ mymain(void)
     DO_TEST("cpu-check-full", QEMU_CAPS_KVM);
     DO_TEST("cpu-check-default-none", QEMU_CAPS_KVM);
     DO_TEST_NOCAPS("cpu-check-default-none2");
-    DO_TEST("cpu-check-default-partial", QEMU_CAPS_KVM);
+    /* this test case uses 'cpu="host-model"', run it with Haswell host cpu to prevent test case churn */
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-check-default-partial", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST("cpu-check-default-partial2", QEMU_CAPS_KVM);
 
     DO_TEST("cpu-cache-disable", QEMU_CAPS_KVM);
-    DO_TEST("cpu-cache-disable3", QEMU_CAPS_KVM);
+    /* this test case uses 'cpu="host-model"', run it with Haswell host cpu to prevent test case churn */
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-cache-disable3", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST("cpu-cache-passthrough", QEMU_CAPS_KVM);
     DO_TEST("cpu-cache-emulate-l3", QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("cpu-cache-emulate-l2", QEMU_CAPS_KVM);
@@ -2576,7 +2579,8 @@ mymain(void)
 
     DO_TEST("cpu-phys-bits-passthrough", QEMU_CAPS_KVM);
     DO_TEST("cpu-phys-bits-emulate", QEMU_CAPS_KVM);
-    DO_TEST("cpu-phys-bits-emulate2", QEMU_CAPS_KVM);
+    /* this test case uses 'cpu="host"', run it with Haswell host cpu to prevent test case churn */
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-phys-bits-emulate2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_PARSE_ERROR("cpu-phys-bits-passthrough2", QEMU_CAPS_KVM);
     DO_TEST_CAPS_LATEST("cpu-phys-bits-limit");
     DO_TEST_CAPS_LATEST("cpu-phys-bits-emulate-bare");
