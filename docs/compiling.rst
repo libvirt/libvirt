@@ -112,6 +112,11 @@ Please ensure that you have the appropriate minimal ``meson`` version installed
 in your build environment. The minimal version for a specific package can be
 checked in the top level ``meson.build`` file in the ``meson_version`` field.
 
+**DO NOT** use the ``CFLAGS`` environment variable to set optimizations
+(e.g. ``CFLAGS=-O0``), but rather use Meson's ``--optimization=0`` option.
+Certain internal build options are based on the configured optimization value
+and Meson does not interpret ``CFLAGS``.
+
 
 Compiling the sources
 ---------------------
