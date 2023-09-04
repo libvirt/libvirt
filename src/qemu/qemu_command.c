@@ -6560,12 +6560,10 @@ qemuBuildCpuCommandLine(virCommand *cmd,
 
         if (hostOff &&
             (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH ||
-             def->cpu->mode == VIR_CPU_MODE_MAXIMUM) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_CACHE))
+             def->cpu->mode == VIR_CPU_MODE_MAXIMUM))
             virBufferAddLit(&buf, ",host-cache-info=off");
 
-        if (l3Off &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_CACHE))
+        if (l3Off)
             virBufferAddLit(&buf, ",l3-cache=off");
     }
 
