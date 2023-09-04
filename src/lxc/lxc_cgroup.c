@@ -130,10 +130,10 @@ static int virLXCCgroupGetMemStat(virCgroup *cgroup,
 {
     return virCgroupGetMemoryStat(cgroup,
                                   &meminfo->cached,
-                                  &meminfo->inactive_anon,
                                   &meminfo->active_anon,
-                                  &meminfo->inactive_file,
+                                  &meminfo->inactive_anon,
                                   &meminfo->active_file,
+                                  &meminfo->inactive_file,
                                   &meminfo->unevictable);
 }
 
