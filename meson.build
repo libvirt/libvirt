@@ -255,7 +255,7 @@ if cc.get_id() == 'clang' and get_option('optimization') == '0'
 endif
 
 # sanitizer instrumentation may enlarge stack frames
-if get_option('b_sanitize') == 'none'
+if get_option('b_sanitize') != 'none'
   stack_frame_size = 32768
 endif
 
