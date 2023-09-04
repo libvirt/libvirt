@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-08-25 19:26+0000\n"
-"PO-Revision-Date: 2023-08-30 12:21+0000\n"
+"PO-Revision-Date: 2023-09-04 04:21+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1919,7 +1919,7 @@ msgid "Allows setting or modifying the description or title of a domain."
 msgstr "도메인의 영구 설정을 변경 할 수 없음."
 
 msgid "Allows setting or modifying the description or title of a network."
-msgstr ""
+msgstr "네트워크의 설명이나 제목을 설정하거나 수정 할 수 있도록 허용합니다."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "오류가 발생하였으나 원인은 알지 못합니다"
@@ -7089,13 +7089,13 @@ msgstr "XML에 대한 암호를 이스케이프하지 못했습니다"
 
 #, c-format
 msgid "Failed to execute symbol '%1$s' in module '%2$s'"
-msgstr "모듈 '%1$s'에서 기호 '%2$s'을(를) 실행하지 못했습니다"
+msgstr "모듈 '%1$s'에서 기호 '%2$s'를 실행하지 못했습니다"
 
 msgid "Failed to extract interface information"
-msgstr "인터페이스 정보를 추출하는데 실패"
+msgstr "연결장치 정보를 추출하는데 실패함"
 
 msgid "Failed to extract interface information or no interfaces found"
-msgstr "인터페이스 정보를 추출하지 못하거나 인터페이스를 찾을 수 없습니다"
+msgstr "연결장치 정보를 추출하지 못하거나 연결장치를 찾을 수 없습니다"
 
 #, c-format
 msgid "Failed to find QOM Object path for device '%1$s'"
@@ -7140,7 +7140,7 @@ msgstr "gid '%1$u'의 그룹 기록을 찾는데 실패했습니다"
 
 #, c-format
 msgid "Failed to find module '%1$s'"
-msgstr "모듈 '%1$s'을(를) 찾지 못했습니다"
+msgstr "모듈 '%1$s'를 찾지 못했습니다"
 
 #, c-format
 msgid "Failed to find parent device for %1$s"
@@ -7186,7 +7186,7 @@ msgstr "분리된 인터페이스 %1$s에 대한 새 xml 문서의 형식을 지
 
 #, c-format
 msgid "Failed to fully read directory %1$s"
-msgstr "디렉토리 %1$s을(를) 완전히 읽지 못했습니다"
+msgstr "디렉토리 %1$s를 완전히 읽지 못했습니다"
 
 msgid "Failed to generate UUID"
 msgstr "UUID 생성 실패"
@@ -7287,7 +7287,7 @@ msgid "Failed to get network autostart state"
 msgstr "네트워크 자동 시작 상태를 가져오지 못했습니다"
 
 msgid "Failed to get network description xml"
-msgstr ""
+msgstr "네트워크 설명 xml을 가져오는데 실패함"
 
 msgid "Failed to get network persistence info"
 msgstr "네트워크 지속성 정보를 가져오지 못했습니다"
@@ -7484,11 +7484,11 @@ msgstr "볼륨 목록화에 실패"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s"
-msgstr ""
+msgstr "pci 드라이버 모듈 %1$s을 적재하는데 실패함"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
-msgstr ""
+msgstr "PCI 드라이버 모듈 %1$s를 적재하는데 실패함: 관리상 금지"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7757,7 +7757,7 @@ msgid "Failed to parse mode '%1$s'"
 msgstr "모드 '%1$s'의 구문분석에 실패했습니다"
 
 msgid "Failed to parse network description xml"
-msgstr ""
+msgstr "네트워크 설명 xml을 구문 분석하는데 실패함"
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8259,10 +8259,10 @@ msgid "Failed to set new domain title"
 msgstr "새 도메인 제목을 설정하지 못했습니다"
 
 msgid "Failed to set new network description"
-msgstr ""
+msgstr "신규 네트워크 설명을 설정하는데 실패함"
 
 msgid "Failed to set new network title"
-msgstr ""
+msgstr "신규 네트워크 이름을 설정하는데 실패함"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "비-블러킹 파일 디스크립터 플래그를 설정하는 데 실패했습니다"
@@ -8730,6 +8730,8 @@ msgid ""
 "Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
 "'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
+"플래그 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
+"'VIR_NETWORK_UPDATE_AFFECT_CONFIG'는 상호 배타적입니다"
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -11887,10 +11889,10 @@ msgstr ""
 "네트워크 설정 파일 이름 '%1$s'은 네트워크 이름 '%2$s'에 부합하지 않습니다ㅓ"
 
 msgid "Network description not changed\n"
-msgstr ""
+msgstr "네트워크 설명이 변경되지 않았습니다\n"
 
 msgid "Network description updated successfully"
-msgstr ""
+msgstr "네트워크 설명이 성공적으로 최신화 되었습니다"
 
 #, c-format
 msgid "Network device %1$s already exists"
@@ -11978,13 +11980,13 @@ msgid "Network port with UUID %1$s does not exist"
 msgstr "UUID %1$s와 함께 네트워크 포트가 존재하지 않습니다"
 
 msgid "Network title can't contain newlines"
-msgstr ""
+msgstr "네트워크 이름은 줄바꿈 문자(개행 문자)을 포함 할 수 없습니다"
 
 msgid "Network title not changed\n"
-msgstr ""
+msgstr "네트워크 이름이 변경되지 않았습니다\n"
 
 msgid "Network title updated successfully"
-msgstr ""
+msgstr "네트워크 이름이 성공적으로 최신화 되었습니다"
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12106,7 +12108,7 @@ msgstr "도메인 설명이 없음: %1$s"
 
 #, c-format
 msgid "No description for network: %1$s"
-msgstr ""
+msgstr "네트워크를 위한 설명이 없습니다: %1$s"
 
 msgid "No device model command-line argument specified"
 msgstr "장치 모델 명령줄 인수가 지정되지 않았습니다"
@@ -12324,7 +12326,7 @@ msgstr "도메인 제목 없음: %1$s"
 
 #, c-format
 msgid "No title for network: %1$s"
-msgstr ""
+msgstr "네트워크를 위한 이름이 없습니다: %1$s"
 
 msgid "No total stats available"
 msgstr "사용 가능한 총 통계가 없습니다"
@@ -14437,7 +14439,7 @@ msgid "Shows or modifies the XML metadata of a domain."
 msgstr "도메인의 XML 메타데이터를 표시하거나 수정합니다."
 
 msgid "Shows or modifies the XML metadata of a network."
-msgstr ""
+msgstr "네트워크의 XML 메타자료를 표시하거나 수정합니다."
 
 msgid "Shutdown"
 msgstr "종료"
@@ -15254,11 +15256,11 @@ msgstr "대상 디스크 장치 %1$s가 소스%2$s와 일치하지 않음"
 
 #, c-format
 msgid "Target disk discard_granularity %1$u does not match source %2$u"
-msgstr ""
+msgstr "대상 디스크 discard_granularity %1$u가 원천 %2$u와 일치하지 않습니다"
 
 #, c-format
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "대상 디스크 논리_블록_크기 %1$u가 원천 %2$u와 일치하지 않습니다"
 
 #, c-format
 msgid "Target disk model %1$s does not match source %2$s"
@@ -15266,7 +15268,7 @@ msgstr "대상 디스크 모델 %1$s가 소스 %2$s와 일치하지 않습니다
 
 #, c-format
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "대상 디스크 물리_블록_크기 %1$u가 원천 %2$u와 일치하지 않습니다"
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16645,7 +16647,7 @@ msgid "Unable to allocate lockspace %1$s"
 msgstr "잠금공간 %1$s를 할당 할 수 없습니다"
 
 msgid "Unable to allocate stack"
-msgstr ""
+msgstr "스택을 할당 할 수 없습니다"
 
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
@@ -17601,11 +17603,11 @@ msgstr "루프 장치를 자동 지우기로 표시할 수 없음"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
-msgstr ""
+msgstr "FD를 일괄 종료 할 수 없음 (처음=%1$zd, 마지막=%2$d"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
-msgstr ""
+msgstr "FD를 일괄 종료 할 수 없음 (처음=%1$zd, 마지막=%2$zd)"
 
 msgid "Unable to modify live devices"
 msgstr "라이브 장치를 수정 할 수 없습니다"
@@ -21784,7 +21786,7 @@ msgstr "'%1$s'에서 '%2$s'로 메모리 접근을 수정 할 수 없습니다"
 
 #, c-format
 msgid "cannot modify memory address from '0x%1$llx' to '0x%2$llx'"
-msgstr ""
+msgstr "'0x%1$llx'에서 '0x%2$llx'로 메모리 주소를 수정 할 수 없습니다"
 
 #, c-format
 msgid "cannot modify memory block size from '%1$llu' to '%2$llu'"
