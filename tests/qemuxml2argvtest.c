@@ -1107,7 +1107,8 @@ mymain(void)
     DO_TEST_NOCAPS("clock-localtime-basis-localtime");
     DO_TEST_NOCAPS("clock-variable");
     DO_TEST_NOCAPS("clock-france");
-    DO_TEST_NOCAPS("clock-hpet-off");
+    DO_TEST_CAPS_VER("clock-hpet-off", "7.2.0");
+    DO_TEST_CAPS_LATEST("clock-hpet-off");
     DO_TEST("clock-catchup", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST_NOCAPS("cpu-kvmclock");
     DO_TEST_NOCAPS("cpu-host-kvmclock");
