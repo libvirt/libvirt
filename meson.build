@@ -256,7 +256,7 @@ endif
 
 # sanitizer instrumentation may enlarge stack frames
 if get_option('b_sanitize') == 'none'
-  stack_frame_size == 32768
+  stack_frame_size = 32768
 endif
 
 # array_bounds=2 check triggers false positive on some GCC
