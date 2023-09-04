@@ -417,7 +417,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 250 */
               "query-named-block-nodes", /* X_QEMU_CAPS_QUERY_NAMED_BLOCK_NODES */
-              "cpu-cache", /* QEMU_CAPS_CPU_CACHE */
+              "cpu-cache", /* X_QEMU_CAPS_CPU_CACHE */
               "qemu-xhci", /* QEMU_CAPS_DEVICE_QEMU_XHCI */
               "kernel-irqchip", /* X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP */
               "kernel-irqchip.split", /* X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT */
@@ -5457,11 +5457,6 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
 {
-    if (ARCH_IS_X86(qemuCaps->arch) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
-    }
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES);
 

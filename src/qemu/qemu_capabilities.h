@@ -396,7 +396,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 250 */
     X_QEMU_CAPS_QUERY_NAMED_BLOCK_NODES, /* qmp query-named-block-nodes */
-    QEMU_CAPS_CPU_CACHE, /* -cpu supports host-cache-info and l3-cache properties */
+    X_QEMU_CAPS_CPU_CACHE, /* -cpu supports host-cache-info and l3-cache properties */
     QEMU_CAPS_DEVICE_QEMU_XHCI, /* -device qemu-xhci */
     X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP, /* -machine kernel_irqchip */
     X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT, /* -machine kernel_irqchip=split */

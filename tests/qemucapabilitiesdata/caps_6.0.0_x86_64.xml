@@ -85,7 +85,6 @@
   <flag name='nvdimm'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
-  <flag name='cpu-cache'/>
   <flag name='qemu-xhci'/>
   <flag name='intel-iommu.intremap'/>
   <flag name='intel-iommu.caching-mode'/>
