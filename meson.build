@@ -247,8 +247,17 @@ alloc_max = run_command(
   check: true,
 )
 
+stack_frame_size = 2048
+
+# clang without optimization enlarges stack frames in certain corner cases
+if cc.get_id() == 'clang' and get_option('optimization') == '0'
+    stack_frame_size = 4096
+endif
+
 # sanitizer instrumentation may enlarge stack frames
-stack_frame_size = get_option('b_sanitize') == 'none' ? 2048 : 32768
+if get_option('b_sanitize') == 'none'
+  stack_frame_size == 32768
+endif
 
 # array_bounds=2 check triggers false positive on some GCC
 # versions when using sanitizers. Seen on Fedora 34 with
