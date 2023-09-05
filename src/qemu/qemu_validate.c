@@ -2341,12 +2341,6 @@ qemuValidateDomainMdevDefVFIOPCI(const virDomainHostdevDef *hostdev,
     if (dev->display == VIR_TRISTATE_SWITCH_ABSENT)
         return 0;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_DISPLAY)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("display property of device vfio-pci is not supported by this version of QEMU"));
-        return -1;
-    }
-
     if (dev->model != VIR_MDEV_MODEL_TYPE_VFIO_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("<hostdev> attribute 'display' is only supported with model='vfio-pci'"));

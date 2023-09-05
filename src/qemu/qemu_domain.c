@@ -6034,13 +6034,11 @@ qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDef *host
 
 
 static int
-qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDev *mdevsrc,
-                                  virQEMUCaps *qemuCaps)
+qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDev *mdevsrc)
 {
     /* QEMU 2.12 added support for vfio-pci display type, we default to
      * 'display=off' to stay safe from future changes */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_DISPLAY) &&
-        mdevsrc->model == VIR_MDEV_MODEL_TYPE_VFIO_PCI &&
+    if (mdevsrc->model == VIR_MDEV_MODEL_TYPE_VFIO_PCI &&
         mdevsrc->display == VIR_TRISTATE_SWITCH_ABSENT)
         mdevsrc->display = VIR_TRISTATE_SWITCH_OFF;
 
@@ -6050,7 +6048,6 @@ qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDev *mdevsrc,
 
 static int
 qemuDomainHostdevDefPostParse(virDomainHostdevDef *hostdev,
-                              virQEMUCaps *qemuCaps,
                               unsigned int parseFlags)
 {
     virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
@@ -6063,7 +6060,7 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDef *hostdev,
 
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
-        qemuDomainHostdevDefMdevPostParse(&subsys->u.mdev, qemuCaps) < 0)
+        qemuDomainHostdevDefMdevPostParse(&subsys->u.mdev) < 0)
         return -1;
 
     return 0;
@@ -6213,7 +6210,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        ret = qemuDomainHostdevDefPostParse(dev->data.hostdev, qemuCaps, parseFlags);
+        ret = qemuDomainHostdevDefPostParse(dev->data.hostdev, parseFlags);
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:
