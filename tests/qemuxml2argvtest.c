@@ -868,6 +868,9 @@ mymain(void)
                  QEMU_CAPS_SMP_DIES, \
                  QEMU_CAPS_USB_HOST_HOSTDEVICE, \
                  QEMU_CAPS_DEVICE_QEMU_XHCI, \
+                 QEMU_CAPS_QXL_VRAM64,\
+                 QEMU_CAPS_QXL_VGAMEM, \
+                 QEMU_CAPS_VGA_VGAMEM, \
                  __VA_ARGS__, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
@@ -884,6 +887,9 @@ mymain(void)
                  QEMU_CAPS_SMP_DIES, \
                  QEMU_CAPS_USB_HOST_HOSTDEVICE, \
                  QEMU_CAPS_DEVICE_QEMU_XHCI, \
+                 QEMU_CAPS_QXL_VRAM64,\
+                 QEMU_CAPS_QXL_VGAMEM, \
+                 QEMU_CAPS_VGA_VGAMEM, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
 
