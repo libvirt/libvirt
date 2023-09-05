@@ -864,6 +864,8 @@ mymain(void)
                  QEMU_CAPS_SECCOMP_SANDBOX, \
                  QEMU_CAPS_PIIX3_USB_UHCI, \
                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, \
+                 QEMU_CAPS_CPU_MIGRATABLE, \
+                 QEMU_CAPS_SMP_DIES, \
                  __VA_ARGS__, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
@@ -876,6 +878,8 @@ mymain(void)
                  QEMU_CAPS_SECCOMP_SANDBOX, \
                  QEMU_CAPS_PIIX3_USB_UHCI, \
                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, \
+                 QEMU_CAPS_CPU_MIGRATABLE, \
+                 QEMU_CAPS_SMP_DIES, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
 
