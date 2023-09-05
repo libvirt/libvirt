@@ -937,7 +937,7 @@ virCHMonitorGetIOThreads(virCHMonitor *mon,
                          virDomainIOThreadInfo ***iothreads)
 {
     size_t nthreads = 0;
-    size_t niothreads = 0;
+    int niothreads = 0;
     int thd_index;
     virDomainIOThreadInfo **iothreadinfolist = NULL;
     virDomainIOThreadInfo *iothreadinfo = NULL;
@@ -969,7 +969,7 @@ virCHMonitorGetIOThreads(virCHMonitor *mon,
         }
     }
 
-    VIR_DEBUG("niothreads = %ld", niothreads);
+    VIR_DEBUG("niothreads = %d", niothreads);
     *iothreads = g_steal_pointer(&iothreadinfolist);
     return niothreads;
 
