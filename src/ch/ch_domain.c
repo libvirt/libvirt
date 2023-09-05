@@ -225,7 +225,7 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 int
 virCHDomainRefreshThreadInfo(virDomainObj *vm)
 {
-    size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
     virCHMonitorThreadInfo *info = NULL;
     size_t nthreads;
     size_t ncpus = 0;
@@ -252,7 +252,7 @@ virCHDomainRefreshThreadInfo(virDomainObj *vm)
 
     /* TODO: Remove the warning when hotplug is implemented.*/
     if (ncpus != maxvcpus)
-        VIR_WARN("Mismatch in the number of cpus, expected: %ld, actual: %ld",
+        VIR_WARN("Mismatch in the number of cpus, expected: %u, actual: %zu",
                  maxvcpus, ncpus);
 
     return 0;
