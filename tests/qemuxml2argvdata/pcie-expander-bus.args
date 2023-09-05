@@ -64,6 +64,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/.config \
 -device '{"driver":"xio3130-downstream","port":29,"chassis":33,"id":"pci.33","bus":"pci.3","addr":"0x1d"}' \
 -device '{"driver":"xio3130-downstream","port":30,"chassis":34,"id":"pci.34","bus":"pci.3","addr":"0x1e"}' \
 -device '{"driver":"xio3130-downstream","port":31,"chassis":35,"id":"pci.35","bus":"pci.3","addr":"0x1f"}' \
+-device '{"driver":"pcie-root-port","port":8,"chassis":36,"id":"pci.36","bus":"pcie.0","addr":"0x1"}' \
+-device '{"driver":"qemu-xhci","id":"usb","bus":"pci.36","addr":"0x0"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","drive":"libvirt-1-format","id":"sata0-0-0","bootindex":1}' \

@@ -36,6 +36,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -device '{"driver":"xio3130-downstream","port":4,"chassis":8,"id":"pci.8","bus":"pci.2","addr":"0x4"}' \
 -device '{"driver":"xio3130-downstream","port":5,"chassis":9,"id":"pci.9","bus":"pci.2","addr":"0x5"}' \
 -device '{"driver":"xio3130-downstream","port":6,"chassis":10,"id":"pci.10","bus":"pci.2","addr":"0x6"}' \
+-device '{"driver":"qemu-xhci","id":"usb","bus":"pci.4","addr":"0x0"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","drive":"libvirt-1-format","id":"sata0-0-0","bootindex":1}' \

@@ -866,6 +866,8 @@ mymain(void)
                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, \
                  QEMU_CAPS_CPU_MIGRATABLE, \
                  QEMU_CAPS_SMP_DIES, \
+                 QEMU_CAPS_USB_HOST_HOSTDEVICE, \
+                 QEMU_CAPS_DEVICE_QEMU_XHCI, \
                  __VA_ARGS__, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
@@ -880,6 +882,8 @@ mymain(void)
                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, \
                  QEMU_CAPS_CPU_MIGRATABLE, \
                  QEMU_CAPS_SMP_DIES, \
+                 QEMU_CAPS_USB_HOST_HOSTDEVICE, \
+                 QEMU_CAPS_DEVICE_QEMU_XHCI, \
                  QEMU_CAPS_LAST, \
                  ARG_END)
 
