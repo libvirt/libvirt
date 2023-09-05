@@ -79,7 +79,6 @@
   <flag name='hda-output'/>
   <flag name='vhost-vsock'/>
   <flag name='egl-headless'/>
-  <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='egl-headless.rendernode'/>

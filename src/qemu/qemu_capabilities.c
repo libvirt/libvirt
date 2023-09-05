@@ -503,7 +503,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "machine.pseries.cap-htm", /* X_QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
               "usb-storage.werror", /* X_QEMU_CAPS_USB_STORAGE_WERROR */
               "egl-headless", /* QEMU_CAPS_EGL_HEADLESS */
-              "vfio-pci.display", /* QEMU_CAPS_VFIO_PCI_DISPLAY */
+              "vfio-pci.display", /* X_QEMU_CAPS_VFIO_PCI_DISPLAY */
               "blockdev", /* X_QEMU_CAPS_BLOCKDEV */
 
               /* 315 */
@@ -1445,7 +1445,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
-    { "display", QEMU_CAPS_VFIO_PCI_DISPLAY, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {

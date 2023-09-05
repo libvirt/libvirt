@@ -46,7 +46,6 @@
   <flag name='screendump_device'/>
   <flag name='vhost-vsock'/>
   <flag name='egl-headless'/>
-  <flag name='vfio-pci.display'/>
   <flag name='vfio-ap'/>
   <flag name='zpci'/>
   <flag name='memory-backend-memfd'/>
