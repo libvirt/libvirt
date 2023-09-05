@@ -299,7 +299,8 @@ mymain(void)
 {
     int ret = 0;
     int rc = testUserXattrEnabled();
-    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
+    g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
 
     if (rc < 0) {
         VIR_TEST_VERBOSE("failed to determine xattr support");
@@ -322,12 +323,10 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    qemuCaps = virQEMUCapsNew();
+    qemuTestSetHostArch(&driver, VIR_ARCH_X86_64);
 
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC);
-
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps) < 0)
+    if (testQemuInsertRealCaps(driver.qemuCapsCache, "x86_64", "latest", "",
+                               capslatest, capscache, NULL, NULL) < 0)
         return EXIT_FAILURE;
 
 #define DO_TEST_LABELING(name) \
