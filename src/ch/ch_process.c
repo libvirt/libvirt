@@ -332,7 +332,7 @@ virCHProcessSetupIOThreads(virDomainObj *vm)
         return -1;
 
     for (i = 0; i < niothreads; i++) {
-        VIR_DEBUG("IOThread index = %ld , tid = %d", i, iothreads[i]->iothread_id);
+        VIR_DEBUG("IOThread index = %zu , tid = %d", i, iothreads[i]->iothread_id);
         if (virCHProcessSetupIOThread(vm, iothreads[i]) < 0)
             return -1;
     }
