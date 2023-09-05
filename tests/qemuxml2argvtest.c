@@ -1742,10 +1742,15 @@ mymain(void)
     DO_TEST("cpu-exact1", QEMU_CAPS_KVM);
     DO_TEST("cpu-exact2", QEMU_CAPS_KVM);
     DO_TEST("cpu-exact2-nofallback", QEMU_CAPS_KVM);
-    DO_TEST("cpu-fallback", QEMU_CAPS_KVM);
-    DO_TEST_FAILURE("cpu-nofallback", QEMU_CAPS_KVM);
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-strict1", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST("cpu-no-removed-features", QEMU_CAPS_KVM);
+
+    /* EPYC-Milan became available in qemu-6.0, use it for the fallback tests */
+    DO_TEST_CAPS_VER_FAILURE("cpu-nofallback", "5.2.0");
+    DO_TEST_CAPS_VER("cpu-nofallback", "8.0.0");
+    DO_TEST_CAPS_VER("cpu-fallback", "5.2.0");
+    DO_TEST_CAPS_VER("cpu-fallback", "8.0.0");
+
     DO_TEST_NOCAPS("cpu-numa1");
     DO_TEST_NOCAPS("cpu-numa2");
     DO_TEST_NOCAPS("cpu-numa-no-memory-element");

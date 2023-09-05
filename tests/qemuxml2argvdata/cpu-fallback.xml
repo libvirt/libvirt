@@ -9,11 +9,16 @@
     <boot dev='network'/>
   </os>
   <cpu match='exact'>
-    <model>Westmere</model>
-    <feature policy='disable' name='sse4.1'/>
-    <feature policy='disable' name='sse4.2'/>
-    <feature policy='disable' name='popcnt'/>
-    <feature policy='disable' name='aes'/>
+    <model>EPYC-Milan</model>
+    <feature policy='disable' name='amd-ssbd'/>
+    <feature policy='disable' name='erms'/>
+    <feature policy='disable' name='fsrm'/>
+    <feature policy='disable' name='ibrs'/>
+    <feature policy='disable' name='invpcid'/>
+    <feature policy='disable' name='pcid'/>
+    <feature policy='disable' name='pku'/>
+    <feature policy='disable' name='svme-addr-chk'/>
+    <feature policy='disable' name='xsaves'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
