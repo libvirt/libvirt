@@ -249,6 +249,7 @@ Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
 %endif
 %if %{with_qemu}
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
+Requires: libvirt-client-qemu = %{version}-%{release}
 %endif
 # We had UML driver, but we've removed it.
 Obsoletes: libvirt-daemon-driver-uml <= 5.0.0
