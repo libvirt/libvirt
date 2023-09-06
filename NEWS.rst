@@ -17,6 +17,14 @@ v9.9.0 (unreleased)
 
 * **New features**
 
+  * QEMU: implement reverting external snapshots
+
+    Reverting external snapshots is now possible using the existing API
+    ``virDomainSnapshotRevert()``. Management application can check host
+    capabilities for ``<externalSnapshot/>`` element within the list of
+    guest features to see if the current libvirt supports both deleting
+    and reverting external snapshots.
+
 * **Improvements**
 
 * **Bug fixes**
