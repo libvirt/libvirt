@@ -115,6 +115,7 @@
       <model usable='no' vendor='AMD'>EPYC-Rome</model>
       <model usable='no' vendor='AMD'>EPYC-Milan</model>
       <model usable='no' vendor='AMD'>EPYC-IBPB</model>
+      <model usable='no' vendor='AMD'>EPYC-Genoa</model>
       <model usable='no' vendor='AMD'>EPYC</model>
       <model usable='no' vendor='Hygon'>Dhyana</model>
       <model usable='no' vendor='Intel'>Cooperlake</model>

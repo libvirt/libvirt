@@ -70,6 +70,7 @@
     <include filename='x86_EPYC-IBPB.xml'/>
     <include filename='x86_EPYC-Rome.xml'/>
     <include filename='x86_EPYC-Milan.xml'/>
+    <include filename='x86_EPYC-Genoa.xml'/>
 
     <!-- Hygon CPU models -->
     <include filename='x86_Dhyana.xml'/>
