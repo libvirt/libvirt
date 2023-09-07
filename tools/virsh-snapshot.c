@@ -1310,9 +1310,11 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
             }
         }
     }
-    if (!(orig_flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL))
+    if (!(orig_flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL) &&
+        snaplist->snaps && snaplist->nsnaps) {
         qsort(snaplist->snaps, snaplist->nsnaps, sizeof(*snaplist->snaps),
               virshSnapSorter);
+    }
     snaplist->nsnaps -= deleted;
 
     ret = g_steal_pointer(&snaplist);
