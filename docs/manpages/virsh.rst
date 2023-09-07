@@ -4614,12 +4614,13 @@ undefined; if not all of the requested volumes could be deleted, the
 error message indicates what still remains behind. If a volume path is not
 found in the domain definition, it's treated as if the volume was successfully
 deleted. Only volumes managed by libvirt in storage pools can be removed this
-way.
+way. Note that this also removes only the top level image of a backing chain,
+any backing stores of the image are kept as they may be shared.
 (See ``domblklist`` for list of target names associated to a domain).
 Example: --storage vda,/path/to/storage.img
 
 The *--remove-all-storage* flag specifies that all of the domain's storage
-volumes should be deleted.
+volumes should be deleted as if they were specified via *--storage*.
 
 The *--delete-storage-volume-snapshots* (previously *--delete-snapshots*)
 flag specifies that any snapshots associated with
