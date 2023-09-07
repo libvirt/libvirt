@@ -257,10 +257,6 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     if (!(cmd = qemuVirtioFSBuildCommandLine(cfg, fs, &fd)))
         goto error;
 
-    /* so far only running as root is supported */
-    virCommandSetUID(cmd, 0);
-    virCommandSetGID(cmd, 0);
-
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetOutputFD(cmd, &logfd);
     virCommandSetErrorFD(cmd, &logfd);
