@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-08-25 19:26+0000\n"
-"PO-Revision-Date: 2023-09-04 04:21+0000\n"
+"PO-Revision-Date: 2023-09-08 03:21+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -23750,7 +23750,7 @@ msgstr "내부 스냅샷이 상위로 있는 외부 스냅샷 삭제하기는 �
 msgid ""
 "deletion of active external snapshot that is not a leaf snapshot is not "
 "supported"
-msgstr ""
+msgstr "리프 스냅샷이 아닌 활성화된 외부 스냅샷 삭제는 지원되지 않습니다"
 
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr "외부와 내부 하위 디스크 스냅샷 삭제가 지원되지 않음"
@@ -23761,7 +23761,7 @@ msgstr "외부 하위 디스크 스냅샷의 삭제는 지원되지 않습니다
 msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
-msgstr ""
+msgstr "다중 하위 스냅샷이 있는 외부 디스크 스냅샷의 삭제는 지원되지 않습니다"
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "하위에 있는 외부 디스크 스냅샷의 삭제는 지원되지 않습니다"
@@ -23769,7 +23769,7 @@ msgstr "하위에 있는 외부 디스크 스냅샷의 삭제는 지원되지 �
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
 "supported"
-msgstr ""
+msgstr "활성화된 체인에 있지 않은 비-리프 외부 스냅샷 삭제는 지원되지 않습니다"
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -24609,7 +24609,7 @@ msgid "driver serial '%1$s' contains unsafe characters"
 msgstr "드라이브 시리얼 '%1$s'에 안전하지 않은 문자가 포함되어 있습니다"
 
 msgid "driver type not set"
-msgstr ""
+msgstr "드라이버 유형이 설정되지 않았습니다"
 
 msgid "dropped"
 msgstr "드랍됨"
@@ -28653,7 +28653,7 @@ msgid "ivgen element found, but cipher is missing"
 msgstr "ivgen 요소를 찾았지만 암호가 없습니다"
 
 msgid "ivshmem device is no longer supported"
-msgstr ""
+msgstr "ivshmem 장치는 더 이상 지원되지 않습니다"
 
 #, c-format
 msgid "job '%1$s' canceled by client"
@@ -34391,7 +34391,7 @@ msgid "show inactive defined XML"
 msgstr "비활성화로 정의된 XML을 보여줌"
 
 msgid "show network title"
-msgstr ""
+msgstr "네트워크 명칭을 표시합니다"
 
 msgid "show or set domain's custom XML metadata"
 msgstr "도메인의 사용자 지정 XML 메타데이터 표시 또는 설정"
@@ -34400,10 +34400,10 @@ msgid "show or set domain's description or title"
 msgstr "도메인 설명 또는 제목 보기 또는 설정"
 
 msgid "show or set network's custom XML metadata"
-msgstr ""
+msgstr "네트워크의 사용자 정의 XML 메타자료를 보여주거나 설정합니다"
 
 msgid "show or set network's description or title"
-msgstr ""
+msgstr "네트워크의 설명 또는 명칭을 보여주거나 설정합니다"
 
 msgid "show timestamp for each printed event"
 msgstr "인쇄된 각 이벤트에 대한 타임스탬프 표시"
@@ -37779,6 +37779,8 @@ msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"'VIR_MIGRATE_PARAM_MIGRATE_DISKS'의 사용은 'VIR_MIGRATE_NON_SHARED_DISK' "
+"또는 'VIR_MIGRATE_NON_SHARED_INC' 플래그의 사용이 필요합니다"
 
 msgid "use of <server> requires pull mode backup"
 msgstr "<server>를 사용하려면 풀 모드 백업이 필요합니다"
