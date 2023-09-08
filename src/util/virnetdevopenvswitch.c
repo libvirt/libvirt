@@ -54,10 +54,14 @@ virNetDevOpenvswitchSetTimeout(unsigned int timeout)
 }
 
 static virCommand *
-virNetDevOpenvswitchCreateCmd(void)
+virNetDevOpenvswitchCreateCmd(char **errbuf)
 {
     virCommand *cmd = virCommandNew(OVS_VSCTL);
+
     virCommandAddArgFormat(cmd, "--timeout=%u", virNetDevOpenvswitchTimeout);
+    if (errbuf)
+        virCommandSetErrorBuffer(cmd, errbuf);
+
     return cmd;
 }
 
@@ -137,6 +141,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
     g_autofree char *attachedmac_ex_id = NULL;
     g_autofree char *ifaceid_ex_id = NULL;
     g_autofree char *profile_ex_id = NULL;
@@ -157,7 +162,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                         ovsport->profileID);
     }
 
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     virCommandAddArgList(cmd, "--", "--may-exist",
                          "add-port", brname, ifname, NULL);
 
@@ -185,8 +190,8 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to add port %1$s to OVS bridge %2$s"),
-                       ifname, brname);
+                       _("Unable to add port %1$s to OVS bridge %2$s: %3$s"),
+                       ifname, brname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -203,13 +208,15 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
  */
 int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char *ifname)
 {
-    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
 
     virCommandAddArgList(cmd, "--", "--if-exists", "del-port", ifname, NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to delete port %1$s from OVS"), ifname);
+                       _("Unable to delete port %1$s from OVS: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -228,7 +235,8 @@ int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char 
 int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
 {
     size_t len;
-    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
 
     virCommandAddArgList(cmd, "--if-exists", "get", "Interface",
                          ifname, "external_ids:PortData", NULL);
@@ -238,8 +246,8 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     /* Run the command */
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to run command to get OVS port data for interface %1$s"),
-                       ifname);
+                       _("Unable to run command to get OVS port data for interface %1$s: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -263,21 +271,22 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
 int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 {
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
 
     if (!migrate) {
         VIR_DEBUG("No OVS port data for interface %s", ifname);
         return 0;
     }
 
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
     virCommandAddArgFormat(cmd, "external_ids:PortData=%s", migrate);
 
     /* Run the command */
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to run command to set OVS port data for interface %1$s"),
-                       ifname);
+                       _("Unable to run command to set OVS port data for interface %1$s: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -371,7 +380,8 @@ int
 virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                    virDomainInterfaceStatsPtr stats)
 {
-    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     g_autofree char *output = NULL;
 
     virCommandAddArgList(cmd, "--if-exists", "--format=list", "--data=json",
@@ -390,8 +400,9 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
     if (virCommandRun(cmd, NULL) < 0 ||
         STREQ_NULLABLE(output, "")) {
         /* no ovs-vsctl or interface 'ifname' doesn't exists in ovs */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Interface not found"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Interface not found: %1$s"),
+                       NULLSTR(errbuf));
         return -1;
     }
 
@@ -433,7 +444,8 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
 int
 virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 {
-    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     int exitstatus;
 
     *master = NULL;
@@ -443,8 +455,8 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 
     if (virCommandRun(cmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to run command to get OVS master for interface %1$s"),
-                       ifname);
+                       _("Unable to run command to get OVS master for interface %1$s: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -546,7 +558,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
         return 0;
     }
 
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(NULL);
 
     if (server) {
         virCommandAddArgList(cmd, "--no-headings", "--columns=name", "find",
@@ -600,7 +612,8 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                                    const virNetDevVlan *virtVlan)
 {
-    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
 
     virCommandAddArgList(cmd,
                          "--", "--if-exists", "clear", "Port", ifname, "tag",
@@ -614,7 +627,8 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to set vlan configuration on port %1$s"), ifname);
+                       _("Unable to set vlan configuration on port %1$s: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -629,7 +643,7 @@ virNetDevOpenvswitchFindUUID(const char *table,
     g_autoptr(virCommand) cmd = NULL;
     char *uuid = NULL;
 
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(NULL);
     virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", table,
                          vmid_ex_id, ifname_ex_id, NULL);
     virCommandSetOutputBuffer(cmd, &uuid);
@@ -673,7 +687,7 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
             if (!*line) {
                 continue;
             }
-            listcmd = virNetDevOpenvswitchCreateCmd();
+            listcmd = virNetDevOpenvswitchCreateCmd(NULL);
             virCommandAddArgList(listcmd, "--no-heading", "--columns=_uuid", "--if-exists",
                                  "list", "port", ifname, "qos", NULL);
             virCommandSetOutputBuffer(listcmd, &port_qos);
@@ -681,13 +695,13 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
                 VIR_WARN("Unable to remove port qos on port %s", ifname);
             }
             if (port_qos && *port_qos) {
-                g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+                g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd(NULL);
                 virCommandAddArgList(cmd, "remove", "port", ifname, "qos", line, NULL);
                 if (virCommandRun(cmd, NULL) < 0) {
                     VIR_WARN("Unable to remove port qos on port %s", ifname);
                 }
             }
-            destroycmd = virNetDevOpenvswitchCreateCmd();
+            destroycmd = virNetDevOpenvswitchCreateCmd(NULL);
             virCommandAddArgList(destroycmd, "destroy", "qos", line, NULL);
             if (virCommandRun(destroycmd, NULL) < 0) {
                 VIR_WARN("Unable to destroy qos on port %s", ifname);
@@ -706,7 +720,7 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
                 continue;
             }
 
-            cmd = virNetDevOpenvswitchCreateCmd();
+            cmd = virNetDevOpenvswitchCreateCmd(NULL);
             virCommandAddArgList(cmd, "destroy", "queue", line, NULL);
             if (virCommandRun(cmd, NULL) < 0) {
                 VIR_WARN("Unable to destroy queue on port %s", ifname);
@@ -722,15 +736,17 @@ static int
 virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
 {
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
 
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
     virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu", 0llu);
     virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu", 0llu);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to reset ingress on port %1$s"), ifname);
+                       _("Unable to reset ingress on port %1$s: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -754,6 +770,7 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
 {
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
     g_autofree char *vmid_ex_id = NULL;
     g_autofree char *ifname_ex_id = NULL;
     g_autofree char *average = NULL;
@@ -777,7 +794,7 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
     qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
 
     /* create qos and set */
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     if (queue_uuid && *queue_uuid) {
         g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
         virCommandAddArgList(cmd, "set", "queue", lines[0], NULL);
@@ -806,17 +823,20 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
     if (virCommandRun(cmd, NULL) < 0) {
         if (queue_uuid && *queue_uuid) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to set queue configuration on port %1$s"), ifname);
+                           _("Unable to set queue configuration on port %1$s: %2$s"),
+                           ifname, NULLSTR(errbuf));
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to create and set qos configuration on port %1$s"), ifname);
+                           _("Unable to create and set qos configuration on port %1$s: %2$s"),
+                           ifname, NULLSTR(errbuf));
         }
         return -1;
     }
 
     if (qos_uuid && *qos_uuid) {
         g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
-        g_autoptr(virCommand) qoscmd = virNetDevOpenvswitchCreateCmd();
+        g_autofree char *qoserrbuf = NULL;
+        g_autoptr(virCommand) qoscmd = virNetDevOpenvswitchCreateCmd(&qoserrbuf);
 
         virCommandAddArgList(qoscmd, "set", "qos", lines[0], NULL);
         virCommandAddArgFormat(qoscmd, "other_config:min-rate=%s", average);
@@ -829,7 +849,8 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
         virCommandAddArgList(qoscmd, vmid_ex_id, ifname_ex_id, NULL);
         if (virCommandRun(qoscmd, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to set qos configuration on port %1$s"), ifname);
+                           _("Unable to set qos configuration on port %1$s: %2$s"),
+                           ifname, NULLSTR(qoserrbuf));
             return -1;
         }
     }
@@ -842,8 +863,9 @@ virNetDevOpenvswitchInterfaceSetRxQos(const char *ifname,
                                       const virNetDevBandwidthRate *rx)
 {
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
 
-    cmd = virNetDevOpenvswitchCreateCmd();
+    cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
     virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu",
                            rx->average * VIR_NETDEV_RX_TO_OVS);
@@ -853,7 +875,8 @@ virNetDevOpenvswitchInterfaceSetRxQos(const char *ifname,
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to set vlan configuration on port %1$s"), ifname);
+                       _("Unable to set vlan configuration on port %1$s: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
