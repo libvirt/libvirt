@@ -59,6 +59,25 @@ Sharing a host directory with a guest
 
    Note: this requires virtiofs support in the guest kernel (Linux v5.4 or later)
 
+Running unprivileged
+====================
+
+In unprivileged mode (``qemu:///session``), mapping user/group IDs is available
+(since libvirt version 10.0.0). The root user (ID 0) in the guest will be mapped
+to the current user on the host.
+
+The rest of the IDs will be mapped to the subordinate user IDs specified
+in `/etc/subuid`:
+
+::
+
+  $ cat /etc/subuid
+  jtomko:100000:65536
+  $ cat /etc/subgid
+  jtomko:100000:65536
+
+To manually tweak the user ID mapping, the `idmap` element can be used.
+
 Optional parameters
 ===================
 
