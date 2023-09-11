@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"i82801b11-bridge","id":"pci.1","bus":"pcie.0","addr":"0x1e"}' \
--device '{"driver":"pci-bridge","chassis_nr":56,"id":"pci.2","bus":"pci.1","addr":"0x0"}' \
+-device '{"driver":"pci-bridge","chassis_nr":56,"mem-reserve":8392704,"id":"pci.2","bus":"pci.1","addr":"0x0"}' \
 -device '{"driver":"ich9-usb-ehci1","id":"usb","bus":"pcie.0","addr":"0x1d.0x7"}' \
 -device '{"driver":"ich9-usb-uhci1","masterbus":"usb.0","firstport":0,"bus":"pcie.0","multifunction":true,"addr":"0x1d"}' \
 -device '{"driver":"ich9-usb-uhci2","masterbus":"usb.0","firstport":2,"bus":"pcie.0","addr":"0x1d.0x1"}' \

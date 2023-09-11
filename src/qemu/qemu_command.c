@@ -2776,6 +2776,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
         if (virJSONValueObjectAdd(&props,
                                   "s:driver", modelName,
                                   "i:chassis_nr", pciopts->chassisNr,
+                                  "P:mem-reserve", pciopts->memReserve * 1024,
                                   "s:id", def->info.alias,
                                   NULL) < 0)
             return -1;
@@ -2816,6 +2817,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
                                   "i:chassis", pciopts->chassis,
                                   "s:id", def->info.alias,
                                   "T:hotplug", pciopts->hotplug,
+                                  "P:mem-reserve", pciopts->memReserve * 1024,
                                   NULL) < 0)
             return -1;
 
@@ -2824,6 +2826,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
         if (virJSONValueObjectAdd(&props,
                                   "s:driver", modelName,
                                   "i:index", pciopts->targetIndex,
+                                  "P:mem-reserve", pciopts->memReserve * 1024,
                                   "s:id", def->info.alias,
                                   NULL) < 0)
             return -1;
