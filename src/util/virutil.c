@@ -1200,8 +1200,12 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
      * do this if we failed to get the capability above, so ignore the
      * return value.
      */
-    if (!need_setpcap)
-        capng_apply(CAPNG_SELECT_BOUNDS);
+    if (!need_setpcap &&
+        (capng_ret = capng_apply(CAPNG_SELECT_BOUNDS)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot apply process capabilities: %1$d"), capng_ret);
+        return -1;
+    }
 
     /* Drop the caps that allow setuid/gid (unless they were requested) */
     if (need_setgid)
