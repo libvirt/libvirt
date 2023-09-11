@@ -1725,7 +1725,13 @@ static int lxcContainerDropCapabilities(virDomainDef *def,
                                 CAP_SYSLOG,
                                 CAP_WAKE_ALARM};
 
-    capng_get_caps_process();
+    /* Init the internal state of capng */
+    if ((ret = capng_get_caps_process()) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to get current process capabilities: %1$d"),
+                       ret);
+        return -1;
+    }
 
     /* Make sure we drop everything if required by the user */
     if (policy == VIR_DOMAIN_CAPABILITIES_POLICY_DENY)
