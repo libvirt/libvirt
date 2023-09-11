@@ -64,8 +64,8 @@ void
 qemuBlockStorageSourceSetStorageNodename(virStorageSource *src,
                                          char *nodename)
 {
-    g_free(src->nodestorage);
-    src->nodestorage = nodename;
+    g_free(src->nodenamestorage);
+    src->nodenamestorage = nodename;
 }
 
 
@@ -83,7 +83,7 @@ qemuBlockStorageSourceGetEffectiveStorageNodename(virStorageSource *src)
         src->sliceStorage->nodename)
         return src->sliceStorage->nodename;
 
-    return src->nodestorage;
+    return src->nodenamestorage;
 }
 
 
@@ -96,7 +96,7 @@ qemuBlockStorageSourceGetEffectiveStorageNodename(virStorageSource *src)
 const char *
 qemuBlockStorageSourceGetStorageNodename(virStorageSource *src)
 {
-    return src->nodestorage;
+    return src->nodenamestorage;
 }
 
 

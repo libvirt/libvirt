@@ -371,7 +371,7 @@ struct _virStorageSource {
 
     /* metadata that allows identifying given storage source */
     char *nodeformat;  /* name of the format handler object */
-    char *nodestorage; /* name of the storage object */
+    char *nodenamestorage; /* name of the storage object */
 
     /* An optional setting to enable usage of TLS for the storage source */
     virTristateBool haveTLS;

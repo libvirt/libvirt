@@ -829,7 +829,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->snapshot = g_strdup(src->snapshot);
     def->configFile = g_strdup(src->configFile);
     def->nodeformat = g_strdup(src->nodeformat);
-    def->nodestorage = g_strdup(src->nodestorage);
+    def->nodenamestorage = g_strdup(src->nodenamestorage);
     def->compat = g_strdup(src->compat);
     def->tlsAlias = g_strdup(src->tlsAlias);
     def->tlsCertdir = g_strdup(src->tlsCertdir);
@@ -1168,7 +1168,7 @@ virStorageSourceClear(virStorageSource *def)
     virStorageAuthDefFree(def->auth);
     virObjectUnref(def->privateData);
 
-    VIR_FREE(def->nodestorage);
+    VIR_FREE(def->nodenamestorage);
     VIR_FREE(def->nodeformat);
 
     virStorageSourceBackingStoreClear(def);
