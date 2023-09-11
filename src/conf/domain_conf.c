@@ -8528,6 +8528,11 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                               &def->opts.pciopts.targetIndex,
                               def->opts.pciopts.targetIndex) < 0)
                 return NULL;
+
+            if (virXMLPropULongLong(targetNodes[0], "memReserve", 0,
+                                    VIR_XML_PROP_NONZERO,
+                                    &def->opts.pciopts.memReserve) < 0)
+                return NULL;
         }
     }
 
@@ -23094,6 +23099,10 @@ virDomainControllerDefFormatPCI(virBuffer *buf,
     if (def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&targetAttrBuf, " hotplug='%s'",
                           virTristateSwitchTypeToString(def->opts.pciopts.hotplug));
+    }
+    if (def->opts.pciopts.memReserve) {
+        virBufferAsprintf(&targetAttrBuf, " memReserve='%llu'",
+                          def->opts.pciopts.memReserve);
     }
 
     if (def->opts.pciopts.numaNode != -1)

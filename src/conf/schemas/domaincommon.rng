@@ -2897,6 +2897,11 @@
                       <ref name="unsignedInt"/>
                     </element>
                   </optional>
+                  <optional>
+                    <attribute name="memReserve">
+                      <ref name="unsignedLong"/>
+                    </attribute>
+                  </optional>
                 </element>
               </optional>
               <!-- *-root controllers have an optional element "pcihole64"-->
