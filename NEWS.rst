@@ -34,6 +34,15 @@ v9.8.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: add nbdkit backend for network disks
+
+    Up until now, libvirt supported network disks (http, ftp, ssh) by passing
+    the URL to qemu and having the appropriate qemu block drivers handle the
+    disk I/O. However, by handling the network I/O outside of the qemu process,
+    we get several advantages, such as reduced attack surface and improved
+    stability of qemu. Therefore, when available, libvirt will use nbdkit as a
+    backend for these network disks and export an NBD disk to qemu.
+
 * **Bug fixes**
 
 
