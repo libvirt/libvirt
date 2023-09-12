@@ -91,7 +91,7 @@ run_integration() {
     sudo systemctl daemon-reexec
 
     # Source the os-release file to query the vendor-provided variables
-    source /etc/os-release
+    . /etc/os-release
     if test "$ID" = "centos" && test "$VERSION_ID" -eq 8
     then
         DAEMONS="libvirtd virtlockd virtlogd"
@@ -102,8 +102,8 @@ run_integration() {
     do
         LOG_OUTPUTS="1:file:/var/log/libvirt/${daemon}.log"
         LOG_FILTERS="3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.netlink 3:node_device 3:rpc 3:access 1:*"
-        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_filters "'$LOG_FILTERS'" &>/dev/null
-        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_outputs "'$LOG_OUTPUTS'" &>/dev/null
+        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_filters "'$LOG_FILTERS'" 1>/dev/null 2>&1
+        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_outputs "'$LOG_OUTPUTS'" 1>/dev/null 2>&1
         sudo systemctl --quiet stop ${daemon}.service
         sudo systemctl restart ${daemon}.socket
     done
@@ -113,7 +113,7 @@ run_integration() {
     # Shell scripts with -e by default and virsh returns an error if one tries
     # to start a machine/network that is already active which is both fine and
     # should also be a non-fatal error
-    sudo virsh --quiet net-start default &>/dev/null || true
+    sudo virsh --quiet net-start default 1>/dev/null 2>&1 || true
 
     cd "$SCRATCH_DIR"
     git clone --depth 1 https://gitlab.com/libvirt/libvirt-tck.git
