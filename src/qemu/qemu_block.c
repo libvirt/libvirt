@@ -1309,38 +1309,40 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSource *src,
                                        virStorageSource *backingStore)
 {
     g_autoptr(virJSONValue) props = NULL;
+    const char *backingFormatterStr = NULL;
+    const char *backingNodename = NULL;
     const char *storagenode = src->nodestorage;
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         storagenode = src->sliceStorage->nodename;
 
+    if (virStorageSourceIsBacking(backingStore) &&
+        src->format < VIR_STORAGE_FILE_BACKING) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("storage format '%1$s' does not support backing store"),
+                       virStorageFileFormatTypeToString(src->format));
+        return NULL;
+    }
+
+    if (backingStore &&
+        src->format >= VIR_STORAGE_FILE_BACKING) {
+        if (virStorageSourceIsBacking(backingStore)) {
+            backingFormatterStr = "s:backing";
+            backingNodename = backingStore->nodeformat;
+        } else {
+            /* chain is terminated, indicate that no detection should happen in qemu */
+            backingFormatterStr = "n:backing";
+        }
+    }
+
     if (!(props = qemuBlockStorageSourceGetBlockdevFormatProps(src)))
         return NULL;
 
-    if (virJSONValueObjectAppendString(props, "file", storagenode) < 0)
-        return NULL;
-
-    if (backingStore) {
-        if (src->format >= VIR_STORAGE_FILE_BACKING) {
-            if (virStorageSourceIsBacking(backingStore)) {
-                if (virJSONValueObjectAppendString(props, "backing",
-                                                   backingStore->nodeformat) < 0)
-                    return NULL;
-            } else {
-                /* chain is terminated, indicate that no detection should happen
-                 * in qemu */
-                if (virJSONValueObjectAppendNull(props, "backing") < 0)
-                    return NULL;
-            }
-        } else {
-            if (virStorageSourceIsBacking(backingStore)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("storage format '%1$s' does not support backing store"),
-                               virStorageFileFormatTypeToString(src->format));
-                return NULL;
-            }
-        }
-    }
+    if (virJSONValueObjectAdd(&props,
+                              "s:file", storagenode,
+                              backingFormatterStr, backingNodename,
+                              NULL) < 0)
+        return 0;
 
     return g_steal_pointer(&props);
 }
