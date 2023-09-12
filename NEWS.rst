@@ -23,6 +23,15 @@ v9.8.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for vDPA block devices
+
+    With a new enough version of qemu, libvirt will allow you to assign vDPA block
+    devices to a domain. This is configured with::
+
+      <disk type='vhostvdpa'>
+        <source dev='/dev/vhost-vdpa-0'>
+        ...
+
 * **Improvements**
 
 * **Bug fixes**
