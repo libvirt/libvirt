@@ -57,8 +57,8 @@ virURI *
 qemuBlockStorageSourceGetURI(virStorageSource *src);
 
 virJSONValue *
-qemuBlockStorageSourceGetBlockdevProps(virStorageSource *src,
-                                       virStorageSource *backingStore);
+qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
+                                     virStorageSource *backingStore);
 
 virJSONValue *
 qemuBlockStorageGetCopyOnReadProps(virDomainDiskDef *disk);

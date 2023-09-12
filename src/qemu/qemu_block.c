@@ -1295,18 +1295,17 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
 
 
 /**
- * qemuBlockStorageSourceGetBlockdevProps:
+ * qemuBlockStorageSourceGetFormatProps:
  *
  * @src: storage source to format
  * @backingStore: a storage source to use as backing of @src
  *
- * Formats @src into a JSON object which can be used with blockdev-add or
- * -blockdev. The formatted object contains both the storage and format layer
- * in nested form including link to the backing chain layer if necessary.
+ * Formats properties of @src related to the format blockdev driver in qemu
+ * into a JSON object which can be used with blockdev-add or -blockdev.
  */
 virJSONValue *
-qemuBlockStorageSourceGetBlockdevProps(virStorageSource *src,
-                                       virStorageSource *backingStore)
+qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
+                                     virStorageSource *backingStore)
 {
     g_autoptr(virJSONValue) props = NULL;
     const char *backingFormatterStr = NULL;
@@ -1434,8 +1433,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src,
-                                                                     backingStore)) ||
+    if (!(data->formatProps = qemuBlockStorageSourceGetFormatProps(src, backingStore)) ||
         !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src,
                                                                      backendpropsflags)))
         return NULL;
@@ -3049,7 +3047,7 @@ qemuBlockReopenFormatMon(qemuMonitor *mon,
     g_autoptr(virJSONValue) srcprops = NULL;
     g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
 
-    if (!(srcprops = qemuBlockStorageSourceGetBlockdevProps(src, src->backingStore)))
+    if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
         return -1;
 
     if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)

@@ -301,7 +301,7 @@ testQemuDiskXMLToProps(const void *opaque)
 
         qemuDomainPrepareDiskSourceData(disk, n);
 
-        if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n, n->backingStore)) ||
+        if (!(formatProps = qemuBlockStorageSourceGetFormatProps(n, n->backingStore)) ||
             !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, backendpropsflagstarget)) ||
             !(storageProps = qemuBlockStorageSourceGetBackendProps(n, backendpropsflagsnormal)) ||
             !(backingstore = qemuBlockGetBackingStoreString(n, true))) {
