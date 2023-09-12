@@ -87,16 +87,16 @@ run_website_build() {
 }
 
 run_integration() {
-    sudo pip3 install --prefix=/usr avocado-framework
+    run_cmd sudo pip3 install --prefix=/usr avocado-framework
 
     # Explicitly allow storing cores globally
-    sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf"
+    run_cmd sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf"
 
     # Need to reexec systemd after changing config
-    sudo systemctl daemon-reexec
+    run_cmd sudo systemctl daemon-reexec
 
     # Source the os-release file to query the vendor-provided variables
-    . /etc/os-release
+    run_cmd . /etc/os-release
     if test "$ID" = "centos" && test "$VERSION_ID" -eq 8
     then
         DAEMONS="libvirtd virtlockd virtlogd"
@@ -107,10 +107,10 @@ run_integration() {
     do
         LOG_OUTPUTS="1:file:/var/log/libvirt/${daemon}.log"
         LOG_FILTERS="3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.netlink 3:node_device 3:rpc 3:access 1:*"
-        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_filters "'$LOG_FILTERS'" 1>/dev/null 2>&1
-        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_outputs "'$LOG_OUTPUTS'" 1>/dev/null 2>&1
-        sudo systemctl --quiet stop ${daemon}.service
-        sudo systemctl restart ${daemon}.socket
+        run_cmd_quiet sudo augtool set /files/etc/libvirt/${daemon}.conf/log_filters "'$LOG_FILTERS'"
+        run_cmd_quiet sudo augtool set /files/etc/libvirt/${daemon}.conf/log_outputs "'$LOG_OUTPUTS'"
+        run_cmd_quiet sudo systemctl --quiet stop ${daemon}.service
+        run_cmd_quiet sudo systemctl restart ${daemon}.socket
     done
 
     # Make sure the default network is started on all platforms
@@ -118,10 +118,10 @@ run_integration() {
     # Shell scripts with -e by default and virsh returns an error if one tries
     # to start a machine/network that is already active which is both fine and
     # should also be a non-fatal error
-    sudo virsh --quiet net-start default 1>/dev/null 2>&1 || true
+    run_cmd_quiet sudo virsh --quiet net-start default || true
 
-    cd "$SCRATCH_DIR"
-    git clone --depth 1 https://gitlab.com/libvirt/libvirt-tck.git
-    cd libvirt-tck
-    sudo avocado --config avocado.config run --job-results-dir "$SCRATCH_DIR"/avocado
+    run_cmd cd "$SCRATCH_DIR"
+    run_cmd git clone --depth 1 https://gitlab.com/libvirt/libvirt-tck.git
+    run_cmd cd libvirt-tck
+    run_cmd sudo avocado --config avocado.config run --job-results-dir "$SCRATCH_DIR"/avocado
 }
