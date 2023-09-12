@@ -1418,7 +1418,7 @@ qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
         src->format >= VIR_STORAGE_FILE_BACKING) {
         if (virStorageSourceIsBacking(backingStore)) {
             backingFormatterStr = "s:backing";
-            backingNodename = backingStore->nodeformat;
+            backingNodename = qemuBlockStorageSourceGetEffectiveNodename(backingStore);
         } else {
             /* chain is terminated, indicate that no detection should happen in qemu */
             backingFormatterStr = "n:backing";
