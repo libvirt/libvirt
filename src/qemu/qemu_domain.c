@@ -6008,7 +6008,7 @@ qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDef *host
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
         return 0;
 
-    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    switch (scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
         if (!scsisrc->u.host.src)
             scsisrc->u.host.src = virStorageSourceNew();
@@ -11373,7 +11373,7 @@ qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
     virStorageSource *src = NULL;
     g_autofree char *devstr = NULL;
 
-    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    switch (scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
         virObjectUnref(scsisrc->u.host.src);
         scsisrc->u.host.src = virStorageSourceNew();

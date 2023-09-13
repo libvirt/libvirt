@@ -6065,20 +6065,14 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
                                       unsigned int flags,
                                       virDomainXMLOption *xmlopt)
 {
-    g_autofree char *protocol = NULL;
-
-    if ((protocol = virXMLPropString(sourcenode, "protocol"))) {
-        scsisrc->protocol =
-            virDomainHostdevSubsysSCSIProtocolTypeFromString(protocol);
-        if (scsisrc->protocol < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown SCSI subsystem protocol '%1$s'"),
-                           protocol);
-            return -1;
-        }
+    if (virXMLPropEnum(sourcenode, "protocol",
+                       virDomainHostdevSubsysSCSIProtocolTypeFromString,
+                       VIR_XML_PROP_NONE,
+                       &scsisrc->protocol) < 0) {
+        return -1;
     }
 
-    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    switch (scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
         return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, ctxt, scsisrc,
                                                          flags, xmlopt);

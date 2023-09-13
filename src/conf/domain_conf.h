@@ -273,7 +273,7 @@ typedef enum {
 } virDomainDeviceSGIO;
 
 struct _virDomainHostdevSubsysSCSI {
-    int protocol; /* enum virDomainHostdevSCSIProtocolType */
+    virDomainHostdevSCSIProtocolType protocol;
     virDomainDeviceSGIO sgio;
     virTristateBool rawio;
     union {

@@ -5033,7 +5033,7 @@ qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
     virStorageSource *src;
     qemuDomainStorageSourcePrivate *srcpriv;
 
-    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    switch (scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
         src = scsisrc->u.host.src;
         break;
@@ -5068,7 +5068,7 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
     g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
     virStorageSource *src = NULL;
 
-    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    switch (scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
         src = scsisrc->u.host.src;
         break;
