@@ -684,7 +684,7 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
 {
     int ret = -1;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_CHR:
         ret = virDomainChrDefPostParse(dev->data.chr, def);
         break;

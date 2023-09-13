@@ -146,7 +146,7 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                           void *opaque G_GNUC_UNUSED,
                           void *parseOpaque G_GNUC_UNUSED)
 {
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_MEMORY:

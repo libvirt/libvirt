@@ -3307,7 +3307,7 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
                                                  &chardevBackendData) < 0)
         return -1;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
@@ -5150,7 +5150,7 @@ qemuDomainRemoveAuditDevice(virDomainObj *vm,
                             virDomainDeviceDef *detach,
                             bool success)
 {
-    switch ((virDomainDeviceType)detach->type) {
+    switch (detach->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         virDomainAuditDisk(vm, detach->data.disk->src, NULL, "detach", success);
         break;
@@ -5231,7 +5231,7 @@ qemuDomainRemoveDevice(virQEMUDriver *driver,
         alias = g_strdup(info->alias);
     info = NULL;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_CHR:
         /* We must return directly after calling
          * qemuDomainRemoveChrDevice because it is called directly
@@ -6058,7 +6058,7 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
     int ret = -1;
     int rc;
 
-    switch ((virDomainDeviceType)match->type) {
+    switch (match->type) {
         /*
          * lease and chr devices don't follow the standard pattern of
          * the others, so they must have their own self-contained
@@ -7100,7 +7100,7 @@ qemuDomainUpdateDeviceLive(virDomainObj *vm,
     virDomainDeviceDef oldDev = { .type = dev->type };
     int idx;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         return qemuDomainChangeDiskLive(vm, dev, driver, force);

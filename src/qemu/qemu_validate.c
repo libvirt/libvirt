@@ -5068,7 +5068,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     if (qemuValidateDomainDeviceInfo(dev, def, qemuCaps) < 0)
         return -1;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
         return qemuValidateDomainDeviceDefNetwork(dev->data.net, qemuCaps);
 

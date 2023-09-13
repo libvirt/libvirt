@@ -796,7 +796,7 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
                                bool *has_ntmodel,
                                bool *useBusSuffix)
 {
-    switch ((virDomainDeviceType) device->type) {
+    switch (device->type) {
         case VIR_DOMAIN_DEVICE_DISK:
             if (virStorageSourceGetActualType(device->data.disk->src) == VIR_STORAGE_TYPE_VHOST_USER)
                 *baseName = "vhost-user-blk";

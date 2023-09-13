@@ -3520,7 +3520,7 @@ void virDomainDeviceDefFree(virDomainDeviceDef *def)
     if (!def)
         return;
 
-    switch ((virDomainDeviceType) def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         virDomainDiskDefFree(def->data.disk);
         break;
@@ -4468,7 +4468,7 @@ virDomainObjGetOneDef(virDomainObj *vm,
 virDomainDeviceInfo *
 virDomainDeviceGetInfo(const virDomainDeviceDef *device)
 {
-    switch ((virDomainDeviceType) device->type) {
+    switch (device->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         return &device->data.disk->info;
     case VIR_DOMAIN_DEVICE_FS:
@@ -4541,7 +4541,7 @@ void
 virDomainDeviceSetData(virDomainDeviceDef *device,
                        void *devicedata)
 {
-    switch ((virDomainDeviceType) device->type) {
+    switch (device->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         device->data.disk = devicedata;
         break;
@@ -13777,7 +13777,7 @@ virDomainDeviceDefParse(const char *xmlStr,
     if (virDomainDeviceDefParseType((const char *)node->name, &dev->type) < 0)
         return NULL;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         if (!(dev->data.disk = virDomainDiskDefParseXML(xmlopt, node, ctxt,
                                                         flags)))

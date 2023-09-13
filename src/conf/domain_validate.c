@@ -2847,7 +2847,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     if (virDomainDeviceInfoValidate(dev) < 0)
         return -1;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         return virDomainDiskDefValidate(def, dev->data.disk);
 

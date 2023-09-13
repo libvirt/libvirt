@@ -6175,7 +6175,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
     virQEMUCaps *qemuCaps = parseOpaque;
     int ret = -1;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
         ret = qemuDomainDeviceNetDefPostParse(dev->data.net, def, qemuCaps);
         break;
@@ -10297,7 +10297,7 @@ qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
     struct qemuDomainPrepareChardevSourceData *data = opaque;
     qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(charsrc);
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch (dev->type) {
 
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_RNG:
@@ -12148,7 +12148,7 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
                                          qemuDomainDeviceBackendChardevForeachCallback cb,
                                          void *opaque)
 {
-    switch ((virDomainDeviceType) dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         if (virStorageSourceGetActualType(dev->data.disk->src) != VIR_STORAGE_TYPE_VHOST_USER)
             return 0;

@@ -522,7 +522,7 @@ qemuDomainAssignVirtioMMIOAddresses(virDomainDef *def,
 static bool
 qemuDomainDeviceSupportZPCI(virDomainDeviceDef *device)
 {
-    switch ((virDomainDeviceType)device->type) {
+    switch (device->type) {
     case VIR_DOMAIN_DEVICE_CHR:
         return false;
 
@@ -604,7 +604,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
     virDomainPCIConnectFlags pciFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                                          VIR_PCI_CONNECT_AUTOASSIGN);
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_CONTROLLER: {
         virDomainControllerDef *cont = dev->data.controller;
 

@@ -6624,7 +6624,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
     virDomainRedirdevDef *redirdev;
     virDomainShmemDef *shmem;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
@@ -6843,7 +6843,7 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
     virDomainMemoryDef *mem;
     int idx;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
         if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
@@ -7041,7 +7041,7 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
     virDomainDeviceDef oldDev = { .type = dev->type };
     int pos;
 
-    switch ((virDomainDeviceType)dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         newDisk = dev->data.disk;
         if ((pos = virDomainDiskIndexByName(vmdef, newDisk->dst, false)) < 0) {
