@@ -6176,7 +6176,7 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
     g_autoptr(virJSONValue) addr = NULL;
     g_autofree char *port_str = NULL;
 
-    switch ((virStorageNetHostTransport)server->transport) {
+    switch (server->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
         port_str = g_strdup_printf("%u", server->port);
         addr = qemuMonitorJSONBuildInetSocketAddress(server->name, port_str);

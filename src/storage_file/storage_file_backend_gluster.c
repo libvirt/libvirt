@@ -63,7 +63,7 @@ virStorageFileBackendGlusterInitServer(virStorageFileBackendGlusterPriv *priv,
     const char *hoststr = NULL;
     int port = 0;
 
-    switch ((virStorageNetHostTransport) host->transport) {
+    switch (host->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_RDMA:
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
         hoststr = host->name;

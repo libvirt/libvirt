@@ -5834,17 +5834,13 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
     g_autofree char *port = NULL;
 
     memset(host, 0, sizeof(*host));
-    host->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
 
-    /* transport can be tcp (default), unix or rdma.  */
-    if ((transport = virXMLPropString(hostnode, "transport"))) {
-        host->transport = virStorageNetHostTransportTypeFromString(transport);
-        if (host->transport < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown protocol transport type '%1$s'"),
-                           transport);
-            goto cleanup;
-        }
+    if (virXMLPropEnumDefault(hostnode, "transport",
+                              virStorageNetHostTransportTypeFromString,
+                              VIR_XML_PROP_NONE,
+                              &host->transport,
+                              VIR_STORAGE_NET_HOST_TRANS_TCP) < 0) {
+        goto cleanup;
     }
 
     host->socket = virXMLPropString(hostnode, "socket");

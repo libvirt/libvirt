@@ -151,7 +151,7 @@ typedef struct _virStorageNetHostDef virStorageNetHostDef;
 struct _virStorageNetHostDef {
     char *name;
     unsigned int port;
-    int transport; /* virStorageNetHostTransport */
+    virStorageNetHostTransport transport;
     char *socket;  /* path to unix socket */
 };
 

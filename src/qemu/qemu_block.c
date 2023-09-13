@@ -130,7 +130,7 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDef *host)
     g_autoptr(virJSONValue) server = NULL;
     g_autofree char *port = NULL;
 
-    switch ((virStorageNetHostTransport) host->transport) {
+    switch (host->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
         port = g_strdup_printf("%u", host->port);
 

@@ -42,6 +42,7 @@ virStorageSourceParseBackingURI(virStorageSource *src,
 {
     g_autoptr(virURI) uri = NULL;
     const char *path = NULL;
+    int transport = 0;
     g_auto(GStrv) scheme = NULL;
 
     if (!(uri = virURIParse(uristr))) {
@@ -65,12 +66,14 @@ virStorageSourceParseBackingURI(virStorageSource *src,
         return -1;
     }
 
-    if (scheme[1] &&
-        (src->hosts->transport = virStorageNetHostTransportTypeFromString(scheme[1])) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid protocol transport type '%1$s'"),
-                       scheme[1]);
-        return -1;
+    if (scheme[1]) {
+        if ((transport = virStorageNetHostTransportTypeFromString(scheme[1])) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid protocol transport type '%1$s'"),
+                           scheme[1]);
+            return -1;
+        }
+        src->hosts->transport = transport;
     }
 
     if (uri->query) {

@@ -68,7 +68,7 @@ qemuBackupPrepare(virDomainBackupDef *def)
             def->server->name = g_strdup("localhost");
         }
 
-        switch ((virStorageNetHostTransport) def->server->transport) {
+        switch (def->server->transport) {
         case VIR_STORAGE_NET_HOST_TRANS_TCP:
             /* TODO: Update qemu.conf to provide a port range,
              * probably starting at 10809, for obtaining automatic
