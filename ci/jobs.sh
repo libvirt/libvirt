@@ -89,7 +89,7 @@ run_integration() {
     sudo systemctl daemon-reexec # need to reexec systemd after changing config
 
     source /etc/os-release  # in order to query the vendor-provided variables
-    if test "$ID" = "centos" && test "$VERSION_ID" -lt 9
+    if test "$ID" = "centos" && test "$VERSION_ID" -eq 8
     then
         DAEMONS="libvirtd virtlockd virtlogd"
     else
