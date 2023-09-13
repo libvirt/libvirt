@@ -6095,24 +6095,17 @@ virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
                                            virDomainHostdevDef *def)
 {
     virDomainHostdevSubsysSCSIVHost *hostsrc = &def->source.subsys.u.scsi_host;
-    g_autofree char *protocol = NULL;
     g_autofree char *wwpn = NULL;
 
-    if (!(protocol = virXMLPropString(sourcenode, "protocol"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing scsi_host subsystem protocol"));
+
+    if (virXMLPropEnum(sourcenode, "protocol",
+                       virDomainHostdevSubsysSCSIHostProtocolTypeFromString,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &hostsrc->protocol) < 0) {
         return -1;
     }
 
-    if ((hostsrc->protocol =
-         virDomainHostdevSubsysSCSIHostProtocolTypeFromString(protocol)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown scsi_host subsystem protocol '%1$s'"),
-                       protocol);
-        return -1;
-    }
-
-    switch ((virDomainHostdevSubsysSCSIHostProtocolType) hostsrc->protocol) {
+    switch (hostsrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST:
         if (!(wwpn = virXMLPropString(sourcenode, "wwpn"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",

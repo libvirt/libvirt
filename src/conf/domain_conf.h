@@ -290,7 +290,7 @@ struct _virDomainHostdevSubsysMediatedDev {
 };
 
 typedef enum {
-    VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE = 0,
     VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST,
 
     VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST,
@@ -310,7 +310,7 @@ typedef enum {
 VIR_ENUM_DECL(virDomainHostdevSubsysSCSIVHostModel);
 
 struct _virDomainHostdevSubsysSCSIVHost {
-    int protocol; /* enum virDomainHostdevSubsysSCSIHostProtocolType */
+    virDomainHostdevSubsysSCSIHostProtocolType protocol;
     char *wwpn;
     virDomainHostdevSubsysSCSIVHostModelType model;
 };
