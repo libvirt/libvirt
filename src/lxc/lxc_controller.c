@@ -1807,7 +1807,7 @@ virLXCControllerSetupHostdevCaps(virDomainDef *vmDef,
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported host device mode %1$s"),
-                       virDomainHostdevCapsTypeToString(def->source.subsys.type));
+                       virDomainHostdevCapsTypeToString(def->source.caps.type));
         return -1;
     }
 }
