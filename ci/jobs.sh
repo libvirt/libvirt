@@ -122,6 +122,13 @@ run_integration() {
     # should also be a non-fatal error
     run_cmd_quiet sudo virsh --quiet net-start default || true
 
+    # SCRATCH_DIR is normally set inside the GitLab CI job to /tmp/scratch.
+    # However, for local executions inside a VM we need to make sure some
+    # scratch directory exists and also that it is created outside of /tmp for
+    # storage space reasons (if multiple project repos are to be cloned).
+    SCRATCH_DIR="${SCRATCH_DIR:=$GIT_ROOT/ci/scratch)}"
+
+    test ! -d "$SCRATCH_DIR" && run_cmd mkdir "$SCRATCH_DIR"
     run_cmd cd "$SCRATCH_DIR"
     run_cmd git clone --depth 1 https://gitlab.com/libvirt/libvirt-tck.git
     run_cmd cd libvirt-tck
