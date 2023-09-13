@@ -39,7 +39,10 @@ run_dist() {
 }
 
 run_test() {
+    TEST_ARGS="${TEST_ARGS:=--no-suite syntax-check --print-errorlogs}"
+
     test -f $GIT_ROOT/build/build.ninja || run_meson_setup
+
     run_cmd meson test -C build $TEST_ARGS
 }
 
