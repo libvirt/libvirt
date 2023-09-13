@@ -2806,7 +2806,7 @@ virDomainDeviceInfoValidate(const virDomainDeviceDef *dev)
     if (!(info = virDomainDeviceGetInfo(dev)))
         return 0;
 
-    switch ((virDomainDeviceAddressType) info->type) {
+    switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:

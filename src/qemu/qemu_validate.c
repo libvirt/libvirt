@@ -1479,7 +1479,7 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
                                    const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
-    switch ((virDomainDeviceAddressType) info->type) {
+    switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (qemuValidateDomainDeviceDefZPCIAddress(info, qemuCaps) < 0)
             return -1;

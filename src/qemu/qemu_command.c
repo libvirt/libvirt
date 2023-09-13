@@ -541,7 +541,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
                             const virDomainDef *domainDef,
                             const virDomainDeviceInfo *info)
 {
-    switch ((virDomainDeviceAddressType) info->type) {
+    switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI: {
         g_autofree char *pciaddr = NULL;
         g_autofree char *bus = qemuBuildDeviceAddressPCIGetBus(domainDef, info);
@@ -981,7 +981,7 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
 
     virBufferAdd(&buf, baseName, -1);
 
-    switch ((virDomainDeviceAddressType) info->type) {
+    switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         implName = "pci";
         break;

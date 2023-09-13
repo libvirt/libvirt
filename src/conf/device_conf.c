@@ -98,7 +98,7 @@ virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
     if (a->type != b->type)
         return false;
 
-    switch ((virDomainDeviceAddressType) a->type) {
+    switch (a->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
     /* address types below don't have any specific data */
@@ -427,6 +427,16 @@ virDomainDeviceAddressIsValid(virDomainDeviceInfo *info,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
         return true;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+        break;
     }
 
     return false;

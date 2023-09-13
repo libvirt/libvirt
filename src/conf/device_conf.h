@@ -32,7 +32,7 @@
 #include "virenum.h"
 
 typedef enum {
-    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE = 0,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL,
@@ -116,7 +116,7 @@ struct _virDomainDeviceDimmAddress {
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 struct _virDomainDeviceInfo {
     char *alias;
-    int type; /* virDomainDeviceAddressType */
+    virDomainDeviceAddressType type;
     union {
         virPCIDeviceAddress pci;
         virDomainDeviceDriveAddress drive;

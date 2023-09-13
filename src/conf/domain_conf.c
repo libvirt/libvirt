@@ -5366,7 +5366,7 @@ virDomainDeviceInfoFormat(virBuffer *buf,
     virBufferAsprintf(&attrBuf, " type='%s'",
                       virDomainDeviceAddressTypeToString(info->type));
 
-    switch ((virDomainDeviceAddressType) info->type) {
+    switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (!virPCIDeviceAddressIsEmpty(&info->addr.pci)) {
             virBufferAsprintf(&attrBuf, " domain='0x%04x' bus='0x%02x' "
@@ -5539,21 +5539,14 @@ static int
 virDomainDeviceAddressParseXML(xmlNodePtr address,
                                virDomainDeviceInfo *info)
 {
-    g_autofree char *type = virXMLPropString(address, "type");
-
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("No type specified for device address"));
+    if (virXMLPropEnum(address, "type",
+                       virDomainDeviceAddressTypeFromString,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &info->type) < 0) {
         return -1;
     }
 
-    if ((info->type = virDomainDeviceAddressTypeFromString(type)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown address type '%1$s'"), type);
-        return -1;
-    }
-
-    switch ((virDomainDeviceAddressType) info->type) {
+    switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (virPCIDeviceAddressParseXML(address, &info->addr.pci) < 0)
             return -1;
@@ -19625,7 +19618,7 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfo *src,
         return false;
     }
 
-    switch ((virDomainDeviceAddressType) src->type) {
+    switch (src->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (src->addr.pci.domain != dst->addr.pci.domain ||
             src->addr.pci.bus != dst->addr.pci.bus ||
