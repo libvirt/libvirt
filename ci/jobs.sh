@@ -103,6 +103,8 @@ run_integration() {
     else
         DAEMONS="virtinterfaced virtlockd virtlogd virtnetworkd virtnodedevd virtnwfilterd virtproxyd virtqemud virtsecretd virtstoraged"
     fi
+
+    echo "DAEMONS=$DAEMONS"
     for daemon in $DAEMONS
     do
         LOG_OUTPUTS="1:file:/var/log/libvirt/${daemon}.log"
