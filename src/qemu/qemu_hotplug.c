@@ -926,7 +926,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
             goto cleanup;
     }
 
-    switch ((virDomainDiskBus) disk->bus) {
+    switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_USB:
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5468,7 +5468,7 @@ qemuDomainDetachPrepDisk(virDomainObj *vm,
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
 
-        switch ((virDomainDiskBus) disk->bus) {
+        switch (disk->bus) {
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
         case VIR_DOMAIN_DISK_BUS_USB:
         case VIR_DOMAIN_DISK_BUS_SCSI:

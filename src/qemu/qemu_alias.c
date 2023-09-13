@@ -244,7 +244,7 @@ qemuAssignDeviceDiskAlias(virDomainDef *def,
      * need the full path into /machine/peripheral as a historical artifact.
      */
     if (!diskPriv->qomName) {
-        switch ((virDomainDiskBus) disk->bus) {
+        switch (disk->bus) {
         case VIR_DOMAIN_DISK_BUS_FDC:
         case VIR_DOMAIN_DISK_BUS_IDE:
         case VIR_DOMAIN_DISK_BUS_SATA:

@@ -409,7 +409,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
     virDomainControllerDef *controller = NULL;
     const char *controllerAlias = NULL;
 
-    switch ((virDomainDiskBus) info->addr.drive.diskbus) {
+    switch (info->addr.drive.diskbus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
         /* When domain has builtin IDE controller we don't put it onto cmd
          * line. Therefore we can't set its alias. In that case, use the
@@ -1770,7 +1770,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     const char *wpolicy = NULL;
     const char *rpolicy = NULL;
 
-    switch ((virDomainDiskBus) disk->bus) {
+    switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
     case VIR_DOMAIN_DISK_BUS_SATA:
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)

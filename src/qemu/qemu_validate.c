@@ -1371,7 +1371,7 @@ qemuValidateDomainDeviceDefAddressDrive(virDomainDeviceInfo *info,
 {
     virDomainControllerDef *controller = NULL;
 
-    switch ((virDomainDiskBus) info->addr.drive.diskbus) {
+    switch (info->addr.drive.diskbus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
         /* Setting bus= attr for SCSI drives, causes a controller
          * to be created. Yes this is slightly odd. It is not possible
@@ -2673,7 +2673,7 @@ static bool
 qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
                                          const virDomainDiskDef *disk)
 {
-    switch ((virDomainDiskBus)disk->bus) {
+    switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         break;
 
