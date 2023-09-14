@@ -1035,7 +1035,7 @@ mymain(void)
     DO_TEST_CAPS_VER("clock-hpet-off", "7.2.0");
     DO_TEST_CAPS_LATEST("clock-hpet-off");
     DO_TEST_CAPS_LATEST("clock-catchup");
-    DO_TEST_CAPS_LATEST("cpu-kvmclock");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-kvmclock", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_CAPS_LATEST("cpu-host-kvmclock");
     DO_TEST_CAPS_LATEST("kvmclock");
     DO_TEST_CAPS_LATEST("clock-timer-hyperv-rtc");
@@ -2201,13 +2201,13 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memfd-memory-default-hugepage");
 
     DO_TEST_CAPS_LATEST("cpu-check-none");
-    DO_TEST_CAPS_LATEST("cpu-check-partial");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-check-partial", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_CAPS_LATEST("cpu-check-full");
     DO_TEST_CAPS_LATEST("cpu-check-default-none");
     DO_TEST_CAPS_LATEST("cpu-check-default-none2");
     /* this test case uses 'cpu="host-model"', run it with Haswell host cpu to prevent test case churn */
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-check-default-partial", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
-    DO_TEST_CAPS_LATEST("cpu-check-default-partial2");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-check-default-partial2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
 
     DO_TEST_CAPS_LATEST("cpu-cache-disable");
     /* this test case uses 'cpu="host-model"', run it with Haswell host cpu to prevent test case churn */
