@@ -7229,7 +7229,6 @@ virDomainDiskSourceNVMeParse(xmlNodePtr node,
 {
     g_autoptr(virStorageSourceNVMeDef) nvme = NULL;
     g_autofree char *type = NULL;
-    g_autofree char *namespc = NULL;
     xmlNodePtr address;
 
     nvme = g_new0(virStorageSourceNVMeDef, 1);
@@ -7247,16 +7246,9 @@ virDomainDiskSourceNVMeParse(xmlNodePtr node,
         return -1;
     }
 
-    if (!(namespc = virXMLPropString(node, "namespace"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing 'namespace' attribute to disk source"));
-        return -1;
-    }
-
-    if (virStrToLong_ull(namespc, NULL, 10, &nvme->namespc) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("malformed namespace '%1$s'"),
-                       namespc);
+    if (virXMLPropULongLong(node, "namespace", 10,
+                            VIR_XML_PROP_REQUIRED,
+                            &nvme->namespc) < 0) {
         return -1;
     }
 
