@@ -80,3 +80,35 @@ run_website_build() {
 
     run_build
 }
+
+run_integration() {
+    # Avocado >98.0 fails with the nwfilter TCK tests, so stick with 98.0 for now
+    sudo pip3 install --prefix=/usr avocado-framework
+
+    sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf" # Explicitly allow storing cores globally
+    sudo systemctl daemon-reexec # need to reexec systemd after changing config
+
+    source /etc/os-release  # in order to query the vendor-provided variables
+    if test "$ID" = "centos" && test "$VERSION_ID" -lt 9
+    then
+        DAEMONS="libvirtd virtlockd virtlogd"
+    else
+        DAEMONS="virtinterfaced virtlockd virtlogd virtnetworkd virtnodedevd virtnwfilterd virtproxyd virtqemud virtsecretd virtstoraged"
+    fi
+    for daemon in $DAEMONS
+    do
+        LOG_OUTPUTS="1:file:/var/log/libvirt/${daemon}.log"
+        LOG_FILTERS="3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.netlink 3:node_device 3:rpc 3:access 1:*"
+        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_filters "'$LOG_FILTERS'" &>/dev/null
+        sudo augtool set /files/etc/libvirt/${daemon}.conf/log_outputs "'$LOG_OUTPUTS'" &>/dev/null
+        sudo systemctl --quiet stop ${daemon}.service
+        sudo systemctl restart ${daemon}.socket
+    done
+
+    sudo virsh net-start default &>/dev/null || true
+
+    cd "$SCRATCH_DIR"
+    git clone --depth 1 https://gitlab.com/libvirt/libvirt-tck.git
+    cd libvirt-tck
+    sudo avocado --config avocado.config run --job-results-dir "$SCRATCH_DIR"/avocado
+}
