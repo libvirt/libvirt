@@ -104,7 +104,7 @@ run_integration() {
         sudo systemctl restart ${daemon}.socket
     done
 
-    sudo virsh net-start default &>/dev/null || true
+    sudo virsh --quiet net-start default &>/dev/null || true
 
     cd "$SCRATCH_DIR"
     git clone --depth 1 https://gitlab.com/libvirt/libvirt-tck.git
