@@ -82,7 +82,6 @@ run_website_build() {
 }
 
 run_integration() {
-    # Avocado >98.0 fails with the nwfilter TCK tests, so stick with 98.0 for now
     sudo pip3 install --prefix=/usr avocado-framework
 
     sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf" # Explicitly allow storing cores globally
