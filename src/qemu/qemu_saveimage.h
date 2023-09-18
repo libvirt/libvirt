@@ -58,17 +58,6 @@ qemuSaveImageUpdateDef(virQEMUDriver *driver,
                        const char *newxml);
 
 int
-qemuSaveImageStartProcess(virConnectPtr conn,
-                          virQEMUDriver *driver,
-                          virDomainObj *vm,
-                          int *fd,
-                          const char *path,
-                          virQEMUSaveData *data,
-                          virDomainAsyncJob asyncJob,
-                          unsigned int start_flags,
-                          bool *started);
-
-int
 qemuSaveImageStartVM(virConnectPtr conn,
                      virQEMUDriver *driver,
                      virDomainObj *vm,

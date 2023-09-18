@@ -23,6 +23,7 @@
 
 #include "qemu_conf.h"
 #include "qemu_domain.h"
+#include "qemu_saveimage.h"
 #include "vireventthread.h"
 
 int qemuProcessPrepareMonitorChr(virDomainChrSourceDef *monConfig,
@@ -89,6 +90,16 @@ int qemuProcessStart(virConnectPtr conn,
                      virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags);
+
+int qemuProcessStartWithMemoryState(virConnectPtr conn,
+                                    virQEMUDriver *driver,
+                                    virDomainObj *vm,
+                                    int *fd,
+                                    const char *path,
+                                    virQEMUSaveData *data,
+                                    virDomainAsyncJob asyncJob,
+                                    unsigned int start_flags,
+                                    bool *started);
 
 int qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,
                                        virDomainObj *vm,
