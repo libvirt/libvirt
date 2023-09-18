@@ -1182,7 +1182,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
         rc = -1;
         break;
     default:
-        virReportEnumRangeError(virNetDevVPortProfileType, virtPortOp);
+        virReportEnumRangeError(virNetDevVPortProfileLinkOp, virtPortOp);
         rc = -1;
         break;
     }
