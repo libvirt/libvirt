@@ -100,6 +100,21 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
     ATTRIBUTE_NONNULL(2);
 
 int
+qemuSaveImageDecompressionStart(virQEMUSaveData *data,
+                                int *fd,
+                                int *intermediatefd,
+                                char **errbuf,
+                                virCommand **retcmd);
+
+int
+qemuSaveImageDecompressionStop(virCommand *cmd,
+                               int *fd,
+                               int *intermediatefd,
+                               char *errbuf,
+                               bool started,
+                               const char *path);
+
+int
 qemuSaveImageCreate(virQEMUDriver *driver,
                     virDomainObj *vm,
                     const char *path,

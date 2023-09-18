@@ -247,6 +247,116 @@ qemuSaveImageGetCompressionCommand(virQEMUSaveFormat compression)
 }
 
 
+/**
+ * qemuSaveImageDecompressionStart:
+ * @data: data from memory state file
+ * @fd: pointer to FD of memory state file
+ * @intermediatefd: pointer to FD to store original @fd
+ * @errbuf: error buffer for @retcmd
+ * @retcmd: new virCommand pointer
+ *
+ * Start process to decompress VM memory state from @fd. If decompression
+ * is needed the original FD is stored to @intermediatefd and new FD after
+ * decompression is stored to @fd so caller can use the same variable
+ * in both cases.
+ *
+ * Function qemuSaveImageDecompressionStop() needs to be used to correctly
+ * stop the process and swap FD to the original state.
+ *
+ * Caller is responsible for freeing @retcmd.
+ *
+ * Returns -1 on error, 0 on success.
+ */
+int
+qemuSaveImageDecompressionStart(virQEMUSaveData *data,
+                                int *fd,
+                                int *intermediatefd,
+                                char **errbuf,
+                                virCommand **retcmd)
+{
+    virQEMUSaveHeader *header = &data->header;
+    g_autoptr(virCommand) cmd = NULL;
+
+    if (header->version != 2)
+        return 0;
+
+    if (header->compressed == QEMU_SAVE_FORMAT_RAW)
+        return 0;
+
+    if (!(cmd = qemuSaveImageGetCompressionCommand(header->compressed)))
+        return -1;
+
+    *intermediatefd = *fd;
+    *fd = -1;
+
+    virCommandSetInputFD(cmd, *intermediatefd);
+    virCommandSetOutputFD(cmd, fd);
+    virCommandSetErrorBuffer(cmd, errbuf);
+    virCommandDoAsyncIO(cmd);
+
+    if (virCommandRunAsync(cmd, NULL) < 0) {
+        *fd = *intermediatefd;
+        *intermediatefd = -1;
+        return -1;
+    }
+
+    *retcmd = g_steal_pointer(&cmd);
+    return 0;
+}
+
+
+/**
+ * qemuSaveImageDecompressionStop:
+ * @cmd: virCommand pointer
+ * @fd: pointer to FD of memory state file
+ * @intermediatefd: pointer to FD to store original @fd
+ * @errbuf: error buffer for @cmd
+ * @started: boolean to indicate if QEMU process was started
+ * @path: path to the memory state file
+ *
+ * Stop decompression process and close both @fd and @intermediatefd if
+ * necessary.
+ *
+ * Returns -1 on errro, 0 on success.
+ */
+int
+qemuSaveImageDecompressionStop(virCommand *cmd,
+                               int *fd,
+                               int *intermediatefd,
+                               char *errbuf,
+                               bool started,
+                               const char *path)
+{
+    int rc = 0;
+    virErrorPtr orig_err = NULL;
+
+    if (*intermediatefd == -1)
+        return rc;
+
+    if (!started) {
+        /* if there was an error setting up qemu, the intermediate
+         * process will wait forever to write to stdout, so we
+         * must manually kill it and ignore any error related to
+         * the process
+         */
+        virErrorPreserveLast(&orig_err);
+        VIR_FORCE_CLOSE(*intermediatefd);
+        VIR_FORCE_CLOSE(*fd);
+    }
+
+    rc = virCommandWait(cmd, NULL);
+    VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
+    virErrorRestore(&orig_err);
+
+    if (VIR_CLOSE(*fd) < 0) {
+        virReportSystemError(errno, _("cannot close file: %1$s"), path);
+        rc = -1;
+    }
+
+    return rc;
+}
+
+
 /* Helper function to execute a migration to file with a correct save header
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
@@ -595,7 +705,6 @@ qemuSaveImageStartProcess(virConnectPtr conn,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
-    virQEMUSaveHeader *header = &data->header;
     VIR_AUTOCLOSE intermediatefd = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
@@ -605,25 +714,8 @@ qemuSaveImageStartProcess(virConnectPtr conn,
                                  virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
         return -1;
 
-    if ((header->version == 2) &&
-        (header->compressed != QEMU_SAVE_FORMAT_RAW)) {
-        if (!(cmd = qemuSaveImageGetCompressionCommand(header->compressed)))
-            return -1;
-
-        intermediatefd = *fd;
-        *fd = -1;
-
-        virCommandSetInputFD(cmd, intermediatefd);
-        virCommandSetOutputFD(cmd, fd);
-        virCommandSetErrorBuffer(cmd, &errbuf);
-        virCommandDoAsyncIO(cmd);
-
-        if (virCommandRunAsync(cmd, NULL) < 0) {
-            *fd = intermediatefd;
-            intermediatefd = -1;
-            return -1;
-        }
-    }
+    if (qemuSaveImageDecompressionStart(data, fd, &intermediatefd, &errbuf, &cmd) < 0)
+        return -1;
 
     /* No cookie means libvirt which saved the domain was too old to mess up
      * the CPU definitions.
@@ -641,28 +733,7 @@ qemuSaveImageStartProcess(virConnectPtr conn,
                          start_flags) == 0)
         *started = true;
 
-    if (intermediatefd != -1) {
-        virErrorPtr orig_err = NULL;
-
-        if (!*started) {
-            /* if there was an error setting up qemu, the intermediate
-             * process will wait forever to write to stdout, so we
-             * must manually kill it and ignore any error related to
-             * the process
-             */
-            virErrorPreserveLast(&orig_err);
-            VIR_FORCE_CLOSE(intermediatefd);
-            VIR_FORCE_CLOSE(*fd);
-        }
-
-        rc = virCommandWait(cmd, NULL);
-        VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
-        virErrorRestore(&orig_err);
-    }
-    if (VIR_CLOSE(*fd) < 0) {
-        virReportSystemError(errno, _("cannot close file: %1$s"), path);
-        rc = -1;
-    }
+    rc = qemuSaveImageDecompressionStop(cmd, fd, &intermediatefd, errbuf, *started, path);
 
     virDomainAuditStart(vm, "restored", *started);
     if (!*started || rc < 0)
