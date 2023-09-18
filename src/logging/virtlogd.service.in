@@ -21,5 +21,6 @@ OOMScoreAdjust=-900
 LimitNOFILE=1024:524288
 
 [Install]
+WantedBy=multi-user.target
 Also=virtlogd.socket
 Also=virtlogd-admin.socket
