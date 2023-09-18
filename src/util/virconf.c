@@ -939,8 +939,7 @@ int virConfGetValueStringList(virConf *conf,
     case VIR_CONF_STRING:
         if (compatString) {
             *values = g_new0(char *, cval->str ? 2 : 1);
-            if (cval->str)
-                (*values)[0] = g_strdup(cval->str);
+            (*values)[0] = g_strdup(cval->str);
             break;
         }
         G_GNUC_FALLTHROUGH;

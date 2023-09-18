@@ -2960,8 +2960,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
     case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
         if (error) {
             tmp = virJSONValueObjectGetString(ret, "error-desc");
-            if (tmp)
-                *error = g_strdup(tmp);
+            *error = g_strdup(tmp);
         }
         break;
 

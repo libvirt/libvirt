@@ -583,8 +583,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
 #endif
 
         /* copy SLIC table path to acpi_firmware */
-        if (def->os.slic_table)
-            b_info->u.hvm.acpi_firmware = g_strdup(def->os.slic_table);
+        b_info->u.hvm.acpi_firmware = g_strdup(def->os.slic_table);
 
         if (def->nsounds > 0) {
             /*
@@ -1198,8 +1197,7 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
         return -1;
     }
 
-    if (l_disk->domain_name)
-        x_disk->backend_domname = g_strdup(l_disk->domain_name);
+    x_disk->backend_domname = g_strdup(l_disk->domain_name);
 
     return 0;
 }

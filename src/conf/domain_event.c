@@ -1561,8 +1561,7 @@ virDomainEventMetadataChangeNew(int id,
         return NULL;
 
     ev->type = type;
-    if (nsuri)
-        ev->nsuri = g_strdup(nsuri);
+    ev->nsuri = g_strdup(nsuri);
 
     return (virObjectEvent *)ev;
 }

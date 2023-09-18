@@ -67,8 +67,7 @@ lxcCreateFSDef(int type,
 
     def->type = type;
     def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
-    if (src)
-        def->src->path = g_strdup(src);
+    def->src->path = g_strdup(src);
     def->dst = g_strdup(dst);
     def->readonly = readonly;
     def->usage = usage;
