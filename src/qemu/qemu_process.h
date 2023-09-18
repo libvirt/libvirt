@@ -99,6 +99,7 @@ int qemuProcessStartWithMemoryState(virConnectPtr conn,
                                     virQEMUSaveData *data,
                                     virDomainAsyncJob asyncJob,
                                     unsigned int start_flags,
+                                    const char *reason,
                                     bool *started);
 
 int qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,

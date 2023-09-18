@@ -8102,10 +8102,13 @@ qemuProcessStart(virConnectPtr conn,
  * @data: data from memory state file
  * @asyncJob: type of asynchronous job
  * @start_flags: flags to start QEMU process with
+ * @reason: audit log reason
  * @started: boolean to store if QEMU process was started
  *
  * Start VM with existing memory state. Make sure that the stored memory state
  * is correctly decompressed so it can be loaded by QEMU process.
+ *
+ * For audit purposes the expected @reason is one of `restored` or `from-snapshot`.
  *
  * Returns 0 on success, -1 on error.
  */
@@ -8118,6 +8121,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                                 virQEMUSaveData *data,
                                 virDomainAsyncJob asyncJob,
                                 unsigned int start_flags,
+                                const char *reason,
                                 bool *started)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8152,7 +8156,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
 
     rc = qemuSaveImageDecompressionStop(cmd, fd, &intermediatefd, errbuf, *started, path);
 
-    virDomainAuditStart(vm, "restored", *started);
+    virDomainAuditStart(vm, reason, *started);
     if (!*started || rc < 0)
         return -1;
 
