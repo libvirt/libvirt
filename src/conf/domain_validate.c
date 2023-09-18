@@ -181,7 +181,7 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         break;
     case VIR_DOMAIN_VIDEO_BACKEND_TYPE_LAST:
     default:
-        virReportEnumRangeError(virDomainInputType, video->backend);
+        virReportEnumRangeError(virDomainVideoBackendType, video->backend);
         return -1;
     }
 
