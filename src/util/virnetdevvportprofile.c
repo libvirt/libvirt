@@ -69,12 +69,12 @@ VIR_LOG_INIT("util.netdevvportprofile");
 # define LLDPAD_PID_FILE  "/var/run/lldpad.pid"
 
 
-enum virNetDevVPortProfileLinkOp {
+typedef enum {
     VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE = 0x1,
     VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE = 0x2,
     VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE = 0x3,
     VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR = 0x4,
-};
+} virNetDevVPortProfileLinkOp;
 
 #endif
 
@@ -1024,7 +1024,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                const virMacAddr *macaddr,
                                int vf,
                                const virNetDevVPortProfile *virtPort,
-                               enum virNetDevVPortProfileLinkOp virtPortOp,
+                               virNetDevVPortProfileLinkOp virtPortOp,
                                bool setlink_only)
 {
     int op = PORT_REQUEST_ASSOCIATE;
@@ -1093,7 +1093,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                int32_t vf,
                                const virNetDevVPortProfile *virtPort,
                                const unsigned char *vm_uuid,
-                               enum virNetDevVPortProfileLinkOp virtPortOp)
+                               virNetDevVPortProfileLinkOp virtPortOp)
 {
     int rc = 0;
     char *physfndev = NULL;
