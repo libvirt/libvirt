@@ -8099,6 +8099,7 @@ qemuProcessStart(virConnectPtr conn,
  * @vm: domain object
  * @fd: FD pointer of memory state file
  * @path: path to memory state file
+ * @snapshot: internal snapshot to load when starting QEMU process or NULL
  * @data: data from memory state file
  * @asyncJob: type of asynchronous job
  * @start_flags: flags to start QEMU process with
@@ -8107,6 +8108,11 @@ qemuProcessStart(virConnectPtr conn,
  *
  * Start VM with existing memory state. Make sure that the stored memory state
  * is correctly decompressed so it can be loaded by QEMU process.
+ *
+ * When reverting to internal snapshot caller needs to pass @snapshot as well
+ * to correctly start QEMU process.
+ *
+ * When restoring VM from saved image @snapshot needs to be NULL.
  *
  * For audit purposes the expected @reason is one of `restored` or `from-snapshot`.
  *
@@ -8118,6 +8124,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                                 virDomainObj *vm,
                                 int *fd,
                                 const char *path,
+                                virDomainMomentObj *snapshot,
                                 virQEMUSaveData *data,
                                 virDomainAsyncJob asyncJob,
                                 unsigned int start_flags,
@@ -8149,7 +8156,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
         priv->disableSlirp = true;
 
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
-                         asyncJob, "stdio", *fd, path, NULL,
+                         asyncJob, "stdio", *fd, path, snapshot,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          start_flags) == 0)
         *started = true;

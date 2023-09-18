@@ -698,7 +698,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
     if (reset_nvram)
         start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
-    if (qemuProcessStartWithMemoryState(conn, driver, vm, fd, path, data,
+    if (qemuProcessStartWithMemoryState(conn, driver, vm, fd, path, NULL, data,
                                         asyncJob, start_flags, "restored",
                                         &started) < 0) {
         goto cleanup;
