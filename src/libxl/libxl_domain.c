@@ -926,7 +926,7 @@ libxlDomainFreeMem(libxl_ctx *ctx, libxl_domain_config *d_config)
 {
     uint64_t needed_mem;
     uint64_t free_mem;
-    uint64_t target_mem;
+    int64_t target_mem;
     int tries = 3;
     int wait_secs = 10;
 
