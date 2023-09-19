@@ -164,11 +164,8 @@ if conf.has('WITH_LXC')
 
   virt_daemon_units += {
     'service': 'virtlxcd',
-    'service_in': files('virtlxcd.service.in'),
     'name': 'Libvirt lxc',
-    'socket_in': libvirtd_socket_in,
-    'socket_ro_in': libvirtd_socket_ro_in,
-    'socket_admin_in': libvirtd_socket_admin_in,
+    'service_extra_in': files('virtlxcd.service.extra.in'),
   }
 
   openrc_init_files += {
