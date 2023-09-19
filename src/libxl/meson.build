@@ -66,12 +66,9 @@ if conf.has('WITH_LIBXL')
 
   virt_daemon_units += {
     'service': 'virtxend',
-    'service_in': files('virtxend.service.in'),
     'name': 'Libvirt libxl',
-    'socket_in': libvirtd_socket_in,
-    'socket_ro_in': libvirtd_socket_ro_in,
-    'socket_admin_in': libvirtd_socket_admin_in,
-    'deps': 'ConditionPathExists=/proc/xen/capabilities',
+    'service_extra_in': files('virtxend.service.extra.in'),
+    'socket_extra_in': files('virtxend.socket.extra.in'),
   }
 
   openrc_init_files += {

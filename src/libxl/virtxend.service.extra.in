@@ -1,0 +1,12 @@
+[Unit]
+Wants=virtlockd.socket
+After=remote-fs.target
+After=xencommons.service
+Conflicts=xendomains.service
+ConditionPathExists=/proc/xen/capabilities
+
+[Service]
+KillMode=process
+
+[Install]
+Also=virtlockd.socket
