@@ -1,0 +1,25 @@
+[Unit]
+Description=@name@ daemon
+Conflicts=libvirtd.service
+Requires=@service@.socket
+Requires=@service@-ro.socket
+Requires=@service@-admin.socket
+After=network.target
+After=dbus.service
+After=apparmor.service
+Documentation=man:@service@(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+Environment=@SERVICE@_ARGS="--timeout 120"
+EnvironmentFile=-@initconfdir@/@service@
+ExecStart=@sbindir@/@service@ $@SERVICE@_ARGS
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Also=@service@.socket
+Also=@service@-ro.socket
+Also=@service@-admin.socket

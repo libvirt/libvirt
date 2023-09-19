@@ -1,0 +1,12 @@
+[Unit]
+Description=@name@ TLS IP socket
+Before=@service@.service
+BindsTo=@service@.socket
+After=@service@.socket
+
+[Socket]
+ListenStream=16514
+Service=@service@.service
+
+[Install]
+WantedBy=sockets.target

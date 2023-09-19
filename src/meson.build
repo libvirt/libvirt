@@ -203,6 +203,8 @@ libvirtd_socket_admin_in = files('remote' / 'libvirtd-admin.socket.in')
 #   * sockets - array of additional sockets (optional, default [ 'main', 'ro', 'admin' ])
 #   * service_in - service source file (optional, default remote/libvirtd.service.in)
 #   * socket_$name_in - additional socket source files (optional, default remote/libvirtd.socket.in )
+#   * service_extra_in - unit to merge with service_in (optional, default None)
+#   * socket_extra_in - unit to merge with socket_$name_in (optional, default None)
 #   * deps - socket dependencies (optional, default '')
 virt_daemon_units = []
 
@@ -817,6 +819,7 @@ if conf.has('WITH_LIBVIRTD')
         'initconfdir': initconfdir,
         'name': unit['name'],
         'service': unit['service'],
+        'SERVICE': unit['service'].to_upper(),
         'sockprefix': unit.get('sockprefix', unit['service']),
         'deps': unit.get('deps', ''),
         'sockmode': sockmode,
@@ -824,6 +827,15 @@ if conf.has('WITH_LIBVIRTD')
 
       service_in = unit.get('service_in', service_in_default)
       service_out = '@0@.service'.format(unit['service'])
+
+      if 'service_extra_in' in unit
+        service_in = configure_file(
+          input: [ service_in, unit['service_extra_in'] ],
+          output: '@0@.in'.format(service_out),
+          command: [ merge_systemd_units_prog, '@INPUT0@', '@INPUT1@' ],
+          capture: true,
+        )
+      endif
 
       configure_file(
         input: service_in,
@@ -843,6 +855,16 @@ if conf.has('WITH_LIBVIRTD')
           socket_in = unit.get('socket_@0@_in'.format(socket), socket_in_default)
           socket_out = '@0@-@1@.socket'.format(unit['service'], socket)
         endif
+
+        if 'socket_extra_in' in unit
+          socket_in = configure_file(
+            input: [ socket_in, unit['socket_extra_in'] ],
+            output: '@0@.in'.format(socket_out),
+            command: [ merge_systemd_units_prog, '@INPUT0@', '@INPUT1@' ],
+            capture: true,
+          )
+        endif
+
         configure_file(
           input: socket_in,
           output: socket_out,

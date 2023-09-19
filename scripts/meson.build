@@ -19,6 +19,7 @@ scripts = [
   'header-ifdef.py',
   'hvsupport.py',
   'hyperv_wmi_generator.py',
+  'merge-systemd-units.py',
   'meson-dist.py',
   'meson-gen-authors.py',
   'meson-gen-def.py',
