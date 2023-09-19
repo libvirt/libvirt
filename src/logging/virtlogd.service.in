@@ -7,6 +7,7 @@ Documentation=man:virtlogd(8)
 Documentation=https://libvirt.org
 
 [Service]
+Type=notify
 Environment=VIRTLOGD_ARGS=
 EnvironmentFile=-@initconfdir@/virtlogd
 ExecStart=@sbindir@/virtlogd $VIRTLOGD_ARGS

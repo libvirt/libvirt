@@ -7,6 +7,7 @@ Documentation=man:virtlockd(8)
 Documentation=https://libvirt.org
 
 [Service]
+Type=notify
 Environment=VIRTLOCKD_ARGS=
 EnvironmentFile=-@initconfdir@/virtlockd
 ExecStart=@sbindir@/virtlockd $VIRTLOCKD_ARGS
