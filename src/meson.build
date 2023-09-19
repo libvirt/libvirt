@@ -797,13 +797,13 @@ if conf.has('WITH_LIBVIRTD')
       install_dir: systemd_unit_dir,
     )
 
-    foreach unit : virt_daemon_units
-      if conf.has('WITH_POLKIT')
-        sockmode = '0666'
-      else
-        sockmode = '0600'
-      endif
+    if conf.has('WITH_POLKIT')
+      sockmode = '0666'
+    else
+      sockmode = '0600'
+    endif
 
+    foreach unit : virt_daemon_units
       unit_conf = configuration_data({
         'runstatedir': runstatedir,
         'sbindir': sbindir,
