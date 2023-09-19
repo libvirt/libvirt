@@ -36,7 +36,6 @@ if conf.has('WITH_SECRETS')
     'service_in': files('virtsecretd.service.in'),
     'name': 'Libvirt secret',
     'sockprefix': 'virtsecretd',
-    'sockets': [ 'main', 'ro', 'admin' ],
   }
 
   openrc_init_files += {

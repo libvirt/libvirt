@@ -114,7 +114,6 @@ if conf.has('WITH_STORAGE')
     'service_in': files('virtstoraged.service.in'),
     'name': 'Libvirt storage',
     'sockprefix': 'virtstoraged',
-    'sockets': [ 'main', 'ro', 'admin' ],
   }
 
   openrc_init_files += {

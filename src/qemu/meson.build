@@ -186,7 +186,6 @@ if conf.has('WITH_QEMU')
     'service_in': files('virtqemud.service.in'),
     'name': 'Libvirt qemu',
     'sockprefix': 'virtqemud',
-    'sockets': [ 'main', 'ro', 'admin' ],
   }
 
   openrc_init_files += {

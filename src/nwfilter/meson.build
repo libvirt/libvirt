@@ -53,7 +53,6 @@ if conf.has('WITH_NWFILTER')
     'service_in': files('virtnwfilterd.service.in'),
     'name': 'Libvirt nwfilter',
     'sockprefix': 'virtnwfilterd',
-    'sockets': [ 'main', 'ro', 'admin' ],
   }
 
   openrc_init_files += {
