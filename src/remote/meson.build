@@ -128,8 +128,6 @@ libvirtd_socket_unit_files = [
   'libvirtd-tls.socket',
 ]
 
-libvirtd_socket_conflicts = ' '.join(libvirtd_socket_unit_files)
-
 logrotate_files = [
   'libvirtd.qemu',
   'libvirtd.lxc',
@@ -225,7 +223,6 @@ if conf.has('WITH_REMOTE')
       'name': 'Libvirt proxy',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
-      'deps': 'Conflicts=' + libvirtd_socket_conflicts,
     }
 
     openrc_init_files += {
