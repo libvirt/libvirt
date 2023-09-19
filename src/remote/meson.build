@@ -224,15 +224,9 @@ if conf.has('WITH_REMOTE')
 
     virt_daemon_units += {
       'service': 'virtproxyd',
-      'service_in': files('virtproxyd.service.in'),
       'name': 'Libvirt proxy',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
-      'socket_in': files('libvirtd.socket.in'),
-      'socket_ro_in': files('libvirtd-ro.socket.in'),
-      'socket_admin_in': files('libvirtd-admin.socket.in'),
-      'socket_tcp_in': files('libvirtd-tcp.socket.in'),
-      'socket_tls_in': files('libvirtd-tls.socket.in'),
     }
 
     openrc_init_files += {
