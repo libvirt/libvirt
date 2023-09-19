@@ -196,7 +196,7 @@ guest_unit_files = []
 #   * service - name of the service (required)
 #   * service_in - service source file (required)
 #   * name - socket description (required)
-#   * sockprefix - socket prefix name (required)
+#   * sockprefix - socket prefix name (optional, default unit['service'])
 #   * sockets - array of additional sockets (optional, default [ 'main', 'ro', 'admin' ])
 #   * socket_$name_in - additional socket source files (optional, default remote/libvirtd.socket.in )
 #   * deps - socket dependencies (optional, default '')
@@ -811,7 +811,7 @@ if conf.has('WITH_LIBVIRTD')
         'initconfdir': initconfdir,
         'name': unit['name'],
         'service': unit['service'],
-        'sockprefix': unit['sockprefix'],
+        'sockprefix': unit.get('sockprefix', unit['service']),
         'deps': unit.get('deps', ''),
         'sockmode': sockmode,
       })
