@@ -201,7 +201,6 @@ guest_unit_files = []
 #   * socket_$name_in - additional socket source files (optional, default virtd.socket.in or virtd-$name.socket.in)
 #   * service_extra_in - unit to merge with service_in (optional, default None)
 #   * socket_extra_in - unit to merge with socket_$name_in (optional, default None)
-#   * deps - socket dependencies (optional, default '')
 virt_daemon_units = []
 
 # openrc_init_files
@@ -817,7 +816,6 @@ if conf.has('WITH_LIBVIRTD')
         'service': unit['service'],
         'SERVICE': unit['service'].to_upper(),
         'sockprefix': unit.get('sockprefix', unit['service']),
-        'deps': unit.get('deps', ''),
         'sockmode': sockmode,
       })
 

@@ -1,7 +1,6 @@
 [Unit]
 Description=@name@ local socket
 Before=@service@.service
-@deps@
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock

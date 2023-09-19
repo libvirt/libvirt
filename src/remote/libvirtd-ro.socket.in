@@ -3,7 +3,6 @@ Description=@name@ local read-only socket
 Before=@service@.service
 BindsTo=@service@.socket
 After=@service@.socket
-@deps@
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock-ro

@@ -3,7 +3,6 @@ Description=@name@ TLS IP socket
 Before=@service@.service
 BindsTo=@service@.socket
 After=@service@.socket
-@deps@
 
 [Socket]
 ListenStream=16514
