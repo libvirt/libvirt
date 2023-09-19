@@ -2,3 +2,4 @@
 base = master
 to = libvir-list@redhat.com
 prefix = libvirt PATCH
+suppresscc = misc-by
