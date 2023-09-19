@@ -62,11 +62,8 @@ if conf.has('WITH_NETWORK')
 
   virt_daemon_units += {
     'service': 'virtnetworkd',
-    'service_in': files('virtnetworkd.service.in'),
     'name': 'Libvirt network',
-    'socket_in': libvirtd_socket_in,
-    'socket_ro_in': libvirtd_socket_ro_in,
-    'socket_admin_in': libvirtd_socket_admin_in,
+    'service_extra_in': files('virtnetworkd.service.extra.in'),
   }
 
   openrc_init_files += {
