@@ -145,7 +145,6 @@ if conf.has('WITH_LIBVIRTD')
     'service': 'virtlockd',
     'service_in': files('virtlockd.service.in'),
     'name': 'Libvirt locking',
-    'sockprefix': '',
     'sockets': [ 'main', 'admin' ],
     'socket_in': files('virtlockd.socket.in'),
     'socket_admin_in': files('virtlockd-admin.socket.in'),

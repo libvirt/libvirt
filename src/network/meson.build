@@ -64,7 +64,6 @@ if conf.has('WITH_NETWORK')
     'service': 'virtnetworkd',
     'service_in': files('virtnetworkd.service.in'),
     'name': 'Libvirt network',
-    'sockprefix': 'virtnetworkd',
   }
 
   openrc_init_files += {

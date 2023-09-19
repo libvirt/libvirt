@@ -92,7 +92,6 @@ if conf.has('WITH_LIBVIRTD')
     'service': 'virtlogd',
     'service_in': files('virtlogd.service.in'),
     'name': 'Libvirt logging',
-    'sockprefix': '',
     'sockets': [ 'main', 'admin' ],
     'socket_in': files('virtlogd.socket.in'),
     'socket_admin_in': files('virtlogd-admin.socket.in'),

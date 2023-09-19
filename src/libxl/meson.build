@@ -68,7 +68,6 @@ if conf.has('WITH_LIBXL')
     'service': 'virtxend',
     'service_in': files('virtxend.service.in'),
     'name': 'Libvirt libxl',
-    'sockprefix': 'virtxend',
     'deps': 'ConditionPathExists=/proc/xen/capabilities',
   }
 
