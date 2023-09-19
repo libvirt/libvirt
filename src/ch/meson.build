@@ -57,11 +57,8 @@ if conf.has('WITH_CH')
 
   virt_daemon_units += {
     'service': 'virtchd',
-    'service_in': files('virtchd.service.in'),
     'name': 'Libvirt ch',
-    'socket_in': libvirtd_socket_in,
-    'socket_ro_in': libvirtd_socket_ro_in,
-    'socket_admin_in': libvirtd_socket_admin_in,
+    'service_extra_in': files('virtchd.service.extra.in'),
   }
 
   virt_install_dirs += [
