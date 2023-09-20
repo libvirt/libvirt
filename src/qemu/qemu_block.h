@@ -30,11 +30,18 @@ void
 qemuBlockStorageSourceSetStorageNodename(virStorageSource *src,
                                          char *nodename);
 
+void
+qemuBlockStorageSourceSetFormatNodename(virStorageSource *src,
+                                        char *nodename);
+
 const char *
 qemuBlockStorageSourceGetEffectiveStorageNodename(virStorageSource *src);
 
 const char *
 qemuBlockStorageSourceGetStorageNodename(virStorageSource *src);
+
+const char *
+qemuBlockStorageSourceGetFormatNodename(virStorageSource *src);
 
 
 typedef struct qemuBlockNodeNameBackingChainData qemuBlockNodeNameBackingChainData;

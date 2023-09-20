@@ -70,6 +70,23 @@ qemuBlockStorageSourceSetStorageNodename(virStorageSource *src,
 
 
 /**
+ * qemuBlockStorageSourceSetFormatNodename:
+ * @src: virStorageSource to set the format nodename
+ * @nodename: The node name to set (stolen)
+ *
+ * Sets @nodename as the format node name of @src. Using NULL @nodename clears
+ * the nodename. @src takes ownership of @nodename.
+ */
+void
+qemuBlockStorageSourceSetFormatNodename(virStorageSource *src,
+                                        char *nodename)
+{
+    g_free(src->nodeformat);
+    src->nodeformat = nodename;
+}
+
+
+/**
  * qemuBlockStorageSourceGetEffectiveStorageNodename:
  * @src: virStorageSource to get the effective nodename of
  *
@@ -97,6 +114,20 @@ const char *
 qemuBlockStorageSourceGetStorageNodename(virStorageSource *src)
 {
     return src->nodenamestorage;
+}
+
+
+/**
+ * qemuBlockStorageSourceGetFormatNodename:
+ * @src: virStorageSource to get the effective nodename of
+ *
+ * Gets the nodename corresponding to the format layer. Useful when accessing
+ * format specific features. Returns NULL if there is no format layer.
+ */
+const char *
+qemuBlockStorageSourceGetFormatNodename(virStorageSource *src)
+{
+    return src->nodeformat;
 }
 
 
