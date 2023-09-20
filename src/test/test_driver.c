@@ -10000,6 +10000,41 @@ testNetworkSetMetadata(virNetworkPtr net,
     return ret;
 }
 
+static char *
+testConnectGetDomainCapabilities(virConnectPtr conn G_GNUC_UNUSED,
+                                 const char *emulatorbin,
+                                 const char *arch_str,
+                                 const char *machine,
+                                 const char *virttype_str,
+                                 unsigned int flags)
+{
+    g_autoptr(virDomainCaps) domCaps = NULL;
+    virArch arch = VIR_ARCH_I686;
+    int virttype = VIR_DOMAIN_VIRT_TEST;
+
+    virCheckFlags(0, NULL);
+
+    if (arch_str &&
+        (arch = virArchFromString(arch_str)) == VIR_ARCH_NONE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown architecture: %1$s"), arch_str);
+        return NULL;
+    }
+
+    if (virttype_str &&
+        (virttype = virDomainVirtTypeFromString(virttype_str)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown virttype: %1$s"), virttype_str);
+        return NULL;
+    }
+
+    if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
+        return NULL;
+
+    return virDomainCapsFormat(domCaps);
+}
+
+
 /*
  * Test driver
  */
@@ -10167,6 +10202,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainCheckpointGetParent = testDomainCheckpointGetParent, /* 5.6.0 */
     .domainCheckpointDelete = testDomainCheckpointDelete, /* 5.6.0 */
     .domainGetMessages = testDomainGetMessages, /* 7.6.0 */
+    .connectGetDomainCapabilities = testConnectGetDomainCapabilities, /* 9.8.0 */
 };
 
 static virNetworkDriver testNetworkDriver = {

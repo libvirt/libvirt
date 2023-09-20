@@ -66,7 +66,8 @@ The root element that emulator capability XML document starts with has name
    </domainCapabilities>
 
 ``path``
-   The full path to the emulator binary.
+   The full path to the emulator binary. Since not every hypervisor has a
+   notion of emulator binary this element might be omitted in such drivers.
 ``domain``
    Describes the `virtualization type <formatdomain.html#element-and-attribute-overview>`__ (or so
    called domain type).
