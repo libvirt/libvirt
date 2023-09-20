@@ -3686,13 +3686,16 @@ A directory on the host that can be accessed directly from the guest.
    tag that is exported to the guest as a hint for where to mount.
 ``readonly``
    Enables exporting filesystem as a readonly mount for guest, by default
-   read-write access is given (currently only works for QEMU/KVM driver).
+   read-write access is given (currently only works for QEMU/KVM driver; not
+   with virtiofs).
 ``space_hard_limit``
    Maximum space available to this guest's filesystem. :since:`Since 0.9.13`
+   Only supported by the OpenVZ driver.
 ``space_soft_limit``
    Maximum space available to this guest's filesystem. The container is
    permitted to exceed its soft limits for a grace period of time. Afterwards
    the hard limit is enforced. :since:`Since 0.9.13`
+   Only supported by the OpenVZ driver.
 
 
 Device Addresses
