@@ -43,6 +43,9 @@ qemuBlockStorageSourceGetStorageNodename(virStorageSource *src);
 const char *
 qemuBlockStorageSourceGetFormatNodename(virStorageSource *src);
 
+const char *
+qemuBlockStorageSourceGetEffectiveNodename(virStorageSource *src);
+
 
 typedef struct qemuBlockNodeNameBackingChainData qemuBlockNodeNameBackingChainData;
 struct qemuBlockNodeNameBackingChainData {

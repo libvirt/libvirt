@@ -87,6 +87,20 @@ qemuBlockStorageSourceSetFormatNodename(virStorageSource *src,
 
 
 /**
+ * qemuBlockStorageSourceGetEffectiveNodename:
+ * @src: virStorageSource to get the effective nodename of
+ *
+ * Gets the nodename that exposes the guest visible data. This function always
+ * returns a name.
+ */
+const char *
+qemuBlockStorageSourceGetEffectiveNodename(virStorageSource *src)
+{
+    return src->nodeformat;
+}
+
+
+/**
  * qemuBlockStorageSourceGetEffectiveStorageNodename:
  * @src: virStorageSource to get the effective nodename of
  *
