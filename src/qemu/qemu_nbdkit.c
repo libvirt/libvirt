@@ -971,6 +971,9 @@ qemuNbdkitProcessBuildCommandAuth(virStorageAuthDef *authdef,
     }
 
     conn = virGetConnectSecret();
+    if (!conn)
+        return -1;
+
     if (virSecretGetSecretString(conn,
                                  &authdef->seclookupdef,
                                  secrettype,
