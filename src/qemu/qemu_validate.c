@@ -4264,6 +4264,13 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                        _("only supports mount filesystem type"));
         return -1;
     }
+
+    if (fs->space_hard_limit > 0 || fs->space_soft_limit > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("filesystem usage limits are not supported with QEMU"));
+        return -1;
+    }
+
     if (fs->multidevs != VIR_DOMAIN_FS_MULTIDEVS_DEFAULT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_MULTIDEVS)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4328,6 +4335,12 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                                _("virtiofs does not support wrpolicy"));
                 return -1;
             }
+        }
+
+        if (fs->readonly) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtiofs does not support read-only access"));
+            return -1;
         }
 
         if (fs->model != VIR_DOMAIN_FS_MODEL_DEFAULT) {
