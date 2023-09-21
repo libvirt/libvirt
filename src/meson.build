@@ -194,10 +194,10 @@ guest_unit_files = []
 # virt_daemon_units:
 #   generate libvirt daemon systemd unit files
 #   * service - name of the service (required)
-#   * service_in - service source file (required)
 #   * name - socket description (required)
 #   * sockprefix - socket prefix name (optional, default unit['service'])
 #   * sockets - array of additional sockets (optional, default [ 'main', 'ro', 'admin' ])
+#   * service_in - service source file (optional, default remote/libvirtd.service.in)
 #   * socket_$name_in - additional socket source files (optional, default remote/libvirtd.socket.in )
 #   * deps - socket dependencies (optional, default '')
 virt_daemon_units = []
@@ -803,6 +803,8 @@ if conf.has('WITH_LIBVIRTD')
       sockmode = '0600'
     endif
 
+    service_in_default = 'remote' / 'libvirtd.service.in'
+
     foreach unit : virt_daemon_units
       unit_conf = configuration_data({
         'runstatedir': runstatedir,
@@ -816,7 +818,7 @@ if conf.has('WITH_LIBVIRTD')
         'sockmode': sockmode,
       })
 
-      service_in = unit['service_in']
+      service_in = unit.get('service_in', service_in_default)
       service_out = '@0@.service'.format(unit['service'])
 
       configure_file(
