@@ -191,6 +191,10 @@ virt_test_aug_dir = datadir / 'augeas' / 'lenses' / 'tests'
 #   guest unit files to install
 guest_unit_files = []
 
+libvirtd_socket_in = files('remote' / 'libvirtd.socket.in')
+libvirtd_socket_ro_in = files('remote' / 'libvirtd-ro.socket.in')
+libvirtd_socket_admin_in = files('remote' / 'libvirtd-admin.socket.in')
+
 # virt_daemon_units:
 #   generate libvirt daemon systemd unit files
 #   * service - name of the service (required)
