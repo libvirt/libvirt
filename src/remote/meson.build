@@ -194,6 +194,11 @@ if conf.has('WITH_REMOTE')
       'name': 'Libvirt',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
+      'socket_in': files('libvirtd.socket.in'),
+      'socket_ro_in': files('libvirtd-ro.socket.in'),
+      'socket_admin_in': files('libvirtd-admin.socket.in'),
+      'socket_tcp_in': files('libvirtd-tcp.socket.in'),
+      'socket_tls_in': files('libvirtd-tls.socket.in'),
     }
 
     openrc_init_files += {
@@ -223,6 +228,11 @@ if conf.has('WITH_REMOTE')
       'name': 'Libvirt proxy',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
+      'socket_in': files('libvirtd.socket.in'),
+      'socket_ro_in': files('libvirtd-ro.socket.in'),
+      'socket_admin_in': files('libvirtd-admin.socket.in'),
+      'socket_tcp_in': files('libvirtd-tcp.socket.in'),
+      'socket_tls_in': files('libvirtd-tls.socket.in'),
     }
 
     openrc_init_files += {

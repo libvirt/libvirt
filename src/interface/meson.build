@@ -46,6 +46,9 @@ if conf.has('WITH_INTERFACE')
     'service': 'virtinterfaced',
     'service_in': files('virtinterfaced.service.in'),
     'name': 'Libvirt interface',
+    'socket_in': libvirtd_socket_in,
+    'socket_ro_in': libvirtd_socket_ro_in,
+    'socket_admin_in': libvirtd_socket_admin_in,
   }
 
   openrc_init_files += {

@@ -113,6 +113,9 @@ if conf.has('WITH_STORAGE')
     'service': 'virtstoraged',
     'service_in': files('virtstoraged.service.in'),
     'name': 'Libvirt storage',
+    'socket_in': libvirtd_socket_in,
+    'socket_ro_in': libvirtd_socket_ro_in,
+    'socket_admin_in': libvirtd_socket_admin_in,
   }
 
   openrc_init_files += {

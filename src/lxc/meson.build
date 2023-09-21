@@ -166,6 +166,9 @@ if conf.has('WITH_LXC')
     'service': 'virtlxcd',
     'service_in': files('virtlxcd.service.in'),
     'name': 'Libvirt lxc',
+    'socket_in': libvirtd_socket_in,
+    'socket_ro_in': libvirtd_socket_ro_in,
+    'socket_admin_in': libvirtd_socket_admin_in,
   }
 
   openrc_init_files += {
