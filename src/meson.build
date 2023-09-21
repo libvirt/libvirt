@@ -201,8 +201,8 @@ libvirtd_socket_admin_in = files('remote' / 'libvirtd-admin.socket.in')
 #   * name - socket description (required)
 #   * sockprefix - socket prefix name (optional, default unit['service'])
 #   * sockets - array of additional sockets (optional, default [ 'main', 'ro', 'admin' ])
-#   * service_in - service source file (optional, default remote/libvirtd.service.in)
-#   * socket_$name_in - additional socket source files (optional, default remote/libvirtd.socket.in )
+#   * service_in - service source file (optional, default virtd.service.in)
+#   * socket_$name_in - additional socket source files (optional, default virtd.socket.in or virtd-$name.socket.in)
 #   * service_extra_in - unit to merge with service_in (optional, default None)
 #   * socket_extra_in - unit to merge with socket_$name_in (optional, default None)
 #   * deps - socket dependencies (optional, default '')
@@ -809,7 +809,7 @@ if conf.has('WITH_LIBVIRTD')
       sockmode = '0600'
     endif
 
-    service_in_default = 'remote' / 'libvirtd.service.in'
+    service_in_default = 'virtd.service.in'
 
     foreach unit : virt_daemon_units
       unit_conf = configuration_data({
@@ -847,11 +847,11 @@ if conf.has('WITH_LIBVIRTD')
 
       foreach socket : unit.get('sockets', [ 'main', 'ro', 'admin' ])
         if socket == 'main'
-          socket_in_default = 'remote' / 'libvirtd.socket.in'
+          socket_in_default = 'virtd.socket.in'
           socket_in = unit.get('socket_in', socket_in_default)
           socket_out = '@0@.socket'.format(unit['service'])
         else
-          socket_in_default = 'remote' / 'libvirtd-@0@.socket.in'.format(socket)
+          socket_in_default = 'virtd-@0@.socket.in'.format(socket)
           socket_in = unit.get('socket_@0@_in'.format(socket), socket_in_default)
           socket_out = '@0@-@1@.socket'.format(unit['service'], socket)
         endif
