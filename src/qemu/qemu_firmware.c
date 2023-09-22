@@ -1854,7 +1854,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
             }
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Unable to find any firmware to satisfy '%1$s'"),
+                           _("Unable to find '%1$s' firmware that is compatible with the current configuration"),
                            virDomainOsDefFirmwareTypeToString(def->os.firmware));
             return -1;
         }
