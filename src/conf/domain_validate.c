@@ -2221,6 +2221,7 @@ static int
 virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            const virDomainDef *def)
 {
+    const long pagesize = virGetSystemPageSize();
     unsigned long long thpSize;
 
     /* Guest NUMA nodes are continuous and indexed from zero. */
@@ -2293,6 +2294,14 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
         if (mem->targetNode != -1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio-pmem does not support NUMA nodes"));
+            return -1;
+        }
+
+        if (pagesize > 0 &&
+            mem->target.virtio_pmem.address % pagesize != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("memory address must be aligned to %1$ld bytes"),
+                           pagesize);
             return -1;
         }
         break;
