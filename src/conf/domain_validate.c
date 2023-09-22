@@ -2341,7 +2341,8 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
             return -1;
         }
 
-        if (mem->target.virtio_mem.address % mem->target.virtio_mem.blocksize != 0) {
+        /* blocksize is stored in KiB while address is in bytes */
+        if (mem->target.virtio_mem.address % (mem->target.virtio_mem.blocksize * 1024) != 0) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("memory device address must be aligned to blocksize"));
             return -1;
