@@ -436,7 +436,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay, boo
                          _("Failed to terminate process %1$lld with SIG%2$s"),
                          (long long)pid, signame);
 
-    return 0;
+    return -1;
 }
 
 
