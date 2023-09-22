@@ -2223,6 +2223,9 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 {
     const long pagesize = virGetSystemPageSize();
     unsigned long long thpSize;
+    unsigned long long thisStart = 0;
+    unsigned long long thisEnd = 0;
+    size_t i;
 
     /* Guest NUMA nodes are continuous and indexed from zero. */
     if (mem->targetNode != -1) {
@@ -2304,6 +2307,7 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            pagesize);
             return -1;
         }
+        thisStart = mem->target.virtio_pmem.address;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
@@ -2347,6 +2351,7 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            _("memory device address must be aligned to blocksize"));
             return -1;
         }
+        thisStart = mem->target.virtio_mem.address;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -2366,6 +2371,48 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
     default:
         virReportEnumRangeError(virDomainMemoryModel, mem->model);
         return -1;
+    }
+
+    if (thisStart == 0) {
+        return 0;
+    }
+
+    /* thisStart and thisEnd are in bytes, mem->size in kibibytes */
+    thisEnd = thisStart + mem->size * 1024;
+
+    for (i = 0; i < def->nmems; i++) {
+        const virDomainMemoryDef *other = def->mems[i];
+        unsigned long long otherStart = 0;
+
+        if (other == mem)
+            continue;
+
+        switch (other->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            continue;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+            otherStart = other->target.virtio_pmem.address;
+            break;
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            otherStart = other->target.virtio_mem.address;
+            break;
+        }
+
+        if (otherStart == 0)
+            continue;
+
+        if (thisStart <= otherStart && thisEnd > otherStart) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device (0x%3$llx)"),
+                           thisStart, thisEnd, otherStart);
+            return -1;
+        }
     }
 
     return 0;

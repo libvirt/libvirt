@@ -2114,6 +2114,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
     DO_TEST_CAPS_LATEST("memory-hotplug-multiple");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("memory-hotplug-virtio-mem-overlap-address");
 
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-caps", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-cap", "s390x");
