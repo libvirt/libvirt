@@ -843,6 +843,8 @@ int virNetSocketNewConnectSSH(const char *nodename,
     virCommandAddEnvPass(cmd, "OPENSSL_CONF");
     virCommandAddEnvPass(cmd, "DISPLAY");
     virCommandAddEnvPass(cmd, "XAUTHORITY");
+    virCommandAddEnvPass(cmd, "GPG_TTY");
+    virCommandAddEnvPass(cmd, "TERM");
     virCommandClearCaps(cmd);
 
     if (service)
