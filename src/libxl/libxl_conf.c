@@ -1372,7 +1372,7 @@ libxlMakeNic(virDomainDef *def,
             break;
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
-            if (!(conn = virConnectOpen("xen:///system")))
+            if (!(conn = virGetConnectNetwork()))
                 goto cleanup;
 
             if (!(network =
