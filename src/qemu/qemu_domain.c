@@ -11143,7 +11143,10 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
                                                qemuDomainObjPrivate *priv,
                                                virQEMUDriverConfig *cfg)
 {
-    src->nodestorage = g_strdup_printf("%s-storage", nodenameprefix);
+    char *nodestorage = g_strdup_printf("%s-storage", nodenameprefix);
+
+    /* qemuBlockStorageSourceSetStorageNodename steals 'nodestorage' */
+    qemuBlockStorageSourceSetStorageNodename(src, nodestorage);
     src->nodeformat = g_strdup_printf("%s-format", nodenameprefix);
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
@@ -11162,18 +11165,17 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
                                                        src->nodeformat) < 0)
         return -1;
 
-    if (!qemuDomainPrepareStorageSourceNbdkit(src, cfg, src->nodestorage, priv)) {
+    if (!qemuDomainPrepareStorageSourceNbdkit(src, cfg, nodestorage, priv)) {
         /* If we're using nbdkit to serve the storage source, we don't pass
          * authentication secrets to qemu, but will pass them to nbdkit instead */
-        if (qemuDomainSecretStorageSourcePrepareAuth(priv, src,
-                                                     src->nodestorage) < 0)
+        if (qemuDomainSecretStorageSourcePrepareAuth(priv, src, nodestorage) < 0)
             return -1;
     }
 
-    if (qemuDomainPrepareStorageSourcePR(src, priv, src->nodestorage) < 0)
+    if (qemuDomainPrepareStorageSourcePR(src, priv, nodestorage) < 0)
         return -1;
 
-    if (qemuDomainPrepareStorageSourceTLS(src, cfg, src->nodestorage,
+    if (qemuDomainPrepareStorageSourceTLS(src, cfg, nodestorage,
                                           priv) < 0)
         return -1;
 
@@ -11297,12 +11299,14 @@ qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
     }
 
     if (src) {
-        const char *backendalias = hostdev->info->alias;
+        char *backendalias;
 
         src->readonly = hostdev->readonly;
         src->id = qemuDomainStorageIDNew(priv);
-        src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
-        backendalias = src->nodestorage;
+        backendalias = g_strdup_printf("libvirt-%d-backend", src->id);
+
+        /* 'src' takes ownership of 'backendalias' */
+        qemuBlockStorageSourceSetStorageNodename(src, backendalias);
 
         if (src->auth) {
             virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
@@ -11695,8 +11699,7 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
     pflash0->readonly = false;
     virTristateBoolToBool(def->os.loader->readonly, &pflash0->readonly);
     pflash0->nodeformat = g_strdup("libvirt-pflash0-format");
-    pflash0->nodestorage = g_strdup("libvirt-pflash0-storage");
-
+    qemuBlockStorageSourceSetStorageNodename(pflash0, g_strdup("libvirt-pflash0-storage"));
 
     if (def->os.loader->nvram) {
         if (qemuDomainPrepareStorageSourceBlockdevNodename(NULL,
