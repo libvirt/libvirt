@@ -923,7 +923,7 @@ qemuNbdkitStopStorageSource(virStorageSource *src,
 
         if (priv && priv->nbdkitProcess &&
             qemuNbdkitProcessStop(priv->nbdkitProcess, vm) < 0)
-            VIR_WARN("Unable to stop nbdkit for storage source '%s'", src->nodestorage);
+            VIR_WARN("Unable to stop nbdkit for storage source '%s'", qemuBlockStorageSourceGetStorageNodename(src));
     }
 }
 
@@ -1173,7 +1173,7 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
 
     logfd = qemuLogContextGetWriteFD(logContext);
 
-    VIR_DEBUG("starting nbdkit process for %s", proc->source->nodestorage);
+    VIR_DEBUG("starting nbdkit process for %s", qemuBlockStorageSourceGetStorageNodename(proc->source));
     virCommandSetErrorFD(cmd, &logfd);
     virCommandSetOutputFD(cmd, &logfd);
     virCommandSetPidFile(cmd, proc->pidfile);

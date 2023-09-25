@@ -6771,7 +6771,7 @@ qemuProcessPrepareHostStorageSourceVDPA(virStorageSource *src,
 
     srcpriv = qemuDomainStorageSourcePrivateFetch(src);
 
-    srcpriv->fdpass = qemuFDPassNew(src->nodestorage, priv);
+    srcpriv->fdpass = qemuFDPassNew(qemuBlockStorageSourceGetStorageNodename(src), priv);
     qemuFDPassAddFD(srcpriv->fdpass, &vdpafd, "-vdpa");
     return 0;
 }

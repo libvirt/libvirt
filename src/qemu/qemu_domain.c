@@ -11106,7 +11106,7 @@ qemuDomainPrepareStorageSourceFDs(virStorageSource *src,
 
     srcpriv = qemuDomainStorageSourcePrivateFetch(src);
 
-    srcpriv->fdpass = qemuFDPassNew(src->nodestorage, priv);
+    srcpriv->fdpass = qemuFDPassNew(qemuBlockStorageSourceGetStorageNodename(src), priv);
 
     for (i = 0; i < fdt->nfds; i++) {
         g_autofree char *idx = g_strdup_printf("%zu", i);
