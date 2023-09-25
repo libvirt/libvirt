@@ -1,10 +1,10 @@
 [Unit]
 Description=@name@ local socket
-Before=@service@.service
+Before=libvirtd.service
 
 [Socket]
-ListenStream=@runstatedir@/libvirt/@sockprefix@-sock
-Service=@service@.service
+ListenStream=@runstatedir@/libvirt/libvirt-sock
+Service=libvirtd.service
 SocketMode=@sockmode@
 RemoveOnStop=yes
 

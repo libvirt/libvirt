@@ -1,12 +1,12 @@
 [Unit]
 Description=@name@ admin socket
-Before=@service@.service
-BindsTo=@service@.socket
-After=@service@.socket
+Before=libvirtd.service
+BindsTo=libvirtd.socket
+After=libvirtd.socket
 
 [Socket]
-ListenStream=@runstatedir@/libvirt/@sockprefix@-admin-sock
-Service=@service@.service
+ListenStream=@runstatedir@/libvirt/libvirt-admin-sock
+Service=libvirtd.service
 SocketMode=0600
 
 [Install]

@@ -1,12 +1,12 @@
 [Unit]
 Description=@name@ TLS IP socket
-Before=@service@.service
-BindsTo=@service@.socket
-After=@service@.socket
+Before=libvirtd.service
+BindsTo=libvirtd.socket
+After=libvirtd.socket
 
 [Socket]
 ListenStream=16514
-Service=@service@.service
+Service=libvirtd.service
 
 [Install]
 WantedBy=sockets.target
