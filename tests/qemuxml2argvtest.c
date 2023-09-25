@@ -12,6 +12,7 @@
 # include "internal.h"
 # include "viralloc.h"
 # include "viridentity.h"
+# include "qemu/qemu_block.h"
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_domain.h"
 # include "qemu/qemu_migration.h"
@@ -338,7 +339,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 
                     srcpriv = qemuDomainStorageSourcePrivateFetch(src);
 
-                    srcpriv->fdpass = qemuFDPassNew(src->nodestorage, priv);
+                    srcpriv->fdpass = qemuFDPassNew(qemuBlockStorageSourceGetStorageNodename(src), priv);
                     qemuFDPassAddFD(srcpriv->fdpass, &fd, "-vdpa");
                 }
             }

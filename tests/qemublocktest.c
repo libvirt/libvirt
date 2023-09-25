@@ -233,7 +233,7 @@ testQemuDiskXMLToJSONFakeSecrets(virStorageSource *src)
 
         srcpriv->secinfo->username = g_strdup(src->auth->username);
         srcpriv->secinfo->alias = g_strdup_printf("%s-secalias",
-                                                  NULLSTR(src->nodestorage));
+                                                  NULLSTR(qemuBlockStorageSourceGetStorageNodename(src)));
     }
 
     if (src->encryption) {
@@ -667,7 +667,7 @@ testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
    ret->type = VIR_STORAGE_TYPE_FILE;
    ret->format = VIR_STORAGE_FILE_QCOW2;
    ret->path = g_strdup_printf("/image%zu", idx);
-   ret->nodestorage = g_strdup_printf("libvirt-%zu-storage", idx);
+   qemuBlockStorageSourceSetStorageNodename(ret, g_strdup_printf("libvirt-%zu-storage", idx));
    ret->nodeformat = g_strdup_printf("libvirt-%zu-format", idx);
 
    return ret;
