@@ -18682,7 +18682,7 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
         goto endjob;
     }
 
-    nodename = g_strdup(src->nodestorage);
+    nodename = g_strdup(qemuBlockStorageSourceGetStorageNodename(src));
 
     qemuDomainObjEnterMonitor(vm);
     rc = qemuMonitorSetBlockThreshold(priv->mon, nodename, threshold);
