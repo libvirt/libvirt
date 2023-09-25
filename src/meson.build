@@ -799,9 +799,9 @@ if conf.has('WITH_LIBVIRTD')
 
     foreach unit : virt_daemon_units
       if conf.has('WITH_POLKIT')
-        mode = '0666'
+        sockmode = '0666'
       else
-        mode = '0600'
+        sockmode = '0600'
       endif
 
       unit_conf = configuration_data({
@@ -813,7 +813,7 @@ if conf.has('WITH_LIBVIRTD')
         'service': unit['service'],
         'sockprefix': unit['sockprefix'],
         'deps': unit.get('deps', ''),
-        'mode': mode,
+        'sockmode': sockmode,
       })
 
       configure_file(

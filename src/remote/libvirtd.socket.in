@@ -6,7 +6,7 @@ Before=@service@.service
 [Socket]
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock
 Service=@service@.service
-SocketMode=@mode@
+SocketMode=@sockmode@
 RemoveOnStop=yes
 
 [Install]
