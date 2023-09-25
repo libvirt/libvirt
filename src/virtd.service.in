@@ -1,9 +1,10 @@
 [Unit]
 Description=@name@ daemon
-Conflicts=libvirtd.service
 Requires=@service@.socket
 Requires=@service@-ro.socket
 Requires=@service@-admin.socket
+Conflicts=libvirtd.service
+After=libvirtd.service
 After=network.target
 After=dbus.service
 After=apparmor.service

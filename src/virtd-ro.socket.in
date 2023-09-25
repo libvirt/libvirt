@@ -3,6 +3,8 @@ Description=@name@ local read-only socket
 Before=@service@.service
 BindsTo=@service@.socket
 After=@service@.socket
+Conflicts=libvirtd-ro.socket
+After=libvirtd-ro.socket
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock-ro

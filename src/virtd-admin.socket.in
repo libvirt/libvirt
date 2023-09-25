@@ -3,6 +3,8 @@ Description=@name@ admin socket
 Before=@service@.service
 BindsTo=@service@.socket
 After=@service@.socket
+Conflicts=libvirtd-admin.socket
+After=libvirtd-admin.socket
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/@sockprefix@-admin-sock

@@ -3,6 +3,8 @@ Description=@name@ non-TLS IP socket
 Before=@service@.service
 BindsTo=@service@.socket
 After=@service@.socket
+Conflicts=libvirtd-tcp.socket
+After=libvirtd-tcp.socket
 
 [Socket]
 ListenStream=16509

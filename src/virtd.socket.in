@@ -1,6 +1,8 @@
 [Unit]
 Description=@name@ local socket
 Before=@service@.service
+Conflicts=libvirtd.socket
+After=libvirtd.socket
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock
