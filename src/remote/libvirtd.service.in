@@ -1,13 +1,18 @@
 [Unit]
 Description=Virtualization daemon
-Requires=virtlogd.socket
 # Use Wants instead of Requires so that users
 # can disable these three .socket units to revert
 # to a traditional non-activation deployment setup
 Wants=libvirtd.socket
 Wants=libvirtd-ro.socket
 Wants=libvirtd-admin.socket
+After=libvirtd.socket
+After=libvirtd-ro.socket
+After=libvirtd-admin.socket
+Requires=virtlogd.socket
 Wants=virtlockd.socket
+After=virtlogd.socket
+After=virtlockd.socket
 Wants=systemd-machined.service
 After=network.target
 After=dbus.service

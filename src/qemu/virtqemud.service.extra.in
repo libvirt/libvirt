@@ -1,6 +1,8 @@
 [Unit]
 Requires=virtlogd.socket
 Wants=virtlockd.socket
+After=virtlogd.socket
+After=virtlockd.socket
 Wants=systemd-machined.service
 After=systemd-machined.service
 After=remote-fs.target

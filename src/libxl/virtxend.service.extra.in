@@ -1,5 +1,6 @@
 [Unit]
 Wants=virtlockd.socket
+After=virtlockd.socket
 After=remote-fs.target
 After=xencommons.service
 Conflicts=xendomains.service
