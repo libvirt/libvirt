@@ -1484,7 +1484,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
                                                                      backendpropsflags)))
         return NULL;
 
-    data->storageNodeName = src->nodestorage;
+    data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     data->formatNodeName = src->nodeformat;
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src)) {
@@ -1705,7 +1705,7 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
 
     data->formatNodeName = src->nodeformat;
     data->formatAttached = true;
-    data->storageNodeName = src->nodestorage;
+    data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     data->storageAttached = true;
 
     /* 'raw' format doesn't need the extra 'raw' layer when slicing, thus
@@ -1899,7 +1899,8 @@ qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
     ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodeformat);
 
     if (ret == 0)
-        ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodestorage);
+        ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm),
+                                     qemuBlockStorageSourceGetStorageNodename(src));
 
     qemuDomainObjExitMonitor(vm);
 

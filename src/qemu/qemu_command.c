@@ -5049,7 +5049,7 @@ qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
     }
 
     srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-    ret->storageNodeName = src->nodestorage;
+    ret->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     ret->storageAttached = true;
 
     if (srcpriv && srcpriv->secinfo)
@@ -5083,8 +5083,8 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
         return NULL;
     }
 
-    ret->storageNodeName = src->nodestorage;
-    *backendAlias = src->nodestorage;
+    ret->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
+    *backendAlias = qemuBlockStorageSourceGetStorageNodename(src);
 
     if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src,
                                                                     QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)))
