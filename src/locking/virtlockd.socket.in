@@ -1,6 +1,5 @@
 [Unit]
 Description=Virtual machine lock manager socket
-Before=libvirtd.service
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/virtlockd-sock

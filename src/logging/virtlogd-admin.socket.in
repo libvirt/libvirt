@@ -1,6 +1,5 @@
 [Unit]
 Description=Virtual machine log manager socket
-Before=libvirtd.service
 BindsTo=virtlogd.socket
 After=virtlogd.socket
 

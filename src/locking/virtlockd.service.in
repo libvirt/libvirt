@@ -4,7 +4,6 @@ BindsTo=virtlockd.socket
 Wants=virtlockd-admin.socket
 After=virtlockd.socket
 After=virtlockd-admin.socket
-Before=libvirtd.service
 Documentation=man:virtlockd(8)
 Documentation=https://libvirt.org
 
