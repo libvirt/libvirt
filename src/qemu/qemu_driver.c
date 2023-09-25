@@ -17349,7 +17349,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
         if (QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
             frontendalias = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
             backendalias = n->nodeformat;
-            backendstoragealias = n->nodestorage;
+            backendstoragealias = qemuBlockStorageSourceGetStorageNodename(n);
         } else {
             /* alias may be NULL if the VM is not running */
             if (disk->info.alias &&
@@ -17408,7 +17408,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                            stats) < 0)
                 return -1;
 
-            if (qemuDomainGetStatsBlockExportBackendStorage(disk->mirror->nodestorage,
+            if (qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(disk->mirror),
                                                             stats, *recordnr,
                                                             params) < 0)
                 return -1;
@@ -17437,7 +17437,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                                    stats) < 0)
                         return -1;
 
-                    if (qemuDomainGetStatsBlockExportBackendStorage(backupdisk->store->nodestorage,
+                    if (qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(backupdisk->store),
                                                                     stats, *recordnr,
                                                                     params) < 0)
                         return -1;
