@@ -1,5 +1,5 @@
 [Unit]
-Description=Virtual machine lock manager admin socket
+Description=libvirt locking daemon admin socket
 BindsTo=virtlockd.socket
 After=virtlockd.socket
 

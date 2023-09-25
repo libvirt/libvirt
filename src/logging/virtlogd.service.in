@@ -1,5 +1,5 @@
 [Unit]
-Description=Virtual machine log manager
+Description=libvirt logging daemon
 BindsTo=virtlogd.socket
 Wants=virtlogd-admin.socket
 After=virtlogd.socket

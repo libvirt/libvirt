@@ -50,7 +50,7 @@ if conf.has('WITH_NWFILTER')
 
   virt_daemon_units += {
     'service': 'virtnwfilterd',
-    'name': 'Libvirt nwfilter',
+    'name': 'nwfilter',
   }
 
   openrc_init_files += {

@@ -1,5 +1,5 @@
 [Unit]
-Description=Virtual machine log manager socket
+Description=libvirt logging daemon socket
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/virtlogd-sock

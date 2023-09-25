@@ -62,7 +62,7 @@ if conf.has('WITH_NETWORK')
 
   virt_daemon_units += {
     'service': 'virtnetworkd',
-    'name': 'Libvirt network',
+    'name': 'network',
     'service_extra_in': files('virtnetworkd.service.extra.in'),
   }
 

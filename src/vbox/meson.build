@@ -57,7 +57,7 @@ if conf.has('WITH_VBOX')
 
   virt_daemon_units += {
     'service': 'virtvboxd',
-    'name': 'Libvirt vbox',
+    'name': 'VirtualBox',
     'service_extra_in': files('virtvboxd.service.extra.in'),
   }
 

@@ -66,7 +66,7 @@ if conf.has('WITH_LIBXL')
 
   virt_daemon_units += {
     'service': 'virtxend',
-    'name': 'Libvirt libxl',
+    'name': 'Xen',
     'service_extra_in': files('virtxend.service.extra.in'),
     'socket_extra_in': files('virtxend.socket.extra.in'),
   }

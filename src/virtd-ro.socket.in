@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ local read-only socket
+Description=libvirt @name@ daemon read-only socket
 BindsTo=@service@.socket
 After=@service@.socket
 Conflicts=libvirtd-ro.socket

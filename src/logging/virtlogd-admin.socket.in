@@ -1,5 +1,5 @@
 [Unit]
-Description=Virtual machine log manager socket
+Description=libvirt logging daemon admin socket
 BindsTo=virtlogd.socket
 After=virtlogd.socket
 

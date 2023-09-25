@@ -57,7 +57,7 @@ if conf.has('WITH_CH')
 
   virt_daemon_units += {
     'service': 'virtchd',
-    'name': 'Libvirt ch',
+    'name': 'Cloud Hypervisor',
     'service_extra_in': files('virtchd.service.extra.in'),
   }
 

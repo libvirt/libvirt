@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ non-TLS IP socket
+Description=libvirt legacy monolithic daemon non-TLS IP socket
 BindsTo=libvirtd.socket
 After=libvirtd.socket
 

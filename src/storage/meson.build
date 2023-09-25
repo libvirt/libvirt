@@ -111,7 +111,7 @@ if conf.has('WITH_STORAGE')
 
   virt_daemon_units += {
     'service': 'virtstoraged',
-    'name': 'Libvirt storage',
+    'name': 'storage',
     'service_extra_in': files('virtstoraged.service.extra.in'),
   }
 

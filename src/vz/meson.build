@@ -48,7 +48,7 @@ if conf.has('WITH_VZ')
 
   virt_daemon_units += {
     'service': 'virtvzd',
-    'name': 'Libvirt vz',
+    'name': 'vz',
     'service_extra_in': files('virtvzd.service.extra.in'),
   }
 

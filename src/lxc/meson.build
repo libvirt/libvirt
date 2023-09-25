@@ -164,7 +164,7 @@ if conf.has('WITH_LXC')
 
   virt_daemon_units += {
     'service': 'virtlxcd',
-    'name': 'Libvirt lxc',
+    'name': 'LXC',
     'service_extra_in': files('virtlxcd.service.extra.in'),
   }
 

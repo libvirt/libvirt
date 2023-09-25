@@ -183,7 +183,7 @@ if conf.has('WITH_QEMU')
 
   virt_daemon_units += {
     'service': 'virtqemud',
-    'name': 'Libvirt qemu',
+    'name': 'QEMU',
     'service_extra_in': files('virtqemud.service.extra.in'),
   }
 

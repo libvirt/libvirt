@@ -1,5 +1,5 @@
 [Unit]
-Description=Virtual machine lock manager socket
+Description=libvirt locking daemon socket
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/virtlockd-sock

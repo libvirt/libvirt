@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ TLS IP socket
+Description=libvirt @name@ daemon TLS IP socket
 BindsTo=@service@.socket
 After=@service@.socket
 Conflicts=libvirtd-tls.socket

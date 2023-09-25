@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ admin socket
+Description=libvirt legacy monolithic daemon admin socket
 BindsTo=libvirtd.socket
 After=libvirtd.socket
 

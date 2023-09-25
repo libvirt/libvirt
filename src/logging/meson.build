@@ -91,7 +91,7 @@ if conf.has('WITH_LIBVIRTD')
   virt_daemon_units += {
     'service': 'virtlogd',
     'service_in': files('virtlogd.service.in'),
-    'name': 'Libvirt logging',
+    'name': 'logging',
     'sockets': [ 'main', 'admin' ],
     'socket_in': files('virtlogd.socket.in'),
     'socket_admin_in': files('virtlogd-admin.socket.in'),

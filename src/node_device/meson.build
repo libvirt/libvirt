@@ -52,7 +52,7 @@ if conf.has('WITH_NODE_DEVICES')
 
   virt_daemon_units += {
     'service': 'virtnodedevd',
-    'name': 'Libvirt nodedev',
+    'name': 'nodedev',
   }
 
   openrc_init_files += {

@@ -44,7 +44,7 @@ if conf.has('WITH_INTERFACE')
 
   virt_daemon_units += {
     'service': 'virtinterfaced',
-    'name': 'Libvirt interface',
+    'name': 'interface',
   }
 
   openrc_init_files += {

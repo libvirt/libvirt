@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ daemon
+Description=libvirt @name@ daemon
 BindsTo=@service@.socket
 Wants=@service@-ro.socket
 Wants=@service@-admin.socket

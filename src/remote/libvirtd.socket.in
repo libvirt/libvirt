@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ local socket
+Description=libvirt legacy monolithic daemon socket
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/libvirt-sock

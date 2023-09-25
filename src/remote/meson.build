@@ -191,7 +191,7 @@ if conf.has('WITH_REMOTE')
     virt_daemon_units += {
       'service': 'libvirtd',
       'service_in': files('libvirtd.service.in'),
-      'name': 'Libvirt',
+      'name': 'legacy monolithic',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
       'socket_in': files('libvirtd.socket.in'),
@@ -224,7 +224,7 @@ if conf.has('WITH_REMOTE')
 
     virt_daemon_units += {
       'service': 'virtproxyd',
-      'name': 'Libvirt proxy',
+      'name': 'proxy',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
     }

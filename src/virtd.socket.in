@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ local socket
+Description=libvirt @name@ daemon socket
 Conflicts=libvirtd.socket
 After=libvirtd.socket
 

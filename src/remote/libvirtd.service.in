@@ -1,5 +1,5 @@
 [Unit]
-Description=Virtualization daemon
+Description=libvirt legacy monolithic daemon
 # Use Wants instead of Requires so that users
 # can disable these three .socket units to revert
 # to a traditional non-activation deployment setup

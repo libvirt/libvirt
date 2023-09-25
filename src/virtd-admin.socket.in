@@ -1,5 +1,5 @@
 [Unit]
-Description=@name@ admin socket
+Description=libvirt @name@ daemon admin socket
 BindsTo=@service@.socket
 After=@service@.socket
 Conflicts=libvirtd-admin.socket
