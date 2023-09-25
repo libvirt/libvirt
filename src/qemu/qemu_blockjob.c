@@ -312,7 +312,7 @@ qemuBlockJobNewCreate(virDomainObj *vm,
     const char *nodename = src->nodeformat;
 
     if (storage)
-        nodename = src->nodestorage;
+        nodename = qemuBlockStorageSourceGetStorageNodename(src);
 
     jobname = g_strdup_printf("create-%s", nodename);
 

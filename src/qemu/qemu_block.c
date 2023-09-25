@@ -2078,7 +2078,7 @@ qemuBlockStorageSourceCreateGetFormatPropsGeneric(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", driver,
-                              "s:file", src->nodestorage,
+                              "s:file", qemuBlockStorageSourceGetEffectiveStorageNodename(src),
                               "U:size", src->capacity,
                               NULL) < 0)
         return -1;
@@ -2143,7 +2143,7 @@ qemuBlockStorageSourceCreateGetFormatPropsLUKS(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&luksprops,
                               "s:driver", "luks",
-                              "s:file", src->nodestorage,
+                              "s:file", qemuBlockStorageSourceGetEffectiveStorageNodename(src),
                               "U:size", src->capacity,
                               NULL) < 0)
         return -1;
@@ -2200,7 +2200,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow2(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&qcow2props,
                               "s:driver", "qcow2",
-                              "s:file", src->nodestorage,
+                              "s:file", qemuBlockStorageSourceGetEffectiveStorageNodename(src),
                               "U:size", src->capacity,
                               "S:version", qcow2version,
                               "P:cluster-size", src->clusterSize,
@@ -2226,7 +2226,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&qcowprops,
                               "s:driver", "qcow",
-                              "s:file", src->nodestorage,
+                              "s:file", qemuBlockStorageSourceGetEffectiveStorageNodename(src),
                               "U:size", src->capacity,
                               NULL) < 0)
         return -1;
@@ -2249,7 +2249,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQed(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&qedprops,
                               "s:driver", "qed",
-                              "s:file", src->nodestorage,
+                              "s:file", qemuBlockStorageSourceGetEffectiveStorageNodename(src),
                               "U:size", src->capacity,
                               NULL) < 0)
         return -1;
