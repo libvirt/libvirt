@@ -1,11 +1,11 @@
 [Unit]
 Description=libvirt locking daemon
+Documentation=man:virtlockd(8)
+Documentation=https://libvirt.org/
 BindsTo=virtlockd.socket
 Wants=virtlockd-admin.socket
 After=virtlockd.socket
 After=virtlockd-admin.socket
-Documentation=man:virtlockd(8)
-Documentation=https://libvirt.org
 
 [Service]
 Type=notify

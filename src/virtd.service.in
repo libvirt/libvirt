@@ -1,5 +1,7 @@
 [Unit]
 Description=libvirt @name@ daemon
+Documentation=man:@service@(8)
+Documentation=https://libvirt.org/
 BindsTo=@service@.socket
 Wants=@service@-ro.socket
 Wants=@service@-admin.socket
@@ -11,8 +13,6 @@ After=libvirtd.service
 After=network.target
 After=dbus.service
 After=apparmor.service
-Documentation=man:@service@(8)
-Documentation=https://libvirt.org
 
 [Service]
 Type=notify

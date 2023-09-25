@@ -1,11 +1,11 @@
 [Unit]
 Description=libvirt logging daemon
+Documentation=man:virtlogd(8)
+Documentation=https://libvirt.org/
 BindsTo=virtlogd.socket
 Wants=virtlogd-admin.socket
 After=virtlogd.socket
 After=virtlogd-admin.socket
-Documentation=man:virtlogd(8)
-Documentation=https://libvirt.org
 
 [Service]
 Type=notify
