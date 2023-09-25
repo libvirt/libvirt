@@ -1060,8 +1060,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
         return NULL;
 
     if (!onlytarget) {
-        if (qemuBlockNodeNameValidate(src->nodestorage) < 0 ||
-            virJSONValueObjectAdd(&fileprops, "S:node-name", src->nodestorage, NULL) < 0)
+        if (qemuBlockNodeNameValidate(qemuBlockStorageSourceGetStorageNodename(src)) < 0 ||
+            virJSONValueObjectAdd(&fileprops,
+                                  "S:node-name", qemuBlockStorageSourceGetStorageNodename(src),
+                                  NULL) < 0)
             return NULL;
 
         if (!legacy) {
@@ -1358,10 +1360,6 @@ qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
     g_autoptr(virJSONValue) props = NULL;
     const char *backingFormatterStr = NULL;
     const char *backingNodename = NULL;
-    const char *storagenode = src->nodestorage;
-
-    if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
-        storagenode = src->sliceStorage->nodename;
 
     if (virStorageSourceIsBacking(backingStore) &&
         src->format < VIR_STORAGE_FILE_BACKING) {
@@ -1386,7 +1384,7 @@ qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
         return NULL;
 
     if (virJSONValueObjectAdd(&props,
-                              "s:file", storagenode,
+                              "s:file", qemuBlockStorageSourceGetEffectiveStorageNodename(src),
                               backingFormatterStr, backingNodename,
                               NULL) < 0)
         return 0;
@@ -1408,7 +1406,7 @@ qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
                               "s:node-name", src->sliceStorage->nodename,
                               "U:offset", src->sliceStorage->offset,
                               "U:size", src->sliceStorage->size,
-                              "s:file", src->nodestorage,
+                              "s:file", qemuBlockStorageSourceGetStorageNodename(src),
                               "b:auto-read-only", true,
                               "s:discard", "unmap",
                               NULL) < 0)
