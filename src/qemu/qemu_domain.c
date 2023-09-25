@@ -2000,7 +2000,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     int enccount;
     xmlNodePtr nbdkitnode = NULL;
 
-    src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
+    qemuBlockStorageSourceSetStorageNodename(src, virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt));
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
     src->tlsAlias = virXPathString("string(./objects/TLSx509/@alias)", ctxt);
 
@@ -2111,7 +2111,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
     g_auto(virBuffer) objectsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) fdsetsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
+    virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", qemuBlockStorageSourceGetStorageNodename(src));
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
 
     if (src->sliceStorage)
@@ -2288,13 +2288,16 @@ qemuDomainPrivateBlockJobFormatCommit(qemuBlockJobData *job,
     g_auto(virBuffer) disabledBitmapsBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (job->data.commit.base)
-        virBufferAsprintf(buf, "<base node='%s'/>\n", job->data.commit.base->nodestorage);
+        virBufferAsprintf(buf, "<base node='%s'/>\n",
+                          qemuBlockStorageSourceGetStorageNodename(job->data.commit.base));
 
     if (job->data.commit.top)
-        virBufferAsprintf(buf, "<top node='%s'/>\n", job->data.commit.top->nodestorage);
+        virBufferAsprintf(buf, "<top node='%s'/>\n",
+                          qemuBlockStorageSourceGetStorageNodename(job->data.commit.top));
 
     if (job->data.commit.topparent)
-        virBufferAsprintf(buf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodestorage);
+        virBufferAsprintf(buf, "<topparent node='%s'/>\n",
+                          qemuBlockStorageSourceGetStorageNodename(job->data.commit.topparent));
 
     if (job->data.commit.deleteCommittedImages)
         virBufferAddLit(buf, "<deleteCommittedImages/>\n");
@@ -2357,7 +2360,8 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
     switch ((qemuBlockJobType) job->type) {
         case QEMU_BLOCKJOB_TYPE_PULL:
             if (job->data.pull.base)
-                virBufferAsprintf(&childBuf, "<base node='%s'/>\n", job->data.pull.base->nodestorage);
+                virBufferAsprintf(&childBuf, "<base node='%s'/>\n",
+                                  qemuBlockStorageSourceGetStorageNodename(job->data.pull.base));
             break;
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
@@ -6060,8 +6064,8 @@ qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDef *host
         return -1;
     }
 
-    if (!src->nodestorage)
-        src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+    if (!qemuBlockStorageSourceGetStorageNodename(src))
+        qemuBlockStorageSourceSetStorageNodename(src, g_strdup_printf("libvirt-%s-backend", hostdev->info->alias));
 
     return 0;
 }
