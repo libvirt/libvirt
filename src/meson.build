@@ -826,12 +826,12 @@ if conf.has('WITH_LIBVIRTD')
 
       foreach socket : unit.get('sockets', [ 'main', 'ro', 'admin' ])
         if socket == 'main'
-          socket_in_def = 'remote' / 'libvirtd.socket.in'
-          socket_in = unit.get('socket_in', socket_in_def)
+          socket_in_default = 'remote' / 'libvirtd.socket.in'
+          socket_in = unit.get('socket_in', socket_in_default)
           socket_out = '@0@.socket'.format(unit['service'])
         else
-          socket_in_def = 'remote' / 'libvirtd-@0@.socket.in'.format(socket)
-          socket_in = unit.get('socket_@0@_in'.format(socket), socket_in_def)
+          socket_in_default = 'remote' / 'libvirtd-@0@.socket.in'.format(socket)
+          socket_in = unit.get('socket_@0@_in'.format(socket), socket_in_default)
           socket_out = '@0@-@1@.socket'.format(unit['service'], socket)
         endif
         configure_file(
