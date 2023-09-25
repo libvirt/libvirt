@@ -1,6 +1,5 @@
 [Unit]
 Description=@name@ non-TLS IP socket
-Before=libvirtd.service
 BindsTo=libvirtd.socket
 After=libvirtd.socket
 

@@ -1,6 +1,5 @@
 [Unit]
 Description=@name@ local socket
-Before=libvirtd.service
 
 [Socket]
 ListenStream=@runstatedir@/libvirt/libvirt-sock

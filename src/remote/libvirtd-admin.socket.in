@@ -1,6 +1,5 @@
 [Unit]
 Description=@name@ admin socket
-Before=libvirtd.service
 BindsTo=libvirtd.socket
 After=libvirtd.socket
 

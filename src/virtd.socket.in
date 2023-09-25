@@ -1,6 +1,5 @@
 [Unit]
 Description=@name@ local socket
-Before=@service@.service
 Conflicts=libvirtd.socket
 After=libvirtd.socket
 
