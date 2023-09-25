@@ -12,3 +12,5 @@ SocketMode=0666
 
 [Install]
 WantedBy=sockets.target
+Also=@service@.socket
+Also=@service@-admin.socket

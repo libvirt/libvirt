@@ -10,3 +10,4 @@ SocketMode=0600
 
 [Install]
 WantedBy=sockets.target
+Also=virtlogd.socket

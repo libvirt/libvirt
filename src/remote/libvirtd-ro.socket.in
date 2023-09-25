@@ -10,3 +10,5 @@ SocketMode=0666
 
 [Install]
 WantedBy=sockets.target
+Also=libvirtd.socket
+Also=libvirtd-admin.socket

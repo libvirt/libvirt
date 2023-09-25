@@ -11,3 +11,5 @@ RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target
+Also=@service@-ro.socket
+Also=@service@-admin.socket
