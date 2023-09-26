@@ -816,9 +816,12 @@ if conf.has('WITH_LIBVIRTD')
         'sockmode': sockmode,
       })
 
+      service_in = unit['service_in']
+      service_out = '@0@.service'.format(unit['service'])
+
       configure_file(
-        input: unit['service_in'],
-        output: '@0@.service'.format(unit['service']),
+        input: service_in,
+        output: service_out,
         configuration: unit_conf,
         install: true,
         install_dir: systemd_unit_dir,
