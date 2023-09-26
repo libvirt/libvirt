@@ -328,6 +328,8 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     bool cellno = vshCommandOptBool(cmd, "cellno");
     bool pagesz = vshCommandOptBool(cmd, "pagesize");
     virshControl *priv = ctl->privData;
+    bool pagesize_missing = false;
+    int rv = -1;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
@@ -407,16 +409,22 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
                 goto cleanup;
             }
 
-            if (virNodeGetFreePages(priv->conn, npages, pagesize,
-                                    cell, 1, counts, 0) < 0)
+            rv = virNodeGetFreePages(priv->conn, npages, pagesize,
+                                     cell, 1, counts, 0);
+            if (rv < 0)
                 goto cleanup;
+
+            if (rv < npages) {
+                pagesize_missing = true;
+                vshError(ctl, _("Did not get all free page data for node %1$d"), cell);
+                continue;
+            }
 
             vshPrint(ctl, _("Node %1$d:\n"), cell);
             for (j = 0; j < npages; j++)
                 vshPrint(ctl, "%uKiB: %lld\n", pagesize[j], counts[j]);
             vshPrint(ctl, "%c", '\n');
         }
-
     } else {
         if (!cellno) {
             vshError(ctl, "%s", _("missing cellno argument"));
@@ -443,14 +451,22 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
 
         counts = g_new0(unsigned long long, 1);
 
-        if (virNodeGetFreePages(priv->conn, 1, pagesize,
-                                cell, 1, counts, 0) < 0)
+        rv = virNodeGetFreePages(priv->conn, 1, pagesize,
+                                 cell, 1, counts, 0);
+        if (rv < 0)
             goto cleanup;
+
+        if (rv == 0) {
+            vshError(ctl,
+                     "Could not get count of free %uKiB pages, no data returned",
+                     *pagesize);
+            goto cleanup;
+        }
 
         vshPrint(ctl, "%uKiB: %lld\n", *pagesize, counts[0]);
     }
 
-    ret = true;
+    ret = !pagesize_missing;
  cleanup:
     VIR_FREE(nodes);
     return ret;
