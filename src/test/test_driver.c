@@ -4497,24 +4497,25 @@ static int
 testNodeGetFreePages(virConnectPtr conn G_GNUC_UNUSED,
                      unsigned int npages,
                      unsigned int *pages G_GNUC_UNUSED,
-                     int startCell G_GNUC_UNUSED,
+                     int startCell,
                      unsigned int cellCount,
                      unsigned long long *counts,
                      unsigned int flags)
 {
     size_t i = 0, j = 0;
-    int x = 6;
 
     virCheckFlags(0, -1);
 
     for (i = 0; i < cellCount; i++) {
+        int x = (startCell + i) * 6;
+
         for (j = 0; j < npages; j++) {
             x = x * 2 + 7;
             counts[(i * npages) +  j] = x;
         }
     }
 
-    return 0;
+    return cellCount * npages;
 }
 
 static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
