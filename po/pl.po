@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2023-02-13 12:20+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -435,6 +435,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s nie może przetworzyć UID „%2$s”"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
 
@@ -781,6 +785,10 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4147,10 +4155,6 @@ msgstr "Nie można odnaleźć przechowalni danych o nazwie „%1$s”"
 msgid "Could not find storage volume with key '%1$s'"
 msgstr "Nie można odnaleźć przechowalni danych o nazwie „%1$s”"
 
-#, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "Nie można odnaleźć pliku typu „%1$s”"
-
 #, fuzzy, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "Nie można odnaleźć pliku typu „%1$s”"
@@ -4664,10 +4668,6 @@ msgid "Could not read type information"
 msgstr "Nie można pobrać informacji o puli"
 
 #, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "Nie można odczytać pliku typu „%1$s”"
-
-#, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "Nie można wznowić domeny: %1$s"
 
@@ -4811,6 +4811,10 @@ msgid "Could not set the source dir for the filesystem"
 msgstr "Nie można ustawić katalogu źródłowego dla systemu plików"
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
+msgstr ""
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
 msgstr ""
 
 #, fuzzy
@@ -5264,10 +5268,6 @@ msgstr ""
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Urządzenie nie jest HBA Fibre Channel"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "Typ urządzenia „%1$s” nie jest liczbą całkowitą"
 
 msgid "Device updated successfully\n"
 msgstr "Pomyślnie zaktualizowano urządzenie\n"
@@ -6640,6 +6640,10 @@ msgstr "Skompilowanie wyrażenia regularnego %s się nie powiodło"
 msgid "Failed to connect socket to '%1$s'"
 msgstr "uzyskanie sekretu „%1$s” się nie powiodło"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to connect to ssh agent"
 msgstr "Ponowne połączenie z nadzorcą się nie powiodło"
@@ -7264,6 +7268,10 @@ msgstr "utworzenie gniazda się nie powiodło"
 #, fuzzy
 msgid "Failed to get client socket identity"
 msgstr "Uzyskanie informacji o interfejsie się nie powiodło"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "Uzyskanie informacji o dysku się nie powiodło"
@@ -11731,9 +11739,6 @@ msgstr ""
 msgid "Missing scsi_host PCI address element"
 msgstr ""
 
-msgid "Missing scsi_host subsystem protocol"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "brak informacji o systemie operacyjnym %1$s"
@@ -12569,9 +12574,6 @@ msgstr "Brak dostępnego wywołania zwrotnego uwierzytelnienia"
 
 msgid "No transaction is set"
 msgstr ""
-
-msgid "No type specified for device address"
-msgstr "Nie podano typu dla adresu sprzętu"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -16905,7 +16907,7 @@ msgid "Unable to add media registry other media"
 msgstr "nie można zarejestrować zdarzeń monitora"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr ""
 
 #, fuzzy
@@ -17175,7 +17177,7 @@ msgid "Unable to create UNIX socket"
 msgstr "Nie można otworzyć gniazda uniksowego"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 #, fuzzy
@@ -17327,9 +17329,9 @@ msgstr "Usunięcie sekretu %1$s się nie powiodło"
 msgid "Unable to delete medium"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "Usunięcie puli %1$s się nie powiodło"
+#, c-format
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17420,6 +17422,12 @@ msgstr "Nie można wykonać powłoki %1$s"
 msgid "Unable to find '%1$s' binary in $PATH"
 msgstr "Odnalezienie ścieżki dla pliku binarnego %1$s się nie powiodło"
 
+#, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "nie można odnaleźć statystyk dla urządzenia „%s”"
@@ -17483,10 +17491,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to find any /dev mount"
 msgstr "Nie można zainicjować muteksu"
-
-#, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr ""
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -18391,6 +18395,10 @@ msgstr "Nie można odczytać %1$s"
 msgid "Unable to read net device config on this platform"
 msgstr "informacje o węźle nie są zaimplementowane na tej platformie"
 
+#, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "Odczytanie pliku „%1$s” się nie powiodło"
@@ -18498,7 +18506,7 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "Nie można przywrócić urządzenia PCI %1$s: %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
+msgid "Unable to reset ingress on port %1$s: %2$s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18540,11 +18548,9 @@ msgstr "Nie można uzyskać parametrów pamięci"
 msgid "Unable to run among %1$llu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
+#, c-format
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
 msgstr ""
-"Wykonanie polecenia „%1$s”, aby utworzyć nowy interfejs iSCSI się nie "
-"powiodło"
 
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
@@ -18552,11 +18558,19 @@ msgstr ""
 "Wykonanie polecenia „%s”, aby zaktualizować interfejs iSCSI za pomocą IQN "
 "„%s” się nie powiodło"
 
+#, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr ""
 "Wykonanie polecenia „%s”, aby zaktualizować interfejs iSCSI za pomocą IQN "
 "„%s” się nie powiodło"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr ""
@@ -18785,11 +18799,11 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "Wyświetlenie listy nieaktywnych interfejsów się nie powiodło"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
 msgstr ""
 
 #, fuzzy
@@ -18808,9 +18822,9 @@ msgstr "Nie można uzyskać stanu domeny"
 msgid "Unable to set thread local variable"
 msgstr "nie można odczytać pliku dziennika vmware"
 
-#, fuzzy, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "odczytanie pliku konfiguracji %1$s się nie powiodło"
+#, c-format
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -19303,10 +19317,6 @@ msgid "Unknown SCSI controller model %1$s"
 msgstr "Nieznany typ kontrolera „%1$s”"
 
 #, fuzzy, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "Nieznany protokół „%1$s”"
-
-#, fuzzy, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "Nieznany typ modelu „%1$s”"
 
@@ -19516,10 +19526,6 @@ msgstr "Nieznany błąd"
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "Nieznany protokół „%1$s”"
 
 #, fuzzy, c-format
 msgid "Unknown serial type: %1$X"
@@ -21614,6 +21620,10 @@ msgstr "nie można przydzielić nlhandle dla netlink"
 #, fuzzy, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "Zastosowanie możliwości się nie powiodło: %1$d"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "nie można przełączyć na przywódcę sesji"
@@ -24860,6 +24870,10 @@ msgstr ""
 msgid "disk target %1$s not found"
 msgstr "nie odnaleziono dysku %1$s"
 
+#, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr "typ puli „%1$s” nie obsługuje wykrywania źródeł"
@@ -24899,12 +24913,6 @@ msgstr "wyświetla rozszerzone informacje o pulach"
 
 msgid "display extended details for volumes"
 msgstr "wyświetla rozszerzone informacje o woluminach"
-
-#, fuzzy
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr ""
-"Typ urządzenia balonu pamięci „%s” jest nieobsługiwany przez tę wersję QEMU"
 
 #, fuzzy
 msgid "display the progress of dump"
@@ -25410,6 +25418,10 @@ msgstr ""
 msgid "element"
 msgstr ""
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr ""
 
@@ -25782,6 +25794,10 @@ msgstr ""
 
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
 msgstr ""
 
 #, c-format
@@ -26717,6 +26733,10 @@ msgid "failed to mark pool %1$s as autostarted"
 msgstr "oznaczenie puli %1$s jako automatycznie uruchamianej się nie powiodło"
 
 #, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "nie powiodło się przeniesienie pliku do %1$s "
 
@@ -27438,6 +27458,9 @@ msgstr "system plików nie jest typu „template” lub „mount”"
 
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
+msgstr ""
+
+msgid "filesystem usage limits are not supported with QEMU"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29575,7 +29598,8 @@ msgstr ""
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "Bibliotekę libvirt zbudowano bez sterownika „%1$s”"
 
-msgid "libvirt was not compiled with libpcap and \""
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
 msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
@@ -30238,10 +30262,6 @@ msgid "malformed mtu size"
 msgstr "Błędnie sformatowany rozmiar %s"
 
 #, fuzzy, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "błędnie sformatowany adres MAC „%1$s”"
-
-#, fuzzy, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "błędnie sformatowany adres MAC „%1$s”"
 
@@ -30522,7 +30542,17 @@ msgid "memory access mode '%1$s' not supported without guest numa node"
 msgstr ""
 "Typ urządzenia balonu pamięci „%1$s” jest nieobsługiwany przez tę wersję QEMU"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
+msgstr ""
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
 msgstr ""
 
 #, c-format
@@ -30901,10 +30931,6 @@ msgstr ""
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
-#, fuzzy
-msgid "missing 'namespace' attribute to disk source"
-msgstr "brak nazwy dla dysku źródłowego"
-
 #, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr ""
@@ -31006,14 +31032,6 @@ msgstr ""
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr ""
-
-#, fuzzy
-msgid "missing RNG device backend model"
-msgstr "brak trybu urządzenia smartcard"
-
-#, fuzzy
-msgid "missing RNG device model"
-msgstr "brak trybu urządzenia smartcard"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -31397,6 +31415,12 @@ msgstr "brak informacji o jądrze"
 msgid "missing name information in %1$s"
 msgstr "brak informacji o urządzeniu root w %1$s"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 #, fuzzy
 msgid "missing network device feature name"
 msgstr "Nazwa urządzenia sieci jest za długa"
@@ -31480,6 +31504,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "brak nazwy dla gospodarza"
+
+msgid "missing path in nbdkit capabilities cache"
+msgstr ""
 
 msgid "missing path to restore from"
 msgstr ""
@@ -31599,10 +31626,6 @@ msgstr ""
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr ""
-
-#, fuzzy
-msgid "missing source address type"
-msgstr "brak urządzenia źródłowego"
 
 msgid "missing source device"
 msgstr "brak urządzenia źródłowego"
@@ -31995,6 +32018,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "szablon „%1$s” nie istnieje"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 #, fuzzy
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -33845,6 +33874,10 @@ msgstr ""
 msgid "pid_value in %1$s is too large"
 msgstr ""
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr ""
 
@@ -34162,6 +34195,10 @@ msgstr ""
 
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
+msgstr ""
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
 msgstr ""
 
 msgid "protocol misses the family attribute"
@@ -35341,13 +35378,8 @@ msgid ""
 "'remove' type"
 msgstr ""
 
-#, fuzzy
-msgid "setting ACPI S3 not supported"
-msgstr "typ działania %d jest nieobsługiwany"
-
-#, fuzzy
-msgid "setting ACPI S4 not supported"
-msgstr "typ działania %d jest nieobsługiwany"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -37975,14 +38007,6 @@ msgstr "nieznany typ systemu operacyjnego %1$s"
 msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "nieznany modelu dźwięku „%1$s”"
-
-#, fuzzy, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "nieznany modelu dźwięku „%1$s”"
-
 #, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "nieznany typ możliwości gospodarza SCSI „%1$s” dla „%2$s”"
@@ -37994,10 +38018,6 @@ msgstr "nieznany typ możliwości gospodarza SCSI „%1$s” dla „%2$s”"
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "nieznany typ adresu „%1$s”"
 
 #, fuzzy, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -38156,10 +38176,6 @@ msgstr "Nieznany model procesora %s"
 msgid "unknown host device source address type '%1$s'"
 msgstr "nieznany typ adresu „%1$s”"
 
-#, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "nieznany tryb urządzenia gospodarza „%1$s”"
-
 #, fuzzy, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "nieznany typ urządzenia znakowego „%1$s”"
@@ -38273,10 +38289,6 @@ msgstr "nieznany typ formatu puli %1$s"
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "nieznana procedura: %1$d"
-
-#, fuzzy, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "nieznany typ protokołu „%1$s”"
 
 #, fuzzy, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -38409,14 +38421,6 @@ msgstr "nieznany typ formatu woluminu %1$s"
 #, fuzzy, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "nieznany typ formatu woluminu %1$s"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "nieznana czynność watchdog „%1$s”"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "nieznany model watchdog „%1$s”"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -38586,6 +38590,9 @@ msgstr "nieobsługiwana konfiguracja: %1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "nieobsługiwany typ konsoli docelowej %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -39247,9 +39254,6 @@ msgstr ""
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr ""
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr "vhostuser jest nieobsługiwane przez ten plik binarny QEMU"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
@@ -39482,6 +39486,9 @@ msgstr "pula nie obsługuje usuwania pul"
 #, fuzzy
 msgid "virtiofs does not support multidevs"
 msgstr "magistrala PS/2 nie obsługuje urządzenia wejściowego %s"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 #, fuzzy
 msgid "virtiofs does not support wrpolicy"
@@ -39742,9 +39749,6 @@ msgstr "ostrzeżenie"
 msgid "watchdog"
 msgstr ""
 
-msgid "watchdog must contain model name"
-msgstr "watchdog musi zawierać nazwę modelu"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
@@ -39900,6 +39904,113 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <ciąg>}…"
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "Nie można odnaleźć pliku typu „%1$s”"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "Nie można odczytać pliku typu „%1$s”"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "Typ urządzenia „%1$s” nie jest liczbą całkowitą"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "Nie podano typu dla adresu sprzętu"
+
+#, fuzzy, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "Usunięcie puli %1$s się nie powiodło"
+
+#, fuzzy, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr ""
+#~ "Wykonanie polecenia „%1$s”, aby utworzyć nowy interfejs iSCSI się nie "
+#~ "powiodło"
+
+#, fuzzy, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "odczytanie pliku konfiguracji %1$s się nie powiodło"
+
+#, fuzzy, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "Nieznany protokół „%1$s”"
+
+#, fuzzy, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "Nieznany protokół „%1$s”"
+
+#, fuzzy
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr ""
+#~ "Typ urządzenia balonu pamięci „%s” jest nieobsługiwany przez tę wersję "
+#~ "QEMU"
+
+#, fuzzy, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "błędnie sformatowany adres MAC „%1$s”"
+
+#, fuzzy
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "brak nazwy dla dysku źródłowego"
+
+#, fuzzy
+#~ msgid "missing RNG device backend model"
+#~ msgstr "brak trybu urządzenia smartcard"
+
+#, fuzzy
+#~ msgid "missing RNG device model"
+#~ msgstr "brak trybu urządzenia smartcard"
+
+#, fuzzy
+#~ msgid "missing source address type"
+#~ msgstr "brak urządzenia źródłowego"
+
+#, fuzzy
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "typ działania %d jest nieobsługiwany"
+
+#, fuzzy
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "typ działania %d jest nieobsługiwany"
+
+#, fuzzy, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "nieznany modelu dźwięku „%1$s”"
+
+#, fuzzy, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "nieznany modelu dźwięku „%1$s”"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "nieznany typ adresu „%1$s”"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "nieznany tryb urządzenia gospodarza „%1$s”"
+
+#, fuzzy, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "nieznany typ protokołu „%1$s”"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "nieznana czynność watchdog „%1$s”"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "nieznany model watchdog „%1$s”"
+
+#~ msgid "vhostuser disk is not supported with this QEMU binary"
+#~ msgstr "vhostuser jest nieobsługiwane przez ten plik binarny QEMU"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "watchdog musi zawierać nazwę modelu"
 
 #, fuzzy, c-format
 #~ msgid "Failed to load PCI stub module %1$s"

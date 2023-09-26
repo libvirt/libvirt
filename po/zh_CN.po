@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -565,6 +565,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s 无法解析 UID '%2$s'"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr "%1$s 不支持使用文件描述符传入密码"
 
@@ -919,6 +923,10 @@ msgstr "%1$s: secret %2$s 的事件\"生命周期\"：%3$s\n"
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
 msgstr "%1$s: 存储池 %2$s 的事件\"生命周期\"：%3$s\n"
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -4117,10 +4125,6 @@ msgid "Could not find storage volume with key '%1$s'"
 msgstr "无法找到密钥为 '%1$s' 的存储池"
 
 #, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "无法找到类型文件 '%1$s'"
-
-#, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "无法找到变量 '%1$s' 值"
 
@@ -4600,10 +4604,6 @@ msgid "Could not read type information"
 msgstr "无法读取类型信息"
 
 #, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "无法读取类型文件 '%1$s'"
-
-#, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "无法恢复域：%1$s"
 
@@ -4746,6 +4746,10 @@ msgstr "无法为文件系统设置源目录"
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "无法为 xmlNodeParam 设置 wsman 命名空间地址"
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
+msgstr ""
 
 msgid "Could not start 'virtiofsd'"
 msgstr "无法启动 'virtiofsd'"
@@ -5171,10 +5175,6 @@ msgstr "设备已处于活跃状态"
 
 msgid "Device is not a fibre channel HBA"
 msgstr "设备不是光纤 HBA"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "设备类型 '%1$s' 不是一个整数"
 
 msgid "Device updated successfully\n"
 msgstr "成功更新设备\n"
@@ -6448,6 +6448,10 @@ msgstr "显示树形列表失败"
 msgid "Failed to connect socket to '%1$s'"
 msgstr "将插槽连接到 '%1$s' 失败"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 msgid "Failed to connect to ssh agent"
 msgstr "连接到 ssh 代理失败"
 
@@ -7029,6 +7033,10 @@ msgstr "获取客户端套接字 PID 失败"
 
 msgid "Failed to get client socket identity"
 msgstr "获取客户端插槽身份失败"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "获得磁盘信息失败"
@@ -11198,9 +11206,6 @@ msgstr "JSON 文件中缺少 restricted 数据"
 msgid "Missing scsi_host PCI address element"
 msgstr "缺少 scsi_host PCI 地址元素"
 
-msgid "Missing scsi_host subsystem protocol"
-msgstr "缺少 scsi_host 子系统协议"
-
 #, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "在 sched 信息 '%1$s' 中缺少分隔符"
@@ -11991,9 +11996,6 @@ msgstr "没有可用的总体统计数据"
 
 msgid "No transaction is set"
 msgstr "没有设置事务"
-
-msgid "No type specified for device address"
-msgstr "没有指定设备地址类型"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -16116,8 +16118,8 @@ msgid "Unable to add media registry other media"
 msgstr "无法将其他介质添加到介质注册表"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
-msgstr "无法在 OVS 桥接 %1$s 中添加端口 %2$s"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "无法添加存储控制器"
@@ -16359,8 +16361,8 @@ msgid "Unable to create UNIX socket"
 msgstr "无法创建 UNIX 套接字"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
-msgstr "无法在端口 %1$s 上创建并设置 qos 配置"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to create blkid library handle"
 msgstr "无法创建 blkid 库句柄"
@@ -16497,8 +16499,8 @@ msgid "Unable to delete medium"
 msgstr "无法删除介质"
 
 #, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "无法从 OVS 中删除端口 %1$s"
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -16580,6 +16582,12 @@ msgid "Unable to find '%1$s' binary in $PATH"
 msgstr "无法在 $PATH 中查找 '%1$s' 二进制文件"
 
 #, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
+#, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "无法为块设备 '%1$s' 找到 '%2$s' 限制"
 
@@ -16639,10 +16647,6 @@ msgstr "无法在范围 '%1$s'(%2$d-%3$d)中找到一个未使用的端口"
 
 msgid "Unable to find any /dev mount"
 msgstr "无法找到任何 /dev 挂载"
-
-#, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr "无法找到任何固件来满足 '%1$s'"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -17443,6 +17447,10 @@ msgid "Unable to read net device config on this platform"
 msgstr "无法读取此平台上的网络设备配置"
 
 #, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "无法读取 slirp pidfile '%1$s'"
 
@@ -17545,8 +17553,8 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "无法重置 PCI 设备 %1$s: %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
-msgstr "在端口 %1$s 上重置 ingress"
+msgid "Unable to reset ingress on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
@@ -17586,16 +17594,24 @@ msgid "Unable to run among %1$llu"
 msgstr "无法在 %1$llu 中运行"
 
 #, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
-msgstr "无法运行命令来获取接口 %1$s 的主 OVS"
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr "无法运行命令为接口 %1$s 获取 OVS 端口数据"
 
 #, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr "无法运行命令为接口 %1$s 设定 OVS 端口数据"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "无法运行一次性 GDBus 初始化器"
@@ -17804,12 +17820,12 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "无法在直接接口中设定端口侧写"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
-msgstr "无法在端口 %1$s 上设置 qos 配置"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
-msgstr "无法在端口 %1$s 上设置队列配置"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to set socket reuse addr flag"
 msgstr "无法设定插槽重复使用 addr 标签"
@@ -17825,8 +17841,8 @@ msgid "Unable to set thread local variable"
 msgstr "无法设置线程本地变量"
 
 #, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "无法在端口 %1$s 上设置 vlan 配置"
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -18293,10 +18309,6 @@ msgid "Unknown SCSI controller model %1$s"
 msgstr "未知的 SCSI 控制器型号 %1$s"
 
 #, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "未知 SCSI 子系统协议 '%1$s'"
-
-#, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "未知的 URI 参数 '%1$s'"
 
@@ -18502,10 +18514,6 @@ msgstr "未知的返回代码"
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr "未知的 sched_core 值 %1$s"
-
-#, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "未知的 scsi_host 子系统协议 '%1$s'"
 
 #, c-format
 msgid "Unknown serial type: %1$X"
@@ -20534,6 +20542,10 @@ msgstr "无法为 netlink 分配占位 nlhandle"
 #, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "无法应用进程功能 %1$d"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "无法成为会话领导者"
@@ -23613,6 +23625,10 @@ msgid "disk target %1$s not found"
 msgstr "磁盘目标 %1$s 未找到"
 
 #, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
+#, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr "'%1$s' 磁盘类型不支持可弹出介质"
 
@@ -23648,10 +23664,6 @@ msgstr "为池显示扩展的详情"
 
 msgid "display extended details for volumes"
 msgstr "显示卷的扩展详情"
-
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr "显示此 QEMU 版本不支持的设备 vfio-pci 的属性"
 
 msgid "display the progress of dump"
 msgstr "显示转储进程"
@@ -24127,6 +24139,10 @@ msgstr "预期的 secret uuid 或用法"
 msgid "element"
 msgstr "元素"
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr "元素 'genid' 只能出现一次"
 
@@ -24492,6 +24508,10 @@ msgstr ""
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
 msgstr "域 '%1$s' 的事件 'metadata-change': 类型 %2$s, uri %3$s\n"
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
@@ -25377,6 +25397,10 @@ msgid "failed to mark pool %1$s as autostarted"
 msgstr "无法将池 %1$s 标记为自动启动"
 
 #, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "无法将文件移到 %1$s "
 
@@ -26045,6 +26069,9 @@ msgstr "filesyste 不是 'template' 或者 'mount' 类型"
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
 msgstr "文件系统目标 '%1$s' 指定了两次"
+
+msgid "filesystem usage limits are not supported with QEMU"
+msgstr ""
 
 #, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
@@ -28089,8 +28116,9 @@ msgstr "libvirt 管理守护进程："
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "在没有 '%1$s' 驱动程序的情况下构建 libvirt"
 
-msgid "libvirt was not compiled with libpcap and \""
-msgstr "libvirt 与 libpcap 和 \" 不兼容"
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
+msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr "libvirt 将自动从主机分离设备，或将设备附加到主机"
@@ -28671,10 +28699,6 @@ msgid "malformed mtu size"
 msgstr "格式错误的 mtu 大小"
 
 #, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "格式错误的命名空间 '%1$s'"
-
-#, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "格式错误的命名空间名称：%1$s"
 
@@ -28926,8 +28950,18 @@ msgstr "内存 '%1$s' 未找到"
 msgid "memory access mode '%1$s' not supported without guest numa node"
 msgstr "在没有 guest numa 节点的情况下不支持内存访问模式 '%1$s'"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "内存属性：[file=]name[,snapshot=type]"
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
+msgstr ""
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -29279,9 +29313,6 @@ msgstr "QEMU 功能缓存中缺少主机 CPU model 属性的 'name' 属性"
 msgid "missing 'name' attribute for qemu:property"
 msgstr "缺少 qemu:property 的 'name' 属性"
 
-msgid "missing 'namespace' attribute to disk source"
-msgstr "缺少磁盘源的 'namespace' 属性"
-
 #, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr "'%1$s' 中缺少 'nvram-template'"
@@ -29376,12 +29407,6 @@ msgstr "QEMU 功能缓存中缺少 GIC 版本"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink 响应中缺少 IFLA_VF_INFO"
-
-msgid "missing RNG device backend model"
-msgstr "缺少 RNG 设备后端型号"
-
-msgid "missing RNG device model"
-msgstr "缺少 RNG 设备型号"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -29719,6 +29744,12 @@ msgstr "丢失名称信息"
 msgid "missing name information in %1$s"
 msgstr "%1$s 中缺少名称信息"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 msgid "missing network device feature name"
 msgstr "缺少网络设备功能名称"
 
@@ -29797,6 +29828,9 @@ msgstr "缺少 JSON 后备卷驱动程序 '%1$s' 的解析器实现"
 
 msgid "missing path for <reservations/>"
 msgstr "缺少 <reservations/> 的路径"
+
+msgid "missing path in nbdkit capabilities cache"
+msgstr ""
 
 msgid "missing path to restore from"
 msgstr "缺少从中恢复的路径"
@@ -29909,9 +29943,6 @@ msgstr "外部 TPM 设备缺少套接字路径"
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr "JSON 后备卷定义中缺少 udp 后备服务器的套接字路径"
-
-msgid "missing source address type"
-msgstr "缺少源地址类型"
 
 msgid "missing source device"
 msgstr "缺少源设备"
@@ -30280,6 +30311,12 @@ msgstr "nbd 协议只接受一个主机"
 #, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "nbd_tls_x509_cert_dir 目录 '%1$s' 不存在"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -32027,6 +32064,10 @@ msgstr "pid"
 msgid "pid_value in %1$s is too large"
 msgstr "%1$s 中的 pid_value 太长"
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr "在启动 RDMA 实时迁移前固定所有内存"
 
@@ -32329,6 +32370,10 @@ msgstr "名为 'id' 的属性不能被覆盖"
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
 msgstr "协议 '%1$s' 只接受一个主机"
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
+msgstr ""
 
 msgid "protocol misses the family attribute"
 msgstr "协议缺少 family 属性"
@@ -33436,11 +33481,8 @@ msgid ""
 "'remove' type"
 msgstr "设置 'qemu:property' 的 'value' 属性对于 'remove' 类型没有意义"
 
-msgid "setting ACPI S3 not supported"
-msgstr "不支持设定 ACPI S3"
-
-msgid "setting ACPI S4 not supported"
-msgstr "不支持设定 ACPI S4"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -36013,14 +36055,6 @@ msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr "未知的 QEMU_AUDIO_DRV 设置 %1$s"
 
 #, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "未知的 RNG 后端型号 '%1$s'"
-
-#, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "未知的 RNG 型号 '%1$s'"
-
-#, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "未知的 '%1$s' 的 SCSI 主机功能类型 '%2$s'"
 
@@ -36031,10 +36065,6 @@ msgstr "未知的 '%1$s' 的 SCSI 目标功能 '%2$s'"
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "未知的 SDL_AUDIODRIVER 设置 %1$s"
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "未知的地址类型 '%1$s'"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -36191,10 +36221,6 @@ msgid "unknown host device source address type '%1$s'"
 msgstr "未知的主机设备源地址类型 '%1$s'"
 
 #, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "未知的 hostdev 模式 '%1$s'"
-
-#, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "未知的 hub 设备类型 '%1$s'"
 
@@ -36306,10 +36332,6 @@ msgstr "未知的池格式类型 %1$s"
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "未知的流程：%1$d"
-
-#, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "未知的协议传输类型 '%1$s'"
 
 #, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -36441,14 +36463,6 @@ msgstr "未知的卷格式类型 %1$s"
 #, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "未知的卷类型 '%1$s'"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "未知的 watchdog 操作 '%1$s'"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "未知的 watchdog 型号 '%1$s'"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -36616,6 +36630,9 @@ msgstr "<reservations/> 的不支持的连接类型：%1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "不支持的控制台目标类型 %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -37257,9 +37274,6 @@ msgstr "vhost-user-gpu 无法启动"
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr "vhost_user 类型在这个 CH 中支持 UNIX 套接字"
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 vhostuser 磁盘"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr "vhostuser 磁盘只支持 virtio 总线"
 
@@ -37483,6 +37497,9 @@ msgstr "virtiofs 不支持 model"
 
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs 不支持 multidevs"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs 不支持 wrpolicy"
@@ -37728,9 +37745,6 @@ msgstr "警告"
 msgid "watchdog"
 msgstr "watchdog"
 
-msgid "watchdog must contain model name"
-msgstr "计时器必须包含模型名称"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持具有不同操作的 watchdog"
@@ -37882,6 +37896,132 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "无法找到类型文件 '%1$s'"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "无法读取类型文件 '%1$s'"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "设备类型 '%1$s' 不是一个整数"
+
+#~ msgid "Missing scsi_host subsystem protocol"
+#~ msgstr "缺少 scsi_host 子系统协议"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "没有指定设备地址类型"
+
+#, c-format
+#~ msgid "Unable to add port %1$s to OVS bridge %2$s"
+#~ msgstr "无法在 OVS 桥接 %1$s 中添加端口 %2$s"
+
+#, c-format
+#~ msgid "Unable to create and set qos configuration on port %1$s"
+#~ msgstr "无法在端口 %1$s 上创建并设置 qos 配置"
+
+#, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "无法从 OVS 中删除端口 %1$s"
+
+#, c-format
+#~ msgid "Unable to find any firmware to satisfy '%1$s'"
+#~ msgstr "无法找到任何固件来满足 '%1$s'"
+
+#, c-format
+#~ msgid "Unable to reset ingress on port %1$s"
+#~ msgstr "在端口 %1$s 上重置 ingress"
+
+#, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr "无法运行命令来获取接口 %1$s 的主 OVS"
+
+#, c-format
+#~ msgid "Unable to set qos configuration on port %1$s"
+#~ msgstr "无法在端口 %1$s 上设置 qos 配置"
+
+#, c-format
+#~ msgid "Unable to set queue configuration on port %1$s"
+#~ msgstr "无法在端口 %1$s 上设置队列配置"
+
+#, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "无法在端口 %1$s 上设置 vlan 配置"
+
+#, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "未知 SCSI 子系统协议 '%1$s'"
+
+#, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "未知的 scsi_host 子系统协议 '%1$s'"
+
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr "显示此 QEMU 版本不支持的设备 vfio-pci 的属性"
+
+#~ msgid "libvirt was not compiled with libpcap and \""
+#~ msgstr "libvirt 与 libpcap 和 \" 不兼容"
+
+#, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "格式错误的命名空间 '%1$s'"
+
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "缺少磁盘源的 'namespace' 属性"
+
+#~ msgid "missing RNG device backend model"
+#~ msgstr "缺少 RNG 设备后端型号"
+
+#~ msgid "missing RNG device model"
+#~ msgstr "缺少 RNG 设备型号"
+
+#~ msgid "missing source address type"
+#~ msgstr "缺少源地址类型"
+
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "不支持设定 ACPI S3"
+
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "不支持设定 ACPI S4"
+
+#, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "未知的 RNG 后端型号 '%1$s'"
+
+#, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "未知的 RNG 型号 '%1$s'"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "未知的地址类型 '%1$s'"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "未知的 hostdev 模式 '%1$s'"
+
+#, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "未知的协议传输类型 '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "未知的 watchdog 操作 '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "未知的 watchdog 型号 '%1$s'"
+
+#~ msgid "vhostuser disk is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 vhostuser 磁盘"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "计时器必须包含模型名称"
 
 #~ msgid "Attempting to use unknown stub driver"
 #~ msgstr "尝试使用未知的 stub 驱动程序"

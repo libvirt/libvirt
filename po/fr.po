@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -574,6 +574,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s impossible d'analyser l'UID '%2$s'"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
 "%1$s ne prend pas en charge le passage d'une phrase de passe en utilisant un "
@@ -973,6 +977,10 @@ msgstr "%1$s : événement \"cycle de vie\" pour le secret %2$s : %3$s\n"
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
 msgstr "%1$s : événement 'cycle de vie' pour le pool de stockage %2$s : %3$s\n"
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -4500,10 +4508,6 @@ msgid "Could not find storage volume with key '%1$s'"
 msgstr "Impossible de trouver le volume de stockage avec la clé '%1$s'"
 
 #, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "Impossible de trouver le fichier de type '%1$s'"
-
-#, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "Impossible de trouver la valeur de la variable '%1$s'"
 
@@ -5009,10 +5013,6 @@ msgid "Could not read type information"
 msgstr "Impossible de lire les informations sur le type"
 
 #, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "Impossible de lire le fichier de type '%1$s'"
-
-#, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "Impossible de reprendre le domaine : %1$s"
 
@@ -5163,6 +5163,10 @@ msgstr "Impossible de définir le répertoire source pour le système de fichier
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
 "Impossible de définir l'adresse de l'espace de nom wsman pour xmlNodeParam"
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
+msgstr ""
 
 msgid "Could not start 'virtiofsd'"
 msgstr "Impossible de lancer 'virtiofsd'"
@@ -5623,10 +5627,6 @@ msgstr "Le périphérique est déjà actif"
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Le périphérique n'est pas un HBA fibre channel"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "Le type de périphérique '%1$s' n'est pas un entier"
 
 msgid "Device updated successfully\n"
 msgstr "Le périphérique a été mis à jour avec succès\n"
@@ -7009,6 +7009,10 @@ msgstr "Échec de l'établissement de la liste d’arborescence"
 msgid "Failed to connect socket to '%1$s'"
 msgstr "Échec de la connexion du socket à '%1$s'"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 msgid "Failed to connect to ssh agent"
 msgstr "Échec de la connexion à l'agent ssh"
 
@@ -7616,6 +7620,10 @@ msgstr "Échec de la récupération du PID de la socket du client"
 
 msgid "Failed to get client socket identity"
 msgstr "Échec de la récupération de l'identité du socket client"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "Impossible de récupérer les informations relatives au disque"
@@ -12138,9 +12146,6 @@ msgstr "Données restreintes manquantes dans le document JSON"
 msgid "Missing scsi_host PCI address element"
 msgstr "Élément d'adresse PCI scsi_host manquant"
 
-msgid "Missing scsi_host subsystem protocol"
-msgstr "Protocole du sous-système scsi_host manquant"
-
 #, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "Séparateur manquant dans l'information sur les horaires '%1$s'"
@@ -12987,9 +12992,6 @@ msgstr "Pas de statistiques totales disponibles"
 
 msgid "No transaction is set"
 msgstr "Aucune transaction n'est définie"
-
-msgid "No type specified for device address"
-msgstr "Aucun type spécifié pour l’adresse de périphérique"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -17679,8 +17681,8 @@ msgid "Unable to add media registry other media"
 msgstr "Impossible d'ajouter le registre des médias d'autres médias"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
-msgstr "Impossible d'ajouter le port %1$s au pont OVS %2$s"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "Impossible d'ajouter un contrôleur de stockage"
@@ -17935,9 +17937,8 @@ msgid "Unable to create UNIX socket"
 msgstr "Impossible de créer un socket UNIX"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
 msgstr ""
-"Impossible de créer et de définir la configuration qos sur le port %1$s"
 
 msgid "Unable to create blkid library handle"
 msgstr "Impossible de créer l'identifiant de la bibliothèque blkid"
@@ -18078,8 +18079,8 @@ msgid "Unable to delete medium"
 msgstr "Impossible de supprimer le support"
 
 #, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "Impossible de supprimer le port %1$s de OVS"
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -18164,6 +18165,12 @@ msgid "Unable to find '%1$s' binary in $PATH"
 msgstr "Impossible de trouver le binaire '%1$s' dans $PATH"
 
 #, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
+#, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr ""
 "Impossible de trouver la limite '%1$s' pour le périphérique de blocage '%2$s'"
@@ -18229,10 +18236,6 @@ msgstr ""
 
 msgid "Unable to find any /dev mount"
 msgstr "Impossible de trouver un montage /dev"
-
-#, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr "Impossible de trouver un firmware pour satisfaire '%1$s'"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -19061,6 +19064,10 @@ msgstr ""
 "Impossible de lire la configuration du périphérique net sur cette plateforme"
 
 #, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "Impossible de lire le fichier pid de slirp '%1$s'"
 
@@ -19163,8 +19170,8 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "Impossible de réinitialiser le périphérique PCI %1$s : %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
-msgstr "Impossible de réinitialiser l'entrée sur le port %1$s"
+msgid "Unable to reset ingress on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
@@ -19211,10 +19218,8 @@ msgid "Unable to run among %1$llu"
 msgstr "Impossible d'exécuter parmi %1$llu"
 
 #, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
 msgstr ""
-"Impossible d'exécuter la commande pour obtenir le maître OVS pour "
-"l'interface %1$s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
@@ -19223,10 +19228,18 @@ msgstr ""
 "l'interface %1$s"
 
 #, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr ""
 "Impossible d'exécuter la commande pour définir les données du port OVS pour "
 "l'interface %1$s"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "Impossible d'exécuter une fois l'initialisateur GDBus"
@@ -19453,13 +19466,12 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "Impossible de définir le profil de port sur les interfaces directes"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
-msgstr "Impossible de définir la configuration de qos sur le port %1$s"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
 msgstr ""
-"Impossible de définir la configuration de la file d'attente sur le port %1$s"
 
 msgid "Unable to set socket reuse addr flag"
 msgstr "Impossible de définir l'indicateur d'addr de réutilisation de socket"
@@ -19477,8 +19489,8 @@ msgid "Unable to set thread local variable"
 msgstr "Impossible de définir la variable locale du thread"
 
 #, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "Impossible de définir la configuration du vlan sur le port %1$s"
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -19958,10 +19970,6 @@ msgid "Unknown SCSI controller model %1$s"
 msgstr "Modèle de contrôleur SCSI inconnu %1$s"
 
 #, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "Protocole de sous-système SCSI inconnu '%1$s'"
-
-#, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "Paramètre URI inconnu '%1$s'"
 
@@ -20170,10 +20178,6 @@ msgstr "Code de retour inconnu"
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr "Valeur sched_core inconnue %1$s"
-
-#, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "Protocole inconnu du sous-système scsi_host '%1$s'"
 
 #, c-format
 msgid "Unknown serial type: %1$X"
@@ -22439,6 +22443,10 @@ msgstr "ne peut pas allouer de placeholder nlhandle pour netlink"
 #, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "ne peut pas appliquer les capacités du processus %1$d"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "ne peut pas devenir chef de session"
@@ -25793,6 +25801,10 @@ msgid "disk target %1$s not found"
 msgstr "cible de disque %1$s non trouvé"
 
 #, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
+#, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr ""
 "Le type de disque '%1$s' ne prend pas en charge les supports éjectables"
@@ -25832,12 +25844,6 @@ msgstr "afficher les détails étendus pour les pools"
 
 msgid "display extended details for volumes"
 msgstr "afficher les détails étendus pour les volumes"
-
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr ""
-"la propriété d'affichage du périphérique vfio-pci n'est pas prise en charge "
-"par cette version de QEMU"
 
 msgid "display the progress of dump"
 msgstr "afficher la progression du dumping"
@@ -26330,6 +26336,10 @@ msgstr "soit l'uuid secret ou l'usage attendu"
 msgid "element"
 msgstr "élément"
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr "l'élément \"genid\" ne peut apparaître qu'une seule fois"
 
@@ -26712,6 +26722,10 @@ msgstr ""
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
 msgstr ""
 "événement 'metadata-change' pour le domaine '%1$s' : type %2$s, uri %3$s\n"
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
@@ -27638,6 +27652,10 @@ msgid "failed to mark pool %1$s as autostarted"
 msgstr "impossible de démarrer automatiquement le pool %1$s"
 
 #, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "a échoué à déplacer le fichier vers %1$s "
 
@@ -28336,6 +28354,9 @@ msgstr "Le système de fichiers n'est pas de type 'template' ou 'mount'"
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
 msgstr "cible du système de fichiers '%1$s' spécifiée deux fois"
+
+msgid "filesystem usage limits are not supported with QEMU"
+msgstr ""
 
 #, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
@@ -30534,8 +30555,9 @@ msgstr "démon de gestion libvirt :"
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "libvirt a été construit sans le pilote '%1$s'"
 
-msgid "libvirt was not compiled with libpcap and \""
-msgstr "libvirt n'a pas été compilé avec libpcap et \""
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
+msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr ""
@@ -31162,10 +31184,6 @@ msgid "malformed mtu size"
 msgstr "taille mtu malformée"
 
 #, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "espace de nom malformé '%1$s'"
-
-#, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "nom d'espace de nom malformé : %1$s"
 
@@ -31426,8 +31444,18 @@ msgid "memory access mode '%1$s' not supported without guest numa node"
 msgstr ""
 "mode d'accès à la mémoire '%1$s' non pris en charge sans nœud numa invité"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "attributs de la mémoire : [file=]nom[,snapshot=type]"
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
+msgstr ""
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -31836,9 +31864,6 @@ msgstr ""
 msgid "missing 'name' attribute for qemu:property"
 msgstr "attribut 'name' manquant pour qemu:property"
 
-msgid "missing 'namespace' attribute to disk source"
-msgstr "attribut \"namespace\" manquant pour la source du disque"
-
 #, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr "'nvram-template' manquant dans '%1$s'"
@@ -31946,12 +31971,6 @@ msgstr "version de GIC manquante dans le cache des capacités de QEMU"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "IFLA_VF_INFO manquant dans la réponse netlink"
-
-msgid "missing RNG device backend model"
-msgstr "modèle backend de périphérique RNG manquant"
-
-msgid "missing RNG device model"
-msgstr "modèle de périphérique RNG manquant"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -32304,6 +32323,12 @@ msgstr "informations manquantes sur le nom"
 msgid "missing name information in %1$s"
 msgstr "informations manquantes sur le nom dans %1$s"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 msgid "missing network device feature name"
 msgstr "nom de la fonctionnalité du périphérique réseau manquant"
 
@@ -32401,6 +32426,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "chemin manquant pour <reservations/>"
+
+msgid "missing path in nbdkit capabilities cache"
+msgstr ""
 
 msgid "missing path to restore from"
 msgstr "chemin manquant pour restaurer à partir de"
@@ -32530,9 +32558,6 @@ msgid ""
 msgstr ""
 "chemin de la socket manquant pour le serveur de backing udp dans la "
 "définition du volume de backing JSON"
-
-msgid "missing source address type"
-msgstr "type d’adresse source manquant"
 
 msgid "missing source device"
 msgstr "périphérique source non spécifié"
@@ -32932,6 +32957,12 @@ msgstr "le protocole nbd n'accepte qu'un seul hôte"
 #, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "nbd_tls_x509_cert_dir répertoire '%1$s' n'existe pas"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -34830,6 +34861,10 @@ msgstr "pid"
 msgid "pid_value in %1$s is too large"
 msgstr "pid_value dans %1$s est trop grand"
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr ""
 "épingler toute la mémoire avant de commencer la migration RDMA en direct"
@@ -35154,6 +35189,10 @@ msgstr "la propriété avec le nom 'id' ne peut pas être surchargée"
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
 msgstr "protocole '%1$s' n'accepte qu'un seul hôte"
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
+msgstr ""
 
 msgid "protocol misses the family attribute"
 msgstr "le protocole manque l'attribut famille"
@@ -36382,11 +36421,8 @@ msgstr ""
 "La définition de l'attribut \"value\" de \"qemu:property\" n'a pas de sens "
 "avec le type \"remove\""
 
-msgid "setting ACPI S3 not supported"
-msgstr "réglage ACPI S3 non pris en charge"
-
-msgid "setting ACPI S4 not supported"
-msgstr "réglage ACPI S4 non pris en charge"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -39166,14 +39202,6 @@ msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr "paramètre QEMU_AUDIO_DRV inconnu %1$s"
 
 #, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "modèle de backend RNG inconnu '%1$s'"
-
-#, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "modèle de RNG '%1$s' inconnu"
-
-#, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "type de capacité d'hôte SCSI inconnu '%1$s' pour '%2$s'"
 
@@ -39184,10 +39212,6 @@ msgstr "type de capacité cible SCSI inconnu '%1$s' pour '%2$s'"
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "paramètre SDL_AUDIODRIVER inconnu %1$s"
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "type d’adresse '%1$s' inconnu"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -39344,10 +39368,6 @@ msgid "unknown host device source address type '%1$s'"
 msgstr "type d’adresse source '%1$s' du périphérique hôte inconnu"
 
 #, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "mode hostdev '%1$s' inconnu"
-
-#, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "type de périphérique concentrateur '%1$s' inconnu"
 
@@ -39459,10 +39479,6 @@ msgstr "type de format de pool inconnu %1$s"
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "procédure inconnue : %1$d"
-
-#, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "type de transport de protocole '%1$s' inconnu"
 
 #, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -39599,14 +39615,6 @@ msgstr "type de format de volume inconnu %1$s"
 #, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "type de volume inconnu '%1$s'"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "action du périphérique de surveillance inconnue '%1$s'"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "modèle de surveillance inconnu '%1$s'"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -39781,6 +39789,9 @@ msgstr "Type de connexion non pris en charge pour <reservations/> : %1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "Type de cible de console non pris en charge %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -40463,9 +40474,6 @@ msgstr "échec du démarrage de vhost-user-gpu"
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr "vhost_user type support UNIX socket dans ce CH"
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr "le disque vhostuser n'est pas pris en charge avec ce binaire QEMU"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr "le disque vhostuser ne prend en charge que le bus virtio"
 
@@ -40712,6 +40720,9 @@ msgstr "virtiofs ne prend pas en charge le modèle"
 
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs ne prend pas en charge les multidevs"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs ne prend pas en charge wrpolicy"
@@ -40986,9 +40997,6 @@ msgstr "attention"
 msgid "watchdog"
 msgstr "périphérique de surveillance"
 
-msgid "watchdog must contain model name"
-msgstr "Le dispositif de surveillance doit contenir le nom du modèle"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
@@ -41157,6 +41165,139 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "Impossible de trouver le fichier de type '%1$s'"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "Impossible de lire le fichier de type '%1$s'"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "Le type de périphérique '%1$s' n'est pas un entier"
+
+#~ msgid "Missing scsi_host subsystem protocol"
+#~ msgstr "Protocole du sous-système scsi_host manquant"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "Aucun type spécifié pour l’adresse de périphérique"
+
+#, c-format
+#~ msgid "Unable to add port %1$s to OVS bridge %2$s"
+#~ msgstr "Impossible d'ajouter le port %1$s au pont OVS %2$s"
+
+#, c-format
+#~ msgid "Unable to create and set qos configuration on port %1$s"
+#~ msgstr ""
+#~ "Impossible de créer et de définir la configuration qos sur le port %1$s"
+
+#, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "Impossible de supprimer le port %1$s de OVS"
+
+#, c-format
+#~ msgid "Unable to find any firmware to satisfy '%1$s'"
+#~ msgstr "Impossible de trouver un firmware pour satisfaire '%1$s'"
+
+#, c-format
+#~ msgid "Unable to reset ingress on port %1$s"
+#~ msgstr "Impossible de réinitialiser l'entrée sur le port %1$s"
+
+#, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr ""
+#~ "Impossible d'exécuter la commande pour obtenir le maître OVS pour "
+#~ "l'interface %1$s"
+
+#, c-format
+#~ msgid "Unable to set qos configuration on port %1$s"
+#~ msgstr "Impossible de définir la configuration de qos sur le port %1$s"
+
+#, c-format
+#~ msgid "Unable to set queue configuration on port %1$s"
+#~ msgstr ""
+#~ "Impossible de définir la configuration de la file d'attente sur le port "
+#~ "%1$s"
+
+#, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "Impossible de définir la configuration du vlan sur le port %1$s"
+
+#, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "Protocole de sous-système SCSI inconnu '%1$s'"
+
+#, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "Protocole inconnu du sous-système scsi_host '%1$s'"
+
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr ""
+#~ "la propriété d'affichage du périphérique vfio-pci n'est pas prise en "
+#~ "charge par cette version de QEMU"
+
+#~ msgid "libvirt was not compiled with libpcap and \""
+#~ msgstr "libvirt n'a pas été compilé avec libpcap et \""
+
+#, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "espace de nom malformé '%1$s'"
+
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "attribut \"namespace\" manquant pour la source du disque"
+
+#~ msgid "missing RNG device backend model"
+#~ msgstr "modèle backend de périphérique RNG manquant"
+
+#~ msgid "missing RNG device model"
+#~ msgstr "modèle de périphérique RNG manquant"
+
+#~ msgid "missing source address type"
+#~ msgstr "type d’adresse source manquant"
+
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "réglage ACPI S3 non pris en charge"
+
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "réglage ACPI S4 non pris en charge"
+
+#, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "modèle de backend RNG inconnu '%1$s'"
+
+#, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "modèle de RNG '%1$s' inconnu"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "type d’adresse '%1$s' inconnu"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "mode hostdev '%1$s' inconnu"
+
+#, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "type de transport de protocole '%1$s' inconnu"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "action du périphérique de surveillance inconnue '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "modèle de surveillance inconnu '%1$s'"
+
+#~ msgid "vhostuser disk is not supported with this QEMU binary"
+#~ msgstr "le disque vhostuser n'est pas pris en charge avec ce binaire QEMU"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "Le dispositif de surveillance doit contenir le nom du modèle"
 
 #~ msgid "Attempting to use unknown stub driver"
 #~ msgstr "Tentative d'utilisation d'un pilote de souche inconnu"

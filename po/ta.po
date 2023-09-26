@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -465,6 +465,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "பஸ் '%s' ஐ பாகுபடுத்த முடியவில்லை"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
 
@@ -823,6 +827,10 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4222,10 +4230,6 @@ msgid "Could not find storage volume with key '%1$s'"
 msgstr "'%1$s' என்ற விசையுள்ள சேமிப்பகத் தொகுப்பகத்தைக் கண்டறிய முடியவில்லை"
 
 #, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "வகைகோப்பு '%1$s' கண்டுபிடிக்க முடியவில்லைுடியவில்லை"
-
-#, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "மாறி '%1$s' க்கு ஒரு மதிப்பைக் கண்டுபிடிக்க முடியவில்லை"
 
@@ -4734,10 +4738,6 @@ msgid "Could not read type information"
 msgstr "தொகுப்பக தகவலை மீட்டுப்பெற முடியவில்லை"
 
 #, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "வகைகோப்பு '%1$s'ஐ வாசிக்க இயலவில்லை"
-
-#, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "டொமைனை மீண்டும் தொடங்க முடியவில்லை: %1$s"
 
@@ -4880,6 +4880,10 @@ msgid "Could not set the source dir for the filesystem"
 msgstr "கோப்புமுறைக்கு மூல அடைவினை அமைக்க முடியவில்லை"
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
+msgstr ""
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
 msgstr ""
 
 #, fuzzy
@@ -5330,10 +5334,6 @@ msgstr ""
 
 msgid "Device is not a fibre channel HBA"
 msgstr "சாதனம் ஒரு fibre சேனல் HBA இல்லை"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "சாதன வகை '%1$s' முழு எண் இல்லைடியவில்லை"
 
 msgid "Device updated successfully\n"
 msgstr "சாதனம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது\n"
@@ -6699,6 +6699,10 @@ msgstr "கிளையமைப்பு பட்டியலிடுதல�
 msgid "Failed to connect socket to '%1$s'"
 msgstr "சாக்கெட்டை '%1$s' உடன் இணைப்பதில் தோல்வி"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 msgid "Failed to connect to ssh agent"
 msgstr "ssh ஏஜன்டுடன் இணைப்பதில் தோல்வி"
 
@@ -7294,6 +7298,10 @@ msgstr "கிளையன்ட் சாக்கெட் PID ஐப் ப�
 
 msgid "Failed to get client socket identity"
 msgstr "கிளையன்ட் சாக்கெட் அடையாளத்தைப் பெறுவதில் தோல்வி"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "வட்டு தகவலை பெற முடியவில்லை"
@@ -11652,10 +11660,6 @@ msgstr "JSON ஆவணத்தில் தடைசெய்யப்பட்
 msgid "Missing scsi_host PCI address element"
 msgstr "scsi_host PCI கூறு இல்லை"
 
-#, fuzzy
-msgid "Missing scsi_host subsystem protocol"
-msgstr "scsi_host PCI கூறு இல்லை"
-
 #, fuzzy, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "cgroup மவுன்ட் '%1$s' இல் '/' பிரிப்பான் விடுபட்டுள்ளது"
@@ -12490,9 +12494,6 @@ msgstr "மொத்த புள்ளிவிவரம் கிடைக்�
 
 msgid "No transaction is set"
 msgstr ""
-
-msgid "No type specified for device address"
-msgstr "குறிப்பிட்ட சாதனத்திற்கான முகவரி வகை இல்லை"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -16857,8 +16858,8 @@ msgid "Unable to add media registry other media"
 msgstr "கணினி நிகழ்வுகளை பதிவுசெய்ய முடியவில்லை"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
-msgstr "முனையம் %1$s ஐ OVS பிரிட்ஜ் %2$s இல் சேர்க்க முடியவில்லை"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to add storage controller"
@@ -17117,7 +17118,7 @@ msgid "Unable to create UNIX socket"
 msgstr "சாக்கெட்டை உருவாக்க முடியவில்லை"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 msgid "Unable to create blkid library handle"
@@ -17260,8 +17261,8 @@ msgid "Unable to delete medium"
 msgstr ""
 
 #, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "முனையம் %1$s ஐ OVS இலிருந்து அழிக்க முடியவில்லை"
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17344,6 +17345,12 @@ msgstr "ஷெல் %1$s ஐ exec செய்ய முடியவில்�
 msgid "Unable to find '%1$s' binary in $PATH"
 msgstr "$PATH இல் 'qemu-nbd' பைனரி எதையும் கண்டறிய முடியவில்லை"
 
+#, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "சாதனம் '%s' இன் மைனர் எண்ணிக்கையைப் பெற முடியவில்லை"
@@ -17408,10 +17415,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to find any /dev mount"
 msgstr "முனையத்திற்கு பிணைக்க முடியவில்லை"
-
-#, fuzzy, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr "'%1$s' இல் எழுத முடியவில்லை"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -18264,6 +18267,10 @@ msgstr "நிலைக் கோப்பு %1$s ஐ சேமிக்க ம
 msgid "Unable to read net device config on this platform"
 msgstr "இந்த இயங்குதளத்தில் இடைமுக அமைவாக்கத்தைச் சரிபார்க்க முடியவில்லை"
 
+#, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "'%1$s' இலிருந்து வாசிக்க முடியவில்லை"
@@ -18369,7 +18376,7 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "PCI சாதனம் %1$sஐ மறுஅமைக்க முடியவில்லை: %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
+msgid "Unable to reset ingress on port %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -18410,17 +18417,25 @@ msgstr "நினைவக அளவுருக்களைப் பெற ம
 msgid "Unable to run among %1$llu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
-msgstr "இடைமுகம் %1$s க்கான OVS முனைய தரவைப் பெறுவதற்கான கட்டளையை இயக்க முடியவில்லை"
+#, c-format
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr "இடைமுகம் %1$s க்கான OVS முனைய தரவைப் பெறுவதற்கான கட்டளையை இயக்க முடியவில்லை"
 
 #, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr "இடைமுகம் %1$s க்கான OVS முனைய தரவை அமைப்பதற்கான கட்டளையை இயக்க முடியவில்லை"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr ""
@@ -18645,11 +18660,11 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "நேரடி இடைமுகங்களில் முனைய விவரத் தொகுப்பை அமைக்க முடியவில்லை"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
 msgstr ""
 
 msgid "Unable to set socket reuse addr flag"
@@ -18666,9 +18681,9 @@ msgstr "தொடரிழை அக அடையாளத்தை அமைக
 msgid "Unable to set thread local variable"
 msgstr "தொடரிழை அக அடையாளத்தை அமைக்க முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "%1$s இன் அமைவாக்கத்தை பாகுபடுத்த முடியவில்லை"
+#, c-format
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -19147,10 +19162,6 @@ msgstr "தெரியாத cgroup கன்ட்ரோலர் '%1$s'"
 msgid "Unknown SCSI controller model %1$s"
 msgstr "தெரியாத கட்டுப்படுத்தி வகை '%1$s'"
 
-#, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "தெரியாத SCSI உபமுறைமை நெறிமுறை '%1$s'"
-
 #, fuzzy, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "தெரியாத அளவுரு %1$s"
@@ -19358,10 +19369,6 @@ msgstr "தெரியாத வழங்கல் குறியீடு"
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "தெரியாத SCSI உபமுறைமை நெறிமுறை '%1$s'"
 
 #, fuzzy, c-format
 msgid "Unknown serial type: %1$X"
@@ -21470,6 +21477,10 @@ msgstr "நெட்லிங்கிற்கு ப்ளேஸ்ஹோல�
 #, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "செயலாக்க திறப்பாடுகளைப் பயன்படுத்த முடியவில்லை %1$d"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "அமர்வு தலைவராக முடியவில்லை"
@@ -24693,6 +24704,10 @@ msgstr ""
 msgid "disk target %1$s not found"
 msgstr "வட்டு %1$s காணப்படவில்லை"
 
+#, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr "தொகுப்பக வகை '%1$s' ஆனது மூல கண்டுபிடிப்புக்கு துணைபுரியவில்லை"
@@ -24733,11 +24748,6 @@ msgstr "தொகுப்பகங்களுக்கான விரிவ�
 
 msgid "display extended details for volumes"
 msgstr "பிரிவகங்களுக்கான விரிவான தகவலைக் காண்பி"
-
-#, fuzzy
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr "QEMU இன் இந்தப் பதிப்பில் USB திருப்பிவிடுதலுக்கு ஆதரவில்லை"
 
 msgid "display the progress of dump"
 msgstr "டம்பின் செயல் நிலையைக் காண்பி"
@@ -25236,6 +25246,10 @@ msgstr ""
 msgid "element"
 msgstr ""
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr ""
 
@@ -25602,6 +25616,10 @@ msgstr ""
 
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
 msgstr ""
 
 #, c-format
@@ -26538,6 +26556,10 @@ msgid "failed to mark pool %1$s as autostarted"
 msgstr "தொகுப்பகம் %1$s ஐ குறிக்க தானாக துவக்க முடியவில்லை"
 
 #, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "கோப்பை %1$s க்கு நகர்த்துவதில் தொல்வி "
 
@@ -27235,6 +27257,9 @@ msgstr "கோப்பு முறைமை 'template' அல்லது 'mou
 
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
+msgstr ""
+
+msgid "filesystem usage limits are not supported with QEMU"
 msgstr ""
 
 #, c-format
@@ -29369,8 +29394,9 @@ msgstr ""
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "'%1$s' இயக்கி இல்லாமல் லிப்விர்ட் உருவாக்கப்பட்டது"
 
-msgid "libvirt was not compiled with libpcap and \""
-msgstr "லிப்விர்ட்டானது libpcap  \" கொண்டு கம்பைல் செய்யப்படவில்லை"
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
+msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr ""
@@ -29992,10 +30018,6 @@ msgid "malformed mtu size"
 msgstr "தவறான அளவு %s"
 
 #, fuzzy, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "தவறான mac முகவரி '%1$s'"
-
-#, fuzzy, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "தவறாக வடிவமைக்கப்பட்ட சமிக்ஞை பெயர்: %1$s"
 
@@ -30257,8 +30279,18 @@ msgstr ""
 msgid "memory access mode '%1$s' not supported without guest numa node"
 msgstr "selinux இல் பாதுகாப்பு லேபிள் மாதிரி %1$s க்கு ஆதரவில்லை"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "நினைவக பண்புருக்கள்: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
+msgstr ""
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -30631,10 +30663,6 @@ msgstr "QEMU திறப்பாடுகள் தேக்ககத்தி
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
-#, fuzzy
-msgid "missing 'namespace' attribute to disk source"
-msgstr "வட்டு மூலத்திற்கான பெயர் இல்லை"
-
 #, fuzzy, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr "%1$s இல் பெயர் தகவல் விடுபட்டுள்ளது"
@@ -30738,12 +30766,6 @@ msgstr "QEMU திறப்பாடுகள் தேக்ககத்தி
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "நெட்லிங்க் பதிலளிப்பில் IFLA_VF_INFO விடுபட்டுள்ளது"
-
-msgid "missing RNG device backend model"
-msgstr "RNG சாதன பின்புல முறைமை மாதிரியம் விடுபட்டுள்ளது"
-
-msgid "missing RNG device model"
-msgstr "RNG சாதன மாதிரியம் விடுபட்டுள்ளது"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -31114,6 +31136,12 @@ msgstr "பெயர் தகவல் விடுபட்டுள்ளத�
 msgid "missing name information in %1$s"
 msgstr "%1$s இல் பெயர் தகவல் விடுபட்டுள்ளது"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 #, fuzzy
 msgid "missing network device feature name"
 msgstr "அம்சத்தின் பெயர் இல்லை"
@@ -31201,6 +31229,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "emulatorpin க்கான cpuset இல்லை"
+
+msgid "missing path in nbdkit capabilities cache"
+msgstr ""
 
 msgid "missing path to restore from"
 msgstr ""
@@ -31320,9 +31351,6 @@ msgstr ""
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr ""
-
-msgid "missing source address type"
-msgstr "மூல முகவரி வகை இல்லை"
 
 msgid "missing source device"
 msgstr "மூல சாதனம் விடுபட்டுள்ளது"
@@ -31712,6 +31740,12 @@ msgstr "நெறிமுறை '%s' ஒரு வழங்கியை மட�
 #, fuzzy, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "கட்டளை '%1$s' உள்ளிருக்கவில்லை"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -33547,6 +33581,10 @@ msgstr "pid"
 msgid "pid_value in %1$s is too large"
 msgstr "%1$s இல் உள்ள pid_value மிகப்பெரியது"
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr ""
 
@@ -33872,6 +33910,10 @@ msgstr ""
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
 msgstr "நெறிமுறை '%1$s' ஒரு வழங்கியை மட்டுமே ஏற்கும்"
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
+msgstr ""
 
 msgid "protocol misses the family attribute"
 msgstr "நெறிமுறை குடும்ப அளவுருவை கொண்டிருக்கவில்லை"
@@ -35046,11 +35088,8 @@ msgid ""
 "'remove' type"
 msgstr ""
 
-msgid "setting ACPI S3 not supported"
-msgstr "ACPI S3 ஐ அமைப்பதற்கு ஆதரவில்லை"
-
-msgid "setting ACPI S4 not supported"
-msgstr "ACPI S4 ஐ அமைப்பதற்கு ஆதரவில்லை"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -37707,14 +37746,6 @@ msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr ""
 
 #, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "தெரியாத RNG பின்புல முறைமை மாதிரியம் '%1$s'"
-
-#, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "தெரியாத RNG மாதிரி '%1$s'"
-
-#, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "தெரியாத SCSI புரவலன் செயல்திறன் வகை '%1$s' க்கு '%2$s'"
 
@@ -37725,10 +37756,6 @@ msgstr "தெரியாத SCSI புரவலன் செயல்தி�
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "தெரியாத முகவரி வகை '%1$s'"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -37887,10 +37914,6 @@ msgid "unknown host device source address type '%1$s'"
 msgstr "வழங்கி சாதன மூல முகவரி வகை '%1$s' தெரியாதது"
 
 #, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "தெரியாத hostdev முறைமை '%1$s'"
-
-#, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "தெரியாத ஹப் சாதன வகை '%1$s'"
 
@@ -38002,10 +38025,6 @@ msgstr "தெரியாத தொகுப்பக முறை வகை %1
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "தெரியாத செயல்பாடு: %1$d"
-
-#, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "தெரியாத நெறிமுறை போக்குவரத்து வகை '%1$s'"
 
 #, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -38138,14 +38157,6 @@ msgstr "தெரியாத தொகுதி முறை வகை %1$s"
 #, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "தெரியாத தொகுதி வகை '%1$s'"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "தெரியாத watchdog செயல்பாடு '%1$s'"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "தெரியாத watchdog மாதிரி '%1$s'"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -38316,6 +38327,9 @@ msgstr "துணைபுரியாத கட்டமைப்பு: %1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "ஆதரிக்கப்படாத கன்சோல் இலக்கு வகை %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -38971,9 +38985,6 @@ msgstr "விருந்தினர் %s ஐ துவங்குவதி�
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr ""
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr ""
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
@@ -39208,6 +39219,9 @@ msgstr "பூல்லானது தொகுப்பகம் அழித�
 #, fuzzy
 msgid "virtiofs does not support multidevs"
 msgstr "கெர்னல் தனிப்பட்ட devpts ஐ ஆதரிக்காது"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 #, fuzzy
 msgid "virtiofs does not support wrpolicy"
@@ -39472,9 +39486,6 @@ msgstr "எச்சரிக்கை"
 msgid "watchdog"
 msgstr "watchdog"
 
-msgid "watchdog must contain model name"
-msgstr "watchdog மாதிரிப் பெயரைக் கொண்டிருக்க வேண்டும்"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
@@ -39631,6 +39642,117 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "வகைகோப்பு '%1$s' கண்டுபிடிக்க முடியவில்லைுடியவில்லை"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "வகைகோப்பு '%1$s'ஐ வாசிக்க இயலவில்லை"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "சாதன வகை '%1$s' முழு எண் இல்லைடியவில்லை"
+
+#, fuzzy
+#~ msgid "Missing scsi_host subsystem protocol"
+#~ msgstr "scsi_host PCI கூறு இல்லை"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "குறிப்பிட்ட சாதனத்திற்கான முகவரி வகை இல்லை"
+
+#, c-format
+#~ msgid "Unable to add port %1$s to OVS bridge %2$s"
+#~ msgstr "முனையம் %1$s ஐ OVS பிரிட்ஜ் %2$s இல் சேர்க்க முடியவில்லை"
+
+#, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "முனையம் %1$s ஐ OVS இலிருந்து அழிக்க முடியவில்லை"
+
+#, fuzzy, c-format
+#~ msgid "Unable to find any firmware to satisfy '%1$s'"
+#~ msgstr "'%1$s' இல் எழுத முடியவில்லை"
+
+#, fuzzy, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr ""
+#~ "இடைமுகம் %1$s க்கான OVS முனைய தரவைப் பெறுவதற்கான கட்டளையை இயக்க முடியவில்லை"
+
+#, fuzzy, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "%1$s இன் அமைவாக்கத்தை பாகுபடுத்த முடியவில்லை"
+
+#, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "தெரியாத SCSI உபமுறைமை நெறிமுறை '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "தெரியாத SCSI உபமுறைமை நெறிமுறை '%1$s'"
+
+#, fuzzy
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr "QEMU இன் இந்தப் பதிப்பில் USB திருப்பிவிடுதலுக்கு ஆதரவில்லை"
+
+#~ msgid "libvirt was not compiled with libpcap and \""
+#~ msgstr "லிப்விர்ட்டானது libpcap  \" கொண்டு கம்பைல் செய்யப்படவில்லை"
+
+#, fuzzy, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "தவறான mac முகவரி '%1$s'"
+
+#, fuzzy
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "வட்டு மூலத்திற்கான பெயர் இல்லை"
+
+#~ msgid "missing RNG device backend model"
+#~ msgstr "RNG சாதன பின்புல முறைமை மாதிரியம் விடுபட்டுள்ளது"
+
+#~ msgid "missing RNG device model"
+#~ msgstr "RNG சாதன மாதிரியம் விடுபட்டுள்ளது"
+
+#~ msgid "missing source address type"
+#~ msgstr "மூல முகவரி வகை இல்லை"
+
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "ACPI S3 ஐ அமைப்பதற்கு ஆதரவில்லை"
+
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "ACPI S4 ஐ அமைப்பதற்கு ஆதரவில்லை"
+
+#, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "தெரியாத RNG பின்புல முறைமை மாதிரியம் '%1$s'"
+
+#, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "தெரியாத RNG மாதிரி '%1$s'"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "தெரியாத முகவரி வகை '%1$s'"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "தெரியாத hostdev முறைமை '%1$s'"
+
+#, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "தெரியாத நெறிமுறை போக்குவரத்து வகை '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "தெரியாத watchdog செயல்பாடு '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "தெரியாத watchdog மாதிரி '%1$s'"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "watchdog மாதிரிப் பெயரைக் கொண்டிருக்க வேண்டும்"
 
 #, c-format
 #~ msgid "Failed to load PCI stub module %1$s"

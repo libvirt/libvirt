@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -431,6 +431,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "బస్ '%s పార్శ్ చేయలేము'"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
 
@@ -776,6 +780,10 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4124,10 +4132,6 @@ msgid "Could not find storage volume with key '%1$s'"
 msgstr "కీ '%1$s' తో నిల్వ వాల్యూమ్ కనుగొనలేక పోయింది"
 
 #, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "'%1$s' రకముదస్త్రమును కనుగొనలేక పోయింది"
-
-#, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "వేరియబుల్ '%1$s' కొరకు విలువ కనుగొనలేక పోయింది"
 
@@ -4627,10 +4631,6 @@ msgid "Could not read type information"
 msgstr "పూల్ సమాచారం వెలికితీయలేదు"
 
 #, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "'%1$s' టైపుదస్త్రమును చదువలేక పోయింది"
-
-#, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "డొమైన్ తిరిగి కొనసాగించలేక పోయింది: %1$s"
 
@@ -4768,6 +4768,10 @@ msgid "Could not set the source dir for the filesystem"
 msgstr "మూలపు dirను దస్త్రవ్యవస్థ కొరకు అమర్చలేక పోయింది"
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
+msgstr ""
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
 msgstr ""
 
 #, fuzzy
@@ -5203,10 +5207,6 @@ msgstr ""
 
 msgid "Device is not a fibre channel HBA"
 msgstr "పరికరము ఫైబర్ చానల్ HBA కాదు"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "పరికరము రకము '%1$s' అనునది యింటీజర్ కాదు"
 
 msgid "Device updated successfully\n"
 msgstr "పరికరం విజయవంతంగా నవీకరించబడెను\n"
@@ -6537,6 +6537,10 @@ msgstr "ట్రీ జాబితా పూర్తిచేయుటకు 
 msgid "Failed to connect socket to '%1$s'"
 msgstr "సాకెట్‌ను '%1$s' కు అనుసంధానించుటకు విఫలమైంది"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 msgid "Failed to connect to ssh agent"
 msgstr "ssh ఏజెంట్‌కు అనుసంధానమగుటకు విఫలమైంది"
 
@@ -7134,6 +7138,10 @@ msgstr "క్లైంట్ సాకెట్ గుర్తింపు ప
 
 msgid "Failed to get client socket identity"
 msgstr "క్లైంట్ సాకెట్ గుర్తింపు పొందుటకు విఫలమైంది"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "డిస్కు సమాచారాన్ని పొందటంలో విఫలమైంది"
@@ -11449,9 +11457,6 @@ msgstr "JSON పత్రము నందు దొరకని నిర్భ�
 msgid "Missing scsi_host PCI address element"
 msgstr ""
 
-msgid "Missing scsi_host subsystem protocol"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "cgroup మౌంట్ '%1$s' నందు '/' విచ్చేదని దొరకలేదు"
@@ -12284,9 +12289,6 @@ msgstr "మొత్త గణాంకాలు అందుబాటులో�
 
 msgid "No transaction is set"
 msgstr ""
-
-msgid "No type specified for device address"
-msgstr "పరికరపు చిరునామా కొరకు యెటువంటి రకము తెలుపబడలేదు"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -16570,8 +16572,8 @@ msgid "Unable to add media registry other media"
 msgstr "మానిటర్ ఘటనలను నమోదుచేయలేక పోయింది"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
-msgstr "పోర్ట్ %1$s ను OVS బ్రిడ్జ్ %2$s కు జతచేయలేదు"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to add storage controller"
@@ -16828,7 +16830,7 @@ msgid "Unable to create UNIX socket"
 msgstr "సాకెట్ సృష్టించలేదు"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 msgid "Unable to create blkid library handle"
@@ -16970,8 +16972,8 @@ msgid "Unable to delete medium"
 msgstr ""
 
 #, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "పోర్ట్ %1$s ను OVS నుండి తొలగించలేదు"
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17055,6 +17057,12 @@ msgstr "%1$s మూయలేదు"
 msgid "Unable to find '%1$s' binary in $PATH"
 msgstr "$PATH నందు 'qemu-nbd' బైనరీ కనుగొనలేదు"
 
+#, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "పరికరం '%s' యొక్క మైనర్ సంఖ్య పొందలేదు"
@@ -17118,10 +17126,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to find any /dev mount"
 msgstr "పోర్టుకు బందనం చేయలేదు"
-
-#, fuzzy, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr "'%1$s' కు వ్రాయలేదు"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -17978,6 +17982,10 @@ msgstr "స్థితి ఫైల్ %1$s దాయలేదు"
 msgid "Unable to read net device config on this platform"
 msgstr "ఈ ప్లాట్‌ఫాం పైన ఇంటర్ఫేస్ ఆకృతీకరణ పరిశీలించలేక పోయింది"
 
+#, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "'%1$s' నుండి చదువలేదు"
@@ -18083,7 +18091,7 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "PCI పరికరము %1$sను తిరిగివుంచలేక పోయింది: %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
+msgid "Unable to reset ingress on port %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -18124,17 +18132,25 @@ msgstr "మెమొరీ పారామితులు పొందలేద�
 msgid "Unable to run among %1$llu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
-msgstr "ఇంటర్ఫేస్ %1$s కొరకు OVS పోర్టు దత్తాంశం పొందుటకు ఆదేశం నడుపలేదు"
+#, c-format
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr "ఇంటర్ఫేస్ %1$s కొరకు OVS పోర్టు దత్తాంశం పొందుటకు ఆదేశం నడుపలేదు"
 
 #, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr "ఇంటర్ఫేస్ %1$s కొరకు OVS పోర్టు దత్తాంశం అమర్చుటకు ఆదేశం నడుపలేదు"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr ""
@@ -18360,11 +18376,11 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "డైరెక్ట్ యింటర్ఫేసులపై పోర్ట్ ప్రొఫైల్ అమర్చలేదు"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
 msgstr ""
 
 msgid "Unable to set socket reuse addr flag"
@@ -18381,9 +18397,9 @@ msgstr "త్రెడ్ స్థానిక గుర్తింపు అ
 msgid "Unable to set thread local variable"
 msgstr "త్రెడ్ స్థానిక గుర్తింపు అమర్చలేదు"
 
-#, fuzzy, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "%1$s యొక్క ఆకృతీకరణ పార్స్ చేయుటకు విఫలమైంది"
+#, c-format
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -18862,10 +18878,6 @@ msgid "Unknown SCSI controller model %1$s"
 msgstr "తెలియని నియంత్రణి రకము '%1$s'"
 
 #, fuzzy, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "తెలియని నిభందన(ప్రోటోకాల్) '%1$s'"
-
-#, fuzzy, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "తెలియని రీతి రకం '%1$s'"
 
@@ -19072,10 +19084,6 @@ msgstr "తిప్పియిచ్చు కోడ్ తెలియని�
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "తెలియని నిభందన(ప్రోటోకాల్) '%1$s'"
 
 #, fuzzy, c-format
 msgid "Unknown serial type: %1$X"
@@ -21153,6 +21161,10 @@ msgstr "నెట్‌లింక్ కొరకు ప్లేస్‌హ�
 #, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "ప్రోసెస్ సామర్ధ్యాలు %1$d వర్తింపచేయలేదు"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "సెషన్ లీడర్ అవ్వలేదు"
@@ -24351,6 +24363,10 @@ msgstr ""
 msgid "disk target %1$s not found"
 msgstr "డిస్కు %1$s కనబడలేదు"
 
+#, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr "పూల్ టైప్ '%1$s' మూలము ఆవిష్కారమును మద్దతించదు"
@@ -24390,11 +24406,6 @@ msgstr "పూల్స్ కొరకు విస్తరిత వివర
 
 msgid "display extended details for volumes"
 msgstr "వాల్యూమ్‌ల కొరకు విస్తరిత వివరాలను ప్రదర్శించు"
-
-#, fuzzy
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr "USB రీడైరెక్షన్ అనునది ఈ QEMU వర్షన్ చేత తోడ్పాటునీయబడదు"
 
 msgid "display the progress of dump"
 msgstr "డంప్ యొక్క పురోగతి ప్రదర్శించు"
@@ -24894,6 +24905,10 @@ msgstr ""
 msgid "element"
 msgstr ""
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr ""
 
@@ -25259,6 +25274,10 @@ msgstr ""
 
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
 msgstr ""
 
 #, c-format
@@ -26191,6 +26210,10 @@ msgid "failed to mark pool %1$s as autostarted"
 msgstr "పూల్ %1$s అనునది స్వయంచాలకప్రారంభంగా గుర్తుంచుటలో విఫలమైంది"
 
 #, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "ఫైలు %1$s కు కదుల్చుటకు విఫలమైంది"
 
@@ -26890,6 +26913,9 @@ msgstr "దస్త్రవ్యవస్థ 'template' లేదా 'mount' 
 
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
+msgstr ""
+
+msgid "filesystem usage limits are not supported with QEMU"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29009,8 +29035,9 @@ msgstr ""
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "libvirt అనునది '%1$s' డ్రైవర్ లేకుండా నిర్మించబడెను"
 
-msgid "libvirt was not compiled with libpcap and \""
-msgstr "libvirt అనునది libpcap మరియు \" తో కంపైల్ అవలేదు"
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
+msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr ""
@@ -29629,10 +29656,6 @@ msgid "malformed mtu size"
 msgstr "తప్పుగాఫార్మైన పరిమాణము %s"
 
 #, fuzzy, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "తప్పుగావున్న mac చిరునామా '%1$s'"
-
-#, fuzzy, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "తప్పుగారూపొందిన సంకేతం పేరు: %1$s"
 
@@ -29904,8 +29927,18 @@ msgstr ""
 msgid "memory access mode '%1$s' not supported without guest numa node"
 msgstr "రక్షణ లేబుల్ రీతి %1$s అనునది selinux తో తోడ్పాటులేదు"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "మెమొరీ ఏట్రిబ్యూట్లు: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
+msgstr ""
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -30275,10 +30308,6 @@ msgstr ""
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
-#, fuzzy
-msgid "missing 'namespace' attribute to disk source"
-msgstr "డిస్కు మూలం కొరకు పేరు లేదు"
-
 #, fuzzy, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr "%1$s నందు దొరకని పేరు సమాచారం"
@@ -30382,12 +30411,6 @@ msgstr "మైగ్రేషన్ సామర్ధ్యాల జాబి�
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "నెట్‌లింక్ స్పందన నందు IFLA_VF_INFO లేదు"
-
-msgid "missing RNG device backend model"
-msgstr "దొరకని RNG పరికర బ్యాకెండ్ రకం"
-
-msgid "missing RNG device model"
-msgstr "దొరకని RNG పరికర రకం"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -30766,6 +30789,12 @@ msgstr "దొరకని పేరు సమాచారం"
 msgid "missing name information in %1$s"
 msgstr "%1$s నందు దొరకని పేరు సమాచారం"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 #, fuzzy
 msgid "missing network device feature name"
 msgstr "దొరకని విశేషణం పేరు"
@@ -30852,6 +30881,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "దొరకని పేరు సమాచారం"
+
+msgid "missing path in nbdkit capabilities cache"
+msgstr ""
 
 msgid "missing path to restore from"
 msgstr ""
@@ -30972,9 +31004,6 @@ msgstr ""
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr ""
-
-msgid "missing source address type"
-msgstr "మూలపు చిరునామా రకం దొరకట్లేదు"
 
 msgid "missing source device"
 msgstr "మూలపు పరికరము తప్పిపోయినది"
@@ -31362,6 +31391,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "మాదిరి '%1$s' లేదు"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -33193,6 +33228,10 @@ msgstr "pid"
 msgid "pid_value in %1$s is too large"
 msgstr "%1$s నందలి pid_value మరీ పెద్దది"
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr ""
 
@@ -33514,6 +33553,10 @@ msgstr ""
 
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
+msgstr ""
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
 msgstr ""
 
 msgid "protocol misses the family attribute"
@@ -34676,11 +34719,8 @@ msgid ""
 "'remove' type"
 msgstr ""
 
-msgid "setting ACPI S3 not supported"
-msgstr "ACPI S3 అమర్చుటకు తోడ్పాటులేదు"
-
-msgid "setting ACPI S4 not supported"
-msgstr "ACPI S4 అమర్చుటకు తోడ్పాటులేదు"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -37315,14 +37355,6 @@ msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr ""
 
 #, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "తెలియని RNG బ్యాకెండ్ రకం '%1$s'"
-
-#, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "తెలియని RNG రకం '%1$s'"
-
-#, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "తెలియని SCSI హోస్టు సామర్ధ్య రకము '%1$s' '%2$s' కొరకు"
 
@@ -37333,10 +37365,6 @@ msgstr "తెలియని SCSI హోస్టు సామర్ధ్య �
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "తెలియని చిరునామా రకము '%1$s'"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -37496,10 +37524,6 @@ msgid "unknown host device source address type '%1$s'"
 msgstr "తెలియని అతిధేయ పరికరం మూలపు చిరునామా రకం '%1$s'"
 
 #, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "తెలియని hostdev రీతి '%1$s'"
-
-#, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "తెలియని హబ్ పరికర రకం '%1$s'"
 
@@ -37611,10 +37635,6 @@ msgstr "తెలియని పూల్ ఫార్మాట్ రకము
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "తెలియని విధానము: %1$d"
-
-#, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "తెలియని ప్రొటోకాల్ బదిలీ రకం '%1$s'"
 
 #, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -37747,14 +37767,6 @@ msgstr "తెలియని వాల్యూమ్ ఫార్మాట్ 
 #, fuzzy, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "తెలియని కోడక్ రకం '%1$s'"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "తెలియని watchdog చర్య '%1$s'"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "తెలియని watchdog రీతి '%1$s'"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -37922,6 +37934,9 @@ msgstr "మద్దతీయని ఆకృతీకరణ: %1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "తోడ్పాటునీయని కన్సోల్ లక్ష్యం రకం %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -38579,9 +38594,6 @@ msgstr "అతిథి ప్రారంభించుటలో విఫల�
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr ""
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr ""
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
@@ -38812,6 +38824,9 @@ msgstr "పూల్ అనునది పూల్ తొలగింపున
 #, fuzzy
 msgid "virtiofs does not support multidevs"
 msgstr "వ్యక్తిగత devpts ను కెర్నల్ తోడ్పాటునీయదు"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 #, fuzzy
 msgid "virtiofs does not support wrpolicy"
@@ -39072,9 +39087,6 @@ msgstr "హెచ్చరిక"
 msgid "watchdog"
 msgstr "వాచ్‌డాగ్"
 
-msgid "watchdog must contain model name"
-msgstr "watchdog తప్పక రీతి నామమును కలిగివుండాలి"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
@@ -39230,6 +39242,112 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "'%1$s' రకముదస్త్రమును కనుగొనలేక పోయింది"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "'%1$s' టైపుదస్త్రమును చదువలేక పోయింది"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "పరికరము రకము '%1$s' అనునది యింటీజర్ కాదు"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "పరికరపు చిరునామా కొరకు యెటువంటి రకము తెలుపబడలేదు"
+
+#, c-format
+#~ msgid "Unable to add port %1$s to OVS bridge %2$s"
+#~ msgstr "పోర్ట్ %1$s ను OVS బ్రిడ్జ్ %2$s కు జతచేయలేదు"
+
+#, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "పోర్ట్ %1$s ను OVS నుండి తొలగించలేదు"
+
+#, fuzzy, c-format
+#~ msgid "Unable to find any firmware to satisfy '%1$s'"
+#~ msgstr "'%1$s' కు వ్రాయలేదు"
+
+#, fuzzy, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr "ఇంటర్ఫేస్ %1$s కొరకు OVS పోర్టు దత్తాంశం పొందుటకు ఆదేశం నడుపలేదు"
+
+#, fuzzy, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "%1$s యొక్క ఆకృతీకరణ పార్స్ చేయుటకు విఫలమైంది"
+
+#, fuzzy, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "తెలియని నిభందన(ప్రోటోకాల్) '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "తెలియని నిభందన(ప్రోటోకాల్) '%1$s'"
+
+#, fuzzy
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr "USB రీడైరెక్షన్ అనునది ఈ QEMU వర్షన్ చేత తోడ్పాటునీయబడదు"
+
+#~ msgid "libvirt was not compiled with libpcap and \""
+#~ msgstr "libvirt అనునది libpcap మరియు \" తో కంపైల్ అవలేదు"
+
+#, fuzzy, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "తప్పుగావున్న mac చిరునామా '%1$s'"
+
+#, fuzzy
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "డిస్కు మూలం కొరకు పేరు లేదు"
+
+#~ msgid "missing RNG device backend model"
+#~ msgstr "దొరకని RNG పరికర బ్యాకెండ్ రకం"
+
+#~ msgid "missing RNG device model"
+#~ msgstr "దొరకని RNG పరికర రకం"
+
+#~ msgid "missing source address type"
+#~ msgstr "మూలపు చిరునామా రకం దొరకట్లేదు"
+
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "ACPI S3 అమర్చుటకు తోడ్పాటులేదు"
+
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "ACPI S4 అమర్చుటకు తోడ్పాటులేదు"
+
+#, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "తెలియని RNG బ్యాకెండ్ రకం '%1$s'"
+
+#, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "తెలియని RNG రకం '%1$s'"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "తెలియని చిరునామా రకము '%1$s'"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "తెలియని hostdev రీతి '%1$s'"
+
+#, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "తెలియని ప్రొటోకాల్ బదిలీ రకం '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "తెలియని watchdog చర్య '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "తెలియని watchdog రీతి '%1$s'"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "watchdog తప్పక రీతి నామమును కలిగివుండాలి"
 
 #, c-format
 #~ msgid "Failed to load PCI stub module %1$s"

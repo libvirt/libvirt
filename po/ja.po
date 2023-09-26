@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -567,6 +567,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s は UID '%2$s' を解析できません"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
 "%1$s は、ファイル記述子を使用したパスフレーズの受け渡しをサポートしていません"
@@ -948,6 +952,10 @@ msgstr "%1$s: シークレット %2$s のイベント'lifecycle': %3$s\n"
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
 msgstr "%1$s: ストレージプール %2$s のイベント 'lifecycle': %3$s\n"
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -4324,10 +4332,6 @@ msgid "Could not find storage volume with key '%1$s'"
 msgstr "キー '%1$s' のストレージボリュームを見つけられませんでした"
 
 #, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "タイプファイル '%1$s' を見つけることができませんでした"
-
-#, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "変数 '%1$s' の値を見つけられませんでした"
 
@@ -4823,10 +4827,6 @@ msgid "Could not read type information"
 msgstr "タイプ情報を読み取れませんでした"
 
 #, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "タイプファイル '%1$s' を読み込みできませんでした"
-
-#, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "ドメインを再開できません: %1$s"
 
@@ -4973,6 +4973,10 @@ msgstr "ファイルシステム用のソースディレクトリーを設定で
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "xmlNodeParam の wsman 名前空間アドレスを設定できませんでした"
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
+msgstr ""
 
 msgid "Could not start 'virtiofsd'"
 msgstr "'virtiofsd' を開始できませんでした"
@@ -5413,10 +5417,6 @@ msgstr "デバイスはすでにアクティブです"
 
 msgid "Device is not a fibre channel HBA"
 msgstr "デバイスはファイバーチャンネル HBA ではありません"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "デバイスタイプ '%1$s' が整数ではありません"
 
 msgid "Device updated successfully\n"
 msgstr "デバイスが正常に更新されました\n"
@@ -6773,6 +6773,10 @@ msgstr "ツリーの一覧化が完了できませんでした"
 msgid "Failed to connect socket to '%1$s'"
 msgstr "ソケットの '%1$s' への接続に失敗しました"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 msgid "Failed to connect to ssh agent"
 msgstr "SSH エージェントへの接続に失敗しました"
 
@@ -7370,6 +7374,10 @@ msgstr "クライアントのソケット PID の取得に失敗しました"
 
 msgid "Failed to get client socket identity"
 msgstr "クライアントソケット識別子の取得に失敗しました"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "ディスク情報の取得に失敗しました"
@@ -11754,9 +11762,6 @@ msgstr "JSON ドキュメントに制限データがありません"
 msgid "Missing scsi_host PCI address element"
 msgstr "scsi_host PCI アドレス要素がありません"
 
-msgid "Missing scsi_host subsystem protocol"
-msgstr "scsi_host サブシステムプロトコルがありません"
-
 #, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "スケジュール情報 '%1$s' にセパレーターがありません"
@@ -12570,9 +12575,6 @@ msgstr "合計の統計が利用可能ではありません"
 
 msgid "No transaction is set"
 msgstr "トランザクションは設定されていません"
-
-msgid "No type specified for device address"
-msgstr "デバイスアドレスの種類が指定されていません"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -17023,8 +17025,8 @@ msgid "Unable to add media registry other media"
 msgstr "他のメディアにメディアレジストリーを追加できません"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
-msgstr "ポート %1$s を OVS ブリッジ %2$s に追加できません"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "ストレージコントローラーを追加できません"
@@ -17270,8 +17272,8 @@ msgid "Unable to create UNIX socket"
 msgstr "UNIX ソケットを作成できません"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
-msgstr "ポート %1$s で qos 設定を作成および設定できません"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to create blkid library handle"
 msgstr "blkid ライブラリーハンドルを作成できません"
@@ -17412,8 +17414,8 @@ msgid "Unable to delete medium"
 msgstr "メディアを削除できません"
 
 #, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "ポート %1$s を OVS から削除できません"
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17495,6 +17497,12 @@ msgid "Unable to find '%1$s' binary in $PATH"
 msgstr "$PATH で '%1$s' バイナリーを見つけることができません"
 
 #, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
+#, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "ブロックデバイス '%1$s' の '%2$s' 制限を見つけることができません"
 
@@ -17555,10 +17563,6 @@ msgstr "範囲 '%1$s' (%2$d-%3$d) で未使用のポートが見つかりませ�
 
 msgid "Unable to find any /dev mount"
 msgstr "/dev マウントを見つけることができません"
-
-#, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr "'%1$s' を満たすファームウェアを見つけることができません"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -18362,6 +18366,10 @@ msgid "Unable to read net device config on this platform"
 msgstr "このプラットフォームでネットデバイス設定を読み取ることができません"
 
 #, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "slirp pidfile '%1$s' を読み取れません"
 
@@ -18464,8 +18472,8 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "PCI デバイス %1$s をリセットできません: %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
-msgstr "ポート %1$s のイングレスをリセットできません"
+msgid "Unable to reset ingress on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
@@ -18505,9 +18513,8 @@ msgid "Unable to run among %1$llu"
 msgstr "%1$llu 間で実行できません"
 
 #, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
 msgstr ""
-"インターフェイス %1$s の OVS マスターを取得するコマンドを実行できません"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
@@ -18516,9 +18523,17 @@ msgstr ""
 "ません"
 
 #, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
+#, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr ""
 "インターフェイス %1$s の OVS ポートデータを設定するコマンドを実行できません"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "ワンタイム GDBus イニシャライザーを実行できません"
@@ -18727,12 +18742,12 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "直接インターフェイスにおいてポートプロファイルを設定できません"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
-msgstr "ポート %1$s に qos 設定を設定できません"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
-msgstr "ポート %1$s にキュー設定を設定できません"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to set socket reuse addr flag"
 msgstr "ソケットの再利用アドレスフラグを設定できません"
@@ -18748,8 +18763,8 @@ msgid "Unable to set thread local variable"
 msgstr "スレッドローカル変数を設定できません"
 
 #, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "ポート %1$s に vlan 設定を設定できません"
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -19221,10 +19236,6 @@ msgid "Unknown SCSI controller model %1$s"
 msgstr "不明な SCSI コントローラーモデル %1$s"
 
 #, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "不明な SCSI サブシステムプロトコル '%1$s'"
-
-#, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "不明な URI パラメーター '%1$s'"
 
@@ -19433,10 +19444,6 @@ msgstr "不明なリターンコード"
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr "不明な sched_core 値 %1$s"
-
-#, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "不明な scsi_host サブシステムプロトコル '%1$s'"
 
 #, c-format
 msgid "Unknown serial type: %1$X"
@@ -21598,6 +21605,10 @@ msgstr "ネットリンクに対してプレースホルダー nlhandle を割�
 #, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "プロセスのケイパビリティー %1$d を適用できません"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "セッションのリーダーになれません"
@@ -24789,6 +24800,10 @@ msgid "disk target %1$s not found"
 msgstr "ディスクターゲット %1$s が見つかりません"
 
 #, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
+#, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr "'%1$s' のディスクタイプはイジェクト可能なメディアをサポートしません"
 
@@ -24828,12 +24843,6 @@ msgstr "プールの拡張詳細の表示"
 
 msgid "display extended details for volumes"
 msgstr "ボリュームの詳細の表示"
-
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr ""
-"このバージョンの QEMU では、デバイス vfio-pci の表示プロパティーはサポートさ"
-"れていません"
 
 msgid "display the progress of dump"
 msgstr "ダンプの進行状況の表示"
@@ -25316,6 +25325,10 @@ msgstr "シークレット uuid または使用法のいずれかが期待され
 msgid "element"
 msgstr "要素"
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr "要素 'genid' は 1 回だけ表示できます"
 
@@ -25694,6 +25707,10 @@ msgstr ""
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
 msgstr "ドメイン '%1$s' のイベント 'metadata-change': タイプ %2$s、uri %3$s\n"
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
@@ -26611,6 +26628,10 @@ msgid "failed to mark pool %1$s as autostarted"
 msgstr "プール %1$s を自動起動済みとしてマークすることに失敗しました"
 
 #, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "ファイルを %1$s に移動できませんでした "
 
@@ -27291,6 +27312,9 @@ msgstr "ファイルシステムは「template」や「mount」のタイプで�
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
 msgstr "ファイルシステムターゲット '%1$s' が 2 回指定されました"
+
+msgid "filesystem usage limits are not supported with QEMU"
+msgstr ""
 
 #, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
@@ -29435,8 +29459,9 @@ msgstr "libvirt 管理デーモン:"
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "libvirt が '%1$s' ドライバーなしでビルドされました"
 
-msgid "libvirt was not compiled with libpcap and \""
-msgstr "libvirt が libpcap とともにコンパイルされていません"
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
+msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr ""
@@ -30034,10 +30059,6 @@ msgid "malformed mtu size"
 msgstr "不正な形式の mtu サイズ"
 
 #, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "不正な形式の名前空間 '%1$s'"
-
-#, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "不正な形式の名前空間名: %1$s"
 
@@ -30292,8 +30313,18 @@ msgstr ""
 "メモリーアクセスモード '%1$s' は、ゲスト numa ノードなしではサポートされませ"
 "ん"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "memory 属性: [file=]name[,snapshot=type]"
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
+msgstr ""
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -30678,9 +30709,6 @@ msgstr ""
 msgid "missing 'name' attribute for qemu:property"
 msgstr "qemu:property の 'name' 属性がありません"
 
-msgid "missing 'namespace' attribute to disk source"
-msgstr "ディスクソースに 'namespace' 属性がありません"
-
 #, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr "'%1$s' の 'nvram-template' がありません"
@@ -30781,12 +30809,6 @@ msgstr "QEMU ケイパビリティーキャッシュに GIC バージョンが�
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink 応答に IFLA_VF_INFO がありません"
-
-msgid "missing RNG device backend model"
-msgstr "RNG デバイスのバックエンドモデルがありません"
-
-msgid "missing RNG device model"
-msgstr "RNG デバイスモデルがありません"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -31132,6 +31154,12 @@ msgstr "名前の情報がありません"
 msgid "missing name information in %1$s"
 msgstr "%1$s に名前の情報がありません"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 msgid "missing network device feature name"
 msgstr "ネットワークデバイスの機能名がありません"
 
@@ -31227,6 +31255,9 @@ msgstr "JSON バッキングボリュームドライバー '%1$s' のパーサ�
 
 msgid "missing path for <reservations/>"
 msgstr "<reservations/> のパスがありません"
+
+msgid "missing path in nbdkit capabilities cache"
+msgstr ""
 
 msgid "missing path to restore from"
 msgstr "復元するパスが欠落しています"
@@ -31348,9 +31379,6 @@ msgid ""
 msgstr ""
 "JSON バッキングボリューム定義に udp バッキングサーバーのソケットパスがありま"
 "せん"
-
-msgid "missing source address type"
-msgstr "ソースアドレスタイプがありません"
 
 msgid "missing source device"
 msgstr "ソースデバイスがありません"
@@ -31738,6 +31766,12 @@ msgstr "nbd プロトコルは 1 つのホストのみを受け入れます"
 #, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "nbd_tls_x509_cert_dir ディレクトリー '%1$s' は存在しません"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -33572,6 +33606,10 @@ msgstr "プロセス ID"
 msgid "pid_value in %1$s is too large"
 msgstr "%1$s の pid_value が大きすぎます"
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr "RDMA ライブマイグレーションを開始する前にすべてのメモリーを固定します"
 
@@ -33882,6 +33920,10 @@ msgstr "名前が 'id' のプロパティーはオーバーライドできませ
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
 msgstr "プロトコル '%1$s' は1 つのホストのみを受け入れます"
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
+msgstr ""
 
 msgid "protocol misses the family attribute"
 msgstr "プロトコルにファミリー属性がありません"
@@ -35036,11 +35078,8 @@ msgstr ""
 "'qemu:property' の 'value' 属性を設定しても、'remove' タイプでは意味を成しま"
 "せん"
 
-msgid "setting ACPI S3 not supported"
-msgstr "ACPI S3 の設定はサポートされません"
-
-msgid "setting ACPI S4 not supported"
-msgstr "ACPI S4 の設定はサポートされません"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -37737,14 +37776,6 @@ msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr "不明な QEMU_AUDIO_DRV 設定 %1$s"
 
 #, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "不明な RNG バックエンドモデル '%1$s'"
-
-#, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "不明な RNG モデル '%1$s'"
-
-#, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "'%1$s' に対する不明な SCSI ホストケイパビリティータイプ '%2$s'"
 
@@ -37755,10 +37786,6 @@ msgstr "'%1$s' に対する不明な SCSI ターゲットケイパビリティ�
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "不明な SDL_AUDIODRIVER 設定 %1$s"
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "不明なアドレスタイプ '%1$s'"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -37915,10 +37942,6 @@ msgid "unknown host device source address type '%1$s'"
 msgstr "不明なホストデバイスのソースアドレスタイプ '%1$s'"
 
 #, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "不明な hostdev モード '%1$s'"
-
-#, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "ハブデバイスの不明なタイプ '%1$s' です"
 
@@ -38030,10 +38053,6 @@ msgstr "不明なプールフォーマットタイプ %1$s"
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "不明なプロシージャー: %1$d"
-
-#, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "不明なプロトコル転送タイプ '%1$s'"
 
 #, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -38166,14 +38185,6 @@ msgstr "不明なボリュームフォーマットタイプ %1$s"
 #, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "不明なボリュームタイプ '%1$s'"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "不明なウォッチドッグアクション '%1$s'"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "不明なウォッチドッグモデル '%1$s'"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -38348,6 +38359,9 @@ msgstr "<reservations/> のサポートされない接続タイプ: %1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "サポートされないコンソールターゲットタイプ %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -39011,9 +39025,6 @@ msgstr "vhost-user-gpu を開始できませんでした"
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr "vhost_user タイプは、この CH で UNIX ソケットをサポートします"
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、vhostuser ディスクはサポートされません"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr "vhostuser ディスクは virtio バスのみをサポートします"
 
@@ -39256,6 +39267,9 @@ msgstr "virtiofs はモデルをサポートしません"
 
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs は multidevs をサポートしません"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs は wrpolicy をサポートしません"
@@ -39522,9 +39536,6 @@ msgstr "警告"
 msgid "watchdog"
 msgstr "ウォッチドッグ"
 
-msgid "watchdog must contain model name"
-msgstr "watchdog はモデル名を含まなければいけません"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
@@ -39689,6 +39700,135 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "タイプファイル '%1$s' を見つけることができませんでした"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "タイプファイル '%1$s' を読み込みできませんでした"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "デバイスタイプ '%1$s' が整数ではありません"
+
+#~ msgid "Missing scsi_host subsystem protocol"
+#~ msgstr "scsi_host サブシステムプロトコルがありません"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "デバイスアドレスの種類が指定されていません"
+
+#, c-format
+#~ msgid "Unable to add port %1$s to OVS bridge %2$s"
+#~ msgstr "ポート %1$s を OVS ブリッジ %2$s に追加できません"
+
+#, c-format
+#~ msgid "Unable to create and set qos configuration on port %1$s"
+#~ msgstr "ポート %1$s で qos 設定を作成および設定できません"
+
+#, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "ポート %1$s を OVS から削除できません"
+
+#, c-format
+#~ msgid "Unable to find any firmware to satisfy '%1$s'"
+#~ msgstr "'%1$s' を満たすファームウェアを見つけることができません"
+
+#, c-format
+#~ msgid "Unable to reset ingress on port %1$s"
+#~ msgstr "ポート %1$s のイングレスをリセットできません"
+
+#, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr ""
+#~ "インターフェイス %1$s の OVS マスターを取得するコマンドを実行できません"
+
+#, c-format
+#~ msgid "Unable to set qos configuration on port %1$s"
+#~ msgstr "ポート %1$s に qos 設定を設定できません"
+
+#, c-format
+#~ msgid "Unable to set queue configuration on port %1$s"
+#~ msgstr "ポート %1$s にキュー設定を設定できません"
+
+#, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "ポート %1$s に vlan 設定を設定できません"
+
+#, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "不明な SCSI サブシステムプロトコル '%1$s'"
+
+#, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "不明な scsi_host サブシステムプロトコル '%1$s'"
+
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr ""
+#~ "このバージョンの QEMU では、デバイス vfio-pci の表示プロパティーはサポート"
+#~ "されていません"
+
+#~ msgid "libvirt was not compiled with libpcap and \""
+#~ msgstr "libvirt が libpcap とともにコンパイルされていません"
+
+#, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "不正な形式の名前空間 '%1$s'"
+
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "ディスクソースに 'namespace' 属性がありません"
+
+#~ msgid "missing RNG device backend model"
+#~ msgstr "RNG デバイスのバックエンドモデルがありません"
+
+#~ msgid "missing RNG device model"
+#~ msgstr "RNG デバイスモデルがありません"
+
+#~ msgid "missing source address type"
+#~ msgstr "ソースアドレスタイプがありません"
+
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "ACPI S3 の設定はサポートされません"
+
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "ACPI S4 の設定はサポートされません"
+
+#, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "不明な RNG バックエンドモデル '%1$s'"
+
+#, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "不明な RNG モデル '%1$s'"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "不明なアドレスタイプ '%1$s'"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "不明な hostdev モード '%1$s'"
+
+#, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "不明なプロトコル転送タイプ '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "不明なウォッチドッグアクション '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "不明なウォッチドッグモデル '%1$s'"
+
+#~ msgid "vhostuser disk is not supported with this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、vhostuser ディスクはサポートされません"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "watchdog はモデル名を含まなければいけません"
 
 #~ msgid "Attempting to use unknown stub driver"
 #~ msgstr "不明なスタブドライバーを使用しようとしています"

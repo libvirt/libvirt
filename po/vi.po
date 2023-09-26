@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-08-25 19:26+0000\n"
+"POT-Creation-Date: 2023-09-25 20:10+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -379,6 +379,10 @@ msgid "%1$s cannot parse UID '%2$s'"
 msgstr "không thể phân tích tuyến %s"
 
 #, c-format
+msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
 
@@ -721,6 +725,10 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4054,10 +4062,6 @@ msgstr "Không thể tìm datastore với tên '%1$s'"
 msgid "Could not find storage volume with key '%1$s'"
 msgstr "Không thể tìm datastore với tên '%1$s'"
 
-#, c-format
-msgid "Could not find typefile '%1$s'"
-msgstr "Không thể tìm tập tin kiểu '%1$s'"
-
 #, fuzzy, c-format
 msgid "Could not find value for variable '%1$s'"
 msgstr "Không thể tìm tập tin kiểu '%1$s'"
@@ -4568,10 +4572,6 @@ msgstr "Không thể đọc cấu hình cho bộ chứa %d"
 msgid "Could not read type information"
 msgstr "Không thể lấy thông tin pool"
 
-#, c-format
-msgid "Could not read typefile '%1$s'"
-msgstr "Không thể đọc tập tin kiểu '%1$s'"
-
 #, fuzzy, c-format
 msgid "Could not resume domain: %1$s"
 msgstr "Thất bại khi tiếp tục miền %1$s"
@@ -4716,6 +4716,10 @@ msgid "Could not set the source dir for the filesystem"
 msgstr "Không thể đặt thư mục nguồn cho hệ thống tập tin"
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
+msgstr ""
+
+#, c-format
+msgid "Could not start 'nbdkit'. exitstatus: %1$d"
 msgstr ""
 
 #, fuzzy
@@ -5161,10 +5165,6 @@ msgstr ""
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Thiết bị không phải là fibre channel HBA"
-
-#, c-format
-msgid "Device type '%1$s' is not an integer"
-msgstr "Kiểu thiết bị '%1$s' không phải một số nguyên"
 
 msgid "Device updated successfully\n"
 msgstr "Thiết bị cập nhật thành công\n"
@@ -6517,6 +6517,10 @@ msgstr "Thất bại khi biên dịch regex %s"
 msgid "Failed to connect socket to '%1$s'"
 msgstr "thất bại khi lấy bí mật '%1$s'"
 
+#, c-format
+msgid "Failed to connect to nbdkit for '%1$s': %2$s"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to connect to ssh agent"
 msgstr "Thất bại khi kết nối lại tới trình quản lý máy ảo"
@@ -7131,6 +7135,10 @@ msgstr "thất bại khi tạo socket"
 #, fuzzy
 msgid "Failed to get client socket identity"
 msgstr "Thất bại khi lấy thông tin giao diện"
+
+#, c-format
+msgid "Failed to get current process capabilities: %1$d"
+msgstr ""
 
 msgid "Failed to get disk information"
 msgstr "Lấy thông tin ổ đĩa thất bại"
@@ -11493,9 +11501,6 @@ msgstr ""
 msgid "Missing scsi_host PCI address element"
 msgstr ""
 
-msgid "Missing scsi_host subsystem protocol"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "thiếu thông tin hệ điều hành cho %1$s"
@@ -12322,9 +12327,6 @@ msgstr "Không có callback xác thực có sẵn"
 
 msgid "No transaction is set"
 msgstr ""
-
-msgid "No type specified for device address"
-msgstr "Không chỉ rõ kiểu cho địa chỉ thiết bị"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -16575,7 +16577,7 @@ msgid "Unable to add media registry other media"
 msgstr "không thể đăng ký các sự kiện bộ theo dõi"
 
 #, c-format
-msgid "Unable to add port %1$s to OVS bridge %2$s"
+msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr ""
 
 #, fuzzy
@@ -16843,7 +16845,7 @@ msgid "Unable to create UNIX socket"
 msgstr "không thể tạo cặp socket"
 
 #, c-format
-msgid "Unable to create and set qos configuration on port %1$s"
+msgid "Unable to create and set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 #, fuzzy
@@ -16995,9 +16997,9 @@ msgstr "Thất bại khi xoá bí mật %1$s"
 msgid "Unable to delete medium"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to delete port %1$s from OVS"
-msgstr "Thất bại khi xoá pool %1$s"
+#, c-format
+msgid "Unable to delete port %1$s from OVS: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17088,6 +17090,12 @@ msgstr "không thể đóng %1$s"
 msgid "Unable to find '%1$s' binary in $PATH"
 msgstr ""
 
+#, c-format
+msgid ""
+"Unable to find '%1$s' firmware that is compatible with the current "
+"configuration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "không thể tìm thống kê cho thiết bị '%s'"
@@ -17150,10 +17158,6 @@ msgstr ""
 #, fuzzy
 msgid "Unable to find any /dev mount"
 msgstr "Không thể mở /proc/mounts"
-
-#, c-format
-msgid "Unable to find any firmware to satisfy '%1$s'"
-msgstr ""
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
@@ -18060,6 +18064,10 @@ msgstr "Không thể pre-create tập tin chardev '%1$s'"
 msgid "Unable to read net device config on this platform"
 msgstr "thông tin nút không thực hiện trên nền tảng này"
 
+#, c-format
+msgid "Unable to read pidfile '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "Thất bại khi đọc tập tin '%1$s'"
@@ -18167,7 +18175,7 @@ msgid "Unable to reset PCI device %1$s: %2$s"
 msgstr "Không thể thiết lập lại thiết bị PCI %1$s: %2$s"
 
 #, c-format
-msgid "Unable to reset ingress on port %1$s"
+msgid "Unable to reset ingress on port %1$s: %2$s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18209,17 +18217,25 @@ msgstr "Không thể lấy các thông số bộ nhớ"
 msgid "Unable to run among %1$llu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to run command to get OVS master for interface %1$s"
-msgstr "Thất bại khi chạy lệnh '%1$s' để tạo giao diện iscsi mới"
+#, c-format
+msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr "Thất bại khi chạy lệnh '%s' để cập nhật giao diện iscsi với IQN '%s'"
 
+#, c-format
+msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr "Thất bại khi chạy lệnh '%s' để cập nhật giao diện iscsi với IQN '%s'"
+
+#, c-format
+msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
+msgstr ""
 
 msgid "Unable to run one time GDBus initializer"
 msgstr ""
@@ -18447,11 +18463,11 @@ msgid "Unable to set port profile on direct interfaces"
 msgstr "Thất bại khi liệt kê các giao diện không hoạt động"
 
 #, c-format
-msgid "Unable to set qos configuration on port %1$s"
+msgid "Unable to set qos configuration on port %1$s: %2$s"
 msgstr ""
 
 #, c-format
-msgid "Unable to set queue configuration on port %1$s"
+msgid "Unable to set queue configuration on port %1$s: %2$s"
 msgstr ""
 
 #, fuzzy
@@ -18470,9 +18486,9 @@ msgstr "Không thể lấy trạng thái miền"
 msgid "Unable to set thread local variable"
 msgstr "Không thể lấy các thông số bộ nhớ"
 
-#, fuzzy, c-format
-msgid "Unable to set vlan configuration on port %1$s"
-msgstr "thất bại khi đọc tập tin cấu hình %1$s"
+#, c-format
+msgid "Unable to set vlan configuration on port %1$s: %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -18959,10 +18975,6 @@ msgid "Unknown SCSI controller model %1$s"
 msgstr "Kiểu bộ điều khiển không rõ '%1$s'"
 
 #, fuzzy, c-format
-msgid "Unknown SCSI subsystem protocol '%1$s'"
-msgstr "Giao thức không rõ '%1$s'"
-
-#, fuzzy, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "Kiểu mẫu không rõ '%1$s'"
 
@@ -19173,10 +19185,6 @@ msgstr "Chế độ nguồn không rõ '%s'"
 #, c-format
 msgid "Unknown sched_core value %1$s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Unknown scsi_host subsystem protocol '%1$s'"
-msgstr "Giao thức không rõ '%1$s'"
 
 #, fuzzy, c-format
 msgid "Unknown serial type: %1$X"
@@ -21261,6 +21269,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "cannot apply process capabilities %1$d"
 msgstr "Thất bại khi áp dụng các khả năng: %1$d"
+
+#, c-format
+msgid "cannot apply process capabilities: %1$d"
+msgstr ""
 
 msgid "cannot become session leader"
 msgstr "không thể trở thành lãnh đạo phiên làm việc"
@@ -24499,6 +24511,10 @@ msgstr ""
 msgid "disk target %1$s not found"
 msgstr "đĩa %1$s không thấy"
 
+#, c-format
+msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
 msgstr "kiểu pool '%1$s' không hỗ trợ khám phá nguồn"
@@ -24538,13 +24554,6 @@ msgstr "hiển thị các chi tiết mở rộng cho các pool"
 
 msgid "display extended details for volumes"
 msgstr "hiển thị các chi tiết mở rộng cho các ổ"
-
-#, fuzzy
-msgid ""
-"display property of device vfio-pci is not supported by this version of QEMU"
-msgstr ""
-"Kiểu thiết bị balloon bộ nhớ '%s' không được hỗ trợ bởi phiên bản này của "
-"qemu"
 
 msgid "display the progress of dump"
 msgstr ""
@@ -25049,6 +25058,10 @@ msgstr ""
 msgid "element"
 msgstr ""
 
+#, c-format
+msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
+msgstr ""
+
 msgid "element 'genid' can only appear once"
 msgstr ""
 
@@ -25419,6 +25432,10 @@ msgstr ""
 
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
 msgstr ""
 
 #, c-format
@@ -26355,6 +26372,10 @@ msgstr "thất bại khi đánh dấu network %1$s tự khởi động"
 msgid "failed to mark pool %1$s as autostarted"
 msgstr "thất bại khi đánh dấu pool %1$s tự khởi động"
 
+#, c-format
+msgid "failed to monitor nbdkit process %1$i"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to move file to %1$s "
 msgstr "Thất bại khi mở tập tin '%1$s'"
@@ -27067,6 +27088,9 @@ msgstr "hệ thống tập tin không phải kiểu 'template' hoặc 'mount'"
 
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
+msgstr ""
+
+msgid "filesystem usage limits are not supported with QEMU"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29202,7 +29226,8 @@ msgstr ""
 msgid "libvirt was built without the '%1$s' driver"
 msgstr "libvirt được dựng mà không có trình điều khiển '%1$s'"
 
-msgid "libvirt was not compiled with libpcap and \""
+#, c-format
+msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
 msgstr ""
 
 msgid "libvirt will automatically detach/attach the device from/to host"
@@ -29850,10 +29875,6 @@ msgid "malformed mtu size"
 msgstr "Kích thước %s sai dạng thức"
 
 #, fuzzy, c-format
-msgid "malformed namespace '%1$s'"
-msgstr "địa chỉ mac sai dạng thức '%1$s'"
-
-#, fuzzy, c-format
 msgid "malformed namespace name: %1$s"
 msgstr "địa chỉ mac sai dạng thức '%1$s'"
 
@@ -30122,7 +30143,17 @@ msgstr ""
 "Kiểu thiết bị balloon bộ nhớ '%1$s' không được hỗ trợ bởi phiên bản này của "
 "qemu"
 
+#, c-format
+msgid "memory address must be aligned to %1$ld bytes"
+msgstr ""
+
 msgid "memory attributes: [file=]name[,snapshot=type]"
+msgstr ""
+
+#, c-format
+msgid ""
+"memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
+"(0x%3$llx)"
 msgstr ""
 
 #, c-format
@@ -30493,10 +30524,6 @@ msgstr ""
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
-#, fuzzy
-msgid "missing 'namespace' attribute to disk source"
-msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
-
 #, c-format
 msgid "missing 'nvram-template' in '%1$s'"
 msgstr ""
@@ -30598,14 +30625,6 @@ msgstr ""
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr ""
-
-#, fuzzy
-msgid "missing RNG device backend model"
-msgstr "Thiếu backend %d"
-
-#, fuzzy
-msgid "missing RNG device model"
-msgstr "thiếu thiết bị khởi động"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
@@ -30992,6 +31011,12 @@ msgstr "thiếu thông tin hạt nhân"
 msgid "missing name information in %1$s"
 msgstr "thiếu thông tin thiết bị gốc trong %1$s"
 
+msgid "missing nbdkit pidfile"
+msgstr ""
+
+msgid "missing nbdkit socketfile"
+msgstr ""
+
 #, fuzzy
 msgid "missing network device feature name"
 msgstr "Tên thiết bị mạng quá dài"
@@ -31073,6 +31098,9 @@ msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
 
 msgid "missing path for <reservations/>"
+msgstr ""
+
+msgid "missing path in nbdkit capabilities cache"
 msgstr ""
 
 msgid "missing path to restore from"
@@ -31193,10 +31221,6 @@ msgstr ""
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr ""
-
-#, fuzzy
-msgid "missing source address type"
-msgstr "thiếu thiết bị nguồn"
 
 msgid "missing source device"
 msgstr "thiếu thiết bị nguồn"
@@ -31588,6 +31612,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "mẫu '%1$s' không tồn tại"
+
+msgid "nbdkit restart failed"
+msgstr ""
+
+msgid "nbdkit support is not enabled"
+msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr ""
@@ -33429,6 +33459,10 @@ msgstr ""
 msgid "pid_value in %1$s is too large"
 msgstr ""
 
+#, c-format
+msgid "pidfd_open failed for %1$i"
+msgstr ""
+
 msgid "pin all memory before starting RDMA live migration"
 msgstr ""
 
@@ -33747,6 +33781,10 @@ msgstr ""
 
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
+msgstr ""
+
+#, c-format
+msgid "protocol '%1$s' is not supported by nbdkit"
 msgstr ""
 
 msgid "protocol misses the family attribute"
@@ -34913,13 +34951,8 @@ msgid ""
 "'remove' type"
 msgstr ""
 
-#, fuzzy
-msgid "setting ACPI S3 not supported"
-msgstr "kiểu thao tác %d không hỗ trợ"
-
-#, fuzzy
-msgid "setting ACPI S4 not supported"
-msgstr "kiểu thao tác %d không hỗ trợ"
+msgid "setting ACPI S3/S4 not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -37538,14 +37571,6 @@ msgstr "kiểu OS không rõ %1$s"
 msgid "unknown QEMU_AUDIO_DRV setting %1$s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unknown RNG backend model '%1$s'"
-msgstr "mẫu âm thanh không rõ '%1$s'"
-
-#, fuzzy, c-format
-msgid "unknown RNG model '%1$s'"
-msgstr "mẫu âm thanh không rõ '%1$s'"
-
 #, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
 msgstr "kiểu khả năng máy chủ SCSI không rõ '%1$s' cho '%2$s'"
@@ -37557,10 +37582,6 @@ msgstr "kiểu khả năng máy chủ SCSI không rõ '%1$s' cho '%2$s'"
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
-
-#, c-format
-msgid "unknown address type '%1$s'"
-msgstr "kiểu địa chỉ không rõ '%1$s'"
 
 #, fuzzy, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -37719,10 +37740,6 @@ msgstr "Mẫu CPU không rõ %s"
 msgid "unknown host device source address type '%1$s'"
 msgstr "kiểu địa chỉ không rõ '%1$s'"
 
-#, c-format
-msgid "unknown hostdev mode '%1$s'"
-msgstr "chế độ hostdev không rõ '%1$s'"
-
 #, fuzzy, c-format
 msgid "unknown hub device type '%1$s'"
 msgstr "kiểu thiết bị ký tự '%1$s' không rõ"
@@ -37837,10 +37854,6 @@ msgstr "kiểu định dạng pool không rõ %1$s"
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "thủ tục chưa biết: %1$d"
-
-#, fuzzy, c-format
-msgid "unknown protocol transport type '%1$s'"
-msgstr "kiểu định dạng pool không rõ %1$s"
 
 #, fuzzy, c-format
 msgid "unknown redirdev bus '%1$s'"
@@ -37973,14 +37986,6 @@ msgstr "kiểu định dạng ổ không rõ %1$s"
 #, fuzzy, c-format
 msgid "unknown volume type '%1$s'"
 msgstr "kiểu định dạng ổ không rõ %1$s"
-
-#, c-format
-msgid "unknown watchdog action '%1$s'"
-msgstr "hành động watchdog không rõ '%1$s'"
-
-#, c-format
-msgid "unknown watchdog model '%1$s'"
-msgstr "mẫu watchdog không rõ '%1$s'"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
@@ -38151,6 +38156,9 @@ msgstr "cấu hình không hỗ trợ: %1$s"
 #, c-format
 msgid "unsupported console target type %1$s"
 msgstr "kiểu đích console không hỗ trợ %1$s"
+
+msgid "unsupported controller device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -38812,9 +38820,6 @@ msgstr ""
 msgid "vhost_user type support UNIX socket in this CH"
 msgstr ""
 
-msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr ""
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
@@ -39048,6 +39053,9 @@ msgstr "pool không hỗ trợ xóa pool"
 #, fuzzy
 msgid "virtiofs does not support multidevs"
 msgstr "tuyến ps2 không hỗ trợ thiết bị nhập %s"
+
+msgid "virtiofs does not support read-only access"
+msgstr ""
 
 #, fuzzy
 msgid "virtiofs does not support wrpolicy"
@@ -39305,9 +39313,6 @@ msgstr "cảnh báo"
 msgid "watchdog"
 msgstr ""
 
-msgid "watchdog must contain model name"
-msgstr "watchdog phải chứa tên mẫu"
-
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
 msgstr ""
@@ -39462,6 +39467,108 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s] <chuỗi>"
+
+#, c-format
+#~ msgid "Could not find typefile '%1$s'"
+#~ msgstr "Không thể tìm tập tin kiểu '%1$s'"
+
+#, c-format
+#~ msgid "Could not read typefile '%1$s'"
+#~ msgstr "Không thể đọc tập tin kiểu '%1$s'"
+
+#, c-format
+#~ msgid "Device type '%1$s' is not an integer"
+#~ msgstr "Kiểu thiết bị '%1$s' không phải một số nguyên"
+
+#~ msgid "No type specified for device address"
+#~ msgstr "Không chỉ rõ kiểu cho địa chỉ thiết bị"
+
+#, fuzzy, c-format
+#~ msgid "Unable to delete port %1$s from OVS"
+#~ msgstr "Thất bại khi xoá pool %1$s"
+
+#, fuzzy, c-format
+#~ msgid "Unable to run command to get OVS master for interface %1$s"
+#~ msgstr "Thất bại khi chạy lệnh '%1$s' để tạo giao diện iscsi mới"
+
+#, fuzzy, c-format
+#~ msgid "Unable to set vlan configuration on port %1$s"
+#~ msgstr "thất bại khi đọc tập tin cấu hình %1$s"
+
+#, fuzzy, c-format
+#~ msgid "Unknown SCSI subsystem protocol '%1$s'"
+#~ msgstr "Giao thức không rõ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "Unknown scsi_host subsystem protocol '%1$s'"
+#~ msgstr "Giao thức không rõ '%1$s'"
+
+#, fuzzy
+#~ msgid ""
+#~ "display property of device vfio-pci is not supported by this version of "
+#~ "QEMU"
+#~ msgstr ""
+#~ "Kiểu thiết bị balloon bộ nhớ '%s' không được hỗ trợ bởi phiên bản này của "
+#~ "qemu"
+
+#, fuzzy, c-format
+#~ msgid "malformed namespace '%1$s'"
+#~ msgstr "địa chỉ mac sai dạng thức '%1$s'"
+
+#, fuzzy
+#~ msgid "missing 'namespace' attribute to disk source"
+#~ msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
+
+#, fuzzy
+#~ msgid "missing RNG device backend model"
+#~ msgstr "Thiếu backend %d"
+
+#, fuzzy
+#~ msgid "missing RNG device model"
+#~ msgstr "thiếu thiết bị khởi động"
+
+#, fuzzy
+#~ msgid "missing source address type"
+#~ msgstr "thiếu thiết bị nguồn"
+
+#, fuzzy
+#~ msgid "setting ACPI S3 not supported"
+#~ msgstr "kiểu thao tác %d không hỗ trợ"
+
+#, fuzzy
+#~ msgid "setting ACPI S4 not supported"
+#~ msgstr "kiểu thao tác %d không hỗ trợ"
+
+#, fuzzy, c-format
+#~ msgid "unknown RNG backend model '%1$s'"
+#~ msgstr "mẫu âm thanh không rõ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown RNG model '%1$s'"
+#~ msgstr "mẫu âm thanh không rõ '%1$s'"
+
+#, c-format
+#~ msgid "unknown address type '%1$s'"
+#~ msgstr "kiểu địa chỉ không rõ '%1$s'"
+
+#, c-format
+#~ msgid "unknown hostdev mode '%1$s'"
+#~ msgstr "chế độ hostdev không rõ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown protocol transport type '%1$s'"
+#~ msgstr "kiểu định dạng pool không rõ %1$s"
+
+#, c-format
+#~ msgid "unknown watchdog action '%1$s'"
+#~ msgstr "hành động watchdog không rõ '%1$s'"
+
+#, c-format
+#~ msgid "unknown watchdog model '%1$s'"
+#~ msgstr "mẫu watchdog không rõ '%1$s'"
+
+#~ msgid "watchdog must contain model name"
+#~ msgstr "watchdog phải chứa tên mẫu"
 
 #, fuzzy, c-format
 #~ msgid "Failed to load PCI stub module %1$s"
