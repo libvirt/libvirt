@@ -5,6 +5,7 @@ Description=Virtual machine lock manager socket
 ListenStream=@runstatedir@/libvirt/virtlockd-sock
 Service=virtlockd.service
 SocketMode=0600
+RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target

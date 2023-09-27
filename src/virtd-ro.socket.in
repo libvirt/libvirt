@@ -9,6 +9,7 @@ After=libvirtd-ro.socket
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock-ro
 Service=@service@.service
 SocketMode=0666
+RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target

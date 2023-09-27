@@ -7,6 +7,7 @@ After=virtlockd.socket
 ListenStream=@runstatedir@/libvirt/virtlockd-admin-sock
 Service=virtlockd.service
 SocketMode=0600
+RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target

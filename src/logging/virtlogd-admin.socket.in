@@ -7,6 +7,7 @@ After=virtlogd.socket
 ListenStream=@runstatedir@/libvirt/virtlogd-admin-sock
 Service=virtlogd.service
 SocketMode=0600
+RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target

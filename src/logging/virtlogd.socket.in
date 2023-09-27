@@ -5,6 +5,7 @@ Description=Virtual machine log manager socket
 ListenStream=@runstatedir@/libvirt/virtlogd-sock
 Service=virtlogd.service
 SocketMode=0600
+RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target
