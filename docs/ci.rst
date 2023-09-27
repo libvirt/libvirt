@@ -31,8 +31,12 @@ see below.
 GitLab CI variables
 -------------------
 
-* ``LIBVIRT_CI_INTEGRATION`` - enables integration test runs manually or in forks
-* ``LIBVIRT_CI_INTEGRATION_RUNNER_TAG`` - overrides the upstream runner tag on the
+* ``LIBVIRT_CI_INTEGRATION`` - enables integration test suite execution as part
+    of the pipeline (works in forks too if there's a registered shared runner)
+* ``LIBVIRT_CI_INTEGRATION_RUNNER_TAG`` - overrides the gitlab-runner tag for
+    the pipeline; this is needed in forks because the default tag only matches
+    upstream shared runners which may be (and will be) different from the tags
+    defined on shared runners in forks
 
 Retrieving test logs
 --------------------
