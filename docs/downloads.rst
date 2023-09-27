@@ -261,7 +261,7 @@ The core libvirt module follows a time based plan, with releases made once a
 month on the 1st of each month give or take a few days. The only exception is at
 the start of the year where there are two 6 weeks gaps (first release in the
 middle of Jan, then skip the Feb release), giving a total of 11 releases a year.
-The Python and Perl modules will aim to release at the same time as the core
+The Python, Perl and Go modules will aim to release at the same time as the core
 libvirt module. Other modules have independent ad-hoc releases with no fixed
 time schedule.
 
