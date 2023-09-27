@@ -8100,7 +8100,7 @@ qemuProcessStart(virConnectPtr conn,
  * @fd: FD pointer of memory state file
  * @path: path to memory state file
  * @snapshot: internal snapshot to load when starting QEMU process or NULL
- * @data: data from memory state file
+ * @data: data from memory state file or NULL
  * @asyncJob: type of asynchronous job
  * @start_flags: flags to start QEMU process with
  * @reason: audit log reason
@@ -8109,10 +8109,11 @@ qemuProcessStart(virConnectPtr conn,
  * Start VM with existing memory state. Make sure that the stored memory state
  * is correctly decompressed so it can be loaded by QEMU process.
  *
- * When reverting to internal snapshot caller needs to pass @snapshot as well
- * to correctly start QEMU process.
+ * When reverting to internal snapshot caller needs to pass @snapshot
+ * to correctly start QEMU process, @fd, @path, @data needs to be NULL.
  *
- * When restoring VM from saved image @snapshot needs to be NULL.
+ * When restoring VM from saved image caller needs to pass @fd, @path and
+ * @data to correctly start QEMU process, @snapshot needs to be NULL.
  *
  * For audit purposes the expected @reason is one of `restored` or `from-snapshot`.
  *
@@ -8138,9 +8139,16 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     g_autofree char *errbuf = NULL;
     int rc = 0;
 
-    if (virSaveCookieParseString(data->cookie, (virObject **)&cookie,
-                                 virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
-        return -1;
+    if (data) {
+        if (virSaveCookieParseString(data->cookie, (virObject **)&cookie,
+                                     virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
+            return -1;
+
+        if (qemuSaveImageDecompressionStart(data, fd, &intermediatefd,
+                                            &errbuf, &cmd) < 0) {
+            return -1;
+        }
+    }
 
     if (qemuSaveImageDecompressionStart(data, fd, &intermediatefd, &errbuf, &cmd) < 0)
         return -1;
@@ -8161,7 +8169,10 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                          start_flags) == 0)
         *started = true;
 
-    rc = qemuSaveImageDecompressionStop(cmd, fd, &intermediatefd, errbuf, *started, path);
+    if (data) {
+        rc = qemuSaveImageDecompressionStop(cmd, fd, &intermediatefd, errbuf,
+                                            *started, path);
+    }
 
     virDomainAuditStart(vm, reason, *started);
     if (!*started || rc < 0)
