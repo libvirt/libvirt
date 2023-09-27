@@ -54,6 +54,16 @@ configurations on the GitLab UI.  Navigate to:
  * *Runners activated for this project*, then
  * Click on the *Edit* icon (next to the *Lock* Icon)
 
+*Note: GitLab has changed the runner registration process deprecating the use of
+registration tokens in future versions, so while the above process is still
+applicable (though the settings are now a bit more hidden) at the time of writing
+this note (09/2023), GitLab v18.0+ is planned to completely switch to a new
+process (see the links below), deleting the use of registration tokens.*
+
+ * https://gitlab.com/gitlab-org/gitlab/-/issues/380872
+ * https://docs.gitlab.com/ee/ci/runners/new_creation_workflow.html
+ * https://docs.gitlab.com/ee/ci/runners/runners_scope.html#create-a-shared-runner-with-a-runner-authentication-token
+
 Don't forget to add a tag to your runner as these are used to route specific
 jobs to specific runners, e.g. if a job in ``ci/integration.yml`` looked like
 this ::
