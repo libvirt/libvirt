@@ -78,7 +78,7 @@ as root the test suite as root (when running with Avocado):
 
 ::
 
-    # avocado --config avocado.config run --tap - ./scripts/
+    # avocado --config avocado.config run
 
 from the TCK's git root.
 
