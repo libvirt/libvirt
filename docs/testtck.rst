@@ -90,8 +90,33 @@ in the future we plan on making the TCK internal coupling with Avocado tighter.
 Running TCK
 ~~~~~~~~~~~
 
-Once you have all the dependencies installed, you can then proceed with running
-as root the test suite as root (when running with Avocado):
+Once you have all the dependencies installed, you can then proceed with either
+of the following procedures to execute the test suite as root.
+
+Replicating upstream CI test suite execution locally
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Similarly to how local container builds utilize the standalone ``ci/jobs.sh``
+script containing functions describing GitLab job definitions it can be
+utilized to run integration test suite as well. In this case, one needs to
+get a copy of their libvirt repository containing the changes to be tested
+inside the VM (either by cloning it manually or sharing the repo e.g. via
+`virtiofs <https://libvirt.org/kbase/virtiofs.html>`__). Make sure that the
+user which is going to execute the following has passwordless "sudo" permissions
+(lcitool's default "test" user does). Then it's just a matter of running
+
+::
+
+    $ source ci/jobs.sh
+    $ run_integration
+
+Manual invocation
+^^^^^^^^^^^^^^^^^
+
+If you want to have more control over the whole procedure or simply don't want
+to run the exact same steps as libvirt's upstream CI pipeline does in context
+of integration tests then start by cloning the
+`TCK <https://gitlab.com/libvirt/libvirt-tck.git>`__ repository and run
 
 ::
 
