@@ -48,20 +48,31 @@ available through the system package manager and some will likely need to be
 installed from CPAN (Perl's equivalent of Python's PyPI). Here's where
 `libvirt-ci's <https://gitlab.com/libvirt/libvirt-ci.git>`__ lcitool can help
 with preparing a test environment in a fresh VM, taking care of the
-dependencies along the way:
+dependencies along the way. A simple example of getting a machine from lcitool
+would be:
 
 ::
 
-    $ lcitool install --target fedora-36 tck-fedora36 --wait
+    $ lcitool install --target fedora-38 tck-fedora38 --wait
 
-would get you a new Fedora 36 VM named ``tck-fedora36``. Then
+would get you a new Fedora 38 VM named ``tck-fedora38``. There are different
+ways of getting a fresh local VM with ``lcitool``, so please refer to
+`Installing local VMs <https://gitlab.com/libvirt/libvirt-ci/-/blob/master/docs/vms.rst>`__
+for further details, especially to utilize vendor cloud images for this
+purpose.
+
+Once you have a fresh virtual machine, you need to pre-install it with all
+necessary build dependencies to be able to build libvirt, libvirt Perl bindings
+and run the TCK test suite inside it. You'd do that by running
 
 ::
 
-    $ lcitool update tck-fedora36 libvirt,libvirt-perl,libvirt-tck+runtime
+    $ lcitool update tck-fedora38 libvirt,libvirt-perl,libvirt-tck+runtime
 
-will install all the necessary dependencies to build libvirt, the corresponding
-Perl bindings and all TCK runtime dependencies to be able to execute the tests.
+Again, for further details on how to update ``lcitool`` virtual machines,
+please refer to
+`Updating VMs with a given project dependencies <https://gitlab.com/libvirt/libvirt-ci/-/blob/master/docs/vms.rst>`__
+
 We also recommend executing TCK using the Avocado framework as the test harness
 engine which means that you'll have to install Avocado in the test environment
 as well. You can get it either from
