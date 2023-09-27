@@ -48,11 +48,17 @@ Running container builds with GitLab CI
 As long as your GitLab account has CI minutes available, pipelines will run
 automatically on every branch push to your fork.
 
-Running container builds locally
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Running container jobs locally
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to run container builds locally, we have a ``helper`` script inside
-the ``ci`` directory that can pull, build, and test (if applicable) changes on
+GitLab CI configuration file is the only source of truth when it comes to
+various job specifications we execute as part of the upstream pipeline.
+Luckily, all "script" (i.e. Bash scripts) were extracted to standalone Shell
+functions in ``ci/jobs.sh``. This allows users to run any of the container
+GitLab job specifications locally by just referencing the job name.
+
+When it comes to actually running the GitLab jobs locally, we have a
+``ci/helper`` script that can pull, build, and test (if applicable) changes on
 your current local branch. It supports both the Docker and Podman runtimes
 with an automatic selection of whichever runtime is configured on your system.
 In case neither has been enabled/configured, please go through the following
@@ -130,12 +136,27 @@ the default libvirt registry:
     fedora-rawhide-cross-mingw64
     ...
 
-Now let's say one would want to build their local libvirt changes on Alpine
-Edge using their own GitLab's registry container. They'd then proceed with
+Now, let's say one would want to run the ``website`` job from GitLab on Debian
+11. This is how a GitLab job specification can be referenced on ``ci/helper``'s
+command line:
 
 ::
 
-    $ ci/helper build --image-prefix registry.gitlab.com/<user>/libvirt/ci- alpine-edge
+    $ ci/helper run --job website debian-10
+
+What if you want to run an rpmbuild of libvirt on an RPM distro?
+
+::
+
+    $ ci/helper run --job rpmbuild fedora-38
+
+Want to use your own, say alpine-edge, container image from your GitLab
+container registry?
+Proceed with the following:
+
+::
+
+    $ ci/helper run --job build --image-prefix registry.gitlab.com/<user>/libvirt/ci- alpine-edge
 
 Finally, it would be nice if one could get an interactive shell inside the
 test environment to debug potential build issues. This can be achieved with the
@@ -143,7 +164,7 @@ following:
 
 ::
 
-    $ ci/helper shell alpine-edge
+    $ ci/helper run --job shell alpine-edge
 
 
 Integration tests
