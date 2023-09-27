@@ -1,7 +1,7 @@
 [Unit]
 Description=Virtual machine lock manager
 BindsTo=virtlockd.socket
-Requires=virtlockd-admin.socket
+Wants=virtlockd-admin.socket
 After=virtlockd.socket
 Before=libvirtd.service
 Documentation=man:virtlockd(8)

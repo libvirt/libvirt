@@ -1,8 +1,8 @@
 [Unit]
 Description=@name@ daemon
 BindsTo=@service@.socket
-Requires=@service@-ro.socket
-Requires=@service@-admin.socket
+Wants=@service@-ro.socket
+Wants=@service@-admin.socket
 After=@service@.socket
 Conflicts=libvirtd.service
 After=libvirtd.service
