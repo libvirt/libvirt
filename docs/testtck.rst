@@ -73,6 +73,12 @@ Again, for further details on how to update ``lcitool`` virtual machines,
 please refer to
 `Updating VMs with a given project dependencies <https://gitlab.com/libvirt/libvirt-ci/-/blob/master/docs/vms.rst>`__
 
+Note that lcitool only installs build dependencies, so as mentioned above you'll
+need both libvirt **and** libvirt Perl bindings installed in order to be able
+to run TCK. You can (depending on use case) either build both inside the VM and
+install manually or install the corresponding RPMs from GitLab CI build
+artifacts.
+
 We also recommend executing TCK using the Avocado framework as the test harness
 engine which means that you'll have to install Avocado in the test environment
 as well. You can get it either from
