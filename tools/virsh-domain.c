@@ -4059,12 +4059,29 @@ static const vshCmdOptDef opts_start[] = {
     {.name = NULL}
 };
 
+static int
+virshDomainCreateHelper(virDomainPtr dom,
+                        unsigned int nfds,
+                        int *fds,
+                        unsigned int flags)
+{
+    /* Prefer older API unless we have to pass a flag.  */
+    if (nfds > 0) {
+        return virDomainCreateWithFiles(dom, nfds, fds, flags);
+    } else if (flags != 0) {
+        return virDomainCreateWithFlags(dom, flags);
+    }
+
+    return virDomainCreate(dom);
+}
+
 static bool
 cmdStart(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
 #ifndef WIN32
     bool console = vshCommandOptBool(cmd, "console");
+    bool resume_domain = false;
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
     int rc;
@@ -4083,8 +4100,14 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (virshFetchPassFdsList(ctl, cmd, &nfds, &fds) < 0)
         return false;
 
-    if (vshCommandOptBool(cmd, "paused"))
+    if (vshCommandOptBool(cmd, "paused")) {
         flags |= VIR_DOMAIN_START_PAUSED;
+#ifndef WIN32
+    } else if (console) {
+        flags |= VIR_DOMAIN_START_PAUSED;
+        resume_domain = true;
+#endif
+    }
     if (vshCommandOptBool(cmd, "autodestroy"))
         flags |= VIR_DOMAIN_START_AUTODESTROY;
     if (vshCommandOptBool(cmd, "bypass-cache"))
@@ -4096,12 +4119,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 
     /* We can emulate force boot, even for older servers that reject it.  */
     if (flags & VIR_DOMAIN_START_FORCE_BOOT) {
-        if (nfds > 0) {
-            rc = virDomainCreateWithFiles(dom, nfds, fds, flags);
-        } else {
-            rc = virDomainCreateWithFlags(dom, flags);
-        }
-
+        rc = virshDomainCreateHelper(dom, nfds, fds, flags);
         if (rc == 0)
             goto started;
 
@@ -4124,14 +4142,20 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         flags &= ~VIR_DOMAIN_START_FORCE_BOOT;
     }
 
-    /* Prefer older API unless we have to pass a flag.  */
-    if (nfds > 0) {
-        rc = virDomainCreateWithFiles(dom, nfds, fds, flags);
-    } else if (flags != 0) {
-        rc = virDomainCreateWithFlags(dom, flags);
-    } else {
-        rc = virDomainCreate(dom);
+    rc = virshDomainCreateHelper(dom, nfds, fds, flags);
+#ifndef WIN32
+    /* If the driver does not support the paused flag, let's fallback to the old
+     * behavior without the flag. */
+    if (rc < 0 && resume_domain &&
+        last_error && last_error->code == VIR_ERR_INVALID_ARG) {
+
+        vshResetLibvirtError();
+
+        flags &= ~VIR_DOMAIN_START_PAUSED;
+        resume_domain = false;
+        rc = virshDomainCreateHelper(dom, nfds, fds, flags);
     }
+#endif
 
     if (rc < 0) {
         vshError(ctl, _("Failed to start domain '%1$s'"), virDomainGetName(dom));
@@ -4142,7 +4166,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     vshPrintExtra(ctl, _("Domain '%1$s' started\n"),
                   virDomainGetName(dom));
 #ifndef WIN32
-    if (console && !cmdRunConsole(ctl, dom, NULL, false, 0))
+    if (console && !cmdRunConsole(ctl, dom, NULL, resume_domain, 0))
         return false;
 #endif
 
