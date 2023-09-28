@@ -18420,6 +18420,7 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
         goto cleanup; \
     if (virTypedParamsAddString(&par, &npar, &maxpar, #name, tmp) < 0) \
         goto cleanup; \
+    VIR_FREE(tmp)
 
     ADD_BITMAP(vcpus);
     ADD_BITMAP(online);
