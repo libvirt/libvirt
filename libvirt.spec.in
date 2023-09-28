@@ -128,7 +128,6 @@
     %define with_vmware 0
     %define with_libxl 0
     %define with_hyperv 0
-    %define with_vz 0
     %define with_lxc 0
 %endif
 
