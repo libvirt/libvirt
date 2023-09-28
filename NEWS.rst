@@ -43,6 +43,17 @@ v9.8.0 (unreleased)
     stability of qemu. Therefore, when available, libvirt will use nbdkit as a
     backend for these network disks and export an NBD disk to qemu.
 
+  * virnetdevopenvswitch: Propagate OVS error messages
+
+    When configuring OVS interfaces/bridges libvirt used to report its own
+    error messages instead of passing (more accurate) error messages from
+    `ovs-vsctl`. This is now changed.
+
+  * Various virtio-mem/virtio-pmem fixes
+
+    Now libvirt validates more values of virtio-mem and virtio-pmem devices,
+    e.g. overlapping memory addresses or alignment.
+
 * **Bug fixes**
 
 
