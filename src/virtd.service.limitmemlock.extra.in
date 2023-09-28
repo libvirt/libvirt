@@ -1,0 +1,7 @@
+[Service]
+# With cgroups v2 there is no devices controller anymore, we have to use
+# eBPF to control access to devices. In order to do that we create a eBPF
+# hash MAP which locks memory. The default map size for 64 devices together
+# with program takes 12k per guest. After rounding up we will get 64M to
+# support 4096 guests.
+LimitMEMLOCK=64M
