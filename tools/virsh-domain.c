@@ -8216,6 +8216,20 @@ static const vshCmdOptDef opts_create[] = {
     {.name = NULL}
 };
 
+static virshDomain *
+virshDomainCreateXMLHelper(virConnectPtr conn,
+                           const char *xmlDesc,
+                           unsigned int nfds,
+                           int *fds,
+                           unsigned int flags)
+{
+    if (nfds) {
+        return virDomainCreateXMLWithFiles(conn, xmlDesc, nfds, fds, flags);
+    }
+
+    return virDomainCreateXML(conn, xmlDesc, flags);
+}
+
 static bool
 cmdCreate(vshControl *ctl, const vshCmd *cmd)
 {
@@ -8224,6 +8238,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     g_autofree char *buffer = NULL;
 #ifndef WIN32
     bool console = vshCommandOptBool(cmd, "console");
+    bool resume_domain = false;
 #endif
     unsigned int flags = 0;
     size_t nfds = 0;
@@ -8239,8 +8254,14 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (virshFetchPassFdsList(ctl, cmd, &nfds, &fds) < 0)
         return false;
 
-    if (vshCommandOptBool(cmd, "paused"))
+    if (vshCommandOptBool(cmd, "paused")) {
         flags |= VIR_DOMAIN_START_PAUSED;
+#ifndef WIN32
+    } else if (console) {
+        flags |= VIR_DOMAIN_START_PAUSED;
+        resume_domain = true;
+#endif
+    }
     if (vshCommandOptBool(cmd, "autodestroy"))
         flags |= VIR_DOMAIN_START_AUTODESTROY;
     if (vshCommandOptBool(cmd, "validate"))
@@ -8248,10 +8269,18 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "reset-nvram"))
         flags |= VIR_DOMAIN_START_RESET_NVRAM;
 
-    if (nfds)
-        dom = virDomainCreateXMLWithFiles(priv->conn, buffer, nfds, fds, flags);
-    else
-        dom = virDomainCreateXML(priv->conn, buffer, flags);
+    dom = virshDomainCreateXMLHelper(priv->conn, buffer, nfds, fds, flags);
+#ifndef WIN32
+    /* If the driver does not support the paused flag, let's fallback to the old
+     * behavior without the flag. */
+    if (!dom && resume_domain && last_error && last_error->code == VIR_ERR_INVALID_ARG) {
+      vshResetLibvirtError();
+
+      flags &= ~VIR_DOMAIN_START_PAUSED;
+      resume_domain = false;
+      dom = virshDomainCreateXMLHelper(priv->conn, buffer, nfds, fds, flags);
+    }
+#endif
 
     if (!dom) {
         vshError(ctl, _("Failed to create domain from %1$s"), from);
@@ -8262,7 +8291,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
                   virDomainGetName(dom), from);
 #ifndef WIN32
     if (console)
-        cmdRunConsole(ctl, dom, NULL, false, 0);
+        cmdRunConsole(ctl, dom, NULL, resume_domain, 0);
 #endif
     return true;
 }
