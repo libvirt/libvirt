@@ -63,6 +63,7 @@ if conf.has('WITH_CH')
     'service_extra_in': [
       files('virtchd.service.extra.in'),
       systemd_service_limitnofile_extra_in,
+      systemd_service_tasksmax_extra_in,
     ],
   }
 

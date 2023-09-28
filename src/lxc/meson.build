@@ -168,6 +168,7 @@ if conf.has('WITH_LXC')
     'service_extra_in': [
       files('virtlxcd.service.extra.in'),
       systemd_service_limitnofile_extra_in,
+      systemd_service_tasksmax_extra_in,
     ],
   }
 

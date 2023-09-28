@@ -195,6 +195,7 @@ guest_unit_files = []
 #   snippets that are shared by multiple units
 #   can be used in service_extra_in/socket_extra_in (see below)
 systemd_service_limitnofile_extra_in = files('virtd.service.limitnofile.extra.in')
+systemd_service_tasksmax_extra_in = files('virtd.service.tasksmax.extra.in')
 
 # virt_daemon_units:
 #   generate libvirt daemon systemd unit files
