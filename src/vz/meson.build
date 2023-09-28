@@ -49,7 +49,9 @@ if conf.has('WITH_VZ')
   virt_daemon_units += {
     'service': 'virtvzd',
     'name': 'vz',
-    'service_extra_in': files('virtvzd.service.extra.in'),
+    'service_extra_in': [
+      files('virtvzd.service.extra.in'),
+    ],
   }
 
   openrc_init_files += {

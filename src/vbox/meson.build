@@ -58,7 +58,9 @@ if conf.has('WITH_VBOX')
   virt_daemon_units += {
     'service': 'virtvboxd',
     'name': 'VirtualBox',
-    'service_extra_in': files('virtvboxd.service.extra.in'),
+    'service_extra_in': [
+      files('virtvboxd.service.extra.in'),
+    ],
   }
 
   openrc_init_files += {

@@ -60,7 +60,9 @@ if conf.has('WITH_CH')
   virt_daemon_units += {
     'service': 'virtchd',
     'name': 'Cloud Hypervisor',
-    'service_extra_in': files('virtchd.service.extra.in'),
+    'service_extra_in': [
+      files('virtchd.service.extra.in'),
+    ],
   }
 
   virt_install_dirs += [

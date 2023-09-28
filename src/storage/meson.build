@@ -112,7 +112,9 @@ if conf.has('WITH_STORAGE')
   virt_daemon_units += {
     'service': 'virtstoraged',
     'name': 'storage',
-    'service_extra_in': files('virtstoraged.service.extra.in'),
+    'service_extra_in': [
+      files('virtstoraged.service.extra.in'),
+    ],
   }
 
   openrc_init_files += {
