@@ -62,6 +62,7 @@ if conf.has('WITH_CH')
     'name': 'Cloud Hypervisor',
     'service_extra_in': [
       files('virtchd.service.extra.in'),
+      systemd_service_limitnofile_extra_in,
     ],
   }
 

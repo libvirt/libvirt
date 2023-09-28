@@ -191,6 +191,9 @@ if conf.has('WITH_REMOTE')
     virt_daemon_units += {
       'service': 'libvirtd',
       'service_in': files('libvirtd.service.in'),
+      'service_extra_in': [
+        systemd_service_limitnofile_extra_in,
+      ],
       'name': 'legacy monolithic',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
       'socket_in': files('libvirtd.socket.in'),

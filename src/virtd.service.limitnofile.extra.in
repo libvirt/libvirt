@@ -1,0 +1,5 @@
+[Service]
+# Raise hard limits to match behaviour of systemd >= 240.
+# During startup, daemon will set soft limit to match hard limit
+# per systemd recommendations
+LimitNOFILE=1024:524288

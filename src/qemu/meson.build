@@ -186,6 +186,7 @@ if conf.has('WITH_QEMU')
     'name': 'QEMU',
     'service_extra_in': [
       files('virtqemud.service.extra.in'),
+      systemd_service_limitnofile_extra_in,
     ],
   }
 

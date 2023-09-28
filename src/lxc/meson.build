@@ -167,6 +167,7 @@ if conf.has('WITH_LXC')
     'name': 'LXC',
     'service_extra_in': [
       files('virtlxcd.service.extra.in'),
+      systemd_service_limitnofile_extra_in,
     ],
   }
 

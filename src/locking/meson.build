@@ -144,6 +144,9 @@ if conf.has('WITH_LIBVIRTD')
   virt_daemon_units += {
     'service': 'virtlockd',
     'service_in': files('virtlockd.service.in'),
+    'service_extra_in': [
+      systemd_service_limitnofile_extra_in,
+    ],
     'name': 'locking',
     'sockets': [ 'main', 'admin' ],
     'socket_in': files('virtlockd.socket.in'),

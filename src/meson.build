@@ -191,6 +191,11 @@ virt_test_aug_dir = datadir / 'augeas' / 'lenses' / 'tests'
 #   guest unit files to install
 guest_unit_files = []
 
+# systemd_*_extra_in:
+#   snippets that are shared by multiple units
+#   can be used in service_extra_in/socket_extra_in (see below)
+systemd_service_limitnofile_extra_in = files('virtd.service.limitnofile.extra.in')
+
 # virt_daemon_units:
 #   generate libvirt daemon systemd unit files
 #   * service - name of the service (required)
