@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-09-25 20:10+0000\n"
-"PO-Revision-Date: 2023-09-08 03:21+0000\n"
+"PO-Revision-Date: 2023-09-28 05:14+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18.2\n"
+"X-Generator: Weblate 5.0.2\n"
 
 msgid ""
 "\n"
@@ -558,7 +558,7 @@ msgstr "%1$s는 UID '%2$s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "%1$s 디스크는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -926,7 +926,7 @@ msgstr "%1$s: 저장소 풀 %2$s: %3$s에 대한 사건 '수명주기'\n"
 
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
-msgstr ""
+msgstr "%1$s: 네트워크 %2$s를 위한 사건 'metadata-change': 유형 %3$s, uri %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -4899,7 +4899,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not start 'nbdkit'. exitstatus: %1$d"
-msgstr ""
+msgstr "'nbdkit'를 시작 할 수 없습니다. 종료상태: %1$d"
 
 msgid "Could not start 'virtiofsd'"
 msgstr "'virtiofsd'를 시작할 수 없습니다"
@@ -6658,7 +6658,7 @@ msgstr "소켓을 '%1$s'에 연결하지 못했습니다"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
-msgstr ""
+msgstr "'%1$s': %2$s를 위해 nbdkit으로 연결하는데 실패함"
 
 msgid "Failed to connect to ssh agent"
 msgstr "SSH 에이전트에 연결하지 못했습니다"
@@ -7248,7 +7248,7 @@ msgstr "클라이언트 소켓 ID를 가져오지 못했습니다"
 
 #, c-format
 msgid "Failed to get current process capabilities: %1$d"
-msgstr ""
+msgstr "현재 프로세스 기능을 가져오는데 실패함: %1$d"
 
 msgid "Failed to get disk information"
 msgstr "디스크 정보 보기 실패"
@@ -21103,7 +21103,7 @@ msgstr "프로세스 기능 %1$d을(를) 적용할 수 없습니다"
 
 #, c-format
 msgid "cannot apply process capabilities: %1$d"
-msgstr ""
+msgstr "처리 기능을 적용 할 수 없습니다: %1$d"
 
 msgid "cannot become session leader"
 msgstr "세션 리더가 되는 데 실패"
