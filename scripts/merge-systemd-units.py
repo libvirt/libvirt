@@ -82,13 +82,18 @@ def merge_units(base, extra):
     return merged
 
 
-if len(sys.argv) < 2:
-    print("usage: {} BASE EXTRA".format(sys.argv[0]))
+prog = sys.argv[0]
+args = sys.argv[1:]
+
+if len(args) < 1:
+    print("usage: {} BASE [EXTRA]...".format(prog))
     sys.exit(1)
 
-base = parse_unit(sys.argv[1])
-extra = parse_unit(sys.argv[2])
+merged = parse_unit(args[0])
 
-merged = merge_units(base, extra)
+for arg in args[1:]:
+    extra = parse_unit(arg)
+
+    merged = merge_units(merged, extra)
 
 sys.stdout.write(format_unit(merged))
