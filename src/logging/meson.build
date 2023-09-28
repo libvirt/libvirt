@@ -92,6 +92,7 @@ if conf.has('WITH_LIBVIRTD')
     'service': 'virtlogd',
     'service_in': files('virtlogd.service.in'),
     'service_extra_in': [
+      systemd_service_oomscoreadjust_extra_in,
       systemd_service_limitnofile_extra_in,
     ],
     'name': 'logging',

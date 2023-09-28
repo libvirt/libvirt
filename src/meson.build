@@ -197,6 +197,7 @@ guest_unit_files = []
 systemd_service_limitnofile_extra_in = files('virtd.service.limitnofile.extra.in')
 systemd_service_tasksmax_extra_in = files('virtd.service.tasksmax.extra.in')
 systemd_service_limitmemlock_extra_in = files('virtd.service.limitmemlock.extra.in')
+systemd_service_oomscoreadjust_extra_in = files('virtd.service.oomscoreadjust.extra.in')
 
 # virt_daemon_units:
 #   generate libvirt daemon systemd unit files

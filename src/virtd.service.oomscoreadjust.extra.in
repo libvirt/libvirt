@@ -1,0 +1,5 @@
+[Service]
+# Losing this daemon is a really bad thing that will
+# cause the machine to be fenced (rebooted), so make
+# sure we discourage OOM killer
+OOMScoreAdjust=-900

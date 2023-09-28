@@ -145,6 +145,7 @@ if conf.has('WITH_LIBVIRTD')
     'service': 'virtlockd',
     'service_in': files('virtlockd.service.in'),
     'service_extra_in': [
+      systemd_service_oomscoreadjust_extra_in,
       systemd_service_limitnofile_extra_in,
     ],
     'name': 'locking',
