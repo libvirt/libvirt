@@ -27,6 +27,7 @@
 int virshRunConsole(vshControl *ctl,
                     virDomainPtr dom,
                     const char *dev_name,
+                    const bool resume_domain,
                     unsigned int flags);
 
 #endif /* !WIN32 */

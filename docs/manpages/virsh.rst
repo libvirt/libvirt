@@ -1442,7 +1442,7 @@ console
 
 ::
 
-   console domain [devname] [--safe] [--force]
+   console domain [devname] [--safe] [--force] [--resume]
 
 Connect the virtual serial console for the guest. The optional
 *devname* parameter refers to the device alias of an alternate
@@ -1454,6 +1454,9 @@ if the driver supports safe console handling. This flag specifies that
 the server has to ensure exclusive access to console devices. Optionally
 the *--force* flag may be specified, requesting to disconnect any existing
 sessions, such as in a case of a broken connection.
+
+If the flag *--resume* is specified then the guest is resumed after connecting
+to the console.
 
 
 cpu-stats

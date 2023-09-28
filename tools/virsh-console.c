@@ -401,6 +401,7 @@ int
 virshRunConsole(vshControl *ctl,
                 virDomainPtr dom,
                 const char *dev_name,
+                const bool resume_domain,
                 unsigned int flags)
 {
     virConsole *con = NULL;
@@ -474,6 +475,14 @@ virshRunConsole(vshControl *ctl,
                                   virObjectUnref) < 0) {
         virObjectUnref(con);
         goto cleanup;
+    }
+
+    if (resume_domain) {
+        if (virDomainResume(dom) != 0) {
+            vshError(ctl, _("Failed to resume domain '%1$s'"),
+                     virDomainGetName(dom));
+            goto cleanup;
+        }
     }
 
     while (!con->quit) {

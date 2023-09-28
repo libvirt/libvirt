@@ -3012,6 +3012,10 @@ static const vshCmdOptDef opts_console[] = {
      .type = VSH_OT_BOOL,
      .help =  N_("force console connection (disconnect already connected sessions)")
     },
+    {.name = "resume",
+     .type = VSH_OT_BOOL,
+     .help =  N_("resume a paused guest after connecting to console")
+    },
     {.name = "safe",
      .type = VSH_OT_BOOL,
      .help =  N_("only connect if safe console handling is supported")
@@ -3022,6 +3026,7 @@ static const vshCmdOptDef opts_console[] = {
 static bool
 cmdRunConsole(vshControl *ctl, virDomainPtr dom,
               const char *name,
+              const bool resume_domain,
               unsigned int flags)
 {
     int state;
@@ -3048,7 +3053,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
         vshPrintExtra(ctl, " (Ctrl + %c)", priv->escapeChar[1]);
     vshPrintExtra(ctl, "\n");
     fflush(stdout);
-    if (virshRunConsole(ctl, dom, name, flags) == 0)
+    if (virshRunConsole(ctl, dom, name, resume_domain, flags) == 0)
         return true;
 
     return false;
@@ -3059,6 +3064,7 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     bool force = vshCommandOptBool(cmd, "force");
+    bool resume = vshCommandOptBool(cmd, "resume");
     bool safe = vshCommandOptBool(cmd, "safe");
     unsigned int flags = 0;
     const char *name = NULL;
@@ -3074,7 +3080,7 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     if (safe)
         flags |= VIR_DOMAIN_CONSOLE_SAFE;
 
-    return cmdRunConsole(ctl, dom, name, flags);
+    return cmdRunConsole(ctl, dom, name, resume, flags);
 }
 #endif /* WIN32 */
 
@@ -4136,7 +4142,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     vshPrintExtra(ctl, _("Domain '%1$s' started\n"),
                   virDomainGetName(dom));
 #ifndef WIN32
-    if (console && !cmdRunConsole(ctl, dom, NULL, 0))
+    if (console && !cmdRunConsole(ctl, dom, NULL, false, 0))
         return false;
 #endif
 
@@ -8232,7 +8238,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
                   virDomainGetName(dom), from);
 #ifndef WIN32
     if (console)
-        cmdRunConsole(ctl, dom, NULL, 0);
+        cmdRunConsole(ctl, dom, NULL, false, 0);
 #endif
     return true;
 }
