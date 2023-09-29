@@ -90,13 +90,13 @@ if conf.has('WITH_LIBVIRTD')
 
   virt_daemon_units += {
     'service': 'virtlogd',
+    'name': 'logging',
     'service_in': files('virtlogd.service.in'),
     'service_extra_in': [
       files('virtlogd.service.extra.in'),
       systemd_service_oomscoreadjust_extra_in,
       systemd_service_limitnofile_extra_in,
     ],
-    'name': 'logging',
     'sockets': [ 'main', 'admin' ],
     'socket_in': files('virtlogd.socket.in'),
     'socket_admin_in': files('virtlogd-admin.socket.in'),
