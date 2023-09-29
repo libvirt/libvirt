@@ -18396,7 +18396,6 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
     g_autoptr(virBitmap) vcpus = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
     g_autoptr(virBitmap) online = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
     g_autoptr(virBitmap) offlinable = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
-    g_autofree char *tmp = NULL;
     size_t i;
     int ret = -1;
 
@@ -18416,11 +18415,13 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
     }
 
 #define ADD_BITMAP(name) \
-    if (!(tmp = virBitmapFormat(name))) \
-        goto cleanup; \
-    if (virTypedParamsAddString(&par, &npar, &maxpar, #name, tmp) < 0) \
-        goto cleanup; \
-    VIR_FREE(tmp)
+    do { \
+        g_autofree char *tmp = NULL; \
+        if (!(tmp = virBitmapFormat(name))) \
+            goto cleanup; \
+        if (virTypedParamsAddString(&par, &npar, &maxpar, #name, tmp) < 0) \
+            goto cleanup; \
+    } while (0)
 
     ADD_BITMAP(vcpus);
     ADD_BITMAP(online);
