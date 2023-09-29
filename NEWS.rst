@@ -15,13 +15,13 @@ v9.8.0 (unreleased)
 
 * **Removed features**
 
+* **New features**
+
   * network: New metadata change event
 
     The network object now has a new event ID ``VIR_NETWORK_EVENT_ID_METADATA_CHANGE``
     that can be used to get notifications upon changes in any of ``<title>``,
     ``<description>`` or ``<metadata>``.
-
-* **New features**
 
   * qemu: Add support for vDPA block devices
 
