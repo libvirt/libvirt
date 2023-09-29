@@ -24,6 +24,11 @@ def parse_unit(unit_path):
             if line == "":
                 continue
 
+            # Comments at the very top of the file, outside of any
+            # section, are allowed and will not show up in the output
+            if line[0] == "#" and current_section == "[Invalid]":
+                continue
+
             if line[0] == "[" and line[-1] == "]":
                 if line not in SECTIONS:
                     print("Unknown section {}".format(line))
