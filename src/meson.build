@@ -207,8 +207,8 @@ systemd_service_oomscoreadjust_extra_in = files('virtd.service.oomscoreadjust.ex
 #   * sockets - array of additional sockets (optional, default [ 'main', 'ro', 'admin' ])
 #   * service_in - service source file (optional, default virtd.service.in)
 #   * socket_$name_in - additional socket source files (optional, default virtd.socket.in or virtd-$name.socket.in)
-#   * service_extra_in - units to merge with service_in (optional, default [])
-#   * socket_extra_in - units to merge with socket_$name_in (optional, default [])
+#   * service_extra_in - units to merge with service_in (required)
+#   * socket_extra_in - units to merge with socket_$name_in (required)
 virt_daemon_units = []
 
 # openrc_init_files
@@ -830,14 +830,12 @@ if conf.has('WITH_LIBVIRTD')
       service_in = unit.get('service_in', service_in_default)
       service_out = '@0@.service'.format(unit['service'])
 
-      if 'service_extra_in' in unit
-        service_in = configure_file(
-          input: [ service_in ] + unit['service_extra_in'],
-          output: '@0@.in'.format(service_out),
-          command: [ merge_systemd_units_prog, '@INPUT@' ],
-          capture: true,
-        )
-      endif
+      service_in = configure_file(
+        input: [ service_in ] + unit['service_extra_in'],
+        output: '@0@.in'.format(service_out),
+        command: [ merge_systemd_units_prog, '@INPUT@' ],
+        capture: true,
+      )
 
       configure_file(
         input: service_in,
@@ -858,14 +856,12 @@ if conf.has('WITH_LIBVIRTD')
           socket_out = '@0@-@1@.socket'.format(unit['service'], socket)
         endif
 
-        if 'socket_extra_in' in unit
-          socket_in = configure_file(
-            input: [ socket_in ] + unit['socket_extra_in'],
-            output: '@0@.in'.format(socket_out),
-            command: [ merge_systemd_units_prog, '@INPUT@' ],
-            capture: true,
-          )
-        endif
+        socket_in = configure_file(
+          input: [ socket_in ] + unit['socket_extra_in'],
+          output: '@0@.in'.format(socket_out),
+          command: [ merge_systemd_units_prog, '@INPUT@' ],
+          capture: true,
+        )
 
         configure_file(
           input: socket_in,
