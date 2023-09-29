@@ -190,6 +190,9 @@ if conf.has('WITH_QEMU')
       systemd_service_tasksmax_extra_in,
       systemd_service_limitmemlock_extra_in,
     ],
+    'socket_extra_in': [
+      files('virtqemud.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

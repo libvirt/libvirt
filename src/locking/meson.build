@@ -145,6 +145,7 @@ if conf.has('WITH_LIBVIRTD')
     'service': 'virtlockd',
     'service_in': files('virtlockd.service.in'),
     'service_extra_in': [
+      files('virtlockd.service.extra.in'),
       systemd_service_oomscoreadjust_extra_in,
       systemd_service_limitnofile_extra_in,
     ],
@@ -152,6 +153,9 @@ if conf.has('WITH_LIBVIRTD')
     'sockets': [ 'main', 'admin' ],
     'socket_in': files('virtlockd.socket.in'),
     'socket_admin_in': files('virtlockd-admin.socket.in'),
+    'socket_extra_in': [
+      files('virtlockd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

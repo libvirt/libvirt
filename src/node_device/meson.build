@@ -53,6 +53,12 @@ if conf.has('WITH_NODE_DEVICES')
   virt_daemon_units += {
     'service': 'virtnodedevd',
     'name': 'nodedev',
+    'service_extra_in': [
+      files('virtnodedevd.service.extra.in'),
+    ],
+    'socket_extra_in': [
+      files('virtnodedevd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

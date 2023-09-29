@@ -45,6 +45,12 @@ if conf.has('WITH_INTERFACE')
   virt_daemon_units += {
     'service': 'virtinterfaced',
     'name': 'interface',
+    'service_extra_in': [
+      files('virtinterfaced.service.extra.in'),
+    ],
+    'socket_extra_in': [
+      files('virtinterfaced.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

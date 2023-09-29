@@ -115,6 +115,9 @@ if conf.has('WITH_STORAGE')
     'service_extra_in': [
       files('virtstoraged.service.extra.in'),
     ],
+    'socket_extra_in': [
+      files('virtstoraged.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

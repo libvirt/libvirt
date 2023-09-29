@@ -1,3 +1,6 @@
+# The contents of this unit will be merged into a base template.
+# Additional units might be merged as well. See meson.build for details.
+
 [Unit]
 Wants=systemd-machined.service
 After=systemd-machined.service

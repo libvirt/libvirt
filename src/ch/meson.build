@@ -66,6 +66,9 @@ if conf.has('WITH_CH')
       systemd_service_tasksmax_extra_in,
       systemd_service_limitmemlock_extra_in,
     ],
+    'socket_extra_in': [
+      files('virtchd.socket.extra.in'),
+    ],
   }
 
   virt_install_dirs += [

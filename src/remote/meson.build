@@ -192,6 +192,7 @@ if conf.has('WITH_REMOTE')
       'service': 'libvirtd',
       'service_in': files('libvirtd.service.in'),
       'service_extra_in': [
+        files('libvirtd.service.extra.in'),
         systemd_service_limitnofile_extra_in,
         systemd_service_tasksmax_extra_in,
         systemd_service_limitmemlock_extra_in,
@@ -203,6 +204,9 @@ if conf.has('WITH_REMOTE')
       'socket_admin_in': files('libvirtd-admin.socket.in'),
       'socket_tcp_in': files('libvirtd-tcp.socket.in'),
       'socket_tls_in': files('libvirtd-tls.socket.in'),
+      'socket_extra_in': [
+        files('libvirtd.socket.extra.in'),
+      ],
     }
 
     openrc_init_files += {
@@ -229,8 +233,14 @@ if conf.has('WITH_REMOTE')
     virt_daemon_units += {
       'service': 'virtproxyd',
       'name': 'proxy',
+      'service_extra_in': [
+        files('virtproxyd.service.extra.in'),
+      ],
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
+      'socket_extra_in': [
+        files('virtproxyd.socket.extra.in'),
+      ],
     }
 
     openrc_init_files += {

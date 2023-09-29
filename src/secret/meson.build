@@ -34,6 +34,12 @@ if conf.has('WITH_SECRETS')
   virt_daemon_units += {
     'service': 'virtsecretd',
     'name': 'secret',
+    'service_extra_in': [
+      files('virtsecretd.service.extra.in'),
+    ],
+    'socket_extra_in': [
+      files('virtsecretd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

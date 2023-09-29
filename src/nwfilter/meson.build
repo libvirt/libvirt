@@ -51,6 +51,12 @@ if conf.has('WITH_NWFILTER')
   virt_daemon_units += {
     'service': 'virtnwfilterd',
     'name': 'nwfilter',
+    'service_extra_in': [
+      files('virtnwfilterd.service.extra.in'),
+    ],
+    'socket_extra_in': [
+      files('virtnwfilterd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

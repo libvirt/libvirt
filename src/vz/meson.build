@@ -52,6 +52,9 @@ if conf.has('WITH_VZ')
     'service_extra_in': [
       files('virtvzd.service.extra.in'),
     ],
+    'socket_extra_in': [
+      files('virtvzd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

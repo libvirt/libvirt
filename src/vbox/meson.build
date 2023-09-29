@@ -61,6 +61,9 @@ if conf.has('WITH_VBOX')
     'service_extra_in': [
       files('virtvboxd.service.extra.in'),
     ],
+    'socket_extra_in': [
+      files('virtvboxd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

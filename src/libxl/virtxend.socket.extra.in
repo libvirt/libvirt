@@ -1,2 +1,5 @@
+# The contents of this unit will be merged into a base template.
+# Additional units might be merged as well. See meson.build for details.
+
 [Unit]
 ConditionPathExists=/proc/xen/capabilities

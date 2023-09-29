@@ -66,6 +66,9 @@ if conf.has('WITH_NETWORK')
     'service_extra_in': [
       files('virtnetworkd.service.extra.in'),
     ],
+    'socket_extra_in': [
+      files('virtnetworkd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {

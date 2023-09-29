@@ -171,6 +171,9 @@ if conf.has('WITH_LXC')
       systemd_service_tasksmax_extra_in,
       systemd_service_limitmemlock_extra_in,
     ],
+    'socket_extra_in': [
+      files('virtlxcd.socket.extra.in'),
+    ],
   }
 
   openrc_init_files += {
