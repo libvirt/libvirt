@@ -192,7 +192,6 @@ if conf.has('WITH_REMOTE')
       'service': 'libvirtd',
       'service_in': files('libvirtd.service.in'),
       'name': 'legacy monolithic',
-      'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
       'socket_in': files('libvirtd.socket.in'),
       'socket_ro_in': files('libvirtd-ro.socket.in'),
