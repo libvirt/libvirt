@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-09-25 20:10+0000\n"
-"PO-Revision-Date: 2023-09-28 05:14+0000\n"
+"PO-Revision-Date: 2023-10-01 02:35+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -16614,7 +16614,7 @@ msgstr "미디어 레지스트리 다른 미디어를 추가 할 수 없습니�
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
-msgstr ""
+msgstr "OVS 브릿지에 포트 %1$s를 추가 할 수 없음 %2$s: %3$s"
 
 msgid "Unable to add storage controller"
 msgstr "저장소 제어기를 추가 할 수 없습니다"
@@ -16859,7 +16859,7 @@ msgstr "유닉스 소켓을 생성 할 수 없습니다"
 
 #, c-format
 msgid "Unable to create and set qos configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "포트에서 qos 구성을 생성하거나 설정 할 수 없음 %1$s: %2$s"
 
 msgid "Unable to create blkid library handle"
 msgstr "blkid 라이브러리 핸들을 생성 할 수 없습니다"
@@ -16999,7 +16999,7 @@ msgstr "미디어를 삭제 할 수 없습니다"
 
 #, c-format
 msgid "Unable to delete port %1$s from OVS: %2$s"
-msgstr ""
+msgstr "OVS에서 포트 port %1$s를 삭제 할 수 없음: %2$s"
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17084,7 +17084,7 @@ msgstr "$PATH에서 '%1$s' 바이너리를 찾을 수 없습니다"
 msgid ""
 "Unable to find '%1$s' firmware that is compatible with the current "
 "configuration"
-msgstr ""
+msgstr "현재 구성에 호환하는 %1$s' 펌웨어를 찾을 수 없음"
 
 #, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
@@ -17948,7 +17948,7 @@ msgstr "이 기술환경에서 네트 장치 환경구성을 읽을 수 없습�
 
 #, c-format
 msgid "Unable to read pidfile '%1$s'"
-msgstr ""
+msgstr "pidfile '%1$s'을 읽을 수 없음"
 
 #, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
@@ -18054,7 +18054,7 @@ msgstr "PCI 장치 %1$s를 리셋할 수 없음: %2$s"
 
 #, c-format
 msgid "Unable to reset ingress on port %1$s: %2$s"
-msgstr ""
+msgstr "포트에서 수신을 재설정 할 수 없습니다 %1$s: %2$s"
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
