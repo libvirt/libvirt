@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v9.8.0 (unreleased)
+v9.8.0 (2023-10-02)
 ===================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -53,9 +49,6 @@ v9.8.0 (unreleased)
 
     Now libvirt validates more values of virtio-mem and virtio-pmem devices,
     e.g. overlapping memory addresses or alignment.
-
-* **Bug fixes**
-
 
 v9.7.0 (2023-09-01)
 ===================
