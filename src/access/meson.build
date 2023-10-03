@@ -105,7 +105,7 @@ access_dep = declare_dependency(
 
 generated_sym_files += access_gen_sym
 
-if build_tests[0]
+if tests_enabled[0]
   test(
     'check-aclperms',
     python3_prog,

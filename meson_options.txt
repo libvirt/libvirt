@@ -10,7 +10,7 @@ option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror i
 option('rpath', type: 'feature', value: 'auto', description: 'whether to include rpath information in installed binaries and libraries')
 option('docdir', type: 'string', value: '', description: 'documentation installation directory')
 option('docs', type: 'feature', value: 'auto', description: 'whether to generate documentation')
-option('tests', type: 'feature', value: 'auto', description: 'whether to build tests')
+option('tests', type: 'feature', value: 'auto', description: 'whether to build and run tests')
 
 
 # build dependencies options

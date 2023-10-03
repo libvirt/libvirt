@@ -2027,8 +2027,8 @@ conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
 
 # test options
 
-build_tests = [ not get_option('tests').disabled() ]
-if build_tests[0] and \
+tests_enabled = [ not get_option('tests').disabled() ]
+if tests_enabled[0] and \
    cc.get_id() == 'clang' and \
    not supported_cc_flags.contains('-fsemantic-interposition') \
    and get_option('optimization') != '0'
@@ -2039,14 +2039,14 @@ if build_tests[0] and \
    if get_option('tests').enabled()
      error(msg)
    endif
-   build_tests = [ false, '!!! @0@ !!!'.format(msg) ]
+   tests_enabled = [ false, '!!! @0@ !!!'.format(msg) ]
 endif
 
 if get_option('expensive_tests').auto()
-  use_expensive_tests = not git and build_tests[0]
+  use_expensive_tests = not git and tests_enabled[0]
 else
   use_expensive_tests = get_option('expensive_tests').enabled()
-  if use_expensive_tests and not build_tests[0]
+  if use_expensive_tests and not tests_enabled[0]
     error('cannot enable expensive tests when tests are disabled')
   endif
 endif
@@ -2083,7 +2083,7 @@ subdir('src')
 
 subdir('tools')
 
-if build_tests[0]
+if tests_enabled[0]
   subdir('tests')
 else
   # Ensure that 'meson test' fails when tests are disabled, as opposed to
@@ -2307,7 +2307,7 @@ endif
 misc_summary = {
   'Warning Flags': supported_cc_flags,
   'docs': gen_docs,
-  'tests': build_tests,
+  'tests': tests_enabled,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),

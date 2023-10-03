@@ -119,7 +119,7 @@ html_xslt_gen = []
 
 # --- end of XSLT processing ---
 
-if build_tests[0]
+if tests_enabled[0]
   test(
     'check-html',
     xmllint_prog,

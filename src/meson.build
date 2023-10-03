@@ -946,7 +946,7 @@ meson.add_install_script(
 
 # Check driver files
 
-if build_tests[0]
+if tests_enabled[0]
   if host_machine.system() == 'linux'
     test(
       'check-symfile',

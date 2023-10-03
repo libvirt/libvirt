@@ -351,7 +351,7 @@ run_target(
   depends: install_web_deps,
 )
 
-if build_tests[0]
+if tests_enabled[0]
   test(
     'check-html-references',
     python3_prog,
