@@ -2035,7 +2035,11 @@ if build_tests[0] and \
    # If CLang doesn't support -fsemantic-interposition then our
    # mocking doesn't work. The best we can do is to not run the
    # test suite.
-   build_tests = [ false, '!!! Forcibly disabling tests because CLang lacks -fsemantic-interposition. Update CLang or disable optimization !!!' ]
+   msg = 'Forcibly disabling tests because CLang lacks -fsemantic-interposition. Update CLang or disable optimization'
+   if get_option('tests').enabled()
+     error(msg)
+   endif
+   build_tests = [ false, '!!! @0@ !!!'.format(msg) ]
 endif
 
 if get_option('expensive_tests').auto()
