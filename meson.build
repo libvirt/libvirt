@@ -151,23 +151,6 @@ if packager_version != ''
 endif
 
 
-# test options
-
-if get_option('expensive_tests').auto()
-  use_expensive_tests = not git
-else
-  use_expensive_tests = get_option('expensive_tests').enabled()
-endif
-
-coverage_flags = []
-if get_option('test_coverage')
-  coverage_flags = [
-    '-fprofile-arcs',
-    '-ftest-coverage',
-  ]
-endif
-
-
 # Add RPATH information when building for a non-standard prefix, or
 # when explicitly requested to do so
 
@@ -2041,6 +2024,35 @@ endif
 
 conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
 
+
+# test options
+
+build_tests = [ not get_option('tests').disabled() ]
+if build_tests[0] and \
+   cc.get_id() == 'clang' and \
+   not supported_cc_flags.contains('-fsemantic-interposition') \
+   and get_option('optimization') != '0'
+   # If CLang doesn't support -fsemantic-interposition then our
+   # mocking doesn't work. The best we can do is to not run the
+   # test suite.
+   build_tests = [ false, '!!! Forcibly disabling tests because CLang lacks -fsemantic-interposition. Update CLang or disable optimization !!!' ]
+endif
+
+if get_option('expensive_tests').auto()
+  use_expensive_tests = not git
+else
+  use_expensive_tests = get_option('expensive_tests').enabled()
+endif
+
+coverage_flags = []
+if get_option('test_coverage')
+  coverage_flags = [
+    '-fprofile-arcs',
+    '-ftest-coverage',
+  ]
+endif
+
+
 # Various definitions
 
 # Python3 < 3.7 treats the C locale as 7-bit only. We must force env vars so
@@ -2063,17 +2075,6 @@ subdir('include')
 subdir('src')
 
 subdir('tools')
-
-build_tests = [ not get_option('tests').disabled() ]
-if build_tests[0] and \
-   cc.get_id() == 'clang' and \
-   not supported_cc_flags.contains('-fsemantic-interposition') \
-   and get_option('optimization') != '0'
-   # If CLang doesn't support -fsemantic-interposition then our
-   # mocking doesn't work. The best we can do is to not run the
-   # test suite.
-   build_tests = [ false, '!!! Forcibly disabling tests because CLang lacks -fsemantic-interposition. Update CLang or disable optimization !!!' ]
-endif
 
 if build_tests[0]
   subdir('tests')
