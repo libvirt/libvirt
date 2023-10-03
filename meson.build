@@ -2043,9 +2043,12 @@ if build_tests[0] and \
 endif
 
 if get_option('expensive_tests').auto()
-  use_expensive_tests = not git
+  use_expensive_tests = not git and build_tests[0]
 else
   use_expensive_tests = get_option('expensive_tests').enabled()
+  if use_expensive_tests and not build_tests[0]
+    error('cannot enable expensive tests when tests are disabled')
+  endif
 endif
 
 coverage_flags = []
