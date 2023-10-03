@@ -1,6 +1,6 @@
 # Skip syntax-check if not building from git because we get the list of files
 # to check using git commands and it fails if we are not in git repository.
-if git
+if git and build_tests[0]
   flake8_path = ''
   if flake8_prog.found()
     flake8_path = flake8_prog.full_path()

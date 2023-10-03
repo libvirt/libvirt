@@ -2085,6 +2085,13 @@ subdir('tools')
 
 if build_tests[0]
   subdir('tests')
+else
+  # Ensure that 'meson test' fails when tests are disabled, as opposed to
+  # misleadingly succeeding at doing absolutely nothing
+  test(
+    'tests-are-disabled',
+    python3_prog, args: [ '-c', 'raise Exception("tests are disabled")' ],
+  )
 endif
 
 subdir('examples')

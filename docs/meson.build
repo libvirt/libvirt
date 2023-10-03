@@ -351,14 +351,16 @@ run_target(
   depends: install_web_deps,
 )
 
-test(
-  'check-html-references',
-  python3_prog,
-  args: [
-    check_html_references_prog.full_path(),
-    '--webroot',
-    meson.project_build_root() / 'docs'
-  ],
-  env: runutf8,
-  suite: 'script'
-)
+if build_tests[0]
+  test(
+    'check-html-references',
+    python3_prog,
+    args: [
+      check_html_references_prog.full_path(),
+      '--webroot',
+      meson.project_build_root() / 'docs'
+    ],
+    env: runutf8,
+    suite: 'script'
+  )
+endif

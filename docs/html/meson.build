@@ -119,12 +119,14 @@ html_xslt_gen = []
 
 # --- end of XSLT processing ---
 
-test(
-  'check-html',
-  xmllint_prog,
-  args: [
-    '--nonet', '--noout', docs_html_paths,
-  ],
-  depends: docs_html_dep,
-  suite: 'script'
-)
+if build_tests[0]
+  test(
+    'check-html',
+    xmllint_prog,
+    args: [
+      '--nonet', '--noout', docs_html_paths,
+    ],
+    depends: docs_html_dep,
+    suite: 'script'
+  )
+endif

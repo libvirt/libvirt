@@ -946,121 +946,123 @@ meson.add_install_script(
 
 # Check driver files
 
-if host_machine.system() == 'linux'
+if build_tests[0]
+  if host_machine.system() == 'linux'
+    test(
+      'check-symfile',
+      python3_prog,
+      args: [ check_symfile_prog.full_path(), libvirt_syms, libvirt_lib ],
+      env: runutf8,
+      suite: 'script'
+    )
+
+    if conf.has('WITH_REMOTE')
+      test(
+        'check-admin-symfile',
+        python3_prog,
+        args: [ check_symfile_prog.full_path(), libvirt_admin_syms, libvirt_admin_lib ],
+        env: runutf8,
+        suite: 'script'
+      )
+    endif
+  endif
+
   test(
-    'check-symfile',
+    'check-symsorting',
     python3_prog,
-    args: [ check_symfile_prog.full_path(), libvirt_syms, libvirt_lib ],
+    args: [
+      check_symsorting_prog.full_path(),
+      meson.current_source_dir(),
+      files(sym_files, used_sym_files),
+    ],
     env: runutf8,
     suite: 'script'
   )
 
-  if conf.has('WITH_REMOTE')
-    test(
-      'check-admin-symfile',
-      python3_prog,
-      args: [ check_symfile_prog.full_path(), libvirt_admin_syms, libvirt_admin_lib ],
-      env: runutf8,
-      suite: 'script'
-    )
+  test(
+    'check-admin-symsorting',
+    python3_prog,
+    args: [
+      check_symsorting_prog.full_path(),
+      meson.current_source_dir(),
+      libvirt_admin_private_syms,
+    ],
+    env: runutf8,
+    suite: 'script'
+  )
+
+  test(
+    'check-drivername',
+    python3_prog,
+    args: [
+      check_drivername_prog.full_path(), files(driver_headers),
+      files('libvirt_public.syms'), libvirt_qemu_syms, libvirt_lxc_syms,
+    ],
+    env: runutf8,
+    suite: 'script'
+  )
+
+  test(
+    'check-admin-drivername',
+    python3_prog,
+    args: [
+      check_drivername_prog.full_path(), libvirt_admin_public_syms,
+    ],
+    env: runutf8,
+    suite: 'script'
+  )
+
+  test(
+    'check-driverimpls',
+    python3_prog,
+    args: [ check_driverimpls_prog.full_path(), driver_source_files ],
+    env: runutf8,
+    suite: 'script'
+  )
+
+  test(
+    'check-aclrules',
+    python3_prog,
+    args: [ check_aclrules_prog.full_path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
+    env: runutf8,
+    suite: 'script'
+  )
+
+  if augparse_prog.found()
+    foreach data : augeas_test_data
+      test(
+        'check-augeas-@0@'.format(data['name']),
+        augparse_prog,
+        args: [
+          '-I', data['srcdir'],
+          '-I', data['builddir'],
+          data['file'].full_path(),
+        ],
+        suite: 'script'
+      )
+    endforeach
   endif
-endif
 
-test(
-  'check-symsorting',
-  python3_prog,
-  args: [
-    check_symsorting_prog.full_path(),
-    meson.current_source_dir(),
-    files(sym_files, used_sym_files),
-  ],
-  env: runutf8,
-  suite: 'script'
-)
-
-test(
-  'check-admin-symsorting',
-  python3_prog,
-  args: [
-    check_symsorting_prog.full_path(),
-    meson.current_source_dir(),
-    libvirt_admin_private_syms,
-  ],
-  env: runutf8,
-  suite: 'script'
-)
-
-test(
-  'check-drivername',
-  python3_prog,
-  args: [
-    check_drivername_prog.full_path(), files(driver_headers),
-    files('libvirt_public.syms'), libvirt_qemu_syms, libvirt_lxc_syms,
-  ],
-  env: runutf8,
-  suite: 'script'
-)
-
-test(
-  'check-admin-drivername',
-  python3_prog,
-  args: [
-    check_drivername_prog.full_path(), libvirt_admin_public_syms,
-  ],
-  env: runutf8,
-  suite: 'script'
-)
-
-test(
-  'check-driverimpls',
-  python3_prog,
-  args: [ check_driverimpls_prog.full_path(), driver_source_files ],
-  env: runutf8,
-  suite: 'script'
-)
-
-test(
-  'check-aclrules',
-  python3_prog,
-  args: [ check_aclrules_prog.full_path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
-  env: runutf8,
-  suite: 'script'
-)
-
-if augparse_prog.found()
-  foreach data : augeas_test_data
-    test(
-      'check-augeas-@0@'.format(data['name']),
-      augparse_prog,
-      args: [
-        '-I', data['srcdir'],
-        '-I', data['builddir'],
-        data['file'].full_path(),
-      ],
-      suite: 'script'
-    )
-  endforeach
-endif
-
-if pdwtags_prog.found() and cc.get_id() != 'clang'
-  foreach proto : check_protocols
-    lib = proto['lib']
-    test(
-      'check-@0@'.format(proto['name']),
-      python3_prog,
-      args: [
-        check_remote_protocol_prog.full_path(),
-        proto['name'],
-        lib.name(),
-        lib.full_path(),
-        pdwtags_prog.full_path(),
-        files('@0@-structs'.format(proto['name'])),
-      ],
-      env: runutf8,
-      depends: [ lib ],
-      suite: 'script'
-    )
-  endforeach
+  if pdwtags_prog.found() and cc.get_id() != 'clang'
+    foreach proto : check_protocols
+      lib = proto['lib']
+      test(
+        'check-@0@'.format(proto['name']),
+        python3_prog,
+        args: [
+          check_remote_protocol_prog.full_path(),
+          proto['name'],
+          lib.name(),
+          lib.full_path(),
+          pdwtags_prog.full_path(),
+          files('@0@-structs'.format(proto['name'])),
+        ],
+        env: runutf8,
+        depends: [ lib ],
+        suite: 'script'
+      )
+    endforeach
+  endif
 endif
 
 # configure pkg-config files for run script
