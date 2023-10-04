@@ -95,6 +95,7 @@
 %define with_fuse             0
 %define with_sanlock          0
 %define with_numad            0
+%define with_nbdkit           0
 %define with_firewalld_zone   0
 %define with_netcf            0
 %define with_libssh2          0
@@ -170,6 +171,18 @@
 # it's not available on many non-x86 architectures.
     %ifarch %{arches_numad}
         %define with_numad    0%{!?_without_numad:1}
+    %endif
+%endif
+
+# We should only enable nbdkit support if the OS ships a SELinux policy that
+# allows libvirt to launch it. Right now that's not the case anywhere, but
+# things should be fine by the time Fedora 40 is released.
+#
+# TODO: add RHEL 9 once a minor release that contains the necessary SELinux
+#       bits exists (we only support the most recent minor release)
+%if %{with_qemu}
+    %if 0%{?fedora} >= 40
+        %define with_nbdkit 0%{!?_without_nbdkit:1}
     %endif
 %endif
 
@@ -312,6 +325,9 @@ BuildRequires: util-linux
 BuildRequires: libacl-devel
 # From QEMU RPMs, used by virstoragetest
 BuildRequires: /usr/bin/qemu-img
+%endif
+# nbdkit support requires libnbd
+%if %{with_nbdkit}
 BuildRequires: libnbd-devel
 %endif
 # For LVM drivers
@@ -769,9 +785,11 @@ Requires: numad
 Recommends: passt
 Recommends: passt-selinux
     %endif
+    %if %{with_nbdkit}
 Recommends: nbdkit
 Recommends: nbdkit-curl-plugin
 Recommends: nbdkit-ssh-plugin
+    %endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -1078,10 +1096,8 @@ exit 1
 
 %if %{with_qemu}
     %define arg_qemu -Ddriver_qemu=enabled
-    %define arg_libnbd -Dlibnbd=enabled
 %else
     %define arg_qemu -Ddriver_qemu=disabled
-    %define arg_libnbd -Dlibnbd=disabled
 %endif
 
 %if %{with_openvz}
@@ -1156,6 +1172,12 @@ exit 1
     %define arg_numad -Dnumad=enabled
 %else
     %define arg_numad -Dnumad=disabled
+%endif
+
+%if %{with_nbdkit}
+    %define arg_nbdkit -Dnbdkit=enabled
+%else
+    %define arg_nbdkit -Dnbdkit=disabled
 %endif
 
 %if %{with_fuse}
@@ -1270,7 +1292,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dyajl=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
-           %{?arg_libnbd} \
+           %{?arg_nbdkit} \
            -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \

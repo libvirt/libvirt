@@ -1011,10 +1011,27 @@ endif
 libiscsi_version = '1.18.0'
 libiscsi_dep = dependency('libiscsi', version: '>=' + libiscsi_version, required: get_option('libiscsi'))
 
-libnbd_version = '1.0'
-libnbd_dep = dependency('libnbd', version: '>=' + libnbd_version, required: get_option('libnbd'))
-if libnbd_dep.found()
-  conf.set('WITH_LIBNBD', 1)
+if not get_option('nbdkit').disabled()
+  libnbd_version = '1.0'
+  libnbd_dep = dependency('libnbd', version: '>=' + libnbd_version, required: false)
+
+  nbdkit_requested = get_option('nbdkit').enabled()
+  nbdkit_syscall_ok = conf.has('WITH_DECL_SYS_PIDFD_OPEN')
+  nbdkit_libnbd_ok = libnbd_dep.found()
+
+  if not nbdkit_syscall_ok and nbdkit_requested
+    error('nbdkit support requires pidfd_open(2)')
+  endif
+  if not nbdkit_libnbd_ok and nbdkit_requested
+    error('nbdkit support requires libnbd')
+  endif
+
+  if nbdkit_syscall_ok and nbdkit_libnbd_ok
+    conf.set('WITH_NBDKIT', 1)
+  endif
+endif
+if not conf.has('WITH_NBDKIT')
+  libnbd_dep = dependency('', required: false)
 endif
 
 libnl_version = '3.0'
@@ -2023,10 +2040,6 @@ elif get_option('sysctl_config').enabled()
 endif
 
 conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
-
-if conf.has('WITH_DECL_SYS_PIDFD_OPEN')
-  conf.set('WITH_NBDKIT', 1)
-endif
 
 # Various definitions
 
