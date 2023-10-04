@@ -103,6 +103,9 @@ typedef enum {
 #define ARCH_IS_MIPS64(arch) ((arch) == VIR_ARCH_MIPS64 ||\
                               (arch) == VIR_ARCH_MIPS64EL)
 
+#define ARCH_IS_SH4(arch) ((arch) == VIR_ARCH_SH4 ||\
+                           (arch) == VIR_ARCH_SH4EB)
+
 typedef enum {
     VIR_ARCH_LITTLE_ENDIAN,
     VIR_ARCH_BIG_ENDIAN,

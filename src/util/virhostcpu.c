@@ -1650,7 +1650,7 @@ virHostCPUGetPhysAddrSize(const virArch hostArch,
 {
     g_autoptr(FILE) cpuinfo = NULL;
 
-    if (ARCH_IS_S390(hostArch)) {
+    if (!(ARCH_IS_X86(hostArch) || ARCH_IS_SH4(hostArch))) {
         /* Ensure size is set to 0 as physical address size is unknown */
         *size = 0;
         return 0;
