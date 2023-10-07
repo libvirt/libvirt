@@ -505,7 +505,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "%1$s not found in %2$s"
-msgstr "Не е открит домейна: %s"
+msgstr "Не е открит домейнът: %s"
 
 #, c-format
 msgid "%1$s not implemented on Win32"
@@ -1841,14 +1841,14 @@ msgid "BIOS serial console only supported on x86 architectures"
 msgstr ""
 
 msgid "Backup"
-msgstr ""
+msgstr "Резервно копие"
 
 msgid "Backup Dump XML"
 msgstr ""
 
 #, fuzzy
 msgid "Backup started\n"
-msgstr "Домейна %s бе стартиран\n"
+msgstr "Резервното копие е стартирано\n"
 
 #, c-format
 msgid "Bad $%1$s value."
@@ -2799,7 +2799,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot open %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "Cannot open /proc/cgroups"
 msgstr ""
@@ -3365,11 +3365,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Client not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "Client not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "Client socket identity not available"
 msgstr ""
@@ -3791,7 +3791,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not find %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 #, c-format
 msgid "Could not find %1$s controller with index %2$d required for device"
@@ -4887,7 +4887,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Destroyed"
-msgstr "Домейна %s бе унищожен\n"
+msgstr "Домейнът %s бе унищожен\n"
 
 #, c-format
 msgid "Destroyed node device '%1$s'\n"
@@ -4917,7 +4917,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Device %1$s detached\n"
-msgstr "Домейна %1$s бе унищожен\n"
+msgstr "Домейнът %1$s бе унищожен\n"
 
 #, c-format
 msgid "Device %1$s does not have a VPD"
@@ -4925,7 +4925,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Device %1$s is already in use"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, c-format
 msgid "Device %1$s is behind a switch lacking ACS and cannot be assigned"
@@ -5250,7 +5250,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Domain Events"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "Domain UUID is malformed or empty"
 msgstr ""
@@ -5286,11 +5286,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Domain backup job id not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "Domain backup job id not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 #, c-format
 msgid "Domain checkpoint %1$s children deleted\n"
@@ -5306,15 +5306,15 @@ msgstr "Домейн %1$s бе създаден от %2$s\n"
 
 #, fuzzy, c-format
 msgid "Domain checkpoint %1$s deleted\n"
-msgstr "Домейна %1$s бе унищожен\n"
+msgstr "Домейнът %1$s бе унищожен\n"
 
 #, fuzzy
 msgid "Domain checkpoint not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "Domain checkpoint not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "Domain description not changed\n"
 msgstr ""
@@ -5355,18 +5355,18 @@ msgid "Domain interface"
 msgstr "състояние на домейна"
 
 msgid "Domain is already active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, fuzzy
 msgid "Domain is already active or is in state transition"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "Domain is already running"
 msgstr "Домейнът вече е активен"
 
 #, fuzzy
 msgid "Domain is not active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "Domain is not active or in state transition"
 msgstr ""
@@ -5376,15 +5376,15 @@ msgstr ""
 
 #, fuzzy
 msgid "Domain is not paused"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy
 msgid "Domain is not powered off"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy
 msgid "Domain is not powered on"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy
 msgid "Domain is not running"
@@ -5392,21 +5392,21 @@ msgstr "Домейнът вече е активен"
 
 #, fuzzy
 msgid "Domain is not suspended"
-msgstr "Домейна %s приспан\n"
+msgstr "Домейнът %s не е приспан\n"
 
 #, fuzzy
 msgid "Domain is not suspended or powered off"
-msgstr "Домейна %s приспан\n"
+msgstr "Домейнът %s не е приспан или изключен\n"
 
 msgid "Domain name contains invalid escape sequence"
 msgstr ""
 
 msgid "Domain not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, c-format
 msgid "Domain not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
@@ -5419,7 +5419,7 @@ msgstr ""
 
 #, c-format
 msgid "Domain restored from %1$s\n"
-msgstr "Домейна бе възстановен от %1$s\n"
+msgstr "Домейнът бе възстановен от %1$s\n"
 
 #, fuzzy
 msgid "Domain should have at least one disk defined"
@@ -5439,7 +5439,7 @@ msgstr "Домейн %1$s бе създаден от %2$s\n"
 
 #, fuzzy, c-format
 msgid "Domain snapshot %1$s deleted\n"
-msgstr "Домейна %1$s бе унищожен\n"
+msgstr "Домейнът %1$s бе унищожен\n"
 
 #, c-format
 msgid "Domain snapshot %1$s reverted\n"
@@ -5447,18 +5447,18 @@ msgstr ""
 
 #, fuzzy
 msgid "Domain snapshot not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "Domain snapshot not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "Domain title can't contain newlines"
 msgstr ""
 
 #, fuzzy
 msgid "Domain title not changed\n"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "Domain title updated successfully"
 msgstr ""
@@ -8763,7 +8763,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Handshake is already complete"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "Hard disk is null"
 msgstr ""
@@ -8829,7 +8829,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "HostPortGroup with name '%1$s' exists already"
-msgstr "домейна %1$s вече съществува"
+msgstr "Хост-порт група с име '%1$s' вече съществува"
 
 msgid ""
 "HostVirtualSwitch already exists, editing existing ones is not supported yet"
@@ -12056,11 +12056,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Node device not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "Node device not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "Non-blocking streams are not supported yet"
 msgstr ""
@@ -12827,11 +12827,11 @@ msgstr "Домейн %1$s дефиниран от %2$s\n"
 
 #, fuzzy, c-format
 msgid "Pool %1$s deleted\n"
-msgstr "Домейна %1$s бе унищожен\n"
+msgstr "Домейнът %1$s бе унищожен\n"
 
 #, fuzzy, c-format
 msgid "Pool %1$s destroyed\n"
-msgstr "Домейна %1$s бе унищожен\n"
+msgstr "Домейнът %1$s бе унищожен\n"
 
 #, fuzzy, c-format
 msgid "Pool %1$s has been undefined\n"
@@ -12839,7 +12839,7 @@ msgstr "Дефиницията на домейн %1$s бе премахната\
 
 #, fuzzy, c-format
 msgid "Pool %1$s marked as autostarted\n"
-msgstr "Домейна %1$s е маркиран като авто-стартиращ се\n"
+msgstr "Домейнът %1$s е маркиран като авто-стартиращ се\n"
 
 #, fuzzy, c-format
 msgid "Pool %1$s refreshed\n"
@@ -12847,11 +12847,11 @@ msgstr "Домейн %1$s бе събуден\n"
 
 #, fuzzy, c-format
 msgid "Pool %1$s started\n"
-msgstr "Домейна %1$s бе стартиран\n"
+msgstr "Домейнът %1$s бе стартиран\n"
 
 #, fuzzy, c-format
 msgid "Pool %1$s unmarked as autostarted\n"
-msgstr "Домейна %1$s е размаркиран като авто-стартиращ се\n"
+msgstr "Домейнът %1$s е размаркиран като авто-стартиращ се\n"
 
 msgid "Populate a disk from its backing image."
 msgstr ""
@@ -15729,7 +15729,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Too many bytes to read from stream"
-msgstr "Домейна бе възстановен от %s\n"
+msgstr "Домейнът бе възстановен от %s\n"
 
 msgid "Too many bytes to write to stream"
 msgstr ""
@@ -19195,7 +19195,7 @@ msgstr ""
 
 #, fuzzy
 msgid "VM is already active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "VM is not defined"
 msgstr ""
@@ -19300,7 +19300,7 @@ msgstr "Домейн %1$s бе създаден от %2$s\n"
 
 #, fuzzy, c-format
 msgid "Vol %1$s deleted\n"
-msgstr "Домейна %1$s бе унищожен\n"
+msgstr "Домейнът %1$s бе унищожен\n"
 
 #, c-format
 msgid "Vol %1$s wiped\n"
@@ -19715,7 +19715,7 @@ msgstr ""
 
 #, fuzzy
 msgid "already active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "also print reason for the state"
 msgstr ""
@@ -21401,11 +21401,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot open %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 #, fuzzy, c-format
 msgid "cannot open '%1$s'"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "cannot open SELinux label_handle"
 msgstr ""
@@ -23341,7 +23341,7 @@ msgstr ""
 
 #, fuzzy
 msgid "destroyed"
-msgstr "Домейна %s бе унищожен\n"
+msgstr "Домейнът %s бе унищожен\n"
 
 msgid "detach device from an XML file"
 msgstr "откачане на устройство от XML файл"
@@ -23399,7 +23399,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "device %1$s is already in use"
-msgstr "домейна %1$s вече съществува"
+msgstr "домейнът %1$s вече съществува"
 
 #, c-format
 msgid "device %1$s is not a PCI device"
@@ -23439,11 +23439,11 @@ msgstr ""
 
 #, fuzzy
 msgid "device not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "device not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 #, fuzzy
 msgid "device not present in domain configuration"
@@ -23577,7 +23577,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "disk %1$s not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, c-format
 msgid "disk '%1$s' already in active block job"
@@ -23605,7 +23605,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "disk '%1$s' not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, c-format
 msgid "disk '%1$s' not found in domain"
@@ -23829,7 +23829,7 @@ msgstr ""
 
 #, c-format
 msgid "domain %1$s exists already"
-msgstr "домейна %1$s вече съществува"
+msgstr "домейнът %1$s вече съществува"
 
 #, c-format
 msgid "domain %1$s has no snapshots with name %2$s"
@@ -23869,7 +23869,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "domain '%1$s' is already active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, fuzzy, c-format
 msgid "domain '%1$s' is already being removed"
@@ -23901,7 +23901,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "domain '%1$s' not paused"
-msgstr "домейна %1$s вече съществува"
+msgstr "домейнът %1$s вече съществува"
 
 #, fuzzy, c-format
 msgid "domain '%1$s' not running"
@@ -23912,7 +23912,7 @@ msgstr ""
 
 #, fuzzy
 msgid "domain already has a vsock device"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
@@ -24003,7 +24003,7 @@ msgstr "Домейнът вече е активен"
 
 #, fuzzy
 msgid "domain is marked for auto destroy"
-msgstr "Домейна %s е маркиран като авто-стартиращ се\n"
+msgstr "Домейнът %s е маркиран като авто-стартиращ се\n"
 
 #, fuzzy
 msgid "domain is no longer running"
@@ -24018,7 +24018,7 @@ msgstr ""
 
 #, fuzzy
 msgid "domain is not in suspend state"
-msgstr "Домейна %s приспан\n"
+msgstr "Домейнът %s приспан\n"
 
 #, fuzzy
 msgid "domain is not running"
@@ -24033,7 +24033,7 @@ msgstr "информация за домейн"
 
 #, fuzzy
 msgid "domain is pmsuspended"
-msgstr "Домейна %s приспан\n"
+msgstr "Домейнът %s приспан\n"
 
 #, fuzzy
 msgid "domain is transient"
@@ -24049,7 +24049,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "domain moment %1$s already exists"
-msgstr "домейна %1$s вече съществува"
+msgstr "домейнът %1$s вече съществува"
 
 msgid "domain must be in a paused state"
 msgstr ""
@@ -24107,7 +24107,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "domain with name '%1$s' already exists"
-msgstr "домейна %1$s вече съществува"
+msgstr "домейнът %1$s вече съществува"
 
 msgid "domain's dimm info lacks slot ID or base address"
 msgstr ""
@@ -26985,7 +26985,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "hostdev %1$s not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "hostdev does not have an alias"
 msgstr ""
@@ -28225,7 +28225,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "iothread %1$d not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "iothread for the new IOThread"
 msgstr ""
@@ -28241,7 +28241,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "iothreadid %1$d not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr ""
@@ -29143,7 +29143,7 @@ msgstr ""
 
 #, fuzzy
 msgid "masterbus not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, c-format
 msgid "match mode %1$s not supported"
@@ -29379,11 +29379,11 @@ msgstr ""
 
 #, fuzzy
 msgid "metadata not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "metadata not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "metadata preallocation conflicts with backing store"
 msgstr ""
@@ -30574,7 +30574,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "mount point not found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 msgid "mountpoint path to be frozen"
 msgstr ""
@@ -30933,11 +30933,11 @@ msgstr "тип на интерфейса на мрежата"
 
 #, fuzzy
 msgid "network is already active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, fuzzy, c-format
 msgid "network is already active as '%1$s'"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, fuzzy
 msgid "network is not running"
@@ -31296,7 +31296,7 @@ msgstr ""
 
 #, fuzzy
 msgid "no hostname found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy, c-format
 msgid "no hostname found for domain %1$s"
@@ -31304,7 +31304,7 @@ msgstr "Неуспешно премахване дефиницията на до
 
 #, fuzzy, c-format
 msgid "no hostname found: %1$s"
-msgstr "Не е открит домейна: %1$s"
+msgstr "Не е открит домейнът: %1$s"
 
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
@@ -31342,7 +31342,7 @@ msgstr ""
 
 #, fuzzy
 msgid "no matching redirdev was not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "no matching watchdog was found"
 msgstr ""
@@ -31453,7 +31453,7 @@ msgstr ""
 
 #, fuzzy
 msgid "no sockets found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 #, fuzzy
 msgid "no space"
@@ -32077,7 +32077,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "option --%1$s already seen"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, c-format
 msgid "option parsing failed: %1$s\n"
@@ -32488,7 +32488,7 @@ msgstr ""
 
 #, fuzzy
 msgid "pmsuspended"
-msgstr "Домейна %s приспан\n"
+msgstr "Домейнът %s приспан\n"
 
 msgid "polkit text authentication agent unavailable"
 msgstr ""
@@ -32535,7 +32535,7 @@ msgstr "информация за домейн в XML"
 
 #, fuzzy, c-format
 msgid "pool is already active as '%1$s'"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 msgid "pool name"
 msgstr ""
@@ -34409,7 +34409,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "storage pool '%1$s' is already active"
-msgstr "Домейна вече е активен"
+msgstr "Домейнът вече е активен"
 
 #, c-format
 msgid "storage pool '%1$s' is not active"
@@ -37342,7 +37342,7 @@ msgstr ""
 
 #, fuzzy
 msgid "usb device not found"
-msgstr "Не е открит домейна"
+msgstr "Не е открит домейнът"
 
 msgid "usb keyboard is not supported by this QEMU binary"
 msgstr ""
@@ -38459,7 +38459,7 @@ msgstr "--%1$s <низ>"
 
 #, fuzzy
 #~ msgid "domain already has a watchdog"
-#~ msgstr "Домейна вече е активен"
+#~ msgstr "Домейнът вече е активен"
 
 #, fuzzy
 #~ msgid "domain has no watchdog"
@@ -38839,7 +38839,7 @@ msgstr "--%1$s <низ>"
 
 #, fuzzy
 #~ msgid "no matching device found"
-#~ msgstr "Не е открит домейна"
+#~ msgstr "Не е открит домейнът"
 
 #, fuzzy
 #~ msgid "unknown 'unknown' value '%s'"
@@ -39160,7 +39160,7 @@ msgstr "--%1$s <низ>"
 #~ "Domain %s state saved by libvirt\n"
 #~ msgstr ""
 #~ "\n"
-#~ "Домейна %s бе стартиран\n"
+#~ "Домейнът %s бе стартиран\n"
 
 #, fuzzy
 #~ msgid "Connected to domain %s\n"
@@ -39176,7 +39176,7 @@ msgstr "--%1$s <низ>"
 
 #, fuzzy
 #~ msgid "Domain %s could not be suspended"
-#~ msgstr "Домейна %s приспан\n"
+#~ msgstr "Домейнът %s приспан\n"
 
 #~ msgid "Domain %s created from %s\n"
 #~ msgstr "Домейн %s бе създаден от %s\n"
@@ -39185,7 +39185,7 @@ msgstr "--%1$s <низ>"
 #~ msgstr "Домейн %s дефиниран от %s\n"
 
 #~ msgid "Domain %s destroyed\n"
-#~ msgstr "Домейна %s бе унищожен\n"
+#~ msgstr "Домейнът %s бе унищожен\n"
 
 #~ msgid "Domain %s has been undefined\n"
 #~ msgstr "Дефиницията на домейн %s бе премахната\n"
@@ -39197,23 +39197,23 @@ msgstr "--%1$s <низ>"
 #~ msgstr "Домейн %s се изключва\n"
 
 #~ msgid "Domain %s marked as autostarted\n"
-#~ msgstr "Домейна %s е маркиран като авто-стартиращ се\n"
+#~ msgstr "Домейнът %s е маркиран като авто-стартиращ се\n"
 
 #~ msgid "Domain %s resumed\n"
 #~ msgstr "Домейн %s бе събуден\n"
 
 #~ msgid "Domain %s started\n"
-#~ msgstr "Домейна %s бе стартиран\n"
+#~ msgstr "Домейнът %s бе стартиран\n"
 
 #, fuzzy
 #~ msgid "Domain %s successfully suspended"
-#~ msgstr "Домейна %s приспан\n"
+#~ msgstr "Домейнът %s приспан\n"
 
 #~ msgid "Domain %s suspended\n"
-#~ msgstr "Домейна %s приспан\n"
+#~ msgstr "Домейнът %s приспан\n"
 
 #~ msgid "Domain %s unmarked as autostarted\n"
-#~ msgstr "Домейна %s е размаркиран като авто-стартиращ се\n"
+#~ msgstr "Домейнът %s е размаркиран като авто-стартиращ се\n"
 
 #, fuzzy
 #~ msgid "Domain %s was reset\n"
