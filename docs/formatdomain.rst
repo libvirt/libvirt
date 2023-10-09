@@ -2179,7 +2179,7 @@ are:
    Enable QEMU vmcoreinfo device to let the guest kernel save debug details.
    :since:`Since 4.4.0` (QEMU only)
 ``htm``
-   Configure HTM (Hardware Transational Memory) availability for pSeries guests.
+   Configure HTM (Hardware Transactional Memory) availability for pSeries guests.
    Possible values for the ``state`` attribute are ``on`` and ``off``. If the
    attribute is not defined, the hypervisor default will be used. :since:`Since
    4.6.0` (QEMU/KVM only)

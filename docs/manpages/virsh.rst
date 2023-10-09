@@ -5267,7 +5267,7 @@ dom-fd-associate
 
 Associate one or more fds described via *--pass-fds* argument to *domain* as
 *--name*. The lifetime of the passed fd group is the same as the connection, thus
-exitting virsh un-registers them afterwards.
+exiting virsh un-registers them afterwards.
 
 By default security labels are applied if needed but they are not restored after
 use to avoid keeping them open unnecessarily. Best-effort security label restore

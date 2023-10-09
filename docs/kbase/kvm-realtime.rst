@@ -103,7 +103,7 @@ Be aware that CPU ID numbers are not always allocated sequentially as shown
 here. It is not unusual to see IDs interleaved between sockets on the two NUMA
 nodes, such that ``0-3,8-11`` are on the first node and ``4-7,12-15`` are on
 the second node.  Carefully check the ``virsh capabilities`` output to determine
-the CPU ID numbers when configiring both ``isolcpus`` and the guest ``cpuset``
+the CPU ID numbers when configuring both ``isolcpus`` and the guest ``cpuset``
 values.
 
 Guest configuration
