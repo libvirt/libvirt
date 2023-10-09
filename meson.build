@@ -867,7 +867,7 @@ if not get_option('driver_remote').disabled()
   # use extra library as it's provided by libc directly.
   if host_machine.system() == 'windows'
     xdr_dep = cc.find_library('portablexdr', required: get_option('driver_remote'))
-  elif host_machine.system() == 'linux'
+  elif host_machine.system() in [ 'linux', 'gnu' ]
     xdr_dep = dependency('libtirpc', required: get_option('driver_remote'))
   elif host_machine.system() in [ 'freebsd', 'darwin' ]
     xdr_dep = cc.find_library('c', required: get_option('driver_remote'))
