@@ -22,6 +22,7 @@
 
 #include "virdomainobjlist.h"
 #include "virthread.h"
+#include "ch_capabilities.h"
 
 #define CH_DRIVER_NAME "CH"
 #define CH_CMD "cloud-hypervisor"
@@ -53,6 +54,11 @@ struct _virCHDriver
     /* Require lock to get a reference on the object,
      * lockless access thereafter */
     virCaps *caps;
+
+    /* Immutable pointer, Immutable object
+     * Initialized once and reused as needed
+     */
+    virBitmap *chCaps;
 
     /* Immutable pointer, Immutable object */
     virDomainXMLOption *xmlopt;

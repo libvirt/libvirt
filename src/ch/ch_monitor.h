@@ -25,6 +25,7 @@
 #include "virobject.h"
 #include "virjson.h"
 #include "domain_conf.h"
+#include "ch_conf.h"
 
 #define URL_ROOT "http://localhost/api/v1"
 #define URL_VMM_SHUTDOWN "vmm.shutdown"
@@ -103,7 +104,8 @@ void virCHMonitorClose(virCHMonitor *mon);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHMonitor, virCHMonitorClose);
 
 
-int virCHMonitorCreateVM(virCHMonitor *mon,
+int virCHMonitorCreateVM(virCHDriver *driver,
+                         virCHMonitor *mon,
                          size_t *nnicindexes,
                          int **nicindexes);
 int virCHMonitorBootVM(virCHMonitor *mon);

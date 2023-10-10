@@ -1,4 +1,6 @@
 ch_driver_sources = [
+  'ch_capabilities.h',
+  'ch_capabilities.c',
   'ch_conf.c',
   'ch_conf.h',
   'ch_domain.c',

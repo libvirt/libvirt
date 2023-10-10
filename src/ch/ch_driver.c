@@ -20,6 +20,7 @@
 
 #include <config.h>
 
+#include "ch_capabilities.h"
 #include "ch_conf.h"
 #include "ch_domain.h"
 #include "ch_driver.h"
@@ -898,6 +899,8 @@ static int chStateInitialize(bool privileged,
             ret = VIR_DRV_STATE_INIT_SKIPPED;
         goto cleanup;
     }
+
+    ch_driver->chCaps = virCHCapsInitCHVersionCaps(ch_driver->version);
 
     ch_driver->privileged = privileged;
     ret = VIR_DRV_STATE_INIT_COMPLETE;

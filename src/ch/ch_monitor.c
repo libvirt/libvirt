@@ -107,6 +107,37 @@ virCHMonitorBuildPTYJson(virJSONValue *content, virDomainDef *vmdef)
 }
 
 static int
+virCHMonitorBuildPayloadJson(virJSONValue *content, virDomainDef *vmdef)
+{
+    g_autoptr(virJSONValue) payload = virJSONValueNewObject();
+
+
+    if (vmdef->os.kernel == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Kernel image path in this domain is not defined"));
+        return -1;
+    } else {
+        if (virJSONValueObjectAppendString(payload, "kernel", vmdef->os.kernel) < 0)
+            return -1;
+    }
+
+    if (vmdef->os.cmdline) {
+        if (virJSONValueObjectAppendString(payload, "cmdline", vmdef->os.cmdline) < 0)
+            return -1;
+    }
+
+    if (vmdef->os.initrd != NULL) {
+        if (virJSONValueObjectAppendString(payload, "initramfs", vmdef->os.initrd) < 0)
+            return -1;
+    }
+
+    if (virJSONValueObjectAppend(content, "payload", &payload) < 0)
+    return -1;
+
+    return 0;
+}
+
+static int
 virCHMonitorBuildKernelRelatedJson(virJSONValue *content, virDomainDef *vmdef)
 {
     g_autoptr(virJSONValue) kernel = virJSONValueNewObject();
@@ -425,7 +456,8 @@ virCHMonitorBuildDevicesJson(virJSONValue *content,
 }
 
 static int
-virCHMonitorBuildVMJson(virDomainDef *vmdef,
+virCHMonitorBuildVMJson(virCHDriver *driver,
+                        virDomainDef *vmdef,
                         char **jsonstr,
                         size_t *nnicindexes,
                         int **nicindexes)
@@ -447,8 +479,13 @@ virCHMonitorBuildVMJson(virDomainDef *vmdef,
     if (virCHMonitorBuildMemoryJson(content, vmdef) < 0)
         return -1;
 
-    if (virCHMonitorBuildKernelRelatedJson(content, vmdef) < 0)
-        return -1;
+    if (virBitmapIsBitSet(driver->chCaps, CH_KERNEL_API_DEPRCATED)) {
+        if (virCHMonitorBuildPayloadJson(content, vmdef) < 0)
+            return -1;
+    } else if (virCHMonitorBuildKernelRelatedJson(content, vmdef) < 0) {
+            return -1;
+    }
+
 
     if (virCHMonitorBuildDisksJson(content, vmdef) < 0)
         return -1;
@@ -840,7 +877,8 @@ virCHMonitorShutdownVMM(virCHMonitor *mon)
 }
 
 int
-virCHMonitorCreateVM(virCHMonitor *mon,
+virCHMonitorCreateVM(virCHDriver *driver,
+                     virCHMonitor *mon,
                      size_t *nnicindexes,
                      int **nicindexes)
 {
@@ -854,7 +892,7 @@ virCHMonitorCreateVM(virCHMonitor *mon,
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
 
-    if (virCHMonitorBuildVMJson(mon->vm->def, &payload,
+    if (virCHMonitorBuildVMJson(driver, mon->vm->def, &payload,
                                 nnicindexes, nicindexes) != 0)
         return -1;
 

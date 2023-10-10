@@ -483,7 +483,7 @@ virCHProcessStart(virCHDriver *driver,
             goto cleanup;
         }
 
-        if (virCHMonitorCreateVM(priv->monitor,
+        if (virCHMonitorCreateVM(driver, priv->monitor,
                                  &nnicindexes, &nicindexes) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create guest VM"));
