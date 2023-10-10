@@ -142,10 +142,11 @@ virDomainXMLPrivateDataCallbacks virCHDriverPrivateDataCallbacks = {
 
 static int
 chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
-                          const virDomainDef *def G_GNUC_UNUSED,
-                          void *opaque G_GNUC_UNUSED,
+                          const virDomainDef *def,
+                          void *opaque,
                           void *parseOpaque G_GNUC_UNUSED)
 {
+    virCHDriver *driver = opaque;
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_NET:
@@ -191,18 +192,25 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         return -1;
     }
 
-    if ((def->nconsoles &&
-         def->consoles[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)
-        && (def->nserials &&
-            def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+    if (!virBitmapIsBitSet(driver->chCaps, CH_SERIAL_CONSOLE_IN_PARALLEL)) {
+        if ((def->nconsoles &&
+                def->consoles[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)
+            && (def->nserials &&
+                def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Only a single console or serial can be configured for this domain"));
-        return -1;
-    } else if (def->nconsoles > 1) {
+            return -1;
+        }
+    }
+
+
+    if (def->nconsoles > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Only a single console can be configured for this domain"));
         return -1;
-    } else if (def->nserials > 1) {
+    }
+
+    if (def->nserials > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Only a single serial can be configured for this domain"));
         return -1;
