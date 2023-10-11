@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-09-25 20:10+0000\n"
-"PO-Revision-Date: 2023-10-01 02:35+0000\n"
+"PO-Revision-Date: 2023-10-11 10:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1313,10 +1313,10 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-users의 응답에서 'login-time'이 누락"
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr "'manual' 메모리 스냅샷 방식은 지원되지 않습니다"
+msgstr "'manual' 메모리 순간찍기 방식은 지원되지 않습니다"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
-msgstr "테스트 드라이버에 의해 'manual' 스냅샷 방식은 지원되지 않습니다"
+msgstr "시험 드라이버에 의해 'manual' 순간찍기 방식은 지원되지 않습니다"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'max_sector'는 virtio-scsi 제어기에서만 지원됩니다"
@@ -1486,7 +1486,7 @@ msgid "(domain_definition)"
 msgstr "(도메인 정의)"
 
 msgid "(domain_snapshot)"
-msgstr "(도메인_스냅샷)"
+msgstr "(도메인_순간찍기)"
 
 msgid "(esx execute response)"
 msgstr "(esx 실행 결과)"
@@ -1537,7 +1537,7 @@ msgid "(save cookie)"
 msgstr "(qemu_migration_cookie)"
 
 msgid "(snapshot_tree)"
-msgstr "(스냅샷_트리)"
+msgstr "(순간찍기_나무)"
 
 msgid "(storage_pool_definition)"
 msgstr "(저장소 풀 정의)"
@@ -3147,7 +3147,7 @@ msgid "Cannot parse <HardDisk> 'uuid' attribute"
 msgstr "<HardDisk> 'uuid' 속성을 구문 분석 할 수 없습니다"
 
 msgid "Cannot parse <Machine> 'currentSnapshot' attribute"
-msgstr "<Machine> '현재 스냅샷' 속성을 구문 분석 할 수 없습니다"
+msgstr "<Machine> '현재 순간찍기' 속성을 구문 분석 할 수 없음"
 
 msgid "Cannot parse <Machine> 'lastStateChange' attribute"
 msgstr "<Machine> 'lastStateChange' 속성을 구문 분석 할 수 없습니다"
@@ -3724,7 +3724,7 @@ msgid "Commit aborted"
 msgstr "커밋 중단됨"
 
 msgid "Commit changes from a snapshot down to its backing image."
-msgstr "커밋은 스냅샷으로부터 백업 이미지로 변환됩니다."
+msgstr "커밋은 순간찍기에서 백업 이미지로 변환됩니다."
 
 msgid "Commit complete"
 msgstr "커밋 완료"
@@ -4055,7 +4055,7 @@ msgstr "간단한 매개 변수를 생성할 수 없습니다"
 
 #, c-format
 msgid "Could not create snapshot: %1$s"
-msgstr "스냅샷을 생성할 수 없음: %1$s"
+msgstr "순간찍기를 생성 할 수 없음: %1$s"
 
 msgid "Could not create temporary xml doc"
 msgstr "임시 xml doc를 생성 할 수 없습니다"
@@ -4073,7 +4073,7 @@ msgstr "도메인을 정의할 수 없음: %1$s"
 
 #, c-format
 msgid "Could not delete snapshot '%1$s': %2$s"
-msgstr "스냅샷 '%1$s'을 삭제할 수 없음: %2$s"
+msgstr "순간찍기를 삭제 할 수 없음 '%1$s': %2$s"
 
 #, c-format
 msgid "Could not delete volume: %1$s"
@@ -4197,7 +4197,7 @@ msgstr "'%1$s'에서 디렉토리 구분자를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%1$s'"
-msgstr "내부 이름 '%1$s'인 도메인 스냅샷을 찾을 수 없음"
+msgstr "내부 이름 '%1$s'인 도메인 순간찍기를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find domain with UUID '%1$s'"
@@ -4242,7 +4242,7 @@ msgstr "응답 방법에서 선택자를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find snapshot with name '%1$s'"
-msgstr "이름 '%1$s'라는 스냅샷을 찾을 수 없음"
+msgstr "이름 '%1$s'라는 순간찍기를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find storage pool with name '%1$s'"
@@ -4460,7 +4460,7 @@ msgid "Could not get snapshot id"
 msgstr "순간찍기 id를 가져 올 수 없습니다"
 
 msgid "Could not get snapshot name"
-msgstr "스냅샷 이름을 얻을 수 없음"
+msgstr "순간찍기 이름을 획득 할 수 없음"
 
 msgid "Could not get storage controller bus"
 msgstr "저장소 제어기 버스를 가져 올 수 없습니다"
@@ -4573,7 +4573,7 @@ msgid "Could not lookup pull response items"
 msgstr "가져오기 응답 항목을 검색 할 수 없음"
 
 msgid "Could not lookup root snapshot list"
-msgstr "root 스냅샷 목록을 검색할 수 없음"
+msgstr "root 순간찍기 목록을 조회 할 수 없음"
 
 #, c-format
 msgid "Could not migrate domain, migration task finished with an error: %1$s"
@@ -4816,7 +4816,7 @@ msgstr "가상 스위치를 검색할 수 없습니다"
 
 #, c-format
 msgid "Could not revert to snapshot '%1$s': %2$s"
-msgstr "스냅샷 '%1$s'을 되돌릴 수 없습니다: %2$s"
+msgstr "순간찍기로 되돌릴 수 없음 '%1$s': %2$s"
 
 #, c-format
 msgid ""
@@ -4999,16 +4999,16 @@ msgid "Create a restore point for interfaces settings"
 msgstr "인터페이스 설정에 대한 복원 지점 만들기"
 
 msgid "Create a snapshot (disk and RAM) from XML"
-msgstr "XML에서 스냅샷 (디스크 및 RAM) 생성"
+msgstr "XML에서 순간찍기 (디스크 및 RAM) 생성"
 
 msgid "Create a snapshot (disk and RAM) from arguments"
-msgstr "인수에서 스냅샷 (디스크 및 RAM) 생성"
+msgstr "인수에서 순간찍기(디스크 및 RAM) 생성"
 
 msgid "Create a snapshot from XML"
-msgstr "XML에서 스냅샷 생성"
+msgstr "XML에서 순간찍기 생성"
 
 msgid "Create a snapshot from a set of args"
-msgstr "인수 모음에서 스냅샷 생성"
+msgstr "인수 모음에서 순간찍기 생성"
 
 msgid "Create a vol from an existing volume."
 msgstr "기존 볼륨에서 새 볼륨을 만듭니다."
@@ -5158,7 +5158,7 @@ msgid "Delete a domain checkpoint"
 msgstr "도메인 점검점 삭제"
 
 msgid "Delete a domain snapshot"
-msgstr "도메인 스냅샷 삭제"
+msgstr "도메인 순간찍기 삭제"
 
 msgid "Delete a given network filter binding."
 msgstr "주어진 네트워크 필터를 정의 해제함."
@@ -5413,7 +5413,7 @@ msgstr "디스크가 성공적으로 탈착되었습니다\n"
 
 #, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
-msgstr "디스크 장치 %1$s가 스냅샷을 지원하지 않습니다"
+msgstr "디스크 장치 '%1$s'가 순간찍기를 지원하지 않습니다"
 
 msgid "Disk discard_no_unref is not supported by vz driver."
 msgstr "Disk discard_no_unref는 vz 드라이버에서 지원되지 않습니다."
@@ -5672,7 +5672,7 @@ msgstr ""
 "를 사용하고, pci 장비 주소를 지정하여 제거해야 합니다."
 
 msgid "Domain has no current snapshot"
-msgstr "도메인에 현재 스냅샷이 없음"
+msgstr "도메인은 현재 순간찍기가 없음"
 
 msgid "Domain has no managed save image"
 msgstr "도메인에 관리되는 저장 이미지가 없습니다"
@@ -5753,30 +5753,30 @@ msgstr "도메인에는 적어도 하나의 지정된 디스크를 가져야 합
 
 #, c-format
 msgid "Domain snapshot %1$s children deleted\n"
-msgstr "도메인 스냅샷 %1$s 자식 스냅샷이 삭제됨\n"
+msgstr "도메인 순간찍기 %1$s 자식 순간찍기가 삭제됨\n"
 
 #, c-format
 msgid "Domain snapshot %1$s created"
-msgstr "도메인 스냅샷 %1$s가 생성됨"
+msgstr "도메인 순간찍기 %1$s가 생성됨"
 
 #, c-format
 msgid "Domain snapshot %1$s created from '%2$s'"
-msgstr "도메인 스냅샷 %1$s가 '%2$s'에서 생성됨"
+msgstr "도메인 순간찍기 %1$s가 '%2$s'에서 생성됨"
 
 #, c-format
 msgid "Domain snapshot %1$s deleted\n"
-msgstr "도메인 스냅샷 %1$s이 삭제됨\n"
+msgstr "도메인 순간찍기 %1$s가 삭제됨\n"
 
 #, c-format
 msgid "Domain snapshot %1$s reverted\n"
-msgstr "도메인 스냅샷 %1$s가 복귀되었습니다\n"
+msgstr "도메인 순간찍기 %1$s가 복귀되었습니다\n"
 
 msgid "Domain snapshot not found"
-msgstr "도메인 스냅샷을 찾을 수 없음"
+msgstr "도메인 순간찍기를 찾을 수 없음"
 
 #, c-format
 msgid "Domain snapshot not found: %1$s"
-msgstr "도메인 스냅샷을 찾을 수 없음: %1$s"
+msgstr "도메인 순간찍기를 찾을 수 없음: %1$s"
 
 msgid "Domain title can't contain newlines"
 msgstr "도메인 제목에는 줄 바꿈을 포함할 수 없습니다"
@@ -5828,7 +5828,7 @@ msgid "Dump XML for a domain checkpoint"
 msgstr "도메인 체크포인트에 대한 덤프 XML"
 
 msgid "Dump XML for a domain snapshot"
-msgstr "도메인 스냅샷의 덤프 XML"
+msgstr "도메인 순간찍기를 위해 XML 덤프"
 
 msgid "Dump XML for an ongoing domain block backup job"
 msgstr "진행 중인 도메인 블록 백업 작업에 대한 덤프 XML"
@@ -5919,7 +5919,7 @@ msgid "Edit the domain checkpoint XML for a named checkpoint"
 msgstr "이름이 지정된 점검점의 도메인 점검점 XML 편집"
 
 msgid "Edit the domain snapshot XML for a named snapshot"
-msgstr "이름이 지정된 스냅샷의 도메인 스냅샷 XML 편집"
+msgstr "명명된 순간찍기를 위해 도메인 순간찍기를 편집"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "'scsi_host' 어댑터에 대해 'name' 또는 'parent'를 지정해야 합니다"
@@ -6389,7 +6389,7 @@ msgid "Extract the checkpoint's parent, if any"
 msgstr "만약 존재하는 경우 체크포인트의 부모를 추출합니다"
 
 msgid "Extract the snapshot's parent, if any"
-msgstr "만약 존재하는 경우 스냅샷의 부모를 추출합니다"
+msgstr "만약 존재하는 경우 순간찍기의 부모를 추출합니다"
 
 msgid "FAIL"
 msgstr "실패"
@@ -6844,7 +6844,7 @@ msgstr "slirp 상태 디렉토리 %1$s을 생성하는데 실패했습니다"
 
 #, c-format
 msgid "Failed to create snapshot dir %1$s"
-msgstr "스냅샷 디렉토리 %1$s 성성에 실패"
+msgstr "순간찍기 디렉토리 %1$s 생성에 실패함"
 
 msgid "Failed to create socket"
 msgstr "소켓 생성하기 실패"
@@ -6976,11 +6976,11 @@ msgstr "비밀정보 %1$s 삭제 실패"
 
 #, c-format
 msgid "Failed to delete snapshot %1$s"
-msgstr "스냅샷 %1$s 삭제 실패"
+msgstr "순간찍기 %1$s 삭제에 실패함"
 
 #, c-format
 msgid "Failed to delete snapshot: %1$s"
-msgstr "스냅샷 삭제하기에 실패: %1$s"
+msgstr "순간찍기 삭제에 실패함: %1$s"
 
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
@@ -7328,7 +7328,7 @@ msgstr ""
 "습니다"
 
 msgid "Failed to get snapshot count"
-msgstr "스냅샷 카운트 가져오기 실패"
+msgstr "순간찍기 카운트 획득에 실패함"
 
 msgid "Failed to get storage controller name"
 msgstr "저장소 제어기 이름을 가져오는데 실패함"
@@ -7791,7 +7791,7 @@ msgstr "'%1$s'에서 회전된 색인을 구문 분석하는데 실패함"
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%1$s'"
-msgstr "파일 '%1$s'에서 스냅샷 XML을 구문 분석하는데 실패"
+msgstr "파일 '%1$s'에서 순간찍기 XML을 구문 분석에 실패함"
 
 #, c-format
 msgid "Failed to parse target '%1$s'"
@@ -7925,7 +7925,7 @@ msgstr "비밀 읽기에 실패"
 
 #, c-format
 msgid "Failed to read snapshot file %1$s"
-msgstr "스냅샷 파일 %1$s 읽기에 실패"
+msgstr "순간찍기 파일 %1$s 읽기에 실패함"
 
 #, c-format
 msgid "Failed to read system token '%1$s'"
@@ -8114,7 +8114,7 @@ msgstr "vcpu 상태 비트맵을 검색하는데 실패"
 
 #, c-format
 msgid "Failed to revert snapshot %1$s"
-msgstr "스냅샷 %1$s를 되돌리는데 실패함"
+msgstr "순간찍기 %1$s로 되돌리는데 실패함"
 
 msgid "Failed to rollback network config change transaction"
 msgstr "네트워크 구성 변경 연결을 되돌리는데 실패"
@@ -8179,7 +8179,7 @@ msgid "Failed to send request to init control %1$s"
 msgstr "제어 %1$s 초기화에 대한 요청을 보내지 못했습니다"
 
 msgid "Failed to serialize snapshot"
-msgstr "스냅샷 직렬화에 실패"
+msgstr "순간찍기 직렬화에 실패함"
 
 #, c-format
 msgid "Failed to set %1$s for %2$s: value too large"
@@ -8408,7 +8408,7 @@ msgstr "%1$s에 장치 %2$s를 심볼릭 링크하는데 실패"
 
 #, c-format
 msgid "Failed to take snapshot: %1$s"
-msgstr "스냅샷 %1$s 가져오는데 실패"
+msgstr "순간찍기를 가져오는데 실패함: %1$s"
 
 #, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
@@ -8934,7 +8934,7 @@ msgstr ""
 "    virsh # perf <domain>"
 
 msgid "Get or set the current snapshot"
-msgstr "현재 스냅샷 설정"
+msgstr "현재 순간찍기를 가져오거나 설정합니다"
 
 msgid "Get persistent config failed"
 msgstr "영구 구성 가져오기 실패"
@@ -8958,7 +8958,7 @@ msgid "Get the name of the parent of a checkpoint"
 msgstr "점검 지점의 상위 이름을 가져옵니다"
 
 msgid "Get the name of the parent of a snapshot"
-msgstr "스냅샷의 상위 이름을 가져오기"
+msgstr "순간찍기의 상위 이름을 가져오기"
 
 msgid "Get the summary of block devices for a domain."
 msgstr "도메인의 장치 블럭 상태 보기."
@@ -9861,11 +9861,11 @@ msgid "Invalid domain checkpoint: %1$s"
 msgstr "잘못된 도메인 체크포인트: %1$s"
 
 msgid "Invalid domain snapshot"
-msgstr "잘못된 도메인 스냅샷"
+msgstr "잘못된 도메인 순간찍기"
 
 #, c-format
 msgid "Invalid domain snapshot: %1$s"
-msgstr "잘못된 도메인 스냅샷: %1$s"
+msgstr "잘못된 도메인 순간찍기: %1$s"
 
 #, c-format
 msgid "Invalid domain state %1$s"
@@ -10240,7 +10240,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
-msgstr "도메인 스냅샷 XML에서 잘못된 상태 '%1$s'"
+msgstr "도메인 순간찍기 XML에서 잘못된 상태 '%1$s'"
 
 msgid "Invalid state for this operation"
 msgstr "이 작업의 잘못된 상태"
@@ -10266,7 +10266,7 @@ msgstr "잘못된 대상"
 
 #, c-format
 msgid "Invalid target domain state '%1$s'. Refusing snapshot reversion"
-msgstr "대상 도메인 상태 '%1$s'이(가) 잘못되었습니다. 스냅샷 되돌리기 거부"
+msgstr "대상 도메인 상태 '%1$s'가 잘못되었습니다. 순간찍기 되돌리기 거부 중"
 
 msgid "Invalid target model for serial device"
 msgstr "직렬 장치에 대한 잘못된 대상 모델"
@@ -10570,7 +10570,7 @@ msgid "List event types, or wait for storage pool events to occur"
 msgstr "이벤트 유형을 나열하거나 저장소 풀 이벤트가 발생 할 때까지 대기합니다"
 
 msgid "List snapshots for a domain"
-msgstr "도메인의 스냅샷 목록"
+msgstr "도메인을 위한 순간찍기 목록"
 
 msgid "Listen for QEMU Monitor Events"
 msgstr "QEMU 모니터 이벤트 수신 대기"
@@ -12043,7 +12043,7 @@ msgid "No URI scheme specified: %1$s"
 msgstr "지정된 URI 체계 없음: %1$s"
 
 msgid "No access manager registered"
-msgstr "등록된 액세스 관리자가 없습니다"
+msgstr "등록된 접근 관리자가 없습니다"
 
 #, c-format
 msgid "No active block job '%1$s'"
@@ -13088,7 +13088,7 @@ msgstr "경로 '%1$s'는 초과 항목에 종료합니다"
 
 #, c-format
 msgid "Path '%1$s' is not accessible"
-msgstr "경로 '%1$s'에 액세스할 수 없습니다"
+msgstr "경로 '%1$s'는 접근 할 수 없습니다"
 
 #, c-format
 msgid "Path '%1$s' must be a block device"
@@ -13153,7 +13153,7 @@ msgstr "도메인 모의실험 쓰레드를 호스트 물리적 CPU에 고정합
 
 #, c-format
 msgid "Plugin %1$s not accessible"
-msgstr "플러그인 %1$s에 액세스할 수 없습니다"
+msgstr "플러그인 %1$s는 접근 할 수 없습니다"
 
 #, c-format
 msgid "Policy kit denied action %1$s from <anonymous>"
@@ -13518,7 +13518,7 @@ msgstr "단순 I/O는 이와 같은 기술환경에서 지원되지 않습니다
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
-msgstr "읽기/쓰기, 독점 액세스, 디스크가 있지만 임대가 지정되지 않았습니다"
+msgstr "읽기/쓰기, 베타적 접근, 디스크가 있지만, 임대가 지정되지 않았습니다"
 
 msgid "Reading CPUID is not supported on this platform"
 msgstr "CPUID 읽기는 이와 같은 기술환경에서 지원되지 않습니다"
@@ -13551,13 +13551,13 @@ msgstr "주어진 풀을 새로 고침."
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
-msgstr "%1$d개의 스냅샷이 있는 동안 정의 해제를 거부합니다"
+msgstr "%1$d 순간찍기가 존재하는 동안 정의 해제를 거부 중"
 
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "도메인 관리 저장 이미지가 있는 동안 정의 해제 거부"
 
 msgid "Refusing to undefine while snapshots exist"
-msgstr "스냅샷이 있는 동안 정의 취소 거부"
+msgstr "순간찍기가 존재하는 동안 정의 취소 거부 중"
 
 #, c-format
 msgid "Regular expression '%1$s' must have exactly 1 match group, not %2$d"
@@ -13765,7 +13765,7 @@ msgid "Returns basic information about a checkpoint."
 msgstr "체크포인트에 대한 기본 정보를 반환합니다."
 
 msgid "Returns basic information about a snapshot."
-msgstr "스냅샷에 대한 기본 정보를 반환합니다."
+msgstr "순간찍기에 대한 기본 정보를 반환합니다."
 
 msgid "Returns basic information about the domain IOThreads."
 msgstr "도메인 IOT쓰레드에 관한 기본 정보 보기로 반환됩니다."
@@ -13843,10 +13843,10 @@ msgid "Returns the number of virtual CPUs used by the domain."
 msgstr "도메인에서 사용하는 가상 CPU 수를 반환합니다."
 
 msgid "Revert a domain to a snapshot"
-msgstr "도메인을 스냅샷으로 되돌리기"
+msgstr "도메인을 순간찍기로 되돌리기"
 
 msgid "Revert domain to snapshot"
-msgstr "도메인을 스냅샷으로 되돌리기"
+msgstr "도메인을 순간찍기로 되돌리기"
 
 #, c-format
 msgid "Route address '%1$s' conflicts with IP address for '%2$s'"
@@ -13942,7 +13942,7 @@ msgstr "SCSI 장치 %1$s가 이미 '%2$s'와 같은 다른 데몬(들)에 의해
 
 #, c-format
 msgid "SCSI device '%1$s': could not access %2$s"
-msgstr "SCSI 장치 '%1$s': %2$s에 액세스할 수 없습니다"
+msgstr "SCSI 장치 '%1$s': %2$s에 접근 할 수 없습니다"
 
 #, c-format
 msgid "SCSI disk index (parsed from '%1$s') is too large"
@@ -14484,7 +14484,7 @@ msgid "Skipping is not supported with this stream"
 msgstr "이 스트림에서는 건너뛰기가 지원되지 않습니다"
 
 msgid "Snapshot"
-msgstr "스냅샷"
+msgstr "순간찍기"
 
 #, c-format
 msgid "Snapshot %1$s XML configuration not changed.\n"
@@ -14492,11 +14492,11 @@ msgstr "도메인 %1$s XML 설정이 변경되지 않았습니다.\n"
 
 #, c-format
 msgid "Snapshot %1$s cloned to %2$s.\n"
-msgstr "스냅샷 %1$s이 %2$s로 복제되었습니다.\n"
+msgstr "순간찍기 %1$s가 %2$s로 복제되었습니다.\n"
 
 #, c-format
 msgid "Snapshot %1$s edited.\n"
-msgstr "스냅샷 %1$s이 편집되었습니다.\n"
+msgstr "순간찍기 %1$s가 편집되었습니다.\n"
 
 #, c-format
 msgid "Snapshot %1$s set as current"
@@ -14504,32 +14504,32 @@ msgstr "순간찍기 %1$s가 현재로 설정되었습니다"
 
 #, c-format
 msgid "Snapshot '%1$s' already exists"
-msgstr "스냅샷 '%1$s'이 이미 존재합니다"
+msgstr "순간찍기 '%1$s'가 이미 존재합니다"
 
 msgid "Snapshot Delete"
-msgstr "스냅샷 삭제"
+msgstr "순간찍기 삭제"
 
 msgid "Snapshot Dump XML"
-msgstr "스냅샷 덤프 XML"
+msgstr "순간찍기 XML 덤프"
 
 msgid "Snapshot List"
-msgstr "스냅샷 목록"
+msgstr "순간찍기 목록"
 
 msgid "Snapshot delete"
-msgstr "스냅샷 삭제"
+msgstr "순간찍기 삭제"
 
 msgid "Snapshot is Null"
-msgstr "스냅샷이 없습니다"
+msgstr "순간찍기가 없습니다"
 
 msgid "Snapshot revert"
-msgstr "스냅샷 되돌리기"
+msgstr "순간찍기 되돌리기"
 
 msgid "Snapshots are not yet supported with 'pool' volumes"
-msgstr "스냅샷은 아직 '풀' 볼륨에서 지원되지 않습니다"
+msgstr "순간찍기는 아직 '풀' 볼륨에서 지원되지 않습니다"
 
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
-msgstr "%1$s 도메인에 대한 스냅샷의 관계가 일치하지 않습니다"
+msgstr "순간찍기는 도메인 %1$s를 위한 관계가 일치하지 않습니다"
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
@@ -15246,7 +15246,7 @@ msgid "Target disk %1$s does not match source %2$s"
 msgstr "대상 디스크 %1$s가 소스 %2$s와 일치하지 않음"
 
 msgid "Target disk access mode does not match source"
-msgstr "대상 디스크 액세스 모드가 소스와 일치하지 않음"
+msgstr "대상 디스크 접근 방식은 원천과 일치하지 않습니다"
 
 #, c-format
 msgid "Target disk bus %1$s does not match source %2$s"
@@ -15499,7 +15499,7 @@ msgid "Target domain watchdog device count %1$zu does not match source %2$zu"
 msgstr "대상 도메인 와치독 장치 카운트 %1$zu는 원천 %2$zu와 일치하지 않습니다"
 
 msgid "Target filesystem access mode does not match source"
-msgstr "대상 파일 시스템 액세스 모드가 소스와 일치하지 않음"
+msgstr "대상 파일 시스템 접근 방식이 원천과 일치하지 않습니다"
 
 #, c-format
 msgid "Target filesystem guest target %1$s does not match source %2$s"
@@ -15991,7 +15991,7 @@ msgstr ""
 "ich9-intel-hda 오디어 제어기는 이 QEMU 바이너리에서는 지원되지 않습니다"
 
 msgid "The machine has no snapshot and it should have it"
-msgstr "머신에는 현재 스냅샷이 없으며, 스냅샷이 필요합니다"
+msgstr "장비에는 현재 순간찍기가 없고 앞으로 필요합니다"
 
 msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
 msgstr "<clock offset='absolute'>를 위한 최대 'start' 값은 253402300799 입니다"
@@ -16131,7 +16131,7 @@ msgid "This host is not managed by a vCenter"
 msgstr "이 호스트는 vCenter에 의해 관리되지 않습니다"
 
 msgid "This snapshot has children, please delete these snapshots before"
-msgstr "이 스냅샷에는 하위 항목이 있습니다. 미리 이 스냅샷을 삭제하십시오"
+msgstr "이 순간찍기는 하위 항목이 있고, 미리 이들 순간찍기를 삭제하세요"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "이 유형의 디스크는 핫 언플러그할 수 없습니다"
@@ -16314,7 +16314,7 @@ msgstr "제한 '%1$d'에 너무 많은 서버 '%2$d'를 갖고 있습니다"
 
 #, c-format
 msgid "Too many snapshots claiming to be current for domain %1$s"
-msgstr "도메인 %1$s에 현재 상태에서 너무 많은 스냅샷이 요청됨"
+msgstr "도메인 %1$s를 위해 현재 상태에서 너무 많은 순간찍기가 요청됨"
 
 #, c-format
 msgid "Too many storage_pools '%1$d' for limit '%2$d'"
@@ -16620,18 +16620,18 @@ msgid "Unable to add storage controller"
 msgstr "저장소 제어기를 추가 할 수 없습니다"
 
 msgid "Unable to add the snapshot hardware"
-msgstr "스냅샷 하드웨어를 추가 할 수 없습니다"
+msgstr "순간찍기 하드웨어를 추가 할 수 없음"
 
 msgid "Unable to add the snapshot storageController"
-msgstr "스냅샷 storageController를 추가할 수 없습니다"
+msgstr "순간찍기 저장장치 제어기를 추가 할 수 없습니다"
 
 msgid "Unable to add the snapshot to the machine description"
-msgstr "시스템 설명에 스냅샷을 추가할 수 없습니다"
+msgstr "장비 설명에 순간찍기를 추가 할 수 없음"
 
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
-msgstr "이 스냅샷을 추가할 수 없습니다; 이미 컴퓨터에 연결된 스냅샷이 있습니다"
+msgstr "이 순간찍기를 추가 할 수 없으며, 이미 장비에 연결된 순간찍기가 있습니다"
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "이 기술환경에서 fdb 항목을 추가/삭제 할 수 없습니다"
@@ -17173,11 +17173,11 @@ msgstr "uuid %1$s를 갖는 하드디스크를 찾을 수 없습니다"
 
 #, c-format
 msgid "Unable to find the snapshot %1$s"
-msgstr "스냅샷 %1$s 찾을 수 없습니다"
+msgstr "순간찍기 %1$s를 찾을 수 없음"
 
 #, c-format
 msgid "Unable to find the snapshot with name %1$s"
-msgstr "이름 '%1$s'에 스냅샷을 찾을 수 없습니다"
+msgstr "이름 '%1$s'인 순간찍기를 찾을 수 없음"
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "IPv6에만 강제로 바인딩 할 수 없음"
@@ -17261,7 +17261,7 @@ msgid "Unable to get XATTR %1$s on %2$s"
 msgstr "%1$s에서 XATTR %2$s를 가져 올 수 없습니다"
 
 msgid "Unable to get XML Desc of snapshot"
-msgstr "스냅샷의 XML 설명을 가져올 수 없습니다"
+msgstr "순간찍기의 XML 설명을 가져올 수 없음"
 
 msgid "Unable to get a virDomainSnapshotDef *"
 msgstr "virDomainSnapshotDef를 가져올 수 없습니다"
@@ -17460,7 +17460,7 @@ msgid "Unable to get session bus connection: %1$s"
 msgstr "세션 버스 연결을 가져올 수 없음: %1$s"
 
 msgid "Unable to get snapshot content"
-msgstr "스냅샷 콘텐츠를 가져올 수 없습니다"
+msgstr "순간찍기 내용을 가져올 수 없음"
 
 msgid "Unable to get sysfs info on this platform"
 msgstr "이 기술환경에서 sysfs 정보를 가져올 수 없습니다"
@@ -17482,7 +17482,7 @@ msgid "Unable to get the read write medium id"
 msgstr "읽기 쓰기 매체 ID를 가져올 수 없습니다"
 
 msgid "Unable to get the snapshot to remove"
-msgstr "제거에 스냅샷을 가져 올 수 없습니다"
+msgstr "제거하려는 순간찍기를 가져 올 수 없음"
 
 msgid "Unable to get virtual function index on this platform"
 msgstr "이 기술환경에서 가상 기능 색인을 가져올 수 없습니다"
@@ -17565,7 +17565,7 @@ msgid "Unable to know if disk is in media registry"
 msgstr "디스크가 미디어 레지스트리에 있는지 알 수 없음"
 
 msgid "Unable to know if the snapshot is the current snapshot"
-msgstr "스냅샷이 현재 스냅샷인지 알 수 없음"
+msgstr "순간찍기가 현재 순간찍기인지 알 수 없음"
 
 #, c-format
 msgid "Unable to label files under %1$s"
@@ -18014,11 +18014,11 @@ msgstr "미디어 레지스트리에서 하드 디스크 %1$s를 제거 할 수 
 
 #, c-format
 msgid "Unable to remove metadata of %1$d snapshots"
-msgstr "%1$d 스냅샷의 메타 자료를 제거 할 수 없습니다"
+msgstr "%1$d 순간찍기의 메타자료를 제거 할 수 없음"
 
 #, c-format
 msgid "Unable to remove snapshot %1$s"
-msgstr "스냅샷 %1$s를 제거 할 수 없습니다"
+msgstr "순간찍기 %1$s를 제거 할 수 없음"
 
 #, c-format
 msgid "Unable to remove stale socket path: %1$s"
@@ -18095,7 +18095,7 @@ msgstr "%1$llu 사이에서 실행 할 수 없음"
 
 #, c-format
 msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
-msgstr ""
+msgstr "연결장치를 위해 OVS 마스터를 가져오는 명령을 실행 할 수 없습니다 %1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
@@ -18104,7 +18104,8 @@ msgstr ""
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
-msgstr ""
+msgstr "연결장치를 위한 OVS 포트 자료를 가져오는 명령을 실행 할 수 없습니다 %1$s: "
+"%2$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
@@ -18113,7 +18114,8 @@ msgstr ""
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
-msgstr ""
+msgstr "연결장치를 위한 OVS 포트 자료를 설정하는데 명령을 실행 할 수 없습니다 %1$s: "
+"%2$s"
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "GDBus 이니셜라이저를 한 번 실행할 수 없습니다"
@@ -18134,7 +18136,7 @@ msgid "Unable to save net device config on this platform"
 msgstr "이 기술환경에서 넷 장치 구성을 저장 할 수 없습니다"
 
 msgid "Unable to save new snapshot xml file"
-msgstr "새로운 스냅샷 xml 파일을 저장 할 수 없습니다"
+msgstr "신규 순간찍기 xml 파일을 저장 할 수 없음"
 
 msgid "Unable to save socket state when SASL session is active"
 msgstr "SASL 세션이 활성화된 상태일 때 소켓 상태를 저장할 수 없습니다"
@@ -18324,11 +18326,11 @@ msgstr "직접 인터페이스에서 포트 프로필을 설정할 수 없음"
 
 #, c-format
 msgid "Unable to set qos configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "포트에서 qos 구성을 설정 할 수 없습니다 %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set queue configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "포트에서 대기열 구성을 설정 할 수 없습니다 %1$s: %2$s"
 
 msgid "Unable to set socket reuse addr flag"
 msgstr "소켓 재사용 addr 플래그를 설정할 수 없습니다"
@@ -18345,7 +18347,7 @@ msgstr "스레드 로컬 변수를 설정할 수 없습니다"
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "포트에서 vlan 구성을 설정 할 수 없습니다 %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -19636,7 +19638,7 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO 장치 할당은 현재 이 시스템에서 지원되지 않습니다"
 
 msgid "VM disk source and snapshot disk source are not the same"
-msgstr "VM 디스크 원천과 스냅샷 디스크 원천은 동일하지 않습니다"
+msgstr "VM 디스크 원천과 순간찍기 디스크 원천은 동일하지 않습니다"
 
 msgid "VM is already active"
 msgstr "VM이 이미 실행중입니다"
@@ -19920,7 +19922,7 @@ msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr "Xen은 'xenpv', 'xenpvh' 및 'xenfv' 시스템만 지원합니다"
 
 msgid "You are trying to remove a snapshot which does not exists"
-msgstr "존재하지 않는 스냅샷을 제거하려고 합니다"
+msgstr "존재하지 않는 순간찍기를 제거하려고 합니다"
 
 msgid "You must map the root user of container"
 msgstr "컨테이너 root 사용자를 매핑해야 합니다"
@@ -19985,7 +19987,7 @@ msgid "a redefined checkpoint must have a name"
 msgstr "재 정의된 점검점은 이름을 지정해야 합니다"
 
 msgid "a redefined snapshot must have a name"
-msgstr "재 지정된 스냅샷은 이름을 지정해야 합니다"
+msgstr "재-지정된 순간찍기는 이름을 가져야 합니다"
 
 #, c-format
 msgid "a secret with UUID %1$s already defined for use with %2$s"
@@ -20014,7 +20016,7 @@ msgid "access denied"
 msgstr "접근 거부됨"
 
 msgid "access denied by policy"
-msgstr "정책에 의해 거부된 액세스"
+msgstr "정책에 의해 거부된 접근"
 
 #, c-format
 msgid "access denied: %1$s"
@@ -20031,9 +20033,8 @@ msgstr "활성 커밋이 요청되었지만 '%1$s'이(가) 활성 상태가 아�
 msgid ""
 "active qemu domains require external disk snapshots; disk %1$s requested "
 "internal"
-msgstr ""
-"활성 qemu 도메인에는 외부 디스크 스냅샷이 필요합니다. 디스크 %1$s가 내부에 요"
-"청되었습니다"
+msgstr "활성 qemu 도메인에는 외부 디스크 순간찍기가 필요합니다; 디스크 %1$s가 내부에 "
+"요청되었습니다"
 
 msgid "adapter name to be used for underlying storage"
 msgstr "기본 저장소에 사용할 어댑터 이름"
@@ -20061,7 +20062,7 @@ msgid "add a column showing parent checkpoint"
 msgstr "상위 점검지점을 보여주는데 열 추가"
 
 msgid "add a column showing parent snapshot"
-msgstr "상위 스냅샷을 표시하는 열 추가"
+msgstr "상위 순간찍기를 표시하는 열 추가"
 
 msgid "add an IOThread to the guest domain"
 msgstr "게스트 도메인에 IO쓰레드 추가"
@@ -20152,7 +20153,7 @@ msgid "allow cloning to new name"
 msgstr "새 이름으로 복제하는 것을 허용"
 
 msgid "allow renaming an existing snapshot"
-msgstr "기존 스냅샷 이름을 변경하는 것을 허용"
+msgstr "기존 순간찍기 이름 변경을 허용"
 
 msgid "allow the resize to shrink the volume"
 msgstr "크기 조정으로 볼륨 축소 허용하십시오"
@@ -20167,7 +20168,7 @@ msgid "also print reason for the state"
 msgstr "상태에 대한 판단을 인쇄하십시오"
 
 msgid "also set edited snapshot as current"
-msgstr "또한 편집된 스냅샷을 현재로 설정합니다"
+msgstr "또한 편집된 순간찍기를 현재로 설정합니다"
 
 msgid "alter live configuration of running domain"
 msgstr "실행 중인 도메인의 라이브 구성 변경"
@@ -20617,7 +20618,7 @@ msgstr "블록 I/O 조절은 디스크 '%1$s'를 위해 지원되지 않습니�
 
 #, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
-msgstr "디스크 '%1$s' 스냅샷을 삭제하는 동안 블록 커밋 실패: '%2$s'"
+msgstr "블록 커밋은 디스크 '%1$s' 순간찍기를 삭제하는 동안 실패함: '%2$s'"
 
 msgid "block copy still active"
 msgstr "블럭 복사는 여전히 활성화됨"
@@ -20631,7 +20632,7 @@ msgstr "블럭 장치"
 
 #, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
-msgstr "블럭 장치 스냅샷 대상 '%1$s'가 존재하지 않습니다"
+msgstr "블록 장치 순간찍기 대상 '%1$s'가 존재하지 않습니다"
 
 msgid "block info is not supported for FD passed disk image"
 msgstr "블럭 정보는 FD 전달된 디스크 이미지를 지원하지 않습니다"
@@ -20930,7 +20931,7 @@ msgid "can't deflatten colliding key '%1$s'"
 msgstr "충돌하는 키 '%1$s'을(를) 축소할 수 없습니다"
 
 msgid "can't download volume, all existing snapshots will be lost"
-msgstr "볼륨을 내려 받을 수 없으며, 모든 기존 스냅샷이 손실됩니다"
+msgstr "볼륨을 내려 받을 수 없으며, 모든 기존 순간찍기가 손실됩니다"
 
 msgid "can't find created snapshot"
 msgstr "충돌하는 키 '%s'을(를) 축소할 수 없습니다"
@@ -20948,7 +20949,7 @@ msgstr "상대적 지지 관계를 유지할 수 없음"
 
 #, c-format
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
-msgstr "디스크 '%1$s'의 비활성 스냅샷을 조작할 수 없습니다"
+msgstr "디스크 '%1$s'의 비활성 순간찍기를 조작 할 수 없음"
 
 #, c-format
 msgid "can't open session to the domain with id %1$d"
@@ -21009,7 +21010,7 @@ msgid "can't update unrecognized section of network"
 msgstr "인식 할 수 없는 네트워크 부분을 최신화 할 수 없습니다"
 
 msgid "can't upload volume, all existing snapshots will be lost"
-msgstr "볼륨을 업로드할 수 없습니다. 모든 기존 스냅샷이 손실됩니다"
+msgstr "볼륨을 올릴 수 없으며, 모든 기존 순간찍기가 손실됩니다"
 
 msgid "canceled"
 msgstr "취소"
@@ -21119,13 +21120,13 @@ msgstr "nvram을 유지하고 지울 수 없습니다"
 
 #, c-format
 msgid "cannot change between disk only and full system in snapshot %1$s"
-msgstr "스냅샷 %1$s에서 디스크 전용과 전체 시스템 사이에서 변경 할 수 없습니다"
+msgstr "순간찍기 %1$s에서 디스크 전용 및 전체 시스템 사이에서 변경 할 수 없습니다"
 
 #, c-format
 msgid ""
 "cannot change between online and offline snapshot state in snapshot %1$s"
-msgstr ""
-"스냅샷 %1$s에서 온라인과 오프라인 스냅샷 상태 사이에서는 변경 할 수 없습니다"
+msgstr "순간찍기 %1$s에서 온라인 및 오프라인 순간찍기 상태 사이에서는 변경 할 수 "
+"없습니다"
 
 #, c-format
 msgid "cannot change config of '%1$s' network interface type"
@@ -21289,7 +21290,7 @@ msgid "cannot create checkpoint for inactive domain"
 msgstr "비활성 도메인에 대한 체크포인트를 생성할 수 없습니다"
 
 msgid "cannot create checkpoint while snapshot exists"
-msgstr "스냅샷이 있는 동안에는 체크포인트를 생성할 수 없습니다"
+msgstr "순간찍기가 있는 동안에는 점검점을 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot create config directory %1$s"
@@ -21327,10 +21328,10 @@ msgstr "터널링된 이전을 위한 파이프를 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot create snapshot directory '%1$s'"
-msgstr "스냅샷 디렉토리 '%1$s'를 생성 할 수 없음"
+msgstr "순간찍기 디렉토리 '%1$s'를 생성 할 수 없음"
 
 msgid "cannot create snapshot while checkpoint exists"
-msgstr "체크포인트가 존재하는 동안 스냅샷을 생성할 수 없습니다"
+msgstr "점검점이 존재하는 동안 순간찍기를 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot create state directory '%1$s'"
@@ -21347,10 +21348,10 @@ msgid "cannot delete checkpoint for inactive domain"
 msgstr "비활성 도메인에 대한 체크포인트를 삭제할 수 없습니다"
 
 msgid "cannot delete domain snapshot for running domain"
-msgstr "동작 중인 도메인에 도메인 스냅샷을 제거 할 수 없습니다"
+msgstr "동작 중인 도메인에 도메인 순간찍기를 제거 할 수 없습니다"
 
 msgid "cannot delete external snapshots when there is another active block job"
-msgstr "다른 활성 블록 작업이 있을 때 외부 스냅샷을 삭제 할 수 없습니다"
+msgstr "다른 활성 블록 작업이 있을 때 외부 순간찍기를 삭제 할 수 없습니다"
 
 #, c-format
 msgid "cannot delete inactive domain with %1$d checkpoints"
@@ -21358,13 +21359,13 @@ msgstr "%1$d 체크포인트가 있는 비활성 도메인을 삭제할 수 없�
 
 #, c-format
 msgid "cannot delete inactive domain with %1$d snapshots"
-msgstr "%1$d 스냅샷와 함께 비활성화 도메인을 삭제 할 수 있습니다"
+msgstr "%1$d 순간찍기와 비활성화 도메인을 삭제 할 수 있습니다"
 
 msgid "cannot delete metadata of a snapshot with children"
-msgstr "하위 항목이 있는 스냅샷의 메타데이터를 삭제할 수 없습니다"
+msgstr "하위 항목이 있는 순간찍기의 메타자료를 삭제 할 수 없습니다"
 
 msgid "cannot delete snapshots of running domain"
-msgstr "동작 중인 도메인의 스냅샷을 제거 할 수 없습니다"
+msgstr "동작 중인 도메인의 순간찍기를 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot detect host CPU model for %1$s architecture"
@@ -21434,7 +21435,7 @@ msgid "cannot extract resource nodes"
 msgstr "리소스 노드를 추출할 수 없음"
 
 msgid "cannot extract snapshot nodes"
-msgstr "스냅샷 노드를 추출할 수 없습니다"
+msgstr "순간찍기 노드를 추출 할 수 없습니다"
 
 msgid "cannot extract vcpusched nodes"
 msgstr "vcpusched 노드를 추출할 수 없습니다"
@@ -21558,19 +21559,19 @@ msgstr "도메인 %1$s를 위해 dac 사용자와 그룹 id를 생성 할 수 �
 #, c-format
 msgid ""
 "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
-msgstr "'%1$s' 장치에 디스크 '%2$s'의 외부 스냅샷 이름을 생성 할 수 없습니다"
+msgstr "디스크 '%1$s'('%2$s' 장치에서)를 위해 외부 순간찍기 이름을 생성 할 수 "
+"없습니다"
 
 #, c-format
 msgid "cannot generate external snapshot name for disk '%1$s' without source"
-msgstr "원천 없는 디스크 '%1$s'에 외부 스냅샷 이름을 생성 할 수 없습니다"
+msgstr "원천 없는 디스크 '%1$s'를 위해 외부 순간찍기 이름을 생성 할 수 없습니다"
 
 #, c-format
 msgid ""
 "cannot generate external snapshot name for disk '%1$s': collision with disk "
 "'%2$s'"
-msgstr ""
-"디스크 '%1$s'를 위해 외부 스냅샷 이름을 생성 할 수 없습니다: 디스크 '%2$s'와 "
-"충돌"
+msgstr "디스크 '%1$s'를 위해 외부 순간찍기 이름을 생성 할 수 없습니다: 디스크 '%2$"
+"s'와 충돌"
 
 #, c-format
 msgid "cannot get CPU affinity of process %1$d"
@@ -21635,7 +21636,7 @@ msgid "cannot get settings file path"
 msgstr "설정 파일 경로를 가져올 수 없습니다"
 
 msgid "cannot get snapshot ids"
-msgstr "스냅샷 ids를 가져 올 수 없습니다"
+msgstr "순간찍기 ids를 가져 올 수 없습니다"
 
 msgid "cannot get the host uuid"
 msgstr "호스트 uuid를 가져 올 수 없습니다"
@@ -21650,10 +21651,10 @@ msgid "cannot get vcpupin for transient domain"
 msgstr "임시 도메인에 대한 vcpupin을 가져올 수 없습니다"
 
 msgid "cannot halt after snapshot of transient domain"
-msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다"
+msgstr "임시 도메인의 순간찍기 이후에는 중지 할 수 없습니다"
 
 msgid "cannot halt after transient domain snapshot"
-msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다"
+msgstr "임시 도메인 순간찍기 이후에는 중지 할 수 없습니다"
 
 #, c-format
 msgid ""
@@ -21764,7 +21765,7 @@ msgstr "<interface tyoe='%1$s'>인 도메인을 이전 할 수 없습니다"
 
 #, c-format
 msgid "cannot migrate domain with %1$d snapshots"
-msgstr "%1$d 스냅샷와 함께 도메인을 이전 할 수 없습니다"
+msgstr "%1$d 순간찍기와 함께 도메인을 이전 할 수 없습니다"
 
 msgid "cannot migrate domain with I/O error"
 msgstr "입출력(I/O) 오류가 있는 도메인을 이전 할 수 없습니다"
@@ -22213,13 +22214,13 @@ msgstr ""
 "없습니다"
 
 msgid "cannot restore domain snapshot for running domain"
-msgstr "동작 중인 도메인에 도메인 스냅샷을 복구 할 수 없습니다"
+msgstr "동작 중인 도메인을 위해 도메인 순간찍기를 복구 할 수 없습니다"
 
 msgid "cannot retrieve vcpu information for inactive domain"
 msgstr "비활성 도메인에 대한 vcpu 정보를 검색할 수 없습니다"
 
 msgid "cannot revert snapshot of running domain"
-msgstr "동작 중인 도메인의 스냅샷을 되돌릴 수 없습니다"
+msgstr "동작 중인 도메인의 순간찍기를 되돌릴 수 없습니다"
 
 #, c-format
 msgid "cannot save file '%1$s'"
@@ -22914,7 +22915,7 @@ msgid "configuration potentially modified by hook script"
 msgstr "후크 스크립트에 의해 잠재적으로 수정된 구성"
 
 msgid "configuring disks is not supported for vz snapshots"
-msgstr "vz 스냅샷에는 디스크 구성이 지원되지 않습니다"
+msgstr "구성 중인 디스크는 vz 순간찍기가 지원되지 않습니다"
 
 msgid "configuring memory location is not supported"
 msgstr "메모리 위치 구성은 지원되지 않습니다"
@@ -23101,7 +23102,7 @@ msgid "could not define a domain"
 msgstr "도메인을 정의 할 수 없습니다"
 
 msgid "could not delete snapshot"
-msgstr "스냅샷을 삭제 할 수 없습니다"
+msgstr "순간찍기를 삭제 할 수 없습니다"
 
 msgid "could not delete the domain"
 msgstr "도메인을 삭제 할 수 없습니다"
@@ -23158,25 +23159,25 @@ msgid "could not get VM definition"
 msgstr "VM 정의를 가져 올 수 없습니다"
 
 msgid "could not get children snapshots"
-msgstr "스냅샷을 가져올 수 없습니다"
+msgstr "하위 순간찍기를 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get creation time of snapshot %1$s"
-msgstr "스냅샷 %1$s의 생성 시간을 가져올 수 없습니다"
+msgstr "순간찍기 %1$s의 생성 시간을 가져올 수 없습니다"
 
 msgid "could not get current snapshot"
-msgstr "현재 스냅샷을 가져올 수 없습니다"
+msgstr "현재 순간찍기를 가져올 수 없습니다"
 
 msgid "could not get current snapshot name"
-msgstr "현재 스냅샷 이름을 가져올 수 없습니다"
+msgstr "현재 순간찍기 이름을 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get current snapshot of domain %1$s"
-msgstr "%1$s 도메인의 현재 스냅샷을 가져올 수 없습니다"
+msgstr "도메인 %1$s의 현재 순간찍기를 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get description of snapshot %1$s"
-msgstr "스냅샷 %1$s의 설명자를 가져 올 수 없습니다"
+msgstr "순간찍기 %1$s의 설명을 가져 올 수 없습니다"
 
 msgid "could not get domain UUID"
 msgstr "도메인 UUID를 가져 올 수 없습니다"
@@ -23199,7 +23200,7 @@ msgstr "기계를 얻을 수 없습니다"
 
 #, c-format
 msgid "could not get name of parent of snapshot %1$s"
-msgstr "스냅샷 %1$s의 상위 항목 이름을 가져올 수 없습니다"
+msgstr "순간찍기 %1$s의 상위 항목 이름을 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get number of volumes in the pool: %1$s, rc=%2$08x"
@@ -23207,11 +23208,11 @@ msgstr "풀에서 볼륨 수를 가져올 수 없습니다. %1$s, rc=%2$08x"
 
 #, c-format
 msgid "could not get online state of snapshot %1$s"
-msgstr "스냅샷 %1$s의 온라인 상태를 가져올 수 없습니다"
+msgstr "순간찍기 %1$s의 온라인 상태를 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get parent of snapshot %1$s"
-msgstr "스냅샷 %1$s의 상위 항목을 가져올 수 없습니다"
+msgstr "순간찍기 %1$s의 상위 항목을 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get preferred machine for %1$s type=%2$s"
@@ -23219,23 +23220,23 @@ msgstr "%1$s 유형=%2$s에 대한 기본 시스템을 가져올 수 없습니�
 
 #, c-format
 msgid "could not get root snapshot for domain %1$s"
-msgstr "도메인 %1$s에 root 스냅샷을 가져 올 수 없습니다"
+msgstr "도메인 %1$s를 위해 root 순간찍기를 가져 올 수 없습니다"
 
 msgid "could not get snapshot UUID"
-msgstr "스냅샷 UUID를 가져 올 수 없음"
+msgstr "순간찍기 UUID를 가져 올 수 없음"
 
 msgid "could not get snapshot children"
-msgstr "스냅샷 자식을 가져올 수 없습니다"
+msgstr "순간찍기 하위 항목을 가져올 수 없습니다"
 
 #, c-format
 msgid "could not get snapshot count for domain %1$s"
-msgstr "도메인 %1$s에 대한 스냅샷 수를 가져올 수 없습니다"
+msgstr "도메인 %1$s을 위한 순간찍기 계수를 가져올 수 없습니다"
 
 msgid "could not get snapshot count for listed domains"
-msgstr "나열된 도메인에 대한 스냅샷 수를 가져올 수 없습니다"
+msgstr "나열된 도메인을 위해 순간찍기 계수를 가져 올 수 없음"
 
 msgid "could not get snapshot name"
-msgstr "스냅샷 이름을 가져 올 수 없음"
+msgstr "순간찍기 이름을 가져 올 수 없음"
 
 #, c-format
 msgid "could not get the volume list in the pool: %1$s, rc=%2$08x"
@@ -23294,7 +23295,7 @@ msgstr "'%1$s'에 대한 프로파일을 삭제할 수 없음"
 
 #, c-format
 msgid "could not restore snapshot for domain %1$s"
-msgstr "%1$s 도메인에 대한 스냅샷을 복원할 수 없습니다"
+msgstr "도메인 %1$s를 위해 순간찍기를 복원 할 수 없습니다"
 
 msgid "could not set IFS"
 msgstr "IFS를 설정할 수 없습니다"
@@ -23324,7 +23325,7 @@ msgstr "%1$s의 스크린샷을 찍을 수 없습니다"
 
 #, c-format
 msgid "could not take snapshot of domain %1$s"
-msgstr "도메인 %1$s의 스냅샷을 만들 수 없습니다"
+msgstr "도메인 %1$s의 순간찍기를 만들 수 없습니다"
 
 msgid "could not use Xen hypervisor entry"
 msgstr "Xen 하이퍼바이저 항목을 사용할 수 없음"
@@ -23500,8 +23501,8 @@ msgid ""
 "create a snapshot of current interfaces settings, which can be later "
 "committed (iface-commit) or restored (iface-rollback)"
 msgstr ""
-"나중에 커밋(iface-commit)하거나 복원(iface-rollback)할 수 있는 현재 인터페이"
-"스 설정의 스냅샷 생성하십시오"
+"나중에 커밋(iface-commit)하거나 복원(iface-rollback) 할 수 있는 현재 "
+"연결장치 설정의 순간찍기를 생성합니다"
 
 msgid "create a vol from an XML file"
 msgstr "XML 파일에서 볼륨 생성"
@@ -23522,7 +23523,7 @@ msgid "creating checkpoint for incremental backup is not supported yet"
 msgstr "증분 백업에 대한 체크포인트 생성은 아직 지원되지 않습니다"
 
 msgid "creating snapshot"
-msgstr "스냅샷 생성 중"
+msgstr "순간찍기 생성 중"
 
 msgid "creation of images with slice type='storage' is not supported"
 msgstr "슬라이스 유형='storage'인 이미지 생성은 지원되지 않습니다"
@@ -23697,7 +23698,7 @@ msgstr "체크포인트 %1$s에 대한 정의는 uuid %2$s를 사용해야 합�
 
 #, c-format
 msgid "definition for snapshot %1$s must use uuid %2$s"
-msgstr "스냅샷 %1$s에 대한 정의는 uuid %2$s를 사용해야 합니다"
+msgstr "순간찍기 %1$s를 위한 정의는 uuid %2$s를 사용해야 합니다"
 
 msgid "deflate-on-oom is not supported by this QEMU binary"
 msgstr "deflate-on-oom은 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -23724,10 +23725,10 @@ msgid "delete children but not checkpoint"
 msgstr "자식은 삭제하지만 체크포인트는 삭제하지 않음"
 
 msgid "delete children but not snapshot"
-msgstr "스냅샷이 아닌 자식 스냅샷을 삭제"
+msgstr "순간찍기가 아닌 하위 항목을 삭제합니다"
 
 msgid "delete current snapshot"
-msgstr "현재 스냅샷을 삭제합니다"
+msgstr "현재 순간찍기를 삭제합니다"
 
 msgid "delete files that were successfully committed"
 msgstr "성공적으로 커밋된 파일 삭제"
@@ -23736,52 +23737,51 @@ msgid "delete only libvirt metadata, leaving checkpoint contents behind"
 msgstr "체크포인트 내용은 남겨두고 libvirt 메타데이터만 삭제"
 
 msgid "delete only libvirt metadata, leaving snapshot contents behind"
-msgstr "libvirt 메타 자료만 삭제하고, 스냅샷 내용은 남겨둡니다"
+msgstr "libvirt 메타 자료만 삭제하고, 순간찍기 내용은 남겨둡니다"
 
 msgid "delete snapshot and all children"
-msgstr "스냅샷과 그 안에있는 모든 정보 삭제"
+msgstr "순간찍기와 모든 하위 항목을 삭제합니다"
 
 msgid ""
 "delete snapshots associated with volume (must be supported by storage driver)"
-msgstr "볼륨과 연결된 스냅샷 삭제(저장소 드라이버에서 지원해야 함)"
+msgstr "볼륨과 연결된 순간찍기를 삭제합니다(저장소 드라이버에서 지원해야 함)"
 
 msgid ""
 "delete snapshots associated with volume(s), requires --remove-all-storage "
 "(must be supported by storage driver)"
-msgstr ""
-"볼륨과 연결된 스냅샷 삭제, --remove-all-storage 필요(저장소 드라이버에서 지원"
-"해야 함)"
+msgstr "볼륨과 연결된 순간찍기를 삭제합니다, --remove-all-storage가 필요합니다("
+"저장소 드라이버에서 지원해야 함)"
 
 msgid "delete the specified network port"
 msgstr "지정된 네트워크 포트를 삭제하세요"
 
 msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
-msgstr "내부 스냅샷이 상위로 있는 외부 스냅샷 삭제하기는 지원되지 않음"
+msgstr "내부 순간찍기가 상위 항목에 있는 외부 순간찍기 삭제는 지원되지 않음"
 
 msgid ""
 "deletion of active external snapshot that is not a leaf snapshot is not "
 "supported"
-msgstr "리프 스냅샷이 아닌 활성화된 외부 스냅샷 삭제는 지원되지 않습니다"
+msgstr "리프 순간찍기가 아닌 활성화된 외부 순간찍기의 삭제는 지원되지 않습니다"
 
 msgid "deletion of external and internal children disk snapshots not supported"
-msgstr "외부와 내부 하위 디스크 스냅샷 삭제가 지원되지 않음"
+msgstr "외부 및 내부 항목의 하위 디스크 순간찍기 삭제가 지원되지 않음"
 
 msgid "deletion of external children disk snapshots not supported"
-msgstr "외부 하위 디스크 스냅샷의 삭제는 지원되지 않습니다"
+msgstr "외부 하위 디스크 순간찍기의 삭제는 지원되지 않습니다"
 
 msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
-msgstr "다중 하위 스냅샷이 있는 외부 디스크 스냅샷의 삭제는 지원되지 않습니다"
+msgstr "다중 하위 순간찍기가 있는 외부 디스크 순간찍기 삭제는 지원되지 않습니다"
 
 msgid "deletion of external disk snapshots with children not supported"
-msgstr "하위에 있는 외부 디스크 스냅샷의 삭제는 지원되지 않습니다"
+msgstr "하위에 있는 외부 디스크 순간찍기의 삭제는 지원되지 않습니다"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
 "supported"
-msgstr "활성화된 체인에 있지 않은 비-리프 외부 스냅샷 삭제는 지원되지 않습니다"
+msgstr "활성화 체인에 있지 않은 비-리프 외부 순간찍기 삭제는 지원되지 않습니다"
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -23794,7 +23794,7 @@ msgid "description of checkpoint"
 msgstr "점검점 설명"
 
 msgid "description of snapshot"
-msgstr "스냅샷 설명"
+msgstr "순간찍기의 설명"
 
 msgid "destroy (stop) a device on the node"
 msgstr "노드 상의 장치를 삭제 (중지)"
@@ -24079,7 +24079,7 @@ msgstr "디스크 '%1$s'이(가) 비어 있거나 읽기 전용입니다"
 
 #, c-format
 msgid "disk '%1$s' must use snapshot mode '%2$s'"
-msgstr "디스크 '%1$s'는 스냅샷 모드 '%2$s'를 사용해야 함"
+msgstr "디스크 '%1$s'는 순간찍기 방식 '%2$s'를 사용해야 합니다"
 
 #, c-format
 msgid "disk '%1$s' not found"
@@ -24102,8 +24102,7 @@ msgstr "디스크 속성: 디스크[,검사점=유형][,비트맵=이름]"
 
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
-msgstr ""
-"디스크 속성: 디스크[,스냅샷=유형][,드라이버=유형][,s유형=유형][,파일=이름]"
+msgstr "디스크 속성: 디스크[,순간찍기=유형][,드라이버=유형][,s유형=유형][,파일=이름]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
@@ -24175,9 +24174,8 @@ msgstr "디스크 형식 %1$s는 지원되지 않습니다"
 msgid ""
 "disk image '%1$s' for internal snapshot '%2$s' is not the same as disk image "
 "currently used by VM"
-msgstr ""
-"디스크 이미지 '%1$s'(내부 스냅샷 '%2$s'를 위해)는 현재 VM에 의해 사용되는 디"
-"스크 이미지와 동일하지 않습니다"
+msgstr "디스크 이미지 '%1$s'(내부 순간찍기 '%2$s'를 위해)는 현재 VM에 의해 사용되는 "
+"디스크 이미지와 동일하지 않습니다"
 
 #, c-format
 msgid "disk image format not supported: %1$s"
@@ -24215,10 +24213,10 @@ msgstr "디스크 제품은 인쇄 가능한 문자열이 아닙니다"
 
 #, c-format
 msgid "disk snapshot image path '%1$s' must be absolute"
-msgstr "디스크 스냅샷 이미지 경로 '%1$s'은(는) 절대 경로여야 합니다"
+msgstr "디스크 순간찍기 이미지 경로 '%1$s'는 절대 경로여야 합니다"
 
 msgid "disk snapshots not supported yet"
-msgstr "디스크 스냅샷이 아직 지원되지 않습니다"
+msgstr "디스크 순간찍기는 아직 지원되지 않습니다"
 
 msgid "disk source can be changed only in removable drives"
 msgstr "디스크 소스는 이동식 드라이브에서만 변경할 수 있습니다"
@@ -24242,7 +24240,7 @@ msgstr "디스크 대상 %1$s을(를) 찾을 수 없습니다"
 
 #, c-format
 msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
-msgstr ""
+msgstr "디스크 유형 '%1$s은 캐쉬 방식 '%2$s' 또는 '%3$s'가 필요합니다"
 
 #, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
@@ -24257,12 +24255,12 @@ msgstr "디스크 제조사는 인쇄 가능한 문자열이 아닙니다"
 
 #, c-format
 msgid "disk-only flag for snapshot %1$s requires disk-snapshot state"
-msgstr ""
-"스냅샷 %1$s에 대한 디스크 전용 플래그에는 디스크 스냅샷 상태가 필요합니다"
+msgstr "순간찍기 %1$s를 위한 디스크 전용 플래그는 디스크 순간찍기 상태가 필요합니다"
 
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
-msgstr "디스크 전용 스냅샷은 스냅샷용으로 하나 이상의 디스크를 선택해야 합니다"
+msgstr "디스크 전용 순간찍기는 순간찍기를 위해 선택되도록 하나 이상의 디스크가 "
+"필요합니다"
 
 msgid "display"
 msgstr "표시하다"
@@ -24313,7 +24311,7 @@ msgstr "이미 %1$s 도메인이 존재함"
 
 #, c-format
 msgid "domain %1$s has no snapshots with name %2$s"
-msgstr "도메인 %1$s에 이름이 %2$s인 스냅샷이 없습니다"
+msgstr "도메인 %1$s는 이름 %2$s인 순간찍기가 없습니다"
 
 #, c-format
 msgid "domain %1$s is already running"
@@ -24341,7 +24339,7 @@ msgstr "도메인 '%1$s'에 기록된 기능이 없습니다"
 
 #, c-format
 msgid "domain '%1$s' has no current snapshot"
-msgstr "도메인 '%1$s'에는 현재 스냅샷이 없습니다"
+msgstr "도메인 '%1$s'는 현재 순간찍기가 없습니다"
 
 #, c-format
 msgid "domain '%1$s' in %2$s must match connection"
@@ -24454,7 +24452,7 @@ msgid "domain has assigned host devices"
 msgstr "도메인에 호스트 장치가 할당되었습니다"
 
 msgid "domain has no snapshots"
-msgstr "도메인은 스냅샷을 갖지 않습니다"
+msgstr "도메인은 순간찍기를 갖지 않습니다"
 
 msgid "domain has to be shutoff before renaming"
 msgstr "이름을 변경하기 전에 도메인을 차단해야 합니다"
@@ -24534,7 +24532,7 @@ msgid "domain save"
 msgstr "도메인 저장"
 
 msgid "domain snapshot XML"
-msgstr "도메인 스냅샷 XML"
+msgstr "도메인 순간찍기 XML"
 
 msgid "domain started"
 msgstr "도메인 시작됨"
@@ -24743,7 +24741,7 @@ msgid "edit XML for a domain's saved state file"
 msgstr "도메인의 저장된 상태 파일에 대한 XML 편집"
 
 msgid "edit XML for a snapshot"
-msgstr "스냅샷의 XML 편집"
+msgstr "순간찍기를 위한 XML 편집"
 
 msgid "either --list or --event <type> is required"
 msgstr "--list 또는 --event <유형>이 필요합니다"
@@ -24759,7 +24757,7 @@ msgstr "요소"
 
 #, c-format
 msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
-msgstr ""
+msgstr "요소 '%1$s'는 'keyfile' 또는 'agentsock' 속성 중 하나가 필요합니다"
 
 msgid "element 'genid' can only appear once"
 msgstr "요소 'genid'는 한 번만 나타날 수 있습니다"
@@ -25139,7 +25137,7 @@ msgstr "도메인 '%1$s'를 위한 사건 '메타자료-변경': 유형 %2$s, ur
 
 #, c-format
 msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
-msgstr ""
+msgstr "네트워크를 위한 사건 '메타자료-변경' %1$s: 유형 %2$s, uri %3$s\n"
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
@@ -25339,10 +25337,10 @@ msgstr "외부"
 
 #, c-format
 msgid "external active snapshots are not supported on '%1$s' disks"
-msgstr "외부 활성 스냅샷은 '%1$s' 디스크에서 지원되지 않습니다"
+msgstr "외부 활성화 순간찍기는 '%1$s' 디스크에서 지원되지 않습니다"
 
 msgid "external active snapshots are not supported on scsi passthrough devices"
-msgstr "외부 활성 스냅샷은 scsi 패스스루 장치에서 지원되지 않습니다"
+msgstr "외부 활성화 순간찍기는 scsi 통과 장치에서 지원되지 않습니다"
 
 #, c-format
 msgid ""
@@ -25353,30 +25351,28 @@ msgstr ""
 
 #, c-format
 msgid "external inactive snapshots are not supported on '%1$s' disks"
-msgstr "외부 비활성 스냅샷은 '%1$s' 디스크에서 지원되지 않습니다"
+msgstr "외부 비활성 순간찍기는 '%1$s' 디스크에서 지원되지 않습니다"
 
 #, c-format
 msgid ""
 "external inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
-msgstr ""
-"외부 비활성 스냅샷은 '%1$s' 프로토콜을 사용하는 '네트워크' 디스크에서 지원되"
-"지 않습니다"
+msgstr "외부 비활성 순간찍기는 '%1$s' 통신규약을 사용하는 '네트워크' 디스크에서 "
+"지원되지 않습니다"
 
 msgid "external memory snapshots require a filename"
-msgstr "외부 메모리 스냅샷에 파일 이름이 필요합니다"
+msgstr "외부 메모리 순간찍기는 파일 이름이 필요합니다"
 
 #, c-format
 msgid ""
 "external snapshot file for disk %1$s already exists and is not a block "
 "device: %2$s"
-msgstr ""
-"디스크 %1$s에 대한 외부 스냅샷 파일이 이미 존재하며 블록 장치가 아닙니다. "
+msgstr "디스크 %1$s를 위한 외부 순간찍기 파일은 이미 존재하며 블록 장치가 아닙니다: "
 "%2$s"
 
 #, c-format
 msgid "external snapshot format for disk %1$s is unsupported: %2$s"
-msgstr "디스크 %1$s의 외부 스냅샷 형식은 지원되지 않습니다. %2$s"
+msgstr "디스크 %1$s를 위한 외부 순간찍기 형식은 지원되지 않습니다: %2$s"
 
 #, c-format
 msgid "extra %1$s unsupported in <virtualport type='%2$s'>"
@@ -25496,7 +25492,7 @@ msgid "failed to close screenshot file"
 msgstr "스크린샷 파일을 닫지 못했습니다"
 
 msgid "failed to collect snapshot list"
-msgstr "스냅샷 목록을 수집하는데 실패"
+msgstr "순간찍기 목록을 수집하는데 실패함"
 
 #, c-format
 msgid "failed to commit transaction: %1$s%2$s%3$s"
@@ -25555,7 +25551,7 @@ msgstr "%1$s 인터페이스 생성 (시작) 실패: %2$s%3$s%4$s"
 
 #, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
-msgstr "RBD 스냅샷 %1$s@%2$s을(를) 생성하지 못했습니다"
+msgstr "RBD 순간찍기 %1$s@%2$s를 생성하는데 실패함"
 
 msgid "failed to create XML node"
 msgstr "XML 코드 생성에 실패함"
@@ -25737,7 +25733,7 @@ msgstr "디스크 '%1$s'을(를) 찾지 못했습니다"
 
 #, c-format
 msgid "failed to find disk '%1$s' in snapshot VM XML"
-msgstr "스냅샷 VM XML에서 디스크 '%1$s'를 찾는데 실패함"
+msgstr "순간찍기 VM XML에서 디스크 '%1$s'를 찾는데 실패함"
 
 #, c-format
 msgid "failed to find iothread id for '%1$s'"
@@ -26013,7 +26009,7 @@ msgstr "RBD 이미지 '%1$s'을(를) 반복하지 못했습니다"
 
 #, c-format
 msgid "failed to iterate RBD snapshot %1$s@%2$s"
-msgstr "RBD 스냅샷 %1$s@%2$s을(를) 반복하지 못했습니다"
+msgstr "RBD 순간찍기 %1$s@%2$s를 반복하는데 실패함"
 
 #, c-format
 msgid "failed to list host interfaces: %1$s%2$s%3$s"
@@ -26043,7 +26039,7 @@ msgstr "자동 시작으로 %1$s 풀을 표시하기 실패"
 
 #, c-format
 msgid "failed to monitor nbdkit process %1$i"
-msgstr ""
+msgstr "nbdkit 프로세서 %1$i를 감시하는데 실패함"
 
 #, c-format
 msgid "failed to move file to %1$s "
@@ -26253,7 +26249,7 @@ msgstr "fd %1$d을(를) 보존하지 못했습니다"
 
 #, c-format
 msgid "failed to protect RBD snapshot %1$s@%2$s"
-msgstr "RBD 스냅샷 %1$s@%2$s을(를) 보호하지 못했습니다"
+msgstr "RBD 순간찍기 %1$s@%2$s를 보호하는데 실패함"
 
 #, c-format
 msgid "failed to query job for disk %1$s"
@@ -26335,7 +26331,7 @@ msgstr "풀 '%1$s'을 제거하는 데 실패"
 
 #, c-format
 msgid "failed to remove snapshot '%1$s/%2$s@%3$s'"
-msgstr "스냅샷 '%1$s/%2$s@%3$s'을(를) 제거하지 못했습니다"
+msgstr "순간찍기 '%1$s/%2$s@%3$s'를 제거하는데 실패함"
 
 #, c-format
 msgid "failed to remove volume '%1$s/%2$s'"
@@ -26505,7 +26501,7 @@ msgstr "자동 시작으로 %1$s 풀을 표시 해제하기 실패"
 
 #, c-format
 msgid "failed to unprotect snapshot '%1$s/%2$s@%3$s'"
-msgstr "스냅샷 '%1$s/%2$s@%3$s'의 보호를 해제하지 못했습니다"
+msgstr "순간찍기 '%1$s/%2$s@%3$s' 보호 해제에 실패함"
 
 #, c-format
 msgid "failed to update capacity data for block node '%1$s'"
@@ -26523,11 +26519,11 @@ msgstr "새 XML 네임스페이스에 대한 접두사의 유효성을 검사하
 
 #, c-format
 msgid "failed to verify if RBD snapshot %1$s@%2$s is protected"
-msgstr "RBD 스냅샷 %1$s@%2$s이(가) 보호되는지 확인하지 못했습니다"
+msgstr "RBD 순간찍기 %1$s@%2$s가 보호되었는지 확인하는데 실패함"
 
 #, c-format
 msgid "failed to verify if snapshot '%1$s/%2$s@%3$s' is protected"
-msgstr "스냅샷 '%1$s/%2$s@%3$s'이(가) 보호되는지 확인하지 못했습니다"
+msgstr "순간찍기 '%1$s/%2$s@%3$s'가 보호되었는지 확인하는데 실패함"
 
 msgid "failed to wait for domain condition"
 msgstr "도메인 조건을 기다리지 못했습니다"
@@ -26651,7 +26647,7 @@ msgstr "파일 %1$s이 존재하지 않음"
 
 #, c-format
 msgid "file '%1$s' for disk '%2$s' requires use of external snapshot mode"
-msgstr "디스크 '%1$s'의 파일 '%2$s'는 외부 스냅샷 방식의 사용이 필요합니다"
+msgstr "파일 '%1$s'(디스크 '%2$s'를 위해)는 외부 순간찍기 방식의 사용이 필요합니다"
 
 msgid "file containing XML CPU descriptions"
 msgstr "XML CPU 설명을 포함하는 파일"
@@ -26719,7 +26715,7 @@ msgid "filesystem target '%1$s' specified twice"
 msgstr "파일 시스템 대상 '%1$s'이(가) 두 번 지정되었습니다"
 
 msgid "filesystem usage limits are not supported with QEMU"
-msgstr ""
+msgstr "파일시스템 사용량 제한은 QEMU에서 지원되지 않습니다"
 
 #, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
@@ -26751,7 +26747,7 @@ msgid "filter binding status missing content"
 msgstr "필터 바인딩 상태 누락 내용"
 
 msgid "filter by disk-only snapshots"
-msgstr "디스크-전용 스냅샷에 의해 필터"
+msgstr "디스크-전용 순간찍기에 의한 분리"
 
 msgid "filter by domain name, id or uuid"
 msgstr "도메인 이름, id 또는 uuid에 의해 필터"
@@ -26760,10 +26756,10 @@ msgid "filter by event name"
 msgstr "사건 이름에 의해 필터"
 
 msgid "filter by external snapshots"
-msgstr "외부 스냅샷에 의해 실패"
+msgstr "외부 순간찍기에 의해 분리"
 
 msgid "filter by internal snapshots"
-msgstr "내부 스냅샷에 의해 필터"
+msgstr "내부 순간찍기에 의해 분리"
 
 msgid "filter by network name or uuid"
 msgstr "네트워크 이름 또는 uuid로 필터링"
@@ -26775,10 +26771,10 @@ msgid "filter by secret name or uuid"
 msgstr "비밀 이름 또는 uuid로 필터링"
 
 msgid "filter by snapshots taken while active (full system snapshots)"
-msgstr "활성 상태에서 찍은 스냅샷으로 필터링(전체 시스템 스냅샷)"
+msgstr "활성화 상태에서 가져온 순간찍기에 의해 분리(전체 시스템 순간찍기)"
 
 msgid "filter by snapshots taken while inactive"
-msgstr "비활성 상태에서 찍은 스냅샷으로 필터링"
+msgstr "비활성 상태에서 가져온 순간찍기에 의해 분리"
 
 msgid "filter by storage pool name or uuid"
 msgstr "저장소 풀 이름 또는 uuid로 필터링"
@@ -26804,10 +26800,10 @@ msgid "find parent of checkpoint name"
 msgstr "체크포인트 이름의 부모 찾기"
 
 msgid "find parent of current snapshot"
-msgstr "현재 스냅샷의 부모 찾기"
+msgstr "현재 순간찍기의 상위 항목을 찾기"
 
 msgid "find parent of snapshot name"
-msgstr "스냅샷 이름의 상위 찾기"
+msgstr "순간찍기 이름의 상위 항목을 찾기"
 
 msgid "find potential storage pool sources"
 msgstr "사용가능한 저장소 풀 소스를 찾습니다"
@@ -26817,7 +26813,7 @@ msgstr "이전이 취소된 완료 단계를 무시"
 
 #, c-format
 msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
-msgstr "디스크 '%1$s' 스냅샷을 삭제하는 동안 마무리 블록 작업을 실패함: '%2$s'"
+msgstr "마무리 블록 작업은 디스크 '%1$s' 순간찍기를 삭제하는 동안에 실패함: '%2$s'"
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -26954,7 +26950,7 @@ msgstr ""
 "니다(문제 해결을 위해 https://libvirt.org/kbase/backing_chains.html 참조)"
 
 msgid "format of backing volume if taking a snapshot"
-msgstr "스냅샷을 찍는 경우 백업 볼륨의 형식"
+msgstr "순간찍기를 하는 경우 백업 볼륨의 형식"
 
 msgid "format of the destination file"
 msgstr "대상 파일의 형식"
@@ -26984,7 +26980,7 @@ msgid "freePageReporting is not supported by this QEMU binary"
 msgstr "freePageReporting은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "from snapshot"
-msgstr "스냅샷에서"
+msgstr "순간찍기 시작"
 
 #, c-format
 msgid "fs driver %1$s is not supported"
@@ -27260,7 +27256,7 @@ msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd 채널은 오직 IPv4 주소만을 지원합니다"
 
 msgid "halt domain after snapshot is created"
-msgstr "스냅샷 생성 후 도메인 중지"
+msgstr "순간찍기 생성 후 도메인 중지"
 
 msgid "handler failed to wait on condition"
 msgstr "핸들러가 조건을 기다리지 못했습니다"
@@ -27627,7 +27623,7 @@ msgid "info migration reply was missing return status"
 msgstr "정보 이전 응답에 반환 상태가 빠져있었습니다"
 
 msgid "info on current snapshot"
-msgstr "현재 스냅샷 정보"
+msgstr "현재 순간찍기 정보"
 
 msgid "init binary must be specified"
 msgstr "init 바이너리를 지정해야 합니다"
@@ -27834,8 +27830,8 @@ msgstr "내부(잠금) 오류"
 msgid ""
 "internal and full system snapshots require all disks to be selected for "
 "snapshot"
-msgstr ""
-"내부 및 전체 시스템 스냅샷은 스냅샷을 위해 모든 디스크를 선택해야 합니다"
+msgstr "내부 및 전체 시스템 순간찍기는 순간찍기를 위해 선택되도록 모든 디스크가 "
+"필요합니다"
 
 msgid "internal command for autocompletion"
 msgstr "자동 완성을 위한 내부 명령"
@@ -27852,28 +27848,27 @@ msgstr "내부 오류: %1$s"
 
 #, c-format
 msgid "internal inactive snapshots are not supported on '%1$s' disks"
-msgstr "내부 비활성 스냅샷은 '%1$s' 디스크에서 지원되지 않습니다"
+msgstr "내부 비활성 순간찍기는 '%1$s' 디스크에서 지원되지 않습니다"
 
 #, c-format
 msgid ""
 "internal inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
-msgstr ""
-"내부 비활성 스냅샷은 '%1$s' 프로토콜을 사용하는 '네트워크' 디스크에서 지원되"
-"지 않습니다"
+msgstr "내부 비활성 순간찍기는 '%1$s' 통신규약을 사용하는 '네트워크' 디스크에서 "
+"지원되지 않습니다"
 
 msgid "internal parse requested with NULL current"
 msgstr "현재 NULL로 내부 구문 분석이 요청되었습니다"
 
 #, c-format
 msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
-msgstr "디스크 %1$s의 내부 스냅샷은 저장소 유형 %2$s에 대해 지원되지 않습니다"
+msgstr "디스크 %1$s를 위한 내부 순간찍기는 저장소 유형 %2$s에 대해 지원되지 않습니다"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr "실행 중인 VM의 내부 스냅샷에는 메모리 상태가 포함되어야 합니다"
+msgstr "실행 중인 VM의 내부 순간찍기는 메모리 상태가 포함되어야 합니다"
 
 msgid "internal snapshots of a VM with pflash based firmware are not supported"
-msgstr "pflash 기반 펌웨어가 있는 VM의 내부 스냅샷은 지원되지 않습니다"
+msgstr "pflash 기반의 펌웨어가 있는 VM의 내부 순간찍기는 지원되지 않습니다"
 
 msgid "internal use only"
 msgstr "오직 내부 사용"
@@ -28479,11 +28474,11 @@ msgstr "'%1$s'에 대해 잘못된 크기가 지정되었습니다"
 
 #, c-format
 msgid "invalid snapshot name '%1$s': name can't contain '/'"
-msgstr "잘못된 스냅샷 이름 '%1$s': 이름에 '/'를 포함시킬 수 없음"
+msgstr "잘못된 순간찍기 이름 '%1$s': 이름은 '/'를 포함 할 수 없음"
 
 #, c-format
 msgid "invalid snapshot name '%1$s': name can't start with '.'"
-msgstr "잘못된 스냅샷 이름 '%1$s': 이름은 '.'로 시작 할 수 없음"
+msgstr "잘못된 순간찍기 이름 '%1$s': 이름은 '.'로 시작 할 수 없음"
 
 #, c-format
 msgid "invalid ssid value '%1$s' for '%2$s'"
@@ -28817,7 +28812,7 @@ msgstr "libvirt가 '%1$s' 드라이버 없이 제작(빌드)되었습니다"
 
 #, c-format
 msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
-msgstr ""
+msgstr "libvirt는 libcap와 함께 컴파일 되지 않았으며 \"%1$s\"가 필요합니다"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr "libvirt는 호스트에서 자동으로 장치를 분리/연결합니다"
@@ -28932,13 +28927,13 @@ msgid "lifecycle type to modify"
 msgstr "수정할 수명 주기 유형"
 
 msgid "limit list to children of current snapshot"
-msgstr "현재 스냅샷의 자식으로 목록 제한"
+msgstr "현재 순간찍기의 하위 항목으로 제한된 목록"
 
 msgid "limit list to children of given checkpoint"
 msgstr "지정된 체크포인트의 자식으로 목록 제한"
 
 msgid "limit list to children of given snapshot"
-msgstr "주어진 스냅샷의 자식으로 목록 제한"
+msgstr "제공된 순간찍기의 하위 항목으로 제한된 목록"
 
 #, c-format
 msgid "line %1$d corrupt ipaddr \"%2$s\""
@@ -29002,7 +28997,7 @@ msgid "list domains with existing checkpoint"
 msgstr "기존 체크포인트가 있는 도메인 나열"
 
 msgid "list domains with existing snapshot"
-msgstr "기존 스냅샷이 있는 도메인 나열"
+msgstr "기존 순간찍기에 있는 도메인 나열"
 
 msgid "list domains with managed save state"
 msgstr "관리되는 저장 상태로 도메인 나열"
@@ -29011,7 +29006,7 @@ msgid "list domains without a checkpoint"
 msgstr "체크포인트 없이 도메인 나열"
 
 msgid "list domains without a snapshot"
-msgstr "스냅샷 없이 도메인 나열"
+msgstr "순간찍기가 없는 도메인 나열"
 
 msgid "list domains without managed save"
 msgstr "관리되는 저장 없이 도메인 나열"
@@ -29119,19 +29114,19 @@ msgid "list only shutoff domains"
 msgstr "차단 도메인만 나열"
 
 msgid "list only snapshots that are not leaves (with children)"
-msgstr "잎이 아닌 스냅샷만 나열(자식 포함)"
+msgstr "앙상한 순간찍기만 나열 (하위 항목과 함께)"
 
 msgid "list only snapshots that have metadata that would prevent undefine"
-msgstr "정의 취소를 방지하는 메타데이터가 있는 스냅샷만 나열"
+msgstr "정의 취소를 예방하는 메타자료가 있는 순간찍기만 나열합니다"
 
 msgid "list only snapshots that have no metadata managed by libvirt"
-msgstr "libvirt에서 관리하는 메타데이터가 없는 스냅샷만 나열"
+msgstr "libvirt에서 관리되는 메타자료가 없는 순간찍기만 나열합니다"
 
 msgid "list only snapshots without children"
-msgstr "자식 없는 스냅샷 목록만 나열"
+msgstr "하위 항목 없는 순간찍기만 나열합니다"
 
 msgid "list only snapshots without parents"
-msgstr "부모 없는 스냅샷 목록만 나열"
+msgstr "상위 항목 없는 순간찍기만 나열합니다"
 
 msgid "list only transient domains"
 msgstr "임시 도메인만 목록화합니다"
@@ -29164,10 +29159,10 @@ msgid "list secrets"
 msgstr "비밀정보 목록 나열"
 
 msgid "list snapshot names only"
-msgstr "스냅샷 이름만 나열"
+msgstr "순간찍기 이름만 나열합니다"
 
 msgid "list snapshots in a tree"
-msgstr "트리에 스냅샷 나열"
+msgstr "나무 유형에 순간찍기 나열"
 
 msgid "list table (default)"
 msgstr "목록 테이블(기본값)"
@@ -29229,7 +29224,7 @@ msgid "live migration"
 msgstr "실시간 이전"
 
 msgid "live snapshot creation is supported only during full system snapshots"
-msgstr "라이브 스냅샷 생성은 전체 시스템 스냅샷 중에만 지원됩니다"
+msgstr "실시간 순간찍기 생성은 전체 시스템 순간찍기 중에만 지원됩니다"
 
 #, c-format
 msgid "live update of device '%1$s' is not supported"
@@ -29658,7 +29653,7 @@ msgstr "이 버전의 qemu에서는 메모리 부울 장치 유형 '%1$s'를 지
 
 #, c-format
 msgid "memory address must be aligned to %1$ld bytes"
-msgstr ""
+msgstr "메모리 주소는 %1$ld 바이트로 정렬되어야 합니다"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "메모리 속성: [file=]name[,snapshot=type]"
@@ -29667,7 +29662,8 @@ msgstr "메모리 속성: [file=]name[,snapshot=type]"
 msgid ""
 "memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
 "(0x%3$llx)"
-msgstr ""
+msgstr "메모리 장치 주소 [0x%1$llx:0x%2$llx]가 다른 메모리 장치 (0x%3$llx)와 "
+"중복됩니다"
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -29707,7 +29703,7 @@ msgstr "이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'를 지�
 
 #, c-format
 msgid "memory filename '%1$s' requires external snapshot"
-msgstr "메모리 파일 이름 '%1$s'는 외부 스냅샷이 필요합니다"
+msgstr "메모리 파일 이름 '%1$s'는 외부 순간찍기가 필요합니다"
 
 msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
@@ -29741,10 +29737,10 @@ msgstr "정렬 후 NUMA 노드 '%1$zu'의 메모리 크기가 오버플로되었
 
 #, c-format
 msgid "memory snapshot file path (%1$s) must be absolute"
-msgstr "메모리 스냅샷 파일 경로(%1$s)는 절대 경로여야 합니다"
+msgstr "메모리 순간찍기 파일 경로(%1$s)는 절대 경로여야 합니다"
 
 msgid "memory state cannot be saved with offline or disk-only snapshot"
-msgstr "메모리 상태는 오프라인 또는 디스크 전용 스냅샷으로 저장 할 수 없습니다"
+msgstr "메모리 상태는 오프라인 또는 디스크 전용 순간찍기로 저장 될 수 없습니다"
 
 msgid "memory-only dump failed for unknown reason"
 msgstr "알 수 없는 이유로 메모리 전용 덤프가 실패했습니다"
@@ -29937,9 +29933,8 @@ msgstr "잘못 처리된 저장소 형식 '%1$s'"
 msgid ""
 "mismatch between configured type for snapshot disk '%1$s' and the type of "
 "existing file '%2$s'"
-msgstr ""
-"스냅샷 디스크 '%1$s'에 대해 구성된 유형과 기존 파일 '%2$s' 유형이 일치하지 않"
-"습니다"
+msgstr "순간찍기 디스크 '%1$s'를 위해 구성된 유형과 기존 파일 '%2$s'의 유형이 "
+"불일치합니다"
 
 #, c-format
 msgid "mismatch of address family in range %1$s - %2$s"
@@ -30178,7 +30173,7 @@ msgid "missing ap-domain value for '%1$s'"
 msgstr "'%1$s'에 대한 누락된 ap-도메인 값"
 
 msgid "missing arch in QEMU capabilities cache"
-msgstr "QEMU 기능 캐시에 누락된 아치"
+msgstr "QEMU 기능 캐쉬에 누락된 구조"
 
 msgid "missing argument"
 msgstr "인수가 누락되어 있음"
@@ -30242,7 +30237,7 @@ msgid "missing creationTime from existing checkpoint"
 msgstr "기존 체크포인트에서 생성 시간 누락"
 
 msgid "missing creationTime from existing snapshot"
-msgstr "기존 스냅샷에서 생성 시간이 누락되어 있음"
+msgstr "기존 순간찍기에서 생성 시간이 누락됨"
 
 #, c-format
 msgid "missing cssid value for '%1$s'"
@@ -30292,7 +30287,7 @@ msgid "missing domain in checkpoint"
 msgstr "체크포인트에서 누락된 도메인"
 
 msgid "missing domain in snapshot"
-msgstr "스냅샷에서 도메인이 누락됨"
+msgstr "순간찍기에서 도메인이 누락됨"
 
 msgid "missing domain name"
 msgstr "누락된 도메인 이름"
@@ -30457,7 +30452,7 @@ msgid "missing name from disk backup element"
 msgstr "디스크 백업 요소에서 이름이 누락"
 
 msgid "missing name from disk snapshot element"
-msgstr "디스크 스냅샷 요소에서 이름이 누락됨"
+msgstr "디스크 순간찍기 요소에서 이름이 누락됨"
 
 msgid "missing name information"
 msgstr "이름 정보 부재"
@@ -30467,10 +30462,10 @@ msgid "missing name information in %1$s"
 msgstr "%1$s에 이름 정보가 없습니다"
 
 msgid "missing nbdkit pidfile"
-msgstr ""
+msgstr "nbdkit pidfile 누락"
 
 msgid "missing nbdkit socketfile"
-msgstr ""
+msgstr "nbdkit 소켓파일 누락"
 
 msgid "missing network device feature name"
 msgstr "누락된 네트워크 장치 기능 이름"
@@ -30552,7 +30547,7 @@ msgid "missing path for <reservations/>"
 msgstr "<reservations/>를 위한 경로 누락"
 
 msgid "missing path in nbdkit capabilities cache"
-msgstr ""
+msgstr "nbdkit 기능 캐쉬에 누락된 경로"
 
 msgid "missing path to restore from"
 msgstr "복원하려는 경로가 누락됨"
@@ -30692,7 +30687,7 @@ msgid "missing ssid value for '%1$s'"
 msgstr "'%1$s'에 대한 ssid 값이 없습니다"
 
 msgid "missing state from existing snapshot"
-msgstr "기존 스냅샷에서 상태가 누락되어 있음"
+msgstr "기존 순간찍기에서 상태가 누락됨"
 
 #, c-format
 msgid "missing storage backend for '%1$s' storage"
@@ -30826,7 +30821,7 @@ msgstr "'%1$s'에 대한 wwpn 식별자가 없습니다"
 
 msgid ""
 "mixing internal and external targets for a snapshot is not yet supported"
-msgstr "스냅샷에 대한 내부 및 외부 대상 혼합은 아직 지원되지 않습니다"
+msgstr "순간찍기를 위한 내부 및 외부 대상 혼합은 아직 지원되지 않습니다"
 
 msgid "mixing nested objects and values is forbidden in JSON deflattening"
 msgstr ""
@@ -30905,7 +30900,7 @@ msgstr ""
 "다"
 
 msgid "more than one snapshot claims to be active"
-msgstr "둘 이상의 스냅샷이 활성 상태라고 주장합니다"
+msgstr "둘 이상의 순간찍기는 활성 상태라고 주장합니다"
 
 msgid "mount is not supported on this platform."
 msgstr "적재는 이 기술환경에서는 지원되지 않습니다."
@@ -31011,7 +31006,7 @@ msgid "name of checkpoint"
 msgstr "체크포인트 이름"
 
 msgid "name of existing snapshot to make current"
-msgstr "현재로 만들 기존 스냅샷의 이름"
+msgstr "현재로 만들어야 하는 기존 순간찍기의 이름"
 
 msgid ""
 "name of file containing xml (or, if it starts with '<', the complete xml "
@@ -31021,7 +31016,7 @@ msgstr ""
 "요소 자체)을 포함하는 파일의 이름"
 
 msgid "name of snapshot"
-msgstr "스냅샷 이름"
+msgstr "순간찍기의 이름"
 
 msgid "name of the FD group"
 msgstr "FD 그룹의 이름"
@@ -31049,10 +31044,10 @@ msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "nbd_tls_x509_cert_dir 디렉토리 '%1$s'가 존재하지 않습니다"
 
 msgid "nbdkit restart failed"
-msgstr ""
+msgstr "nbdkit 재시작 실패함"
 
 msgid "nbdkit support is not enabled"
-msgstr ""
+msgstr "nbdkit 지원이 비활성화 되었습니다"
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -31223,9 +31218,7 @@ msgstr "네트워크 '%1$s'가 동작 중이 아님"
 msgid ""
 "network '%1$s' requires exclusive access to interfaces, but none are "
 "available"
-msgstr ""
-"네트워크 '%1$s'에는 인터페이스에 대한 단독 액세스가 필요하지만 사용할 수 있"
-"는 항목이 없습니다"
+msgstr "네트워크 '%1$s'는 연결장치에 베타적 접근이 필요하지만, 가용하지 않습니다"
 
 #, c-format
 msgid ""
@@ -31597,7 +31590,7 @@ msgstr "도메인 설정 없음"
 
 #, c-format
 msgid "no domain snapshot with matching name '%1$s'"
-msgstr "일치하는 이름 '%1$s'의 도메인 스냅샷이 없음"
+msgstr "일치하는 이름 '%1$s'의 도메인 순간찍기가 없음"
 
 #, c-format
 msgid "no domain with matching id %1$d"
@@ -32013,7 +32006,7 @@ msgid "not supported on non-linux platforms"
 msgstr "비-리눅스 기술환경에서 지원되지 않음"
 
 msgid "nothing selected for snapshot"
-msgstr "스냅샷에 대해 선택된 항목이 없습니다"
+msgstr "순간찍기를 위해 선택된 항목이 없음"
 
 msgid "notify server to update TLS related files online."
 msgstr "TLS 연관련 파일을 온라인으로 최신화하도록 서버에 알립니다."
@@ -32355,7 +32348,7 @@ msgid "only supports mount filesystem type"
 msgstr "적재된 파일 시스템 유형만이 지원됩니다"
 
 msgid "only supports passthrough accessmode"
-msgstr "통과 액세스 모드만 지원"
+msgstr "통과 접근 방식만 지원"
 
 msgid "only tablet input devices are supported"
 msgstr "태블릿 입력 장치만 지원됩니다"
@@ -32402,7 +32395,7 @@ msgid "operation failed: %1$s"
 msgstr "작업 실패: %1$s"
 
 msgid "operation forbidden for read only access"
-msgstr "읽기 전용 액세스에 대해 작업이 허용되지 않음"
+msgstr "읽기 전용 접근을 위해 금지된 작업"
 
 #, c-format
 msgid "operation forbidden: %1$s"
@@ -32829,7 +32822,7 @@ msgstr "%1$s에 있는 pid_value가 너무 큽니다"
 
 #, c-format
 msgid "pidfd_open failed for %1$i"
-msgstr ""
+msgstr "%1$i를 위해 실패한 pidfd_open"
 
 msgid "pin all memory before starting RDMA live migration"
 msgstr "RDMA 실시간 이전을 시작하기 전에 모든 메모리 고정합니다"
@@ -33137,7 +33130,7 @@ msgstr "프로토콜 '%1$s'는 하나의 호스트만 허용합니다"
 
 #, c-format
 msgid "protocol '%1$s' is not supported by nbdkit"
-msgstr ""
+msgstr "통신규약 '%1$s'는 nbdkit에서 지원되지 않습니다"
 
 msgid "protocol misses the family attribute"
 msgstr "프로토콜에 패밀리 특성이 빠졌습니다"
@@ -33198,10 +33191,10 @@ msgid "qemu does not support the accel2d setting"
 msgstr "qemu는 accel2d 설정을 지원하지 않습니다"
 
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
-msgstr "quem은 PMSUSPENDED 상태에서 스냅샷 복구를 지원하지 않습니다"
+msgstr "quem은 PMSUSPENDED 상태에서 가져온 순간찍기의 복구를 지원하지 않습니다"
 
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
-msgstr "qume는 PMSUSPENDED 게스트의 스냅샷 생성을 지원하지 않습니다"
+msgstr "qume는 PMSUSPENDED 게스트의 순간찍기 생성을 지원하지 않습니다"
 
 msgid ""
 "qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set "
@@ -33549,7 +33542,7 @@ msgid "redefine metadata for existing checkpoint"
 msgstr "기존 체크포인트에 대한 메타데이터 재정의"
 
 msgid "redefine metadata for existing snapshot"
-msgstr "기존 스냅샷에 대한 메타데이터 재정의"
+msgstr "기존 순간찍기를 위해 메타자료 재정의"
 
 msgid "redefine the XML for a domain's managed save state file"
 msgstr "도메인의 관리되는 저장 상태 파일에 대한 XML 재정의"
@@ -33621,7 +33614,7 @@ msgid "remove all domain checkpoint metadata (vm must be inactive)"
 msgstr "모든 도메인 체크포인트 메타데이터 제거(vm은 비활성화되어야 함)"
 
 msgid "remove all domain snapshot metadata (vm must be inactive)"
-msgstr "모든 도메인 스냅샷 메타데이터 제거(vm은 비활성화되어야 함)"
+msgstr "모든 도메인 순간찍기 메타자료 제거(vm은 비활성화 되어야 함)"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
@@ -33728,7 +33721,7 @@ msgid "report interface information"
 msgstr "연결장치 정보 보고"
 
 msgid "report only stats that are accessible instantly"
-msgstr "즉시 액세스할 수 있는 통계만 보고"
+msgstr "즉시 접근 할 수 있는 통계만 보고"
 
 msgid "report operating system information"
 msgstr "운영 시스템 정보 보고"
@@ -33867,7 +33860,7 @@ msgid "resuming after dump failed"
 msgstr "덤프한 후 재개하는 데 실패했습니다"
 
 msgid "resuming after snapshot failed"
-msgstr "스냅샷 실패 후 재개"
+msgstr "순간찍기 실패 후 재개 중"
 
 #, c-format
 msgid "resuming failed post-copy migration of domain %1$s already in progress"
@@ -33935,7 +33928,7 @@ msgid "revert requires force: %1$s"
 msgstr "되돌리려면 강제 실행이 필요합니다. %1$s"
 
 msgid "revert to current snapshot"
-msgstr "현재 스냅샷으로 되돌리기"
+msgstr "현재 순간찍기로 되돌리기"
 
 msgid "rollback to previous restore point"
 msgstr "이전 복원 지점으로 롤백"
@@ -34269,7 +34262,7 @@ msgstr ""
 "'qemu:property'의 'value' 속성 설정은 'remove' 유형에서 의미가 없습니다"
 
 msgid "setting ACPI S3/S4 not supported"
-msgstr ""
+msgstr "ACPI S3/S4 설정이 지원되지 않음"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -34351,11 +34344,10 @@ msgstr "공유 가능은 vhostuser 디스크에서 지원되지 않습니다"
 
 #, c-format
 msgid "shared access for disk '%1$s' requires use of supported storage format"
-msgstr ""
-"디스크 '%1$s'에 대한 공유 액세스에는 지원되는 저장소 형식을 사용해야 합니다"
+msgstr "디스크 '%1$s'를 위한 공유된 접근은 지원되는 저장소 형식의 사용이 필요합니다"
 
 msgid "shared access mode required for virtio-pmem device"
-msgstr "virtio-pmem 장치에 필요한 공유 액세스 모드"
+msgstr "virtio-pmem 장치를 위해 필요한 공유된 접근 방식"
 
 #, c-format
 msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
@@ -34509,49 +34501,48 @@ msgid "slices are not supported with NVRAM"
 msgstr "슬라이스는 NVRAM을 지원하지 않습니다"
 
 msgid "snapshot"
-msgstr "스냅샷"
+msgstr "순간찍기"
 
 #, c-format
 msgid "snapshot %1$s disappeared from list"
-msgstr "스냅샷 %1$s이 목록에서 사라짐"
+msgstr "순간찍기 %1$s가 목록에서 사라짐"
 
 #, c-format
 msgid "snapshot '%1$s' does not have a parent"
-msgstr "스냅샷 '%1$s'는 모체가 없습니다"
+msgstr "순간찍기 '%1$s'는 상위 항목이 없습니다"
 
 #, c-format
 msgid "snapshot '%1$s' has no parent"
-msgstr "스냅샷 '%1$s'에 상위 항목이 없습니다"
+msgstr "순간찍기 '%1$s'는 상위 항목이 없습니다"
 
 #, c-format
 msgid "snapshot '%1$s' lacks domain '%2$s' rollback info"
-msgstr "스냅샷 '%1$s'에 도메인 '%2$s' 롤백 정보가 없습니다"
+msgstr "순간찍기 '%1$s'는 도메인 '%2$s' 복원 정보가 부족합니다"
 
 msgid "snapshot VM disk source and parent disk source are not the same"
-msgstr "스냅샷 VM 디스크 원천과 상위 디스크 원천은 동일하지 않습니다"
+msgstr "순간찍기 VM 디스크 원천 및 상위 디스크 원천은 동일하지 않습니다"
 
 #, c-format
 msgid "snapshot disk '%1$s' was target of not completed snapshot delete"
-msgstr "스냅샷 디스크 '%1$s'는 미-완료된 스냅샷 삭제의 대상이었습니다"
+msgstr "순간찍기 디스크 '%1$s'는 미완료된 순간찍기 삭제의 대상이었습니다"
 
 msgid "snapshot information"
-msgstr "스냅샷 정보"
+msgstr "순간찍기 정보"
 
 msgid "snapshot name"
-msgstr "스냅샷 이름"
+msgstr "순간찍기 이름"
 
 msgid ""
 "snapshot without memory state, removal of existing managed saved state "
 "strongly recommended to avoid corruption"
-msgstr ""
-"메모리 상태가 없는 스냅샷, 손상을 방지하기 위해 기존의 관리되는 저장된 상태"
-"를 제거하는 것이 좋습니다"
+msgstr "메모리 상태가 없는 순간찍기, 손상을 방지하려면 기존 관리 저장된 상태를 "
+"제거하는 것이 아주 좋습니다"
 
 msgid "snapshotName is null"
-msgstr "스냅샷 이름이 null입니다"
+msgstr "순간찍기 이름이 null입니다"
 
 msgid "snapshots have inconsistent relations"
-msgstr "스냅샷의 관계가 일치하지 않습니다"
+msgstr "순간찍기는 일치하지 않는 관계를 가지고 있습니다"
 
 msgid "sndbuf must be a positive integer"
 msgstr "sndbuf는 양의 정수여야 합니다"
@@ -34579,8 +34570,8 @@ msgstr "저장소에 대한 원천 장치"
 msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
-msgstr ""
-"디스크 '%1$s'의 원천는 정규 파일이 아닙니다; 외부 스냅샷 이름 생성을 거부함"
+msgstr "디스크 '%1$s'를 위한 원천은 정규 파일이 아닙니다; 외부 순간찍기 이름을 "
+"생성하는데 거부 중"
 
 msgid "source media is a block device"
 msgstr "원천 미디어는 블록 장치입니다"
@@ -34983,13 +34974,13 @@ msgid "tainted: %1$s"
 msgstr "오염됨: %1$s"
 
 msgid "take a live snapshot"
-msgstr "라이브 스냅샷을 찍다"
+msgstr "실시간으로 순간찍기합니다"
 
 msgid "take a screenshot of a current domain console and store it into a file"
 msgstr "현재 도메인 콘솔의 스크린샷을 찍어 파일에 저장"
 
 msgid "take snapshot but create no metadata"
-msgstr "스냅샷을 찍지만 메타데이터를 생성하지 않음"
+msgstr "순간찍기를 실행하지만 메타자료를 생성하지 않음"
 
 #, c-format
 msgid "tap fd %1$d is not character device"
@@ -35146,7 +35137,7 @@ msgstr ""
 "호스트 항목 IP의 주소 계열은 dhcp 요소 부모의 주소 계열과 일치해야 합니다"
 
 msgid "the backing volume if taking a snapshot"
-msgstr "스냅샷을 찍는 경우 백업 볼륨"
+msgstr "순간찍기를 실행하는 경우 백업된 볼륨"
 
 msgid "the bandwidth limit is in bytes/s rather than MiB/s"
 msgstr "대역폭 제한은 MiB/s가 아닌 바이트/s입니다"
@@ -35176,7 +35167,7 @@ msgid "the domain already has a vsock device"
 msgstr "도메인에 이미 vsock 장치가 있습니다"
 
 msgid "the domain does not have a current snapshot"
-msgstr "도메인에는 현재 스냅샷이 없습니다"
+msgstr "도메인은 현재 순간찍기를 가지고 있지 않습니다"
 
 msgid "the guest hasn't updated any stats yet"
 msgstr "게스트는 아직 통계를 최신화하지 않았습니다"
@@ -35189,7 +35180,7 @@ msgid "the machine '%1$s' is not supported by emulator '%2$s'"
 msgstr "머신 '%1$s'는 에뮬레이터 '%2$s'에서 지원되지 않습니다"
 
 msgid "the machine has no snapshot"
-msgstr "머신에 스냅샷이 없습니다"
+msgstr "장비에 순간찍기가 없습니다"
 
 msgid "the new password"
 msgstr "새 비밀번호"
@@ -35314,10 +35305,10 @@ msgid "this disk doesn't support update"
 msgstr "이 디스크는 최신화를 지원하지 않습니다"
 
 msgid "this domain does not have a device to delete snapshots"
-msgstr "이 도메인에는 스냅샷을 삭제할 수 있는 장치가 없음"
+msgstr "이 도메인에는 순간찍기를 삭제 할 수 있는 장치를 가지고 있지 않습니다"
 
 msgid "this domain does not have a device to take snapshots"
-msgstr "이 도메인은 스냅샷을 찍을 수 있는 장치를 가지고 있지 않습니다"
+msgstr "이 도메인은 순간찍기를 실행 할 수 있는 장치를 가지고 있지 않습니다"
 
 msgid "this domain exists already"
 msgstr "이미 도메인이 존재함"
@@ -35454,13 +35445,13 @@ msgid "too many NUMA cells: %1$d > %2$d"
 msgstr "너무 많은 NUMA 셀: %1$d > %2$d"
 
 msgid "too many current snapshots"
-msgstr "너무 많은 현재 스냅샷"
+msgstr "너무 많은 현재 순간찍기"
 
 msgid "too many disk checkpoint requests for domain"
 msgstr "도메인에 대한 너무 많은 디스크 검사점 요청"
 
 msgid "too many disk snapshot requests for domain"
-msgstr "도메인에 대해 너무 많은 디스크 스냅샷이 요청됨"
+msgstr "도메인을 위해 과다한 디스크 순간찍기가 요청되었습니다"
 
 msgid "too many disks"
 msgstr "너무 많은 디스크"
@@ -35817,8 +35808,7 @@ msgstr "임시 도메인은 실행 상태 '종료'를 가질 수 없습니다"
 
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
-msgstr ""
-"비활성 스냅샷으로 되돌리려면 임시 도메인에서 실행 또는 일시 중지를 요청해야 "
+msgstr "비활성 순간찍기로 되돌리려면 임시 도메인에서 실행 또는 일시 중지를 요청해야 "
 "합니다"
 
 msgid "transient domains do not have any persistent config"
@@ -35936,11 +35926,11 @@ msgstr "'%1$s'에서 파일 시스템 유형을 쿼리할 수 없습니다"
 
 #, c-format
 msgid "unable to access device %1$s\n"
-msgstr "장치 %1$s에 액세스할 수 없음\n"
+msgstr "장치 %1$s에 접근 할 수 없음\n"
 
 #, c-format
 msgid "unable to access disk %1$s\n"
-msgstr "디스크 %1$s에 액세스할 수 없음\n"
+msgstr "디스크 %1$s에 접근 할 수 없음\n"
 
 #, c-format
 msgid "unable to add SSH host key for host '%1$s': %2$s"
@@ -36029,7 +36019,7 @@ msgid "unable to determine if checkpoint has parent"
 msgstr "체크포인트가 부모가 있는지 확인 할 수 없습니다"
 
 msgid "unable to determine if snapshot has parent"
-msgstr "스냅샷에 상위 항목이 있는지 확인할 수 없습니다"
+msgstr "순간찍기에 상위 항목이 있는지 확인 할 수 없습니다"
 
 #, c-format
 msgid "unable to disable host cpu perf event for %1$s"
@@ -36264,7 +36254,7 @@ msgid "unable to parse: %1$s"
 msgstr "구문 분석 할 수 없음: %1$s"
 
 msgid "unable to perform snapshot filtering"
-msgstr "스냅샷 필터링을 실행할 수 없음"
+msgstr "순간찍기 선별을 수행 할 수 없음"
 
 msgid "unable to poll on child"
 msgstr "하단에게 투표할 수 없음"
@@ -36318,7 +36308,7 @@ msgstr "체크포인트 %1$s에 대한 메타데이터를 저장할 수 없습�
 
 #, c-format
 msgid "unable to save metadata for snapshot %1$s"
-msgstr "스냅샷 %1$s의 메타데이터를 저장할 수 없음"
+msgstr "순간찍기 %1$s를 위해 메타자료를 저장 할 수 없음"
 
 msgid "unable to seek"
 msgstr "추구할 수 없다"
@@ -36526,7 +36516,7 @@ msgstr "예기치 못한 Xen URI 경로 '%1$s', xen:///system을 시도하세요
 
 #, c-format
 msgid "unexpected accessmode %1$d"
-msgstr "예기치 못한 액세스 모드 %1$d"
+msgstr "예기치 못한 접근 방식 %1$d"
 
 #, c-format
 msgid "unexpected actual net type %1$d"
@@ -36737,11 +36727,11 @@ msgstr "예기치 못한 net 유형 %1$d"
 
 #, c-format
 msgid "unexpected number of snapshots < %1$u"
-msgstr "예상치 못한 스냅샷 수 < %1$u"
+msgstr "예상치 못한 순간찍기의 수 < %1$u"
 
 #, c-format
 msgid "unexpected number of snapshots > %1$u"
-msgstr "예상치 못한 스냅샷 수 > %1$u"
+msgstr "예상치 못한 순간찍기의 수 > %1$u"
 
 #, c-format
 msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
@@ -36762,7 +36752,7 @@ msgid "unexpected problem querying checkpoints"
 msgstr "체크포인트를 쿼리하는 예기치 않은 문제"
 
 msgid "unexpected problem reading snapshot xml"
-msgstr "스냅샷 xml을 읽는 동안 예기치 않은 문제가 발생했습니다"
+msgstr "순간찍기 xml을 읽는 동안 예기치 않은 문제가 발생함"
 
 msgid "unexpected protocol type"
 msgstr "예기치 않은 프로토콜 유형"
@@ -36785,7 +36775,7 @@ msgstr "예기치 못한 smbios 모드 %1$d"
 
 #, c-format
 msgid "unexpected snapshot state: %1$s"
-msgstr "예기치 않은 스냅샷 상태: %1$s"
+msgstr "예기치 않은 순간찍기 상태: %1$s"
 
 #, c-format
 msgid "unexpected sound model %1$d"
@@ -37020,7 +37010,7 @@ msgstr "'%1$s'에 알 수 없는 장치 유형"
 
 #, c-format
 msgid "unknown disk snapshot driver '%1$s'"
-msgstr "알 수 없는 디스크 스냅샷 드라이버 '%1$s'"
+msgstr "알 수 없는 디스크 순간찍기 드라이버 '%1$s'"
 
 #, c-format
 msgid "unknown driver format value '%1$s'"
@@ -37112,7 +37102,7 @@ msgstr "알 수 없는 ip 주소 유형 '%1$s'"
 
 #, c-format
 msgid "unknown memoryBacking/access/mode '%1$s'"
-msgstr "알 수 없는 메모리백킹/액세스/모드 '%1$s'"
+msgstr "알 수 없는 메모리백킹/접근/방식 '%1$s'"
 
 #, c-format
 msgid "unknown memoryBacking/allocation/mode '%1$s'"
@@ -37486,7 +37476,7 @@ msgid "unsupported console target type %1$s"
 msgstr "지원되지 않는 콘솔 대상 유형 %1$s"
 
 msgid "unsupported controller device"
-msgstr ""
+msgstr "지원되지 않는 제어기 장치"
 
 #, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -37521,7 +37511,7 @@ msgstr "지원되지 않는 디스크 드라이버 %1$s"
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
-msgstr "지원되지 않는 디스크 스냅샷 유형 '%1$s'"
+msgstr "지원되지 않는 디스크 순간찍기 유형 '%1$s'"
 
 msgid "unsupported disk type"
 msgstr "지원하지 않는 디스크 형식"
@@ -37560,7 +37550,7 @@ msgstr "지원되지 않는 기능 %1$s"
 
 #, c-format
 msgid "unsupported filesystem accessmode '%1$s'"
-msgstr "지원되지 않는 파일 시스템 액세스 모드 '%1$s'"
+msgstr "지원되지 않는 파일 시스템 접근 방식 '%1$s'"
 
 #, c-format
 msgid "unsupported filesystem driver '%1$s'"
@@ -38380,7 +38370,7 @@ msgid "virtiofs does not support multidevs"
 msgstr "virtiofs는 multidevs를 지원하지 않습니다"
 
 msgid "virtiofs does not support read-only access"
-msgstr ""
+msgstr "virtiofs는 읽기-전용 접근을 지원하지 않습니다"
 
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs는 wrpolicy를 지원하지 않습니다"
@@ -38395,7 +38385,7 @@ msgid "virtiofs is not yet supported in session mode"
 msgstr "virtiofs는 아직 세션 모드에서 지원되지 않습니다"
 
 msgid "virtiofs only supports passthrough accessmode"
-msgstr "virtiofs는 통과 액세스 모드만 지원합니다"
+msgstr "virtiofs는 통과 접근 방식만 지원합니다"
 
 #, c-format
 msgid "virtiofsd binary '%1$s' is not executable"
@@ -38405,7 +38395,7 @@ msgid "virtiofsd died unexpectedly"
 msgstr "virtiofsd가 예기치 않게 사망했습니다"
 
 msgid "virtual FAT storage can't be accessed in read-write mode"
-msgstr "읽기-쓰기 모드에서는 가상 FAT 저장소에 액세스할 수 없습니다"
+msgstr "가상 FAT 저장소는 읽기-쓰기 방식으로 접근 할 수 없습니다"
 
 msgid "virtualization type (/domain/@type)"
 msgstr "가상화 유형(/domain/@type)"
@@ -38707,7 +38697,7 @@ msgid "with --wait, don't wait for cancel to finish"
 msgstr "--wait를 사용하여 취소가 완료될 때까지 기다리지 마십시오"
 
 msgid "with redefine, set current snapshot"
-msgstr "재정의로 현재 스냅샷 설정"
+msgstr "재정의로 현재 순간찍기 설정"
 
 msgid "wrap xpath results in an common root element"
 msgstr "wrap xpath는 일반 root 요소로 나타납니다"
