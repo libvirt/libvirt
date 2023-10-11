@@ -934,7 +934,7 @@ qemuMonitorJSONHandleTrayChange(qemuMonitor *mon,
     int reason;
 
     /* drive alias is always reported but empty for -blockdev */
-    if (*devAlias == '\0')
+    if (devAlias && *devAlias == '\0')
         devAlias = NULL;
 
     if (!devAlias && !devid) {
