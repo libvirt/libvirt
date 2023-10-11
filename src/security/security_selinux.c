@@ -1988,17 +1988,6 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
         ret = virSecuritySELinuxSetFilecon(mgr, path, use_label, remember);
     }
 
-    if (ret == 1 && !disk_seclabel) {
-        /* If we failed to set a label, but virt_use_nfs let us
-         * proceed anyway, then we don't need to relabel later.  */
-        disk_seclabel = virSecurityDeviceLabelDefNew(SECURITY_SELINUX_NAME);
-        if (!disk_seclabel)
-            return -1;
-        disk_seclabel->labelskip = true;
-        VIR_APPEND_ELEMENT(src->seclabels, src->nseclabels, disk_seclabel);
-        ret = 0;
-    }
-
     return ret;
 }
 
