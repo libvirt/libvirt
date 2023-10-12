@@ -654,7 +654,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
     ctl->def = virDomainDefParseString(xmlStr,
                                        ctl->xmlopt, NULL,
                                        VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL |
-                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
+                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
+                                       VIR_DOMAIN_DEF_PARSE_VOLUME_TRANSLATED);
 
     if (ctl->def == NULL) {
         vah_error(ctl, 0, _("could not parse XML"));

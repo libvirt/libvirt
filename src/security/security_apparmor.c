@@ -159,12 +159,16 @@ load_profile(virSecurityManager *mgr G_GNUC_UNUSED,
              bool append)
 {
     bool create = true;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE);
-    if (!xml)
+    if (virDomainDefFormatInternal(def, NULL, &buf,
+                                   VIR_DOMAIN_DEF_FORMAT_SECURE |
+                                   VIR_DOMAIN_DEF_FORMAT_VOLUME_TRANSLATED) < 0)
         return -1;
+
+    xml = virBufferContentAndReset(&buf);
 
     if (profile_status_file(profile) >= 0)
         create = false;
