@@ -378,9 +378,9 @@
         <target dev='vdc' bus='virtio'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
       </disk>
-      <disk type='file' device='cdrom'>
+      <disk type='volume' device='cdrom'>
         <driver name='qemu' type='raw'/>
-        <source file='/var/lib/libvirt/images/systemrescuecd-x86-4.9.5.iso'/>
+        <source pool='testpool' volume='testvolume' actualType='file' file='/var/lib/libvirt/images/systemrescuecd-x86-4.9.5.iso'/>
         <backingStore/>
         <target dev='hda' bus='ide'/>
         <readonly/>
