@@ -3734,6 +3734,8 @@ typedef enum {
      * post parse callbacks before starting. Failure of the post parse callback
      * is recorded as def->postParseFail */
     VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL = 1 << 11,
+    /* Parse the translated disk type='volume' data if present */
+    VIR_DOMAIN_DEF_PARSE_VOLUME_TRANSLATED = 1 << 12,
 } virDomainDefParseFlags;
 
 typedef enum {
@@ -3749,6 +3751,8 @@ typedef enum {
     VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM       = 1 << 6,
     VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT      = 1 << 7,
     VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST    = 1 << 8,
+    /* format disk type='volume' translated data if present */
+    VIR_DOMAIN_DEF_FORMAT_VOLUME_TRANSLATED = 1 << 9,
 } virDomainDefFormatFlags;
 
 /* Use these flags to skip specific domain ABI consistency checks done
