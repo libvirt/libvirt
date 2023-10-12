@@ -28247,7 +28247,8 @@ virDomainObjSave(virDomainObj *obj,
                           VIR_DOMAIN_DEF_FORMAT_STATUS |
                           VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
                           VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
-                          VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST);
+                          VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST |
+                          VIR_DOMAIN_DEF_FORMAT_VOLUME_TRANSLATED);
 
     g_autofree char *xml = NULL;
 
