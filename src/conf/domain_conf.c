@@ -7011,7 +7011,6 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 {
     virStorageSourcePoolDef *source;
     int ret = -1;
-    g_autofree char *mode = NULL;
 
     *srcpool = NULL;
 
@@ -7019,7 +7018,6 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 
     source->pool = virXMLPropString(node, "pool");
     source->volume = virXMLPropString(node, "volume");
-    mode = virXMLPropString(node, "mode");
 
     /* CD-ROM and Floppy allows no source */
     if (!source->pool && !source->volume) {
@@ -7033,13 +7031,11 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (mode &&
-        (source->mode = virStorageSourcePoolModeTypeFromString(mode)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown source mode '%1$s' for volume type disk"),
-                       mode);
+    if (virXMLPropEnum(node, "mode",
+                       virStorageSourcePoolModeTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &source->mode) < 0)
         goto cleanup;
-    }
 
     *srcpool = g_steal_pointer(&source);
     ret = 0;

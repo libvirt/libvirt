@@ -201,7 +201,7 @@ struct _virStorageSourcePoolDef {
     int voltype; /* virStorageVolType, internal only */
     int pooltype; /* virStoragePoolType from storage_conf.h, internal only */
     virStorageType actualtype; /* internal only */
-    int mode; /* virStorageSourcePoolMode, currently makes sense only for iscsi pool */
+    virStorageSourcePoolMode mode; /* currently makes sense only for iscsi pool */
 };
 
 
