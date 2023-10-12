@@ -30529,7 +30529,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDef *def)
     virStorageSource *n;
 
     for (n = def->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (n->type != VIR_STORAGE_TYPE_VOLUME || !n->srcpool)
+        if (n->type != VIR_STORAGE_TYPE_VOLUME || !n->srcpool || n->srcpool->actualtype != VIR_STORAGE_TYPE_NONE)
             continue;
 
         if (!conn) {
