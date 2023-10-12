@@ -498,6 +498,7 @@ virStorageSourceInitChainElement(virStorageSource *newelem,
 
 void
 virStorageSourcePoolDefFree(virStorageSourcePoolDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSourcePoolDef, virStorageSourcePoolDefFree);
 
 void
 virStorageSourceClear(virStorageSource *def);

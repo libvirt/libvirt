@@ -7005,44 +7005,31 @@ virDomainLeaseDefParseXML(xmlNodePtr node,
     return NULL;
 }
 
-static int
-virDomainDiskSourcePoolDefParse(xmlNodePtr node,
-                                virStorageSourcePoolDef **srcpool)
+static virStorageSourcePoolDef *
+virDomainDiskSourcePoolDefParse(xmlNodePtr node)
 {
-    virStorageSourcePoolDef *source;
-    int ret = -1;
-
-    *srcpool = NULL;
-
-    source = g_new0(virStorageSourcePoolDef, 1);
+    g_autoptr(virStorageSourcePoolDef) source = g_new0(virStorageSourcePoolDef, 1);
 
     source->pool = virXMLPropString(node, "pool");
     source->volume = virXMLPropString(node, "volume");
 
-    /* CD-ROM and Floppy allows no source */
-    if (!source->pool && !source->volume) {
-        ret = 0;
-        goto cleanup;
-    }
+    /* CD-ROM and Floppy allows no source -> empty pool */
+    if (!source->pool && !source->volume)
+        return g_steal_pointer(&source);
 
     if (!source->pool || !source->volume) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("'pool' and 'volume' must be specified together for 'pool' type source"));
-        goto cleanup;
+        return NULL;
     }
 
     if (virXMLPropEnum(node, "mode",
                        virStorageSourcePoolModeTypeFromString,
                        VIR_XML_PROP_NONZERO,
                        &source->mode) < 0)
-        goto cleanup;
+        return NULL;
 
-    *srcpool = g_steal_pointer(&source);
-    ret = 0;
-
- cleanup:
-    virStorageSourcePoolDefFree(source);
-    return ret;
+    return g_steal_pointer(&source);
 }
 
 
@@ -7482,7 +7469,7 @@ virDomainStorageSourceParse(xmlNodePtr node,
             return -1;
         break;
     case VIR_STORAGE_TYPE_VOLUME:
-        if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)
+        if (!(src->srcpool = virDomainDiskSourcePoolDefParse(node)))
             return -1;
         break;
     case VIR_STORAGE_TYPE_NVME:
@@ -8660,7 +8647,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             units = virXMLPropString(source_node, "units");
         } else if (def->type == VIR_DOMAIN_FS_TYPE_VOLUME) {
             def->src->type = VIR_STORAGE_TYPE_VOLUME;
-            if (virDomainDiskSourcePoolDefParse(source_node, &def->src->srcpool) < 0)
+            if (!(def->src->srcpool = virDomainDiskSourcePoolDefParse(source_node)))
                 goto error;
         }
     }
