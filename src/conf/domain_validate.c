@@ -2387,6 +2387,21 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
         if (other == mem)
             continue;
 
+        /* In case we're updating an existing memory device (e.g. virtio-mem),
+         * then pointers will be different. But addresses and aliases are the
+         * same. However, STREQ_NULLABLE() returns true if both strings are
+         * NULL which is not what we want. */
+        if (virDomainDeviceInfoAddressIsEqual(&other->info,
+                                              &mem->info)) {
+            continue;
+        }
+
+        if (mem->info.alias &&
+            STREQ_NULLABLE(other->info.alias,
+                           mem->info.alias)) {
+            continue;
+        }
+
         switch (other->model) {
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
