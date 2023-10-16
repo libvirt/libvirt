@@ -252,7 +252,8 @@ qemuBlockJobDiskNewPull(virDomainObj *vm,
                         unsigned int jobflags)
 {
     g_autoptr(qemuBlockJobData) job = NULL;
-    g_autofree char *jobname = g_strdup_printf("pull-%s-%s", disk->dst, disk->src->nodeformat);
+    g_autofree char *jobname = g_strdup_printf("pull-%s-%s", disk->dst,
+                                               qemuBlockStorageSourceGetEffectiveNodename(disk->src));
 
     if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_PULL, jobname)))
         return NULL;
@@ -278,7 +279,8 @@ qemuBlockJobDiskNewCommit(virDomainObj *vm,
                           unsigned int jobflags)
 {
     g_autoptr(qemuBlockJobData) job = NULL;
-    g_autofree char *jobname = g_strdup_printf("commit-%s-%s", disk->dst, top->nodeformat);
+    g_autofree char *jobname = g_strdup_printf("commit-%s-%s", disk->dst,
+                                               qemuBlockStorageSourceGetEffectiveNodename(top));
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
 
     if (topparent == NULL)
@@ -309,7 +311,7 @@ qemuBlockJobNewCreate(virDomainObj *vm,
 {
     g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *jobname = NULL;
-    const char *nodename = src->nodeformat;
+    const char *nodename = qemuBlockStorageSourceGetEffectiveNodename(src);
 
     if (storage)
         nodename = qemuBlockStorageSourceGetStorageNodename(src);
@@ -340,7 +342,8 @@ qemuBlockJobDiskNewCopy(virDomainObj *vm,
                         unsigned int jobflags)
 {
     g_autoptr(qemuBlockJobData) job = NULL;
-    g_autofree char *jobname = g_strdup_printf("copy-%s-%s", disk->dst, disk->src->nodeformat);
+    g_autofree char *jobname = g_strdup_printf("copy-%s-%s", disk->dst,
+                                               qemuBlockStorageSourceGetEffectiveNodename(disk->src));
 
     if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_COPY, jobname)))
         return NULL;
@@ -368,7 +371,8 @@ qemuBlockJobDiskNewBackup(virDomainObj *vm,
     g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *jobname = NULL;
 
-    jobname = g_strdup_printf("backup-%s-%s", disk->dst, disk->src->nodeformat);
+    jobname = g_strdup_printf("backup-%s-%s", disk->dst,
+                              qemuBlockStorageSourceGetEffectiveNodename(disk->src));
 
     if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_BACKUP, jobname)))
         return NULL;
