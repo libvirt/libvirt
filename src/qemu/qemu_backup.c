@@ -335,9 +335,9 @@ qemuBackupDiskPrepareDataOnePush(virJSONValue *actions,
         syncmode = QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_INCREMENTAL;
 
     if (qemuMonitorTransactionBackup(actions,
-                                     dd->domdisk->src->nodeformat,
+                                     qemuBlockStorageSourceGetEffectiveNodename(dd->domdisk->src),
                                      dd->blockjob->name,
-                                     dd->store->nodeformat,
+                                     qemuBlockStorageSourceGetEffectiveNodename(dd->store),
                                      dd->incrementalBitmap,
                                      syncmode) < 0)
         return -1;
@@ -355,9 +355,9 @@ qemuBackupDiskPrepareDataOnePull(virJSONValue *actions,
         dd->backupdisk->exportbitmap = g_strdup(dd->incrementalBitmap);
 
     if (qemuMonitorTransactionBackup(actions,
-                                     dd->domdisk->src->nodeformat,
+                                     qemuBlockStorageSourceGetEffectiveNodename(dd->domdisk->src),
                                      dd->blockjob->name,
-                                     dd->store->nodeformat,
+                                     qemuBlockStorageSourceGetEffectiveNodename(dd->store),
                                      NULL,
                                      QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_NONE) < 0)
         return -1;
