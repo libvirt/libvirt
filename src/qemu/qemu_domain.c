@@ -7891,7 +7891,7 @@ qemuDomainDiskGetTopNodename(virDomainDiskDef *disk)
     if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON)
         return priv->nodeCopyOnRead;
 
-    return disk->src->nodeformat;
+    return qemuBlockStorageSourceGetEffectiveNodename(disk->src);
 }
 
 

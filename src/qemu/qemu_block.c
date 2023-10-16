@@ -1980,7 +1980,7 @@ qemuBlockStorageGetCopyOnReadProps(virDomainDiskDef *disk)
     ignore_value(virJSONValueObjectAdd(&ret,
                                        "s:driver", "copy-on-read",
                                        "s:node-name", priv->nodeCopyOnRead,
-                                       "s:file", disk->src->nodeformat,
+                                       "s:file", qemuBlockStorageSourceGetEffectiveNodename(disk->src),
                                        "s:discard", "unmap",
                                        NULL));
 
@@ -2735,10 +2735,10 @@ qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
 {
     qemuBlockNamedNodeData *entry;
 
-    if (!(entry = virHashLookup(blockNamedNodeData, templ->nodeformat))) {
+    if (!(entry = virHashLookup(blockNamedNodeData, qemuBlockStorageSourceGetEffectiveNodename(templ)))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to update capacity data for block node '%1$s'"),
-                       templ->nodeformat);
+                       qemuBlockStorageSourceGetEffectiveNodename(templ));
         return -1;
     }
 
