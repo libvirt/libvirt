@@ -902,7 +902,7 @@ virSecretLoadAllConfigs(virSecretObjList *secrets,
     /* Ignore errors reported by readdir or other calls within the
      * loop (if any).  It's better to keep the secrets we managed to find. */
     while (virDirRead(dir, &de, NULL) > 0) {
-        char *path;
+        g_autofree char *path = NULL;
         virSecretObj *obj;
 
         if (!virStringHasSuffix(de->d_name, ".xml"))
@@ -914,11 +914,9 @@ virSecretLoadAllConfigs(virSecretObjList *secrets,
         if (!(obj = virSecretLoad(secrets, de->d_name, path, configDir))) {
             VIR_ERROR(_("Error reading secret: %1$s"),
                       virGetLastErrorMessage());
-            VIR_FREE(path);
             continue;
         }
 
-        VIR_FREE(path);
         virSecretObjEndAPI(&obj);
     }
 
