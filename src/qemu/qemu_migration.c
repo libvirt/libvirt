@@ -1012,7 +1012,7 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
     copysrc->tlsHostname = g_strdup(tlsHostname);
 
     qemuBlockStorageSourceSetStorageNodename(copysrc, g_strdup_printf("migration-%s-storage", disk->dst));
-    copysrc->nodeformat = g_strdup_printf("migration-%s-format", disk->dst);
+    qemuBlockStorageSourceSetFormatNodename(copysrc, g_strdup_printf("migration-%s-format", disk->dst));
 
     return g_steal_pointer(&copysrc);
 }
@@ -1060,7 +1060,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
     if (mon_ret == 0)
         mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), diskAlias, true,
                                             qemuDomainDiskGetTopNodename(disk),
-                                            copysrc->nodeformat,
+                                            qemuBlockStorageSourceGetEffectiveNodename(copysrc),
                                             mirror_speed, 0, 0, mirror_shallow,
                                             syncWrites);
 

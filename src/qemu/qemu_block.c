@@ -3406,11 +3406,11 @@ qemuBlockExportAddNBD(virDomainObj *vm,
     const char *bitmaps[2] = { bitmap, NULL };
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_EXPORT_ADD))
-        return qemuMonitorNBDServerAdd(priv->mon, src->nodeformat,
+        return qemuMonitorNBDServerAdd(priv->mon, qemuBlockStorageSourceGetEffectiveNodename(src),
                                        exportname, writable, bitmap);
 
-    if (!(nbdprops = qemuBlockExportGetNBDProps(src->nodeformat, exportname,
-                                                writable, bitmaps)))
+    if (!(nbdprops = qemuBlockExportGetNBDProps(qemuBlockStorageSourceGetEffectiveNodename(src),
+                                                exportname, writable, bitmaps)))
         return -1;
 
     return qemuMonitorBlockExportAdd(priv->mon, &nbdprops);

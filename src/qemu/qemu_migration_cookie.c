@@ -31,6 +31,7 @@
 #include "qemu_domain.h"
 #include "qemu_migration_cookie.h"
 #include "qemu_migration_params.h"
+#include "qemu_block.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -507,7 +508,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
         virDomainDiskDef *disk = vm->def->disks[i];
         qemuBlockStats *entry;
 
-        if (!(entry = virHashLookup(stats, disk->src->nodeformat)))
+        if (!(entry = virHashLookup(stats, qemuBlockStorageSourceGetEffectiveNodename(disk->src))))
             continue;
 
         mig->nbd->disks[mig->nbd->ndisks].target = g_strdup(disk->dst);
