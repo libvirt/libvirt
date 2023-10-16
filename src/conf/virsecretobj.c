@@ -865,25 +865,24 @@ virSecretLoad(virSecretObjList *secrets,
               const char *path,
               const char *configDir)
 {
-    virSecretDef *def = NULL;
+    g_autoptr(virSecretDef) def = NULL;
     virSecretObj *obj = NULL;
 
     if (!(def = virSecretDefParse(NULL, path, 0)))
-        goto cleanup;
+        return NULL;
 
     if (virSecretLoadValidateUUID(def, file) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!(obj = virSecretObjListAdd(secrets, &def, configDir, NULL)))
-        goto cleanup;
+        return NULL;
 
     if (virSecretLoadValue(obj) < 0) {
         virSecretObjListRemove(secrets, obj);
         g_clear_pointer(&obj, virObjectUnref);
+        return NULL;
     }
 
- cleanup:
-    virSecretDefFree(def);
     return obj;
 }
 
