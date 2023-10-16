@@ -2001,7 +2001,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     xmlNodePtr nbdkitnode = NULL;
 
     qemuBlockStorageSourceSetStorageNodename(src, virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt));
-    src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
+    qemuBlockStorageSourceSetFormatNodename(src, virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt));
     src->tlsAlias = virXPathString("string(./objects/TLSx509/@alias)", ctxt);
 
     if (src->sliceStorage)
@@ -2112,7 +2112,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
     g_auto(virBuffer) fdsetsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", qemuBlockStorageSourceGetStorageNodename(src));
-    virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
+    virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", qemuBlockStorageSourceGetFormatNodename(src));
 
     if (src->sliceStorage)
         virBufferEscapeString(&nodenamesChildBuf, "<nodename type='slice-storage' name='%s'/>\n",
@@ -2817,8 +2817,9 @@ qemuDomainVirStorageSourceFindByNodeName(virStorageSource *top,
 
     for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
         const char *nodestorage = qemuBlockStorageSourceGetStorageNodename(tmp);
+        const char *nodeformat = qemuBlockStorageSourceGetFormatNodename(tmp);
 
-        if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
+        if ((nodeformat && STREQ(nodeformat, nodeName)) ||
             (nodestorage && STREQ(nodestorage, nodeName)))
             return tmp;
     }
@@ -11144,10 +11145,11 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
                                                virQEMUDriverConfig *cfg)
 {
     char *nodestorage = g_strdup_printf("%s-storage", nodenameprefix);
+    char *nodeformat = g_strdup_printf("%s-format", nodenameprefix);
 
     /* qemuBlockStorageSourceSetStorageNodename steals 'nodestorage' */
     qemuBlockStorageSourceSetStorageNodename(src, nodestorage);
-    src->nodeformat = g_strdup_printf("%s-format", nodenameprefix);
+    qemuBlockStorageSourceSetFormatNodename(src, nodeformat);
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         src->sliceStorage->nodename = g_strdup_printf("libvirt-%u-slice-sto", src->id);
@@ -11161,8 +11163,7 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     qemuDomainPrepareStorageSourceConfig(src, cfg);
     qemuDomainPrepareDiskSourceData(disk, src);
 
-    if (qemuDomainSecretStorageSourcePrepareEncryption(priv, src,
-                                                       src->nodeformat) < 0)
+    if (qemuDomainSecretStorageSourcePrepareEncryption(priv, src, nodeformat) < 0)
         return -1;
 
     if (!qemuDomainPrepareStorageSourceNbdkit(src, cfg, nodestorage, priv)) {
@@ -11698,7 +11699,7 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
     pflash0->path = g_strdup(def->os.loader->path);
     pflash0->readonly = false;
     virTristateBoolToBool(def->os.loader->readonly, &pflash0->readonly);
-    pflash0->nodeformat = g_strdup("libvirt-pflash0-format");
+    qemuBlockStorageSourceSetFormatNodename(pflash0, g_strdup("libvirt-pflash0-format"));
     qemuBlockStorageSourceSetStorageNodename(pflash0, g_strdup("libvirt-pflash0-storage"));
 
     if (def->os.loader->nvram) {
