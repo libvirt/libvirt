@@ -1301,7 +1301,7 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriver *driver,
         return;
 
     qemuMonitorBitmapRemove(priv->mon,
-                            disk->mirror->nodeformat,
+                            qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
                             "libvirt-tmp-activewrite");
 
     qemuDomainObjExitMonitor(vm);
@@ -1388,7 +1388,7 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriver *driver,
 
     if (job->data.backup.bitmap)
         qemuMonitorBitmapRemove(qemuDomainGetMonitor(vm),
-                                job->disk->src->nodeformat,
+                                qemuBlockStorageSourceGetEffectiveNodename(job->disk->src),
                                 job->data.backup.bitmap);
 
     qemuDomainObjExitMonitor(vm);

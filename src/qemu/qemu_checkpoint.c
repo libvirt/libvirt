@@ -154,7 +154,7 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSource *src,
         found = true;
 
         if (qemuMonitorTransactionBitmapRemove(actions,
-                                               n->nodeformat,
+                                               qemuBlockStorageSourceGetEffectiveNodename(n),
                                                bitmapdata->name) < 0)
             return -1;
 
@@ -395,7 +395,8 @@ qemuCheckpointAddActions(virDomainObj *vm,
             chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
 
-        if (qemuMonitorTransactionBitmapAdd(actions, domdisk->src->nodeformat,
+        if (qemuMonitorTransactionBitmapAdd(actions,
+                                            qemuBlockStorageSourceGetEffectiveNodename(domdisk->src),
                                             chkdisk->bitmap, true, false, 0) < 0)
             return -1;
     }
@@ -704,7 +705,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
                 recoveractions = virJSONValueNewArray();
 
             if (qemuMonitorTransactionBitmapRemove(recoveractions,
-                                                   domdisk->src->nodeformat,
+                                                   qemuBlockStorageSourceGetEffectiveNodename(domdisk->src),
                                                    "libvirt-tmp-size-xml") < 0)
                 goto endjob;
         }
@@ -718,7 +719,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
             goto endjob;
 
         if (qemuMonitorTransactionBitmapRemove(cleanupactions,
-                                               domdisk->src->nodeformat,
+                                               qemuBlockStorageSourceGetEffectiveNodename(domdisk->src),
                                                "libvirt-tmp-size-xml") < 0)
             goto endjob;
     }

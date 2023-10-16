@@ -13634,7 +13634,7 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
         goto endjob;
 
     if (baseSource) {
-        nodebase = baseSource->nodeformat;
+        nodebase = qemuBlockStorageSourceGetEffectiveNodename(baseSource);
         if (!backingPath &&
             !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
             goto endjob;
@@ -13642,7 +13642,7 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
 
     qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorBlockStream(priv->mon,
-                                 disk->src->nodeformat,
+                                 qemuBlockStorageSourceGetEffectiveNodename(disk->src),
                                  job->name,
                                  nodebase,
                                  backingPath,
@@ -14327,7 +14327,8 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
 
     ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
                                     qemuDomainDiskGetTopNodename(disk),
-                                    mirror->nodeformat, bandwidth,
+                                    qemuBlockStorageSourceGetEffectiveNodename(mirror),
+                                    bandwidth,
                                     granularity, buf_size, mirror_shallow,
                                     syncWrites);
 

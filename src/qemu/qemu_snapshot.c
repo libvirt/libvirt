@@ -959,7 +959,8 @@ qemuSnapshotDiskBitmapsPropagate(qemuSnapshotDiskData *dd,
     qemuBlockNamedNodeData *entry;
     size_t i;
 
-    if (!(entry = virHashLookup(blockNamedNodeData, dd->disk->src->nodeformat)))
+    if (!(entry = virHashLookup(blockNamedNodeData,
+                                qemuBlockStorageSourceGetEffectiveNodename(dd->disk->src))))
         return 0;
 
     for (i = 0; i < entry->nbitmaps; i++) {
@@ -969,7 +970,8 @@ qemuSnapshotDiskBitmapsPropagate(qemuSnapshotDiskData *dd,
         if (!bitmap->persistent || !bitmap->recording || bitmap->inconsistent)
             continue;
 
-        if (qemuMonitorTransactionBitmapAdd(actions, dd->src->nodeformat,
+        if (qemuMonitorTransactionBitmapAdd(actions,
+                                            qemuBlockStorageSourceGetEffectiveNodename(dd->src),
                                             bitmap->name, true, false,
                                             bitmap->granularity) < 0)
             return -1;

@@ -2807,7 +2807,8 @@ qemuBlockNamedNodeDataGetBitmapByName(GHashTable *blockNamedNodeData,
     qemuBlockNamedNodeData *nodedata;
     size_t i;
 
-    if (!(nodedata = virHashLookup(blockNamedNodeData, src->nodeformat)))
+    if (!(nodedata = virHashLookup(blockNamedNodeData,
+                                   qemuBlockStorageSourceGetEffectiveNodename(src))))
         return NULL;
 
     for (i = 0; i < nodedata->nbitmaps; i++) {
@@ -2863,7 +2864,7 @@ qemuBlockGetBitmapMergeActionsGetBitmaps(virStorageSource *topsrc,
     /* for now it doesn't make sense to consider bitmaps which are not present
      * in @topsrc as we can't recreate a bitmap for a layer if it's missing */
 
-    if (!(entry = virHashLookup(blockNamedNodeData, topsrc->nodeformat)))
+    if (!(entry = virHashLookup(blockNamedNodeData, qemuBlockStorageSourceGetEffectiveNodename(topsrc))))
         return NULL;
 
     for (i = 0; i < entry->nbitmaps; i++) {
@@ -2972,7 +2973,7 @@ qemuBlockGetBitmapMergeActions(virStorageSource *topsrc,
                 granularity = bitmap->granularity;
 
             if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(merge,
-                                                                 n->nodeformat,
+                                                                 qemuBlockStorageSourceGetEffectiveNodename(n),
                                                                  bitmap->name) < 0)
                 return -1;
         }
@@ -2982,7 +2983,7 @@ qemuBlockGetBitmapMergeActions(virStorageSource *topsrc,
                                                              target, curbitmap))) {
 
             if (qemuMonitorTransactionBitmapAdd(act,
-                                                target->nodeformat,
+                                                qemuBlockStorageSourceGetEffectiveNodename(target),
                                                 mergebitmapname,
                                                 mergebitmappersistent,
                                                 mergebitmapdisabled,
@@ -2992,18 +2993,18 @@ qemuBlockGetBitmapMergeActions(virStorageSource *topsrc,
 
         if (writebitmapsrc &&
             qemuMonitorTransactionBitmapMergeSourceAddBitmap(merge,
-                                                             writebitmapsrc->nodeformat,
+                                                             qemuBlockStorageSourceGetEffectiveNodename(writebitmapsrc),
                                                              "libvirt-tmp-activewrite") < 0)
             return -1;
 
-        if (qemuMonitorTransactionBitmapMerge(act, target->nodeformat,
+        if (qemuMonitorTransactionBitmapMerge(act, qemuBlockStorageSourceGetEffectiveNodename(target),
                                               mergebitmapname, &merge) < 0)
             return -1;
     }
 
  done:
     if (writebitmapsrc &&
-        qemuMonitorTransactionBitmapRemove(act, writebitmapsrc->nodeformat,
+        qemuMonitorTransactionBitmapRemove(act, qemuBlockStorageSourceGetEffectiveNodename(writebitmapsrc),
                                            "libvirt-tmp-activewrite") < 0)
         return -1;
 
@@ -3578,8 +3579,8 @@ qemuBlockCommit(virDomainObj *vm,
     rc = qemuMonitorBlockCommit(priv->mon,
                                 qemuDomainDiskGetTopNodename(disk),
                                 job->name,
-                                topSource->nodeformat,
-                                baseSource->nodeformat,
+                                qemuBlockStorageSourceGetEffectiveNodename(topSource),
+                                qemuBlockStorageSourceGetEffectiveNodename(baseSource),
                                 backingPath, bandwidth,
                                 autofinalize);
 
@@ -3663,7 +3664,7 @@ qemuBlockPivot(virDomainObj *vm,
             bitmapactions = virJSONValueNewArray();
 
             if (qemuMonitorTransactionBitmapAdd(bitmapactions,
-                                                disk->mirror->nodeformat,
+                                                qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
                                                 "libvirt-tmp-activewrite",
                                                 false,
                                                 false,
@@ -3684,8 +3685,8 @@ qemuBlockPivot(virDomainObj *vm,
                 reopenactions = virJSONValueNewArray();
 
                 if (qemuMonitorTransactionSnapshotBlockdev(reopenactions,
-                                                           disk->mirror->backingStore->nodeformat,
-                                                           disk->mirror->nodeformat))
+                                                           qemuBlockStorageSourceGetEffectiveNodename(disk->mirror->backingStore),
+                                                           qemuBlockStorageSourceGetFormatNodename(disk->mirror)))
                     return -1;
             }
 
@@ -3696,7 +3697,7 @@ qemuBlockPivot(virDomainObj *vm,
         bitmapactions = virJSONValueNewArray();
 
         if (qemuMonitorTransactionBitmapAdd(bitmapactions,
-                                            job->data.commit.base->nodeformat,
+                                            qemuBlockStorageSourceGetEffectiveNodename(job->data.commit.base),
                                             "libvirt-tmp-activewrite",
                                             false,
                                             false,
