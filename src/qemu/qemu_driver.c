@@ -9252,7 +9252,7 @@ qemuDomainBlockResize(virDomainPtr dom,
     }
 
     if (!qemuDiskBusIsSD(disk->bus)) {
-        nodename = disk->src->nodeformat;
+        nodename = qemuBlockStorageSourceGetEffectiveNodename(disk->src);
     } else {
         if (!(device = qemuAliasDiskDriveFromDisk(disk)))
             goto endjob;
