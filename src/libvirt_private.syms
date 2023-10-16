@@ -2280,7 +2280,6 @@ virFDStreamSetInternalCloseCb;
 saferead;
 safewrite;
 safezero;
-virBuildPathInternal;
 virCloseFrom;
 virCloseRange;
 virCloseRangeInit;

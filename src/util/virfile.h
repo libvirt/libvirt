@@ -307,11 +307,6 @@ int virFileOpenTty(int *ttymaster,
 
 char *virFileFindMountPoint(const char *type);
 
-/* NB: this should be combined with virFileBuildPath */
-#define virBuildPath(path, ...) \
-    virBuildPathInternal(path, __VA_ARGS__, NULL)
-void virBuildPathInternal(char **path, ...) G_GNUC_NULL_TERMINATED;
-
 typedef struct _virHugeTLBFS virHugeTLBFS;
 struct _virHugeTLBFS {
     char *mnt_dir;                  /* Where the FS is mount to */
