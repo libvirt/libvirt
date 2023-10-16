@@ -153,7 +153,7 @@ virHookCheck(int no, const char *driver)
         return -1;
     }
 
-    virBuildPath(&path, LIBVIRT_HOOK_DIR, driver);
+    path = g_build_filename(LIBVIRT_HOOK_DIR, driver, NULL);
 
     if (!virFileExists(path)) {
         VIR_DEBUG("No hook script %s", path);
@@ -398,7 +398,7 @@ virHookCall(int driver,
     if (extra == NULL)
         extra = "-";
 
-    virBuildPath(&path, LIBVIRT_HOOK_DIR, drvstr);
+    path = g_build_filename(LIBVIRT_HOOK_DIR, drvstr, NULL);
 
     script_ret = 1;
 

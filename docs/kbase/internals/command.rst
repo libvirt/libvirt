@@ -444,7 +444,7 @@ src/util/hooks.c
      g_autofree char *path = NULL;
      g_autoptr(virCommand) cmd = NULL;
 
-     virBuildPath(&path, LIBVIRT_HOOK_DIR, drvstr);
+     path = g_build_filename(LIBVIRT_HOOK_DIR, drvstr, NULL);
 
      cmd = virCommandNew(path);
 

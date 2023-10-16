@@ -38,7 +38,7 @@ virFCIsCapableRport(const char *rport)
 {
     g_autofree char *path = NULL;
 
-    virBuildPath(&path, SYSFS_FC_RPORT_PATH, rport);
+    path = g_build_filename(SYSFS_FC_RPORT_PATH, rport, NULL);
 
     return virFileExists(path);
 }
