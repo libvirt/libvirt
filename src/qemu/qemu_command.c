@@ -7032,9 +7032,11 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 
     if (virDomainDefHasOldStyleUEFI(def)) {
         if (priv->pflash0)
-            virBufferAsprintf(&buf, ",pflash0=%s", priv->pflash0->nodeformat);
+            virBufferAsprintf(&buf, ",pflash0=%s",
+                              qemuBlockStorageSourceGetEffectiveNodename(priv->pflash0));
         if (def->os.loader->nvram)
-            virBufferAsprintf(&buf, ",pflash1=%s", def->os.loader->nvram->nodeformat);
+            virBufferAsprintf(&buf, ",pflash1=%s",
+                              qemuBlockStorageSourceGetEffectiveNodename(def->os.loader->nvram));
     }
 
     if (virDomainNumaHasHMAT(def->numa))
