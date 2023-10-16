@@ -1573,7 +1573,7 @@ qemuMigrationCookieBlockDirtyBitmapsMatchDisks(virDomainDef *def,
             return -1;
         }
 
-        disk->nodename = disk->disk->src->nodeformat;
+        disk->nodename = qemuBlockStorageSourceGetEffectiveNodename(disk->disk->src);
     }
 
     return 0;
