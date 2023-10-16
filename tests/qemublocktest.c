@@ -241,7 +241,7 @@ testQemuDiskXMLToJSONFakeSecrets(virStorageSource *src)
         srcpriv->encinfo[0] = g_new0(qemuDomainSecretInfo, 1);
 
         srcpriv->encinfo[0]->alias = g_strdup_printf("%s-encalias",
-                                                     NULLSTR(src->nodeformat));
+                                                     qemuBlockStorageSourceGetFormatNodename(src));
         srcpriv->enccount = 1;
     }
 
@@ -653,7 +653,7 @@ testQemuBitmapListPrint(const char *title,
 
     for (; next; next = next->next) {
         virStorageSource *src = next->data;
-        virBufferAsprintf(buf, "%s\n", src->nodeformat);
+        virBufferAsprintf(buf, "%s\n", qemuBlockStorageSourceGetFormatNodename(src));
     }
 }
 
@@ -668,7 +668,7 @@ testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
    ret->format = VIR_STORAGE_FILE_QCOW2;
    ret->path = g_strdup_printf("/image%zu", idx);
    qemuBlockStorageSourceSetStorageNodename(ret, g_strdup_printf("libvirt-%zu-storage", idx));
-   ret->nodeformat = g_strdup_printf("libvirt-%zu-format", idx);
+   qemuBlockStorageSourceSetFormatNodename(ret, g_strdup_printf("libvirt-%zu-format", idx));
 
    return ret;
 }
@@ -741,7 +741,7 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
     }
 
     target = virStorageSourceNew();
-    target->nodeformat = g_strdup_printf("target_node");
+    qemuBlockStorageSourceSetFormatNodename(target, g_strdup_printf("target_node"));
 
     if (qemuBackupDiskPrepareOneBitmapsChain(data->chain,
                                              target,
@@ -872,7 +872,7 @@ testQemuBlockBitmapBlockcopy(const void *opaque)
     g_autoptr(virStorageSource) fakemirror = virStorageSourceNew();
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    fakemirror->nodeformat = g_strdup("mirror-format-node");
+    qemuBlockStorageSourceSetFormatNodename(fakemirror, g_strdup("mirror-format-node"));
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  blockcopyPrefix, data->name);
