@@ -9368,7 +9368,7 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
         /* capacity are reported only per node-name so we need to transfer them */
         if (disk && disk->src &&
-            (capstats = virHashLookup(blockstats, disk->src->nodeformat))) {
+            (capstats = virHashLookup(blockstats, qemuBlockStorageSourceGetEffectiveNodename(disk->src)))) {
             (*retstats)->capacity = capstats->capacity;
             (*retstats)->physical = capstats->physical;
             (*retstats)->wr_highest_offset = capstats->wr_highest_offset;
@@ -17348,7 +17348,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         if (QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
             frontendalias = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
-            backendalias = n->nodeformat;
+            backendalias = qemuBlockStorageSourceGetEffectiveNodename(n);
             backendstoragealias = qemuBlockStorageSourceGetStorageNodename(n);
         } else {
             /* alias may be NULL if the VM is not running */
@@ -17402,7 +17402,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                 return -1;
 
             if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
-                                           disk->mirror->nodeformat,
+                                           qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
                                            disk->mirror,
                                            *recordnr,
                                            stats) < 0)
@@ -17431,7 +17431,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                         return -1;
 
                     if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
-                                                   backupdisk->store->nodeformat,
+                                                   qemuBlockStorageSourceGetEffectiveNodename(backupdisk->store),
                                                    backupdisk->store,
                                                    *recordnr,
                                                    stats) < 0)
