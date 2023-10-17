@@ -969,7 +969,7 @@ myDomainEventMemoryFailureCallback(virConnectPtr conn G_GNUC_UNUSED,
                                    void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) memory failure: recipient '%d', "
-           "aciont '%d', flags '%d'\n", __func__, virDomainGetName(dom),
+           "aciont '%d', flags '0x%x'\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), recipient, action, flags);
     return 0;
 }
