@@ -1513,14 +1513,10 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachData *data)
  */
 qemuBlockStorageSourceAttachData *
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
-                                            virStorageSource *backingStore,
-                                            bool autoreadonly)
+                                            virStorageSource *backingStore)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    unsigned int backendpropsflags = 0;
-
-    if (autoreadonly)
-        backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
+    unsigned int backendpropsflags = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 

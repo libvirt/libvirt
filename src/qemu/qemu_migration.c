@@ -1045,11 +1045,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
                                                                         tlsAlias, tlsHostname)))
         return -1;
 
-    /* Migration via blockdev-mirror was supported sooner than the auto-read-only
-     * feature was added to qemu */
     if (!(data = qemuBlockStorageSourceAttachPrepareBlockdev(copysrc,
-                                                             copysrc->backingStore,
-                                                             false)))
+                                                             copysrc->backingStore)))
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_OUT) < 0)

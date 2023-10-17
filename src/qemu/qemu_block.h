@@ -134,8 +134,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockStorageSourceAttachData,
 
 qemuBlockStorageSourceAttachData *
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
-                                            virStorageSource *backingStore,
-                                            bool autoreadonly);
+                                            virStorageSource *backingStore);
 
 qemuBlockStorageSourceAttachData *
 qemuBlockStorageSourceDetachPrepare(virStorageSource *src);
