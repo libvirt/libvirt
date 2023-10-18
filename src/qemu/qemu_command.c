@@ -1572,30 +1572,6 @@ qemuDiskBusIsSD(int bus)
 }
 
 
-/**
- * qemuDiskSourceGetProps:
- * @src: disk source struct
- *
- * Returns the disk source struct wrapped so that it can be used as disk source
- * directly by converting it from json.
- */
-static virJSONValue *
-qemuDiskSourceGetProps(virStorageSource *src)
-{
-    g_autoptr(virJSONValue) props = NULL;
-    virJSONValue *ret = NULL;
-
-    if (!(props = qemuBlockStorageSourceGetBackendProps(src,
-                                                        QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY)))
-        return NULL;
-
-    if (virJSONValueObjectAdd(&ret, "a:file", &props, NULL) < 0)
-        return NULL;
-
-    return ret;
-}
-
-
 static int
 qemuBuildDriveSourceStr(virDomainDiskDef *disk,
                         virBuffer *buf)
@@ -1603,7 +1579,6 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
     virStorageType actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
     qemuDomainSecretInfo **encinfo = NULL;
-    g_autoptr(virJSONValue) srcprops = NULL;
     bool rawluks = false;
 
     if (srcpriv)
@@ -1624,14 +1599,22 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
         virQEMUBuildBufferEscapeComma(buf, disk->src->path);
         break;
 
-    case VIR_STORAGE_TYPE_NETWORK:
-        if (!(srcprops = qemuDiskSourceGetProps(disk->src)))
+    case VIR_STORAGE_TYPE_NETWORK: {
+        g_autoptr(virJSONValue) props = NULL;
+        g_autoptr(virJSONValue) wrap = NULL;
+
+        if (!(props = qemuBlockStorageSourceGetBackendProps(disk->src,
+                                                            QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY)))
             return -1;
 
-        if (virQEMUBuildCommandLineJSON(srcprops, buf, NULL,
+        if (virJSONValueObjectAdd(&wrap, "a:file", &props, NULL) < 0)
+            return -1;
+
+        if (virQEMUBuildCommandLineJSON(wrap, buf, NULL,
                                         virQEMUBuildCommandLineJSONArrayNumbered) < 0)
             return -1;
         break;
+    }
 
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NVME:
