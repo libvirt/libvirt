@@ -913,22 +913,18 @@ qemuBlockStorageSourceGetVhostVdpaProps(virStorageSource *src)
 
 static int
 qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSource *src,
-                                               virJSONValue *props)
+                                               virJSONValue **cache)
 {
-    g_autoptr(virJSONValue) cacheobj = NULL;
     bool direct = false;
     bool noflush = false;
 
     if (!qemuDomainDiskCachemodeFlags(src->cachemode, NULL, &direct, &noflush))
         return 0;
 
-    if (virJSONValueObjectAdd(&cacheobj,
+    if (virJSONValueObjectAdd(cache,
                               "b:direct", direct,
                               "b:no-flush", noflush,
                               NULL) < 0)
-        return -1;
-
-    if (virJSONValueObjectAppend(props, "cache", &cacheobj) < 0)
         return -1;
 
     return 0;
@@ -1109,10 +1105,13 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             return NULL;
 
         if (!legacy) {
-            if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, fileprops) < 0)
+            g_autoptr(virJSONValue) cache = NULL;
+
+            if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
                 return NULL;
 
             if (virJSONValueObjectAdd(&fileprops,
+                                      "A:cache", &cache,
                                       "T:read-only", ro,
                                       "T:auto-read-only", aro,
                                       NULL) < 0)
@@ -1278,8 +1277,12 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSource *src)
     int detectZeroesMode = virDomainDiskGetDetectZeroesMode(src->discard,
                                                             src->detect_zeroes);
     g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) cache = NULL;
 
     if (qemuBlockNodeNameValidate(qemuBlockStorageSourceGetFormatNodename(src)) < 0)
+        return NULL;
+
+    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
         return NULL;
 
     if (src->discard)
@@ -1297,10 +1300,8 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSource *src)
                               "b:read-only", src->readonly,
                               "S:discard", discard,
                               "S:detect-zeroes", detectZeroes,
+                              "A:cache", &cache,
                               NULL) < 0)
-        return NULL;
-
-    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, props) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
@@ -1439,8 +1440,12 @@ static virJSONValue *
 qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
 {
     g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) cache = NULL;
 
     if (qemuBlockNodeNameValidate(src->sliceStorage->nodename) < 0)
+        return NULL;
+
+    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
         return NULL;
 
     if (virJSONValueObjectAdd(&props,
@@ -1451,10 +1456,8 @@ qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
                               "s:file", qemuBlockStorageSourceGetStorageNodename(src),
                               "b:auto-read-only", true,
                               "s:discard", "unmap",
+                              "A:cache", &cache,
                               NULL) < 0)
-        return NULL;
-
-    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, props) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
