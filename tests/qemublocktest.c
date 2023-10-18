@@ -1015,6 +1015,7 @@ mymain(void)
         xmljsonxmldata.legacy = true; \
         if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
                        &xmljsonxmldata) < 0) \
+            ret = -1; \
         xmljsonxmldata.legacy = false; \
         if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
                        &xmljsonxmldata) < 0) \
