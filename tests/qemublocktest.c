@@ -1084,12 +1084,6 @@ mymain(void)
     TEST_JSON_FORMAT_NET("<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/6'>\n"
                          "  <host name='test.org' port='1234'/>\n"
                          "</source>\n");
-    TEST_JSON_FORMAT_NET("<source protocol='sheepdog' name='test'>\n"
-                         "  <host name='example.com' port='321'/>\n"
-                         "</source>\n");
-    TEST_JSON_FORMAT_NET("<source protocol='vxhs' name='c6718f6b-0401-441d-a8c3-1f0064d75ee0'>\n"
-                         "  <host name='example.com' port='9999'/>\n"
-                         "</source>\n");
 
 #define TEST_DISK_TO_JSON_FULL(nme, fl) \
     do { \
