@@ -919,11 +919,8 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSource *src,
     bool direct = false;
     bool noflush = false;
 
-    if (src->cachemode == VIR_DOMAIN_DISK_CACHE_DEFAULT)
+    if (!qemuDomainDiskCachemodeFlags(src->cachemode, NULL, &direct, &noflush))
         return 0;
-
-    if (qemuDomainDiskCachemodeFlags(src->cachemode, NULL, &direct, &noflush) < 0)
-        return -1;
 
     if (virJSONValueObjectAdd(&cacheobj,
                               "b:direct", direct,

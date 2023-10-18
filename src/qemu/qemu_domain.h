@@ -1008,8 +1008,8 @@ qemuDomainPrepareDiskSource(virDomainDiskDef *disk,
                             qemuDomainObjPrivate *priv,
                             virQEMUDriverConfig *cfg);
 
-int
-qemuDomainDiskCachemodeFlags(int cachemode,
+bool
+qemuDomainDiskCachemodeFlags(virDomainDiskCache cachemode,
                              bool *writeback,
                              bool *direct,
                              bool *noflush);

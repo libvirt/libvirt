@@ -1889,16 +1889,13 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         wwn = virJSONValueNewNumberUlong(w);
     }
 
-    if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT) {
-        /* VIR_DOMAIN_DISK_DEVICE_LUN translates into 'scsi-block'
-         * where any caching setting makes no sense. */
-        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
-            bool wb;
+    /* 'write-cache' component of disk->cachemode is set on device level.
+     * VIR_DOMAIN_DISK_DEVICE_LUN translates into 'scsi-block' where any
+     * caching setting makes no sense. */
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
+        bool wb;
 
-            if (qemuDomainDiskCachemodeFlags(disk->cachemode, &wb, NULL,
-                                             NULL) < 0)
-                return NULL;
-
+        if (qemuDomainDiskCachemodeFlags(disk->cachemode, &wb, NULL, NULL)) {
             writeCache = virTristateSwitchFromBool(wb);
         }
     }

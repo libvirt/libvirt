@@ -11406,13 +11406,18 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
 
 /**
  * qemuDomainDiskCachemodeFlags:
+ * @cachemode: aggregated cache mode
+ * @writeback: populated with 'writeback' component of @cachemode (may be NULL)
+ * @direct: populated with 'direct' component of @cachemode (may be NULL)
+ * @noflush: populated with 'noflush' component of @cachemode (may be NULL)
  *
- * Converts disk cachemode to the cache mode options for qemu. Returns -1 for
- * invalid @cachemode values and fills the flags and returns 0 on success.
- * Flags may be NULL.
+ * Converts disk @cachemode to the cache mode options for qemu according to the
+ * table below.
+ *
+ * Returns true if @cachemode is a relevant cache mode setting.
  */
-int
-qemuDomainDiskCachemodeFlags(int cachemode,
+bool
+qemuDomainDiskCachemodeFlags(virDomainDiskCache cachemode,
                              bool *writeback,
                              bool *direct,
                              bool *noflush)
@@ -11437,45 +11442,43 @@ qemuDomainDiskCachemodeFlags(int cachemode,
      * directsync   │ false             true           false
      * unsafe       │ true              false          true
      */
-    switch ((virDomainDiskCache) cachemode) {
+    switch (cachemode) {
     case VIR_DOMAIN_DISK_CACHE_DISABLE: /* 'none' */
         *writeback = true;
         *direct = true;
         *noflush = false;
-        break;
+        return true;
 
     case VIR_DOMAIN_DISK_CACHE_WRITETHRU:
         *writeback = false;
         *direct = false;
         *noflush = false;
-        break;
+        return true;
 
     case VIR_DOMAIN_DISK_CACHE_WRITEBACK:
         *writeback = true;
         *direct = false;
         *noflush = false;
-        break;
+        return true;
 
     case VIR_DOMAIN_DISK_CACHE_DIRECTSYNC:
         *writeback = false;
         *direct = true;
         *noflush = false;
-        break;
+        return true;
 
     case VIR_DOMAIN_DISK_CACHE_UNSAFE:
         *writeback = true;
         *direct = false;
         *noflush = true;
-        break;
+        return true;
 
     case VIR_DOMAIN_DISK_CACHE_DEFAULT:
     case VIR_DOMAIN_DISK_CACHE_LAST:
-    default:
-        virReportEnumRangeError(virDomainDiskCache, cachemode);
-        return -1;
+        return false;
     }
 
-    return 0;
+    return false;
 }
 
 
