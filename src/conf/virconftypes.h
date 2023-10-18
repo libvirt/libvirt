@@ -1,5 +1,5 @@
 /*
- * virconftypes.h: struct typedefs to avoid circular inclusion
+ * virconftypes.h: struct and enum type definitions to avoid circular inclusion
  *
  * Copyright (C) 2006-2019 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
@@ -261,3 +261,40 @@ typedef struct _virDomainXMLOption virDomainXMLOption;
 typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
 
 typedef struct _virDomainXenbusControllerOpts virDomainXenbusControllerOpts;
+
+typedef enum {
+    VIR_DOMAIN_DISK_IO_DEFAULT = 0,
+    VIR_DOMAIN_DISK_IO_NATIVE,
+    VIR_DOMAIN_DISK_IO_THREADS,
+    VIR_DOMAIN_DISK_IO_URING,
+
+    VIR_DOMAIN_DISK_IO_LAST
+} virDomainDiskIo;
+
+typedef enum {
+    VIR_DOMAIN_DISK_CACHE_DEFAULT = 0,
+    VIR_DOMAIN_DISK_CACHE_DISABLE,
+    VIR_DOMAIN_DISK_CACHE_WRITETHRU,
+    VIR_DOMAIN_DISK_CACHE_WRITEBACK,
+    VIR_DOMAIN_DISK_CACHE_DIRECTSYNC,
+    VIR_DOMAIN_DISK_CACHE_UNSAFE,
+
+    VIR_DOMAIN_DISK_CACHE_LAST
+} virDomainDiskCache;
+
+typedef enum {
+    VIR_DOMAIN_DISK_DISCARD_DEFAULT = 0,
+    VIR_DOMAIN_DISK_DISCARD_UNMAP,
+    VIR_DOMAIN_DISK_DISCARD_IGNORE,
+
+    VIR_DOMAIN_DISK_DISCARD_LAST
+} virDomainDiskDiscard;
+
+typedef enum {
+    VIR_DOMAIN_DISK_DETECT_ZEROES_DEFAULT = 0,
+    VIR_DOMAIN_DISK_DETECT_ZEROES_OFF,
+    VIR_DOMAIN_DISK_DETECT_ZEROES_ON,
+    VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP,
+
+    VIR_DOMAIN_DISK_DETECT_ZEROES_LAST
+} virDomainDiskDetectZeroes;
