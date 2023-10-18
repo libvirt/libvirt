@@ -61,8 +61,6 @@ testBackingXMLjsonXML(const void *args)
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     unsigned int backendpropsflags = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY;
 
-    if (data->legacy)
-        backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY;
 
     xmlsrc = virStorageSourceNew();
     xmlsrc->type = data->type;
@@ -81,17 +79,15 @@ testBackingXMLjsonXML(const void *args)
         return -1;
     }
 
-    if (!data->legacy) {
-        if (testQEMUSchemaValidate(backendprops, data->schemaroot,
-                                   data->schema, false, &debug) < 0) {
-            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
-            g_autofree char *debugprops = virJSONValueToString(backendprops, true);
+    if (testQEMUSchemaValidate(backendprops, data->schemaroot,
+                               data->schema, false, &debug) < 0) {
+        g_autofree char *debugmsg = virBufferContentAndReset(&debug);
+        g_autofree char *debugprops = virJSONValueToString(backendprops, true);
 
-            VIR_TEST_VERBOSE("json does not conform to QAPI schema");
-            VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
-                           debugprops, NULLSTR(debugmsg));
-            return -1;
-        }
+        VIR_TEST_VERBOSE("json does not conform to QAPI schema");
+        VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                       debugprops, NULLSTR(debugmsg));
+        return -1;
     }
 
     if (virJSONValueObjectAdd(&wrapper, "a:file", &backendprops, NULL) < 0)
@@ -1012,11 +1008,6 @@ mymain(void)
     do { \
         xmljsonxmldata.type = tpe; \
         xmljsonxmldata.xml = xmlstr; \
-        xmljsonxmldata.legacy = true; \
-        if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
-                       &xmljsonxmldata) < 0) \
-            ret = -1; \
-        xmljsonxmldata.legacy = false; \
         if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
                        &xmljsonxmldata) < 0) \
             ret = -1; \
