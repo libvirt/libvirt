@@ -1098,32 +1098,28 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
     if (driver && virJSONValueObjectPrependString(fileprops, "driver", driver) < 0)
         return NULL;
 
-    if (!onlytarget) {
-        if (qemuBlockNodeNameValidate(qemuBlockStorageSourceGetStorageNodename(src)) < 0 ||
-            virJSONValueObjectAdd(&fileprops,
-                                  "S:node-name", qemuBlockStorageSourceGetStorageNodename(src),
-                                  NULL) < 0)
+    if (!onlytarget && !legacy) {
+        g_autoptr(virJSONValue) cache = NULL;
+        const char *discardstr = "unmap";
+        const char *nodename = qemuBlockStorageSourceGetStorageNodename(src);
+
+        if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)
+            discardstr = NULL;
+
+        if (qemuBlockNodeNameValidate(nodename) < 0)
             return NULL;
 
-        if (!legacy) {
-            g_autoptr(virJSONValue) cache = NULL;
+        if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
+            return NULL;
 
-            if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
-                return NULL;
-
-            if (virJSONValueObjectAdd(&fileprops,
-                                      "A:cache", &cache,
-                                      "T:read-only", ro,
-                                      "T:auto-read-only", aro,
-                                      NULL) < 0)
-                return NULL;
-
-            if (!(flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP) &&
-                virJSONValueObjectAdd(&fileprops,
-                                      "s:discard", "unmap",
-                                      NULL) < 0)
-                return NULL;
-        }
+        if (virJSONValueObjectAdd(&fileprops,
+                                  "s:node-name", nodename,
+                                  "A:cache", &cache,
+                                  "T:read-only", ro,
+                                  "T:auto-read-only", aro,
+                                  "S:discard", discardstr,
+                                  NULL) < 0)
+            return NULL;
     }
 
     return g_steal_pointer(&fileprops);
