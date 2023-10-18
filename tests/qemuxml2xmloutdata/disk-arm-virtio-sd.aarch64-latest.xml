@@ -30,6 +30,22 @@
       <source file='/arm-sd.qcow2'/>
       <target dev='sda' bus='sd'/>
     </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source protocol='nbd' name='export'>
+        <host name='localhost' port='10809'/>
+      </source>
+      <target dev='sdb' bus='sd'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source protocol='gluster' name='Volume3/Image.qcow2'>
+        <host name='example.org' port='6000'/>
+        <host name='example.org' port='24007'/>
+        <host transport='unix' socket='/path/to/sock'/>
+      </source>
+      <target dev='sdc' bus='sd'/>
+    </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='/arm-virtio.qcow2'/>

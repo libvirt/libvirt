@@ -33,6 +33,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -dtb /arm.dtb \
 -usb \
 -drive file=/arm-sd.qcow2,format=qcow2,if=sd,index=0 \
+-drive file.driver=nbd,file.server.type=inet,file.server.host=localhost,file.server.port=10809,file.export=export,format=qcow2,if=sd,index=1 \
+-drive file.driver=gluster,file.volume=Volume3,file.path=Image.qcow2,file.server.0.type=inet,file.server.0.host=example.org,file.server.0.port=6000,file.server.1.type=inet,file.server.1.host=example.org,file.server.1.port=24007,file.server.2.type=unix,file.server.2.path=/path/to/sock,file.debug=4,format=qcow2,if=sd,index=2 \
 -blockdev '{"driver":"file","filename":"/arm-virtio.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-device","drive":"libvirt-1-format","id":"virtio-disk0"}' \
