@@ -59,7 +59,7 @@ testBackingXMLjsonXML(const void *args)
     g_autoptr(virStorageSource) xmlsrc = NULL;
     g_autoptr(virStorageSource) jsonsrc = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
-    unsigned int backendpropsflags = 0;
+    unsigned int backendpropsflags = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY;
 
     if (data->legacy)
         backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY;
@@ -157,7 +157,7 @@ testJSONtoJSON(const void *args)
     }
 
     if (!(jsonsrcout = qemuBlockStorageSourceGetBackendProps(src,
-                                                             QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY))) {
+                                                             QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY))) {
         fprintf(stderr, "failed to format disk source json\n");
         return -1;
     }

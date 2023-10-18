@@ -8,7 +8,5 @@
   "user": "testuser",
   "host-key-check": {
     "mode": "none"
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }
