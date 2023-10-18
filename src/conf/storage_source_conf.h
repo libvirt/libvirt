@@ -397,10 +397,10 @@ struct _virStorageSource {
     /* Libvirt currently stores the following properties in virDomainDiskDef.
      * These instances are currently just copies from the parent definition and
      * are not mapped back to the XML */
-    int iomode; /* enum virDomainDiskIo */
-    int cachemode; /* enum virDomainDiskCache */
-    int discard; /* enum virDomainDiskDiscard */
-    int detect_zeroes; /* enum virDomainDiskDetectZeroes */
+    virDomainDiskIo iomode;
+    virDomainDiskCache cachemode;
+    virDomainDiskDiscard discard;
+    virDomainDiskDetectZeroes detect_zeroes;
     virTristateSwitch discard_no_unref;
 
     bool floppyimg; /* set to true if the storage source is going to be used
