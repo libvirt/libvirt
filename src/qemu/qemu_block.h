@@ -280,7 +280,8 @@ bool
 qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src);
 
 bool
-qemuBlockStorageSourceNeedsFormatLayer(const virStorageSource *src);
+qemuBlockStorageSourceNeedsFormatLayer(const virStorageSource *src,
+                                       virQEMUCaps *qemuCaps);
 
 char *
 qemuBlockStorageSourceGetCookieString(virStorageSource *src);

@@ -37,9 +37,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -device '{"driver":"xio3130-downstream","port":5,"chassis":9,"id":"pci.9","bus":"pci.2","addr":"0x5"}' \
 -device '{"driver":"xio3130-downstream","port":6,"chassis":10,"id":"pci.10","bus":"pci.2","addr":"0x6"}' \
 -device '{"driver":"qemu-xhci","id":"usb","bus":"pci.4","addr":"0x0"}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"ide-hd","bus":"ide.0","drive":"libvirt-1-format","id":"sata0-0-0","bootindex":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"ide-hd","bus":"ide.0","drive":"libvirt-1-storage","id":"sata0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"qxl-vga","id":"video0","max_outputs":1,"ram_size":67108864,"vram_size":33554432,"vram64_size_mb":0,"vgamem_mb":8,"bus":"pcie.0","addr":"0x1"}' \
 -global ICH9-LPC.noreboot=off \

@@ -27,9 +27,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-storage","id":"ide0-0-0","bootindex":1}' \
 -netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:24:a5:9f","bus":"pci.0","addr":"0x2","rombar":1}' \
 -netdev '{"type":"user","id":"hostnet1"}' \

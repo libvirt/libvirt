@@ -582,18 +582,15 @@ mymain(void)
 
     DO_TEST_ATTACH("x86_64", "base-live", "disk-virtio", false, true,
                    "blockdev-add", QMP_OK,
-                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
     DO_TEST_DETACH("x86_64", "base-live", "disk-virtio", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "disk-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("x86_64", "base-live", "disk-usb", false, true,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
@@ -601,11 +598,9 @@ mymain(void)
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "disk-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("x86_64", "base-live", "disk-scsi", false, true,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
@@ -613,7 +608,6 @@ mymain(void)
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "disk-scsi", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("x86_64", "base-without-scsi-controller-live", "disk-scsi-2", false, true,
@@ -623,19 +617,16 @@ mymain(void)
                    "device_add", QMP_OK,
                    "device_add", QMP_OK,
                    "blockdev-add", QMP_OK,
-                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
     DO_TEST_DETACH("x86_64", "base-with-scsi-controller-live", "disk-scsi-2", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-with-scsi-controller-live", "disk-scsi-2", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi3-0-6") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("x86_64", "base-live", "disk-scsi-multipath", false, true,
                    "object-add", QMP_OK,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
@@ -643,7 +634,6 @@ mymain(void)
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "disk-scsi-multipath", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-0") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK,
                    "object-del", QMP_OK);
 
@@ -718,7 +708,6 @@ mymain(void)
     DO_TEST_ATTACH("x86_64", "base-live+disk-scsi-wwn",
                    "disk-scsi-duplicate-wwn", false, false,
                    "blockdev-add", QMP_OK,
-                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
 
@@ -767,18 +756,15 @@ mymain(void)
 
     DO_TEST_ATTACH("x86_64", "base-live", "cdrom-usb", false, true,
                    "blockdev-add", QMP_OK,
-                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
     DO_TEST_DETACH("x86_64", "base-live", "cdrom-usb", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "cdrom-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk4") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("x86_64", "base-live", "cdrom-scsi", false, true,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
@@ -786,7 +772,6 @@ mymain(void)
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "cdrom-scsi", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-4") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
 #define DO_TEST_CPU_GROUP(archname, prefix, vcpus, expectfail) \

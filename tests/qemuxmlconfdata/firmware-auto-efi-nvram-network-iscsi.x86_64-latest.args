@@ -13,9 +13,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -blockdev '{"driver":"file","filename":"/usr/share/edk2/ovmf/OVMF_CODE.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -object '{"qom-type":"secret","id":"libvirt-pflash1-storage-auth-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
--blockdev '{"driver":"iscsi","portal":"example.com:6000","target":"iqn.2013-07.com.example:iscsi-nopool","lun":0,"transport":"tcp","user":"myname","password-secret":"libvirt-pflash1-storage-auth-secret0","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine pc-i440fx-4.0,usb=off,dump-guest-core=off,memory-backend=pc.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,acpi=on \
+-blockdev '{"driver":"iscsi","portal":"example.com:6000","target":"iqn.2013-07.com.example:iscsi-nopool","lun":0,"transport":"tcp","user":"myname","password-secret":"libvirt-pflash1-storage-auth-secret0","node-name":"libvirt-pflash1-storage","read-only":false}' \
+-machine pc-i440fx-4.0,usb=off,dump-guest-core=off,memory-backend=pc.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-storage,acpi=on \
 -accel tcg \
 -cpu qemu64 \
 -m size=1048576k \

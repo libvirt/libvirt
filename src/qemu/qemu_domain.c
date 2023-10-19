@@ -11176,7 +11176,7 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     /* qemuBlockStorageSourceSetStorageNodename steals 'nodestorage' */
     qemuBlockStorageSourceSetStorageNodename(src, nodestorage);
 
-    if (qemuBlockStorageSourceNeedsFormatLayer(src)) {
+    if (qemuBlockStorageSourceNeedsFormatLayer(src, priv->qemuCaps)) {
         char *nodeformat = g_strdup_printf("%s-format", nodenameprefix);
 
         qemuBlockStorageSourceSetFormatNodename(src, nodeformat);

@@ -32,9 +32,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"pc-dimm","node":0,"memdev":"memdimm0","id":"dimm0","slot":0}' \
 -object '{"qom-type":"memory-backend-file","id":"memdimm1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","prealloc":true,"size":536870912,"host-nodes":[1,2,3],"policy":"bind"}' \
 -device '{"driver":"pc-dimm","node":0,"memdev":"memdimm1","id":"dimm1","slot":1}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-storage","id":"ide0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

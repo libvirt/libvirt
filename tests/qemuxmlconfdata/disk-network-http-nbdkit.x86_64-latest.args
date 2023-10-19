@@ -27,18 +27,14 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-4-storage.socket"},"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw","file":"libvirt-4-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-4-format","id":"virtio-disk0","bootindex":1}' \
--blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-3-storage.socket"},"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw","file":"libvirt-3-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-3-format","id":"virtio-disk1"}' \
--blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-2-storage.socket"},"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk2"}' \
--blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-1-storage.socket"},"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-1-format","id":"virtio-disk3"}' \
+-blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-4-storage.socket"},"node-name":"libvirt-4-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-4-storage","id":"virtio-disk0","bootindex":1}' \
+-blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-3-storage.socket"},"node-name":"libvirt-3-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-3-storage","id":"virtio-disk1"}' \
+-blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-2-storage.socket"},"node-name":"libvirt-2-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-2-storage","id":"virtio-disk2"}' \
+-blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/nbdkit-libvirt-1-storage.socket"},"node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-1-storage","id":"virtio-disk3"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

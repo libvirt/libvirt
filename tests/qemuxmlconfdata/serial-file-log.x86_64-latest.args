@@ -27,9 +27,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-storage","id":"ide0-0-0","bootindex":1}' \
 -add-fd set=0,fd=1750,opaque=serial0-source \
 -add-fd set=1,fd=1751,opaque=serial0-log \
 -chardev file,id=charserial0,path=/dev/fdset/0,append=on,logfile=/dev/fdset/1,logappend=on \

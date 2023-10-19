@@ -43,9 +43,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -device '{"driver":"nec-usb-xhci","id":"usb","bus":"pci.6","addr":"0x0"}' \
 -device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.5","addr":"0x0"}' \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.4","addr":"0x0"}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.7","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk1","bootindex":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.7","addr":"0x0","drive":"libvirt-1-storage","id":"virtio-disk1","bootindex":1}' \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
 -device '{"driver":"virtio-9p-pci","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"/import/from/host","bus":"pci.1","addr":"0x0"}' \
 -netdev '{"type":"user","id":"hostnet0"}' \

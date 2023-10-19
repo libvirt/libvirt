@@ -28,12 +28,10 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -boot menu=on,strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
--blockdev '{"driver":"host_device","filename":"/dev/sdfake","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device '{"driver":"virtio-blk-pci","scsi":true,"bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk0","bootindex":2}' \
--blockdev '{"driver":"host_device","filename":"/dev/sdfake2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","scsi":true,"bus":"pci.0","addr":"0x5","drive":"libvirt-1-format","id":"virtio-disk1"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sdfake","node-name":"libvirt-2-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","scsi":true,"bus":"pci.0","addr":"0x4","drive":"libvirt-2-storage","id":"virtio-disk0","bootindex":2}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sdfake2","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","scsi":true,"bus":"pci.0","addr":"0x5","drive":"libvirt-1-storage","id":"virtio-disk1"}' \
 -netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","event_idx":false,"netdev":"hostnet0","id":"net0","mac":"52:54:00:e5:48:58","bus":"pci.0","addr":"0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

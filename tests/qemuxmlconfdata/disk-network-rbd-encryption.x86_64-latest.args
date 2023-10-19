@@ -35,10 +35,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.config \
 -blockdev '{"driver":"rbd","pool":"pool","image":"image","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"luks","key-secret":"libvirt-3-format-encryption-secret0","file":"libvirt-3-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-3-format","id":"virtio-disk1"}' \
--object '{"qom-type":"secret","id":"libvirt-2-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
--blockdev '{"driver":"rbd","pool":"pool","image":"image","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"encrypt":{"format":"luks","key-secret":"libvirt-2-format-encryption-secret0"},"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-2-format","id":"virtio-disk2"}' \
+-object '{"qom-type":"secret","id":"libvirt-2-storage-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
+-blockdev '{"driver":"rbd","pool":"pool","image":"image","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"encrypt":{"format":"luks","key-secret":"libvirt-2-storage-encryption-secret0"},"node-name":"libvirt-2-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-2-storage","id":"virtio-disk2"}' \
 -object '{"qom-type":"secret","id":"libvirt-1-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"rbd","pool":"pool","image":"image2","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"encrypt":{"format":"luks2","key-secret":"libvirt-1-format-encryption-secret0"},"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"vmdk","file":"libvirt-1-storage"}' \

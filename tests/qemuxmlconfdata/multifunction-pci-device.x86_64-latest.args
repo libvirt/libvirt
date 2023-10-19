@@ -36,9 +36,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"lsi","id":"scsi6","bus":"pci.0","addr":"0x4.0x5"}' \
 -device '{"driver":"lsi","id":"scsi7","bus":"pci.0","addr":"0x4.0x6"}' \
 -device '{"driver":"lsi","id":"scsi8","bus":"pci.0","addr":"0x4.0x7"}' \
--blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"scsi-hd","bus":"scsi0.0","scsi-id":0,"device_id":"drive-scsi0-0-0","drive":"libvirt-1-format","id":"scsi0-0-0","bootindex":1}' \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"scsi-hd","bus":"scsi0.0","scsi-id":0,"device_id":"drive-scsi0-0-0","drive":"libvirt-1-storage","id":"scsi0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
