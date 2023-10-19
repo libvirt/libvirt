@@ -1185,33 +1185,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
         return NULL;
 
     if (!onlytarget && !legacy) {
-        const char *nodename = qemuBlockStorageSourceGetStorageNodename(src);
-
-        if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE) {
-            if (qemuBlockStorageSourceAddBlockdevCommonProps(&fileprops, src, nodename, true) < 0)
+        if (qemuBlockStorageSourceAddBlockdevCommonProps(&fileprops, src,
+                                                         qemuBlockStorageSourceGetStorageNodename(src),
+                                                         !!(flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE)) < 0)
                 return NULL;
-        } else {
-            g_autoptr(virJSONValue) cache = NULL;
-            const char *discardstr = "unmap";
-
-            if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)
-                discardstr = NULL;
-
-            if (qemuBlockNodeNameValidate(nodename) < 0)
-                return NULL;
-
-            if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
-                return NULL;
-
-            if (virJSONValueObjectAdd(&fileprops,
-                                      "s:node-name", nodename,
-                                      "T:read-only", ro,
-                                      "T:auto-read-only", aro,
-                                      "S:discard", discardstr,
-                                      "A:cache", &cache,
-                                      NULL) < 0)
-                return NULL;
-        }
     }
 
     return g_steal_pointer(&fileprops);
