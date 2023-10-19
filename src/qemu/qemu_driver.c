@@ -7209,6 +7209,7 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
                                     unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    virObjectEvent *event = NULL;
     g_autoptr(virDomainDef) vmdef = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(virDomainDeviceDef) devConf = NULL;
@@ -7292,6 +7293,12 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
             return -1;
 
         virDomainObjAssignDef(vm, &vmdef, false, NULL);
+
+        /* Event sending if persistent config has changed */
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_DEFINED,
+                                                  VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     return 0;
@@ -7348,6 +7355,7 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     qemuDomainObjPrivate *priv;
+    virObjectEvent *event = NULL;
     g_autoptr(virDomainDef) vmdef = NULL;
     g_autoptr(virDomainDeviceDef) dev_config = NULL;
     g_autoptr(virDomainDeviceDef) dev_live = NULL;
@@ -7419,8 +7427,16 @@ qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
-        if (!ret)
+        if (!ret) {
             virDomainObjAssignDef(vm, &vmdef, false, NULL);
+
+            /* Event sending if persistent config has changed */
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                     VIR_DOMAIN_EVENT_DEFINED,
+                                                     VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+
+            virObjectEventStateQueue(driver->domainEventState, event);
+        }
     }
 
  endjob:
@@ -7438,6 +7454,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
                                     unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    virObjectEvent *event = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(virDomainDeviceDef) dev_config = NULL;
     g_autoptr(virDomainDeviceDef) dev_live = NULL;
@@ -7495,6 +7512,12 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
             return -1;
 
         virDomainObjAssignDef(vm, &vmdef, false, NULL);
+
+        /* Event sending if persistent config has changed */
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_DEFINED,
+                                                  VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     return 0;
