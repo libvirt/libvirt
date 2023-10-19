@@ -5066,8 +5066,7 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
     ret->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     *backendAlias = qemuBlockStorageSourceGetStorageNodename(src);
 
-    if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src,
-                                                                    QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)))
+    if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src, QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE)))
         return NULL;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(src, ret) < 0)
