@@ -3292,6 +3292,25 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
 
 
 /**
+ * qemuBlockStorageSourceNeedsFormatLayer:
+ * @src: storage source
+ *
+ * Returns true if configuration of @src requires a 'format' layer -blockdev.
+ *
+ * Important: This helper must be used only for decisions when setting up a
+ * '-blockdev' backend in which case the format layer node name will be populated.
+ * Any cases when the backend can be already in use must decide based on the
+ * existence of the format layer nodename.
+ */
+bool
+qemuBlockStorageSourceNeedsFormatLayer(const virStorageSource *src G_GNUC_UNUSED)
+{
+    /* Currently we always create a 'format' layer */
+    return true;
+}
+
+
+/**
  * qemuBlockStorageSourceGetCookieString:
  * @src: storage source
  *

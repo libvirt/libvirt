@@ -280,6 +280,9 @@ qemuBlockReopenReadOnly(virDomainObj *vm,
 bool
 qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src);
 
+bool
+qemuBlockStorageSourceNeedsFormatLayer(const virStorageSource *src);
+
 char *
 qemuBlockStorageSourceGetCookieString(virStorageSource *src);
 
