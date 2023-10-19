@@ -4406,7 +4406,7 @@ virDomainNetResolveActualType(virDomainNetDef *iface)
 
 int virDomainDiskTranslateSourcePool(virDomainDiskDef *def);
 
-int
+virDomainDiskDetectZeroes
 virDomainDiskGetDetectZeroesMode(virDomainDiskDiscard discard,
                                  virDomainDiskDetectZeroes detect_zeroes);
 

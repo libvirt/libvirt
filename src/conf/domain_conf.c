@@ -30592,7 +30592,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDef *def)
  * don't change it in the XML for easier adjustments.  This behaviour is
  * documented.
  */
-int
+virDomainDiskDetectZeroes
 virDomainDiskGetDetectZeroesMode(virDomainDiskDiscard discard,
                                  virDomainDiskDetectZeroes detect_zeroes)
 {

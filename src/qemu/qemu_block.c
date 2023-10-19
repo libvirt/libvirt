@@ -1271,8 +1271,8 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSource *src)
 {
     const char *detectZeroes = NULL;
     const char *discard = NULL;
-    int detectZeroesMode = virDomainDiskGetDetectZeroesMode(src->discard,
-                                                            src->detect_zeroes);
+    virDomainDiskDetectZeroes detectZeroesMode = virDomainDiskGetDetectZeroesMode(src->discard,
+                                                                                  src->detect_zeroes);
     g_autoptr(virJSONValue) props = NULL;
     g_autoptr(virJSONValue) cache = NULL;
 

@@ -1680,8 +1680,8 @@ static char *
 qemuBuildDriveStr(virDomainDiskDef *disk)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
-    int detect_zeroes = virDomainDiskGetDetectZeroesMode(disk->discard,
-                                                         disk->detect_zeroes);
+    virDomainDiskDetectZeroes detect_zeroes = virDomainDiskGetDetectZeroesMode(disk->discard,
+                                                                               disk->detect_zeroes);
 
     if (qemuBuildDriveSourceStr(disk, &opt) < 0)
         return NULL;
