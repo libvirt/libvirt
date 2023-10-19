@@ -1031,6 +1031,8 @@ qemuBlockStorageSourceAddBlockdevCommonProps(virJSONValue **props,
  *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP:
  *      don't enable 'discard:unmap' option for passing through discards
  *      (note that this is disabled also for _LEGACY and _TARGET_ONLY options)
+ *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE:
+ *      the 'protocol' node is used as the effective/top node of a virStorageSource
  *
  * Creates a JSON object describing the underlying storage or protocol of a
  * storage source. Returns NULL on error and reports an appropriate error message.
@@ -1183,27 +1185,33 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
         return NULL;
 
     if (!onlytarget && !legacy) {
-        g_autoptr(virJSONValue) cache = NULL;
-        const char *discardstr = "unmap";
         const char *nodename = qemuBlockStorageSourceGetStorageNodename(src);
 
-        if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)
-            discardstr = NULL;
+        if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE) {
+            if (qemuBlockStorageSourceAddBlockdevCommonProps(&fileprops, src, nodename, true) < 0)
+                return NULL;
+        } else {
+            g_autoptr(virJSONValue) cache = NULL;
+            const char *discardstr = "unmap";
 
-        if (qemuBlockNodeNameValidate(nodename) < 0)
-            return NULL;
+            if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)
+                discardstr = NULL;
 
-        if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
-            return NULL;
+            if (qemuBlockNodeNameValidate(nodename) < 0)
+                return NULL;
 
-        if (virJSONValueObjectAdd(&fileprops,
-                                  "s:node-name", nodename,
-                                  "T:read-only", ro,
-                                  "T:auto-read-only", aro,
-                                  "S:discard", discardstr,
-                                  "A:cache", &cache,
-                                  NULL) < 0)
-            return NULL;
+            if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
+                return NULL;
+
+            if (virJSONValueObjectAdd(&fileprops,
+                                      "s:node-name", nodename,
+                                      "T:read-only", ro,
+                                      "T:auto-read-only", aro,
+                                      "S:discard", discardstr,
+                                      "A:cache", &cache,
+                                      NULL) < 0)
+                return NULL;
+        }
     }
 
     return g_steal_pointer(&fileprops);
