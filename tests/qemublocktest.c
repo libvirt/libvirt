@@ -285,9 +285,6 @@ testQemuDiskXMLToProps(const void *opaque)
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         g_autofree char *backingstore = NULL;
-        unsigned int backendpropsflagsnormal = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
-        unsigned int backendpropsflagstarget = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY |
-                                               QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY;
 
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             return -1;
@@ -298,8 +295,8 @@ testQemuDiskXMLToProps(const void *opaque)
         qemuDomainPrepareDiskSourceData(disk, n);
 
         if (!(formatProps = qemuBlockStorageSourceGetFormatProps(n, n->backingStore)) ||
-            !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, backendpropsflagstarget)) ||
-            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, backendpropsflagsnormal)) ||
+            !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY)) ||
+            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, 0)) ||
             !(backingstore = qemuBlockGetBackingStoreString(n, true))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props");

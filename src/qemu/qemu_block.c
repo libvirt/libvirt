@@ -1007,11 +1007,6 @@ qemuBlockStorageSourceAddBlockdevCommonProps(virJSONValue **props,
  *      use legacy formatting of attributes (for -drive / old qemus)
  *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY:
  *      omit any data which does not identify the image itself
- *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY:
- *      use the auto-read-only feature of qemu
- *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP:
- *      don't enable 'discard:unmap' option for passing through discards
- *      (note that this is disabled also for _LEGACY and _TARGET_ONLY options)
  *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE:
  *      the 'protocol' node is used as the effective/top node of a virStorageSource
  *
@@ -1511,7 +1506,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
                                             virStorageSource *backingStore)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    unsigned int backendpropsflags = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
+    unsigned int backendpropsflags = 0;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
