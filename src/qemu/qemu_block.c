@@ -933,6 +933,90 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSource *src,
 
 
 /**
+ * qemuBlockStorageSourceAddBlockdevCommonProps:
+ * @props: JSON object to append the props to
+ * @src: storage source
+ * @nodename: nodename to use for @src
+ * @effective: Whether props for the effective(topmost) layer are to be formatted
+ *
+ * Add the common props (node name, read-only state, cache configuration, discard)
+ * to a JSON object for a -blockdev definition. If @effective is true,
+ * the props are configured for the topmost layer used to access the data,
+ * otherwise the props are configured for the storage protocol backing a format
+ * layer.
+ */
+static int
+qemuBlockStorageSourceAddBlockdevCommonProps(virJSONValue **props,
+                                             virStorageSource *src,
+                                             const char *nodename,
+                                             bool effective)
+{
+    virStorageType actualType = virStorageSourceGetActualType(src);
+    g_autoptr(virJSONValue) cache = NULL;
+    const char *detectZeroes = NULL;
+    const char *discard = NULL;
+    virTristateBool autoReadOnly = VIR_TRISTATE_BOOL_ABSENT;
+    virTristateBool readOnly = VIR_TRISTATE_BOOL_ABSENT;
+
+    if (qemuBlockNodeNameValidate(nodename) < 0)
+        return -1;
+
+    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
+        return -1;
+
+    if (effective) {
+        virDomainDiskDetectZeroes dz = virDomainDiskGetDetectZeroesMode(src->discard,
+                                                                        src->detect_zeroes);
+
+        if (src->discard != VIR_DOMAIN_DISK_DISCARD_DEFAULT)
+            discard = virDomainDiskDiscardTypeToString(src->discard);
+
+        if (dz != VIR_DOMAIN_DISK_DETECT_ZEROES_DEFAULT)
+            detectZeroes = virDomainDiskDetectZeroesTypeToString(dz);
+
+        autoReadOnly = VIR_TRISTATE_BOOL_ABSENT;
+        readOnly = virTristateBoolFromBool(src->readonly);
+    } else {
+        /* when passing a FD to qemu via the /dev/fdset mechanism qemu
+         * fetches the appropriate FD from the fdset by checking that it has
+         * the correct accessmode. Now with 'auto-read-only' in effect qemu
+         * wants to use a read-only FD first. If the user didn't pass multiple
+         * FDs the feature will not work regardless, so we'll not enable it. */
+        if ((actualType == VIR_STORAGE_TYPE_FILE || actualType == VIR_STORAGE_TYPE_BLOCK) &&
+            src->fdtuple && src->fdtuple->nfds == 1) {
+            autoReadOnly = VIR_TRISTATE_BOOL_ABSENT;
+
+            /* now we setup the normal readonly flag. If user requested write access honour it */
+            if (src->fdtuple->writable)
+                readOnly = VIR_TRISTATE_BOOL_NO;
+            else
+                readOnly = virTristateBoolFromBool(src->readonly);
+        } else {
+            autoReadOnly = VIR_TRISTATE_BOOL_YES;
+        }
+
+        discard = "unmap";
+    }
+
+    /* currently unhandled global properties:
+     * '*force-share': 'bool'
+     */
+
+    if (virJSONValueObjectAdd(props,
+                              "s:node-name", nodename,
+                              "T:read-only", readOnly,
+                              "T:auto-read-only", autoReadOnly,
+                              "S:discard", discard,
+                              "S:detect-zeroes", detectZeroes,
+                              "A:cache", &cache,
+                              NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
  * @flags: bitwise-or of qemuBlockStorageSourceBackendPropsFlags
@@ -1267,51 +1351,15 @@ qemuBlockStorageSourceGetFormatQcow2Props(virStorageSource *src,
 
 
 static virJSONValue *
-qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSource *src)
-{
-    const char *detectZeroes = NULL;
-    const char *discard = NULL;
-    virDomainDiskDetectZeroes detectZeroesMode = virDomainDiskGetDetectZeroesMode(src->discard,
-                                                                                  src->detect_zeroes);
-    g_autoptr(virJSONValue) props = NULL;
-    g_autoptr(virJSONValue) cache = NULL;
-
-    if (qemuBlockNodeNameValidate(qemuBlockStorageSourceGetFormatNodename(src)) < 0)
-        return NULL;
-
-    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
-        return NULL;
-
-    if (src->discard)
-        discard = virDomainDiskDiscardTypeToString(src->discard);
-
-    if (detectZeroesMode)
-        detectZeroes = virDomainDiskDetectZeroesTypeToString(detectZeroesMode);
-
-    /* currently unhandled global properties:
-     * '*force-share': 'bool'
-     */
-
-    if (virJSONValueObjectAdd(&props,
-                              "s:node-name", qemuBlockStorageSourceGetFormatNodename(src),
-                              "b:read-only", src->readonly,
-                              "S:discard", discard,
-                              "S:detect-zeroes", detectZeroes,
-                              "A:cache", &cache,
-                              NULL) < 0)
-        return NULL;
-
-    return g_steal_pointer(&props);
-}
-
-
-static virJSONValue *
 qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
 {
     const char *driver = NULL;
     g_autoptr(virJSONValue) props = NULL;
 
-    if (!(props = qemuBlockStorageSourceGetBlockdevFormatCommonProps(src)))
+    if (qemuBlockStorageSourceAddBlockdevCommonProps(&props,
+                                                     src,
+                                                     qemuBlockStorageSourceGetFormatNodename(src),
+                                                     true) < 0)
         return NULL;
 
     switch ((virStorageFileFormat) src->format) {
