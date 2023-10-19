@@ -807,9 +807,7 @@ qemuBlockStorageSourceGetSshProps(virStorageSource *src)
 
 static virJSONValue *
 qemuBlockStorageSourceGetFileProps(virStorageSource *src,
-                                   bool onlytarget,
-                                   virTristateBool *autoReadOnly,
-                                   virTristateBool *readOnly)
+                                   bool onlytarget)
 {
     const char *path = src->path;
     const char *iomode = NULL;
@@ -825,25 +823,8 @@ qemuBlockStorageSourceGetFileProps(virStorageSource *src,
         if (src->iomode != VIR_DOMAIN_DISK_IO_DEFAULT)
             iomode = virDomainDiskIoTypeToString(src->iomode);
 
-        if (srcpriv && srcpriv->fdpass) {
+        if (srcpriv && srcpriv->fdpass)
             path = qemuFDPassGetPath(srcpriv->fdpass);
-
-            /* when passing a FD to qemu via the /dev/fdset mechanism qemu
-             * fetches the appropriate FD from the fdset by checking that it has
-             * the correct accessmode. Now with 'auto-read-only' in effect qemu
-             * wants to use a read-only FD first. If the user didn't pass multiple
-             * FDs the feature will not work regardless, so we'll disable it. */
-            if (src->fdtuple->nfds == 1) {
-                *autoReadOnly = VIR_TRISTATE_BOOL_ABSENT;
-
-                /* now we setup the normal readonly flag. If user requested write
-                 * access honour it */
-                if (src->fdtuple->writable)
-                    *readOnly = VIR_TRISTATE_BOOL_NO;
-                else
-                    *readOnly = virTristateBoolFromBool(src->readonly);
-            }
-        }
     }
 
     ignore_value(virJSONValueObjectAdd(&ret,
@@ -1044,19 +1025,8 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
     virStorageType actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) fileprops = NULL;
     const char *driver = NULL;
-    virTristateBool aro = VIR_TRISTATE_BOOL_ABSENT;
-    virTristateBool ro = VIR_TRISTATE_BOOL_ABSENT;
     bool onlytarget = flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY;
     bool legacy = flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY;
-
-    if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY) {
-        aro = VIR_TRISTATE_BOOL_YES;
-    } else {
-        if (src->readonly)
-            ro = VIR_TRISTATE_BOOL_YES;
-        else
-            ro = VIR_TRISTATE_BOOL_NO;
-    }
 
     switch (actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -1070,7 +1040,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             driver = "file";
         }
 
-        if (!(fileprops = qemuBlockStorageSourceGetFileProps(src, onlytarget, &aro, &ro)))
+        if (!(fileprops = qemuBlockStorageSourceGetFileProps(src, onlytarget)))
             return NULL;
         break;
 
