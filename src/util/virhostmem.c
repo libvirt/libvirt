@@ -617,7 +617,10 @@ virHostMemGetTotal(void)
     unsigned long long physmem = 0;
     size_t len = sizeof(physmem);
 
-    if (sysctlbyname("hw.physmem", &physmem, &len, NULL, 0) < 0) {
+    /* On macOS hw.physmem is int32_t which doesn't fly with >4GiB of memory.
+     * But hw.memsize is uint64_t. */
+    if (sysctlbyname("hw.memsize", &physmem, &len, NULL, 0) < 0 &&
+        sysctlbyname("hw.physmem", &physmem, &len, NULL, 0) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to query memory total"));
         return 0;
