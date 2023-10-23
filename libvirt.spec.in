@@ -1356,7 +1356,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dglusterfs=disabled \
   -Dhost_validate=disabled \
   -Dlibiscsi=disabled \
-  -Dlibnbd=disabled \
+  -Dnbdkit=disabled \
   -Dlibnl=disabled \
   -Dlibpcap=disabled \
   -Dlibssh2=disabled \
