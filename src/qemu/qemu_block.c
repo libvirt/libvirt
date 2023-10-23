@@ -1204,27 +1204,6 @@ qemuBlockStorageSourceGetFormatLUKSProps(virStorageSource *src,
 
 
 static int
-qemuBlockStorageSourceGetFormatRawProps(virStorageSource *src,
-                                        virJSONValue *props)
-{
-    if (virJSONValueObjectAdd(&props, "s:driver", "raw", NULL) < 0)
-        return -1;
-
-    /* Currently only storage slices are supported. We'll have to calculate
-     * the union of the slices here if we don't want to be adding needless
-     * 'raw' nodes. */
-    if (src->sliceStorage &&
-        virJSONValueObjectAdd(&props,
-                              "U:offset", src->sliceStorage->offset,
-                              "U:size", src->sliceStorage->size,
-                              NULL) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 qemuBlockStorageSourceGetCryptoProps(virStorageSource *src,
                                      virJSONValue **encprops)
 {
@@ -1336,8 +1315,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
     case VIR_STORAGE_FILE_FAT:
         /* The fat layer is emulated by the storage access layer, so we need to
          * put a raw layer on top */
-        if (qemuBlockStorageSourceGetFormatRawProps(src, props) < 0)
-            return NULL;
+        driver = "raw";
         break;
 
     case VIR_STORAGE_FILE_RAW:
@@ -1345,8 +1323,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
             if (qemuBlockStorageSourceGetFormatLUKSProps(src, props) < 0)
                 return NULL;
         } else {
-            if (qemuBlockStorageSourceGetFormatRawProps(src, props) < 0)
-                return NULL;
+            driver = "raw";
         }
         break;
 
@@ -3295,10 +3272,7 @@ qemuBlockStorageSourceIsRaw(const virStorageSource *src)
 bool
 qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
 {
-    if (!src->sliceStorage)
-        return false;
-
-    return !qemuBlockStorageSourceIsRaw(src);
+    return !!src->sliceStorage;
 }
 
 
@@ -3314,9 +3288,13 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
  * existence of the format layer nodename.
  */
 bool
-qemuBlockStorageSourceNeedsFormatLayer(const virStorageSource *src G_GNUC_UNUSED)
+qemuBlockStorageSourceNeedsFormatLayer(const virStorageSource *src)
 {
-    /* Currently we always create a 'format' layer */
+    /* Skip 'format' layer, when a storage slice for a raw image is in use */
+    if (qemuBlockStorageSourceIsRaw(src) &&
+        src->sliceStorage)
+        return false;
+
     return true;
 }
 
