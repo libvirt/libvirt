@@ -1485,24 +1485,19 @@ static virJSONValue *
 qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
 {
     g_autoptr(virJSONValue) props = NULL;
-    g_autoptr(virJSONValue) cache = NULL;
-
-    if (qemuBlockNodeNameValidate(src->sliceStorage->nodename) < 0)
-        return NULL;
-
-    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, &cache) < 0)
-        return NULL;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", "raw",
-                              "s:node-name", src->sliceStorage->nodename,
                               "U:offset", src->sliceStorage->offset,
                               "U:size", src->sliceStorage->size,
                               "s:file", qemuBlockStorageSourceGetStorageNodename(src),
-                              "b:auto-read-only", true,
-                              "s:discard", "unmap",
-                              "A:cache", &cache,
                               NULL) < 0)
+        return NULL;
+
+    if (qemuBlockStorageSourceAddBlockdevCommonProps(&props,
+                                                     src,
+                                                     src->sliceStorage->nodename,
+                                                     false) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
