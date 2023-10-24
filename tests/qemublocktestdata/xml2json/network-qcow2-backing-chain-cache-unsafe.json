@@ -30,12 +30,12 @@
   ],
   "key-secret": "node-a-s-secalias",
   "node-name": "node-a-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": false,
     "no-flush": true
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }
 {
   "node-name": "node-b-f",
@@ -55,10 +55,10 @@
   "lun": 1,
   "transport": "tcp",
   "node-name": "node-b-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": false,
     "no-flush": true
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }

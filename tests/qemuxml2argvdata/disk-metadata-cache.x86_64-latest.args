@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"file","filename":"/tmp/QEMUGuest1.img","node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/tmp/QEMUGuest1.img","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","cache-size":12345,"file":"libvirt-3-storage"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-3-format","id":"ide0-0-0","bootindex":1,"write-cache":"on"}' \
--blockdev '{"driver":"file","filename":"/tmp/backing-store.qcow","node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/tmp/backing-store.qcow","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","cache-size":1048576,"file":"libvirt-2-storage","backing":null}' \
--blockdev '{"driver":"file","filename":"/tmp/QEMUGuest2.img","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/tmp/QEMUGuest2.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage","backing":"libvirt-2-format"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":1,"drive":"libvirt-1-format","id":"ide0-0-1","write-cache":"on"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

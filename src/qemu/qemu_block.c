@@ -1114,10 +1114,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
 
         if (virJSONValueObjectAdd(&fileprops,
                                   "s:node-name", nodename,
-                                  "A:cache", &cache,
                                   "T:read-only", ro,
                                   "T:auto-read-only", aro,
                                   "S:discard", discardstr,
+                                  "A:cache", &cache,
                                   NULL) < 0)
             return NULL;
     }

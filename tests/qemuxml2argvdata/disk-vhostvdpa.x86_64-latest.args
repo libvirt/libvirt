@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -add-fd set=0,fd=201,opaque=libvirt-1-storage-vdpa \
--blockdev '{"driver":"virtio-blk-vhost-vdpa","path":"/dev/fdset/0","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"virtio-blk-vhost-vdpa","path":"/dev/fdset/0","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1,"write-cache":"on"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

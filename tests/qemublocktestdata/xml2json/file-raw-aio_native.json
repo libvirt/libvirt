@@ -13,10 +13,10 @@
   "filename": "/path/to/i.img",
   "aio": "native",
   "node-name": "test2",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": true,
     "no-flush": false
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }

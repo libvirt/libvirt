@@ -26,13 +26,13 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--blockdev '{"driver":"file","filename":"/var/images/image1","node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/var/images/image1","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-3-storage"}' \
 -device '{"driver":"virtio-blk-ccw","devno":"fe.0.0000","drive":"libvirt-3-format","id":"virtio-disk0","bootindex":1,"write-cache":"on","werror":"stop","rerror":"stop"}' \
--blockdev '{"driver":"file","filename":"/var/images/image2","node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/var/images/image2","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-2-storage"}' \
 -device '{"driver":"virtio-blk-ccw","devno":"fe.0.0001","drive":"libvirt-2-format","id":"virtio-disk1","write-cache":"on","werror":"enospc"}' \
--blockdev '{"driver":"file","filename":"/var/images/image3","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/var/images/image3","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-ccw","devno":"fe.0.0002","drive":"libvirt-1-format","id":"virtio-disk2","write-cache":"on","werror":"report","rerror":"ignore"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

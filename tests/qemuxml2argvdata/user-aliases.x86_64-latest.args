@@ -38,7 +38,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-gentoo/.config \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x8"}' \
 -device '{"driver":"usb-ccid","id":"ua-myCCID","bus":"ua-SomeWeirdController.0","port":"1"}' \
 -device '{"driver":"usb-ccid","id":"ua-myCCID2","bus":"ua-SomeWeirdController.0","port":"2"}' \
--blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/fd.img","node-name":"libvirt-4-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/fd.img","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-4-storage"}' \
 -device '{"driver":"floppy","unit":0,"drive":"libvirt-4-format","id":"ua-myDisk1","write-cache":"on"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/gentoo.qcow2","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
@@ -48,7 +48,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-gentoo/.config \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/OtherDemo.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","encrypt":{"format":"luks","key-secret":"libvirt-2-format-encryption-secret0"},"file":"libvirt-2-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x7","drive":"libvirt-2-format","id":"ua-myEncryptedDisk1"}' \
--blockdev '{"driver":"file","filename":"/home/zippy/tmp/install-amd64-minimal-20140619.iso","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/home/zippy/tmp/install-amd64-minimal-20140619.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":0,"share-rw":true,"drive":"libvirt-1-format","id":"ua-WhatAnAwesomeCDROM","bootindex":2,"write-cache":"on"}' \
 -netdev '{"type":"tap","fd":"3","vhost":true,"vhostfd":"44","id":"hostua-CheckoutThisNIC"}' \

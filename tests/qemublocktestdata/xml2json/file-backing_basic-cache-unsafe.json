@@ -13,12 +13,12 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/a",
   "node-name": "node-a-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": false,
     "no-flush": true
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }
 {
   "node-name": "node-b-f",
@@ -35,12 +35,12 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/b",
   "node-name": "node-b-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": false,
     "no-flush": true
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }
 {
   "node-name": "node-c-f",
@@ -65,12 +65,12 @@
     }
   ],
   "node-name": "node-c-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": false,
     "no-flush": true
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }
 {
   "node-name": "node-d-f",
@@ -86,10 +86,10 @@
   "driver": "file",
   "filename": "/var/lib/libvirt/images/d",
   "node-name": "node-d-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": false,
     "no-flush": true
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }

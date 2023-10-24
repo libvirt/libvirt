@@ -14,10 +14,10 @@
   "floppy": false,
   "rw": false,
   "node-name": "node-s",
+  "auto-read-only": true,
+  "discard": "unmap",
   "cache": {
     "direct": true,
     "no-flush": false
-  },
-  "auto-read-only": true,
-  "discard": "unmap"
+  }
 }

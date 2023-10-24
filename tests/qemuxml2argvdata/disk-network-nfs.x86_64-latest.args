@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"nfs","server":{"host":"example.com","type":"inet"},"path":"/foo/bar/baz","user":6234,"group":12354,"node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"nfs","server":{"host":"example.com","type":"inet"},"path":"/foo/bar/baz","user":6234,"group":12354,"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-3-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-3-format","id":"virtio-disk0","bootindex":1,"write-cache":"on","serial":"eb90327c-8302-4725-9e1b-4e85ed4dc251"}' \
 -blockdev '{"driver":"nfs","server":{"host":"example.org","type":"inet"},"path":"/backing/store/nfs","user":1234,"group":5678,"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \

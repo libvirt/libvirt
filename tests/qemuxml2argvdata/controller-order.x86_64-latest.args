@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-fdr/.config \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x7"}' \
 -device '{"driver":"usb-hub","id":"hub0","bus":"usb.0","port":"1"}' \
 -device '{"driver":"usb-ccid","id":"ccid0","bus":"usb.0","port":"1.1"}' \
--blockdev '{"driver":"file","filename":"/tmp/fdr.img","aio":"native","node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"file","filename":"/tmp/fdr.img","aio":"native","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-2-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","share-rw":true,"drive":"libvirt-2-format","id":"virtio-disk0","bootindex":1,"write-cache":"on"}' \
 -blockdev '{"driver":"file","filename":"/tmp/Fedora-17-x86_64-Live-Desktop.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
