@@ -27,18 +27,18 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--add-fd set=2,fd=700,opaque=libvirt-4-storage0 \
--add-fd set=2,fd=705,opaque=libvirt-4-storage1 \
+-add-fd set=2,fd=200,opaque=libvirt-4-storage0 \
+-add-fd set=2,fd=205,opaque=libvirt-4-storage1 \
 -blockdev '{"driver":"file","filename":"/dev/fdset/2","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"qcow2","file":"libvirt-4-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-4-format","id":"virtio-disk4","bootindex":1}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/rhel7.1484071876","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"qcow2","file":"libvirt-3-storage","backing":null}' \
--add-fd set=1,fd=777,opaque=libvirt-2-storage0 \
--add-fd set=1,fd=778,opaque=libvirt-2-storage1 \
+-add-fd set=1,fd=247,opaque=libvirt-2-storage0 \
+-add-fd set=1,fd=248,opaque=libvirt-2-storage1 \
 -blockdev '{"driver":"file","filename":"/dev/fdset/1","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"qcow2","file":"libvirt-2-storage","backing":"libvirt-3-format"}' \
--add-fd set=0,fd=704,opaque=libvirt-1-storage0 \
+-add-fd set=0,fd=204,opaque=libvirt-1-storage0 \
 -blockdev '{"driver":"file","filename":"/dev/fdset/0","node-name":"libvirt-1-storage","read-only":false,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage","backing":"libvirt-2-format"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-1-format","id":"virtio-disk5"}' \

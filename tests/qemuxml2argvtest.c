@@ -1186,7 +1186,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-vhostuser-numa");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-vhostvdpa", "x86_64",
-                                  ARG_VDPA_FD, "/dev/vhost-vdpa-0", 801);
+                                  ARG_VDPA_FD, "/dev/vhost-vdpa-0", 201);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
     DO_TEST_CAPS_LATEST("disk-usb-device");
@@ -1226,9 +1226,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-backing-chains-index");
     DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-source-fd", "x86_64",
-                                  ARG_FD_GROUP, "testgroup2", 2, 700, 705,
-                                  ARG_FD_GROUP, "testgroup5", 1, 704,
-                                  ARG_FD_GROUP, "testgroup6", 2, 777, 778);
+                                  ARG_FD_GROUP, "testgroup2", 2, 200, 205,
+                                  ARG_FD_GROUP, "testgroup5", 1, 204,
+                                  ARG_FD_GROUP, "testgroup6", 2, 247, 248);
 
     DO_TEST_CAPS_LATEST("disk-slices");
     DO_TEST_CAPS_LATEST("disk-rotation");
