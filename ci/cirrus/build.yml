@@ -24,7 +24,7 @@ build_task:
     - git fetch origin "${CI_MERGE_REQUEST_REF_PATH:-$CI_COMMIT_REF_NAME}"
     - git reset --hard "$CI_COMMIT_SHA"
   build_script:
-    - meson setup build
+    - if test "$(uname)" = "Darwin"; then meson setup build --optimization 0; else meson setup build; fi
     - meson dist -C build --no-tests
     - meson compile -C build
     - meson test -C build --no-suite syntax-check --print-errorlogs || (cat ~/Library/Logs/DiagnosticReports/*.crash && exit 1)
