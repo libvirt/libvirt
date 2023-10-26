@@ -1007,6 +1007,9 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
         goto cleanup;
 
+    if (qemuProcessPrepareHostStorageDisk(vm, disk) < 0)
+        goto cleanup;
+
     if (qemuHotplugAttachManagedPR(vm, disk->src, VIR_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
