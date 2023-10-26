@@ -133,6 +133,13 @@ int qemuProcessPrepareHost(virQEMUDriver *driver,
                            virDomainObj *vm,
                            unsigned int flags);
 
+int qemuProcessPrepareHostStorageSource(virDomainObj *vm,
+                                        virStorageSource *src);
+int qemuProcessPrepareHostStorageSourceChain(virDomainObj *vm,
+                                             virStorageSource *chain);
+int qemuProcessPrepareHostStorageDisk(virDomainObj *vm,
+                                  virDomainDiskDef *disk);
+
 int qemuProcessDeleteThreadContext(virDomainObj *vm);
 
 int qemuProcessLaunch(virConnectPtr conn,

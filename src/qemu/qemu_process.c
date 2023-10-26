@@ -6777,6 +6777,69 @@ qemuProcessPrepareHostStorageSourceVDPA(virStorageSource *src,
 }
 
 
+/**
+ * See qemuProcessPrepareHostStorageSourceChain
+ */
+int
+qemuProcessPrepareHostStorageSource(virDomainObj *vm,
+                                    virStorageSource *src)
+{
+    /* connect to any necessary vdpa block devices */
+    if (qemuProcessPrepareHostStorageSourceVDPA(src, vm->privateData) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuProcessPrepareHostStorageSourceChain:
+ *
+ * @vm: domain object
+ * @chain: source chain
+ *
+ * Prepare the host side of a disk for use with the VM. Note that this function
+ * accesses host resources.
+ */
+int
+qemuProcessPrepareHostStorageSourceChain(virDomainObj *vm,
+                                         virStorageSource *chain)
+{
+    virStorageSource *n;
+
+    for (n = chain; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuProcessPrepareHostStorageSource(vm, n) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuProcessPrepareHostStorageDisk:
+ *
+ * @vm: domain object
+ * @disk: disk definition object
+ *
+ * Prepare the host side of a disk for use with the VM. Note that this function
+ * accesses host resources.
+ *
+ * Note that this function does not call qemuDomainDetermineDiskChain as that is
+ * needed in qemuProcessPrepareHostStorage to remove disks based on the startup
+ * policy, thus other callers need to call it explicitly.
+ */
+int
+qemuProcessPrepareHostStorageDisk(virDomainObj *vm,
+                                  virDomainDiskDef *disk)
+{
+    if (qemuProcessPrepareHostStorageSourceChain(vm, disk->src) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuProcessPrepareHostStorage(virQEMUDriver *driver,
                               virDomainObj *vm,
@@ -6813,16 +6876,11 @@ qemuProcessPrepareHostStorage(virQEMUDriver *driver,
         return -1;
     }
 
-    /* connect to any necessary vdpa block devices */
-    for (i = vm->def->ndisks; i > 0; i--) {
-        size_t idx = i - 1;
-        virDomainDiskDef *disk = vm->def->disks[idx];
-        virStorageSource *src;
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *disk = vm->def->disks[i];
 
-        for (src = disk->src; virStorageSourceIsBacking(src); src = src->backingStore) {
-            if (qemuProcessPrepareHostStorageSourceVDPA(src, vm->privateData) < 0)
-                return -1;
-        }
+        if (qemuProcessPrepareHostStorageDisk(vm, disk) < 0)
+            return -1;
     }
 
     return 0;
