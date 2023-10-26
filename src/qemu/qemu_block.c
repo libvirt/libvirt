@@ -23,6 +23,7 @@
 #include "qemu_domain.h"
 #include "qemu_alias.h"
 #include "qemu_security.h"
+#include "qemu_process.h"
 
 #include "storage_source.h"
 #include "viralloc.h"
@@ -3674,6 +3675,9 @@ qemuBlockPivot(virDomainObj *vm,
             if (reuse && shallow &&
                 virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY) &&
                 virStorageSourceHasBacking(disk->mirror)) {
+
+                if (qemuProcessPrepareHostStorageSourceChain(vm, disk->mirror->backingStore) < 0)
+                    return -1;
 
                 if (!(chainattachdata = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->mirror->backingStore)))
                     return -1;

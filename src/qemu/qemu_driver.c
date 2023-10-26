@@ -14290,10 +14290,16 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY)) {
             g_autoptr(virStorageSource) terminator = virStorageSourceNew();
 
+            if (qemuProcessPrepareHostStorageSource(vm, mirror) < 0)
+                goto endjob;
+
             if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
                                                                              terminator)))
                 goto endjob;
         } else {
+            if (qemuProcessPrepareHostStorageSourceChain(vm, mirror) < 0)
+                goto endjob;
+
             if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror)))
                 goto endjob;
         }
@@ -14308,6 +14314,9 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         if (mirror_shallow) {
             /* if external backing store is populated we'll need to open it */
             if (virStorageSourceHasBacking(mirror)) {
+                if (qemuProcessPrepareHostStorageSourceChain(vm, mirror->backingStore) < 0)
+                    goto endjob;
+
                 if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror->backingStore)))
                     goto endjob;
 
@@ -14320,6 +14329,9 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         } else {
             mirrorBacking = mirror->backingStore;
         }
+
+        if (qemuProcessPrepareHostStorageSource(vm, mirror) < 0)
+            goto endjob;
 
         if (!(crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
                                                                            mirrorBacking)))
