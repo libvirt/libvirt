@@ -201,7 +201,7 @@
   <flag name='virtio-blk-vhost-vdpa'/>
   <version>8001050</version>
   <microcodeVersion>43100246</microcodeVersion>
-  <package>v8.1.0-1639-g63011373ad</package>
+  <package>v8.1.0-2161-ga95260486a</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
