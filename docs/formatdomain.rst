@@ -387,9 +387,6 @@ and full virtualized guests.
      <initrd>/root/f8-i386-initrd</initrd>
      <cmdline>console=ttyS0 ks=http://example.com/f8-i386/os/</cmdline>
      <dtb>/root/ppc.dtb</dtb>
-     <acpi>
-       <table type='slic'>/path/to/slic.dat</table>
-     </acpi>
    </os>
    ...
 
@@ -413,11 +410,6 @@ and full virtualized guests.
    The contents of this element specify the fully-qualified path to the
    (optional) device tree binary (dtb) image in the host OS. :since:`Since
    1.0.4`
-``acpi``
-   The ``table`` element contains a fully-qualified path to the ACPI table. The
-   ``type`` attribute contains the ACPI table type (currently only ``slic`` is
-   supported) :since:`Since 1.3.5 (QEMU)` :since:`Since 5.9.0 (Xen)`
-
 
 Container boot
 ~~~~~~~~~~~~~~
@@ -469,6 +461,27 @@ If you want to enable user namespace, set the ``idmap`` element. The ``uid`` and
      <uid start='0' target='1000' count='10'/>
      <gid start='0' target='1000' count='10'/>
    </idmap>
+
+Common ``<os>`` element configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These options apply to any form of booting of the guest OS.
+
+::
+
+   ...
+   <os>
+     ...
+     <acpi>
+       <table type='slic'>/path/to/slic.dat</table>
+     </acpi>
+   </os>
+   ...
+
+``acpi``
+   The ``table`` element contains a fully-qualified path to the ACPI table. The
+   ``type`` attribute contains the ACPI table type (currently only ``slic`` is
+   supported) :since:`Since 1.3.5 (QEMU)` :since:`Since 5.9.0 (Xen)`
 
 
 SMBIOS System Information
