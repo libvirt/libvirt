@@ -41,7 +41,7 @@ required under the **Settings** page:
 
   * **Pipelines emails**
 
-    * *Recipients*: ``libvirt-ci@redhat.com``
+    * *Recipients*: ``ci@lists.libvirt.org``
 
 * **Repository**
 

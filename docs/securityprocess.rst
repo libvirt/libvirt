@@ -20,7 +20,7 @@ address:
 
 ::
 
-   libvirt-security@redhat.com
+   security@lists.libvirt.org
 
 NB. while this email address is backed by a mailing list, it is invitation only
 and moderated for non-members. As such you will receive an auto-reply indicating

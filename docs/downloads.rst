@@ -336,7 +336,7 @@ And there are also read-only mirrors on libvirt.org:
 
 Note that for most repositories, development happens via merge requests
 on GitLab. However, for the main `libvirt.git` repository all patch review and
-discussion only occurs on the `libvir-list <contact.html>`__ mailing list.
+discussion only occurs on the `devel <contact.html>`__ mailing list.
 
 The GitHub repository is read-only and pull requests and issues there are ignored.
 

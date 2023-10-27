@@ -64,8 +64,8 @@ Contact
 
 The libvirt project has two primary mailing lists:
 
-* libvirt-users@redhat.com (**for user discussions**)
-* libvir-list@redhat.com (**for development only**)
+* users@lists.libvirt.org (**for user discussions**)
+* devel@lists.libvirt.org (**for development only**)
 
 Further details on contacting the project are available on the website:
 

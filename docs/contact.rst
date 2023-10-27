@@ -19,11 +19,11 @@ Mailing lists
 
 There are three mailing-lists:
 
-**libvir-list@redhat.com** (for development)
+**devel@lists.libvirt.org** (for development)
    Archives
-     https://listman.redhat.com/archives/libvir-list
+     https://lists.libvirt.org/archives/list/devel@lists.libvirt.org/
    List info
-     https://listman.redhat.com/mailman/listinfo/libvir-list
+     https://lists.libvirt.org/admin/lists/devel.lists.libvirt.org/
 
    This is a high volume mailing list. It is a place for discussions about the
    **development** of libvirt.
@@ -35,11 +35,11 @@ There are three mailing-lists:
    -  Development of language bindings for libvirt API
    -  Testing and documentation of libvirt
 
-**libvirt-users@redhat.com** (for users)
+**users@lists.libvirt.org** (for users)
    Archives
-     https://listman.redhat.com/archives/libvirt-users
+     https://lists.libvirt.org/archives/list/users@lists.libvirt.org/
    List info
-     https://listman.redhat.com/mailman/listinfo/libvirt-users
+     https://lists.libvirt.org/admin/lists/users.lists.libvirt.org/
 
    This is a moderate volume mailing list. It is a place for discussions
    involving libvirt **users**.
@@ -51,11 +51,11 @@ There are three mailing-lists:
    -  Development of applications on top of / using the libvirt API(s)
    -  Any other topics along these lines
 
-**libvirt-announce@redhat.com** (for release notices)
+**announce@lists.libvirt.org** (for release notices)
    Archives
-     https://listman.redhat.com/archives/libvirt-announce
+     https://lists.libvirt.org/archives/list/announce@lists.libvirt.org/
    List info
-     https://listman.redhat.com/mailman/listinfo/libvirt-announce
+     https://lists.libvirt.org/admin/lists/announce.lists.libvirt.org/
 
    This is a low volume mailing list, with restricted posting, for announcements
    of new libvirt releases.

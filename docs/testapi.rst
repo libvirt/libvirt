@@ -30,5 +30,5 @@ For more details you can look at:
 
 Libvirt-test-API is maintained using `a GIT
 repository <https://gitlab.com/libvirt/libvirt-test-API>`__, and comment,
-patches and reviews are carried on the `libvir-list <contact.html>`__
-development list.
+patches and reviews are carried on the `devel <contact.html>`__
+mailing list.

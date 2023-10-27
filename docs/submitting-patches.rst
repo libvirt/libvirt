@@ -35,7 +35,7 @@ When you want to post your patches:
   $ git pull --rebase
   (fix any conflicts)
   $ git send-email --cover-letter --no-chain-reply-to --annotate \
-                   --confirm=always --to=libvir-list@redhat.com master
+                   --confirm=always --to=devel@lists.libvirt.org master
 
 For a single patch you can omit ``--cover-letter``, but a
 series of two or more patches needs a cover letter.
@@ -51,13 +51,13 @@ to your SMTP server with something like:
 
   $ git config --global sendemail.smtpServer stmp.youremailprovider.net
 
-If you get tired of typing ``--to=libvir-list@redhat.com`` all
+If you get tired of typing ``--to=devel@lists.libvirt.org`` all
 the time, you can configure that to be automatically handled as
 well:
 
 ::
 
-  $ git config sendemail.to libvir-list@redhat.com
+  $ git config sendemail.to devel@lists.libvirt.org
 
 Avoid using mail clients for sending patches, as most of them
 will mangle the messages in some way, making them unusable for
@@ -65,8 +65,8 @@ our purposes. Gmail and other Web-based mail clients are
 particularly bad at this.
 
 If everything went well, your patch should show up on the
-`libvir-list
-archives <https://listman.redhat.com/archives/libvir-list/>`__ in a
+`devel list
+archives <https://lists.libvirt.org/archives/list/devel@lists.libvirt.org/>`__ in a
 matter of minutes; if you still can't find it on there after an
 hour or so, you should double-check your setup. **Note that, if
 you are not already a subscriber, your very first post to the
