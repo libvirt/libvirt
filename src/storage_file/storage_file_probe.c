@@ -761,7 +761,7 @@ virStorageFileProbeFormatFromBuf(const char *path,
 
     if (possibleFormat != VIR_STORAGE_FILE_RAW)
         VIR_WARN("File %s matches %s magic, but version is wrong. "
-                 "Please report new version to libvir-list@redhat.com",
+                 "Please report new version to devel@lists.libvirt.org",
                  path, virStorageFileFormatTypeToString(possibleFormat));
 
  cleanup:
