@@ -38,10 +38,11 @@ function advancedsearch(e) {
     e.stopPropagation();
 
     var form = document.createElement("form");
-    form.setAttribute("method", "get");
+    form.method = "get";
 
     var newq = document.createElement("input");
-    newq.setAttribute("type", "hidden");
+    newq.type = "hidden";
+    newq.name = "q";
     form.appendChild(newq);
 
     var q = document.getElementById("searchq");
@@ -54,17 +55,27 @@ function advancedsearch(e) {
         }
     }
 
-    form.setAttribute("action", "https://google.com/search");
-    newq.setAttribute("name", "q");
+    if (what == "website" || what == "wiki") {
+        form.action = "https://google.com/search";
+        if (what == "website") {
+            newq.value = "site:libvirt.org " + q.value;
+        } else {
+            newq.value = "site:wiki.libvirt.org " + q.value;
+        }
+    } else if (what == "devs" || "users") {
+        form.action = "https://lists.libvirt.org/archives/search";
+        newq.value = q.value;
 
-    if (what == "website") {
-        newq.value = "site:libvirt.org " + q.value;
-    } else if (what == "wiki") {
-        newq.value = "site:wiki.libvirt.org " + q.value;
-    } else if (what == "devs") {
-        newq.value = "site:redhat.com/archives/libvir-list " + q.value;
-    } else if (what == "users") {
-        newq.value = "site:redhat.com/archives/libvirt-users " + q.value;
+        var newl = document.createElement("input");
+        newl.type = "hidden";
+        newl.name = "mlist";
+        form.appendChild(newl);
+
+        if (what == "devs") {
+            newl.value = "devel@lists.libvirt.org";
+        } else {
+            newl.value = "users@lists.libvirt.org";
+        }
     }
 
     document.body.appendChild(form);
