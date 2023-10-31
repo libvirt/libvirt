@@ -4221,10 +4221,6 @@ virDomainMigrate3(virDomainPtr domain,
                           VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
                           error);
 
-    VIR_REQUIRE_FLAG_GOTO(VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES,
-                          VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
-                          error);
-
     if (flags & VIR_MIGRATE_PEER2PEER) {
         virReportInvalidArg(flags, "%s",
                             _("use virDomainMigrateToURI3 for peer-to-peer migration"));
