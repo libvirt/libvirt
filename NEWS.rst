@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v9.9.0 (unreleased)
+v9.9.0 (2023-11-01)
 ===================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -41,9 +37,6 @@ v9.9.0 (unreleased)
 
     The ``virsh create --console`` now tries to connect to the guest console
     before starting the vCPUs.
-
-* **Bug fixes**
-
 
 v9.8.0 (2023-10-02)
 ===================
