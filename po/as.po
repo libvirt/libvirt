@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -5267,6 +5267,10 @@ msgstr "USB ডিভাইচ বাচ:%u ডিভাইচ:%u পোৱা �
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "USB ডিভাইচ বাচ:%1$u ডিভাইচ:%2$u পোৱা নগল"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -34435,6 +34439,9 @@ msgstr "ফলাফল অতিপাত ডাঙৰ: %1$llu"
 msgid "resume a domain"
 msgstr "ডোমেইন পুনৰাৰম্ভ কৰক"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37799,10 +37806,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "অজ্ঞাত smbios অৱস্থা '%1$s'"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "ভলিউম ধৰণ ডিস্কৰ বাবে অজ্ঞাত উৎস অৱস্থা '%1$s'"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "অজ্ঞাত ভঁৰাল ক্ষমতাৰ ধৰণ '%1$s', '%2$s' ৰ কাৰণে"
 
@@ -39381,6 +39384,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "ভলিউম ধৰণ ডিস্কৰ বাবে অজ্ঞাত উৎস অৱস্থা '%1$s'"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

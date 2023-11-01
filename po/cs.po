@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -5468,6 +5468,10 @@ msgstr "Nenalezeno USB zařízení %1$04x:%2$04x sběrnice:%3$u zařízení:%4$u
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "Nenalezena sběrnice USB zařízení bus:%1$u device:%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -34695,6 +34699,9 @@ msgstr "výsledek je příliš velký: %1$llu"
 msgid "resume a domain"
 msgstr "probudit doménu"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr "navázat na nezdařilé post-copy stěhování"
 
@@ -38105,10 +38112,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "neznámý režim smbios „%1$s“"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "neznámý zdrojový režim „%1$s“ pro disk typu svazek"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "neznámý typ vlastnosti úložiště „%1$s“ pro „%2$s“"
 
@@ -39709,6 +39712,10 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <řetězec>}…"
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "neznámý zdrojový režim „%1$s“ pro disk typu svazek"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

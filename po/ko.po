@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-10-11 10:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -926,7 +926,8 @@ msgstr "%1$s: 저장소 풀 %2$s: %3$s에 대한 사건 '수명주기'\n"
 
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
-msgstr "%1$s: 네트워크 %2$s를 위한 사건 'metadata-change': 유형 %3$s, uri %4$s\n"
+msgstr ""
+"%1$s: 네트워크 %2$s를 위한 사건 'metadata-change': 유형 %3$s, uri %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -5356,6 +5357,10 @@ msgstr "USB 장치 %1$04x:%2$04x 버스:%3$u 장치:%4$u을(를) 찾지 못했�
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "USB 장치 버스를 찾을 수 없음:%1$u 장치:%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -16631,7 +16636,8 @@ msgstr "장비 설명에 순간찍기를 추가 할 수 없음"
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
-msgstr "이 순간찍기를 추가 할 수 없으며, 이미 장비에 연결된 순간찍기가 있습니다"
+msgstr ""
+"이 순간찍기를 추가 할 수 없으며, 이미 장비에 연결된 순간찍기가 있습니다"
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "이 기술환경에서 fdb 항목을 추가/삭제 할 수 없습니다"
@@ -18095,7 +18101,8 @@ msgstr "%1$llu 사이에서 실행 할 수 없음"
 
 #, c-format
 msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
-msgstr "연결장치를 위해 OVS 마스터를 가져오는 명령을 실행 할 수 없습니다 %1$s: %2$s"
+msgstr ""
+"연결장치를 위해 OVS 마스터를 가져오는 명령을 실행 할 수 없습니다 %1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
@@ -18104,7 +18111,8 @@ msgstr ""
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
-msgstr "연결장치를 위한 OVS 포트 자료를 가져오는 명령을 실행 할 수 없습니다 %1$s: "
+msgstr ""
+"연결장치를 위한 OVS 포트 자료를 가져오는 명령을 실행 할 수 없습니다 %1$s: "
 "%2$s"
 
 #, c-format
@@ -18114,7 +18122,8 @@ msgstr ""
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
-msgstr "연결장치를 위한 OVS 포트 자료를 설정하는데 명령을 실행 할 수 없습니다 %1$s: "
+msgstr ""
+"연결장치를 위한 OVS 포트 자료를 설정하는데 명령을 실행 할 수 없습니다 %1$s: "
 "%2$s"
 
 msgid "Unable to run one time GDBus initializer"
@@ -20033,7 +20042,8 @@ msgstr "활성 커밋이 요청되었지만 '%1$s'이(가) 활성 상태가 아�
 msgid ""
 "active qemu domains require external disk snapshots; disk %1$s requested "
 "internal"
-msgstr "활성 qemu 도메인에는 외부 디스크 순간찍기가 필요합니다; 디스크 %1$s가 내부에 "
+msgstr ""
+"활성 qemu 도메인에는 외부 디스크 순간찍기가 필요합니다; 디스크 %1$s가 내부에 "
 "요청되었습니다"
 
 msgid "adapter name to be used for underlying storage"
@@ -21120,13 +21130,15 @@ msgstr "nvram을 유지하고 지울 수 없습니다"
 
 #, c-format
 msgid "cannot change between disk only and full system in snapshot %1$s"
-msgstr "순간찍기 %1$s에서 디스크 전용 및 전체 시스템 사이에서 변경 할 수 없습니다"
+msgstr ""
+"순간찍기 %1$s에서 디스크 전용 및 전체 시스템 사이에서 변경 할 수 없습니다"
 
 #, c-format
 msgid ""
 "cannot change between online and offline snapshot state in snapshot %1$s"
-msgstr "순간찍기 %1$s에서 온라인 및 오프라인 순간찍기 상태 사이에서는 변경 할 수 "
-"없습니다"
+msgstr ""
+"순간찍기 %1$s에서 온라인 및 오프라인 순간찍기 상태 사이에서는 변경 할 수 없습"
+"니다"
 
 #, c-format
 msgid "cannot change config of '%1$s' network interface type"
@@ -21559,19 +21571,22 @@ msgstr "도메인 %1$s를 위해 dac 사용자와 그룹 id를 생성 할 수 �
 #, c-format
 msgid ""
 "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
-msgstr "디스크 '%1$s'('%2$s' 장치에서)를 위해 외부 순간찍기 이름을 생성 할 수 "
-"없습니다"
+msgstr ""
+"디스크 '%1$s'('%2$s' 장치에서)를 위해 외부 순간찍기 이름을 생성 할 수 없습니"
+"다"
 
 #, c-format
 msgid "cannot generate external snapshot name for disk '%1$s' without source"
-msgstr "원천 없는 디스크 '%1$s'를 위해 외부 순간찍기 이름을 생성 할 수 없습니다"
+msgstr ""
+"원천 없는 디스크 '%1$s'를 위해 외부 순간찍기 이름을 생성 할 수 없습니다"
 
 #, c-format
 msgid ""
 "cannot generate external snapshot name for disk '%1$s': collision with disk "
 "'%2$s'"
-msgstr "디스크 '%1$s'를 위해 외부 순간찍기 이름을 생성 할 수 없습니다: 디스크 '%2$"
-"s'와 충돌"
+msgstr ""
+"디스크 '%1$s'를 위해 외부 순간찍기 이름을 생성 할 수 없습니다: 디스크 "
+"'%2$s'와 충돌"
 
 #, c-format
 msgid "cannot get CPU affinity of process %1$d"
@@ -23501,8 +23516,8 @@ msgid ""
 "create a snapshot of current interfaces settings, which can be later "
 "committed (iface-commit) or restored (iface-rollback)"
 msgstr ""
-"나중에 커밋(iface-commit)하거나 복원(iface-rollback) 할 수 있는 현재 "
-"연결장치 설정의 순간찍기를 생성합니다"
+"나중에 커밋(iface-commit)하거나 복원(iface-rollback) 할 수 있는 현재 연결장"
+"치 설정의 순간찍기를 생성합니다"
 
 msgid "create a vol from an XML file"
 msgstr "XML 파일에서 볼륨 생성"
@@ -23749,8 +23764,9 @@ msgstr "볼륨과 연결된 순간찍기를 삭제합니다(저장소 드라이�
 msgid ""
 "delete snapshots associated with volume(s), requires --remove-all-storage "
 "(must be supported by storage driver)"
-msgstr "볼륨과 연결된 순간찍기를 삭제합니다, --remove-all-storage가 필요합니다("
-"저장소 드라이버에서 지원해야 함)"
+msgstr ""
+"볼륨과 연결된 순간찍기를 삭제합니다, --remove-all-storage가 필요합니다(저장"
+"소 드라이버에서 지원해야 함)"
 
 msgid "delete the specified network port"
 msgstr "지정된 네트워크 포트를 삭제하세요"
@@ -23773,7 +23789,8 @@ msgstr "외부 하위 디스크 순간찍기의 삭제는 지원되지 않습니
 msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
-msgstr "다중 하위 순간찍기가 있는 외부 디스크 순간찍기 삭제는 지원되지 않습니다"
+msgstr ""
+"다중 하위 순간찍기가 있는 외부 디스크 순간찍기 삭제는 지원되지 않습니다"
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "하위에 있는 외부 디스크 순간찍기의 삭제는 지원되지 않습니다"
@@ -24102,7 +24119,8 @@ msgstr "디스크 속성: 디스크[,검사점=유형][,비트맵=이름]"
 
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
-msgstr "디스크 속성: 디스크[,순간찍기=유형][,드라이버=유형][,s유형=유형][,파일=이름]"
+msgstr ""
+"디스크 속성: 디스크[,순간찍기=유형][,드라이버=유형][,s유형=유형][,파일=이름]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
@@ -24174,7 +24192,8 @@ msgstr "디스크 형식 %1$s는 지원되지 않습니다"
 msgid ""
 "disk image '%1$s' for internal snapshot '%2$s' is not the same as disk image "
 "currently used by VM"
-msgstr "디스크 이미지 '%1$s'(내부 순간찍기 '%2$s'를 위해)는 현재 VM에 의해 사용되는 "
+msgstr ""
+"디스크 이미지 '%1$s'(내부 순간찍기 '%2$s'를 위해)는 현재 VM에 의해 사용되는 "
 "디스크 이미지와 동일하지 않습니다"
 
 #, c-format
@@ -24255,12 +24274,14 @@ msgstr "디스크 제조사는 인쇄 가능한 문자열이 아닙니다"
 
 #, c-format
 msgid "disk-only flag for snapshot %1$s requires disk-snapshot state"
-msgstr "순간찍기 %1$s를 위한 디스크 전용 플래그는 디스크 순간찍기 상태가 필요합니다"
+msgstr ""
+"순간찍기 %1$s를 위한 디스크 전용 플래그는 디스크 순간찍기 상태가 필요합니다"
 
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
-msgstr "디스크 전용 순간찍기는 순간찍기를 위해 선택되도록 하나 이상의 디스크가 "
-"필요합니다"
+msgstr ""
+"디스크 전용 순간찍기는 순간찍기를 위해 선택되도록 하나 이상의 디스크가 필요합"
+"니다"
 
 msgid "display"
 msgstr "표시하다"
@@ -25357,8 +25378,9 @@ msgstr "외부 비활성 순간찍기는 '%1$s' 디스크에서 지원되지 않
 msgid ""
 "external inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
-msgstr "외부 비활성 순간찍기는 '%1$s' 통신규약을 사용하는 '네트워크' 디스크에서 "
-"지원되지 않습니다"
+msgstr ""
+"외부 비활성 순간찍기는 '%1$s' 통신규약을 사용하는 '네트워크' 디스크에서 지원"
+"되지 않습니다"
 
 msgid "external memory snapshots require a filename"
 msgstr "외부 메모리 순간찍기는 파일 이름이 필요합니다"
@@ -25367,7 +25389,8 @@ msgstr "외부 메모리 순간찍기는 파일 이름이 필요합니다"
 msgid ""
 "external snapshot file for disk %1$s already exists and is not a block "
 "device: %2$s"
-msgstr "디스크 %1$s를 위한 외부 순간찍기 파일은 이미 존재하며 블록 장치가 아닙니다: "
+msgstr ""
+"디스크 %1$s를 위한 외부 순간찍기 파일은 이미 존재하며 블록 장치가 아닙니다: "
 "%2$s"
 
 #, c-format
@@ -26647,7 +26670,8 @@ msgstr "파일 %1$s이 존재하지 않음"
 
 #, c-format
 msgid "file '%1$s' for disk '%2$s' requires use of external snapshot mode"
-msgstr "파일 '%1$s'(디스크 '%2$s'를 위해)는 외부 순간찍기 방식의 사용이 필요합니다"
+msgstr ""
+"파일 '%1$s'(디스크 '%2$s'를 위해)는 외부 순간찍기 방식의 사용이 필요합니다"
 
 msgid "file containing XML CPU descriptions"
 msgstr "XML CPU 설명을 포함하는 파일"
@@ -26813,7 +26837,8 @@ msgstr "이전이 취소된 완료 단계를 무시"
 
 #, c-format
 msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
-msgstr "마무리 블록 작업은 디스크 '%1$s' 순간찍기를 삭제하는 동안에 실패함: '%2$s'"
+msgstr ""
+"마무리 블록 작업은 디스크 '%1$s' 순간찍기를 삭제하는 동안에 실패함: '%2$s'"
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -27830,8 +27855,9 @@ msgstr "내부(잠금) 오류"
 msgid ""
 "internal and full system snapshots require all disks to be selected for "
 "snapshot"
-msgstr "내부 및 전체 시스템 순간찍기는 순간찍기를 위해 선택되도록 모든 디스크가 "
-"필요합니다"
+msgstr ""
+"내부 및 전체 시스템 순간찍기는 순간찍기를 위해 선택되도록 모든 디스크가 필요"
+"합니다"
 
 msgid "internal command for autocompletion"
 msgstr "자동 완성을 위한 내부 명령"
@@ -27854,15 +27880,17 @@ msgstr "내부 비활성 순간찍기는 '%1$s' 디스크에서 지원되지 않
 msgid ""
 "internal inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
-msgstr "내부 비활성 순간찍기는 '%1$s' 통신규약을 사용하는 '네트워크' 디스크에서 "
-"지원되지 않습니다"
+msgstr ""
+"내부 비활성 순간찍기는 '%1$s' 통신규약을 사용하는 '네트워크' 디스크에서 지원"
+"되지 않습니다"
 
 msgid "internal parse requested with NULL current"
 msgstr "현재 NULL로 내부 구문 분석이 요청되었습니다"
 
 #, c-format
 msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
-msgstr "디스크 %1$s를 위한 내부 순간찍기는 저장소 유형 %2$s에 대해 지원되지 않습니다"
+msgstr ""
+"디스크 %1$s를 위한 내부 순간찍기는 저장소 유형 %2$s에 대해 지원되지 않습니다"
 
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr "실행 중인 VM의 내부 순간찍기는 메모리 상태가 포함되어야 합니다"
@@ -29662,8 +29690,9 @@ msgstr "메모리 속성: [file=]name[,snapshot=type]"
 msgid ""
 "memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
 "(0x%3$llx)"
-msgstr "메모리 장치 주소 [0x%1$llx:0x%2$llx]가 다른 메모리 장치 (0x%3$llx)와 "
-"중복됩니다"
+msgstr ""
+"메모리 장치 주소 [0x%1$llx:0x%2$llx]가 다른 메모리 장치 (0x%3$llx)와 중복됩니"
+"다"
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
@@ -29933,8 +29962,9 @@ msgstr "잘못 처리된 저장소 형식 '%1$s'"
 msgid ""
 "mismatch between configured type for snapshot disk '%1$s' and the type of "
 "existing file '%2$s'"
-msgstr "순간찍기 디스크 '%1$s'를 위해 구성된 유형과 기존 파일 '%2$s'의 유형이 "
-"불일치합니다"
+msgstr ""
+"순간찍기 디스크 '%1$s'를 위해 구성된 유형과 기존 파일 '%2$s'의 유형이 불일치"
+"합니다"
 
 #, c-format
 msgid "mismatch of address family in range %1$s - %2$s"
@@ -31218,7 +31248,8 @@ msgstr "네트워크 '%1$s'가 동작 중이 아님"
 msgid ""
 "network '%1$s' requires exclusive access to interfaces, but none are "
 "available"
-msgstr "네트워크 '%1$s'는 연결장치에 베타적 접근이 필요하지만, 가용하지 않습니다"
+msgstr ""
+"네트워크 '%1$s'는 연결장치에 베타적 접근이 필요하지만, 가용하지 않습니다"
 
 #, c-format
 msgid ""
@@ -33850,6 +33881,9 @@ msgstr "결과가 너무 큽니다: %1$llu"
 msgid "resume a domain"
 msgstr "도메인을 다시 시작"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr "실패한 복사-후 이전을 재시작"
 
@@ -34344,7 +34378,8 @@ msgstr "공유 가능은 vhostuser 디스크에서 지원되지 않습니다"
 
 #, c-format
 msgid "shared access for disk '%1$s' requires use of supported storage format"
-msgstr "디스크 '%1$s'를 위한 공유된 접근은 지원되는 저장소 형식의 사용이 필요합니다"
+msgstr ""
+"디스크 '%1$s'를 위한 공유된 접근은 지원되는 저장소 형식의 사용이 필요합니다"
 
 msgid "shared access mode required for virtio-pmem device"
 msgstr "virtio-pmem 장치를 위해 필요한 공유된 접근 방식"
@@ -34535,8 +34570,9 @@ msgstr "순간찍기 이름"
 msgid ""
 "snapshot without memory state, removal of existing managed saved state "
 "strongly recommended to avoid corruption"
-msgstr "메모리 상태가 없는 순간찍기, 손상을 방지하려면 기존 관리 저장된 상태를 "
-"제거하는 것이 아주 좋습니다"
+msgstr ""
+"메모리 상태가 없는 순간찍기, 손상을 방지하려면 기존 관리 저장된 상태를 제거하"
+"는 것이 아주 좋습니다"
 
 msgid "snapshotName is null"
 msgstr "순간찍기 이름이 null입니다"
@@ -34570,8 +34606,9 @@ msgstr "저장소에 대한 원천 장치"
 msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
-msgstr "디스크 '%1$s'를 위한 원천은 정규 파일이 아닙니다; 외부 순간찍기 이름을 "
-"생성하는데 거부 중"
+msgstr ""
+"디스크 '%1$s'를 위한 원천은 정규 파일이 아닙니다; 외부 순간찍기 이름을 생성하"
+"는데 거부 중"
 
 msgid "source media is a block device"
 msgstr "원천 미디어는 블록 장치입니다"
@@ -35808,7 +35845,8 @@ msgstr "임시 도메인은 실행 상태 '종료'를 가질 수 없습니다"
 
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
-msgstr "비활성 순간찍기로 되돌리려면 임시 도메인에서 실행 또는 일시 중지를 요청해야 "
+msgstr ""
+"비활성 순간찍기로 되돌리려면 임시 도메인에서 실행 또는 일시 중지를 요청해야 "
 "합니다"
 
 msgid "transient domains do not have any persistent config"
@@ -37198,10 +37236,6 @@ msgstr "알려져 있지 않은 비밀 사용 유형 %1$s"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "알려지지 않은 smbios 모드 '%1$s'"
-
-#, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "알 수 없는 볼륨 유형 디스크의 원천 방식 '%1$s'"
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -38778,6 +38812,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "알 수 없는 볼륨 유형 디스크의 원천 방식 '%1$s'"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

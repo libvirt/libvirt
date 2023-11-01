@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -5270,6 +5270,10 @@ msgstr "ബസ്:%u ഉപകരണം:%u എന്ന യുഎസ്ബി �
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "ബസ്:%1$u ഉപകരണം:%2$u എന്ന യുഎസ്ബി ഉപകരണം കണ്ടില്ല"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -34553,6 +34557,9 @@ msgstr "ഫലം വളരെ വലുതു്: %1$llu"
 msgid "resume a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുക"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37921,10 +37928,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "അപരിചിതമായ smbios മോഡ് '%1$s'"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "വോള്യം തരത്തിലുള്ള ഡിസ്കിനു് അപരിചിതമായ സോഴ്സ് മോഡ് '%1$s'"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "അപരിചിതമായ സ്റ്റോറേജ് വോള്യം രീതി '%1$s'('%2$s'-നുള്ളതു്)"
 
@@ -39503,6 +39506,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "വോള്യം തരത്തിലുള്ള ഡിസ്കിനു് അപരിചിതമായ സോഴ്സ് മോഡ് '%1$s'"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

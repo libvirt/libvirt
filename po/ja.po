@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -5442,6 +5442,10 @@ msgstr ""
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "USB デバイスのバスを見つけられませんでした:%1$u デバイス:%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -34662,6 +34666,9 @@ msgstr "結果が大きすぎます: %1$llu"
 msgid "resume a domain"
 msgstr "ドメインを再開します"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr "レジュームポストコピーのマイグレーションに失敗"
 
@@ -38081,10 +38088,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "不明な smbios モード '%1$s'"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "ボリュームタイプディスクに対する不明なソースモード '%1$s'"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "'%1$s' に対する不明なストレージケイパビリティータイプ '%2$s'"
 
@@ -39700,6 +39703,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "ボリュームタイプディスクに対する不明なソースモード '%1$s'"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

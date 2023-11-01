@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -5231,6 +5231,10 @@ msgstr "USB పరికరం bus:%u device:%u కనుగొనలేదు"
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "USB పరికరం bus:%1$u device:%2$u కనుగొనలేదు"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -34299,6 +34303,9 @@ msgstr "ఫలితం మరీ పెద్దగా వుంది: %1$llu"
 msgid "resume a domain"
 msgstr "క్షేత్రాన్ని సంక్షిప్తీకరించు"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37663,10 +37670,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "తెలియని smbios రీతి '%1$s'"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "తెలియని మూలపు రీతి '%1$s' వాల్యూమ్ రకం డిస్కు కొరకు"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "'%2$s' కొరకు తెలియని నిల్వ సామర్ధ్యపు రకము '%1$s'"
 
@@ -39242,6 +39245,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "తెలియని మూలపు రీతి '%1$s' వాల్యూమ్ రకం డిస్కు కొరకు"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

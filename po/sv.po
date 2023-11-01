@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-10-07 20:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -5438,6 +5438,10 @@ msgstr "Hittade inte USB-enhet %1$04x:%2$04x buss:%3$u enhet %4$u"
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "Hittade inte USB-enhetsbuss:%1$u enhet:%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -34264,6 +34268,9 @@ msgstr "nparams är för stor"
 msgid "resume a domain"
 msgstr "fortsätt en domän"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37583,10 +37590,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "okänt smbios-läge ”%1$s”"
 
 #, fuzzy, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "Okänd källäge ”%1$s”"
-
-#, fuzzy, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "okänd protokolltyp ”%s”"
 
@@ -39135,6 +39138,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
+
+#, fuzzy, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "Okänd källäge ”%1$s”"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

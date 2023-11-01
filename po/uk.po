@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-09-28 05:14+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -5610,6 +5610,10 @@ msgstr "Не знайдено пристрою USB %1$04x:%2$04x канал:%3$u
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "Не знайдено каналу пристрій USB, канал:%1$u, пристрій:%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -19112,8 +19116,8 @@ msgstr ""
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
 msgstr ""
-"Не вдалося віддати команду для отримання даних порту OVS для інтерфейсу %1$s:"
-" %2$s"
+"Не вдалося віддати команду для отримання даних порту OVS для інтерфейсу "
+"%1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
@@ -28101,7 +28105,8 @@ msgid "filesystem target '%1$s' specified twice"
 msgstr "ціль — файлову систему «%1$s» — вказано двічі"
 
 msgid "filesystem usage limits are not supported with QEMU"
-msgstr "підтримки обмеження використання файлових системи у QEMU не передбачено"
+msgstr ""
+"підтримки обмеження використання файлових системи у QEMU не передбачено"
 
 #, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
@@ -35739,6 +35744,9 @@ msgstr "результат надто великий: %1$llu"
 msgid "resume a domain"
 msgstr "відновити домен"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr "не вдалося відновити перенесення із пост-копіюванням"
 
@@ -39206,10 +39214,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "невідомий режим smbios «%1$s»"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "невідомий режим джерела «%1$s» для диска типу тому"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "невідомий тип можливостей збереження «%1$s» для «%2$s»"
 
@@ -40870,6 +40874,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "невідомий режим джерела «%1$s» для диска типу тому"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

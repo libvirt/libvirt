@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-10-31 12:55+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
@@ -341,10 +341,10 @@ msgid ""
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
 "possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"!!! SSH მასპინძელის გასაღების ვერიფიკაცია ვერ მოხერხდა !!! ჰოსტის "
-"'%1$s:%2$d'-ის იდენტიფიკატორი განსხვავდება შენახული იდენტიფიკატორისგან. "
-"გთხოვთ, შეამოწმოთ ახალი ჰოსტის გასაღები '%3$s', რათა თავი აარიდოთ შესაძლო "
-"შუაკაცის შეტევას. გასაღები შენახულია '%4$s'-ში."
+"!!! SSH მასპინძელის გასაღების ვერიფიკაცია ვერ მოხერხდა !!! ჰოსტის '%1$s:"
+"%2$d'-ის იდენტიფიკატორი განსხვავდება შენახული იდენტიფიკატორისგან. გთხოვთ, "
+"შეამოწმოთ ახალი ჰოსტის გასაღები '%3$s', რათა თავი აარიდოთ შესაძლო შუაკაცის "
+"შეტევას. გასაღები შენახულია '%4$s'-ში."
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -4982,6 +4982,10 @@ msgstr ""
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
+msgstr ""
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
 msgid ""
@@ -32632,6 +32636,9 @@ msgstr ""
 msgid "resume a domain"
 msgstr ""
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -35857,10 +35864,6 @@ msgstr ""
 
 #, c-format
 msgid "unknown smbios mode '%1$s'"
-msgstr ""
-
-#, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
 msgstr ""
 
 #, c-format

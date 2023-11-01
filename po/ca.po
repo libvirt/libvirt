@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -5072,6 +5072,10 @@ msgstr ""
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
+msgstr ""
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
 msgid ""
@@ -33862,6 +33866,9 @@ msgstr "l'nparams és massa gran"
 msgid "resume a domain"
 msgstr "recupera un domini"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37181,10 +37188,6 @@ msgstr "tipus d'SO desconegut %1$s"
 #, fuzzy, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "el dispositiu d'arrencada '%1$s' és desconegut"
-
-#, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"

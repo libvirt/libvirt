@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -5245,6 +5245,10 @@ msgstr ""
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
+msgstr ""
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
 msgid ""
@@ -34633,6 +34637,9 @@ msgstr "nparams troppo grande"
 msgid "resume a domain"
 msgstr "ripristinare un dominio"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37992,10 +37999,6 @@ msgstr "tipo di utilizzo segreto sconosciuto %1$s"
 msgid "unknown smbios mode '%1$s'"
 msgstr "modo smbios '%1$s' sconosciuto"
 
-#, fuzzy, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "Modalità sorgente sconosciuta '%1$s'"
-
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "tipo di funzionalità di storage '%1$s' sconosciuta per '%2$s'"
@@ -39574,6 +39577,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s <string>]"
+
+#, fuzzy, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "Modalità sorgente sconosciuta '%1$s'"
 
 #, fuzzy, c-format
 #~ msgid "Could not find typefile '%1$s'"

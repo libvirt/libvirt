@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -5066,6 +5066,10 @@ msgstr ""
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
+msgstr ""
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
 msgid ""
@@ -33917,6 +33921,9 @@ msgstr "nparams preveliki"
 msgid "resume a domain"
 msgstr "nastavi domen"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -37254,10 +37261,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "nepoznat „%1$s“ uređaj za pokretanje"
 
 #, fuzzy, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "nepoznata vrsta %d diska za skladištenje"
-
-#, fuzzy, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "nepoznata vrsta %d diska za skladištenje"
 
@@ -38820,6 +38823,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <niska>"
+
+#, fuzzy, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "nepoznata vrsta %d diska za skladištenje"
 
 #, fuzzy, c-format
 #~ msgid "Could not find typefile '%1$s'"

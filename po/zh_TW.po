@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2018-09-10 04:24+0000\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
@@ -5026,6 +5026,10 @@ msgstr ""
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
+msgstr ""
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
 msgid ""
@@ -33472,6 +33476,9 @@ msgstr ""
 msgid "resume a domain"
 msgstr "繼續執行區域"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -36755,10 +36762,6 @@ msgstr "未知的作業系統類型 %1$s"
 #, fuzzy, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "未知的指令：「%1$s」"
-
-#, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"

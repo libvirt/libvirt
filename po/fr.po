@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -5654,6 +5654,10 @@ msgstr ""
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "N'a pas trouvé le bus de périphérique USB :%1$u périphérique :%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -35986,6 +35990,9 @@ msgstr "résultat trop important : %1$llu"
 msgid "resume a domain"
 msgstr "réactiver un domaine"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr "reprendre une migration post-copie qui a échoué"
 
@@ -39507,10 +39514,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "mode smbios inconnu '%1$s'"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "mode source inconnu '%1$s' pour un volume de type disque"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "type de capacité de stockage inconnu '%1$s' pour '%2$s'"
 
@@ -41165,6 +41168,10 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "mode source inconnu '%1$s' pour un volume de type disque"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

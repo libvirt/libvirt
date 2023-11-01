@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 7.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2021-01-19 12:15+0000\n"
 "Last-Translator: Muha Aliss <muhaaliss@gmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4969,6 +4969,10 @@ msgstr ""
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
+msgstr ""
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
 msgid ""
@@ -32619,6 +32623,9 @@ msgstr ""
 msgid "resume a domain"
 msgstr ""
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -35844,10 +35851,6 @@ msgstr ""
 
 #, c-format
 msgid "unknown smbios mode '%1$s'"
-msgstr ""
-
-#, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
 msgstr ""
 
 #, c-format

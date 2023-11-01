@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -5199,6 +5199,10 @@ msgstr "未找到 USB 设备 %1$04x:%2$04x 总线：%3$u 设备：%4$u"
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "未找到 USB 设备总线：%1$u 设备：%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -33076,6 +33080,9 @@ msgstr "结果太大：%1$llu"
 msgid "resume a domain"
 msgstr "重新恢复一个域"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr "恢复失败的 post-copy 迁移"
 
@@ -36360,10 +36367,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "未知的 smbios 模式 ‘%1$s’"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "未指定卷类型磁盘的源模式 '%1$s'"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "未知的 '%1$s' 的存储能力类型 '%2$s'"
 
@@ -37896,6 +37899,10 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "未指定卷类型磁盘的源模式 '%1$s'"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

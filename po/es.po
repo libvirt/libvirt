@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -5413,6 +5413,10 @@ msgstr "No se encontró bus de dispositivo USB:%u device:%u"
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "No se encontró bus de dispositivo USB:%1$u device:%2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -35273,6 +35277,9 @@ msgstr "resultado demasiado amplio: %1$llu"
 msgid "resume a domain"
 msgstr "reinicia un dominio"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -38706,10 +38713,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "modo '%1$s' de smbios desconocido"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "Modo de fuente desconocido'%1$s' para disco de tipo de volumen"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "tipo de capacidad de almacenamiento '%1$s' desconocido para '%2$s'"
 
@@ -40304,6 +40307,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "Modo de fuente desconocido'%1$s' para disco de tipo de volumen"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

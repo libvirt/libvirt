@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-10-26 09:33+0000\n"
 "PO-Revision-Date: 2023-06-09 13:20+0000\n"
 "Last-Translator: Malte Linke <malte.linke@outlook.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
@@ -5384,6 +5384,10 @@ msgstr "Konnte USB Einheit Bus:%u Einheit:%u nicht finden"
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "Konnte USB Einheit Bus:%1$u Einheit:%2$u nicht finden"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -35104,6 +35108,9 @@ msgstr "Ergebnis zu lang: %1$llu"
 msgid "resume a domain"
 msgstr "Domain fortsetzen"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -38533,10 +38540,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "Unbekannter smbios Modus '%1$s'"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "Unbekannter Quellmodus '%1$s' für Datenträgertyp Disk"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "Unbekannter Speicherfähigkeitstyp '%1$s' für '%2$s'"
 
@@ -40133,6 +40136,10 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "Unbekannter Quellmodus '%1$s' für Datenträgertyp Disk"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"
