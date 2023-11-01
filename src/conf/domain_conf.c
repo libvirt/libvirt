@@ -22363,14 +22363,12 @@ virDomainDiskSourceFormat(virBuffer *buf,
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    if (src->type == VIR_STORAGE_TYPE_VOLUME) {
-        if (src->srcpool) {
-            virBufferEscapeString(&attrBuf, " pool='%s'", src->srcpool->pool);
-            virBufferEscapeString(&attrBuf, " volume='%s'", src->srcpool->volume);
-            if (src->srcpool->mode)
-                virBufferAsprintf(&attrBuf, " mode='%s'",
-                                  virStorageSourcePoolModeTypeToString(src->srcpool->mode));
-        }
+    if (src->type == VIR_STORAGE_TYPE_VOLUME && src->srcpool) {
+        virBufferEscapeString(&attrBuf, " pool='%s'", src->srcpool->pool);
+        virBufferEscapeString(&attrBuf, " volume='%s'", src->srcpool->volume);
+        if (src->srcpool->mode)
+            virBufferAsprintf(&attrBuf, " mode='%s'",
+                              virStorageSourcePoolModeTypeToString(src->srcpool->mode));
 
         if (flags & VIR_DOMAIN_DEF_FORMAT_VOLUME_TRANSLATED &&
             src->srcpool->actualtype != VIR_STORAGE_TYPE_NONE) {
