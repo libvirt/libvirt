@@ -2157,13 +2157,20 @@ qemuSnapshotRevertExternalInactive(virDomainObj *vm,
 {
     virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
     g_autoptr(virBitmap) created = NULL;
+    int ret = -1;
 
     created = virBitmapNew(tmpsnapdef->ndisks);
 
-    if (qemuSnapshotDomainDefUpdateDisk(domdef, tmpsnapdef, false) < 0)
-        return -1;
+    if (qemuSnapshotCreateQcow2Files(driver, domdef, tmpsnapdef, created) < 0)
+        goto cleanup;
 
-    if (qemuSnapshotCreateQcow2Files(driver, domdef, tmpsnapdef, created) < 0) {
+    if (qemuSnapshotDomainDefUpdateDisk(domdef, tmpsnapdef, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0 && created) {
         ssize_t bit = -1;
         virErrorPtr err = NULL;
 
@@ -2180,11 +2187,9 @@ qemuSnapshotRevertExternalInactive(virDomainObj *vm,
         }
 
         virErrorRestore(&err);
-
-        return -1;
     }
 
-    return 0;
+    return ret;
 }
 
 
