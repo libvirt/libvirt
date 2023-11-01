@@ -2749,6 +2749,44 @@ qemuSnapshotGetDisksWithBackingStore(virDomainObj *vm,
 
 
 /**
+ * qemuSnapshotExternalGetSnapDiskSrc:
+ * @vm: domain object
+ * @snap: snapshot object
+ * @snapDisk: disk definition from snapshost
+ *
+ * Try to get actual disk source for @snapDisk as the source stored in
+ * snapshot metadata is not always the correct source we need to work with.
+ * This happens mainly after reverting to non-leaf snapshot and creating
+ * new branch with new snapshot.
+ *
+ * Returns disk source on success, NULL on error.
+ */
+static virStorageSource *
+qemuSnapshotExternalGetSnapDiskSrc(virDomainObj *vm,
+                                   virDomainMomentObj *snap,
+                                   virDomainSnapshotDiskDef *snapDisk)
+{
+    virDomainDiskDef *disk = NULL;
+
+    /* Should never happen when deleting external snapshot as for now we do
+     * not support this specific case for now. */
+    if (snap->nchildren > 1)
+        return snapDisk->src;
+
+    if (snap->first_child) {
+        disk = qemuDomainDiskByName(snap->first_child->def->dom, snapDisk->name);
+    } else if (virDomainSnapshotGetCurrent(vm->snapshots) == snap) {
+        disk = qemuDomainDiskByName(vm->def, snapDisk->name);
+    }
+
+    if (disk)
+        return disk->src;
+
+    return snapDisk->src;
+}
+
+
+/**
  * qemuSnapshotDeleteExternalPrepareData:
  * @vm: domain object
  * @snap: snapshot object
@@ -2802,18 +2840,22 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
         }
 
         if (data->merge) {
+            virStorageSource *snapDiskSrc = NULL;
+
             data->domDisk = qemuDomainDiskByName(vm->def, snapDisk->name);
             if (!data->domDisk)
                 return -1;
 
+            snapDiskSrc = qemuSnapshotExternalGetSnapDiskSrc(vm, snap, data->snapDisk);
+
             if (virDomainObjIsActive(vm)) {
                 data->diskSrc = virStorageSourceChainLookupBySource(data->domDisk->src,
-                                                                    data->snapDisk->src,
+                                                                    snapDiskSrc,
                                                                     &data->prevDiskSrc);
                 if (!data->diskSrc)
                     return -1;
 
-                if (!virStorageSourceIsSameLocation(data->diskSrc, data->snapDisk->src)) {
+                if (!virStorageSourceIsSameLocation(data->diskSrc, snapDiskSrc)) {
                     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                    _("VM disk source and snapshot disk source are not the same"));
                     return -1;
