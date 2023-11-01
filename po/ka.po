@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-09-25 20:10+0000\n"
-"PO-Revision-Date: 2023-07-12 18:20+0000\n"
+"PO-Revision-Date: 2023-10-31 12:55+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.2\n"
+"X-Generator: Weblate 5.1.1\n"
 
 msgid ""
 "\n"
@@ -28,13 +28,12 @@ msgstr ""
 "  --(მიუთითეთ help <ბრძანება> ბრძანებაზე ინფორმაციისთვის)\n"
 "\n"
 
-#, fuzzy
 msgid ""
 "\n"
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 "\n"
-"  (მიუთითეთ დახმარების <ჯგუფი> ჯგუფში ბრძანებებზე ინფორმაციისთვის)\n"
+"  (შეიყვანეთ help <ჯგუფი> ჯგუფში ბრძანებებზე ინფორმაციისთვის)\n"
 
 msgid ""
 "\n"
@@ -124,13 +123,12 @@ msgstr ""
 "\n"
 "  პარამეტრები\n"
 
-#, fuzzy
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  შინაარსი\n"
+"  დასკვნა\n"
 
 #, c-format
 msgid ""
@@ -209,13 +207,13 @@ msgstr ""
 "(დრო: %1$.3f მწ)\n"
 "\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "Domain '%1$s' dumped to %2$s\n"
 msgstr ""
 "\n"
-"დომენი '%1$s' გადაიტვირთა %2$s-ში\n"
+"დომენი '%1$s'-ის დამპი ჩაიწერა %2$s-ში\n"
 
 #, c-format
 msgid ""
@@ -225,13 +223,13 @@ msgstr ""
 "\n"
 "დომენი '%1$s' შეინახა '%2$s'-ში\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "Domain '%1$s' state saved by libvirt\n"
 msgstr ""
 "\n"
-"დომენი '%1$s'-ის მდგომარეობა შენახულია ლიბვირტის მიერ\n"
+"დომენი '%1$s'-ის მდგომარეობა შენახულია libvirt-ის მიერ\n"
 
 #, c-format
 msgid ""
@@ -309,11 +307,11 @@ msgstr ""
 msgid "  NAME\n"
 msgstr "  სახელი\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid " %1$s (help keyword '%2$s')\n"
 msgstr " %1$s (დახმარების საკვანძო სიტყვა '%2$s')\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (დახმარების საკვანძო სიტყვა '%2$s')\n"
 
@@ -337,20 +335,20 @@ msgid ""
 " end=%4$llu\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
 "possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"!!! SSH მასპინძელის გასაღების ვერიფიკაცია ვერ მოხერხდა !!! მასპინძელ '%1$s:"
-"%2$d'-ის ვინაობა განსხვავდება შენახული ვინაობისგან. გთხოვთ, შეამოწმოთ ახალი "
-"მასპინძელის გასაღები '%3$s', რათა აერიდოთ შესაძლო შუაკაცის შეტევას. გასაღები "
-"შენახულია '%4$s'-ში."
+"!!! SSH მასპინძელის გასაღების ვერიფიკაცია ვერ მოხერხდა !!! ჰოსტის "
+"'%1$s:%2$d'-ის იდენტიფიკატორი განსხვავდება შენახული იდენტიფიკატორისგან. "
+"გთხოვთ, შეამოწმოთ ახალი ჰოსტის გასაღები '%3$s', რათა თავი აარიდოთ შესაძლო "
+"შუაკაცის შეტევას. გასაღები შენახულია '%4$s'-ში."
 
-#, fuzzy, c-format
+#, c-format
 msgid "$%1$s value should be between 0 and %2$d"
-msgstr "$%1$s მნიშვნელობა უნდა იყოს 0-სა და %2$d-ს შორის"
+msgstr "$%1$s-ის მნიშვნელობა უნდა იყოს 0-სა და %2$d-ს შორის"
 
 #, c-format
 msgid "%1$6s: Checking %2$-60s: "
@@ -364,40 +362,40 @@ msgstr "%1$s\n"
 msgid "%1$s %2$s"
 msgstr "%1$s%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
-msgstr "%1$s %2$s '%3$s'-ს აქვს ტიპი, რომელსაც არ აქვს მხარდაჭერა '%4$s'"
+msgstr "%1$s %2$s '%3$s'-ს აქვს მხარდაუჭერელი ტიპი '%4$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr ""
 "%1$s %2$s '%3$s' აქვს ტიპი, რომელსაც არ აქვს მხარდაჭერა '%4$s', მოსალოდნელია "
 "'%5$s' ან '%6$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s (on destination side) does not support the --migration option needed "
 "for migration with shared storage"
 msgstr ""
-"%1$s (დანიშნულებია ადგილზე) არ უჭერს მხარს --migration ოფციას, რომელიც "
-"საჭიროა საერთო მეხსიერებასთან მიგრაციისთვის"
+"%1$s (სამიზნის მხარეს) არ უჭერს მხარს --migration პარამეტრს, რომელიც საჭიროა "
+"გაზიარებული საცავით მიგრაციისთვის"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s (out of %2$d)"
 msgstr "%1$s (%2$d-დან)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s can't be empty"
 msgstr "%1$s ვერ იქნება ცარიელი"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s cannot be set higher than %2$s"
 msgstr "%1$s ვერ იქნება %2$s-ზე უფრო მაღალი"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s cannot parse GID '%2$s'"
-msgstr "%1$s ვერ აანალიზებს GID '%2$s'-ს"
+msgstr "%1$s ვერ აანალიზებს GID-ს '%2$s'"
 
 #, c-format
 msgid "%1$s cannot parse UID '%2$s'"
@@ -407,84 +405,86 @@ msgstr "%1$s ვერ აანალიზებს UID '%2$s'-ს"
 msgid "%1$s disk is not supported with this QEMU binary"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
-msgstr "%1$s არ უჭერს მხარს ფაილის დესკრიპტორის გამოყენებით შიფრის გატარებას"
+msgstr ""
+"%1$s არ უჭერს მხარს ფაილის დესკრიპტორის გამოყენებით საკვანძო ფრაზის გატარებას"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s does not support passing passphrase via file descriptor"
-msgstr "%1$s არ უჭერს მხარს ფაილის დესკრიპტორის გამოყენებით შიფრის გატარებას"
+msgstr ""
+"%1$s არ უჭერს მხარს ფაილის დესკრიპტორის გამოყენებით საკვანძო ფრაზის გატარებას"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s ელის UID და GID პარამეტრებს"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr "%1$s წარუმატებელია ახალი რეჟიმით სამიზნე '%2$s'-თვის სტატუსით '%3$d'"
+msgstr "%1$s ჩავარდა ახალი რეჟიმით სამიზნისთვის '%2$s' სტატუსით '%3$d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
-msgstr "%1$s ოჯახი მითითებულია არა-IPv4 მისამართი '%2$s'-თვის ქსელ '%3$s'-ში"
+msgstr "%1$s ოჯახი მითითებულია არა-IPv4 მისამართისთვის '%2$s' ქსელში '%3$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr ""
-"%1$s გადაგზავნა მოთხოვნილია, მაგრამ IP მისამართი არ არის მითითებული ქსელი "
-"'%2$s'-თვის"
+"%1$s გადაგზავნა მოთხოვნილია, მაგრამ IP მისამართი არ არის მითითებული "
+"ქსელისთვის '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s graphics are not supported with this QEMU"
-msgstr "%1$s გრაფიკებს მხარდაჭერა არ აქვს ამ QEMU-სთან"
+msgstr "%1$s გრაფიკა ამ QEMU-სთან მხარდაჭერილი არაა"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s harddisk '%2$s' has unsupported cache mode '%3$s'"
-msgstr "%1$s მყარი დისკ '%2$s-ს აქვს მხარდაჭერის არმქონე ქეშის რეჟიმი '%3$s'"
+msgstr "%1$s მყარ დისკ '%2$s-ს აქვს მხარდაჭერის არმქონე ქეშის რეჟიმი '%3$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s has illegal value %2$s"
 msgstr "%1$s აქვს აკრძალული მნიშვნელობა %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s has unexpected '*' before last line"
 msgstr "%1$s-ს აქვს მოულოდნელი '*' უკანასკნელი ხაზის წინ"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be NULL"
-msgstr "%1$s %2$s-ში უნდა იყოს არარსებული"
+msgstr "%1$s %2$s-ში უნდა იყოს ნულოვანი"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be greater than zero"
 msgstr "%1$s %2$s-ში უნდა იყოს ნულზე მეტი"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be zero"
 msgstr "%1$s %2$s-ში უნდა იყოს ნული"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be zero or greater"
-msgstr "%1$s %2$s უნდა იყოს ნული ან მეტი"
+msgstr "%1$s %2$s ნული ან მეტი უნდა იყოს"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must not be NULL"
-msgstr "%1$s %2$s-ში არ უნდა იყოს არარსებული"
+msgstr "%1$s %2$s-ში ნულოვანი არ უნდა იყოს"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must not be zero"
-msgstr "%1$s %2$s-ში არ უნდა იყოს ნული"
+msgstr "%1$s %2$s-ში ნულის ტოლი არ უნდა იყოს"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s is missing 'type' property"
-msgstr "%1$s-ს აკლია 'type' პარამეტრი"
+msgstr "%1$s-ს აკლია თვისება 'type'"
 
 #, c-format
 msgid "%1$s is not an executable"
 msgstr "%1$s: გაშვებადი ფაილი არაა"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s is not supported by this QEMU binary"
-msgstr "%1$s არ არის მხარდაჭერილი ამ QEMU ბინარით"
+msgstr "%1$s არ არის მხარდაჭერილი ამ QEMU-ის გამშვების მიერ"
 
 #, c-format
 msgid "%1$s length greater than maximum: %2$d > %3$d"
@@ -520,17 +520,17 @@ msgstr ""
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s module is not loaded, "
 msgstr "%1$s მოდული არ არის ჩატვირთული, "
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s namespace is not available"
-msgstr "%1$s სახელთა სივრცე არ არის ხელმისაწვდომი"
+msgstr "%1$s სახელთა სივრცე ხელმისაწვდომი არაა"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s not found in %2$s"
-msgstr "%1$s არ მოიპოვება %2$s-ში"
+msgstr "%1$s ვერ ვიპოვე %2$s-ში"
 
 #, c-format
 msgid "%1$s not implemented on Win32"
@@ -2007,7 +2007,7 @@ msgid "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
 msgstr ""
 
 msgid "CPU Affinity"
-msgstr ""
+msgstr "CPU შესაბამისობა"
 
 msgid "CPU Affinity:"
 msgstr ""
@@ -4734,7 +4734,7 @@ msgid "Data processed:"
 msgstr ""
 
 msgid "Data remaining:"
-msgstr ""
+msgstr "დარჩენილი ტრაფიკი:"
 
 msgid "Data total:"
 msgstr ""
@@ -5407,7 +5407,7 @@ msgid "Domain:"
 msgstr "დომენი:"
 
 msgid "Done.\n"
-msgstr ""
+msgstr "დასრულდა.\n"
 
 msgid "Download length it too large"
 msgstr ""
@@ -20275,7 +20275,7 @@ msgid "cannot chown '%1$s' to group %2$u"
 msgstr ""
 
 msgid "cannot close file"
-msgstr ""
+msgstr "ფაილის დახურვის შეცდომა"
 
 #, c-format
 msgid "cannot close file %1$s"
@@ -23253,7 +23253,7 @@ msgid ""
 msgstr ""
 
 msgid "display"
-msgstr ""
+msgstr "ჩვენება"
 
 msgid "display all block devices info"
 msgstr ""
@@ -25556,7 +25556,7 @@ msgid "failed writing to file '%1$s'"
 msgstr ""
 
 msgid "fatal"
-msgstr ""
+msgstr "ფატალური"
 
 #, c-format
 msgid "fatal signal %1$d"
@@ -28085,7 +28085,7 @@ msgid "lists not allowed in VMX format"
 msgstr ""
 
 msgid "live"
-msgstr ""
+msgstr "ცოცხალი"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
@@ -33713,7 +33713,7 @@ msgid "sysctl failed for '%1$s'"
 msgstr ""
 
 msgid "system call error"
-msgstr ""
+msgstr "სისტემური ფუნქციის გამოძახების შეცდომა"
 
 msgid "system pages pool can't be modified"
 msgstr ""
@@ -34862,7 +34862,7 @@ msgstr "დამუშავების შეცდომა: %1$s"
 
 #, c-format
 msgid "unable to parse FD: %1$s"
-msgstr "FD-ის დამუშავების შეცდომა: %1$s"
+msgstr "'FD'-ის დამუშავების შეცდომა: %1$s"
 
 #, c-format
 msgid "unable to parse URI scheme '%1$s'"
@@ -34870,7 +34870,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to parse URI: %1$s"
-msgstr "URI-ის დამუშავების შეცდომა: %1$s"
+msgstr "'URI'-ის დამუშავების შეცდომა: %1$s"
 
 #, c-format
 msgid "unable to parse blkio device '%1$s' '%2$s'"
@@ -37357,41 +37357,36 @@ msgstr ""
 msgid "xen bus does not support %1$s input device"
 msgstr ""
 
-#, fuzzy
 msgid "xml data file to export from"
-msgstr "xml მონაცემების ფაილი, რომლიდანაც მოხდება (მოხდა) გატანა"
+msgstr "xml მონაცემების ფაილი, რომლიდანაც მოხდება გატანა"
 
-#, fuzzy
 msgid "xml modification unsupported"
 msgstr "xml მოდიფიკაცია არ არის მხარდაჭერილი"
 
-#, fuzzy
 msgid "xpath expression to filter the XML document"
 msgstr "xpath ტერმინი XML დოკუმენტის ფილტრაციისთვის"
 
-#, fuzzy, c-format
+#, c-format
 msgid "xsd:dateTime value '%1$s' has unexpected format"
 msgstr "xsd:dateTime მნიშვნელობა '%1$s'-ს აქვს მოულოდნელი ფორმატი"
 
-#, fuzzy
 msgid "y - yes, start editor again"
 msgstr "y - დიახ, კვლავ გაიხსნას რედაქტორი"
 
 msgid "yes"
 msgstr "დიახ"
 
-#, fuzzy, c-format
+#, c-format
 msgid "zPCI %1$s %2$o is already reserved"
 msgstr "zPCI %1$s %2$o უკვე დარეზერვებულია"
 
-#, fuzzy
 msgid "zero-copy is only available for parallel migration"
-msgstr "zero-copy ხელმისაწვდომია მხოლოდ პარალელური მიგრაციისთვის"
+msgstr "zero-copy ხელმისაწვდომია მხოლოდ, პარალელური მიგრაციისთვის"
 
-#, fuzzy, c-format
+#, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
-"ზონა %1$s არის მოთხოვნილი ქსელი %2$s-თვის, მაგრამ firewalld არ არის აქტიური"
+"ზონა %1$s არის მოთხოვნილი ქსელისთვის %2$s, მაგრამ firewalld აქტიური არაა"
 
 #, c-format
 msgid "{[--%1$s] <string>}..."
