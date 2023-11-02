@@ -316,7 +316,7 @@ BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: iptables
 BuildRequires: ebtables
-BuildRequires: module-init-tools
+BuildRequires: kmod
 BuildRequires: cyrus-sasl-devel
 BuildRequires: polkit >= 0.112
 # For mount/umount in FS driver
