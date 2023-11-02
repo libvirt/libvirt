@@ -57,10 +57,15 @@ include:
     key: "$CI_JOB_NAME"
   script:
     - source ci/jobs.sh
-    - run_build
-    - if test "$CROSS" = "i686" ;
+    - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
-        run_test;
+        run_rpmbuild;
+      else
+        run_build;
+        if test "$CROSS" = "i686";
+        then
+          run_test;
+        fi;
       fi
 
 .cross_build_job_prebuilt_env:

@@ -72,10 +72,31 @@ run_potfile() {
 
 run_rpmbuild() {
     run_dist
+
+    # The spec file supports three types of builds: native, mingw32
+    # and mingw64. By default they're all enabled, but each of the
+    # containers in which our CI jobs are executed is only set up for
+    # one of them, so we have to explicitly disable the other two.
+    case "$CROSS" in
+    mingw32)
+        build1="native"
+        build2="mingw64"
+        ;;
+    mingw64)
+        build1="native"
+        build2="mingw32"
+        ;;
+    *)
+        build1="mingw32"
+        build2="mingw64"
+        ;;
+    esac
+
     run_cmd rpmbuild \
                 --clean \
                 --nodeps \
-                --define "_without_mingw 1" \
+                --define "_without_$build1 1" \
+                --define "_without_$build2 1" \
                 -ta build/meson-dist/libvirt-*.tar.xz
 }
 
