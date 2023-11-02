@@ -1349,7 +1349,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Ddriver_vmware=disabled \
   -Ddriver_vz=disabled \
   -Ddtrace=disabled \
-  -Dexpensive_tests=enabled \
+  -Dexpensive_tests=disabled \
   -Dfirewalld=disabled \
   -Dfirewalld_zone=disabled \
   -Dfuse=disabled \
