@@ -1283,6 +1283,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dcapng=enabled \
            %{?arg_fuse} \
            %{?arg_netcf} \
+           -Dnls=enabled \
            -Dselinux=enabled \
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
@@ -1363,7 +1364,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dlibssh=disabled \
   -Dlogin_shell=disabled \
   -Dnetcf=disabled \
-  -Dnls=disabled \
+  -Dnls=enabled \
   -Dnss=disabled \
   -Dnumactl=disabled \
   -Dnumad=disabled \
