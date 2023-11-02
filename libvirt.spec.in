@@ -203,9 +203,19 @@
 %define qemu_moddir %{_libdir}/qemu
 %define qemu_datadir %{_datadir}/qemu
 
-%define with_mingw 0
+%define with_mingw32 0
+%define with_mingw64 0
+
 %if 0%{?fedora}
-    %define with_mingw 0%{!?_without_mingw:1}
+    %if 0%{!?_without_mingw:1}
+        %define with_mingw32 0%{!?_without_mingw32:1}
+        %define with_mingw64 0%{!?_without_mingw64:1}
+    %endif
+
+    # These tell the other mingw macros whether to perform or
+    # skip the 32-bit and 64-bit specific steps respectively
+    %define mingw_build_win32 %{with_mingw32}
+    %define mingw_build_win64 %{with_mingw64}
 %endif
 
 # RHEL releases provide stable tool chains and so it is safe to turn
@@ -405,7 +415,7 @@ BuildRequires: libtirpc-devel
 BuildRequires: firewalld-filesystem
 %endif
 
-%if %{with_mingw}
+%if %{with_mingw32}
 BuildRequires: mingw32-filesystem
 BuildRequires: mingw32-gcc
 BuildRequires: mingw32-binutils
@@ -419,6 +429,8 @@ BuildRequires: mingw32-portablexdr
 BuildRequires: mingw32-dlfcn
 BuildRequires: mingw32-libssh2
 BuildRequires: mingw32-curl
+%endif
+%if %{with_mingw64}
 BuildRequires: mingw64-filesystem
 BuildRequires: mingw64-gcc
 BuildRequires: mingw64-binutils
@@ -1064,7 +1076,7 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 %description nss
 Libvirt plugin for NSS for translating domain names into IP addresses.
 
-%if %{with_mingw}
+%if %{with_mingw32}
 %package -n mingw32-libvirt
 Summary: %{summary}
 Obsoletes: mingw32-libvirt-static < 7.0.0
@@ -1073,6 +1085,10 @@ BuildArch: noarch
 %description -n mingw32-libvirt
 MinGW Windows libvirt virtualization library.
 
+%{?mingw32_debug_package}
+%endif
+
+%if %{with_mingw64}
 %package -n mingw64-libvirt
 Summary: %{summary}
 Obsoletes: mingw64-libvirt-static < 7.0.0
@@ -1081,7 +1097,6 @@ BuildArch: noarch
 %description -n mingw64-libvirt
 MinGW Windows libvirt virtualization library.
 
-%{?mingw32_debug_package}
 %{?mingw64_debug_package}
 %endif
 
@@ -1327,7 +1342,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
 %meson_build
 
-%if %{with_mingw}
+%if %{with_mingw32} || %{with_mingw64}
 %mingw_meson \
   --auto-features=enabled \
   -Ddriver_remote=enabled \
@@ -1473,21 +1488,27 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
     %endif
 %endif
 
-%if %{with_mingw}
+%if %{with_mingw32} || %{with_mingw64}
 %mingw_ninja_install
+%endif
 
+%if %{with_mingw32}
 rm -rf $RPM_BUILD_ROOT%{mingw32_sysconfdir}/libvirt/nwfilter
-rm -rf $RPM_BUILD_ROOT%{mingw64_sysconfdir}/libvirt/nwfilter
 rm -rf $RPM_BUILD_ROOT%{mingw32_datadir}/doc/*
-rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/doc/*
 rm -rf $RPM_BUILD_ROOT%{mingw32_datadir}/gtk-doc/*
-rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/gtk-doc/*
-
 rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt_iohelper.exe
-rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt_iohelper.exe
 rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt-guests.sh
-rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
+%endif
 
+%if %{with_mingw64}
+rm -rf $RPM_BUILD_ROOT%{mingw64_sysconfdir}/libvirt/nwfilter
+rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/doc/*
+rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/gtk-doc/*
+rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt_iohelper.exe
+rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
+%endif
+
+%if %{with_mingw32} || %{with_mingw64}
 %mingw_debug_install_post
 
 %mingw_find_lang %{name}
@@ -2389,7 +2410,7 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
 
-%if %{with_mingw}
+%if %{with_mingw32}
 %files -n mingw32-libvirt -f mingw32-libvirt.lang
 %dir %{mingw32_sysconfdir}/libvirt/
 %config(noreplace) %{mingw32_sysconfdir}/libvirt/libvirt.conf
@@ -2446,7 +2467,9 @@ exit 0
 %{mingw32_mandir}/man1/virt-pki-query-dn.1*
 %{mingw32_mandir}/man1/virt-pki-validate.1*
 %{mingw32_mandir}/man7/virkey*.7*
+%endif
 
+%if %{with_mingw64}
 %files -n mingw64-libvirt -f mingw64-libvirt.lang
 %dir %{mingw64_sysconfdir}/libvirt/
 %config(noreplace) %{mingw64_sysconfdir}/libvirt/libvirt.conf
