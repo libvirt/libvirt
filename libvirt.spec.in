@@ -293,6 +293,7 @@ BuildRequires: xen-devel
 %endif
 BuildRequires: glib2-devel >= 2.56
 BuildRequires: libxml2-devel
+# For xsltproc
 BuildRequires: libxslt
 BuildRequires: readline-devel
 BuildRequires: bash-completion >= 2.0
@@ -316,6 +317,7 @@ BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: iptables
 BuildRequires: ebtables
+# For modprobe
 BuildRequires: kmod
 BuildRequires: cyrus-sasl-devel
 BuildRequires: polkit >= 0.112
