@@ -19719,10 +19719,21 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfo *src,
         }
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        if (src->addr.ccw.cssid != dst->addr.ccw.cssid ||
+            src->addr.ccw.ssid != dst->addr.ccw.ssid ||
+            src->addr.ccw.devno != dst->addr.ccw.devno) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x.%6$04x"),
+                           dst->addr.ccw.cssid, dst->addr.ccw.ssid, dst->addr.ccw.devno,
+                           src->addr.ccw.cssid, src->addr.ccw.ssid, src->addr.ccw.devno);
+            return false;
+        }
+        break;
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
