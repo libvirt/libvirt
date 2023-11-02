@@ -281,7 +281,6 @@ Requires: libvirt-libs = %{version}-%{release}
 # All build-time requirements. Run-time requirements are
 # listed against each sub-RPM
 BuildRequires: python3-docutils
-BuildRequires: gcc
 BuildRequires: meson >= 0.56.0
 BuildRequires: ninja-build
 BuildRequires: git
@@ -290,16 +289,21 @@ BuildRequires: python3
 BuildRequires: python3-pytest
 # For xmllint
 BuildRequires: libxml2
+# For xsltproc
+BuildRequires: libxslt
+BuildRequires: gettext
+BuildRequires: systemd-rpm-macros
+BuildRequires: rpcgen
+# Fedora build root suckage
+BuildRequires: gawk
+BuildRequires: gcc
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
 BuildRequires: glib2-devel >= 2.56
 BuildRequires: libxml2-devel
-# For xsltproc
-BuildRequires: libxslt
 BuildRequires: readline-devel
 BuildRequires: bash-completion >= 2.0
-BuildRequires: gettext
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
 BuildRequires: libattr-devel
@@ -308,7 +312,6 @@ BuildRequires: libblkid-devel >= 2.17
 # for augparse, optionally used in testing
 BuildRequires: augeas
 BuildRequires: systemd-devel >= 185
-BuildRequires: systemd-rpm-macros
 BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: yajl-devel
 %if %{with_sanlock}
@@ -385,8 +388,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
-# Fedora build root suckage
-BuildRequires: gawk
 # For storage wiping with different algorithms
 BuildRequires: scrub
 %if %{with_numad}
