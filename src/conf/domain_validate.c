@@ -2221,6 +2221,7 @@ static int
 virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
                                 const virDomainDef *def)
 {
+    const virDomainDeviceDimmAddress *thisAddr = NULL;
     unsigned long long thisStart = 0;
     unsigned long long thisEnd = 0;
     size_t i;
@@ -2235,6 +2236,7 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+            thisAddr = &mem->info.addr.dimm;
             thisStart = mem->info.addr.dimm.base;
         }
         break;
@@ -2244,7 +2246,7 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
         break;
     }
 
-    if (thisStart == 0) {
+    if (thisStart == 0 && !thisAddr) {
         return 0;
     }
 
@@ -2258,19 +2260,27 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
         if (other == mem)
             continue;
 
-        /* In case we're updating an existing memory device (e.g. virtio-mem),
-         * then pointers will be different. But addresses and aliases are the
-         * same. However, STREQ_NULLABLE() returns true if both strings are
-         * NULL which is not what we want. */
-        if (virDomainDeviceInfoAddressIsEqual(&other->info,
-                                              &mem->info)) {
-            continue;
-        }
+        if (thisAddr && other->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
+            thisAddr->slot == other->info.addr.dimm.slot) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("memory device slot '%1$u' is already being used by another memory device"),
+                           thisAddr->slot);
+            return -1;
+        } else if (!thisAddr) {
+            /* In case we're updating an existing memory device (e.g.
+             * virtio-mem), then pointers will be different. But addresses and
+             * aliases are the same. However, STREQ_NULLABLE() returns true if
+             * both strings are NULL which is not what we want. */
+            if (virDomainDeviceInfoAddressIsEqual(&other->info,
+                                                  &mem->info)) {
+                continue;
+            }
 
-        if (mem->info.alias &&
-            STREQ_NULLABLE(other->info.alias,
-                           mem->info.alias)) {
-            continue;
+            if (mem->info.alias &&
+                STREQ_NULLABLE(other->info.alias,
+                               mem->info.alias)) {
+                continue;
+            }
         }
 
         switch (other->model) {
@@ -2294,7 +2304,7 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
             break;
         }
 
-        if (otherStart == 0)
+        if (thisStart == 0 || otherStart == 0)
             continue;
 
         if (thisStart <= otherStart && thisEnd > otherStart) {
