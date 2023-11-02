@@ -2234,6 +2234,10 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
         break;
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+            thisStart = mem->info.addr.dimm.base;
+        }
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
@@ -2271,13 +2275,17 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
 
         switch (other->model) {
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             continue;
             break;
 
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            if (other->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+                otherStart = other->info.addr.dimm.base;
+            }
+            break;
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
             otherStart = other->target.virtio_pmem.address;
             break;
