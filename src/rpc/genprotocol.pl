@@ -41,6 +41,8 @@ unlink $target;
 
 if ($rpcgen =~ /portable-rpcgen/) {
     $rpcgen = "$rpcgen -o -";
+} else {
+    $rpcgen = "$rpcgen -C";
 }
 open RPCGEN, "-|", "$rpcgen $mode $xdrdef"
     or die "cannot run $rpcgen $mode $xdrdef: $!";
