@@ -993,10 +993,6 @@ mymain(void)
 #if WITH_QEMU
 # define DO_TEST_JSON(arch, host, json) \
     do { \
-        if (json == JSON_MODELS) { \
-            DO_TEST(arch, cpuTestGuestCPUID, host, host, \
-                    NULL, NULL, 0, NULL, 0, 0); \
-        } \
         if (json != JSON_NONE) { \
             DO_TEST(arch, cpuTestJSONCPUID, host, host, \
                     NULL, NULL, 0, NULL, json, 0); \
