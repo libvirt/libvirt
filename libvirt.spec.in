@@ -1081,7 +1081,8 @@ BuildArch: noarch
 %description -n mingw64-libvirt
 MinGW Windows libvirt virtualization library.
 
-%{?mingw_debug_package}
+%{?mingw32_debug_package}
+%{?mingw64_debug_package}
 %endif
 
 %prep
