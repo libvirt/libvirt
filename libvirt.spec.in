@@ -288,6 +288,8 @@ BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
 BuildRequires: python3-pytest
+# For xmllint
+BuildRequires: libxml2
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
