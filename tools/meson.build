@@ -16,6 +16,7 @@ tools_dep = declare_dependency(
     libvirt_relro
     + libvirt_no_indirect
     + libvirt_no_undefined
+    + libvirt_no_warn_duplicate_libraries
   ),
 )
 

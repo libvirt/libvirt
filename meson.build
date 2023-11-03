@@ -542,6 +542,10 @@ libvirt_no_indirect = cc.get_supported_link_arguments([
   '-Wl,--no-copy-dt-needed-entries',
 ])
 
+libvirt_no_warn_duplicate_libraries = cc.get_supported_link_arguments([
+  '-Wl,-no_warn_duplicate_libraries',
+])
+
 if host_machine.system() == 'windows'
   version_script_flags = '-Wl,'
 elif host_machine.system() == 'darwin'

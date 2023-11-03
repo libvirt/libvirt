@@ -28,6 +28,7 @@ tests_dep = declare_dependency(
   ],
   link_args: (
     libvirt_export_dynamic
+    + libvirt_no_warn_duplicate_libraries
     + libvirt_flat_namespace
     + coverage_flags
   ),

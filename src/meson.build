@@ -18,6 +18,7 @@ src_dep = declare_dependency(
   link_args: (
     libvirt_relro
     + libvirt_no_indirect
+    + libvirt_no_warn_duplicate_libraries
     + coverage_flags
     + driver_modules_flags
     + win32_link_flags
