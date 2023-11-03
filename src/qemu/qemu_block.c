@@ -1448,8 +1448,18 @@ qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
 }
 
 
+/**
+ * qemuBlockStorageSourceGetBlockdevStorageSliceProps:
+ * @src: storage source object
+ * @effective: Whether this blockdev will be the 'effective' layer of @src
+ *
+ * Formats the JSON object representing -blockdev configuration required to
+ * configure a 'slice' of @src. If @effective is true, the slice layer is the
+ * topmost/effective blockdev layer of @src.
+ */
 static virJSONValue *
-qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
+qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src,
+                                                   bool effective)
 {
     g_autoptr(virJSONValue) props = NULL;
 
@@ -1464,7 +1474,7 @@ qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src)
     if (qemuBlockStorageSourceAddBlockdevCommonProps(&props,
                                                      src,
                                                      src->sliceStorage->nodename,
-                                                     false) < 0)
+                                                     effective) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
@@ -1536,7 +1546,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
     data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
 
     if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src))) {
-        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src)))
+        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, false)))
             return NULL;
     }
 
