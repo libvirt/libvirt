@@ -201,6 +201,8 @@ targets:
       - arch: x86_64
         variables:
           RPM: skip
+          # Keep until fix for: https://bugzilla.opensuse.org/show_bug.cgi?id=1216862
+          CFLAGS: -Wno-missing-include-dirs
 
   opensuse-tumbleweed:
     jobs:

@@ -332,6 +332,7 @@ x86_64-opensuse-leap-15-prebuilt-env:
       optional: true
   allow_failure: false
   variables:
+    CFLAGS: -Wno-missing-include-dirs
     NAME: opensuse-leap-15
     RPM: skip
 
@@ -340,6 +341,7 @@ x86_64-opensuse-leap-15-local-env:
   needs: []
   allow_failure: false
   variables:
+    CFLAGS: -Wno-missing-include-dirs
     IMAGE: registry.opensuse.org/opensuse/leap:15.5
     NAME: opensuse-leap-15
     RPM: skip
