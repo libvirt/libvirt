@@ -896,28 +896,6 @@ mips64el-debian-sid-local-env:
     NAME: debian-sid
 
 
-mipsel-debian-sid-prebuilt-env:
-  extends: .cross_build_job_prebuilt_env
-  needs:
-    - job: mipsel-debian-sid-container
-      optional: true
-  allow_failure: false
-  variables:
-    CROSS: mipsel
-    JOB_OPTIONAL: 1
-    NAME: debian-sid
-
-mipsel-debian-sid-local-env:
-  extends: .cross_build_job_local_env
-  needs: []
-  allow_failure: false
-  variables:
-    CROSS: mipsel
-    IMAGE: docker.io/library/debian:sid-slim
-    JOB_OPTIONAL: 1
-    NAME: debian-sid
-
-
 ppc64le-debian-sid-prebuilt-env:
   extends: .cross_build_job_prebuilt_env
   needs:

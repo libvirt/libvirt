@@ -144,10 +144,6 @@ targets:
         containers: false
         builds: false
 
-      - arch: mipsel
-        containers: false
-        builds: false
-
       - arch: ppc64le
         containers: false
         builds: false

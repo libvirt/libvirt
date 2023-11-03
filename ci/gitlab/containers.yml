@@ -283,14 +283,6 @@ mips64el-debian-sid-container:
     NAME: debian-sid-cross-mips64el
 
 
-mipsel-debian-sid-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-sid-cross-mipsel
-
-
 ppc64le-debian-sid-container:
   extends: .container_job
   allow_failure: false
