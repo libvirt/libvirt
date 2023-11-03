@@ -8208,9 +8208,6 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
         }
     }
 
-    if (qemuSaveImageDecompressionStart(data, fd, &intermediatefd, &errbuf, &cmd) < 0)
-        return -1;
-
     /* No cookie means libvirt which saved the domain was too old to mess up
      * the CPU definitions.
      */
