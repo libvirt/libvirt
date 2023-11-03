@@ -1771,13 +1771,14 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
-    data->formatAttached = true;
-    data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
-    data->storageAttached = true;
+    if ((data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src)))
+        data->formatAttached = true;
 
     if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src)))
         data->storageSliceAttached = true;
+
+    data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
+    data->storageAttached = true;
 
     if (src->pr &&
         !virStoragePRDefIsManaged(src->pr))
