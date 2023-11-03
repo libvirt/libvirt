@@ -9082,39 +9082,6 @@ qemuDomainSupportsPCI(virDomainDef *def,
 }
 
 
-static bool
-qemuCheckMemoryDimmConflict(const virDomainDef *def,
-                            const virDomainMemoryDef *mem)
-{
-    size_t i;
-
-    for (i = 0; i < def->nmems; i++) {
-         virDomainMemoryDef *tmp = def->mems[i];
-
-         if (tmp == mem ||
-             tmp->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM)
-             continue;
-
-         if (mem->info.addr.dimm.slot == tmp->info.addr.dimm.slot) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("memory device slot '%1$u' is already being used by another memory device"),
-                            mem->info.addr.dimm.slot);
-             return true;
-         }
-
-         if (mem->info.addr.dimm.base != 0 &&
-             mem->info.addr.dimm.base == tmp->info.addr.dimm.base) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("memory device base '0x%1$llx' is already being used by another memory device"),
-                            mem->info.addr.dimm.base);
-             return true;
-         }
-    }
-
-    return false;
-}
-
-
 static int
 qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
                                          const virDomainDef *def)
@@ -9138,10 +9105,6 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
                                mem->info.addr.dimm.slot, def->mem.memory_slots);
                 return -1;
             }
-
-
-            if (qemuCheckMemoryDimmConflict(def, mem))
-                return -1;
         }
         break;
 
