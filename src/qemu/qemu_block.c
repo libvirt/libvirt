@@ -1533,22 +1533,34 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
                                             virStorageSource *backingStore)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
+    bool effective = true;
     unsigned int backendpropsflags = 0;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    if (!(data->formatProps = qemuBlockStorageSourceGetFormatProps(src, backingStore)) ||
-        !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src,
-                                                                     backendpropsflags)))
+    if (qemuBlockStorageSourceGetFormatNodename(src)) {
+        if (!(data->formatProps = qemuBlockStorageSourceGetFormatProps(src, backingStore)))
+            return NULL;
+
+        data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
+
+        effective = false;
+    }
+
+    if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src))) {
+        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, effective)))
+            return NULL;
+
+        effective = false;
+    }
+
+    if (effective)
+        backendpropsflags = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE;
+
+    if (!(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, backendpropsflags)))
         return NULL;
 
     data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
-    data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
-
-    if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src))) {
-        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, false)))
-            return NULL;
-    }
 
     return g_steal_pointer(&data);
 }
