@@ -169,9 +169,12 @@ static int printEnvironment(FILE *log)
 
     for (i = 0; i < length; i++) {
         /* Ignore the variables used to instruct the loader into
-         * behaving differently, as they could throw the tests off. */
-        if (!STRPREFIX(newenv[i], "LD_"))
+         * behaving differently, as they could throw the tests off.
+         * Also ignore __CF_USER_TEXT_ENCODING, which is set by macOS. */
+        if (!STRPREFIX(newenv[i], "LD_") &&
+            !STRPREFIX(newenv[i], "__CF_USER_TEXT_ENCODING=")) {
             fprintf(log, "ENV:%s\n", newenv[i]);
+        }
     }
 
     return 0;
