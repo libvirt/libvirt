@@ -81,7 +81,7 @@ class XDRTypeDeclarationGenerator(XDRVisitor):
         )
 
     def visit_declaration_variablearray(self, obj, indent, context):
-        if type(obj.typ) == XDRTypeString:
+        if type(obj.typ) is XDRTypeString:
             return "%schar *%s" % (indent, obj.identifier)
         else:
             code = (
@@ -178,10 +178,10 @@ class XDRTypeDeclarationGenerator(XDRVisitor):
             + "%s    union {\n" % indent
         )
         for value in obj.cases:
-            if type(value.decl.typ) == XDRTypeVoid:
+            if type(value.decl.typ) is XDRTypeVoid:
                 continue
             code = code + self.visit_object(value, indent + "        ") + ";\n"
-        if obj.default is not None and type(obj.default.typ) != XDRTypeVoid:
+        if obj.default is not None and type(obj.default.typ) is not XDRTypeVoid:
             code = code + self.visit_object(obj.default, indent + "        ") + ";\n"
         code = code + "%s    } %su;\n" % (indent, prefix) + "%s}" % indent
         return code
@@ -250,10 +250,10 @@ class XDRMarshallImplementationGenerator(XDRVisitor):
         return code
 
     def generate_type_call(self, decl, field, typename, embedded=False, indent=""):
-        if type(decl.typ) == XDRTypeVoid:
+        if type(decl.typ) is XDRTypeVoid:
             return ""
-        if type(decl) == XDRDeclarationFixedArray:
-            if type(decl.typ) == XDRTypeOpaque:
+        if type(decl) is XDRDeclarationFixedArray:
+            if type(decl.typ) is XDRTypeOpaque:
                 code = "%s    if (!xdr_%s(xdrs, %s, %s))\n" % (
                     indent,
                     self.visit_object(decl.typ, context="func"),
@@ -270,7 +270,7 @@ class XDRMarshallImplementationGenerator(XDRVisitor):
                     self.visit_object(decl.typ),
                     self.visit_object(decl.typ, context="func"),
                 )
-        elif type(decl) == XDRDeclarationVariableArray:
+        elif type(decl) is XDRDeclarationVariableArray:
             fieldRef = "."
             pointerStr = ""
             if embedded:
@@ -278,7 +278,7 @@ class XDRMarshallImplementationGenerator(XDRVisitor):
             else:
                 fieldRef = "->"
 
-            if type(decl.typ) == XDRTypeString:
+            if type(decl.typ) is XDRTypeString:
                 code = "%s    if (!xdr_%s(xdrs, %s%s, %s))\n" % (
                     indent,
                     self.visit_object(decl.typ, context="func"),
@@ -286,7 +286,7 @@ class XDRMarshallImplementationGenerator(XDRVisitor):
                     field,
                     decl.maxlength,
                 )
-            elif type(decl.typ) == XDRTypeOpaque:
+            elif type(decl.typ) is XDRTypeOpaque:
                 code = "%s    if (!xdr_bytes(xdrs, (char **)&%s%s%s_val, " % (
                     indent,
                     field,
@@ -311,7 +311,7 @@ class XDRMarshallImplementationGenerator(XDRVisitor):
                         self.visit_object(decl.typ, context="func"),
                     )
                 )
-        elif type(decl) == XDRDeclarationPointer:
+        elif type(decl) is XDRDeclarationPointer:
             pointerStr = ""
             if embedded:
                 pointerStr = "&"
@@ -327,9 +327,9 @@ class XDRMarshallImplementationGenerator(XDRVisitor):
         else:
             pointerStr = ""
             isFixedArray = (
-                type(decl.typ) == XDRTypeCustom
-                and type(decl.typ.definition) == XDRDefinitionTypedef
-                and type(decl.typ.definition.decl) == XDRDeclarationFixedArray
+                type(decl.typ) is XDRTypeCustom
+                and type(decl.typ.definition) is XDRDefinitionTypedef
+                and type(decl.typ.definition.decl) is XDRDeclarationFixedArray
             )
 
             if embedded and not isFixedArray:

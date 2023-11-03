@@ -185,9 +185,9 @@ class XDRTypeCustom(XDRType):
         self.definition = definition
 
     def is_scalar(self):
-        if type(self.definition) == XDRDefinitionEnum:
+        if type(self.definition) is XDRDefinitionEnum:
             return True
-        if type(self.definition) == XDRDefinitionTypedef:
+        if type(self.definition) is XDRDefinitionTypedef:
             return self.definition.decl.typ.is_scalar()
         return False
 

@@ -55,7 +55,7 @@ class XDRToken(abc.ABC):
 
     def __eq__(self, other):
         return (
-            type(self) == type(other)
+            type(self) is type(other)
             and self.line == other.line
             and self.column == other.column
             and self.value == other.value

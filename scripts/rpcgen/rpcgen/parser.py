@@ -162,10 +162,10 @@ class XDRParser:
         if token is None:
             return None
 
-        if type(token) == XDRTokenCEscape:
+        if type(token) is XDRTokenCEscape:
             return XDRDefinitionCEscape(token.value[1:])
 
-        if type(token) != XDRTokenIdentifier:
+        if type(token) is not XDRTokenIdentifier:
             raise Exception("Expected identifier, but got %s" % token)
 
         defs = {
@@ -186,18 +186,18 @@ class XDRParser:
         definition = func()
 
         semi = self.lexer.next()
-        if type(semi) != XDRTokenPunctuation or semi.value != ";":
+        if type(semi) is not XDRTokenPunctuation or semi.value != ";":
             raise Exception("Expected ';', but got %s" % semi)
 
         return definition
 
     def parse_definition_const(self):
         ident = self.lexer.next()
-        if type(ident) != XDRTokenIdentifier:
+        if type(ident) is not XDRTokenIdentifier:
             raise Exception("Expected identifier, but got %s" % ident)
 
         assign = self.lexer.next()
-        if type(assign) != XDRTokenPunctuation or assign.value != "=":
+        if type(assign) is not XDRTokenPunctuation or assign.value != "=":
             raise Exception("Expected '=', but got %s" % assign)
 
         const = self.lexer.next()
@@ -217,7 +217,7 @@ class XDRParser:
 
     def parse_definition_enum(self):
         name = self.lexer.next()
-        if type(name) != XDRTokenIdentifier:
+        if type(name) is not XDRTokenIdentifier:
             raise Exception("Expected identifier, but got %s" % name)
 
         body = self.parse_enum_body()
@@ -231,7 +231,7 @@ class XDRParser:
 
     def parse_definition_struct(self):
         name = self.lexer.next()
-        if type(name) != XDRTokenIdentifier:
+        if type(name) is not XDRTokenIdentifier:
             raise Exception("Expected identifier, but got %s" % name)
 
         body = self.parse_struct_body()
@@ -245,7 +245,7 @@ class XDRParser:
 
     def parse_definition_union(self):
         name = self.lexer.next()
-        if type(name) != XDRTokenIdentifier:
+        if type(name) is not XDRTokenIdentifier:
             raise Exception("Expected identifier, but got %s" % name)
 
         body = self.parse_union_body()
@@ -260,23 +260,23 @@ class XDRParser:
     def parse_declaration(self):
         typ = self.parse_type()
 
-        if type(typ) == XDRTypeVoid:
+        if type(typ) is XDRTypeVoid:
             return XDRDeclarationScalar(typ, None)
 
         ident = self.lexer.next()
 
         pointer = False
-        if type(ident) == XDRTokenPunctuation:
+        if type(ident) is XDRTokenPunctuation:
             if ident.value != "*":
                 raise Exception("Expected '*' or identifer, but got %s" % ident)
-            if type(typ) == XDRTypeString or type(typ) == XDRTypeOpaque:
+            if type(typ) is XDRTypeString or type(typ) is XDRTypeOpaque:
                 raise Exception("Pointer invalid for 'string' and 'opaque' types")
 
             pointer = True
             ident = self.lexer.next()
 
         bracket = self.lexer.peek()
-        if type(bracket) == XDRTokenPunctuation:
+        if type(bracket) is XDRTokenPunctuation:
             if bracket.value == "[":
                 _ = self.lexer.next()
                 value = self.lexer.next()
@@ -284,10 +284,10 @@ class XDRParser:
                     raise Exception("Expected constant, but got %s" % value)
 
                 close = self.lexer.next()
-                if type(close) != XDRTokenPunctuation or close.value != "]":
+                if type(close) is not XDRTokenPunctuation or close.value != "]":
                     raise Exception("Expected ']', but got %s" % value)
 
-                if type(typ) == XDRTypeString:
+                if type(typ) is XDRTypeString:
                     raise Exception("Fixed array invalid for 'string' type")
                 return XDRDeclarationFixedArray(typ, ident.value, value.value)
             elif bracket.value == "<":
@@ -298,7 +298,7 @@ class XDRParser:
                     value = self.lexer.next().value
 
                 close = self.lexer.next()
-                if type(close) != XDRTokenPunctuation or close.value != ">":
+                if type(close) is not XDRTokenPunctuation or close.value != ">":
                     raise Exception("Expected '>', but got %s" % close)
 
                 return XDRDeclarationVariableArray(typ, ident.value, value)
@@ -310,12 +310,12 @@ class XDRParser:
 
     def parse_type(self):
         typ = self.lexer.next()
-        if type(typ) != XDRTokenIdentifier:
+        if type(typ) is not XDRTokenIdentifier:
             raise Exception("Expected identifier, but got %s" % typ)
 
         if typ.value == "unsigned":
             typ = self.lexer.peek()
-            if type(typ) != XDRTokenIdentifier:
+            if type(typ) is not XDRTokenIdentifier:
                 raise Exception("Expected identifier, but got %s" % typ)
 
             if typ.value == "char":
@@ -366,25 +366,25 @@ class XDRParser:
 
     def parse_enum_body(self):
         body = self.lexer.next()
-        if type(body) != XDRTokenPunctuation or body.value != "{":
+        if type(body) is not XDRTokenPunctuation or body.value != "{":
             raise Exception("Expected '{', but got %s" % body)
 
         values = []
         while True:
             ident = self.lexer.next()
-            if type(ident) != XDRTokenIdentifier:
+            if type(ident) is not XDRTokenIdentifier:
                 raise Exception("Expected identifier, but got %s" % ident)
 
             equal = self.lexer.next()
-            if type(equal) != XDRTokenPunctuation or equal.value != "=":
+            if type(equal) is not XDRTokenPunctuation or equal.value != "=":
                 raise Exception("Expected '=', but got %s" % ident)
 
             value = self.lexer.next()
-            if type(value) != XDRTokenConstant:
+            if type(value) is not XDRTokenConstant:
                 raise Exception("Expected constant, but got %s" % ident)
 
             separator = self.lexer.next()
-            if type(separator) != XDRTokenPunctuation and separator.value not in [
+            if type(separator) is not XDRTokenPunctuation and separator.value not in [
                 "}",
                 ",",
             ]:
@@ -403,7 +403,7 @@ class XDRParser:
 
     def parse_struct_body(self):
         body = self.lexer.next()
-        if type(body) != XDRTokenPunctuation or body.value != "{":
+        if type(body) is not XDRTokenPunctuation or body.value != "{":
             raise Exception("Expected '{', but got %s" % body)
 
         fields = []
@@ -412,11 +412,11 @@ class XDRParser:
             fields.append(field)
 
             separator = self.lexer.next()
-            if type(separator) != XDRTokenPunctuation and separator.value != ";":
+            if type(separator) is not XDRTokenPunctuation and separator.value != ";":
                 raise Exception("Expected ';', but got %s" % separator)
 
             end = self.lexer.peek()
-            if type(end) == XDRTokenPunctuation and end.value == "}":
+            if type(end) is XDRTokenPunctuation and end.value == "}":
                 break
 
         # discard the '}' we peeked at to end the loop
@@ -429,28 +429,28 @@ class XDRParser:
 
     def parse_union_body(self):
         ident = self.lexer.next()
-        if type(ident) != XDRTokenIdentifier or ident.value != "switch":
+        if type(ident) is not XDRTokenIdentifier or ident.value != "switch":
             raise Exception("Expected 'switch', but got %s" % ident)
 
         bracket = self.lexer.next()
-        if type(bracket) != XDRTokenPunctuation or bracket.value != "(":
+        if type(bracket) is not XDRTokenPunctuation or bracket.value != "(":
             raise Exception("Expected '(', but got %s" % bracket)
 
         discriminator = self.parse_declaration()
 
         bracket = self.lexer.next()
-        if type(bracket) != XDRTokenPunctuation or bracket.value != ")":
+        if type(bracket) is not XDRTokenPunctuation or bracket.value != ")":
             raise Exception("Expected ')', but got %s" % bracket)
 
         bracket = self.lexer.next()
-        if type(bracket) != XDRTokenPunctuation or bracket.value != "{":
+        if type(bracket) is not XDRTokenPunctuation or bracket.value != "{":
             raise Exception("Expected '{', but got %s" % bracket)
 
         default = None
         cases = []
         while True:
             ident = self.lexer.next()
-            if type(ident) != XDRTokenIdentifier or ident.value not in [
+            if type(ident) is not XDRTokenIdentifier or ident.value not in [
                 "default",
                 "case",
             ]:
@@ -463,7 +463,7 @@ class XDRParser:
                     raise Exception("Expected constant, but got %s" % value)
 
                 sep = self.lexer.next()
-                if type(sep) != XDRTokenPunctuation or sep.value != ":":
+                if type(sep) is not XDRTokenPunctuation or sep.value != ":":
                     raise Exception("Expected ':', but got %s" % value)
 
                 decl = self.parse_declaration()
@@ -475,17 +475,17 @@ class XDRParser:
                     raise Exception("Duplicate 'default' clause")
 
                 sep = self.lexer.next()
-                if type(sep) != XDRTokenPunctuation or sep.value != ":":
+                if type(sep) is not XDRTokenPunctuation or sep.value != ":":
                     raise Exception("Expected ':', but got %s" % value)
 
                 default = self.parse_declaration()
 
             separator = self.lexer.next()
-            if type(separator) != XDRTokenPunctuation and separator.value != ";":
+            if type(separator) is not XDRTokenPunctuation and separator.value != ";":
                 raise Exception("Expected ';', but got %s" % bracket)
 
             end = self.lexer.peek()
-            if type(end) == XDRTokenPunctuation and end.value == "}":
+            if type(end) is XDRTokenPunctuation and end.value == "}":
                 break
 
         # discard the '}' we peeked at to end the loop
