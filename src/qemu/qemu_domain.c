@@ -11108,11 +11108,21 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
                                                virQEMUDriverConfig *cfg)
 {
     char *nodestorage = g_strdup_printf("%s-storage", nodenameprefix);
-    char *nodeformat = g_strdup_printf("%s-format", nodenameprefix);
+    const char *encryptionAlias = nodestorage;
 
     /* qemuBlockStorageSourceSetStorageNodename steals 'nodestorage' */
     qemuBlockStorageSourceSetStorageNodename(src, nodestorage);
-    qemuBlockStorageSourceSetFormatNodename(src, nodeformat);
+
+    if (qemuBlockStorageSourceNeedsFormatLayer(src)) {
+        char *nodeformat = g_strdup_printf("%s-format", nodenameprefix);
+
+        qemuBlockStorageSourceSetFormatNodename(src, nodeformat);
+
+        encryptionAlias = nodeformat;
+    }
+
+    if (qemuDomainSecretStorageSourcePrepareEncryption(priv, src, encryptionAlias) < 0)
+        return -1;
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         src->sliceStorage->nodename = g_strdup_printf("libvirt-%u-slice-sto", src->id);
@@ -11125,9 +11135,6 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
 
     qemuDomainPrepareStorageSourceConfig(src, cfg);
     qemuDomainPrepareDiskSourceData(disk, src);
-
-    if (qemuDomainSecretStorageSourcePrepareEncryption(priv, src, nodeformat) < 0)
-        return -1;
 
     if (!qemuDomainPrepareStorageSourceNbdkit(src, cfg, nodestorage, priv)) {
         /* If we're using nbdkit to serve the storage source, we don't pass
