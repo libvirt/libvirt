@@ -1,5 +1,7 @@
 [Unit]
-Description=Suspend/Resume Running libvirt Guests
+Description=libvirt guests suspend/resume service
+Documentation=man:libvirt-guests(8)
+Documentation=https://libvirt.org/
 Requires=virt-guest-shutdown.target
 After=network.target
 After=time-sync.target
@@ -10,8 +12,6 @@ After=virtvboxd.socket
 After=virtvzd.socket
 After=virtxend.socket
 After=virt-guest-shutdown.target
-Documentation=man:libvirt-guests(8)
-Documentation=https://libvirt.org
 
 [Service]
 EnvironmentFile=-@initconfdir@/libvirt-guests
