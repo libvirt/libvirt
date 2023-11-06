@@ -73,7 +73,6 @@ function install_buildenv() {
         python3-flake8 \
         qemu-img \
         readline-devel \
-        rpcgen \
         rpm-build \
         sanlock-devel \
         scrub \

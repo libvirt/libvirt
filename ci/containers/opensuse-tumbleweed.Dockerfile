@@ -75,7 +75,6 @@ RUN zypper dist-upgrade -y && \
            python39-flake8 \
            qemu-tools \
            readline-devel \
-           rpcgen \
            rpm-build \
            sanlock-devel \
            scrub \

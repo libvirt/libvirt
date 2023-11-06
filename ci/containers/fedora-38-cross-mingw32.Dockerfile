@@ -29,6 +29,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                dwarves \
                ebtables \
                firewalld-filesystem \
+               gettext \
                git \
                glibc-langpack-en \
                grep \
@@ -52,7 +53,6 @@ exec "$@"\n' > /usr/bin/nosync && \
                python3-docutils \
                python3-flake8 \
                qemu-img \
-               rpcgen \
                rpm-build \
                scrub \
                sed \

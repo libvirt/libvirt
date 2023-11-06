@@ -60,7 +60,6 @@ function install_buildenv() {
         python3 \
         qemu-img \
         readline-dev \
-        rpcgen \
         samurai \
         sed \
         util-linux-dev \

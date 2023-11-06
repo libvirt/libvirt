@@ -61,7 +61,6 @@ RUN apk update && \
         python3 \
         qemu-img \
         readline-dev \
-        rpcgen \
         samurai \
         sed \
         util-linux-dev \

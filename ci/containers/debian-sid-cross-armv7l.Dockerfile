@@ -28,7 +28,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       iproute2 \
                       iptables \
                       kmod \
-                      libc-dev-bin \
                       libnbd-dev \
                       libxml2-utils \
                       locales \
@@ -77,7 +76,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libdevmapper-dev:armhf \
                       libfuse-dev:armhf \
                       libglib2.0-dev:armhf \
-                      libglusterfs-dev:armhf \
                       libgnutls28-dev:armhf \
                       libiscsi-dev:armhf \
                       libnl-3-dev:armhf \

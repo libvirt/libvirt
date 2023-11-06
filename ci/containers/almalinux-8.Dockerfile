@@ -76,7 +76,6 @@ RUN dnf update -y && \
         python3-flake8 \
         qemu-img \
         readline-devel \
-        rpcgen \
         rpm-build \
         sanlock-devel \
         scrub \

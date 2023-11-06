@@ -26,7 +26,6 @@ function install_buildenv() {
             iproute2 \
             iptables \
             kmod \
-            libc-dev-bin \
             libnbd-dev \
             libxml2-utils \
             locales \
@@ -66,7 +65,6 @@ function install_buildenv() {
             libdevmapper-dev:armel \
             libfuse-dev:armel \
             libglib2.0-dev:armel \
-            libglusterfs-dev:armel \
             libgnutls28-dev:armel \
             libiscsi-dev:armel \
             libnl-3-dev:armel \

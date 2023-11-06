@@ -18,6 +18,7 @@ function install_buildenv() {
         dwarves \
         ebtables \
         firewalld-filesystem \
+        gettext \
         git \
         glibc-langpack-en \
         grep \
@@ -41,7 +42,6 @@ function install_buildenv() {
         python3-docutils \
         python3-flake8 \
         qemu-img \
-        rpcgen \
         rpm-build \
         scrub \
         sed \
