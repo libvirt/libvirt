@@ -63,7 +63,6 @@
       <feature policy='require' name='vgif'/>
       <feature policy='require' name='svme-addr-chk'/>
       <feature policy='disable' name='vme'/>
-      <feature policy='disable' name='sha-ni'/>
       <feature policy='disable' name='xsavec'/>
       <feature policy='disable' name='fxsr_opt'/>
       <feature policy='disable' name='misalignsse'/>
