@@ -147,6 +147,8 @@ module Libvirtd_qemu =
 
    let capability_filters_entry = str_array_entry "capability_filters"
 
+   let storage_entry = bool_entry "storage_use_nbdkit"
+
    (* Each entry in the config is one of the following ... *)
    let entry = default_tls_entry
              | vnc_entry
@@ -170,6 +172,7 @@ module Libvirtd_qemu =
              | nbd_entry
              | swtpm_entry
              | capability_filters_entry
+             | storage_entry
              | obsolete_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]

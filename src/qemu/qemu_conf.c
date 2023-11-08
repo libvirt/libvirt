@@ -285,6 +285,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         return NULL;
 
     cfg->deprecationBehavior = g_strdup("none");
+    cfg->storageUseNbdkit = USE_NBDKIT_DEFAULT;
 
     return g_steal_pointer(&cfg);
 }
@@ -1065,6 +1066,24 @@ virQEMUDriverConfigLoadCapsFiltersEntry(virQEMUDriverConfig *cfg,
 }
 
 
+static int
+virQEMUDriverConfigLoadStorageEntry(virQEMUDriverConfig *cfg,
+                                    virConf *conf)
+{
+    if (virConfGetValueBool(conf, "storage_use_nbdkit", &cfg->storageUseNbdkit) < 0)
+        return -1;
+
+#if !WITH_NBDKIT
+    if (cfg->storageUseNbdkit) {
+        VIR_WARN("Ignoring configuration option 'storage_use_nbdkit': nbdkit is not supported by this libvirt");
+        cfg->storageUseNbdkit = false;
+    }
+#endif /* WITH_NBDKIT */
+
+    return 0;
+}
+
+
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
                                 const char *filename,
                                 bool privileged)
@@ -1134,6 +1153,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
         return -1;
 
     if (virQEMUDriverConfigLoadCapsFiltersEntry(cfg, conf) < 0)
+        return -1;
+
+    if (virQEMUDriverConfigLoadStorageEntry(cfg, conf) < 0)
         return -1;
 
     return 0;

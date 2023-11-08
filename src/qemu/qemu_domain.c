@@ -10296,6 +10296,9 @@ qemuDomainPrepareStorageSourceNbdkit(virStorageSource *src,
 {
     g_autoptr(qemuNbdkitCaps) nbdkit = NULL;
 
+    if (!cfg->storageUseNbdkit)
+        return false;
+
     if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK)
         return false;
 

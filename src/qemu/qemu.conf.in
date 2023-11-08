@@ -974,3 +974,14 @@
 # "full"    -  both QEMU and its helper processes are placed into separate
 #              scheduling group
 #sched_core = "none"
+
+# Using nbdkit to access remote disk sources
+#
+# If this is set then libvirt will use nbdkit to access remote disk sources
+# when available. nbdkit will export an NBD share to QEMU rather than having
+# QEMU attempt to access the remote server directly.
+#
+# Possible values are 0 or 1. Default value is @USE_NBDKIT_DEFAULT@. Please
+# note that the default might change in future releases.
+#
+#storage_use_nbdkit = @USE_NBDKIT_DEFAULT@

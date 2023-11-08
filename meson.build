@@ -1009,6 +1009,16 @@ if not conf.has('WITH_NBDKIT')
   libnbd_dep = dependency('', required: false)
 endif
 
+# default value for storage_use_nbdkit config option.
+# For now 'auto' just maps to disabled, but in the future it may depend on
+# which security drivers are enabled
+use_nbdkit_default = get_option('nbdkit_config_default').enabled()
+
+if use_nbdkit_default and not conf.has('WITH_NBDKIT')
+  error('nbdkit_config_default requires nbdkit to be enabled')
+endif
+conf.set10('USE_NBDKIT_DEFAULT', use_nbdkit_default)
+
 libnl_version = '3.0'
 if not get_option('libnl').disabled() and host_machine.system() == 'linux'
   libnl_dep = dependency('libnl-3.0', version: '>=' + libnl_version, required: get_option('libnl'))

@@ -230,6 +230,8 @@ struct _virQEMUDriverConfig {
 
     char *deprecationBehavior;
 
+    bool storageUseNbdkit;
+
     virQEMUSchedCore schedCore;
 };
 

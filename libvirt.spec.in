@@ -96,6 +96,7 @@
 %define with_sanlock          0
 %define with_numad            0
 %define with_nbdkit           0
+%define with_nbdkit_config_default 0
 %define with_firewalld_zone   0
 %define with_netcf            0
 %define with_libssh2          0
@@ -174,15 +175,17 @@
     %endif
 %endif
 
-# We should only enable nbdkit support if the OS ships a SELinux policy that
-# allows libvirt to launch it. Right now that's not the case anywhere, but
-# things should be fine by the time Fedora 40 is released.
+# We want to build with nbdkit support, but should only enable nbdkit by
+# default if the OS ships a SELinux policy that allows libvirt to launch it.
+# Right now that's not the case anywhere, but things should be fine by the time
+# Fedora 40 is released.
 #
 # TODO: add RHEL 9 once a minor release that contains the necessary SELinux
 #       bits exists (we only support the most recent minor release)
 %if %{with_qemu}
+    %define with_nbdkit 0%{!?_without_nbdkit:1}
     %if 0%{?fedora} >= 40
-        %define with_nbdkit 0%{!?_without_nbdkit:1}
+        %define with_nbdkit_config_default 0%{!?_without_nbdkit_config_default:1}
     %endif
 %endif
 
@@ -1207,6 +1210,12 @@ exit 1
     %define arg_nbdkit -Dnbdkit=disabled
 %endif
 
+%if %{with_nbdkit_config_default}
+    %define arg_nbdkit_config_default -Dnbdkit_config_default=enabled
+%else
+    %define arg_nbdkit_config_default -Dnbdkit_config_default=disabled
+%endif
+
 %if %{with_fuse}
     %define arg_fuse -Dfuse=enabled
 %else
@@ -1322,6 +1331,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
            %{?arg_nbdkit} \
+           %{?arg_nbdkit_config_default} \
            -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \

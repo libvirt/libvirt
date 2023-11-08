@@ -117,3 +117,4 @@ module Test_libvirtd_qemu =
 }
 { "deprecation_behavior" = "none" }
 { "sched_core" = "none" }
+{ "storage_use_nbdkit" = "@USE_NBDKIT_DEFAULT@" }

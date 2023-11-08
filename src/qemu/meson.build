@@ -137,6 +137,7 @@ if conf.has('WITH_QEMU')
   qemu_user_group_conf = configuration_data({
     'QEMU_USER': qemu_user,
     'QEMU_GROUP': qemu_group,
+    'USE_NBDKIT_DEFAULT': use_nbdkit_default.to_int(),
   })
   qemu_conf = configure_file(
     input: 'qemu.conf.in',
@@ -147,6 +148,7 @@ if conf.has('WITH_QEMU')
   qemu_user_group_hack_conf = configuration_data({
     'QEMU_USER': qemu_user,
     'QEMU_GROUP': qemu_group,
+    'USE_NBDKIT_DEFAULT': use_nbdkit_default.to_int(),
     # This hack is necessary because the output file is going to be
     # used as input for another configure_file() call later, which
     # will take care of substituting @CONFIG@ with useful data
