@@ -2991,6 +2991,8 @@ virDomainMigrateVersion1(virDomainPtr domain,
                      "dconn=%p, flags=0x%lx, dname=%s, uri=%s, bandwidth=%lu",
                      dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
 
+    virCheckNonEmptyOptStringArgReturn(dname, NULL);
+
     ret = virDomainGetInfo(domain, &info);
     if (ret == 0 && info.state == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
@@ -3084,6 +3086,8 @@ virDomainMigrateVersion2(virDomainPtr domain,
     VIR_DOMAIN_DEBUG(domain,
                      "dconn=%p, flags=0x%lx, dname=%s, uri=%s, bandwidth=%lu",
                      dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
+
+    virCheckNonEmptyOptStringArgReturn(dname, NULL);
 
     /* Prepare the migration.
      *
@@ -3241,6 +3245,8 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                      dconn, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(uri),
                      bandwidth, params, nparams, useParams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virCheckNonEmptyOptStringArgReturn(dname, NULL);
 
     if ((!useParams &&
          (!domain->conn->driver->domainMigrateBegin3 ||
@@ -3582,6 +3588,8 @@ virDomainMigrateUnmanagedProto2(virDomainPtr domain,
         return -1;
     }
 
+    virCheckNonEmptyOptStringArgReturn(dname, -1);
+
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (miguri) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3631,6 +3639,8 @@ virDomainMigrateUnmanagedProto3(virDomainPtr domain,
                                 VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
         return -1;
     }
+
+    virCheckNonEmptyOptStringArgReturn(dname, -1);
 
     return domain->conn->driver->domainMigratePerform3
             (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
@@ -3801,6 +3811,8 @@ virDomainMigrate(virDomainPtr domain,
     /* Now checkout the destination */
     virCheckConnectGoto(dconn, error);
     virCheckReadOnlyGoto(dconn->flags, error);
+
+    virCheckNonEmptyOptStringArgReturn(dname, NULL);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
                              VIR_MIGRATE_NON_SHARED_INC,
@@ -3998,6 +4010,8 @@ virDomainMigrate2(virDomainPtr domain,
     /* Now checkout the destination */
     virCheckConnectGoto(dconn, error);
     virCheckReadOnlyGoto(dconn->flags, error);
+
+    virCheckNonEmptyOptStringArgReturn(dname, NULL);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
                              VIR_MIGRATE_NON_SHARED_INC,
@@ -4232,6 +4246,19 @@ virDomainMigrate3(virDomainPtr domain,
         goto error;
     }
 
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &uri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, &dxml) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
+        goto error;
+    }
+
+    virCheckNonEmptyOptStringArgReturn(dname, NULL);
+
     if (flags & VIR_MIGRATE_OFFLINE) {
         rc = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE);
@@ -4290,17 +4317,6 @@ virDomainMigrate3(virDomainPtr domain,
                              G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Migration APIs with extensible parameters are not supported but extended parameters were passed"));
-        goto error;
-    }
-
-    if (virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_URI, &uri) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_XML, &dxml) < 0 ||
-        virTypedParamsGetULLong(params, nparams,
-                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
         goto error;
     }
 
@@ -4475,6 +4491,7 @@ virDomainMigrateToURI(virDomainPtr domain,
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(duri, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
                              VIR_MIGRATE_PARALLEL,
@@ -4553,6 +4570,8 @@ virDomainMigrateToURI2(virDomainPtr domain,
     /* First checkout the source */
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
                              VIR_MIGRATE_PARALLEL,
@@ -4679,6 +4698,7 @@ virDomainMigratePrepare(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigratePrepare) {
         int ret;
@@ -4723,6 +4743,7 @@ virDomainMigratePerform(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigratePerform) {
         int ret;
@@ -4762,6 +4783,7 @@ virDomainMigrateFinish(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigrateFinish) {
         virDomainPtr ret;
@@ -4805,6 +4827,7 @@ virDomainMigratePrepare2(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigratePrepare2) {
         int ret;
@@ -4846,6 +4869,7 @@ virDomainMigrateFinish2(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigrateFinish2) {
         virDomainPtr ret;
@@ -4886,6 +4910,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
 
     virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn != st->conn) {
         virReportInvalidArg(conn, "%s",
@@ -4936,6 +4961,7 @@ virDomainMigrateBegin3(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigrateBegin3) {
         char *xml;
@@ -4983,6 +5009,7 @@ virDomainMigratePrepare3(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigratePrepare3) {
         int ret;
@@ -5031,6 +5058,7 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
 
     virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn != st->conn) {
         virReportInvalidArg(conn, "%s",
@@ -5089,6 +5117,7 @@ virDomainMigratePerform3(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigratePerform3) {
         int ret;
@@ -5135,6 +5164,7 @@ virDomainMigrateFinish3(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigrateFinish3) {
         virDomainPtr ret;
@@ -5211,6 +5241,7 @@ virDomainMigrateBegin3Params(virDomainPtr domain,
                              unsigned int flags)
 {
     virConnectPtr conn;
+    const char *dname = NULL;
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, "
                      "cookieout=%p, cookieoutlen=%p, flags=0x%x",
@@ -5223,6 +5254,12 @@ virDomainMigrateBegin3Params(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto error;
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigrateBegin3Params) {
         char *xml;
@@ -5258,6 +5295,8 @@ virDomainMigratePrepare3Params(virConnectPtr dconn,
                                char **uri_out,
                                unsigned int flags)
 {
+    const char *dname = NULL;
+
     VIR_DEBUG("dconn=%p, params=%p, nparams=%d, cookiein=%p, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_out=%p, flags=0x%x",
               dconn, params, nparams, cookiein, cookieinlen,
@@ -5268,6 +5307,12 @@ virDomainMigratePrepare3Params(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto error;
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigratePrepare3Params) {
         int ret;
@@ -5303,6 +5348,8 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
                                      int *cookieoutlen,
                                      unsigned int flags)
 {
+    const char *dname = NULL;
+
     VIR_DEBUG("conn=%p, stream=%p, params=%p, nparams=%d, cookiein=%p, "
               "cookieinlen=%d, cookieout=%p, cookieoutlen=%p, flags=0x%x",
               conn, st, params, nparams, cookiein, cookieinlen,
@@ -5319,6 +5366,12 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
                             _("conn must match stream connection"));
         goto error;
     }
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto error;
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigratePrepareTunnel3Params) {
         int rv;
@@ -5354,6 +5407,7 @@ virDomainMigratePerform3Params(virDomainPtr domain,
                                unsigned int flags)
 {
     virConnectPtr conn;
+    const char *dname = NULL;
 
     VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, cookiein=%p, "
                      "cookieinlen=%d, cookieout=%p, cookieoutlen=%p, flags=0x%x",
@@ -5367,6 +5421,12 @@ virDomainMigratePerform3Params(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto error;
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigratePerform3Params) {
         int ret;
@@ -5401,6 +5461,8 @@ virDomainMigrateFinish3Params(virConnectPtr dconn,
                               unsigned int flags,
                               int cancelled)
 {
+    const char *dname = NULL;
+
     VIR_DEBUG("dconn=%p, params=%p, nparams=%d, cookiein=%p, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%x, cancelled=%d",
               dconn, params, nparams, cookiein, cookieinlen, cookieout,
@@ -5411,6 +5473,12 @@ virDomainMigrateFinish3Params(virConnectPtr dconn,
 
     virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto error;
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (dconn->driver->domainMigrateFinish3Params) {
         virDomainPtr ret;
@@ -5444,6 +5512,7 @@ virDomainMigrateConfirm3Params(virDomainPtr domain,
                                int cancelled)
 {
     virConnectPtr conn;
+    const char *dname = NULL;
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, cookiein=%p, "
                      "cookieinlen=%d, flags=0x%x, cancelled=%d",
@@ -5456,6 +5525,12 @@ virDomainMigrateConfirm3Params(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto error;
+
+    virCheckNonEmptyOptStringArgGoto(dname, error);
 
     if (conn->driver->domainMigrateConfirm3Params) {
         int ret;

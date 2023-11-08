@@ -441,6 +441,20 @@
             goto label; \
         } \
     } while (0)
+#define virCheckNonEmptyOptStringArgGoto(argname, label) \
+    do { \
+        if (argname && *argname == '\0') { \
+            virReportInvalidEmptyStringArg(argname); \
+            goto label; \
+        } \
+    } while (0)
+#define virCheckNonEmptyOptStringArgReturn(argname, retval) \
+    do { \
+        if (argname && *argname == '\0') { \
+            virReportInvalidEmptyStringArg(argname); \
+            return retval; \
+        } \
+    } while (0)
 #define virCheckPositiveArgGoto(argname, label) \
     do { \
         if (argname <= 0) { \
