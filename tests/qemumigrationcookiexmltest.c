@@ -137,8 +137,16 @@ static int
 testQemuMigrationCookieParse(const void *opaque)
 {
     struct testQemuMigrationCookieData *data = (struct testQemuMigrationCookieData *) opaque;
-    qemuDomainObjPrivate *priv = data->vm->privateData;
+    qemuDomainObjPrivate *priv;
     g_auto(virBuffer) actual = VIR_BUFFER_INITIALIZER;
+
+    /* if the VM object parsing step failed there's nothing this test can do */
+    if (!data->vm) {
+        VIR_TEST_DEBUG("\nmissing VM object\n");
+        return -1;
+    }
+
+    priv = data->vm->privateData;
 
     if (!(data->cookie = qemuMigrationCookieParse(&driver,
                                                   data->vm,
@@ -311,6 +319,12 @@ testQemuMigrationCookieBlockDirtyBitmaps(const void *opaque)
 
     if (!(qmpschema = testQEMUSchemaLoadLatest("x86_64"))) {
         VIR_TEST_VERBOSE("failed to load QMP schema");
+        return -1;
+    }
+
+    /* if the VM object parsing step failed there's nothing this test can do */
+    if (!data->vm) {
+        VIR_TEST_DEBUG("\nmissing VM object\n");
         return -1;
     }
 
