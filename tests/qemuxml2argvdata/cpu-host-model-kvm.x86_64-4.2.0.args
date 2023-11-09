@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-q35-4.2,usb=off,dump-guest-core=off \
 -accel kvm \
--cpu Skylake-Client-IBRS,ss=on,vmx=on,hypervisor=on,tsc-adjust=on,clflushopt=on,umip=on,md-clear=on,stibp=on,arch-capabilities=on,ssbd=on,xsaves=on,pdpe1gb=on,skip-l1dfl-vmentry=on,pschange-mc-no=on,vmx-ins-outs=on,vmx-true-ctls=on,vmx-store-lma=on,vmx-activity-hlt=on,vmx-vmwrite-vmexit-fields=on \
+-cpu Skylake-Client-IBRS,ss=on,vmx=on,hypervisor=on,tsc-adjust=on,clflushopt=on,umip=on,md-clear=on,stibp=on,arch-capabilities=on,ssbd=on,xsaves=on,pdpe1gb=on,skip-l1dfl-vmentry=on,pschange-mc-no=on,vmx-ins-outs=on,vmx-true-ctls=on,vmx-store-lma=on,vmx-activity-hlt=on,vmx-vmwrite-vmexit-fields=on,vmx-apicv-xapic=on,vmx-ept=on,vmx-desc-exit=on,vmx-rdtscp-exit=on,vmx-apicv-x2apic=on,vmx-vpid=on,vmx-wbinvd-exit=on,vmx-unrestricted-guest=on,vmx-rdrand-exit=on,vmx-invpcid-exit=on,vmx-vmfunc=on,vmx-shadow-vmcs=on,vmx-rdseed-exit=on,vmx-pml=on,vmx-xsaves=on \
 -m size=219136k \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

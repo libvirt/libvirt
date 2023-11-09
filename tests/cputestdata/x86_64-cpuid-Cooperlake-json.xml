@@ -18,4 +18,21 @@
   <feature policy='require' name='vmx-store-lma'/>
   <feature policy='require' name='vmx-activity-hlt'/>
   <feature policy='require' name='vmx-vmwrite-vmexit-fields'/>
+  <feature policy='require' name='vmx-apicv-xapic'/>
+  <feature policy='require' name='vmx-ept'/>
+  <feature policy='require' name='vmx-desc-exit'/>
+  <feature policy='require' name='vmx-rdtscp-exit'/>
+  <feature policy='require' name='vmx-apicv-x2apic'/>
+  <feature policy='require' name='vmx-vpid'/>
+  <feature policy='require' name='vmx-wbinvd-exit'/>
+  <feature policy='require' name='vmx-unrestricted-guest'/>
+  <feature policy='require' name='vmx-apicv-register'/>
+  <feature policy='require' name='vmx-apicv-vid'/>
+  <feature policy='require' name='vmx-rdrand-exit'/>
+  <feature policy='require' name='vmx-invpcid-exit'/>
+  <feature policy='require' name='vmx-vmfunc'/>
+  <feature policy='require' name='vmx-shadow-vmcs'/>
+  <feature policy='require' name='vmx-rdseed-exit'/>
+  <feature policy='require' name='vmx-pml'/>
+  <feature policy='require' name='vmx-xsaves'/>
 </cpu>

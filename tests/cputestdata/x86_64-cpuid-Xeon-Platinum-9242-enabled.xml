@@ -9,4 +9,5 @@
   <msr index='0x10a' edx='0x00000000' eax='0x000000eb'/>
   <msr index='0x480' edx='0x00c00000' eax='0x00000000'/>
   <msr index='0x485' edx='0x00000000' eax='0x20000060'/>
+  <msr index='0x48b' edx='0x00000000' eax='0x00137bff'/>
 </cpudata>

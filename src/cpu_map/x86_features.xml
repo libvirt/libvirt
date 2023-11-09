@@ -815,4 +815,68 @@
   <feature name='vmx-zero-len-inject'>
     <msr index='0x485' edx='0x00000000' eax='0x40000000'/>
   </feature>
+
+  <feature name='vmx-apicv-xapic'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000001'/>
+  </feature>
+  <feature name='vmx-ept'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000002'/>
+  </feature>
+  <feature name='vmx-desc-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000004'/>
+  </feature>
+  <feature name='vmx-rdtscp-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000008'/>
+  </feature>
+  <feature name='vmx-apicv-x2apic'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000010'/>
+  </feature>
+  <feature name='vmx-vpid'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000020'/>
+  </feature>
+  <feature name='vmx-wbinvd-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000040'/>
+  </feature>
+  <feature name='vmx-unrestricted-guest'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000080'/>
+  </feature>
+  <feature name='vmx-apicv-register'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000100'/>
+  </feature>
+  <feature name='vmx-apicv-vid'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000200'/>
+  </feature>
+  <feature name='vmx-ple'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000400'/>
+  </feature>
+  <feature name='vmx-rdrand-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00000800'/>
+  </feature>
+  <feature name='vmx-invpcid-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00001000'/>
+  </feature>
+  <feature name='vmx-vmfunc'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00002000'/>
+  </feature>
+  <feature name='vmx-shadow-vmcs'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00004000'/>
+  </feature>
+  <feature name='vmx-encls-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00008000'/>
+  </feature>
+  <feature name='vmx-rdseed-exit'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00010000'/>
+  </feature>
+  <feature name='vmx-pml'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00020000'/>
+  </feature>
+  <feature name='vmx-xsaves'>
+    <msr index='0x48b' edx='0x00000000' eax='0x00100000'/>
+  </feature>
+  <feature name='vmx-tsc-scaling'>
+    <msr index='0x48b' edx='0x00000000' eax='0x02000000'/>
+  </feature>
+  <feature name='vmx-enable-user-wait-pause'>
+    <msr index='0x48b' edx='0x00000000' eax='0x04000000'/>
+  </feature>
 </cpus>
