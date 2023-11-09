@@ -41,6 +41,7 @@
 #include "domain_conf.h"
 #include "domain_driver.h"
 #include "domain_event.h"
+#include "domain_validate.h"
 #include "network_event.h"
 #include "snapshot_conf.h"
 #include "virfdstream.h"
@@ -10036,6 +10037,352 @@ testConnectGetDomainCapabilities(virConnectPtr conn G_GNUC_UNUSED,
 }
 
 
+static int
+testDomainAttachHostPCIDevice(testDriver *driver G_GNUC_UNUSED,
+                              virDomainObj *vm,
+                              virDomainHostdevDef *hostdev)
+{
+    int backend = hostdev->source.subsys.u.pci.backend;
+
+    switch (backend) {
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("test hypervisor does not support device assignment mode '%1$s'"),
+                       virDomainHostdevSubsysPCIBackendTypeToString(backend));
+        return -1;
+    }
+
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+
+    return 0;
+}
+
+
+static int
+testDomainAttachHostDevice(testDriver *driver,
+                           virDomainObj *vm,
+                           virDomainHostdevDef *hostdev)
+{
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hotplug is not supported for hostdev mode '%1$s'"),
+                       virDomainHostdevModeTypeToString(hostdev->mode));
+        return -1;
+    }
+
+    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hotplug is not supported for hostdev subsys type '%1$s'"),
+                       virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+        return -1;
+    }
+
+    return testDomainAttachHostPCIDevice(driver, vm, hostdev);
+}
+
+
+static int
+testDomainAttachDeviceLive(virDomainObj *vm,
+                           virDomainDeviceDef *dev,
+                           testDriver *driver)
+{
+    const char *alias = NULL;
+
+    if (dev->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live attach of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
+        return -1;
+    }
+
+    testDomainObjCheckHostdevTaint(vm, dev->data.hostdev);
+    if (testDomainAttachHostDevice(driver, vm, dev->data.hostdev) < 0)
+        return -1;
+
+    alias = dev->data.hostdev->info->alias;
+    dev->data.hostdev = NULL;
+
+    if (alias) {
+        virObjectEvent *event;
+        event = virDomainEventDeviceAddedNewFromObj(vm, alias);
+        virObjectEventStateQueue(driver->eventState, event);
+    }
+
+    return 0;
+}
+
+
+static int
+testDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
+                                    testDriver *driver,
+                                    const char *xml,
+                                    unsigned int flags)
+{
+    g_autoptr(virDomainDeviceDef) devConf = NULL;
+    g_autoptr(virDomainDeviceDef) devLive = NULL;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                               VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!(devLive = virDomainDeviceDefParse(xml, vm->def,
+                                                driver->xmlopt, NULL,
+                                                parse_flags)))
+            return -1;
+
+        if (virDomainDeviceValidateAliasForHotplug(vm, devLive,
+                                                   VIR_DOMAIN_AFFECT_LIVE) < 0)
+            return -1;
+
+        if (virDomainDefCompatibleDevice(vm->def, devLive, NULL,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH,
+                                         true) < 0)
+            return -1;
+
+        if (testDomainAttachDeviceLive(vm, devLive, driver) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+testDomainAttachDeviceFlags(virDomainPtr domain,
+                            const char *xml,
+                            unsigned int flags)
+{
+
+    testDriver *driver = domain->conn->privateData;
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto cleanup;
+
+    if (testDomainAttachDeviceLiveAndConfig(vm, driver, xml, flags) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
+testDomainAttachDevice(virDomainPtr domain, const char *xml)
+{
+    return testDomainAttachDeviceFlags(domain, xml, 0);
+}
+
+
+/* search for a hostdev matching dev and detach it */
+static int
+testDomainDetachPrepHostdev(virDomainObj *vm,
+                            virDomainHostdevDef *match,
+                            virDomainHostdevDef **detach)
+{
+    virDomainHostdevSubsys *subsys = &match->source.subsys;
+    virDomainHostdevSubsysPCI *pcisrc = &subsys->u.pci;
+    virDomainHostdevDef *hostdev = NULL;
+
+    if (match->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hot unplug is not supported for hostdev mode '%1$s'"),
+                       virDomainHostdevModeTypeToString(match->mode));
+        return -1;
+    }
+
+    if (virDomainHostdevFind(vm->def, match, &hostdev) < 0) {
+        if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            g_autofree char *addrStr = virPCIDeviceAddressAsString(&pcisrc->addr);
+
+            virReportError(VIR_ERR_DEVICE_MISSING,
+                           _("host pci device %1$s not found"),
+                           addrStr);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected hostdev type %1$d"), subsys->type);
+        }
+        return -1;
+    }
+
+    *detach = hostdev;
+
+    return 0;
+}
+
+
+static int
+testDomainRemoveHostDevice(testDriver *driver G_GNUC_UNUSED,
+                           virDomainObj *vm,
+                           virDomainHostdevDef *hostdev)
+{
+    size_t i;
+
+    VIR_DEBUG("Removing host device %s from domain %p %s",
+              hostdev->info->alias, vm, vm->def->name);
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        if (vm->def->hostdevs[i] == hostdev) {
+            virDomainHostdevRemove(vm->def, i);
+            virDomainHostdevDefFree(hostdev);
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+testDomainRemoveDevice(testDriver *driver,
+                       virDomainObj *vm,
+                       virDomainDeviceDef *dev)
+{
+    virDomainDeviceInfo *info = NULL;
+    g_autofree char *alias = NULL;
+
+    if (dev->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("don't know how to remove a %1$s device"),
+                       virDomainDeviceTypeToString(dev->type));
+        return -1;
+    }
+
+    /*
+     * save the alias to use when sending a DEVICE_REMOVED event after
+     * all other teardown is complete
+     */
+    if ((info = virDomainDeviceGetInfo(dev))) {
+        alias = g_strdup(info->alias);
+    }
+
+    if (testDomainRemoveHostDevice(driver, vm, dev->data.hostdev) < 0)
+        return -1;
+
+    if (alias) {
+        virObjectEvent *event;
+        event = virDomainEventDeviceRemovedNewFromObj(vm, alias);
+        virObjectEventStateQueue(driver->eventState, event);
+    }
+
+    return 0;
+}
+
+
+static int
+testDomainDetachDeviceLive(testDriver *driver,
+                           virDomainObj *vm,
+                           virDomainDeviceDef *match)
+{
+    virDomainDeviceDef detach = { .type = match->type };
+    virDomainDeviceInfo *info = NULL;
+
+    if (match->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live detach of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(match->type));
+        return -1;
+    }
+
+    if (testDomainDetachPrepHostdev(vm, match->data.hostdev,
+                                    &detach.data.hostdev) < 0)
+        return -1;
+
+    /* "detach" now points to the actual device we want to detach */
+
+    if (!(info = virDomainDeviceGetInfo(&detach))) {
+        /*
+         * This should never happen, since all of the device types in
+         * the switch cases that end with a "break" instead of a
+         * return have a virDeviceInfo in them.
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("device of type '%1$s' has no device info"),
+                       virDomainDeviceTypeToString(detach.type));
+        return -1;
+    }
+
+    /* Make generic validation checks common to all device types */
+
+    if (!info->alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot detach %1$s device with no alias"),
+                       virDomainDeviceTypeToString(detach.type));
+        return -1;
+    }
+
+    return testDomainRemoveDevice(driver, vm, &detach);
+}
+
+
+static int
+testDomainDetachDeviceAliasLiveAndConfig(testDriver *driver,
+                                         virDomainObj *vm,
+                                         const char *alias,
+                                         unsigned int flags)
+{
+    virDomainDef *def = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+
+    if (virDomainObjGetDefs(vm, flags, &def, NULL) < 0)
+        return -1;
+
+    if (def) {
+        virDomainDeviceDef dev;
+
+        if (virDomainDefFindDevice(def, alias, &dev, true) < 0)
+            return -1;
+
+        if (testDomainDetachDeviceLive(driver, vm, &dev) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+testDomainDetachDeviceAlias(virDomainPtr dom,
+                            const char *alias,
+                            unsigned int flags)
+{
+    testDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto cleanup;
+
+    if (testDomainDetachDeviceAliasLiveAndConfig(driver, vm, alias, flags) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 /*
  * Test driver
  */
@@ -10058,6 +10405,9 @@ static virHypervisorDriver testHypervisorDriver = {
     .connectListDomains = testConnectListDomains, /* 0.1.1 */
     .connectNumOfDomains = testConnectNumOfDomains, /* 0.1.1 */
     .connectListAllDomains = testConnectListAllDomains, /* 0.9.13 */
+    .domainAttachDevice = testDomainAttachDevice, /* 10.0.0 */
+    .domainAttachDeviceFlags = testDomainAttachDeviceFlags, /* 10.0.0 */
+    .domainDetachDeviceAlias = testDomainDetachDeviceAlias, /* 10.0.0 */
     .domainCreateXML = testDomainCreateXML, /* 0.1.4 */
     .domainCreateXMLWithFiles = testDomainCreateXMLWithFiles, /* 5.7.0 */
     .domainLookupByID = testDomainLookupByID, /* 0.1.1 */
