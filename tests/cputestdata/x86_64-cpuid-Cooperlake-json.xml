@@ -13,4 +13,6 @@
   <feature policy='require' name='amd-stibp'/>
   <feature policy='require' name='amd-ssbd'/>
   <feature policy='require' name='tsx-ctrl'/>
+  <feature policy='require' name='vmx-ins-outs'/>
+  <feature policy='require' name='vmx-true-ctls'/>
 </cpu>

@@ -19,4 +19,6 @@
   <feature policy='require' name='mds-no'/>
   <feature policy='require' name='pschange-mc-no'/>
   <feature policy='require' name='tsx-ctrl'/>
+  <feature policy='require' name='vmx-ins-outs'/>
+  <feature policy='require' name='vmx-true-ctls'/>
 </cpu>

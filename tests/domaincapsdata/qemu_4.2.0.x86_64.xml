@@ -58,6 +58,8 @@
       <feature policy='require' name='invtsc'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>
       <feature policy='require' name='pschange-mc-no'/>
+      <feature policy='require' name='vmx-ins-outs'/>
+      <feature policy='require' name='vmx-true-ctls'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>qemu64</model>

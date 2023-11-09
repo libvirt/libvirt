@@ -18,6 +18,8 @@
   <feature policy='require' name='skip-l1dfl-vmentry'/>
   <feature policy='require' name='mds-no'/>
   <feature policy='require' name='pschange-mc-no'/>
+  <feature policy='require' name='vmx-ins-outs'/>
+  <feature policy='require' name='vmx-true-ctls'/>
   <feature policy='disable' name='mpx'/>
   <feature policy='disable' name='core-capability'/>
   <feature policy='disable' name='pdpe1gb'/>
