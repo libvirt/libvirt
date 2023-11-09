@@ -1071,4 +1071,8 @@
   <feature name='vmx-entry-load-pkrs'>
     <msr index='0x490' edx='0x00000000' eax='0x00400000'/>
   </feature>
+
+  <feature name='vmx-eptp-switching'>
+    <msr index='0x491' edx='0x00000000' eax='0x00000001'/>
+  </feature>
 </cpus>

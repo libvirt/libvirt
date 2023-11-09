@@ -89,4 +89,5 @@
   <feature policy='require' name='vmx-entry-ia32e-mode'/>
   <feature policy='require' name='vmx-entry-load-pat'/>
   <feature policy='require' name='vmx-entry-load-efer'/>
+  <feature policy='require' name='vmx-eptp-switching'/>
 </cpu>

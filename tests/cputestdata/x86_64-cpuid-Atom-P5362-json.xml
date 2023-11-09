@@ -87,6 +87,7 @@
   <feature policy='require' name='vmx-entry-ia32e-mode'/>
   <feature policy='require' name='vmx-entry-load-pat'/>
   <feature policy='require' name='vmx-entry-load-efer'/>
+  <feature policy='require' name='vmx-eptp-switching'/>
   <feature policy='disable' name='mpx'/>
   <feature policy='disable' name='core-capability'/>
   <feature policy='disable' name='pdpe1gb'/>

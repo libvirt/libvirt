@@ -15,4 +15,5 @@
   <msr index='0x48e' edx='0x00000000' eax='0xfbf99e8c'/>
   <msr index='0x48f' edx='0x00000000' eax='0x007c8004'/>
   <msr index='0x490' edx='0x00000000' eax='0x0000c204'/>
+  <msr index='0x491' edx='0x00000000' eax='0x00000001'/>
 </cpudata>
