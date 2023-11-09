@@ -90,6 +90,10 @@
       <feature policy='require' name='vmx-eptad'/>
       <feature policy='require' name='vmx-invept-single-context'/>
       <feature policy='require' name='vmx-invept-all-context'/>
+      <feature policy='require' name='vmx-intr-exit'/>
+      <feature policy='require' name='vmx-nmi-exit'/>
+      <feature policy='require' name='vmx-vnmi'/>
+      <feature policy='require' name='vmx-preemption-timer'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>qemu64</model>

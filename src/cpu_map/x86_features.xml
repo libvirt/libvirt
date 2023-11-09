@@ -932,4 +932,20 @@
   <feature name='vmx-invept-all-context'>
     <msr index='0x48c' edx='0x00000000' eax='0x04000000'/>
   </feature>
+
+  <feature name='vmx-intr-exit'>
+    <msr index='0x48d' edx='0x00000000' eax='0x00000001'/>
+  </feature>
+  <feature name='vmx-nmi-exit'>
+    <msr index='0x48d' edx='0x00000000' eax='0x00000008'/>
+  </feature>
+  <feature name='vmx-vnmi'>
+    <msr index='0x48d' edx='0x00000000' eax='0x00000020'/>
+  </feature>
+  <feature name='vmx-preemption-timer'>
+    <msr index='0x48d' edx='0x00000000' eax='0x00000040'/>
+  </feature>
+  <feature name='vmx-posted-intr'>
+    <msr index='0x48d' edx='0x00000000' eax='0x00000080'/>
+  </feature>
 </cpus>
