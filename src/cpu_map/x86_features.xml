@@ -1046,4 +1046,29 @@
   <feature name='vmx-exit-load-pkrs'>
     <msr index='0x48f' edx='0x00000000' eax='0x20000000'/>
   </feature>
+
+  <feature name='vmx-entry-noload-debugctl'>
+    <msr index='0x490' edx='0x00000000' eax='0x00000004'/>
+  </feature>
+  <feature name='vmx-entry-ia32e-mode'>
+    <msr index='0x490' edx='0x00000000' eax='0x00000200'/>
+  </feature>
+  <feature name='vmx-entry-load-perf-global-ctrl'>
+    <msr index='0x490' edx='0x00000000' eax='0x00002000'/>
+  </feature>
+  <feature name='vmx-entry-load-pat'>
+    <msr index='0x490' edx='0x00000000' eax='0x00004000'/>
+  </feature>
+  <feature name='vmx-entry-load-efer'>
+    <msr index='0x490' edx='0x00000000' eax='0x00008000'/>
+  </feature>
+  <feature name='vmx-entry-load-bndcfgs'>
+    <msr index='0x490' edx='0x00000000' eax='0x00010000'/>
+  </feature>
+  <feature name='vmx-entry-load-rtit-ctl'>
+    <msr index='0x490' edx='0x00000000' eax='0x00040000'/>
+  </feature>
+  <feature name='vmx-entry-load-pkrs'>
+    <msr index='0x490' edx='0x00000000' eax='0x00400000'/>
+  </feature>
 </cpus>

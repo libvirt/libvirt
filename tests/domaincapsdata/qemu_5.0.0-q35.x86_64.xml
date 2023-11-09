@@ -122,6 +122,10 @@
       <feature policy='require' name='vmx-exit-save-efer'/>
       <feature policy='require' name='vmx-exit-load-efer'/>
       <feature policy='require' name='vmx-exit-save-preemption-timer'/>
+      <feature policy='require' name='vmx-entry-noload-debugctl'/>
+      <feature policy='require' name='vmx-entry-ia32e-mode'/>
+      <feature policy='require' name='vmx-entry-load-pat'/>
+      <feature policy='require' name='vmx-entry-load-efer'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>qemu64</model>
