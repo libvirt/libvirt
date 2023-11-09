@@ -57,4 +57,25 @@
   <feature policy='require' name='vmx-vnmi'/>
   <feature policy='require' name='vmx-preemption-timer'/>
   <feature policy='require' name='vmx-posted-intr'/>
+  <feature policy='require' name='vmx-vintr-pending'/>
+  <feature policy='require' name='vmx-tsc-offset'/>
+  <feature policy='require' name='vmx-hlt-exit'/>
+  <feature policy='require' name='vmx-invlpg-exit'/>
+  <feature policy='require' name='vmx-mwait-exit'/>
+  <feature policy='require' name='vmx-rdpmc-exit'/>
+  <feature policy='require' name='vmx-rdtsc-exit'/>
+  <feature policy='require' name='vmx-cr3-load-noexit'/>
+  <feature policy='require' name='vmx-cr3-store-noexit'/>
+  <feature policy='require' name='vmx-cr8-load-exit'/>
+  <feature policy='require' name='vmx-cr8-store-exit'/>
+  <feature policy='require' name='vmx-flexpriority'/>
+  <feature policy='require' name='vmx-vnmi-pending'/>
+  <feature policy='require' name='vmx-movdr-exit'/>
+  <feature policy='require' name='vmx-io-exit'/>
+  <feature policy='require' name='vmx-io-bitmap'/>
+  <feature policy='require' name='vmx-mtf'/>
+  <feature policy='require' name='vmx-msr-bitmap'/>
+  <feature policy='require' name='vmx-monitor-exit'/>
+  <feature policy='require' name='vmx-pause-exit'/>
+  <feature policy='require' name='vmx-secondary-ctls'/>
 </cpu>

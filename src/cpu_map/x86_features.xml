@@ -948,4 +948,68 @@
   <feature name='vmx-posted-intr'>
     <msr index='0x48d' edx='0x00000000' eax='0x00000080'/>
   </feature>
+
+  <feature name='vmx-vintr-pending'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00000004'/>
+  </feature>
+  <feature name='vmx-tsc-offset'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00000008'/>
+  </feature>
+  <feature name='vmx-hlt-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00000080'/>
+  </feature>
+  <feature name='vmx-invlpg-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00000200'/>
+  </feature>
+  <feature name='vmx-mwait-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00000400'/>
+  </feature>
+  <feature name='vmx-rdpmc-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00000800'/>
+  </feature>
+  <feature name='vmx-rdtsc-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00001000'/>
+  </feature>
+  <feature name='vmx-cr3-load-noexit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00008000'/>
+  </feature>
+  <feature name='vmx-cr3-store-noexit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00010000'/>
+  </feature>
+  <feature name='vmx-cr8-load-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00080000'/>
+  </feature>
+  <feature name='vmx-cr8-store-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00100000'/>
+  </feature>
+  <feature name='vmx-flexpriority'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00200000'/>
+  </feature>
+  <feature name='vmx-vnmi-pending'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00400000'/>
+  </feature>
+  <feature name='vmx-movdr-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x00800000'/>
+  </feature>
+  <feature name='vmx-io-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x01000000'/>
+  </feature>
+  <feature name='vmx-io-bitmap'>
+    <msr index='0x48e' edx='0x00000000' eax='0x02000000'/>
+  </feature>
+  <feature name='vmx-mtf'>
+    <msr index='0x48e' edx='0x00000000' eax='0x08000000'/>
+  </feature>
+  <feature name='vmx-msr-bitmap'>
+    <msr index='0x48e' edx='0x00000000' eax='0x10000000'/>
+  </feature>
+  <feature name='vmx-monitor-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x20000000'/>
+  </feature>
+  <feature name='vmx-pause-exit'>
+    <msr index='0x48e' edx='0x00000000' eax='0x40000000'/>
+  </feature>
+  <feature name='vmx-secondary-ctls'>
+    <msr index='0x48e' edx='0x00000000' eax='0x80000000'/>
+  </feature>
 </cpus>
