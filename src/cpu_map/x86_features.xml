@@ -1012,4 +1012,38 @@
   <feature name='vmx-secondary-ctls'>
     <msr index='0x48e' edx='0x00000000' eax='0x80000000'/>
   </feature>
+
+  <feature name='vmx-exit-nosave-debugctl'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00000004'/>
+  </feature>
+  <feature name='vmx-exit-load-perf-global-ctrl'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00001000'/>
+  </feature>
+  <feature name='vmx-exit-ack-intr'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00008000'/>
+  </feature>
+  <feature name='vmx-exit-save-pat'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00040000'/>
+  </feature>
+  <feature name='vmx-exit-load-pat'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00080000'/>
+  </feature>
+  <feature name='vmx-exit-save-efer'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00100000'/>
+  </feature>
+  <feature name='vmx-exit-load-efer'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00200000'/>
+  </feature>
+  <feature name='vmx-exit-save-preemption-timer'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00400000'/>
+  </feature>
+  <feature name='vmx-exit-clear-bndcfgs'>
+    <msr index='0x48f' edx='0x00000000' eax='0x00800000'/>
+  </feature>
+  <feature name='vmx-exit-clear-rtit-ctl'>
+    <msr index='0x48f' edx='0x00000000' eax='0x02000000'/>
+  </feature>
+  <feature name='vmx-exit-load-pkrs'>
+    <msr index='0x48f' edx='0x00000000' eax='0x20000000'/>
+  </feature>
 </cpus>

@@ -115,6 +115,13 @@
       <feature policy='require' name='vmx-monitor-exit'/>
       <feature policy='require' name='vmx-pause-exit'/>
       <feature policy='require' name='vmx-secondary-ctls'/>
+      <feature policy='require' name='vmx-exit-nosave-debugctl'/>
+      <feature policy='require' name='vmx-exit-ack-intr'/>
+      <feature policy='require' name='vmx-exit-save-pat'/>
+      <feature policy='require' name='vmx-exit-load-pat'/>
+      <feature policy='require' name='vmx-exit-save-efer'/>
+      <feature policy='require' name='vmx-exit-load-efer'/>
+      <feature policy='require' name='vmx-exit-save-preemption-timer'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>qemu64</model>
