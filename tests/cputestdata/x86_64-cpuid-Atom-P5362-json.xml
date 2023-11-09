@@ -20,6 +20,9 @@
   <feature policy='require' name='pschange-mc-no'/>
   <feature policy='require' name='vmx-ins-outs'/>
   <feature policy='require' name='vmx-true-ctls'/>
+  <feature policy='require' name='vmx-store-lma'/>
+  <feature policy='require' name='vmx-activity-hlt'/>
+  <feature policy='require' name='vmx-vmwrite-vmexit-fields'/>
   <feature policy='disable' name='mpx'/>
   <feature policy='disable' name='core-capability'/>
   <feature policy='disable' name='pdpe1gb'/>

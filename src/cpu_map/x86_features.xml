@@ -796,4 +796,23 @@
   <feature name='vmx-any-errcode'>
     <msr index='0x480' edx='0x01000000' eax='0x00000000'/>
   </feature>
+
+  <feature name='vmx-store-lma'>
+    <msr index='0x485' edx='0x00000000' eax='0x00000020'/>
+  </feature>
+  <feature name='vmx-activity-hlt'>
+    <msr index='0x485' edx='0x00000000' eax='0x00000040'/>
+  </feature>
+  <feature name='vmx-activity-shutdown'>
+    <msr index='0x485' edx='0x00000000' eax='0x00000080'/>
+  </feature>
+  <feature name='vmx-activity-wait-sipi'>
+    <msr index='0x485' edx='0x00000000' eax='0x00000100'/>
+  </feature>
+  <feature name='vmx-vmwrite-vmexit-fields'>
+    <msr index='0x485' edx='0x00000000' eax='0x20000000'/>
+  </feature>
+  <feature name='vmx-zero-len-inject'>
+    <msr index='0x485' edx='0x00000000' eax='0x40000000'/>
+  </feature>
 </cpus>

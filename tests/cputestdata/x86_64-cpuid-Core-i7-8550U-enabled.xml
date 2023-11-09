@@ -7,4 +7,5 @@
   <cpuid eax_in='0x80000001' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0x00000121' edx='0x2c100800'/>
   <msr index='0x10a' edx='0x00000000' eax='0x00000048'/>
   <msr index='0x480' edx='0x00c00000' eax='0x00000000'/>
+  <msr index='0x485' edx='0x00000000' eax='0x20000060'/>
 </cpudata>
