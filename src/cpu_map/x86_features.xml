@@ -879,4 +879,57 @@
   <feature name='vmx-enable-user-wait-pause'>
     <msr index='0x48b' edx='0x00000000' eax='0x04000000'/>
   </feature>
+
+  <feature name='vmx-invvpid'>
+    <msr index='0x48c' edx='0x00000001' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-invvpid-single-addr'>
+    <msr index='0x48c' edx='0x00000100' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-invvpid-single-context'>
+    <msr index='0x48c' edx='0x00000200' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-invvpid-all-context'>
+    <msr index='0x48c' edx='0x00000400' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-invvpid-single-context-noglobals'>
+    <alias name='vmx-invept-single-context-noglobals' source='qemu'/>
+    <msr index='0x48c' edx='0x00000800' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-ept-execonly'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00000001'/>
+  </feature>
+  <feature name='vmx-page-walk-4'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00000040'/>
+  </feature>
+  <feature name='vmx-page-walk-5'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00000080'/>
+  </feature>
+  <feature name='vmx-ept-uc'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00000100'/>
+  </feature>
+  <feature name='vmx-ept-wb'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00004000'/>
+  </feature>
+  <feature name='vmx-ept-2mb'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00010000'/>
+  </feature>
+  <feature name='vmx-ept-1gb'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00020000'/>
+  </feature>
+  <feature name='vmx-invept'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00100000'/>
+  </feature>
+  <feature name='vmx-eptad'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00200000'/>
+  </feature>
+  <feature name='vmx-ept-advanced-exitinfo'>
+    <msr index='0x48c' edx='0x00000000' eax='0x00400000'/>
+  </feature>
+  <feature name='vmx-invept-single-context'>
+    <msr index='0x48c' edx='0x00000000' eax='0x02000000'/>
+  </feature>
+  <feature name='vmx-invept-all-context'>
+    <msr index='0x48c' edx='0x00000000' eax='0x04000000'/>
+  </feature>
 </cpus>

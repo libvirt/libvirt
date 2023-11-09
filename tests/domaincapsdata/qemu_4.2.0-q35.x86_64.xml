@@ -79,6 +79,17 @@
       <feature policy='require' name='vmx-rdseed-exit'/>
       <feature policy='require' name='vmx-pml'/>
       <feature policy='require' name='vmx-xsaves'/>
+      <feature policy='require' name='vmx-invvpid'/>
+      <feature policy='require' name='vmx-invvpid-single-addr'/>
+      <feature policy='require' name='vmx-invvpid-all-context'/>
+      <feature policy='require' name='vmx-ept-execonly'/>
+      <feature policy='require' name='vmx-page-walk-4'/>
+      <feature policy='require' name='vmx-ept-2mb'/>
+      <feature policy='require' name='vmx-ept-1gb'/>
+      <feature policy='require' name='vmx-invept'/>
+      <feature policy='require' name='vmx-eptad'/>
+      <feature policy='require' name='vmx-invept-single-context'/>
+      <feature policy='require' name='vmx-invept-all-context'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>qemu64</model>
