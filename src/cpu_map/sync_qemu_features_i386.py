@@ -99,7 +99,7 @@ def ignore_feature(feature):
 
     name = feature["name"]
 
-    if name.startswith("x-") or name.startswith("vmx-"):
+    if name.startswith("x-"):
         return True
 
     if name in ignored_features:
