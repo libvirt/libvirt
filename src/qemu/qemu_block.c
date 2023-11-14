@@ -1942,40 +1942,6 @@ qemuBlockStorageSourceChainDetach(qemuMonitor *mon,
 }
 
 
-/**
- * qemuBlockStorageSourceDetachOneBlockdev:
- * @driver: qemu driver object
- * @vm: domain object
- * @asyncJob: currently running async job
- * @src: storage source to detach
- *
- * Detaches one virStorageSource using blockdev-del. Note that this does not
- * detach any authentication/encryption objects. This function enters the
- * monitor internally.
- */
-int
-qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
-                                        virDomainAsyncJob asyncJob,
-                                        virStorageSource *src)
-{
-    int ret;
-
-    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-        return -1;
-
-    ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm),
-                                 qemuBlockStorageSourceGetFormatNodename(src));
-
-    if (ret == 0)
-        ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm),
-                                     qemuBlockStorageSourceGetStorageNodename(src));
-
-    qemuDomainObjExitMonitor(vm);
-
-    return ret;
-}
-
-
 int
 qemuBlockSnapshotAddBlockdev(virJSONValue *actions,
                              virDomainDiskDef *disk,

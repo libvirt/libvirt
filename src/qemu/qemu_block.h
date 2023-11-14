@@ -149,11 +149,6 @@ void
 qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
                                      qemuBlockStorageSourceAttachData *data);
 
-int
-qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
-                                        virDomainAsyncJob asyncJob,
-                                        virStorageSource *src);
-
 struct _qemuBlockStorageSourceChainData {
     qemuBlockStorageSourceAttachData **srcdata;
     size_t nsrcdata;
