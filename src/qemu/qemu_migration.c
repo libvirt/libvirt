@@ -938,12 +938,26 @@ qemuMigrationSrcNBDCopyCancel(virDomainObj *vm,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
 
         if (!diskPriv->migrSource)
             continue;
 
-        qemuBlockStorageSourceDetachOneBlockdev(vm, asyncJob,
-                                                diskPriv->migrSource);
+        /* remove the alias of the TLS object when we're about to detach the
+         * migration NBD blockdev as the TLS object is shared for the migration
+         * and we don't want to detach it. The alias is not needed after
+         * the JSON object of the blockdev props is formatted */
+        g_clear_pointer(&diskPriv->migrSource->tlsAlias, g_free);
+
+        data = qemuBlockStorageSourceDetachPrepare(diskPriv->migrSource);
+
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+            goto cleanup;
+
+        qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);
+
+        qemuDomainObjExitMonitor(vm);
+
         g_clear_pointer(&diskPriv->migrSource, virObjectUnref);
     }
 
