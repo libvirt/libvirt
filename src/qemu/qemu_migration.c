@@ -1026,7 +1026,6 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
     copysrc->tlsHostname = g_strdup(tlsHostname);
 
     qemuBlockStorageSourceSetStorageNodename(copysrc, g_strdup_printf("migration-%s-storage", disk->dst));
-    qemuBlockStorageSourceSetFormatNodename(copysrc, g_strdup_printf("migration-%s-format", disk->dst));
 
     return g_steal_pointer(&copysrc);
 }
