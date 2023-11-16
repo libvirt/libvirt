@@ -72,16 +72,36 @@ relevant documentation
 Changing an existing VM
 =======================
 
-Once the VM has been created, updating the XML configuration as
-described above is **not** enough to change the Secure Boot status:
-the NVRAM file associated with the VM has to be regenerated from its
-template as well.
+When a VM is defined, libvirt will pick the firmware that best
+satisfies the provided criteria and record this information for use
+on subsequent boots. The resulting XML configuration will look like
+this:
+
+::
+
+  <os firmware='efi'>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
+    <loader readonly='yes' secure='yes' type='pflash'>/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd</loader>
+    <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd'>/var/lib/libvirt/qemu/nvram/vm_VARS.fd</nvram>
+  </os>
+
+In order to force libvirt to repeat the firmware autoselection
+process, it's necessary to remove the ``<loader>`` and ``<nvram>``
+elements. Failure to do so will likely result in an error.
+
+Note that updating the XML configuration as described above is
+**not** enough to change the Secure Boot status: the NVRAM file
+associated with the VM has to be regenerated from its template as
+well.
 
 In order to do that, update the XML and then start the VM with
 
 ::
 
-  $ virsh start $vm --reset-nvram
+  $ virsh start vm --reset-nvram
 
 This option is only available starting with libvirt 8.1.0, so if your
 version of libvirt is older than that you will have to delete the
