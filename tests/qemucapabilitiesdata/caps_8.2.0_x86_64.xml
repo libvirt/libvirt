@@ -199,9 +199,9 @@
   <flag name='qcow2-discard-no-unref'/>
   <flag name='run-with.async-teardown'/>
   <flag name='virtio-blk-vhost-vdpa'/>
-  <version>8001050</version>
+  <version>8002000</version>
   <microcodeVersion>43100246</microcodeVersion>
-  <package>v8.1.0-3111-gad6ef0a42e</package>
+  <package>v8.2.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>

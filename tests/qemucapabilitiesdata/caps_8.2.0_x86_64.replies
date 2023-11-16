@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 50,
-      "minor": 1,
+      "micro": 0,
+      "minor": 2,
       "major": 8
     },
-    "package": "v8.1.0-3111-gad6ef0a42e"
+    "package": "v8.2.0"
   },
   "id": "libvirt-2"
 }
@@ -30705,9 +30705,10 @@
       "type": "bool"
     },
     {
-      "default-value": 0,
-      "name": "len-reserved-regions",
-      "type": "uint32"
+      "default-value": [
+      ],
+      "name": "reserved-regions",
+      "type": "list"
     },
     {
       "default-value": 0,
