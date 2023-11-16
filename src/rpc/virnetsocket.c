@@ -843,6 +843,11 @@ int virNetSocketNewConnectSSH(const char *nodename,
     virCommandAddEnvPass(cmd, "OPENSSL_CONF");
     virCommandAddEnvPass(cmd, "DISPLAY");
     virCommandAddEnvPass(cmd, "XAUTHORITY");
+    if (!noTTY) {
+        /* Needed for gpg-agent's curses-based authentication prompt */
+        virCommandAddEnvPass(cmd, "GPG_TTY");
+        virCommandAddEnvPass(cmd, "TERM");
+    }
     virCommandClearCaps(cmd);
 
     if (service)
