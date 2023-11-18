@@ -1136,6 +1136,7 @@ virXMLParseHelper(int domcode,
     g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr rootnode;
     const char *docname;
+    const int parseFlags = XML_PARSE_NONET | XML_PARSE_NOWARNING;
 
     if (filename)
         docname = filename;
@@ -1154,13 +1155,9 @@ virXMLParseHelper(int domcode,
     pctxt->sax->error = catchXMLError;
 
     if (filename) {
-        xml = xmlCtxtReadFile(pctxt, filename, NULL,
-                              XML_PARSE_NONET |
-                              XML_PARSE_NOWARNING);
+        xml = xmlCtxtReadFile(pctxt, filename, NULL, parseFlags);
     } else {
-        xml = xmlCtxtReadDoc(pctxt, BAD_CAST xmlStr, url, NULL,
-                             XML_PARSE_NONET |
-                             XML_PARSE_NOWARNING);
+        xml = xmlCtxtReadDoc(pctxt, BAD_CAST xmlStr, url, NULL, parseFlags);
     }
 
     if (!xml) {
