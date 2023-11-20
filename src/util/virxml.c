@@ -24,6 +24,7 @@
 #include <math.h>               /* for isnan() */
 #include <sys/stat.h>
 
+#include <libxml/xmlsave.h>
 #include <libxml/xpathInternals.h>
 
 #include "virerror.h"
