@@ -369,6 +369,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     int firstRegexResult = 0;
     g_auto(GStrv) secondRegex = NULL;
     int secondRegexResult = 0;
+    const int parseFlags = XML_PARSE_NONET;
 
     uuid = g_strdup_printf("{%s}", snapshot->uuid);
 
@@ -406,7 +407,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     parseError = xmlParseInNodeContext(node,
                                        snapshot->hardware,
                                        (int)strlen(snapshot->hardware),
-                                       0,
+                                       parseFlags,
                                        &hardwareNode);
     if (parseError != XML_ERR_OK) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -418,7 +419,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     /* storageController */
     if (xmlParseInNodeContext(node, snapshot->storageController,
                               (int)strlen(snapshot->storageController),
-                              0,
+                              parseFlags,
                               &storageControllerNode) != XML_ERR_OK) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Unable to add the snapshot storageController"));
@@ -944,6 +945,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     int firstRegexResult = 0;
     g_auto(GStrv) secondRegex = NULL;
     int secondRegexResult = 0;
+    const int parseFlags = XML_PARSE_NONET;
 
     if (machine == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1051,7 +1053,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
         parseError = xmlParseInNodeContext(mediaRegistryNode,
                               machine->mediaRegistry->otherMedia[i],
                               (int)strlen(machine->mediaRegistry->otherMedia[i]),
-                              0,
+                              parseFlags,
                               &cur);
         if (parseError != XML_ERR_OK) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1071,7 +1073,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     parseError = xmlParseInNodeContext(machineNode,
                                        machine->hardware,
                                        (int)strlen(machine->hardware),
-                                       0,
+                                       parseFlags,
                                        &cur);
     if (parseError != XML_ERR_OK) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1084,7 +1086,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
         parseError = xmlParseInNodeContext(xmlDocGetRootElement(xml),
                                            machine->extraData,
                                            (int)strlen(machine->extraData),
-                                           0,
+                                           parseFlags,
                                            &cur);
         if (parseError != XML_ERR_OK) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1097,7 +1099,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     parseError = xmlParseInNodeContext(machineNode,
                                        machine->storageController,
                                        (int)strlen(machine->storageController),
-                                       0,
+                                       parseFlags,
                                        &cur);
     if (parseError != XML_ERR_OK) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
