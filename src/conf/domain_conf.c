@@ -19503,13 +19503,10 @@ virDomainDefParse(const char *xmlStr,
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
     bool validate = flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    xml = virXMLParse(filename, xmlStr, _("(domain_definition)"),
-                      "domain", &ctxt, "domain.rng", validate);
-
-    xmlKeepBlanksDefault(keepBlanksDefault);
+    xml = virXMLParseWithIndent(filename, xmlStr, _("(domain_definition)"),
+                                "domain", &ctxt, "domain.rng", validate);
 
     if (!xml)
         return NULL;
@@ -19566,10 +19563,8 @@ virDomainObjParseFile(const char *filename,
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    xml = virXMLParse(filename, NULL, NULL, "domstatus", &ctxt, NULL, false);
-    xmlKeepBlanksDefault(keepBlanksDefault);
+    xml = virXMLParseWithIndent(filename, NULL, NULL, "domstatus", &ctxt, NULL, false);
 
     if (!xml)
         return NULL;

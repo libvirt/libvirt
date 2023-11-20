@@ -1962,11 +1962,9 @@ virNetworkDefParse(const char *xmlStr,
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    xml = virXMLParse(filename, xmlStr, _("(network_definition)"),
-                      "network", &ctxt, "network.rng", validate);
-    xmlKeepBlanksDefault(keepBlanksDefault);
+    xml = virXMLParseWithIndent(filename, xmlStr, _("(network_definition)"),
+                                "network", &ctxt, "network.rng", validate);
 
     if (!xml)
         return NULL;

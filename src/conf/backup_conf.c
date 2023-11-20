@@ -276,13 +276,11 @@ virDomainBackupDefParseString(const char *xmlStr,
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
     bool validate = !(flags & VIR_DOMAIN_BACKUP_PARSE_INTERNAL);
 
-    xml = virXMLParse(NULL, xmlStr, _("(domain_backup)"),
-                      "domainbackup", &ctxt, "domainbackup.rng", validate);
-
-    xmlKeepBlanksDefault(keepBlanksDefault);
+    xml = virXMLParseWithIndent(NULL, xmlStr, _("(domain_backup)"),
+                                "domainbackup", &ctxt, "domainbackup.rng",
+                                validate);
 
     if (!xml)
         return NULL;

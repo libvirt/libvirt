@@ -474,16 +474,13 @@ virshDumpXML(vshControl *ctl,
     g_autofree xmlNodePtr *nodes = NULL;
     int nnodes = 0;
     size_t i;
-    int oldblanks;
 
     if (xpath == NULL) {
         vshPrint(ctl, "%s", xml);
         return true;
     }
 
-    oldblanks = xmlKeepBlanksDefault(0);
-    doc = virXMLParseStringCtxt(xml, url, &ctxt);
-    xmlKeepBlanksDefault(oldblanks);
+    doc = virXMLParseStringCtxtWithIndent(xml, url, &ctxt);
     if (!doc)
         return false;
 

@@ -426,13 +426,11 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(xmlDoc) xml = NULL;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
     bool validate = flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
-    xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"),
-                      "domainsnapshot", &ctxt, "domainsnapshot.rng", validate);
-
-    xmlKeepBlanksDefault(keepBlanksDefault);
+    xml = virXMLParseWithIndent(NULL, xmlStr, _("(domain_snapshot)"),
+                                "domainsnapshot", &ctxt, "domainsnapshot.rng",
+                                validate);
 
     if (!xml)
         return NULL;
