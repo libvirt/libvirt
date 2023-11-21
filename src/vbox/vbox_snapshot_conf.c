@@ -25,6 +25,7 @@
 #include "virstring.h"
 #include "virxml.h"
 
+#include <libxml/xmlsave.h>
 #include <libxml/xpathInternals.h>
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
@@ -364,12 +365,11 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     xmlParserErrors parseError = XML_ERR_OK;
     char *uuid = NULL;
     char *timeStamp = NULL;
-
     g_auto(GStrv) firstRegex = NULL;
     int firstRegexResult = 0;
     g_auto(GStrv) secondRegex = NULL;
     int secondRegexResult = 0;
-    const int parseFlags = XML_PARSE_NONET;
+    const int parseFlags = XML_PARSE_NONET | XML_PARSE_NOBLANKS;
 
     uuid = g_strdup_printf("{%s}", snapshot->uuid);
 
@@ -940,12 +940,14 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     xmlParserErrors parseError = XML_ERR_OK;
     char *currentSnapshot = NULL;
     char *timeStamp = NULL;
-
     g_auto(GStrv) firstRegex = NULL;
     int firstRegexResult = 0;
     g_auto(GStrv) secondRegex = NULL;
     int secondRegexResult = 0;
-    const int parseFlags = XML_PARSE_NONET;
+    const int parseFlags = XML_PARSE_NONET | XML_PARSE_NOBLANKS;
+    int oldIndentTreeOutput = xmlIndentTreeOutput;
+
+    xmlIndentTreeOutput = 1;
 
     if (machine == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1127,6 +1129,8 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     ret = 0;
 
  cleanup:
+    xmlIndentTreeOutput = oldIndentTreeOutput;
+
     VIR_FREE(currentSnapshot);
     VIR_FREE(timeStamp);
 
