@@ -1671,7 +1671,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManager *mgr,
 }
 
 
-struct _virSecuritySELinuxChardevCallbackData {
+struct _virSecurityDACChardevCallbackData {
     virSecurityManager *mgr;
     bool chardevStdioLogd;
 };
@@ -1682,7 +1682,7 @@ virSecurityDACRestoreChardevCallback(virDomainDef *def,
                                      virDomainChrDef *dev G_GNUC_UNUSED,
                                      void *opaque)
 {
-    struct _virSecuritySELinuxChardevCallbackData *data = opaque;
+    struct _virSecurityDACChardevCallbackData *data = opaque;
 
     return virSecurityDACRestoreChardevLabel(data->mgr, def, dev->source,
                                              data->chardevStdioLogd);
@@ -1916,7 +1916,7 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
     size_t i;
     int rc = 0;
 
-    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+    struct _virSecurityDACChardevCallbackData chardevData = {
         .mgr = mgr,
         .chardevStdioLogd = chardevStdioLogd,
     };
@@ -2018,7 +2018,7 @@ virSecurityDACSetChardevCallback(virDomainDef *def,
                                  virDomainChrDef *dev G_GNUC_UNUSED,
                                  void *opaque)
 {
-    struct _virSecuritySELinuxChardevCallbackData *data = opaque;
+    struct _virSecurityDACChardevCallbackData *data = opaque;
 
     return virSecurityDACSetChardevLabel(data->mgr, def, dev->source,
                                          data->chardevStdioLogd);
@@ -2141,7 +2141,7 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
     uid_t user;
     gid_t group;
 
-    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+    struct _virSecurityDACChardevCallbackData chardevData = {
         .mgr = mgr,
         .chardevStdioLogd = chardevStdioLogd,
     };
