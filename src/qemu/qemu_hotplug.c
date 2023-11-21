@@ -931,7 +931,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk device='lun' is not supported for usb bus"));
-            break;
+            goto cleanup;
         }
 
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
@@ -991,6 +991,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk bus '%1$s' cannot be hotplugged."),
                        virDomainDiskBusTypeToString(disk->bus));
+        goto cleanup;
     }
 
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
