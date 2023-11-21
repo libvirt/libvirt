@@ -939,12 +939,12 @@ virSecurityDACSetImageLabelInternal(virSecurityManager *mgr,
 
 
 static int
-virSecurityDACSetImageLabelRelative(virSecurityManager *mgr,
-                                    virDomainDef *def,
-                                    virStorageSource *src,
-                                    virStorageSource *parent,
-                                    virSecurityDomainImageLabelFlags flags)
+virSecurityDACSetImageLabel(virSecurityManager *mgr,
+                            virDomainDef *def,
+                            virStorageSource *src,
+                            virSecurityDomainImageLabelFlags flags)
 {
+    virStorageSource *parent = src;
     virStorageSource *n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
@@ -960,15 +960,6 @@ virSecurityDACSetImageLabelRelative(virSecurityManager *mgr,
     }
 
     return 0;
-}
-
-static int
-virSecurityDACSetImageLabel(virSecurityManager *mgr,
-                            virDomainDef *def,
-                            virStorageSource *src,
-                            virSecurityDomainImageLabelFlags flags)
-{
-    return virSecurityDACSetImageLabelRelative(mgr, def, src, src, flags);
 }
 
 static int
