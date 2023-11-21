@@ -1129,14 +1129,15 @@ virXMLParseHelper(int domcode,
                   const char *rootelement,
                   xmlXPathContextPtr *ctxt,
                   const char *schemafile,
-                  bool validate)
+                  bool validate,
+                  bool keepindent)
 {
     struct virParserData private;
     g_autoptr(xmlParserCtxt) pctxt = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr rootnode;
     const char *docname;
-    const int parseFlags = XML_PARSE_NONET | XML_PARSE_NOWARNING;
+    int parseFlags = XML_PARSE_NONET | XML_PARSE_NOWARNING;
 
     if (filename)
         docname = filename;
@@ -1153,6 +1154,10 @@ virXMLParseHelper(int domcode,
     private.domcode = domcode;
     pctxt->_private = &private;
     pctxt->sax->error = catchXMLError;
+
+    if (keepindent) {
+        parseFlags |= XML_PARSE_NOBLANKS;
+    }
 
     if (filename) {
         xml = xmlCtxtReadFile(pctxt, filename, NULL, parseFlags);
