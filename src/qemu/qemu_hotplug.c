@@ -944,6 +944,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cdrom device with virtio bus isn't supported"));
+            goto cleanup;
         }
         if (qemuDomainEnsureVirtioAddress(&releaseVirtio, vm, dev) < 0)
             goto cleanup;
