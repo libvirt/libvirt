@@ -412,9 +412,9 @@ virSecurityManagerGetPrivileged(virSecurityManager *mgr)
  */
 int
 virSecurityManagerRestoreImageLabel(virSecurityManager *mgr,
-                                   virDomainDef *vm,
-                                   virStorageSource *src,
-                                   virSecurityDomainImageLabelFlags flags)
+                                    virDomainDef *vm,
+                                    virStorageSource *src,
+                                    virSecurityDomainImageLabelFlags flags)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
@@ -1082,8 +1082,8 @@ virSecurityManagerDomainRestorePathLabel(virSecurityManager *mgr,
  */
 int
 virSecurityManagerSetMemoryLabel(virSecurityManager *mgr,
-                                     virDomainDef *vm,
-                                     virDomainMemoryDef *mem)
+                                 virDomainDef *vm,
+                                 virDomainMemoryDef *mem)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
@@ -1108,8 +1108,8 @@ virSecurityManagerSetMemoryLabel(virSecurityManager *mgr,
  */
 int
 virSecurityManagerRestoreMemoryLabel(virSecurityManager *mgr,
-                                        virDomainDef *vm,
-                                        virDomainMemoryDef *mem)
+                                     virDomainDef *vm,
+                                     virDomainMemoryDef *mem)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
