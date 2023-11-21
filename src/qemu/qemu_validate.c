@@ -1512,8 +1512,8 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
         if (!qemuDomainIsS390CCW(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot use CCW address type for device '%1$s' using machine type '%2$s'"),
-                           NULLSTR(info->alias), def->os.machine);
+                           _("CCW addresses are not supported by machine type '%1$s'"),
+                           def->os.machine);
             return -1;
         }
 
