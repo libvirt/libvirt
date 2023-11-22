@@ -2594,6 +2594,8 @@ testQemuMonitorJSONBlockdevReopen(const void *opaque)
     const testGenericData *data = opaque;
     g_autoptr(qemuMonitorTest) test = NULL;
     g_autoptr(virStorageSource) src = virStorageSourceNew();
+    g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
+    g_autoptr(virJSONValue) srcprops = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
         return -1;
@@ -2604,10 +2606,16 @@ testQemuMonitorJSONBlockdevReopen(const void *opaque)
     qemuBlockStorageSourceSetStorageNodename(src, g_strdup("backing nodename"));
     src->backingStore = virStorageSourceNew();
 
+    if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
+        return -1;
+
+    if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
+        return -1;
+
     if (qemuMonitorTestAddItem(test, "blockdev-reopen", "{\"return\":{}}") < 0)
         return -1;
 
-    if (qemuBlockReopenFormatMon(qemuMonitorTestGetMonitor(test), src) < 0)
+    if (qemuMonitorBlockdevReopen(qemuMonitorTestGetMonitor(test), &reopenoptions) < 0)
         return -1;
 
     return 0;
