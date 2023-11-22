@@ -814,7 +814,9 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-virshStoragePoolSorter(const void *a, const void *b)
+virshStoragePoolSorter(const void *a,
+                       const void *b,
+                       void *opaque G_GNUC_UNUSED)
 {
     virStoragePoolPtr *pa = (virStoragePoolPtr *) a;
     virStoragePoolPtr *pb = (virStoragePoolPtr *) b;
@@ -1005,9 +1007,10 @@ virshStoragePoolListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->pools && list->npools)
-        qsort(list->pools, list->npools,
-              sizeof(*list->pools), virshStoragePoolSorter);
+    if (list->pools && list->npools) {
+        g_qsort_with_data(list->pools, list->npools,
+                          sizeof(*list->pools), virshStoragePoolSorter, NULL);
+    }
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)

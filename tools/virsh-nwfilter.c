@@ -220,7 +220,9 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-virshNWFilterSorter(const void *a, const void *b)
+virshNWFilterSorter(const void *a,
+                    const void *b,
+                    void *opaque G_GNUC_UNUSED)
 {
     virNWFilterPtr *fa = (virNWFilterPtr *) a;
     virNWFilterPtr *fb = (virNWFilterPtr *) b;
@@ -323,9 +325,10 @@ virshNWFilterListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->filters && list->nfilters)
-        qsort(list->filters, list->nfilters,
-              sizeof(*list->filters), virshNWFilterSorter);
+    if (list->filters && list->nfilters) {
+        g_qsort_with_data(list->filters, list->nfilters,
+                          sizeof(*list->filters), virshNWFilterSorter, NULL);
+    }
 
     /* truncate the list for not found filter objects */
     if (deleted)
@@ -644,7 +647,9 @@ cmdNWFilterBindingDumpXML(vshControl *ctl, const vshCmd *cmd)
 
 
 static int
-virshNWFilterBindingSorter(const void *a, const void *b)
+virshNWFilterBindingSorter(const void *a,
+                           const void *b,
+                           void *opaque G_GNUC_UNUSED)
 {
     virNWFilterBindingPtr *fa = (virNWFilterBindingPtr *) a;
     virNWFilterBindingPtr *fb = (virNWFilterBindingPtr *) b;
@@ -702,9 +707,10 @@ virshNWFilterBindingListCollect(vshControl *ctl,
     list->nbindings = ret;
 
     /* sort the list */
-    if (list->bindings && list->nbindings > 1)
-        qsort(list->bindings, list->nbindings,
-              sizeof(*list->bindings), virshNWFilterBindingSorter);
+    if (list->bindings && list->nbindings > 1) {
+        g_qsort_with_data(list->bindings, list->nbindings,
+                          sizeof(*list->bindings), virshNWFilterBindingSorter, NULL);
+    }
 
     success = true;
 

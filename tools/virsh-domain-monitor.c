@@ -1483,7 +1483,9 @@ static const vshCmdInfo info_list[] = {
 
 /* compare domains, pack NULLed ones at the end */
 static int
-virshDomainSorter(const void *a, const void *b)
+virshDomainSorter(const void *a,
+                  const void *b,
+                  void *opaque G_GNUC_UNUSED)
 {
     virDomainPtr *da = (virDomainPtr *) a;
     virDomainPtr *db = (virDomainPtr *) b;
@@ -1741,9 +1743,10 @@ virshDomainListCollect(vshControl *ctl, unsigned int flags)
 
  finished:
     /* sort the list */
-    if (list->domains && list->ndomains)
-        qsort(list->domains, list->ndomains, sizeof(*list->domains),
-              virshDomainSorter);
+    if (list->domains && list->ndomains) {
+        g_qsort_with_data(list->domains, list->ndomains,
+                          sizeof(*list->domains), virshDomainSorter, NULL);
+    }
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)

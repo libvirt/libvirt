@@ -20,11 +20,10 @@
 #  nm -D --defined-only --without-symbol-versions /lib64/libc.so.6 \
 #      | grep '_r$' \
 #      | awk '{print $3}' \
-#      | grep -v -e '^_' -e 'qsort' -e 'readdir' \
+#      | grep -v -e '^_' -e 'readdir' \
 #      | sort -u \
 #      | sed -s 's/_r$//'
 #
-# qsort() is safe because we don't need to pass extra args to qsort comparator,
 # readdir*() is safe as long as each DIR * instance is only used by one thread.
 #
 # Also manually add in all inet_* functions some of which

@@ -129,7 +129,9 @@ static void printArguments(FILE *log, int argc, char** argv)
     }
 }
 
-static int envsort(const void *a, const void *b)
+static int envsort(const void *a,
+                   const void *b,
+                   void *opaque G_GNUC_UNUSED)
 {
     const char *astr = *(const char**)a;
     const char *bstr = *(const char**)b;
@@ -165,7 +167,7 @@ static int printEnvironment(FILE *log)
         newenv[i] = environ[i];
     }
 
-    qsort(newenv, length, sizeof(newenv[0]), envsort);
+    g_qsort_with_data(newenv, length, sizeof(newenv[0]), envsort, NULL);
 
     for (i = 0; i < length; i++) {
         /* Ignore the variables used to instruct the loader into

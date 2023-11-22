@@ -393,7 +393,9 @@ x86FeatureFindInternal(const char *name)
 
 
 static int
-virCPUx86DataSorter(const void *a, const void *b)
+virCPUx86DataSorter(const void *a,
+                    const void *b,
+                    void *opaque G_GNUC_UNUSED)
 {
     virCPUx86DataItem *da = (virCPUx86DataItem *) a;
     virCPUx86DataItem *db = (virCPUx86DataItem *) b;
@@ -437,7 +439,7 @@ static int
 virCPUx86DataItemCmp(const virCPUx86DataItem *item1,
                      const virCPUx86DataItem *item2)
 {
-    return virCPUx86DataSorter(item1, item2);
+    return virCPUx86DataSorter(item1, item2, NULL);
 }
 
 
@@ -541,8 +543,9 @@ virCPUx86DataAddItem(virCPUx86Data *data,
         VIR_APPEND_ELEMENT_COPY(data->items, data->len,
                                 *((virCPUx86DataItem *)item));
 
-        qsort(data->items, data->len,
-              sizeof(virCPUx86DataItem), virCPUx86DataSorter);
+        g_qsort_with_data(data->items, data->len,
+                          sizeof(virCPUx86DataItem),
+                          virCPUx86DataSorter, NULL);
     }
 
     return 0;
@@ -3465,8 +3468,8 @@ virCPUx86DataGetHost(void)
     }
 
     /* the rest of the code expects the function to be in order */
-    qsort(cpuid->data.x86.items, cpuid->data.x86.len,
-          sizeof(virCPUx86DataItem), virCPUx86DataSorter);
+    g_qsort_with_data(cpuid->data.x86.items, cpuid->data.x86.len,
+                      sizeof(virCPUx86DataItem), virCPUx86DataSorter, NULL);
 
     return cpuid;
 }

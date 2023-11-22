@@ -2193,9 +2193,11 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
         mounts[nmounts - 2] = g_strdup(mntent.mnt_dir);
     }
 
-    if (mounts)
-        qsort(mounts, nmounts - 1, sizeof(mounts[0]),
-              reverse ? virStringSortRevCompare : virStringSortCompare);
+    if (mounts) {
+        g_qsort_with_data(mounts, nmounts - 1, sizeof(mounts[0]),
+                          reverse ? virStringSortRevCompare : virStringSortCompare,
+                          NULL);
+    }
 
     *mountsret = mounts;
     *nmountsret = nmounts ? nmounts - 1 : 0;

@@ -2522,7 +2522,8 @@ virResctrlMonitorRemove(virResctrlMonitor *monitor)
 
 static int
 virResctrlMonitorStatsSorter(const void *a,
-                             const void *b)
+                             const void *b,
+                             void *opaque G_GNUC_UNUSED)
 {
     return (*(virResctrlMonitorStats **)a)->id
         - (*(virResctrlMonitorStats **)b)->id;
@@ -2625,8 +2626,10 @@ virResctrlMonitorGetStats(virResctrlMonitor *monitor,
     }
 
     /* Sort in id's ascending order */
-    if (*nstats)
-        qsort(*stats, *nstats, sizeof(**stats), virResctrlMonitorStatsSorter);
+    if (*nstats) {
+        g_qsort_with_data(*stats, *nstats, sizeof(**stats),
+                          virResctrlMonitorStatsSorter, NULL);
+    }
 
     ret = 0;
  cleanup:

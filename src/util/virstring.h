@@ -83,8 +83,12 @@ bool virStringIsEmpty(const char *str);
 int virStrcpy(char *dest, const char *src, size_t destbytes);
 #define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
-int virStringSortCompare(const void *a, const void *b);
-int virStringSortRevCompare(const void *a, const void *b);
+int virStringSortCompare(const void *a,
+                         const void *b,
+                         void *opaque);
+int virStringSortRevCompare(const void *a,
+                            const void *b,
+                            void *opaque);
 int virStringToUpper(char **dst, const char *src);
 
 ssize_t virStringSearch(const char *str,

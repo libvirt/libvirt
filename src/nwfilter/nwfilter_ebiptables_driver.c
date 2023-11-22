@@ -3087,7 +3087,9 @@ virNWFilterRuleInstSort(const void *a, const void *b)
 
 
 static int
-virNWFilterRuleInstSortPtr(const void *a, const void *b)
+virNWFilterRuleInstSortPtr(const void *a,
+                           const void *b,
+                           void *opaque G_GNUC_UNUSED)
 {
     virNWFilterRuleInst * const *insta = a;
     virNWFilterRuleInst * const *instb = b;
@@ -3097,7 +3099,8 @@ virNWFilterRuleInstSortPtr(const void *a, const void *b)
 
 static int
 ebiptablesFilterOrderSort(const void *va,
-                          const void *vb)
+                          const void *vb,
+                          void *opaque G_GNUC_UNUSED)
 {
     const virHashKeyValuePair *a = va;
     const virHashKeyValuePair *b = vb;
@@ -3244,7 +3247,9 @@ struct _ebtablesSubChainInst {
 
 
 static int
-ebtablesSubChainInstSort(const void *a, const void *b)
+ebtablesSubChainInstSort(const void *a,
+                         const void *b,
+                         void *opaque G_GNUC_UNUSED)
 {
     const ebtablesSubChainInst **insta = (const ebtablesSubChainInst **)a;
     const ebtablesSubChainInst **instb = (const ebtablesSubChainInst **)b;
@@ -3268,7 +3273,8 @@ ebtablesGetSubChainInsts(GHashTable *chains,
     if (filter_names == NULL)
         return -1;
 
-    qsort(filter_names, nfilter_names, sizeof(*filter_names), ebiptablesFilterOrderSort);
+    g_qsort_with_data(filter_names, nfilter_names,
+                      sizeof(*filter_names), ebiptablesFilterOrderSort, NULL);
 
     for (i = 0; filter_names[i].key; i++) {
         g_autofree ebtablesSubChainInst *inst = NULL;
@@ -3306,9 +3312,10 @@ ebiptablesApplyNewRules(const char *ifname,
     size_t nsubchains = 0;
     int ret = -1;
 
-    if (nrules)
-        qsort(rules, nrules, sizeof(rules[0]),
-              virNWFilterRuleInstSortPtr);
+    if (nrules) {
+        g_qsort_with_data(rules, nrules, sizeof(rules[0]),
+                          virNWFilterRuleInstSortPtr, NULL);
+    }
 
     /* cleanup whatever may exist */
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
@@ -3388,9 +3395,11 @@ ebiptablesApplyNewRules(const char *ifname,
                 goto cleanup;
         }
 
-        if (nsubchains > 0)
-            qsort(subchains, nsubchains, sizeof(subchains[0]),
-                  ebtablesSubChainInstSort);
+        if (nsubchains > 0) {
+            g_qsort_with_data(subchains, nsubchains,
+                              sizeof(subchains[0]),
+                              ebtablesSubChainInstSort, NULL);
+        }
 
         for (i = 0, j = 0; i < nrules; i++) {
             if (virNWFilterRuleIsProtocolEthernet(rules[i]->def)) {

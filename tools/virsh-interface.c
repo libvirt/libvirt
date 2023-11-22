@@ -141,7 +141,9 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-virshInterfaceSorter(const void *a, const void *b)
+virshInterfaceSorter(const void *a,
+                     const void *b,
+                     void *opaque G_GNUC_UNUSED)
 {
     virInterfacePtr *ia = (virInterfacePtr *) a;
     virInterfacePtr *ib = (virInterfacePtr *) b;
@@ -281,9 +283,10 @@ virshInterfaceListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->ifaces && list->nifaces)
-        qsort(list->ifaces, list->nifaces,
-              sizeof(*list->ifaces), virshInterfaceSorter);
+    if (list->ifaces && list->nifaces) {
+        g_qsort_with_data(list->ifaces, list->nifaces,
+                          sizeof(*list->ifaces), virshInterfaceSorter, NULL);
+    }
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)

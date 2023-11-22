@@ -791,7 +791,9 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-virshNetworkSorter(const void *a, const void *b)
+virshNetworkSorter(const void *a,
+                   const void *b,
+                   void *opaque G_GNUC_UNUSED)
 {
     virNetworkPtr *na = (virNetworkPtr *) a;
     virNetworkPtr *nb = (virNetworkPtr *) b;
@@ -982,9 +984,10 @@ virshNetworkListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->nets && list->nnets)
-        qsort(list->nets, list->nnets,
-              sizeof(*list->nets), virshNetworkSorter);
+    if (list->nets && list->nnets) {
+        g_qsort_with_data(list->nets, list->nnets,
+                          sizeof(*list->nets), virshNetworkSorter, NULL);
+    }
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)
@@ -1801,7 +1804,9 @@ static const vshCmdOptDef opts_network_dhcp_leases[] = {
 };
 
 static int
-virshNetworkDHCPLeaseSorter(const void *a, const void *b)
+virshNetworkDHCPLeaseSorter(const void *a,
+                            const void *b,
+                            void *opaque G_GNUC_UNUSED)
 {
     virNetworkDHCPLeasePtr *lease1 = (virNetworkDHCPLeasePtr *) a;
     virNetworkDHCPLeasePtr *lease2 = (virNetworkDHCPLeasePtr *) b;
@@ -1840,7 +1845,8 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Sort the list according to MAC Address/IAID */
-    qsort(leases, nleases, sizeof(*leases), virshNetworkDHCPLeaseSorter);
+    g_qsort_with_data(leases, nleases,
+                      sizeof(*leases), virshNetworkDHCPLeaseSorter, NULL);
 
     table = vshTableNew(_("Expiry Time"), _("MAC address"), _("Protocol"),
                         _("IP address"), _("Hostname"), _("Client ID or DUID"),
@@ -2068,7 +2074,9 @@ cmdNetworkPortDelete(vshControl *ctl, const vshCmd *cmd)
 
 
 static int
-virshNetworkPortSorter(const void *a, const void *b)
+virshNetworkPortSorter(const void *a,
+                       const void *b,
+                       void *opaque G_GNUC_UNUSED)
 {
     virNetworkPortPtr *na = (virNetworkPortPtr *) a;
     virNetworkPortPtr *nb = (virNetworkPortPtr *) b;
@@ -2129,9 +2137,10 @@ virshNetworkPortListCollect(vshControl *ctl,
     list->nports = ret;
 
     /* sort the list */
-    if (list->ports && list->nports)
-        qsort(list->ports, list->nports,
-              sizeof(*list->ports), virshNetworkPortSorter);
+    if (list->ports && list->nports) {
+        g_qsort_with_data(list->ports, list->nports,
+                          sizeof(*list->ports), virshNetworkPortSorter, NULL);
+    }
 
     success = true;
 

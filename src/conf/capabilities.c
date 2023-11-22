@@ -2073,7 +2073,8 @@ virCapsHostCacheBankFree(virCapsHostCacheBank *ptr)
 
 static int
 virCapsHostCacheBankSorter(const void *a,
-                           const void *b)
+                           const void *b,
+                           void *opaque G_GNUC_UNUSED)
 {
     virCapsHostCacheBank *ca = *(virCapsHostCacheBank **)a;
     virCapsHostCacheBank *cb = *(virCapsHostCacheBank **)b;
@@ -2273,8 +2274,9 @@ virCapabilitiesInitCaches(virCaps *caps)
      * still traverse the directory instead of guessing names (in case there is
      * 'index1' and 'index3' but no 'index2'). */
     if (caps->host.cache.banks) {
-        qsort(caps->host.cache.banks, caps->host.cache.nbanks,
-              sizeof(*caps->host.cache.banks), virCapsHostCacheBankSorter);
+        g_qsort_with_data(caps->host.cache.banks, caps->host.cache.nbanks,
+                          sizeof(*caps->host.cache.banks),
+                          virCapsHostCacheBankSorter, NULL);
     }
 
     if (virCapabilitiesInitResctrlMemory(caps) < 0)

@@ -518,9 +518,11 @@ virStringIsEmpty(const char *str)
  * virStringSortCompare:
  *
  * A comparator function for sorting strings in
- * normal order with qsort().
+ * normal order with g_qsort_with_data().
  */
-int virStringSortCompare(const void *a, const void *b)
+int virStringSortCompare(const void *a,
+                         const void *b,
+                         void *opaque G_GNUC_UNUSED)
 {
     const char **sa = (const char**)a;
     const char **sb = (const char**)b;
@@ -532,9 +534,11 @@ int virStringSortCompare(const void *a, const void *b)
  * virStringSortRevCompare:
  *
  * A comparator function for sorting strings in
- * reverse order with qsort().
+ * reverse order with g_qsort_with_data().
  */
-int virStringSortRevCompare(const void *a, const void *b)
+int virStringSortRevCompare(const void *a,
+                            const void *b,
+                            void *opaque G_GNUC_UNUSED)
 {
     const char **sa = (const char**)a;
     const char **sb = (const char**)b;

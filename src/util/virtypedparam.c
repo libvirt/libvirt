@@ -43,7 +43,9 @@ VIR_ENUM_IMPL(virTypedParameter,
 );
 
 static int
-virTypedParamsSortName(const void *left, const void *right)
+virTypedParamsSortName(const void *left,
+                       const void *right,
+                       void *opaque G_GNUC_UNUSED)
 {
     const virTypedParameter *param_left = left, *param_right = right;
     return strcmp(param_left->field, param_right->field);
@@ -78,7 +80,8 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 
     /* Here we intentionally don't copy values */
     memcpy(sorted, params, sizeof(*params) * nparams);
-    qsort(sorted, nparams, sizeof(*sorted), virTypedParamsSortName);
+    g_qsort_with_data(sorted, nparams,
+                      sizeof(*sorted), virTypedParamsSortName, NULL);
 
     name = va_arg(ap, const char *);
     while (name) {
@@ -102,7 +105,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 
     va_end(ap);
 
-    qsort(keys, nkeys, sizeof(*keys), virTypedParamsSortName);
+    g_qsort_with_data(keys, nkeys, sizeof(*keys), virTypedParamsSortName, NULL);
 
     for (i = 0, j = 0; i < nparams && j < nkeys;) {
         if (STRNEQ(sorted[i].field, keys[j].field)) {

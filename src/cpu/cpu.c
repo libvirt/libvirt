@@ -1045,7 +1045,8 @@ virCPUConvertLegacy(virArch arch,
 
 static int
 virCPUFeatureCompare(const void *p1,
-                     const void *p2)
+                     const void *p2,
+                     void *opaque G_GNUC_UNUSED)
 {
     const virCPUFeatureDef *f1 = p1;
     const virCPUFeatureDef *f2 = p2;
@@ -1085,8 +1086,8 @@ virCPUExpandFeatures(virArch arch,
         driver->expandFeatures(cpu) < 0)
         return -1;
 
-    qsort(cpu->features, cpu->nfeatures, sizeof(*cpu->features),
-          virCPUFeatureCompare);
+    g_qsort_with_data(cpu->features, cpu->nfeatures, sizeof(*cpu->features),
+                      virCPUFeatureCompare, NULL);
 
     VIR_DEBUG("nfeatures=%zu", cpu->nfeatures);
     return 0;

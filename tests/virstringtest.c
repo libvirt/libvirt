@@ -89,10 +89,10 @@ testStringSortCompare(const void *opaque G_GNUC_UNUSED)
     };
     size_t i;
 
-    qsort(randlist, G_N_ELEMENTS(randlist), sizeof(randlist[0]),
-          virStringSortCompare);
-    qsort(randrlist, G_N_ELEMENTS(randrlist), sizeof(randrlist[0]),
-          virStringSortRevCompare);
+    g_qsort_with_data(randlist, G_N_ELEMENTS(randlist),
+                      sizeof(randlist[0]), virStringSortCompare, NULL);
+    g_qsort_with_data(randrlist, G_N_ELEMENTS(randrlist),
+                      sizeof(randrlist[0]), virStringSortRevCompare, NULL);
 
     for (i = 0; i < G_N_ELEMENTS(randlist); i++) {
         if (STRNEQ(randlist[i], sortlist[i])) {

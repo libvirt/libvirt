@@ -15703,7 +15703,9 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 }
 
 
-static int virDomainIdMapEntrySort(const void *a, const void *b)
+static int virDomainIdMapEntrySort(const void *a,
+                                   const void *b,
+                                   void *opaque G_GNUC_UNUSED)
 {
     const virDomainIdMapEntry *entrya = a;
     const virDomainIdMapEntry *entryb = b;
@@ -15746,7 +15748,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
         }
     }
 
-    qsort(idmap, num, sizeof(idmap[0]), virDomainIdMapEntrySort);
+    g_qsort_with_data(idmap, num, sizeof(idmap[0]), virDomainIdMapEntrySort, NULL);
 
     return idmap;
 }

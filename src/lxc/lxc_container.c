@@ -791,7 +791,8 @@ static int lxcContainerSetReadOnly(void)
     if (!mounts)
         return 0;
 
-    qsort(mounts, nmounts, sizeof(mounts[0]), virStringSortRevCompare);
+    g_qsort_with_data(mounts, nmounts,
+                      sizeof(mounts[0]), virStringSortRevCompare, NULL);
 
     /* turn 'mounts' into a proper GStrv */
     VIR_EXPAND_N(mounts, nmounts, 1);

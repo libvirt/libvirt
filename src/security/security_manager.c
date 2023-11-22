@@ -1247,7 +1247,9 @@ virSecurityManagerRestoreNetdevLabel(virSecurityManager *mgr,
 
 
 static int
-cmpstringp(const void *p1, const void *p2)
+cmpstringp(const void *p1,
+           const void *p2,
+           void *opaque G_GNUC_UNUSED)
 {
     const char *s1 = *(char * const *) p1;
     const char *s2 = *(char * const *) p2;
@@ -1303,8 +1305,9 @@ virSecurityManagerMetadataLock(virSecurityManager *mgr G_GNUC_UNUSED,
      * paths in the same order and thus no deadlock can occur.
      * Lastly, it makes searching for duplicate paths below
      * simpler. */
-    if (paths)
-        qsort(paths, npaths, sizeof(*paths), cmpstringp);
+    if (paths) {
+        g_qsort_with_data(paths, npaths, sizeof(*paths), cmpstringp, NULL);
+    }
 
     for (i = 0; i < npaths; i++) {
         const char *p = paths[i];

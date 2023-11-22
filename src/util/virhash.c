@@ -514,7 +514,8 @@ void *virHashSearch(GHashTable *table,
 
 static int
 virHashGetItemsKeySorter(const void *va,
-                         const void *vb)
+                         const void *vb,
+                         void *opaque G_GNUC_UNUSED)
 {
     const virHashKeyValuePair *a = va;
     const virHashKeyValuePair *b = vb;
@@ -552,8 +553,10 @@ virHashGetItems(GHashTable *table,
         i++;
     }
 
-    if (sortKeys)
-        qsort(items, *nitems, sizeof(*items), virHashGetItemsKeySorter);
+    if (sortKeys) {
+        g_qsort_with_data(items, *nitems,
+                          sizeof(*items), virHashGetItemsKeySorter, NULL);
+    }
 
     return items;
 }

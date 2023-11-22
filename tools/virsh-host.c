@@ -300,7 +300,9 @@ static const vshCmdOptDef opts_freepages[] = {
 };
 
 static int
-vshPageSizeSorter(const void *a, const void *b)
+vshPageSizeSorter(const void *a,
+                  const void *b,
+                  void *opaque G_GNUC_UNUSED)
 {
     unsigned int pa = *(unsigned int *)a;
     unsigned int pb = *(unsigned int *)b;
@@ -377,7 +379,8 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
              * @pagesize array will contain duplicates. We should
              * remove them otherwise not very nice output will be
              * produced. */
-            qsort(pagesize, nodes_cnt, sizeof(*pagesize), vshPageSizeSorter);
+            g_qsort_with_data(pagesize, nodes_cnt,
+                              sizeof(*pagesize), vshPageSizeSorter, NULL);
 
             for (i = 0; i < nodes_cnt - 1;) {
                 if (pagesize[i] == pagesize[i + 1]) {

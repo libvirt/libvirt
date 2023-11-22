@@ -183,7 +183,9 @@ virshNodeListLookup(int devid, bool parent, void *opaque)
 }
 
 static int
-virshNodeDeviceSorter(const void *a, const void *b)
+virshNodeDeviceSorter(const void *a,
+                      const void *b,
+                      void *opaque G_GNUC_UNUSED)
 {
     virNodeDevicePtr *na = (virNodeDevicePtr *) a;
     virNodeDevicePtr *nb = (virNodeDevicePtr *) b;
@@ -334,9 +336,10 @@ virshNodeDeviceListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->devices && list->ndevices)
-        qsort(list->devices, list->ndevices,
-              sizeof(*list->devices), virshNodeDeviceSorter);
+    if (list->devices && list->ndevices) {
+        g_qsort_with_data(list->devices, list->ndevices,
+                          sizeof(*list->devices), virshNodeDeviceSorter, NULL);
+    }
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)

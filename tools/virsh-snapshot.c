@@ -982,7 +982,9 @@ virshSnapshotListFree(struct virshSnapshotList *snaplist)
 }
 
 static int
-virshSnapSorter(const void *a, const void *b)
+virshSnapSorter(const void *a,
+                const void *b,
+                void *opaque G_GNUC_UNUSED)
 {
     const struct virshSnap *sa = a;
     const struct virshSnap *sb = b;
@@ -1232,7 +1234,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
          * still in list.  We mark known descendants by clearing
          * snaps[i].parents.  Sorry, this is O(n^3) - hope your
          * hierarchy isn't huge.  XXX Is it worth making O(n^2 log n)
-         * by using qsort and bsearch?  */
+         * by using g_qsort_with_data and bsearch?  */
         if (start_index < 0) {
             vshError(ctl, _("snapshot %1$s disappeared from list"), fromname);
             goto cleanup;
@@ -1312,8 +1314,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     }
     if (!(orig_flags & VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL) &&
         snaplist->snaps && snaplist->nsnaps) {
-        qsort(snaplist->snaps, snaplist->nsnaps, sizeof(*snaplist->snaps),
-              virshSnapSorter);
+        g_qsort_with_data(snaplist->snaps, snaplist->nsnaps,
+                          sizeof(*snaplist->snaps), virshSnapSorter, NULL);
     }
     snaplist->nsnaps -= deleted;
 

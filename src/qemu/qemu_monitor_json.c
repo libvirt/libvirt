@@ -7607,7 +7607,8 @@ qemuMonitorJSONProcessHotpluggableCpusReply(virJSONValue *vcpu,
 
 static int
 qemuMonitorQueryHotpluggableCpusEntrySort(const void *p1,
-                                          const void *p2)
+                                          const void *p2,
+                                          void *opaque G_GNUC_UNUSED)
 {
     const struct qemuMonitorQueryHotpluggableCpusEntry *a = p1;
     const struct qemuMonitorQueryHotpluggableCpusEntry *b = p2;
@@ -7659,7 +7660,8 @@ qemuMonitorJSONGetHotpluggableCPUs(qemuMonitor *mon,
             goto cleanup;
     }
 
-    qsort(info, ninfo, sizeof(*info), qemuMonitorQueryHotpluggableCpusEntrySort);
+    g_qsort_with_data(info, ninfo, sizeof(*info),
+                      qemuMonitorQueryHotpluggableCpusEntrySort, NULL);
 
     *entries = g_steal_pointer(&info);
     *nentries = ninfo;

@@ -1200,7 +1200,9 @@ cmdVolDumpXML(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-virshStorageVolSorter(const void *a, const void *b)
+virshStorageVolSorter(const void *a,
+                      const void *b,
+                      void *opaque G_GNUC_UNUSED)
 {
     virStorageVolPtr *va = (virStorageVolPtr *) a;
     virStorageVolPtr *vb = (virStorageVolPtr *) b;
@@ -1299,8 +1301,10 @@ virshStorageVolListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->vols && list->nvols)
-        qsort(list->vols, list->nvols, sizeof(*list->vols), virshStorageVolSorter);
+    if (list->vols && list->nvols) {
+        g_qsort_with_data(list->vols, list->nvols,
+                          sizeof(*list->vols), virshStorageVolSorter, NULL);
+    }
 
     if (deleted)
         VIR_SHRINK_N(list->vols, list->nvols, deleted);

@@ -399,7 +399,9 @@ cmdSecretUndefine(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-virshSecretSorter(const void *a, const void *b)
+virshSecretSorter(const void *a,
+                  const void *b,
+                  void *opaque G_GNUC_UNUSED)
 {
     virSecretPtr *sa = (virSecretPtr *) a;
     virSecretPtr *sb = (virSecretPtr *) b;
@@ -509,9 +511,10 @@ virshSecretListCollect(vshControl *ctl,
 
  finished:
     /* sort the list */
-    if (list->secrets && list->nsecrets)
-        qsort(list->secrets, list->nsecrets,
-              sizeof(*list->secrets), virshSecretSorter);
+    if (list->secrets && list->nsecrets) {
+        g_qsort_with_data(list->secrets, list->nsecrets,
+                          sizeof(*list->secrets), virshSecretSorter, NULL);
+    }
 
     /* truncate the list for not found secret objects */
     if (deleted)

@@ -526,7 +526,8 @@ virshCheckpointListFree(struct virshCheckpointList *checkpointlist)
 
 static int
 virshChkSorter(const void *a,
-               const void *b)
+               const void *b,
+               void *opaque G_GNUC_UNUSED)
 {
     const struct virshChk *sa = a;
     const struct virshChk *sb = b;
@@ -594,9 +595,10 @@ virshCheckpointListCollect(vshControl *ctl,
     }
 
     if (!(orig_flags & VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL) &&
-        checkpointlist->chks)
-        qsort(checkpointlist->chks, checkpointlist->nchks,
-              sizeof(*checkpointlist->chks), virshChkSorter);
+        checkpointlist->chks) {
+        g_qsort_with_data(checkpointlist->chks, checkpointlist->nchks,
+                          sizeof(*checkpointlist->chks), virshChkSorter, NULL);
+    }
 
     ret = g_steal_pointer(&checkpointlist);
 

@@ -6093,7 +6093,8 @@ qemuDomainHasHotpluggableStartupVcpus(virDomainDef *def)
 
 static int
 qemuProcessVcpusSortOrder(const void *a,
-                          const void *b)
+                          const void *b,
+                          void *opaque G_GNUC_UNUSED)
 {
     virDomainVcpuDef *vcpua = *((virDomainVcpuDef **)a);
     virDomainVcpuDef *vcpub = *((virDomainVcpuDef **)b);
@@ -6133,8 +6134,8 @@ qemuProcessSetupHotpluggableVcpus(virDomainObj *vm,
     if (nbootHotplug == 0)
         return 0;
 
-    qsort(bootHotplug, nbootHotplug, sizeof(*bootHotplug),
-          qemuProcessVcpusSortOrder);
+    g_qsort_with_data(bootHotplug, nbootHotplug,
+                      sizeof(*bootHotplug), qemuProcessVcpusSortOrder, NULL);
 
     if (virDomainCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
         goto cleanup;
