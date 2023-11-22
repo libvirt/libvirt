@@ -3202,8 +3202,19 @@ qemuBlockReopenAccess(virDomainObj *vm,
     src->readonly = readonly;
     /* from now on all error paths must use 'goto cleanup' */
 
-    if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
-        return -1;
+    /* based on which is the current 'effecitve' layer we must reopen the
+     * appropriate blockdev */
+    if (qemuBlockStorageSourceGetFormatNodename(src)) {
+        if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
+            return -1;
+    } else if (qemuBlockStorageSourceGetSliceNodename(src)) {
+        if (!(srcprops = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, true)))
+            return -1;
+    } else {
+        if (!(srcprops = qemuBlockStorageSourceGetBackendProps(src,
+                                                               QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE)))
+            return -1;
+    }
 
     if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
         return -1;
