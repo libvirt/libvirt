@@ -3231,31 +3231,52 @@ qemuBlockReopenFormat(virDomainObj *vm,
 
 
 /**
+ * qemuBlockReopenAccess:
+ * @vm: domain object
+ * @src: storage source to reopen
+ * @readonly: requested readonly mode
+ * @asyncJob: qemu async job type
+ *
+ * Reopen @src image to ensure that it is in @readonly. Does nothing if it is
+ * already in the requested state.
+ *
+ * Callers must use qemuBlockReopenReadWrite/qemuBlockReopenReadOnly functions.
+ */
+
+static int
+qemuBlockReopenAccess(virDomainObj *vm,
+                      virStorageSource *src,
+                      bool readonly,
+                      virDomainAsyncJob asyncJob)
+{
+    if (src->readonly == readonly)
+        return 0;
+
+    src->readonly = readonly;
+    if (qemuBlockReopenFormat(vm, src, asyncJob) < 0) {
+        src->readonly = !readonly;
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
  * qemuBlockReopenReadWrite:
  * @vm: domain object
  * @src: storage source to reopen
  * @asyncJob: qemu async job type
  *
- * Wrapper that reopens @src read-write. We currently depend on qemu
- * reopening the storage with 'auto-read-only' enabled for us.
- * After successful reopen @src's 'readonly' flag is modified. Does nothing
- * if @src is already read-write.
+ * Semantic wrapper that reopens @src read-write. After successful reopen @src's
+ * 'readonly' flag is modified. Does nothing if @src is already read-write.
  */
 int
 qemuBlockReopenReadWrite(virDomainObj *vm,
                          virStorageSource *src,
                          virDomainAsyncJob asyncJob)
 {
-    if (!src->readonly)
-        return 0;
-
-    src->readonly = false;
-    if (qemuBlockReopenFormat(vm, src, asyncJob) < 0) {
-        src->readonly = true;
-        return -1;
-    }
-
-    return 0;
+    return qemuBlockReopenAccess(vm, src, false, asyncJob);
 }
 
 
@@ -3265,26 +3286,15 @@ qemuBlockReopenReadWrite(virDomainObj *vm,
  * @src: storage source to reopen
  * @asyncJob: qemu async job type
  *
- * Wrapper that reopens @src read-only. We currently depend on qemu
- * reopening the storage with 'auto-read-only' enabled for us.
- * After successful reopen @src's 'readonly' flag is modified. Does nothing
- * if @src is already read-only.
+ * Semantic wrapper that reopens @src read-only. After successful reopen @src's
+ * 'readonly' flag is modified. Does nothing if @src is already read-only.
  */
 int
 qemuBlockReopenReadOnly(virDomainObj *vm,
                          virStorageSource *src,
                          virDomainAsyncJob asyncJob)
 {
-    if (src->readonly)
-        return 0;
-
-    src->readonly = true;
-    if (qemuBlockReopenFormat(vm, src, asyncJob) < 0) {
-        src->readonly = false;
-        return -1;
-    }
-
-    return 0;
+    return qemuBlockReopenAccess(vm, src, true, asyncJob);
 }
 
 /**
