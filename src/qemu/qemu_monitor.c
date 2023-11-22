@@ -3971,14 +3971,11 @@ qemuMonitorBlockdevAdd(qemuMonitor *mon,
 
 int
 qemuMonitorBlockdevReopen(qemuMonitor *mon,
-                          virJSONValue **props)
+                          virJSONValue **options)
 {
-    VIR_DEBUG("props=%p (node-name=%s)", *props,
-              NULLSTR(virJSONValueObjectGetString(*props, "node-name")));
-
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockdevReopen(mon, props);
+    return qemuMonitorJSONBlockdevReopen(mon, options);
 }
 
 

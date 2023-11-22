@@ -7785,12 +7785,14 @@ qemuMonitorJSONBlockdevAdd(qemuMonitor *mon,
 
 int
 qemuMonitorJSONBlockdevReopen(qemuMonitor *mon,
-                              virJSONValue **props)
+                              virJSONValue **options)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("blockdev-reopen", props)))
+    if (!(cmd = qemuMonitorJSONMakeCommand("blockdev-reopen",
+                                           "a:options", options,
+                                           NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)

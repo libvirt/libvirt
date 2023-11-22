@@ -1309,7 +1309,7 @@ int qemuMonitorBlockdevAdd(qemuMonitor *mon,
                            virJSONValue **props);
 
 int qemuMonitorBlockdevReopen(qemuMonitor *mon,
-                              virJSONValue **props);
+                              virJSONValue **options);
 
 int qemuMonitorBlockdevDel(qemuMonitor *mon,
                            const char *nodename);
