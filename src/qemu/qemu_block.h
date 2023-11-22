@@ -263,11 +263,6 @@ qemuBlockBitmapsHandleCommitFinish(virStorageSource *topsrc,
                                    GHashTable *blockNamedNodeData,
                                    virJSONValue **actions);
 
-/* only for use in qemumonitorjsontest */
-int
-qemuBlockReopenFormatMon(qemuMonitor *mon,
-                         virStorageSource *src);
-
 int
 qemuBlockReopenReadWrite(virDomainObj *vm,
                          virStorageSource *src,

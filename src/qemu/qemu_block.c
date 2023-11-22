@@ -3165,26 +3165,6 @@ qemuBlockBitmapsHandleCommitFinish(virStorageSource *topsrc,
 }
 
 
-int
-qemuBlockReopenFormatMon(qemuMonitor *mon,
-                         virStorageSource *src)
-{
-    g_autoptr(virJSONValue) srcprops = NULL;
-    g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
-
-    if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
-        return -1;
-
-    if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
-        return -1;
-
-    if (qemuMonitorBlockdevReopen(mon, &reopenoptions) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 /**
  * qemuBlockReopenAccess:
  * @vm: domain object
@@ -3203,7 +3183,8 @@ qemuBlockReopenAccess(virDomainObj *vm,
                       bool readonly,
                       virDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
+    g_autoptr(virJSONValue) srcprops = NULL;
     int rc;
     int ret = -1;
 
@@ -3221,10 +3202,16 @@ qemuBlockReopenAccess(virDomainObj *vm,
     src->readonly = readonly;
     /* from now on all error paths must use 'goto cleanup' */
 
+    if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
+        return -1;
+
+    if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
+        return -1;
+
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
 
-    rc = qemuBlockReopenFormatMon(priv->mon, src);
+    rc = qemuMonitorBlockdevReopen(qemuDomainGetMonitor(vm), &reopenoptions);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
