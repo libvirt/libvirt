@@ -3192,45 +3192,6 @@ qemuBlockReopenFormatMon(qemuMonitor *mon,
 
 
 /**
- * qemuBlockReopenFormat:
- * @vm: domain object
- * @src: storage source to reopen
- * @asyncJob: qemu async job type
- *
- * Invokes the 'blockdev-reopen' command on the format layer of @src. This means
- * that @src must be already properly configured for the desired outcome. The
- * nodenames of @src are used to identify the specific image in qemu.
- */
-static int
-qemuBlockReopenFormat(virDomainObj *vm,
-                      virStorageSource *src,
-                      virDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    int rc;
-
-    /* If we are lacking the object here, qemu might have opened an image with
-     * a node name unknown to us */
-    if (!src->backingStore) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("can't reopen image with unknown presence of backing store"));
-        return -1;
-    }
-
-    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-        return -1;
-
-    rc = qemuBlockReopenFormatMon(priv->mon, src);
-
-    qemuDomainObjExitMonitor(vm);
-    if (rc < 0)
-        return -1;
-
-    return 0;
-}
-
-
-/**
  * qemuBlockReopenAccess:
  * @vm: domain object
  * @src: storage source to reopen
@@ -3242,23 +3203,44 @@ qemuBlockReopenFormat(virDomainObj *vm,
  *
  * Callers must use qemuBlockReopenReadWrite/qemuBlockReopenReadOnly functions.
  */
-
 static int
 qemuBlockReopenAccess(virDomainObj *vm,
                       virStorageSource *src,
                       bool readonly,
                       virDomainAsyncJob asyncJob)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int rc;
+    int ret = -1;
+
     if (src->readonly == readonly)
         return 0;
 
-    src->readonly = readonly;
-    if (qemuBlockReopenFormat(vm, src, asyncJob) < 0) {
-        src->readonly = !readonly;
+    /* If we are lacking the object here, qemu might have opened an image with
+     * a node name unknown to us */
+    if (!src->backingStore) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("can't reopen image with unknown presence of backing store"));
         return -1;
     }
 
-    return 0;
+    src->readonly = readonly;
+    /* from now on all error paths must use 'goto cleanup' */
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuBlockReopenFormatMon(priv->mon, src);
+
+    qemuDomainObjExitMonitor(vm);
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    src->readonly = !readonly;
+    return ret;
 }
 
 
