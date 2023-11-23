@@ -955,13 +955,9 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
 
     VIR_FREE(meta->backingStoreRaw);
     if (fileTypeInfo[meta->format].getBackingStore != NULL) {
-        int store = fileTypeInfo[meta->format].getBackingStore(&meta->backingStoreRaw,
-                                                               &format,
-                                                               buf, len);
+        fileTypeInfo[meta->format].getBackingStore(&meta->backingStoreRaw,
+                                                   &format, buf, len);
         meta->backingStoreRawFormat = format;
-
-        if (store == BACKING_STORE_INVALID)
-            return 0;
     }
 
     g_clear_pointer(&meta->features, virBitmapFree);
