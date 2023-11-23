@@ -242,92 +242,156 @@ static struct FileEncryptionInfo const qcow2EncryptionInfo[] = {
 };
 
 static struct FileTypeInfo const fileTypeInfo[] = {
-    [VIR_STORAGE_FILE_NONE] = { 0, NULL, LV_LITTLE_ENDIAN,
-                                -1, 0, {0}, 0, 0, 0, NULL, NULL },
-    [VIR_STORAGE_FILE_RAW] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0,
-                               luksEncryptionInfo,
-                               NULL },
-    [VIR_STORAGE_FILE_DIR] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0, NULL, NULL },
+    [VIR_STORAGE_FILE_NONE] = {
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+    },
+    [VIR_STORAGE_FILE_RAW] = {
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+        .cryptInfo = luksEncryptionInfo,
+    },
+    [VIR_STORAGE_FILE_DIR] = {
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+        .cryptInfo = luksEncryptionInfo,
+    },
     [VIR_STORAGE_FILE_BOCHS] = {
         /*"Bochs Virtual HD Image", */ /* Untested */
-        0, NULL,
-        LV_LITTLE_ENDIAN, 64, 4, {0x20000},
-        32+16+16+4+4+4+4+4, 8, 1, NULL, NULL
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = 64,
+        .versionSize = 4,
+        .versionNumbers = {0x20000},
+        .sizeOffset = 32 + 16 + 16 + 4 + 4 + 4 + 4 + 4,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
     },
+
     [VIR_STORAGE_FILE_CLOOP] = {
         /* #!/bin/sh
            #V2.0 Format
            modprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1
         */ /* Untested */
-        0, NULL,
-        LV_LITTLE_ENDIAN, -1, 0, {0},
-        -1, 0, 0, NULL, NULL
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+        .sizeOffset = -1,
     },
     [VIR_STORAGE_FILE_DMG] = {
         /* XXX QEMU says there's no magic for dmg,
          * /usr/share/misc/magic lists double magic (both offsets
          * would have to match) but then disables that check. */
-        0, NULL,
-        0, -1, 0, {0},
-        -1, 0, 0, NULL, NULL
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+        .sizeOffset = -1,
     },
     [VIR_STORAGE_FILE_ISO] = {
-        32769, "CD001",
-        LV_LITTLE_ENDIAN, -2, 0, {0},
-        -1, 0, 0, NULL, NULL
+        .magicOffset = 32769,
+        .magic = "CD001",
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -2,
+        .sizeOffset = -1,
     },
     [VIR_STORAGE_FILE_VPC] = {
-        0, "conectix",
-        LV_BIG_ENDIAN, 12, 4, {0x10000},
-        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, NULL, NULL
+        .magicOffset = 0,
+        .magic = "conectix",
+        .endian = LV_BIG_ENDIAN,
+        .versionOffset = 12,
+        .versionSize = 4,
+        .versionNumbers = {0x10000},
+        .sizeOffset = 8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
     },
-    /* TODO: add getBackingStore function */
     [VIR_STORAGE_FILE_VDI] = {
-        64, "\x7f\x10\xda\xbe",
-        LV_LITTLE_ENDIAN, 68, 4, {0x00010001},
-        64 + 5 * 4 + 256 + 7 * 4, 8, 1, NULL, NULL },
-
+        .magicOffset = 64,
+        .magic = "\x7f\x10\xda\xbe",
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = 68,
+        .versionSize = 4,
+        .versionNumbers = {0x00010001},
+        .sizeOffset = 64 + 5 * 4 + 256 + 7 * 4,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
+    },
     /* Not direct file formats, but used for various drivers */
-    [VIR_STORAGE_FILE_FAT] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0, NULL, NULL },
-    [VIR_STORAGE_FILE_VHD] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0, NULL, NULL },
-    [VIR_STORAGE_FILE_PLOOP] = { 0, "WithouFreSpacExt", LV_LITTLE_ENDIAN,
-                                 -2, 0, {0}, PLOOP_IMAGE_SIZE_OFFSET, 8,
-                                 PLOOP_SIZE_MULTIPLIER, NULL, NULL },
-
+    [VIR_STORAGE_FILE_FAT] = {
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+    },
+    [VIR_STORAGE_FILE_VHD] = {
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -1,
+    },
+    [VIR_STORAGE_FILE_PLOOP] = {
+        .magicOffset = 0,
+        .magic = "WithouFreSpacExt",
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -2,
+        .sizeOffset = PLOOP_IMAGE_SIZE_OFFSET,
+        .sizeBytes = 8,
+        .sizeMultiplier = PLOOP_SIZE_MULTIPLIER,
+    },
     /* All formats with a backing store probe below here */
     [VIR_STORAGE_FILE_COW] = {
-        0, "OOOM",
-        LV_BIG_ENDIAN, 4, 4, {2},
-        4+4+1024+4, 8, 1, NULL, cowGetImageSpecific
+        .magicOffset = 0,
+        .magic = "OOOM",
+        .endian = LV_BIG_ENDIAN,
+        .versionOffset = 4,
+        .versionSize = 4,
+        .versionNumbers = {2},
+        .sizeOffset = 4 + 4 + 1024 + 4,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
+        .getImageSpecific = cowGetImageSpecific,
     },
     [VIR_STORAGE_FILE_QCOW] = {
-        0, "QFI",
-        LV_BIG_ENDIAN, 4, 4, {1},
-        QCOWX_HDR_IMAGE_SIZE, 8, 1,
-        qcow1EncryptionInfo,
-        qcowGetImageSpecific
+        .magicOffset = 0,
+        .magic = "QFI",
+        .endian = LV_BIG_ENDIAN,
+        .versionOffset = 4,
+        .versionSize = 4,
+        .versionNumbers = {1},
+        .sizeOffset = QCOWX_HDR_IMAGE_SIZE,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
+        .cryptInfo = qcow1EncryptionInfo,
+        .getImageSpecific = qcowGetImageSpecific,
     },
     [VIR_STORAGE_FILE_QCOW2] = {
-        0, "QFI",
-        LV_BIG_ENDIAN, 4, 4, {2, 3},
-        QCOWX_HDR_IMAGE_SIZE, 8, 1,
-        qcow2EncryptionInfo,
-        qcow2GetImageSpecific
+        .magicOffset = 0,
+        .magic = "QFI",
+        .endian = LV_BIG_ENDIAN,
+        .versionOffset = 4,
+        .versionSize = 4,
+        .versionNumbers = {2, 3},
+        .sizeOffset = QCOWX_HDR_IMAGE_SIZE,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
+        .cryptInfo = qcow2EncryptionInfo,
+        .getImageSpecific = qcow2GetImageSpecific,
     },
     [VIR_STORAGE_FILE_QED] = {
         /* https://wiki.qemu.org/Features/QED */
-        0, "QED",
-        LV_LITTLE_ENDIAN, -2, 0, {0},
-        QED_HDR_IMAGE_SIZE, 8, 1, NULL, qedGetImageSpecific
+        .magicOffset = 0,
+        .magic = "QED",
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = -2,
+        .sizeOffset = QED_HDR_IMAGE_SIZE,
+        .sizeBytes = 8,
+        .sizeMultiplier = 1,
+        .getImageSpecific = qedGetImageSpecific,
     },
     [VIR_STORAGE_FILE_VMDK] = {
-        0, "KDMV",
-        LV_LITTLE_ENDIAN, 4, 4, {1, 2, 3},
-        4+4+4, 8, 512, NULL, vmdk4GetImageSpecific
+        .magicOffset = 0,
+        .magic = "KDMV",
+        .endian = LV_LITTLE_ENDIAN,
+        .versionOffset = 4,
+        .versionSize = 4,
+        .versionNumbers = {1, 2, 3},
+        .sizeOffset = 4 + 4 + 4,
+        .sizeBytes = 8,
+        .sizeMultiplier = 512,
+        .getImageSpecific = vmdk4GetImageSpecific,
     },
 };
 G_STATIC_ASSERT(G_N_ELEMENTS(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
