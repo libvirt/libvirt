@@ -3074,6 +3074,11 @@ qemuBlockBitmapsHandleBlockcopy(virStorageSource *src,
 {
     virStorageSource *base = NULL;
 
+    /* if copy destination is a 'raw' image there's no point in attempting to
+     * merge the bitmaps into it */
+    if (mirror->format == VIR_STORAGE_FILE_RAW)
+        return 0;
+
     if (shallow)
         base = src->backingStore;
 
@@ -3106,6 +3111,11 @@ qemuBlockBitmapsHandleCommitFinish(virStorageSource *topsrc,
                                    virJSONValue **actions)
 {
     virStorageSource *writebitmapsrc = NULL;
+
+    /* if base is a 'raw' image there's no point in attempting to merge the
+     * bitmaps into it */
+    if (basesrc->format == VIR_STORAGE_FILE_RAW)
+        return 0;
 
     if (active)
         writebitmapsrc = basesrc;
