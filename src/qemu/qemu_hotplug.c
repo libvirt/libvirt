@@ -1001,16 +1001,16 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         goto cleanup;
 
     if (!virStorageSourceIsEmpty(disk->src)) {
-        if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
-            goto cleanup;
-
-        releaseSeclabel = true;
-
         if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
             goto cleanup;
 
         if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
             goto cleanup;
+
+        if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
+            goto cleanup;
+
+        releaseSeclabel = true;
 
         if (qemuProcessPrepareHostStorageDisk(vm, disk) < 0)
             goto cleanup;
