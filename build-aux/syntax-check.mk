@@ -248,6 +248,13 @@ sc_prohibit_canonicalize_file_name:
 	halt='use virFileCanonicalizePath() instead of canonicalize_file_name()' \
 	  $(_sc_search_regexp)
 
+# qsort from glibc has unstable sort ordering for "equal" members
+sc_prohibit_qsort:
+	@prohibit='\<(qsort|qsort_r) *\(' \
+	exclude='exempt from syntax-check' \
+	halt='use g_qsort_with_data instead of qsort' \
+	  $(_sc_search_regexp)
+
 # Insist on correct types for [pug]id.
 sc_correct_id_types:
 	@prohibit='\<(int|long) *[pug]id\>' \

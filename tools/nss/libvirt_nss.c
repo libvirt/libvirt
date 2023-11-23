@@ -71,7 +71,8 @@ sortAddr(leaseAddress *tmpAddress,
          size_t ntmpAddress)
 {
     if (tmpAddress)
-        qsort(tmpAddress, ntmpAddress, sizeof(*tmpAddress), leaseAddressSorter);
+        qsort(tmpAddress, ntmpAddress, /* exempt from syntax-check */
+              sizeof(*tmpAddress), leaseAddressSorter);
 }
 
 
