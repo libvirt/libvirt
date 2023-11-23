@@ -46,7 +46,6 @@ enum lv_endian {
 enum {
     BACKING_STORE_OK,
     BACKING_STORE_INVALID,
-    BACKING_STORE_ERROR,
 };
 
 #define FILE_TYPE_VERSIONS_LAST 3
@@ -963,9 +962,6 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
 
         if (store == BACKING_STORE_INVALID)
             return 0;
-
-        if (store == BACKING_STORE_ERROR)
-            return -1;
     }
 
     g_clear_pointer(&meta->features, virBitmapFree);
