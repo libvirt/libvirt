@@ -1,6 +1,6 @@
 path:ABS_SRCDIR/virstoragetestdata/images/qcow2-protocol-backing-file.qcow2
 backingStoreRaw: raw
-backingStoreRawFormat: <null>(-1)
+backingStoreRawFormat: raw(1)
 capacity: 1024
 encryption: 0
 relPath:<null>

@@ -484,7 +484,7 @@ mymain(void)
                VIR_STORAGE_FILE_QCOW2, EXP_PASS);
     TEST_CHAIN("qcow2-protocol-backing-nbd",
                abs_srcdir "/virstoragetestdata/images/qcow2-protocol-backing-nbd.qcow2",
-               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN("qcow2-qcow2_missing",

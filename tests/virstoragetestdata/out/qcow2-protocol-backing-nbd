@@ -1,0 +1,21 @@
+path:ABS_SRCDIR/virstoragetestdata/images/qcow2-protocol-backing-nbd.qcow2
+backingStoreRaw: nbd+tcp://example.org:6000/blah
+backingStoreRawFormat: raw(1)
+capacity: 10485760
+encryption: 0
+relPath:<null>
+type:file
+format:qcow2
+protocol:none
+hostname:<null>
+
+path:blah
+backingStoreRaw: <null>
+backingStoreRawFormat: none(0)
+capacity: 0
+encryption: 0
+relPath:<null>
+type:network
+format:raw
+protocol:nbd
+hostname:example.org

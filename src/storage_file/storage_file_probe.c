@@ -474,9 +474,15 @@ qcow2GetExtensions(const char *buf,
             memcpy(tmp, buf + offset, len);
             tmp[len] = '\0';
 
+            /* qemu and qemu-img allow using the protocol driver name inside
+             * of the format field in cases when the dummy 'raw' driver should
+             * not be created. Thus libvirt needs to consider anything that
+             * doesn't look like a format driver name to be a protocol driver
+             * directly and thus the image is in fact still considered raw
+             */
             *backingFormat = virStorageFileFormatTypeFromString(tmp);
             if (*backingFormat <= VIR_STORAGE_FILE_NONE)
-                return -1;
+                *backingFormat = VIR_STORAGE_FILE_RAW;
             break;
         }
 
