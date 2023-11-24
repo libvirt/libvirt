@@ -102,6 +102,22 @@ qemuBlockStorageSourceGetEffectiveNodename(virStorageSource *src)
 
 
 /**
+ * qemuBlockStorageSourceGetSliceNodename:
+ *
+ * Gets the nodename corresponding to the storage slice layer. Returns NULL
+ * when there is no explicit storage slice layer.
+ */
+const char *
+qemuBlockStorageSourceGetSliceNodename(virStorageSource *src)
+{
+    if (!src->sliceStorage)
+        return NULL;
+
+    return src->sliceStorage->nodename;
+}
+
+
+/**
  * qemuBlockStorageSourceGetEffectiveStorageNodename:
  * @src: virStorageSource to get the effective nodename of
  *
@@ -111,9 +127,10 @@ qemuBlockStorageSourceGetEffectiveNodename(virStorageSource *src)
 const char *
 qemuBlockStorageSourceGetEffectiveStorageNodename(virStorageSource *src)
 {
-    if (src->sliceStorage &&
-        src->sliceStorage->nodename)
-        return src->sliceStorage->nodename;
+    const char *slice = qemuBlockStorageSourceGetSliceNodename(src);
+
+    if (slice)
+        return slice;
 
     return src->nodenamestorage;
 }

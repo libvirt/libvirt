@@ -41,6 +41,9 @@ const char *
 qemuBlockStorageSourceGetStorageNodename(virStorageSource *src);
 
 const char *
+qemuBlockStorageSourceGetSliceNodename(virStorageSource *src);
+
+const char *
 qemuBlockStorageSourceGetFormatNodename(virStorageSource *src);
 
 const char *
