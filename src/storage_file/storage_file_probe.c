@@ -43,11 +43,6 @@ enum lv_endian {
     LV_BIG_ENDIAN         /* 4321 */
 };
 
-enum {
-    BACKING_STORE_OK,
-    BACKING_STORE_INVALID,
-};
-
 #define FILE_TYPE_VERSIONS_LAST 3
 
 struct FileEncryptionInfo {
@@ -382,14 +377,14 @@ cowGetBackingStore(char **res,
     *format = VIR_STORAGE_FILE_AUTO;
 
     if (buf_size < 4+4+ COW_FILENAME_MAXLEN)
-        return BACKING_STORE_INVALID;
+        return 0;
     if (buf[4+4] == '\0') { /* cow_header_v2.backing_file[0] */
         *format = VIR_STORAGE_FILE_NONE;
-        return BACKING_STORE_OK;
+        return 0;
     }
 
     *res = g_strndup((const char *)buf + 4 + 4, COW_FILENAME_MAXLEN);
-    return BACKING_STORE_OK;
+    return 0;
 }
 
 
@@ -527,34 +522,34 @@ qcowXGetBackingStore(char **res,
     *format = VIR_STORAGE_FILE_AUTO;
 
     if (buf_size < QCOWX_HDR_BACKING_FILE_OFFSET+8+4)
-        return BACKING_STORE_INVALID;
+        return 0;
 
     offset = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
     if (offset > buf_size)
-        return BACKING_STORE_INVALID;
+        return 0;
 
     if (offset == 0) {
         *format = VIR_STORAGE_FILE_NONE;
-        return BACKING_STORE_OK;
+        return 0;
     }
 
     size = virReadBufInt32BE(buf + QCOWX_HDR_BACKING_FILE_SIZE);
     if (size == 0) {
         *format = VIR_STORAGE_FILE_NONE;
-        return BACKING_STORE_OK;
+        return 0;
     }
     if (size > 1023)
-        return BACKING_STORE_INVALID;
+        return 0;
     if (offset + size > buf_size || offset + size < offset)
-        return BACKING_STORE_INVALID;
+        return 0;
     *res = g_new0(char, size + 1);
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
     if (qcow2GetExtensions(buf, buf_size, format) < 0)
-        return BACKING_STORE_INVALID;
+        return 0;
 
-    return BACKING_STORE_OK;
+    return 0;
 }
 
 
@@ -582,7 +577,7 @@ vmdk4GetBackingStore(char **res,
     *format = VIR_STORAGE_FILE_AUTO;
 
     if (buf_size <= 0x200)
-        return BACKING_STORE_INVALID;
+        return 0;
 
     len = buf_size - 0x200;
     if (len >= VIR_STORAGE_MAX_HEADER)
@@ -592,21 +587,21 @@ vmdk4GetBackingStore(char **res,
     start = strstr(desc, prefix);
     if (start == NULL) {
         *format = VIR_STORAGE_FILE_NONE;
-        return BACKING_STORE_OK;
+        return 0;
     }
     start += strlen(prefix);
     end = strchr(start, '"');
     if (end == NULL)
-        return BACKING_STORE_INVALID;
+        return 0;
 
     if (end == start) {
         *format = VIR_STORAGE_FILE_NONE;
-        return BACKING_STORE_OK;
+        return 0;
     }
     *end = '\0';
     *res = g_strdup(start);
 
-    return BACKING_STORE_OK;
+    return 0;
 }
 
 static int
@@ -621,24 +616,24 @@ qedGetBackingStore(char **res,
     *res = NULL;
     /* Check if this image has a backing file */
     if (buf_size < QED_HDR_FEATURES_OFFSET+8)
-        return BACKING_STORE_INVALID;
+        return 0;
     flags = virReadBufInt64LE(buf + QED_HDR_FEATURES_OFFSET);
     if (!(flags & QED_F_BACKING_FILE)) {
         *format = VIR_STORAGE_FILE_NONE;
-        return BACKING_STORE_OK;
+        return 0;
     }
 
     /* Parse the backing file */
     if (buf_size < QED_HDR_BACKING_FILE_OFFSET+8)
-        return BACKING_STORE_INVALID;
+        return 0;
     offset = virReadBufInt32LE(buf + QED_HDR_BACKING_FILE_OFFSET);
     if (offset > buf_size)
-        return BACKING_STORE_INVALID;
+        return 0;
     size = virReadBufInt32LE(buf + QED_HDR_BACKING_FILE_SIZE);
     if (size == 0)
-        return BACKING_STORE_OK;
+        return 0;
     if (offset + size > buf_size || offset + size < offset)
-        return BACKING_STORE_INVALID;
+        return 0;
     *res = g_new0(char, size + 1);
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
@@ -648,7 +643,7 @@ qedGetBackingStore(char **res,
     else
         *format = VIR_STORAGE_FILE_AUTO_SAFE;
 
-    return BACKING_STORE_OK;
+    return 0;
 }
 
 
