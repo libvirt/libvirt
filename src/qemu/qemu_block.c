@@ -1535,11 +1535,9 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
     data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
 
-    if (qemuBlockStorageSourceNeedsStorageSliceLayer(src)) {
+    if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src))) {
         if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src)))
             return NULL;
-
-        data->storageSliceNodeName = src->sliceStorage->nodename;
     }
 
     return g_steal_pointer(&data);
@@ -1756,13 +1754,8 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
     data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     data->storageAttached = true;
 
-    /* 'raw' format doesn't need the extra 'raw' layer when slicing, thus
-     * the nodename is NULL */
-    if (src->sliceStorage &&
-        src->sliceStorage->nodename) {
-        data->storageSliceNodeName = src->sliceStorage->nodename;
+    if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src)))
         data->storageSliceAttached = true;
-    }
 
     if (src->pr &&
         !virStoragePRDefIsManaged(src->pr))
@@ -3274,6 +3267,12 @@ qemuBlockReopenReadOnly(virDomainObj *vm,
  *
  * Returns true if @src requires an extra 'raw' layer for handling of the storage
  * slice.
+ *
+ * Important: This helper must be used only for decisions when setting up a
+ * '-blockdev' backend in which case the storage slice layer node name will be
+ * populated.
+ * Any cases when the backend can be already in use must decide based on the
+ * existence of the storage slice layer nodename.
  */
 bool
 qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
