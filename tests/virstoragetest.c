@@ -187,8 +187,8 @@ testStorageChain(const void *args)
                           "capacity: %lld\n"
                           "encryption: %d\n"
                           "relPath:%s\n"
-                          "type:%d\n"
-                          "format:%d\n"
+                          "type:%s\n"
+                          "format:%s\n"
                           "protocol:%s\n"
                           "hostname:%s\n\n",
                           strippedPath,
@@ -196,8 +196,8 @@ testStorageChain(const void *args)
                           elt->capacity,
                           !!elt->encryption,
                           strippedRelPath,
-                          elt->type,
-                          elt->format,
+                          NULLSTR(virStorageTypeToString(elt->type)),
+                          NULLSTR(virStorageFileFormatTypeToString(elt->format)),
                           virStorageNetProtocolTypeToString(elt->protocol),
                           NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL));
     }

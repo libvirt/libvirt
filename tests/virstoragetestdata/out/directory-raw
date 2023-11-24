@@ -3,7 +3,7 @@ backingStoreRaw: <null>
 capacity: 0
 encryption: 0
 relPath:<null>
-type:3
-format:1
+type:dir
+format:raw
 protocol:none
 hostname:<null>

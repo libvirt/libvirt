@@ -3,8 +3,8 @@ backingStoreRaw: ../sub/link1
 capacity: 1024
 encryption: 0
 relPath:<null>
-type:1
-format:14
+type:file
+format:qcow2
 protocol:none
 hostname:<null>
 
@@ -13,8 +13,8 @@ backingStoreRaw: ../raw
 capacity: 1024
 encryption: 0
 relPath:../sub/link1
-type:1
-format:14
+type:file
+format:qcow2
 protocol:none
 hostname:<null>
 
@@ -23,7 +23,7 @@ backingStoreRaw: <null>
 capacity: 0
 encryption: 0
 relPath:../raw
-type:1
-format:1
+type:file
+format:raw
 protocol:none
 hostname:<null>
