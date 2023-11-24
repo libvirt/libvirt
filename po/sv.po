@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-10-07 20:35+0000\n"
+"PO-Revision-Date: 2023-11-24 08:52+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.2\n"
+"X-Generator: Weblate 5.2.1\n"
 
 msgid ""
 "\n"
@@ -563,7 +563,7 @@ msgstr "%1$s kan inte tolka UID:n ”%2$s”"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "%1$s-disk stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -940,6 +940,7 @@ msgstr "%1$s: händelsen ”lifecycle” för lagringspoolen %2$s: %3$s\n"
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
+"%1$s-händelsen ”metadata-change” för nätverket %2$s typen %3$s, uri:n %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -1326,7 +1327,7 @@ msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "attributet ”iothread” stödjs endast för styrenheten virtio-scsi"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
-msgstr ""
+msgstr "”Föråldrad KVM”-enhetstilldelning stödjs inte längre på detta system"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "”logical-id” saknas i svaret på guest-get-vcpus"
@@ -1941,6 +1942,8 @@ msgstr ""
 
 msgid "Allows setting or modifying the description or title of a network."
 msgstr ""
+"Tillåter inställning eller ändring av beskrivningen eller titeln för ett "
+"nätver."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Ett fel inträffade, men orsaken är okänd"
@@ -4968,7 +4971,7 @@ msgstr "Kunde inte sätta wsman-namnrymdsadressen för xmlNodeParam"
 
 #, c-format
 msgid "Could not start 'nbdkit'. exitstatus: %1$d"
-msgstr ""
+msgstr "Kunde inte starta ”nbdkit”, slutstatus: %1$d"
 
 msgid "Could not start 'virtiofsd'"
 msgstr "Kunde inte starta ”virtiofsd”"
@@ -5441,7 +5444,7 @@ msgstr "Hittade inte USB-enhetsbuss:%1$u enhet:%2$u"
 
 #, c-format
 msgid "Did not get all free page data for node %1$d"
-msgstr ""
+msgstr "Fick inte all data om fria sidor för nod %1$d"
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -6753,7 +6756,7 @@ msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
-msgstr ""
+msgstr "Misslyckades att ansluta till nbdkit för ”%1$s”: %2$s"
 
 msgid "Failed to connect to ssh agent"
 msgstr "Misslyckades att ansluta till ssh-agenten"
@@ -7351,7 +7354,7 @@ msgstr "Misslyckades att få klientuttagsidentitet"
 
 #, c-format
 msgid "Failed to get current process capabilities: %1$d"
-msgstr ""
+msgstr "Misslyckades att få aktuella processförmågor: %1$d"
 
 msgid "Failed to get disk information"
 msgstr "Misslyckades att få diskinformation"
@@ -7398,7 +7401,7 @@ msgid "Failed to get network autostart state"
 msgstr "Misslyckades att få tillståndet för nätverksautostart"
 
 msgid "Failed to get network description xml"
-msgstr ""
+msgstr "Misslyckades att få nätverksbeskrivnings-xml"
 
 msgid "Failed to get network persistence info"
 msgstr "Misslyckades att hämta information om nätverkvaraktighet"
@@ -7592,11 +7595,13 @@ msgstr "Misslyckades med att lista volymer"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s"
-msgstr ""
+msgstr "Misslyckades med att ladda PCI-drivrutinsmodulen %1$s"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
+"Misslyckades med att lista PCI-drivrutinsmodulen %1$s: administrativt "
+"förhindrat"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -7867,7 +7872,7 @@ msgid "Failed to parse mode '%1$s'"
 msgstr "Misslyckades med att tolka läget ”%1$s”"
 
 msgid "Failed to parse network description xml"
-msgstr ""
+msgstr "Misslyckades med att tolka nätverksbeskrivnings-xml"
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8389,10 +8394,10 @@ msgid "Failed to set new domain title"
 msgstr "Misslyckades med att sätta en ny domäntitel"
 
 msgid "Failed to set new network description"
-msgstr ""
+msgstr "Misslyckades med att sätta en ny nätverksbeskrivning"
 
 msgid "Failed to set new network title"
-msgstr ""
+msgstr "Misslyckades med att sätta en ny nätverkstitel"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Misslyckades med att sätta filbeskrivarflaggan för icke blockerande"
@@ -8868,6 +8873,8 @@ msgid ""
 "Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
 "'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
+"Flaggan ”VIR_NETWORK_UPDATE_LIVE” och ”VIR_NETWORK_UPDATE_CONFIG” är "
+"ömsesidigt uteslutande"
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -12067,10 +12074,10 @@ msgstr ""
 "Nätverkskonfigurationsfilnamnet ”%1$s” matchar inte nätverksnamnet ”%2$s”"
 
 msgid "Network description not changed\n"
-msgstr ""
+msgstr "Nätverksbeskrivningen inte ändrad\n"
 
 msgid "Network description updated successfully"
-msgstr ""
+msgstr "Nätverksbeskrivningen uppdaterad"
 
 #, c-format
 msgid "Network device %1$s already exists"
@@ -12158,13 +12165,13 @@ msgid "Network port with UUID %1$s does not exist"
 msgstr "Nätverksporten med UUID %1$s finns inte"
 
 msgid "Network title can't contain newlines"
-msgstr ""
+msgstr "Nätverkstiteln får inte innehålla nyrader"
 
 msgid "Network title not changed\n"
-msgstr ""
+msgstr "Nätverkstiteln är inte ändrad\n"
 
 msgid "Network title updated successfully"
-msgstr ""
+msgstr "Nätverkstiteln uppdaterad"
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -12286,7 +12293,7 @@ msgstr "Ingen beskrivning för domänen: %1$s"
 
 #, c-format
 msgid "No description for network: %1$s"
-msgstr ""
+msgstr "Ingen beskrivning för nätverket: %1$s"
 
 msgid "No device model command-line argument specified"
 msgstr "Inget kommandoradsargument till enhetsmodellen angivet"
@@ -12505,7 +12512,7 @@ msgstr "Ingen titel på domänen: %1$s"
 
 #, c-format
 msgid "No title for network: %1$s"
-msgstr ""
+msgstr "Ingen titel för nätverket: %1$s"
 
 msgid "No total stats available"
 msgstr "Ingen total statistik tillgänglig"
@@ -14638,7 +14645,7 @@ msgid "Shows or modifies the XML metadata of a domain."
 msgstr "Visar eller ändrar XML-metadatan för en domän."
 
 msgid "Shows or modifies the XML metadata of a network."
-msgstr ""
+msgstr "Visar eller ändrar XML-metadatan för ett nätverk."
 
 msgid "Shutdown"
 msgstr "Stäng av"
@@ -15476,11 +15483,11 @@ msgstr "Måldiskenheten %1$s stämmer inte med källan %2$s"
 
 #, c-format
 msgid "Target disk discard_granularity %1$u does not match source %2$u"
-msgstr ""
+msgstr "Måldiskens discard_granularity %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "Målnehetes logical_block_size %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk model %1$s does not match source %2$s"
@@ -15488,7 +15495,7 @@ msgstr "Måldiskmodellen %1$s stämmer inte med källan %2$s"
 
 #, c-format
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "Målnehetes physical_block_size %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -16834,7 +16841,7 @@ msgstr "Kan inte lägga till mediaregistret för andra media"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
-msgstr ""
+msgstr "Kan inte lägga till porten %1$s till OVS-bryggan %2$s: %3$s"
 
 msgid "Unable to add storage controller"
 msgstr "Kan inte lägga till lagringsstyrenhet"
@@ -16871,7 +16878,7 @@ msgid "Unable to allocate lockspace %1$s"
 msgstr "Kan inte allokera låsutrymmet %1$s"
 
 msgid "Unable to allocate stack"
-msgstr ""
+msgstr "Kan inte allokera stack"
 
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
@@ -17081,7 +17088,7 @@ msgstr "Kan inte skapa ett UNIX-uttag"
 
 #, c-format
 msgid "Unable to create and set qos configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte skapa och sätta qos-konfigurationen på port %1$s: %2$s"
 
 msgid "Unable to create blkid library handle"
 msgstr "Kan inte skapa blkid-bibliotekhandtag"
@@ -17223,7 +17230,7 @@ msgstr "Kan inte radera mediumet"
 
 #, c-format
 msgid "Unable to delete port %1$s from OVS: %2$s"
-msgstr ""
+msgstr "Kan inte radera port %1$s från OVS: %2$s"
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
@@ -17309,6 +17316,8 @@ msgid ""
 "Unable to find '%1$s' firmware that is compatible with the current "
 "configuration"
 msgstr ""
+"Kan inte hitta fast programvara ”%1$s” som är kompatibel med den aktuella "
+"konfigurationen"
 
 #, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
@@ -17831,11 +17840,11 @@ msgstr "Kan inte markera slingenheten som autoclear"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
-msgstr ""
+msgstr "Kan inte masstänga FB:are (första=%1$zd, sistal=%2$d"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
-msgstr ""
+msgstr "Kan inte masstänga FB:are (första=%1$zd, sista=%2$zd)"
 
 msgid "Unable to modify live devices"
 msgstr "Kan inte ändra aktiva enheter"
@@ -18173,7 +18182,7 @@ msgstr "Kan inte läsa konfigurationen av nätenheter på denna plattform"
 
 #, c-format
 msgid "Unable to read pidfile '%1$s'"
-msgstr ""
+msgstr "Kan inte läsa slirp-pid-filen ”%1$s”"
 
 #, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
@@ -18279,7 +18288,7 @@ msgstr "Kan inte återställa PCI-enheten %1$s: %2$s"
 
 #, c-format
 msgid "Unable to reset ingress on port %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte återställa ingången på port %1$s: %2$s"
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
@@ -18321,6 +18330,7 @@ msgstr "Kan inte köra bland %1$llu"
 #, c-format
 msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
 msgstr ""
+"Kan inte köra kommandot för att hämta OVS-master för gränssnittet %1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
@@ -18329,6 +18339,7 @@ msgstr "Kan inte köra kommandot för att få OVS-portsdata för gränssnittet %
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
 msgstr ""
+"Kan inte köra kommandot för att få OVS-portsdata för gränssnittet %1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
@@ -18339,6 +18350,8 @@ msgstr ""
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
 msgstr ""
+"Kan inte köra kommandot för att sätta OVS-portsdata för gränssnittet %1$s: "
+"%2$s"
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "Kan inte köra engångs GDBus-initierare"
@@ -18549,11 +18562,11 @@ msgstr "Kan inte sätta portprofilen på direkta gränssnitt"
 
 #, c-format
 msgid "Unable to set qos configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte sätta qos-konfigurationen på port %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set queue configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte sätta kökonfigurationen på port %1$s: %2$s"
 
 msgid "Unable to set socket reuse addr flag"
 msgstr "Kan inte sätta flaggan för uttagets adressåteranvändning"
@@ -18570,7 +18583,7 @@ msgstr "Kan inte sätta en trådlokal variabel"
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte sätta vlan-konfigurationen på port %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
@@ -18626,161 +18639,155 @@ msgstr "Kan inte töa alla processer"
 msgid "Unable to thaw filesystems"
 msgstr "Kan inte töa filsystem"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to truncate %1$s"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte hugga av %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to umount %1$s"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte avmontera %1$s"
 
 #, c-format
 msgid "Unable to unbind the virtual port %1$s from Midonet"
-msgstr ""
+msgstr "Kan inte binda upp den virtuella porten %1$s från Midonet"
 
 #, c-format
 msgid "Unable to undefine mediated device: %1$s"
-msgstr ""
+msgstr "Kan inte avdefineria en medierad enhet: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink %1$s"
-msgstr "Misslyckades att avdefiniera nätverk %1$s"
+msgstr "Kan inte avlänka %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink path '%1$s'"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte avlänka sökvägen ”%1$s”"
 
 msgid "Unable to unregister machine"
-msgstr ""
+msgstr "Kan inte avregistrera maskinen"
 
 msgid "Unable to update server's tls related files."
-msgstr ""
+msgstr "Kan inte uppdatera serverns tls-relaterade filer."
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to validate doc against %1$s\n"
 "%2$s"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr ""
+"Kan inte validera dokumentationen mot %1$s\n"
+"%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to verify TLS peer: %1$s"
-msgstr "Kan inte fråga kqueue"
+msgstr "Kan inte verifiera TLS-motparten: %1$s"
 
 #, c-format
 msgid "Unable to verify client certificate %1$s against CA certificate %2$s"
-msgstr ""
+msgstr "Kan inte verifiera klientcertifikatet %1$s mot CA-certifikatet %2$s"
 
 #, c-format
 msgid "Unable to verify server certificate %1$s against CA certificate %2$s"
-msgstr ""
+msgstr "Kan inte verifiera servercertifikatet %1$s mot CA-certifikatet %2$s"
 
-#, fuzzy
 msgid "Unable to wait for child process"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte vänta på barnprocessen"
 
-#, fuzzy
 msgid "Unable to wait on agent socket condition"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte vänta på agentuttagvillkoret"
 
-#, fuzzy
 msgid "Unable to wait on epoll"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte vänta på epoll"
 
 #, c-format
 msgid "Unable to wait on monitor condition (vm='%1$s')"
-msgstr ""
+msgstr "Kan inte vänta på övervarkarvillkoret (vm=”%1$s”)"
 
 msgid "Unable to wait on parent process"
 msgstr "Kan inte vänta på föräldraprocessen"
 
-#, fuzzy
 msgid "Unable to watch epoll FD"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte bevaka epoll-FB"
 
-#, fuzzy
 msgid "Unable to watch host console PTY"
-msgstr "anslut till gästkonsolen"
+msgstr "Kan inte bevaka värdkonsol-PTY"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write %1$s"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva %1$s"
 
 #, c-format
 msgid "Unable to write '%1$s' to '%2$s'"
-msgstr ""
+msgstr "Kan inte skriva ”%1$s” till ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write pid file '%1$s/%2$s.pid'"
-msgstr "%1$s: misslyckades att skriva loggfilen: %2$s"
+msgstr "Kan inte skriva pid-filen: ”%1$s/%2$s.pid”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to %1$s"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to '%1$s'"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till ”%1$s”"
 
-#, fuzzy
 msgid "Unable to write to agent"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till agenten"
 
-#, fuzzy
 msgid "Unable to write to container pty"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till behållar-pty"
 
-#, fuzzy
 msgid "Unable to write to domain logfile"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till domänloggfilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file %1$s"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till filen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file '%1$s'"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till filen ”%1$s”"
 
 msgid "Unable to write to monitor"
 msgstr "Kan inte skriva till övervakaren"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to: %1$s"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "Kan inte skriva till: %1$s"
 
 msgid "Unbounded"
-msgstr ""
+msgstr "Obegränsad"
 
 msgid "Unconfined guests are not allowed on this host"
-msgstr ""
+msgstr "Obegränsade gäster är inte tillåtna på denna värd"
 
 msgid "Undefine a given network filter."
-msgstr ""
+msgstr "Avdefiniera ett angivet nätverksfilter."
 
 msgid "Undefine a secret."
-msgstr ""
+msgstr "Avdefiniera en hemlighet."
 
 msgid "Undefine an inactive domain, or convert persistent to transient."
-msgstr ""
+msgstr "Avdefiniera en inaktiv domän, eller konvertera varaktig till transient."
 
 msgid "Undefine an inactive node device"
-msgstr ""
+msgstr "Avdefiniera en inaktiv nodenhet"
 
 msgid "Undefine the configuration for a persistent network."
-msgstr ""
+msgstr "Avdefiniera konfigurationen för ett varaktigt nätverk."
 
 msgid "Undefine the configuration for an inactive pool."
-msgstr ""
+msgstr "Avdefiniera konfigurationen för en inaktiv pool."
 
 msgid "Undefined"
 msgstr "Odefinierad"
 
 #, c-format
 msgid "Undefined node device '%1$s'\n"
-msgstr ""
+msgstr "Avdefinierade nodenheten ”%1$s”\n"
 
 msgid "Undefines the configuration for an inactive node device"
-msgstr ""
+msgstr "Avdefinierar konfigurationen för en inaktiv nodenhet"
 
 #, c-format
 msgid "Unexpected CPU fallback value: %1$d"
@@ -18794,62 +18801,62 @@ msgstr "Oväntad CPU-funktionspolicy %1$d"
 msgid "Unexpected CPU match policy %1$d"
 msgstr "Oväntad CPU-matchningspolicy %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected CPU mode %1$d"
-msgstr "Oväntad CPU-matchningspolicy %1$d"
+msgstr "Oväntat CPU-läge %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected HTTP response code %1$lu"
-msgstr "Oväntad CPU-funktionspolicy %d"
+msgstr "Oväntad HTTP-svarskod %1$lu"
 
 #, c-format
 msgid "Unexpected HTTP response during %1$s: %2$d"
 msgstr "Oväntat HTTP-svar under %1$s: %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected IDE controller model %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntad IDE-styrenhetsmodell %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected JSON format: %1$s"
-msgstr "oväntad data '%1$s'"
+msgstr "Oväntat JSON-format %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected JSON reply '%1$s'"
-msgstr "Oväntad CPU-funktionspolicy %d"
+msgstr "Oväntat JSON-svar ”%1$s”"
 
 #, c-format
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
-msgstr ""
+msgstr "Oväntad LXC URI-sökväg ”%1$s”, prova lxc:///system"
 
 msgid "Unexpected PCI backend 'xen'"
-msgstr ""
+msgstr "Oväntad PCI-bakände ”xen”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected PCI controller model %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntad PCI-styrenhetsmodell %1$d"
 
 msgid "Unexpected QEMU agent still active during domain deletion"
-msgstr ""
+msgstr "Oväntad QEMU-agent som fortfarande är aktiv när domänen raderas"
 
 msgid "Unexpected QEMU monitor still active during domain deletion"
-msgstr ""
+msgstr "Oväntad QEMU-övervakare som fortfarande är aktiv när domänen raderas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected SCSI controller model %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntad SCSI-styrenhetsmodell %1$d"
 
 #, c-format
 msgid "Unexpected Virtuozzo URI path '%1$s', try vz:///system"
-msgstr ""
+msgstr "Oväntad Virtuozzo URI-sökväg ”%1$s”, prova vz:///system"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected address type for '%1$s'"
-msgstr "oväntad disktyp %1$s"
+msgstr "Oväntad adresstyp för ”%1$s”"
 
 #, c-format
 msgid "Unexpected bhyve URI path '%1$s', try bhyve:///system"
-msgstr ""
+msgstr "Oväntad bhyve URI-sökväg ”%1$s”, prova bhyve:///system"
 
 #, c-format
 msgid "Unexpected boot device type %1$i"
@@ -18857,373 +18864,371 @@ msgstr "Oväntad startenhetstyp %1$i"
 
 #, c-format
 msgid "Unexpected confirm code '%1$c' from parent"
-msgstr ""
+msgstr "Oväntad bekräftelsekod ”%1$c” från föräldern"
 
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
-msgstr ""
+msgstr "Oväntad parameter dconnuri med ej peer2peer-migrering"
 
 #, c-format
 msgid "Unexpected device type %1$d"
 msgstr "Oväntad enhetstypen %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected disk sgio mode '%1$d'"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntat disk-sgio-läge ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected driver type '%1$s' opened"
-msgstr "oväntad disktyp %1$s"
+msgstr "Oväntad drivrutinstyp ”%1$s” öppnad"
 
 #, c-format
 msgid "Unexpected element '%1$s' in CPU map '%2$s'"
-msgstr ""
+msgstr "Oväntat element ”%1$s” i CPU-avbildning ”%2$s”"
 
 msgid "Unexpected event thread still active during domain deletion"
-msgstr ""
+msgstr "Oväntad händelsetråd som fortfarande är aktiv när domänen raderas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected filesystem type %1$s"
-msgstr "oväntad disktyp %1$s"
+msgstr "Oväntad filsystemstyp %1$s"
 
 msgid "Unexpected format for mdevctl response"
-msgstr ""
+msgstr "Oväntat format på mdevctl-svaret"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected hostdev mode %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntat hostdev-läge %1$d"
 
 msgid "Unexpected lock parameters for disk resource"
-msgstr ""
+msgstr "Ovändade låsparametrar för diskresursen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message proc %1$d != %2$d"
-msgstr "Oväntad CPU-funktionspolicy %d"
+msgstr "Oväntad meddelande-proc %1$d ≠ %2$d"
 
 #, c-format
 msgid "Unexpected message serial %1$d != %2$d"
-msgstr ""
+msgstr "Oväntad meddelandeserienummer %1$d ≠ %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message status %1$d"
-msgstr "oväntad data '%s'"
+msgstr "Oväntad meddelandestatus %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message status %1$u"
-msgstr "oväntad data '%s'"
+msgstr "Oväntad meddelandestatus %1$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "Oväntad meddelandetyp %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message type %1$u"
-msgstr "oväntad disktyp %s"
+msgstr "Oväntad meddelandetyp %1$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message type: %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "Oväntad meddelandetyp: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected network port type %1$s"
-msgstr "oväntad disktyp %1$s"
+msgstr "Oväntad nätverksporttyp %1$s"
 
 msgid "Unexpected output of cloud-hypervisor binary"
-msgstr ""
+msgstr "Oväntad utdata från moln-hypervisor-binären"
 
 #, c-format
 msgid "Unexpected parameter %1$s for lease resource"
-msgstr ""
+msgstr "Oväntad parameter %1$s till lease-resursen"
 
 #, c-format
 msgid "Unexpected parameter %1$s for object"
-msgstr ""
+msgstr "Oväntad parameter %1$s till objektet"
 
-#, fuzzy
 msgid "Unexpected parameters for disk resource"
-msgstr "saknat namn för källskiva"
+msgstr "Ovändade parametrar till diskresursen"
 
-#, fuzzy
 msgid "Unexpected product line"
-msgstr "oväntad data '%s'"
+msgstr "Oväntad produktrad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected protocol %1$d"
-msgstr "Oväntad CPU-matchningspolicy %1$d"
+msgstr "Oväntat protokoll %1$d"
 
 msgid "Unexpected root filesystem without loop device"
-msgstr ""
+msgstr "Oväntat rotfilsystem utan slingenhet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected rule protocol %1$d"
-msgstr "Oväntad CPU-funktionspolicy %1$d"
+msgstr "Oväntat regelprotokoll %1$d"
 
 #, c-format
 msgid "Unexpected server name '%1$s' during restart"
-msgstr ""
+msgstr "Oväntat servernamn ”%1$s” under omstart"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected signal received: %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntad signal mottagen: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected state of feature '%1$s'"
-msgstr "oväntad data '%1$s'"
+msgstr "Oväntat tillstånd på funktionen ”%1$s”"
 
-#, fuzzy
 msgid "Unexpected stream hole"
-msgstr "Oväntad CPU-funktionspolicy %d"
+msgstr "Ovänta strömhål"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected volume path format: %1$s"
-msgstr "absolut sökväg förväntas: %1$s"
+msgstr "Oväntat format på volymsökväg: %1$s"
 
 msgid "Unexpectedly got a network port without a network bridge"
-msgstr ""
+msgstr "Fick oväntat en nätverksport utan en nätverksbrygga"
 
 msgid "Unexpectedly got a network port without a plug"
-msgstr ""
+msgstr "Fick oväntat en nätverksport utan en plugg"
 
 msgid "Unix file descriptors not supported on this platform"
-msgstr ""
+msgstr "Unix-filbeskrivare stödjs inte på denna plattform"
 
 msgid "Unknown"
 msgstr "Okänd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU feature %1$s"
-msgstr "okänd OS-typ %1$s"
+msgstr "Okänd CPU-funktion %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU mode: %1$X"
-msgstr "Okänd källäge ”%s”"
+msgstr "Okänt CPU-läge: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU mode: %1$s"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänt CPU-läge: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU model %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd CPU-modell %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU vendor %1$s"
-msgstr "Okänt fel"
+msgstr "Okänd CPU-leverantör %1$s"
 
 #, c-format
 msgid "Unknown Command '%1$i'"
-msgstr ""
+msgstr "Okänt kommando ”%1$i”"
 
 msgid "Unknown Error"
-msgstr ""
+msgstr "Okänt fel"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown IP address data source %1$d"
-msgstr "okänd adresstyp ”%s”"
+msgstr "Okänd IP-adressdatakälla %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown JSON reply '%1$s'"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänt JSON-svar ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown LXC namespace source '%1$s'"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänd LXC-namnrymdskälla ”%1$s”"
 
 #, c-format
 msgid "Unknown PCI header type '%1$d' for device '%2$s'"
-msgstr ""
+msgstr "Okänd PCI-huvudtyp ”%1$d” för enheten ”%2$s”"
 
 msgid "Unknown Partition Type, requires build --overwrite"
-msgstr ""
+msgstr "Okänd partitionstyp, förutsätter bygge --overwrite"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown QEMU arch %1$s"
-msgstr "Okänt protokoll ”%1$s”"
+msgstr "Okänd QEMU-arkitektur %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown QEMU device for '%1$s' controller"
-msgstr "okänd diskenhet ”%1$s”"
+msgstr "Okänd QEMU-enhet för styrenheten ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown SCSI controller model %1$s"
-msgstr "Okänd styrenhetstyp ”%1$s”"
+msgstr "Okänd SCSI-styrenhetsmodell %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown URI parameter '%1$s'"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd URI-parameter ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown acpi table type: %1$s"
-msgstr "Okänd styrenhetstyp ”%1$s”"
+msgstr "Okänd acpi-tabelltyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown adapter type: %1$X"
-msgstr "okänd parametertyp: %d"
+msgstr "Okänd adaptertyp: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown architecture %1$s"
-msgstr "okänt förfarande: %d"
+msgstr "Okänd arkitektur %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown async job type %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd async-jobbtyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown autostart mode: %1$X"
-msgstr "Okänd källäge ”%s”"
+msgstr "Okänd autostartläge: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown blkio parameter %1$s"
-msgstr "okänd parametertyp: %d"
+msgstr "Okänd blkio-parameter %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown cache type '%1$s'"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd cache-typ ”%1$s”"
 
 #, c-format
 msgid "Unknown calculation mode '%1$s'"
-msgstr ""
+msgstr "Okänt beräkningsläge ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown cgroup controller '%1$s'"
-msgstr "Okänd styrenhetstyp ”%1$s”"
+msgstr "Okänd cgroup-hanterare ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown char device type: %1$d"
-msgstr "okänd teckenenhetstyp: %s"
+msgstr "Okänd teckenenhetstyp: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown compatibility mode %1$s"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänd kompatibilietsläge %1$s"
 
 #, c-format
 msgid "Unknown controller type %1$d"
 msgstr "Okänd styrenhetstyp %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown core size '%1$s'"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänd kärnstorlek ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown crypto hash %1$d"
-msgstr "Okänt protokoll ”%s”"
+msgstr "Okänd kryptokontrollsumma %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown data source '%1$s'"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänd datakälla ”%1$s”"
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
-msgstr ""
+msgstr "Okänt beräkningsläge för hastigheten för smutsiga sidor: %1$s"
 
 #, c-format
 msgid "Unknown dirty rate status: %1$s"
-msgstr ""
+msgstr "Okänd status för smutshastigheten: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown disk bus: %1$X"
-msgstr "okänd diskbusstyp ”%s”"
+msgstr "Okänd diskbuss: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown disk name '%1$s' and no address specified"
-msgstr "Okänt gränssnitt <driver name='%1$s'> har specificerats"
+msgstr "Okänt disknamn ”%1$s” och ingen adress angiven"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown domain type: %1$X"
-msgstr "okänd disktyp ”%s”"
+msgstr "Okänd domäntyp: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown driver name '%1$s'"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänt drivrutinsnamn ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown driver type %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd drivrutinstyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown enable type %1$d in network"
-msgstr "Okänd modelltyp ”%s”"
+msgstr "Okänd aktiveringstyp %1$d i nätverket"
 
 msgid "Unknown error"
 msgstr "Okänt fel"
 
-#, fuzzy
 msgid "Unknown error value"
-msgstr "Okänt fel"
+msgstr "Okänt felvärde"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown family %1$d"
-msgstr "Okänd modelltyp ”%s”"
+msgstr "Okänd familj %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown firewall layer %1$d"
-msgstr "Okänd modelltyp ”%s”"
+msgstr "Okänt brandväggslager %1$d"
 
 #, c-format
 msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
 msgstr "Okänt vidarebefordran <driver name='%1$s'/> i nätverket %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
-msgstr "Okänd modelltyp ”%s”"
+msgstr "Okänd vidarebefordranstyp %1$d i nätverket ”%2$s”"
 
 #, c-format
 msgid "Unknown forwardPlainNames type %1$d in network"
-msgstr ""
+msgstr "Okänd forwardPlainNames-typ %1$d i nätverket"
 
-#, fuzzy
 msgid "Unknown input device type"
-msgstr "okän gränssnittstyp ”%s”"
+msgstr "Okänd typ av inmatningsenhet"
 
 msgid "Unknown invocation state"
-msgstr ""
+msgstr "Okänt anropstillstånd"
 
-#, fuzzy
 msgid "Unknown job"
-msgstr "Okänd"
+msgstr "Okänt jobb"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown job phase %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd jobbfas %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown job type %1$s"
-msgstr "okänd OS-typ %1$s"
+msgstr "Okänd jobbtyp %1$s"
 
 #, c-format
 msgid "Unknown localOnly type %1$d in network"
-msgstr ""
+msgstr "Okänd localOnly-typ %1$d i nätverket"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown lock manager object type %1$d"
-msgstr "okänd teckenenhetstyp: %s"
+msgstr "Okänd objekttyp för låshanterare %1$d"
 
 #, c-format
 msgid "Unknown lock manager object type %1$d for domain lock object"
-msgstr ""
+msgstr "Okänd objekttyp för låshanterare %1$d för domänlåsobjektet"
 
 #, c-format
 msgid "Unknown migration cookie feature %1$s"
-msgstr ""
+msgstr "Okänd funktion för migreringskaka %1$s"
 
 #, c-format
 msgid ""
 "Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal' or "
 "'paravirt'"
 msgstr ""
+"Okänt lägesvärde %1$s, ”acpi”, ”agent”, ”initctl”, ”signal” eller ”paravirt” "
+"förväntades"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal', or "
 "'paravirt'"
 msgstr ""
+"Okänt lägesvärde %1$s, ”acpi”, ”agent”, ”initctl”, ”signal” eller ”paravirt” "
+"förväntades"
 
 #, c-format
 msgid "Unknown model type '%1$s'"
 msgstr "Okänd modelltyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown namespace: %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd namnrymd: ”%1$s”"
 
 #, c-format
 msgid "Unknown parameter %1$s"
@@ -19238,62 +19243,61 @@ msgstr "Okänt protokoll ”%1$s”"
 
 #, c-format
 msgid "Unknown qemu capabilities flag %1$s"
-msgstr ""
+msgstr "Okänd flagga för qemu-förmågor %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown release: %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd utgåva: %1$s"
 
 #, c-format
 msgid "Unknown remote mode '%1$s'"
-msgstr ""
+msgstr "Okänt fjärrläge ”%1$s”"
 
-#, fuzzy
 msgid "Unknown return code"
-msgstr "Okänt fel"
+msgstr "Okänd returkod"
 
 #, c-format
 msgid "Unknown sched_core value %1$s"
-msgstr ""
+msgstr "Okänt sched_core-värde %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown serial type: %1$X"
-msgstr "Okänd modelltyp ”%s”"
+msgstr "Okänd serietyp: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown slirp feature %1$s"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd slirp-funktion %1$s"
 
 #, c-format
 msgid "Unknown source type: '%1$s'"
 msgstr "Okänd källtyp: ”%1$s”"
 
 msgid "Unknown state of the remote server SSH key"
-msgstr ""
+msgstr "Okänt tillstånd för fjärsserverns SSH-nyckel"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown stdio handler %1$s"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänd stdio-hanterare %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown storage type: '%1$s'"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "Okänd lagringstyp: ”%1$s”"
 
 #, c-format
 msgid "Unknown stub driver configured for PCI device %1$s"
-msgstr ""
+msgstr "Okänd stubbdrivrutin konfigurerad för PCI-enheten %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown suspend target: %1$u"
-msgstr "okänt förfarande: %d"
+msgstr "Okänt sovmål: %1$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown taint flag %1$s"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "Okänd fläckningsflagga %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown uri scheme: '%1$s'"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "Okänt uri-schema: ”%1$s”"
 
 #, fuzzy, c-format
 msgid "Unknown value '%1$s' for %2$s"
