@@ -787,9 +787,7 @@ virNumaGetPages(int node,
         tmp_free[ntmp] = page_free;
         ntmp++;
 
-        /* page_size is in kibibytes while we want huge_page_sum
-         * in just bytes. */
-        huge_page_sum += 1024 * page_size * page_avail;
+        huge_page_sum += page_size * page_avail;
     }
 
     if (direrr < 0)
@@ -799,6 +797,9 @@ virNumaGetPages(int node,
     VIR_REALLOC_N(tmp_size, ntmp + 1);
     VIR_REALLOC_N(tmp_avail, ntmp + 1);
     VIR_REALLOC_N(tmp_free, ntmp + 1);
+
+    /* page_size is in kibibytes while we want huge_page_sum in just bytes. */
+    huge_page_sum *= 1024;
 
     if (virNumaGetPageInfo(node, system_page_size, huge_page_sum,
                            &tmp_avail[ntmp], &tmp_free[ntmp]) < 0)
