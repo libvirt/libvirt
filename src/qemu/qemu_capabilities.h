@@ -681,6 +681,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_SMP_CLUSTERS, /* -smp clusters= */
     QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_DYNAMIC_MEMSLOTS, /* -device virtio-mem-pci.dynamic-memslots= */
 
+    /* 455 */
+    QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL, /* backing-mask-protocol of block-commit/block-stream */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

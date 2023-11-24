@@ -701,6 +701,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-blk.iothread-mapping", /* QEMU_CAPS_VIRTIO_BLK_IOTHREAD_MAPPING */
               "smp-clusters", /* QEMU_CAPS_SMP_CLUSTERS */
               "virtio-mem-pci.dynamic-memslots", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_DYNAMIC_MEMSLOTS */
+
+              /* 455 */
+              "blockjob.backing-mask-protocol", /* QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL */
     );
 
 
@@ -5424,6 +5427,10 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
         if (virQEMUQAPISchemaPathExists(cmd->value, schema))
             virQEMUCapsSet(qemuCaps, cmd->flag);
     }
+
+    if (virQEMUQAPISchemaPathExists("block-commit/arg-type/backing-mask-protocol", schema) &&
+        virQEMUQAPISchemaPathExists("block-stream/arg-type/backing-mask-protocol", schema))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL);
 
     return 0;
 }
