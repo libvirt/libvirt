@@ -4036,6 +4036,10 @@ qemuMonitorJSONBlockCommit(qemuMonitor *mon,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virTristateBool autodismiss = VIR_TRISTATE_BOOL_NO;
+    virTristateBool backingProtocol = VIR_TRISTATE_BOOL_ABSENT;
+
+    if (mon->blockjobMaskProtocol)
+        backingProtocol = VIR_TRISTATE_BOOL_YES;
 
     cmd = qemuMonitorJSONMakeCommand("block-commit",
                                      "s:device", device,
@@ -4046,6 +4050,7 @@ qemuMonitorJSONBlockCommit(qemuMonitor *mon,
                                      "S:backing-file", backingName,
                                      "T:auto-finalize", autofinalize,
                                      "T:auto-dismiss", autodismiss,
+                                     "T:backing-mask-protocol", backingProtocol,
                                      NULL);
     if (!cmd)
         return -1;
@@ -4315,6 +4320,10 @@ qemuMonitorJSONBlockStream(qemuMonitor *mon,
     g_autoptr(virJSONValue) reply = NULL;
     virTristateBool autofinalize = VIR_TRISTATE_BOOL_YES;
     virTristateBool autodismiss = VIR_TRISTATE_BOOL_NO;
+    virTristateBool backingProtocol = VIR_TRISTATE_BOOL_ABSENT;
+
+    if (mon->blockjobMaskProtocol)
+        backingProtocol = VIR_TRISTATE_BOOL_YES;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-stream",
                                            "s:device", device,
@@ -4324,6 +4333,7 @@ qemuMonitorJSONBlockStream(qemuMonitor *mon,
                                            "S:backing-file", backingName,
                                            "T:auto-finalize", autofinalize,
                                            "T:auto-dismiss", autodismiss,
+                                           "T:backing-mask-protocol", backingProtocol,
                                            NULL)))
         return -1;
 

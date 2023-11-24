@@ -92,6 +92,8 @@ struct _qemuMonitor {
     bool objectAddNoWrap;
     /* query-named-block-nodes supports the 'flat' option */
     bool queryNamedBlockNodesFlat;
+    /* use the backing-mask-protocol flag of block-commit/stream */
+    bool blockjobMaskProtocol;
 };
 
 

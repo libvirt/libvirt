@@ -624,6 +624,7 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     if (priv) {
         mon->objectAddNoWrap = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_JSON);
         mon->queryNamedBlockNodesFlat = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
+        mon->blockjobMaskProtocol = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL);
     }
 
     if (virSetCloseExec(mon->fd) < 0) {
