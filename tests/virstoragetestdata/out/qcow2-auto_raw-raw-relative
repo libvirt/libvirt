@@ -1,5 +1,6 @@
 path:ABS_SRCDIR/virstoragetestdata/images/qcow2_raw-raw-relative.qcow2
 backingStoreRaw: <null>
+backingStoreRawFormat: none(0)
 capacity: 0
 encryption: 0
 relPath:<null>

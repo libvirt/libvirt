@@ -184,6 +184,7 @@ testStorageChain(const void *args)
         virBufferAsprintf(&buf,
                           "path:%s\n"
                           "backingStoreRaw: %s\n"
+                          "backingStoreRawFormat: %s(%d)\n"
                           "capacity: %lld\n"
                           "encryption: %d\n"
                           "relPath:%s\n"
@@ -193,6 +194,8 @@ testStorageChain(const void *args)
                           "hostname:%s\n\n",
                           strippedPath,
                           strippedBackingStoreRaw,
+                          NULLSTR(virStorageFileFormatTypeToString(elt->backingStoreRawFormat)),
+                          elt->backingStoreRawFormat,
                           elt->capacity,
                           !!elt->encryption,
                           strippedRelPath,

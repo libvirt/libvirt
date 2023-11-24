@@ -1,5 +1,6 @@
 path:ABS_SRCDIR/virstoragetestdata/images/sub/link2
 backingStoreRaw: ../sub/link1
+backingStoreRawFormat: qcow2(14)
 capacity: 1024
 encryption: 0
 relPath:<null>
@@ -10,6 +11,7 @@ hostname:<null>
 
 path:ABS_SRCDIR/virstoragetestdata/images/sub/../sub/link1
 backingStoreRaw: ../raw
+backingStoreRawFormat: raw(1)
 capacity: 1024
 encryption: 0
 relPath:../sub/link1
@@ -20,6 +22,7 @@ hostname:<null>
 
 path:ABS_SRCDIR/virstoragetestdata/images/sub/../sub/../raw
 backingStoreRaw: <null>
+backingStoreRawFormat: none(0)
 capacity: 0
 encryption: 0
 relPath:../raw
