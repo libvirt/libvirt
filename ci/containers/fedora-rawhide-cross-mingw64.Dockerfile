@@ -53,6 +53,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                python3 \
                python3-docutils \
                python3-flake8 \
+               python3-pytest \
                qemu-img \
                rpm-build \
                scrub \

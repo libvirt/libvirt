@@ -57,6 +57,7 @@ function install_buildenv() {
         polkit \
         py3-docutils \
         py3-flake8 \
+        py3-pytest \
         python3 \
         qemu-img \
         readline-dev \

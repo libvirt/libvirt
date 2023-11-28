@@ -70,6 +70,7 @@ function install_buildenv() {
         python3 \
         python3-docutils \
         python3-flake8 \
+        python3-pytest \
         qemu-img \
         readline-devel \
         rpm-build \

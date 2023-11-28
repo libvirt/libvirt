@@ -43,6 +43,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       policykit-1 \
                       python3 \
                       python3-docutils \
+                      python3-pytest \
                       qemu-utils \
                       scrub \
                       sed \

@@ -73,6 +73,7 @@ RUN zypper update -y && \
            python3-base \
            python3-docutils \
            python3-flake8 \
+           python3-pytest \
            qemu-tools \
            readline-devel \
            rpm-build \
