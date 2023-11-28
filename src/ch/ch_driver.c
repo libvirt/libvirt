@@ -850,10 +850,11 @@ static int chStateCleanup(void)
     if (ch_driver == NULL)
         return -1;
 
-    virObjectUnref(ch_driver->domains);
+    virBitmapFree(ch_driver->chCaps);
+    virObjectUnref(ch_driver->config);
     virObjectUnref(ch_driver->xmlopt);
     virObjectUnref(ch_driver->caps);
-    virObjectUnref(ch_driver->config);
+    virObjectUnref(ch_driver->domains);
     virMutexDestroy(&ch_driver->lock);
     g_clear_pointer(&ch_driver, g_free);
 
