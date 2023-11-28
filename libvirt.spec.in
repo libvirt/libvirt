@@ -313,7 +313,6 @@ BuildRequires: libxml2
 BuildRequires: libxslt
 BuildRequires: gettext
 BuildRequires: systemd-rpm-macros
-BuildRequires: rpcgen
 # Fedora build root suckage
 BuildRequires: gawk
 %if %{with_native}
