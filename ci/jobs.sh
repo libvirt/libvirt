@@ -94,7 +94,6 @@ run_rpmbuild() {
 
     run_cmd rpmbuild \
                 --clean \
-                --nodeps \
                 --define "_without_$build1 1" \
                 --define "_without_$build2 1" \
                 -ta build/meson-dist/libvirt-*.tar.xz
