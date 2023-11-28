@@ -4704,11 +4704,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysPCI *pcisrc = &dev->source.subsys.u.pci;
     virDomainNetTeamingInfo *teaming;
-    g_autofree char *host = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT,
-                                            pcisrc->addr.domain,
-                                            pcisrc->addr.bus,
-                                            pcisrc->addr.slot,
-                                            pcisrc->addr.function);
+    g_autofree char *host = virPCIDeviceAddressAsString(&pcisrc->addr);
     const char *failover_pair_id = NULL;
 
     /* caller has to assign proper passthrough backend type */
