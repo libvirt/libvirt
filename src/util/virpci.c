@@ -2536,6 +2536,12 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *addr,
     return 0;
 }
 
+
+/* Represents format of PF's phys_port_name in switchdev mode:
+ * 'p%u' or 'p%us%u'. New line checked since value is read from sysfs file.
+ */
+# define VIR_PF_PHYS_PORT_NAME_REGEX  "(p[0-9]+$)|(p[0-9]+s[0-9]+$)"
+
 /**
  * virPCIGetNetName:
  * @device_link_sysfs_path: sysfs path to the PCI device
@@ -2660,6 +2666,8 @@ virPCIGetNetName(const char *device_link_sysfs_path,
                    device_link_sysfs_path);
     return -1;
 }
+
+# undef VIR_PF_PHYS_PORT_NAME_REGEX
 
 int
 virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
