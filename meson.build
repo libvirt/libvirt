@@ -814,7 +814,6 @@ optional_programs = [
   'mm-ctl',
   'modprobe',
   'ovs-vsctl',
-  'passt',
   'pdwtags',
   'pytest',
   'rmmod',

@@ -35,6 +35,9 @@
 VIR_LOG_INIT("qemu.passt");
 
 
+#define PASST "passt"
+
+
 static char *
 qemuPasstCreatePidFilename(virDomainObj *vm,
                            virDomainNetDef *net)
