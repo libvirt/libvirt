@@ -50,8 +50,6 @@ struct _virZPCIDeviceAddress {
     /* Don't forget to update virPCIDeviceAddressCopy if needed. */
 };
 
-#define VIR_PCI_DEVICE_ADDRESS_FMT "%04x:%02x:%02x.%d"
-
 struct _virPCIDeviceAddress {
     unsigned int domain;
     unsigned int bus;
