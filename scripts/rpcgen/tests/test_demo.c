@@ -12,7 +12,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
     /* 128kb is big enough for any of our test data */
     size_t buflen = 128 * 1000;
     g_autofree char *buf = g_new0(char, buflen);
-    g_autofree char *expfile = g_strdup_printf("test_demo_%s.bin", testname);
+    g_autofree char *expfile = g_strdup_printf(abs_srcdir "/test_demo_%s.bin", testname);
     g_autofree char *expected = NULL;
     size_t explen;
     size_t actlen;

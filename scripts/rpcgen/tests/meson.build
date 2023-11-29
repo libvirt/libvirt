@@ -8,7 +8,9 @@ rpcgen_tests = files([
 test_demo = executable(
     'test_demo',
     [ 'test_demo.c' ],
-    c_args: cc_flags_relaxed_frame_limit,
+    c_args: [
+      '-Dabs_srcdir="@0@"'.format(meson.current_source_dir()),
+    ] + cc_flags_relaxed_frame_limit,
     dependencies: [
         xdr_dep, glib_dep
     ],
