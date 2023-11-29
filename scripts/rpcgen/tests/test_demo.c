@@ -373,7 +373,7 @@ static void test_enum_variable_array_empty(void)
              &vorig, &vnew, "enum_variable_array_empty", false);
 }
 
-#define TEST_STRUCT_INIT (TestStruct) { .c1 = 0xca, .c2 = 0xfe }
+#define TEST_STRUCT_INIT (TestStruct) { .c1 = 0x4a, .c2 = 0x7e }
 #define TEST_STRUCT_INIT_ALT (TestStruct) { .c1 = 0x09, .c2 = 0x07 }
 
 static void test_struct_scalar(void)
