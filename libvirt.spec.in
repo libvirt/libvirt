@@ -431,8 +431,6 @@ BuildRequires: mingw32-filesystem
 BuildRequires: mingw32-gcc
 BuildRequires: mingw32-binutils
 BuildRequires: mingw32-glib2 >= 2.48
-BuildRequires: mingw32-libgpg-error
-BuildRequires: mingw32-libgcrypt
 BuildRequires: mingw32-gnutls
 BuildRequires: mingw32-gettext
 BuildRequires: mingw32-libxml2
@@ -446,8 +444,6 @@ BuildRequires: mingw64-filesystem
 BuildRequires: mingw64-gcc
 BuildRequires: mingw64-binutils
 BuildRequires: mingw64-glib2 >= 2.48
-BuildRequires: mingw64-libgpg-error
-BuildRequires: mingw64-libgcrypt
 BuildRequires: mingw64-gnutls
 BuildRequires: mingw64-gettext
 BuildRequires: mingw64-libxml2
