@@ -1,8 +1,7 @@
 subdir('rpcgen')
+subdir('tests')
 
 if pytest_prog.found()
-    subdir('tests')
-
     test(
         'rpcgen-pytest',
         python3_prog,
