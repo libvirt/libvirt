@@ -408,8 +408,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
-# For storage wiping with different algorithms
-BuildRequires: scrub
     %if %{with_numad}
 BuildRequires: numad
     %endif
