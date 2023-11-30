@@ -80,6 +80,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                pkgconfig \
                polkit \
                python3 \
+               python3-black \
                python3-docutils \
                python3-flake8 \
                python3-pytest \
@@ -87,7 +88,6 @@ exec "$@"\n' > /usr/bin/nosync && \
                readline-devel \
                rpm-build \
                sanlock-devel \
-               scrub \
                sed \
                systemd-devel \
                systemd-rpm-macros \

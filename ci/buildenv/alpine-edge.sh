@@ -13,6 +13,7 @@ function install_buildenv() {
         audit-dev \
         augeas \
         bash-completion \
+        black \
         ca-certificates \
         ccache \
         ceph-dev \

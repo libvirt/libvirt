@@ -14,6 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       augeas-lenses \
                       augeas-tools \
                       bash-completion \
+                      black \
                       ca-certificates \
                       ccache \
                       clang \
@@ -82,7 +83,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       python3-setuptools \
                       python3-wheel \
                       qemu-utils \
-                      scrub \
                       sed \
                       systemtap-sdt-dev \
                       wireshark-dev \

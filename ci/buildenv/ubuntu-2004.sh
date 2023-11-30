@@ -12,6 +12,7 @@ function install_buildenv() {
             augeas-lenses \
             augeas-tools \
             bash-completion \
+            black \
             ca-certificates \
             ccache \
             clang \
@@ -80,7 +81,6 @@ function install_buildenv() {
             python3-setuptools \
             python3-wheel \
             qemu-utils \
-            scrub \
             sed \
             systemtap-sdt-dev \
             wireshark-dev \

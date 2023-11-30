@@ -68,6 +68,7 @@ function install_buildenv() {
         pkgconfig \
         polkit \
         python3 \
+        python3-black \
         python3-docutils \
         python3-flake8 \
         python3-pytest \
@@ -75,7 +76,6 @@ function install_buildenv() {
         readline-devel \
         rpm-build \
         sanlock-devel \
-        scrub \
         sed \
         systemd-devel \
         systemd-rpm-macros \

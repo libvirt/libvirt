@@ -12,6 +12,7 @@ function install_buildenv() {
             augeas-lenses \
             augeas-tools \
             bash-completion \
+            black \
             ca-certificates \
             ccache \
             codespell \
@@ -43,7 +44,6 @@ function install_buildenv() {
             python3-docutils \
             python3-pytest \
             qemu-utils \
-            scrub \
             sed \
             xsltproc
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen

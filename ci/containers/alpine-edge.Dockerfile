@@ -14,6 +14,7 @@ RUN apk update && \
         audit-dev \
         augeas \
         bash-completion \
+        black \
         ca-certificates \
         ccache \
         ceph-dev \

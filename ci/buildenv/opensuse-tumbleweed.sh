@@ -70,14 +70,14 @@ function install_buildenv() {
            pkgconfig \
            polkit \
            python3-base \
+           python3-black \
            python3-docutils \
+           python3-flake8 \
            python3-pytest \
-           python39-flake8 \
            qemu-tools \
            readline-devel \
            rpm-build \
            sanlock-devel \
-           scrub \
            sed \
            systemd-rpm-macros \
            systemtap-sdt-devel \

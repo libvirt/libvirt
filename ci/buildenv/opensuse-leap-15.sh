@@ -72,12 +72,14 @@ function install_buildenv() {
            python3-base \
            python3-docutils \
            python3-flake8 \
+           python3-pip \
            python3-pytest \
+           python3-setuptools \
+           python3-wheel \
            qemu-tools \
            readline-devel \
            rpm-build \
            sanlock-devel \
-           scrub \
            sed \
            systemd-rpm-macros \
            systemtap-sdt-devel \
@@ -88,6 +90,7 @@ function install_buildenv() {
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
+    /usr/bin/pip3 install black
 }
 
 export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
