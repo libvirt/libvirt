@@ -73,6 +73,7 @@ VIR_LOG_INIT("storage.storage_util");
 #endif
 
 #define PARTED "parted"
+#define SCRUB "scrub"
 
 /* virStorageBackendNamespaceInit:
  * @poolType: virStoragePoolType

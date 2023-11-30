@@ -818,7 +818,6 @@ optional_programs = [
   'pdwtags',
   'pytest',
   'rmmod',
-  'scrub',
   'tc',
 ]
 
