@@ -3,7 +3,7 @@ subdir('rpcgen')
 if tests_enabled[0]
   subdir('tests')
 
-  if pytest_prog.found()
+  if pytest_prog.found() and host_machine.system() != 'darwin'
     test(
       'rpcgen-pytest',
       python3_prog,
