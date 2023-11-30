@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-11-24 08:52+0000\n"
+"PO-Revision-Date: 2023-11-27 12:14+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -18768,7 +18768,8 @@ msgid "Undefine a secret."
 msgstr "Avdefiniera en hemlighet."
 
 msgid "Undefine an inactive domain, or convert persistent to transient."
-msgstr "Avdefiniera en inaktiv domän, eller konvertera varaktig till transient."
+msgstr ""
+"Avdefiniera en inaktiv domän, eller konvertera varaktig till transient."
 
 msgid "Undefine an inactive node device"
 msgstr "Avdefiniera en inaktiv nodenhet"
@@ -19214,7 +19215,7 @@ msgstr ""
 "Okänt lägesvärde %1$s, ”acpi”, ”agent”, ”initctl”, ”signal” eller ”paravirt” "
 "förväntades"
 
-#, c-format, fuzzy
+#, c-format
 msgid ""
 "Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal', or "
 "'paravirt'"
@@ -19299,140 +19300,144 @@ msgstr "Okänd fläckningsflagga %1$s"
 msgid "Unknown uri scheme: '%1$s'"
 msgstr "Okänt uri-schema: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown value '%1$s' for %2$s"
-msgstr "Okänd modelltyp ”%s”"
+msgstr "Okänt värde ”%1$s” på %2$s"
 
 #, c-format
 msgid "Unknown value '%1$s' for %2$s 'type' property"
-msgstr ""
+msgstr "Okänt värde ”%1$s” på %2$s egenskap ”type”"
 
 #, c-format
 msgid "Unknown value '%1$s' for AnyType 'type' property"
-msgstr ""
+msgstr "Okänt värde ”%1$s” på AnyType-egenskapen ”type”"
 
 #, c-format
 msgid "Unknown value '%1$s' for xsd:boolean"
-msgstr ""
+msgstr "Okänt värde ”%1$s” på xsd:boolean"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown vendor %1$s referenced by CPU model %2$s"
-msgstr "CPU-leverantören anges utan CPU-modell"
+msgstr "Okänd leverantör %1$s refererad av CPU-modell %2$s"
 
 #, c-format
 msgid "Unknown virDomainControllerPCIModelName value: %1$d"
-msgstr ""
+msgstr "Okänd värde på virDomainControllerPCIModelName: %1$d"
 
 #, c-format
 msgid "Unmanaged PCI device %1$s must be manually detached from the host"
-msgstr ""
+msgstr "Ohanterad PCI-enhet %1$s måste manuellt kopplas från värden"
 
 #, c-format
 msgid "Unnkown proxy type '%1$s'"
-msgstr ""
+msgstr "Okänd proxy-typ ”%1$s”"
 
 msgid "Unpaused"
 msgstr "Avpausad"
 
 #, c-format
 msgid "Unrecognized controller type %1$d"
-msgstr ""
+msgstr "Okänd styrenhetstyp %1$d"
 
 msgid "Unrecognized disk label found, requires build"
-msgstr ""
+msgstr "Okänd disketikett funnen, kräver bygge"
 
 #, c-format
 msgid "Unrecognized family '%1$s' in network '%2$s'"
-msgstr ""
+msgstr "Okänd familj ”%1$s” i nätverket ”%2$s”"
 
 #, c-format
 msgid "Unrecognized firewalld backend type: %1$s"
-msgstr ""
+msgstr "Okänd bakändestyp till firewalld: %1$s"
 
 #, c-format
 msgid "Unrecognized value in %1$s: %2$s"
-msgstr ""
+msgstr "Okänt värde i %1$s: %2$s"
 
-#, fuzzy
 msgid "Unsafe migration"
-msgstr "live-migrering"
+msgstr "Osäker migrering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsafe migration: %1$s"
-msgstr "live-migrering"
+msgstr "Osäker migrering: %1$s"
 
 #, c-format
 msgid ""
 "Unsupported <bandwidth> element in network '%1$s' in portgroup '%2$s' with "
 "forward mode='%3$s'"
 msgstr ""
+"Ej stött element <bandwidth> i nätverket ”%1$s” i portgruppen ”%2$s” med "
+"vidarebefordransläge=”%3$s”"
 
 #, c-format
 msgid "Unsupported <dns> element in network %1$s with forward mode='%2$s'"
 msgstr ""
+"Ej stött element <dns> i nätverket %1$s med vidarebefordransläge=”%2$s”"
 
 #, c-format
 msgid "Unsupported <domain> element in network %1$s with forward mode='%2$s'"
 msgstr ""
+"Ej stött element <domain> i nätverket %1$s med vidarebefordransläge=”%2$s”"
 
 #, c-format
 msgid "Unsupported <ip> element in network %1$s with forward mode='%2$s'"
-msgstr ""
+msgstr "Ej stött element <ip> i nätverket %1$s med vidarebefordransläge=”%2$s”"
 
 #, c-format
 msgid "Unsupported <mac> element in network %1$s with forward mode='%2$s'"
 msgstr ""
+"Ej stött element <mac> i nätverket %1$s med vidarebefordransläge=”%2$s”"
 
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%1$s'"
-msgstr ""
+msgstr "Ej stött element <tftp> i ett IPv6-element i nätverket ”%1$s”"
 
 #, c-format
 msgid "Unsupported IP address data source %1$d"
-msgstr ""
+msgstr "Ej stödd IP-adressdatakälla %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported NUMA memory placement mode '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Ej stött läge för NUMA-minnesplacering ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported NUMA memory tuning mode '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "Ej stött läge för NUMA-minnestrimning ”%1$s”"
 
 #, c-format
 msgid "Unsupported OS type: %1$s"
 msgstr "OS-typen %1$s stödjs inte"
 
 msgid "Unsupported PCI Express root controller"
-msgstr ""
+msgstr "Ej stödd PCI-Express rotstyrenhet"
 
 #, c-format
 msgid "Unsupported PCR banks '%1$s'"
-msgstr ""
+msgstr "Ej stödda PCR-bankar ”%1$s”"
 
 #, c-format
 msgid "Unsupported SCSI controller address type '%1$d'"
-msgstr ""
+msgstr "Ej stödd adresstyp för SCSI-styrenhet ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported SCSI controller model %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "Ej stödd SCSI-styrenhetsmodell %1$s"
 
 #, c-format
 msgid "Unsupported SCSI controller model '%1$d'"
-msgstr ""
+msgstr "Ej stödd SCSI-styrenhetsmodell ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported SMBIOS mode '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Ej stött SBMIOS-läge ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported URI scheme '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Ej stött URI-schema ”%1$s”"
 
 #, c-format
 msgid "Unsupported VPD field access type specified %1$s"
-msgstr ""
+msgstr "Ej stödd VPD-fältåtkomsttyp angiven %1$s"
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -19440,58 +19445,56 @@ msgstr "Åtgärd som inte stödjs: %1$s\n"
 
 #, c-format
 msgid "Unsupported address family %1$d Only IPv4 or IPv6 default gateway"
-msgstr ""
+msgstr "Ej stödd adressfamilj %1$d Endast IPv4 eller IPv6 som standard-gateway"
 
 #, c-format
 msgid "Unsupported address type '%1$s' with mediated device model '%2$s'"
-msgstr ""
+msgstr "Ej stödd adresstyp ”%1$s” med förmedlad enhetsmodell ”%2$s”"
 
-#, fuzzy
 msgid "Unsupported address type for character device"
-msgstr "okänd typ presenterad för värd för teckenenhet: %s"
+msgstr "Ej stödd adrestyp för teckenenhet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported algorithm '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "Ej stödd algoritm ”%1$s”"
 
 #, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "Startenhetstypen stödjs inte: ”%1$s”"
 
-#, fuzzy
 msgid "Unsupported boot order configuration"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "Ej stödd startordningskonfiguration"
 
 #, c-format
 msgid "Unsupported bus type '%1$s'"
 msgstr "Busstypen ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported bus type '%1$s' for %2$s"
-msgstr "disktypen stödjs inte %s"
+msgstr "Ej stödd busstyp ”%1$s” för %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported bus type '%1$s' for device type '%2$s'"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Ej stödd busstyp ”%1$s” för enhetstypen ”%2$s”"
 
 msgid "Unsupported capacity-to-allocation relation"
-msgstr ""
+msgstr "Ej stödd relation kapacetet-till-allokering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Ej stött TCP-protokoll för teckenenhet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported character device type '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Ej stödd teckenenhetstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported codeset '%1$d'"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "Ej stödd koduppsättning ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported compression method '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "Ej stödd komprimeringsmetod ”%1$s”"
 
 #, c-format
 msgid "Unsupported config format '%1$s'"
@@ -19501,24 +19504,23 @@ msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
 msgid "Unsupported config type %1$s"
 msgstr "Konfigurationstypen stödjs inte %1$s"
 
-#, fuzzy
 msgid "Unsupported configuration"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "Ej stödd konfiguration"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported controller model: %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "Ej stödd styrenhetsmodell: %1$s"
 
 msgid "Unsupported controller type"
-msgstr ""
+msgstr "Ej stödd styrenhetstyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported controller type %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "Ej stödd styrenhetstyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported controller type: %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "Ej stödd styrenhetstyp: %1$s"
 
 msgid "Unsupported device type"
 msgstr "Enhetstyp som inte stödjs"
@@ -19534,16 +19536,18 @@ msgstr "Enhetstypen ”%1$s” stödjs inte"
 #, c-format
 msgid "Unsupported device-mapper version. Expected %1$d got %2$d"
 msgstr ""
+"Ej stödd enhetsavbildarversion (device mapper). %1$d förväntades men fick "
+"%2$d"
 
 msgid "Unsupported disk address type"
-msgstr ""
+msgstr "Ej stödd diskadresstyp"
 
 #, c-format
 msgid "Unsupported disk address type '%1$s'"
 msgstr "Diskadresstypen ”%1$s” stödjs inte"
 
 msgid "Unsupported disk bus"
-msgstr ""
+msgstr "Ej stödd diskbuss"
 
 #, c-format
 msgid "Unsupported disk bus type %1$s"
@@ -19560,13 +19564,13 @@ msgstr "Disktypen stödjs inte"
 msgid "Unsupported disk type %1$d"
 msgstr "Disktypen %1$d stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported format of disk %1$s"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "Ej stött format på disken %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported forward mode '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "Ej stött fidarebefordransläge ”%1$s”"
 
 #, c-format
 msgid "Unsupported graphics type '%1$s'"
@@ -19590,19 +19594,18 @@ msgstr "Värdenhetstypen %1$s stödjs inte"
 
 #, c-format
 msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr ""
+msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
 
-#, fuzzy
 msgid "Unsupported listen type"
-msgstr "disktypen stödjs inte %s"
+msgstr "Ej stödd lyssningstyp"
 
 #, c-format
 msgid "Unsupported loader format '%1$s'"
-msgstr ""
+msgstr "Ej stött laddformat ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported migration cookie feature %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "Ej stödd funktion för migreringskaka %1$s"
 
 #, c-format
 msgid "Unsupported net type %1$s"
@@ -19612,9 +19615,9 @@ msgstr "Nättypen %1$s stödjs inte"
 msgid "Unsupported net type '%1$s'"
 msgstr "Nättypen ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported network block protocol '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "Ej stött nätverksblockprotokoll ”%1$s”"
 
 #, c-format
 msgid "Unsupported network type %1$s"
@@ -19625,46 +19628,46 @@ msgid ""
 "Unsupported network-wide <bandwidth> element in network %1$s with forward "
 "mode='%2$s'"
 msgstr ""
+"Ej stött nätverksövergripande element <bandwidth> i nätverket %1$s med "
+"vidarebefordransläge=”%2$s”"
 
-#, fuzzy
 msgid "Unsupported null storage bus"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "Ej stödd null-lagringsbuss"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported numatune mode '%1$d'"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "Ej stött numatune-läge ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported numatune placement '%1$d'"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "Ej stödd numatune-placering ”%1$d”"
 
 #, c-format
 msgid "Unsupported nvram format '%1$s'"
-msgstr ""
+msgstr "Ej stött nvram-format ”%1$s”"
 
 #, c-format
 msgid "Unsupported object type %1$d"
 msgstr "Objekttyp %1$d stödjs inte"
 
-#, fuzzy
 msgid "Unsupported resctrl monitor type"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "Ej stödd resctrl-övervakningstyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported root filesystem type %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "Ej stödd rotfilsystemstyp %1$s"
 
 #, c-format
 msgid "Unsupported scheme in disks URI: %1$s"
-msgstr ""
+msgstr "Ej stött schema i disk-URI:er: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported spicevmc target name '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Ej stött spicevmc-målnamn ”%1$s”"
 
 #, c-format
 msgid "Unsupported storage type %1$s, the only supported type is %2$s"
-msgstr ""
+msgstr "Ej stödd lagringstyp %1$s, den enda stödda typen är %2$s"
 
 #, c-format
 msgid "Unsupported vbox device type: %1$d"
@@ -19674,54 +19677,53 @@ msgstr "Vbox-enhetstypen %1$d stödjs inte"
 msgid "Unsupported video device type '%1$s'"
 msgstr "Videoenhetstypen ”%1$s” stödjs inte"
 
-#, fuzzy
 msgid "Unsupported virt type"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "Ej stödd virt-typ"
 
 #, c-format
 msgid "Unsupported volume format '%1$s'"
 msgstr "Volymformatet ”%1$s” stödjs inte"
 
-#, fuzzy
 msgid "Unused"
-msgstr "stannad"
+msgstr "Oanvänd"
 
 #, c-format
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
-msgstr ""
+msgstr "Ovanligt värde i %1$s/devices/%2$s/class: %3$s"
 
 msgid "Update device from an XML <file>."
 msgstr "Uppdatera enhet från en XML <fil>."
 
 msgid "Update the media"
-msgstr ""
+msgstr "Uppdatera mediumet"
 
 msgid "Update values of a memory device of a domain"
-msgstr ""
+msgstr "Uppdatera värden för en domäns minnesenhet"
 
 msgid "Updated"
 msgstr "Uppdaterad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Updated network %1$s live state"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "Uppdaterade nätverket %1$s aktivitetstillstånd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Updated network %1$s persistent config"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "Uppdaterade nätverket %1$s varaktighetskonfiguration"
 
 #, c-format
 msgid "Updated network %1$s persistent config and live state"
 msgstr ""
+"Uppdaterade nätverket %1$s varaktighetkonfiguration och aktivitetstillstånd"
 
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
-msgstr ""
+msgstr "Uppdatering av en körande domän kräver flaggan VIR_DOMAIN_AFFECT_LIVE"
 
 msgid "Upgrade to a kernel supporting namespaces"
-msgstr ""
+msgstr "Uppgradera till en kärna som stödjer namnrymder"
 
 msgid "Upload file contents to a volume"
-msgstr ""
+msgstr "Ladda upp filinnehåll till en volym"
 
 msgid "Usage"
 msgstr "Användning"
@@ -19730,6 +19732,8 @@ msgid ""
 "Usage of listen-address is forbidden when migration URI uses UNIX transport "
 "method"
 msgstr ""
+"Användning av lyssningsadresser är förbjuden när migrerings-URI:n använder "
+"UNIX-transportmetoden"
 
 msgid "Usage:"
 msgstr "Användning:"
@@ -19750,16 +19754,31 @@ msgid ""
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
 msgstr ""
+"Användning:\n"
+"  %1$s FIL\n"
+"  %2$s { -v | -h }\n"
+"\n"
+"Extrahera Distinguished Name från ett PEM-certifikat.\n"
+"Utdatan är avsedd att användas i konfigurationsalternativet\n"
+"tls_allowed_dn_list i filen libvirtd.conf.\n"
+"\n"
+"  FIL             certifikatfil att extrahera DN:et ifrån\n"
+"\n"
+"flaggor:\n"
+"  -h | --help     visa denna hjälp och avsluta\n"
+"  -v | --version  skriv ut versionsinformation och avsluta\n"
 
 #, sh-format
 msgid ""
 "Usage: $program_name {start|stop|status|restart|condrestart|try-restart|"
 "reload|force-reload|gueststatus|shutdown}"
 msgstr ""
+"Användning: $program_name {start|stop|status|restart|condrestart|try-restart|"
+"reload|force-reload|gueststatus|shutdown}"
 
 #, c-format
 msgid "Usage: %1$s FILENAME FD"
-msgstr ""
+msgstr "Användning: %1$s FILNAMN FB"
 
 #, c-format
 msgid ""
@@ -19767,58 +19786,73 @@ msgid ""
 "Designed for use with 'dnsmasq --dhcp-script'\n"
 "Refer to man page of dnsmasq for more details'\n"
 msgstr ""
+"Användning: %1$s add|old|del|init mac|clientid ip [hostname]\n"
+"Gjort för användning med ”dnsmasq --dhcp-script”\n"
+"Referera till manualsidan för dnsmasq för fler detaljer\n"
 
 msgid ""
 "Use XML to start a full or incremental disk backup of a live domain, "
 "optionally creating a checkpoint"
 msgstr ""
+"Använd XML för att starta en fullständig eller inkrementell "
+"disksäkerhetskopia av en aktiv domän, eventuellt genom att skapa en "
+"kontrollpunkt"
 
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr ""
+"Användning av elementet ”parentaddr” kräver användningen av adaptern ”type”"
 
 msgid ""
 "Use of 'wwnn', 'wwpn', and 'parent' attributes requires use of the adapter "
 "'type'"
 msgstr ""
+"Användning av attributen ”wwnn”, ”wwpn” och ”parent” kräver användning av "
+"adaptern ”type”"
 
 msgid "Use the guest agent to query authorized SSH keys for given user"
 msgstr ""
+"Använd gästagenten för att fråga om auktoriserae SSH-nycklar för den angivna "
+"användaren"
 
 msgid ""
 "Use the guest agent to query or set cpu state from guest's point of view"
 msgstr ""
+"Använd gästagenten för att fråga eller ställa in cpu-tillstånd från gästens "
+"synvinkel"
 
 msgid ""
 "Use the guest agent to query various information from guest's point of view"
 msgstr ""
+"Använd gästagenten för att fråga om diverse information från gästens "
+"synvinkel"
 
 msgid "Used memory:"
 msgstr "Använt minne:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "User %1$s doesn't exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "Användaren %1$s finns inte"
 
 msgid "User namespace support is recommended"
-msgstr ""
+msgstr "Stöd för användarnamnrymder rekommenderas"
 
 msgid "Username request failed"
-msgstr ""
+msgstr "Användarnamnsbegäran misslyckades"
 
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "Använder API: %1$s %2$d.%3$d.%4$d\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
-msgstr "Använder API: %s %d.%d.%d\n"
+msgstr "Använder biblioteket: libvirt %1$d.%2$d.%3$d\n"
 
 msgid "Uuid is null"
-msgstr ""
+msgstr "Uuid är null"
 
 #, c-format
 msgid "V1 controller '%1$s' is not wanted, but '%2$s' is co-mounted"
-msgstr ""
+msgstr "V1-hanteraren ”%1$s” är inte önskad, men ”%2$s” är sammonterad"
 
 msgid "VCPU"
 msgstr "VCPU"
@@ -19831,85 +19865,85 @@ msgid ""
 "VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
 "be set to %3$s"
 msgstr ""
+"VF %1$d för PF ”%2$s” är inte bunden till en nätdrivrutin, så dess MAC-"
+"adress kan inte sättas till %3$s"
 
 #, c-format
 msgid "VFB %1$s too big for destination"
 msgstr "VFB %1$s är för stor för destinationen"
 
 msgid "VFIO AP device assignment is not supported by this version of QEMU"
-msgstr ""
+msgstr "Tilldelning av VFIO AP-enhet stödjs inte av denna version av QEMU"
 
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
-msgstr ""
+msgstr "Tilldelning av VFIO CCW-enhet stödjs inte av denna version av QEMU"
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
-msgstr ""
+msgstr "Tilldelning av VFIO PCI-enhet stödjs inte av denna version av QEMU"
 
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
-msgstr ""
+msgstr "Tilldelning av VFIO PCI-enhet stödjs inte av denna version av qemu"
 
-#, fuzzy
 msgid "VFIO device assignment is currently not supported on this system"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Tilldelning av VFIO-enhet stödjs för närvarande inte på detta system"
 
 msgid "VM disk source and snapshot disk source are not the same"
-msgstr ""
+msgstr "VM-diskkälla och ögonblicsbildskälla är inte samma"
 
-#, fuzzy
 msgid "VM is already active"
-msgstr "Domänen är redan aktiv"
+msgstr "VM:en är redan aktiv"
 
 msgid "VM is not defined"
-msgstr ""
+msgstr "VM:en är inte definierad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "VMX-posten ”%1$s” innehåller ett schema ”%2$s” som inte stödjs"
 
 #, c-format
 msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr ""
+msgstr "VMX-posten ”%1$s” innehåller inte en portdel"
 
 msgid "VMX entry 'annotation' contains invalid escape sequence"
-msgstr ""
+msgstr "VMX-posten ”annotation” innehåller ogiltiga kontrollsekvenser"
 
 msgid "VMX entry 'cpuid.coresPerSocket' smaller than 'numvcpus'"
-msgstr ""
+msgstr "VMX-posten ”cpuid.coresPerSocket” är mindre än ”numvcpus”"
 
 #, c-format
 msgid "VMX entry 'firmware' has unknown value '%1$s'"
-msgstr ""
+msgstr "VMX-posten ”firmware” har ett okänt värde ”%1$s”"
 
-#, fuzzy
 msgid "VMX entry 'name' contains invalid escape sequence"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "VMX-posten ”name” innehåller en ogiltig flyktföljd"
 
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %1$d, this value is too large"
 msgstr ""
+"VMX-posten ”sched.cpu.affinity” innehåller en %1$d, detta värde är för stort"
 
 msgid "VNC"
 msgstr "VNC"
 
 msgid "VNC Password authentication not supported by bhyve"
-msgstr ""
+msgstr "VNC-lösenordsautenticering stödjs inte av bhyve"
 
 #, c-format
 msgid "VNC password is %1$zu characters long, only 8 permitted"
-msgstr ""
+msgstr "VNC-lösenordet är %1$zu tecken långt, endast 8 är tillåtna"
 
 msgid "VNC power control is not available"
-msgstr ""
+msgstr "VNC-strömstyrning är inte tillgängligt"
 
 msgid "VNC supports connected='keep' only"
-msgstr ""
+msgstr "VNC stödjer endast connected='keep'"
 
 msgid "VPD fields access type parsing has failed"
-msgstr ""
+msgstr "Tolkningen av VPD-fältåtkomsttyp har misslyckats"
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
-msgstr ""
+msgstr "Värdet ”%1$s” är inte representerbart som %2$s"
 
 #, fuzzy, c-format
 msgid "Value '%1$s' is out of %2$s range"
@@ -39142,6 +39176,24 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr "CCW-adresser stödjs inte av maskintypen ”%1$s”"
+
+#, c-format
+msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+"Målenhetens CCW-adress %1$x.%2$x.%3$04x stämmer inte med källan %4$x.%5$x."
+"%6$04x"
+
+#, c-format
+msgid ""
+"integer overflow on %1$s. Please contact the libvirt development team at "
+"devel@lists.libvirt.org"
+msgstr ""
 
 #, fuzzy, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"
