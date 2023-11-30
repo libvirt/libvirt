@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2367,6 +2367,10 @@ msgstr "Occupé"
 
 msgid "CA certificate:"
 msgstr "Certificat AC :"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -16107,6 +16111,12 @@ msgstr ""
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -23854,12 +23864,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "ne peut pas télécharger vers le volume %1$s"
 
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr ""
-"Impossible d'utiliser le type d'adresse CCW pour le périphérique '%1$s' avec "
-"le type de machine '%2$s'"
-
 msgid "cannot use custom tap device in session mode"
 msgstr ""
 "Impossible d'utiliser le périphérique de tapotement personnalisé en mode "
@@ -29383,10 +29387,8 @@ msgstr ""
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
-"Débordement d'entiers relatifs sur %1$s. Veuillez contacter l'équipe de "
-"développement de libvirt à l'adresse libvir-list@redhat.com"
 
 #, c-format
 msgid ""
@@ -31475,13 +31477,6 @@ msgstr "alias du périphérique de mémoire"
 
 msgid "memory device alias is not assigned"
 msgstr "l'alias du périphérique de mémoire n'est pas attribué"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-"la base du périphérique de mémoire '0x%1$llx' est déjà utilisée par un autre "
-"périphérique de mémoire"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -41168,6 +41163,29 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr ""
+#~ "Impossible d'utiliser le type d'adresse CCW pour le périphérique '%1$s' "
+#~ "avec le type de machine '%2$s'"
+
+#, c-format
+#~ msgid ""
+#~ "integer overflow on %1$s. Please contact the libvirt development team at "
+#~ "libvir-list@redhat.com"
+#~ msgstr ""
+#~ "Débordement d'entiers relatifs sur %1$s. Veuillez contacter l'équipe de "
+#~ "développement de libvirt à l'adresse libvir-list@redhat.com"
+
+#, c-format
+#~ msgid ""
+#~ "memory device base '0x%1$llx' is already being used by another memory "
+#~ "device"
+#~ msgstr ""
+#~ "la base du périphérique de mémoire '0x%1$llx' est déjà utilisée par un "
+#~ "autre périphérique de mémoire"
 
 #, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

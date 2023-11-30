@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-09-25 20:10+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2023-11-08 14:23+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2286,6 +2286,10 @@ msgstr "Занято"
 
 msgid "CA certificate:"
 msgstr "Сертификат ЦС:"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -5439,6 +5443,10 @@ msgstr "Не найдено устройство USB %1$04x:%2$04x шина:%3$u
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "Не найдена шина устройства USB: %1$u устройство: %2$u"
+
+#, c-format
+msgid "Did not get all free page data for node %1$d"
+msgstr ""
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -15522,6 +15530,12 @@ msgstr "%1$d не соответствует числу векторов исх�
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -22988,12 +23002,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "не удалось отправить данные в %1$s"
 
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr ""
-"нельзя использовать тип адреса CCW для устройства «%1$s» с типом машины "
-"«%2$s»"
-
 msgid "cannot use custom tap device in session mode"
 msgstr "нельзя использовать пользовательское устройство tap в режиме сеанса"
 
@@ -28347,10 +28355,8 @@ msgstr "добавить в пул страницы вместо указани�
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
-"целочисленное переполнение в %1$s. Свяжитесь с командой разработчиков "
-"libvirt (libvir-list@redhat.com)"
 
 #, c-format
 msgid ""
@@ -30405,12 +30411,6 @@ msgstr ""
 
 msgid "memory device alias is not assigned"
 msgstr "альтернативное название устройства памяти не назначено"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-"база устройства памяти «0x%1$llx» уже используется другим устройством памяти"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -34724,6 +34724,9 @@ msgstr "слишком большой результат: %1$llu"
 msgid "resume a domain"
 msgstr "возобновить работу домена"
 
+msgid "resume a paused guest after connecting to console"
+msgstr ""
+
 msgid "resume failed post-copy migration"
 msgstr ""
 
@@ -38132,10 +38135,6 @@ msgid "unknown smbios mode '%1$s'"
 msgstr "неизвестный режим smbios: «%1$s»"
 
 #, c-format
-msgid "unknown source mode '%1$s' for volume type disk"
-msgstr "Неизвестный режим источника «%1$s» для тома"
-
-#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "неизвестный тип возможностей хранения «%1$s» для «%2$s»"
 
@@ -39768,11 +39767,31 @@ msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <строка>}..."
 
 #, c-format
-msgid "Did not get all free page data for node %1$d"
-msgstr ""
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr ""
+#~ "нельзя использовать тип адреса CCW для устройства «%1$s» с типом машины "
+#~ "«%2$s»"
 
-msgid "resume a paused guest after connecting to console"
-msgstr ""
+#, c-format
+#~ msgid ""
+#~ "integer overflow on %1$s. Please contact the libvirt development team at "
+#~ "libvir-list@redhat.com"
+#~ msgstr ""
+#~ "целочисленное переполнение в %1$s. Свяжитесь с командой разработчиков "
+#~ "libvirt (libvir-list@redhat.com)"
+
+#, c-format
+#~ msgid ""
+#~ "memory device base '0x%1$llx' is already being used by another memory "
+#~ "device"
+#~ msgstr ""
+#~ "база устройства памяти «0x%1$llx» уже используется другим устройством "
+#~ "памяти"
+
+#, c-format
+#~ msgid "unknown source mode '%1$s' for volume type disk"
+#~ msgstr "Неизвестный режим источника «%1$s» для тома"
 
 #, c-format
 #~ msgid "Could not find typefile '%1$s'"

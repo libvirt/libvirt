@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2023-09-28 05:14+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -2348,6 +2348,10 @@ msgstr "Зайнятий"
 
 msgid "CA certificate:"
 msgstr "Сертифікат CA:"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -15975,6 +15979,12 @@ msgstr ""
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -23657,12 +23667,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "не вдалося вивантажити дані до тому %1$s"
 
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr ""
-"не можна використовувати тип адрес CCW для пристрою «%1$s», що використовує "
-"тип комп'ютера «%2$s»"
-
 msgid "cannot use custom tap device in session mode"
 msgstr "не можна використовувати нетиповий пристрій tap у режимі сеансу"
 
@@ -29176,10 +29180,8 @@ msgstr "замість встановлення нового розміру бу
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
-"Переповнення цілого типу у %1$s. Будь ласка, повідомте про цю помилку "
-"команду розробників libvirt за адресою libvir-list@redhat.com"
 
 #, c-format
 msgid ""
@@ -31281,12 +31283,6 @@ msgstr "альтернативна назва пристрою пам'яті"
 
 msgid "memory device alias is not assigned"
 msgstr "альтернативну назву пристрою пам'яті не призначено"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-"база пристрою пам'яті «0x%1$llx» вже використовується іншим пристроєм пам'яті"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -40874,6 +40870,29 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
+
+#, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr ""
+#~ "не можна використовувати тип адрес CCW для пристрою «%1$s», що "
+#~ "використовує тип комп'ютера «%2$s»"
+
+#, c-format
+#~ msgid ""
+#~ "integer overflow on %1$s. Please contact the libvirt development team at "
+#~ "libvir-list@redhat.com"
+#~ msgstr ""
+#~ "Переповнення цілого типу у %1$s. Будь ласка, повідомте про цю помилку "
+#~ "команду розробників libvirt за адресою libvir-list@redhat.com"
+
+#, c-format
+#~ msgid ""
+#~ "memory device base '0x%1$llx' is already being used by another memory "
+#~ "device"
+#~ msgstr ""
+#~ "база пристрою пам'яті «0x%1$llx» вже використовується іншим пристроєм "
+#~ "пам'яті"
 
 #, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

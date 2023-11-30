@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -2015,6 +2015,10 @@ msgstr ""
 #, fuzzy
 msgid "CA certificate:"
 msgstr "Chứng thực không hợp lệ"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -15199,6 +15203,12 @@ msgstr ""
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -22653,10 +22663,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "không thể mở ổ '%1$s'"
 
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr ""
-
 #, fuzzy
 msgid "cannot use custom tap device in session mode"
 msgstr "không thể trở thành lãnh đạo phiên làm việc"
@@ -28090,7 +28096,7 @@ msgstr ""
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
 
 #, c-format
@@ -30171,11 +30177,6 @@ msgid "memory device alias"
 msgstr ""
 
 msgid "memory device alias is not assigned"
-msgstr ""
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
 msgstr ""
 
 #, c-format

@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -2178,6 +2178,10 @@ msgstr "忙碌"
 
 msgid "CA certificate:"
 msgstr "CA 证书："
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -14756,6 +14760,12 @@ msgstr "目标控制器矢量 %1$d 与源 %2$d 不匹配"
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -21851,10 +21861,6 @@ msgstr "无法更新生命周期操作，因为 QEMU 是使用不兼容的 -no-r
 msgid "cannot upload to volume %1$s"
 msgstr "无法上传卷 %1$s"
 
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr "无法为使用机器类型 '%1$s'的设备 '%2$s' 使用 CCW 地址"
-
 msgid "cannot use custom tap device in session mode"
 msgstr "无法在绘画模式中使用虚拟网卡设备"
 
@@ -27026,9 +27032,8 @@ msgstr "不是设置新的池大小，而是向其添加页"
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
-"%1$s 中的整数溢出。请联络 libvirt 开发团队，邮件地址：libvir-list@redhat.com"
 
 #, c-format
 msgid ""
@@ -28979,11 +28984,6 @@ msgstr "内存设备别名"
 
 msgid "memory device alias is not assigned"
 msgstr "内存设备别名未分配"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr "内存设备基础 '0x%1$llx' 已被另一个内存设备使用"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -37899,6 +37899,25 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr "无法为使用机器类型 '%1$s'的设备 '%2$s' 使用 CCW 地址"
+
+#, c-format
+#~ msgid ""
+#~ "integer overflow on %1$s. Please contact the libvirt development team at "
+#~ "libvir-list@redhat.com"
+#~ msgstr ""
+#~ "%1$s 中的整数溢出。请联络 libvirt 开发团队，邮件地址：libvir-list@redhat."
+#~ "com"
+
+#, c-format
+#~ msgid ""
+#~ "memory device base '0x%1$llx' is already being used by another memory "
+#~ "device"
+#~ msgstr "内存设备基础 '0x%1$llx' 已被另一个内存设备使用"
 
 #, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

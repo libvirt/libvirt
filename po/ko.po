@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2023-11-01 09:40+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2262,6 +2262,10 @@ msgstr "바쁨"
 
 msgid "CA certificate:"
 msgstr "인증서:"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -15186,6 +15190,12 @@ msgstr "대상 컨트롤러 벡터 %1$d가 소스 %2$d와 일치하지 않음"
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -22440,12 +22450,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "볼륨 %1$s로 업로드 할 수 없습니다"
 
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr ""
-"시스템 유형 '%1$s'을(를) 사용하는 장치 '%2$s'에 대해 CCW 주소 유형을 사용할 "
-"수 없습니다"
-
 msgid "cannot use custom tap device in session mode"
 msgstr "세션 모드에서 사용자 정의 탭 장치를 사용할 수 없습니다"
 
@@ -27712,10 +27716,8 @@ msgstr "새 풀 크기를 설정하는 대신 페이지를 추가하십시오"
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
-"%1$s에 정수 오버플로가 있습니다. libvir-list@redhat.com으로 libvirt 개발 팀"
-"에 문의하십시오"
 
 #, c-format
 msgid ""
@@ -29706,11 +29708,6 @@ msgstr "메모리 장치 별칭"
 
 msgid "memory device alias is not assigned"
 msgstr "메모리 장치 별칭이 할당되지 않았습니다"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr "메모리 장치 기반 '0x%1$llx'는 이미 다른 메모리 장치에서 사용 중입니다"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -38812,6 +38809,28 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr ""
+#~ "시스템 유형 '%1$s'을(를) 사용하는 장치 '%2$s'에 대해 CCW 주소 유형을 사용"
+#~ "할 수 없습니다"
+
+#, c-format
+#~ msgid ""
+#~ "integer overflow on %1$s. Please contact the libvirt development team at "
+#~ "libvir-list@redhat.com"
+#~ msgstr ""
+#~ "%1$s에 정수 오버플로가 있습니다. libvir-list@redhat.com으로 libvirt 개발 "
+#~ "팀에 문의하십시오"
+
+#, c-format
+#~ msgid ""
+#~ "memory device base '0x%1$llx' is already being used by another memory "
+#~ "device"
+#~ msgstr ""
+#~ "메모리 장치 기반 '0x%1$llx'는 이미 다른 메모리 장치에서 사용 중입니다"
 
 #, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

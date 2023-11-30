@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2086,6 +2086,10 @@ msgstr "Occupato"
 
 msgid "CA certificate:"
 msgstr "Certificato CA:"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -15242,6 +15246,12 @@ msgstr ""
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -22733,10 +22743,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "impossibile aprire il volume '%1$s'"
 
-#, fuzzy, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr "Errore nel parsing dell'indirizzo MAC '%1$s' della rete '%2$s'"
-
 #, fuzzy
 msgid "cannot use custom tap device in session mode"
 msgstr "impossibile diventare leader della sessione"
@@ -28191,7 +28197,7 @@ msgstr ""
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
 
 #, c-format
@@ -30288,11 +30294,6 @@ msgstr ""
 #, fuzzy
 msgid "memory device alias is not assigned"
 msgstr "il dispositivo a caratteri %s non sta usando una PTY"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -39577,6 +39578,11 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s <string>]"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr "Errore nel parsing dell'indirizzo MAC '%1$s' della rete '%2$s'"
 
 #, fuzzy, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

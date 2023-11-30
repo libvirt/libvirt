@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -2166,6 +2166,10 @@ msgstr "ಕಾರ್ಯನಿರತ"
 #, fuzzy
 msgid "CA certificate:"
 msgstr "ಅಮಾನ್ಯವಾದ ಪ್ರಮಾಣಪತ್ರ"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -15493,6 +15497,12 @@ msgstr "ಗುರಿ ನಿಯಂತ್ರಕ ವೆಕ್ಟರ್ %1$d ಎಂ�
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -22916,10 +22926,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "ಪರಿಮಾಣ %1$s ಅನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr "'%1$s' MAC ವಿಳಾಸವನ್ನು ('%2$s' ಜಾಲಬಂಧದಲ್ಲಿನ) ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
 #, fuzzy
 msgid "cannot use custom tap device in session mode"
 msgstr "ಅಧಿವೇಶನದ ಮುಂದಾಳುವಾಗಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -28352,7 +28358,7 @@ msgstr ""
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
 
 #, fuzzy, c-format
@@ -30413,11 +30419,6 @@ msgstr ""
 #, fuzzy
 msgid "memory device alias is not assigned"
 msgstr "PCI ಸಾಧನ %s ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -39786,6 +39787,11 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr "'%1$s' MAC ವಿಳಾಸವನ್ನು ('%2$s' ಜಾಲಬಂಧದಲ್ಲಿನ) ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

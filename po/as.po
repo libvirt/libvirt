@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2023-11-27 09:22+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -2115,6 +2115,10 @@ msgstr "ব্যস্ত"
 #, fuzzy
 msgid "CA certificate:"
 msgstr "ডিভাইচৰ প্ৰকৃতি বৈধ নহয়: %s"
+
+#, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -15285,6 +15289,12 @@ msgstr "লক্ষ্য নিয়ন্ত্ৰক সদিশসমূহ 
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -22648,10 +22658,6 @@ msgstr ""
 msgid "cannot upload to volume %1$s"
 msgstr "ভলিউম %1$s লে আপল'ড কৰিব নোৱাৰি"
 
-#, fuzzy, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr "নেটৱাৰক '%1$s' ত MAC ঠিকনা '%2$s' বিশ্লেষণ কৰিব নোৱাৰি"
-
 #, fuzzy
 msgid "cannot use custom tap device in session mode"
 msgstr "অধিবেশন বিচাৰি পোৱা ন'গ'ল"
@@ -28050,10 +28056,8 @@ msgstr ""
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
-"%1$s ত পূৰ্ণসংখ্যা অভাৰফ্লো। অনুগ্ৰহ কৰি libvir-list@redhat.com ত libvirt উন্নয়ন "
-"দলক যোগাযোগ কৰক"
 
 #, fuzzy, c-format
 msgid ""
@@ -30090,11 +30094,6 @@ msgstr ""
 #, fuzzy
 msgid "memory device alias is not assigned"
 msgstr "PCI ডিভাইচ %s ধাৰ্য্য কৰিব পৰা নহয়"
-
-#, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -39384,6 +39383,19 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr "নেটৱাৰক '%1$s' ত MAC ঠিকনা '%2$s' বিশ্লেষণ কৰিব নোৱাৰি"
+
+#, c-format
+#~ msgid ""
+#~ "integer overflow on %1$s. Please contact the libvirt development team at "
+#~ "libvir-list@redhat.com"
+#~ msgstr ""
+#~ "%1$s ত পূৰ্ণসংখ্যা অভাৰফ্লো। অনুগ্ৰহ কৰি libvir-list@redhat.com ত libvirt উন্নয়ন "
+#~ "দলক যোগাযোগ কৰক"
 
 #, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"
