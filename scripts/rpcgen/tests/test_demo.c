@@ -22,7 +22,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
     /* Step 1:  serialize the vorig and compare to the data in test .bin files */
     xdrmem_create(&xdr, buf, buflen, XDR_ENCODE);
 
-    ret = !!proc(&xdr, vorig);
+    ret = !!proc(&xdr, vorig, 0);
     g_assert_cmpint(ret, ==, !fail);
 
     if (fail)
@@ -49,7 +49,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
     /* Step 2: de-serialize the state to create a new object */
     xdrmem_create(&xdr, buf, buflen, XDR_DECODE);
 
-    ret = !!proc(&xdr, vnew);
+    ret = !!proc(&xdr, vnew, 0);
     g_assert_cmpint(ret, ==, true);
 
     actlen = xdr_getpos(&xdr);
@@ -63,7 +63,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
 
     xdrmem_create(&xdr, buf, buflen, XDR_ENCODE);
 
-    ret = !!proc(&xdr, vnew);
+    ret = !!proc(&xdr, vnew, 0);
     g_assert_cmpint(ret, ==, true);
 
     actlen = xdr_getpos(&xdr);
