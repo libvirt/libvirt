@@ -646,6 +646,8 @@ Requires: libvirt-libs = %{version}-%{release}
 Requires: nfs-utils
 # For mkfs
 Requires: util-linux
+# For storage wiping with different algorithms
+Requires: scrub
     %if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
