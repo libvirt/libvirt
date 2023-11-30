@@ -3,6 +3,10 @@
 #include <rpc/xdr.h>
 #include <stdbool.h>
 
+#ifdef __APPLE__
+# define xdr_uint64_t xdr_u_int64_t
+#endif
+
 #include "demo.h"
 #include "demo.c"
 
