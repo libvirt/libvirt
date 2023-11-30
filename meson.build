@@ -820,7 +820,6 @@ optional_programs = [
   'rmmod',
   'scrub',
   'tc',
-  'udevadm',
 ]
 
 foreach name : optional_programs

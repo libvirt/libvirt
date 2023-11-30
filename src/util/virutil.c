@@ -62,6 +62,8 @@ G_STATIC_ASSERT(sizeof(gid_t) <= sizeof(unsigned int) &&
 
 VIR_LOG_INIT("util.util");
 
+#define UDEVADM "udevadm"
+
 #ifndef WIN32
 
 int virSetInherit(int fd, bool inherit)
