@@ -176,10 +176,10 @@ v9.6.0 (2023-08-01)
 
   * ``CVE-2023-3750``: Fix race condition in storage driver leading to a crash
 
-   In **libvirt-8.3** a bug was introduced which in rare cases could cause
-   ``libvirtd`` or ``virtstoraged`` to crash if multiple clients attempted to
-   look up a storage volume by key, path or target path, while other clients
-   attempted to access something from the same storage pool.
+    In **libvirt-8.3** a bug was introduced which in rare cases could cause
+    ``libvirtd`` or ``virtstoraged`` to crash if multiple clients attempted to
+    look up a storage volume by key, path or target path, while other clients
+    attempted to access something from the same storage pool.
 
 * **Improvements**
 
@@ -1983,17 +1983,17 @@ v7.1.0 (2021-03-01)
 
   * qemu: Fix disk quiescing rollback when creating external snapshots
 
-   If the qemu guest agent call to freeze filesystems failed when creating
-   an external snapshot with ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` flag the
-   filesystems would be unconditionally thawed. This could cause problems when
-   the filesystems were frozen by an explicit call to ``virDomainFSFreeze``
-   since the guest agent then rejects any further freeze attempts once are
-   filesystems frozen, an explicit freeze followed by a quiesced snapshot
-   would fail and thaw filesystems.
+    If the qemu guest agent call to freeze filesystems failed when creating
+    an external snapshot with ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` flag the
+    filesystems would be unconditionally thawed. This could cause problems when
+    the filesystems were frozen by an explicit call to ``virDomainFSFreeze``
+    since the guest agent then rejects any further freeze attempts once are
+    filesystems frozen, an explicit freeze followed by a quiesced snapshot
+    would fail and thaw filesystems.
 
-   Users are also encouraged to use ``virDomainFSFreeze/Thaw`` manually instead
-   of relying on ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` if they need finer
-   grained control.
+    Users are also encouraged to use ``virDomainFSFreeze/Thaw`` manually instead
+    of relying on ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` if they need finer
+    grained control.
 
   * cgroups: Fix how we setup and configure cgroups on hosts with systemd
 
@@ -2155,11 +2155,12 @@ v6.10.0 (2020-12-01)
   * qemu: Enable client TLS certificate validation by default for ``chardev``,
     ``migration``, and ``backup`` servers.
 
-  The default value if qemu.conf options ``chardev_tls_x509_verify``,
-  ``migrate_tls_x509_verify``, or  ``backup_tls_x509_verify`` are not specified
-  explicitly in the config file and also the ``default_tls_x509_verify`` config
-  option is missing are now '1'. This ensures that only legitimate clients
-  access servers, which don't have any additional form of authentication.
+    The default value if qemu.conf options ``chardev_tls_x509_verify``,
+    ``migrate_tls_x509_verify``, or  ``backup_tls_x509_verify`` are not
+    specified explicitly in the config file and also the
+    ``default_tls_x509_verify`` config option is missing are now '1'. This
+    ensures that only legitimate clients access servers, which don't have any
+    additional form of authentication.
 
   * qemu: Introduce "migrate_tls_force" qemu.conf option
 
