@@ -1,0 +1,34 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-dummy \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-dummy/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-dummy/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-dummy/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=dummy,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-dummy/master-key.aes"}' \
+-machine pc-i440fx-2.3,usb=off,dump-guest-core=off,acpi=off \
+-accel kvm \
+-cpu qemu64 \
+-m size=7864320k,slots=16,maxmem=16777216k \
+-overcommit mem-lock=off \
+-smp 12,sockets=12,cores=1,threads=1 \
+-numa node,nodeid=0,cpus=0-1,cpus=5,cpus=7-11,mem=3840 \
+-numa node,nodeid=1,cpus=2-4,cpus=6,mem=3840 \
+-uuid 4d92ec27-9ebf-400b-ae91-20c71c647c19 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

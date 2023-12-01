@@ -1,0 +1,41 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-machine \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-machine/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-machine/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-machine/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=machine,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-machine/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 2187c512-ff97-47d7-b67c-c02d3bdc219d \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-add-fd set=0,fd=1750,opaque=serial0-source \
+-chardev file,id=charserial0,path=/dev/fdset/0,append=on \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-chardev socket,id=charserial1,path=/tmp/serial.sock \
+-device '{"driver":"isa-serial","chardev":"charserial1","id":"serial1","index":1}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-chardev pipe,id=charrng0,path=/dev/null \
+-object '{"qom-type":"rng-egd","id":"objrng0","chardev":"charrng0"}' \
+-device '{"driver":"virtio-rng-pci","rng":"objrng0","id":"rng0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

@@ -274,6 +274,7 @@ testCheckExclusiveFlags(int flags)
                   FLAG_REAL_CAPS |
                   FLAG_SLIRP_HELPER |
                   FLAG_ALLOW_DUPLICATE_OUTPUT |
+                  FLAG_SKIP_CONFIG_ACTIVE |
                   0, -1);
 
     return 0;
@@ -2443,6 +2444,42 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("s390-async-teardown", "s390x", "6.0.0");
     DO_TEST_CAPS_ARCH_LATEST("s390-async-teardown-disabled", "s390x");
     DO_TEST_CAPS_ARCH_VER("s390-async-teardown-disabled", "s390x", "6.0.0");
+
+    DO_TEST_CAPS_LATEST("boot-menu-disable-with-timeout");
+    DO_TEST_CAPS_LATEST("channel-unix-source-path");
+    DO_TEST_CAPS_LATEST("chardev-label");
+    DO_TEST_CAPS_LATEST("console-compat2");
+    DO_TEST_CAPS_LATEST("cpu-empty");
+    DO_TEST_CAPS_LATEST("cpu-host-model-features");
+    DO_TEST_CAPS_LATEST("cpu-numa-disordered");
+    DO_TEST_CAPS_LATEST("disk-active-commit");
+    DO_TEST_CAPS_LATEST("disk-mirror-old");
+    DO_TEST_CAPS_LATEST("disk-mirror");
+    DO_TEST_CAPS_VER("disk-network-vxhs", "5.0.0");
+    DO_TEST_CAPS_LATEST("downscript");
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display");
+    DO_TEST_CAPS_LATEST("hostdev-scsi-autogen-address");
+    DO_TEST_CAPS_LATEST("hostdev-scsi-large-unit");
+    DO_TEST_CAPS_LATEST("hostdev-scsi-shareable");
+    DO_TEST_CAPS_LATEST("lease");
+    DO_TEST_CAPS_LATEST("memorybacking-set");
+    DO_TEST_CAPS_LATEST("memorybacking-unset");
+    DO_TEST_CAPS_LATEST("metadata-duplicate");
+    DO_TEST_CAPS_LATEST("metadata");
+    DO_TEST_CAPS_LATEST("net-midonet");
+    DO_TEST_CAPS_LATEST("numad-auto-vcpu-no-numatune");
+    DO_TEST_CAPS_LATEST("numad-static-vcpu-no-numatune");
+    DO_TEST_CAPS_LATEST("numavcpus-topology-mismatch");
+    DO_TEST_CAPS_ARCH_LATEST("panic-pseries", "ppc64");
+    DO_TEST_CAPS_LATEST("pcihole64-gib");
+    DO_TEST_CAPS_ARCH_LATEST("s390-defaultconsole", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-panic", "s390x");
+    DO_TEST_CAPS_LATEST("seclabel-device-multiple");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-none-relabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-none");
+    DO_TEST_CAPS_LATEST("serial-target-port-auto");
+    DO_TEST_CAPS_LATEST("vhost-user-fs-sock");
+    DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw-auto", "s390x");
 
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();

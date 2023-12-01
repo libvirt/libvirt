@@ -1,0 +1,60 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest2,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest2/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9466-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"virtio-scsi-pci","id":"scsi1","bus":"pci.0","addr":"0x3"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-2-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-2-backend","id":"hostdev0","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":0}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-3-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-3-backend","id":"hostdev1","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-4-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-4-backend","id":"hostdev2","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":2}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-5-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-5-backend","id":"hostdev3","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":3}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-6-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-6-backend","id":"hostdev4","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":4}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-7-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-7-backend","id":"hostdev5","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":5}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-8-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-8-backend","id":"hostdev6","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":6}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-9-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-9-backend","id":"hostdev7","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":0}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-10-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-10-backend","id":"hostdev8","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-11-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-11-backend","id":"hostdev9","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":5}' \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-12-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-12-backend","id":"hostdev10","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":2}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
