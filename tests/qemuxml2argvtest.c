@@ -1411,8 +1411,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-secret-chardev");
     VIR_FREE(driver.config->chardevTLSx509secretUUID);
     driver.config->chardevTLS = 0;
-    DO_TEST_CAPS_LATEST("parallel-tcp-chardev");
-    DO_TEST_CAPS_LATEST("parallel-parport-chardev");
     DO_TEST_CAPS_LATEST("serial-many-chardev");
     DO_TEST_CAPS_LATEST("parallel-tcp-chardev");
     DO_TEST_CAPS_LATEST("parallel-parport-chardev");
