@@ -113,6 +113,23 @@ virNetDevTapCreate(char **ifname,
     }
 }
 
+
+int
+qemuInterfaceBridgeConnect(virDomainDef *def G_GNUC_UNUSED,
+                           virQEMUDriver *driver G_GNUC_UNUSED,
+                           virDomainNetDef *net G_GNUC_UNUSED,
+                           int *tapfd,
+                           size_t *tapfdSize)
+{
+    size_t i;
+
+    for (i = 0; i < *tapfdSize; i++)
+        tapfd[i] = STDERR_FILENO + 100 + i;
+
+    return 0;
+}
+
+
 int
 virNetDevSetMAC(const char *ifname G_GNUC_UNUSED,
                 const virMacAddr *macaddr G_GNUC_UNUSED)

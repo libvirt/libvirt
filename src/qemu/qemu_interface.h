@@ -48,7 +48,7 @@ int qemuInterfaceBridgeConnect(virDomainDef *def,
                                virDomainNetDef *net,
                                int *tapfd,
                                size_t *tapfdSize)
-    ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(2) G_NO_INLINE;
 
 int qemuInterfaceOpenVhostNet(virDomainObj *def,
                               virDomainNetDef *net) G_NO_INLINE;
