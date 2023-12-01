@@ -70,6 +70,7 @@ struct testQemuConf {
     GHashTable *capslatest;
     GHashTable *qapiSchemaCache;
     GHashTable *duplicateTests; /* for checking duplicated invocations */
+    GHashTable *existingTestCases; /* for checking missing invocations */
 };
 
 typedef enum {

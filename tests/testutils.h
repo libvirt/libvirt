@@ -82,6 +82,8 @@ unsigned int virTestGetExpensive(void);
 unsigned int virTestGetRegenerate(void);
 void virTestPropagateLibvirtError(void);
 
+bool virTestHasRangeBitmap(void);
+
 #define VIR_TEST_DEBUG(fmt, ...) \
     do { \
         if (virTestGetDebug()) \

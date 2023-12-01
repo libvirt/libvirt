@@ -746,6 +746,20 @@ virTestGetRegenerate(void)
     return testRegenerate;
 }
 
+
+/**
+ * virTestHasRangeBitmap:
+ *
+ * Returns whether the test was invoked with VIR_TEST_RANGE declared thus
+ * limiting the run only on specific test cases.
+ */
+bool
+virTestHasRangeBitmap(void)
+{
+    return !!testBitmap;
+}
+
+
 static int
 virTestSetEnvPath(void)
 {

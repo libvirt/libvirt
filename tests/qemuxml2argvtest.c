@@ -623,6 +623,9 @@ testCompareXMLToArgv(const void *data)
     virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
+    /* mark test case as used */
+    ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->infile));
+
     if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
         goto cleanup;
 
@@ -820,20 +823,74 @@ testInfoSetPaths(struct testQemuInfo *info,
                                       abs_srcdir, info->name, suffix ? suffix : "");
 }
 
+
+static int
+testConfXMLCheck(GHashTable *existingTestCases)
+{
+    g_autofree virHashKeyValuePair *items = virHashGetItems(existingTestCases, NULL, true);
+    size_t i;
+    int ret = 0;
+
+    for (i = 0; items[i].key; i++) {
+        if (ret == 0)
+            fprintf(stderr, "\n");
+
+        fprintf(stderr, "unused input file: %s\n", (const char *) items[i].key);
+        ret = -1;
+    }
+
+    return ret;
+}
+
+
+static int
+testConfXMLEnumerate(GHashTable *existingTestCases)
+{
+    struct dirent *ent;
+    g_autoptr(DIR) dir = NULL;
+    int rc;
+
+    /* If VIR_TEST_RANGE is in use don't bother filling in the data, which
+     * also makes testConfXMLCheck succeed. */
+    if (virTestHasRangeBitmap())
+        return 0;
+
+    if (virDirOpen(&dir, abs_srcdir "/qemuxml2argvdata") < 0)
+        return -1;
+
+    while ((rc = virDirRead(dir, &ent, abs_srcdir "/qemuxml2argvdata")) > 0) {
+        if (virStringHasSuffix(ent->d_name, ".xml")) {
+            g_hash_table_insert(existingTestCases,
+                                g_strdup_printf(abs_srcdir "/qemuxml2argvdata/%s", ent->d_name),
+                                NULL);
+        }
+    }
+
+    return rc;
+}
+
+
 static int
 mymain(void)
 {
     int ret = 0;
     g_autoptr(GHashTable) duplicateTests = virHashNew(NULL);
+    g_autoptr(GHashTable) existingTestCases = virHashNew(NULL);
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) g_hash_table_unref);
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
                                      .qapiSchemaCache = qapiSchemaCache,
-                                     .duplicateTests = duplicateTests };
+                                     .duplicateTests = duplicateTests,
+                                     .existingTestCases = existingTestCases };
 
     if (!capslatest)
+        return EXIT_FAILURE;
+
+    /* enumerate and store all available test cases to verify at the end that
+     * all of them were invoked */
+    if (testConfXMLEnumerate(existingTestCases) < 0)
         return EXIT_FAILURE;
 
     /* Set the timezone because we are mocking the time() function.
@@ -2599,6 +2656,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-virtio-teaming-network");
     DO_TEST_CAPS_LATEST("tap-vhost-incorrect");
     DO_TEST_CAPS_LATEST("tap-vhost");
+
+    /* check that all input files were actually used here */
+    if (testConfXMLCheck(existingTestCases) < 0)
+        ret = -1;
 
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();
