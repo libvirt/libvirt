@@ -216,6 +216,8 @@ mymain(void)
     DO_TEST_FAIL_INACTIVE("memorytune-colliding-allocs");
     DO_TEST_FAIL_INACTIVE("memorytune-colliding-cachetune");
 
+    DO_TEST("smbios-multiple-type2");
+
     DO_TEST("tseg");
 
     DO_TEST("launch-security-sev");

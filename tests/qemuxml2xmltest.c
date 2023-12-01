@@ -761,7 +761,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tap-vhost-incorrect");
     DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
     DO_TEST_CAPS_LATEST("smbios");
-    DO_TEST_CAPS_LATEST("smbios-multiple-type2");
     DO_TEST_CAPS_LATEST("smbios-type-fwcfg");
 
     DO_TEST_CAPS_ARCH_LATEST("aarch64-aavmf-virtio-mmio", "aarch64");
