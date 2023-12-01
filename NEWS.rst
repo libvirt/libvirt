@@ -89,6 +89,7 @@ v9.9.0 (2023-11-01)
     The ``virsh create --console`` now tries to connect to the guest console
     before starting the vCPUs.
 
+
 v9.8.0 (2023-10-02)
 ===================
 
@@ -130,6 +131,7 @@ v9.8.0 (2023-10-02)
 
     Now libvirt validates more values of virtio-mem and virtio-pmem devices,
     e.g. overlapping memory addresses or alignment.
+
 
 v9.7.0 (2023-09-01)
 ===================
@@ -2549,7 +2551,6 @@ v6.6.0 (2020-08-02)
     management applications may wish to override this behaviour. This is now
     possible via new ``cow`` element.
 
-
 * **Improvements**
 
   * esx: Change the NIC limit for recent virtualHW versions
@@ -2573,7 +2574,6 @@ v6.6.0 (2020-08-02)
     in the case of domains with static vcpu placement, all available CPUs
     instead of all possible CPUs are returned making these APIs consistent with
     the behavior of ``vcpuinfo``.
-
 
 * **Bug fixes**
 
