@@ -8196,6 +8196,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     VIR_AUTOCLOSE intermediatefd = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
+    const char *migrateFrom = NULL;
     int rc = 0;
 
     if (data) {
@@ -8207,6 +8208,8 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                                             &errbuf, &cmd) < 0) {
             return -1;
         }
+
+        migrateFrom = "stdio";
     }
 
     /* No cookie means libvirt which saved the domain was too old to mess up
@@ -8220,7 +8223,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
         priv->disableSlirp = true;
 
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
-                         asyncJob, "stdio", *fd, path, snapshot,
+                         asyncJob, migrateFrom, *fd, path, snapshot,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          start_flags) == 0)
         *started = true;
