@@ -33,7 +33,7 @@
         <identity username='myuser2' keyfile='/path/to/id_rsa'/>
         <knownHosts path="/path/to/ssh_known_hosts2"/>
       </source>
-      <target dev='vda' bus='virtio'/>
+      <target dev='vdb' bus='virtio'/>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>

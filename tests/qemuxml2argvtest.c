@@ -1260,6 +1260,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_NBDKIT("disk-network-http-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
     DO_TEST_CAPS_LATEST_NBDKIT("disk-network-ssh-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
     DO_TEST_CAPS_LATEST_NBDKIT("disk-network-ssh-password", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-network-ssh-key", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
     driver.config->storageUseNbdkit = 0;
 
     DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "5.2.0");
