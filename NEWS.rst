@@ -24,7 +24,29 @@ v9.10.0 (unreleased)
 
 * **Improvements**
 
+  * Adapt to qemu's use of protocol drivers in QCOW2 'backing file format' field
+
+    QEMU allows creating images where the 'backing file format' is actually a
+    protocol name such as 'file'/'host_device'/'nbd'/etc.. Adapt libvirt to
+    properly handle such images and don't assume automatic format probing is
+    necessary, which is in many cases forbidden due to security implications.
+
 * **Bug fixes**
+
+  * qemu: Fix setup of images on hotplug of disk
+
+    Internal image metadata was not setup correctly which could cause some disk
+    hotplug configurations (namely those including backing images) to fail.
+
+  * qemu: Fix qemu crash when reverting an internal snapshot
+
+    Libvirt attempted to start qemu with wrong arguments when attempting to
+    revert to an internal snapshot causing qemu to crash.
+
+  * qemu: Fix hotplug of empty cdrom
+
+    Empty cdrom drive couldn't be hotplugged as libvirt wanted to setup the
+    storage backing it unconditionally.
 
 
 v9.9.0 (2023-11-01)
