@@ -1416,6 +1416,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("parallel-tcp-chardev");
     DO_TEST_CAPS_LATEST("parallel-parport-chardev");
     DO_TEST_CAPS_LATEST("parallel-unix-chardev");
+    DO_TEST_CAPS_LATEST("console-compat-chardev");
+    DO_TEST_CAPS_LATEST("pci-serial-dev-chardev");
 
     DO_TEST_CAPS_LATEST("channel-guestfwd");
     DO_TEST_CAPS_LATEST("channel-unix-guestfwd");
