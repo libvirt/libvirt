@@ -81,11 +81,13 @@ mymain(void)
 
     DO_TEST("plug-none");
     DO_TEST("plug-bridge");
+    DO_TEST("plug-bridge-basic");
     DO_TEST("plug-bridge-mactbl");
     DO_TEST("plug-direct");
     DO_TEST("plug-hostdev-pci");
     DO_TEST("plug-hostdev-pci-unmanaged");
     DO_TEST("plug-network");
+    DO_TEST("plug-network-basic");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
