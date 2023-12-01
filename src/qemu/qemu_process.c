@@ -5704,12 +5704,8 @@ qemuProcessInit(virQEMUDriver *driver,
 }
 
 
-/**
- * qemuProcessNetworkPrepareDevices
- */
 static int
-qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
-                                 virDomainObj *vm)
+qemuProcessPrepareDomainNetwork(virDomainObj *vm)
 {
     virDomainDef *def = vm->def;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -5761,15 +5757,32 @@ qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
 
             if (virDomainHostdevInsert(def, hostdev) < 0)
                 return -1;
-        } else if (actualType == VIR_DOMAIN_NET_TYPE_USER &&
-                   net->backend.type == VIR_DOMAIN_NET_BACKEND_DEFAULT &&
-                   !priv->disableSlirp &&
-                   virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-            if (qemuInterfacePrepareSlirp(driver, net) < 0)
+        }
+    }
+    return 0;
+}
+
+
+static int
+qemuProcessPrepareHostNetwork(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    size_t i;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDef *net = vm->def->nets[i];
+        virDomainNetType actualType = virDomainNetGetActualType(net);
+
+        if (actualType == VIR_DOMAIN_NET_TYPE_USER &&
+            net->backend.type == VIR_DOMAIN_NET_BACKEND_DEFAULT &&
+            !priv->disableSlirp &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+            if (qemuInterfacePrepareSlirp(priv->driver, net) < 0)
                 return -1;
-         }
+        }
 
     }
+
     return 0;
 }
 
@@ -6626,6 +6639,10 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     if (qemuProcessPrepareDomainHostdevs(vm, priv) < 0)
         return -1;
 
+    VIR_DEBUG("Setting up network devices");
+    if (qemuProcessPrepareDomainNetwork(vm) < 0)
+        return -1;
+
     VIR_DEBUG("Prepare chardev source backends");
     if (qemuProcessPrepareChardevSource(vm->def, cfg) < 0)
         return -1;
@@ -7191,12 +7208,8 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         if (qemuProcessOpenVhostVsock(vm->def->vsock) < 0)
             return -1;
     }
-    /* network devices must be "prepared" before hostdevs, because
-     * setting up a network device might create a new hostdev that
-     * will need to be setup.
-     */
     VIR_DEBUG("Preparing network devices");
-    if (qemuProcessNetworkPrepareDevices(driver, vm) < 0)
+    if (qemuProcessPrepareHostNetwork(vm) < 0)
         return -1;
 
     /* Must be run before security labelling */
