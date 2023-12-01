@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v9.10.0 (unreleased)
+v9.10.0 (2023-12-01)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
