@@ -273,6 +273,7 @@ testCheckExclusiveFlags(int flags)
                   FLAG_FIPS_HOST |
                   FLAG_REAL_CAPS |
                   FLAG_SLIRP_HELPER |
+                  FLAG_ALLOW_DUPLICATE_OUTPUT |
                   0, -1);
 
     return 0;
@@ -478,6 +479,28 @@ testCompareXMLToArgvValidateSchema(virCommand *cmd,
 
 
 static int
+testInfoCheckDuplicate(struct testQemuInfo *info)
+{
+    const char *path = info->outfile;
+
+    if (info->flags & FLAG_ALLOW_DUPLICATE_OUTPUT)
+        return 0;
+
+    if (info->flags & (FLAG_EXPECT_FAILURE | FLAG_EXPECT_PARSE_ERROR))
+        path = info->errfile;
+
+    if (g_hash_table_contains(info->conf->duplicateTests, path)) {
+        fprintf(stderr, "\nduplicate invocation of test case: %s\n'", path);
+        return -1;
+    }
+
+    g_hash_table_insert(info->conf->duplicateTests, g_strdup(path), NULL);
+
+    return 0;
+}
+
+
+static int
 testCompareXMLToArgv(const void *data)
 {
     struct testQemuInfo *info = (void *) data;
@@ -501,6 +524,9 @@ testCompareXMLToArgv(const void *data)
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
     if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
+        goto cleanup;
+
+    if (testInfoCheckDuplicate(info) < 0)
         goto cleanup;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
@@ -688,12 +714,14 @@ static int
 mymain(void)
 {
     int ret = 0;
+    g_autoptr(GHashTable) duplicateTests = virHashNew(NULL);
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) g_hash_table_unref);
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
-                                     .qapiSchemaCache = qapiSchemaCache };
+                                     .qapiSchemaCache = qapiSchemaCache,
+                                     .duplicateTests = duplicateTests };
 
     if (!capslatest)
         return EXIT_FAILURE;
@@ -852,7 +880,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, "x86_64", ver)
 
 # define DO_TEST_GIC(name, ver, gic) \
-    DO_TEST_CAPS_ARCH_VER_FULL(name, "aarch64", ver, ARG_GIC, gic, ARG_END)
+    DO_TEST_CAPS_ARCH_VER_FULL(name, "aarch64", ver, ARG_GIC, gic, ARG_FLAGS, FLAG_ALLOW_DUPLICATE_OUTPUT, ARG_END)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -1344,7 +1372,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-vhostuser-multiq");
     DO_TEST_CAPS_LATEST_FAILURE("net-vhostuser-fail");
     DO_TEST_CAPS_LATEST("net-user");
-    DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER | FLAG_ALLOW_DUPLICATE_OUTPUT);
     DO_TEST_CAPS_LATEST("net-user-addr");
     DO_TEST_CAPS_LATEST("net-user-passt");
     DO_TEST_CAPS_VER("net-user-passt", "7.2.0");
@@ -1595,7 +1623,8 @@ mymain(void)
                                   ARG_MIGRATE_FD, 7);
     DO_TEST_CAPS_ARCH_LATEST_FULL("restore-v2-fd", "x86_64",
                                   ARG_MIGRATE_FROM, "fd:7",
-                                  ARG_MIGRATE_FD, 7);
+                                  ARG_MIGRATE_FD, 7,
+                                  ARG_FLAGS, FLAG_ALLOW_DUPLICATE_OUTPUT);
     DO_TEST_CAPS_ARCH_LATEST_FULL("migrate", "x86_64",
                                   ARG_MIGRATE_FROM, "tcp:10.0.0.1:5000");
     DO_TEST_CAPS_ARCH_LATEST_FULL("migrate-numa-unaligned", "x86_64",

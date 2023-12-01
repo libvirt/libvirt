@@ -73,7 +73,7 @@ mymain(void)
 {
     int ret = 0;
     g_autoptr(virConnect) conn = NULL;
-    struct testQemuConf testConf = { NULL, NULL, NULL };
+    struct testQemuConf testConf = { NULL, NULL, NULL, NULL };
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;

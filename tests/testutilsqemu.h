@@ -62,12 +62,14 @@ typedef enum {
     FLAG_REAL_CAPS          = 1 << 3,
     FLAG_SLIRP_HELPER       = 1 << 4,
     FLAG_SKIP_CONFIG_ACTIVE = 1 << 5, /* Skip 'active' config test in qemuxml2xmltest */
+    FLAG_ALLOW_DUPLICATE_OUTPUT = 1 << 6, /* allow multiple tests with the same output file */
 } testQemuInfoFlags;
 
 struct testQemuConf {
     GHashTable *capscache;
     GHashTable *capslatest;
     GHashTable *qapiSchemaCache;
+    GHashTable *duplicateTests; /* for checking duplicated invocations */
 };
 
 typedef enum {
