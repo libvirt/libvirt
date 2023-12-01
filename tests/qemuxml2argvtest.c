@@ -257,6 +257,105 @@ static virNWFilterDriver fakeNWFilterDriver = {
 };
 
 
+/* name of the fake network shall be constructed as:
+ *  NETWORKXMLNAME;NETWORKPORTXMLNAME
+ *  where:
+ *  NETWORKXMLNAME resolves to abs_srcdir/networkxml2xmlin/NETWORKXMLNAME.xml
+ *  NETWORKPORTXMLNAME resolves to abs_srcdir/virnetworkportxml2xmldata/NETWORKPORTXMLNAME.xml
+ */
+static virNetworkPtr
+fakeNetworkLookupByName(virConnectPtr conn,
+                        const char *name)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    g_autofree char *netname = g_strdup(name);
+    g_autofree char *path = NULL;
+    char *tmp;
+
+    memset(uuid, 0, VIR_UUID_BUFLEN);
+
+    if ((tmp = strchr(netname, ';'))) {
+        *tmp = '\0';
+    } else {
+        virReportError(VIR_ERR_NO_NETWORK,
+                       "Malformed fake network name '%s'. See fakeNetworkLookupByName.",
+                       name);
+        return NULL;
+    }
+
+    path = g_strdup_printf(abs_srcdir "/networkxml2xmlin/%s.xml", netname);
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_NO_NETWORK, "fake network '%s' not found", path);
+        return NULL;
+    }
+
+    return virGetNetwork(conn, name, uuid);
+}
+
+
+static char *
+fakeNetworkGetXMLDesc(virNetworkPtr network,
+                      unsigned int noflags G_GNUC_UNUSED)
+{
+    g_autofree char *netname = g_strdup(network->name);
+    g_autofree char *path = NULL;
+    char *xml = NULL;
+
+    *(strchr(netname, ';')) = '\0';
+
+    path = g_strdup_printf(abs_srcdir "/networkxml2xmlin/%s.xml", netname);
+
+    if (virFileReadAll(path, 4 * 1024, &xml) < 0)
+        return NULL;
+
+    return xml;
+}
+
+
+static virNetworkPortPtr
+fakeNetworkPortCreateXML(virNetworkPtr net,
+                         const char *xmldesc G_GNUC_UNUSED,
+                         unsigned int noflags G_GNUC_UNUSED)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    g_autofree char *portname = g_strdup(strchr(net->name, ';') + 1);
+    g_autofree char *path = g_strdup_printf(abs_srcdir "/virnetworkportxml2xmldata/%s.xml", portname);
+
+    memset(uuid, 0, VIR_UUID_BUFLEN);
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_NO_NETWORK_PORT, "fake network port '%s' not found", path);
+        return NULL;
+    }
+
+    return virGetNetworkPort(net, uuid);
+}
+
+
+static char *
+fakeNetworkPortGetXMLDesc(virNetworkPortPtr port,
+                          unsigned int noflags G_GNUC_UNUSED)
+{
+    g_autofree char *portname = g_strdup(strchr(port->net->name, ';') + 1);
+    g_autofree char *path = g_strdup_printf(abs_srcdir "/virnetworkportxml2xmldata/%s.xml", portname);
+    char *xml = NULL;
+
+    if (virFileReadAll(path, 4 * 1024, &xml) < 0)
+        return NULL;
+
+    return xml;
+}
+
+
+static virNetworkDriver fakeNetworkDriver = {
+    .networkLookupByName = fakeNetworkLookupByName,
+    .networkGetXMLDesc = fakeNetworkGetXMLDesc,
+    .networkPortCreateXML = fakeNetworkPortCreateXML,
+    .networkPortGetXMLDesc = fakeNetworkPortGetXMLDesc,
+};
+
+
 static void
 testUpdateQEMUCapsHostCPUModel(virQEMUCaps *qemuCaps, virArch hostArch)
 {
@@ -546,6 +645,7 @@ testCompareXMLToArgv(const void *data)
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
     conn->nwfilterDriver = &fakeNWFilterDriver;
+    conn->networkDriver = &fakeNetworkDriver;
 
     virSetConnectInterface(conn);
     virSetConnectNetwork(conn);
