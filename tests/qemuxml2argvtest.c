@@ -1814,6 +1814,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST_PPC64("pseries-basic");
     DO_TEST_CAPS_LATEST_PPC64("pseries-vio");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-vio-address-clash", "ppc64");
     DO_TEST_CAPS_LATEST_PPC64("pseries-usb-default");
     DO_TEST_CAPS_LATEST_PPC64("pseries-usb-multi");
     DO_TEST_CAPS_LATEST_PPC64("pseries-vio-user-assigned");
