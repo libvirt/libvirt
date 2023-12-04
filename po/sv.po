@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-11-27 12:14+0000\n"
+"PO-Revision-Date: 2023-12-04 08:10+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -19945,136 +19945,134 @@ msgstr "Tolkningen av VPD-fältåtkomsttyp har misslyckats"
 msgid "Value '%1$s' is not representable as %2$s"
 msgstr "Värdet ”%1$s” är inte representerbart som %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Value '%1$s' is out of %2$s range"
-msgstr "värde på typeid är utanför intervallet"
+msgstr "Värdet ”%1$s” är utanför intervallet för %2$s"
 
 #, c-format
 msgid "Value of cputune '%1$s' must be in range [%2$llu, %3$llu]"
-msgstr ""
+msgstr "Värdet på cputune ”%1$s” måste ligga i intervallet [%2$llu, %3$llu]"
 
-#, fuzzy
 msgid "Variable value contains invalid character"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "Variabelvärdet innehåller ogiltiga tecken"
 
 msgid "Verbose messages"
-msgstr ""
+msgstr "Utförliga meddelanden"
 
 msgid "Video adapters are not supported int containers."
-msgstr ""
+msgstr "Videoadaptrar stödjs inte i behållare."
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
-msgstr ""
+msgstr "Kommandoradsverktyget virsh från libvirt %1$s\n"
 
 #, c-format
 msgid "Virt-admin command line tool of libvirt %1$s\n"
-msgstr ""
+msgstr "Kommandoradsverktyget virt-admin från libvirt %1$s\n"
 
 msgid "Virtual machines need to be saved"
-msgstr ""
+msgstr "Virtuella maskiner behöver sparas"
 
 msgid "Virtual network portgroups are not supported by vz driver."
-msgstr ""
+msgstr "Virtuella nätversportsgrupper stödjs inte av drivrutinen vz."
 
-#, fuzzy
 msgid "Virtual port profile association not supported on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Virtuella portprofilassociationer stödjs inte på denna plattform"
 
 #, c-format
 msgid "Vol %1$s cloned from %2$s\n"
 msgstr "Volym %1$s klonad från %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %1$s created\n"
-msgstr "Domän %s skapad från %s\n"
+msgstr "Vol %1$s skapad\n"
 
 #, c-format
 msgid "Vol %1$s created from %2$s\n"
 msgstr "Volym %1$s skapad från %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %1$s created from input vol %2$s\n"
-msgstr "Domän %1$s skapad från %2$s\n"
+msgstr "Vol %1$s skapad från indata-vol %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %1$s deleted\n"
-msgstr "Domän %1$s förstörd\n"
+msgstr "Vol %1$s raderad\n"
 
 #, c-format
 msgid "Vol %1$s wiped\n"
-msgstr ""
+msgstr "Vol %1$s struken\n"
 
 #, c-format
 msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr ""
+msgstr "Volymen ”%1$s” finns inte i domänens definition.\n"
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
-msgstr ""
+msgstr "Volymen ”%1$s” (%2$s) borttagen.\n"
 
 #, c-format
 msgid "Volume name '%1$s' doesn't have expected format '<directory>/<file>'"
-msgstr ""
+msgstr "Volymnamnet ”%1$s” har inte det förväntade formatet ”<katalog>/<fil>”"
 
 #, c-format
 msgid "Volume name '%1$s' has unsupported suffix, expecting '.vmdk'"
-msgstr ""
+msgstr "Volymnamnet ”%1$s” har ett suffix som inte stödjs, ”.vmdk” förväntades"
 
 #, c-format
 msgid "Volume path '%1$s' did not start with parent pool source device name."
-msgstr ""
+msgstr "Volymsökvägen ”%1$s” började inte med föräldrapoolens källenhetsnamn."
 
 #, c-format
 msgid "Volume path '%1$s' is a FIFO"
-msgstr ""
+msgstr "Volymsökvägen ”%1$s” är en FIFO"
 
 #, c-format
 msgid "Volume path '%1$s' is a socket"
-msgstr ""
+msgstr "Volymsökvägen ”%1$s” är ett uttag"
 
 msgid "VxHS protocol accepts only one host"
-msgstr ""
+msgstr "VxHS-protokollet accepterar bara en värd"
 
 msgid "VxHS protocol is not supported with this QEMU binary"
 msgstr "VxHS-protokollet stödjs inte med denna QEMU-binär"
 
 msgid "WARN"
-msgstr ""
+msgstr "VARN"
 
 #, c-format
 msgid "WS-Management fault during %1$s invocation: %2$s"
-msgstr ""
+msgstr "WS-Management-fel under anrop av %1$s: %2$s"
 
 #, sh-format
 msgid "Waiting for %d guests to shut down, %d seconds left\\n"
-msgstr ""
+msgstr "Väntar på att %d gäster skall stängas av, %d sekunder kvar\\n"
 
 #, sh-format
 msgid "Waiting for %d guests to shut down\\n"
-msgstr ""
+msgstr "Väntar på att %d gäster skall stängas av\\n"
 
 #, sh-format
 msgid "Waiting for guest %s to shut down, %d seconds left\\n"
-msgstr ""
+msgstr "Väntar på att gästen %s skall stängas av, %d sekunder kvar\\n"
 
 #, sh-format
 msgid "Waiting for guest %s to shut down\\n"
-msgstr ""
+msgstr "Väntar på att gästen %s skall stängas av\\n"
 
-#, fuzzy
 msgid "Wakeup a domain that was previously suspended by power management."
-msgstr "Fortsätt en tidigare suspenderad domän."
+msgstr "Väck upp en domän som tidigare sövdes av strömhanteringen."
 
 msgid "Watchdog"
 msgstr "Vakthund"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Welcome to %1$s, the administrating virtualization interactive terminal.\n"
 "\n"
 msgstr ""
-"Välkommen till %1$s, den interaktiva terminalen för virtualisering.\n"
+"Välkommen till %1$s, den interaktiva terminalen för administration av "
+"virtualisering.\n"
 "\n"
 
 #, c-format
@@ -20087,96 +20085,98 @@ msgstr ""
 
 #, c-format
 msgid "Wiping volume '%1$s'(%2$s) ... "
-msgstr ""
+msgstr "Stryker volymen ”%1$s” (%2$s) … "
 
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
-msgstr ""
+msgstr "Skrivfiltrering av PCI-enhetskonfigurationsutrymme stödjs inte av qemu"
 
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
-msgstr ""
+msgstr "Att skriva ”%1$s” till ”%2$s” när vport skapades/raderades misslyckades"
 
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
-msgstr ""
+msgstr "Att skriva till ”%1$s” för att utlösa en värdskanning misslyckades"
 
 msgid "Wrong MAC address"
-msgstr ""
+msgstr "Fel MAC-adress"
 
 #, c-format
 msgid "Wrong XML element type %1$d"
-msgstr ""
+msgstr "Fel XML-elementtyp %1$d"
 
 msgid "Wrong address type for USB hub"
-msgstr ""
+msgstr "Fel adresstyp för USB-navet"
 
 msgid "Wrong length MAC address"
-msgstr ""
+msgstr "Fel längd på MAC-adressen"
 
 msgid ""
 "Wrong or no <model> 'type' attribute specified with <interface "
 "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
 msgstr ""
+"Fel eller inget <model>-attribut ”type” angivet med <interface "
+"type='vhostuser'/>. vhostuser kräver framänden virtio-net*"
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
-msgstr ""
+msgstr "XBZRLE är aktivt, men ”bytes”-data saknades"
 
 msgid "XBZRLE is active, but 'cache-miss' data was missing"
-msgstr ""
+msgstr "XBZRLE är aktivt, men ”cache-miss”-data saknades"
 
 msgid "XBZRLE is active, but 'cache-size' data was missing"
-msgstr ""
+msgstr "XBZRLE är aktivt, men ”cache-size”-data saknades"
 
 msgid "XBZRLE is active, but 'overflow' data was missing"
-msgstr ""
+msgstr "XBZRLE är aktivt, men ”overflow”-data saknades"
 
 msgid "XBZRLE is active, but 'pages' data was missing"
-msgstr ""
+msgstr "XBZRLE är aktivt, men ”pages”-data saknades"
 
 msgid "XML description is invalid or not well formed"
-msgstr ""
+msgstr "XML-beskrivningen är ogiltig eller inte rätt utformad"
 
 msgid "XML document failed to validate against schema"
-msgstr ""
+msgstr "XML-dokumentet kunde inte validera mot schemat"
 
 #, c-format
 msgid "XML document failed to validate against schema: %1$s"
-msgstr ""
+msgstr "XML-dokumentet kunde inte validera mot schemat %1$s"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML innehåller inte ett förväntat ”cpu”-element"
 
-#, fuzzy, c-format
+#, c-format
 msgid "XML error: %1$s"
-msgstr "fel: "
+msgstr "XML-fel: %1$s"
 
 msgid "XML file"
 msgstr "XML-fil"
 
-#, fuzzy, c-format
+#, c-format
 msgid "XML node doesn't contain text, expecting an %1$s value"
-msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+msgstr "XML-noden innehåller inte text, ett %1$s-värde förväntas"
 
 msgid "XML node doesn't contain text, expecting an xsd:dateTime value"
-msgstr ""
+msgstr "XML-noden innehåller inte text, ett xsd:dateTime-värde förväntas"
 
 #, c-format
 msgid "XPath evaluation of response for call to '%1$s' failed"
-msgstr ""
+msgstr "XPath-evaluering av svaret för anroptet av ”%1$s” misslyckades"
 
 #, c-format
 msgid "Xen migration stream version '%1$d' is not supported on this host"
-msgstr ""
+msgstr "Xen-miigreringsström version ”%1$d” stödjs inte på denna värd"
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
-msgstr ""
+msgstr "Xen stödjer bara maskinerna ”xenpv”, ”xenpvh” och ”xenfv”"
 
 msgid "You are trying to remove a snapshot which does not exists"
-msgstr ""
+msgstr "Du försöker ta bort en ögonblicksbild som inte finns"
 
 msgid "You must map the root user of container"
-msgstr ""
+msgstr "Man måste avbilda behållarens root-användare"
 
 #, c-format
 msgid "[--%1$s <number>]"
@@ -20196,113 +20196,127 @@ msgstr "[--%1$s <sträng>]"
 
 #, c-format
 msgid "[<%1$s>]..."
-msgstr ""
+msgstr "[<%1$s>]…"
 
-#, fuzzy, c-format
+#, c-format
 msgid "[[--%1$s] <string>]..."
-msgstr "--%1$s <sträng>"
+msgstr "[[--%1$s] <sträng>]…"
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
+"en videotyp ”none” måste vara den enda videoenheten som är definierad för "
+"domänen"
 
 #, c-format
 msgid ""
 "a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
+"ett PCI-uttag behövs för att ansluta en PCI-styrenhet modell=”%1$s”, men "
+"inget finns tillgängligt, och det kan inte läggas till automatiskt"
 
 msgid "a device with the same address already exists "
-msgstr ""
+msgstr "en enhet med samma adress finns redan "
 
 msgid "a different backing store cannot be specified."
-msgstr ""
+msgstr "en annan bakomliggande lagring kan inte anges."
 
 #, c-format
 msgid ""
 "a different portgroup entry in network '%1$s' is already set as the default. "
 "Only one default is allowed."
 msgstr ""
+"en annan portgruppspost i nätverket ”%1$s” är redan satt som standard. "
+"Endast ett standardvärde är tillåtet."
 
 msgid ""
 "a maximum of two TPM devices is supported, one of them being a TPM Proxy "
 "device"
 msgstr ""
+"maximalt två TPM-enheter stödjs, där en av dem skall vara en TPM Proxy-enhet"
 
 msgid "a redefined checkpoint must have a name"
-msgstr ""
+msgstr "en omdefinierad kontrollpunkt måste ha ett namn"
 
 msgid "a redefined snapshot must have a name"
-msgstr ""
+msgstr "en omdefinierad ögonblicksbild måste ha ett namn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "a secret with UUID %1$s already defined for use with %2$s"
-msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
+msgstr ""
+"en hemlighet med UUID %1$s är redan definierad för att användas med %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "a secret with UUID %1$s is already defined for use with %2$s"
-msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
+msgstr ""
+"en hemlighet med UUID %1$s är redan definierad för att användas med %2$s"
 
 msgid "a slirp-helper cannot be migrated"
-msgstr ""
+msgstr "en slirp-hjälpare kan inte migreras"
 
-#, fuzzy
 msgid "abort active domain job"
-msgstr "lista inaktiva domäner"
+msgstr "avbryt ett aktivt domänjobb"
 
 msgid "abort on soft errors during migration"
-msgstr ""
+msgstr "avbryt vid mjuka fel under migreringen"
 
 msgid "abort the active job on the specified disk"
-msgstr ""
+msgstr "avbryt det aktiva jobbet på den angivna disken"
 
 msgid "absolute path must be used as block copy target"
-msgstr ""
+msgstr "en absolut sökväg måste användas som blockkopiemål"
 
 msgid "access denied"
 msgstr "åtkomst nekas"
 
 msgid "access denied by policy"
-msgstr ""
+msgstr "åtkomst nekas av policyn"
 
 #, c-format
 msgid "access denied: %1$s"
-msgstr ""
+msgstr "åtkomst nekas: %1$s"
 
 msgid "active"
 msgstr "aktiv"
 
 #, c-format
 msgid "active commit requested but '%1$s' is not active"
-msgstr ""
+msgstr "aktivt fastställande begärt men ”%1$s” är inte aktiv"
 
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %1$s requested "
 "internal"
 msgstr ""
+"aktiva qemu-domäner kräver externa diskögonblicksbilder; disken %1$s begärde "
+"intern"
 
 msgid "adapter name to be used for underlying storage"
-msgstr ""
+msgstr "adapternamnet att använda för underliggande lagring"
 
 msgid ""
 "adapter parent scsi_hostN fabric_wwn to be used for underlying vHBA storage"
 msgstr ""
+"adapterföräldern scsi_hostN fabric_wwn att använda för underliggande vHBA-"
+"lagring"
 
 msgid "adapter parent scsi_hostN to be used for underlying vHBA storage"
-msgstr ""
+msgstr "adapterföräldern scsi_hostN att använda för underliggande vHBA-lagring"
 
 msgid "adapter parent scsi_hostN wwnn to be used for underlying vHBA storage"
 msgstr ""
+"adapterföräldern scsi_hostN wwnn att använda för underliggande vHBA-lagring"
 
 msgid "adapter parent scsi_hostN wwpn to be used for underlying vHBA storage"
 msgstr ""
+"adapterföräldern scsi_hostN wwpn att använda för underliggande vHBA-lagring"
 
 msgid "adapter wwnn to be used for underlying storage"
-msgstr ""
+msgstr "adapter-wwnn att användas för underliggande lagring"
 
 msgid "adapter wwpn to be used for underlying storage"
-msgstr ""
+msgstr "adapter-wwpn att användas för underliggande lagring"
 
 msgid "add a column showing parent checkpoint"
 msgstr ""
