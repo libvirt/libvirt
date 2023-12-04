@@ -16,29 +16,26 @@
   <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type='file' device='disk'>
-      <driver name='qemu' type='qcow2' event_idx='on'/>
-      <source file='/var/lib/libvirt/images/f14.img'/>
-      <target dev='vda' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
-    </disk>
-    <disk type='file' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <source file='/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso'/>
-      <target dev='hdc' bus='ide'/>
-      <readonly/>
-      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
-    </disk>
     <controller type='usb' index='0'/>
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </controller>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <interface type='user'>
+    <interface type='ethernet'>
       <mac address='52:54:00:e5:48:58'/>
       <model type='virtio'/>
       <driver name='vhost' queues='5'/>
+    </interface>
+    <interface type='ethernet'>
+      <mac address='52:54:00:e5:48:59'/>
+      <model type='virtio'/>
+      <driver name='vhost' ioeventfd='on'/>
+    </interface>
+    <interface type='ethernet'>
+      <mac address='52:54:00:e5:48:5A'/>
+      <model type='virtio'/>
+      <driver name='vhost' ioeventfd='on' queues='5'/>
     </interface>
     <serial type='pty'>
       <target port='0'/>

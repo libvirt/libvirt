@@ -1382,6 +1382,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-virtio-device");
     DO_TEST_CAPS_LATEST("net-virtio-disable-offloads");
     DO_TEST_CAPS_LATEST("net-virtio-netdev");
+    DO_TEST_CAPS_LATEST("net-virtio-vhost");
     DO_TEST_CAPS_ARCH_LATEST("net-virtio-ccw", "s390x");
     DO_TEST_CAPS_LATEST("net-virtio-rxtxqueuesize");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("net-virtio-rxqueuesize-invalid-size");

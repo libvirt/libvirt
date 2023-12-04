@@ -383,6 +383,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-virtio");
     DO_TEST_CAPS_LATEST("net-virtio-device");
     DO_TEST_CAPS_LATEST("net-virtio-disable-offloads");
+    DO_TEST_CAPS_LATEST("net-virtio-vhost");
     DO_TEST_CAPS_LATEST("net-linkstate");
     DO_TEST_CAPS_LATEST("net-eth");
     DO_TEST_CAPS_LATEST("net-eth-ifname");
@@ -476,7 +477,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
     DO_TEST_CAPS_LATEST("lease");
     DO_TEST_CAPS_LATEST("event_idx");
-    DO_TEST_CAPS_LATEST("vhost_queues");
     DO_TEST_CAPS_LATEST("interface-driver");
     DO_TEST_CAPS_LATEST("net-server");
     DO_TEST_CAPS_LATEST("virtio-lun");
