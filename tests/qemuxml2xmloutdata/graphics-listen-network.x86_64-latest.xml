@@ -33,7 +33,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='5903' autoport='no'>
-      <listen type='network' network='Bobsnetwork'/>
+      <listen type='network' network='nat-network;'/>
     </graphics>
     <audio id='1' type='none'/>
     <video>

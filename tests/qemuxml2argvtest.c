@@ -2583,6 +2583,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-fs-sock");
     DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw-auto", "s390x");
 
+    DO_TEST_CAPS_LATEST("graphics-listen-network");
+
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();
 
