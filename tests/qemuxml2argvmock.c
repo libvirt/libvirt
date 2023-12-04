@@ -284,3 +284,11 @@ virIdentityEnsureSystemToken(void)
 {
     return g_strdup("3de80bcbf22d4833897f1638e01be9b2");
 }
+
+
+int
+virNetDevSetMTU(const char *ifname G_GNUC_UNUSED,
+                int mtu G_GNUC_UNUSED)
+{
+    return 0;
+}

@@ -202,7 +202,7 @@ int virNetDevSetCoalesce(const char *ifname,
 
 int virNetDevSetMTU(const char *ifname,
                     int mtu)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 int virNetDevSetMTUFromDevice(const char *ifname,
                               const char *otherifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
