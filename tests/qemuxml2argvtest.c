@@ -811,18 +811,6 @@ testCompareXMLToArgv(const void *data)
     return ret;
 }
 
-static void
-testInfoSetPaths(testQemuInfo *info,
-                 const char *suffix)
-{
-    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml",
-                                   abs_srcdir, info->name);
-    info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args",
-                                    abs_srcdir, info->name, suffix ? suffix : "");
-    info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err",
-                                      abs_srcdir, info->name, suffix ? suffix : "");
-}
-
 
 static int
 testConfXMLCheck(GHashTable *existingTestCases)
@@ -867,6 +855,32 @@ testConfXMLEnumerate(GHashTable *existingTestCases)
     }
 
     return rc;
+}
+
+
+static void
+testRun(const char *name,
+        const char *suffix,
+        int *ret,
+        struct testQemuConf *testConf,
+        ...)
+{
+    g_autofree char *testname = g_strdup_printf("QEMU XML-2-ARGV %s%s", name, suffix);
+    g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
+    va_list ap;
+
+    info->name = name;
+    info->conf = testConf;
+
+    va_start(ap, testConf);
+    testQemuInfoSetArgs(info, ap);
+    va_end(ap);
+
+    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir, info->name);
+    info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args", abs_srcdir, info->name, suffix);
+    info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
+
+    virTestRunLog(ret, testname, testCompareXMLToArgv, info);
 }
 
 
@@ -940,15 +954,7 @@ mymain(void)
  * version.
  */
 # define DO_TEST_FULL(_name, _suffix, ...) \
-    do { \
-        static testQemuInfo info = { \
-            .name = _name, \
-        }; \
-        testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \
-        testInfoSetPaths(&info, _suffix); \
-        virTestRunLog(&ret, "QEMU XML-2-ARGV " _name _suffix, testCompareXMLToArgv, &info); \
-        testQemuInfoClear(&info); \
-    } while (0)
+    testRun(_name, _suffix, &ret, &testConf, __VA_ARGS__);
 
 # define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
     DO_TEST_FULL(name, "." arch "-" ver, \

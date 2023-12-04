@@ -107,6 +107,34 @@ testInfoSetPaths(testQemuInfo *info,
 }
 
 
+static void
+testRun(const char *name,
+        const char *suffix,
+        struct testQemuConf *testConf,
+        int *ret,
+        ...)
+{
+    g_autofree char *name_active = g_strdup_printf("QEMU XML-2-XML-active %s", name);
+    g_autofree char *name_inactive = g_strdup_printf("QEMU XML-2-XML-inactive %s", name);
+    g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
+    va_list ap;
+
+    info->name = name;
+    info->conf = testConf;
+
+    va_start(ap, ret);
+    testQemuInfoSetArgs(info, ap);
+    va_end(ap);
+
+
+    testInfoSetPaths(info, suffix, "inactive");
+    virTestRunLog(ret, name_inactive, testXML2XMLInactive, info);
+
+    testInfoSetPaths(info, suffix, "active");
+    virTestRunLog(ret, name_active, testXML2XMLActive, info);
+}
+
+
 static int
 mymain(void)
 {
@@ -147,22 +175,9 @@ mymain(void)
     virSetConnectStorage(conn);
 
 #define DO_TEST_CAPS_INTERNAL(_name, arch, ver, ...) \
-    do { \
-        static testQemuInfo info = { \
-            .name = _name, \
-        }; \
-        testQemuInfoSetArgs(&info, &testConf, \
-                            ARG_CAPS_ARCH, arch, \
-                            ARG_CAPS_VER, ver, \
-                            __VA_ARGS__, ARG_END); \
- \
-        testInfoSetPaths(&info, "." arch "-" ver, "inactive"); \
-        virTestRunLog(&ret, "QEMU XML-2-XML-inactive " _name, testXML2XMLInactive, &info); \
- \
-        testInfoSetPaths(&info, "." arch "-" ver, "active"); \
-        virTestRunLog(&ret, "QEMU XML-2-XML-active " _name, testXML2XMLActive, &info); \
-        testQemuInfoClear(&info); \
-    } while (0)
+    testRun(_name, "." arch "-" ver, &testConf, &ret, \
+            ARG_CAPS_ARCH, arch, ARG_CAPS_VER, ver, \
+            __VA_ARGS__, ARG_END);
 
 #define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)

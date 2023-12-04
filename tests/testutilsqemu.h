@@ -115,6 +115,8 @@ struct _testQemuInfo {
 };
 
 typedef struct _testQemuInfo testQemuInfo;
+void testQemuInfoFree(testQemuInfo *info);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(testQemuInfo, testQemuInfoFree);
 
 virDomainXMLOption *testQemuXMLConfInit(void);
 
@@ -153,10 +155,8 @@ int testQemuCapsIterate(const char *suffix,
                         void *opaque);
 
 void testQemuInfoSetArgs(testQemuInfo *info,
-                         struct testQemuConf *conf,
-                         ...);
+                         va_list argptr);
 int testQemuInfoInitArgs(testQemuInfo *info);
-void testQemuInfoClear(testQemuInfo *info);
 
 int testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                          virDomainChrSourceDef *chardev,

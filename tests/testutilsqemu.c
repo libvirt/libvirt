@@ -624,16 +624,13 @@ testQemuCapsIterate(const char *suffix,
 
 void
 testQemuInfoSetArgs(testQemuInfo *info,
-                    struct testQemuConf *conf, ...)
+                    va_list argptr)
 {
-    va_list argptr;
     testQemuInfoArgName argname;
     int flag;
 
-    info->conf = conf;
     info->args.newargs = true;
 
-    va_start(argptr, conf);
     while ((argname = va_arg(argptr, testQemuInfoArgName)) != ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
@@ -748,8 +745,6 @@ testQemuInfoSetArgs(testQemuInfo *info,
         if (info->args.invalidarg)
             break;
     }
-
-    va_end(argptr);
 }
 
 
@@ -959,7 +954,7 @@ testQemuInfoInitArgs(testQemuInfo *info)
 
 
 void
-testQemuInfoClear(testQemuInfo *info)
+testQemuInfoFree(testQemuInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
@@ -970,6 +965,7 @@ testQemuInfoClear(testQemuInfo *info)
     g_clear_pointer(&info->args.fds, g_hash_table_unref);
     g_clear_object(&info->nbdkitCaps);
     g_clear_pointer(&info->args.fakeNbdkitCaps, virBitmapFree);
+    g_free(info);
 }
 
 

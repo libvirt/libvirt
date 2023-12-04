@@ -60,11 +60,30 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 
 static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
 
-static void
-testInfoSetStatusPaths(testQemuInfo *info)
+
+static int
+testRunStatus(const char *name,
+              struct testQemuConf *testConf,
+              ...)
 {
+    g_autofree char *testname = g_strdup_printf("QEMU status XML-2-XML %s", name);
+    g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
+    va_list ap;
+
+    info->name = name;
+    info->conf = testConf;
+
+    va_start(ap, testConf);
+    testQemuInfoSetArgs(info, ap);
+    va_end(ap);
+
     info->infile = g_strdup_printf("%s%s-in.xml", statusPath, info->name);
     info->outfile = g_strdup_printf("%s%s-out.xml", statusPath, info->name);
+
+    if (virTestRun(testname, testCompareStatusXMLToXMLFiles, info) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -90,19 +109,9 @@ mymain(void)
 
 #define DO_TEST_STATUS(_name) \
     do { \
-        static testQemuInfo info = { \
-            .name = _name, \
-        }; \
-        testQemuInfoSetArgs(&info, &testConf, ARG_END); \
-        testInfoSetStatusPaths(&info); \
-\
-        if (virTestRun("QEMU status XML-2-XML " _name, \
-                       testCompareStatusXMLToXMLFiles, &info) < 0) \
+        if (testRunStatus(_name, &testConf, ARG_END) < 0) \
             ret = -1; \
-\
-        testQemuInfoClear(&info); \
     } while (0)
-
 
     DO_TEST_STATUS("blockjob-mirror");
     DO_TEST_STATUS("vcpus-multi");
