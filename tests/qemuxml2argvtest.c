@@ -2584,6 +2584,16 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw-auto", "s390x");
 
     DO_TEST_CAPS_LATEST("graphics-listen-network");
+    DO_TEST_CAPS_LATEST("net-bandwidth");
+    DO_TEST_CAPS_LATEST("net-bandwidth2");
+    DO_TEST_CAPS_LATEST("net-coalesce");
+    DO_TEST_CAPS_LATEST("net-isolated-port");
+    DO_TEST_CAPS_LATEST("net-mtu");
+    DO_TEST_CAPS_LATEST("net-openvswitch");
+    DO_TEST_CAPS_LATEST("net-virtio-network-portgroup");
+    DO_TEST_CAPS_LATEST("net-virtio-teaming-network");
+    DO_TEST_CAPS_LATEST("tap-vhost-incorrect");
+    DO_TEST_CAPS_LATEST("tap-vhost");
 
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();

@@ -32,7 +32,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='network' trustGuestRxFilters='yes'>
       <mac address='00:11:22:33:44:55'/>
-      <source network='rednet' portgroup='bob'/>
+      <source network='vepa-net;plug-bridge-basic' portgroup='bob'/>
       <vlan>
         <tag id='4095'/>
       </vlan>
@@ -44,7 +44,7 @@
     </interface>
     <interface type='network' trustGuestRxFilters='no'>
       <mac address='10:11:22:33:44:55'/>
-      <source network='blue' portgroup='sam'/>
+      <source network='vepa-net;plug-bridge-basic' portgroup='sam'/>
       <virtualport>
         <parameters instanceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f' interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/>
       </virtualport>
@@ -53,7 +53,7 @@
     </interface>
     <interface type='network'>
       <mac address='22:11:22:33:44:55'/>
-      <source network='blue' portgroup='sam'/>
+      <source network='vepa-net;plug-bridge-basic' portgroup='sam'/>
       <virtualport type='802.1Qbh'>
         <parameters profileid='testhis99'/>
       </virtualport>

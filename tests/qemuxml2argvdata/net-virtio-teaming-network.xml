@@ -21,14 +21,14 @@
     <controller type='usb' index='0'/>
     <interface type='network'>
       <mac address='00:11:22:33:44:55'/>
-      <source network='mybridge'/>
+      <source network='nat-network;plug-bridge-basic'/>
       <model type='virtio'/>
       <teaming type='persistent'/>
       <alias name='ua-backup0'/>
     </interface>
     <interface type='network'>
       <mac address='00:11:22:33:44:55'/>
-      <source network='myhostdevpool'/>
+      <source network='hostdev;plug-hostdev-pci'/>
       <model type='virtio'/>
       <teaming type='transient' persistent='ua-backup0'/>
     </interface>

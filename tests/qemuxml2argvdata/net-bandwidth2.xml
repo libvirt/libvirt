@@ -34,7 +34,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='network'>
       <mac address='52:54:00:24:a5:9f'/>
-      <source network='default'/>
+      <source network='nat-network;plug-network-basic'/>
       <bandwidth>
         <inbound floor='200'/>
       </bandwidth>

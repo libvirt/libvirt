@@ -1,0 +1,47 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-f14-60 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-f14-60/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-f14-60/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-f14-60/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=f14-60,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-f14-60/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=on \
+-accel kvm \
+-cpu qemu64 \
+-m size=1048576k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
+-overcommit mem-lock=off \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 38644c45-5227-a936-3b38-bc4f72c355bb \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot menu=on,strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/f14-6.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","file":"libvirt-2-storage"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk0","bootindex":2}' \
+-blockdev '{"driver":"file","filename":"/home/zippy/tmp/Fedora-14-x86_64-Live-KDE.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
+-device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-1-format","id":"ide0-1-0","bootindex":1}' \
+-netdev '{"type":"tap","fd":"102","id":"hostnet0"}' \
+-device '{"driver":"rtl8139","netdev":"hostnet0","id":"net0","mac":"52:54:00:24:a5:9f","bus":"pci.0","addr":"0x7"}' \
+-chardev pty,id=charserial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-device '{"driver":"usb-tablet","id":"input0","bus":"usb.0","port":"1"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-vnc 127.0.0.1:0,audiodev=audio1 \
+-device '{"driver":"VGA","id":"video0","vgamem_mb":16,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"AC97","id":"sound0","audiodev":"audio1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x5"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

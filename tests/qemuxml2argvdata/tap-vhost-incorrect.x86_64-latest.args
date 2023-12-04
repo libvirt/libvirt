@@ -1,0 +1,40 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-test \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-test/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-test/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=test,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-test/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=1048576k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid bba65c0e-c049-934f-b6aa-4e2c0582acdf \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot menu=on,strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
+-netdev '{"type":"tap","fd":"102","id":"hostnet0"}' \
+-device '{"driver":"e1000","netdev":"hostnet0","id":"net0","mac":"52:54:00:e5:48:58","bus":"pci.0","addr":"0x2"}' \
+-netdev '{"type":"tap","fd":"102","vhost":true,"vhostfd":"44","id":"hostnet1"}' \
+-device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"52:54:00:e5:48:59","bus":"pci.0","addr":"0x3"}' \
+-chardev pty,id=charserial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

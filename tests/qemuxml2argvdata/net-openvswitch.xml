@@ -24,7 +24,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='network'>
       <mac address='00:11:22:33:44:55'/>
-      <source network='ovs-net'/>
+      <source network='openvswitch-net;plug-bridge-basic'/>
       <vlan trunk='yes'>
         <tag id='42'/>
         <tag id='48'/>

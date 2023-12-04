@@ -44,7 +44,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='network'>
       <mac address='52:54:00:e5:48:58'/>
-      <source network='default'/>
+      <source network='nat-network;plug-network-basic'/>
       <model type='virtio'/>
       <coalesce>
         <rx>
@@ -55,13 +55,13 @@
     </interface>
     <interface type='network'>
       <mac address='52:54:00:e5:48:59'/>
-      <source network='default'/>
+      <source network='nat-network;plug-network-basic'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <interface type='network'>
       <mac address='52:54:00:e5:48:60'/>
-      <source network='default'/>
+      <source network='nat-network;plug-network-basic'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </interface>

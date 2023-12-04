@@ -22,7 +22,7 @@
     <controller type='pci' index='0' model='pcie-root'/>
     <interface type='network'>
       <mac address='52:54:00:d6:c0:0b'/>
-      <source network='default'/>
+      <source network='nat-network;plug-network-basic'/>
       <port isolated='yes'/>
       <model type='virtio'/>
     </interface>

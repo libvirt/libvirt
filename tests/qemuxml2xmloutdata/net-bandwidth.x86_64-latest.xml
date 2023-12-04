@@ -49,7 +49,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='network'>
       <mac address='52:54:00:24:a5:9f'/>
-      <source network='default'/>
+      <source network='nat-network;plug-network-basic'/>
       <bandwidth>
         <inbound average='1000' peak='4000' burst='1024'/>
         <outbound average='128' peak='256' burst='32768'/>
