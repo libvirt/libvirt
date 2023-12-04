@@ -6628,6 +6628,26 @@ qemuCheckDiskConfigAgainstDomain(const virDomainDef *def,
 
 
 static int
+qemuDomainAttachMemoryConfig(virDomainDef *vmdef,
+                             virDomainMemoryDef **mem)
+{
+    if (vmdef->nmems == vmdef->mem.memory_slots) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("no free memory device slot available"));
+        return -1;
+    }
+
+    vmdef->mem.cur_balloon += (*mem)->size;
+
+    if (virDomainMemoryInsert(vmdef, *mem) < 0)
+        return -1;
+
+    *mem = NULL;
+    return 0;
+}
+
+
+static int
 qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
                              virDomainDeviceDef *dev,
                              virQEMUCaps *qemuCaps,
@@ -6747,17 +6767,8 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        if (vmdef->nmems == vmdef->mem.memory_slots) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("no free memory device slot available"));
+        if (qemuDomainAttachMemoryConfig(vmdef, &dev->data.memory) < 0)
             return -1;
-        }
-
-        vmdef->mem.cur_balloon += dev->data.memory->size;
-
-        if (virDomainMemoryInsert(vmdef, dev->data.memory) < 0)
-            return -1;
-        dev->data.memory = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
