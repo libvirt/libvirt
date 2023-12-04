@@ -574,7 +574,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
     DO_TEST_CAPS_LATEST("console-virtio");
     DO_TEST_CAPS_LATEST("serial-target-port-auto");
-    DO_TEST_CAPS_LATEST("graphics-listen-network2");
     DO_TEST_CAPS_LATEST("numad-auto-vcpu-no-numatune");
     DO_TEST_CAPS_LATEST("numad-auto-memory-vcpu-no-cpuset-and-placement");
     DO_TEST_CAPS_LATEST("numad-auto-memory-vcpu-cpuset");
