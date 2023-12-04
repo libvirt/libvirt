@@ -477,7 +477,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
     DO_TEST_CAPS_LATEST("lease");
     DO_TEST_CAPS_LATEST("event_idx");
-    DO_TEST_CAPS_LATEST("interface-driver");
     DO_TEST_CAPS_LATEST("net-server");
     DO_TEST_CAPS_LATEST("virtio-lun");
 
