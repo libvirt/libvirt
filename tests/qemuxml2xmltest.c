@@ -383,6 +383,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-virtio");
     DO_TEST_CAPS_LATEST("net-virtio-device");
     DO_TEST_CAPS_LATEST("net-virtio-disable-offloads");
+    DO_TEST_CAPS_LATEST("net-linkstate");
     DO_TEST_CAPS_LATEST("net-eth");
     DO_TEST_CAPS_LATEST("net-eth-ifname");
     DO_TEST_CAPS_LATEST("net-eth-hostip");

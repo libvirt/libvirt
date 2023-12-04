@@ -1387,6 +1387,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("net-virtio-rxqueuesize-invalid-size");
     DO_TEST_CAPS_LATEST("net-virtio-teaming");
     DO_TEST_CAPS_LATEST("net-virtio-teaming-hostdev");
+    DO_TEST_CAPS_LATEST("net-linkstate");
     DO_TEST_CAPS_LATEST("net-eth");
     DO_TEST_CAPS_LATEST("net-eth-ifname");
     DO_TEST_CAPS_LATEST("net-eth-names");
