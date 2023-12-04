@@ -85,8 +85,8 @@
               </div>
             </form>
             <div id="advancedsearch">
-              <span><input type="radio" name="what" id="whatwebsite" checked="checked" value="website"/><label for="whatwebsite">Website</label></span>
-              <span><input type="radio" name="what" id="whatwiki" value="wiki"/><label for="whatwiki">Wiki</label></span>
+              <span><input type="radio" name="what" id="whatwebsite" checked="checked" value="website"/><label for="whatwebsite">Website <i>(via DuckDuckGo)</i></label></span>
+              <span><input type="radio" name="what" id="whatwiki" value="wiki"/><label for="whatwiki">Wiki <i>(via DuckDuckGo)</i></label></span>
               <span><input type="radio" name="what" id="whatdevs" value="devs"/><label for="whatdevs">Developers list</label></span>
               <span><input type="radio" name="what" id="whatusers" value="users"/><label for="whatusers">Users list</label></span>
             </div>
