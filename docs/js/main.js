@@ -40,12 +40,13 @@ function advancedsearch(e) {
     var form = document.createElement("form");
     form.method = "get";
 
+    var q = document.getElementById("searchq");
     var newq = document.createElement("input");
     newq.type = "hidden";
     newq.name = "q";
+    newq.value = q.value;
     form.appendChild(newq);
 
-    var q = document.getElementById("searchq");
     var whats = document.getElementsByName("what");
     var what = "website";
     for (var i = 0; i < whats.length; i++) {
@@ -56,15 +57,20 @@ function advancedsearch(e) {
     }
 
     if (what == "website" || what == "wiki") {
-        form.action = "https://google.com/search";
+        form.action = "https://duckduckgo.com/";
+
+        var newsite = document.createElement("input");
+        newsite.type = "hidden";
+        newsite.name = "sites";
+        form.appendChild(newsite);
+
         if (what == "website") {
-            newq.value = "site:libvirt.org " + q.value;
+            newsite.value = "libvirt.org";
         } else {
-            newq.value = "site:wiki.libvirt.org " + q.value;
+            newsite.value = "wiki.libvirt.org";
         }
     } else if (what == "devs" || "users") {
         form.action = "https://lists.libvirt.org/archives/search";
-        newq.value = q.value;
 
         var newl = document.createElement("input");
         newl.type = "hidden";

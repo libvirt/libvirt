@@ -77,9 +77,9 @@
             </ul>
           </div>
           <div id="search">
-            <form id="simplesearch" action="https://www.google.com/search" enctype="application/x-www-form-urlencoded" method="get">
+            <form id="simplesearch" action="https://duckduckgo.com/" enctype="application/x-www-form-urlencoded" method="get">
               <div>
-                <input id="searchsite" name="sitesearch" type="hidden" value="libvirt.org"/>
+                <input id="searchsite" name="sites" type="hidden" value="libvirt.org"/>
                 <input id="searchq" name="q" type="text" size="12" value=""/>
                 <input name="submit" type="submit" value="Go"/>
               </div>
