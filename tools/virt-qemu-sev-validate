@@ -1054,7 +1054,7 @@ class LibvirtConfidentialVM(ConfidentialVM):
                 raise InsecureUsageException(
                     "Using CPU SKU from capabilities is not secure")
 
-            mode = doc.xpath("/domain/cpu/@mode")
+            mode = doc.xpath("string(/domain/cpu/@mode)")
             if mode != "host-passthrough":
                 raise UnsupportedUsageException(
                     "Using CPU family/model/stepping from host not possible unless 'host-passthrough' is used")
