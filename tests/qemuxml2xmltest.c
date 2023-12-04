@@ -20,9 +20,9 @@
 static virQEMUDriver driver;
 
 static int
-testXML2XMLCommon(const struct testQemuInfo *info)
+testXML2XMLCommon(const testQemuInfo *info)
 {
-    if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
+    if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
         return -1;
 
     virFileCacheClear(driver.qemuCapsCache);
@@ -37,7 +37,7 @@ testXML2XMLCommon(const struct testQemuInfo *info)
 static int
 testXML2XMLActive(const void *opaque)
 {
-    const struct testQemuInfo *info = opaque;
+    const testQemuInfo *info = opaque;
 
     if (info->flags & FLAG_SKIP_CONFIG_ACTIVE)
         return EXIT_AM_SKIP;
@@ -57,7 +57,7 @@ testXML2XMLActive(const void *opaque)
 static int
 testXML2XMLInactive(const void *opaque)
 {
-    const struct testQemuInfo *info = opaque;
+    const testQemuInfo *info = opaque;
 
     if (testXML2XMLCommon(info) < 0 ||
         testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
@@ -84,7 +84,7 @@ testXML2XMLInactive(const void *opaque)
  * both the "active" and "inactive" versions are the same.
  */
 static void
-testInfoSetPaths(struct testQemuInfo *info,
+testInfoSetPaths(testQemuInfo *info,
                  const char *suffix,
                  const char *statesuffix)
 {
@@ -148,7 +148,7 @@ mymain(void)
 
 #define DO_TEST_CAPS_INTERNAL(_name, arch, ver, ...) \
     do { \
-        static struct testQemuInfo info = { \
+        static testQemuInfo info = { \
             .name = _name, \
         }; \
         testQemuInfoSetArgs(&info, &testConf, \

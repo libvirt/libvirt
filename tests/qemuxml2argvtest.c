@@ -384,7 +384,7 @@ static virCommand *
 testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
                                virDomainObj *vm,
                                const char *migrateURI,
-                               struct testQemuInfo *info,
+                               testQemuInfo *info,
                                unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -561,7 +561,7 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
 
 static int
 testCompareXMLToArgvValidateSchema(virCommand *cmd,
-                                   struct testQemuInfo *info)
+                                   testQemuInfo *info)
 {
     g_auto(GStrv) args = NULL;
 
@@ -579,7 +579,7 @@ testCompareXMLToArgvValidateSchema(virCommand *cmd,
 
 
 static int
-testInfoCheckDuplicate(struct testQemuInfo *info)
+testInfoCheckDuplicate(testQemuInfo *info)
 {
     const char *path = info->outfile;
 
@@ -603,7 +603,7 @@ testInfoCheckDuplicate(struct testQemuInfo *info)
 static int
 testCompareXMLToArgv(const void *data)
 {
-    struct testQemuInfo *info = (void *) data;
+    testQemuInfo *info = (void *) data;
     g_autofree char *migrateURI = NULL;
     g_auto(virBuffer) actualBuf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actualargv = NULL;
@@ -626,7 +626,7 @@ testCompareXMLToArgv(const void *data)
     /* mark test case as used */
     ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->infile));
 
-    if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
+    if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
         goto cleanup;
 
     if (testInfoCheckDuplicate(info) < 0)
@@ -812,7 +812,7 @@ testCompareXMLToArgv(const void *data)
 }
 
 static void
-testInfoSetPaths(struct testQemuInfo *info,
+testInfoSetPaths(testQemuInfo *info,
                  const char *suffix)
 {
     info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml",
@@ -941,7 +941,7 @@ mymain(void)
  */
 # define DO_TEST_FULL(_name, _suffix, ...) \
     do { \
-        static struct testQemuInfo info = { \
+        static testQemuInfo info = { \
             .name = _name, \
         }; \
         testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \

@@ -623,7 +623,7 @@ testQemuCapsIterate(const char *suffix,
 
 
 void
-testQemuInfoSetArgs(struct testQemuInfo *info,
+testQemuInfoSetArgs(testQemuInfo *info,
                     struct testQemuConf *conf, ...)
 {
     va_list argptr;
@@ -900,7 +900,7 @@ testQemuInsertRealCaps(virFileCache *cache,
 
 
 int
-testQemuInfoInitArgs(struct testQemuInfo *info)
+testQemuInfoInitArgs(testQemuInfo *info)
 {
     ssize_t cap;
 
@@ -959,7 +959,7 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
 
 
 void
-testQemuInfoClear(struct testQemuInfo *info)
+testQemuInfoClear(testQemuInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);

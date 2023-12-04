@@ -96,7 +96,7 @@ struct testQemuArgs {
     bool invalidarg;
 };
 
-struct testQemuInfo {
+struct _testQemuInfo {
     const char *name;
     char *infile;
     char *outfile;
@@ -113,6 +113,8 @@ struct testQemuInfo {
     struct testQemuArgs args;
     struct testQemuConf *conf;
 };
+
+typedef struct _testQemuInfo testQemuInfo;
 
 virDomainXMLOption *testQemuXMLConfInit(void);
 
@@ -150,11 +152,11 @@ int testQemuCapsIterate(const char *suffix,
                         testQemuCapsIterateCallback callback,
                         void *opaque);
 
-void testQemuInfoSetArgs(struct testQemuInfo *info,
+void testQemuInfoSetArgs(testQemuInfo *info,
                          struct testQemuConf *conf,
                          ...);
-int testQemuInfoInitArgs(struct testQemuInfo *info);
-void testQemuInfoClear(struct testQemuInfo *info);
+int testQemuInfoInitArgs(testQemuInfo *info);
+void testQemuInfoClear(testQemuInfo *info);
 
 int testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                          virDomainChrSourceDef *chardev,

@@ -18,7 +18,7 @@ static virQEMUDriver driver;
 static int
 testCompareStatusXMLToXMLFiles(const void *opaque)
 {
-    const struct testQemuInfo *data = opaque;
+    const testQemuInfo *data = opaque;
     virDomainObj *obj = NULL;
     g_autofree char *actual = NULL;
     int ret = -1;
@@ -61,7 +61,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
 
 static void
-testInfoSetStatusPaths(struct testQemuInfo *info)
+testInfoSetStatusPaths(testQemuInfo *info)
 {
     info->infile = g_strdup_printf("%s%s-in.xml", statusPath, info->name);
     info->outfile = g_strdup_printf("%s%s-out.xml", statusPath, info->name);
@@ -90,7 +90,7 @@ mymain(void)
 
 #define DO_TEST_STATUS(_name) \
     do { \
-        static struct testQemuInfo info = { \
+        static testQemuInfo info = { \
             .name = _name, \
         }; \
         testQemuInfoSetArgs(&info, &testConf, ARG_END); \
