@@ -10125,7 +10125,6 @@ testDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
                                     const char *xml,
                                     unsigned int flags)
 {
-    g_autoptr(virDomainDeviceDef) devConf = NULL;
     g_autoptr(virDomainDeviceDef) devLive = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
