@@ -2536,6 +2536,18 @@ qemuMonitorRemoveNetdev(qemuMonitor *mon,
 }
 
 
+/**
+ * qemuMonitorQueryRxFilter:
+ * @mon: monitor object
+ * @alias: alias of the network interface
+ * @filter: where to store the result (can be NULL)
+ *
+ * Issues query-rx-filter command for given device (@alias) and stores parsed
+ * output at @filter (if not NULL). If @filter is NULL, the command is executed
+ * but nothing is parsed.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
 int
 qemuMonitorQueryRxFilter(qemuMonitor *mon, const char *alias,
                          virNetDevRxFilter **filter)

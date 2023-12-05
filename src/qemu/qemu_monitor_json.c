@@ -3753,7 +3753,8 @@ qemuMonitorJSONQueryRxFilter(qemuMonitor *mon, const char *alias,
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
         return -1;
 
-    if (qemuMonitorJSONQueryRxFilterParse(reply, filter) < 0)
+    if (filter &&
+        qemuMonitorJSONQueryRxFilterParse(reply, filter) < 0)
         return -1;
 
     return 0;
