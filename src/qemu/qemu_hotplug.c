@@ -3626,6 +3626,43 @@ qemuDomainChangeNetLinkState(virDomainObj *vm,
 }
 
 static int
+qemuDomainQueryRxFilterDummy(virDomainObj *vm,
+                             virDomainNetDef *dev,
+                             bool trustGuestRxFilters)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    VIR_DEBUG("dev: %s, trustGuestRxFilters: %d",
+              NULLSTR(dev->info.alias), trustGuestRxFilters);
+
+    /* Transition from "yes" to "no" is simple, just record the new
+     * setting and processNicRxFilterChangedEvent() will ignore
+     * NIC_RX_FILTER_CHANGED event.
+     * Transition from "no" to "yes" requires issuing query-rx-filter
+     * monitor command to enable the event delivery again.
+     */
+    if (trustGuestRxFilters) {
+        int rc;
+
+        if (!dev->info.alias) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("can't query rx filters: device alias not found"));
+            return -1;
+        }
+
+        qemuDomainObjEnterMonitor(vm);
+        rc = qemuMonitorQueryRxFilter(priv->mon, dev->info.alias, NULL);
+        qemuDomainObjExitMonitor(vm);
+        if (rc < 0)
+            return -1;
+    }
+
+    /* modify the device configuration */
+    dev->trustGuestRxFilters = trustGuestRxFilters;
+    return 0;
+}
+
+static int
 qemuDomainChangeNet(virQEMUDriver *driver,
                     virDomainObj *vm,
                     virDomainDeviceDef *dev)
@@ -3644,6 +3681,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     bool needCoalesceChange = false;
     bool needVlanUpdate = false;
     bool needIsolatedPortChange = false;
+    bool needQueryRxFilter = false;
     int ret = -1;
     int changeidx = -1;
     g_autoptr(virConnect) conn = NULL;
@@ -3999,6 +4037,11 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         needIsolatedPortChange = true;
     }
 
+    if (virDomainNetGetActualTrustGuestRxFilters(olddev) !=
+        virDomainNetGetActualTrustGuestRxFilters(newdev)) {
+        needQueryRxFilter = true;
+    }
+
     if (olddev->linkstate != newdev->linkstate)
         needLinkStateChange = true;
 
@@ -4088,6 +4131,14 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     if (needCoalesceChange) {
         if (virNetDevSetCoalesce(newdev->ifname, newdev->coalesce, true) < 0)
             goto cleanup;
+        needReplaceDevDef = true;
+    }
+
+    if (needQueryRxFilter) {
+        if (qemuDomainQueryRxFilterDummy(vm, olddev,
+                                         virDomainNetGetActualTrustGuestRxFilters(newdev)) < 0) {
+            goto cleanup;
+        }
         needReplaceDevDef = true;
     }
 
