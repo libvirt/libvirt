@@ -373,7 +373,6 @@ testCheckExclusiveFlags(int flags)
                   FLAG_REAL_CAPS |
                   FLAG_SLIRP_HELPER |
                   FLAG_ALLOW_DUPLICATE_OUTPUT |
-                  FLAG_SKIP_CONFIG_ACTIVE |
                   0, -1);
 
     return 0;
@@ -2646,7 +2645,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("s390-defaultconsole", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("s390-panic", "s390x");
     DO_TEST_CAPS_LATEST("seclabel-device-multiple");
-    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-none-relabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-none-relabel");
     DO_TEST_CAPS_LATEST("seclabel-dynamic-none");
     DO_TEST_CAPS_LATEST("serial-target-port-auto");
     DO_TEST_CAPS_LATEST("vhost-user-fs-sock");

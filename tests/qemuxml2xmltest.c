@@ -39,9 +39,6 @@ testXML2XMLActive(const void *opaque)
 {
     const testQemuInfo *info = opaque;
 
-    if (info->flags & FLAG_SKIP_CONFIG_ACTIVE)
-        return EXIT_AM_SKIP;
-
     if (testXML2XMLCommon(info) < 0 ||
         testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                    info->infile, info->outfile, true,
@@ -485,17 +482,17 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-single", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-with-tpm", "ppc64");
 
-    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-baselabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
-    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-override", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
-    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-labelskip", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
-    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-relabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-baselabel");
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-override");
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-labelskip");
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-relabel");
     DO_TEST_CAPS_LATEST("seclabel-static");
     DO_TEST_CAPS_LATEST("seclabel-static-labelskip");
     DO_TEST_CAPS_LATEST("seclabel-none");
     DO_TEST_CAPS_LATEST("seclabel-dac-none");
     DO_TEST_CAPS_LATEST("seclabel-dynamic-none");
     DO_TEST_CAPS_LATEST("seclabel-device-multiple");
-    DO_TEST_CAPS_ARCH_LATEST_FULL("seclabel-dynamic-none-relabel", "x86_64", ARG_FLAGS, FLAG_SKIP_CONFIG_ACTIVE, ARG_END);
+    DO_TEST_CAPS_LATEST("seclabel-dynamic-none-relabel");
     DO_TEST_CAPS_LATEST("numad-static-vcpu-no-numatune");
 
     DO_TEST_CAPS_LATEST("disk-scsi-disk-vpd");
