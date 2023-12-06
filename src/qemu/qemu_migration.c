@@ -440,9 +440,8 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
                                  const char **migrate_disks,
                                  bool incremental)
 {
-    int ret = -1;
+    g_autoptr(virConnect) conn = NULL;
     size_t i = 0;
-    virConnectPtr conn = NULL;
 
     if (!nbd || !nbd->ndisks)
         return 0;
@@ -459,7 +458,7 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to find disk target '%1$s' for non-shared-storage migration"),
                            nbd->disks[i].target);
-            goto cleanup;
+            return -1;
         }
 
         if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
@@ -479,20 +478,16 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("pre-creation of storage target '%1$s' for incremental storage migration of disk '%2$s' is not supported"),
                            NULLSTR(diskSrcPath), nbd->disks[i].target);
-            goto cleanup;
+            return -1;
         }
 
         VIR_DEBUG("Proceeding with disk source %s", NULLSTR(diskSrcPath));
 
-        if (qemuMigrationDstPrecreateDisk(&conn,
-                                          disk, nbd->disks[i].capacity) < 0)
-            goto cleanup;
+        if (qemuMigrationDstPrecreateDisk(&conn, disk, nbd->disks[i].capacity) < 0)
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    virObjectUnref(conn);
-    return ret;
+    return 0;
 }
 
 
