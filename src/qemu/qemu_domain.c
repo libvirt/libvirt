@@ -12675,3 +12675,117 @@ qemuDomainNumatuneMaybeFormatNodesetUnion(virDomainObj *vm,
     if (nodeset)
         *nodeset = g_steal_pointer(&unionMask);
 }
+
+
+/**
+ * @cfg: driver configuration data
+ * @vm: domain object
+ * @src: storage source data
+ * @ret_fd: pointer to return open'd file descriptor
+ * @ret_sb: pointer to return stat buffer (local or remote)
+ * @skipInaccessible: Don't report error if files are not accessible
+ *
+ * For local storage, open the file using qemuDomainOpenFile and then use
+ * fstat() to grab the stat struct data for the caller.
+ *
+ * For remote storage, attempt to access the file and grab the stat
+ * struct data if the remote connection supports it.
+ *
+ * Returns 1 if @src was successfully opened (@ret_fd and @ret_sb is populated),
+ * 0 if @src can't be opened and @skipInaccessible is true (no errors are
+ * reported) or -1 otherwise (errors are reported).
+ */
+int
+qemuDomainStorageOpenStat(virQEMUDriverConfig *cfg,
+                          virDomainObj *vm,
+                          virStorageSource *src,
+                          int *ret_fd,
+                          struct stat *ret_sb,
+                          bool skipInaccessible)
+{
+    if (virStorageSourceIsLocalStorage(src)) {
+        if (skipInaccessible && !virFileExists(src->path))
+            return 0;
+
+        if ((*ret_fd = qemuDomainOpenFile(cfg, vm->def, src->path, O_RDONLY,
+                                          NULL)) < 0)
+            return -1;
+
+        if (fstat(*ret_fd, ret_sb) < 0) {
+            virReportSystemError(errno, _("cannot stat file '%1$s'"), src->path);
+            VIR_FORCE_CLOSE(*ret_fd);
+            return -1;
+        }
+    } else {
+        if (skipInaccessible && virStorageSourceSupportsBackingChainTraversal(src) <= 0)
+            return 0;
+
+        if (virStorageSourceInitAs(src, cfg->user, cfg->group) < 0)
+            return -1;
+
+        if (virStorageSourceStat(src, ret_sb) < 0) {
+            virStorageSourceDeinit(src);
+            virReportSystemError(errno, _("failed to stat remote file '%1$s'"),
+                                 NULLSTR(src->path));
+            return -1;
+        }
+    }
+
+    return 1;
+}
+
+
+/**
+ * @src: storage source data
+ * @fd: file descriptor to close for local
+ *
+ * If local, then just close the file descriptor.
+ * else remote, then tear down the storage driver backend connection.
+ */
+void
+qemuDomainStorageCloseStat(virStorageSource *src,
+                           int *fd)
+{
+    if (virStorageSourceIsLocalStorage(src))
+        VIR_FORCE_CLOSE(*fd);
+    else
+        virStorageSourceDeinit(src);
+}
+
+
+/**
+ * qemuDomainStorageUpdatePhysical:
+ * @cfg: qemu driver configuration object
+ * @vm: domain object
+ * @src: storage source to update
+ *
+ * Update the physical size of the disk by reading the actual size of the image
+ * on disk.
+ *
+ * Returns 0 on successful update and -1 otherwise (some uncommon errors may be
+ * reported but are reset (thus only logged)).
+ */
+int
+qemuDomainStorageUpdatePhysical(virQEMUDriverConfig *cfg,
+                                virDomainObj *vm,
+                                virStorageSource *src)
+{
+    int ret;
+    int fd = -1;
+    struct stat sb;
+
+    if (virStorageSourceIsEmpty(src))
+        return 0;
+
+    if ((ret = qemuDomainStorageOpenStat(cfg, vm, src, &fd, &sb, true)) <= 0) {
+        if (ret < 0)
+            virResetLastError();
+        return -1;
+    }
+
+    ret = virStorageSourceUpdatePhysicalSize(src, fd, &sb);
+
+    qemuDomainStorageCloseStat(src, &fd);
+
+    return ret;
+}

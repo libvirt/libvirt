@@ -1129,3 +1129,18 @@ void
 qemuDomainNumatuneMaybeFormatNodesetUnion(virDomainObj *vm,
                                           virBitmap **nodeset,
                                           char **nodesetStr);
+
+int
+qemuDomainStorageOpenStat(virQEMUDriverConfig *cfg,
+                          virDomainObj *vm,
+                          virStorageSource *src,
+                          int *ret_fd,
+                          struct stat *ret_sb,
+                          bool skipInaccessible);
+void
+qemuDomainStorageCloseStat(virStorageSource *src,
+                           int *fd);
+int
+qemuDomainStorageUpdatePhysical(virQEMUDriverConfig *cfg,
+                                virDomainObj *vm,
+                                virStorageSource *src);
