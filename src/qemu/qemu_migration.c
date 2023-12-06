@@ -473,6 +473,25 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
         }
 
         if (diskSrcPath) {
+            /* In case the destination of the storage migration is a block
+             * device it might be possible that for various reasons the size
+             * will not be identical. Since qemu refuses to do a blockdev-mirror
+             * into an image which doesn't have the exact same size we need to
+             * install a slice on top of the top image */
+            if (virStorageSourceIsBlockLocal(disk->src) &&
+                disk->src->format == VIR_STORAGE_FILE_RAW &&
+                disk->src->sliceStorage == NULL) {
+                qemuDomainObjPrivate *priv = vm->privateData;
+                g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+                qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+                if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) == 0 &&
+                    disk->src->physical > nbd->disks[i].capacity) {
+                    disk->src->sliceStorage = g_new0(virStorageSourceSlice, 1);
+                    disk->src->sliceStorage->size = nbd->disks[i].capacity;
+                    diskPriv->migrationslice = true;
+                }
+            }
 
             /* don't pre-create existing disks */
             if (virFileExists(diskSrcPath)) {
@@ -6377,6 +6396,37 @@ qemuMigrationDstPersist(virQEMUDriver *driver,
     if (!(vmdef = virDomainObjGetPersistentDef(driver->xmlopt, vm,
                                                priv->qemuCaps)))
         goto error;
+
+    if (vm->def) {
+        size_t i;
+
+        for (i = 0; i < vm->def->ndisks; i++) {
+            virDomainDiskDef *disk = vm->def->disks[i];
+            qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+            virDomainDiskDef *persistDisk;
+
+            /* transfer over any slices added for migration */
+            if (!disk->src->sliceStorage)
+                continue;
+
+            if (!diskPriv->migrationslice)
+                continue;
+
+            diskPriv->migrationslice = false;
+
+            if (!(persistDisk = virDomainDiskByTarget(vm->newDef, disk->dst)))
+                continue;
+
+            if (persistDisk->src->sliceStorage)
+                continue;
+
+            if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src))
+                continue;
+
+            persistDisk->src->sliceStorage = g_new0(virStorageSourceSlice, 1);
+            persistDisk->src->sliceStorage->size = disk->src->sliceStorage->size;
+        }
+    }
 
     if (!oldPersist) {
         eventDetail = VIR_DOMAIN_EVENT_DEFINED_ADDED;

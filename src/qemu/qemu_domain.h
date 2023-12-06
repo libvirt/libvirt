@@ -275,6 +275,7 @@ struct _qemuDomainDiskPrivate {
 
     bool migrating; /* the disk is being migrated */
     virStorageSource *migrSource; /* disk source object used for NBD migration */
+    bool migrationslice; /* storage slice was added for migration purposes */
 
     /* information about the device */
     bool tray; /* device has tray */
