@@ -434,11 +434,11 @@ qemuMigrationHasAnyStorageMigrationDisks(virDomainDef *def,
 
 
 static int
-qemuMigrationDstPrecreateStorage(virDomainObj *vm,
-                                 qemuMigrationCookieNBD *nbd,
-                                 size_t nmigrate_disks,
-                                 const char **migrate_disks,
-                                 bool incremental)
+qemuMigrationDstPrepareStorage(virDomainObj *vm,
+                               qemuMigrationCookieNBD *nbd,
+                               size_t nmigrate_disks,
+                               const char **migrate_disks,
+                               bool incremental)
 {
     g_autoptr(virConnect) conn = NULL;
     size_t i = 0;
@@ -3096,9 +3096,9 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
         goto error;
     }
 
-    if (qemuMigrationDstPrecreateStorage(vm, mig->nbd,
-                                         nmigrate_disks, migrate_disks,
-                                         !!(flags & VIR_MIGRATE_NON_SHARED_INC)) < 0)
+    if (qemuMigrationDstPrepareStorage(vm, mig->nbd,
+                                       nmigrate_disks, migrate_disks,
+                                       !!(flags & VIR_MIGRATE_NON_SHARED_INC)) < 0)
         goto error;
 
     if (tunnel &&
