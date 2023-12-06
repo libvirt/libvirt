@@ -457,7 +457,7 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
 
         if (!(disk = virDomainDiskByTarget(vm->def, nbd->disks[i].target))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to find disk by target: %1$s"),
+                           _("unable to find disk target '%1$s' for non-shared-storage migration"),
                            nbd->disks[i].target);
             goto cleanup;
         }
@@ -476,8 +476,9 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
         }
 
         if (incremental) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("pre-creation of storage targets for incremental storage migration is not supported"));
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("pre-creation of storage target '%1$s' for incremental storage migration of disk '%2$s' is not supported"),
+                           NULLSTR(diskSrcPath), nbd->disks[i].target);
             goto cleanup;
         }
 
