@@ -11194,7 +11194,7 @@ doMigrate(void *opaque)
     }
 
     if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
-        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_DISK))) {
+        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))) {
         vshError(ctl, "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--copy-storage-inc'");
         goto out;
     }
