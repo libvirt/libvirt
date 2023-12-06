@@ -448,7 +448,7 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
 
     for (i = 0; i < nbd->ndisks; i++) {
         virDomainDiskDef *disk;
-        const char *diskSrcPath;
+        const char *diskSrcPath = NULL;
         g_autofree char *nvmePath = NULL;
 
         VIR_DEBUG("Looking up disk target '%s' (capacity=%llu)",
@@ -461,18 +461,27 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
             return -1;
         }
 
+        /* Skip disks we don't want to migrate. */
+        if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
+            continue;
+
         if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
             virPCIDeviceAddressGetSysfsFile(&disk->src->nvme->pciAddr, &nvmePath);
             diskSrcPath = nvmePath;
-        } else {
+        } else if (virStorageSourceIsLocalStorage(disk->src)) {
             diskSrcPath = virDomainDiskGetSource(disk);
         }
 
-        /* Skip disks we don't want to migrate and already existing disks. */
-        if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks) ||
-            (diskSrcPath && virFileExists(diskSrcPath))) {
-            continue;
+        if (diskSrcPath) {
+
+            /* don't pre-create existing disks */
+            if (virFileExists(diskSrcPath)) {
+                VIR_DEBUG("Skipping pre-create of existing source for disk '%s'", disk->dst);
+                continue;
+            }
         }
+
+        /* create the storage - if supported */
 
         if (incremental) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -480,8 +489,6 @@ qemuMigrationDstPrecreateStorage(virDomainObj *vm,
                            NULLSTR(diskSrcPath), nbd->disks[i].target);
             return -1;
         }
-
-        VIR_DEBUG("Proceeding with disk source %s", NULLSTR(diskSrcPath));
 
         if (qemuMigrationDstPrecreateDisk(&conn, disk, nbd->disks[i].capacity) < 0)
             return -1;
