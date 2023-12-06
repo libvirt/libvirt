@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-12-04 08:10+0000\n"
+"PO-Revision-Date: 2023-12-06 11:44+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -20319,148 +20319,142 @@ msgid "adapter wwpn to be used for underlying storage"
 msgstr "adapter-wwpn att användas för underliggande lagring"
 
 msgid "add a column showing parent checkpoint"
-msgstr ""
+msgstr "lägg till en kolumn som visar föräldrakontrollpunkten"
 
 msgid "add a column showing parent snapshot"
-msgstr ""
+msgstr "lägg till en kolumn som visar föräldraögonblicksbilden"
 
 msgid "add an IOThread to the guest domain"
 msgstr "lägg till en IOThread till gästdomänen"
 
 msgid "add backing chain information to block stats"
-msgstr ""
+msgstr "lägg till information om bakomliggade kedja till blockstatus"
 
 msgid "additionally display the type and device value"
-msgstr ""
+msgstr "visa dessutom typen och enhetsvärdet"
 
 msgid "address not supported for video type ramfb"
-msgstr ""
+msgstr "adressen stödjs inte för videotypen ramfb"
 
-#, fuzzy
 msgid "address of disk device"
-msgstr "drivrutin för diskenhet"
+msgstr "adressen till diskenheten"
 
 #, c-format
 msgid "address of type '%1$s' is supported only for hostdevs"
-msgstr ""
+msgstr "adressen av typen ”%1$s” stödjs endast för hostdevs"
 
 msgid "address source: 'lease' or 'agent'"
-msgstr ""
+msgstr "adresskälla: ”lease” eller ”agent”"
 
 msgid "address source: 'lease', 'agent', or 'arp'"
-msgstr ""
+msgstr "adresskälla: ”lease”, ”agent” eller ”arp”"
 
 #, c-format
 msgid "address type drive is not supported for bus '%1$s'"
-msgstr ""
+msgstr "adresstypens drivrutin stödjs inte för bussen ”%1$s”"
 
 #, c-format
 msgid "address type='%1$s' not supported in hostdev interfaces"
-msgstr ""
+msgstr "adresstypen=”%1$s” stödjs inte i hostdev-gränssnitt"
 
 #, c-format
 msgid "admin MAC can only be set for SR-IOV VFs, but %1$s is not a VF"
-msgstr ""
+msgstr "admin-MAC kan endast sättas för SR-IOV VF:er, men %1$s är inte en VF"
 
 msgid "affect current domain"
-msgstr ""
+msgstr "påverka den aktuella domänen"
 
-#, fuzzy
 msgid "affect current state of network"
-msgstr "Returnera lista på nätverk."
+msgstr "påverka det aktuella tillståndet för nätverket"
 
 msgid "affect next boot"
-msgstr ""
+msgstr "påverka nästa uppstart"
 
-#, fuzzy
 msgid "affect next network startup"
-msgstr "misslyckades att hämta nätverk '%s'"
+msgstr "påverka nästa nätverksuppstart"
 
-#, fuzzy
 msgid "affect running domain"
-msgstr "Suspendera en körande domän."
+msgstr "påverka den körande domänen"
 
-#, fuzzy
 msgid "affect running network"
-msgstr "Misslyckades att avdefiniera nätverk %s"
+msgstr "påverka det körande nätverket"
 
 msgid "after reverting, change state to paused"
-msgstr ""
+msgstr "efter återställning, byt tillstånd till pausad"
 
 msgid "after reverting, change state to running"
-msgstr ""
+msgstr "efter återställning, byt tillstånd till körande"
 
 #, c-format
 msgid "algorithm=%1$d is not supported"
-msgstr ""
+msgstr "algorithm=%1$d stödjs inte"
 
 #, c-format
 msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
+msgstr "aliaset ”%1$s” för kommandot ”%2$s” har aliastyp som inte stämmer"
 
 #, c-format
 msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
+msgstr "aliaset ”%1$s” för kommandot ”%2$s” saknar ett aliasalternativ"
 
 msgid "all CPU models are accepted"
-msgstr ""
+msgstr "alla CPU-modeller accepteras"
 
 msgid "all vcpus must have either set or unset order"
-msgstr ""
+msgstr "alla vcpu:er måste ha antingen satt eller osatt ordning"
 
 msgid "allocate the new capacity, rather than leaving it sparse"
-msgstr ""
+msgstr "allokera den nya kapaciteten, istället för att lämna den gles"
 
 msgid "allocated netlink buffer is too small"
-msgstr ""
+msgstr "den allokerade netlink-bufferten är för liten"
 
 msgid "allow cloning to new name"
-msgstr ""
+msgstr "tillåt kloning till ett nytt namn"
 
 msgid "allow renaming an existing snapshot"
-msgstr ""
+msgstr "tillåt att byta namn på en befintlig ögonblicksbild"
 
 msgid "allow the resize to shrink the volume"
-msgstr ""
+msgstr "tillåt storleksändringen att krympa volymen"
 
 msgid "allow_disk_format_probing is no longer supported"
-msgstr ""
+msgstr "allow_disk_format_probing stödjs inte längre"
 
-#, fuzzy
 msgid "already active"
-msgstr "Domänen är redan aktiv"
+msgstr "redan aktiv"
 
 msgid "also print reason for the state"
-msgstr ""
+msgstr "skriv även orsaken till tillståndet"
 
 msgid "also set edited snapshot as current"
-msgstr ""
+msgstr "sätt även den redigerade ögonblicksbilden som aktuell"
 
-#, fuzzy
 msgid "alter live configuration of running domain"
-msgstr "misslyckades att skriva konfigurationsfilen"
+msgstr "ändra den verksamma konfigureringen av en körande domän"
 
 msgid "alter persistent configuration, effect observed on next boot"
 msgstr ""
+"ändra den varraktiga konfigurationen, effekten syns efter nästa uppstart"
 
 msgid "always display names and MACs of interfaces"
-msgstr ""
+msgstr "visa alltid namn och MAC:er för gränssnitt"
 
 msgid "amount of data to download"
-msgstr ""
+msgstr "mängd data att hämta"
 
 msgid "amount of data to upload"
-msgstr ""
+msgstr "mängd data att skicka"
 
 msgid "an <auth> definition already found for disk source"
-msgstr ""
+msgstr "en <auth>-definition finns redan för diskkällan"
 
 msgid "an <encryption> definition already found for disk source"
-msgstr ""
+msgstr "en <encryption>-definition finns redan för diskkällan"
 
 #, c-format
 msgid "an IOThread is already using iothread_id '%1$u'"
-msgstr ""
+msgstr "en IOThread använder redan iothread_id ”%1$u”"
 
 #, fuzzy
 msgid "an os <type> must be specified"
