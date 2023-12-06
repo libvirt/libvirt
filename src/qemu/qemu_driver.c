@@ -10217,7 +10217,6 @@ qemuDomainMemoryPeek(virDomainPtr dom,
 
 
 /**
- * @driver: qemu driver data
  * @cfg: driver configuration data
  * @vm: domain object
  * @src: storage source data
@@ -10236,8 +10235,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
  * reported) or -1 otherwise (errors are reported).
  */
 static int
-qemuDomainStorageOpenStat(virQEMUDriver *driver G_GNUC_UNUSED,
-                          virQEMUDriverConfig *cfg,
+qemuDomainStorageOpenStat(virQEMUDriverConfig *cfg,
                           virDomainObj *vm,
                           virStorageSource *src,
                           int *ret_fd,
@@ -10296,7 +10294,6 @@ qemuDomainStorageCloseStat(virStorageSource *src,
 
 /**
  * qemuDomainStorageUpdatePhysical:
- * @driver: qemu driver
  * @cfg: qemu driver configuration object
  * @vm: domain object
  * @src: storage source to update
@@ -10308,8 +10305,7 @@ qemuDomainStorageCloseStat(virStorageSource *src,
  * reported but are reset (thus only logged)).
  */
 static int
-qemuDomainStorageUpdatePhysical(virQEMUDriver *driver,
-                                virQEMUDriverConfig *cfg,
+qemuDomainStorageUpdatePhysical(virQEMUDriverConfig *cfg,
                                 virDomainObj *vm,
                                 virStorageSource *src)
 {
@@ -10320,7 +10316,7 @@ qemuDomainStorageUpdatePhysical(virQEMUDriver *driver,
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if ((ret = qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb, true)) <= 0) {
+    if ((ret = qemuDomainStorageOpenStat(cfg, vm, src, &fd, &sb, true)) <= 0) {
         if (ret < 0)
             virResetLastError();
         return -1;
@@ -10335,7 +10331,6 @@ qemuDomainStorageUpdatePhysical(virQEMUDriver *driver,
 
 
 /**
- * @driver: qemu driver data
  * @cfg: driver configuration data
  * @vm: domain object
  * @src: storage source data
@@ -10366,8 +10361,7 @@ qemuDomainStorageUpdatePhysical(virQEMUDriver *driver,
  * are reported).
  */
 static int
-qemuStorageLimitsRefresh(virQEMUDriver *driver,
-                         virQEMUDriverConfig *cfg,
+qemuStorageLimitsRefresh(virQEMUDriverConfig *cfg,
                          virDomainObj *vm,
                          virStorageSource *src,
                          bool skipInaccessible)
@@ -10379,7 +10373,7 @@ qemuStorageLimitsRefresh(virQEMUDriver *driver,
     g_autofree char *buf = NULL;
     ssize_t len;
 
-    if ((rc = qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb,
+    if ((rc = qemuDomainStorageOpenStat(cfg, vm, src, &fd, &sb,
                                         skipInaccessible)) <= 0)
         return rc;
 
@@ -10470,7 +10464,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     /* for inactive domains we have to peek into the files */
     if (!virDomainObjIsActive(vm)) {
-        if ((qemuStorageLimitsRefresh(driver, cfg, vm, disk->src, false)) < 0)
+        if ((qemuStorageLimitsRefresh(cfg, vm, disk->src, false)) < 0)
             goto endjob;
 
         info->capacity = disk->src->capacity;
@@ -10510,7 +10504,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         if (info->allocation == 0)
             info->allocation = entry->physical;
 
-        if (qemuDomainStorageUpdatePhysical(driver, cfg, vm, disk->src) == 0) {
+        if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) == 0) {
             info->physical = disk->src->physical;
         } else {
             info->physical = entry->physical;
@@ -17220,8 +17214,7 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
 
 /* refresh information by opening images on the disk */
 static int
-qemuDomainGetStatsOneBlockFallback(virQEMUDriver *driver,
-                                   virQEMUDriverConfig *cfg,
+qemuDomainGetStatsOneBlockFallback(virQEMUDriverConfig *cfg,
                                    virDomainObj *dom,
                                    virTypedParamList *params,
                                    virStorageSource *src,
@@ -17233,7 +17226,7 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriver *driver,
     if (virStorageSourceIsFD(src))
         return 0;
 
-    if (qemuStorageLimitsRefresh(driver, cfg, dom, src, true) <= 0) {
+    if (qemuStorageLimitsRefresh(cfg, dom, src, true) <= 0) {
         virResetLastError();
         return 0;
     }
@@ -17252,8 +17245,7 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriver *driver,
 
 
 static int
-qemuDomainGetStatsOneBlock(virQEMUDriver *driver,
-                           virQEMUDriverConfig *cfg,
+qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
                            virDomainObj *dom,
                            virTypedParamList *params,
                            const char *entryname,
@@ -17266,7 +17258,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriver *driver,
     /* the VM is offline so we have to go and load the stast from the disk by
      * ourselves */
     if (!virDomainObjIsActive(dom)) {
-        return qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, params,
+        return qemuDomainGetStatsOneBlockFallback(cfg, dom, params,
                                                   src, block_idx);
     }
 
@@ -17284,7 +17276,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriver *driver,
     if (entry->physical) {
         virTypedParamListAddULLong(params, entry->physical, "block.%zu.physical", block_idx);
     } else {
-        if (qemuDomainStorageUpdatePhysical(driver, cfg, dom, src) == 0) {
+        if (qemuDomainStorageUpdatePhysical(cfg, dom, src) == 0) {
             virTypedParamListAddULLong(params, src->physical, "block.%zu.physical", block_idx);
         }
     }
@@ -17362,7 +17354,6 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                   virTypedParamList *params,
                                   size_t *recordnr,
                                   bool visitBacking,
-                                  virQEMUDriver *driver,
                                   virQEMUDriverConfig *cfg,
                                   virDomainObj *dom)
 
@@ -17435,7 +17426,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                 return -1;
         }
 
-        if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
+        if (qemuDomainGetStatsOneBlock(cfg, dom, params,
                                        backendalias, n, *recordnr,
                                        stats) < 0)
             return -1;
@@ -17462,7 +17453,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
             if (qemuDomainGetStatsBlockExportHeader(disk, disk->mirror, *recordnr, params) < 0)
                 return -1;
 
-            if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
+            if (qemuDomainGetStatsOneBlock(cfg, dom, params,
                                            qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
                                            disk->mirror,
                                            *recordnr,
@@ -17491,7 +17482,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                                             *recordnr, params) < 0)
                         return -1;
 
-                    if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
+                    if (qemuDomainGetStatsOneBlock(cfg, dom, params,
                                                    qemuBlockStorageSourceGetEffectiveNodename(backupdisk->store),
                                                    backupdisk->store,
                                                    *recordnr,
@@ -17548,7 +17539,7 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
     for (i = 0; i < dom->def->ndisks; i++) {
         if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats,
                                               blockparams, &visited,
-                                              visitBacking, driver, cfg, dom) < 0)
+                                              visitBacking, cfg, dom) < 0)
             return -1;
     }
 
