@@ -4703,6 +4703,7 @@ qemuMigrationSrcCancel(virDomainObj *vm,
 static int
 qemuMigrationSrcRun(virQEMUDriver *driver,
                     virDomainObj *vm,
+                    const char *xmlin,
                     const char *persist_xml,
                     const char *cookiein,
                     int cookieinlen,
@@ -4774,6 +4775,15 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
             if (!(persistDef = qemuMigrationAnyPrepareDef(driver,
                                                           priv->qemuCaps,
                                                           persist_xml,
+                                                          NULL, NULL)))
+                goto error;
+        } else if (xmlin) {
+            /* if input XML is provided, use that one as template for the
+             * persistent XML. Otherwise user's changes will be thrown away.
+             */
+            if (!(persistDef = qemuMigrationAnyPrepareDef(driver,
+                                                          priv->qemuCaps,
+                                                          xmlin,
                                                           NULL, NULL)))
                 goto error;
         } else {
@@ -5114,6 +5124,7 @@ qemuMigrationSrcResume(virDomainObj *vm,
 static int
 qemuMigrationSrcPerformNative(virQEMUDriver *driver,
                               virDomainObj *vm,
+                              const char *xmlin,
                               const char *persist_xml,
                               const char *uri,
                               const char *cookiein,
@@ -5199,7 +5210,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
         ret = qemuMigrationSrcResume(vm, migParams, cookiein, cookieinlen,
                                      cookieout, cookieoutlen, &spec, flags);
     } else {
-        ret = qemuMigrationSrcRun(driver, vm, persist_xml, cookiein, cookieinlen,
+        ret = qemuMigrationSrcRun(driver, vm, xmlin, persist_xml, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, flags, resource,
                                   &spec, dconn, graphicsuri,
                                   nmigrate_disks, migrate_disks,
@@ -5217,6 +5228,7 @@ static int
 qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
                               virDomainObj *vm,
                               virStreamPtr st,
+                              const char *xmlin,
                               const char *persist_xml,
                               const char *cookiein,
                               int cookieinlen,
@@ -5263,7 +5275,7 @@ qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    ret = qemuMigrationSrcRun(driver, vm, persist_xml, cookiein, cookieinlen,
+    ret = qemuMigrationSrcRun(driver, vm, xmlin, persist_xml, cookiein, cookieinlen,
                               cookieout, cookieoutlen, flags, resource, &spec,
                               dconn, graphicsuri, nmigrate_disks, migrate_disks,
                               migParams, NULL);
@@ -5302,7 +5314,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
     virCloseCallbacksDomainRemove(vm, NULL, qemuMigrationAnyConnectionClosed);
     qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
 
-    ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri,
+    ret = qemuMigrationSrcPerformNative(driver, vm, NULL, NULL, uri,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen, flags,
                                         0, NULL, NULL, 0, NULL, migParams, NULL);
@@ -5404,12 +5416,12 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriver *driver,
     VIR_DEBUG("Perform %p", sconn);
     ignore_value(qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_PERFORM2));
     if (flags & VIR_MIGRATE_TUNNELLED)
-        ret = qemuMigrationSrcPerformTunnel(driver, vm, st, NULL,
+        ret = qemuMigrationSrcPerformTunnel(driver, vm, st, NULL, NULL,
                                             NULL, 0, NULL, NULL,
                                             flags, resource, dconn,
                                             NULL, 0, NULL, migParams);
     else
-        ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri_out,
+        ret = qemuMigrationSrcPerformNative(driver, vm, NULL, NULL, uri_out,
                                             cookie, cookielen,
                                             NULL, NULL, /* No out cookie with v2 migration */
                                             flags, resource, dconn, NULL, 0, NULL,
@@ -5665,14 +5677,14 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
     } else {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3));
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            ret = qemuMigrationSrcPerformTunnel(driver, vm, st, persist_xml,
+            ret = qemuMigrationSrcPerformTunnel(driver, vm, st, xmlin, persist_xml,
                                                 cookiein, cookieinlen,
                                                 &cookieout, &cookieoutlen,
                                                 flags, bandwidth, dconn, graphicsuri,
                                                 nmigrate_disks, migrate_disks,
                                                 migParams);
         } else {
-            ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri,
+            ret = qemuMigrationSrcPerformNative(driver, vm, xmlin, persist_xml, uri,
                                                 cookiein, cookieinlen,
                                                 &cookieout, &cookieoutlen,
                                                 flags, bandwidth, dconn, graphicsuri,
@@ -6072,7 +6084,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
         if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_PERFORM2) < 0)
             goto endjob;
 
-        ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
+        ret = qemuMigrationSrcPerformNative(driver, vm, xmlin, persist_xml, uri, cookiein, cookieinlen,
                                             cookieout, cookieoutlen,
                                             flags, resource, NULL, NULL, 0, NULL,
                                             migParams, nbdURI);
@@ -6137,6 +6149,7 @@ static int
 qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
                              virConnectPtr conn,
                              virDomainObj *vm,
+                             const char *xmlin,
                              const char *persist_xml,
                              const char *uri,
                              const char *graphicsuri,
@@ -6174,7 +6187,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
 
     virCloseCallbacksDomainRemove(vm, NULL, qemuMigrationAnyConnectionClosed);
 
-    if (qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
+    if (qemuMigrationSrcPerformNative(driver, vm, xmlin, persist_xml, uri, cookiein, cookieinlen,
                                       cookieout, cookieoutlen,
                                       flags, resource, NULL, graphicsuri,
                                       nmigrate_disks, migrate_disks, migParams, nbdURI) < 0)
@@ -6273,7 +6286,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
     }
 
     if (v3proto) {
-        return qemuMigrationSrcPerformPhase(driver, conn, vm, persist_xml, uri,
+        return qemuMigrationSrcPerformPhase(driver, conn, vm, xmlin, persist_xml, uri,
                                             graphicsuri,
                                             nmigrate_disks, migrate_disks,
                                             migParams,
