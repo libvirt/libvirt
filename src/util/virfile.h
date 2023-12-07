@@ -176,8 +176,8 @@ int virFileReadBufQuiet(const char *file, char *buf, int len)
 int virFileWriteStr(const char *path, const char *str, mode_t mode)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
-int virFileLinkPointsTo(const char *checkLink,
-                        const char *checkDest)
+bool virFileLinkPointsTo(const char *checkLink,
+                         const char *checkDest)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virFileRelLinkPointsTo(const char *directory,
                            const char *checkLink,

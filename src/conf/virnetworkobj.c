@@ -945,8 +945,7 @@ virNetworkLoadConfig(virNetworkObjList *nets,
     if ((autostartLink = virNetworkConfigFile(autostartDir, name)) == NULL)
         return NULL;
 
-    if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
-        return NULL;
+    autostart = virFileLinkPointsTo(autostartLink, configFile);
 
     if (!(def = virNetworkDefParse(NULL, configFile, xmlopt, false)))
         return NULL;

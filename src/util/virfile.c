@@ -1697,7 +1697,7 @@ virFileWriteStr(const char *path, const char *str, mode_t mode)
 /* Return nonzero if checkLink and checkDest
  * refer to the same file.  Otherwise, return 0.
  */
-int
+bool
 virFileLinkPointsTo(const char *checkLink,
                     const char *checkDest)
 {

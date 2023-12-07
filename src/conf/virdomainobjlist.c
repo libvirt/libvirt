@@ -497,8 +497,7 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
         return NULL;
 
-    if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
-        return NULL;
+    autostart = virFileLinkPointsTo(autostartLink, configFile);
 
     if (!(dom = virDomainObjListAddLocked(doms, &def, xmlopt, 0, &oldDef)))
         return NULL;
