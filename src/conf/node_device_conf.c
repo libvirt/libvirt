@@ -540,13 +540,14 @@ static void
 virNodeDeviceCapStorageDefFormatBlocksize(virBuffer *buf,
                                           const virNodeDevCapData *data)
 {
-    if (data->storage.logical_block_size > 0)
-        virBufferAsprintf(buf, "<logical_block_size>%llu</logical_block_size>\n",
-                          data->storage.logical_block_size);
+    if (data->storage.logical_block_size == 0 &&
+        data->storage.num_blocks == 0)
+        return;
 
-    if (data->storage.num_blocks > 0)
-        virBufferAsprintf(buf, "<num_blocks>%llu</num_blocks>\n",
-                          data->storage.num_blocks);
+    virBufferAsprintf(buf, "<logical_block_size>%llu</logical_block_size>\n",
+                      data->storage.logical_block_size);
+    virBufferAsprintf(buf, "<num_blocks>%llu</num_blocks>\n",
+                      data->storage.num_blocks);
 }
 
 
