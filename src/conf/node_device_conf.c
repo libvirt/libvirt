@@ -540,23 +540,13 @@ static void
 virNodeDeviceCapStorageDefFormat(virBuffer *buf,
                                  const virNodeDevCapData *data)
 {
-    virBufferEscapeString(buf, "<block>%s</block>\n",
-                          data->storage.block);
-    if (data->storage.bus)
-        virBufferEscapeString(buf, "<bus>%s</bus>\n",
-                              data->storage.bus);
-    if (data->storage.drive_type)
-        virBufferEscapeString(buf, "<drive_type>%s</drive_type>\n",
-                              data->storage.drive_type);
-    if (data->storage.model)
-        virBufferEscapeString(buf, "<model>%s</model>\n",
-                              data->storage.model);
-    if (data->storage.vendor)
-        virBufferEscapeString(buf, "<vendor>%s</vendor>\n",
-                              data->storage.vendor);
-    if (data->storage.serial)
-        virBufferEscapeString(buf, "<serial>%s</serial>\n",
-                              data->storage.serial);
+    virBufferEscapeString(buf, "<block>%s</block>\n", data->storage.block);
+    virBufferEscapeString(buf, "<bus>%s</bus>\n", data->storage.bus);
+    virBufferEscapeString(buf, "<drive_type>%s</drive_type>\n", data->storage.drive_type);
+    virBufferEscapeString(buf, "<model>%s</model>\n", data->storage.model);
+    virBufferEscapeString(buf, "<vendor>%s</vendor>\n", data->storage.vendor);
+    virBufferEscapeString(buf, "<serial>%s</serial>\n", data->storage.serial);
+
     if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE) {
         int avl = data->storage.flags &
             VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
@@ -566,10 +556,7 @@ virNodeDeviceCapStorageDefFormat(virBuffer *buf,
                           "</media_available>\n", avl ? 1 : 0);
         virBufferAsprintf(buf, "<media_size>%llu</media_size>\n",
                           data->storage.removable_media_size);
-        if (data->storage.media_label)
-            virBufferEscapeString(buf,
-                                  "<media_label>%s</media_label>\n",
-                                  data->storage.media_label);
+        virBufferEscapeString(buf, "<media_label>%s</media_label>\n", data->storage.media_label);
         if (data->storage.logical_block_size > 0)
             virBufferAsprintf(buf, "<logical_block_size>%llu"
                               "</logical_block_size>\n",
