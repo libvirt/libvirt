@@ -3854,7 +3854,8 @@ processJobStatusChangeEvent(virDomainObj *vm,
 
 static void
 processMonitorEOFEvent(virQEMUDriver *driver,
-                       virDomainObj *vm)
+                       virDomainObj *vm,
+                       int domid)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int eventReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
@@ -3862,6 +3863,12 @@ processMonitorEOFEvent(virQEMUDriver *driver,
     const char *auditReason = "shutdown";
     unsigned int stopFlags = 0;
     virObjectEvent *event = NULL;
+
+    if (vm->def->id != domid) {
+        VIR_DEBUG("Domain %s was restarted, ignoring EOF",
+                  vm->def->name);
+        return;
+    }
 
     if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, true) < 0)
         return;
@@ -4082,7 +4089,7 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         processJobStatusChangeEvent(vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
-        processMonitorEOFEvent(driver, vm);
+        processMonitorEOFEvent(driver, vm, GPOINTER_TO_INT(processEvent->data));
         break;
     case QEMU_PROCESS_EVENT_PR_DISCONNECT:
         processPRDisconnectEvent(vm);

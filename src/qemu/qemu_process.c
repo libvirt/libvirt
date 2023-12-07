@@ -316,7 +316,7 @@ qemuProcessHandleMonitorEOF(qemuMonitor *mon,
     }
 
     qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_MONITOR_EOF,
-                           0, 0, NULL);
+                           0, 0, GINT_TO_POINTER(vm->def->id));
 
     /* We don't want this EOF handler to be called over and over while the
      * thread is waiting for a job.
