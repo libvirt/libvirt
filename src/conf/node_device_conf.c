@@ -537,6 +537,20 @@ virNodeDeviceCapSCSIDefFormat(virBuffer *buf,
 
 
 static void
+virNodeDeviceCapStorageDefFormatBlocksize(virBuffer *buf,
+                                          const virNodeDevCapData *data)
+{
+    if (data->storage.logical_block_size > 0)
+        virBufferAsprintf(buf, "<logical_block_size>%llu</logical_block_size>\n",
+                          data->storage.logical_block_size);
+
+    if (data->storage.num_blocks > 0)
+        virBufferAsprintf(buf, "<num_blocks>%llu</num_blocks>\n",
+                          data->storage.num_blocks);
+}
+
+
+static void
 virNodeDeviceCapStorageDefFormat(virBuffer *buf,
                                  const virNodeDevCapData *data)
 {
@@ -557,27 +571,14 @@ virNodeDeviceCapStorageDefFormat(virBuffer *buf,
         virBufferAsprintf(buf, "<media_size>%llu</media_size>\n",
                           data->storage.removable_media_size);
         virBufferEscapeString(buf, "<media_label>%s</media_label>\n", data->storage.media_label);
-        if (data->storage.logical_block_size > 0)
-            virBufferAsprintf(buf, "<logical_block_size>%llu"
-                              "</logical_block_size>\n",
-                              data->storage.logical_block_size);
-        if (data->storage.num_blocks > 0)
-            virBufferAsprintf(buf,
-                              "<num_blocks>%llu</num_blocks>\n",
-                              data->storage.num_blocks);
+        virNodeDeviceCapStorageDefFormatBlocksize(buf, data);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</capability>\n");
     } else {
-        virBufferAsprintf(buf, "<size>%llu</size>\n",
-                          data->storage.size);
-        if (data->storage.logical_block_size > 0)
-            virBufferAsprintf(buf, "<logical_block_size>%llu"
-                              "</logical_block_size>\n",
-                              data->storage.logical_block_size);
-        if (data->storage.num_blocks > 0)
-            virBufferAsprintf(buf, "<num_blocks>%llu</num_blocks>\n",
-                              data->storage.num_blocks);
+        virBufferAsprintf(buf, "<size>%llu</size>\n", data->storage.size);
+        virNodeDeviceCapStorageDefFormatBlocksize(buf, data);
     }
+
     if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE)
         virBufferAddLit(buf, "<capability type='hotpluggable'/>\n");
 }
