@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-12-06 11:44+0000\n"
+"PO-Revision-Date: 2023-12-07 21:43+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -20456,33 +20456,31 @@ msgstr "en <encryption>-definition finns redan för diskkällan"
 msgid "an IOThread is already using iothread_id '%1$u'"
 msgstr "en IOThread använder redan iothread_id ”%1$u”"
 
-#, fuzzy
 msgid "an os <type> must be specified"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "en os-<type> måste anges"
 
-#, fuzzy
 msgid "another backup job is already running"
-msgstr "Domänen kör redan"
+msgstr "ett annat säkerhetskopieringsjobb kör redan"
 
 #, c-format
 msgid "another migration job is already running for domain '%1$s'"
-msgstr ""
+msgstr "ett annat migreringsjobb kör redan för domänen ”%1$s”"
 
 msgid "any configuration"
 msgstr "någon konfiguration"
 
 #, c-format
 msgid "ap-domain value '%1$s' is out of range for '%2$s'"
-msgstr ""
+msgstr "ap-domänvärdet ”%1$s” är utanför intervallet för ”%2$s”"
 
 msgid "api error"
-msgstr ""
+msgstr "api-fel"
 
 msgid "apparmor_parser exited with error"
-msgstr ""
+msgstr "apparmor_parser avslutade med felkod"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
-msgstr ""
+msgstr "applyDHCPOnlyRules misslyckades — lurendrejeri är inte skyddat!"
 
 msgid "architecture"
 msgstr "arkitektur"
@@ -20491,53 +20489,57 @@ msgstr "arkitektur"
 msgid ""
 "architecture from emulator '%1$s' doesn't match given architecture '%2$s'"
 msgstr ""
+"arkitekturen från emulatorn ”%1$s” stämmer inte med den angivna arkitekturen "
+"”%2$s”"
 
 #, c-format
 msgid "argument key '%1$s' is too short or malformed"
-msgstr ""
+msgstr "argumentnyckeln ”%1$s” är för kort eller felformad"
 
 #, c-format
 msgid "argument key '%1$s' must not be negative"
-msgstr ""
+msgstr "argumentnyckeln ”%1$s” får inte vara negativ"
 
 #, c-format
 msgid "argument key '%1$s' must not have null value"
-msgstr ""
+msgstr "argumentnyckeln ”%1$s” får inte ha null-värde"
 
 msgid "argument unsupported"
-msgstr ""
+msgstr "argumentet stödjs inte"
 
 #, c-format
 msgid "argument unsupported: %1$s"
-msgstr ""
+msgstr "argumentet stödjs inte: %1$s"
 
 msgid "argument virt_type must not be NULL"
-msgstr ""
+msgstr "argumentet virt_type får inte vara NULL"
 
 msgid "arguments to echo"
-msgstr ""
+msgstr "argument till echo"
 
 #, c-format
 msgid ""
 "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo 'disk' data"
 msgstr ""
+"vektorelementet ”%1$zd” till ”%2$zd” saknas i guest-get-fsinfo ”disk”-data"
 
 #, c-format
 msgid ""
 "array element '%1$zd' of '%2$zd' missing in guest-get-fsinfo return data"
 msgstr ""
+"vektorelementet ”%1$zd” till ”%2$zd” saknas i guest-get-fsinfo returdata"
 
 msgid "array element missing in guest-get-disks return value"
-msgstr ""
+msgstr "vektorelement saknas i guest-get-disks returvärde"
 
 msgid "array element missing in guest-get-users return value"
-msgstr ""
+msgstr "vektorelement saknas i guest-get-users returvärde"
 
 msgid "array element missing in guest-get-vcpus return value"
-msgstr ""
+msgstr "vektorelement saknas i guest-get-vcpus returvärde"
 
 msgid "associate a FD with a domain"
-msgstr ""
+msgstr "associera en FB med en domän"
 
 msgid "asynchronous teardown is not available with this QEMU binary"
 msgstr ""
