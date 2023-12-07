@@ -64,6 +64,9 @@ Usage
 `Secure Boot <secureboot.html>`__
     Enable and disable the Secure Boot feature
 
+`Connection fail after installation <failed_connection_after_install.html>`__
+    Explanation of a common issue users stumble upon after installation
+
 
 Debugging
 ---------

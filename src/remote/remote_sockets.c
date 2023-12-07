@@ -398,7 +398,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 
         if (!direct_sock_name) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Cannot use direct socket mode if no URI is set"));
+                           _("Cannot use direct socket mode if no URI is set. For more information see https://libvirt.org/kbase/failed_connection_after_install.html"));
             return NULL;
         }
 
