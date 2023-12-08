@@ -1408,7 +1408,7 @@ remoteConnectGetType(virConnectPtr conn)
         return NULL;
 
     /* Stash. */
-    return priv->type = ret.type;
+    return priv->type = g_steal_pointer(&ret.type);
 }
 
 static int remoteConnectIsSecure(virConnectPtr conn)
