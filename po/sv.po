@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-12-07 21:43+0000\n"
+"PO-Revision-Date: 2023-12-10 10:43+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -20542,27 +20542,29 @@ msgid "associate a FD with a domain"
 msgstr "associera en FB med en domän"
 
 msgid "asynchronous teardown is not available with this QEMU binary"
-msgstr ""
+msgstr "asynkron nedrivning är inte tillgängligt med denna QEMU-binär"
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
+"åtminstone 1 server är i en bakomliggande JSON-definition för en glustervolym"
 
 #, c-format
 msgid ""
 "at line %1$d: %2$s%3$s\n"
 "%4$s"
 msgstr ""
+"på rad %1$d: %2$s%3$s\n"
+"%4$s"
 
 msgid "at most 1 fd can be passed to qemu along with a command"
-msgstr ""
+msgstr "högst 1 fb kan skickas till qemu tillsammans med ett kommando"
 
 msgid "at most one CPU cache element may be specified"
-msgstr ""
+msgstr "högst ett CPU-cacheelement kan anges"
 
-#, fuzzy
 msgid "ats driver option is only supported for virtio devices"
-msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
+msgstr "alternativet ats-drivrutin stödjs endast för virtio-enheter"
 
 msgid "attach device from an XML file"
 msgstr "anslut enhet från en XML-fil"
@@ -20574,79 +20576,94 @@ msgid "attach network interface"
 msgstr "anslut nätverksgränssnitt"
 
 msgid "attach to console after creation"
-msgstr ""
+msgstr "anslut till konsolen efter skapandet"
 
 msgid "attach/detach vcpu or groups of threads"
-msgstr ""
+msgstr "koppla in/ifrån vcpu:er eller trådgrupper"
 
 #, c-format
 msgid "attaching device type '%1$s' is unsupported"
-msgstr ""
+msgstr "att ansluta enhetstypen ”%1$s” stödjs inte"
 
 msgid "attaching network device to VM is unsupported"
-msgstr ""
+msgstr "att ansluta en nätverksenhet till en VM stödjs inte"
 
 msgid "attaching serial console is not supported"
-msgstr ""
+msgstr "att ansluta en seriekonsol stödjs inte"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched instanceids ('%1$s' and '%2$s')"
 msgstr ""
+"försök att slå samman virtualports med instanceid:er som inte stämmer (”%1$s”"
+" och ”%2$s”)"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched interfaceids ('%1$s' and "
 "'%2$s')"
 msgstr ""
+"försök att slå samman virtualports med interfaceid:er som inte stämmer "
+"(”%1$s” och ”%2$s”)"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
 msgstr ""
+"försök att slå samman virtualports med managerid:er som inte stämmer (%1$d "
+"och %2$d)"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched profileids ('%1$s' and '%2$s')"
 msgstr ""
+"försök att slå samman virtualports med profileid:er som inte stämmer (”%1$s” "
+"och ”%2$s”)"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched typeids (%1$d and %2$d)"
 msgstr ""
+"försök att slå samman virtualports med typeid:er som inte stämmer (%1$d och "
+"%2$d)"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched typeidversions (%1$d and %2$d)"
 msgstr ""
+"försök att slå samman virtualports med typeidversion:er som inte stämmer (%1$"
+"d och %2$d)"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr ""
+"försök att slå samman virtualports med type:er som inte stämmer (”%1$s” och "
+"”%2$s”)"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
-msgstr ""
+msgstr "attributet ”limit” stödjs bara för maxphysaddr-läget ”passthrough”"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
-msgstr ""
+msgstr "audio-ID %1$u används flera gånger"
 
 msgid "audio settings specified without fixed settings flag"
-msgstr ""
+msgstr "audioinställningar angivna utan en fixerad inställningsflagga"
 
 msgid "auth is not supported with vhostuser disk"
-msgstr ""
+msgstr "autentisering stödjs inte med en vhostuser-disk"
 
 msgid "auth secret UUID to be used for underlying storage"
-msgstr ""
+msgstr "autentiseringshemlighets UUID att användas för underliggande lagring"
 
 msgid "auth secret usage to be used for underlying storage"
 msgstr ""
+"autentiseringshemlighetsanvändning att användas för underliggande lagring"
 
 msgid "auth type to be used for underlying storage"
-msgstr ""
+msgstr "autentiseringstyp att användas för underliggande lagring"
 
 msgid "auth username to be used for underlying storage"
-msgstr ""
+msgstr "autentiseringsanvändarnamn att användas för underliggande lagring"
 
 msgid "authentication cancelled"
 msgstr "autenticeringen avbröts"
@@ -20659,7 +20676,7 @@ msgid "authentication failed"
 msgstr "autentisering misslyckades"
 
 msgid "authentication failed, see test XML for the correct username/password"
-msgstr ""
+msgstr "autentiseringen misslyckades se test-XML för rätt användarnamn/lösenord"
 
 #, c-format
 msgid "authentication failed: %1$s"
@@ -20667,34 +20684,34 @@ msgstr "autentisering misslyckades: %1$s"
 
 #, c-format
 msgid "authentication is not supported for protocol '%1$s'"
-msgstr ""
+msgstr "autentisering stödjs inte för protokollet ”%1$s”"
 
 msgid "authentication is supported only for network backed disks"
-msgstr ""
+msgstr "autentisering stödjs endast för diskar backade via nätverket"
 
 msgid "authentication required"
 msgstr "autentisering krävs"
 
-#, fuzzy
 msgid "authentication unavailable"
-msgstr "autentisering misslyckades"
+msgstr "autentisering är inte tillgängligt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "authentication unavailable: %1$s"
-msgstr "autentisering misslyckades: %1$s"
+msgstr "autentisering är inte tillgängligt: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "authentication with private key '%1$s' has failed: %2$s"
-msgstr "autentisering misslyckades: %s"
+msgstr "autentisering med den privata nyckeln ”%1$s” har misslyckats: %2$s"
 
 msgid "automatically destroy the guest when virsh disconnects"
-msgstr ""
+msgstr "förstör automatiskt gästen när virsh kopplar ifrån"
 
 msgid "automatically switch to post-copy migration after one pass of pre-copy"
 msgstr ""
+"byt automatiskt till postkopieringsmigrering efter ett pass av prekopiering"
 
 msgid "autostart a defined node device"
-msgstr ""
+msgstr "autostarta en definierad nodenhet"
 
 msgid "autostart a domain"
 msgstr "autostarta en domän"
@@ -20702,85 +20719,88 @@ msgstr "autostarta en domän"
 msgid "autostart a network"
 msgstr "starta ett nätverk automatiskt"
 
-#, fuzzy
 msgid "autostart a pool"
-msgstr "autostarta en domän"
+msgstr "autostarta en pool"
 
 msgid "avoid file system cache when dumping"
-msgstr ""
+msgstr "undvik filsystemscachen vid dumpning"
 
 msgid "avoid file system cache when loading"
-msgstr ""
+msgstr "undvik filsystemscachen vid laddning"
 
 msgid "avoid file system cache when restoring"
-msgstr ""
+msgstr "undvik filsystemscachen vid återställning"
 
 msgid "avoid file system cache when saving"
-msgstr ""
+msgstr "undvik filsystemscachen vid sparande"
 
 msgid "background job"
-msgstr ""
+msgstr "bakgrundsjobb"
 
 msgid "backing chains more than 200 layers deep are not supported"
-msgstr ""
+msgstr "bakomliggande kedjor som är mer än 200 lager djupa stödjs inte"
 
 #, c-format
 msgid ""
 "backing chains more than 200 layers deep are not supported for disk '%1$s'"
 msgstr ""
+"bakomliggande kedjor som är mer än 200 lager djupa stödjs inte för disken "
+"”%1$s”"
 
 msgid "backing storage not supported for directories volumes"
-msgstr ""
+msgstr "bakomliggande lagring stödjs inte för katalogvolymer"
 
 msgid "backing storage not supported for raw volumes"
-msgstr ""
+msgstr "bakomliggande lagring stödjs inte för råa volymer"
 
 #, c-format
 msgid "backing store for %1$s is self-referential or too deeply nested"
 msgstr ""
+"bakomliggande lagring för %1$s är självrefererande eller för djupt nästad"
 
 #, c-format
 msgid "backing store parser is not implemented for protocol %1$s"
 msgstr ""
+"parsern för bakomliggande lagring är inte implementerad för protokollet %1$s"
 
 #, c-format
 msgid "backing store protocol '%1$s' is not yet supported"
-msgstr ""
+msgstr "protokollet ”%1$s” för bakomliggande lagring stödjs inte ännu"
 
 msgid "backingStore is not supported with NVRAM"
-msgstr ""
+msgstr "backingStore stödjs inte med NVRAM"
 
 msgid "backingStore is not supported with vhostuser disk"
-msgstr ""
+msgstr "backingStore stödjs inte med en vhostuser-disk"
 
 msgid ""
 "backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make "
 "sense"
 msgstr ""
+"backingStore för en spegel utan VIR_DOMAIN_BLOCK_COPY_SHALLOW är meningslöst"
 
 msgid "backup"
-msgstr ""
+msgstr "säkerhetskopia"
 
 msgid "backup TLS directory not configured"
-msgstr ""
+msgstr "säkerhetskopia av TLS-katalog är inte konfigurerat"
 
 msgid "backup job data missing"
-msgstr ""
+msgstr "säkerhetskopieringsjobbets data saknas"
 
 #, c-format
 msgid "backup socket path '%1$s' must be absolute"
-msgstr ""
+msgstr "säkerhetskopians uttagssökväg ”%1$s” måste vara absolut"
 
 #, c-format
 msgid "backup_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "backup_tls_x509_cert_dir-katalogen ”%1$s” finns inte"
 
 msgid "bad command"
-msgstr ""
+msgstr "felaktigt kommando"
 
-#, fuzzy
 msgid "bad name"
-msgstr "felaktig sökväg"
+msgstr "felaktigt namn"
 
 msgid "bad pathname"
 msgstr "felaktig sökväg"
@@ -20788,19 +20808,23 @@ msgstr "felaktig sökväg"
 #, c-format
 msgid "bad prefix %1$d for network %2$s when checking range %3$s - %4$s"
 msgstr ""
+"felaktigt prefix %1$d för nätverket %2$s vid kontroll av intervallet %3$s - "
+"%4$s"
 
 msgid "balloon device cannot be disabled"
-msgstr ""
+msgstr "ballongenheten kan inte avaktiveras"
 
 #, c-format
 msgid "bandwidth %1$llu cannot be represented in result"
-msgstr ""
+msgstr "bandbreden %1$llu kan inte representeras i resultatet"
 
 #, c-format
 msgid ""
 "bandwidth %1$llu is greater than %2$lu which is the maximum value supported "
 "by this API"
 msgstr ""
+"bandbredden %1$llu är större än %2$lu vilket är det maximala värdet som "
+"stödjs av detta API"
 
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
