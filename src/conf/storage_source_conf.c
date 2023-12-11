@@ -765,7 +765,7 @@ virStorageSourceSliceCopy(const virStorageSourceSlice *src)
 }
 
 
-static void
+void
 virStorageSourceSliceFree(virStorageSourceSlice *slice)
 {
     if (!slice)

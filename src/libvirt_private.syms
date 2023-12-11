@@ -1161,6 +1161,7 @@ virStorageSourcePoolModeTypeFromString;
 virStorageSourcePoolModeTypeToString;
 virStorageSourcePrivateDataFormatRelPath;
 virStorageSourcePrivateDataParseRelPath;
+virStorageSourceSliceFree;
 virStorageTypeFromString;
 virStorageTypeToString;
 
