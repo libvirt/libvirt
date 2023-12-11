@@ -9245,6 +9245,7 @@ qemuDomainBlockResize(virDomainPtr dom,
     g_autofree char *device = NULL;
     const char *nodename = NULL;
     virDomainDiskDef *disk = NULL;
+    virDomainDiskDef *persistDisk = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES |
                   VIR_DOMAIN_BLOCK_RESIZE_CAPACITY, -1);
@@ -9293,19 +9294,27 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_BLOCK_RESIZE_CAPACITY) {
+    /* The physical capacity is needed both when automatic sizing is requested
+     * and when a slice is used on top of a block device.
+     */
+    if (virStorageSourceIsBlockLocal(disk->src) &&
+        ((flags & VIR_DOMAIN_BLOCK_RESIZE_CAPACITY) ||
+         disk->src->sliceStorage)) {
         g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
-
-        if (!qemuBlockStorageSourceIsRaw(disk->src) ||
-            !virStorageSourceIsBlockLocal(disk->src)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("block resize to full capacity supported only with 'raw' local block-based disks"));
-            goto endjob;
-        }
 
         if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("failed to update capacity of '%1$s'"), disk->src->path);
+            goto endjob;
+        }
+
+    }
+
+    if (flags & VIR_DOMAIN_BLOCK_RESIZE_CAPACITY) {
+        if (!qemuBlockStorageSourceIsRaw(disk->src) ||
+            !virStorageSourceIsBlockLocal(disk->src)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("block resize to full capacity supported only with 'raw' local block-based disks"));
             goto endjob;
         }
 
@@ -9318,6 +9327,55 @@ qemuDomainBlockResize(virDomainPtr dom,
     if (disk->src->format == VIR_STORAGE_FILE_QCOW2 ||
         disk->src->format == VIR_STORAGE_FILE_QED)
         size = VIR_ROUND_UP(size, 512);
+
+    if (disk->src->sliceStorage) {
+        if (qemuDiskBusIsSD(disk->bus)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("resize of a 'sd' disk with storage slice is not supported"));
+            goto endjob;
+        }
+
+        /* If the storage slice has a non-zero 'offset' it's usually some weird
+         * configuration that we'd rather not touch */
+        if (disk->src->sliceStorage->offset > 0) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("resize of a disk with storage slice with non-zero 'offset' is not supported"));
+            goto endjob;
+        }
+
+        /* Removing the slice for non-raw will require introducing an attribute that
+         * the slice was fully expanded so that the XML can keep the 'slice' element.
+         * For raw images we simply remove the slice definition as there is no
+         * extra layer. */
+        if (!qemuBlockStorageSourceIsRaw(disk->src)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("resize of a disk with storage slice is supported only for 'raw' images"));
+            goto endjob;
+        }
+
+        /* trying to resize a block device to a size not equal to the actual
+         * size of the block device will cause qemu to fail */
+        if (virStorageSourceIsBlockLocal(disk->src) &&
+            disk->src->physical != size) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("block device backed disk must be resized to its actual size '%1$llu'"),
+                           disk->src->physical);
+            goto endjob;
+        }
+
+        if (vm->newDef &&
+            (persistDisk = virDomainDiskByTarget(vm->newDef, disk->dst))) {
+            if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src) ||
+                !persistDisk->src->sliceStorage)
+                persistDisk = NULL;
+        }
+
+        /* remove the slice completely, we then instruct qemu to resize */
+        if (qemuBlockReopenSliceExpand(vm, disk->src) < 0)
+            goto endjob;
+
+        qemuDomainSaveStatus(vm);
+    }
 
     if (!qemuDiskBusIsSD(disk->bus)) {
         nodename = qemuBlockStorageSourceGetEffectiveNodename(disk->src);
@@ -9332,6 +9390,11 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
     }
     qemuDomainObjExitMonitor(vm);
+
+    if (persistDisk) {
+        g_clear_pointer(&persistDisk->src->sliceStorage, virStorageSourceSliceFree);
+        qemuDomainSaveConfig(vm);
+    }
 
     ret = 0;
 

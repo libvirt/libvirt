@@ -3266,6 +3266,71 @@ qemuBlockStorageSourceIsRaw(const virStorageSource *src)
 
 
 /**
+ * qemuBlockReopenSliceExpand:
+ * @vm: domain object
+ * @src: storage source to reopen
+ *
+ * Reopen @src image to remove its storage slice. Note that this currently
+ * works only for 'raw' disks.
+ *
+ * Note: This changes transforms the definition such that the 'raw' driver
+ *       becomes the 'format' layer rather than the 'slice' layer, to be able
+ *       to free the slice definition.
+ */
+int
+qemuBlockReopenSliceExpand(virDomainObj *vm,
+                           virStorageSource *src)
+{
+    g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
+    g_autoptr(virJSONValue) srcprops = NULL;
+    int rc;
+
+    /* If we are lacking the object here, qemu might have opened an image with
+     * a node name unknown to us */
+    /* Note: This is currently dead code, as only 'raw' images are supported */
+    if (!src->backingStore) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("can't reopen image with unknown presence of backing store"));
+        return -1;
+    }
+
+    /* If there is an explicit storage slice 'raw' driver layer we need to modify that */
+    if (qemuBlockStorageSourceGetSliceNodename(src)) {
+        /* we need to know whether the slice layer is the "effective" layer */
+        bool isEffective = !qemuBlockStorageSourceGetSliceNodename(src);
+
+        if (!(srcprops = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, isEffective, true)))
+            return -1;
+    } else {
+        if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
+            return -1;
+    }
+
+    if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_NONE) < 0)
+        return -1;
+
+    rc = qemuMonitorBlockdevReopen(qemuDomainGetMonitor(vm), &reopenoptions);
+
+    qemuDomainObjExitMonitor(vm);
+    if (rc < 0)
+        return -1;
+
+    /* transform the 'slice' raw driver into a 'format' driver so that we don't
+     * have to add extra code */
+    if (qemuBlockStorageSourceGetSliceNodename(src))
+        qemuBlockStorageSourceSetFormatNodename(src, g_strdup(qemuBlockStorageSourceGetSliceNodename(src)));
+
+    /* get rid of the slice */
+    g_clear_pointer(&src->sliceStorage, virStorageSourceSliceFree);
+
+    return 0;
+}
+
+
+/**
  * qemuBlockStorageSourceNeedSliceLayer:
  * @src: source to inspect
  *
