@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-12-10 10:43+0000\n"
+"PO-Revision-Date: 2023-12-11 11:44+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -20828,65 +20828,64 @@ msgstr ""
 
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr ""
+msgstr "bandbreddsstyrenheten med id %1$zd finns inte, max styrenhets-id %2$u"
 
 msgid "bandwidth limit in MiB/s"
-msgstr ""
+msgstr "bandbreddsgräns i MiB/s"
 
 #, c-format
 msgid "bandwidth must be less than %1$llu"
-msgstr ""
+msgstr "bandbredden måste vara mindre än %1$llu"
 
 #, c-format
 msgid "bandwidth must be less than %1$llu bytes"
-msgstr ""
+msgstr "bandbredden måste vara mindre än %1$llu byte"
 
 #, c-format
 msgid "bandwidth must be less than '%1$llu' bytes/s (%2$llu MiB/s)"
-msgstr ""
+msgstr "bandbredden måste vara mindre än ”%1$llu” byte/s (%2$llu MiB/s)"
 
 #, c-format
 msgid "base '%1$s' is not immediately below '%2$s' in chain for '%3$s'"
-msgstr ""
+msgstr "basen ”%1$s” är inte omedelbart nedanför ”%2$s” i kedjan för ”%3$s”"
 
 msgid "base64-encoded secret value"
-msgstr ""
+msgstr "base64-kodat hemligt värde"
 
-#, fuzzy
 msgid "bhyve state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "bhyve-tillståndsdrivrutinen är inte aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "binding '%1$s' already exists"
-msgstr "oväntad domän %1$s finns redan"
+msgstr "bindningen ”%1$s” finns redan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "binding '%1$s' is already being removed"
-msgstr "domänen ”%s” är redan definierat med UUID %s"
+msgstr "bindningen ”%1$s” tas redan bort"
 
 #, c-format
 msgid "bitmap '%1$s' not found in backing chain of '%2$s'"
-msgstr ""
+msgstr "bitkartan ”%1$s” finns inte i den bakomliggande kedjan för ”%2$s”"
 
 #, c-format
 msgid "bitmap for disk '%1$s' must match checkpoint name '%2$s'"
 msgstr ""
+"bitkartan för disken ”%1$s” måste stämma med kontrollpunktsnamnet ”%2$s”"
 
-#, fuzzy
 msgid "blkio cgroup isn't mounted"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "blkio-styrgruppen är inte monterad"
 
 msgid "blkio device weight is valid only for bfq or cfq scheduler"
-msgstr ""
+msgstr "blkio-enhetsvikten är endast giltig för schemaläggarna bfq och cfq"
 
 msgid "blkio device weight is valid only for cfq scheduler"
-msgstr ""
+msgstr "blkio-enhetsvikten är endast giltig för schemaläggaren cfq"
 
 msgid "blkio parameters are not supported by vz driver"
-msgstr ""
+msgstr "blkio-parametrar stödjs inte av vz-drivrutinen"
 
 msgid "blkio weight is valid only for bfq or cfq scheduler"
-msgstr ""
+msgstr "blkio-vikten är endast giltig för schemaläggarna bfq och cfq"
 
 msgid "block"
 msgstr "block"
@@ -20894,18 +20893,22 @@ msgstr "block"
 #, c-format
 msgid "block I/O throttle limit must be no more than %1$llu using QEMU"
 msgstr ""
+"strypningsgränsen för block-I/O får inte vara mer än %1$llu när man använder "
+"QEMU"
 
 #, c-format
 msgid "block I/O throttle limit value must be no more than %1$llu"
-msgstr ""
+msgstr "strypningsgränsen för block-I/O får inte var mer än %1$llu"
 
 #, c-format
 msgid "block I/O throttling is not supported for disk '%1$s'"
-msgstr ""
+msgstr "strypning av block-I/O stödjs inte för disken ”%1$s”"
 
 #, c-format
 msgid "block commit failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
+"blockfastställande misslyckades när ögonblicksbilden av disken ”%1$s” togs "
+"bort: ”%2$s”"
 
 msgid "block copy still active"
 msgstr ""
