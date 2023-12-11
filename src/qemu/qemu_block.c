@@ -1434,22 +1434,31 @@ qemuBlockStorageSourceGetFormatProps(virStorageSource *src,
  * qemuBlockStorageSourceGetBlockdevStorageSliceProps:
  * @src: storage source object
  * @effective: Whether this blockdev will be the 'effective' layer of @src
+ * @resize: If true, the 'size' and 'offset' parameters are not formatted
  *
  * Formats the JSON object representing -blockdev configuration required to
  * configure a 'slice' of @src. If @effective is true, the slice layer is the
- * topmost/effective blockdev layer of @src.
+ * topmost/effective blockdev layer of @src. If @resize is true the 'size' and
+ * 'offset' are not formatted, which is used to remove a slice restriction
+ * to resize the image.
  */
 static virJSONValue *
 qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSource *src,
-                                                   bool effective)
+                                                   bool effective,
+                                                   bool resize)
 {
     g_autoptr(virJSONValue) props = NULL;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", "raw",
+                              "s:file", qemuBlockStorageSourceGetStorageNodename(src),
+                              NULL) < 0)
+        return NULL;
+
+    if (!resize &&
+        virJSONValueObjectAdd(&props,
                               "U:offset", src->sliceStorage->offset,
                               "U:size", src->sliceStorage->size,
-                              "s:file", qemuBlockStorageSourceGetStorageNodename(src),
                               NULL) < 0)
         return NULL;
 
@@ -1530,7 +1539,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
     }
 
     if ((data->storageSliceNodeName = qemuBlockStorageSourceGetSliceNodename(src))) {
-        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, effective)))
+        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, effective, false)))
             return NULL;
 
         effective = false;
@@ -3150,7 +3159,7 @@ qemuBlockReopenAccess(virDomainObj *vm,
         if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
             return -1;
     } else if (qemuBlockStorageSourceGetSliceNodename(src)) {
-        if (!(srcprops = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, true)))
+        if (!(srcprops = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, true, false)))
             return -1;
     } else {
         if (!(srcprops = qemuBlockStorageSourceGetBackendProps(src,
