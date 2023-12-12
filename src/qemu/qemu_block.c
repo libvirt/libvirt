@@ -3237,6 +3237,49 @@ qemuBlockReopenReadOnly(virDomainObj *vm,
     return qemuBlockReopenAccess(vm, src, true, asyncJob);
 }
 
+
+/**
+ * qemuBlockStorageSourceIsLUKS:
+ * @src: storage source object
+ *
+ * Returns true if @src is an image in 'luks' format, which is to be decrypted
+ * in qemu (rather than transparently by the transport layer or host's kernel).
+ */
+bool
+qemuBlockStorageSourceIsLUKS(const virStorageSource *src)
+{
+    if (src->format != VIR_STORAGE_FILE_RAW)
+        return false;
+
+    if (src->encryption &&
+        src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_QEMU &&
+        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+        return true;
+
+    return false;
+}
+
+
+/**
+ * qemuBlockStorageSourceIsRaw:
+ * @src: storage source object
+ *
+ * Returns true if @src is a true 'raw' image. This specifically excludes
+ * LUKS encrypted images to be decrypted by qemu.
+ */
+bool
+qemuBlockStorageSourceIsRaw(const virStorageSource *src)
+{
+    if (src->format != VIR_STORAGE_FILE_RAW)
+        return false;
+
+    if (qemuBlockStorageSourceIsLUKS(src))
+        return false;
+
+    return true;
+}
+
+
 /**
  * qemuBlockStorageSourceNeedSliceLayer:
  * @src: source to inspect

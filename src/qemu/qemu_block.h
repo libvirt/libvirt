@@ -268,6 +268,11 @@ qemuBlockReopenReadOnly(virDomainObj *vm,
                         virDomainAsyncJob asyncJob);
 
 bool
+qemuBlockStorageSourceIsLUKS(const virStorageSource *src);
+bool
+qemuBlockStorageSourceIsRaw(const virStorageSource *src);
+
+bool
 qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src);
 
 bool
