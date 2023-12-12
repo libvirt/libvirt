@@ -3954,6 +3954,11 @@ struct remote_domain_start_dirty_rate_calc_args {
     unsigned int flags;
 };
 
+struct remote_domain_graphics_reload_args {
+    remote_nonnull_domain dom;
+    unsigned int type;
+    unsigned int flags;
+};
 
 struct remote_domain_event_memory_device_size_change_msg {
     int callbackID;
@@ -7037,5 +7042,11 @@ enum remote_procedure {
      * @acl: node_device:save:!VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG|VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE
      * @acl: node_device:save:VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG
      */
-    REMOTE_PROC_NODE_DEVICE_UPDATE = 447
+    REMOTE_PROC_NODE_DEVICE_UPDATE = 447,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_GRAPHICS_RELOAD = 448
 };

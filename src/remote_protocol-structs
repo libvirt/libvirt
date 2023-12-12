@@ -3290,6 +3290,11 @@ struct remote_domain_start_dirty_rate_calc_args {
         int                        seconds;
         u_int                      flags;
 };
+struct remote_domain_graphics_reload_args {
+        remote_nonnull_domain      dom;
+        u_int                      type;
+        u_int                      flags;
+};
 struct remote_domain_event_memory_device_size_change_msg {
         int                        callbackID;
         remote_nonnull_domain      dom;
@@ -3749,4 +3754,5 @@ enum remote_procedure {
         REMOTE_PROC_NETWORK_GET_METADATA = 445,
         REMOTE_PROC_NETWORK_EVENT_CALLBACK_METADATA_CHANGE = 446,
         REMOTE_PROC_NODE_DEVICE_UPDATE = 447,
+        REMOTE_PROC_DOMAIN_GRAPHICS_RELOAD = 448,
 };
