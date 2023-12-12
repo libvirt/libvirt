@@ -1631,7 +1631,7 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
     virBufferAddLit(buf, ",");
 
     if (encinfo) {
-        if (disk->src->format == VIR_STORAGE_FILE_RAW) {
+        if (qemuBlockStorageSourceIsLUKS(disk->src)) {
             virBufferAsprintf(buf, "key-secret=%s,", encinfo[0]->alias);
             rawluks = true;
         } else if (disk->src->format == VIR_STORAGE_FILE_QCOW2 &&

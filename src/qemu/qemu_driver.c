@@ -10090,7 +10090,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (disk->src->format != VIR_STORAGE_FILE_RAW) {
+    if (qemuBlockStorageSourceIsRaw(disk->src)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("peeking is only supported for disk with 'raw' format not '%1$s'"),
                        virStorageFileFormatTypeToString(disk->src->format));
@@ -10285,7 +10285,7 @@ qemuStorageLimitsRefresh(virQEMUDriverConfig *cfg,
      * query the highest allocated extent from QEMU
      */
     if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK &&
-        src->format != VIR_STORAGE_FILE_RAW &&
+        !qemuBlockStorageSourceIsRaw(src) &&
         S_ISBLK(sb.st_mode))
         src->allocation = 0;
 

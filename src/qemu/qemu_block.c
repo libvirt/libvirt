@@ -177,7 +177,7 @@ bool
 qemuBlockStorageSourceSupportsConcurrentAccess(virStorageSource *src)
 {
     /* no need to check in backing chain since only RAW storage supports this */
-    return src->format == VIR_STORAGE_FILE_RAW;
+    return qemuBlockStorageSourceIsRaw(src);
 }
 
 
@@ -1336,10 +1336,12 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
     case VIR_STORAGE_FILE_FAT:
         /* The fat layer is emulated by the storage access layer, so we need to
          * put a raw layer on top */
+        if (qemuBlockStorageSourceGetFormatRawProps(src, props) < 0)
+            return NULL;
+        break;
+
     case VIR_STORAGE_FILE_RAW:
-        if (src->encryption &&
-            src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_QEMU &&
-            src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+        if (qemuBlockStorageSourceIsLUKS(src)) {
             if (qemuBlockStorageSourceGetFormatLUKSProps(src, props) < 0)
                 return NULL;
         } else {
@@ -2080,9 +2082,7 @@ qemuBlockStorageSourceCreateAddBacking(virStorageSource *backing,
         return 0;
 
     if (format) {
-        if (backing->format == VIR_STORAGE_FILE_RAW &&
-            backing->encryption &&
-            backing->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+        if (qemuBlockStorageSourceIsLUKS(backing))
             backingFormatStr = "luks";
         else
             backingFormatStr = virStorageFileFormatTypeToString(backing->format);
@@ -2313,8 +2313,7 @@ qemuBlockStorageSourceCreateGetFormatProps(virStorageSource *src,
 {
     switch ((virStorageFileFormat) src->format) {
     case VIR_STORAGE_FILE_RAW:
-        if (!src->encryption ||
-            src->encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+        if (!qemuBlockStorageSourceIsLUKS(src))
             return 0;
 
         return qemuBlockStorageSourceCreateGetFormatPropsLUKS(src, props);
@@ -2584,8 +2583,8 @@ qemuBlockStorageSourceCreateFormat(virDomainObj *vm,
     g_autoptr(virJSONValue) createformatprops = NULL;
     int ret;
 
-    if (src->format == VIR_STORAGE_FILE_RAW &&
-        !src->encryption)
+    /* we don't bother creating only a true 'raw' image */
+    if (qemuBlockStorageSourceIsRaw(src))
         return 0;
 
     if (qemuBlockStorageSourceCreateGetFormatProps(src, backingStore,
@@ -2743,7 +2742,7 @@ qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
         }
     }
 
-    if (src->format == VIR_STORAGE_FILE_RAW) {
+    if (qemuBlockStorageSourceIsRaw(src)) {
         src->physical = entry->capacity;
     } else {
         src->physical = entry->physical;
@@ -3299,14 +3298,7 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
     if (!src->sliceStorage)
         return false;
 
-    if (src->format != VIR_STORAGE_FILE_RAW)
-        return true;
-
-    if (src->encryption &&
-        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
-        return true;
-
-    return false;
+    return !qemuBlockStorageSourceIsRaw(src);
 }
 
 
