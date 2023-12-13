@@ -378,6 +378,38 @@ testKernelCmdlineMatchParam(const void *data G_GNUC_UNUSED)
 
 
 static int
+testGetSubIDs(const void *data G_GNUC_UNUSED)
+{
+    g_autofree char *subuid_file = g_strdup_printf("%s/virutiltestdata/subuid", abs_srcdir);
+    virSubID *subids = NULL;
+    int len = 0;
+    int ret = -1;
+
+    if ((len = virGetSubIDs(&subids, subuid_file)) < 0) {
+        VIR_TEST_DEBUG("virGetSubIDs failed");
+        goto cleanup;
+    }
+
+    if (len != 4) {
+        VIR_TEST_DEBUG("virGetSubIDs returned %d (expected 4)", len);
+        goto cleanup;
+    }
+
+    if (STRNEQ(subids[0].idstr, "joe")) {
+        VIR_TEST_DEBUG("virGetSubIDs returned wrong name for entry 0: '%s'", NULLSTR(subids[0].idstr));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (len >= 0)
+        virSubIDsFree(&subids, len);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int result = 0;
@@ -400,6 +432,7 @@ mymain(void)
     DO_TEST(OverflowCheckMacro);
     DO_TEST(KernelCmdlineNextParam);
     DO_TEST(KernelCmdlineMatchParam);
+    DO_TEST(GetSubIDs);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

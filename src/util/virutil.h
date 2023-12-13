@@ -102,6 +102,18 @@ char *virGetUserName(uid_t uid) G_NO_INLINE;
 char *virGetGroupName(gid_t gid) G_NO_INLINE;
 int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)
     ATTRIBUTE_NONNULL(3);
+
+typedef struct _virSubID {
+    uid_t id;
+    char *idstr;
+    uid_t start;
+    uid_t range;
+} virSubID;
+
+int virGetSubIDs(virSubID **ret, const char *file);
+void virSubIDsFree(virSubID **uids, size_t n);
+
+
 int virGetUserID(const char *name,
                  uid_t *uid) G_GNUC_WARN_UNUSED_RESULT;
 int virGetGroupID(const char *name,

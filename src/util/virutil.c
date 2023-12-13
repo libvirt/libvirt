@@ -1086,6 +1086,76 @@ virGetGroupName(gid_t gid G_GNUC_UNUSED)
 }
 #endif /* WITH_GETPWUID_R */
 
+void
+virSubIDsFree(virSubID **uids, size_t n)
+{
+    size_t i;
+
+    for (i = 0; i < n; i++) {
+        if ((*uids)[i].idstr)
+            g_free((*uids)[i].idstr);
+    }
+    g_clear_pointer(uids, g_free);
+}
+
+int
+virGetSubIDs(virSubID **retval, const char *file)
+{
+    g_autofree char *buf = NULL;
+    g_auto(GStrv) lines = NULL;
+    virSubID *entries = NULL;
+    size_t i = 0;
+    size_t len;
+    int ret = -1;
+
+    *retval = NULL;
+
+    if (virFileReadAll(file, BUFSIZ, &buf) < 0)
+        return -1;
+
+    lines = g_strsplit(buf, "\n", 0);
+    if (!lines)
+        return -1;
+
+    len = g_strv_length(lines);
+    entries = g_new0(virSubID, len);
+
+    for (i = 0; i < len; i++) {
+        g_auto(GStrv) fields = NULL;
+        unsigned long ulong_id;
+
+        fields = g_strsplit(lines[i], ":", 0);
+        if (!fields)
+            goto cleanup;
+
+        if (g_strv_length(fields) != 3)
+            break;
+
+        if (g_ascii_isdigit(fields[0][0])) {
+            if (virStrToLong_ul(fields[0], NULL, 10, &ulong_id) < 0)
+                goto cleanup;
+            entries[i].id = ulong_id;
+        } else {
+            entries[i].idstr = g_strdup(fields[0]);
+        }
+
+        if (virStrToLong_ul(fields[1], NULL, 10, &ulong_id) < 0)
+            goto cleanup;
+        entries[i].start = ulong_id;
+
+        if (virStrToLong_ul(fields[2], NULL, 10, &ulong_id) < 0)
+            goto cleanup;
+        entries[i].range = ulong_id;
+    }
+
+    *retval = g_steal_pointer(&entries);
+    ret = i;
+ cleanup:
+    if (entries)
+        virSubIDsFree(&entries, len);
+    return ret;
+}
+
 #if WITH_CAPNG
 /* Set the real and effective uid and gid to the given values, while
  * maintaining the capabilities indicated by bits in @capBits. Return
