@@ -551,6 +551,10 @@ void vshReadlineHistoryAdd(const char *cmd);
         } \
     } while (0)
 
+#define VSH_ALTERNATIVE_OPTIONS(NAME1, NAME2) \
+    VSH_ALTERNATIVE_OPTIONS_EXPR(NAME1, vshCommandOptBool(cmd, NAME1), \
+                                 NAME2, vshCommandOptBool(cmd, NAME2))
+
 /* Macros to help dealing with required options. */
 
 /* VSH_REQUIRE_OPTION_EXPR:
