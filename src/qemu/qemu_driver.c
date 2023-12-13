@@ -9246,7 +9246,8 @@ qemuDomainBlockResize(virDomainPtr dom,
     const char *nodename = NULL;
     virDomainDiskDef *disk = NULL;
 
-    virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES |
+                  VIR_DOMAIN_BLOCK_RESIZE_CAPACITY, -1);
 
     /* We prefer operating on bytes.  */
     if ((flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES) == 0) {
@@ -9290,6 +9291,25 @@ qemuDomainBlockResize(virDomainPtr dom,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block resize is not supported for vhostuser disk"));
         goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_BLOCK_RESIZE_CAPACITY) {
+        g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+
+        if (!qemuBlockStorageSourceIsRaw(disk->src) ||
+            !virStorageSourceIsBlockLocal(disk->src)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("block resize to full capacity supported only with 'raw' local block-based disks"));
+            goto endjob;
+        }
+
+        if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("failed to update capacity of '%1$s'"), disk->src->path);
+            goto endjob;
+        }
+
+        size = disk->src->physical;
     }
 
     /* qcow2 and qed must be sized on 512 byte blocks/sectors,
