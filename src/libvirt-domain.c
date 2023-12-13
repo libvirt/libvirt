@@ -6388,6 +6388,11 @@ virDomainBlockPeek(virDomainPtr dom,
  * size.  Depending on the file format, the hypervisor may round up
  * to the next alignment boundary.
  *
+ * If @flag contains VIR_DOMAIN_BLOCK_RESIZE_CAPACITY (since 10.0.0) the
+ * hypervisor will resize the guest block device to fully fill the source,
+ * ignoring @size. This is possible only for image formats with no metadata
+ * ('raw') and for source devices with limited capacity such as block devices.
+ *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand

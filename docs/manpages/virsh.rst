@@ -1421,13 +1421,17 @@ blockresize
 
 ::
 
-   blockresize domain path size
+   blockresize domain path ([size] | [--capacity])
 
 Resize a block device of domain while the domain is running, *path*
 specifies the absolute path of the block device; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to *domain* (see
 also ``domblklist`` for listing these names).
+
+For image formats without metadata (raw) stored inside fixed-size storage (e.g.
+block devices) the --capacity flag can be used to resize the device to the
+full size of the backing device.
 
 *size* is a scaled integer (see ``NOTES`` above) which defaults to KiB
 (blocks of 1024 bytes) if there is no suffix.  You must use a suffix of

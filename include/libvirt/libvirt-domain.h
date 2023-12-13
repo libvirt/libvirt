@@ -2172,6 +2172,7 @@ int                     virDomainBlockPeek (virDomainPtr dom,
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_RESIZE_BYTES = 1 << 0, /* size in bytes instead of KiB (Since: 0.9.11) */
+    VIR_DOMAIN_BLOCK_RESIZE_CAPACITY = 1 << 1, /* resize to full the capacity of the source (Since: 10.0.0) */
 } virDomainBlockResizeFlags;
 
 int                     virDomainBlockResize (virDomainPtr dom,
