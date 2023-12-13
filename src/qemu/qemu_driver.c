@@ -9279,6 +9279,13 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
     }
 
+    if (virStorageSourceIsEmpty(disk->src) || disk->src->readonly) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("can't resize empty or readonly disk '%1$s'"),
+                       disk->dst);
+        goto endjob;
+    }
+
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block resize is not supported for vhostuser disk"));
@@ -9291,13 +9298,6 @@ qemuDomainBlockResize(virDomainPtr dom,
     if (disk->src->format == VIR_STORAGE_FILE_QCOW2 ||
         disk->src->format == VIR_STORAGE_FILE_QED)
         size = VIR_ROUND_UP(size, 512);
-
-    if (virStorageSourceIsEmpty(disk->src) || disk->src->readonly) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("can't resize empty or readonly disk '%1$s'"),
-                       disk->dst);
-        goto endjob;
-    }
 
     if (!qemuDiskBusIsSD(disk->bus)) {
         nodename = qemuBlockStorageSourceGetEffectiveNodename(disk->src);
