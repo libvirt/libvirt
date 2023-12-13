@@ -369,12 +369,84 @@ qemuVirtioFSSetupCgroup(virDomainObj *vm,
     return 0;
 }
 
+static int
+qemuVirtioFSPrepareIdMap(virDomainFSDef *fs)
+{
+    g_autofree char *username = NULL;
+    g_autofree char *groupname = NULL;
+    virSubID *subuids = NULL;
+    virSubID *subgids = NULL;
+    uid_t euid = geteuid();
+    uid_t egid = getegid();
+    int subuidlen = 0;
+    int subgidlen = 0;
+    size_t i;
+
+    username = virGetUserName(euid);
+    groupname = virGetGroupName(egid);
+
+    fs->idmap.uidmap = g_new0(virDomainIdMapEntry, 2);
+    fs->idmap.gidmap = g_new0(virDomainIdMapEntry, 2);
+
+    if ((subuidlen = virGetSubIDs(&subuids, "/etc/subuid")) < 0)
+        return -1;
+
+    fs->idmap.uidmap[0].start = 0;
+    fs->idmap.uidmap[0].target = euid;
+    fs->idmap.uidmap[0].count = 1;
+    fs->idmap.nuidmap = 1;
+
+    for (i = 0; i < subuidlen; i++) {
+        if ((subuids[i].idstr && STREQ(subuids[i].idstr, username)) ||
+            subuids[i].id == euid) {
+            fs->idmap.uidmap[1].start = 1;
+            fs->idmap.uidmap[1].target = subuids[i].start;
+            fs->idmap.uidmap[1].count = subuids[i].range;
+            fs->idmap.nuidmap++;
+            break;
+        }
+    }
+
+    virSubIDsFree(&subuids, subuidlen);
+
+    if ((subgidlen = virGetSubIDs(&subgids, "/etc/subgid")) < 0)
+        return -1;
+
+    fs->idmap.gidmap[0].start = 0;
+    fs->idmap.gidmap[0].target = getegid();
+    fs->idmap.gidmap[0].count = 1;
+    fs->idmap.ngidmap = 1;
+
+    for (i = 0; i < subgidlen; i++) {
+        if ((subgids[i].idstr && STREQ(subgids[i].idstr, groupname)) ||
+            subgids[i].id == egid) {
+            fs->idmap.gidmap[1].start = 1;
+            fs->idmap.gidmap[1].target = subgids[i].start;
+            fs->idmap.gidmap[1].count = subgids[i].range;
+            fs->idmap.ngidmap++;
+            break;
+        }
+    }
+
+    virSubIDsFree(&subgids, subgidlen);
+
+    return 0;
+}
+
 int
 qemuVirtioFSPrepareDomain(virQEMUDriver *driver,
                           virDomainFSDef *fs)
 {
-    if (fs->binary || fs->sock)
+    if (fs->sock)
         return 0;
 
-    return qemuVhostUserFillDomainFS(driver, fs);
+    if (!fs->binary && qemuVhostUserFillDomainFS(driver, fs) < 0)
+        return -1;
+
+    if (!driver->privileged && !fs->idmap.uidmap) {
+        if (qemuVirtioFSPrepareIdMap(fs) < 0)
+            return -1;
+    }
+
+    return 0;
 }
