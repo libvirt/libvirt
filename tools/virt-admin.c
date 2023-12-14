@@ -120,6 +120,9 @@ vshAdmConnect(vshControl *ctl, unsigned int flags)
 
         if (priv->wantReconnect)
             vshPrint(ctl, "%s\n", _("Reconnected to the admin server"));
+
+        if (!ctl->connname)
+            ctl->connname = virAdmConnectGetURI(priv->conn);
     }
 
     return 0;
