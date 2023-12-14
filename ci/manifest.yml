@@ -19,7 +19,7 @@ targets:
           RPM: skip
           CC: clang
 
-  alpine-317: x86_64
+  alpine-319: x86_64
 
   alpine-edge:
     jobs:
@@ -152,14 +152,6 @@ targets:
         containers: false
         builds: false
 
-  fedora-37:
-    jobs:
-      - arch: x86_64
-        artifacts:
-          expire_in: 1 day
-          paths:
-            - libvirt-rpms
-
   fedora-38:
     jobs:
       - arch: x86_64
@@ -172,6 +164,14 @@ targets:
         builds: false
 
       - arch: mingw64
+
+  fedora-39:
+    jobs:
+      - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
 
   fedora-rawhide:
     jobs:

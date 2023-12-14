@@ -14,11 +14,11 @@ x86_64-almalinux-8-container:
     NAME: almalinux-8
 
 
-x86_64-alpine-317-container:
+x86_64-alpine-319-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: alpine-317
+    NAME: alpine-319
 
 
 x86_64-alpine-edge-container:
@@ -64,18 +64,18 @@ x86_64-debian-sid-container:
     NAME: debian-sid
 
 
-x86_64-fedora-37-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: fedora-37
-
-
 x86_64-fedora-38-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: fedora-38
+
+
+x86_64-fedora-39-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-39
 
 
 x86_64-fedora-rawhide-container:

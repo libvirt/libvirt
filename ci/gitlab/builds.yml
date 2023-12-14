@@ -51,22 +51,22 @@ x86_64-almalinux-8-clang-local-env:
     RPM: skip
 
 
-x86_64-alpine-317-prebuilt-env:
+x86_64-alpine-319-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
-    - job: x86_64-alpine-317-container
+    - job: x86_64-alpine-319-container
       optional: true
   allow_failure: false
   variables:
-    NAME: alpine-317
+    NAME: alpine-319
 
-x86_64-alpine-317-local-env:
+x86_64-alpine-319-local-env:
   extends: .native_build_job_local_env
   needs: []
   allow_failure: false
   variables:
-    IMAGE: docker.io/library/alpine:3.17
-    NAME: alpine-317
+    IMAGE: docker.io/library/alpine:3.19
+    NAME: alpine-319
 
 
 x86_64-alpine-edge-prebuilt-env:
@@ -233,32 +233,6 @@ x86_64-debian-sid-local-env:
     NAME: debian-sid
 
 
-x86_64-fedora-37-prebuilt-env:
-  extends: .native_build_job_prebuilt_env
-  needs:
-    - job: x86_64-fedora-37-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: fedora-37
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-x86_64-fedora-37-local-env:
-  extends: .native_build_job_local_env
-  needs: []
-  allow_failure: false
-  variables:
-    IMAGE: registry.fedoraproject.org/fedora:37
-    NAME: fedora-37
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-
 x86_64-fedora-38-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
@@ -279,6 +253,32 @@ x86_64-fedora-38-local-env:
   variables:
     IMAGE: registry.fedoraproject.org/fedora:38
     NAME: fedora-38
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+
+x86_64-fedora-39-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-fedora-39-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-39
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+x86_64-fedora-39-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: registry.fedoraproject.org/fedora:39
+    NAME: fedora-39
   artifacts:
     expire_in: 1 day
     paths:
