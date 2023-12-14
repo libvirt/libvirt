@@ -225,6 +225,9 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
             ctl->connname = g_strdup(name);
         }
 
+        if (!ctl->connname)
+            ctl->connname = virConnectGetURI(priv->conn);
+
         priv->readonly = readonly;
 
         if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
