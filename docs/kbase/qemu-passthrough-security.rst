@@ -157,7 +157,7 @@ will affect all virtual machines. These settings are all made in
 * Cgroups - set ``cgroup_device_acl`` to include the desired device node, or
   ``cgroup_controllers = [...]`` to exclude the ``devices`` controller.
 
-Private monunt namespace
+Private mount namespace
 ----------------------------
 
 As mentioned above, libvirt launches each QEMU process in its own ``mount``
