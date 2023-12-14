@@ -72,14 +72,9 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
 {
     vshControl *ctl = opaque;
     const char *str = "unknown reason";
-    virErrorPtr error;
-    g_autofree char *uri = NULL;
 
     if (reason == VIR_CONNECT_CLOSE_REASON_CLIENT)
         return;
-
-    virErrorPreserveLast(&error);
-    uri = virAdmConnectGetURI(conn);
 
     switch ((virConnectCloseReason) reason) {
     case VIR_CONNECT_CLOSE_REASON_ERROR:
@@ -96,8 +91,7 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
         break;
     }
 
-    vshError(ctl, _(str), NULLSTR(uri));
-    virErrorRestore(&error);
+    vshError(ctl, _(str), NULLSTR(ctl->connname));
 }
 
 static int
