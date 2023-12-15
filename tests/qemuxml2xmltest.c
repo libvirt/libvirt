@@ -45,7 +45,7 @@ testXML2XMLActive(const void *opaque)
     if (testXML2XMLCommon(info) < 0 ||
         testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                    info->infile, info->outfile, true,
-                                   info->parseFlags,
+                                   info->parseFlags | VIR_DOMAIN_DEF_PARSE_INACTIVE,
                                    TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) < 0) {
         return -1;
     }
@@ -62,48 +62,12 @@ testXML2XMLInactive(const void *opaque)
     if (testXML2XMLCommon(info) < 0 ||
         testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                    info->infile, info->outfile, false,
-                                   info->parseFlags,
+                                   info->parseFlags | VIR_DOMAIN_DEF_PARSE_INACTIVE,
                                    TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) < 0) {
         return -1;
     }
 
     return 0;
-}
-
-
-/**
- * testInfoSetPaths:
- * @info: test info structure to populate
- * @suffix: suffix used to create output file name e.g. ".x86-64_latest"
- * @statesuffix: suffix to create output file name based on tested state ("active" | "inactive")
- *
- * This function populates @info with the correct input and output file paths.
- *
- * The output file is chosen based on whether a version with @statesuffix exists.
- * If yes, it's used, if no the @statesuffix is omitted and it's expected that
- * both the "active" and "inactive" versions are the same.
- */
-static void
-testInfoSetPaths(testQemuInfo *info,
-                 const char *suffix,
-                 const char *statesuffix)
-{
-    VIR_FREE(info->infile);
-    VIR_FREE(info->outfile);
-
-    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir,
-                                   info->name);
-
-    info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s-%s%s.xml",
-                                    abs_srcdir, info->name,
-                                    statesuffix, suffix);
-
-    if (!virFileExists(info->outfile)) {
-        VIR_FREE(info->outfile);
-
-        info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml",
-                                        abs_srcdir, info->name, suffix);
-    }
 }
 
 
@@ -126,11 +90,12 @@ testRun(const char *name,
     testQemuInfoSetArgs(info, ap);
     va_end(ap);
 
+    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir,
+                                   info->name);
+    info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml",
+                                    abs_srcdir, info->name, suffix);
 
-    testInfoSetPaths(info, suffix, "inactive");
     virTestRunLog(ret, name_inactive, testXML2XMLInactive, info);
-
-    testInfoSetPaths(info, suffix, "active");
     virTestRunLog(ret, name_active, testXML2XMLActive, info);
 }
 
