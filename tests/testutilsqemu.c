@@ -958,7 +958,10 @@ testQemuInfoFree(testQemuInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
+    VIR_FREE(info->out_xml_active);
+    VIR_FREE(info->out_xml_inactive);
     VIR_FREE(info->errfile);
+    virDomainDefFree(info->def);
     virObjectUnref(info->qemuCaps);
     g_clear_pointer(&info->args.fakeCapsAdd, virBitmapFree);
     g_clear_pointer(&info->args.fakeCapsDel, virBitmapFree);

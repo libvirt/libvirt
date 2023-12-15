@@ -100,7 +100,10 @@ struct _testQemuInfo {
     const char *name;
     char *infile;
     char *outfile;
+    char *out_xml_active;
+    char *out_xml_inactive;
     char *errfile;
+    virDomainDef *def; /* parsed domain definition */
     virQEMUCaps *qemuCaps;
     qemuNbdkitCaps *nbdkitCaps;
     const char *migrateFrom;

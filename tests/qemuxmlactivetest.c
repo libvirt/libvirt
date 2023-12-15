@@ -88,11 +88,117 @@ testRunStatus(const char *name,
 
 
 static int
+testqemuActiveXML2XMLCommon(testQemuInfo *info,
+                            bool live)
+{
+    g_autofree char *actual = NULL;
+    const char *outfile = info->out_xml_active;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+
+    /* Prepare the test data and parse the input just once */
+    if (!info->def) {
+        if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
+            return -1;
+
+        virFileCacheClear(driver.qemuCapsCache);
+
+        if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+            return -1;
+
+        if (!(info->def = virDomainDefParseFile(info->infile,
+                                                driver.xmlopt, NULL,
+                                                info->parseFlags)))
+            return -1;
+
+        if (!virDomainDefCheckABIStability(info->def, info->def, driver.xmlopt)) {
+            VIR_TEST_DEBUG("ABI stability check failed on %s", info->infile);
+            return -1;
+        }
+
+        /* make sure that the XML definition looks active, by setting an ID
+         * as otherwise the XML formatter will simply assume that it's inactive */
+        if (info->def->id == -1)
+            info->def->id = 1337;
+    }
+
+    if (!live) {
+        format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+        outfile = info->out_xml_inactive;
+    }
+
+    if (!(actual = virDomainDefFormat(info->def, driver.xmlopt, format_flags))) {
+        VIR_TEST_VERBOSE("failed to format output XML\n");
+        return -1;
+    }
+
+    if (virTestCompareToFile(actual, outfile) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+testqemuActiveXML2XMLActive(const void *opaque)
+{
+    testQemuInfo *info = (testQemuInfo *) opaque;
+
+    return testqemuActiveXML2XMLCommon(info, true);
+}
+
+
+static int
+testqemuActiveXML2XMLInactive(const void *opaque)
+{
+    testQemuInfo *info = (testQemuInfo *) opaque;
+
+    return testqemuActiveXML2XMLCommon(info, false);
+}
+
+
+static void G_GNUC_UNUSED
+testRunActive(const char *name,
+              const char *suffix,
+              struct testQemuConf *testConf,
+              int *ret,
+              ...)
+{
+    g_autofree char *name_active = g_strdup_printf("QEMU active-XML -> active-XML %s", name);
+    g_autofree char *name_inactive = g_strdup_printf("QEMU activeXML -> inactive-XMLXML %s", name);
+    g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
+    va_list ap;
+
+    info->name = name;
+    info->conf = testConf;
+
+    va_start(ap, ret);
+    testQemuInfoSetArgs(info, ap);
+    va_end(ap);
+
+    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir,
+                                   info->name);
+
+    info->out_xml_active = g_strdup_printf("%s/qemuxmlactive2xmldata/%s-active%s.xml",
+                                           abs_srcdir, info->name, suffix);
+
+    info->out_xml_inactive = g_strdup_printf("%s/qemuxmlactive2xmldata/%s-inactive%s.xml",
+                                             abs_srcdir, info->name, suffix);
+
+    virTestRunLog(ret, name_inactive, testqemuActiveXML2XMLInactive, info);
+    virTestRunLog(ret, name_active, testqemuActiveXML2XMLActive, info);
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
     g_autoptr(virConnect) conn = NULL;
-    struct testQemuConf testConf = { NULL, NULL, NULL, NULL, NULL };
+    g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
+    g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
+    struct testQemuConf testConf = { .capslatest = capslatest,
+                                     .capscache = capscache,
+                                     .qapiSchemaCache = NULL };
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -106,6 +212,10 @@ mymain(void)
     virSetConnectNodeDev(conn);
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
+
+#define DO_TEST_ACTIVE_CAPS_LATEST(_name) \
+    testRunActive(_name, ".x86_64-latest", &testConf, &ret, \
+                  ARG_CAPS_ARCH, "x86_64", ARG_CAPS_VER, "latest", ARG_END);
 
 #define DO_TEST_STATUS(_name) \
     do { \
