@@ -32,7 +32,7 @@
       <source protocol='gluster' name='Volume2/Image'>
         <host transport='unix' socket='/path/to/sock'/>
       </source>
-      <backingStore type='network' index='1'>
+      <backingStore type='network'>
         <format type='qcow2'/>
         <source protocol='nfs' name='/backing/store/nfs'>
           <host name='example.org'/>
