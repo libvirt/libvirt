@@ -20,8 +20,10 @@
 static virQEMUDriver driver;
 
 static int
-testXML2XMLCommon(const testQemuInfo *info)
+testXML2XMLInactive(const void *opaque)
 {
+    const testQemuInfo *info = opaque;
+
     if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
         return -1;
 
@@ -30,35 +32,11 @@ testXML2XMLCommon(const testQemuInfo *info)
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         return -1;
 
-    return 0;
-}
-
-
-static int
-testXML2XMLActive(const void *opaque)
-{
-    const testQemuInfo *info = opaque;
-
-    if (testXML2XMLCommon(info) < 0 ||
-        testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
+    /* we deliberately format the XML as live to catch potential test regressions
+     * as virDomainDefFormatInternalSetRootName implies _INACTIVE if 'def->id'
+     * is -1, thus VM is inactive. */
+    if (testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                    info->infile, info->outfile, true,
-                                   info->parseFlags | VIR_DOMAIN_DEF_PARSE_INACTIVE,
-                                   TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) < 0) {
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
-testXML2XMLInactive(const void *opaque)
-{
-    const testQemuInfo *info = opaque;
-
-    if (testXML2XMLCommon(info) < 0 ||
-        testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
-                                   info->infile, info->outfile, false,
                                    info->parseFlags | VIR_DOMAIN_DEF_PARSE_INACTIVE,
                                    TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) < 0) {
         return -1;
@@ -75,8 +53,7 @@ testRun(const char *name,
         int *ret,
         ...)
 {
-    g_autofree char *name_active = g_strdup_printf("QEMU XML-2-XML-active %s", name);
-    g_autofree char *name_inactive = g_strdup_printf("QEMU XML-2-XML-inactive %s", name);
+    g_autofree char *testname = g_strdup_printf("QEMU inactive-XML -> inactive-XML %s", name);
     g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
     va_list ap;
 
@@ -92,8 +69,7 @@ testRun(const char *name,
     info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml",
                                     abs_srcdir, info->name, suffix);
 
-    virTestRunLog(ret, name_inactive, testXML2XMLInactive, info);
-    virTestRunLog(ret, name_active, testXML2XMLActive, info);
+    virTestRunLog(ret, testname, testXML2XMLInactive, info);
 }
 
 

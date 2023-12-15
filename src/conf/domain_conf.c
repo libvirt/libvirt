@@ -27722,6 +27722,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         return -1;
     }
 
+    /* When changing this condition, beware that tests such as qemuxml*test
+     * were optimized based on this predicate and may need to be fixed. */
     if (def->id == -1)
         flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
