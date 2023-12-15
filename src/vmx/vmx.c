@@ -2484,7 +2484,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
                  */
                 goto ignore;
             }
-        } else if (fileName && STREQ(fileName, "emptyBackingString")) {
+        } else if (fileName && (STREQ(fileName, "") ||
+                                STREQ(fileName, "emptyBackingString"))) {
             if (deviceType && STRCASENEQ(deviceType, "cdrom-image")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Expecting VMX entry '%1$s' to be 'cdrom-image' but found '%2$s'"),
