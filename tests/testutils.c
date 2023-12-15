@@ -1045,25 +1045,24 @@ int
 testCompareDomXML2XMLFiles(virCaps *caps G_GNUC_UNUSED,
                            virDomainXMLOption *xmlopt,
                            const char *infile, const char *outfile, bool live,
-                           unsigned int parseFlags,
+                           unsigned int parse_flags,
                            testCompareDomXML2XMLResult expectResult)
 {
     g_autofree char *actual = NULL;
     int ret = -1;
     testCompareDomXML2XMLResult result;
     g_autoptr(virDomainDef) def = NULL;
-    unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
-
-    parse_flags |= parseFlags;
 
     if (!virFileExists(infile)) {
         VIR_TEST_DEBUG("Test input file '%s' is missing", infile);
         return -1;
     }
 
-    if (!live)
+    if (!live) {
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    }
 
     if (!(def = virDomainDefParseFile(infile, xmlopt, NULL, parse_flags))) {
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE;
