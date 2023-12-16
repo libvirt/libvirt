@@ -618,8 +618,6 @@ testCompareXMLToArgv(const void *data)
     qemuDomainObjPrivate *priv = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    g_autofree char *archstr = NULL;
-    virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
     /* mark test case as used */
@@ -674,12 +672,6 @@ testCompareXMLToArgv(const void *data)
     if (!(xml = virXMLParse(info->infile, NULL, "(domain_definition)",
                             "domain", &ctxt, NULL, false)))
         goto cleanup;
-
-    if ((archstr = virXPathString("string(./os/type[1]/@arch)", ctxt)))
-        arch = virArchFromString(archstr);
-
-    if (arch == VIR_ARCH_NONE)
-        arch = virArchFromHost();
 
     virFileCacheClear(driver.qemuCapsCache);
 
