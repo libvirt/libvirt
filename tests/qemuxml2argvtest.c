@@ -733,6 +733,34 @@ testQemuConfXMLCommon(testQemuInfo *info,
 
 
 static int
+testCompareDef2XML(const void *data)
+{
+    testQemuInfo *info = (void *) data;
+    g_autofree char *actual = NULL;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+    int rc = 0;
+
+    if (!testQemuConfXMLCommon(info, &rc))
+        return rc;
+
+    /* skip tests without output file for now */
+    if (!virTestGetRegenerate() && !virFileExists(info->out_xml_inactive))
+        return EXIT_AM_SKIP;
+
+    /* we deliberately format the XML as live to catch potential test regressions
+     * as virDomainDefFormatInternalSetRootName implies _INACTIVE if 'def->id'
+     * is -1, thus VM is inactive. */
+    if (!(actual = virDomainDefFormat(info->def, driver.xmlopt, format_flags)))
+        return -1;
+
+    if (virTestCompareToFile(actual, info->out_xml_inactive) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 testCompareXMLToArgv(const void *data)
 {
     testQemuInfo *info = (void *) data;
@@ -924,6 +952,7 @@ testRun(const char *name,
         ...)
 {
     g_autofree char *name_parse = g_strdup_printf("QEMU XML def parse %s%s", name, suffix);
+    g_autofree char *name_xml = g_strdup_printf("QEMU XML def -> XML %s%s", name, suffix);
     g_autofree char *name_argv = g_strdup_printf("QEMU XML def -> ARGV %s%s", name, suffix);
     g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
     va_list ap;
@@ -938,8 +967,10 @@ testRun(const char *name,
     info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir, info->name);
     info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args", abs_srcdir, info->name, suffix);
     info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
+    info->out_xml_inactive = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml", abs_srcdir, info->name, suffix);
 
     virTestRunLog(ret, name_parse, testXMLParse, info);
+    virTestRunLog(ret, name_xml, testCompareDef2XML, info);
     virTestRunLog(ret, name_argv, testCompareXMLToArgv, info);
 
     /* clear overriden host cpu */
