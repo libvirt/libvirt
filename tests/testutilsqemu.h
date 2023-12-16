@@ -112,6 +112,12 @@ struct _testQemuInfo {
     virArch arch;
     GHashTable *qmpSchema; /* borrowed pointer from the cache */
 
+    /* Some tests have a common prepare step for multiple cases, but
+     * the common setup needs to be invoked with each virTestRun to facilitate
+     * test skipping */
+    bool prepared;
+    bool prep_skip;
+
     struct testQemuArgs args;
     struct testQemuConf *conf;
 };

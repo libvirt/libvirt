@@ -599,23 +599,37 @@ testInfoCheckDuplicate(testQemuInfo *info)
 }
 
 
-static int
-testCompareXMLToArgv(const void *data)
+/**
+ * testQemuConfXMLCommon: Prepare common test data (e.g. parse input XML)
+ * for a test case.
+ *
+ * @info: test info struct to prepare
+ * @rv: return value that the caller is supposed to return (see below)
+ *
+ * Since some of the prepared data is reused by multiple tests, which can be
+ * potentially skipped via 'VIR_TEST_RANGE', this function is designed to be
+ * callable multiple times but processes data just once.
+ *
+ * Returns 'true' if subsequent tests are expected to run (input XML was parsed
+ * properly and test is not expected to fail on parse error). Otherwise 'false'
+ * is returned and rv is populated according to the following logic:
+ *  1) expected failure of parsing (FLAG_EXPECT_PARSE_ERROR)
+ *      - first invocation sets @rv to 0
+ *      - other invocations set rv to EXIT_AM_SKIP
+ *  2) unexpected error
+ *      - all invocations return -1
+ *      - first invocation reports actual error
+ *      - other invocations report replacement error
+ */
+static bool
+testQemuConfXMLCommon(testQemuInfo *info,
+                      int *rv)
 {
-    testQemuInfo *info = (void *) data;
-    g_autofree char *migrateURI = NULL;
-    g_auto(virBuffer) actualBuf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *actualargv = NULL;
-    unsigned int flags = info->flags;
-    unsigned int parseFlags = info->parseFlags;
-    int ret = -1;
-    virDomainObj *vm = NULL;
-    virDomainChrSourceDef monitor_chr = { 0 };
-    virError *err = NULL;
-    g_autofree char *log = NULL;
-    g_autoptr(virCommand) cmd = NULL;
-    qemuDomainObjPrivate *priv = NULL;
-    g_autoptr(virIdentity) sysident = virIdentityGetSystem();
+    g_autoptr(virDomainDef) def = NULL;
+
+    /* initialize a test just once */
+    if (info->prepared)
+        goto cleanup;
 
     /* mark test case as used */
     ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->infile));
@@ -630,7 +644,8 @@ testCompareXMLToArgv(const void *data)
     /* when compiled without nbdkit support we want to skip the test after
      * marking it as used */
     if (info->args.fakeNbdkitCaps) {
-        ret = EXIT_AM_SKIP;
+        info->prep_skip = true;
+        info->prepared = true;
         goto cleanup;
     }
 # endif /* !WITH_NBDKIT */
@@ -645,15 +660,100 @@ testCompareXMLToArgv(const void *data)
         testUpdateQEMUCapsHostCPUModel(info->qemuCaps, driver.hostarch);
     }
 
-    if (virIdentitySetCurrent(sysident) < 0)
-        goto cleanup;
-
     if (testCheckExclusiveFlags(info->flags) < 0)
         goto cleanup;
 
     virFileCacheClear(driver.qemuCapsCache);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+        goto cleanup;
+
+    if (!virFileExists(info->infile)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Input file '%s' not found", info->infile);
+        goto cleanup;
+    }
+
+    if (!(def = virDomainDefParseFile(info->infile, driver.xmlopt, NULL,
+                                      info->parseFlags | VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
+        virError *err = virGetLastError();
+
+        if (!err) {
+            VIR_TEST_DEBUG("no error was reported for expected parse error");
+            goto cleanup;
+        }
+
+        if (info->flags & FLAG_EXPECT_PARSE_ERROR) {
+            g_autofree char *tmperr = g_strdup_printf("%s\n", NULLSTR(err->message));
+            if (virTestCompareToFile(tmperr, info->errfile) >= 0) {
+                info->prep_skip = true;
+            }
+        }
+
+        goto cleanup;
+    }
+
+    if (info->flags & FLAG_EXPECT_PARSE_ERROR) {
+        VIR_TEST_DEBUG("passed instead of expected parse error");
+        goto cleanup;
+    }
+
+    info->def = g_steal_pointer(&def);
+
+ cleanup:
+    /* definition is present and correct, return true to signal that caller can continue */
+    if (info->def) {
+        info->prepared = true;
+        return true;
+    }
+
+    /* definition is not present, but failure was expected */
+    if (info->prep_skip) {
+        /* first time we report success, any subsequent time EXIT_AM_SKIP */
+        if (!info->prepared)
+            *rv = 0;
+        else
+            *rv = EXIT_AM_SKIP;
+    } else {
+        /* any other failure always results in error in all invocations
+         * so that the user will see all the failures in the final error
+         * message which is suggesting a VIR_TEST_RANGE-limited run for
+         * debugging. */
+        *rv = -1;
+
+        /* report replacement error on subsequent runs */
+        if (!info->prepared)
+            VIR_TEST_VERBOSE("error from testQemuConfXMLCommon() was reported in the first invocation");
+    }
+
+    info->prepared = true;
+    /* caller is not expected to run tests */
+    return false;
+}
+
+
+static int
+testCompareXMLToArgv(const void *data)
+{
+    testQemuInfo *info = (void *) data;
+    g_autofree char *migrateURI = NULL;
+    g_auto(virBuffer) actualBuf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *actualargv = NULL;
+    unsigned int flags = info->flags;
+    int ret = -1;
+    virDomainObj *vm = NULL;
+    virDomainChrSourceDef monitor_chr = { 0 };
+    virError *err = NULL;
+    g_autofree char *log = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    qemuDomainObjPrivate *priv = NULL;
+    g_autoptr(virIdentity) sysident = virIdentityGetSystem();
+    int rc = 0;
+
+    if (!testQemuConfXMLCommon(info, &rc))
+        return rc;
+
+    if (virIdentitySetCurrent(sysident) < 0)
         goto cleanup;
 
     if (info->nbdkitCaps) {
@@ -672,31 +772,7 @@ testCompareXMLToArgv(const void *data)
     if (!(vm = virDomainObjNew(driver.xmlopt)))
         goto cleanup;
 
-    if (!virFileExists(info->infile)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Input file '%s' not found", info->infile);
-        goto cleanup;
-    }
-
-    parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
-
-    if (!(vm->def = virDomainDefParseFile(info->infile, driver.xmlopt, NULL, parseFlags))) {
-        err = virGetLastError();
-        if (!err) {
-            VIR_TEST_DEBUG("no error was reported for expected parse error");
-            goto cleanup;
-        }
-        if (flags & FLAG_EXPECT_PARSE_ERROR) {
-            g_autofree char *tmperr = g_strdup_printf("%s\n", NULLSTR(err->message));
-            if (virTestCompareToFile(tmperr, info->errfile) >= 0)
-                goto ok;
-        }
-        goto cleanup;
-    }
-    if (flags & FLAG_EXPECT_PARSE_ERROR) {
-        VIR_TEST_DEBUG("passed instead of expected parse error");
-        goto cleanup;
-    }
+    vm->def = info->def;
     priv = vm->privateData;
 
     if (info->args.fds) {
@@ -770,7 +846,10 @@ testCompareXMLToArgv(const void *data)
     if (info->args.capsHostCPUModel)
         qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
     virDomainChrSourceDefClear(&monitor_chr);
-    virObjectUnref(vm);
+    if (vm) {
+        vm->def = NULL;
+        virObjectUnref(vm);
+    }
     virIdentitySetCurrent(NULL);
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
@@ -848,6 +927,12 @@ testRun(const char *name,
     info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
 
     virTestRunLog(ret, testname, testCompareXMLToArgv, info);
+
+    /* clear overriden host cpu */
+    if (info->args.capsHostCPUModel)
+        qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
+    if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
+        qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 }
 
 
