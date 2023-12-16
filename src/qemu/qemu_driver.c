@@ -10173,7 +10173,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (qemuBlockStorageSourceIsRaw(disk->src)) {
+    if (!qemuBlockStorageSourceIsRaw(disk->src)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("peeking is only supported for disk with 'raw' format not '%1$s'"),
                        virStorageFileFormatTypeToString(disk->src->format));
