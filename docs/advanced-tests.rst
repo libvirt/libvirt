@@ -52,7 +52,7 @@ directory, like:
 
 ::
 
-  $ ./qemuxml2xmltest
+  $ ./qemuxmlconftest
 
 If you are adding new test cases, or making changes that alter
 existing test output, you can use the environment variable
