@@ -611,7 +611,6 @@ testCompareXMLToArgv(const void *data)
     int ret = -1;
     virDomainObj *vm = NULL;
     virDomainChrSourceDef monitor_chr = { 0 };
-    g_autoptr(virConnect) conn = NULL;
     virError *err = NULL;
     g_autofree char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -645,21 +644,6 @@ testCompareXMLToArgv(const void *data)
         qemuTestSetHostCPU(&driver, driver.hostarch, hostCPUModel);
         testUpdateQEMUCapsHostCPUModel(info->qemuCaps, driver.hostarch);
     }
-
-    if (!(conn = virGetConnect()))
-        goto cleanup;
-
-    conn->secretDriver = &fakeSecretDriver;
-    conn->storageDriver = &fakeStorageDriver;
-    conn->nwfilterDriver = &fakeNWFilterDriver;
-    conn->networkDriver = &fakeNetworkDriver;
-
-    virSetConnectInterface(conn);
-    virSetConnectNetwork(conn);
-    virSetConnectNWFilter(conn);
-    virSetConnectNodeDev(conn);
-    virSetConnectSecret(conn);
-    virSetConnectStorage(conn);
 
     if (virIdentitySetCurrent(sysident) < 0)
         goto cleanup;
@@ -788,8 +772,6 @@ testCompareXMLToArgv(const void *data)
     virDomainChrSourceDefClear(&monitor_chr);
     virObjectUnref(vm);
     virIdentitySetCurrent(NULL);
-    virSetConnectSecret(NULL);
-    virSetConnectStorage(NULL);
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
@@ -873,6 +855,7 @@ static int
 mymain(void)
 {
     int ret = 0;
+    g_autoptr(virConnect) conn = NULL;
     g_autoptr(GHashTable) duplicateTests = virHashNew(NULL);
     g_autoptr(GHashTable) existingTestCases = virHashNew(NULL);
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
@@ -923,6 +906,21 @@ mymain(void)
 
     virFileWrapperAddPrefix("/usr/libexec/qemu/vhost-user",
                             abs_srcdir "/qemuvhostuserdata/usr/libexec/qemu/vhost-user");
+
+    if (!(conn = virGetConnect()))
+        return EXIT_FAILURE;
+
+    conn->secretDriver = &fakeSecretDriver;
+    conn->storageDriver = &fakeStorageDriver;
+    conn->nwfilterDriver = &fakeNWFilterDriver;
+    conn->networkDriver = &fakeNetworkDriver;
+
+    virSetConnectInterface(conn);
+    virSetConnectNetwork(conn);
+    virSetConnectNWFilter(conn);
+    virSetConnectNodeDev(conn);
+    virSetConnectSecret(conn);
+    virSetConnectStorage(conn);
 
 /**
  * The following set of macros allows testing of XML -> argv conversion with a
