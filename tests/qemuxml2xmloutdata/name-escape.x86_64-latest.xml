@@ -1,0 +1,95 @@
+<domain type='qemu'>
+  <name>foo=1,bar=2</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <iotune>
+        <total_bytes_sec>5000</total_bytes_sec>
+        <total_iops_sec>6000</total_iops_sec>
+        <total_bytes_sec_max>10000</total_bytes_sec_max>
+        <total_iops_sec_max>11000</total_iops_sec_max>
+        <group_name>libvirt_iotune_group1,foo</group_name>
+      </iotune>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </controller>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='ccid' index='0'/>
+    <smartcard mode='host-certificates'>
+      <certificate>cert1,foo</certificate>
+      <certificate>cert2</certificate>
+      <certificate>cert3</certificate>
+      <database>/etc/pki/nssdb,foo</database>
+      <address type='ccid' controller='0' slot='0'/>
+    </smartcard>
+    <serial type='dev'>
+      <source path='/dev/ttyS2,foo'/>
+      <target type='isa-serial' port='1'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <serial type='file'>
+      <source path='/tmp/serial.log,foo' append='on'/>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='dev'>
+      <source path='/dev/ttyS2,foo'/>
+      <target type='serial' port='1'/>
+    </console>
+    <channel type='pipe'>
+      <source path='/tmp/guestfwd,foo'/>
+      <target type='guestfwd' address='10.0.2.1' port='4600'/>
+    </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc'>
+      <listen type='socket'/>
+    </graphics>
+    <graphics type='spice'>
+      <listen type='socket'/>
+      <gl enable='yes' rendernode='/dev/dri/foo,bar'/>
+    </graphics>
+    <audio id='1' type='spice'/>
+    <video>
+      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:my,storage/1'>
+        <host name='example.foo.org' port='3260'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='4'/>
+    </hostdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

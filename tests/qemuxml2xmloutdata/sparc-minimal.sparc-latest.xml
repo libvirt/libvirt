@@ -1,0 +1,33 @@
+<domain type='qemu'>
+  <name>redhat62sparc</name>
+  <uuid>00010203-0405-4607-8809-0a0b0c0d0e0f</uuid>
+  <memory unit='KiB'>512000</memory>
+  <currentMemory unit='KiB'>512000</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='sparc' machine='SS-5'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-sparc</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/home/berrange/VirtualMachines/redhat-6.2-sparc.img'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/home/berrange/VirtualMachines/redhat-6.2-sparc.iso'/>
+      <target dev='sdb' bus='scsi'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <controller type='scsi' index='0' model='ncr53c90'/>
+    <audio id='1' type='none'/>
+  </devices>
+</domain>

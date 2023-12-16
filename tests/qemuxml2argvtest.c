@@ -743,10 +743,6 @@ testCompareDef2XML(const void *data)
     if (!testQemuConfXMLCommon(info, &rc))
         return rc;
 
-    /* skip tests without output file for now */
-    if (!virTestGetRegenerate() && !virFileExists(info->out_xml_inactive))
-        return EXIT_AM_SKIP;
-
     /* we deliberately format the XML as live to catch potential test regressions
      * as virDomainDefFormatInternalSetRootName implies _INACTIVE if 'def->id'
      * is -1, thus VM is inactive. */
