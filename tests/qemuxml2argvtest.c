@@ -616,8 +616,6 @@ testCompareXMLToArgv(const void *data)
     g_autofree char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
     qemuDomainObjPrivate *priv = NULL;
-    g_autoptr(xmlDoc) xml = NULL;
-    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
     /* mark test case as used */
@@ -669,10 +667,6 @@ testCompareXMLToArgv(const void *data)
     if (testCheckExclusiveFlags(info->flags) < 0)
         goto cleanup;
 
-    if (!(xml = virXMLParse(info->infile, NULL, "(domain_definition)",
-                            "domain", &ctxt, NULL, false)))
-        goto cleanup;
-
     virFileCacheClear(driver.qemuCapsCache);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
@@ -702,7 +696,7 @@ testCompareXMLToArgv(const void *data)
 
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    if (!(vm->def = virDomainDefParseNode(ctxt, driver.xmlopt, NULL, parseFlags))) {
+    if (!(vm->def = virDomainDefParseFile(info->infile, driver.xmlopt, NULL, parseFlags))) {
         err = virGetLastError();
         if (!err) {
             VIR_TEST_DEBUG("no error was reported for expected parse error");
