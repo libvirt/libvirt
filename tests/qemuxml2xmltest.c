@@ -904,7 +904,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
     DO_TEST_CAPS_LATEST("vhost-user-fs-sock");
 
-    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("riscv64-virt", "riscv64",
+                                  ARG_QEMU_CAPS_DEL,
+                                  QEMU_CAPS_OBJECT_GPEX,
+                                  QEMU_CAPS_LAST);
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-pci", "riscv64");
 
     DO_TEST_CAPS_LATEST("x86-kvm-32-on-64");
