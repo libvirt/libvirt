@@ -229,6 +229,7 @@ static const struct testSchemaEntry schemaCapability[] = {
 /* give exceptions for output files of invalid input XMLs */
 static const char *exceptions_qemuxml2xmloutdata[] = {
     "disk-cdrom-empty-network-invalid.x86_64-latest.xml",
+    "numatune-auto-nodeset-invalid.x86_64-latest.xml",
     NULL
 };
 

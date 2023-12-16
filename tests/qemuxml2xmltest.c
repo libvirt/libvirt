@@ -684,6 +684,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cpu-numa-memshared");
 
     DO_TEST_CAPS_LATEST("numatune-auto-prefer");
+    DO_TEST_CAPS_LATEST("numatune-auto-nodeset-invalid");
     DO_TEST_CAPS_LATEST("numatune-memnode");
     DO_TEST_CAPS_LATEST("numatune-memnode-no-memory");
     DO_TEST_CAPS_LATEST("numatune-distances");
