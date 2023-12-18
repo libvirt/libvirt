@@ -156,7 +156,7 @@ testqemuActiveXML2XMLInactive(const void *opaque)
 }
 
 
-static void G_GNUC_UNUSED
+static void
 testRunActive(const char *name,
               const char *suffix,
               struct testQemuConf *testConf,
@@ -216,6 +216,17 @@ mymain(void)
 #define DO_TEST_ACTIVE_CAPS_LATEST(_name) \
     testRunActive(_name, ".x86_64-latest", &testConf, &ret, \
                   ARG_CAPS_ARCH, "x86_64", ARG_CAPS_VER, "latest", ARG_END);
+
+    DO_TEST_ACTIVE_CAPS_LATEST("channel-unix-source-path");
+    DO_TEST_ACTIVE_CAPS_LATEST("channel-virtio-state");
+    DO_TEST_ACTIVE_CAPS_LATEST("disk-active-commit");
+    DO_TEST_ACTIVE_CAPS_LATEST("disk-backing-chains-index");
+    DO_TEST_ACTIVE_CAPS_LATEST("disk-mirror");
+    DO_TEST_ACTIVE_CAPS_LATEST("disk-mirror-old");
+    DO_TEST_ACTIVE_CAPS_LATEST("genid");
+    DO_TEST_ACTIVE_CAPS_LATEST("genid-auto");
+    DO_TEST_ACTIVE_CAPS_LATEST("graphics-vnc-remove-generated-socket");
+    DO_TEST_ACTIVE_CAPS_LATEST("seclabel-static-labelskip");
 
 #define DO_TEST_STATUS(_name) \
     do { \
