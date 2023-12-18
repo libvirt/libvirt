@@ -16150,7 +16150,7 @@ virDomainDefAddController(virDomainDef *def,
     cont->idx = idx;
     cont->model = model;
 
-    VIR_APPEND_ELEMENT_COPY(def->controllers, def->ncontrollers, cont);
+    virDomainControllerInsert(def, cont);
 
     return cont;
 }

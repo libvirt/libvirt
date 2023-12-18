@@ -22,9 +22,6 @@
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='usb' index='0' model='none'/>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='virtio-serial' index='0'>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
-    </controller>
     <controller type='pci' index='1' model='pcie-root-port'>
       <model name='pcie-root-port'/>
       <target chassis='1' port='0x8'/>
@@ -34,6 +31,9 @@
       <model name='pcie-root-port'/>
       <target chassis='2' port='0x9'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </controller>
     <console type='pty'>
       <target type='virtio' port='0'/>

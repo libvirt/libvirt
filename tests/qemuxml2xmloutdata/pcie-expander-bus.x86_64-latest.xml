@@ -205,16 +205,16 @@
       <target chassis='35' port='0x1f'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1f' function='0x0'/>
     </controller>
+    <controller type='pci' index='36' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='36' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
     <controller type='usb' index='0' model='qemu-xhci'>
       <address type='pci' domain='0x0000' bus='0x24' slot='0x00' function='0x0'/>
     </controller>
     <controller type='sata' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
-    </controller>
-    <controller type='pci' index='36' model='pcie-root-port'>
-      <model name='pcie-root-port'/>
-      <target chassis='36' port='0x8'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
     <interface type='user'>
       <mac address='52:54:00:f1:95:51'/>

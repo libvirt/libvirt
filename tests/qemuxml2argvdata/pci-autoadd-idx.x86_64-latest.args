@@ -26,14 +26,14 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-fdr-br/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device '{"driver":"pci-bridge","chassis_nr":8,"id":"pci.8","bus":"pci.0","addr":"0x3"}' \
--device '{"driver":"pci-bridge","chassis_nr":1,"id":"pci.1","bus":"pci.0","addr":"0x4"}' \
--device '{"driver":"pci-bridge","chassis_nr":2,"id":"pci.2","bus":"pci.0","addr":"0x5"}' \
--device '{"driver":"pci-bridge","chassis_nr":3,"id":"pci.3","bus":"pci.0","addr":"0x6"}' \
--device '{"driver":"pci-bridge","chassis_nr":4,"id":"pci.4","bus":"pci.0","addr":"0x7"}' \
--device '{"driver":"pci-bridge","chassis_nr":5,"id":"pci.5","bus":"pci.0","addr":"0x8"}' \
--device '{"driver":"pci-bridge","chassis_nr":6,"id":"pci.6","bus":"pci.0","addr":"0x9"}' \
--device '{"driver":"pci-bridge","chassis_nr":7,"id":"pci.7","bus":"pci.0","addr":"0xa"}' \
+-device '{"driver":"pci-bridge","chassis_nr":1,"id":"pci.1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"pci-bridge","chassis_nr":2,"id":"pci.2","bus":"pci.0","addr":"0x4"}' \
+-device '{"driver":"pci-bridge","chassis_nr":3,"id":"pci.3","bus":"pci.0","addr":"0x5"}' \
+-device '{"driver":"pci-bridge","chassis_nr":4,"id":"pci.4","bus":"pci.0","addr":"0x6"}' \
+-device '{"driver":"pci-bridge","chassis_nr":5,"id":"pci.5","bus":"pci.0","addr":"0x7"}' \
+-device '{"driver":"pci-bridge","chassis_nr":6,"id":"pci.6","bus":"pci.0","addr":"0x8"}' \
+-device '{"driver":"pci-bridge","chassis_nr":7,"id":"pci.7","bus":"pci.0","addr":"0x9"}' \
+-device '{"driver":"pci-bridge","chassis_nr":8,"id":"pci.8","bus":"pci.0","addr":"0xa"}' \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/var/iso/f18kde.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
