@@ -45,7 +45,7 @@ I.e. to run all tests from 3 to 20 with the exception of tests
 
 ::
 
-  $ VIR_TEST_DEBUG=1 VIR_TEST_RANGE=3-5,7-20,^16 ./run tests/qemuxml2argvtest
+  $ VIR_TEST_DEBUG=1 VIR_TEST_RANGE=3-5,7-20,^16 ./run tests/qemuxmlconftest
 
 Also, individual tests can be run from inside the ``tests/``
 directory, like:
@@ -62,7 +62,7 @@ CAREFULLY to ensure they are correct.
 
 ::
 
-  $ VIR_TEST_REGENERATE_OUTPUT=1 ./qemuxml2argvtest
+  $ VIR_TEST_REGENERATE_OUTPUT=1 ./qemuxmlconftest
 
 There is also a ``./run`` script at the top level, to make it
 easier to run programs that have not yet been installed, as
@@ -81,7 +81,7 @@ location where the file is stored.
 
 ::
 
-  $ VIR_TEST_FILE_ACCESS=1 VIR_TEST_FILE_ACCESS_OUTPUT="/tmp/file_access.txt" ./qemuxml2argvtest
+  $ VIR_TEST_FILE_ACCESS=1 VIR_TEST_FILE_ACCESS_OUTPUT="/tmp/file_access.txt" ./qemuxmlconftest
 
 #. The Valgrind test should produce similar output to
 ``ninja test``. If the output has traces within libvirt API's,
@@ -98,9 +98,9 @@ of leak:
   ==5414==    by 0x4CD581D: virDomainDefParseXML (domain_conf.c:10188)
   ==5414==    by 0x4CD8C73: virDomainDefParseNode (domain_conf.c:10640)
   ==5414==    by 0x4CD8DDB: virDomainDefParse (domain_conf.c:10590)
-  ==5414==    by 0x41CB1D: testCompareXMLToArgvHelper (qemuxml2argvtest.c:100)
+  ==5414==    by 0x41CB1D: testCompareXMLToArgvHelper (qemuxmlconftest.c:100)
   ==5414==    by 0x41E20F: virtTestRun (testutils.c:161)
-  ==5414==    by 0x41C7CB: mymain (qemuxml2argvtest.c:866)
+  ==5414==    by 0x41C7CB: mymain (qemuxmlconftest.c:866)
   ==5414==    by 0x41E84A: virtTestMain (testutils.c:723)
   ==5414==    by 0x34D9021734: (below main) (in /usr/lib64/libc-2.15.so)
 

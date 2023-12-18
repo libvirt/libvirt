@@ -155,7 +155,7 @@ virSecretGetSecretString(virConnectPtr conn,
     if (!sec)
         return -1;
 
-    /* NB: NONE is a byproduct of the qemuxml2argvtest test mocking
+    /* NB: NONE is a byproduct of the qemuxmlconftest test mocking
      * for UUID lookups. Normal secret XML processing would fail if
      * the usage type was NONE and since we have no way to set the
      * expected usage in that environment, let's just accept NONE */

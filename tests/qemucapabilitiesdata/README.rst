@@ -10,7 +10,7 @@ Test data in this directory is used:
  - to excercise the capability parsing code in ``qemucapabilitiestest``
 
  - provides "real" capabilities data for test suites such as ``domaincapstest``
-   ``qemuxml2argvtest``, and others
+   ``qemuxmlconftest``, and others
 
  - provides the required data to validate the QMP commands used by libvirt
    against qemu's QMP schema
@@ -65,7 +65,7 @@ Test suites such as ``qemucapabilitiestest`` or ``domaincapstest`` pick up the
 test data automatically once the corresponding ``.xml`` or ``.replies`` file
 is present in ``tests/qemucapabilitiesdata``.
 
-Other test suites such as ``qemuxml2argvtest`` provide macros which invoke test
+Other test suites such as ``qemuxmlconftest`` provide macros which invoke test
 cases using this data such as ``DO_TEST_CAPS_LATEST``.
 
 Capturing QEMU capabilities
