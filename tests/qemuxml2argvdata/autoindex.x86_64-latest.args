@@ -46,15 +46,15 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -device '{"driver":"ich9-usb-uhci3","masterbus":"usb.0","firstport":4,"bus":"pcie.0","addr":"0x1d.0x2"}' \
 -device '{"driver":"ich9-usb-ehci1","id":"usb1","bus":"pcie.0","addr":"0x1a.0x7"}' \
 -device '{"driver":"ich9-usb-uhci1","masterbus":"usb1.0","firstport":0,"bus":"pcie.0","multifunction":true,"addr":"0x1a"}' \
+-device '{"driver":"ich9-usb-ehci1","id":"usb2","bus":"pci.2","addr":"0x1.0x7"}' \
 -device '{"driver":"ich9-usb-uhci1","masterbus":"usb2.0","firstport":0,"bus":"pci.2","multifunction":true,"addr":"0x1"}' \
 -device '{"driver":"ich9-usb-uhci2","masterbus":"usb2.0","firstport":2,"bus":"pci.2","addr":"0x1.0x1"}' \
 -device '{"driver":"ich9-usb-uhci3","masterbus":"usb2.0","firstport":4,"bus":"pci.2","addr":"0x1.0x2"}' \
--device '{"driver":"ich9-usb-ehci1","id":"usb2","bus":"pci.2","addr":"0x1.0x7"}' \
 -device '{"driver":"nec-usb-xhci","id":"usb3","bus":"pci.5","addr":"0x0"}' \
+-device '{"driver":"ich9-usb-ehci1","id":"usb4","bus":"pci.2","addr":"0x2.0x7"}' \
 -device '{"driver":"ich9-usb-uhci1","masterbus":"usb4.0","firstport":0,"bus":"pci.2","multifunction":true,"addr":"0x2"}' \
 -device '{"driver":"ich9-usb-uhci2","masterbus":"usb4.0","firstport":2,"bus":"pci.2","addr":"0x2.0x1"}' \
 -device '{"driver":"ich9-usb-uhci3","masterbus":"usb4.0","firstport":4,"bus":"pci.2","addr":"0x2.0x2"}' \
--device '{"driver":"ich9-usb-ehci1","id":"usb4","bus":"pci.2","addr":"0x2.0x7"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-hd","bus":"ide.0","drive":"libvirt-1-format","id":"sata0-0-0","bootindex":1}' \
