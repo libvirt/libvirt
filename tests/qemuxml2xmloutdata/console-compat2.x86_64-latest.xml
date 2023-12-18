@@ -42,7 +42,7 @@
       <target type='serial' port='0'/>
     </console>
     <console type='pty'>
-      <target type='virtio' port='0'/>
+      <target type='virtio' port='1'/>
     </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

@@ -4958,6 +4958,7 @@ virDomainDefHasDeviceAddress(virDomainDef *def,
 static int
 virDomainDefAddConsoleCompat(virDomainDef *def)
 {
+    bool renumber_consoles = false;
     size_t i;
 
     /*
@@ -5024,6 +5025,8 @@ virDomainDefAddConsoleCompat(virDomainDef *def)
             /* Create an console alias for the serial port */
             def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
             def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+
+            renumber_consoles = true;
         }
     } else if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && def->nserials > 0 &&
                def->serials[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
@@ -5051,6 +5054,8 @@ virDomainDefAddConsoleCompat(virDomainDef *def)
                 return -1;
             }
 
+            renumber_consoles = true;
+
             def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
             def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 
@@ -5064,6 +5069,16 @@ virDomainDefAddConsoleCompat(virDomainDef *def)
             /* Nothing to do */
             break;
         }
+    }
+
+    /* When consoles are parsed in 'virDomainDefParseXML' the value of
+     * 'target.port' is overriden by the index of the console in the
+     * 'def->consoles' array. Thus if we are modifying the list here we
+     * must ensure that the numbering will be identical as if we've parsed
+     * this definition */
+    if (renumber_consoles) {
+        for (i = 0; i < def->nconsoles; i++)
+            def->consoles[i]->target.port = i;
     }
 
     return 0;
