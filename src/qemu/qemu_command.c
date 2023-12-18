@@ -9086,25 +9086,6 @@ qemuBuildShmemCommandLine(virCommand *cmd,
     g_autoptr(virJSONValue) memProps = NULL;
     g_autoptr(virJSONValue) devProps = NULL;
 
-    if (shmem->size) {
-        /*
-         * Thanks to our parsing code, we have a guarantee that the
-         * size is power of two and is at least a mebibyte in size.
-         * But because it may change in the future, the checks are
-         * doubled in here.
-         */
-        if (shmem->size & (shmem->size - 1)) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("shmem size must be a power of two"));
-            return -1;
-        }
-        if (shmem->size < 1024 * 1024) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("shmem size must be at least 1 MiB (1024 KiB)"));
-            return -1;
-        }
-    }
-
     if (shmem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only 'pci' addresses are supported for the shared memory device"));

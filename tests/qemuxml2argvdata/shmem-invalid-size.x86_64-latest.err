@@ -1,1 +1,1 @@
-XML error: shmem size must be a power of two
+XML error: shmem size must be a power of 2 and at least 1 MiB (1024 KiB)

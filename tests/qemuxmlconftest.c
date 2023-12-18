@@ -2456,9 +2456,9 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
 
     DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
-    DO_TEST_CAPS_LATEST_FAILURE("shmem-invalid-size");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("shmem-invalid-size");
     DO_TEST_CAPS_LATEST_FAILURE("shmem-invalid-address");
-    DO_TEST_CAPS_LATEST_FAILURE("shmem-small-size");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("shmem-small-size");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("shmem-msi-only");
     DO_TEST_CAPS_LATEST("cpu-host-passthrough-features");
 

@@ -5118,6 +5118,15 @@ static int
 qemuValidateDomainDeviceDefShmem(virDomainShmemDef *shmem,
                                  virQEMUCaps *qemuCaps)
 {
+    if (shmem->size > 0) {
+        if (shmem->size < 1024 * 1024 ||
+            !VIR_IS_POW2(shmem->size)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"));
+            return -1;
+        }
+    }
+
     switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
