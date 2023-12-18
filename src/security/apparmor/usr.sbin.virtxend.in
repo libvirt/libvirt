@@ -5,8 +5,10 @@ profile virtxend @sbindir@/virtxend flags=(attach_disconnected) {
   #include <abstractions/dbus>
 
   capability kill,
+  capability net_admin,
   capability setgid,
   capability setuid,
+  capability sys_admin,
   capability sys_pacct,
   capability ipc_lock,
 
