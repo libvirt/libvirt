@@ -904,6 +904,18 @@ testConfXMLEnumerate(GHashTable *existingTestCases)
 }
 
 
+static int
+testXMLParse(const void *data)
+{
+    testQemuInfo *info = (void *) data;
+    int rc = 0;
+
+    testQemuConfXMLCommon(info, &rc);
+
+    return rc;
+}
+
+
 static void
 testRun(const char *name,
         const char *suffix,
@@ -911,7 +923,8 @@ testRun(const char *name,
         struct testQemuConf *testConf,
         ...)
 {
-    g_autofree char *testname = g_strdup_printf("QEMU XML-2-ARGV %s%s", name, suffix);
+    g_autofree char *name_parse = g_strdup_printf("QEMU XML def parse %s%s", name, suffix);
+    g_autofree char *name_argv = g_strdup_printf("QEMU XML def -> ARGV %s%s", name, suffix);
     g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
     va_list ap;
 
@@ -926,7 +939,8 @@ testRun(const char *name,
     info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args", abs_srcdir, info->name, suffix);
     info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
 
-    virTestRunLog(ret, testname, testCompareXMLToArgv, info);
+    virTestRunLog(ret, name_parse, testXMLParse, info);
+    virTestRunLog(ret, name_argv, testCompareXMLToArgv, info);
 
     /* clear overriden host cpu */
     if (info->args.capsHostCPUModel)
