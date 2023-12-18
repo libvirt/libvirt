@@ -2829,10 +2829,16 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
              * controllers don't plug into any other PCI controller, hence
              * they should skip this step */
             if (bus->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
-                bus->model != VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT &&
-                qemuDomainPCIAddressReserveNextAddr(addrs,
-                                                    &dev.data.controller->info) < 0) {
-                goto cleanup;
+                bus->model != VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+                if (qemuDomainPCIAddressReserveNextAddr(addrs,
+                                                        &dev.data.controller->info) < 0)
+                    goto cleanup;
+
+                if (qemuDomainFillDevicePCIExtensionFlagsIter(NULL, &dev, &dev.data.controller->info, qemuCaps) < 0)
+                    goto cleanup;
+
+                if (qemuDomainAssignPCIAddressExtension(NULL, NULL, &dev.data.controller->info, addrs) < 0)
+                    goto cleanup;
             }
         }
 

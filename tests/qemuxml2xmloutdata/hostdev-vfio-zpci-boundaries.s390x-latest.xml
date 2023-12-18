@@ -21,7 +21,9 @@
     <controller type='pci' index='1' model='pci-bridge'>
       <model name='pci-bridge'/>
       <target chassisNr='1'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'>
+        <zpci uid='0x0002' fid='0x00000001'/>
+      </address>
     </controller>
     <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='pci' managed='no'>
