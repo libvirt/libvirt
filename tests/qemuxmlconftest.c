@@ -757,6 +757,38 @@ testCompareDef2XML(const void *data)
 
 
 static int
+testCompareOutXML2XML(const void *data)
+{
+    testQemuInfo *info = (void *) data;
+    g_autofree char *actual = NULL;
+    g_autoptr(virDomainDef) outdef = NULL;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+    int rc = 0;
+
+    if (!testQemuConfXMLCommon(info, &rc))
+        return rc;
+
+    /* parsing of the file produced by libvirt MUST succeed */
+    if (!(outdef = virDomainDefParseFile(info->out_xml_inactive, driver.xmlopt, NULL,
+                                         info->parseFlags | VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
+        VIR_TEST_VERBOSE("failed to parse '%s'", info->out_xml_inactive);
+        return -1;
+    }
+
+    /* we deliberately format the XML as live to catch potential test regressions
+     * as virDomainDefFormatInternalSetRootName implies _INACTIVE if 'def->id'
+     * is -1, thus VM is inactive. */
+    if (!(actual = virDomainDefFormat(outdef, driver.xmlopt, format_flags)))
+        return -1;
+
+    if (virTestCompareToFile(actual, info->out_xml_inactive) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 testCompareXMLToArgv(const void *data)
 {
     testQemuInfo *info = (void *) data;
@@ -949,6 +981,7 @@ testRun(const char *name,
 {
     g_autofree char *name_parse = g_strdup_printf("QEMU XML def parse %s%s", name, suffix);
     g_autofree char *name_xml = g_strdup_printf("QEMU XML def -> XML %s%s", name, suffix);
+    g_autofree char *name_outxml = g_strdup_printf("QEMU XML OUT -> XML %s%s", name, suffix);
     g_autofree char *name_argv = g_strdup_printf("QEMU XML def -> ARGV %s%s", name, suffix);
     g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
     va_list ap;
@@ -967,6 +1000,7 @@ testRun(const char *name,
 
     virTestRunLog(ret, name_parse, testXMLParse, info);
     virTestRunLog(ret, name_xml, testCompareDef2XML, info);
+    virTestRunLog(ret, name_outxml, testCompareOutXML2XML, info);
     virTestRunLog(ret, name_argv, testCompareXMLToArgv, info);
 
     /* clear overriden host cpu */
