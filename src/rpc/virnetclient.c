@@ -1848,6 +1848,15 @@ static void virNetClientIOUpdateCallback(virNetClient *client,
 }
 
 
+static gboolean virNetClientIOWakeup(gpointer opaque)
+{
+    GMainLoop *loop = opaque;
+
+    g_main_loop_quit(loop);
+
+    return G_SOURCE_REMOVE;
+}
+
 /*
  * This function sends a message to remote server and awaits a reply
  *
@@ -1925,7 +1934,9 @@ static int virNetClientIO(virNetClient *client,
     /* Check to see if another thread is dispatching */
     if (client->haveTheBuck) {
         /* Force other thread to wakeup from poll */
-        g_main_loop_quit(client->eventLoop);
+        GSource *wakeup = g_idle_source_new();
+        g_source_set_callback(wakeup, virNetClientIOWakeup, client->eventLoop, NULL);
+        g_source_attach(wakeup, client->eventCtx);
 
         /* If we are non-blocking, detach the thread and keep the call in the
          * queue. */
