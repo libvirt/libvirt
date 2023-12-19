@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2023-12-11 11:44+0000\n"
+"PO-Revision-Date: 2023-12-19 15:58+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2.1\n"
+"X-Generator: Weblate 5.3\n"
 
 msgid ""
 "\n"
@@ -20911,138 +20911,142 @@ msgstr ""
 "bort: ”%2$s”"
 
 msgid "block copy still active"
-msgstr ""
+msgstr "blockkopiering är fortfarande aktivt"
 
 #, c-format
 msgid "block copy still active: %1$s"
-msgstr ""
+msgstr "blockkopiering är fortfarande aktivt: %1$s"
 
 msgid "block device"
 msgstr "blockenhet"
 
 #, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
-msgstr ""
+msgstr "målet för blockenhetens ögonblicksbild ”%1$s” finns inte"
 
 msgid "block info is not supported for FD passed disk image"
-msgstr ""
+msgstr "blockinformation stödjs inte för FB-skickade diskavbilder"
 
 msgid "block info is not supported for vhostuser disk"
-msgstr ""
+msgstr "blockinformation stödjs inte för vhostuser-diskar"
 
 #, c-format
 msgid "block job '%1$s' failed while pivoting"
-msgstr ""
+msgstr "blockjobbet ”%1$s” misslyckades vid pivotering"
 
 #, c-format
 msgid "block job '%1$s' failed while pivoting: %2$s"
-msgstr ""
+msgstr "blockjobbet ”%1$s” misslyckades vid pivotering: %2$s"
 
 #, c-format
 msgid "block job '%1$s' not ready for pivot yet"
-msgstr ""
+msgstr "blockjobbet ”%1$s” är inte redo att pivotera ännu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "block job on disk '%1$s' is still being ended"
-msgstr "volymen ”%1$s” allokeras fortfarande."
+msgstr "blockjobbet på disken ”%1$s” avslutas fortfarande."
 
 #, c-format
 msgid "block jobs are not supported on disk '%1$s' using bus 'sd'"
-msgstr ""
+msgstr "blockjobb stödjs inte på disken ”%1$s” med bussen ”sd”"
 
 #, c-format
 msgid "block jobs are not supported on transient disk '%1$s'"
-msgstr ""
+msgstr "blockjobb stödjs inte på den transienta disken ”%1$s”"
 
 #, c-format
 msgid "block jobs are not supported on vhostuser disk '%1$s'"
-msgstr ""
+msgstr "blockjobb stödjs inte på vhostuser-disken ”%1$s”"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %1$zi > %2$d"
-msgstr ""
+msgstr "blockjobbsbegäranden är för stor för fjärrprotokollet, %1$z > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
-msgstr ""
+msgstr "blockstorleksändringen stödjs inte för vhostuser-diskar"
 
 msgid "block size must be a power of two"
-msgstr ""
+msgstr "blockstorleken måste vara en potens av två"
 
 #, c-format
 msgid "block size too small, must be at least %1$lluKiB"
-msgstr ""
+msgstr "blockstorleken är för liten, måste vara åtminstone %1$llu KiB"
 
 msgid "block stats are not supported for vhostuser disk"
-msgstr ""
+msgstr "blockstatistik stödjs inte för vhostuser-diskar"
 
 msgid "block_io_throttle device entry was not in expected format"
-msgstr ""
+msgstr "enhetsposten block_io_throttle var inte i det förväntade formatet"
 
 #, c-format
 msgid "block_io_throttle field '%1$s' missing in qemu's output"
-msgstr ""
+msgstr "block_io_throttle-fältet ”%1$s” saknas i qemus utdata"
 
 msgid "block_io_throttle inserted entry was not in expected format"
 msgstr ""
+"den infogade posten block_io_throttle var inte i det förväntade formatet"
 
 #, c-format
 msgid ""
 "blockdev flag requested for disk %1$s, but file '%2$s' is not a block device"
 msgstr ""
+"flaggan blockdev begärd för disken %1$s, men filen ”%2$s” är inte en "
+"blockenhet"
 
 msgid "blockdev-create job was cancelled"
-msgstr ""
+msgstr "jobbet blockdev-create annullerades"
 
 msgid "blocked"
 msgstr "blockerat"
 
 msgid "blockio is not supported with vhostuser disk"
-msgstr ""
+msgstr "blockio stödjs inte med vhostuser-diskar"
 
 msgid "blockstats device entry was not in expected format"
-msgstr ""
+msgstr "enhetsposten blockstats var inte i det förväntade formatet"
 
 msgid "blockstats stats entry was not in expected format"
-msgstr ""
+msgstr "statistikposten blockstats var inte i det förväntade formatet"
 
 msgid "bond arp monitoring has no target"
-msgstr ""
+msgstr "bindnings-arp-övervakningen har inget mål"
 
 msgid "bond interface arpmon interval missing or invalid"
-msgstr ""
+msgstr "arpmon-intervallet för bindningsgränssnittet saknas eller är felaktigt"
 
 msgid "bond interface arpmon target missing"
-msgstr ""
+msgstr "arpmon-målet för bindningsgränssnittet saknas"
 
 msgid "bond interface miimon downdelay invalid"
-msgstr ""
+msgstr "miimon-nerfördröjning för bindningsgränssnittet är felaktigt"
 
 msgid "bond interface miimon freq missing or invalid"
-msgstr ""
+msgstr "miimon freq för bindningsgränssnittet saknas eller är felaktigt"
 
 msgid "bond interface miimon updelay invalid"
-msgstr ""
+msgstr "miimon-yoofördröjning för bindningsgränssnittet är felaktigt"
 
 msgid "bond interface misses the bond element"
-msgstr ""
+msgstr "bindningsgränssnittet saknar bindningselementet"
 
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #, c-format
 msgid "bool parameter '%1$s' of command '%2$s' has completer set"
 msgstr ""
+"den booleska parametern ”%1$s” till kommandot ”%2$s” har completterarmängd"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
-msgstr ""
+msgstr "startordningen %1$u är redan använd av en annan enhet"
 
 #, c-format
 msgid "boot order '%1$s' used for more than one device"
-msgstr ""
+msgstr "startordningen ”%1$s” använd för mer än en enhet"
 
 msgid "boot order is only supported for virtiofs"
-msgstr ""
+msgstr "startordning stödjs endast för virtiofs"
 
 msgid "booted"
 msgstr "startad"
@@ -21051,68 +21055,76 @@ msgid ""
 "booting from assigned devices is not supported by mediated devices of model "
 "vfio-ap"
 msgstr ""
+"att starta från tilldelade enheter stödjs inte av medierade enheter av "
+"modellen vfio-ap"
 
 msgid ""
 "booting from assigned devices is not supported by mediated devices of model "
 "vfio-pci"
 msgstr ""
+"att starta från tilldelade enheter stödjs inte av medierade enheter av "
+"modellen vfio-pci"
 
 msgid "booting from assigned devices is not supported by vhost SCSI devices"
-msgstr ""
+msgstr "att starta från tilldelade enheter stödjs inte av vhost-SCSI-enheter"
 
 msgid "bootloader is not supported by QEMU"
-msgstr ""
+msgstr "startladdaren stödjs inte av QEMU"
 
 msgid "both interface name and type must not be NULL"
-msgstr ""
+msgstr "både gränssnittsnamnet och typen får inte vara NULL"
 
 #, c-format
 msgid "bridge %1$s doesn't exist"
-msgstr ""
+msgstr "bryggan %1$s finns inte"
 
 #, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
-msgstr ""
+msgstr "bryggan ”%1$s” har en felaktig nätmask eller IP-adress"
 
 #, c-format
 msgid "bridge '%1$s' has an invalid prefix"
-msgstr ""
+msgstr "bryggan ”%1$s” har ett felaktigt prefix"
 
 msgid "bridge an existing network device"
-msgstr ""
+msgstr "brygga en befintlig nätverksenhet"
 
 #, c-format
 msgid ""
 "bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
 "not in %1$s (network '%2$s')"
 msgstr ""
+"bryggalternativen delay/stp/zone är endast tillåtna i lägena route, nat och "
+"isolated, inte i %1$s (nätverket ”%2$s”)"
 
 msgid "bridge interface misses the bridge element"
-msgstr ""
+msgstr "bryggsgränssnittet saknar bryggelementet"
 
 #, c-format
 msgid "bridge interface stp should be on or off got %1$s"
-msgstr ""
+msgstr "stp för bryggränssnittet skall vara on eller off fick %1$s"
 
 #, c-format
 msgid ""
 "bridge macTableManager setting not allowed in %1$s mode (network '%2$s')"
 msgstr ""
+"brygginställningen macTableManager är inte tillåten i %1$s-läge (nätverket "
+"”%2$s”)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "bridge name '%1$s' already in use."
-msgstr "lagringsvolymnamnet ”%1$s” används redan."
+msgstr "bryggamnet ”%1$s” används redan."
 
 #, c-format
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
-msgstr ""
+msgstr "bryggnamn är inte tillåtna i %1$s-läge (nätverket ”%2$s”)"
 
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
-msgstr ""
+msgstr "bryggzoner är inte tillåtna i %1$s-läge (nätverket ”%2$s”)"
 
 msgid "buffer for root interface name is too small"
-msgstr ""
+msgstr "bufferten för rotgränssnittsnamnet är för liten"
 
 msgid "buffer too small for IP address"
 msgstr "bufferten är för liten för IP-adressen"
@@ -21121,141 +21133,147 @@ msgid "buffer too small for IPv6 address"
 msgstr "bufferten är för liten för IPv6-adressen"
 
 msgid "build a pool"
-msgstr ""
+msgstr "bygg en pool"
 
 msgid "build the pool as normal"
-msgstr ""
+msgstr "bygg bolen normalt"
 
 msgid "building"
-msgstr ""
+msgstr "bygger"
 
 msgid "bus must be 0 for sata controller"
-msgstr ""
+msgstr "bus måste vara 0 för sata-styrenheter"
 
 msgid "bypass cache unsupported by this system"
-msgstr ""
+msgstr "att gå förbi cachen stödjs inte av detta system"
 
 msgid "bytes"
 msgstr "byte"
 
 msgid "cache is not supported with vhostuser disk"
-msgstr ""
+msgstr "cache stödjs inte med en vhostuser-disk"
 
-#, fuzzy
 msgid "cache mode of disk device"
-msgstr "källa för skivenhet"
+msgstr "cache-läget för diskenheten"
 
 msgid "cachetune is only supported for KVM domains"
-msgstr ""
+msgstr "cachetune stödjs indast för KVM-domäner"
 
 msgid ""
 "calculate memory dirty rate within specified seconds, the supported value "
 "range from 1 to 60, default to 1."
 msgstr ""
+"beräkna minnets smutshastighet inom det angivna intervallet, det tillåtna "
+"värdeintervallet är från 1 till 60, standard är 1."
 
 msgid "caller ignores cookie or cookielen"
-msgstr ""
+msgstr "anroparen ignorerar cookie eller cookielen"
 
 msgid "caller ignores cookieout or cookieoutlen"
-msgstr ""
+msgstr "anroparen ignorerar cookieout eller cookieoutlen"
 
 msgid "caller ignores uri_out"
-msgstr ""
+msgstr "anroparen ignorerar uri_out"
 
 msgid ""
 "can be either or both of --live and --config, depends on implementation "
 "hypervisor driver"
 msgstr ""
+"kan vara endera av eller både --live och --config, beror på vad hypervisor-"
+"drivrutinen implementerar"
 
 msgid "can't add memory backend as guest has no NUMA nodes configured"
 msgstr ""
+"kan inte lägga till en minnesbakände eftersom gästen inte har några NUMA-"
+"noder konfigurerade"
 
 #, c-format
 msgid ""
 "can't add memory backend for guest node '%1$d' as the guest has only '%2$zu' "
 "NUMA nodes configured"
 msgstr ""
+"kan inte lägga till en minnesbakände för gästnoden ”%1$d” eftersom gästen "
+"bara har ”%2$zu” NUMA-noder konfigurerade"
 
 msgid "can't change link state: device alias not found"
-msgstr ""
+msgstr "kan inte ändra länktillståndet: enhetsaliaset finns inte"
 
 msgid "can't change media while a block job is running on the device"
-msgstr ""
+msgstr "kan inte ändra media medan ett blockjobb kör på enheten"
 
 msgid "can't change nodeset for strict mode for running domain"
-msgstr ""
+msgstr "kan inte ändra nodmängden för strikt läge för den körande domänen"
 
 msgid "can't change numatune mode for running domain"
-msgstr ""
+msgstr "kan inte ändra numatune-läge för en körande domän"
 
-#, fuzzy
 msgid "can't connect to virtlogd"
-msgstr "kunde inte ansluta till Xen Store"
+msgstr "kan inte ansluta till virtlogd"
 
 #, c-format
 msgid "can't convert relative size: '%1$s'"
-msgstr ""
+msgstr "kan inte konvertera relativ storlek: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "can't create storage format '%1$s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%1$s”"
+msgstr "kan inte skapa lagringsformatet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "can't deflatten colliding key '%1$s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%1$s”"
+msgstr "kan inte avplatta kolliderande nyckel ”%1$s”"
 
 msgid "can't download volume, all existing snapshots will be lost"
 msgstr ""
+"kan inte hämta volymen, alla befintliga ögonblicksbilder kommer gå förlorade"
 
 msgid "can't find created snapshot"
-msgstr ""
+msgstr "kan inte hitta den skapade ögonblicksbilden"
 
 #, c-format
 msgid "can't identify pool in uri %1$s "
-msgstr ""
+msgstr "kan inte identifera poolen i uri %1$s "
 
 #, c-format
 msgid "can't identify volume in uri %1$s"
-msgstr ""
+msgstr "kan inte identifera volymen i uri %1$s"
 
 msgid "can't keep relative backing relationship"
-msgstr ""
+msgstr "kan inte hålla en relativ bakomliggande relation"
 
 #, c-format
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
-msgstr ""
+msgstr "kan inte förändra inaktiva ögonblicksbilder av disken ”%1$s”"
 
 #, c-format
 msgid "can't open session to the domain with id %1$d"
-msgstr ""
+msgstr "kan inte öppna en session till domänen med id %1$d"
 
 msgid "can't parse cputune emulator period value"
-msgstr ""
+msgstr "kan inte tolka periodvärdet för cputune-emulatorn"
 
 msgid "can't parse cputune emulator quota value"
-msgstr ""
+msgstr "kan inte tolka kvotvärdet för cputune-emulatorn"
 
 msgid "can't parse cputune global period value"
-msgstr ""
+msgstr "kan inte tolka det globala periodvärdet för cputune"
 
 msgid "can't parse cputune global quota value"
-msgstr ""
+msgstr "kan inte tolka det globala kvotvärdet för cputune"
 
 msgid "can't parse cputune iothread period value"
-msgstr ""
+msgstr "kan inte tolka iothread-periodvärdet för cputune"
 
 msgid "can't parse cputune iothread quota value"
-msgstr ""
+msgstr "kan inte tolka iothread-kvotvärdet för cputune"
 
-#, fuzzy
 msgid "can't parse cputune period value"
-msgstr "kan inte tolka värdet på parametern typeid"
+msgstr "kan inte tolka periodvärdet för cputune"
 
 msgid "can't parse cputune quota value"
-msgstr ""
+msgstr "kan inte tolka kvotvärdet för cputune"
 
 msgid "can't parse cputune shares value"
-msgstr ""
+msgstr "kan inte tolka andelsvärdet för cputune"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
