@@ -21875,7 +21875,8 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
                 idx = channel->info.addr.vioserial.controller;
 
             if (virDomainDefMaybeAddController(def,
-                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1) < 0)
+                                               VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+                                               idx, -1) < 0)
                 return -1;
         }
     }
@@ -21885,12 +21886,12 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
 
         if (console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
             int idx = 0;
-            if (console->info.type ==
-                VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
+            if (console->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
                 idx = console->info.addr.vioserial.controller;
 
             if (virDomainDefMaybeAddController(def,
-                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1) < 0)
+                                               VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+                                               idx, -1) < 0)
                 return -1;
         }
     }
