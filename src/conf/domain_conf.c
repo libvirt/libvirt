@@ -8523,7 +8523,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             unsigned long long bytes;
             if ((rc = virParseScaledValue("./pcihole64", NULL,
                                           ctxt, &bytes, 1024,
-                                          1024ULL * ULONG_MAX, false)) < 0)
+                                          ULLONG_MAX, false)) < 0)
                 return NULL;
 
             if (rc == 1)
@@ -23123,8 +23123,8 @@ virDomainControllerDefFormat(virBuffer *buf,
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
         def->opts.pciopts.pcihole64) {
-        virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%lu</"
-                          "pcihole64>\n", def->opts.pciopts.pcihole64size);
+        virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%llu</pcihole64>\n",
+                          def->opts.pciopts.pcihole64size);
     }
 
     virXMLFormatElement(buf, "controller", &attrBuf, &childBuf);

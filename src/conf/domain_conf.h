@@ -707,7 +707,7 @@ struct _virDomainVirtioSerialOpts {
 
 struct _virDomainPCIControllerOpts {
     bool pcihole64;
-    unsigned long pcihole64size;
+    unsigned long long pcihole64size;
 
     /* the exact controller name is in the "model" subelement, e.g.:
      * <controller type='pci' model='pcie-root-port'>
