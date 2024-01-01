@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the libvirt package.
 # Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023.
 # Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>, 2023.
+# Weblate <noreply-mt-weblate@weblate.org>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-11-27 09:22+0000\n"
-"PO-Revision-Date: 2023-10-31 12:55+0000\n"
-"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"PO-Revision-Date: 2023-12-22 04:29+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
 "Language: ka\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1.1\n"
+"X-Generator: Weblate 5.3\n"
 
 msgid ""
 "\n"
@@ -2014,7 +2015,7 @@ msgid "CPU Affinity"
 msgstr "CPU შესაბამისობა"
 
 msgid "CPU Affinity:"
-msgstr ""
+msgstr "CPU შესაბამისობა"
 
 msgid "CPU IDs in <numa> exceed the <vcpu> count"
 msgstr ""
