@@ -192,9 +192,9 @@ targets:
         allow-failure: true
         builds: false
 
-  freebsd-12: x86_64
-
   freebsd-13: x86_64
+
+  freebsd-14: x86_64
 
   opensuse-leap-15:
     jobs:

@@ -1028,20 +1028,6 @@ mingw64-fedora-rawhide-local-env:
 
 # Native cirrus build jobs
 
-x86_64-freebsd-12:
-  extends: .cirrus_build_job
-  needs: []
-  allow_failure: false
-  variables:
-    CIRRUS_VM_IMAGE_NAME: freebsd-12-4
-    CIRRUS_VM_IMAGE_SELECTOR: image_family
-    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
-    INSTALL_COMMAND: pkg install -y
-    NAME: freebsd-12
-    UPDATE_COMMAND: pkg update
-    UPGRADE_COMMAND: pkg upgrade -y
-
-
 x86_64-freebsd-13:
   extends: .cirrus_build_job
   needs: []
@@ -1052,6 +1038,20 @@ x86_64-freebsd-13:
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
     INSTALL_COMMAND: pkg install -y
     NAME: freebsd-13
+    UPDATE_COMMAND: pkg update
+    UPGRADE_COMMAND: pkg upgrade -y
+
+
+x86_64-freebsd-14:
+  extends: .cirrus_build_job
+  needs: []
+  allow_failure: false
+  variables:
+    CIRRUS_VM_IMAGE_NAME: freebsd-14-0
+    CIRRUS_VM_IMAGE_SELECTOR: image_family
+    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
+    INSTALL_COMMAND: pkg install -y
+    NAME: freebsd-14
     UPDATE_COMMAND: pkg update
     UPGRADE_COMMAND: pkg upgrade -y
 
