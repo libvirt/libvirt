@@ -6389,8 +6389,9 @@ virDomainBlockPeek(virDomainPtr dom,
  * to the next alignment boundary.
  *
  * If @flag contains VIR_DOMAIN_BLOCK_RESIZE_CAPACITY (since 10.0.0) the
- * hypervisor will resize the guest block device to fully fill the source,
- * ignoring @size. This is possible only for image formats with no metadata
+ * hypervisor will resize the guest block device to fully fill the source.
+ * @size must be either set to zero, or to the exact size of the block
+ * device source. This is possible only for image formats with no metadata
  * ('raw') and for source devices with limited capacity such as block devices.
  *
  * The @disk parameter is either an unambiguous source name of the

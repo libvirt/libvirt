@@ -9324,7 +9324,14 @@ qemuDomainBlockResize(virDomainPtr dom,
             goto endjob;
         }
 
-        size = disk->src->physical;
+        if (size == 0) {
+            size = disk->src->physical;
+        } else if (size != disk->src->physical) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Requested resize to '%1$llu' but device size is '%2$llu'"),
+                           size, disk->src->physical);
+            goto endjob;
+        }
     }
 
     /* qcow2 and qed must be sized on 512 byte blocks/sectors,
