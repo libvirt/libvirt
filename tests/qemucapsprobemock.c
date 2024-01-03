@@ -45,10 +45,32 @@ printLineSkipEmpty(const char *line,
     const char *p;
 
     for (p = line; *p; p++) {
-        if (p[0] == '\n' && p[1] == '\n')
-            continue;
-
         fputc(*p, fp);
+
+        /* YAJL formats empty objects and arrays in a weird way:
+         *
+         * {
+         *   "emptyarray": [
+         *
+         *   ],
+         *   "emptyobject": {
+         *
+         *   }
+         * }
+         *
+         * We want to use empty lines to separate commands and replies as
+         * well as be compatible with python's 'json.dump' method, thus we drop
+         * any whitespace between array/object braces.
+         */
+        if ((p[0] == '{' || p[0] == '[') && p[1] == '\n') {
+            const char *l = p + 1;
+
+            while (*l && g_ascii_isspace(*l))
+                l++;
+
+            if (*l == '}' || *l == ']')
+                p = l - 1;
+        }
     }
 }
 

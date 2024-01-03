@@ -4,8 +4,7 @@
 }
 
 {
-  "return": {
-  },
+  "return": {},
   "id": "libvirt-1"
 }
 
@@ -1686,8 +1685,7 @@
     },
     {
       "name": "0",
-      "members": [
-      ],
+      "members": [],
       "meta-type": "object"
     },
     {
@@ -22230,8 +22228,7 @@
     },
     {
       "name": "751",
-      "members": [
-      ],
+      "members": [],
       "meta-type": "object"
     },
     {
@@ -31074,8 +31071,7 @@
       "type": "bool"
     },
     {
-      "default-value": [
-      ],
+      "default-value": [],
       "name": "reserved-regions",
       "type": "list"
     },
@@ -33857,13 +33853,11 @@
       "option": "fsdev"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "smbios"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "acpi"
     },
     {
@@ -34073,8 +34067,7 @@
       "option": "icount"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "numa"
     },
     {
@@ -34125,13 +34118,11 @@
       "option": "overcommit"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "tpmdev"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "object"
     },
     {
@@ -34246,8 +34237,7 @@
       "option": "memory"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "accel"
     },
     {
@@ -34264,8 +34254,7 @@
       "option": "option-rom"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "plugin"
     },
     {
@@ -34337,23 +34326,19 @@
       "option": "rtc"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "net"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "nic"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "netdev"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "device"
     },
     {
@@ -34945,8 +34930,7 @@
 }
 
 {
-  "return": {
-  },
+  "return": {},
   "id": "libvirt-1"
 }
 

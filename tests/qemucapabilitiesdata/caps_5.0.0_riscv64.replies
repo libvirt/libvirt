@@ -4,8 +4,7 @@
 }
 
 {
-  "return": {
-  },
+  "return": {},
   "id": "libvirt-1"
 }
 
@@ -1361,8 +1360,7 @@
     },
     {
       "name": "0",
-      "members": [
-      ],
+      "members": [],
       "meta-type": "object"
     },
     {
@@ -13220,8 +13218,7 @@
     },
     {
       "name": "521",
-      "members": [
-      ],
+      "members": [],
       "meta-type": "object"
     },
     {
@@ -18143,8 +18140,7 @@
 }
 
 {
-  "return": [
-  ],
+  "return": [],
   "id": "libvirt-36"
 }
 
@@ -18154,8 +18150,7 @@
 }
 
 {
-  "return": [
-  ],
+  "return": [],
   "id": "libvirt-37"
 }
 
@@ -18654,8 +18649,7 @@
       "option": "fw_cfg"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": ""
     },
     {
@@ -18688,8 +18682,7 @@
       "option": "icount"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "numa"
     },
     {
@@ -18744,13 +18737,11 @@
       "option": "realtime"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "tpmdev"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "object"
     },
     {
@@ -18853,8 +18844,7 @@
       "option": "memory"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "accel"
     },
     {
@@ -19044,23 +19034,19 @@
       "option": "rtc"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "net"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "nic"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "netdev"
     },
     {
-      "parameters": [
-      ],
+      "parameters": [],
       "option": "device"
     },
     {
