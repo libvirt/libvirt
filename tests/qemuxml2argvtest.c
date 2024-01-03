@@ -629,6 +629,15 @@ testCompareXMLToArgv(const void *data)
     if (testInfoCheckDuplicate(info) < 0)
         goto cleanup;
 
+# if !WITH_NBDKIT
+    /* when compiled without nbdkit support we want to skip the test after
+     * marking it as used */
+    if (info->args.fakeNbdkitCaps) {
+        ret = EXIT_AM_SKIP;
+        goto cleanup;
+    }
+# endif /* !WITH_NBDKIT */
+
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
 
@@ -908,12 +917,8 @@ mymain(void)
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
 
-# if WITH_NBDKIT
-#  define DO_TEST_CAPS_LATEST_NBDKIT(name, ...) \
+# define DO_TEST_CAPS_LATEST_NBDKIT(name, ...) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", ARG_NBDKIT_CAPS, __VA_ARGS__, QEMU_NBDKIT_CAPS_LAST, ARG_END)
-# else
-#  define DO_TEST_CAPS_LATEST_NBDKIT(name, ...)
-# endif /* WITH_NBDKIT */
 
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
