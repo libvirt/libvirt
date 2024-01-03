@@ -657,6 +657,7 @@ virDomainInputDefPostParse(virDomainInputDef *input,
             if ((input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
                  input->type == VIR_DOMAIN_INPUT_TYPE_KBD) &&
                 (ARCH_IS_X86(def->os.arch) || def->os.arch == VIR_ARCH_NONE)) {
+                    input->bus = VIR_DOMAIN_INPUT_BUS_PS2;
             } else if (ARCH_IS_S390(def->os.arch) ||
                        input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
                 input->bus = VIR_DOMAIN_INPUT_BUS_VIRTIO;
