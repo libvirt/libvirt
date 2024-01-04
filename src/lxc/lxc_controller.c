@@ -947,8 +947,7 @@ static int virLXCControllerSetupServer(virLXCController *ctrl)
     if (virSecurityManagerClearSocketLabel(ctrl->securityManager, ctrl->def) < 0)
         goto error;
 
-    if (virNetServerAddService(srv, svc) < 0)
-        goto error;
+    virNetServerAddService(srv, svc);
     g_clear_pointer(&svc, virObjectUnref);
 
     if (!(ctrl->prog = virNetServerProgramNew(VIR_LXC_MONITOR_PROGRAM,

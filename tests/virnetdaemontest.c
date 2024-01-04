@@ -127,10 +127,8 @@ testCreateServer(const char *server_name, const char *host, int family)
                                            5)))
         goto error;
 
-    if (virNetServerAddService(srv, svc1) < 0)
-        goto error;
-    if (virNetServerAddService(srv, svc2) < 0)
-        goto error;
+    virNetServerAddService(srv, svc1);
+    virNetServerAddService(srv, svc2);
 
     if (virNetSocketNewConnectSockFD(fdclient[0], &sk1) < 0)
         goto error;
