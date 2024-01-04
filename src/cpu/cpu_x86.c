@@ -531,7 +531,7 @@ x86DataCopy(virCPUx86Data *dst, const virCPUx86Data *src)
 }
 
 
-static int
+static void
 virCPUx86DataAddItem(virCPUx86Data *data,
                      const virCPUx86DataItem *item)
 {
@@ -547,12 +547,10 @@ virCPUx86DataAddItem(virCPUx86Data *data,
                           sizeof(virCPUx86DataItem),
                           virCPUx86DataSorter, NULL);
     }
-
-    return 0;
 }
 
 
-static int
+static void
 x86DataAdd(virCPUx86Data *data1,
            const virCPUx86Data *data2)
 {
@@ -560,12 +558,8 @@ x86DataAdd(virCPUx86Data *data1,
     virCPUx86DataItem *item;
 
     virCPUx86DataIteratorInit(&iter, data2);
-    while ((item = virCPUx86DataNext(&iter))) {
-        if (virCPUx86DataAddItem(data1, item) < 0)
-            return -1;
-    }
-
-    return 0;
+    while ((item = virCPUx86DataNext(&iter)))
+        virCPUx86DataAddItem(data1, item);
 }
 
 
@@ -814,13 +808,13 @@ x86DataToSignature(const virCPUx86Data *data)
 }
 
 
-static int
+static void
 x86DataAddSignature(virCPUx86Data *data,
                     uint32_t signature)
 {
     virCPUx86DataItem leaf1 = CPUID(.eax_in = 0x1, .eax = signature);
 
-    return virCPUx86DataAddItem(data, &leaf1);
+    virCPUx86DataAddItem(data, &leaf1);
 }
 
 
@@ -885,8 +879,7 @@ x86DataToCPU(const virCPUx86Data *data,
         for (blocker = hvModel->blockers; *blocker; blocker++) {
             if ((feature = x86FeatureFind(map, *blocker)) &&
                 !x86DataIsSubset(&copy, &feature->data))
-                if (x86DataAdd(&modelData, &feature->data) < 0)
-                    return NULL;
+                x86DataAdd(&modelData, &feature->data);
         }
     }
 
@@ -1125,8 +1118,7 @@ x86ParseDataItemList(virCPUx86Data *cpudata,
             }
         }
 
-        if (virCPUx86DataAddItem(cpudata, &item) < 0)
-            return -1;
+        virCPUx86DataAddItem(cpudata, &item);
         ++i;
 
         node = xmlNextElementSibling(node);
@@ -1381,8 +1373,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
             switch (fpol) {
             case VIR_CPU_FEATURE_FORCE:
             case VIR_CPU_FEATURE_REQUIRE:
-                if (x86DataAdd(&model->data, &feature->data) < 0)
-                    return NULL;
+                x86DataAdd(&model->data, &feature->data);
                 break;
 
             case VIR_CPU_FEATURE_DISABLE:
@@ -1394,8 +1385,8 @@ x86ModelFromCPU(const virCPUDef *cpu,
             case VIR_CPU_FEATURE_LAST:
                 break;
             }
-        } else if (x86DataAdd(&model->data, &feature->data) < 0) {
-            return NULL;
+        } else {
+            x86DataAdd(&model->data, &feature->data);
         }
     }
 
@@ -1641,8 +1632,7 @@ x86ModelParseFeatures(virCPUx86Model *model,
             continue;
         }
 
-        if (x86DataAdd(&model->data, &feature->data))
-            return -1;
+        x86DataAdd(&model->data, &feature->data);
     }
 
     model->removedFeatures = g_renew(char *, model->removedFeatures, nremoved + 1);
@@ -2384,8 +2374,8 @@ x86Encode(virArch arch,
         if (!(data_vendor = virCPUDataNew(arch)))
             return -1;
 
-        if (v && virCPUx86DataAdd(data_vendor, &v->data) < 0)
-            return -1;
+        if (v)
+            virCPUx86DataAdd(data_vendor, &v->data);
     }
 
     if (forced)
@@ -2452,23 +2442,20 @@ cpuidCall(virCPUx86CPUID *cpuid)
  *
  * Sub leaf n+1 is invalid if eax[4:0] in sub leaf n equals 0.
  */
-static int
+static void
 cpuidSetLeaf4(virCPUData *data,
               virCPUx86DataItem *subLeaf0)
 {
     virCPUx86DataItem item = *subLeaf0;
     virCPUx86CPUID *cpuid = &item.data.cpuid;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     while (cpuid->eax & 0x1f) {
         cpuid->ecx_in++;
         cpuidCall(cpuid);
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
     }
-    return 0;
 }
 
 
@@ -2476,7 +2463,7 @@ cpuidSetLeaf4(virCPUData *data,
  *
  * Sub leaf n is invalid if n > eax in sub leaf 0.
  */
-static int
+static void
 cpuidSetLeaf7(virCPUData *data,
               virCPUx86DataItem *subLeaf0)
 {
@@ -2484,16 +2471,13 @@ cpuidSetLeaf7(virCPUData *data,
     virCPUx86CPUID *cpuid = &item.data.cpuid;
     uint32_t sub;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     for (sub = 1; sub <= subLeaf0->data.cpuid.eax; sub++) {
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
     }
-    return 0;
 }
 
 
@@ -2504,7 +2488,7 @@ cpuidSetLeaf7(virCPUData *data,
  * Some output values do not depend on ecx, thus sub leaf 0 provides
  * meaningful data even if it was (theoretically) considered invalid.
  */
-static int
+static void
 cpuidSetLeafB(virCPUData *data,
               virCPUx86DataItem *subLeaf0)
 {
@@ -2512,12 +2496,10 @@ cpuidSetLeafB(virCPUData *data,
     virCPUx86CPUID *cpuid = &item.data.cpuid;
 
     while (cpuid->ecx & 0xff00) {
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
         cpuid->ecx_in++;
         cpuidCall(cpuid);
     }
-    return 0;
 }
 
 
@@ -2529,7 +2511,7 @@ cpuidSetLeafB(virCPUData *data,
  * Sub leaf n (32 <= n < 64) is invalid if edx[n-32] from sub leaf 0 is not set
  * and edx[n-32] from sub leaf 1 is not set.
  */
-static int
+static void
 cpuidSetLeafD(virCPUData *data,
               virCPUx86DataItem *subLeaf0)
 {
@@ -2539,13 +2521,11 @@ cpuidSetLeafD(virCPUData *data,
     virCPUx86CPUID sub1;
     uint32_t sub;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     cpuid->ecx_in = 1;
     cpuidCall(cpuid);
-    if (virCPUx86DataAdd(data, &item) < 0)
-        return -1;
+    virCPUx86DataAdd(data, &item);
 
     sub0 = subLeaf0->data.cpuid;
     sub1 = *cpuid;
@@ -2561,10 +2541,8 @@ cpuidSetLeafD(virCPUData *data,
 
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
     }
-    return 0;
 }
 
 
@@ -2577,7 +2555,7 @@ cpuidSetLeafD(virCPUData *data,
  * 0x0f: Sub leaf n is valid if edx[n] (= res[ResID]) from sub leaf 0 is set.
  * 0x10: Sub leaf n is valid if ebx[n] (= res[ResID]) from sub leaf 0 is set.
  */
-static int
+static void
 cpuidSetLeafResID(virCPUData *data,
                   virCPUx86DataItem *subLeaf0,
                   uint32_t res)
@@ -2586,18 +2564,15 @@ cpuidSetLeafResID(virCPUData *data,
     virCPUx86CPUID *cpuid = &item.data.cpuid;
     uint32_t sub;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     for (sub = 1; sub < 32; sub++) {
         if (!(res & (1U << sub)))
             continue;
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
     }
-    return 0;
 }
 
 
@@ -2606,7 +2581,7 @@ cpuidSetLeafResID(virCPUData *data,
  * Sub leaves 0 and 1 is supported if ebx[2] from leaf 0x7 (SGX) is set.
  * Sub leaves n >= 2 are valid as long as eax[3:0] != 0.
  */
-static int
+static void
 cpuidSetLeaf12(virCPUData *data,
                virCPUx86DataItem *subLeaf0)
 {
@@ -2616,26 +2591,22 @@ cpuidSetLeaf12(virCPUData *data,
 
     if (!(leaf7 = virCPUx86DataGet(&data->data.x86, &item)) ||
         !(leaf7->data.cpuid.ebx & (1 << 2)))
-        return 0;
+        return;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     cpuid->eax_in = 0x12;
     cpuid->ecx_in = 1;
     cpuidCall(cpuid);
-    if (virCPUx86DataAdd(data, &item) < 0)
-        return -1;
+    virCPUx86DataAdd(data, &item);
 
     cpuid->ecx_in = 2;
     cpuidCall(cpuid);
     while (cpuid->eax & 0xf) {
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
         cpuid->ecx_in++;
         cpuidCall(cpuid);
     }
-    return 0;
 }
 
 
@@ -2643,7 +2614,7 @@ cpuidSetLeaf12(virCPUData *data,
  *
  * Sub leaf 0 reports the maximum supported sub leaf in eax.
  */
-static int
+static void
 cpuidSetLeaf14(virCPUData *data,
                virCPUx86DataItem *subLeaf0)
 {
@@ -2651,16 +2622,13 @@ cpuidSetLeaf14(virCPUData *data,
     virCPUx86CPUID *cpuid = &item.data.cpuid;
     uint32_t sub;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     for (sub = 1; sub <= subLeaf0->data.cpuid.eax; sub++) {
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
     }
-    return 0;
 }
 
 
@@ -2669,7 +2637,7 @@ cpuidSetLeaf14(virCPUData *data,
  * Sub leaf 0 is valid if eax >= 3.
  * Sub leaf 0 reports the maximum supported sub leaf in eax.
  */
-static int
+static void
 cpuidSetLeaf17(virCPUData *data,
                virCPUx86DataItem *subLeaf0)
 {
@@ -2678,25 +2646,21 @@ cpuidSetLeaf17(virCPUData *data,
     uint32_t sub;
 
     if (subLeaf0->data.cpuid.eax < 3)
-        return 0;
+        return;
 
-    if (virCPUx86DataAdd(data, subLeaf0) < 0)
-        return -1;
+    virCPUx86DataAdd(data, subLeaf0);
 
     for (sub = 1; sub <= subLeaf0->data.cpuid.eax; sub++) {
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
-        if (virCPUx86DataAdd(data, &item) < 0)
-            return -1;
+        virCPUx86DataAdd(data, &item);
     }
-    return 0;
 }
 
 
 static int
 cpuidSet(uint32_t base, virCPUData *data)
 {
-    int rc;
     uint32_t max;
     uint32_t leaf;
     virCPUx86DataItem item = CPUID(.eax_in = base);
@@ -2714,28 +2678,25 @@ cpuidSet(uint32_t base, virCPUData *data)
          * which provide additional sub leaves for ecx_in > 0
          */
         if (leaf == 0x4)
-            rc = cpuidSetLeaf4(data, &item);
+            cpuidSetLeaf4(data, &item);
         else if (leaf == 0x7)
-            rc = cpuidSetLeaf7(data, &item);
+            cpuidSetLeaf7(data, &item);
         else if (leaf == 0xb)
-            rc = cpuidSetLeafB(data, &item);
+            cpuidSetLeafB(data, &item);
         else if (leaf == 0xd)
-            rc = cpuidSetLeafD(data, &item);
+            cpuidSetLeafD(data, &item);
         else if (leaf == 0xf)
-            rc = cpuidSetLeafResID(data, &item, cpuid->edx);
+            cpuidSetLeafResID(data, &item, cpuid->edx);
         else if (leaf == 0x10)
-            rc = cpuidSetLeafResID(data, &item, cpuid->ebx);
+            cpuidSetLeafResID(data, &item, cpuid->ebx);
         else if (leaf == 0x12)
-            rc = cpuidSetLeaf12(data, &item);
+            cpuidSetLeaf12(data, &item);
         else if (leaf == 0x14)
-            rc = cpuidSetLeaf14(data, &item);
+            cpuidSetLeaf14(data, &item);
         else if (leaf == 0x17)
-            rc = cpuidSetLeaf17(data, &item);
+            cpuidSetLeaf17(data, &item);
         else
-            rc = virCPUx86DataAdd(data, &item);
-
-        if (rc < 0)
-            return -1;
+            virCPUx86DataAdd(data, &item);
     }
 
     return 0;
@@ -2777,8 +2738,7 @@ virCPUx86GetHost(virCPUDef *cpu,
                 },
             };
 
-            if (virCPUx86DataAdd(cpuData, &item) < 0)
-                return -1;
+            virCPUx86DataAdd(cpuData, &item);
         }
     }
 
@@ -2897,9 +2857,8 @@ virCPUx86Baseline(virCPUDef **cpus,
             return NULL;
 
         for (i = 0; features[i]; i++) {
-            if ((feat = x86FeatureFind(map, features[i])) &&
-                x86DataAdd(&featData->data.x86, &feat->data) < 0)
-                return NULL;
+            if ((feat = x86FeatureFind(map, features[i])))
+                x86DataAdd(&featData->data.x86, &feat->data);
         }
 
         x86DataIntersect(&base_model->data, &featData->data.x86);
@@ -2911,9 +2870,8 @@ virCPUx86Baseline(virCPUDef **cpus,
         return NULL;
     }
 
-    if (vendor &&
-        virCPUx86DataAddItem(&base_model->data, &vendor->data) < 0)
-        return NULL;
+    if (vendor)
+        virCPUx86DataAddItem(&base_model->data, &vendor->data);
 
     if (x86Decode(cpu, &base_model->data, models,
                   (const char **) modelNames, migratable) < 0)
@@ -3172,15 +3130,13 @@ virCPUx86Translate(virCPUDef *cpu,
     if (!(model = x86ModelFromCPU(cpu, map, -1)))
         return -1;
 
-    if (model->vendor &&
-        virCPUx86DataAddItem(&model->data, &model->vendor->data) < 0)
-        return -1;
+    if (model->vendor)
+        virCPUx86DataAddItem(&model->data, &model->vendor->data);
 
     if (model->signatures && model->signatures->count > 0) {
         virCPUx86Signature *sig = &model->signatures->items[0];
-        if (x86DataAddSignature(&model->data,
-                                virCPUx86SignatureToCPUID(sig)) < 0)
-            return -1;
+        x86DataAddSignature(&model->data,
+                                virCPUx86SignatureToCPUID(sig));
     }
 
     if (x86Decode(translated, &model->data, models, NULL, false) < 0)
@@ -3298,15 +3254,15 @@ virCPUx86ValidateFeatures(virCPUDef *cpu)
 }
 
 
-int
+void
 virCPUx86DataAdd(virCPUData *cpuData,
                  const virCPUx86DataItem *item)
 {
-    return virCPUx86DataAddItem(&cpuData->data.x86, item);
+    virCPUx86DataAddItem(&cpuData->data.x86, item);
 }
 
 
-int
+void
 virCPUx86DataSetSignature(virCPUData *cpuData,
                           unsigned int family,
                           unsigned int model,
@@ -3314,7 +3270,7 @@ virCPUx86DataSetSignature(virCPUData *cpuData,
 {
     uint32_t signature = x86MakeSignature(family, model, stepping);
 
-    return x86DataAddSignature(&cpuData->data.x86, signature);
+    x86DataAddSignature(&cpuData->data.x86, signature);
 }
 
 
@@ -3339,7 +3295,9 @@ virCPUx86DataSetVendor(virCPUData *cpuData,
     if (virCPUx86VendorToData(vendor, &item) < 0)
         return -1;
 
-    return virCPUx86DataAdd(cpuData, &item);
+    virCPUx86DataAdd(cpuData, &item);
+
+    return 0;
 }
 
 
@@ -3358,8 +3316,7 @@ virCPUx86DataAddFeature(virCPUData *cpuData,
         !(feature = x86FeatureFindInternal(name)))
         return 0;
 
-    if (x86DataAdd(&cpuData->data.x86, &feature->data) < 0)
-        return -1;
+    x86DataAdd(&cpuData->data.x86, &feature->data);
 
     return 0;
 }

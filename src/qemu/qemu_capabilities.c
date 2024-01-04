@@ -3679,8 +3679,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
         }
     }
 
-    if (virCPUx86DataSetSignature(data, sigFamily, sigModel, sigStepping) < 0)
-        return NULL;
+    virCPUx86DataSetSignature(data, sigFamily, sigModel, sigStepping);
 
     return g_steal_pointer(&data);
 }

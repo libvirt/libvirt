@@ -55,7 +55,7 @@ struct guest_arch {
 
 #define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(aarch64|armv7l|x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
-static int
+static void
 libxlCapsAddCPUID(virCPUData *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
 {
     virCPUx86DataItem item = { 0 };
@@ -65,14 +65,8 @@ libxlCapsAddCPUID(virCPUData *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
     for (i = 0; i < ncaps; i++) {
         item.data.cpuid = cpuid[i];
 
-        if (virCPUx86DataAdd(data, &item) < 0) {
-            VIR_DEBUG("Failed to add CPUID(%x,%x)",
-                      cpuid[i].eax_in, cpuid[i].ecx_in);
-            return -1;
-        }
+        virCPUx86DataAdd(data, &item);
     }
-
-    return 0;
 }
 
 /*
@@ -119,8 +113,7 @@ libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap)
         return NULL;
 
     ncaps = G_N_ELEMENTS(cpuid);
-    if (libxlCapsAddCPUID(cpudata, cpuid, ncaps) < 0)
-        return NULL;
+    libxlCapsAddCPUID(cpudata, cpuid, ncaps);
 
     return g_steal_pointer(&cpudata);
 }
