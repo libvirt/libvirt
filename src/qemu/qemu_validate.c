@@ -5066,6 +5066,13 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
                            _("virtio-mem isn't supported by this QEMU binary"));
             return -1;
         }
+
+        if (mem->target.virtio_mem.dynamicMemslots == VIR_TRISTATE_BOOL_YES &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_DYNAMIC_MEMSLOTS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-mem does not support dynamicMemslots"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
