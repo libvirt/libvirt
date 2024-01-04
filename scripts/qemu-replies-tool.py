@@ -382,6 +382,28 @@ def dump_qmp_probe_strings(schemalist):
         dump_qmp_probe_strings_iter(c, '(qmp) ' + c, [], schemadict)
 
 
+def dump_qom_list_types(conv):
+    types = []
+
+    for (cmd, rep) in conv:
+        if cmd['execute'] == 'qom-list-types':
+            for qomtype in rep['return']:
+                # validate known fields:
+                # 'parent' is ignored below as it causes output churn
+                for k in qomtype:
+                    if k not in ['name', 'parent']:
+                        raise Exception("Unhandled 'qom-list-types' field '%s'" % k)
+
+                types.append(qomtype['name'])
+
+            break
+
+    types.sort()
+
+    for t in types:
+        print('(qom) ' + t)
+
+
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
@@ -396,6 +418,10 @@ def process_one(filename, args):
                 if args.dump_all or args.dump_qmp_query_strings:
                     dump_qmp_probe_strings(rep['return'])
                     dumped = True
+
+        if args.dump_all or args.dump_qom_list_types:
+            dump_qom_list_types(conv)
+            dumped = True
 
         if dumped:
             return True
@@ -441,6 +467,11 @@ functional impact on libvirt.
     virQEMUCapsQMPSchemaQueries. It's useful to find specific query string
     without having to piece the information together from 'query-qmp-schema'
 
+  --dump-qom-list-types
+
+    Dumps all types returned by 'qom-list-types' in a stable order with the
+    'parent' property dropped as it's not relevant for libvirt.
+
 The tool can be also used to programmaticaly modify the '.replies' file by
 editing the 'modify_replies' method directly in the source, or for
 re-formatting and re-numbering the '.replies' file to conform with the required
@@ -470,6 +501,9 @@ parser.add_argument('--dump-all', action='store_true',
 
 parser.add_argument('--dump-qmp-query-strings', action='store_true',
                     help='dump QMP schema in form of query strings used to probe capabilities')
+
+parser.add_argument('--dump-qom-list-types', action='store_true',
+                    help='dump data from qom-list-types in a stable order')
 
 args = parser.parse_args()
 
