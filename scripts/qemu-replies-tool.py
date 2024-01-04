@@ -404,6 +404,32 @@ def dump_qom_list_types(conv):
         print('(qom) ' + t)
 
 
+def dump_device_list_properties(conv):
+    devices = []
+
+    for (cmd, rep) in conv:
+        if cmd['execute'] == 'device-list-properties':
+            if 'return' in rep:
+                for arg in rep['return']:
+                    for k in arg:
+                        if k not in ['name', 'type', 'description', 'default-value']:
+                            raise Exception("Unhandled 'device-list-properties' typename '%s' field '%s'" % (cmd['arguments']['typename'], k))
+
+                    if 'default-value' in arg:
+                        defval = ' (%s)' % str(arg['default-value'])
+                    else:
+                        defval = ''
+
+                    devices.append('%s %s %s%s' % (cmd['arguments']['typename'],
+                                                   arg['name'],
+                                                   arg['type'],
+                                                   defval))
+    devices.sort()
+
+    for d in devices:
+        print('(dev) ' + d)
+
+
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
@@ -421,6 +447,10 @@ def process_one(filename, args):
 
         if args.dump_all or args.dump_qom_list_types:
             dump_qom_list_types(conv)
+            dumped = True
+
+        if args.dump_all or args.dump_device_list_properties:
+            dump_device_list_properties(conv)
             dumped = True
 
         if dumped:
@@ -472,6 +502,11 @@ functional impact on libvirt.
     Dumps all types returned by 'qom-list-types' in a stable order with the
     'parent' property dropped as it's not relevant for libvirt.
 
+  --dump-device-list-properties
+
+    Dumps all properties of all devices queried by libvirt in stable order
+    along with types and default values.
+
 The tool can be also used to programmaticaly modify the '.replies' file by
 editing the 'modify_replies' method directly in the source, or for
 re-formatting and re-numbering the '.replies' file to conform with the required
@@ -504,6 +539,9 @@ parser.add_argument('--dump-qmp-query-strings', action='store_true',
 
 parser.add_argument('--dump-qom-list-types', action='store_true',
                     help='dump data from qom-list-types in a stable order')
+
+parser.add_argument('--dump-device-list-properties', action='store_true',
+                    help='dump all devices and their properties')
 
 args = parser.parse_args()
 
