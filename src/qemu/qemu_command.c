@@ -3670,6 +3670,7 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
     unsigned long long requestedsize = 0;
     unsigned long long address = 0;
     bool prealloc = false;
+    virTristateBool dynamicMemslots = VIR_TRISTATE_BOOL_ABSENT;
 
     if (!mem->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3711,6 +3712,7 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
         blocksize = mem->target.virtio_mem.blocksize;
         requestedsize = mem->target.virtio_mem.requestedsize;
         address = mem->target.virtio_mem.address;
+        dynamicMemslots = mem->target.virtio_mem.dynamicMemslots;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
@@ -3733,6 +3735,7 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
                               "s:memdev", memdev,
                               "B:prealloc", prealloc,
                               "P:memaddr", address,
+                              "T:dynamic-memslots", dynamicMemslots,
                               "s:id", mem->info.alias,
                               NULL) < 0)
         return NULL;
