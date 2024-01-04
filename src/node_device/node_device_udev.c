@@ -332,7 +332,7 @@ udevGenerateDeviceName(struct udev_device *device,
 
 static virMutex pciaccessMutex = VIR_MUTEX_INITIALIZER;
 
-static int
+static void
 udevTranslatePCIIds(unsigned int vendor,
                     unsigned int product,
                     char **vendor_string,
@@ -356,8 +356,6 @@ udevTranslatePCIIds(unsigned int vendor,
 
     *vendor_string = g_strdup(vendor_name);
     *product_string = g_strdup(device_name);
-
-    return 0;
 }
 
 
@@ -398,12 +396,10 @@ udevProcessPCI(struct udev_device *device,
     if (udevGetUintSysfsAttr(device, "device", &pci_dev->product, 16) < 0)
         goto cleanup;
 
-    if (udevTranslatePCIIds(pci_dev->vendor,
-                            pci_dev->product,
-                            &pci_dev->vendor_name,
-                            &pci_dev->product_name) != 0) {
-        goto cleanup;
-    }
+    udevTranslatePCIIds(pci_dev->vendor,
+                        pci_dev->product,
+                        &pci_dev->vendor_name,
+                        &pci_dev->product_name);
 
     udevGenerateDeviceName(device, def, NULL);
 
