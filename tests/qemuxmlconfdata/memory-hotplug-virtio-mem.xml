@@ -60,7 +60,7 @@
         <nodemask>1-3</nodemask>
         <pagesize unit='KiB'>2048</pagesize>
       </source>
-      <target>
+      <target dynamicMemslots='yes'>
         <size unit='KiB'>2097152</size>
         <node>0</node>
         <block unit='KiB'>2048</block>

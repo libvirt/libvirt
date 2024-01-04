@@ -13558,6 +13558,10 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
                                  &def->target.virtio_mem.requestedsize, false, false) < 0)
             return -1;
 
+        if (virXMLPropTristateBool(node, "dynamicMemslots", VIR_XML_PROP_NONE,
+                                   &def->target.virtio_mem.dynamicMemslots) < 0)
+            return -1;
+
         addrNode = virXPathNode("./address", ctxt);
         addr = &def->target.virtio_mem.address;
         break;
@@ -21232,6 +21236,12 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
                            src->target.virtio_mem.address);
             return false;
         }
+
+        if (src->target.virtio_mem.dynamicMemslots != dst->target.virtio_mem.dynamicMemslots) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Target memory device 'dynamicMemslots' property doesn't match source memory device"));
+            return false;
+        }
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -25448,6 +25458,7 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
                                unsigned int flags)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&childBuf, "<size unit='KiB'>%llu</size>\n", def->size);
     if (def->targetNode >= 0)
@@ -25487,6 +25498,11 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
         if (def->target.virtio_mem.address)
             virBufferAsprintf(&childBuf, "<address base='0x%llx'/>\n",
                               def->target.virtio_mem.address);
+
+        if (def->target.virtio_mem.dynamicMemslots) {
+            virBufferAsprintf(&attrBuf, " dynamicMemslots='%s'",
+                              virTristateBoolTypeToString(def->target.virtio_mem.dynamicMemslots));
+        }
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
@@ -25496,7 +25512,7 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
         break;
     }
 
-    virXMLFormatElement(buf, "target", NULL, &childBuf);
+    virXMLFormatElement(buf, "target", &attrBuf, &childBuf);
 }
 
 static int

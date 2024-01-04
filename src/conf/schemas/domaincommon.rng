@@ -7268,6 +7268,11 @@
 
   <define name="memorydev-target">
     <element name="target">
+      <optional>
+        <attribute name="dynamicMemslots">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <interleave>
         <element name="size">
           <ref name="scaledInteger"/>

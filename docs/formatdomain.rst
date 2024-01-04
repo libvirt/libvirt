@@ -8443,6 +8443,19 @@ Example: usage of the memory devices
    The ``node`` subelement configures the guest NUMA node to attach the memory
    to. The element shall be used only if the guest has NUMA nodes configured.
 
+   For ``virtio-mem`` optional attribute ``dynamicMemslots`` can be specified
+   (accepted values "yes"/"no") which allows hypervisor to spread memory into
+   multiple memory slots (allocate them dynamically based on the amount of
+   memory exposed to the guest), resulting in smaller memory footprint. But be
+   aware this may affect vhost-user devices. When enabled, older vhost-user
+   device implementations (such as virtiofs) may refuse to initialize resulting
+   in failed domain startup or device hotplug. When only modern vhost-user
+   based devices will be used or when no vhost-user devices are expected to be
+   used it's beneficial to enable this feature. The current default is
+   hypervisor dependant (for QEMU is "no"). If the default changes and you are
+   having difficulties with vhost-user devices, try toggling this to "no".
+   :since:`Since 10.1.0 and QEMU 8.2.0`
+
    The following optional elements may be used:
 
    ``label``
