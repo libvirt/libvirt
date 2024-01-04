@@ -140,10 +140,7 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
 
     if (noldfdlist && oldfdlist) {
         size_t nfds;
-        if (virProcessGetNamespaces(getpid(),
-                                    &nfds,
-                                    oldfdlist) < 0)
-            goto error;
+        virProcessGetNamespaces(getpid(), &nfds, oldfdlist);
         *noldfdlist = nfds;
     }
 

@@ -70,9 +70,9 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids);
 int virProcessGetStartTime(pid_t pid,
                            unsigned long long *timestamp);
 
-int virProcessGetNamespaces(pid_t pid,
-                            size_t *nfdlist,
-                            int **fdlist);
+void virProcessGetNamespaces(pid_t pid,
+                             size_t *nfdlist,
+                             int **fdlist);
 
 int virProcessSetNamespaces(size_t nfdlist,
                             int *fdlist);

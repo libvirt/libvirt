@@ -4691,8 +4691,7 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virProcessGetNamespaces(priv->initpid, &nfds, fdlist) < 0)
-        goto endjob;
+    virProcessGetNamespaces(priv->initpid, &nfds, fdlist);
 
     ret = nfds;
 

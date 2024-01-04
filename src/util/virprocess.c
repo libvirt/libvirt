@@ -652,9 +652,9 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
 }
 
 
-int virProcessGetNamespaces(pid_t pid,
-                            size_t *nfdlist,
-                            int **fdlist)
+void virProcessGetNamespaces(pid_t pid,
+                             size_t *nfdlist,
+                             int **fdlist)
 {
     size_t i = 0;
     const char *ns[] = { "user", "ipc", "uts", "net", "pid", "mnt" };
@@ -673,8 +673,6 @@ int virProcessGetNamespaces(pid_t pid,
             (*fdlist)[(*nfdlist)-1] = fd;
         }
     }
-
-    return 0;
 }
 
 
