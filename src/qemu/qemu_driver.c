@@ -7145,8 +7145,7 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
                                          false) < 0)
             return -1;
 
-        if (virDomainNetUpdate(vmdef, pos, net))
-            return -1;
+        virDomainNetUpdate(vmdef, pos, net);
 
         virDomainNetDefFree(oldDev.data.net);
         dev->data.net = NULL;

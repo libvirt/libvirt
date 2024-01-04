@@ -14690,7 +14690,7 @@ virDomainNetRemoveByObj(virDomainDef *def, virDomainNetDef *net)
 }
 
 
-int
+void
 virDomainNetUpdate(virDomainDef *def,
                    size_t netidx,
                    virDomainNetDef *newnet)
@@ -14725,7 +14725,6 @@ virDomainNetUpdate(virDomainDef *def,
     }
 
     def->nets[netidx] = newnet;
-    return 0;
 }
 
 

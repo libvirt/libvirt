@@ -3084,8 +3084,7 @@ lxcDomainUpdateDeviceConfig(virDomainDef *vmdef,
                                          false) < 0)
             return -1;
 
-        if (virDomainNetUpdate(vmdef, idx, net) < 0)
-            return -1;
+        virDomainNetUpdate(vmdef, idx, net);
 
         virDomainNetDefFree(oldDev.data.net);
         dev->data.net = NULL;
