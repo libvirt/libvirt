@@ -313,8 +313,8 @@ static void virLXCControllerFree(virLXCController *ctrl)
 }
 
 
-static int virLXCControllerAddConsole(virLXCController *ctrl,
-                                      int hostFd)
+static void virLXCControllerAddConsole(virLXCController *ctrl,
+                                       int hostFd)
 {
     VIR_EXPAND_N(ctrl->consoles, ctrl->nconsoles, 1);
     ctrl->consoles[ctrl->nconsoles-1].daemon = ctrl->daemon;
@@ -326,7 +326,6 @@ static int virLXCControllerAddConsole(virLXCController *ctrl,
 
     ctrl->consoles[ctrl->nconsoles-1].epollFd = -1;
     ctrl->consoles[ctrl->nconsoles-1].epollWatch = -1;
-    return 0;
 }
 
 
@@ -2655,8 +2654,7 @@ int main(int argc, char *argv[])
     }
 
     for (i = 0; i < nttyFDs; i++) {
-        if (virLXCControllerAddConsole(ctrl, ttyFDs[i]) < 0)
-            goto cleanup;
+        virLXCControllerAddConsole(ctrl, ttyFDs[i]);
         ttyFDs[i] = -1;
     }
 
