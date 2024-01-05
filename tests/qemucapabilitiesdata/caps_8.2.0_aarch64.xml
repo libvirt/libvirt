@@ -162,6 +162,7 @@
   <flag name='rbd-encryption-luks-any'/>
   <flag name='qcow2-discard-no-unref'/>
   <flag name='run-with.async-teardown'/>
+  <flag name='smp-clusters'/>
   <version>8002000</version>
   <microcodeVersion>61700246</microcodeVersion>
   <package>v8.2.0</package>

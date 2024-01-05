@@ -198,6 +198,7 @@
   <flag name='qcow2-discard-no-unref'/>
   <flag name='run-with.async-teardown'/>
   <flag name='virtio-blk-vhost-vdpa'/>
+  <flag name='smp-clusters'/>
   <version>8001000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v8.1.0</package>
