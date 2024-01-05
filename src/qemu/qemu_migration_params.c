@@ -104,6 +104,7 @@ VIR_ENUM_IMPL(qemuMigrationCapability,
               "dirty-bitmaps",
               "return-path",
               "zero-copy-send",
+              "postcopy-preempt",
 );
 
 
@@ -197,6 +198,7 @@ static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
     {.match = QEMU_MIGRATION_FLAG_REQUIRED,
      .flag = VIR_MIGRATE_POSTCOPY,
      .cap = QEMU_MIGRATION_CAP_POSTCOPY,
+     .optional = QEMU_MIGRATION_CAP_POSTCOPY_PREEMPT,
      .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 
     {.match = QEMU_MIGRATION_FLAG_REQUIRED,

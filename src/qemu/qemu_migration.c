@@ -5203,17 +5203,20 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
             return -1;
         }
 
-        if (flags & VIR_MIGRATE_PARALLEL)
+        /* multi-fd and postcopy-preempt require QEMU to connect to the
+         * destination itself */
+        if (flags & (VIR_MIGRATE_PARALLEL | VIR_MIGRATE_POSTCOPY))
             spec.destType = MIGRATION_DEST_SOCKET;
         else
             spec.destType = MIGRATION_DEST_CONNECT_SOCKET;
 
         spec.dest.socket.path = uribits->path;
     } else {
-        /* RDMA and multi-fd migration requires QEMU to connect to the destination
-         * itself.
+        /* RDMA, multi-fd, and postcopy-preempt migration require QEMU to
+         * connect to the destination itself.
          */
-        if (STREQ(uribits->scheme, "rdma") || (flags & VIR_MIGRATE_PARALLEL))
+        if (STREQ(uribits->scheme, "rdma") ||
+            flags & (VIR_MIGRATE_PARALLEL | VIR_MIGRATE_POSTCOPY))
             spec.destType = MIGRATION_DEST_HOST;
         else
             spec.destType = MIGRATION_DEST_CONNECT_HOST;
