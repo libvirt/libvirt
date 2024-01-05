@@ -340,11 +340,11 @@ virDomainDefHasMemoryHotplug;
 virDomainDefHasNVMeDisk;
 virDomainDefHasOldStyleROUEFI;
 virDomainDefHasOldStyleUEFI;
+virDomainDefHasPCIHostdev;
 virDomainDefHasSpiceGraphics;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
 virDomainDefHasVDPANet;
-virDomainDefHasVFIOHostdev;
 virDomainDefLifecycleActionAllowed;
 virDomainDefMaybeAddController;
 virDomainDefMaybeAddInput;
@@ -777,8 +777,8 @@ virDomainEventWatchdogNewFromObj;
 virDomainQemuMonitorEventNew;
 virDomainQemuMonitorEventStateRegisterID;
 virHostdevIsMdevDevice;
+virHostdevIsPCIDevice;
 virHostdevIsSCSIDevice;
-virHostdevIsVFIODevice;
 
 
 # conf/domain_nwfilter.h
@@ -1642,7 +1642,6 @@ virCloseCallbacksDomainRunForConn;
 
 # hypervisor/virhostdev.h
 virHostdevFindUSBDevice;
-virHostdevIsPCIDevice;
 virHostdevManagerGetDefault;
 virHostdevPCINodeDeviceDetach;
 virHostdevPCINodeDeviceReAttach;

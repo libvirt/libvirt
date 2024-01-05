@@ -4738,7 +4738,7 @@ qemuDomainRemoveHostDevice(virQEMUDriver *driver,
 
     virDomainAuditHostdev(vm, hostdev, "detach", true);
 
-    if (!virHostdevIsVFIODevice(hostdev) &&
+    if (!virHostdevIsPCIDevice(hostdev) &&
         qemuSecurityRestoreHostdevLabel(driver, vm, hostdev) < 0)
         VIR_WARN("Failed to restore host device labelling");
 

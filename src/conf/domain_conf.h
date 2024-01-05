@@ -4419,7 +4419,7 @@ bool
 virDomainDefHasNVMeDisk(const virDomainDef *def);
 
 bool
-virDomainDefHasVFIOHostdev(const virDomainDef *def);
+virDomainDefHasPCIHostdev(const virDomainDef *def);
 
 bool
 virDomainDefHasMdevHostdev(const virDomainDef *def);
@@ -4477,7 +4477,7 @@ bool
 virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
 bool
-virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
+virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
 
 int

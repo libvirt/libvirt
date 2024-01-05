@@ -30704,12 +30704,12 @@ virDomainDefHasNVMeDisk(const virDomainDef *def)
 
 
 bool
-virDomainDefHasVFIOHostdev(const virDomainDef *def)
+virDomainDefHasPCIHostdev(const virDomainDef *def)
 {
     size_t i;
 
     for (i = 0; i < def->nhostdevs; i++) {
-        if (virHostdevIsVFIODevice(def->hostdevs[i]))
+        if (virHostdevIsPCIDevice(def->hostdevs[i]))
             return true;
     }
 
@@ -30980,17 +30980,16 @@ virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
 
 
 /**
- * virHostdevIsVFIODevice:
+ * virHostdevIsPCIDevice:
  * @hostdev: host device to check
  *
- * Returns true if @hostdev is a PCI device with VFIO backend, false otherwise.
+ * Returns true if @hostdev is a PCI device, false otherwise.
  */
 bool
-virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
+virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 {
     return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
 }
 
 

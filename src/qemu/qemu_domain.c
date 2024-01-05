@@ -9343,7 +9343,7 @@ getPPC64MemLockLimitBytes(virDomainDef *def)
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDef *dev = def->hostdevs[i];
 
-        if (virHostdevIsVFIODevice(dev)) {
+        if (virHostdevIsPCIDevice(dev)) {
 
             pciAddr = &dev->source.subsys.u.pci.addr;
             if (virPCIDeviceAddressIsValid(pciAddr, false)) {
@@ -9448,7 +9448,7 @@ qemuDomainGetNumVFIOHostdevs(const virDomainDef *def)
     int n = 0;
 
     for (i = 0; i < def->nhostdevs; i++) {
-        if (virHostdevIsVFIODevice(def->hostdevs[i]) ||
+        if (virHostdevIsPCIDevice(def->hostdevs[i]) ||
             virHostdevIsMdevDevice(def->hostdevs[i]))
             n++;
     }
@@ -10492,7 +10492,7 @@ qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
 bool
 qemuDomainNeedsVFIO(const virDomainDef *def)
 {
-    return virDomainDefHasVFIOHostdev(def) ||
+    return virDomainDefHasPCIHostdev(def) ||
         virDomainDefHasMdevHostdev(def) ||
         virDomainDefHasNVMeDisk(def);
 }
