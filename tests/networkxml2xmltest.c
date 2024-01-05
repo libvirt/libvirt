@@ -146,6 +146,8 @@ mymain(void)
     DO_TEST_FLAGS("passthrough-pf", VIR_NETWORK_XML_INACTIVE);
     DO_TEST("hostdev");
     DO_TEST_FLAGS("hostdev-pf", VIR_NETWORK_XML_INACTIVE);
+    DO_TEST_FLAGS("hostdev-pf-driver-model", VIR_NETWORK_XML_INACTIVE);
+
     DO_TEST("passthrough-address-crash");
     DO_TEST("nat-network-explicit-flood");
     DO_TEST("host-bridge-no-flood");

@@ -39,8 +39,29 @@
       </source>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </hostdev>
-    <memballoon model='virtio'>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x2'/>
+      </source>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver model='vfio-pci-igb'/>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x3'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio' model='vfio-pci-igb'/>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x4'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </hostdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </memballoon>
   </devices>
 </domain>

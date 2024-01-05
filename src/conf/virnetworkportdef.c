@@ -64,6 +64,7 @@ virNetworkPortDefFree(virNetworkPortDef *def)
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI:
+        virDeviceHostdevPCIDriverInfoClear(&def->plug.hostdevpci.driver);
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_LAST:

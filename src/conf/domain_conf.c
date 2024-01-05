@@ -2638,6 +2638,7 @@ virDomainHostdevDefClear(virDomainHostdevDef *def)
             VIR_FREE(def->source.subsys.u.scsi_host.wwpn);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            virDeviceHostdevPCIDriverInfoClear(&def->source.subsys.u.pci.driver);
             g_clear_pointer(&def->source.subsys.u.pci.origstates, virBitmapFree);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
@@ -29949,6 +29950,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
         actual->data.hostdev.def.source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
         actual->data.hostdev.def.source.subsys.u.pci.addr = port->plug.hostdevpci.addr;
         actual->data.hostdev.def.source.subsys.u.pci.driver.name = port->plug.hostdevpci.driver.name;
+        actual->data.hostdev.def.source.subsys.u.pci.driver.model = g_strdup(port->plug.hostdevpci.driver.model);
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_LAST:
@@ -30050,6 +30052,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
         port->plug.hostdevpci.managed = virTristateBoolFromBool(actual->data.hostdev.def.managed);
         port->plug.hostdevpci.addr = actual->data.hostdev.def.source.subsys.u.pci.addr;
         port->plug.hostdevpci.driver.name = actual->data.hostdev.def.source.subsys.u.pci.driver.name;
+        port->plug.hostdevpci.driver.model = g_strdup(actual->data.hostdev.def.source.subsys.u.pci.driver.model);
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:

@@ -315,17 +315,14 @@ to the physical LAN (if at all).
       guest, use the traditional ``<hostdev>`` device definition. :since:` Since
       0.10.0`
 
-      To force use of a particular type of device assignment, a <forward
-      type='hostdev'> interface can have an optional ``driver`` sub-element with
-      a ``name`` attribute set to either "vfio" (VFIO is a new method of device
-      assignment that is compatible with UEFI Secure Boot) or "kvm" (the legacy
-      device assignment handled directly by the KVM kernel module) :since:`Since
-      1.0.5 (QEMU and KVM only, requires kernel 3.6 or newer)` . When specified,
-      device assignment will fail if the requested method of device assignment
-      isn't available on the host. When not specified, the default is "vfio" on
-      systems where the VFIO driver is available and loaded, and "kvm" on older
-      systems, or those where the VFIO driver hasn't been loaded :since:`Since
-      1.1.3` (prior to that the default was always "kvm").
+      To force use of a particular device-specific VFIO driver when
+      assigning the devices to a guest, a <forward type='hostdev'>
+      interface can have an optional ``driver`` sub-element with a
+      ``model`` attribute set to the name of the driver to use
+      :since:`Since 10.0.0 (QEMU only)`. When not specified, libvirt
+      will attempt to find a suitable VFIO variant driver for the
+      device, and if not found it will use the generic driver
+      "vfio-pci".
 
       Note that this "intelligent passthrough" of network devices is very
       similar to the functionality of a standard ``<hostdev>`` device, the

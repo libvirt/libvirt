@@ -4508,17 +4508,39 @@ or:
    an error. See the `Device Addresses`_ section for more details on the address
    element.
 ``driver``
-   PCI devices can have an optional ``driver`` subelement that specifies which
-   backend driver to use for PCI device assignment. Use the ``name`` attribute
-   to select either "vfio" (for the new VFIO device assignment backend, which is
-   compatible with UEFI SecureBoot) or "kvm" (the legacy device assignment
-   handled directly by the KVM kernel module) :since:`Since 1.0.5 (QEMU and KVM
-   only, requires kernel 3.6 or newer)` . When specified, device assignment will
-   fail if the requested method of device assignment isn't available on the
-   host. When not specified, the default is "vfio" on systems where the VFIO
-   driver is available and loaded, and "kvm" on older systems, or those where
-   the VFIO driver hasn't been loaded :since:`Since 1.1.3` (prior to that the
-   default was always "kvm").
+   PCI hostdev devices can have an optional ``driver`` subelement that
+   specifies which host driver to bind to the device when preparing it
+   for assignment to a guest. :since:`Since 10.0.0 (useful for QEMU and
+   KVM only)`. This is done by setting the ``<driver>`` element's ``model``
+   attribute, for example::
+
+     ...
+       <hostdev mode='subsystem' type='pci' managed='yes'>
+         <driver model='vfio-pci-igb'/>
+     ...
+
+   tells libvirt to bind the driver "vfio-pci-igb" to the device on
+   the host before handing it off to QEMU for assignment to the
+   guest. Normally libvirt will bind the device to the "best match"
+   VFIO-type driver that it finds in the kernel's modules.alias file
+   (based on matching the corresponding fields of the device's
+   modalias file in sysfs) or to the generic "vfio-pci" driver if no
+   better match is found (vfio-pci is always used prior to libvirt
+   10.0.0), but in cases when the correct driver isn't listed in
+   modules.alias then the desired device-specific driver can be forced
+   by setting driver name, or if the device-specific driver that is
+   found is "problematic" in some way, the generic vfio-pci driver
+   similarly be forced.
+
+   (Note: :since:`Since 1.0.5, the ``name`` attribute has been
+   described to be used to select the type of PCI device assignment
+   ("vfio", "kvm", or "xen"), but those values have been mostly
+   useless, since the type of device assignment is actually determined
+   by which hypservisor is in use. This means that you may
+   occasionally see ``<driver name='vfio'/>`` or ``<driver
+   name='xen'/>`` in a domain's status XML, or more rarely in config,
+   but those specific values are essentially ignored.)
+
 ``readonly``
    Indicates that the device is readonly, only supported by SCSI host device
    now. :since:`Since 1.0.6 (QEMU and KVM only)`

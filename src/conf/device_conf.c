@@ -67,6 +67,7 @@ virDeviceHostdevPCIDriverInfoParseXML(xmlNodePtr node,
         return -1;
     }
 
+    driver->model = virXMLPropString(node, "model");
     return 0;
 }
 
@@ -90,8 +91,17 @@ virDeviceHostdevPCIDriverInfoFormat(virBuffer *buf,
         virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);
     }
 
+    virBufferEscapeString(&driverAttrBuf, " model='%s'", driver->model);
+
     virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
     return 0;
+}
+
+
+void
+virDeviceHostdevPCIDriverInfoClear(virDeviceHostdevPCIDriverInfo *driver)
+{
+    VIR_FREE(driver->model);
 }
 
 

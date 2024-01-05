@@ -229,6 +229,8 @@ virNetworkForwardDefClear(virNetworkForwardDef *def)
 {
     size_t i;
 
+    virDeviceHostdevPCIDriverInfoClear(&def->driver);
+
     for (i = 0; i < def->npfs && def->pfs; i++)
         virNetworkForwardPfDefClear(&def->pfs[i]);
     VIR_FREE(def->pfs);
