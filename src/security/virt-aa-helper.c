@@ -1092,7 +1092,7 @@ get_files(vahControl * ctl)
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
                 virPCIDevice *pci = virPCIDeviceNew(&dev->source.subsys.u.pci.addr);
 
-                virDeviceHostdevPCIDriverName driverName = dev->source.subsys.u.pci.backend;
+                virDeviceHostdevPCIDriverName driverName = dev->source.subsys.u.pci.driver.name;
 
                 if (driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO ||
                     driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {

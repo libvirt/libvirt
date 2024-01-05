@@ -1257,7 +1257,7 @@ virSecurityDACSetHostdevLabel(virSecurityManager *mgr,
         if (!pci)
             return -1;
 
-        if (pcisrc->backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
+        if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
             g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev)
@@ -1418,7 +1418,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManager *mgr,
         if (!pci)
             return -1;
 
-        if (pcisrc->backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
+        if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
             g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev)

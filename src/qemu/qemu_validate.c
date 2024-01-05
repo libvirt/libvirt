@@ -2437,7 +2437,7 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                    const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
-    int backend;
+    virDeviceHostdevPCIDriverName driverName;
 
     /* forbid capabilities mode hostdev in this kind of hypervisor */
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
@@ -2462,9 +2462,9 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            backend = hostdev->source.subsys.u.pci.backend;
+            driverName = hostdev->source.subsys.u.pci.driver.name;
 
-            if (backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
+            if (driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("VFIO PCI device assignment is not supported by this version of qemu"));

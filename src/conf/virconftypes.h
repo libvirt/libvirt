@@ -66,6 +66,8 @@ typedef struct _virCapsHostSecModelLabel virCapsHostSecModelLabel;
 
 typedef struct _virCapsStoragePool virCapsStoragePool;
 
+typedef struct _virDeviceHostdevPCIDriverInfo virDeviceHostdevPCIDriverInfo;
+
 typedef struct _virDomainABIStability virDomainABIStability;
 
 typedef struct _virDomainActualNetDef virDomainActualNetDef;

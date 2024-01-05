@@ -6287,7 +6287,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             if (virXMLPropEnum(driver_node, "name",
                                virDeviceHostdevPCIDriverNameTypeFromString,
                                VIR_XML_PROP_NONZERO,
-                               &pcisrc->backend) < 0) {
+                               &pcisrc->driver.name) < 0) {
                 return -1;
             }
         }
@@ -23429,17 +23429,17 @@ virDomainHostdevDefFormatSubsysPCI(virBuffer *buf,
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
 
-    if (pcisrc->backend != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
-        const char *backend = virDeviceHostdevPCIDriverNameTypeToString(pcisrc->backend);
+    if (pcisrc->driver.name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
+        const char *driverName = virDeviceHostdevPCIDriverNameTypeToString(pcisrc->driver.name);
 
-        if (!backend) {
+        if (!driverName) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected pci hostdev driver name type %1$d"),
-                           pcisrc->backend);
+                           _("unexpected pci hostdev driver type %1$d"),
+                           pcisrc->driver.name);
             return -1;
         }
 
-        virBufferAsprintf(&driverAttrBuf, " name='%s'", backend);
+        virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);
     }
 
     virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
@@ -29967,15 +29967,15 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
         actual->data.hostdev.def.source.subsys.u.pci.addr = port->plug.hostdevpci.addr;
         switch ((virNetworkForwardDriverNameType)port->plug.hostdevpci.driver) {
         case VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT:
-            actual->data.hostdev.def.source.subsys.u.pci.backend = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT;
+            actual->data.hostdev.def.source.subsys.u.pci.driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT;
             break;
 
         case VIR_NETWORK_FORWARD_DRIVER_NAME_KVM:
-            actual->data.hostdev.def.source.subsys.u.pci.backend = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM;
+            actual->data.hostdev.def.source.subsys.u.pci.driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM;
             break;
 
         case VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO:
-            actual->data.hostdev.def.source.subsys.u.pci.backend = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
+            actual->data.hostdev.def.source.subsys.u.pci.driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
             break;
 
         case VIR_NETWORK_FORWARD_DRIVER_NAME_LAST:
@@ -30085,7 +30085,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
         }
         port->plug.hostdevpci.managed = virTristateBoolFromBool(actual->data.hostdev.def.managed);
         port->plug.hostdevpci.addr = actual->data.hostdev.def.source.subsys.u.pci.addr;
-        switch (actual->data.hostdev.def.source.subsys.u.pci.backend) {
+        switch (actual->data.hostdev.def.source.subsys.u.pci.driver.name) {
         case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
             port->plug.hostdevpci.driver = VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT;
             break;
@@ -30099,14 +30099,10 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
             break;
 
         case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Unexpected PCI backend 'xen'"));
-            break;
-
         case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
         default:
             virReportEnumRangeError(virDeviceHostdevPCIDriverName,
-                                    actual->data.hostdev.def.source.subsys.u.pci.backend);
+                                    actual->data.hostdev.def.source.subsys.u.pci.driver.name);
             return NULL;
         }
 
@@ -31050,7 +31046,7 @@ virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
 {
     return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        hostdev->source.subsys.u.pci.backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
+        hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
 }
 
 

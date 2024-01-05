@@ -10042,9 +10042,9 @@ testDomainAttachHostPCIDevice(testDriver *driver G_GNUC_UNUSED,
                               virDomainObj *vm,
                               virDomainHostdevDef *hostdev)
 {
-    int backend = hostdev->source.subsys.u.pci.backend;
+    int driverName = hostdev->source.subsys.u.pci.driver.name;
 
-    switch (backend) {
+    switch (driverName) {
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
@@ -10054,7 +10054,7 @@ testDomainAttachHostPCIDevice(testDriver *driver G_GNUC_UNUSED,
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("test hypervisor does not support device assignment mode '%1$s'"),
-                       virDeviceHostdevPCIDriverNameTypeToString(backend));
+                       virDeviceHostdevPCIDriverNameTypeToString(driverName));
         return -1;
     }
 

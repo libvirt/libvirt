@@ -869,7 +869,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
         if (!pci)
             goto done;
 
-        if (pcisrc->backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
+        if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {

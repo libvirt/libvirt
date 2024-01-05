@@ -10534,7 +10534,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDef *dev,
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         switch (dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (pcisrc->backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
+            if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
                 if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&pcisrc->addr)))
                     return -1;
 
@@ -11305,7 +11305,7 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
                             virQEMUCaps *qemuCaps)
 {
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
-    virDeviceHostdevPCIDriverName *driverName = &hostdev->source.subsys.u.pci.backend;
+    virDeviceHostdevPCIDriverName *driverName = &hostdev->source.subsys.u.pci.driver.name;
 
     /* assign defaults for hostdev passthrough */
     switch (*driverName) {

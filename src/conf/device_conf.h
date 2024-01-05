@@ -43,6 +43,10 @@ typedef enum {
 
 VIR_ENUM_DECL(virDeviceHostdevPCIDriverName);
 
+struct _virDeviceHostdevPCIDriverInfo {
+    virDeviceHostdevPCIDriverName name;
+};
+
 typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE = 0,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,

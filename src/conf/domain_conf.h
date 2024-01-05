@@ -235,7 +235,7 @@ struct _virDomainHostdevSubsysUSB {
 
 struct _virDomainHostdevSubsysPCI {
     virPCIDeviceAddress addr; /* host address */
-    virDeviceHostdevPCIDriverName backend;
+    virDeviceHostdevPCIDriverInfo driver;
 
     virBitmap *origstates;
 };

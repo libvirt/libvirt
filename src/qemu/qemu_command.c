@@ -4707,8 +4707,8 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     g_autofree char *host = virPCIDeviceAddressAsString(&pcisrc->addr);
     const char *failover_pair_id = NULL;
 
-    /* caller has to assign proper passthrough backend type */
-    switch (pcisrc->backend) {
+    /* caller has to assign proper passthrough driver name */
+    switch (pcisrc->driver.name) {
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
         break;
 
@@ -4718,7 +4718,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid PCI passthrough type '%1$s'"),
-                       virDeviceHostdevPCIDriverNameTypeToString(pcisrc->backend));
+                       virDeviceHostdevPCIDriverNameTypeToString(pcisrc->driver.name));
         return NULL;
     }
 
