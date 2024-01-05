@@ -9900,11 +9900,12 @@ qemuDomainRefreshVcpuInfo(virDomainObj *vm,
 
         if (validTIDs)
             VIR_DEBUG("vCPU[%zu] PID %llu is valid "
-                      "(node=%d socket=%d die=%d core=%d thread=%d)",
+                      "(node=%d socket=%d die=%d cluster=%d core=%d thread=%d)",
                       i, (unsigned long long)info[i].tid,
                       info[i].node_id,
                       info[i].socket_id,
                       info[i].die_id,
+                      info[i].cluster_id,
                       info[i].core_id,
                       info[i].thread_id);
     }
