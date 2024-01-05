@@ -25,6 +25,7 @@
 #include <libxml/xpath.h>
 
 #include "internal.h"
+#include "virconftypes.h"
 #include "virbuffer.h"
 #include "virccw.h"
 #include "virpci.h"
@@ -184,6 +185,12 @@ struct _virDomainDeviceInfo {
      * locking the isolation group */
     bool isolationGroupLocked;
 };
+
+int virDeviceHostdevPCIDriverInfoParseXML(xmlNodePtr node,
+                                          virDeviceHostdevPCIDriverInfo *driver);
+
+int virDeviceHostdevPCIDriverInfoFormat(virBuffer *buf,
+                                        const virDeviceHostdevPCIDriverInfo *driver);
 
 void virDomainDeviceInfoClear(virDomainDeviceInfo *info);
 void virDomainDeviceInfoFree(virDomainDeviceInfo *info);

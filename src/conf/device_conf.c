@@ -55,6 +55,46 @@ VIR_ENUM_IMPL(virDomainDeviceAddress,
               "unassigned",
 );
 
+
+int
+virDeviceHostdevPCIDriverInfoParseXML(xmlNodePtr node,
+                                      virDeviceHostdevPCIDriverInfo *driver)
+{
+    if (virXMLPropEnum(node, "name",
+                       virDeviceHostdevPCIDriverNameTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &driver->name) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virDeviceHostdevPCIDriverInfoFormat(virBuffer *buf,
+                                    const virDeviceHostdevPCIDriverInfo *driver)
+{
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+
+    if (driver->name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
+        const char *driverName = virDeviceHostdevPCIDriverNameTypeToString(driver->name);
+
+        if (!driverName) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected pci hostdev driver name %1$d"),
+                           driver->name);
+            return -1;
+        }
+
+        virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);
+    }
+
+    virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
+    return 0;
+}
+
+
 static int
 virZPCIDeviceAddressParseXML(xmlNodePtr node,
                              virPCIDeviceAddress *addr)

@@ -6283,13 +6283,9 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, ctxt, def, flags) < 0)
             return -1;
 
-        if ((driver_node = virXPathNode("./driver", ctxt))) {
-            if (virXMLPropEnum(driver_node, "name",
-                               virDeviceHostdevPCIDriverNameTypeFromString,
-                               VIR_XML_PROP_NONZERO,
-                               &pcisrc->driver.name) < 0) {
-                return -1;
-            }
+        if ((driver_node = virXPathNode("./driver", ctxt)) &&
+            virDeviceHostdevPCIDriverInfoParseXML(driver_node, &pcisrc->driver) < 0) {
+            return -1;
         }
         break;
 
@@ -23424,25 +23420,12 @@ virDomainHostdevDefFormatSubsysPCI(virBuffer *buf,
                                    unsigned int flags,
                                    bool includeTypeInAddr)
 {
-    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
 
-    if (pcisrc->driver.name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
-        const char *driverName = virDeviceHostdevPCIDriverNameTypeToString(pcisrc->driver.name);
-
-        if (!driverName) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected pci hostdev driver type %1$d"),
-                           pcisrc->driver.name);
-            return -1;
-        }
-
-        virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);
-    }
-
-    virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
+    if (virDeviceHostdevPCIDriverInfoFormat(buf, &pcisrc->driver) < 0)
+        return -1;
 
     if (def->writeFiltering != VIR_TRISTATE_BOOL_ABSENT)
             virBufferAsprintf(&sourceAttrBuf, " writeFiltering='%s'",
