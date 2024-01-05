@@ -30,6 +30,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#ifdef __linux__
+# include <sys/utsname.h>
+#endif
+
 #include "virlog.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -1320,6 +1324,206 @@ virPCIDeviceFindDriver(virPCIDevice *dev)
 }
 
 
+#ifdef __linux__
+typedef struct {
+    /* this is the decomposed version of a string like:
+     *
+     *   vNNNNNNNNdNNNNNNNNsvNNNNNNNNsdNNNNNNNNbcNNscNNiNN
+     *
+     * (followed by a space or newline). The "NNNN" are always of the
+     * length in the example unless replaced with a wildcard ("*"),
+     * but we make no assumptions about length.
+     *
+     * Rather than name each field, we just put them
+     * all in an array of 7 elements, so that we
+     * can write a simple loop to compare them
+     */
+    char *fields[7]; /* v, d, sv, sd, bc, sc, i */
+} virPCIDeviceAliasInfo;
+
+
+/* NULL in last position makes parsing loop simpler */
+static const char *fieldnames[] = { "v", "d", "sv", "sd", "bc", "sc", "i", NULL };
+
+
+static void
+virPCIDeviceAliasInfoFree(virPCIDeviceAliasInfo *info)
+{
+    if (info) {
+        size_t i;
+
+        for (i = 0; i < G_N_ELEMENTS(info->fields); i++)
+            g_free(info->fields[i]);
+
+        g_free(info);
+    }
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIDeviceAliasInfo, virPCIDeviceAliasInfoFree);
+
+
+static virPCIDeviceAliasInfo *
+virPCIDeviceAliasInfoNew(const char *str)
+{
+    const char *field = str;
+
+    size_t i;
+    g_autoptr(virPCIDeviceAliasInfo) ret = g_new0(virPCIDeviceAliasInfo, 1);
+
+    /* initialize from str */
+    for (i = 0; i < G_N_ELEMENTS(ret->fields); i++) {
+        int len = strlen(fieldnames[i]);
+        const char *next;
+
+        if (strncmp(field, fieldnames[i], len))
+            return NULL;
+
+        field += len;
+        if (fieldnames[i + 1]) {
+            if (!(next = strstr(field, fieldnames[i + 1])))
+                return NULL;
+        } else {
+            next = field;
+            while (*next && !g_ascii_isspace(*next))
+                next++;
+        }
+
+        ret->fields[i] = g_strndup(field, next - field);
+        field = next;
+    }
+
+    return g_steal_pointer(&ret);
+}
+
+
+static bool
+virPCIDeviceAliasInfoMatch(virPCIDeviceAliasInfo *orig,
+                           virPCIDeviceAliasInfo *match,
+                           unsigned int *wildCardCt)
+{
+    size_t i;
+
+    *wildCardCt = 0;
+
+    for (i = 0; i < G_N_ELEMENTS(orig->fields); i++) {
+        if (STREQ(match->fields[i], "*"))
+            (*wildCardCt)++;
+        else if (STRNEQ(orig->fields[i], match->fields[i]))
+            return false;
+    }
+    return true;
+}
+
+
+/* virPCIDeviceFindBestVFIOVariant:
+ *
+ * Find the "best" match of all vfio_pci aliases for @dev in the host
+ * modules.alias file. This uses the algorithm of finding every
+ * modules.alias line that begins with "vfio_pci:", then picking the
+ * one that matches the device's own modalias value (from the file of
+ * that name in the device's sysfs directory) with the fewest
+ * "wildcards" (* character, meaning "match any value for this
+ * attribute").
+ */
+int
+virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev,
+                                char **moduleName)
+{
+    g_autofree char *devModAliasPath = NULL;
+    g_autofree char *devModAliasContent = NULL;
+    const char *devModAlias;
+    g_autoptr(virPCIDeviceAliasInfo) devModAliasInfo = NULL;
+    struct utsname unameInfo;
+    g_autofree char *modulesAliasPath = NULL;
+    g_autofree char *modulesAliasContent = NULL;
+    const char *line;
+    unsigned int currentBestWildcardCt = UINT_MAX;
+
+    *moduleName = NULL;
+
+    /* get the modalias values for the device from sysfs */
+    devModAliasPath = virPCIFile(dev->name, "modalias");
+    if (virFileReadAll(devModAliasPath, 100, &devModAliasContent) < 0)
+        return -1;
+
+    VIR_DEBUG("modalias path: '%s' contents: '%s'",
+              devModAliasPath, devModAliasContent);
+
+    /* "pci:vNNNNNNNNdNNNNNNNNsvNNNNNNNNsdNNNNNNNNbcNNscNNiNN\n" */
+    if  ((devModAlias = STRSKIP(devModAliasContent, "pci:")) == NULL ||
+         !(devModAliasInfo = virPCIDeviceAliasInfoNew(devModAlias))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("device modalias file %1$s content has improper format"),
+                       devModAliasPath);
+        return -1;
+    }
+
+    uname(&unameInfo);
+    modulesAliasPath = g_strdup_printf("/lib/modules/%s/modules.alias", unameInfo.release);
+    if (virFileReadAll(modulesAliasPath, 8 * 1024 * 1024, &modulesAliasContent) < 0)
+        return -1;
+
+    /* Look for all lines that are aliases for vfio_pci drivers.
+     * (The first line is always a comment, so we can be sure "alias"
+     * is preceded by a newline)
+     */
+    line = modulesAliasContent;
+
+    while ((line = strstr(line, "\nalias vfio_pci:"))) {
+        g_autoptr(virPCIDeviceAliasInfo) fileModAliasInfo = NULL;
+        unsigned int wildCardCt;
+
+        /* "alias vfio_pci:vNNNNNNNNdNNNNNNNNsvNNNNNNNNsdNNNNNNNNbcNNscNNiNN XXXX\n" */
+        line += strlen("\nalias vfio_pci:");
+        if (!(fileModAliasInfo = virPCIDeviceAliasInfoNew(line)))
+            continue;
+
+        if (virPCIDeviceAliasInfoMatch(devModAliasInfo,
+                                       fileModAliasInfo, &wildCardCt)) {
+
+            const char *aliasStart = strchr(line, ' ');
+            const char *aliasEnd = NULL;
+            g_autofree char *aliasName = NULL;
+
+            if (!aliasStart) {
+                VIR_WARN("malformed modules.alias vfio_pci: line");
+                continue;
+            }
+
+            aliasStart++;
+            line = aliasEnd = strchrnul(aliasStart, '\n');
+            aliasName = g_strndup(aliasStart, aliasEnd - aliasStart);
+
+            VIR_DEBUG("matching alias '%s' found, %u wildcards, best previously was %u",
+                      aliasName, wildCardCt, currentBestWildcardCt);
+
+            if (wildCardCt < currentBestWildcardCt) {
+
+                /* this is a better match than previous */
+                currentBestWildcardCt = wildCardCt;
+                g_free(*moduleName);
+                *moduleName = g_steal_pointer(&aliasName);
+            }
+        }
+    }
+    return 0;
+}
+
+
+#else /* __linux__ */
+
+
+int
+virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev G_GNUC_UNUSED,
+                                char **moduleName G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("VFIO device assignment is not available on this platform"));
+    return -1;
+}
+#endif /* __linux__ */
+
+
 int
 virPCIDeviceUnbind(virPCIDevice *dev)
 {
@@ -1430,6 +1634,21 @@ virPCIDeviceBindToStub(virPCIDevice *dev)
         return -1;
     }
 
+    if (dev->stubDriverType == VIR_PCI_STUB_DRIVER_VFIO && !dev->stubDriverName) {
+        g_autofree char *autodetectModuleName = NULL;
+
+        /*  automatically use a VFIO variant driver if available for
+         *  this device.
+         */
+
+        if (virPCIDeviceFindBestVFIOVariant(dev, &autodetectModuleName) < 0)
+            return -1;
+
+        g_free(dev->stubDriverName);
+        dev->stubDriverName = g_steal_pointer(&autodetectModuleName);
+    }
+
+    /* if a driver name hasn't been decided by now, use default for this type */
     if (!dev->stubDriverName) {
 
         const char *stubDriverName = NULL;

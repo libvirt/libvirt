@@ -3077,6 +3077,7 @@ virPCIDeviceCopy;
 virPCIDeviceDetach;
 virPCIDeviceExists;
 virPCIDeviceFileIterate;
+virPCIDeviceFindBestVFIOVariant;
 virPCIDeviceFree;
 virPCIDeviceGetAddress;
 virPCIDeviceGetConfigPath;

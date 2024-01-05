@@ -124,6 +124,8 @@ int virPCIDeviceReset(virPCIDevice *dev,
                       virPCIDeviceList *activeDevs,
                       virPCIDeviceList *inactiveDevs);
 
+int virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev, char **moduleName) G_NO_INLINE;
+
 void virPCIDeviceSetManaged(virPCIDevice *dev,
                             bool managed);
 bool virPCIDeviceGetManaged(virPCIDevice *dev);

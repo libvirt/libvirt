@@ -25,6 +25,7 @@
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 # define VIR_MOCK_LOOKUP_MAIN
 # include "virmock.h"
+# include "virpci.h"
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/stat.h>
@@ -924,6 +925,14 @@ pci_driver_handle_unbind(const char *path)
     return pci_driver_unbind(dev->driver, dev);
 }
 
+
+
+int
+virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev G_GNUC_UNUSED,
+                                char **moduleName G_GNUC_UNUSED)
+{
+    return 0;
+}
 
 /*
  * Functions to load the symbols and init the environment
