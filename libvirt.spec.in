@@ -179,13 +179,19 @@
 # default if the OS ships a SELinux policy that allows libvirt to launch it.
 # Right now that's not the case anywhere, but things should be fine by the time
 # Fedora 40 is released.
-#
-# TODO: add RHEL 9 once a minor release that contains the necessary SELinux
-#       bits exists (we only support the most recent minor release)
 %if %{with_qemu}
-    %define with_nbdkit 0%{!?_without_nbdkit:1}
-    %if 0%{?fedora} >= 40
-        %define with_nbdkit_config_default 0%{!?_without_nbdkit_config_default:1}
+    # rhel-8 lacks pidfd_open
+    %if 0%{?fedora} || 0%{?rhel} >= 9
+        %define with_nbdkit 0%{!?_without_nbdkit:1}
+
+        # setting 'with_nbdkit_config_default' must be done only when compiling
+        # in nbdkit support
+        #
+        # TODO: add RHEL 9 once a minor release that contains the necessary SELinux
+        #       bits exists (we only support the most recent minor release)
+        %if 0%{?fedora} >= 40
+            %define with_nbdkit_config_default 0%{!?_without_nbdkit_config_default:1}
+        %endif
     %endif
 %endif
 
@@ -1397,6 +1403,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dhost_validate=disabled \
   -Dlibiscsi=disabled \
   -Dnbdkit=disabled \
+  -Dnbdkit_config_default=disabled \
   -Dlibnl=disabled \
   -Dlibpcap=disabled \
   -Dlibssh2=disabled \
