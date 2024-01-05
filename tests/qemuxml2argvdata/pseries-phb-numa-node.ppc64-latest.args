@@ -15,7 +15,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -cpu POWER9 \
 -m size=2097152k \
 -overcommit mem-lock=off \
--smp 8,sockets=2,dies=1,cores=1,threads=4 \
+-smp 8,sockets=2,dies=1,clusters=1,cores=1,threads=4 \
 -object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":1073741824,"host-nodes":[1],"policy":"bind"}' \
 -numa node,nodeid=0,cpus=0-3,memdev=ram-node0 \
 -object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":1073741824,"host-nodes":[2],"policy":"bind"}' \

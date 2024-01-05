@@ -7226,7 +7226,8 @@ qemuBuildSmpCommandLine(virCommand *cmd,
                            _("Only 1 die per socket is supported"));
             return -1;
         }
-        if (def->cpu->clusters != 1) {
+        if (def->cpu->clusters != 1 &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_CLUSTERS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only 1 cluster per die is supported"));
             return -1;
@@ -7234,6 +7235,8 @@ qemuBuildSmpCommandLine(virCommand *cmd,
         virBufferAsprintf(&buf, ",sockets=%u", def->cpu->sockets);
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_DIES))
             virBufferAsprintf(&buf, ",dies=%u", def->cpu->dies);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_CLUSTERS))
+            virBufferAsprintf(&buf, ",clusters=%u", def->cpu->clusters);
         virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
         virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
     } else {

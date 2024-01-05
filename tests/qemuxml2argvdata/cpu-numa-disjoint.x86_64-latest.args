@@ -15,7 +15,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -cpu qemu64 \
 -m size=219136k \
 -overcommit mem-lock=off \
--smp 16,sockets=2,dies=1,cores=4,threads=2 \
+-smp 16,sockets=2,dies=1,clusters=1,cores=4,threads=2 \
 -object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":112197632}' \
 -numa node,nodeid=0,cpus=0-3,cpus=8-11,memdev=ram-node0 \
 -object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":112197632}' \
