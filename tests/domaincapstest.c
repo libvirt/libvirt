@@ -109,8 +109,8 @@ fillQemuCaps(virDomainCaps *domCaps,
      * successfully mocked as they are not exposed as internal APIs. Therefore,
      * instead of mocking set the expected values here by hand. */
     VIR_DOMAIN_CAPS_ENUM_SET(domCaps->hostdev.pciBackend,
-                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
-                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
+                             VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT,
+                             VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO);
 
     /* As of f05b6a918e28 we are expecting to see OVMF_CODE.fd file which
      * may not exists everywhere. */

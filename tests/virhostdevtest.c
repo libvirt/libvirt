@@ -134,7 +134,7 @@ myInit(void)
         subsys->u.pci.addr.bus = 0;
         subsys->u.pci.addr.slot = i + 1;
         subsys->u.pci.addr.function = 0;
-        subsys->u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
+        subsys->u.pci.backend = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
     }
 
     for (i = 0; i < nhostdevs; i++) {

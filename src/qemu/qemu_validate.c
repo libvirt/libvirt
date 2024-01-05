@@ -2464,7 +2464,7 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             backend = hostdev->source.subsys.u.pci.backend;
 
-            if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+            if (backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("VFIO PCI device assignment is not supported by this version of qemu"));

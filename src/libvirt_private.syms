@@ -126,6 +126,7 @@ virCPUModeTypeToString;
 
 # conf/device_conf.h
 virCCWDeviceAddressParseXML;
+virDeviceHostdevPCIDriverNameTypeToString;
 virDeviceInfoPCIAddressExtensionIsPresent;
 virDeviceInfoPCIAddressExtensionIsWanted;
 virDeviceInfoPCIAddressIsPresent;
@@ -467,7 +468,6 @@ virDomainHostdevInsert;
 virDomainHostdevMatch;
 virDomainHostdevModeTypeToString;
 virDomainHostdevRemove;
-virDomainHostdevSubsysPCIBackendTypeToString;
 virDomainHostdevSubsysSCSIVHostModelTypeFromString;
 virDomainHostdevSubsysSCSIVHostModelTypeToString;
 virDomainHostdevSubsysTypeToString;

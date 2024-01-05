@@ -201,18 +201,6 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 } virDomainHostdevSubsysType;
 
-/* the backend driver used for PCI hostdev devices */
-typedef enum {
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT = 0, /* detect automatically, prefer VFIO */
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,    /* force legacy kvm style */
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO,   /* force vfio */
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN,    /* force legacy xen style, use pciback */
-
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST
-} virDomainHostdevSubsysPCIBackendType;
-
-VIR_ENUM_DECL(virDomainHostdevSubsysPCIBackend);
-
 typedef enum {
     VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE,
     VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI,
@@ -247,7 +235,7 @@ struct _virDomainHostdevSubsysUSB {
 
 struct _virDomainHostdevSubsysPCI {
     virPCIDeviceAddress addr; /* host address */
-    virDomainHostdevSubsysPCIBackendType backend;
+    virDeviceHostdevPCIDriverName backend;
 
     virBitmap *origstates;
 };

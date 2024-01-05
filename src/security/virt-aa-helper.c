@@ -1092,9 +1092,10 @@ get_files(vahControl * ctl)
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
                 virPCIDevice *pci = virPCIDeviceNew(&dev->source.subsys.u.pci.addr);
 
-                virDomainHostdevSubsysPCIBackendType backend = dev->source.subsys.u.pci.backend;
-                if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO ||
-                        backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
+                virDeviceHostdevPCIDriverName driverName = dev->source.subsys.u.pci.backend;
+
+                if (driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO ||
+                    driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
                     needsVfio = true;
                 }
 

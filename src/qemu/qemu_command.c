@@ -4709,16 +4709,16 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
 
     /* caller has to assign proper passthrough backend type */
     switch (pcisrc->backend) {
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
         break;
 
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid PCI passthrough type '%1$s'"),
-                       virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend));
+                       virDeviceHostdevPCIDriverNameTypeToString(pcisrc->backend));
         return NULL;
     }
 

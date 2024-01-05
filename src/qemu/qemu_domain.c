@@ -10534,7 +10534,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDef *dev,
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         switch (dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+            if (pcisrc->backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
                 if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&pcisrc->addr)))
                     return -1;
 
@@ -11305,14 +11305,14 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
                             virQEMUCaps *qemuCaps)
 {
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
-    virDomainHostdevSubsysPCIBackendType *backend = &hostdev->source.subsys.u.pci.backend;
+    virDeviceHostdevPCIDriverName *driverName = &hostdev->source.subsys.u.pci.backend;
 
     /* assign defaults for hostdev passthrough */
-    switch (*backend) {
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+    switch (*driverName) {
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
         if (supportsPassthroughVFIO) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
+                *driverName = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("VFIO PCI device assignment is not supported by this version of QEMU"));
@@ -11325,7 +11325,7 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
         }
         break;
 
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
         if (!supportsPassthroughVFIO) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("host doesn't support VFIO PCI passthrough"));
@@ -11333,20 +11333,20 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
         }
         break;
 
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("host doesn't support legacy PCI passthrough"));
         return false;
 
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("QEMU does not support device assignment mode '%1$s'"),
-                       virDomainHostdevSubsysPCIBackendTypeToString(*backend));
+                       virDeviceHostdevPCIDriverNameTypeToString(*driverName));
         return false;
 
     default:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
-        virReportEnumRangeError(virDomainHostdevSubsysPCIBackendType, *backend);
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
+        virReportEnumRangeError(virDeviceHostdevPCIDriverName, *driverName);
         break;
     }
 

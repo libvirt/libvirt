@@ -29,6 +29,15 @@
 
 #define VIR_FROM_THIS VIR_FROM_DEVICE
 
+VIR_ENUM_IMPL(virDeviceHostdevPCIDriverName,
+              VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST,
+              "default",
+              "kvm",
+              "vfio",
+              "xen",
+);
+
+
 VIR_ENUM_IMPL(virDomainDeviceAddress,
               VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",

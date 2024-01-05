@@ -110,6 +110,6 @@ virshNodeDevicePCIBackendCompleter(vshControl *ctl G_GNUC_UNUSED,
 {
     virCheckFlags(0, NULL);
 
-    return virshEnumComplete(VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST,
-                             virDomainHostdevSubsysPCIBackendTypeToString);
+    return virshEnumComplete(VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST,
+                             virDeviceHostdevPCIDriverNameTypeToString);
 }

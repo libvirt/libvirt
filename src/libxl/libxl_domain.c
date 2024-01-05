@@ -160,8 +160,8 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDef *dev,
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-            pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT)
-            pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
+            pcisrc->backend == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT)
+            pcisrc->backend = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
@@ -997,7 +997,7 @@ libxlNetworkPrepareDevices(virDomainDef *def)
 
             if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                 hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-                pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
+                pcisrc->backend = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
 
             if (virDomainHostdevInsert(def, hostdev) < 0)
                 return -1;

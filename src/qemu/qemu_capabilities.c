@@ -6351,8 +6351,8 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCaps *qemuCaps,
     if (supportsPassthroughVFIO &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
         VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
-                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
-                                 VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
+                                 VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT,
+                                 VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO);
     }
 }
 

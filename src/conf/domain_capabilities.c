@@ -524,7 +524,7 @@ virDomainCapsDeviceHostdevFormat(virBuffer *buf,
     ENUM_PROCESS(hostdev, startupPolicy, virDomainStartupPolicyTypeToString);
     ENUM_PROCESS(hostdev, subsysType, virDomainHostdevSubsysTypeToString);
     ENUM_PROCESS(hostdev, capsType, virDomainHostdevCapsTypeToString);
-    ENUM_PROCESS(hostdev, pciBackend, virDomainHostdevSubsysPCIBackendTypeToString);
+    ENUM_PROCESS(hostdev, pciBackend, virDeviceHostdevPCIDriverNameTypeToString);
 
     FORMAT_EPILOGUE(hostdev);
 }

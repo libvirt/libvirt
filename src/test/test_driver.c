@@ -10045,16 +10045,16 @@ testDomainAttachHostPCIDevice(testDriver *driver G_GNUC_UNUSED,
     int backend = hostdev->source.subsys.u.pci.backend;
 
     switch (backend) {
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
         break;
 
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
+    case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("test hypervisor does not support device assignment mode '%1$s'"),
-                       virDomainHostdevSubsysPCIBackendTypeToString(backend));
+                       virDeviceHostdevPCIDriverNameTypeToString(backend));
         return -1;
     }
 
@@ -10080,7 +10080,7 @@ testDomainAttachHostDevice(testDriver *driver,
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("hotplug is not supported for hostdev subsys type '%1$s'"),
-                       virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+                       virDeviceHostdevPCIDriverNameTypeToString(hostdev->source.subsys.type));
         return -1;
     }
 

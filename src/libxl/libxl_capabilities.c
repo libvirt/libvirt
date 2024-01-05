@@ -623,8 +623,7 @@ libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdev *dev)
     virDomainCapsEnumClear(&dev->capsType);
 
     virDomainCapsEnumClear(&dev->pciBackend);
-    VIR_DOMAIN_CAPS_ENUM_SET(dev->pciBackend,
-                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN);
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->pciBackend, VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN);
     return 0;
 }
 
