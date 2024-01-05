@@ -224,13 +224,10 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
                                    &def->plug.hostdevpci.managed) < 0)
             return NULL;
 
-        if ((driverNode = virXPathNode("./plug/driver", ctxt))) {
-            if (virXMLPropEnum(driverNode, "name",
-                               virDeviceHostdevPCIDriverNameTypeFromString,
-                               VIR_XML_PROP_NONZERO,
-                               &def->plug.hostdevpci.driver.name) < 0) {
-                return NULL;
-            }
+        if ((driverNode = virXPathNode("./plug/driver", ctxt)) &&
+            virDeviceHostdevPCIDriverInfoParseXML(driverNode,
+                                                  &def->plug.hostdevpci.driver) < 0) {
+            return NULL;
         }
 
         if (!(addressNode = virXPathNode("./plug/address", ctxt))) {
@@ -321,7 +318,6 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
                           virTristateBoolTypeToString(def->trustGuestRxFilters));
 
     if (def->plugtype != VIR_NETWORK_PORT_PLUG_TYPE_NONE) {
-        g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
         virBufferAsprintf(buf, "<plug type='%s'",
                           virNetworkPortPlugTypeToString(def->plugtype));
@@ -356,12 +352,8 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
 
-            if (def->plug.hostdevpci.driver.name) {
-                virBufferEscapeString(&driverAttrBuf, " name='%s'",
-                                      virDeviceHostdevPCIDriverNameTypeToString(def->plug.hostdevpci.driver.name));
-            }
-
-            virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
+            if (virDeviceHostdevPCIDriverInfoFormat(buf, &def->plug.hostdevpci.driver) < 0)
+                return -1;
 
             virPCIDeviceAddressFormat(buf, def->plug.hostdevpci.addr, false);
             virBufferAdjustIndent(buf, -2);

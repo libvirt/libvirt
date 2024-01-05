@@ -1349,13 +1349,9 @@ virNetworkForwardDefParseXML(const char *networkName,
         def->managed = true;
     }
 
-    if ((driverNode = virXPathNode("./driver", ctxt))) {
-        if (virXMLPropEnum(driverNode, "name",
-                           virDeviceHostdevPCIDriverNameTypeFromString,
-                           VIR_XML_PROP_NONZERO,
-                           &def->driver.name) < 0) {
+    if ((driverNode = virXPathNode("./driver", ctxt)) &&
+        virDeviceHostdevPCIDriverInfoParseXML(driverNode, &def->driver) < 0) {
             return -1;
-        }
     }
 
     /* bridge and hostdev modes can use a pool of physical interfaces */
@@ -2317,7 +2313,6 @@ virNetworkDefFormatBuf(virBuffer *buf,
     if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
         const char *dev = NULL;
         const char *mode = virNetworkForwardTypeToString(def->forward.type);
-        g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
         if (!def->forward.npfs)
             dev = virNetworkDefForwardIf(def, 0);
@@ -2347,18 +2342,8 @@ virNetworkDefFormatBuf(virBuffer *buf,
         virBufferAsprintf(buf, "%s>\n", shortforward ? "/" : "");
         virBufferAdjustIndent(buf, 2);
 
-        if (def->forward.driver.name) {
-            const char *driverName = virDeviceHostdevPCIDriverNameTypeToString(def->forward.driver.name);
-            if (!driverName) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected hostdev driver name %1$d "),
-                               def->forward.driver.name);
-                return -1;
-            }
-            virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);
-        }
-
-        virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
+       if (virDeviceHostdevPCIDriverInfoFormat(buf, &def->forward.driver) < 0)
+            return -1;
 
         if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
             if (virNetworkForwardNatDefFormat(buf, &def->forward) < 0)
