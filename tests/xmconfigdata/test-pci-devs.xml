@@ -55,13 +55,11 @@
       <model type='cirrus' vram='8192' heads='1' primary='yes'/>
     </video>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='xen'/>
       <source>
         <address domain='0x0001' bus='0x0c' slot='0x1b' function='0x2'/>
       </source>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='xen'/>
       <source>
         <address domain='0x0000' bus='0x01' slot='0x13' function='0x0'/>
       </source>

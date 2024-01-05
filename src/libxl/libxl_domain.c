@@ -160,8 +160,15 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDef *dev,
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-            pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT)
-            pcisrc->driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
+            pcisrc->driver.name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT &&
+            pcisrc->driver.name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN) {
+
+            /* Xen only supports "Xen" style of hostdev */
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("XEN does not support device assignment mode '%1$s'"),
+                           virDeviceHostdevPCIDriverNameTypeToString(pcisrc->driver.name));
+            return -1;
+        }
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
@@ -986,18 +993,9 @@ libxlNetworkPrepareDevices(virDomainDef *def)
         if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
             net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             /* Each type='hostdev' network device must also have a
-             * corresponding entry in the hostdevs array. For netdevs
-             * that are hardcoded as type='hostdev', this is already
-             * done by the parser, but for those allocated from a
-             * network / determined at runtime, we need to do it
-             * separately.
+             * corresponding entry in the hostdevs array.
              */
             virDomainHostdevDef *hostdev = virDomainNetGetActualHostdev(net);
-            virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
-
-            if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-                hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-                pcisrc->driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
 
             if (virDomainHostdevInsert(def, hostdev) < 0)
                 return -1;
@@ -1006,6 +1004,54 @@ libxlNetworkPrepareDevices(virDomainDef *def)
 
     return 0;
 }
+
+
+static int
+libxlHostdevPrepareDevices(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
+        virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
+
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+            pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
+
+
+            pcisrc->driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
+
+            /* Q: Why do we set an explicit driver.name here even
+             * though Xen (currently) only supports one driver.name for
+             * PCI hostdev assignment?
+             *
+             * A: Setting the driver name *in the domain XML config*
+             * is optional (and actually pointless at the time of
+             * writing, since each hypervisor only supports a single
+             * type of PCI hostdev device assignment). But the
+             * hypervisor-agnostic virHostdevPrepareDomainDevices(),
+             * which is called immediately after this function in
+             * order to do any driver-related setup (e.g. bind the
+             * host device to a driver kernel driver), requires that
+             * the driver.name be explicitly set (otherwise it wouldn't
+             * know whether to bind to the Xen driver or VFIO driver,
+             * for example).
+             *
+             * NB: If there are ever multiple types of device
+             * assignment supported by Xen, DO NOT CHANGE the value of
+             * driver.name set above when the config is "default" to
+             * anything other than "xen", unless the guest ABI of the
+             * new type is compatible with that of current "xen"
+             * device assignment.
+             *
+             */
+        }
+    }
+
+    return 0;
+}
+
 
 static void
 libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
@@ -1172,6 +1218,9 @@ libxlDomainStartPrepare(libxlDriverPrivate *driver,
         goto error;
 
     if (libxlNetworkPrepareDevices(vm->def) < 0)
+        goto error;
+
+    if (libxlHostdevPrepareDevices(vm->def) < 0)
         goto error;
 
     if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,

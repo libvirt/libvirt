@@ -3087,6 +3087,22 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivate *driver,
 
     VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
+    /* The only supported driverType for Xen is
+     * VIR_DOMAIN_HOSTDEV_PCI_DRIVER_TYPE_XEN, which normally isn't
+     * set in the config (because it doesn't need to be), but it does
+     * need to be set for the impending call to
+     * virHostdevPreparePCIDevices()
+     */
+    if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT)
+        pcisrc->driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
+
+    if (pcisrc->driver.name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("XEN does not support device assignment mode '%1$s'"),
+                       virDeviceHostdevPCIDriverNameTypeToString(pcisrc->driver.name));
+        goto cleanup;
+    }
+
     if (virHostdevPreparePCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def->name, vm->def->uuid,
                                     &hostdev, 1, 0) < 0)
@@ -3395,15 +3411,6 @@ libxlDomainAttachNetDevice(libxlDriverPrivate *driver,
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         virDomainHostdevDef *hostdev = virDomainNetGetActualHostdev(net);
-        virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
-
-        /* For those just allocated from a network pool whose driver type is
-         * still VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT, we need to set
-         * driver name correctly.
-         */
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            pcisrc->driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN;
 
         /* This is really a "smart hostdev", so it should be attached
          * as a hostdev (the hostdev code will reach over into the
