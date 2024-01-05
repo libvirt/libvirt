@@ -3762,18 +3762,12 @@
         </element>
       </optional>
       <optional>
-        <element name="driver">
-          <choice>
-            <group>
-              <attribute name="name">
-                <choice>
-                  <value>kvm</value>
-                  <value>vfio</value>
-                  <value>xen</value>
-                </choice>
-              </attribute>
-            </group>
-            <group>
+        <choice>
+          <group>
+            <ref name="hostdevDriver"/>
+          </group>
+          <group>
+            <element name="driver">
               <optional>
                 <attribute name="name">
                   <choice>
@@ -3811,90 +3805,90 @@
               <optional>
                 <ref name="event_idx"/>
               </optional>
-            </group>
-          </choice>
-          <ref name="virtioOptions"/>
-          <interleave>
-            <optional>
-              <element name="host">
+              <ref name="virtioOptions"/>
+              <interleave>
                 <optional>
-                  <attribute name="csum">
+                  <element name="host">
+                    <optional>
+                      <attribute name="csum">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="gso">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso4">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso6">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ecn">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ufo">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="mrg_rxbuf">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="guest">
+                    <optional>
+                      <attribute name="csum">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso4">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso6">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ecn">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ufo">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                  </element>
+                </optional>
+                <optional>
+                  <attribute name="rss">
                     <ref name="virOnOff"/>
                   </attribute>
                 </optional>
                 <optional>
-                  <attribute name="gso">
+                  <attribute name="rss_hash_report">
                     <ref name="virOnOff"/>
                   </attribute>
                 </optional>
-                <optional>
-                  <attribute name="tso4">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="tso6">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ecn">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ufo">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="mrg_rxbuf">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-              </element>
-            </optional>
-            <optional>
-              <element name="guest">
-                <optional>
-                  <attribute name="csum">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="tso4">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="tso6">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ecn">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ufo">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-              </element>
-            </optional>
-            <optional>
-              <attribute name="rss">
-                <ref name="virOnOff"/>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="rss_hash_report">
-                <ref name="virOnOff"/>
-              </attribute>
-            </optional>
-          </interleave>
-        </element>
+              </interleave>
+            </element>
+          </group>
+        </choice>
       </optional>
       <optional>
         <ref name="alias"/>
@@ -6227,16 +6221,7 @@
     </attribute>
     <interleave>
       <optional>
-        <element name="driver">
-          <attribute name="name">
-            <choice>
-              <value>kvm</value>
-              <value>vfio</value>
-              <value>xen</value>
-            </choice>
-          </attribute>
-          <empty/>
-        </element>
+        <ref name="hostdevDriver"/>
       </optional>
       <optional>
         <ref name="teaming"/>

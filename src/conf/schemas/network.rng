@@ -179,15 +179,7 @@
                 </element>
               </optional>
               <optional>
-                <element name="driver">
-                  <attribute name="name">
-                    <choice>
-                      <value>kvm</value>
-                      <value>vfio</value>
-                    </choice>
-                  </attribute>
-                  <empty/>
-                </element>
+                <ref name="hostdevDriver"/>
               </optional>
               <optional>
                 <element name="nat">
