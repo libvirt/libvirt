@@ -24,6 +24,7 @@
 #define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
 
 #include "internal.h"
+#include "virconftypes.h"
 #include "virsocketaddr.h"
 #include "virnetdevbandwidth.h"
 #include "virnetdevvportprofile.h"
@@ -87,20 +88,6 @@ typedef enum {
 } virNetworkDHCPLeaseTimeUnitType;
 
 VIR_ENUM_DECL(virNetworkDHCPLeaseTimeUnit);
-
-/* The backend driver used for devices from the pool. Currently used
- * only for PCI devices (vfio vs. kvm), but could be used for other
- * device types in the future.
- */
-typedef enum {
-    VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT, /* kvm now, could change */
-    VIR_NETWORK_FORWARD_DRIVER_NAME_KVM,    /* force legacy kvm style */
-    VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO,   /* force vfio */
-
-    VIR_NETWORK_FORWARD_DRIVER_NAME_LAST
-} virNetworkForwardDriverNameType;
-
-VIR_ENUM_DECL(virNetworkForwardDriverName);
 
 typedef struct _virNetworkDHCPLeaseTimeDef virNetworkDHCPLeaseTimeDef;
 struct _virNetworkDHCPLeaseTimeDef {
@@ -216,7 +203,7 @@ typedef struct _virNetworkForwardDef virNetworkForwardDef;
 struct _virNetworkForwardDef {
     int type;     /* One of virNetworkForwardType constants */
     bool managed;  /* managed attribute for hostdev mode */
-    virNetworkForwardDriverNameType driverName;
+    virDeviceHostdevPCIDriverInfo driver;
 
     /* If there are multiple forward devices (i.e. a pool of
      * interfaces), they will be listed here.

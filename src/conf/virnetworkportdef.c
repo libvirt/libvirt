@@ -226,9 +226,9 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 
         if ((driverNode = virXPathNode("./plug/driver", ctxt))) {
             if (virXMLPropEnum(driverNode, "name",
-                               virNetworkForwardDriverNameTypeFromString,
+                               virDeviceHostdevPCIDriverNameTypeFromString,
                                VIR_XML_PROP_NONZERO,
-                               &def->plug.hostdevpci.driver) < 0) {
+                               &def->plug.hostdevpci.driver.name) < 0) {
                 return NULL;
             }
         }
@@ -356,9 +356,9 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
 
-            if (def->plug.hostdevpci.driver) {
+            if (def->plug.hostdevpci.driver.name) {
                 virBufferEscapeString(&driverAttrBuf, " name='%s'",
-                                      virNetworkForwardDriverNameTypeToString(def->plug.hostdevpci.driver));
+                                      virDeviceHostdevPCIDriverNameTypeToString(def->plug.hostdevpci.driver.name));
             }
 
             virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);

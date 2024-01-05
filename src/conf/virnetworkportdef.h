@@ -22,6 +22,8 @@
 #pragma once
 
 #include "internal.h"
+#include "virconftypes.h"
+#include "device_conf.h"
 #include "virnetdevvlan.h"
 #include "virnetdevvportprofile.h"
 #include "virnetdevbandwidth.h"
@@ -69,7 +71,7 @@ struct _virNetworkPortDef {
         } direct;
         struct {
             virPCIDeviceAddress addr; /* PCI Address of device */
-            unsigned int driver; /* virNetworkForwardDriverNameType */
+            virDeviceHostdevPCIDriverInfo driver;
             virTristateBool managed;
         } hostdevpci;
     } plug;

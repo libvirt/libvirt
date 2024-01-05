@@ -56,13 +56,6 @@ VIR_ENUM_IMPL(virNetworkForwardHostdevDevice,
               "none", "pci", "netdev",
 );
 
-VIR_ENUM_IMPL(virNetworkForwardDriverName,
-              VIR_NETWORK_FORWARD_DRIVER_NAME_LAST,
-              "default",
-              "kvm",
-              "vfio",
-);
-
 VIR_ENUM_IMPL(virNetworkTaint,
               VIR_NETWORK_TAINT_LAST,
               "hook-script",
@@ -1358,9 +1351,9 @@ virNetworkForwardDefParseXML(const char *networkName,
 
     if ((driverNode = virXPathNode("./driver", ctxt))) {
         if (virXMLPropEnum(driverNode, "name",
-                           virNetworkForwardDriverNameTypeFromString,
+                           virDeviceHostdevPCIDriverNameTypeFromString,
                            VIR_XML_PROP_NONZERO,
-                           &def->driverName) < 0) {
+                           &def->driver.name) < 0) {
             return -1;
         }
     }
@@ -2349,19 +2342,17 @@ virNetworkDefFormatBuf(virBuffer *buf,
                          || VIR_SOCKET_ADDR_VALID(&def->forward.addr.end)
                          || def->forward.port.start
                          || def->forward.port.end
-                         || (def->forward.driverName
-                             != VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT)
+                         || (def->forward.driver.name != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT)
                          || def->forward.natIPv6);
         virBufferAsprintf(buf, "%s>\n", shortforward ? "/" : "");
         virBufferAdjustIndent(buf, 2);
 
-        if (def->forward.driverName) {
-            const char *driverName
-                = virNetworkForwardDriverNameTypeToString(def->forward.driverName);
+        if (def->forward.driver.name) {
+            const char *driverName = virDeviceHostdevPCIDriverNameTypeToString(def->forward.driver.name);
             if (!driverName) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected hostdev driver name type %1$d "),
-                               def->forward.driverName);
+                               _("unexpected hostdev driver name %1$d "),
+                               def->forward.driver.name);
                 return -1;
             }
             virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);

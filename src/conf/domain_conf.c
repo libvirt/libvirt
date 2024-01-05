@@ -29965,26 +29965,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
         }
         actual->data.hostdev.def.source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
         actual->data.hostdev.def.source.subsys.u.pci.addr = port->plug.hostdevpci.addr;
-        switch ((virNetworkForwardDriverNameType)port->plug.hostdevpci.driver) {
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT:
-            actual->data.hostdev.def.source.subsys.u.pci.driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT;
-            break;
-
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_KVM:
-            actual->data.hostdev.def.source.subsys.u.pci.driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM;
-            break;
-
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO:
-            actual->data.hostdev.def.source.subsys.u.pci.driver.name = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
-            break;
-
-        case VIR_NETWORK_FORWARD_DRIVER_NAME_LAST:
-        default:
-            virReportEnumRangeError(virNetworkForwardDriverNameType,
-                                    port->plug.hostdevpci.driver);
-            goto error;
-        }
-
+        actual->data.hostdev.def.source.subsys.u.pci.driver.name = port->plug.hostdevpci.driver.name;
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_LAST:
@@ -30085,27 +30066,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
         }
         port->plug.hostdevpci.managed = virTristateBoolFromBool(actual->data.hostdev.def.managed);
         port->plug.hostdevpci.addr = actual->data.hostdev.def.source.subsys.u.pci.addr;
-        switch (actual->data.hostdev.def.source.subsys.u.pci.driver.name) {
-        case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
-            port->plug.hostdevpci.driver = VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT;
-            break;
-
-        case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
-            port->plug.hostdevpci.driver = VIR_NETWORK_FORWARD_DRIVER_NAME_KVM;
-            break;
-
-        case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
-            port->plug.hostdevpci.driver = VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO;
-            break;
-
-        case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
-        case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
-        default:
-            virReportEnumRangeError(virDeviceHostdevPCIDriverName,
-                                    actual->data.hostdev.def.source.subsys.u.pci.driver.name);
-            return NULL;
-        }
-
+        port->plug.hostdevpci.driver.name = actual->data.hostdev.def.source.subsys.u.pci.driver.name;
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:

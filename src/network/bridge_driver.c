@@ -3930,7 +3930,7 @@ networkAllocatePort(virNetworkObj *obj,
             return -1;
         }
         port->plug.hostdevpci.addr = dev->device.pci;
-        port->plug.hostdevpci.driver = netdef->forward.driverName;
+        port->plug.hostdevpci.driver.name = netdef->forward.driver.name;
         port->plug.hostdevpci.managed = virTristateBoolFromBool(netdef->forward.managed);
 
         if (port->virtPortProfile) {
