@@ -223,6 +223,13 @@ virPCIDriverDir(const char *driver)
 
 
 static char *
+virPCIModuleDir(const char *module)
+{
+    return g_strdup_printf("/sys/module/%s", module);
+}
+
+
+static char *
 virPCIFile(const char *device, const char *file)
 {
     return g_strdup_printf(PCI_SYSFS "devices/%s/%s", device, file);
@@ -1154,43 +1161,164 @@ virPCIDeviceReset(virPCIDevice *dev,
 }
 
 
-static int
-virPCIProbeDriver(const char *driverName)
+/**
+ * virPCINameDashToUnderscore:
+ * @path: the module/driver name or path - will be directly modified
+ *
+ * Replace all occurences of "-" with "_" in the name
+ * part of the path (everything after final "/"
+ *
+ * return true if any change was made, otherwise false.
+ */
+static bool
+virPCINameDashToUnderscore(char *path)
 {
-    g_autofree char *drvpath = NULL;
+    bool changed = false;
+    char *tmp = strrchr(path, '/');
+
+    if (!tmp)
+        tmp = path;
+
+    while (*tmp) {
+        if (*tmp == '-') {
+            *tmp = '_';
+            changed = true;
+        }
+        tmp++;
+    }
+
+    return changed;
+}
+
+
+static int
+virPCIProbeModule(const char *moduleName)
+{
+    g_autofree char *modulePath = NULL;
     g_autofree char *errbuf = NULL;
 
-    drvpath = virPCIDriverDir(driverName);
+    modulePath = virPCIModuleDir(moduleName);
 
     /* driver previously loaded, return */
-    if (virFileExists(drvpath))
+    if (virFileExists(modulePath))
         return 0;
 
-    if ((errbuf = virKModLoad(driverName))) {
-        VIR_WARN("failed to load driver %s: %s", driverName, errbuf);
-        goto cleanup;
+    if ((errbuf = virKModLoad(moduleName))) {
+        /* If we know failure was because of admin config, let's report that;
+         * otherwise, report a more generic failure message
+         */
+        if (virKModIsProhibited(moduleName)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to load PCI driver module %1$s: administratively prohibited"),
+                           moduleName);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to load PCI driver module %1$s: %2$s"),
+                           moduleName, errbuf);
+        }
+        return -1;
     }
 
     /* driver loaded after probing */
-    if (virFileExists(drvpath))
+    if (virFileExists(modulePath))
         return 0;
 
- cleanup:
-    /* If we know failure was because of admin config, let's report that;
-     * otherwise, report a more generic failure message
-     */
-    if (virKModIsProhibited(driverName)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI driver module %1$s: administratively prohibited"),
-                       driverName);
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI driver module %1$s"),
-                       driverName);
-    }
-
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("modprobe reported success loading module '%1$s', but module is missing from /sys/module"),
+                   moduleName);
     return -1;
 }
+
+/**
+ * virPCIDeviceFindDriver:
+ * @dev: initialized virPCIDevice, including desired stubDriverName
+ *
+ * Checks if there is a driver named @dev->stubDriverName already
+ * loaded. If there is, we're done. If not, look for a driver with
+ * that same name, except with dashes replaced with underscores.
+
+ * If neither of the above is found, then look for/load the module of
+ * the underscored version of the name, and follow the links from
+ * /sys/module/$name/drivers/pci:* to the PCI driver associated with that
+ * module, and update @dev->stubDriverName with that name.
+ *
+ * On a successful return, @dev->stubDriverName will be updated with
+ * the proper name for the driver, and that driver will be loaded.
+ *
+ * returns 0 on success, -1 on failure
+ */
+static int
+virPCIDeviceFindDriver(virPCIDevice *dev)
+{
+    g_autofree char *driverPath = virPCIDriverDir(dev->stubDriverName);
+    g_autofree char *moduleName = NULL;
+    g_autofree char *moduleDriversDir = NULL;
+    g_autoptr(DIR) dir = NULL;
+    struct dirent *ent;
+
+    /* unchanged  stubDriverName */
+    if (virFileExists(driverPath))
+        return 0;
+
+    /* try replacing "-" with "_" */
+    if (virPCINameDashToUnderscore(driverPath) && virFileExists(driverPath)) {
+
+        /* update original name in dev */
+        virPCINameDashToUnderscore(dev->stubDriverName);
+        return 0;
+    }
+
+    /* look for a module with this name (but always replacing
+     * "-" with "_", since that's what modprobe does)
+     */
+
+    moduleName = g_strdup(dev->stubDriverName);
+    virPCINameDashToUnderscore(moduleName);
+
+    if (virPCIProbeModule(moduleName) < 0)
+        return -1;
+
+    /* module was found/loaded. Now find the PCI driver it implements,
+     * linked to by /sys/module/$moduleName/drivers/pci:$driverName
+     */
+
+    moduleDriversDir = g_strdup_printf("/sys/module/%s/drivers", moduleName);
+
+    if (virDirOpen(&dir, moduleDriversDir) < 0)
+        return -1;
+
+    while (virDirRead(dir, &ent, moduleDriversDir) > 0) {
+
+        if (STRPREFIX(ent->d_name, "pci:")) {
+            /* this is the link to the driver we want */
+
+            g_autofree char *drvName = NULL;
+            g_autofree char *drvPath = NULL;
+
+            /* extract the driver name from the link name */
+            drvName = g_strdup(ent->d_name + strlen("pci:"));
+
+            /* make sure that driver is actually loaded */
+            drvPath = virPCIDriverDir(drvName);
+            if (!virFileExists(drvPath)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"),
+                               drvName, moduleName);
+                return -1;
+            }
+
+            g_free(dev->stubDriverName);
+            dev->stubDriverName = g_steal_pointer(&drvName);
+            return 0;
+        }
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("module '%1$s' does not implement any pci driver"),
+                   moduleName);
+    return -1;
+}
+
 
 int
 virPCIDeviceUnbind(virPCIDevice *dev)
@@ -1291,7 +1419,6 @@ virPCIDeviceUnbindFromStub(virPCIDevice *dev)
 static int
 virPCIDeviceBindToStub(virPCIDevice *dev)
 {
-    const char *stubDriverName = dev->stubDriverName;
     g_autofree char *stubDriverPath = NULL;
     g_autofree char *driverLink = NULL;
 
@@ -1303,30 +1430,35 @@ virPCIDeviceBindToStub(virPCIDevice *dev)
         return -1;
     }
 
-    if (!stubDriverName
-        && !(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriverType))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown stub driver configured for PCI device %1$s"),
-                       dev->name);
-        return -1;
+    if (!dev->stubDriverName) {
+
+        const char *stubDriverName = NULL;
+
+        if (!(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriverType))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown stub driver configured for PCI device %1$s"),
+                           dev->name);
+            return -1;
+        }
+        dev->stubDriverName = g_strdup(stubDriverName);
     }
 
-    if (virPCIProbeDriver(stubDriverName) < 0)
+    if (virPCIDeviceFindDriver(dev) < 0)
         return -1;
 
-    stubDriverPath = virPCIDriverDir(stubDriverName);
+    stubDriverPath = virPCIDriverDir(dev->stubDriverName);
     driverLink = virPCIFile(dev->name, "driver");
 
     if (virFileExists(driverLink)) {
         if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
             /* The device is already bound to the correct driver */
             VIR_DEBUG("Device %s is already bound to %s",
-                      dev->name, stubDriverName);
+                      dev->name, dev->stubDriverName);
             return 0;
         }
     }
 
-    if (virPCIDeviceBindWithDriverOverride(dev, stubDriverName) < 0)
+    if (virPCIDeviceBindWithDriverOverride(dev, dev->stubDriverName) < 0)
         return -1;
 
     dev->unbind_from_stub = true;
