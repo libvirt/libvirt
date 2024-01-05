@@ -582,6 +582,7 @@ virTestCompareToFileFull(const char *actual,
     g_autofree char *filecontent = NULL;
     g_autofree char *fixedcontent = NULL;
     const char *cmpcontent = actual;
+    size_t cmpcontentLen;
 
     if (!cmpcontent)
         cmpcontent = "";
@@ -594,16 +595,12 @@ virTestCompareToFileFull(const char *actual,
             return -1;
     }
 
-    if (filecontent) {
-        size_t filecontentLen = strlen(filecontent);
-        size_t cmpcontentLen = strlen(cmpcontent);
+    cmpcontentLen = strlen(cmpcontent);
 
-        if (filecontentLen > 0 &&
-            filecontent[filecontentLen - 1] == '\n' &&
-            (cmpcontentLen == 0 || cmpcontent[cmpcontentLen - 1] != '\n')) {
-            fixedcontent = g_strdup_printf("%s\n", cmpcontent);
-            cmpcontent = fixedcontent;
-        }
+    if (cmpcontentLen > 0 &&
+        cmpcontent[cmpcontentLen - 1] != '\n') {
+        fixedcontent = g_strdup_printf("%s\n", cmpcontent);
+        cmpcontent = fixedcontent;
     }
 
     if (STRNEQ_NULLABLE(cmpcontent, filecontent)) {
