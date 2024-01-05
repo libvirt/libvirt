@@ -163,7 +163,6 @@ rather than emulation.
 
      ...
      <plug type='hostdev-pci' managed='yes'>
-       <driver name='vfio'/>
        <address domain='0x0001' bus='0x02' slot='0x03' function='0x4'/>
      </plug>
      ...

@@ -20,7 +20,6 @@
     <controller type='pci' index='0' model='pci-root'/>
     <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0001' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -29,7 +28,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0002' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -38,7 +36,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0003' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -47,7 +44,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0004' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -56,7 +52,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0005' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -65,7 +60,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0006' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -74,7 +68,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0007' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -83,7 +76,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0008' bus='0x00' slot='0x00' function='0x0'/>
       </source>

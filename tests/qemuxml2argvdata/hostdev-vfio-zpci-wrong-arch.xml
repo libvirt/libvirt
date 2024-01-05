@@ -21,7 +21,6 @@
     </disk>
     <controller type='pci' index='0' model='pci-root'/>
     <hostdev mode='subsystem' type='pci' managed='yes'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0001' bus='00' slot='00' function='0'/>
       </source>

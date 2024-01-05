@@ -392,7 +392,6 @@ to the physical LAN (if at all).
 
       ...
         <forward mode='hostdev' managed='yes'>
-          <driver name='vfio'/>
           <address type='pci' domain='0' bus='4' slot='0' function='1'/>
           <address type='pci' domain='0' bus='4' slot='0' function='2'/>
           <address type='pci' domain='0' bus='4' slot='0' function='3'/>

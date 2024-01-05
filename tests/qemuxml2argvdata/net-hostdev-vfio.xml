@@ -24,7 +24,6 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='hostdev' managed='yes'>
       <mac address='00:11:22:33:44:55'/>
-      <driver name='vfio'/>
       <source>
         <address type='pci' domain='0x0000' bus='0x06' slot='0x12' function='0x1'/>
       </source>

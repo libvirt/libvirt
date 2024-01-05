@@ -5232,7 +5232,6 @@ or stopping the guest.
    ...
    <devices>
      <interface type='hostdev' managed='yes'>
-       <driver name='vfio'/>
        <source>
          <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
        </source>

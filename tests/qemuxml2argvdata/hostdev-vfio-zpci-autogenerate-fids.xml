@@ -8,7 +8,6 @@
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0000' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -17,7 +16,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0001' bus='0x00' slot='0x00' function='0x0'/>
       </source>

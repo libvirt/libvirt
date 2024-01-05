@@ -2,7 +2,6 @@
   <name>hostdev</name>
   <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
   <forward mode='hostdev' managed='yes'>
-    <driver name='vfio'/>
     <pf dev='eth2'/>
   </forward>
 </network>

@@ -25,7 +25,6 @@
     </controller>
     <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0xffff' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -34,7 +33,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0000' bus='0x00' slot='0x00' function='0x0'/>
       </source>

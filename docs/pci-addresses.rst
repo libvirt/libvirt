@@ -223,7 +223,6 @@ For example, the domain XML snippet
 ::
 
   <hostdev mode='subsystem' type='pci' managed='yes'>
-    <driver name='vfio'/>
     <source>
       <address domain='0x0001' bus='0x08' slot='0x00' function='0x0'/>
     </source>

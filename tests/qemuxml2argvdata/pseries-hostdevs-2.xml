@@ -17,7 +17,6 @@
          despite being in the separate isolation group 1 (IOMMU group 0),
          because the address has been requested explicitly by the user -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0001' bus='0x01' slot='0x00' function='0x0'/>
       </source>
@@ -26,7 +25,6 @@
     <!-- This hostdev can use neither the PHB that was just created, nor the
          default one, because it's in isolation group 2 (IOMMU group 1) -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0005' bus='0x90' slot='0x01' function='0x0'/>
       </source>

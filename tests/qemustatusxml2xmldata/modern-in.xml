@@ -502,7 +502,6 @@
         <address type='drive' controller='0' bus='0' target='2' unit='4'/>
       </hostdev>
       <hostdev mode='subsystem' type='pci' managed='yes'>
-        <driver name='vfio'/>
         <source>
           <address domain='0x0005' bus='0x90' slot='0x01' function='0x2'/>
           <origstates>

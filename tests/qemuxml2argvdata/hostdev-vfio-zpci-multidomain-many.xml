@@ -9,7 +9,6 @@
     <emulator>/usr/bin/qemu-system-s390x</emulator>
     <controller type='pci' index='0' model='pci-root'/>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0001' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -18,7 +17,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0002' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -27,20 +25,17 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0003' bus='0x00' slot='0x00' function='0x0'/>
       </source>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0004' bus='0x00' slot='0x00' function='0x0'/>
       </source>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0005' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -49,7 +44,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0006' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -58,7 +52,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0007' bus='0x00' slot='0x00' function='0x0'/>
       </source>
@@ -67,7 +60,6 @@
       </address>
     </hostdev>
     <hostdev mode='subsystem' type='pci'>
-      <driver name='vfio'/>
       <source>
         <address domain='0x0008' bus='0x00' slot='0x00' function='0x0'/>
       </source>
