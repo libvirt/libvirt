@@ -148,6 +148,7 @@ struct _virCPUDef {
     unsigned int microcodeVersion;
     unsigned int sockets;
     unsigned int dies;
+    unsigned int clusters;
     unsigned int cores;
     unsigned int threads;
     unsigned int sigFamily;

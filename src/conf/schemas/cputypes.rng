@@ -92,6 +92,11 @@
           <ref name="positiveInteger"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="clusters">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
       <attribute name="cores">
         <ref name="positiveInteger"/>
       </attribute>

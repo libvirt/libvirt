@@ -18,7 +18,7 @@
   <cpu mode='custom' match='exact' check='partial'>
     <model fallback='allow'>core2duo</model>
     <vendor>Intel</vendor>
-    <topology sockets='1' dies='1' cores='2' threads='1'/>
+    <topology sockets='1' dies='1' clusters='1' cores='2' threads='1'/>
     <feature policy='require' name='lahf_lm'/>
     <feature policy='require' name='xtpr'/>
     <feature policy='require' name='cx16'/>

@@ -2316,6 +2316,7 @@ virDomainDefGetVcpusTopology(const virDomainDef *def,
 
     /* multiplication of 32bit numbers fits into a 64bit variable */
     if ((tmp *= def->cpu->dies) > UINT_MAX ||
+        (tmp *= def->cpu->clusters) > UINT_MAX ||
         (tmp *= def->cpu->cores) > UINT_MAX ||
         (tmp *= def->cpu->threads) > UINT_MAX) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

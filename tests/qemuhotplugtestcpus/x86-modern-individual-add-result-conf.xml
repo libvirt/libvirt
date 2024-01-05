@@ -20,7 +20,7 @@
   </os>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
-    <topology sockets='4' dies='1' cores='2' threads='1'/>
+    <topology sockets='4' dies='1' clusters='1' cores='2' threads='1'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

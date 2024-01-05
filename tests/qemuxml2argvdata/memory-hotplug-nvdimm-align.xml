@@ -15,7 +15,7 @@
   </idmap>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
-    <topology sockets='2' dies='1' cores='1' threads='1'/>
+    <topology sockets='2' dies='1' clusters='1' cores='1' threads='1'/>
     <numa>
       <cell id='0' cpus='0-1' memory='219136' unit='KiB'/>
     </numa>

@@ -12,7 +12,7 @@
     <type arch='x86_64'>hvm</type>
   </os>
   <cpu>
-    <topology sockets='1' dies='1' cores='2' threads='1'/>
+    <topology sockets='1' dies='1' clusters='1' cores='2' threads='1'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

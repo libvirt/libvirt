@@ -672,6 +672,11 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
                            _("Only 1 die per socket is supported"));
             return NULL;
         }
+        if (def->cpu->clusters != 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only 1 cluster per die is supported"));
+            return NULL;
+        }
         if (nvcpus != def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Invalid CPU topology: total number of vCPUs must equal the product of sockets, cores, and threads"));

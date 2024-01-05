@@ -10,7 +10,7 @@
   </os>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
-    <topology sockets='2' dies='1' cores='4' threads='2'/>
+    <topology sockets='2' dies='1' clusters='1' cores='4' threads='2'/>
     <numa>
       <cell id='0' cpus='0-5' memory='109550' unit='KiB'/>
       <cell id='1' cpus='11-15' memory='109550' unit='KiB'/>
