@@ -93,6 +93,7 @@ mymain(void)
     DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false);
     DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false);
     DO_TEST_FULL("basic-dies", VIR_ARCH_X86_64, false, false);
+    DO_TEST_FULL("basic-clusters", VIR_ARCH_AARCH64, false, false);
 
     DO_TEST_FULL("caches", VIR_ARCH_X86_64, true, true);
 
