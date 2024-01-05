@@ -3,6 +3,7 @@
 #
 
 # util/virhostcpu.h
+virHostCPUGetCluster;
 virHostCPUGetCore;
 virHostCPUGetDie;
 virHostCPUGetInfoPopulateLinux;

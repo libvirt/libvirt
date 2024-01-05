@@ -25,30 +25,30 @@
             <line value='16' unit='B'/>
           </cache>
           <cpus num='24'>
-            <cpu id='0' socket_id='0' die_id='0' core_id='0' siblings='0'/>
-            <cpu id='1' socket_id='1' die_id='0' core_id='0' siblings='1'/>
-            <cpu id='2' socket_id='2' die_id='0' core_id='0' siblings='2'/>
-            <cpu id='3' socket_id='3' die_id='0' core_id='0' siblings='3'/>
-            <cpu id='4' socket_id='4' die_id='0' core_id='0' siblings='4'/>
-            <cpu id='5' socket_id='5' die_id='0' core_id='0' siblings='5'/>
-            <cpu id='6' socket_id='6' die_id='0' core_id='0' siblings='6'/>
-            <cpu id='7' socket_id='7' die_id='0' core_id='0' siblings='7'/>
-            <cpu id='8' socket_id='8' die_id='0' core_id='0' siblings='8'/>
-            <cpu id='9' socket_id='9' die_id='0' core_id='0' siblings='9'/>
-            <cpu id='10' socket_id='10' die_id='0' core_id='0' siblings='10'/>
-            <cpu id='11' socket_id='11' die_id='0' core_id='0' siblings='11'/>
-            <cpu id='12' socket_id='12' die_id='0' core_id='0' siblings='12'/>
-            <cpu id='13' socket_id='13' die_id='0' core_id='0' siblings='13'/>
-            <cpu id='14' socket_id='14' die_id='0' core_id='0' siblings='14'/>
-            <cpu id='15' socket_id='15' die_id='0' core_id='0' siblings='15'/>
-            <cpu id='16' socket_id='16' die_id='0' core_id='0' siblings='16'/>
-            <cpu id='17' socket_id='17' die_id='0' core_id='0' siblings='17'/>
-            <cpu id='18' socket_id='18' die_id='0' core_id='0' siblings='18'/>
-            <cpu id='19' socket_id='19' die_id='0' core_id='0' siblings='19'/>
-            <cpu id='20' socket_id='20' die_id='0' core_id='0' siblings='20'/>
-            <cpu id='21' socket_id='21' die_id='0' core_id='0' siblings='21'/>
-            <cpu id='22' socket_id='22' die_id='0' core_id='0' siblings='22'/>
-            <cpu id='23' socket_id='23' die_id='0' core_id='0' siblings='23'/>
+            <cpu id='0' socket_id='0' die_id='0' cluster_id='0' core_id='0' siblings='0'/>
+            <cpu id='1' socket_id='1' die_id='0' cluster_id='0' core_id='0' siblings='1'/>
+            <cpu id='2' socket_id='2' die_id='0' cluster_id='0' core_id='0' siblings='2'/>
+            <cpu id='3' socket_id='3' die_id='0' cluster_id='0' core_id='0' siblings='3'/>
+            <cpu id='4' socket_id='4' die_id='0' cluster_id='0' core_id='0' siblings='4'/>
+            <cpu id='5' socket_id='5' die_id='0' cluster_id='0' core_id='0' siblings='5'/>
+            <cpu id='6' socket_id='6' die_id='0' cluster_id='0' core_id='0' siblings='6'/>
+            <cpu id='7' socket_id='7' die_id='0' cluster_id='0' core_id='0' siblings='7'/>
+            <cpu id='8' socket_id='8' die_id='0' cluster_id='0' core_id='0' siblings='8'/>
+            <cpu id='9' socket_id='9' die_id='0' cluster_id='0' core_id='0' siblings='9'/>
+            <cpu id='10' socket_id='10' die_id='0' cluster_id='0' core_id='0' siblings='10'/>
+            <cpu id='11' socket_id='11' die_id='0' cluster_id='0' core_id='0' siblings='11'/>
+            <cpu id='12' socket_id='12' die_id='0' cluster_id='0' core_id='0' siblings='12'/>
+            <cpu id='13' socket_id='13' die_id='0' cluster_id='0' core_id='0' siblings='13'/>
+            <cpu id='14' socket_id='14' die_id='0' cluster_id='0' core_id='0' siblings='14'/>
+            <cpu id='15' socket_id='15' die_id='0' cluster_id='0' core_id='0' siblings='15'/>
+            <cpu id='16' socket_id='16' die_id='0' cluster_id='0' core_id='0' siblings='16'/>
+            <cpu id='17' socket_id='17' die_id='0' cluster_id='0' core_id='0' siblings='17'/>
+            <cpu id='18' socket_id='18' die_id='0' cluster_id='0' core_id='0' siblings='18'/>
+            <cpu id='19' socket_id='19' die_id='0' cluster_id='0' core_id='0' siblings='19'/>
+            <cpu id='20' socket_id='20' die_id='0' cluster_id='0' core_id='0' siblings='20'/>
+            <cpu id='21' socket_id='21' die_id='0' cluster_id='0' core_id='0' siblings='21'/>
+            <cpu id='22' socket_id='22' die_id='0' cluster_id='0' core_id='0' siblings='22'/>
+            <cpu id='23' socket_id='23' die_id='0' cluster_id='0' core_id='0' siblings='23'/>
           </cpus>
         </cell>
         <cell id='1'>

@@ -17,7 +17,7 @@
           <pages unit='KiB' size='2048'>4096</pages>
           <pages unit='KiB' size='1048576'>6144</pages>
           <cpus num='1'>
-            <cpu id='0' socket_id='0' die_id='0' core_id='0' siblings='0'/>
+            <cpu id='0' socket_id='0' die_id='0' cluster_id='0' core_id='0' siblings='0'/>
           </cpus>
         </cell>
       </cells>

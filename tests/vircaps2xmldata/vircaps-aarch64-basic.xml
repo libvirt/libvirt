@@ -16,10 +16,10 @@
           <pages unit='KiB' size='2048'>4096</pages>
           <pages unit='KiB' size='1048576'>6144</pages>
           <cpus num='4'>
-            <cpu id='0' socket_id='0' die_id='0' core_id='0' siblings='0'/>
-            <cpu id='1' socket_id='0' die_id='0' core_id='1' siblings='1'/>
-            <cpu id='2' socket_id='0' die_id='0' core_id='2' siblings='2'/>
-            <cpu id='3' socket_id='0' die_id='0' core_id='3' siblings='3'/>
+            <cpu id='0' socket_id='0' die_id='0' cluster_id='0' core_id='0' siblings='0'/>
+            <cpu id='1' socket_id='0' die_id='0' cluster_id='0' core_id='1' siblings='1'/>
+            <cpu id='2' socket_id='0' die_id='0' cluster_id='0' core_id='2' siblings='2'/>
+            <cpu id='3' socket_id='0' die_id='0' cluster_id='0' core_id='3' siblings='3'/>
           </cpus>
         </cell>
         <cell id='1'>
@@ -28,10 +28,10 @@
           <pages unit='KiB' size='2048'>6144</pages>
           <pages unit='KiB' size='1048576'>8192</pages>
           <cpus num='4'>
-            <cpu id='4' socket_id='1' die_id='0' core_id='4' siblings='4'/>
-            <cpu id='5' socket_id='1' die_id='0' core_id='5' siblings='5'/>
-            <cpu id='6' socket_id='1' die_id='0' core_id='6' siblings='6'/>
-            <cpu id='7' socket_id='1' die_id='0' core_id='7' siblings='7'/>
+            <cpu id='4' socket_id='1' die_id='0' cluster_id='0' core_id='4' siblings='4'/>
+            <cpu id='5' socket_id='1' die_id='0' cluster_id='0' core_id='5' siblings='5'/>
+            <cpu id='6' socket_id='1' die_id='0' cluster_id='0' core_id='6' siblings='6'/>
+            <cpu id='7' socket_id='1' die_id='0' cluster_id='0' core_id='7' siblings='7'/>
           </cpus>
         </cell>
         <cell id='2'>
@@ -40,10 +40,10 @@
           <pages unit='KiB' size='2048'>8192</pages>
           <pages unit='KiB' size='1048576'>10240</pages>
           <cpus num='4'>
-            <cpu id='8' socket_id='2' die_id='0' core_id='8' siblings='8'/>
-            <cpu id='9' socket_id='2' die_id='0' core_id='9' siblings='9'/>
-            <cpu id='10' socket_id='2' die_id='0' core_id='10' siblings='10'/>
-            <cpu id='11' socket_id='2' die_id='0' core_id='11' siblings='11'/>
+            <cpu id='8' socket_id='2' die_id='0' cluster_id='0' core_id='8' siblings='8'/>
+            <cpu id='9' socket_id='2' die_id='0' cluster_id='0' core_id='9' siblings='9'/>
+            <cpu id='10' socket_id='2' die_id='0' cluster_id='0' core_id='10' siblings='10'/>
+            <cpu id='11' socket_id='2' die_id='0' cluster_id='0' core_id='11' siblings='11'/>
           </cpus>
         </cell>
         <cell id='3'>
@@ -52,10 +52,10 @@
           <pages unit='KiB' size='2048'>10240</pages>
           <pages unit='KiB' size='1048576'>12288</pages>
           <cpus num='4'>
-            <cpu id='12' socket_id='3' die_id='0' core_id='12' siblings='12'/>
-            <cpu id='13' socket_id='3' die_id='0' core_id='13' siblings='13'/>
-            <cpu id='14' socket_id='3' die_id='0' core_id='14' siblings='14'/>
-            <cpu id='15' socket_id='3' die_id='0' core_id='15' siblings='15'/>
+            <cpu id='12' socket_id='3' die_id='0' cluster_id='0' core_id='12' siblings='12'/>
+            <cpu id='13' socket_id='3' die_id='0' cluster_id='0' core_id='13' siblings='13'/>
+            <cpu id='14' socket_id='3' die_id='0' cluster_id='0' core_id='14' siblings='14'/>
+            <cpu id='15' socket_id='3' die_id='0' cluster_id='0' core_id='15' siblings='15'/>
           </cpus>
         </cell>
       </cells>

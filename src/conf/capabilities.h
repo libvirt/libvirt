@@ -89,6 +89,7 @@ struct _virCapsHostNUMACellCPU {
     unsigned int id;
     unsigned int socket_id;
     unsigned int die_id;
+    unsigned int cluster_id;
     unsigned int core_id;
     virBitmap *siblings;
 };

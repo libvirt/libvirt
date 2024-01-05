@@ -233,6 +233,28 @@ virHostCPUGetDie(unsigned int cpu, unsigned int *die)
 }
 
 int
+virHostCPUGetCluster(unsigned int cpu, unsigned int *cluster)
+{
+    int cluster_id;
+    int ret = virFileReadValueInt(&cluster_id,
+                                  "%s/cpu/cpu%u/topology/cluster_id",
+                                  SYSFS_SYSTEM_PATH, cpu);
+
+    if (ret == -1)
+        return -1;
+
+    /* If the file doesn't exists (old kernel) or the value contained
+     * in it is -1 (architecture without CPU clusters), report 0 to
+     * indicate the lack of information */
+    if (ret == -2 || cluster_id < 0)
+        cluster_id = 0;
+
+    *cluster = cluster_id;
+
+    return 0;
+}
+
+int
 virHostCPUGetCore(unsigned int cpu, unsigned int *core)
 {
     int ret = virFileReadValueUint(core,

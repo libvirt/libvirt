@@ -811,9 +811,10 @@ virCapsHostNUMACellCPUFormat(virBuffer *buf,
                 return -1;
 
             virBufferAsprintf(&childBuf,
-                              " socket_id='%d' die_id='%d' core_id='%d' siblings='%s'",
+                              " socket_id='%d' die_id='%d' cluster_id='%d' core_id='%d' siblings='%s'",
                               cpus[j].socket_id,
                               cpus[j].die_id,
+                              cpus[j].cluster_id,
                               cpus[j].core_id,
                               siblings);
         }
@@ -1453,6 +1454,7 @@ virCapabilitiesFillCPUInfo(int cpu_id G_GNUC_UNUSED,
 
     if (virHostCPUGetSocket(cpu_id, &cpu->socket_id) < 0 ||
         virHostCPUGetDie(cpu_id, &cpu->die_id) < 0 ||
+        virHostCPUGetCluster(cpu_id, &cpu->cluster_id) < 0 ||
         virHostCPUGetCore(cpu_id, &cpu->core_id) < 0)
         return -1;
 
@@ -1712,6 +1714,7 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMA *caps)
                     if (tmp) {
                         cpus[cid].id = id;
                         cpus[cid].die_id = 0;
+                        cpus[cid].cluster_id = 0;
                         cpus[cid].socket_id = s;
                         cpus[cid].core_id = c;
                         cpus[cid].siblings = virBitmapNewCopy(siblings);

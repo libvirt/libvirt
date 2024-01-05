@@ -201,6 +201,9 @@
         <attribute name="die_id">
           <ref name="unsignedInt"/>
         </attribute>
+        <attribute name="cluster_id">
+          <ref name="unsignedInt"/>
+        </attribute>
         <attribute name="core_id">
           <ref name="unsignedInt"/>
         </attribute>
