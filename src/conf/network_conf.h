@@ -216,7 +216,7 @@ typedef struct _virNetworkForwardDef virNetworkForwardDef;
 struct _virNetworkForwardDef {
     int type;     /* One of virNetworkForwardType constants */
     bool managed;  /* managed attribute for hostdev mode */
-    int driverName; /* enum virNetworkForwardDriverNameType */
+    virNetworkForwardDriverNameType driverName;
 
     /* If there are multiple forward devices (i.e. a pool of
      * interfaces), they will be listed here.

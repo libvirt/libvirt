@@ -6283,13 +6283,14 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, ctxt, def, flags) < 0)
             return -1;
 
-        driver_node = virXPathNode("./driver", ctxt);
-        if (virXMLPropEnum(driver_node, "name",
-                           virDeviceHostdevPCIDriverNameTypeFromString,
-                           VIR_XML_PROP_NONZERO,
-                           &pcisrc->backend) < 0)
-            return -1;
-
+        if ((driver_node = virXPathNode("./driver", ctxt))) {
+            if (virXMLPropEnum(driver_node, "name",
+                               virDeviceHostdevPCIDriverNameTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &pcisrc->backend) < 0) {
+                return -1;
+            }
+        }
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
@@ -23423,13 +23424,10 @@ virDomainHostdevDefFormatSubsysPCI(virBuffer *buf,
                                    unsigned int flags,
                                    bool includeTypeInAddr)
 {
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
-
-    if (def->writeFiltering != VIR_TRISTATE_BOOL_ABSENT)
-            virBufferAsprintf(&sourceAttrBuf, " writeFiltering='%s'",
-                              virTristateBoolTypeToString(def->writeFiltering));
 
     if (pcisrc->backend != VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
         const char *backend = virDeviceHostdevPCIDriverNameTypeToString(pcisrc->backend);
@@ -23441,8 +23439,14 @@ virDomainHostdevDefFormatSubsysPCI(virBuffer *buf,
             return -1;
         }
 
-        virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
+        virBufferAsprintf(&driverAttrBuf, " name='%s'", backend);
     }
+
+    virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
+
+    if (def->writeFiltering != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&sourceAttrBuf, " writeFiltering='%s'",
+                              virTristateBoolTypeToString(def->writeFiltering));
 
     virPCIDeviceAddressFormat(&sourceChildBuf, pcisrc->addr, includeTypeInAddr);
 

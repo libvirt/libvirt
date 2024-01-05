@@ -69,7 +69,7 @@ struct _virNetworkPortDef {
         } direct;
         struct {
             virPCIDeviceAddress addr; /* PCI Address of device */
-            int driver; /* virNetworkForwardDriverNameType */
+            unsigned int driver; /* virNetworkForwardDriverNameType */
             virTristateBool managed;
         } hostdevpci;
     } plug;

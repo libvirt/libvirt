@@ -1334,8 +1334,8 @@ virNetworkForwardDefParseXML(const char *networkName,
     g_autofree xmlNodePtr *forwardNatNodes = NULL;
     g_autofree char *forwardDev = NULL;
     g_autofree char *forwardManaged = NULL;
-    g_autofree char *forwardDriverName = NULL;
     g_autofree char *type = NULL;
+    xmlNodePtr driverNode = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
@@ -1356,18 +1356,13 @@ virNetworkForwardDefParseXML(const char *networkName,
         def->managed = true;
     }
 
-    forwardDriverName = virXPathString("string(./driver/@name)", ctxt);
-    if (forwardDriverName) {
-        int driverName
-            = virNetworkForwardDriverNameTypeFromString(forwardDriverName);
-
-        if (driverName <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown forward <driver name='%1$s'/> in network %2$s"),
-                           forwardDriverName, networkName);
+    if ((driverNode = virXPathNode("./driver", ctxt))) {
+        if (virXMLPropEnum(driverNode, "name",
+                           virNetworkForwardDriverNameTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->driverName) < 0) {
             return -1;
         }
-        def->driverName = driverName;
     }
 
     /* bridge and hostdev modes can use a pool of physical interfaces */
@@ -2329,6 +2324,7 @@ virNetworkDefFormatBuf(virBuffer *buf,
     if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
         const char *dev = NULL;
         const char *mode = virNetworkForwardTypeToString(def->forward.type);
+        g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
         if (!def->forward.npfs)
             dev = virNetworkDefForwardIf(def, 0);
@@ -2359,8 +2355,7 @@ virNetworkDefFormatBuf(virBuffer *buf,
         virBufferAsprintf(buf, "%s>\n", shortforward ? "/" : "");
         virBufferAdjustIndent(buf, 2);
 
-        if (def->forward.driverName
-            != VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT) {
+        if (def->forward.driverName) {
             const char *driverName
                 = virNetworkForwardDriverNameTypeToString(def->forward.driverName);
             if (!driverName) {
@@ -2369,8 +2364,11 @@ virNetworkDefFormatBuf(virBuffer *buf,
                                def->forward.driverName);
                 return -1;
             }
-            virBufferAsprintf(buf, "<driver name='%s'/>\n", driverName);
+            virBufferAsprintf(&driverAttrBuf, " name='%s'", driverName);
         }
+
+        virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
+
         if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
             if (virNetworkForwardNatDefFormat(buf, &def->forward) < 0)
                 return -1;

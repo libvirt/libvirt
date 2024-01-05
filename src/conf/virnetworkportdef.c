@@ -87,10 +87,10 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr addressNode;
     xmlNodePtr rxfiltersNode = NULL;
     xmlNodePtr plugNode = NULL;
+    xmlNodePtr driverNode = NULL;
     g_autofree char *mac = NULL;
     g_autofree char *macmgr = NULL;
     g_autofree char *mode = NULL;
-    g_autofree char *driver = NULL;
 
     def = g_new0(virNetworkPortDef, 1);
 
@@ -223,14 +223,16 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
                                    VIR_XML_PROP_NONE,
                                    &def->plug.hostdevpci.managed) < 0)
             return NULL;
-        driver = virXPathString("string(./plug/driver/@name)", ctxt);
-        if (driver &&
-            (def->plug.hostdevpci.driver =
-             virNetworkForwardDriverNameTypeFromString(driver)) <= 0) {
-              virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing network port driver name"));
-            return NULL;
+
+        if ((driverNode = virXPathNode("./plug/driver", ctxt))) {
+            if (virXMLPropEnum(driverNode, "name",
+                               virNetworkForwardDriverNameTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &def->plug.hostdevpci.driver) < 0) {
+                return NULL;
+            }
         }
+
         if (!(addressNode = virXPathNode("./plug/address", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port PCI address"));
@@ -319,6 +321,8 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
                           virTristateBoolTypeToString(def->trustGuestRxFilters));
 
     if (def->plugtype != VIR_NETWORK_PORT_PLUG_TYPE_NONE) {
+        g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+
         virBufferAsprintf(buf, "<plug type='%s'",
                           virNetworkPortPlugTypeToString(def->plugtype));
 
@@ -351,10 +355,13 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
             }
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
-            if (def->plug.hostdevpci.driver)
-                virBufferEscapeString(buf, "<driver name='%s'/>\n",
-                                      virNetworkForwardDriverNameTypeToString(
-                                          def->plug.hostdevpci.driver));
+
+            if (def->plug.hostdevpci.driver) {
+                virBufferEscapeString(&driverAttrBuf, " name='%s'",
+                                      virNetworkForwardDriverNameTypeToString(def->plug.hostdevpci.driver));
+            }
+
+            virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
 
             virPCIDeviceAddressFormat(buf, def->plug.hostdevpci.addr, false);
             virBufferAdjustIndent(buf, -2);
