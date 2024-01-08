@@ -3172,8 +3172,8 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
     if (qemuMigrationDstPrepareAnyBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
         goto error;
 
-    if (qemuMigrationParamsCheck(vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                                 migParams, mig->caps->automatic) < 0)
+    if (qemuMigrationParamsCheck(vm, VIR_ASYNC_JOB_MIGRATION_IN, migParams,
+                                 mig->caps->supported, mig->caps->automatic) < 0)
         goto error;
 
     /* Save original migration parameters */
@@ -4831,8 +4831,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         qemuMigrationSrcRunPrepareBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
         goto error;
 
-    if (qemuMigrationParamsCheck(vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                 migParams, mig->caps->automatic) < 0)
+    if (qemuMigrationParamsCheck(vm, VIR_ASYNC_JOB_MIGRATION_OUT, migParams,
+                                 mig->caps->supported, mig->caps->automatic) < 0)
         goto error;
 
     /* Save original migration parameters */

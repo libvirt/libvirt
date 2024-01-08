@@ -64,6 +64,11 @@ struct _qemuMigrationParamValue {
 struct _qemuMigrationParams {
     unsigned long long compMethods; /* bit-wise OR of qemuMigrationCompressMethod */
     virBitmap *caps;
+    /* Optional capabilities are enabled only if supported by QEMU */
+    virBitmap *optional;
+    /* A capability present on both optional and remoteOptional bitmaps are
+     * enabled only if they are supported by both sides of migration. */
+    virBitmap *remoteOptional;
     qemuMigrationParamValue params[QEMU_MIGRATION_PARAM_LAST];
     virJSONValue *blockDirtyBitmapMapping;
 };
@@ -141,6 +146,10 @@ struct _qemuMigrationParamsFlagMapItem {
     virDomainMigrateFlags flag;
     /* Migration capability to be enabled or disabled based on the flag. */
     qemuMigrationCapability cap;
+    /* An optional capability to set in addition to @cap in case it is
+     * supported. Depending on @part either one or both sides of migration
+     * has to support the optional capability to be enabled. */
+    qemuMigrationCapability optional;
     /* Bit-wise OR of qemuMigrationParty. Determines whether the capability has
      * to be enabled on the source, on the destination, or on both sides of
      * migration. */
@@ -334,6 +343,8 @@ qemuMigrationParamsNew(void)
     params = g_new0(qemuMigrationParams, 1);
 
     params->caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
+    params->optional = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
+    params->remoteOptional = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
 
     return g_steal_pointer(&params);
 }
@@ -353,6 +364,8 @@ qemuMigrationParamsFree(qemuMigrationParams *migParams)
     }
 
     virBitmapFree(migParams->caps);
+    virBitmapFree(migParams->optional);
+    virBitmapFree(migParams->remoteOptional);
     virJSONValueFree(migParams->blockDirtyBitmapMapping);
     g_free(migParams);
 }
@@ -698,6 +711,13 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
             VIR_DEBUG("Enabling migration capability '%s'",
                       qemuMigrationCapabilityTypeToString(item->cap));
             ignore_value(virBitmapSetBit(migParams->caps, item->cap));
+
+            if (item->optional) {
+                qemuMigrationCapability opt = item->optional;
+                ignore_value(virBitmapSetBit(migParams->optional, opt));
+                if (item->party != party)
+                    ignore_value(virBitmapSetBit(migParams->remoteOptional, opt));
+            }
         }
     }
 
@@ -1290,6 +1310,7 @@ int
 qemuMigrationParamsCheck(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
+                         virBitmap *remoteSupported,
                          virBitmap *remoteAuto)
 {
     qemuDomainJobPrivate *jobPriv = vm->job->privateData;
@@ -1303,15 +1324,41 @@ qemuMigrationParamsCheck(virDomainObj *vm,
         party = QEMU_MIGRATION_DESTINATION;
 
     for (cap = 0; cap < QEMU_MIGRATION_CAP_LAST; cap++) {
-        bool state = false;
+        bool enable = false;
+        bool optional = false;
+        bool remoteOpt = false;
+        bool remote = false;
+        bool qemu = qemuMigrationCapsGet(vm, cap);
 
-        ignore_value(virBitmapGetBit(migParams->caps, cap, &state));
+        ignore_value(virBitmapGetBit(migParams->caps, cap, &enable));
+        ignore_value(virBitmapGetBit(migParams->optional, cap, &optional));
+        ignore_value(virBitmapGetBit(migParams->remoteOptional, cap, &remoteOpt));
+        ignore_value(virBitmapGetBit(remoteSupported, cap, &remote));
 
-        if (state && !qemuMigrationCapsGet(vm, cap)) {
+        if (enable && !qemu) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("Migration option '%1$s' is not supported by QEMU binary"),
                            qemuMigrationCapabilityTypeToString(cap));
             return -1;
+        }
+
+        if (optional) {
+            if (!qemu) {
+                VIR_DEBUG("Optional migration capability '%s' not supported by QEMU",
+                          qemuMigrationCapabilityTypeToString(cap));
+                optional = false;
+            } else if (remoteOpt && !remote) {
+                VIR_DEBUG("Optional migration capability '%s' not supported "
+                          "by the other side of migration",
+                          qemuMigrationCapabilityTypeToString(cap));
+                optional = false;
+            }
+
+            if (optional) {
+                VIR_DEBUG("Enabling optional migration capability '%s'",
+                          qemuMigrationCapabilityTypeToString(cap));
+                ignore_value(virBitmapSetBit(migParams->caps, cap));
+            }
         }
     }
 

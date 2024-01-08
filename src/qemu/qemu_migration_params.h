@@ -142,6 +142,7 @@ int
 qemuMigrationParamsCheck(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
+                         virBitmap *remoteSupported,
                          virBitmap *remoteAuto);
 
 void
