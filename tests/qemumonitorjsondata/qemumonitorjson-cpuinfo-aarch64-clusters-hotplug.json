@@ -1,0 +1,171 @@
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 1,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 1,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 1,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 1,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 1,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 1,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[6]",
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[5]",
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[4]",
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[3]",
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[2]",
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[1]",
+      "type": "host-arm-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "host-arm-cpu"
+    }
+  ]
+}

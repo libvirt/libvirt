@@ -1,0 +1,88 @@
+{
+  "return": [
+    {
+      "thread-id": 284700,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "qom-path": "/machine/unattached/device[0]",
+      "cpu-index": 0,
+      "target": "aarch64"
+    },
+    {
+      "thread-id": 284701,
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "qom-path": "/machine/unattached/device[1]",
+      "cpu-index": 1,
+      "target": "aarch64"
+    },
+    {
+      "thread-id": 284702,
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "qom-path": "/machine/unattached/device[2]",
+      "cpu-index": 2,
+      "target": "aarch64"
+    },
+    {
+      "thread-id": 284703,
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 0
+      },
+      "qom-path": "/machine/unattached/device[3]",
+      "cpu-index": 3,
+      "target": "aarch64"
+    },
+    {
+      "thread-id": 284704,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "qom-path": "/machine/unattached/device[4]",
+      "cpu-index": 4,
+      "target": "aarch64"
+    },
+    {
+      "thread-id": 284705,
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "qom-path": "/machine/unattached/device[5]",
+      "cpu-index": 5,
+      "target": "aarch64"
+    },
+    {
+      "thread-id": 284706,
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0,
+        "cluster-id": 1
+      },
+      "qom-path": "/machine/unattached/device[6]",
+      "cpu-index": 6,
+      "target": "aarch64"
+    }
+  ]
+}

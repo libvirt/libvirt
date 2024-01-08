@@ -2262,13 +2262,16 @@ testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfo *vcpus,
         if (vcpu->qom_path)
             virBufferAsprintf(&buf, "qom_path='%s'\n", vcpu->qom_path);
 
-        if (vcpu->socket_id != -1 || vcpu->core_id != -1 ||
+        if (vcpu->socket_id != -1 || vcpu->die_id != -1 ||
+            vcpu->cluster_id != -1 || vcpu->core_id != -1 ||
             vcpu->thread_id != -1 || vcpu->vcpus != 0) {
             virBufferAddLit(&buf, "topology:");
             if (vcpu->socket_id != -1)
                 virBufferAsprintf(&buf, " socket='%d'", vcpu->socket_id);
             if (vcpu->die_id != -1)
                 virBufferAsprintf(&buf, " die='%d'", vcpu->die_id);
+            if (vcpu->cluster_id != -1)
+                virBufferAsprintf(&buf, " cluster_id='%d'", vcpu->cluster_id);
             if (vcpu->core_id != -1)
                 virBufferAsprintf(&buf, " core='%d'", vcpu->core_id);
             if (vcpu->thread_id != -1)
@@ -2918,6 +2921,10 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-hotplug-2", 24);
     DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
     DO_TEST_CPU_INFO("ppc64-no-threads", 16);
+
+    /* aarch64 doesn't support CPU hotplug yet, so the data used in
+     * this test is partially synthetic */
+    DO_TEST_CPU_INFO("aarch64-clusters", 16);
 
     DO_TEST_CPU_INFO("s390", 2);
 
