@@ -1377,7 +1377,7 @@ following collection of elements. :since:`Since 0.7.5`
    <cpu match='exact'>
      <model fallback='allow'>core2duo</model>
      <vendor>Intel</vendor>
-     <topology sockets='1' dies='1' cores='2' threads='1'/>
+     <topology sockets='1' dies='1' clusters='1' cores='2' threads='1'/>
      <cache level='3' mode='emulate'/>
      <maxphysaddr mode='emulate' bits='42'/>
      <feature policy='disable' name='lahf_lm'/>
@@ -1388,7 +1388,7 @@ following collection of elements. :since:`Since 0.7.5`
 
    <cpu mode='host-model'>
      <model fallback='forbid'/>
-     <topology sockets='1' dies='1' cores='2' threads='1'/>
+     <topology sockets='1' dies='1' clusters='1' cores='2' threads='1'/>
    </cpu>
    ...
 
@@ -1414,7 +1414,7 @@ In case no restrictions need to be put on CPU model and its features, a simpler
 
    ...
    <cpu>
-     <topology sockets='1' dies='1' cores='2' threads='1'/>
+     <topology sockets='1' dies='1' clusters='1' cores='2' threads='1'/>
    </cpu>
    ...
 
@@ -1579,12 +1579,14 @@ In case no restrictions need to be put on CPU model and its features, a simpler
 ``topology``
    The ``topology`` element specifies requested topology of virtual CPU provided
    to the guest.
-   Its attributes ``sockets``, ``dies`` (:since:`Since 6.1.0`), ``cores``,
-   and ``threads`` accept non-zero positive integer values.
+   Its attributes ``sockets``, ``dies`` (:since:`Since 6.1.0`), ``clusters``
+   (:since:`Since 10.1.0`), ``cores``, and ``threads`` accept non-zero positive
+   integer values.
    They refer to the total number of CPU sockets, number of dies per socket,
-   number of cores per die, and number of threads per core, respectively.
-   The ``dies`` attribute is optional and will default to 1 if omitted, while
-   the other attributes are all mandatory.
+   number of clusters per die, number of cores per cluster, and number of
+   threads per core, respectively.
+   The ``dies`` and ``clusters`` attributes are optional and will default to 1
+   if omitted, while the other attributes are all mandatory.
    Hypervisors may require that the maximum number of vCPUs specified
    by the ``cpus`` element equals to the number of vcpus resulting from the
    topology.
