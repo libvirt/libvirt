@@ -17,6 +17,13 @@ v10.0.0 (unreleased)
 
 * **New features**
 
+  * qemu: Enable ``postcopy-preempt`` migration capability
+
+    Post-copy migrations are now started with ``postcopy-preempt``
+    capability enabled as long as it is supported by both sides of migration.
+    This should enable faster migration of memory pages that the destination
+    tries to read before they are migrated from the source.
+
 * **Improvements**
 
 * **Bug fixes**
