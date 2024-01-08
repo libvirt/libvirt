@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static' current='1'>8</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <gic version='2'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>cortex-a15</model>
+    <topology sockets='1' dies='1' clusters='2' cores='2' threads='2'/>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

@@ -1813,6 +1813,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cpu-topology2");
     DO_TEST_CAPS_LATEST("cpu-topology3");
     DO_TEST_CAPS_LATEST("cpu-topology4");
+    DO_TEST_CAPS_ARCH_LATEST("cpu-topology5", "aarch64");
 
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-minimum1", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-minimum2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);

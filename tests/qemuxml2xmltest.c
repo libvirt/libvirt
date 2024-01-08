@@ -674,6 +674,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("chardev-label");
 
+    DO_TEST_CAPS_ARCH_LATEST("cpu-topology5", "aarch64");
+
     DO_TEST_CAPS_LATEST("cpu-numa1");
     DO_TEST_CAPS_LATEST("cpu-numa2");
     DO_TEST_CAPS_LATEST("cpu-numa-no-memory-element");
