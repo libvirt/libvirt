@@ -1578,14 +1578,18 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    supported vendors can be found in ``cpu_map/*_vendors.xml``.
 ``topology``
    The ``topology`` element specifies requested topology of virtual CPU provided
-   to the guest. Four attributes, ``sockets``, ``dies``, ``cores``, and
-   ``threads``, accept non-zero positive integer values. They refer to the
-   total number of CPU sockets, number of dies per socket, number of cores per
-   die, and number of threads per core, respectively. The ``dies`` attribute is
-   optional and will default to 1 if omitted, while the other attributes are all
-   mandatory. Hypervisors may require that the maximum number of vCPUs specified
+   to the guest.
+   Its attributes ``sockets``, ``dies`` (:since:`Since 6.1.0`), ``cores``,
+   and ``threads`` accept non-zero positive integer values.
+   They refer to the total number of CPU sockets, number of dies per socket,
+   number of cores per die, and number of threads per core, respectively.
+   The ``dies`` attribute is optional and will default to 1 if omitted, while
+   the other attributes are all mandatory.
+   Hypervisors may require that the maximum number of vCPUs specified
    by the ``cpus`` element equals to the number of vcpus resulting from the
    topology.
+   Moreover, not all architectures and machine types support specifying a value
+   other than 1 for all attributes.
 ``feature``
    The ``cpu`` element can contain zero or more ``feature`` elements used to
    fine-tune features provided by the selected CPU model. The list of known
