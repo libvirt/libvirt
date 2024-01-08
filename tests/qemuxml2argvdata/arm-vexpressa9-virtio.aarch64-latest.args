@@ -35,7 +35,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -blockdev '{"driver":"file","filename":"/arm.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-device","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-device","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37"}' \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \

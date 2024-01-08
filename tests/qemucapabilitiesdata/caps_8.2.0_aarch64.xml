@@ -1,0 +1,549 @@
+<qemuCaps>
+  <emulator>/usr/bin/qemu-system-aarch64</emulator>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='kvm'/>
+  <flag name='sdl'/>
+  <flag name='hda-duplex'/>
+  <flag name='piix3-usb-uhci'/>
+  <flag name='piix4-usb-uhci'/>
+  <flag name='usb-ehci'/>
+  <flag name='ich9-usb-ehci1'/>
+  <flag name='pci-ohci'/>
+  <flag name='usb-redir'/>
+  <flag name='usb-hub'/>
+  <flag name='ich9-ahci'/>
+  <flag name='virtio-blk-pci.scsi'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='hda-micro'/>
+  <flag name='nec-usb-xhci'/>
+  <flag name='lsi'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='usb-redir.filter'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='vnc'/>
+  <flag name='VGA'/>
+  <flag name='cirrus-vga'/>
+  <flag name='usb-serial'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='megasas'/>
+  <flag name='tpm-passthrough'/>
+  <flag name='tpm-tis'/>
+  <flag name='pci-bridge'/>
+  <flag name='vfio-pci'/>
+  <flag name='dmi-to-pci-bridge'/>
+  <flag name='usb-storage'/>
+  <flag name='virtio-mmio'/>
+  <flag name='ich9-intel-hda'/>
+  <flag name='usb-kbd'/>
+  <flag name='usb-audio'/>
+  <flag name='migrate-rdma'/>
+  <flag name='VGA.vgamem_mb'/>
+  <flag name='pc-dimm'/>
+  <flag name='pci-serial'/>
+  <flag name='gpex-pcihost'/>
+  <flag name='ioh3420'/>
+  <flag name='x3130-upstream'/>
+  <flag name='xio3130-downstream'/>
+  <flag name='rtl8139'/>
+  <flag name='e1000'/>
+  <flag name='virtio-net'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='mptsas1068'/>
+  <flag name='pxb'/>
+  <flag name='pxb-pcie'/>
+  <flag name='ivshmem-plain'/>
+  <flag name='ivshmem-doorbell'/>
+  <flag name='vhost-scsi'/>
+  <flag name='query-cpu-model-expansion'/>
+  <flag name='nvdimm'/>
+  <flag name='pcie-root-port'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='qemu-xhci'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='vmcoreinfo'/>
+  <flag name='pl011'/>
+  <flag name='pcie-pci-bridge'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='screendump_device'/>
+  <flag name='hda-output'/>
+  <flag name='vhost-vsock'/>
+  <flag name='tpm-emulator'/>
+  <flag name='egl-headless'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='egl-headless.rendernode'/>
+  <flag name='nvdimm.unarmed'/>
+  <flag name='virtio-pci-non-transitional'/>
+  <flag name='machine.virt.iommu'/>
+  <flag name='nbd-bitmap'/>
+  <flag name='bochs-display'/>
+  <flag name='migration-file-drop-cache'/>
+  <flag name='dbus-vmstate'/>
+  <flag name='vhost-user-gpu'/>
+  <flag name='incremental-backup'/>
+  <flag name='ramfb'/>
+  <flag name='arm-max-cpu'/>
+  <flag name='drive-nvme'/>
+  <flag name='smp-dies'/>
+  <flag name='rng-builtin'/>
+  <flag name='cpu.kvm-no-adjvtime'/>
+  <flag name='vhost-user-fs'/>
+  <flag name='query-named-block-nodes.flat'/>
+  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <flag name='blockdev-reopen'/>
+  <flag name='fsdev.multidevs'/>
+  <flag name='pcie-root-port.hotplug'/>
+  <flag name='aio.io_uring'/>
+  <flag name='tcg'/>
+  <flag name='virtio-blk-pci.scsi.default.disabled'/>
+  <flag name='pvscsi'/>
+  <flag name='numa.hmat'/>
+  <flag name='usb-host.hostdevice'/>
+  <flag name='virtio-balloon.free-page-reporting'/>
+  <flag name='block-export-add'/>
+  <flag name='netdev.vhost-vdpa'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
+  <flag name='vhost-user-fs.bootindex'/>
+  <flag name='vhost-user-blk'/>
+  <flag name='cpu-max'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+  <flag name='migration-param.block-bitmap-mapping'/>
+  <flag name='vnc-power-control'/>
+  <flag name='object.qapified'/>
+  <flag name='rotation-rate'/>
+  <flag name='compat-deprecated'/>
+  <flag name='acpi-index'/>
+  <flag name='input-linux'/>
+  <flag name='confidential-guest-support'/>
+  <flag name='set-action'/>
+  <flag name='virtio-blk.queue-size'/>
+  <flag name='virtio-mem-pci'/>
+  <flag name='memory-backend-file.reserve'/>
+  <flag name='netdev.json'/>
+  <flag name='query-dirty-rate'/>
+  <flag name='rbd-encryption'/>
+  <flag name='sev-guest-kernel-hashes'/>
+  <flag name='device.json+hotplug'/>
+  <flag name='virtio-mem-pci.prealloc'/>
+  <flag name='calc-dirty-rate'/>
+  <flag name='dirtyrate-param.mode'/>
+  <flag name='blockdev.nbd.tls-hostname'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='virtio-iommu-pci'/>
+  <flag name='virtio-iommu.boot-bypass'/>
+  <flag name='virtio-net.rss'/>
+  <flag name='chardev.qemu-vdagent'/>
+  <flag name='display-dbus'/>
+  <flag name='iothread.thread-pool-max'/>
+  <flag name='usb-host.guest-resets-all'/>
+  <flag name='migration.blocked-reasons'/>
+  <flag name='query-stats'/>
+  <flag name='query-stats-schemas'/>
+  <flag name='thread-context'/>
+  <flag name='screenshot-format-png'/>
+  <flag name='netdev.stream'/>
+  <flag name='virtio-crypto'/>
+  <flag name='pvpanic-pci'/>
+  <flag name='netdev.stream.reconnect'/>
+  <flag name='virtio-gpu.blob'/>
+  <flag name='rbd-encryption-layering'/>
+  <flag name='rbd-encryption-luks-any'/>
+  <flag name='qcow2-discard-no-unref'/>
+  <flag name='run-with.async-teardown'/>
+  <version>8002000</version>
+  <microcodeVersion>61700246</microcodeVersion>
+  <package>v8.2.0</package>
+  <arch>aarch64</arch>
+  <hostCPU type='kvm' model='host' migratability='no'>
+    <property name='sve768' type='boolean' value='false'/>
+    <property name='sve128' type='boolean' value='false'/>
+    <property name='sve1024' type='boolean' value='false'/>
+    <property name='sve1280' type='boolean' value='false'/>
+    <property name='sve896' type='boolean' value='false'/>
+    <property name='sve256' type='boolean' value='false'/>
+    <property name='sve1536' type='boolean' value='false'/>
+    <property name='sve1792' type='boolean' value='false'/>
+    <property name='sve384' type='boolean' value='false'/>
+    <property name='sve' type='boolean' value='false'/>
+    <property name='sve2048' type='boolean' value='false'/>
+    <property name='pauth' type='boolean' value='false'/>
+    <property name='kvm-no-adjvtime' type='boolean' value='false'/>
+    <property name='sve512' type='boolean' value='false'/>
+    <property name='aarch64' type='boolean' value='true'/>
+    <property name='pmu' type='boolean' value='true'/>
+    <property name='sve1920' type='boolean' value='false'/>
+    <property name='sve1152' type='boolean' value='false'/>
+    <property name='kvm-steal-time' type='boolean' value='true'/>
+    <property name='sve640' type='boolean' value='false'/>
+    <property name='sve1408' type='boolean' value='false'/>
+    <property name='sve1664' type='boolean' value='false'/>
+  </hostCPU>
+  <cpu type='kvm' name='neoverse-n2' typename='neoverse-n2-arm-cpu'/>
+  <cpu type='kvm' name='pxa270-c0' typename='pxa270-c0-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a15' typename='cortex-a15-arm-cpu'/>
+  <cpu type='kvm' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
+  <cpu type='kvm' name='cortex-m4' typename='cortex-m4-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a57' typename='cortex-a57-arm-cpu'/>
+  <cpu type='kvm' name='pxa270-a0' typename='pxa270-a0-arm-cpu'/>
+  <cpu type='kvm' name='arm1176' typename='arm1176-arm-cpu'/>
+  <cpu type='kvm' name='pxa270-b1' typename='pxa270-b1-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a7' typename='cortex-a7-arm-cpu'/>
+  <cpu type='kvm' name='pxa270-a1' typename='pxa270-a1-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a76' typename='cortex-a76-arm-cpu'/>
+  <cpu type='kvm' name='a64fx' typename='a64fx-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a8' typename='cortex-a8-arm-cpu'/>
+  <cpu type='kvm' name='neoverse-v1' typename='neoverse-v1-arm-cpu'/>
+  <cpu type='kvm' name='cortex-r5' typename='cortex-r5-arm-cpu'/>
+  <cpu type='kvm' name='ti925t' typename='ti925t-arm-cpu'/>
+  <cpu type='kvm' name='cortex-r5f' typename='cortex-r5f-arm-cpu'/>
+  <cpu type='kvm' name='arm1026' typename='arm1026-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a9' typename='cortex-a9-arm-cpu'/>
+  <cpu type='kvm' name='cortex-m7' typename='cortex-m7-arm-cpu'/>
+  <cpu type='kvm' name='pxa270' typename='pxa270-arm-cpu'/>
+  <cpu type='kvm' name='pxa260' typename='pxa260-arm-cpu'/>
+  <cpu type='kvm' name='pxa250' typename='pxa250-arm-cpu'/>
+  <cpu type='kvm' name='pxa270-c5' typename='pxa270-c5-arm-cpu'/>
+  <cpu type='kvm' name='pxa261' typename='pxa261-arm-cpu'/>
+  <cpu type='kvm' name='pxa262' typename='pxa262-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a710' typename='cortex-a710-arm-cpu'/>
+  <cpu type='kvm' name='cortex-r52' typename='cortex-r52-arm-cpu'/>
+  <cpu type='kvm' name='sa1110' typename='sa1110-arm-cpu'/>
+  <cpu type='kvm' name='sa1100' typename='sa1100-arm-cpu'/>
+  <cpu type='kvm' name='max' typename='max-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a53' typename='cortex-a53-arm-cpu'/>
+  <cpu type='kvm' name='cortex-m0' typename='cortex-m0-arm-cpu'/>
+  <cpu type='kvm' name='cortex-m33' typename='cortex-m33-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a72' typename='cortex-a72-arm-cpu'/>
+  <cpu type='kvm' name='arm946' typename='arm946-arm-cpu'/>
+  <cpu type='kvm' name='pxa255' typename='pxa255-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a55' typename='cortex-a55-arm-cpu'/>
+  <cpu type='kvm' name='host' typename='host-arm-cpu'/>
+  <cpu type='kvm' name='arm11mpcore' typename='arm11mpcore-arm-cpu'/>
+  <cpu type='kvm' name='cortex-m55' typename='cortex-m55-arm-cpu'/>
+  <cpu type='kvm' name='neoverse-n1' typename='neoverse-n1-arm-cpu'/>
+  <cpu type='kvm' name='arm926' typename='arm926-arm-cpu'/>
+  <cpu type='kvm' name='arm1136' typename='arm1136-arm-cpu'/>
+  <cpu type='kvm' name='cortex-a35' typename='cortex-a35-arm-cpu'/>
+  <cpu type='kvm' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
+  <cpu type='kvm' name='cortex-m3' typename='cortex-m3-arm-cpu'/>
+  <machine type='kvm' name='virt-8.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='qcom-dc-scm-v1-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='mori-bmc' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='ast2600-evb' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='borzoi' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='tiogapass-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='virt-2.7' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='nuri' maxCpus='2' acpi='no'/>
+  <machine type='kvm' name='mcimx7d-sabre' maxCpus='2' defaultRAMid='mcimx7d-sabre.ram' acpi='no'/>
+  <machine type='kvm' name='romulus-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-3.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='virt-5.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='npcm750-evb' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-2.10' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='rainier-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='mps3-an547' maxCpus='1' defaultCPU='cortex-m55-arm-cpu' defaultRAMid='DDR' acpi='no'/>
+  <machine type='kvm' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='musca-b1' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='realview-pbx-a9' maxCpus='4' defaultCPU='cortex-a9-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
+  <machine type='kvm' name='kzm' maxCpus='1' defaultRAMid='kzm.ram' acpi='no'/>
+  <machine type='kvm' name='fby35-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='mcimx6ul-evk' maxCpus='1' defaultRAMid='mcimx6ul-evk.ram' acpi='no'/>
+  <machine type='kvm' name='virt-5.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='smdkc210' maxCpus='2' acpi='no'/>
+  <machine type='kvm' name='sx1' maxCpus='1' defaultCPU='ti925t-arm-cpu' defaultRAMid='omap1.dram' acpi='no'/>
+  <machine type='kvm' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='imx25-pdk' maxCpus='1' defaultRAMid='imx25.ram' acpi='no'/>
+  <machine type='kvm' name='stm32vldiscovery' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='orangepi-pc' maxCpus='4' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='orangepi.ram' acpi='no'/>
+  <machine type='kvm' name='quanta-q71l-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='z2' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='virt-5.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='xilinx-zynq-a9' maxCpus='1' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='zynq.ext_ram' acpi='no'/>
+  <machine type='kvm' name='xlnx-zcu102' maxCpus='6' defaultRAMid='ddr-ram' acpi='no'/>
+  <machine type='kvm' name='tosa' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='mps2-an500' maxCpus='1' defaultCPU='cortex-m7-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='kvm' name='virt-2.12' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='mps2-an521' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='kvm' name='sabrelite' maxCpus='4' defaultRAMid='sabrelite.ram' acpi='no'/>
+  <machine type='kvm' name='mps2-an511' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='kvm' name='canon-a1100' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='realview-eb' maxCpus='1' defaultCPU='arm926-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='quanta-gbs-bmc' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='emcraft-sf2' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='realview-pb-a8' maxCpus='1' defaultCPU='cortex-a8-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='sbsa-ref' maxCpus='512' defaultCPU='neoverse-n1-arm-cpu' defaultRAMid='sbsa-ref.ram' acpi='no'/>
+  <machine type='kvm' name='yosemitev2-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-7.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='raspi1ap' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='palmetto-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='sx1-v1' maxCpus='1' defaultCPU='ti925t-arm-cpu' defaultRAMid='omap1.dram' acpi='no'/>
+  <machine type='kvm' name='n810' maxCpus='1' defaultCPU='arm1136-r2-arm-cpu' defaultRAMid='omap2.dram' acpi='no'/>
+  <machine type='kvm' name='g220a-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='n800' maxCpus='1' defaultCPU='arm1136-r2-arm-cpu' defaultRAMid='omap2.dram' acpi='no'/>
+  <machine type='kvm' name='virt-7.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='tacoma-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='bletchley-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-4.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='quanta-gsj' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='versatilepb' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
+  <machine type='kvm' name='terrier' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='mainstone' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram' acpi='no'/>
+  <machine type='kvm' name='virt-7.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='supermicrox11-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-4.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='witherspoon-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='qcom-firework-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='mps3-an524' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='DDR' acpi='no'/>
+  <machine type='kvm' name='kudo-bmc' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='vexpress-a9' maxCpus='4' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='vexpress.highmem' acpi='no'/>
+  <machine type='kvm' name='midway' maxCpus='4' defaultRAMid='highbank.dram' acpi='no'/>
+  <machine type='kvm' name='musicpal' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='musicpal.ram' acpi='no'/>
+  <machine type='kvm' name='lm3s811evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='lm3s6965evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='supermicro-x11spi-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='microbit' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='fby35' maxCpus='3' acpi='no'/>
+  <machine type='kvm' name='mps2-an505' maxCpus='1' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='kvm' name='mps2-an385' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='kvm' name='virt-6.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='virt-8.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='raspi3ap' maxCpus='4' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='cubieboard' maxCpus='1' defaultCPU='cortex-a8-arm-cpu' defaultRAMid='cubieboard.ram' acpi='no'/>
+  <machine type='kvm' name='ast1030-evb' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='verdex' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='netduino2' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='bpim2u' maxCpus='4' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='bpim2u.ram' acpi='no'/>
+  <machine type='kvm' name='xlnx-versal-virt' maxCpus='4' defaultRAMid='ddr' acpi='no'/>
+  <machine type='kvm' name='mps2-an386' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='kvm' name='olimex-stm32-h405' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='virt-6.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='virt-8.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='raspi3b' maxCpus='4' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='raspi2b' maxCpus='4' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='vexpress-a15' maxCpus='4' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='vexpress.highmem' acpi='no'/>
+  <machine type='kvm' name='fuji-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-6.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='x-remote' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='cheetah' maxCpus='1' defaultCPU='ti925t-arm-cpu' defaultRAMid='omap1.dram' acpi='no'/>
+  <machine type='kvm' name='sonorapass-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='virt-2.6' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='kvm' name='ast2500-evb' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='highbank' maxCpus='4' defaultRAMid='highbank.dram' acpi='no'/>
+  <machine type='kvm' name='akita' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='connex' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='netduinoplus2' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='collie' maxCpus='1' defaultCPU='sa1110-arm-cpu' defaultRAMid='strongarm.sdram' acpi='no'/>
+  <machine type='kvm' name='raspi0' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='fp5280g2-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <hostCPU type='tcg' model='max' migratability='no'>
+    <property name='sve768' type='boolean' value='true'/>
+    <property name='sve128' type='boolean' value='true'/>
+    <property name='sve1024' type='boolean' value='true'/>
+    <property name='sve1280' type='boolean' value='true'/>
+    <property name='pauth-impdef' type='boolean' value='false'/>
+    <property name='sve896' type='boolean' value='true'/>
+    <property name='sve256' type='boolean' value='true'/>
+    <property name='sve1536' type='boolean' value='true'/>
+    <property name='sve1792' type='boolean' value='true'/>
+    <property name='sve384' type='boolean' value='true'/>
+    <property name='sve' type='boolean' value='true'/>
+    <property name='sve2048' type='boolean' value='true'/>
+    <property name='pauth' type='boolean' value='true'/>
+    <property name='pauth-qarma3' type='boolean' value='false'/>
+    <property name='sve512' type='boolean' value='true'/>
+    <property name='aarch64' type='boolean' value='true'/>
+    <property name='pmu' type='boolean' value='true'/>
+    <property name='sve1920' type='boolean' value='true'/>
+    <property name='sve1152' type='boolean' value='true'/>
+    <property name='sve640' type='boolean' value='true'/>
+    <property name='sve1408' type='boolean' value='true'/>
+    <property name='sve1664' type='boolean' value='true'/>
+  </hostCPU>
+  <cpu type='tcg' name='neoverse-n2' typename='neoverse-n2-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-c0' typename='pxa270-c0-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a15' typename='cortex-a15-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m4' typename='cortex-m4-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a57' typename='cortex-a57-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-a0' typename='pxa270-a0-arm-cpu'/>
+  <cpu type='tcg' name='arm1176' typename='arm1176-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-b1' typename='pxa270-b1-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a7' typename='cortex-a7-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-a1' typename='pxa270-a1-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a76' typename='cortex-a76-arm-cpu'/>
+  <cpu type='tcg' name='a64fx' typename='a64fx-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a8' typename='cortex-a8-arm-cpu'/>
+  <cpu type='tcg' name='neoverse-v1' typename='neoverse-v1-arm-cpu'/>
+  <cpu type='tcg' name='cortex-r5' typename='cortex-r5-arm-cpu'/>
+  <cpu type='tcg' name='ti925t' typename='ti925t-arm-cpu'/>
+  <cpu type='tcg' name='cortex-r5f' typename='cortex-r5f-arm-cpu'/>
+  <cpu type='tcg' name='arm1026' typename='arm1026-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a9' typename='cortex-a9-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m7' typename='cortex-m7-arm-cpu'/>
+  <cpu type='tcg' name='pxa270' typename='pxa270-arm-cpu'/>
+  <cpu type='tcg' name='pxa260' typename='pxa260-arm-cpu'/>
+  <cpu type='tcg' name='pxa250' typename='pxa250-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-c5' typename='pxa270-c5-arm-cpu'/>
+  <cpu type='tcg' name='pxa261' typename='pxa261-arm-cpu'/>
+  <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a710' typename='cortex-a710-arm-cpu'/>
+  <cpu type='tcg' name='cortex-r52' typename='cortex-r52-arm-cpu'/>
+  <cpu type='tcg' name='sa1110' typename='sa1110-arm-cpu'/>
+  <cpu type='tcg' name='sa1100' typename='sa1100-arm-cpu'/>
+  <cpu type='tcg' name='max' typename='max-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a53' typename='cortex-a53-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m0' typename='cortex-m0-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m33' typename='cortex-m33-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a72' typename='cortex-a72-arm-cpu'/>
+  <cpu type='tcg' name='arm946' typename='arm946-arm-cpu'/>
+  <cpu type='tcg' name='pxa255' typename='pxa255-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a55' typename='cortex-a55-arm-cpu'/>
+  <cpu type='tcg' name='host' typename='host-arm-cpu'/>
+  <cpu type='tcg' name='arm11mpcore' typename='arm11mpcore-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m55' typename='cortex-m55-arm-cpu'/>
+  <cpu type='tcg' name='neoverse-n1' typename='neoverse-n1-arm-cpu'/>
+  <cpu type='tcg' name='arm926' typename='arm926-arm-cpu'/>
+  <cpu type='tcg' name='arm1136' typename='arm1136-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a35' typename='cortex-a35-arm-cpu'/>
+  <cpu type='tcg' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m3' typename='cortex-m3-arm-cpu'/>
+  <machine type='tcg' name='virt-8.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='qcom-dc-scm-v1-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='mori-bmc' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='ast2600-evb' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='borzoi' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='tiogapass-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='spitz' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='virt-2.7' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='nuri' maxCpus='2' acpi='no'/>
+  <machine type='tcg' name='mcimx7d-sabre' maxCpus='2' defaultRAMid='mcimx7d-sabre.ram' acpi='no'/>
+  <machine type='tcg' name='romulus-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-3.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='virt-5.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='npcm750-evb' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-2.10' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='rainier-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='mps3-an547' maxCpus='1' defaultCPU='cortex-m55-arm-cpu' defaultRAMid='DDR' acpi='no'/>
+  <machine type='tcg' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='musca-b1' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='realview-pbx-a9' maxCpus='4' defaultCPU='cortex-a9-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
+  <machine type='tcg' name='kzm' maxCpus='1' defaultRAMid='kzm.ram' acpi='no'/>
+  <machine type='tcg' name='fby35-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='mcimx6ul-evk' maxCpus='1' defaultRAMid='mcimx6ul-evk.ram' acpi='no'/>
+  <machine type='tcg' name='virt-5.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='smdkc210' maxCpus='2' acpi='no'/>
+  <machine type='tcg' name='sx1' maxCpus='1' defaultCPU='ti925t-arm-cpu' defaultRAMid='omap1.dram' acpi='no'/>
+  <machine type='tcg' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='imx25-pdk' maxCpus='1' defaultRAMid='imx25.ram' acpi='no'/>
+  <machine type='tcg' name='stm32vldiscovery' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='orangepi-pc' maxCpus='4' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='orangepi.ram' acpi='no'/>
+  <machine type='tcg' name='quanta-q71l-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='z2' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='virt-5.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='xilinx-zynq-a9' maxCpus='1' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='zynq.ext_ram' acpi='no'/>
+  <machine type='tcg' name='xlnx-zcu102' maxCpus='6' defaultRAMid='ddr-ram' acpi='no'/>
+  <machine type='tcg' name='tosa' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='mps2-an500' maxCpus='1' defaultCPU='cortex-m7-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='tcg' name='virt-2.12' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='mps2-an521' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='tcg' name='sabrelite' maxCpus='4' defaultRAMid='sabrelite.ram' acpi='no'/>
+  <machine type='tcg' name='mps2-an511' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='tcg' name='canon-a1100' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='realview-eb' maxCpus='1' defaultCPU='arm926-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='quanta-gbs-bmc' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='emcraft-sf2' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='realview-pb-a8' maxCpus='1' defaultCPU='cortex-a8-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='sbsa-ref' maxCpus='512' defaultCPU='neoverse-n1-arm-cpu' defaultRAMid='sbsa-ref.ram' acpi='no'/>
+  <machine type='tcg' name='yosemitev2-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-7.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='raspi1ap' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='palmetto-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='sx1-v1' maxCpus='1' defaultCPU='ti925t-arm-cpu' defaultRAMid='omap1.dram' acpi='no'/>
+  <machine type='tcg' name='n810' maxCpus='1' defaultCPU='arm1136-r2-arm-cpu' defaultRAMid='omap2.dram' acpi='no'/>
+  <machine type='tcg' name='g220a-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='n800' maxCpus='1' defaultCPU='arm1136-r2-arm-cpu' defaultRAMid='omap2.dram' acpi='no'/>
+  <machine type='tcg' name='virt-7.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='tacoma-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='bletchley-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-4.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='quanta-gsj' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='versatilepb' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
+  <machine type='tcg' name='terrier' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='mainstone' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='integratorcp' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='integrator.ram' acpi='no'/>
+  <machine type='tcg' name='virt-7.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='supermicrox11-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-4.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='witherspoon-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='qcom-firework-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='mps3-an524' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='DDR' acpi='no'/>
+  <machine type='tcg' name='kudo-bmc' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='vexpress-a9' maxCpus='4' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='vexpress.highmem' acpi='no'/>
+  <machine type='tcg' name='midway' maxCpus='4' defaultRAMid='highbank.dram' acpi='no'/>
+  <machine type='tcg' name='musicpal' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='musicpal.ram' acpi='no'/>
+  <machine type='tcg' name='lm3s811evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='lm3s6965evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='supermicro-x11spi-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='microbit' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='fby35' maxCpus='3' acpi='no'/>
+  <machine type='tcg' name='mps2-an505' maxCpus='1' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='tcg' name='mps2-an385' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='tcg' name='virt-6.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='virt-8.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='raspi3ap' maxCpus='4' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='cubieboard' maxCpus='1' defaultCPU='cortex-a8-arm-cpu' defaultRAMid='cubieboard.ram' acpi='no'/>
+  <machine type='tcg' name='ast1030-evb' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='verdex' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='netduino2' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='bpim2u' maxCpus='4' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='bpim2u.ram' acpi='no'/>
+  <machine type='tcg' name='xlnx-versal-virt' maxCpus='4' defaultRAMid='ddr' acpi='no'/>
+  <machine type='tcg' name='mps2-an386' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
+  <machine type='tcg' name='olimex-stm32-h405' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='virt-6.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='virt-8.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='raspi3b' maxCpus='4' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='raspi2b' maxCpus='4' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='vexpress-a15' maxCpus='4' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='vexpress.highmem' acpi='no'/>
+  <machine type='tcg' name='fuji-bmc' maxCpus='2' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-6.2' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='x-remote' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='cheetah' maxCpus='1' defaultCPU='ti925t-arm-cpu' defaultRAMid='omap1.dram' acpi='no'/>
+  <machine type='tcg' name='sonorapass-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='virt-2.6' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes' defaultRAMid='mach-virt.ram' acpi='yes'/>
+  <machine type='tcg' name='ast2500-evb' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='highbank' maxCpus='4' defaultRAMid='highbank.dram' acpi='no'/>
+  <machine type='tcg' name='akita' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='connex' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='netduinoplus2' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='collie' maxCpus='1' defaultCPU='sa1110-arm-cpu' defaultRAMid='strongarm.sdram' acpi='no'/>
+  <machine type='tcg' name='raspi0' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='fp5280g2-bmc' maxCpus='1' defaultRAMid='ram' acpi='no'/>
+  <gic version='3' kernel='yes' emulated='yes'/>
+  <gic version='2' kernel='no' emulated='yes'/>
+</qemuCaps>

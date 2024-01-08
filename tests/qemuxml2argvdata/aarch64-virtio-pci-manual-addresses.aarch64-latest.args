@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.config \
 -name guest=aarch64test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-aarch64test/master-key.aes"}' \
--machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=off \
 -accel tcg \
 -cpu cortex-a53 \
 -m size=1048576k \
@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -kernel /aarch64.kernel \
 -initrd /aarch64.initrd \
@@ -40,9 +39,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.config \
 -blockdev '{"driver":"file","filename":"/aarch64.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"scsi-hd","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":0,"device_id":"drive-scsi0-0-0-0","drive":"libvirt-1-format","id":"scsi0-0-0-0","bootindex":1}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.3","addr":"0x0"}' \
--netdev user,id=hostnet1 \
+-netdev '{"type":"user","id":"hostnet1"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"52:54:00:09:a4:38","bus":"pci.5","addr":"0x0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

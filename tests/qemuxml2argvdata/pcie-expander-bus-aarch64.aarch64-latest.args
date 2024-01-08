@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/.config \
 -name guest=pcie-expander-bus-test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/master-key.aes"}' \
--machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=off \
 -accel tcg \
 -cpu cortex-a15 \
 -m size=2097152k \
@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-pcie-expander-bus-te/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"pxb-pcie","bus_nr":254,"id":"pci.1","bus":"pcie.0","addr":"0x1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -name guest=armtest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-armtest/master-key.aes"}' \
--machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram \
+-machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=on \
 -accel kvm \
 -cpu host,aarch64=off \
 -m size=1048576k \
@@ -35,7 +35,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -blockdev '{"driver":"file","filename":"/arm.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.2","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.1","addr":"0x0"}' \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \

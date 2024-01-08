@@ -25,7 +25,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -kernel /arm.kernel \
 -initrd /arm.initrd \

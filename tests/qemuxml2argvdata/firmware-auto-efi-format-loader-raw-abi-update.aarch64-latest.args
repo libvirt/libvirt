@@ -14,7 +14,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/guest_VARS.raw","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine virt-4.0,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
+-machine virt-4.0,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,acpi=on \
 -accel tcg \
 -cpu cortex-a15 \
 -m size=1048576k \

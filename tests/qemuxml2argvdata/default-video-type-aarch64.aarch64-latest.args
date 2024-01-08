@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-a/.config \
 -name guest=default-video-type-aarch64-test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-default-video-type-a/master-key.aes"}' \
--machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram \
+-machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=off \
 -accel kvm \
 -m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
@@ -23,7 +23,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-a/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
 -device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
