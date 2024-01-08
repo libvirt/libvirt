@@ -1,6 +1,10 @@
 include:
   - 'ci/integration-template.yml'
 
+# NOTE The integration tests use artifacts produced by the libvirt-perl
+# and libvirt-python CI jobs, so the new target needs to be introduced
+# there before it can be used here. The VM template for the target
+# also needs to be created on the runner host.
 .centos-stream-8-tests:
   variables:
     # needed by libvirt-gitlab-executor
@@ -41,6 +45,10 @@ centos-stream-8-tests-local-env:
       artifacts: true
 
 
+# NOTE The integration tests use artifacts produced by the libvirt-perl
+# and libvirt-python CI jobs, so the new target needs to be introduced
+# there before it can be used here. The VM template for the target
+# also needs to be created on the runner host.
 .centos-stream-9-tests:
   variables:
     # needed by libvirt-gitlab-executor
@@ -81,6 +89,10 @@ centos-stream-9-tests-local-env:
       artifacts: true
 
 
+# NOTE The integration tests use artifacts produced by the libvirt-perl
+# and libvirt-python CI jobs, so the new target needs to be introduced
+# there before it can be used here. The VM template for the target
+# also needs to be created on the runner host.
 .fedora-38-tests:
   variables:
     # needed by libvirt-gitlab-executor
@@ -121,6 +133,10 @@ fedora-38-tests-local-env:
       artifacts: true
 
 
+# NOTE The integration tests use artifacts produced by the libvirt-perl
+# and libvirt-python CI jobs, so the new target needs to be introduced
+# there before it can be used here. The VM template for the target
+# also needs to be created on the runner host.
 .fedora-39-tests:
   variables:
     # needed by libvirt-gitlab-executor
@@ -161,6 +177,10 @@ fedora-39-tests-local-env:
       artifacts: true
 
 
+# NOTE The integration tests use artifacts produced by the libvirt-perl
+# and libvirt-python CI jobs, so the new target needs to be introduced
+# there before it can be used here. The VM template for the target
+# also needs to be created on the runner host.
 .fedora-39-upstream-qemu-tests:
   variables:
     # needed by libvirt-gitlab-executor
