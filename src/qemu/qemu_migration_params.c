@@ -131,10 +131,20 @@ struct _qemuMigrationParamsAlwaysOnItem {
 
 typedef struct _qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMapItem;
 struct _qemuMigrationParamsFlagMapItem {
+    /* Describes what to do with the capability if @flag is found.
+     * When se to QEMU_MIGRATION_FLAG_REQUIRED, the capability will be
+     * enabled iff the specified migration flag is enabled. On the other hand
+     * QEMU_MIGRATION_FLAG_FORBIDDEN will enable the capability as long as
+     * the specified migration flag is not enabled. */
     qemuMigrationFlagMatch match;
+    /* Migration flag to check. */
     virDomainMigrateFlags flag;
+    /* Migration capability to be enabled or disabled based on the flag. */
     qemuMigrationCapability cap;
-    int party; /* bit-wise OR of qemuMigrationParty */
+    /* Bit-wise OR of qemuMigrationParty. Determines whether the capability has
+     * to be enabled on the source, on the destination, or on both sides of
+     * migration. */
+    int party;
 };
 
 typedef struct _qemuMigrationParamsTPMapItem qemuMigrationParamsTPMapItem;
