@@ -1290,7 +1290,7 @@ int
 qemuMigrationParamsCheck(virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
-                         virBitmap *remoteCaps)
+                         virBitmap *remoteAuto)
 {
     qemuDomainJobPrivate *jobPriv = vm->job->privateData;
     qemuMigrationCapability cap;
@@ -1323,8 +1323,8 @@ qemuMigrationParamsCheck(virDomainObj *vm,
             if (qemuMigrationParamsAlwaysOn[i].party != party) {
                 bool remote = false;
 
-                if (remoteCaps)
-                    ignore_value(virBitmapGetBit(remoteCaps, cap, &remote));
+                if (remoteAuto)
+                    ignore_value(virBitmapGetBit(remoteAuto, cap, &remote));
 
                 if (!remote) {
                     VIR_DEBUG("Not enabling migration capability '%s'; it is "
