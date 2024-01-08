@@ -132,7 +132,7 @@ fedora-38-tests-local-env:
 
 fedora-38-upstream-qemu-tests-prebuilt-env:
   extends:
-    - .integration_tests_prebuilt_env
+    - .integration_tests_upstream_qemu_prebuilt_env
     - .fedora-38-upstream-qemu-tests
   needs:
     - x86_64-fedora-38-prebuilt-env
@@ -147,7 +147,7 @@ fedora-38-upstream-qemu-tests-prebuilt-env:
 
 fedora-38-upstream-qemu-tests-local-env:
   extends:
-    - .integration_tests_local_env
+    - .integration_tests_upstream_qemu_local_env
     - .fedora-38-upstream-qemu-tests
   needs:
     - x86_64-fedora-38-local-env
