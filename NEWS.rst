@@ -17,6 +17,12 @@ v10.1.0 (unreleased)
 
 * **New features**
 
+  * qemu: Support clusters in CPU topology
+
+    It is now possible to configure the guest CPU topology to use clusters.
+    Additionally, if CPU clusters are present in the host topology, they will
+    be reported as part of the capabilities XML.
+
 * **Improvements**
 
 * **Bug fixes**
