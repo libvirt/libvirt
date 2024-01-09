@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2023-10-26 09:33+0000\n"
-"PO-Revision-Date: 2024-01-08 06:04+0000\n"
+"PO-Revision-Date: 2024-01-09 11:12+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23029,15 +23029,16 @@ msgstr "chifferinformationen saknar attributet ”name”"
 
 msgid "classID attribute not supported on <bandwidth> in this usage context"
 msgstr ""
+"attributet classID stödjs inte på <bandwidth> i detta användningssammanhang"
 
 msgid "clear out authorized keys file before adding new keys"
-msgstr ""
+msgstr "rensa ut filen med auktoriserade nycklar innan nya nycklar läggs till"
 
 msgid "client hooks cannot be NULL"
-msgstr ""
+msgstr "klienthakar kan inte vara NULL"
 
 msgid "client socket is closed"
-msgstr ""
+msgstr "klientuttaget är stängt"
 
 msgid "client tried invalid PolicyKit init request"
 msgstr "klienten försökte med en ogiltig PolicyKit-initieringsbegäran"
@@ -23049,31 +23050,30 @@ msgid "client tried invalid SASL start request"
 msgstr "klienten försökte med en ogiltig SASL-startbegäran"
 
 msgid "client which to disconnect, specified by ID"
-msgstr ""
+msgstr "klient att koppla ifrån, angiven med ID"
 
 msgid "client which to retrieve identity information for"
-msgstr ""
+msgstr "klient att hämta identitetsinformation för"
 
 msgid "clone a volume."
-msgstr ""
+msgstr "klona en volym."
 
-#, fuzzy
 msgid "clone name"
-msgstr "nätverksnamn"
+msgstr "klona ett namn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "close: %1$s: failed to write or close temporary file: %2$s"
-msgstr "%1$s: misslyckades att skriva loggfilen: %2$s"
+msgstr "close: %1$s: misslyckades att skriva eller stänga temporärfilen: %2$s"
 
 #, c-format
 msgid "coalesce settings on interface type %1$s are not supported"
-msgstr ""
+msgstr "att slå samman inställningar av gränssnittstypen %1$s stödjs inte"
 
 msgid "comma separated list of compression methods to be used"
-msgstr ""
+msgstr "kommaseparerad lista över komprimeringsmetoder att använda"
 
 msgid "comma separated list of disks to be migrated"
-msgstr ""
+msgstr "kommaseparerad lista över diskar att migrera"
 
 msgid "command"
 msgstr "kommando"
@@ -23084,31 +23084,31 @@ msgstr "kommandot '%1$s' stöder inte flaggan --%2$s"
 
 #, c-format
 msgid "command '%1$s' has handler set"
-msgstr ""
+msgstr "kommandot ”%1$s” har en hanterare satt"
 
 #, c-format
 msgid "command '%1$s' has inconsistent alias"
-msgstr ""
+msgstr "kommandot ”%1$s” har inkonsistent alias"
 
 #, c-format
 msgid "command '%1$s' has info set"
-msgstr ""
+msgstr "kommandot ”%1$s” har en information satt"
 
 #, c-format
 msgid "command '%1$s' has multiple flags set"
-msgstr ""
+msgstr "kommandot ”%1$s” har flera flaggor satta"
 
 #, c-format
 msgid "command '%1$s' has options set"
-msgstr ""
+msgstr "kommandot ”%1$s” har alternativ satta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "command '%1$s' has too many options"
-msgstr "kommando '%s' kräver flaggan --%s"
+msgstr "kommandot '%1$s' har för många alternativ"
 
 #, c-format
 msgid "command '%1$s' lacks help"
-msgstr ""
+msgstr "kommandot ”%1$s” saknar hjälp"
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -23120,76 +23120,76 @@ msgstr "kommando '%1$s' kräver flaggan <%2$s>"
 
 #, c-format
 msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-msgstr ""
+msgstr "kommandoaliaset ”%1$s” pekar på ett kommando ”%2$s” som inte finns"
 
 #, c-format
 msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr ""
+msgstr "kommandoaliaset ”%1$s” pekar på ett annat kommandoalias ”%2$s”"
 
 msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr ""
+msgstr "kommandogrupper och kommandot är båda NULL kör vshinit före omladdning"
 
 msgid "command groups and command set cannot both be NULL"
-msgstr ""
+msgstr "kammandogrupper och kommandouppsättning kan inte båda vara NULL"
 
-#, fuzzy, c-format
+#, c-format
 msgid "command is already running as pid %1$lld"
-msgstr "Domänen kör redan"
+msgstr "kommandot kör redan som pid %1$lld"
 
 msgid "command is in human monitor protocol"
-msgstr ""
+msgstr "kommandot är i mänskligt övervakningsprotokoll"
 
-#, fuzzy
 msgid "command is not yet running"
-msgstr "Domänen kör redan"
+msgstr "kommandot kör inte ännu"
 
 #, c-format
 msgid "command or command group '%1$s' doesn't exist"
-msgstr ""
+msgstr "kommandot eller kommandogruppen ”%1$s” finns inte"
 
 msgid "command to run"
-msgstr ""
+msgstr "kommando att köra"
 
 msgid "commit changes and free restore point"
-msgstr ""
+msgstr "verkställ ändringar och frigör återställningspunkten"
 
 msgid "commit changes made since iface-begin and free restore point"
 msgstr ""
+"fastställ ändringar gjorda sedan iface-begin och frigör återställningspunkten"
 
 #, c-format
 msgid "commit of '%1$s' active layer requires active flag"
-msgstr ""
+msgstr "att fastställa ”%1$s” aktivt lager kräver aktiv flagga"
 
 msgid "compare CPU with host CPU"
-msgstr ""
+msgstr "jämför CPU med värd-CPU"
 
 msgid "compare CPU with hypervisor CPU"
-msgstr ""
+msgstr "jämför CPU med hypervisor-CPU"
 
 msgid "compare a CPU with the CPU created by a hypervisor on the host"
-msgstr ""
+msgstr "jämför en CPU med CPU: som skapades av en hypervisor på värden"
 
 msgid "compare host CPU with a CPU described by an XML file"
-msgstr ""
+msgstr "jämför värd-CPU:n med en CPU beskriven av en XML-fil"
 
 #, c-format
 msgid "comparing with the hypervisor CPU is not supported for arch %1$s"
-msgstr ""
+msgstr "jämförelse med hypervisor-CPU:n stödjs inte för arkitekturen %1$s"
 
 msgid "compatibility option only available with qcow2"
-msgstr ""
+msgstr "kompatibilitetsflaggan är endast tillgänglig med qcow2"
 
 msgid "completed"
 msgstr "färdig"
 
 msgid "compress level for multithread compression"
-msgstr ""
+msgstr "kompressionsnivå för multitrådad komprimering"
 
 msgid "compress level for zlib compression"
-msgstr ""
+msgstr "kompressionsnivå för zlib-komprimering"
 
 msgid "compress level for zstd compression"
-msgstr ""
+msgstr "kompressionsnivå för zstd-komprimering"
 
 msgid "compress repeated pages during live migration"
 msgstr ""
