@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2023-09-28 05:14+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -3599,10 +3599,10 @@ msgstr ""
 "Не можна використовувати режим безпосередніх сокетів для каналу передавання "
 "%1$s"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
-"Не можна використовувати режим безпосередніх сокетів, якщо не встановлено "
-"адреси"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -6153,6 +6153,10 @@ msgid "Duplicate info for NUMA latencies"
 msgstr "Дублювання даних для латентностей NUMA"
 
 #, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
+#, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "Дублювання драйвера захисту %1$s"
 
@@ -7810,8 +7814,8 @@ msgid "Failed to list volumes"
 msgstr "Не вдалося побудувати список томів"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
-msgstr "Не вдалося завантажити модуль драйвера PCI %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
@@ -9694,6 +9698,10 @@ msgstr "Ідентифікатор IOThread"
 
 msgid "IOThread ID number"
 msgstr "Номер ідентифікатора потоку введення-виведення"
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "IOThread, який буде використано підтримуваним пристроєм"
@@ -11820,9 +11828,6 @@ msgstr "Не вказано адреси PCI для порту мережі"
 
 msgid "Missing network port bridge name"
 msgstr "Не вказано назви містка порту мережі"
-
-msgid "Missing network port driver name"
-msgstr "Не вказано назви драйвера для порту мережі"
 
 msgid "Missing network port link device name"
 msgstr "Не вказано пов'язаного із назвою пристрою порту мережі"
@@ -19630,9 +19635,6 @@ msgstr "Неочікувана відповідь JSON «%1$s»"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "Неочікувана адреса LXC «%1$s», спробуйте lxc:///system"
 
-msgid "Unexpected PCI backend 'xen'"
-msgstr "Неочікуваний модуль PCI «xen»"
-
 #, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "Неочікувана модель контролера PCI, %1$d"
@@ -19964,10 +19966,6 @@ msgstr "Невідоме сімейство %1$d"
 #, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "Невідомий шар брандмауера %1$d"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "Невідоме переспрямовування <driver name='%1$s'/> у мережі %2$s"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -20698,6 +20696,9 @@ msgstr "Ця версія QEMU не підтримує призначення PC
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "у цій системі поки що не передбачено призначення пристроїв VFIO"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "Джерело диска ВМ і джерело диска знімка не є тотожними"
 
@@ -20962,6 +20963,10 @@ msgstr "Задіяно XBZRLE, але не вказано даних «overflow�
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "Задіяно XBZRLE, але не вказано даних «pages»"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "Опис XML є некоректним або має помилкове форматування"
@@ -21709,6 +21714,10 @@ msgid "bhyve state driver is not active"
 msgstr "драйвер стану bhyve є неактивним"
 
 #, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
+#, c-format
 msgid "binding '%1$s' already exists"
 msgstr "прив'язка «%1$s» вже існує"
 
@@ -21778,6 +21787,10 @@ msgid "block device"
 msgstr "блоковий пристрій"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr "цілі знімка блокового пристрою «%1$s» не існує"
 
@@ -21829,6 +21842,11 @@ msgstr ""
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "для диска vhostuser не передбачено підтримки зміни розмірів блоків"
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
+msgstr ""
 
 msgid "block size must be a power of two"
 msgstr "розмір блоку має бути степенем двійки"
@@ -22150,6 +22168,9 @@ msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
 "не можна перетворити спільний диск на том сховища даних без підтримки "
 "спільного використання"
+
+msgid "can't query rx filters: device alias not found"
+msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr ""
@@ -25222,6 +25243,10 @@ msgstr "ключ пристрою"
 msgid "device list is not an object"
 msgstr "список пристроїв не є об'єктом"
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr "назва пристрою"
 
@@ -25416,6 +25441,10 @@ msgstr "диск «%1$s» вказано двічі"
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "у налаштуваннях домену не знайдено диска «%1$s»"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "атрибути диска: диск[,checkpoint=тип][,bitmap=назва]"
 
@@ -25487,6 +25516,11 @@ msgstr "диск не має альтернативної назви"
 msgid "disk driver %1$s is not supported"
 msgstr "підтримки драйвера диска %1$s не передбачено"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "режим event_idx роботи диска підтримується лише для каналу virtio"
 
@@ -25508,6 +25542,14 @@ msgstr "підтримки формату образу диска не пере�
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "режим роботи дисків ioeventfd підтримується лише для каналів virtio"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27895,6 +27937,10 @@ msgstr "не вдалося зняти захисти зі знімка «%1$s/%
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "не вдалося оновити дані щодо місткості для блокового вузла «%1$s»"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 msgid "failed to update device in BPF cgroup map"
 msgstr "не вдалося оновити пристрій у карті cgroup BPF"
 
@@ -30165,6 +30211,10 @@ msgstr "ідентифікатор iothread наявного IOThread"
 msgid "iothread is not supported with vhostuser disk"
 msgstr "підтримки iothread для дисків vhostuser не передбачено"
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr "iothread_id для потоку введення-виведення для вилучення"
 
@@ -32059,6 +32109,10 @@ msgstr "не вказано шляху призначення на томі вх
 msgid "missing interface information"
 msgstr "не визначає даних щодо інтерфейсу"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 msgid "missing ivgen info name string"
 msgstr "пропущено рядок назви у інформації щодо ivgen"
 
@@ -32575,6 +32629,16 @@ msgstr "змінити або отримати стан запуску"
 
 msgid "modify/get the title instead of description"
 msgstr "змінити або отримати заголовок замість опису"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 msgid "monitor failure"
 msgstr "помилка монітора"
@@ -34491,8 +34555,8 @@ msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
 #, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "підтримки модуля драйвера PCI «%1$s» не передбачено"
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
@@ -34500,6 +34564,10 @@ msgstr "пристрій pci %1$s не є пристроєм PCI-Express"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
 msgstr "драйвер обробки призначення пристроїв pci (наприклад «vfio» або «xen»)"
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
+msgstr ""
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -34792,12 +34860,11 @@ msgstr "prctl не вдалося скинути значення KEEPCAPS"
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl не вдалося встановити значення KEEPCAPS"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
-"підтримки попереднього створення призначень зберігання даних для перенесення "
-"нарощувальних сховищ не передбачено"
 
 msgid "preallocate is not supported on this platform"
 msgstr ""
@@ -35708,8 +35775,21 @@ msgstr "підтримки скидання nvram не передбачено д
 msgid "resize a vol"
 msgstr "змінити розміри тому"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "зміни розміру шифрованого образу qcow2 не передбачено"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "ресурс зайнято"
@@ -37056,6 +37136,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "перервати у м'якому режимі"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: вкажіть шлях або використовуйте test:///default"
 
@@ -38064,8 +38148,8 @@ msgid "unable to find audio backend for sound device"
 msgstr "не вдалося знайти звуковий модуль для звукового пристрою"
 
 #, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "не вдалося знайти диск за призначенням: %1$s"
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -38656,10 +38740,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "неочікувана модель процесора основної системи для архітектури %1$s"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "неочікуваний тип назви драйвера пристрою основної системи, %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "неочікуваний режим hostdev %1$d"
 
@@ -38748,8 +38828,8 @@ msgstr ""
 "неочікувана адреса nwfilter «%1$s», спробуйте адресу nwfilter:///system"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "неочікуваний тип назви драйвера пристрою PCI основної системи, %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "неочікуваний тип буфера"
@@ -40437,9 +40517,6 @@ msgstr "у virtiofs не передбачено підтримки режиму 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "virtiofs не підтримуються цим двійковим компонентом QEMU"
 
-msgid "virtiofs is not yet supported in session mode"
-msgstr "у virtiofs ще не передбачено підтримки режиму сеансів"
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
 "У virtiofs передбачено підтримку лише режиму доступу з передаванням даних"
@@ -40870,6 +40947,51 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <рядок>}..."
+
+#~ msgid "Cannot use direct socket mode if no URI is set"
+#~ msgstr ""
+#~ "Не можна використовувати режим безпосередніх сокетів, якщо не встановлено "
+#~ "адреси"
+
+#, c-format
+#~ msgid "Failed to load PCI driver module %1$s"
+#~ msgstr "Не вдалося завантажити модуль драйвера PCI %1$s"
+
+#~ msgid "Missing network port driver name"
+#~ msgstr "Не вказано назви драйвера для порту мережі"
+
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "Неочікуваний модуль PCI «xen»"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "Невідоме переспрямовування <driver name='%1$s'/> у мережі %2$s"
+
+#, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "підтримки модуля драйвера PCI «%1$s» не передбачено"
+
+#~ msgid ""
+#~ "pre-creation of storage targets for incremental storage migration is not "
+#~ "supported"
+#~ msgstr ""
+#~ "підтримки попереднього створення призначень зберігання даних для "
+#~ "перенесення нарощувальних сховищ не передбачено"
+
+#, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "не вдалося знайти диск за призначенням: %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "неочікуваний тип назви драйвера пристрою основної системи, %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "неочікуваний тип назви драйвера пристрою PCI основної системи, %1$d"
+
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "у virtiofs ще не передбачено підтримки режиму сеансів"
 
 #, c-format
 #~ msgid ""

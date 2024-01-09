@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -3321,8 +3321,10 @@ msgstr "无法取消共享未初始化的 CRUL 句柄"
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "无法对 %1$s 传输直接使用套接字模式"
 
-msgid "Cannot use direct socket mode if no URI is set"
-msgstr "如果没有设置 URI，则无法使用直接套接字模式"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5712,6 +5714,10 @@ msgid "Duplicate info for NUMA latencies"
 msgstr "NUMA 延迟的重复信息"
 
 #, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
+#, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "重复的安全驱动程序 %1$s"
 
@@ -7283,7 +7289,7 @@ msgid "Failed to list volumes"
 msgstr "列出卷失败"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9037,6 +9043,10 @@ msgstr "IOThread ID"
 
 msgid "IOThread ID number"
 msgstr "IOThread ID 号"
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "支持的设备使用的 IOThread"
@@ -11012,9 +11022,6 @@ msgstr "缺少网络端口 PCI 地址"
 
 msgid "Missing network port bridge name"
 msgstr "缺少网络端口桥接名称"
-
-msgid "Missing network port driver name"
-msgstr "缺少网络端口驱动程序名称"
 
 msgid "Missing network port link device name"
 msgstr "缺少网络端口连接设备名称"
@@ -18100,9 +18107,6 @@ msgstr "意外的 JSON 回复 '%1$s'"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "意外的 LXC URI 路径 '%1$s'，尝试 lxc:///system"
 
-msgid "Unexpected PCI backend 'xen'"
-msgstr "意外的 PCI 后端 'xen'"
-
 #, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "意外的 PCI 控制器型号 %1$d"
@@ -18431,10 +18435,6 @@ msgstr "未知的系列 %1$d"
 #, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "未知的防火墙层 %1$d"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "网络 %1$s 中未知的转发 <driver name='%2$s'/>"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -19128,6 +19128,9 @@ msgstr "此版本的 QEMU 不支持 VFIO PCI 设备分配"
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "此系统上当前不支持 VFIO 设备分配"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "VM 磁盘源和快照磁盘源不同"
 
@@ -19372,6 +19375,10 @@ msgstr "XBZRLE 是活跃的，但缺少 'overflow' 数据。"
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE 是活跃的，但缺少 'page' 数据。"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML 描述无效或者不合格"
@@ -20050,6 +20057,10 @@ msgid "bhyve state driver is not active"
 msgstr "bhyv 状态驱动器未激活"
 
 #, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
+#, c-format
 msgid "binding '%1$s' already exists"
 msgstr "绑定 '%1$s' 已存在"
 
@@ -20110,6 +20121,10 @@ msgid "block device"
 msgstr "阻止设备"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr "块设备快照目标 '%1$s' 不存在"
 
@@ -20153,6 +20168,11 @@ msgstr "为远程协议请求的块 peek 过大，%1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "vhostuser 磁盘不支持块调整大小"
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
+msgstr ""
 
 msgid "block size must be a power of two"
 msgstr "块大小必须是 2 的幂"
@@ -20448,6 +20468,9 @@ msgstr "无法解析 cputune 共享值"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr "无法将共享磁盘转到不支持共享的存储卷"
+
+msgid "can't query rx filters: device alias not found"
+msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr "无法重新打开带有未知后背存储的镜像"
@@ -23307,6 +23330,10 @@ msgstr "设备密钥"
 msgid "device list is not an object"
 msgstr "设备列表不是一个对象"
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr "设备名称"
 
@@ -23494,6 +23521,10 @@ msgstr "两次指定磁盘 '%1$s'"
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "磁盘 '%1$s' 在域配置中未找到"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 
@@ -23560,6 +23591,11 @@ msgstr "磁盘没有别名"
 msgid "disk driver %1$s is not supported"
 msgstr "不支持磁盘驱动程序 %1$s"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "只有 virtio 总线支持 event_idx 模式"
 
@@ -23579,6 +23615,14 @@ msgstr "不支持磁盘镜像格式：%1$s"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "只有 virtio 总线支持磁盘 ioeventfd 模式"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -25873,6 +25917,10 @@ msgstr "无法取消对快照 '%1$s/%2$s@%3$s' 的保护"
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "无法为块节点 '%1$s' 更新容量数据"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 msgid "failed to update device in BPF cgroup map"
 msgstr "无法在 BPF cgroup 图中更新设备"
 
@@ -27958,6 +28006,10 @@ msgstr "现有 IOThread 的 iothread id"
 msgid "iothread is not supported with vhostuser disk"
 msgstr "vhostuser 磁盘不支持 iothread"
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr "要删除的 IOThread 的 iothread_id"
 
@@ -29684,6 +29736,10 @@ msgstr "缺少输入卷目标路径"
 msgid "missing interface information"
 msgstr "缺少接口信息"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 msgid "missing ivgen info name string"
 msgstr "缺少 ivgen 信息名称字符串"
 
@@ -30161,6 +30217,16 @@ msgstr "修改/获取运行状态"
 
 msgid "modify/get the title instead of description"
 msgstr "修改/获得标题而不是描述"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 msgid "monitor failure"
 msgstr "监控失败"
@@ -31950,8 +32016,8 @@ msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
 #, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "不支持 PCI 后端驱动程序 '%1$s'"
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
@@ -31959,6 +32025,10 @@ msgstr "PCI 设备 %1$s 不是一个 PCI-Express 设备"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
 msgstr "PCI 设备分配后端驱动程序（如 'vfio' 或 'xen'）"
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
+msgstr ""
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -32222,10 +32292,11 @@ msgstr "prctl 无法重置 KEEPCAPS"
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl 无法设定 KEEPCAPS"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
-msgstr "不支持为增量存储迁移预先创建存储目标"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
+msgstr ""
 
 msgid "preallocate is not supported on this platform"
 msgstr "在此平台上不支持预先分配"
@@ -33048,8 +33119,21 @@ msgstr "网络支持的 nvram 不支持 nvram 的重置"
 msgid "resize a vol"
 msgstr "创新定义卷大小"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "不支持调整 qcow2 加密的镜像的大小"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "资源忙"
@@ -34299,6 +34383,10 @@ msgstr "查询 '%1$s' 的组件 '%2$s' 的终端 QAPI 不能有追随者"
 msgid "terminate gracefully"
 msgstr "优雅地终止"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen：提供一个路径或者默认使用 test:///"
 
@@ -35231,8 +35319,8 @@ msgid "unable to find audio backend for sound device"
 msgstr "无法为声音后端找到音频设备"
 
 #, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "无法通过目标找到磁盘：%1$s"
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -35815,10 +35903,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "意外的 %1$s 架构的 host-model CPU"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "意外的 hostdev 驱动程序名称类型 %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "意外的 hostdev 模式 %1$d"
 
@@ -35906,8 +35990,8 @@ msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr "意外的 nwfilter URI 路径 '%1$s'，请尝试 nwfilter:///system"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "意外的 pci hostdev 驱动程序名称类型 %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "意外的池类型"
@@ -37513,9 +37597,6 @@ msgstr "virtiofs 尚不支持只读模式"
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 virtiofs"
 
-msgid "virtiofs is not yet supported in session mode"
-msgstr "在会话模式中还不支持 virtiofs"
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "virtiofs 仅支持 passthrough 访问模式"
 
@@ -37899,6 +37980,43 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "Cannot use direct socket mode if no URI is set"
+#~ msgstr "如果没有设置 URI，则无法使用直接套接字模式"
+
+#~ msgid "Missing network port driver name"
+#~ msgstr "缺少网络端口驱动程序名称"
+
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "意外的 PCI 后端 'xen'"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "网络 %1$s 中未知的转发 <driver name='%2$s'/>"
+
+#, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "不支持 PCI 后端驱动程序 '%1$s'"
+
+#~ msgid ""
+#~ "pre-creation of storage targets for incremental storage migration is not "
+#~ "supported"
+#~ msgstr "不支持为增量存储迁移预先创建存储目标"
+
+#, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "无法通过目标找到磁盘：%1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "意外的 hostdev 驱动程序名称类型 %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "意外的 pci hostdev 驱动程序名称类型 %1$d"
+
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "在会话模式中还不支持 virtiofs"
 
 #, c-format
 #~ msgid ""

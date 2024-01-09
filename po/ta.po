@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -3390,7 +3390,9 @@ msgstr "துவக்கப்படாத CURL கையாளுதலைப
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "சாக்கெட் முகவரியை சரமாக மாற்ற முடியாது: %1$s"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
 
 #, c-format
@@ -5904,6 +5906,10 @@ msgstr ""
 msgid "Duplicate info for NUMA latencies"
 msgstr ""
 
+#, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "பாதுகாப்பு இயக்கி '%1$s' ஐக் கண்டறிய முடியவில்லை"
@@ -7553,7 +7559,7 @@ msgid "Failed to list volumes"
 msgstr "பிரிவகங்களைப் பட்டியலிட முடியவில்லை"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9365,6 +9371,10 @@ msgid "IOThread ID"
 msgstr ""
 
 msgid "IOThread ID number"
+msgstr ""
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -11457,10 +11467,6 @@ msgstr "முகவரி இல்லை"
 #, fuzzy
 msgid "Missing network port bridge name"
 msgstr "CPU மாதிரி பெயர் விடுபட்டுள்ளது"
-
-#, fuzzy
-msgid "Missing network port driver name"
-msgstr "சேமிப்பக தொகுப்பக மூலச் சாதன பெயர் விடுபட்டுள்ளது"
 
 #, fuzzy
 msgid "Missing network port link device name"
@@ -18950,10 +18956,6 @@ msgstr "எதிர்பாராத JSON பதில் '%1$s'"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "எதிர்பாராத bhyve URI பாதை '%1$s', bhyve:///system என்பதை முயற்சிக்கவும்"
 
-#, fuzzy
-msgid "Unexpected PCI backend 'xen'"
-msgstr "எதிர்பாராத CPU ஃபால்பேக் மதிப்பு: %d"
-
 #, fuzzy, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "எதிர்பார்க்காத கட்டுப்படுத்தி வகை %1$d"
@@ -19285,10 +19287,6 @@ msgstr "தெரியாத டெயின்ட் கொடி %s"
 #, fuzzy, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "தெரியாத வெளியீடு: %s"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "பிணையம் %1$s இல் தெரியாத முன்னனுப்பல் <driver name='%2$s'/>"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -19993,6 +19991,9 @@ msgstr "qemu இன் இந்தப் பதிப்பில் VFIO PCI �
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "இந்தக் கணினியில் இப்போது VFIO சாதனம் ஒதுக்கியமைத்தலுக்கு ஆதரவில்லை"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 
@@ -20248,6 +20249,10 @@ msgstr "XBZRLE செயலில் உள்ளது, ஆனால் 'overfl
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE செயலில் உள்ளது, ஆனால் 'pages' தரவு விடுபட்டுள்ளது"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML விளக்கம் தவறானது அல்லது சரியாக வடிவமைக்கப்படவில்லை"
@@ -20966,6 +20971,10 @@ msgstr "base64-encoded இரகசிய மதிப்பு"
 msgid "bhyve state driver is not active"
 msgstr "bhyve நிலை இயக்கி செயல்பாட்டில் இல்லை"
 
+#, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "binding '%1$s' already exists"
 msgstr "ஸ்னாப்ஷாட் '%1$s' ஏற்கனவே உள்ளது"
@@ -21028,6 +21037,10 @@ msgid "block device"
 msgstr "தடுக்கப்பட்ட சாதனம்"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr ""
 
@@ -21070,6 +21083,11 @@ msgid "block peek request too large for remote protocol, %1$zi > %2$d"
 msgstr "தொலை நெறிமுறையில் நீளமாக உள்ளது, %1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
 msgstr ""
 
 msgid "block size must be a power of two"
@@ -21375,6 +21393,9 @@ msgid "can't parse cputune shares value"
 msgstr "cputune பகிர்வுகள் மதிப்பைப் பாகுபடுத்த முடியவில்லை"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
+msgstr ""
+
+msgid "can't query rx filters: device alias not found"
 msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
@@ -24375,6 +24396,10 @@ msgstr "சாதன விசை"
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr ""
 
@@ -24568,6 +24593,10 @@ msgstr "'%1$s' என்ற வட்டு இரண்டுமுறை க�
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "டொமைனின் வரையறையில் பிரிவகம் '%1$s' இல்லை.\n"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
 
@@ -24638,6 +24667,11 @@ msgstr "இரசியம் '%s' ஒரு மதிப்பை பெற்�
 msgid "disk driver %1$s is not supported"
 msgstr "வட்டு இயக்கி %1$s க்கு ஆதரவில்லை"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "virtio பஸில் மட்டுமே டிஸ்க் event_idx பயன்முறைக்கு ஆதரவுண்டு"
 
@@ -24657,6 +24691,14 @@ msgstr "வட்டு வடிவமைப்பு %1$s க்கு ஆத�
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "virtio பஸில் மட்டுமே டிஸ்க் ioeventfd பயன்முறைக்கு ஆதரவுண்டு"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27050,6 +27092,10 @@ msgstr "ஸ்னாப்ஷாட் பட்டியலைச் சேக�
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "கோப்பு '%1$s' க்கு இடத்தை முன்னொதுக்கம் செய்வதில் தோல்வியடைந்தது"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
 msgstr "%s இலிருந்து சாதனத்தைப் புதுப்பிக்க முடியவில்லை"
@@ -29227,6 +29273,10 @@ msgstr ""
 msgid "iothread is not supported with vhostuser disk"
 msgstr ""
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
@@ -31067,6 +31117,10 @@ msgstr "உள்ளீடு பிரிவக இலக்குப் பா
 msgid "missing interface information"
 msgstr "இடைமுக தகவல் விடுபட்டுள்ளது"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "கர்னல் தகவல் விடுபட்டுள்ளது"
@@ -31579,6 +31633,16 @@ msgstr "இயங்கும் நிலையை மாற்று/பெற
 
 msgid "modify/get the title instead of description"
 msgstr "விளக்கத்திற்கு பதிலாக தலைப்பை மாற்று/பெறு"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 #, fuzzy
 msgid "monitor failure"
@@ -33461,15 +33525,19 @@ msgstr "pcap_setdirection: %1$s"
 msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
-#, fuzzy, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "வட்டு இயக்கி %1$s க்கு ஆதரவில்லை"
+#, c-format
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "pci device %1$s is not a PCI-Express device"
 msgstr "சாதனம் %1$s ஒரு PCI சாதனமல்ல"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -33748,9 +33816,10 @@ msgstr "KEEPCAPS ஐ மீட்டமைப்பதில் prctl தோல�
 msgid "prctl failed to set KEEPCAPS"
 msgstr "KEEPCAPS அமைப்பதில் prctl தோல்வியடைந்தது"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -34635,9 +34704,22 @@ msgstr ""
 msgid "resize a vol"
 msgstr "ஒரு பிரிவகத்தை மறுஅளவிடுக"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 #, fuzzy
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "fs வடிவமைப்பு %s ஆதரிக்கப்படாது"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "வளம் பணிமிகுதியில் உள்ளது"
@@ -35955,6 +36037,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "கனிவாக நிறுத்து"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ஒரு பாதையை கொடுக்கவும் அல்லது test:///default ஐ பயன்படுத்தவும்"
 
@@ -36896,9 +36982,9 @@ msgstr "இரகசிய சேமிப்பக இயக்கியை த
 msgid "unable to find audio backend for sound device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "இலக்கு %1$s ஐ ஸ்டாட் பிணைப்பு செய்ய முடியவில்லை"
+#, c-format
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37500,10 +37586,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "CPU தரவு %1$s கட்டமைப்புக்காக மறிகுறியீடப்படவில்லை"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "எதிர்பார்க்காத hostdev இயக்கி பெயர் வகை %1$d"
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "எதிர்பார்க்காத hostdev முறை %1$d"
 
@@ -37592,8 +37674,8 @@ msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr "எதிர்பாராத OpenVZ URI பாதை '%1$s', openvz:///systemஐ முயற்சிக்கவும்"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "எதிர்பார்க்காத pci hostdev இயக்கி பெயர் வகை %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "எதிர்பாராத தொகுப்பக வகை"
@@ -39238,10 +39320,6 @@ msgid "virtiofs is not supported with this QEMU binary"
 msgstr "இந்த QEMU பைனரியில் vhost-net க்கு ஆதரவில்லை"
 
 #, fuzzy
-msgid "virtiofs is not yet supported in session mode"
-msgstr "QEMU இன் இந்தப் பதிப்பில் USB திருப்பிவிடுதலுக்கு ஆதரவில்லை"
-
-#, fuzzy
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "பாஸ்த்ரூ அணுகல்பயன்முறையை மட்டுமே ஆதரிக்கும்"
 
@@ -39644,6 +39722,38 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "Missing network port driver name"
+#~ msgstr "சேமிப்பக தொகுப்பக மூலச் சாதன பெயர் விடுபட்டுள்ளது"
+
+#, fuzzy
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "எதிர்பாராத CPU ஃபால்பேக் மதிப்பு: %d"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "பிணையம் %1$s இல் தெரியாத முன்னனுப்பல் <driver name='%2$s'/>"
+
+#, fuzzy, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "வட்டு இயக்கி %1$s க்கு ஆதரவில்லை"
+
+#, fuzzy, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "இலக்கு %1$s ஐ ஸ்டாட் பிணைப்பு செய்ய முடியவில்லை"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "எதிர்பார்க்காத hostdev இயக்கி பெயர் வகை %1$d"
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "எதிர்பார்க்காத pci hostdev இயக்கி பெயர் வகை %1$d"
+
+#, fuzzy
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "QEMU இன் இந்தப் பதிப்பில் USB திருப்பிவிடுதலுக்கு ஆதரவில்லை"
 
 #, fuzzy, c-format
 #~ msgid ""

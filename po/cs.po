@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3507,8 +3507,10 @@ msgstr "Není možné zrušit sdílení neinicializované obsluhy CURL"
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "Pro transport %1$s není možné použít režim přímého soketu"
 
-msgid "Cannot use direct socket mode if no URI is set"
-msgstr "Pokud není nastaveno URI, není možné použít režim přímého soketu"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -6005,6 +6007,10 @@ msgid "Duplicate info for NUMA latencies"
 msgstr "Duplicitní informace ohledně prodlev NUMA"
 
 #, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
+#, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "Duplicitní ovladač zabezpečení %1$s"
 
@@ -7648,7 +7654,7 @@ msgid "Failed to list volumes"
 msgstr "Nepodařilo se vypsat svazky"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9475,6 +9481,10 @@ msgstr "Identifikátor IOThread"
 
 msgid "IOThread ID number"
 msgstr "Číslo identifikátoru vlákna vstupu/výstupu"
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "IOThread který použít podporovaným zařízením"
@@ -11567,9 +11577,6 @@ msgstr "Chybějící PCI adresa síťového portu"
 
 msgid "Missing network port bridge name"
 msgstr "Chybí název síťového mostu daného portu"
-
-msgid "Missing network port driver name"
-msgstr "Chybí název ovladače síťového rozhraní"
 
 msgid "Missing network port link device name"
 msgstr "Chybí název linku síťového rozhraní"
@@ -18986,9 +18993,6 @@ msgstr "Neočekávaná JSON odpověď „%1$s“"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "Neočekávaný LXC URI popis umístění „%1$s“, zkuste lxc:///system"
 
-msgid "Unexpected PCI backend 'xen'"
-msgstr "Neočekávaná PCI podpůrná vrstva „xen“"
-
 #, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "Neočekávaný model PCI řadiče %1$d"
@@ -19323,10 +19327,6 @@ msgstr "Neznámá generace %1$d"
 #, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "Neznámá vrstva brány firewall %1$d"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "Neznámé (přeposlat) forward <driver name='%1$s'/> v síti %2$s"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -20043,6 +20043,9 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 "VFIO přiřazování zařízení v tuto chvíli není na tomto systému podporováno"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "Zdroj disku virt. stroje a zdroj disku zachyceného stavu nejsou stejné"
 
@@ -20294,6 +20297,10 @@ msgstr "XBZRLE je aktivní, ale 'overflow' data chyběla"
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE je aktivní, ale 'pages' data chyběla"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML popis není platný nebo nemá správnou podobu"
@@ -21030,6 +21037,10 @@ msgid "bhyve state driver is not active"
 msgstr "stavový ovladač pro bhyve není aktivní"
 
 #, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
+#, c-format
 msgid "binding '%1$s' already exists"
 msgstr "navázání „%1$s“ už existuje"
 
@@ -21098,6 +21109,10 @@ msgid "block device"
 msgstr "blokové zařízení"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr "cíl zachyceného stavu blokového zařízení „%1$s“ neexistuje"
 
@@ -21144,6 +21159,11 @@ msgstr ""
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "změna velikosti bloku není v případě vhostuser disku podporována"
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
+msgstr ""
 
 msgid "block size must be a power of two"
 msgstr "je třeba, aby velikost bloku byla násobkem dvou"
@@ -21463,6 +21483,9 @@ msgstr "nedaří se zpracovat hodnotu cputune sdílení"
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
 "není možné pivot sdílení disk na úložný svazek, který nepodporuje sdílení"
+
+msgid "can't query rx filters: device alias not found"
+msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr ""
@@ -24454,6 +24477,10 @@ msgstr "klíč zařízení"
 msgid "device list is not an object"
 msgstr "seznam zařízení není objektem"
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr "název zařízení"
 
@@ -24644,6 +24671,10 @@ msgstr "disk „%1$s“ je zadán dvakrát"
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "disk „%1$s“ nebyl nalezen v nastavení domény"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "atributy disku: disk[,checkpoint=typ][,bitmap=nazev]"
 
@@ -24710,6 +24741,11 @@ msgstr "disk nemá alternativní název"
 msgid "disk driver %1$s is not supported"
 msgstr "ovladač disku %1$s není podporován"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "režim disku event_idx je podporován pouze pro virtio sběrnici"
 
@@ -24731,6 +24767,14 @@ msgstr "nepodporovaný formát obrazu disku: %1$s"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "režim disku ioeventfd je podporován pouze pro virtio sběrnici"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27087,6 +27131,10 @@ msgstr "nepodařilo se zrušit ochranu zachyceného stavu „%1$s/%2$s@%3$s“"
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "nepodařilo se aktualizovat data o kapacitě pro blokový uzel „%1$s“"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 msgid "failed to update device in BPF cgroup map"
 msgstr "Nepodařilo se aktualizovat zařízení v BPF cgroup mapě"
 
@@ -29290,6 +29338,10 @@ msgstr "iothread identifikátor existujícího IOThread"
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread není podporováno s vhostuser diskem"
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr "iothread_id vlákna vstupu/výstupu, které smazat"
 
@@ -31119,6 +31171,10 @@ msgstr "chybí cílový popis umístění vstupního svazku"
 msgid "missing interface information"
 msgstr "chybí informace o rozhraní"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 msgid "missing ivgen info name string"
 msgstr "chybí řetězec ivgen info název"
 
@@ -31627,6 +31683,16 @@ msgstr "změnit/získat běhový stav"
 
 msgid "modify/get the title instead of description"
 msgstr "změnit/získat název namísto popisu"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 msgid "monitor failure"
 msgstr "selhání monitoru"
@@ -33494,8 +33560,8 @@ msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
 #, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "ovladač pci podpůrné vrstvy „%1$s“ není podporován"
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
@@ -33504,6 +33570,10 @@ msgstr "pci zařízení %1$s není PCI-Express zařízení"
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
 msgstr ""
 "ovladač podpůrné vrstvy přiřazení pci zařízení (např. 'vfio' nebo 'xen')"
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
+msgstr ""
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -33785,10 +33855,11 @@ msgstr "prctl se nepodařilo resetovat KEEPCAPS"
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl se nepodařilo nastavit KEEPCAPS"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
-msgstr "předvytvoření cílů úložiště pro přírůstkovou migraci není podporováno"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
+msgstr ""
 
 msgid "preallocate is not supported on this platform"
 msgstr "předpřidělení není na této platformě podporováno"
@@ -34662,8 +34733,21 @@ msgstr "resetování nvram není v případě nvram založené na síti podporov
 msgid "resize a vol"
 msgstr "změnit velikost svazku"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "změna velikosti šifrovaného qcow2 obrazu není podporována"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "prostředek zaneprázdněn"
@@ -35984,6 +36068,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "ukončeno nenásilně"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: zadejte cestu nebo test:///default"
 
@@ -36967,8 +37055,8 @@ msgid "unable to find audio backend for sound device"
 msgstr "nedaří se nalézt zvukovou podpůrnou vrstvu pro zvukové zařízení"
 
 #, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "nedaří se nalézt disk podle cíle: %1$s"
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37555,10 +37643,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "neočekávaný model procesoru hostitele pro architekturu %1$s"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "neočekávaný typ názvu ovladače zařízení hostitele %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "neočekávaný režim zařízení hostitele %1$d"
 
@@ -37647,8 +37731,8 @@ msgstr ""
 "neočekávaný popis umístění „%1$s“ nwfilter URI – zkuste nwfilter:///system"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "neočekávaný typ názvu ovladače pci zařízení hostitele %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "neočekávaný typ fondu"
@@ -39301,9 +39385,6 @@ msgstr "virtiofs zatím ještě nepodporuje režim pouze pro čtení"
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "virtiofs není s touto binárkou QEMU podporováno"
 
-msgid "virtiofs is not yet supported in session mode"
-msgstr "virtiofs zatím ještě není podporováno v režimu relace"
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "virtiofs podporuje pouze režim přístupu (accessmode) průchodu"
 
@@ -39708,6 +39789,44 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <řetězec>}…"
+
+#~ msgid "Cannot use direct socket mode if no URI is set"
+#~ msgstr "Pokud není nastaveno URI, není možné použít režim přímého soketu"
+
+#~ msgid "Missing network port driver name"
+#~ msgstr "Chybí název ovladače síťového rozhraní"
+
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "Neočekávaná PCI podpůrná vrstva „xen“"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "Neznámé (přeposlat) forward <driver name='%1$s'/> v síti %2$s"
+
+#, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "ovladač pci podpůrné vrstvy „%1$s“ není podporován"
+
+#~ msgid ""
+#~ "pre-creation of storage targets for incremental storage migration is not "
+#~ "supported"
+#~ msgstr ""
+#~ "předvytvoření cílů úložiště pro přírůstkovou migraci není podporováno"
+
+#, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "nedaří se nalézt disk podle cíle: %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "neočekávaný typ názvu ovladače zařízení hostitele %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "neočekávaný typ názvu ovladače pci zařízení hostitele %1$d"
+
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "virtiofs zatím ještě není podporováno v režimu relace"
 
 #, c-format
 #~ msgid ""

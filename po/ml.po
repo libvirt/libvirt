@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -3323,7 +3323,9 @@ msgstr "ആരംഭിയ്ക്കാത്ത CURL ഹാന്‍ഡില
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "സോക്കറ്റ് വിലാസം വാചകമായി മാറ്റാന്‍ സാധ്യമല്ല: %1$s"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
 
 #, c-format
@@ -5816,6 +5818,10 @@ msgstr ""
 msgid "Duplicate info for NUMA latencies"
 msgstr ""
 
+#, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "സുരക്ഷ ഡ്രൈവര്‍ '%1$s' കണ്ടുപിടിയ്ക്കുവാനായില്ല"
@@ -7465,7 +7471,7 @@ msgid "Failed to list volumes"
 msgstr "വോള്യം പട്ടിക ലഭ്യമായില്ല"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9280,6 +9286,10 @@ msgid "IOThread ID"
 msgstr ""
 
 msgid "IOThread ID number"
+msgstr ""
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -11362,10 +11372,6 @@ msgstr "വിലാസം കാണുന്നില്ല"
 #, fuzzy
 msgid "Missing network port bridge name"
 msgstr "സിപിയു മോഡല്‍ നാമം ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "Missing network port driver name"
-msgstr "സംഭരണ പൂള്‍ ശ്രോതസ്സ് ഡിവൈസ് നാമം ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "Missing network port link device name"
@@ -18867,10 +18873,6 @@ msgstr "അപ്രതീക്ഷിതമായ JSON മറുപടി '%1$s
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "അപ്രതീക്ഷിതമായ OpenVZ URI പാഥ് , '%1$s', openvz:///system ശ്രമിക്കുക"
 
-#, fuzzy
-msgid "Unexpected PCI backend 'xen'"
-msgstr "അപ്രതീക്ഷിതമായ സിപിയു പിന്‍വിളി മൂല്ല്യം: %d"
-
 #, fuzzy, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "അപ്രതീക്ഷിതമായ കണ്ട്രോളര്‍ തരം %1$d"
@@ -19202,10 +19204,6 @@ msgstr "അപരിചിതമായ ടെയിന്റ് ഫ്ലാഗ�
 #, fuzzy, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "അപരിചിതമായ റിലീസ്: %s"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "അപരിചിതമായ ഫോര്‍വേഡ് <driver name='%1$s'/>  നെറ്റ്‌വര്‍ക്ക് %2$s-ല്‍"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -19900,6 +19898,9 @@ msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നത�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നതു് qemu-ന്റെ ഈ പതിപ്പു് പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 
@@ -20148,6 +20149,10 @@ msgstr "XBZRLE സജീവം, പക്ഷേ 'overflow' ഡേറ്റാ �
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE സജീവം, പക്ഷേ 'pages' ഡേറ്റാ ലഭ്യമല്ല"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "എക്സ്എംഎല്‍ വിവരണം അസാധുവോ നന്നായി ഫോം ചെയ്യാത്തതോ ആണു്"
@@ -20869,6 +20874,10 @@ msgstr "base64-എന്‍കോഡഡ് രഹസ്യ മൂല്ല്യ
 msgid "bhyve state driver is not active"
 msgstr "qemu സ്റ്റേറ്റ് ‍ഡ്രൈവര്‍ സജീവമല്ല"
 
+#, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "binding '%1$s' already exists"
 msgstr "'%1$s' എന്ന പേരില്‍ സ്നാപ്പ്ഷോട്ട് നിലവിലുണ്ടു്"
@@ -20931,6 +20940,10 @@ msgid "block device"
 msgstr "ബ്ളോക്ക് ഡിവൈസ്"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr ""
 
@@ -20973,6 +20986,11 @@ msgid "block peek request too large for remote protocol, %1$zi > %2$d"
 msgstr "റിമോട്ട് പ്രോട്ടോക്കോളിനുള്ള ബ്ലോക്ക് പീക്ക് ആവശ്യം വളരെ വലുതു്, %1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
 msgstr ""
 
 msgid "block size must be a power of two"
@@ -21279,6 +21297,9 @@ msgid "can't parse cputune shares value"
 msgstr "cputune ഷെയര്‍ മൂല്ല്യം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
+msgstr ""
+
+msgid "can't query rx filters: device alias not found"
 msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
@@ -24276,6 +24297,10 @@ msgstr "ഡിവൈസ് കീ"
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr ""
 
@@ -24471,6 +24496,10 @@ msgstr "ഡിസ്ക് '%1$s' രണ്ടാമതും നല്‍കി
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "'%1$s' വോള്യം ഡൊമൈനിന്റെ ഡെഫനിഷനില്‍ കാണുന്നില്ല.\n"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
 
@@ -24540,6 +24569,11 @@ msgstr "രഹസ്യം '%s'-നു് മൂല്ല്യം  ലഭ്യ
 msgid "disk driver %1$s is not supported"
 msgstr "ഡിസ്ക് ഡ്രൈവര്‍ %1$s പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "virtio ബസിനു് മാത്രമേ ഡിസ്ക് event_idx മോഡ് പിന്തുണയ്ക്കൂ"
 
@@ -24559,6 +24593,14 @@ msgstr "ഡിസ്ക് ശൈലി %1$s പിന്തുണയ്ക്�
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "virtio ബസിനു് മാത്രമേ ഡിസ്ക് ioeventfd മോഡ് പിന്തുണയ്ക്കൂ"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -26954,6 +26996,10 @@ msgstr "സ്നാപ്പ്ഷോട്ട് പട്ടിക ലഭ്�
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "'%1$s' ഫയലിനുള്ള സ്ഥലം മുമ്പു് അനുവദിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
 msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് പുതുക്കുന്നതില്‍ പരാജയം "
@@ -29127,6 +29173,10 @@ msgstr ""
 msgid "iothread is not supported with vhostuser disk"
 msgstr ""
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
@@ -30968,6 +31018,10 @@ msgstr "ഇന്‍പുട്ട് വോള്യം ടാര്‍ഗറ�
 msgid "missing interface information"
 msgstr "ഇന്റര്‍ഫെയിസ് വിവരം ലഭ്യമല്ല"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "കേര്‍ണല്‍ വിവരം ലഭ്യമല്ല"
@@ -31479,6 +31533,16 @@ msgstr "അവസ്ഥ ലഭ്യമാക്കുന്നതില്‍/�
 
 msgid "modify/get the title instead of description"
 msgstr "വിവരണത്തിന് പകരം തലക്കെട്ട് മാറ്റുക/ക്രമീകരിക്കുക"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 #, fuzzy
 msgid "monitor failure"
@@ -33360,15 +33424,19 @@ msgstr "pcap_setdirection: %1$s"
 msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
-#, fuzzy, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "ഡിസ്ക് ഡ്രൈവര്‍ %1$s പിന്തുണയ്ക്കുന്നില്ല"
+#, c-format
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "pci device %1$s is not a PCI-Express device"
 msgstr "ഡിവൈസ് %1$s ഒരു PCI ഡിവൈസ് അല്ല"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -33646,9 +33714,10 @@ msgstr "prctl KEEPCAPS വീണ്ടും സജ്ജമാക്കുന�
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl KEEPCAPS സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -34525,9 +34594,22 @@ msgstr ""
 msgid "resize a vol"
 msgstr "വോള്യത്തിന്റെ വലിപ്പം മാറ്റുക"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 #, fuzzy
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "fs ശൈലി %s 'name' പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "റിസോഴ്സ്  തിരക്കില്‍"
@@ -35837,6 +35919,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "നന്നായി അവസാനിപ്പിക്കുക"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ഒരു പാഥ് നല്‍കുക അല്ലെങ്കില്‍ test:///default ഉപയോഗിക്കുക"
 
@@ -36768,9 +36854,9 @@ msgstr "രഹസ്യമായ ഒരു സ്റ്റോറേജ് ഡ്
 msgid "unable to find audio backend for sound device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്യം %1$sന്റെ അവസ്ഥ പരിശോധിക്കാന്‍ സാധ്യമല്ല"
+#, c-format
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37369,10 +37455,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "%1$s ആര്‍ക്കിറ്റക്ചറിനുള്ള സിപിയു ഡേറ്റാ ഡീക്കോഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "അപ്രതീക്ഷിതമായ hostdev ഡ്രൈവര്‍ നാമ രീതി %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "അപ്രതീക്ഷിതമായ hostdev മാതൃക %1$d"
 
@@ -37461,8 +37543,8 @@ msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr "അപ്രതീക്ഷിതമായ OpenVZ URI പാഥ് , '%1$s', openvz:///system ശ്രമിക്കുക"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "അപ്രതീക്ഷിതമായ pci hostdev ഡ്രൈവര്‍ പേരിന്റെ തരം %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "അപ്രതീക്ഷിതമായ പൂള്‍ രീതി"
@@ -39108,10 +39190,6 @@ msgid "virtiofs is not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
-msgid "virtiofs is not yet supported in session mode"
-msgstr "QEMU-ന്റെ ഈ പതിപ്പു് യുഎസ്ബി തിരിച്ചുവിടല്‍ പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "ആക്സസ്സ്മോഡിലൂടെ മാത്രം പിന്തുണയ്ക്കുന്നു"
 
@@ -39507,6 +39585,38 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "Missing network port driver name"
+#~ msgstr "സംഭരണ പൂള്‍ ശ്രോതസ്സ് ഡിവൈസ് നാമം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "അപ്രതീക്ഷിതമായ സിപിയു പിന്‍വിളി മൂല്ല്യം: %d"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "അപരിചിതമായ ഫോര്‍വേഡ് <driver name='%1$s'/>  നെറ്റ്‌വര്‍ക്ക് %2$s-ല്‍"
+
+#, fuzzy, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "ഡിസ്ക് ഡ്രൈവര്‍ %1$s പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്യം %1$sന്റെ അവസ്ഥ പരിശോധിക്കാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "അപ്രതീക്ഷിതമായ hostdev ഡ്രൈവര്‍ നാമ രീതി %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "അപ്രതീക്ഷിതമായ pci hostdev ഡ്രൈവര്‍ പേരിന്റെ തരം %1$d"
+
+#, fuzzy
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "QEMU-ന്റെ ഈ പതിപ്പു് യുഎസ്ബി തിരിച്ചുവിടല്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy, c-format
 #~ msgid ""

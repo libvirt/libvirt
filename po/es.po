@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3414,7 +3414,9 @@ msgstr "No se puede dejar de compartir manejador CURL no inicializado "
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "No se pudo convertir dirección  de socket a cadena '%1$s'"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
 
 #, c-format
@@ -5970,6 +5972,10 @@ msgstr ""
 msgid "Duplicate info for NUMA latencies"
 msgstr ""
 
+#, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "No se puede encontrar controlador de seguridad  '%1$s'"
@@ -7642,7 +7648,7 @@ msgid "Failed to list volumes"
 msgstr "Falló listar volúmenes"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9497,6 +9503,10 @@ msgid "IOThread ID"
 msgstr ""
 
 msgid "IOThread ID number"
+msgstr ""
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -11614,11 +11624,6 @@ msgstr "Falta dirección"
 #, fuzzy
 msgid "Missing network port bridge name"
 msgstr "No se encuentra el nombre del modelo de la CPU"
-
-#, fuzzy
-msgid "Missing network port driver name"
-msgstr ""
-"no se encuentra el nombre del dispositivo del grupo de almacenamiento origen"
 
 #, fuzzy
 msgid "Missing network port link device name"
@@ -19319,10 +19324,6 @@ msgstr "Respuesta inesperada de JSON '%1$s'"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "ruta '%1$s' URI de OpenVZ inesperado, intente openvz:///system"
 
-#, fuzzy
-msgid "Unexpected PCI backend 'xen'"
-msgstr "Valor de recuperación de CPU: %d"
-
 #, fuzzy, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "tipo de controlador %1$d no esperado"
@@ -19657,10 +19658,6 @@ msgstr "Marca taint '%s' desconocida"
 #, fuzzy, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "Versión desconocida: %s"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "Reenvío desconocido <driver name='%1$s'/> en red %2$s"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -20358,6 +20355,9 @@ msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 
@@ -20622,6 +20622,10 @@ msgstr "XBZRLE está activo, pero faltaban datos de 'overflow'"
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE está activo, pero faltaban datos de 'pages'"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "Descripción XML inválida o no bien formada"
@@ -21341,6 +21345,10 @@ msgstr "valor secreto codificado con base64"
 msgid "bhyve state driver is not active"
 msgstr "el estado del controlador qemu es no activo"
 
+#, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "binding '%1$s' already exists"
 msgstr "La captura instantánea '%1$s' ya existe"
@@ -21403,6 +21411,10 @@ msgid "block device"
 msgstr "dispositivo de bloque"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr ""
 
@@ -21447,6 +21459,11 @@ msgstr ""
 "%1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
 msgstr ""
 
 msgid "block size must be a power of two"
@@ -21762,6 +21779,9 @@ msgid "can't parse cputune shares value"
 msgstr "No se puede leer valor compartido de cputune"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
+msgstr ""
+
+msgid "can't query rx filters: device alias not found"
 msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
@@ -24830,6 +24850,10 @@ msgstr "clave de dispositivo"
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr ""
 
@@ -25024,6 +25048,10 @@ msgstr ""
 "\n"
 "\n"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
 
@@ -25097,6 +25125,11 @@ msgstr "el secreto '%s' no posee un valor"
 msgid "disk driver %1$s is not supported"
 msgstr "El controlador de disco %1$s no tiene soporte"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "Modo de disco event_idx solamente con soporte para virtio bus"
 
@@ -25116,6 +25149,14 @@ msgstr "El formato de disco %1$s no tiene soporte"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "el modo disk ioeventfd es soportado solamente para bus virtio"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27531,6 +27572,10 @@ msgstr "Falló recolectar lista de instantánea"
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "No se pudo preasignar espacio para archivo ' %1$s'"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
 msgstr "Falló al intentar actualizar el dispositivo desde %s"
@@ -29725,6 +29770,10 @@ msgstr ""
 msgid "iothread is not supported with vhostuser disk"
 msgstr ""
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
@@ -31599,6 +31648,10 @@ msgstr "Falta ruta de destino de volumen de salida"
 msgid "missing interface information"
 msgstr "Falta información de interfaz"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "falta información del kernel "
@@ -32117,6 +32170,16 @@ msgstr "Modificar u obtener  estado en ejecución"
 
 msgid "modify/get the title instead of description"
 msgstr "Modificar u obtener el título en lugar de la descripción"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 #, fuzzy
 msgid "monitor failure"
@@ -34052,15 +34115,19 @@ msgstr "pcap_setdirection: %1$s"
 msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
-#, fuzzy, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "El controlador de disco %1$s no tiene soporte"
+#, c-format
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "pci device %1$s is not a PCI-Express device"
 msgstr "el dispositivo %1$s no es un dispositivo PCI"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -34345,9 +34412,10 @@ msgstr "prctl no pudo reconfigurar KEEPCAPS"
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl no pudo configurar KEEPCAPS"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -35242,9 +35310,22 @@ msgstr ""
 msgid "resize a vol"
 msgstr "resize a vol"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 #, fuzzy
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "Formato fs %s no tiene soporte"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "Recurso ocupado"
@@ -36586,6 +36667,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "terminar "
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: indique una ruta o utilice test:///default"
 
@@ -37541,9 +37626,9 @@ msgstr ""
 msgid "unable to find audio backend for sound device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "No se puede 'stat bind' target %1$s"
+#, c-format
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -38152,10 +38237,6 @@ msgstr ""
 "no es posible decodificar los datos de la CPU para la arquitectura %1$s"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "Se esperaba tipo de nombre de controlador hostdev %1$d"
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "modo de dispositivo de host %1$d no esperado"
 
@@ -38244,8 +38325,8 @@ msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr "ruta '%1$s' URI de OpenVZ inesperado, intente openvz:///system"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "El tipo de nombre de controlador pci hostdev %1$d es inesperado"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "tipo de grupo no esperado"
@@ -39903,10 +39984,6 @@ msgid "virtiofs is not supported with this QEMU binary"
 msgstr "vhost-net no tiene soporte con este binario de QEMU"
 
 #, fuzzy
-msgid "virtiofs is not yet supported in session mode"
-msgstr "Redirección USB no está soportada por esta versión de QEMU"
-
-#, fuzzy
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "solo soporta paso de accessmode"
 
@@ -40308,6 +40385,40 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "Missing network port driver name"
+#~ msgstr ""
+#~ "no se encuentra el nombre del dispositivo del grupo de almacenamiento "
+#~ "origen"
+
+#, fuzzy
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "Valor de recuperación de CPU: %d"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "Reenvío desconocido <driver name='%1$s'/> en red %2$s"
+
+#, fuzzy, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "El controlador de disco %1$s no tiene soporte"
+
+#, fuzzy, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "No se puede 'stat bind' target %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "Se esperaba tipo de nombre de controlador hostdev %1$d"
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "El tipo de nombre de controlador pci hostdev %1$d es inesperado"
+
+#, fuzzy
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "Redirección USB no está soportada por esta versión de QEMU"
 
 #, fuzzy, c-format
 #~ msgid ""

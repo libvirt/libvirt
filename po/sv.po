@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-10-26 09:33+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2024-01-09 11:12+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2281,6 +2281,10 @@ msgid "CA certificate:"
 msgstr "CA-certifikat:"
 
 #, c-format
+msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr "CCW-adresser stödjs inte av maskintypen ”%1$s”"
+
+#, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
 msgstr "CHS-geometrin kan inte anges för bussen ”%1$s”"
 
@@ -3476,8 +3480,10 @@ msgstr "Det går inte att sluta dela ett oinitierat CURL-handtag"
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "Det går inte att använda direkt uttags-läge för %1$s-transport"
 
-msgid "Cannot use direct socket mode if no URI is set"
-msgstr "Det går inte att använda direkt uttagsläge om ingen URI är satt"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5967,6 +5973,10 @@ msgid "Duplicate info for NUMA latencies"
 msgstr "Dubblerad information för NUMA-latenser"
 
 #, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
+#, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "Dubblerad säkerhetsdrivrutin %1$s"
 
@@ -7594,8 +7604,8 @@ msgid "Failed to list volumes"
 msgstr "Misslyckades med att lista volymer"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
-msgstr "Misslyckades med att ladda PCI-drivrutinsmodulen %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
@@ -9433,6 +9443,10 @@ msgstr "IO-tråd ID"
 
 msgid "IOThread ID number"
 msgstr "IO-tråd ID-nummer"
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "IO-tråd att använda av stödd enhet"
@@ -11500,9 +11514,6 @@ msgstr "Saknad PCI-adress till nätverksporten"
 
 msgid "Missing network port bridge name"
 msgstr "Saknat bryggnamn till nätverksporten"
-
-msgid "Missing network port driver name"
-msgstr "Saknat drivrutinsnamn till nätverksporten"
 
 msgid "Missing network port link device name"
 msgstr "Saknat länkenhetsnamn till nätverksporten"
@@ -15406,6 +15417,14 @@ msgstr "Målstyrenhetsvektorerna %1$d stämmer inte med källan %2$d"
 
 #, c-format
 msgid ""
+"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
+"%6$04x"
+msgstr ""
+"Målenhetens CCW-adress %1$x.%2$x.%3$04x stämmer inte med källan %4$x.%5$x."
+"%6$04x"
+
+#, c-format
+msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
@@ -18830,9 +18849,6 @@ msgstr "Oväntat JSON-svar ”%1$s”"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "Oväntad LXC URI-sökväg ”%1$s”, prova lxc:///system"
 
-msgid "Unexpected PCI backend 'xen'"
-msgstr "Oväntad PCI-bakände ”xen”"
-
 #, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "Oväntad PCI-styrenhetsmodell %1$d"
@@ -19161,10 +19177,6 @@ msgstr "Okänd familj %1$d"
 #, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "Okänt brandväggslager %1$d"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "Okänt vidarebefordran <driver name='%1$s'/> i nätverket %2$s"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -19887,6 +19899,9 @@ msgstr "Tilldelning av VFIO PCI-enhet stödjs inte av denna version av qemu"
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "Tilldelning av VFIO-enhet stödjs för närvarande inte på detta system"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "VM-diskkälla och ögonblicsbildskälla är inte samma"
 
@@ -20134,6 +20149,10 @@ msgstr "XBZRLE är aktivt, men ”overflow”-data saknades"
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE är aktivt, men ”pages”-data saknades"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML-beskrivningen är ogiltig eller inte rätt utformad"
@@ -20858,6 +20877,10 @@ msgid "bhyve state driver is not active"
 msgstr "bhyve-tillståndsdrivrutinen är inte aktiv"
 
 #, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
+#, c-format
 msgid "binding '%1$s' already exists"
 msgstr "bindningen ”%1$s” finns redan"
 
@@ -20923,6 +20946,10 @@ msgid "block device"
 msgstr "blockenhet"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr "målet för blockenhetens ögonblicksbild ”%1$s” finns inte"
 
@@ -20966,6 +20993,11 @@ msgstr "blockjobbsbegäranden är för stor för fjärrprotokollet, %1$z > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "blockstorleksändringen stödjs inte för vhostuser-diskar"
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
+msgstr ""
 
 msgid "block size must be a power of two"
 msgstr "blockstorleken måste vara en potens av två"
@@ -21281,6 +21313,9 @@ msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
 "kan inte pivotera en delad disk till en lagringsvolym som inte stödjer "
 "delning"
+
+msgid "can't query rx filters: device alias not found"
+msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr "kan inte återöppna avbilden med okänd närvaro av bakomliggande lagring"
@@ -22622,7 +22657,8 @@ msgid "cannot set supplemental groups"
 msgstr "kan inte sätta tilläggsgrupper"
 
 msgid "cannot set time: qemu doesn't support rtc-reset-reinjection command"
-msgstr "kan inte sätta tiden: qemu stödjer inte kommandot rtc-reset-reinjection"
+msgstr ""
+"kan inte sätta tiden: qemu stödjer inte kommandot rtc-reset-reinjection"
 
 #, c-format
 msgid "cannot set to start of '%1$s'"
@@ -22736,11 +22772,6 @@ msgstr ""
 #, c-format
 msgid "cannot upload to volume %1$s"
 msgstr "kan inte skicka till volymen %1$s"
-
-#, c-format
-msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-msgstr ""
-"kan inte använda CCW-adresstypen för enheten ”%1$s” med maskintypen ”%2$s”"
 
 msgid "cannot use custom tap device in session mode"
 msgstr "kan inte använda en anpassad tap-enhet i sessionsläge"
@@ -22872,7 +22903,8 @@ msgstr ""
 "att ändra noduppsättningen för en körande domän kräver restriktivt numa-läge"
 
 msgid "change of nodeset for running domain requires strict numa mode"
-msgstr "att ändra noduppsättningen för en körande domän kräver strikt numa-läge"
+msgstr ""
+"att ändra noduppsättningen för en körande domän kräver strikt numa-läge"
 
 msgid "change the current directory"
 msgstr "byt aktuell katalog"
@@ -24220,6 +24252,10 @@ msgstr ""
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr "enhetsnamn"
 
@@ -24408,6 +24444,10 @@ msgstr ""
 msgid "disk '%1$s' was not found in the domain config"
 msgstr ""
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
 
@@ -24475,6 +24515,11 @@ msgstr ""
 msgid "disk driver %1$s is not supported"
 msgstr ""
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "disk-event_idx-läge stödjs endast för virtio-bussen"
 
@@ -24494,6 +24539,14 @@ msgstr ""
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -26894,6 +26947,10 @@ msgstr "Misslyckades att ta ögonblicksbild: %s"
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr ""
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
 msgstr "Misslyckades att ansluta enhet från %s"
@@ -28076,7 +28133,7 @@ msgstr ""
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
-"libvir-list@redhat.com"
+"devel@lists.libvirt.org"
 msgstr ""
 
 #, c-format
@@ -29027,6 +29084,10 @@ msgid "iothread id of existing IOThread"
 msgstr ""
 
 msgid "iothread is not supported with vhostuser disk"
+msgstr ""
+
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
 msgstr ""
 
 msgid "iothread_id for the IOThread to delete"
@@ -30119,11 +30180,6 @@ msgid "memory device alias is not assigned"
 msgstr ""
 
 #, c-format
-msgid ""
-"memory device base '0x%1$llx' is already being used by another memory device"
-msgstr ""
-
-#, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
 msgstr ""
 
@@ -30865,6 +30921,10 @@ msgstr ""
 msgid "missing interface information"
 msgstr "saknar kärninformation"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "saknar kärninformation"
@@ -31380,6 +31440,16 @@ msgid "modify/get running state"
 msgstr ""
 
 msgid "modify/get the title instead of description"
+msgstr ""
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
 msgstr ""
 
 msgid "monitor failure"
@@ -33215,7 +33285,7 @@ msgid "pcap_setfilter: %1$s"
 msgstr ""
 
 #, c-format
-msgid "pci backend driver '%1$s' is not supported"
+msgid "pci backend driver type '%1$s' is not supported"
 msgstr ""
 
 #, c-format
@@ -33223,6 +33293,10 @@ msgid "pci device %1$s is not a PCI-Express device"
 msgstr ""
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -33492,9 +33566,10 @@ msgstr ""
 msgid "prctl failed to set KEEPCAPS"
 msgstr ""
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -34342,7 +34417,20 @@ msgstr ""
 msgid "resize a vol"
 msgstr ""
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 msgid "resize of qcow2 encrypted image is not supported"
+msgstr ""
+
+msgid "resize to capacity of source (block device)"
 msgstr ""
 
 msgid "resource busy"
@@ -35627,6 +35715,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ange en sökväg eller använd test:///default"
 
@@ -36520,9 +36612,9 @@ msgstr ""
 msgid "unable to find audio backend for sound device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "kan inte initiera mutex"
+#, c-format
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37136,10 +37228,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "oväntad disktyp %s"
-
-#, fuzzy, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "oväntade sysinfo typmodell %1$d"
 
@@ -37227,9 +37315,9 @@ msgstr ""
 msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "oväntad disktyp %s"
+#, c-format
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 #, fuzzy
 msgid "unexpected pool type"
@@ -38854,9 +38942,6 @@ msgstr ""
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "virtiofs stödjs inte av denna QEMU-binär"
 
-msgid "virtiofs is not yet supported in session mode"
-msgstr ""
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
 
@@ -39246,23 +39331,40 @@ msgstr ""
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
 
-#, c-format
-msgid "CCW addresses are not supported by machine type '%1$s'"
-msgstr "CCW-adresser stödjs inte av maskintypen ”%1$s”"
+#~ msgid "Cannot use direct socket mode if no URI is set"
+#~ msgstr "Det går inte att använda direkt uttagsläge om ingen URI är satt"
 
 #, c-format
-msgid ""
-"Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
-"%6$04x"
-msgstr ""
-"Målenhetens CCW-adress %1$x.%2$x.%3$04x stämmer inte med källan %4$x.%5$x."
-"%6$04x"
+#~ msgid "Failed to load PCI driver module %1$s"
+#~ msgstr "Misslyckades med att ladda PCI-drivrutinsmodulen %1$s"
+
+#~ msgid "Missing network port driver name"
+#~ msgstr "Saknat drivrutinsnamn till nätverksporten"
+
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "Oväntad PCI-bakände ”xen”"
 
 #, c-format
-msgid ""
-"integer overflow on %1$s. Please contact the libvirt development team at "
-"devel@lists.libvirt.org"
-msgstr ""
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "Okänt vidarebefordran <driver name='%1$s'/> i nätverket %2$s"
+
+#, c-format
+#~ msgid ""
+#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+#~ msgstr ""
+#~ "kan inte använda CCW-adresstypen för enheten ”%1$s” med maskintypen ”%2$s”"
+
+#, fuzzy, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "kan inte initiera mutex"
+
+#, fuzzy, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "oväntad disktyp %s"
+
+#, fuzzy, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "oväntad disktyp %s"
 
 #, fuzzy, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"

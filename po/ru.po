@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2023-11-08 14:23+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3496,10 +3496,10 @@ msgstr ""
 "Для способа передачи %1$s нельзя использовать режим непосредственного "
 "использования сокетов"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
-"Нельзя использовать режим непосредственного использования сокетов, если не "
-"задан адрес"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5971,6 +5971,10 @@ msgid "Duplicate info for NUMA latencies"
 msgstr "Дублирование данных для задержек NUMA"
 
 #, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
+#, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "Дублирование драйвера безопасности %1$s"
 
@@ -7600,7 +7604,7 @@ msgid "Failed to list volumes"
 msgstr "Не удалось получить список томов"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9429,6 +9433,10 @@ msgstr "Идентификатор IOThread"
 
 msgid "IOThread ID number"
 msgstr "Количество идентификаторов IOThread"
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "Поток ввода-вывода для сопоставления устройству"
@@ -11515,9 +11523,6 @@ msgstr "Отсутствует адрес PCI сетевого порта"
 
 msgid "Missing network port bridge name"
 msgstr "Отсутствует имя моста сетевого порта"
-
-msgid "Missing network port driver name"
-msgstr "Отсутствует имя драйвера сетевого порта"
 
 msgid "Missing network port link device name"
 msgstr "Отсутствует имя устройства связи сетевого порта"
@@ -19027,9 +19032,6 @@ msgstr "Непредвиденный ответ JSON «%1$s»"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "Непредвиденный путь LXC «%1$s» (попробуйте указать lxc:///system)"
 
-msgid "Unexpected PCI backend 'xen'"
-msgstr "Непредвиденный модуль PCI «xen»"
-
 #, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "Непредвиденная модель контроллера PCI %1$d"
@@ -19361,10 +19363,6 @@ msgstr "Неизвестное семейство %1$d"
 #, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "Неизвестный слой межсетевого экрана %1$d"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "Неизвестная переадресация <driver name='%1$s'/> в сети %2$s"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -20086,6 +20084,9 @@ msgstr "Эта версия QEMU не поддерживает сопостав�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "в этой системе не поддерживается сопоставление устройств VFIO"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 
@@ -20337,6 +20338,10 @@ msgstr "XBZRLE активно, но отсутствуют данные «overfl
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE активно, но отсутствуют данные «pages»"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "Недопустимое или неверное описание XML."
@@ -21071,6 +21076,10 @@ msgid "bhyve state driver is not active"
 msgstr "драйвер состояния bhyve не активен"
 
 #, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
+#, c-format
 msgid "binding '%1$s' already exists"
 msgstr "привязка «%1$s» уже существует"
 
@@ -21138,6 +21147,10 @@ msgid "block device"
 msgstr "блочное устройство"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr ""
 
@@ -21183,6 +21196,11 @@ msgstr ""
 "запрос обзора блока слишком велик для удалённого протокола: %1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
 msgstr ""
 
 msgid "block size must be a power of two"
@@ -21498,6 +21516,9 @@ msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
 "нельзя превратить совместно используемый диск в том хранилища без поддержки "
 "совместного использования"
+
+msgid "can't query rx filters: device alias not found"
+msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr ""
@@ -24510,6 +24531,10 @@ msgstr "ключ устройства"
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr ""
 
@@ -24697,6 +24722,10 @@ msgstr "диск «%1$s» указан дважды"
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "диск «%1$s» не найден в конфигурации домена"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "атрибуты диска: диск[,checkpoint=тип][,bitmap=имя]"
 
@@ -24765,6 +24794,11 @@ msgstr "диск не имеет альтернативного названия
 msgid "disk driver %1$s is not supported"
 msgstr "драйвер диска  %1$s не поддерживается"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "Режим event_idx поддерживается только шиной virtio"
 
@@ -24784,6 +24818,14 @@ msgstr "формат образа диска не поддерживается: 
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "Режим ioeventfd поддерживается только шиной virtio"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27107,6 +27149,10 @@ msgstr "не удалось снять защиту снимка «%1$s/%2$s@%3$
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "не удалось обновить данные ёмкости для блочного узла «%1$s»"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 msgid "failed to update device in BPF cgroup map"
 msgstr "не удалось обновить устройство в карте BPF cgroup"
 
@@ -29332,6 +29378,10 @@ msgstr "идентификатор iothread существующего пото�
 msgid "iothread is not supported with vhostuser disk"
 msgstr ""
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr "iothread_id для потока ввода-вывода для удаления"
 
@@ -31160,6 +31210,10 @@ msgstr "отсутствует путь назначения тома входя
 msgid "missing interface information"
 msgstr "отсутствует информация об интерфейсе"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 msgid "missing ivgen info name string"
 msgstr "отсутствует строка имени в информации о ivgen"
 
@@ -31662,6 +31716,16 @@ msgstr "получить или изменить состояние выполн
 
 msgid "modify/get the title instead of description"
 msgstr "получить или изменить заголовок"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 msgid "monitor failure"
 msgstr "ошибка монитора"
@@ -33522,14 +33586,18 @@ msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
 #, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "модуль драйвера PCI «%1$s» не поддерживается"
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
 msgstr "устройство PCI %1$s не является устройством PCI-Express"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -33817,12 +33885,11 @@ msgstr "prctl не удалось сбросить KEEPCAPS"
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl не удалось установить значение KEEPCAPS"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
-"предварительное создание целевых расположений хранилища для инкрементной "
-"миграции хранилища не поддерживается"
 
 msgid "preallocate is not supported on this platform"
 msgstr "эта платформа не поддерживает предварительное выделение памяти"
@@ -34692,8 +34759,21 @@ msgstr ""
 msgid "resize a vol"
 msgstr "изменить размер тома"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "изменение размера шифрованного образа qcow2 не поддерживается"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "ресурс занят"
@@ -36003,6 +36083,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "плавно остановить работу домена"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: укажите путь или используйте test:///default"
 
@@ -36989,8 +37073,8 @@ msgid "unable to find audio backend for sound device"
 msgstr ""
 
 #, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "не удалось найти диск по назначению: %1$s"
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37581,10 +37665,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "непредвиденная модель процессора основной системы для архитектуры %1$s"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "непредвиденный тип имени драйвера физического устройства: %1$d"
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "непредвиденный режим hostdev %1$d"
 
@@ -37673,8 +37753,8 @@ msgstr ""
 "непредвиденный путь nwfilter «%1$s» (попробуйте указать nwfilter:///system)"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "непредвиденный тип имени драйвера физического устройства PCI: %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "непредвиденный тип пула"
@@ -39350,9 +39430,6 @@ msgstr "virtiofs ещё не поддерживает режим «только 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает virtiofs"
 
-msgid "virtiofs is not yet supported in session mode"
-msgstr "virtiofs ещё не поддерживается в режиме сеанса"
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "virtiofs поддерживает только accessmode='passthrough'"
 
@@ -39765,6 +39842,47 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <строка>}..."
+
+#~ msgid "Cannot use direct socket mode if no URI is set"
+#~ msgstr ""
+#~ "Нельзя использовать режим непосредственного использования сокетов, если "
+#~ "не задан адрес"
+
+#~ msgid "Missing network port driver name"
+#~ msgstr "Отсутствует имя драйвера сетевого порта"
+
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "Непредвиденный модуль PCI «xen»"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "Неизвестная переадресация <driver name='%1$s'/> в сети %2$s"
+
+#, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "модуль драйвера PCI «%1$s» не поддерживается"
+
+#~ msgid ""
+#~ "pre-creation of storage targets for incremental storage migration is not "
+#~ "supported"
+#~ msgstr ""
+#~ "предварительное создание целевых расположений хранилища для инкрементной "
+#~ "миграции хранилища не поддерживается"
+
+#, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "не удалось найти диск по назначению: %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "непредвиденный тип имени драйвера физического устройства: %1$d"
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "непредвиденный тип имени драйвера физического устройства PCI: %1$d"
+
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "virtiofs ещё не поддерживается в режиме сеанса"
 
 #, c-format
 #~ msgid ""

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -3248,7 +3248,9 @@ msgstr "মাউন্ট করা নেম-স্পেস, শেয়ার 
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "unix ট্র্যান্সপোর্টের ক্ষেত্রে সকেট অনুপস্থিত"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
 
 #, c-format
@@ -5766,6 +5768,10 @@ msgstr ""
 msgid "Duplicate info for NUMA latencies"
 msgstr ""
 
+#, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "নিরাপত্তা ড্রাইভার '%1$s' খুঁজে পাওয়া যাচ্ছে না"
@@ -7419,7 +7425,7 @@ msgid "Failed to list volumes"
 msgstr "সক্রিয় পুলের তালিকা নির্মাণে ব্যর্থ"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9231,6 +9237,10 @@ msgid "IOThread ID"
 msgstr ""
 
 msgid "IOThread ID number"
+msgstr ""
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -11291,10 +11301,6 @@ msgstr ""
 #, fuzzy
 msgid "Missing network port bridge name"
 msgstr "CPU-র মডেলের নাম অনুপস্থিত"
-
-#, fuzzy
-msgid "Missing network port driver name"
-msgstr "সংগ্রহের পুলের উৎসের ডিভাইসের নাম অনুপস্থিত"
 
 #, fuzzy
 msgid "Missing network port link device name"
@@ -18773,10 +18779,6 @@ msgstr "CPU বৈশিষ্ট্যের পলিসি %d প্রত্
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "অপ্রত্যাশিত OpenVZ URI পাথ '%1$s', openvz:///system প্রচেষ্টা করুন"
 
-#, fuzzy
-msgid "Unexpected PCI backend 'xen'"
-msgstr "অপ্রত্যাশিত CPU ফলব্যাক মান: %d"
-
 #, fuzzy, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "অপ্রত্যাশিত প্রকৃতির কনট্রোলার %1$d"
@@ -19111,10 +19113,6 @@ msgstr "অজানা টেন্ট ফ্ল্যাগ %s"
 #, fuzzy, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "অজানা রিলিজ: %s"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "অজানা ফরোয়ার্ড <driver name='%1$s'/> %2$s নেটওয়ার্কে"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -19806,6 +19804,9 @@ msgstr ""
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 
@@ -20061,6 +20062,10 @@ msgstr "মাইগ্রেশন সক্রিয় অবস্থায়, �
 #, fuzzy
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "মাইগ্রেশন সক্রিয় অবস্থায়, কিন্তু RAM সংক্রান্ত 'total' তথ্য অনুপস্থিত"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr ""
@@ -20774,6 +20779,10 @@ msgstr "base64-এনকোড করা গোপনীয় তথ্য"
 msgid "bhyve state driver is not active"
 msgstr "qemu state ড্রাইভার সক্রিয় নয়"
 
+#, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "binding '%1$s' already exists"
 msgstr "%1$s টার্গেট বর্তমানে উপস্থিত রয়েছে"
@@ -20836,6 +20845,10 @@ msgid "block device"
 msgstr "ব্লক ডিভাইস"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr ""
 
@@ -20878,6 +20891,11 @@ msgid "block peek request too large for remote protocol, %1$zi > %2$d"
 msgstr "দূরবর্তী প্রোটোকলের জন্য ব্লক peek করার অনুরোধ অত্যাধিক বড়, %1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
 msgstr ""
 
 msgid "block size must be a power of two"
@@ -21185,6 +21203,9 @@ msgid "can't parse cputune shares value"
 msgstr "cputune অংশীদারি মান পার্জ করা যাবে না"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
+msgstr ""
+
+msgid "can't query rx filters: device alias not found"
 msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
@@ -24209,6 +24230,10 @@ msgstr "ডিভাইস-কি"
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr ""
 
@@ -24399,6 +24424,10 @@ msgstr "ডিস্ক '%1$s' দুইবার উল্লেখ করা �
 msgid "disk '%1$s' was not found in the domain config"
 msgstr ""
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
 
@@ -24468,6 +24497,11 @@ msgstr "'%s' গোপনীয় তথ্যের কোনো মান নি
 msgid "disk driver %1$s is not supported"
 msgstr "%d প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "ডিস্ক event_idx মোড শুধুমাত্র virtio bus এর ক্ষেত্রে সমর্থিত"
 
@@ -24487,6 +24521,14 @@ msgstr "কর্ম সমর্থিত হয় না"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "ডিস্ক ioeventfd মোড শুধুমাত্র virtio bus এর ক্ষেত্রে সমর্থিত"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -26911,6 +26953,10 @@ msgstr "পুল '%s' মুছে ফেলতে ব্যর্থ"
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "%1$s ব্লকের নাম পার্স করতে ব্যর্থ"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
 msgstr "%s থেকে ডিভাইস নির্মাণ করতে ব্যর্থ"
@@ -29100,6 +29146,10 @@ msgstr ""
 msgid "iothread is not supported with vhostuser disk"
 msgstr ""
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
@@ -30965,6 +31015,10 @@ msgstr "সংগ্রহের পুলের টার্গেট পাথ
 msgid "missing interface information"
 msgstr "কার্নেল সংক্রান্ত তথ্য অনুপস্থিত"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "কার্নেল সংক্রান্ত তথ্য অনুপস্থিত"
@@ -31483,6 +31537,16 @@ msgid "modify/get running state"
 msgstr "ডোমেইন বর্তমানে সক্রিয় অবস্থায় নয়"
 
 msgid "modify/get the title instead of description"
+msgstr ""
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
 msgstr ""
 
 #, fuzzy
@@ -33373,15 +33437,19 @@ msgstr ""
 msgid "pcap_setfilter: %1$s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "hostdev মোড '%1$s' সমর্থিত নয়"
+#, c-format
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "pci device %1$s is not a PCI-Express device"
 msgstr "%1$s ডিভাইসটি PCI ডিভাইস নয়"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -33655,9 +33723,10 @@ msgstr ""
 msgid "prctl failed to set KEEPCAPS"
 msgstr ""
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -34531,9 +34600,22 @@ msgstr ""
 msgid "resize a vol"
 msgstr "ভলিউম মুছে ফেলুন"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 #, fuzzy
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "%d প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr ""
@@ -35846,6 +35928,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr ""
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: একটি পাথ লিখুন অথবা test:///default ব্যবহার করুন"
 
@@ -36776,9 +36862,9 @@ msgstr "গোপনীয় সংগ্রহের ড্রাইভার অ
 msgid "unable to find audio backend for sound device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "tty-র বৈশিষ্ট্য নির্ধারণ করতে ব্যর্থ: %1$s"
+#, c-format
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37391,10 +37477,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "%1$s আর্কিটেকচারের জন্য CPU-র জন্য ডি-কোড করা সম্ভব নয়"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "অপ্রত্যাশিত hostdev ড্রাইভার নাম ধরন %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "অপ্রত্যাশিত hostdev মোড %1$d"
 
@@ -37483,8 +37565,8 @@ msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr "অপ্রত্যাশিত OpenVZ URI পাথ '%1$s', openvz:///system প্রচেষ্টা করুন"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "অপ্রত্যাশিত pci hostdev ড্রাইভার নাম ধরন %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "অপ্রত্যাশিত পুল প্রকৃতি"
@@ -39138,10 +39220,6 @@ msgstr "পুল দ্বারা পুল মুছে ফেলার ক�
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
 
-#, fuzzy
-msgid "virtiofs is not yet supported in session mode"
-msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
 
@@ -39538,6 +39616,38 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "[--%1$s <string>]"
+
+#, fuzzy
+#~ msgid "Missing network port driver name"
+#~ msgstr "সংগ্রহের পুলের উৎসের ডিভাইসের নাম অনুপস্থিত"
+
+#, fuzzy
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "অপ্রত্যাশিত CPU ফলব্যাক মান: %d"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "অজানা ফরোয়ার্ড <driver name='%1$s'/> %2$s নেটওয়ার্কে"
+
+#, fuzzy, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "hostdev মোড '%1$s' সমর্থিত নয়"
+
+#, fuzzy, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "tty-র বৈশিষ্ট্য নির্ধারণ করতে ব্যর্থ: %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "অপ্রত্যাশিত hostdev ড্রাইভার নাম ধরন %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "অপ্রত্যাশিত pci hostdev ড্রাইভার নাম ধরন %1$d"
+
+#, fuzzy
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
 
 #, fuzzy, c-format
 #~ msgid ""

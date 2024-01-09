@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -3497,8 +3497,10 @@ msgstr "初期化していない CURL ハンドルを共有解除できません
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "%1$s トランスポートにダイレクトソケットモードは使用できません"
 
-msgid "Cannot use direct socket mode if no URI is set"
-msgstr "URI が設定されていない場合、ダイレクトソケットモードは使用できません"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5978,6 +5980,10 @@ msgid "Duplicate info for NUMA latencies"
 msgstr "NUMA レイテンシーの情報を複製します"
 
 #, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
+#, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "セキュリティードライバー %1$s を複製します"
 
@@ -7628,7 +7634,7 @@ msgid "Failed to list volumes"
 msgstr "ボリュームの一覧表示に失敗しました"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9463,6 +9469,10 @@ msgstr "IOThread ID"
 
 msgid "IOThread ID number"
 msgstr "IOThread ID 番号"
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "サポートされるデバイスで使用される IOThread"
@@ -11559,9 +11569,6 @@ msgstr "ネットワークポートの PCI アドレスがありません"
 
 msgid "Missing network port bridge name"
 msgstr "ネットワークポートブリッジ名がありません"
-
-msgid "Missing network port driver name"
-msgstr "ネットワークポートドライバー名がありません"
 
 msgid "Missing network port link device name"
 msgstr "ネットワークポートリンクデバイス名がありません"
@@ -19025,9 +19032,6 @@ msgstr "予期しない JSON 応答 '%1$s'"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "予期しない LXC URI パス '%1$s'、lxc:///system を試してください"
 
-msgid "Unexpected PCI backend 'xen'"
-msgstr "予期しない PCI バックエンド 'xen'"
-
 #, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "予期しない PCI コントローラーモデル %1$d"
@@ -19358,10 +19362,6 @@ msgstr "不明なファミリー %1$d"
 #, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "不明なファイアウォールレイヤー %1$d"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "ネットワーク %1$s 内の不明な転送 <driver name='%2$s'/>"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -20097,6 +20097,9 @@ msgstr ""
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "このシステムでは、VFIO デバイスの割り当ては現在サポートされていません"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "仮想マシンのディスクソースとスナップショットディスクソースが異なります"
 
@@ -20353,6 +20356,10 @@ msgstr "XBZRLE が有効でしたが 'overflow' データがありませんで�
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE が有効ですが 'pages' データがありませんでした"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML 記述が無効です、または十分な形式ではありません"
@@ -21070,6 +21077,10 @@ msgid "bhyve state driver is not active"
 msgstr "bhyve 状態ドライバーがアクティブではありません"
 
 #, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
+#, c-format
 msgid "binding '%1$s' already exists"
 msgstr "バインディング '%1$s' はすでに存在しています"
 
@@ -21137,6 +21148,10 @@ msgid "block device"
 msgstr "ブロックデバイス"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr "ブロックデバイススナップショットターゲット '%1$s' は存在しません"
 
@@ -21182,6 +21197,11 @@ msgstr "block peek 要求はリモートプロトコルには大きすぎます 
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "ブロックのサイズ変更は vhostuser ディスクではサポートされません"
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
+msgstr ""
 
 msgid "block size must be a power of two"
 msgstr "ブロックサイズは 2 のべき乗でなければなりません"
@@ -21502,6 +21522,9 @@ msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
 "共有をサポートしていないストレージボリュームに、共有ディスクをピボットするこ"
 "とはできません"
+
+msgid "can't query rx filters: device alias not found"
+msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr "バッキングストアの存在が不明なイメージを再度開くことはできません"
@@ -24458,6 +24481,10 @@ msgstr "デバイスのキー"
 msgid "device list is not an object"
 msgstr "デバイスリストはオブジェクトではありません"
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr "デバイス名"
 
@@ -24653,6 +24680,10 @@ msgstr "ディスク '%1$s' が二重定義されました"
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "ディスク '%1$s' はドメイン設定で見つかりませんでした"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "ディスク属性: disk[,checkpoint=type][,bitmap=name]"
 
@@ -24721,6 +24752,11 @@ msgstr "ディスクにエイリアスがありません"
 msgid "disk driver %1$s is not supported"
 msgstr "ディスクドライバー %1$s がサポートされません"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "ディスク event_idx モードは virtio バスに対してのみサポートされます"
 
@@ -24742,6 +24778,14 @@ msgstr "ディスクイメージ形式はサポートされていません: %1$s
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "ディスク ioeventfd モードは virtio バスに対してのみサポートされます"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27108,6 +27152,10 @@ msgstr "スナップショット '%1$s/%2$s@%3$s' の保護を解除できませ
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "ブロックノード '%1$s' の容量データの更新に失敗しました"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 msgid "failed to update device in BPF cgroup map"
 msgstr "BPF cgroup マップでデバイスを更新できませんでした"
 
@@ -29296,6 +29344,10 @@ msgstr "既存の IOThread の iothread ID"
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread は vhostuser ディスクではサポートされません"
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr "削除する IOThread の iothread_id"
 
@@ -31088,6 +31140,10 @@ msgstr "入力ボリュームターゲットパスがありません"
 msgid "missing interface information"
 msgstr "インターフェイス情報がありません"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 msgid "missing ivgen info name string"
 msgstr "ivgen 情報名文字列がありません"
 
@@ -31601,6 +31657,16 @@ msgstr "実行状態の変更/取得"
 
 msgid "modify/get the title instead of description"
 msgstr "説明の代わりにタイトルを変更または取得します"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 msgid "monitor failure"
 msgstr "モニター障害"
@@ -33471,8 +33537,8 @@ msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
 #, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "pci バックエンドドライバー '%1$s' はサポートされていません"
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
@@ -33480,6 +33546,10 @@ msgstr "pci デバイス %1$s は PCI-Express デバイスではありません"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
 msgstr "pci デバイス割り当てバックエンドドライバー (例: 'vfio' または 'xen')"
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
+msgstr ""
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -33761,12 +33831,11 @@ msgstr "prctl が KEEPCAPS のリセットに失敗しました"
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl が KEEPCAPS の設定に失敗しました"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
-"増分ストレージマイグレーション用のストレージターゲットの事前作成はサポートさ"
-"れていません"
 
 msgid "preallocate is not supported on this platform"
 msgstr "このプラットフォームでは、事前割り当てはサポートされていません"
@@ -34629,8 +34698,21 @@ msgstr ""
 msgid "resize a vol"
 msgstr "ボリュームのサイズを変更する"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "qcow2 暗号化イメージのサイズ変更はサポートされていません"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "リソースが使用中です"
@@ -35954,6 +36036,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "穏やかに終了します"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: パスを指定します、または test:///default を使用します"
 
@@ -36938,8 +37024,8 @@ msgid "unable to find audio backend for sound device"
 msgstr "サウンドデバイスのオーディオバックエンドが見つかりません"
 
 #, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "ターゲットごとにディスクを見つけることができません: %1$s"
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37529,10 +37615,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "%1$s アーキテクチャーの予期しないホストモデル CPU"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "予期しないホストデバイスのドライバー名タイプ %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "予期しない hostdev モード %1$d"
 
@@ -37621,8 +37703,8 @@ msgstr ""
 "予期しない nwfilter URI パス '%1$s'、nwfilter:///system を試してください"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "予期しない PCI ホストデバイスのドライバー名タイプ %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "予期しないプールタイプ"
@@ -39278,9 +39360,6 @@ msgstr "virtiofs は読み取り専用モードをまだサポートしていま
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "この QEMU バイナリーでは、virtiofs はサポートされません"
 
-msgid "virtiofs is not yet supported in session mode"
-msgstr "virtiofs はセッションモードではまだサポートされていません"
-
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "virtiofs はパススルーアクセスモードのみをサポートします"
 
@@ -39698,6 +39777,46 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "Cannot use direct socket mode if no URI is set"
+#~ msgstr ""
+#~ "URI が設定されていない場合、ダイレクトソケットモードは使用できません"
+
+#~ msgid "Missing network port driver name"
+#~ msgstr "ネットワークポートドライバー名がありません"
+
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "予期しない PCI バックエンド 'xen'"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "ネットワーク %1$s 内の不明な転送 <driver name='%2$s'/>"
+
+#, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "pci バックエンドドライバー '%1$s' はサポートされていません"
+
+#~ msgid ""
+#~ "pre-creation of storage targets for incremental storage migration is not "
+#~ "supported"
+#~ msgstr ""
+#~ "増分ストレージマイグレーション用のストレージターゲットの事前作成はサポート"
+#~ "されていません"
+
+#, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "ターゲットごとにディスクを見つけることができません: %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "予期しないホストデバイスのドライバー名タイプ %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "予期しない PCI ホストデバイスのドライバー名タイプ %1$d"
+
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "virtiofs はセッションモードではまだサポートされていません"
 
 #, c-format
 #~ msgid ""

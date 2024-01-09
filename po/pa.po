@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2023-11-27 09:22+0000\n"
+"POT-Creation-Date: 2024-01-09 09:05+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -3306,7 +3306,9 @@ msgstr "ਮਾਊਂਟ ਨਾਂ-ਸਪੇਸ ਦੀ ਸ਼ੇਅਰਿੰਗ ਹ�
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "ਸਾਕਟ ਐਡਰੈੱਸ ਨੂੰ ਸਤਰ ਵਿੱਚ ਬਦਲ ਨਹੀਂ ਸਕਿਆ: %1$s"
 
-msgid "Cannot use direct socket mode if no URI is set"
+msgid ""
+"Cannot use direct socket mode if no URI is set. For more information see "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
 
 #, c-format
@@ -5783,6 +5785,10 @@ msgstr ""
 msgid "Duplicate info for NUMA latencies"
 msgstr ""
 
+#, c-format
+msgid "Duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %1$s"
 msgstr "ਸੁਰੱਖਿਆ ਚਾਲਕ '%1$s' ਨਹੀਂ ਲੱਭ ਸਕਦਾ"
@@ -7416,7 +7422,7 @@ msgid "Failed to list volumes"
 msgstr "ਆਇਤਨ ਸੂਚੀਬੱਧ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
 #, c-format
-msgid "Failed to load PCI driver module %1$s"
+msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9212,6 +9218,10 @@ msgid "IOThread ID"
 msgstr ""
 
 msgid "IOThread ID number"
+msgstr ""
+
+#, c-format
+msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -11279,10 +11289,6 @@ msgstr "ਐਡਰੈੱਸ ਗੈਰਮੌਜੂਦ ਹੈ"
 #, fuzzy
 msgid "Missing network port bridge name"
 msgstr "ਗੈਰ-ਮੌਜੂਦ CPU ਮਾਡਲ ਨਾਂ"
-
-#, fuzzy
-msgid "Missing network port driver name"
-msgstr "ਗੁੰਮ ਸਟੋਰਜ਼ ਪੂਲ ਸਰੋਤ ਜੰਤਰ ਨਾਂ"
 
 #, fuzzy
 msgid "Missing network port link device name"
@@ -18697,10 +18703,6 @@ msgstr "ਅਚਾਨਕ JSON ਜਵਾਬ '%1$s'"
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
 msgstr "ਅਚਾਨਕ OpenVZ URI ਮਾਰਗ '%1$s', try openvz:///system"
 
-#, fuzzy
-msgid "Unexpected PCI backend 'xen'"
-msgstr "ਅਣਜਾਣ CPU ਫਾਲਬੈਕ ਮੁੱਲ: %d"
-
 #, fuzzy, c-format
 msgid "Unexpected PCI controller model %1$d"
 msgstr "ਅਚਾਨਕ ਕੰਟਰੋਲਰ ਕਿਸਮ %1$d"
@@ -19032,10 +19034,6 @@ msgstr "ਅਣਜਾਣ ਇੰਟਰਫੇਸ ਕਿਸਮ %s"
 #, fuzzy, c-format
 msgid "Unknown firewall layer %1$d"
 msgstr "ਅਚਾਨਕ ਰੀਲੀਜ਼: %s"
-
-#, c-format
-msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-msgstr "ਅਣਪਛਾਤਾ ਫਾਰਵਰਡ <driver name='%1$s'/> ਨੈੱਟਵਰਕ %2$s ਵਿੱਚ"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
@@ -19730,6 +19728,9 @@ msgstr "qemu ਦੇ ਇਸ ਸੰਸਕਰਣ ਨਾਲ VFIO PCI ਯੰਤਰ �
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "qemu ਦੇ ਇਸ ਸੰਸਕਰਣ ਨਾਲ VFIO PCI ਯੰਤਰ ਨਿਰਧਾਰਨ ਨੂੰ ਸਮਰਥਨ ਨਹੀਂ ਹੈ"
 
+msgid "VFIO device assignment is not available on this platform"
+msgstr ""
+
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 
@@ -19981,6 +19982,10 @@ msgstr "XBZRLE ਸਰਗਰਮ ਹੈ, ਪਰ 'overflow' ਡਾਟਾ ਗੁੰ�
 
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE ਸਰਗਰਮ ਹੈ, ਪਰ 'pages' ਡਾਟਾ ਗੁੰਮ ਸੀ"
+
+#, c-format
+msgid "XEN does not support device assignment mode '%1$s'"
+msgstr ""
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML ਵੇਰਵਾ ਠੀਕ ਰੂਪ ਵਿੱਚ ਨਹੀਂ ਜਾਂ ਗਲਤ ਹੈ"
@@ -20691,6 +20696,10 @@ msgstr "base64-encoded ਸੀਕਰੇਟ ਮੁੱਲ"
 msgid "bhyve state driver is not active"
 msgstr "qemu ਸਟੇਟ ਡਰਾਈਵਰ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
+#, c-format
+msgid "binary '%1$s' does not exist in $PATH"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "binding '%1$s' already exists"
 msgstr "ਸਨੈਪਸ਼ਾਟ '%1$s' ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
@@ -20753,6 +20762,10 @@ msgid "block device"
 msgstr "ਬਲਾਕ ਜੰਤਰ"
 
 #, c-format
+msgid "block device backed disk must be resized to its actual size '%1$llu'"
+msgstr ""
+
+#, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
 msgstr ""
 
@@ -20795,6 +20808,11 @@ msgid "block peek request too large for remote protocol, %1$zi > %2$d"
 msgstr "ਬਲਾਕ ਪੀਕ ਬੇਨਤੀ ਰਿਮੋਟ ਪਰੋਟੋਕਾਲਾਂ ਲਈ ਬਹੁਤ ਵੱਡੀ ਹੈ, %1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid ""
+"block resize to full capacity supported only with 'raw' local block-based "
+"disks"
 msgstr ""
 
 msgid "block size must be a power of two"
@@ -21101,6 +21119,9 @@ msgid "can't parse cputune shares value"
 msgstr "cputune ਹਿੱਸਾ ਮੁੱਲ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
+msgstr ""
+
+msgid "can't query rx filters: device alias not found"
 msgstr ""
 
 msgid "can't reopen image with unknown presence of backing store"
@@ -24084,6 +24105,10 @@ msgstr "ਜੰਤਰ ਕੁੰਜੀ"
 msgid "device list is not an object"
 msgstr ""
 
+#, c-format
+msgid "device modalias file %1$s content has improper format"
+msgstr ""
+
 msgid "device name"
 msgstr ""
 
@@ -24275,6 +24300,10 @@ msgstr ""
 "ਆਇਤਨ '%1$s' ਡੋਮੇਨ ਦੀ ਪਰਿਭਾਸ਼ਾ ਵਿੱਚ ਨਹੀਂ ਲੱਭਿਆ ਸੀ।\n"
 "\n"
 
+msgid ""
+"disk 'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
 
@@ -24344,6 +24373,11 @@ msgstr "ਸੀਕਰੇਟ '%s' ਦਾ ਮੁੱਲ ਨਹੀਂ ਹੈ।"
 msgid "disk driver %1$s is not supported"
 msgstr "ਡਿਸਕ ਚਾਲਕ %1$s ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
+msgid ""
+"disk driver 'iothread' attribute can't be used together with 'iothreads' "
+"subelement"
+msgstr ""
+
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "ਡਿਸਕ event_idx ਮੋਡ ਸਿਰਫ virtio ਬੱਸ ਲਈ ਸਹਿਯੋਗੀ ਹੈ"
 
@@ -24363,6 +24397,14 @@ msgstr "ਡਿਸਕ ਫਾਰਮੈਟ %1$s ਸਮਰਥਿਤ ਨਹੀਂ ਹ
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "ਡਿਸਕ ioeventfd ਮੋਡ ਸਿਰਫ virtio ਬੱਸ ਲਈ ਸਹਿਯੋਗੀ ਹੈ"
+
+#, c-format
+msgid "disk iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "disk iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -26753,6 +26795,10 @@ msgstr "ਸਨੈਪਸ਼ਾਟ ਸੂਚੀ ਲੈਣ ਤੋਂ ਫੇਲ"
 msgid "failed to update capacity data for block node '%1$s'"
 msgstr "ਫਾਈਲ '%1$s' ਲਈ ਥਾਂ ਦੀ ਪਹਿਲਾਂ-ਵੰਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
+#, c-format
+msgid "failed to update capacity of '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
 msgstr "%s ਤੋਂ ਜੰਤਰ ਅੱਪਡੇਟ ਲਈ ਫੇਲ"
@@ -28914,6 +28960,10 @@ msgstr ""
 msgid "iothread is not supported with vhostuser disk"
 msgstr ""
 
+msgid ""
+"iothread to queue mapping must be provided for all iothreads or for none"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
@@ -30767,6 +30817,10 @@ msgstr "ਗੁੰਮ ਇੰਨਪੁਟ ਆਇਤਨ ਟਿਕਾਣਾ ਰਾ�
 msgid "missing interface information"
 msgstr "ਇੰਟਰਫੇਸ ਜਾਣਕਾਰੀ ਗੁੰਮ"
 
+#, c-format
+msgid "missing iothread mapping for queue '%1$zd'"
+msgstr ""
+
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "ਕਰਨਲ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
@@ -31278,6 +31332,16 @@ msgstr "ਚੱਲ ਰਹੀ ਸਟੇਟ ਸੋਧੋ/ਲਵੋ"
 
 msgid "modify/get the title instead of description"
 msgstr "ਵਰਣਨ ਦੀ ਥਾਂ ਤੇ ਸਿਰਲੇਖ ਸੁਧਾਰੋ/ਪ੍ਰਾਪਤ ਕਰੋ"
+
+#, c-format
+msgid ""
+"modprobe reported success loading module '%1$s', but module is missing from /"
+"sys/module"
+msgstr ""
+
+#, c-format
+msgid "module '%1$s' does not implement any pci driver"
+msgstr ""
 
 #, fuzzy
 msgid "monitor failure"
@@ -33156,15 +33220,19 @@ msgstr "pcap_setdirection: %1$s"
 msgid "pcap_setfilter: %1$s"
 msgstr "pcap_setfilter: %1$s"
 
-#, fuzzy, c-format
-msgid "pci backend driver '%1$s' is not supported"
-msgstr "ਡਿਸਕ ਚਾਲਕ %1$s ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+#, c-format
+msgid "pci backend driver type '%1$s' is not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "pci device %1$s is not a PCI-Express device"
 msgstr "ਜੰਤਰ %1$s ਇੱਕ PCI ਜੰਤਰ ਨਹੀਂ ਹੈ"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
+
+#, c-format
+msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
 
 msgid ""
@@ -33442,9 +33510,10 @@ msgstr "KEEPCAPS ਨੂੰ ਰੀ-ਸੈੱਟ ਕਰਨ ਵਿੱਚ prctl ਅ�
 msgid "prctl failed to set KEEPCAPS"
 msgstr "KEEPCAPS ਨੂੰ ਸੈੱਟ ਸਕਨ ਵਿੱਚ prctl ਅਸਫਲ"
 
+#, c-format
 msgid ""
-"pre-creation of storage targets for incremental storage migration is not "
-"supported"
+"pre-creation of storage target '%1$s' for incremental storage migration of "
+"disk '%2$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -34318,9 +34387,22 @@ msgstr ""
 msgid "resize a vol"
 msgstr "ਇੱਕ ਵਾਲੀਅਮ ਮੁੜ-ਅਕਾਰ"
 
+msgid "resize of a 'sd' disk with storage slice is not supported"
+msgstr ""
+
+msgid "resize of a disk with storage slice is supported only for 'raw' images"
+msgstr ""
+
+msgid ""
+"resize of a disk with storage slice with non-zero 'offset' is not supported"
+msgstr ""
+
 #, fuzzy
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "fs ਫਾਰਮੈਟ %s ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+msgid "resize to capacity of source (block device)"
+msgstr ""
 
 msgid "resource busy"
 msgstr "ਵਸੀਲਾ ਰੁੱਝਿਆ ਹੋਇਆ"
@@ -35627,6 +35709,10 @@ msgstr ""
 msgid "terminate gracefully"
 msgstr "ਸੁਹਜ ਢੰਗ ਨਾਲ ਬੰਦ ਕਰੋ"
 
+#, c-format
+msgid "test hypervisor does not support device assignment mode '%1$s'"
+msgstr ""
+
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: supply a path or use test:///default"
 
@@ -36561,9 +36647,9 @@ msgstr "ਇੱਕ ਸੀਕਰੇਟ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ �
 msgid "unable to find audio backend for sound device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unable to find disk by target: %1$s"
-msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %1$s"
+#, c-format
+msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -37162,10 +37248,6 @@ msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "CPU ਡਾਟੇ ਨੂੰ %1$s ਢਾਂਚੇ ਲਈ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
-msgid "unexpected hostdev driver name type %1$d "
-msgstr "ਅਣਕਿਆਸੀ hostdev ਚਾਲਕ ਨਾਂ ਕਿਸਮ %1$d "
-
-#, c-format
 msgid "unexpected hostdev mode %1$d"
 msgstr "ਅਚਾਨਕ hostdev ਮੋਡ %1$d"
 
@@ -37254,8 +37336,8 @@ msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
 msgstr "ਅਚਾਨਕ OpenVZ URI ਮਾਰਗ '%1$s', try openvz:///system"
 
 #, c-format
-msgid "unexpected pci hostdev driver name type %1$d"
-msgstr "ਅਣਕਿਆਸੀ pci hostdev ਚਾਲਕ ਨਾਂ ਕਿਸਮ %1$d"
+msgid "unexpected pci hostdev driver name %1$d"
+msgstr ""
 
 msgid "unexpected pool type"
 msgstr "ਅਚਾਨਕ mime ਕਿਸਮ"
@@ -38897,10 +38979,6 @@ msgid "virtiofs is not supported with this QEMU binary"
 msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
 #, fuzzy
-msgid "virtiofs is not yet supported in session mode"
-msgstr "qemu ਦੇ ਇਸ ਵਰਜਨ ਨਾਲ PCI ਜੰਤਰ ਨਿਰਧਾਰਨ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
-#, fuzzy
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "ਸਿਰਫ਼ ਪਾਸਥਰੂਅ ਦਖਲ ਮੋਡ ਦਾ ਹੀ ਸਮਰਥਨ ਕਰਦਾ ਹੈ"
 
@@ -39298,6 +39376,38 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "Missing network port driver name"
+#~ msgstr "ਗੁੰਮ ਸਟੋਰਜ਼ ਪੂਲ ਸਰੋਤ ਜੰਤਰ ਨਾਂ"
+
+#, fuzzy
+#~ msgid "Unexpected PCI backend 'xen'"
+#~ msgstr "ਅਣਜਾਣ CPU ਫਾਲਬੈਕ ਮੁੱਲ: %d"
+
+#, c-format
+#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+#~ msgstr "ਅਣਪਛਾਤਾ ਫਾਰਵਰਡ <driver name='%1$s'/> ਨੈੱਟਵਰਕ %2$s ਵਿੱਚ"
+
+#, fuzzy, c-format
+#~ msgid "pci backend driver '%1$s' is not supported"
+#~ msgstr "ਡਿਸਕ ਚਾਲਕ %1$s ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, fuzzy, c-format
+#~ msgid "unable to find disk by target: %1$s"
+#~ msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %1$s"
+
+#, c-format
+#~ msgid "unexpected hostdev driver name type %1$d "
+#~ msgstr "ਅਣਕਿਆਸੀ hostdev ਚਾਲਕ ਨਾਂ ਕਿਸਮ %1$d "
+
+#, c-format
+#~ msgid "unexpected pci hostdev driver name type %1$d"
+#~ msgstr "ਅਣਕਿਆਸੀ pci hostdev ਚਾਲਕ ਨਾਂ ਕਿਸਮ %1$d"
+
+#, fuzzy
+#~ msgid "virtiofs is not yet supported in session mode"
+#~ msgstr "qemu ਦੇ ਇਸ ਵਰਜਨ ਨਾਲ PCI ਜੰਤਰ ਨਿਰਧਾਰਨ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
 #, fuzzy, c-format
 #~ msgid ""
