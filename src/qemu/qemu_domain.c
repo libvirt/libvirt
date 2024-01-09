@@ -5447,7 +5447,7 @@ qemuDomainChrMatchDefaultPath(const char *prefix,
     virBufferEscapeRegex(&buf, "^%s", prefix);
     if (infix)
         virBufferEscapeRegex(&buf, "%s", infix);
-    virBufferAddLit(&buf, "/(target/)?([^/]+\\.)|(domain-[^/]+/)|([0-9]+-[^/]+/)");
+    virBufferAddLit(&buf, "/(target/)?(([^/]+\\.)|(domain-[^/]+/)|([0-9]+-[^/]+/))");
     virBufferEscapeRegex(&buf, "%s$", target);
 
     regexp = virBufferContentAndReset(&buf);

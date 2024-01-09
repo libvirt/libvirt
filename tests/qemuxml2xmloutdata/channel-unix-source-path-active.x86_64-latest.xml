@@ -54,6 +54,26 @@
       <target type='virtio' name='org.qemu.guest_agent.5'/>
       <address type='virtio-serial' controller='0' bus='0' port='6'/>
     </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/1-QEMUGuest1/org.qemu.guest_agent.6'/>
+      <target type='virtio' name='org.qemu.guest_agent.6'/>
+      <address type='virtio-serial' controller='0' bus='0' port='7'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/1-QEMUGuest1/org.qemu.guest_agent.7'/>
+      <target type='virtio' name='org.qemu.guest_agent.7'/>
+      <address type='virtio-serial' controller='0' bus='0' port='8'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/libvirt/qemu/channel/1-QEMUGuest1/org.qemu.guest_agent.8'/>
+      <target type='virtio' name='org.qemu.guest_agent.8'/>
+      <address type='virtio-serial' controller='0' bus='0' port='9'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/tmp/org.qemu.guest_agent.9'/>
+      <target type='virtio' name='org.qemu.guest_agent.9'/>
+      <address type='virtio-serial' controller='0' bus='0' port='10'/>
+    </channel>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>

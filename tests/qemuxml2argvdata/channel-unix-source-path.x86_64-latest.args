@@ -40,6 +40,14 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":5,"chardev":"charchannel4","id":"channel4","name":"org.qemu.guest_agent.4"}' \
 -chardev socket,id=charchannel5,fd=1729,server=on,wait=off \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":6,"chardev":"charchannel5","id":"channel5","name":"org.qemu.guest_agent.5"}' \
+-chardev socket,id=charchannel6,fd=1729,server=on,wait=off \
+-device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":7,"chardev":"charchannel6","id":"channel6","name":"org.qemu.guest_agent.6"}' \
+-chardev socket,id=charchannel7,fd=1729,server=on,wait=off \
+-device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":8,"chardev":"charchannel7","id":"channel7","name":"org.qemu.guest_agent.7"}' \
+-chardev socket,id=charchannel8,fd=1729,server=on,wait=off \
+-device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":9,"chardev":"charchannel8","id":"channel8","name":"org.qemu.guest_agent.8"}' \
+-chardev socket,id=charchannel9,fd=1729,server=on,wait=off \
+-device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":10,"chardev":"charchannel9","id":"channel9","name":"org.qemu.guest_agent.9"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
