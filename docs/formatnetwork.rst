@@ -106,7 +106,8 @@ to the physical LAN (if at all).
    prefix "virbr" is recommended (and that is what is auto-generated), but not
    enforced. Attribute ``stp`` specifies if Spanning Tree Protocol is 'on' or
    'off' (default is 'on'). Attribute ``delay`` sets the bridge's forward delay
-   value in seconds (default is 0). :since:`Since 0.3.0`
+   value in seconds (default is 0. As the kernel has a minimum delay, values
+   below it may not be counted). :since:`Since 0.3.0`
 
    The ``macTableManager`` attribute of the bridge element is used to tell
    libvirt how the bridge's MAC address table (used to determine the correct
