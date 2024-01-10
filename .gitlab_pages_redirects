@@ -1,25 +1,25 @@
 # Redirects to golang module pages
-/libvirt/libvirt-go /libvirt-go.html 200
-/libvirt/libvirt-go-xml /libvirt-go-xml.html 200
-/libvirt/go/libvirt /go/libvirt.html 200
-/libvirt/go/libvirtxml /go/libvirtxml.html 200
+/libvirt-go /libvirt-go.html 200
+/libvirt-go-xml /libvirt-go-xml.html 200
+/go/libvirt /go/libvirt.html 200
+/go/libvirtxml /go/libvirtxml.html 200
 
 # Redirects to the download server
-/libvirt/sources/* https://download.libvirt.org/:splat 301
-/libvirt/ruby/download/* https://download.libvirt.org/ruby/:splat 301
-/libvirt/maven2/org/libvirt/* https://download.libvirt.org/maven2/org/libvirt/:splat 301
+/sources/* https://download.libvirt.org/:splat 301
+/ruby/download/* https://download.libvirt.org/ruby/:splat 301
+/maven2/org/libvirt/* https://download.libvirt.org/maven2/org/libvirt/:splat 301
 
 # Redirects to subproject pages
-/libvirt/ruby/* https://ruby.libvirt.org/:splat 301
-/libvirt/ocaml/* https://ocaml.libvirt.org/:splat 301
-/libvirt/php/* https://php.libvirt.org/:splat 301
-/libvirt/libvirt-appdev-guide-python/en-US/html/* https://libvirt.gitlab.io/libvirt-appdev-guide-python/:splat: 301
-/libvirt/java.html https://java.libvirt.org 301
+/ruby/* https://ruby.libvirt.org/:splat 301
+/ocaml/* https://ocaml.libvirt.org/:splat 301
+/php/* https://php.libvirt.org/:splat 301
+/libvirt-appdev-guide-python/en-US/html/* https://libvirt.gitlab.io/libvirt-appdev-guide-python/:splat: 301
+/java.html https://java.libvirt.org 301
 # Redirect to the proper javadoc directory on the subproject page
-/libvirt/sources/java/javadoc/* https://java.libvirt.org/javadoc/:splat 301
+/sources/java/javadoc/* https://java.libvirt.org/javadoc/:splat 301
 
 # Redirects from old gitweb location (see below)
-/libvirt/git https://gitlab.com/libvirt/ 301
+/git https://gitlab.com/libvirt/ 301
 
 # The above rules are adapted from the following set of 'mod_rewrite' rules used
 # originally on libvirt.org:
