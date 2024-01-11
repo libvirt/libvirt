@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-09 11:12+0000\n"
+"PO-Revision-Date: 2024-01-11 22:17+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -3484,6 +3484,8 @@ msgid ""
 "Cannot use direct socket mode if no URI is set. For more information see "
 "https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
+"Kan inte använda direkt uttagsläge om ingen URI är satt. För mer information "
+"se https://libvirt.org/kbase/failed_connection_after_install.html"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5974,7 +5976,7 @@ msgstr "Dubblerad information för NUMA-latenser"
 
 #, c-format
 msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
+msgstr "Dubbel avbildning för iotrhead ”%1$u”"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -7605,7 +7607,7 @@ msgstr "Misslyckades med att lista volymer"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: %2$s"
-msgstr ""
+msgstr "Misslyckades med att ladda PCI-drivrutinsmodulen %1$s: %2$s"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
@@ -9447,6 +9449,8 @@ msgstr "IO-tråd ID-nummer"
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
+"IOThread-avbildning för disken ”%1$s” är inte tillgänglig med denna QEMU-"
+"binär"
 
 msgid "IOThread to be used by supported device"
 msgstr "IO-tråd att använda av stödd enhet"
@@ -19900,7 +19904,7 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr "Tilldelning av VFIO-enhet stödjs för närvarande inte på detta system"
 
 msgid "VFIO device assignment is not available on this platform"
-msgstr ""
+msgstr "VFIO-enhetstilldelning är inte tillgänglig på denna plattform"
 
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "VM-diskkälla och ögonblicsbildskälla är inte samma"
@@ -20152,7 +20156,7 @@ msgstr "XBZRLE är aktivt, men ”pages”-data saknades"
 
 #, c-format
 msgid "XEN does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "XEN stödjer inte enhetstilldelingsläget ”%1$s”"
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML-beskrivningen är ogiltig eller inte rätt utformad"
@@ -20878,7 +20882,7 @@ msgstr "bhyve-tillståndsdrivrutinen är inte aktiv"
 
 #, c-format
 msgid "binary '%1$s' does not exist in $PATH"
-msgstr ""
+msgstr "binären ”%1$s” finns inte i $PATH"
 
 #, c-format
 msgid "binding '%1$s' already exists"
@@ -20948,6 +20952,8 @@ msgstr "blockenhet"
 #, c-format
 msgid "block device backed disk must be resized to its actual size '%1$llu'"
 msgstr ""
+"blockenhetsbackad disk måste storleksändras till sin faktiska storlek "
+"”%1$llu”"
 
 #, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
@@ -20998,6 +21004,8 @@ msgid ""
 "block resize to full capacity supported only with 'raw' local block-based "
 "disks"
 msgstr ""
+"blockstorleksändring till full kapacitet stödjs endast med ”raw” lokala "
+"blockbaserade diskar"
 
 msgid "block size must be a power of two"
 msgstr "blockstorleken måste vara en potens av två"
@@ -21315,7 +21323,7 @@ msgstr ""
 "delning"
 
 msgid "can't query rx filters: device alias not found"
-msgstr ""
+msgstr "kan inte fråga rx-filter: enhetsaliaset finns inte"
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr "kan inte återöppna avbilden med okänd närvaro av bakomliggande lagring"
@@ -23224,32 +23232,32 @@ msgid "compress level for zstd compression"
 msgstr "kompressionsnivå för zstd-komprimering"
 
 msgid "compress repeated pages during live migration"
-msgstr ""
+msgstr "komprimera upprepade sidor under migrering i drift"
 
 msgid "compute baseline CPU"
-msgstr ""
+msgstr "beräkna baslinje-CPU"
 
 msgid "compute baseline CPU usable by a specific hypervisor"
-msgstr ""
+msgstr "beräkna baslinje-CPU användbar av en specifik hypervisor"
 
 #, c-format
 msgid "computing baseline hypervisor CPU is not supported for arch %1$s"
 msgstr ""
+"beräkning av baslinje-hypervisor-CPU:n stödjs inte för arkitekturen %1$s"
 
 msgid "config"
-msgstr ""
+msgstr "konfiguration"
 
-#, fuzzy
 msgid "config data file to import from"
-msgstr "syntaxfel i konfigurationsfilen"
+msgstr "konfigurationsfil att importera ifrån"
 
 #, c-format
 msgid "config value %1$s was malformed"
-msgstr ""
+msgstr "konfigurationsvärdet %1$s var felformat"
 
 #, c-format
 msgid "config value %1$s was missing"
-msgstr ""
+msgstr "konfigurationsvärdet %1$s saknades"
 
 msgid "configuration file syntax error"
 msgstr "syntaxfel i konfigurationsfilen"
@@ -23259,22 +23267,22 @@ msgid "configuration file syntax error: %1$s"
 msgstr "syntaxfel i konfigurationsfilen: %1$s"
 
 msgid "configuration potentially modified by hook script"
-msgstr ""
+msgstr "konfigurationen modifieras potentiellt av hakskript"
 
 msgid "configuring disks is not supported for vz snapshots"
-msgstr ""
+msgstr "konfigurationsdiskar stödjs inte för vz-ögonblicksbilder"
 
 msgid "configuring memory location is not supported"
-msgstr ""
+msgstr "konfiguration av minnesplats stödjs inte"
 
 msgid "conn must match stream connection"
-msgstr ""
+msgstr "conn måste matcha strömförbindelsen"
 
 msgid "connect"
 msgstr "anslut"
 
 msgid "connect to daemon's admin server"
-msgstr ""
+msgstr "anslut till demonens administrationsserver"
 
 msgid "connect to the guest console"
 msgstr "anslut till gästkonsolen"
@@ -23286,12 +23294,14 @@ msgid ""
 "connection URI of the destination host as seen from the client(normal "
 "migration) or source(p2p migration)"
 msgstr ""
+"anslutnings-URI för destinationsvärden som den syns från klienten (normal "
+"migrering) eller källan (p2p-migrering)"
 
 msgid "connection already open"
 msgstr "anslutningen redan öppen"
 
 msgid "connection closed due to keepalive timeout"
-msgstr ""
+msgstr "anslutningen stängd på grund av tidsgränsen för livsuppehållandet"
 
 msgid "connection not open"
 msgstr "anslutningen är inte öppen"
@@ -23300,35 +23310,34 @@ msgid "connection vcpu maximum"
 msgstr "anslutning vcpu maximal"
 
 msgid "control domain IOThread affinity"
-msgstr ""
+msgstr "styrdomänens IOThread-samhörighet (affinity)"
 
 msgid "control domain's incoming traffics"
-msgstr ""
+msgstr "styrdomänens inkommande trafik"
 
 msgid "control domain's outgoing traffics"
-msgstr ""
+msgstr "styrdomänens utgående trafik"
 
 msgid "control or query domain emulator affinity"
-msgstr ""
+msgstr "styr- eller frågedomänens emulatorsamhörighet (affinity)"
 
 msgid "control or query domain vcpu affinity"
-msgstr ""
+msgstr "styr- eller frågedomänens vcpu-samhörighet (affinity)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "controller %1$s:%2$d not found"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "styrenheten %1$s:%2$d finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "controller index='%1$d' already exists"
-msgstr "oväntad domän %s finns redan"
+msgstr "en styrenhet med index=”%1$d” finns redan"
 
 #, c-format
 msgid "controller iothread '%1$u' not defined in iothreadid"
-msgstr ""
+msgstr "styrenheten iothread ”%1$u” är inte definierad i iothreadid"
 
-#, fuzzy
 msgid "conversion from 'xen-sxpr' format is no longer supported"
-msgstr "konvertering från hyper till %s svämmade över"
+msgstr "konvertering från formatet ”xen-sxpr” stödjs inte längre"
 
 #, c-format
 msgid "conversion from hyper to %1$s overflowed"
@@ -23352,29 +23361,27 @@ msgstr "konvertera ett nätverks-UUID till nätverksnamn"
 msgid "convert a network name to network UUID"
 msgstr "konvertera ett nätverksnamn till nätverks-UUID"
 
-#, fuzzy
 msgid "convert a pool UUID to pool name"
-msgstr "konvertera ett nätverks-UUID till nätverksnamn"
+msgstr "konvertera ett pool-UUID till ett poolnamn"
 
-#, fuzzy
 msgid "convert a pool name to pool UUID"
-msgstr "konvertera ett nätverksnamn till nätverks-UUID"
+msgstr "konvertera ett poolnamn till ett pool-UUID"
 
 msgid "convert an interface MAC address to interface name"
-msgstr ""
+msgstr "konvertera en gränssnitts-MAC-adress till ett gränssnittsnamn"
 
 msgid "convert an interface name to interface MAC address"
-msgstr ""
+msgstr "konvertera ett gränssnittsnamn till en gränssnitts-MAC-adress"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cookie name '%1$s' contains invalid characters"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "kaknamnet ”%1$s” innehåller ogiltiga tecken"
 
 msgid "cookie name must not be empty"
-msgstr ""
+msgstr "kaknamnet får inte vara tomt"
 
 msgid "copy destination is block device instead of regular file"
-msgstr ""
+msgstr "kopieringsdestinationen är en blockenhet istället för en normal fil"
 
 msgid "copy of read-only disks is not supported"
 msgstr ""
@@ -39331,40 +39338,62 @@ msgstr ""
 msgid "{[--%1$s] <string>}..."
 msgstr "--%1$s <sträng>"
 
-#~ msgid "Cannot use direct socket mode if no URI is set"
-#~ msgstr "Det går inte att använda direkt uttagsläge om ingen URI är satt"
+msgid "Cannot use direct socket mode if no URI is set"
+msgstr "Det går inte att använda direkt uttagsläge om ingen URI är satt"
 
 #, c-format
-#~ msgid "Failed to load PCI driver module %1$s"
-#~ msgstr "Misslyckades med att ladda PCI-drivrutinsmodulen %1$s"
+msgid "Failed to load PCI driver module %1$s"
+msgstr "Misslyckades med att ladda PCI-drivrutinsmodulen %1$s"
 
-#~ msgid "Missing network port driver name"
-#~ msgstr "Saknat drivrutinsnamn till nätverksporten"
+msgid "Missing network port driver name"
+msgstr "Saknat drivrutinsnamn till nätverksporten"
 
-#~ msgid "Unexpected PCI backend 'xen'"
-#~ msgstr "Oväntad PCI-bakände ”xen”"
-
-#, c-format
-#~ msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
-#~ msgstr "Okänt vidarebefordran <driver name='%1$s'/> i nätverket %2$s"
+msgid "Unexpected PCI backend 'xen'"
+msgstr "Oväntad PCI-bakände ”xen”"
 
 #, c-format
-#~ msgid ""
-#~ "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
-#~ msgstr ""
-#~ "kan inte använda CCW-adresstypen för enheten ”%1$s” med maskintypen ”%2$s”"
+msgid "Unknown forward <driver name='%1$s'/> in network %2$s"
+msgstr "Okänt vidarebefordran <driver name='%1$s'/> i nätverket %2$s"
+
+#, c-format
+msgid "cannot use CCW address type for device '%1$s' using machine type '%2$s'"
+msgstr ""
+"kan inte använda CCW-adresstypen för enheten ”%1$s” med maskintypen ”%2$s”"
 
 #, fuzzy, c-format
-#~ msgid "unable to find disk by target: %1$s"
-#~ msgstr "kan inte initiera mutex"
+msgid "unable to find disk by target: %1$s"
+msgstr "kan inte initiera mutex"
 
 #, fuzzy, c-format
-#~ msgid "unexpected hostdev driver name type %1$d "
-#~ msgstr "oväntad disktyp %s"
+msgid "unexpected hostdev driver name type %1$d "
+msgstr "oväntad disktyp %s"
 
 #, fuzzy, c-format
-#~ msgid "unexpected pci hostdev driver name type %1$d"
-#~ msgstr "oväntad disktyp %s"
+msgid "unexpected pci hostdev driver name type %1$d"
+msgstr "oväntad disktyp %s"
+
+#, c-format
+msgid ""
+"integer overflow on %1$s. Please contact the libvirt development team at "
+"libvir-list@redhat.com"
+msgstr ""
+
+#, c-format
+msgid ""
+"memory device base '0x%1$llx' is already being used by another memory device"
+msgstr ""
+
+#, c-format
+msgid "pci backend driver '%1$s' is not supported"
+msgstr ""
+
+msgid ""
+"pre-creation of storage targets for incremental storage migration is not "
+"supported"
+msgstr ""
+
+msgid "virtiofs is not yet supported in session mode"
+msgstr ""
 
 #, fuzzy, c-format
 #~ msgid "unknown source mode '%1$s' for volume type disk"
