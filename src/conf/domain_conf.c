@@ -8866,23 +8866,23 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
 
         if ((n = virXPathNodeSet("./idmap/uid", ctxt, &uid_nodes)) < 0)
-            return NULL;
+            goto error;
 
         if (n) {
             def->idmap.uidmap = virDomainIdmapDefParseXML(ctxt, uid_nodes, n);
             if (!def->idmap.uidmap)
-                return NULL;
+                goto error;
 
             def->idmap.nuidmap = n;
         }
 
         if ((n = virXPathNodeSet("./idmap/gid", ctxt, &gid_nodes)) < 0)
-            return NULL;
+            goto error;
 
         if (n) {
             def->idmap.gidmap = virDomainIdmapDefParseXML(ctxt, gid_nodes, n);
             if (!def->idmap.gidmap)
-                return NULL;
+                goto error;
 
             def->idmap.ngidmap = n;
         }
