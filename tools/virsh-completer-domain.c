@@ -1012,7 +1012,7 @@ virshDomainMigrateCompMethodsCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags)
 {
-    const char *methods[] = {"xbzrle", "mt",  NULL};
+    const char *methods[] = {"xbzrle", "mt", "zlib", "zstd", NULL};
     const char *method = NULL;
 
     virCheckFlags(0, NULL);
