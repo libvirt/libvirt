@@ -10,14 +10,14 @@
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
 # Kim InSoo <simmon@nplob.com>, 2022.
-# 김인수 <simmon@nplob.com>, 2022, 2023.
+# 김인수 <simmon@nplob.com>, 2022, 2023, 2024.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2023-12-15 15:00+0000\n"
+"PO-Revision-Date: 2024-01-11 22:17+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.3.1\n"
 
 msgid ""
 "\n"
@@ -3449,6 +3449,9 @@ msgid ""
 "Cannot use direct socket mode if no URI is set. For more information see "
 "https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
+"만약 URI가 아닌 설정이면 직접 소켓 방식을 사용 할 수 없습니다. 더 많은 "
+"정보를 위해 https://libvirt.org/kbase/failed_connection_after_install.html를 "
+"참고하세요"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5887,7 +5890,7 @@ msgstr "NUMA 지연 시간에 대한 중복 정보"
 
 #, c-format
 msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
+msgstr "iothread '%1$u'를 위한 대응이 중복되었습니다"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -7506,7 +7509,7 @@ msgstr "볼륨 목록화에 실패"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: %2$s"
-msgstr ""
+msgstr "PCI 드라이버 모듈을 적재하는데 실패함 %1$s: %2$s"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
@@ -9308,7 +9311,8 @@ msgstr "IO쓰레드 식별번호"
 
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
-msgstr ""
+msgstr "디스크 '%1$s'를 위한 IO 쓰레드 대응은 이 QEMU 바이너리와 함께 사용 할 수 "
+"없습니다"
 
 msgid "IOThread to be used by supported device"
 msgstr "지원되는 장치에서 사용할 IOThread"
@@ -19658,7 +19662,7 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO 장치 할당은 현재 이 시스템에서 지원되지 않습니다"
 
 msgid "VFIO device assignment is not available on this platform"
-msgstr ""
+msgstr "VFIO 장치 할당은 이와 같은 기술환경에서 사용 할 수 없습니다"
 
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "VM 디스크 원천과 순간찍기 디스크 원천은 동일하지 않습니다"
@@ -19908,7 +19912,7 @@ msgstr "XBZRLE이 활성화되어 있지만 '페이지' 데이터가 누락되�
 
 #, c-format
 msgid "XEN does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "XEN은 장치 할당 방식 '%1$s'를 지원하지 않습니다"
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML 설명이 잘못되었거나 형식이 잘못되었습니다"
@@ -20600,7 +20604,7 @@ msgstr "bhyve 상태 드라이버는 활성화 상태가 아닙니다"
 
 #, c-format
 msgid "binary '%1$s' does not exist in $PATH"
-msgstr ""
+msgstr "바이너리 '%1$s'는 $PATH에 존재하지 않습니다"
 
 #, c-format
 msgid "binding '%1$s' already exists"
@@ -20664,7 +20668,7 @@ msgstr "블럭 장치"
 
 #, c-format
 msgid "block device backed disk must be resized to its actual size '%1$llu'"
-msgstr ""
+msgstr "블록 장치 백엔드 디스크는 이 실제 크기'%1$llu'로 조정되어야만 합니다"
 
 #, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
@@ -20714,7 +20718,7 @@ msgstr "vhostuser 디스크에는 블록 크기 조정이 지원되지 않습니
 msgid ""
 "block resize to full capacity supported only with 'raw' local block-based "
 "disks"
-msgstr ""
+msgstr "블록은 '원시' 로컬 블록-기반의 디스크에서만 지원되는 전체 용량으로 조정합니다"
 
 msgid "block size must be a power of two"
 msgstr "블록 크기는 2의 제곱이어야 합니다"
@@ -21027,7 +21031,7 @@ msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr "공유 디스크를 공유를 지원하지 않는 저장소 볼륨으로 피벗 할 수 없습니다"
 
 msgid "can't query rx filters: device alias not found"
-msgstr ""
+msgstr "수신 필터에 질의 할 수 없음: 장치 별칭을 찾을 수 없음"
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr "알 수 없는 백업 저장소가 있는 이미지를 다시 열 수 없습니다"
@@ -23951,7 +23955,7 @@ msgstr "장치 목록이 개체가 아닙니다"
 
 #, c-format
 msgid "device modalias file %1$s content has improper format"
-msgstr ""
+msgstr "장치 modalias 파일 %1$s 내용은 부적절한 형식을 갖고 있습니다"
 
 msgid "device name"
 msgstr "장치 이름"
@@ -24148,7 +24152,8 @@ msgstr "도메인 구성에서 디스크 '%1$s'을(를) 찾을 수 없습니다"
 
 msgid ""
 "disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
+msgstr "디스크 '대기줄' 계수는 대기줄 대응에 대한 명시적인 io쓰레드를 위해 "
+"구성되어야만 합니다"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "디스크 속성: 디스크[,검사점=유형][,비트맵=이름]"
@@ -24220,7 +24225,8 @@ msgstr "디스크 드라이버 %1$s는 지원되지 않습니다"
 msgid ""
 "disk driver 'iothread' attribute can't be used together with 'iothreads' "
 "subelement"
-msgstr ""
+msgstr "디스크 드라이버 'io쓰레드' 속성은 'io쓰레드' 하위요소와 함께 사용 될 수 "
+"없습니다"
 
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "디스크 event_idx 모드는 virtio 버스에 대해서만 지원됩니다"
@@ -24246,11 +24252,11 @@ msgstr "디스크 ioeventfd 모드는 virtio 버스에 대해서만 지원됩니
 
 #, c-format
 msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
+msgstr "디스크 io쓰레드 대기줄 '%1$u' 는 이미 할당 되어 있습니다"
 
 #, c-format
 msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
+msgstr "범위 밖에 대응하는 디스크 io쓰레드 대기줄 '%1$u'"
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -26581,7 +26587,7 @@ msgstr "블록 노드 '%1$s'의 용량 자료를 최신화하지 못했습니다
 
 #, c-format
 msgid "failed to update capacity of '%1$s'"
-msgstr ""
+msgstr "'%1$s'의 용량을 최신화 하는 데 실패함"
 
 msgid "failed to update device in BPF cgroup map"
 msgstr "BPF cgroup 맵에서 장치를 최신화하지 못했습니다"
@@ -28726,7 +28732,8 @@ msgstr "iothread는 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
-msgstr ""
+msgstr "대기줄 대응하는 io쓰레드는 모든 io쓰레드를 위해 제공되거나 제공되지 않아야 "
+"합니다"
 
 msgid "iothread_id for the IOThread to delete"
 msgstr "삭제할 IOThread의 iothread_id"
@@ -30481,7 +30488,7 @@ msgstr "누락된 인터페이스 정보"
 
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
-msgstr ""
+msgstr "대기줄 '%1$zd'를 위한 io쓰레드 대응이 누락"
 
 msgid "missing ivgen info name string"
 msgstr "누락된 ivgen 정보 이름 문자열"
@@ -30971,11 +30978,12 @@ msgstr "설명 대신 제목 수정/가져오기"
 msgid ""
 "modprobe reported success loading module '%1$s', but module is missing from /"
 "sys/module"
-msgstr ""
+msgstr "modprobe가 성공적은 모듈 적재를 보고했습니다' %1$s', 하지만 모듈은 /sys/"
+"module에서 누락되어 있습니다"
 
 #, c-format
 msgid "module '%1$s' does not implement any pci driver"
-msgstr ""
+msgstr "모듈 '%1$s'은 PCI 드라이버를 구현하지 않습니다"
 
 msgid "monitor failure"
 msgstr "모니터 실패"
@@ -32800,7 +32808,7 @@ msgstr "pcap_setfilter: %1$s"
 
 #, c-format
 msgid "pci backend driver type '%1$s' is not supported"
-msgstr ""
+msgstr "pci 백엔드 드라이버 유형 '%1$s'은 지원되지 않습니다"
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
@@ -32811,7 +32819,8 @@ msgstr "pci 장치 할당 백엔드 드라이버 (예: 'vfio' 또는 'xen')"
 
 #, c-format
 msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
-msgstr ""
+msgstr "pci 드라이버 '%1$s'(모듈 '%2$s'에 의해 적재된 것으로 추정되는)가 sysfs에서 "
+"발견되지 않았습니다"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -33079,7 +33088,8 @@ msgstr "prctl이 KEEPCAPS를 설정하지 못했습니다"
 msgid ""
 "pre-creation of storage target '%1$s' for incremental storage migration of "
 "disk '%2$s' is not supported"
-msgstr ""
+msgstr "저장소 대상 '%1$s'의 사전-생성(디스크 '%2$s'의 증분 저장소 이전을 위해)은 "
+"지원되지 않습니다"
 
 msgid "preallocate is not supported on this platform"
 msgstr "이 기술환경에서는 사전 할당이 지원되지 않습니다"
@@ -33921,20 +33931,20 @@ msgid "resize a vol"
 msgstr "볼륨 크기 조정"
 
 msgid "resize of a 'sd' disk with storage slice is not supported"
-msgstr ""
+msgstr "저장소 조각인 'sd' 디스크의 크기 조정은 지원되지 않습니다"
 
 msgid "resize of a disk with storage slice is supported only for 'raw' images"
-msgstr ""
+msgstr "저장소 조각의 디스크 크기 조정은 '원시' 이미지를 위해서만 지원됩니다"
 
 msgid ""
 "resize of a disk with storage slice with non-zero 'offset' is not supported"
-msgstr ""
+msgstr "0이 아닌 'offset'인 저장소 조각의 디스크 크기 조정은 지원되지 않습니다"
 
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "qcow2 암호화된 이미지의 크기 조정은 지원되지 않습니다"
 
 msgid "resize to capacity of source (block device)"
-msgstr ""
+msgstr "원천의 용량으로 크기 조정 (블록 장치)"
 
 msgid "resource busy"
 msgstr "자원 사용 중"
@@ -35216,7 +35226,7 @@ msgstr "정상적으로 종료"
 
 #, c-format
 msgid "test hypervisor does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "하이퍼바이저 시험은 장치 할당 방식 '%1$s'를 지원하지 않습니다"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: 경로를 지정하거나 test:///default 사용"
@@ -36188,7 +36198,7 @@ msgstr "사운드 장치에 대한 오디오 백엔드를 찾을 수 없습니�
 
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
-msgstr ""
+msgstr "비-공유된-저장소 이전을 위해 디스크 대상 '%1$s'를 찾을 수 없음"
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -36862,7 +36872,7 @@ msgstr ""
 
 #, c-format
 msgid "unexpected pci hostdev driver name %1$d"
-msgstr ""
+msgstr "예상치 못한 pci hostdev 드라이버 이름 %1$d"
 
 msgid "unexpected pool type"
 msgstr "예기치 못한 풀 유형"
