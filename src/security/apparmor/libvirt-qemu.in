@@ -252,6 +252,9 @@
   /sys/devices/system/node/node[0-9]*/meminfo r,
   /sys/module/vhost/parameters/max_mem_regions r,
 
+   # Access to libnuma
+   /sys/devices/system/node/*/cpumap r,
+
   # silence refusals to open lttng files (see LP: #1432644)
   deny /dev/shm/lttng-ust-wait-* r,
   deny /run/shm/lttng-ust-wait-* r,
