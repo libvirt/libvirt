@@ -7,15 +7,15 @@
 # Jiri Grönroos <jiri.gronroos@iki.fi>, 2017
 # Toni Rantala <trantalafilo@gmail.com>, 2017
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
-# Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021.
+# Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021, 2024.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2023-03-22 15:20+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"PO-Revision-Date: 2024-01-11 22:17+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 5.3.1\n"
 
 msgid ""
 "\n"
@@ -7879,7 +7879,7 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "'%1$s'n tallentaminen epäonnistui '%2$s':ta varten"
 
 msgid "Failed to save VM settings"
-msgstr ""
+msgstr "Virtuaalikoneen asetusten tallentaminen epäonnistui"
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -14965,7 +14965,7 @@ msgstr "Kohdetoimialueen uuid %1$s ei vastaa lähdettä %2$s"
 
 #, c-format
 msgid "Target domain vCPU max %1$zu does not match source %2$zu"
-msgstr ""
+msgstr "Kohdetoimialueen vCPU:n enimmäismäärä %1$zu ei vastaa lähdettä %2$zu"
 
 #, c-format
 msgid "Target domain video card count %1$zu does not match source %2$zu"
@@ -14985,6 +14985,7 @@ msgstr ""
 #, c-format
 msgid "Target domain watchdog device count %1$zu does not match source %2$zu"
 msgstr ""
+"Kohdetoimialueen vahtikoiralaitteen lasku %1$zu ei vastaa lähdettä %2$zu"
 
 msgid "Target filesystem access mode does not match source"
 msgstr ""
@@ -16412,7 +16413,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to delete %1$s"
-msgstr ""
+msgstr "%1$s:a ei voi poistaa"
 
 msgid "Unable to delete TAP devices on this platform"
 msgstr ""
@@ -17187,9 +17188,9 @@ msgstr ""
 msgid "Unable to open test socket"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open/create resource %1$s"
-msgstr "Verkon luominen tiedostosta %1$s epäonnistui"
+msgstr "Resurssia %1$s ei voi avata/luoda"
 
 msgid "Unable to override peer2peer migration URI"
 msgstr ""
@@ -17477,7 +17478,7 @@ msgstr "Toimialueen %1$s palautus epäonnistui"
 
 #, c-format
 msgid "Unable to remove bridge %1$s port %2$s"
-msgstr ""
+msgstr "Ei voida poistaa sillan %1$s porttia %2$s"
 
 #, fuzzy, c-format
 msgid "Unable to remove device %1$s"
@@ -18438,9 +18439,9 @@ msgstr "Tuntematon"
 msgid "Unknown job phase %1$s"
 msgstr "Tuntematon julkaisu: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown job type %1$s"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %1$s"
+msgstr "Tuntematon työtyyppi %1$s"
 
 #, c-format
 msgid "Unknown localOnly type %1$d in network"
@@ -19195,9 +19196,9 @@ msgstr "Toimialue %1$s luotu tiedostosta %2$s\n"
 msgid "Vol %1$s created\n"
 msgstr "Taltio %1$s luotu\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %1$s created from %2$s\n"
-msgstr "Toimialue %1$s luotu tiedostosta %2$s\n"
+msgstr "Varanto %1$s luotu %2$s:sta\n"
 
 #, fuzzy, c-format
 msgid "Vol %1$s created from input vol %2$s\n"
@@ -25023,7 +25024,7 @@ msgstr "XML:n luonti epäonnistui"
 
 #, c-format
 msgid "failed to create channel dir '%1$s'"
-msgstr ""
+msgstr "kanavahakemiston %1$s luominen epäonnistui"
 
 msgid "failed to create connection to CH socket"
 msgstr ""
@@ -26954,7 +26955,7 @@ msgstr ""
 
 #, c-format
 msgid "hotplug of watchdog model '%1$s' is not supported"
-msgstr ""
+msgstr "vahtikoiran mallin '%1$s' pikaliitämistä ei tueta"
 
 msgid "hpet timer is not supported by this architecture"
 msgstr ""
@@ -33896,7 +33897,7 @@ msgid "sgio is only supported for scsi host device"
 msgstr "levylaite ei tuettu"
 
 msgid "sgx epc isn't supported by this QEMU binary"
-msgstr ""
+msgstr "Tämä QEMU-binaari ei tue sgx epc:tä"
 
 #, c-format
 msgid ""
@@ -34335,7 +34336,7 @@ msgstr "varasto joukkue %1$s on jo aktiivinen"
 
 #, c-format
 msgid "storage pool '%1$s' is not active"
-msgstr ""
+msgstr "tallennusvarasto '%1$s' ei ole aktiivinen"
 
 #, c-format
 msgid "storage pool '%1$s' is starting up"
@@ -34343,7 +34344,7 @@ msgstr ""
 
 #, c-format
 msgid "storage pool '%1$s' is still active"
-msgstr ""
+msgstr "tallennusvarasto '%1$s' on edelleen aktiivinen"
 
 #, fuzzy
 msgid "storage pool capabilities"
@@ -35594,7 +35595,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context for '%1$s'"
-msgstr ""
+msgstr "'%1$s':n SELinux-kontekstia ei voi noudata"
 
 msgid "unable to get SELinux context for current process"
 msgstr ""
@@ -36457,13 +36458,13 @@ msgstr "tuntematon komento: ”%1$s”"
 msgid "unknown capability type '%1$d' for '%2$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown character device type: %1$s"
-msgstr "tuntematon arkkitehtuuri: %1$s"
+msgstr "tuntematon merkkilaitetyyppi: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown chr device type '%1$s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %1$s"
+msgstr "tuntematon chr-laitetyyppi '%1$s'"
 
 #, fuzzy
 msgid "unknown chrdev type"
@@ -36707,9 +36708,9 @@ msgstr ""
 msgid "unknown storage file meta->format %1$d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage pool type %1$s"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %1$s"
+msgstr "tuntematon tallennusvaraston tyyppi %1$s"
 
 #, c-format
 msgid "unknown storage pool volume refresh allocation type %1$s"
