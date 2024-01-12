@@ -83,9 +83,10 @@
 .integration_tests_upstream_qemu:
   before_script:
     - !reference [.integration_tests, before_script]
-    - cd "$SCRATCH_DIR"
+    - pushd "$SCRATCH_DIR"
     - *qemu-build-template
     - sudo restorecon -R /usr
+    - popd
 
 .integration_tests_upstream_qemu_prebuilt_env:
   extends:
