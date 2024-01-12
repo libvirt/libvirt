@@ -55,6 +55,10 @@ v10.0.0 (unreleased)
     Libvirt aleviates this by automatically adding a ``<slice>`` to match the
     size of the source image rather than failing the migration.
 
+  * test driver: Support for hotplug/hotunplug of PCI devices
+
+    The test driver now supports basic hotplug and hotunplug of PCI devices.
+
 * **Bug fixes**
 
   * qemu: Various migration bug fixes and debuggability improvement
@@ -62,6 +66,29 @@ v10.0.0 (unreleased)
     This release fixes multiple bugs in virsh and libvirt in handling of
     migration arguments and XMLs and modifies error reporting for better
     debugging.
+
+  * conf: Restore setting default bus for input devices
+
+    Because of a regression, starting from 9.3.0 libvirt did not autofill bus
+    for input devices. With this release the regression was identified and
+    fixed.
+
+  * qemu: Relax check for memory device coldplug
+
+    Because of a check that was too aggressive, a virtio-mem memory device
+    could not be cold plugged. This is now fixed.
+
+  * qemu: Be less aggressive when dropping channel source paths
+
+    Another regression is resolved, (introduced in 9.7.0) when libvirt was too
+    aggressive when dropping parsed paths for <channel/> sources
+
+  * qemuDomainChangeNet: Reflect trustGuestRxFilters change
+
+    On device-update, when a user requested change of trustGuestRxFilters for a
+    domain's <interface/> libvirt did nothing. It did not throw an error nor
+    did it reflect the change. Starting with this release, the change is
+    reflected.
 
 
 v9.10.0 (2023-12-01)
