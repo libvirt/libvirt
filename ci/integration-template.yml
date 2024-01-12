@@ -1,4 +1,5 @@
 .qemu-build-template: &qemu-build-template
+  - pushd "$SCRATCH_DIR"
   - git clone --depth 1 https://gitlab.com/qemu-project/qemu.git
   - cd qemu
   #
@@ -22,6 +23,8 @@
   # other user
   - sudo git config --global --add safe.directory "$SCRATCH_DIR/qemu"
   - sudo make install
+  - sudo restorecon -R /usr
+  - popd
 
 
 .collect-logs: &collect-logs
@@ -83,10 +86,7 @@
 .integration_tests_upstream_qemu:
   before_script:
     - !reference [.integration_tests, before_script]
-    - pushd "$SCRATCH_DIR"
     - *qemu-build-template
-    - sudo restorecon -R /usr
-    - popd
 
 .integration_tests_upstream_qemu_prebuilt_env:
   extends:
