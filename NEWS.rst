@@ -46,6 +46,16 @@ v10.0.0 (unreleased)
     vfio-pci. A specific driver can also be forced, using the
     ``<driver model='plugh'/>`` attribute.
 
+  * qemu: add runtime configuration option for nbdkit
+
+    Since the new nbdkit support requires a recent selinux policy that is not
+    widely available yet, it is now possible to build libvirt with nbdkit
+    support for remote disks but disabled at runtime. This behavior is
+    controlled via the storage_use_nbdkit option of the qemu driver
+    configuration file. The option will default to being disabled, but this may
+    change in a future release and can be customized with the
+    nbdkit_config_default build option.
+
 * **Improvements**
 
   * qemu: Improve migration XML use when persisting VM on destination
