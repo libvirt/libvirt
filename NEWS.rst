@@ -24,9 +24,44 @@ v10.0.0 (unreleased)
     This should enable faster migration of memory pages that the destination
     tries to read before they are migrated from the source.
 
+  * qemu: Add support for mapping iothreads to virtqueues of ``virtio-blk`` devices
+
+    QEMU added the possibility to map multiple ``iothreads`` to a single
+    ``virtio-blk`` device and map them even to specific virtqueues. Libvirt
+    adds a ``<iothreads>`` subelement of the ``<disk> <driver>`` element that
+    users can use to configure the mapping.
+
+  * qemu: Allow automatic resize of block-device-backed disk to full size of the device
+
+    The new flag ``VIR_DOMAIN_BLOCK_RESIZE_CAPACITY`` for
+    ``virDomainBlockResize`` allows resizing a block-device backed ``raw`` disk
+    of a VM without the need to specify the full size of the block device.
+
 * **Improvements**
 
+  * qemu: Improve migration XML use when persisting VM on destination
+
+    When migrating a VM with a custom migration XML, use it as a base for
+    persisting it on the destination as users could have changed non-ABI
+    breaking facts which would prevent subsequent start if the old XML were used.
+
+  * qemu: Simplify non-shared storage migration to ``raw`` block devices
+
+    The phase of copying storage during migration without shared storage
+    requires that both the source and destination image are identical in size.
+    This may not be possible if the destination is backed by a block device
+    and the source image size is not a multiple of the block device block size.
+
+    Libvirt aleviates this by automatically adding a ``<slice>`` to match the
+    size of the source image rather than failing the migration.
+
 * **Bug fixes**
+
+  * qemu: Various migration bug fixes and debuggability improvement
+
+    This release fixes multiple bugs in virsh and libvirt in handling of
+    migration arguments and XMLs and modifies error reporting for better
+    debugging.
 
 
 v9.10.0 (2023-12-01)
