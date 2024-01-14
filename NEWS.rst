@@ -37,6 +37,15 @@ v10.0.0 (unreleased)
     ``virDomainBlockResize`` allows resizing a block-device backed ``raw`` disk
     of a VM without the need to specify the full size of the block device.
 
+  * qemu: automatic selection/binding of VFIO variant drivers
+
+    When a device is assigned to a guest using VFIO with ``<hostdev
+    managed='yes'>``, libvirt will now search the running kernel's
+    modules.alias file for the most specific match to that device for
+    a VFIO driver, and bind that driver to the device rather than
+    vfio-pci. A specific driver can also be forced, using the
+    ``<driver model='plugh'/>`` attribute.
+
 * **Improvements**
 
   * qemu: Improve migration XML use when persisting VM on destination
