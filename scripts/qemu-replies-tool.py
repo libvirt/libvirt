@@ -297,15 +297,108 @@ def validate_qmp_schema(schemalist):
             raise qmpSchemaException("unknown or missing 'meta-type' in schema entry '%s'" % entry)
 
 
+# Recursively traverse the schema and print out the schema query strings for
+# the corresponding entries. In certain cases the schema references itself,
+# which is handled by passing a 'trace' list which contains the current path
+def dump_qmp_probe_strings_iter(name, cur, trace, schema):
+    obj = schema[name]
+
+    if name in trace:
+        # The following is not a query string but sometimes useful for debugging
+        # print('%s (recursion)' % cur)
+        return
+
+    trace = trace + [name]
+
+    if obj['meta-type'] == 'command' or obj['meta-type'] == 'event':
+        arguments = obj.get('arg-type', None)
+        returns = obj.get('ret-type', None)
+
+        print(cur)
+
+        for f in obj.get('features', []):
+            print('%s/$%s' % (cur, f))
+
+        if arguments:
+            dump_qmp_probe_strings_iter(arguments, cur + '/arg-type', trace, schema)
+
+        if returns:
+            dump_qmp_probe_strings_iter(returns, cur + '/ret-type', trace, schema)
+
+    elif obj['meta-type'] == 'object':
+        members = sorted(obj.get('members', []), key=lambda d: d['name'])
+        variants = sorted(obj.get('variants', []), key=lambda d: d['case'])
+
+        for f in obj.get('features', []):
+            print('%s/$%s' % (cur, f))
+
+        for memb in members:
+            membpath = "%s/%s" % (cur, memb['name'])
+            print(membpath)
+
+            for f in memb.get('features', []):
+                print('%s/$%s' % (membpath, f))
+
+            dump_qmp_probe_strings_iter(memb['type'], membpath, trace, schema)
+
+        for var in variants:
+            varpath = "%s/+%s" % (cur, var['case'])
+            print(varpath)
+            dump_qmp_probe_strings_iter(var['type'], varpath, trace, schema)
+
+    elif obj['meta-type'] == 'enum':
+        members = sorted(obj.get('members', []), key=lambda d: d['name'])
+
+        for m in members:
+            print('%s/^%s' % (cur, m['name']))
+
+            for f in m.get('features', []):
+                print('%s/^%s/$%s' % (cur, m['name'], f))
+
+    elif obj['meta-type'] == 'array':
+        dump_qmp_probe_strings_iter(obj['element-type'], cur, trace, schema)
+
+    elif obj['meta-type'] == 'builtin':
+        print('%s/!%s' % (cur, name))
+
+    elif obj['meta-type'] == 'alternate':
+        for var in obj['members']:
+            dump_qmp_probe_strings_iter(var['type'], cur, trace, schema)
+
+
+def dump_qmp_probe_strings(schemalist):
+    schemadict = {}
+    toplevel = []
+
+    for memb in schemalist:
+        schemadict[memb['name']] = memb
+
+        if memb['meta-type'] == 'command' or memb['meta-type'] == 'event':
+            toplevel.append(memb['name'])
+
+    toplevel.sort()
+
+    for c in toplevel:
+        dump_qmp_probe_strings_iter(c, '(qmp) ' + c, [], schemadict)
+
+
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
+        dumped = False
 
         modify_replies(conv)
 
         for (cmd, rep) in conv:
             if cmd['execute'] == 'query-qmp-schema':
                 validate_qmp_schema(rep['return'])
+
+                if args.dump_all or args.dump_qmp_query_strings:
+                    dump_qmp_probe_strings(rep['return'])
+                    dumped = True
+
+        if dumped:
+            return True
 
         qemu_replies_compare_or_replace(filename, conv, args.regenerate)
 
@@ -335,6 +428,19 @@ The default mode is validation which checks the following:
     - the input file has the expected JSON formatting
     - the QMP schema from qemu is fully covered by libvirt's code
 
+In 'dump' mode if '-dump-all' or one of the specific '-dump-*' flags (below)
+is selected the script outputs information gathered from the given '.replies'
+file. The data is also usable for comparing two '.replies' files in a "diffable"
+fashion as many of the query commands may change ordering or naming without
+functional impact on libvirt.
+
+  --dump-qmp-query-strings
+
+    Dumps all possible valid QMP capability query strings based on the current
+    qemu version in format used by virQEMUQAPISchemaPathGet or
+    virQEMUCapsQMPSchemaQueries. It's useful to find specific query string
+    without having to piece the information together from 'query-qmp-schema'
+
 The tool can be also used to programmaticaly modify the '.replies' file by
 editing the 'modify_replies' method directly in the source, or for
 re-formatting and re-numbering the '.replies' file to conform with the required
@@ -358,6 +464,12 @@ parser.add_argument('--repliesdir', default='',
 
 parser.add_argument('replyfiles', nargs='*',
                     help='.replies file(s) to process')
+
+parser.add_argument('--dump-all', action='store_true',
+                    help='invoke all --dump-* sub-commands')
+
+parser.add_argument('--dump-qmp-query-strings', action='store_true',
+                    help='dump QMP schema in form of query strings used to probe capabilities')
 
 args = parser.parse_args()
 
