@@ -241,12 +241,6 @@ virJSONValueObjectRemoveKey(virJSONValue *object,
                             virJSONValue **value)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void
-virJSONValueObjectReplaceValue(virJSONValue *object,
-                               const char *key,
-                               virJSONValue **newval)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
 int
 virJSONValueArrayAppendString(virJSONValue *object,
                               const char *value);

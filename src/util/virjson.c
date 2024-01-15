@@ -1136,26 +1136,6 @@ virJSONValueObjectGetString(virJSONValue *object,
 }
 
 
-void
-virJSONValueObjectReplaceValue(virJSONValue *object,
-                               const char *key,
-                               virJSONValue **newval)
-{
-    size_t i;
-
-    if (object->type != VIR_JSON_TYPE_OBJECT ||
-        !*newval)
-        return;
-
-    for (i = 0; i < object->data.object.npairs; i++) {
-        if (STREQ(object->data.object.pairs[i].key, key)) {
-            virJSONValueFree(object->data.object.pairs[i].value);
-            object->data.object.pairs[i].value = g_steal_pointer(newval);
-        }
-    }
-}
-
-
 /**
  * virJSONValueObjectGetStringOrNumber:
  * @object: JSON value object
