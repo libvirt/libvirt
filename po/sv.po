@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-11 22:17+0000\n"
+"PO-Revision-Date: 2024-01-15 04:59+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23384,67 +23384,65 @@ msgid "copy destination is block device instead of regular file"
 msgstr "kopieringsdestinationen är en blockenhet istället för en normal fil"
 
 msgid "copy of read-only disks is not supported"
-msgstr ""
+msgstr "kopiering av endast läsbara diskar stödjs inte"
 
 msgid "copy to a FD passed disk source is not yet supported"
-msgstr ""
+msgstr "kopiering av FB-skickad diskkällor stödjs inte ännu"
 
 msgid "copy-on-write ploop volumes are not yet supported"
-msgstr ""
+msgstr "kopiering-vid-skrivning-ploop-volymer stödjs inte ännu"
 
 #, c-format
 msgid "copy_on_read is not compatible with 'lun' disk '%1$s'"
-msgstr ""
+msgstr "kopiering_vid_läsning är inte kompatibelt med ”lun” disk ”%1$s”"
 
 #, c-format
 msgid "copy_on_read is not compatible with read-only disk '%1$s'"
-msgstr ""
+msgstr "kopiering_vid_läsning är inte kompatibelt med endast läsbar disk ”%1$s”"
 
 #, c-format
 msgid "copy_on_read is not supported with removable disk '%1$s'"
-msgstr ""
+msgstr "kopiering_vid_läsning stödjs inte för en löstagbar disk ”%1$s”"
 
 msgid "copy_on_read is not supported with vhostuser disk"
-msgstr ""
+msgstr "kopiering_vid_läsning stödjs inte för en vhostuser-disk"
 
-#, fuzzy
 msgid "corrupted profileid string"
-msgstr "oterminerad sträng"
+msgstr "trasig profileid-sträng"
 
 msgid "could not allocate memory"
 msgstr "kunde inte allokera minne"
 
 #, c-format
 msgid "could not attach shared folder '%1$s'"
-msgstr ""
+msgstr "kunde inte ansluta den delade mappen ”%1$s”"
 
 msgid "could not build absolute core file path"
-msgstr ""
+msgstr "kunde inte bygga en absolut kärnfilssökväg"
 
 msgid "could not build absolute input file path"
-msgstr ""
+msgstr "kunde inte bygga en absolut indatafilsökväg"
 
 msgid "could not build absolute output file path"
-msgstr ""
+msgstr "kunde inte bygga en absolut utdatafilsökväg"
 
 #, c-format
 msgid "could not change ACPI status to: %1$s"
-msgstr ""
+msgstr "kunde inte ändra ACPI-status till: %1$s"
 
 #, c-format
 msgid "could not change APIC status to: %1$s"
-msgstr ""
+msgstr "kunde inte ändra APIC-status till: %1$s"
 
 #, c-format
 msgid "could not change PAE status to: %1$s"
-msgstr ""
+msgstr "kunde inte ändra PAE-status till: %1$s"
 
 msgid "could not close handshake fd"
-msgstr ""
+msgstr "kunde inte stänga handskaknings-fb"
 
-#, fuzzy
 msgid "could not close logfile"
-msgstr "kunde inte allokera minne"
+msgstr "kunde inte stänga loggfilen"
 
 msgid "could not connect to Xen Store"
 msgstr "kunde inte ansluta till Xen Store"
@@ -23453,191 +23451,181 @@ msgstr "kunde inte ansluta till Xen Store"
 msgid "could not connect to Xen Store %1$s"
 msgstr "kunde inte ansluta till Xen Store %1$s"
 
-#, fuzzy
 msgid "could not create profile"
-msgstr "misslyckats med att skapa profil"
+msgstr "kunde inte skapa profilen"
 
 msgid "could not define a domain"
-msgstr ""
+msgstr "kunde inte definiera en domän"
 
-#, fuzzy
 msgid "could not delete snapshot"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "kunde inte radera en ögonblicksbild"
 
 msgid "could not delete the domain"
-msgstr ""
+msgstr "kunde inte radera domänen"
 
 #, c-format
 msgid "could not detach shared folder '%1$s'"
-msgstr ""
+msgstr "kunde inte koppla loss den delade mappen ”%1$s”"
 
 msgid "could not determine max vcpus for the domain"
-msgstr ""
+msgstr "kunde inte avgöra max vcpu:er för domänen"
 
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
+"kunde inte hitta index ”%1$u” för bakomliggande lagring i kedjan för ”%2$s”"
 
 msgid "could not find base disk source in disk source chain"
-msgstr ""
+msgstr "kunde inte hitta basdiskkällan i diskkällkedjan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not find base image in chain for '%1$s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "kunde inte hitta basavbilden i kedjan för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not find capabilities for %1$s"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "kunde inte hitta förmågor för %1$s"
 
 #, c-format
 msgid "could not find event callback %1$d for deletion"
-msgstr ""
+msgstr "kunde inte hitta händelseåteranrop %1$d för radering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not find image '%1$s' beneath '%2$s' in chain for '%3$s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "kunde inte hitta avbilden ”%1$s” under ”%2$s” i kedjan för ”%3$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not find image '%1$s' in chain for '%2$s'"
-msgstr "Kunde inte hitta %1$s med namnet ”%2$s”"
+msgstr "kunde inte hitta avbilden ”%1$s” i kedjan för ”%2$s”"
 
-#, fuzzy
 msgid "could not find libvirtd"
-msgstr "Kunde inte hitta <uuid>"
+msgstr "kunde inte hitta libvirtd"
 
-#, fuzzy
 msgid "could not find name in XML"
-msgstr "Kunde inte hitta <namn>"
+msgstr "kunde inte hitta namnet i XML"
 
-#, fuzzy
 msgid "could not find realpath"
-msgstr "Kunde inte hitta <namn>"
+msgstr "kunde inte hitta realpath"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get MAC address of interface %1$s"
-msgstr "Misslyckades med att förstöra gränssnittet %1$s"
+msgstr "kunde inte få MAC-adressen för gränssnittet %1$s"
 
-#, fuzzy
 msgid "could not get VM definition"
-msgstr "kunde inte ansluta till Xen Store"
+msgstr "kunde inte få VM-definitionen"
 
 msgid "could not get children snapshots"
-msgstr ""
+msgstr "kunde inte få barnögonblicksbilder"
 
 #, c-format
 msgid "could not get creation time of snapshot %1$s"
-msgstr ""
+msgstr "kunde inte få tiden för skapandet av ögonblicksbilden %1$s"
 
 msgid "could not get current snapshot"
-msgstr ""
+msgstr "kunde inte hämta aktuell ögonblicksbild"
 
 msgid "could not get current snapshot name"
-msgstr ""
+msgstr "kunde inte hämta namnet på aktuell ögonblicksbild"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get current snapshot of domain %1$s"
-msgstr "Kunde inte starta domänen: %1$s"
+msgstr "kunde inte hämta aktuell ögonblicksbild av domänen %1$s"
 
 #, c-format
 msgid "could not get description of snapshot %1$s"
-msgstr ""
+msgstr "kunde inte hämta beskrivningen av ögonblicskbilden %1$s"
 
-#, fuzzy
 msgid "could not get domain UUID"
-msgstr "misslyckades att hämta domän-UUID"
+msgstr "kunde inte hämta domän-UUID"
 
-#, fuzzy
 msgid "could not get domain state"
-msgstr "Kunde inte starta domänen: %s"
+msgstr "kunde inte hämta domäntillståndet"
 
 msgid "could not get information about NUMA topology"
 msgstr "kunde inte få information om NUMA-topologi"
 
-#, fuzzy
 msgid "could not get information about supported page sizes"
-msgstr "kunde inte få information om NUMA-topologi"
+msgstr "kunde inte få information om sidstorlekar som stödjs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get interface XML description: %1$s%2$s%3$s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "kunde inte hämta XML-beskrivningen av gränssnittet: %1$s%2$s%3$s"
 
-#, fuzzy
 msgid "could not get machine"
-msgstr "Kunde inte starta domänen: %s"
+msgstr "kunde inte hämta maskinen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get name of parent of snapshot %1$s"
-msgstr "Kunde inte ställa in antalet virtuella processorer till %d: %s"
+msgstr "kunde inte få namnet på föräldern till ögonblicksbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get number of volumes in the pool: %1$s, rc=%2$08x"
-msgstr "Kunde inte ställa in antalet virtuella processorer till %d: %s"
+msgstr "kunde inte hämta antalet volymer i poolen: %1$s, rk=%2$08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get online state of snapshot %1$s"
-msgstr "kunde inte ansluta till Xen Store %1$s"
+msgstr "kunde inte uppkopplat tillstånd för ögonblicksbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get parent of snapshot %1$s"
-msgstr "Misslyckades att ta ögonblicksbild: %1$s"
+msgstr "kunde inte få föräldern till ögonblicksbilden %1$s"
 
 #, c-format
 msgid "could not get preferred machine for %1$s type=%2$s"
-msgstr ""
+msgstr "kunde inte få föredragen maskin för %1$s typ=%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get root snapshot for domain %1$s"
-msgstr "Kunde inte starta domänen: %1$s"
+msgstr "kunde inte hämta rotögonblicksbilden domänen %1$s"
 
 msgid "could not get snapshot UUID"
 msgstr "kunde inte få tag i ögonblicsbilds-UUID"
 
 msgid "could not get snapshot children"
-msgstr ""
+msgstr "kunde inte få ögonblicksbildsbarn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not get snapshot count for domain %1$s"
-msgstr "Kunde inte starta domänen: %1$s"
+msgstr "kunde inte få antalet ögonblicksbilder för domänen %1$s"
 
 msgid "could not get snapshot count for listed domains"
-msgstr ""
+msgstr "kunde inte få antalet ögonblicksbilder för de listade domänerna"
 
 msgid "could not get snapshot name"
 msgstr "kunde inte få tag i ögonblicksbildsnamn"
 
 #, c-format
 msgid "could not get the volume list in the pool: %1$s, rc=%2$08x"
-msgstr ""
+msgstr "kunde inte få volymlistan i poolen: %1$s, rk=%2$08x"
 
-#, fuzzy
 msgid "could not initialize domain event timer"
-msgstr "kan inte initiera mutex"
+msgstr "kunde inte initiera domänens händelsetidtagare"
 
 #, c-format
 msgid "could not open VirtualBox session with domain %1$s"
-msgstr ""
+msgstr "kunde inte öppna en VirtualBox-session till domänen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not open input path '%1$s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "kunde inte öppna indatasökvägen ”%1$s”"
 
 msgid "could not parse XML"
-msgstr ""
+msgstr "kunde inte tolka XML"
 
 msgid "could not parse arguments"
 msgstr "kunde inte tolka argumenteten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse read bytes sec %1$s"
-msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
+msgstr "kunde inte tolka lästa byte per sekund %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse read iops sec %1$s"
-msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
+msgstr "kunde inte tolka lästa iops per sekund %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse weight %1$s"
-msgstr "Kunde inte starta domänen: %1$s"
+msgstr "kunde inte tolka vikten %1$s"
 
 #, fuzzy, c-format
 msgid "could not parse write bytes sec %1$s"
