@@ -16,6 +16,10 @@ class qrtException(Exception):
     pass
 
 
+class qmpSchemaException(Exception):
+    pass
+
+
 # Load the 'replies' file into a list of (command, reply) tuples of parsed JSON
 def qemu_replies_load(filename):
     conv = []
@@ -162,16 +166,154 @@ def modify_replies(conv):
         conv.insert(idx, (cmd, reply_unsupp))
 
 
+# Validates that 'entry' (an member of the QMP schema):
+# - checks that it's a Dict (imported from a JSON object)
+# - checks that all 'mandatory' fields are present and their types match
+# - checks the types of all 'optional' fields
+# - checks that no unknown fields are present
+def validate_qmp_schema_check_keys(entry, mandatory, optional):
+    keys = set(entry.keys())
+
+    for k, t in mandatory:
+        try:
+            keys.remove(k)
+        except KeyError:
+            raise qmpSchemaException("missing mandatory key '%s' in schema '%s'" % (k, entry))
+
+        if not isinstance(entry[k], t):
+            raise qmpSchemaException("key '%s' is not of the expected type '%s' in schema '%s'" % (k, t, entry))
+
+    for k, t in optional:
+        if k in keys:
+            keys.discard(k)
+
+            if not isinstance(entry[k], t):
+                raise qmpSchemaException("key '%s' is not of the expected type '%s' in schema '%s'" % (k, t, entry))
+
+    if len(keys) > 0:
+        raise qmpSchemaException("unhandled keys '%s' in schema '%s'" % (','.join(list(keys)), entry))
+
+
+# Validates the optional 'features' and that they consist only of strings
+def validate_qmp_schema_check_features_list(entry):
+    for f in entry.get('features', []):
+        if not isinstance(f, str):
+            raise qmpSchemaException("broken 'features' list in schema entry '%s'" % entry)
+
+
+# Validate that the passed schema has only members supported by this script and
+# by the libvirt internals. This is useful to stay up to date with any changes
+# to the schema.
+def validate_qmp_schema(schemalist):
+    for entry in schemalist:
+        if not isinstance(entry, dict):
+            raise qmpSchemaException("schema entry '%s' is not a JSON Object (dict)" % (entry))
+
+        if entry.get('meta-type', None) == 'command':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str),
+                                                      ('arg-type', str),
+                                                      ('ret-type', str)],
+                                           optional=[('features', list),
+                                                     ('allow-oob', bool)])
+
+            validate_qmp_schema_check_features_list(entry)
+
+        elif entry.get('meta-type', None) == 'event':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str),
+                                                      ('arg-type', str)],
+                                           optional=[('features', list)])
+
+            validate_qmp_schema_check_features_list(entry)
+
+        elif entry.get('meta-type', None) == 'object':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str),
+                                                      ('members', list)],
+                                           optional=[('tag', str),
+                                                     ('variants', list),
+                                                     ('features', list)])
+
+            validate_qmp_schema_check_features_list(entry)
+
+            for m in entry.get('members', []):
+                validate_qmp_schema_check_keys(m,
+                                               mandatory=[('name', str),
+                                                          ('type', str)],
+                                               optional=[('default', type(None)),
+                                                         ('features', list)])
+                validate_qmp_schema_check_features_list(m)
+
+            for m in entry.get('variants', []):
+                validate_qmp_schema_check_keys(m,
+                                               mandatory=[('case', str),
+                                                          ('type', str)],
+                                               optional=[])
+
+        elif entry.get('meta-type', None) == 'array':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str),
+                                                      ('element-type', str)],
+                                           optional=[])
+
+        elif entry.get('meta-type', None) == 'enum':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str)],
+                                           optional=[('members', list),
+                                                     ('values', list)])
+
+            for m in entry.get('members', []):
+                validate_qmp_schema_check_keys(m,
+                                               mandatory=[('name', str)],
+                                               optional=[('features', list)])
+                validate_qmp_schema_check_features_list(m)
+
+        elif entry.get('meta-type', None) == 'alternate':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str),
+                                                      ('members', list)],
+                                           optional=[])
+
+            for m in entry.get('members', []):
+                validate_qmp_schema_check_keys(m,
+                                               mandatory=[('type', str)],
+                                               optional=[])
+
+        elif entry.get('meta-type', None) == 'builtin':
+            validate_qmp_schema_check_keys(entry,
+                                           mandatory=[('name', str),
+                                                      ('meta-type', str),
+                                                      ('json-type', str)],
+                                           optional=[])
+
+        else:
+            raise qmpSchemaException("unknown or missing 'meta-type' in schema entry '%s'" % entry)
+
+
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
 
         modify_replies(conv)
 
+        for (cmd, rep) in conv:
+            if cmd['execute'] == 'query-qmp-schema':
+                validate_qmp_schema(rep['return'])
+
         qemu_replies_compare_or_replace(filename, conv, args.regenerate)
 
     except qrtException as e:
         print("'%s' ... FAIL\n%s" % (filename, e))
+        return False
+    except qmpSchemaException as qe:
+        print("'%s' ... FAIL\nqmp schema error: %s" % (filename, qe))
         return False
 
     print("'%s' ... OK" % filename)
@@ -191,6 +333,7 @@ The default mode is validation which checks the following:
     - each command has a reply and both are valid JSON
     - numbering of the 'id' field is as expected
     - the input file has the expected JSON formatting
+    - the QMP schema from qemu is fully covered by libvirt's code
 
 The tool can be also used to programmaticaly modify the '.replies' file by
 editing the 'modify_replies' method directly in the source, or for
