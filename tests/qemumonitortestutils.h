@@ -110,16 +110,3 @@ virDomainObj *
 qemuMonitorTestGetDomainObj(qemuMonitorTest *test);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorTest, qemuMonitorTestFree);
-
-struct qemuMonitorTestCommandReplyTuple {
-    const char *command;
-    const char *reply;
-    size_t line; /* line number of @command */
-};
-
-
-int
-qemuMonitorTestProcessFileEntries(char *inputstr,
-                                  const char *fileName,
-                                  struct qemuMonitorTestCommandReplyTuple **items,
-                                  size_t *nitems);
