@@ -332,7 +332,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "migration-event", /* X_QEMU_CAPS_MIGRATION_EVENT */
 
               /* 190 */
-              "gpex-pcihost", /* QEMU_CAPS_OBJECT_GPEX */
+              "gpex-pcihost", /* X_QEMU_CAPS_OBJECT_GPEX */
               "ioh3420", /* QEMU_CAPS_DEVICE_IOH3420 */
               "x3130-upstream", /* QEMU_CAPS_DEVICE_X3130_UPSTREAM */
               "xio3130-downstream", /* QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM */
@@ -1275,7 +1275,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-audio", QEMU_CAPS_OBJECT_USB_AUDIO },
     { "pc-dimm", QEMU_CAPS_DEVICE_PC_DIMM },
     { "pci-serial", QEMU_CAPS_DEVICE_PCI_SERIAL },
-    { "gpex-pcihost", QEMU_CAPS_OBJECT_GPEX},
     { "ioh3420", QEMU_CAPS_DEVICE_IOH3420 },
     { "x3130-upstream", QEMU_CAPS_DEVICE_X3130_UPSTREAM },
     { "xio3130-downstream", QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM },

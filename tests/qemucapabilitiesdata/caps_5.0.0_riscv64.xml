@@ -48,7 +48,6 @@
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>
   <flag name='pci-serial'/>
-  <flag name='gpex-pcihost'/>
   <flag name='ioh3420'/>
   <flag name='x3130-upstream'/>
   <flag name='xio3130-downstream'/>
