@@ -19,11 +19,18 @@
 
 #include <config.h>
 
+#include "virerror.h"
 #include "virsocket.h"
 #include "virutil.h"
 #include "virfile.h"
+#include "virlog.h"
 
 #include <fcntl.h>
+#include <poll.h>
+
+#define PKT_TIMEOUT_MS 500 /* ms */
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 #ifdef WIN32
 
@@ -482,6 +489,64 @@ virSocketRecvFD(int sock, int fdflags)
 
     return fd;
 }
+
+
+/**
+ * virSocketSendMsgWithFDs:
+ * @sock: socket to send payload and fds to
+ * @payload: payload to send
+ * @fds: array of fds to send
+ * @fds_len: len of fds array
+
+ * Send @fds along with @payload to @sock using SCM_RIGHTS.
+ * Return number of bytes sent on success.
+ * On error, set errno and return -1.
+ */
+int
+virSocketSendMsgWithFDs(int sock, const char *payload, int *fds, size_t fds_len)
+{
+    g_autofree char *control = NULL;
+    const size_t control_size = CMSG_SPACE(sizeof(int) * fds_len);
+    struct cmsghdr *cmsg;
+    struct msghdr msg = { 0 };
+    struct iovec iov[1]; /* Send a single payload, so set vector len to 1 */
+    int ret;
+
+    control = g_new0(char, control_size);
+
+    iov[0].iov_base = (void *) payload;
+    iov[0].iov_len = strlen(payload);
+
+    msg.msg_iov = iov;
+    msg.msg_iovlen = 1;
+
+    msg.msg_control = control;
+    msg.msg_controllen = control_size;
+
+    cmsg = CMSG_FIRSTHDR(&msg);
+    /* check to eliminate "potential null pointer dereference" errors during build */
+    if (!cmsg) {
+        virReportSystemError(EFAULT, "%s", _("Couldn't fit control msg header in msg"));
+        return -1;
+    }
+
+    cmsg->cmsg_len = CMSG_LEN(sizeof(int) * fds_len);
+    cmsg->cmsg_level = SOL_SOCKET;
+    cmsg->cmsg_type = SCM_RIGHTS;
+    memcpy(CMSG_DATA(cmsg), fds, sizeof(int) * fds_len);
+
+    do {
+        ret = sendmsg(sock, &msg, 0);
+    } while (ret < 0 && errno == EINTR);
+
+    if (ret < 0) {
+        virReportSystemError(errno, "%s", _("sendmsg failed"));
+        return -1;
+    }
+
+    return ret;
+}
+
 #else /* WIN32 */
 int
 virSocketSendFD(int sock G_GNUC_UNUSED, int fd G_GNUC_UNUSED)
@@ -494,6 +559,17 @@ int
 virSocketRecvFD(int sock G_GNUC_UNUSED, int fdflags G_GNUC_UNUSED)
 {
     errno = ENOSYS;
+    return -1;
+}
+
+int
+virSocketSendMsgWithFDs(int sock G_GNUC_UNUSED,
+                        const char *payload G_GNUC_UNUSED,
+                        int *fds G_GNUC_UNUSED,
+                        size_t fds_len G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("FD passing is not supported on this platform"));
     return -1;
 }
 #endif  /* WIN32 */
