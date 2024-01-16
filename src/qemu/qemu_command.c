@@ -366,9 +366,26 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
             if (virDomainDeviceAliasIsUserAlias(contAlias)) {
                 /* When domain has builtin pci-root controller we don't put it
                  * onto cmd line. Therefore we can't set its alias. In that
-                 * case, use the default one. */
-                if (!qemuDomainIsPSeries(domainDef) &&
-                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+                 * case, use the default one.
+                 *
+                 * Note that we have to check the value of targetIndex here,
+                 * because we need to handle three different cases:
+                 *
+                 *   non-pSeries guest (targetIndex == -1)
+                 *     => must use default alias
+                 *
+                 *   pSeries guest, default PHB (targetIndex == 0)
+                 *     => must use default alias
+                 *
+                 *   pSeries guest, non-default PHB (targetIndex > 0)
+                 *     => can use actual alias
+                 *
+                 * The last one is due to non-default PHBs beind created
+                 * through the spapr-pci-host-bridge device, which supports
+                 * custom device IDs and thus custom bus names.
+                 * */
+                if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+                    contTargetIndex <= 0) {
                     if (virQEMUCapsHasPCIMultiBus(domainDef))
                         contAlias = "pci.0";
                     else
