@@ -25,11 +25,17 @@
       <model name='spapr-pci-host-bridge'/>
       <target index='1'/>
     </controller>
-    <controller type='pci' index='2' model='pci-root'>
-      <model name='spapr-pci-host-bridge'/>
-      <target index='2'/>
-    </controller>
     <controller type='usb' index='0' model='none'/>
+    <interface type='user'>
+      <mac address='52:54:00:a2:44:92'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </interface>
+    <interface type='user'>
+      <mac address='52:54:00:a2:44:93'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+    </interface>
     <audio id='1' type='none'/>
     <memballoon model='none'/>
     <panic model='pseries'/>
