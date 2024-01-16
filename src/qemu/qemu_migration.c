@@ -527,6 +527,8 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
  * arguments in 'migrate' monitor command.
  * Error is reported here.
  *
+ * Caller is responsible for releasing 'priv->nbdPort' from the port allocator.
+ *
  * Returns 0 on success, -1 otherwise.
  */
 static int
@@ -627,6 +629,9 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
 
                 server.port = port;
             }
+
+            /* caller will release the port */
+            priv->nbdPort = server.port;
         }
 
         if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0)
@@ -643,14 +648,9 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
         qemuDomainObjExitMonitor(vm);
     }
 
-    if (server.transport == VIR_STORAGE_NET_HOST_TRANS_TCP)
-        priv->nbdPort = server.port;
-
     ret = 0;
 
  cleanup:
-    if (ret < 0)
-        virPortAllocatorRelease(server.port);
     return ret;
 
  exit_monitor:
@@ -3261,11 +3261,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
         virDomainAuditStart(vm, "migrated", false);
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_ASYNC_JOB_MIGRATION_IN, stopFlags);
-        /* release if port is auto selected which is not the case if
-         * it is given in parameters
-         */
-        if (nbdPort == 0)
-            virPortAllocatorRelease(priv->nbdPort);
+        virPortAllocatorRelease(priv->nbdPort);
         priv->nbdPort = 0;
     }
     goto cleanup;
@@ -3425,11 +3421,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
 
     if (autoPort)
         priv->migrationPort = port;
-    /* in this case port is not auto selected and we don't need to manage it
-     * anymore after cookie is baked
-     */
-    if (nbdPort != 0)
-        priv->nbdPort = 0;
+
     ret = 0;
 
  cleanup:
