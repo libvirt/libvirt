@@ -2849,7 +2849,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
     if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, false)))
         goto cleanup;
 
-    if (qemuDomainSupportsPCI(def, qemuCaps)) {
+    if (qemuDomainSupportsPCI(def)) {
         if (qemuDomainValidateDevicePCISlotsChipsets(def, addrs) < 0)
             goto cleanup;
 

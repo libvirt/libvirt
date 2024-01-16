@@ -834,8 +834,7 @@ bool qemuDomainHasPCIeRoot(const virDomainDef *def);
 bool qemuDomainHasBuiltinIDE(const virDomainDef *def);
 bool qemuDomainHasBuiltinESP(const virDomainDef *def);
 bool qemuDomainNeedsFDC(const virDomainDef *def);
-bool qemuDomainSupportsPCI(virDomainDef *def,
-                           virQEMUCaps *qemuCaps);
+bool qemuDomainSupportsPCI(virDomainDef *def);
 
 void qemuDomainUpdateCurrentMemorySize(virDomainObj *vm);
 

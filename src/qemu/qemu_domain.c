@@ -4168,7 +4168,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         addDefaultUSB = false;
         addDefaultMemballoon = false;
         if (qemuDomainIsARMVirt(def))
-            addPCIeRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX);
+            addPCIeRoot = true;
         break;
 
     case VIR_ARCH_PPC64:
@@ -4195,7 +4195,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_RISCV64:
         addDefaultUSB = false;
         if (qemuDomainIsRISCVVirt(def))
-            addPCIeRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX);
+            addPCIeRoot = true;
         break;
 
     case VIR_ARCH_S390:
@@ -9059,8 +9059,7 @@ qemuDomainNeedsFDC(const virDomainDef *def)
 
 
 bool
-qemuDomainSupportsPCI(virDomainDef *def,
-                      virQEMUCaps *qemuCaps)
+qemuDomainSupportsPCI(virDomainDef *def)
 {
     if (def->os.arch != VIR_ARCH_ARMV6L &&
         def->os.arch != VIR_ARCH_ARMV7L &&
@@ -9072,9 +9071,8 @@ qemuDomainSupportsPCI(virDomainDef *def,
     if (STREQ(def->os.machine, "versatilepb"))
         return true;
 
-    if ((qemuDomainIsARMVirt(def) ||
-         qemuDomainIsRISCVVirt(def)) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX)) {
+    if (qemuDomainIsARMVirt(def) ||
+        qemuDomainIsRISCVVirt(def)) {
         return true;
     }
 
