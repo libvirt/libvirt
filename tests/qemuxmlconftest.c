@@ -2187,6 +2187,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-phb-simple");
     DO_TEST_CAPS_LATEST_PPC64("pseries-phb-default-missing");
     DO_TEST_CAPS_LATEST_PPC64("pseries-phb-numa-node");
+    DO_TEST_CAPS_LATEST_PPC64("pseries-phb-user-alias");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-default-phb-numa-node",
                                          "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pseries-phb-invalid-target-index-1", "ppc64");
