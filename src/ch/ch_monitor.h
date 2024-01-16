@@ -104,10 +104,7 @@ void virCHMonitorClose(virCHMonitor *mon);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHMonitor, virCHMonitorClose);
 
 
-int virCHMonitorCreateVM(virCHDriver *driver,
-                         virCHMonitor *mon,
-                         size_t *nnicindexes,
-                         int **nicindexes);
+int virCHMonitorCreateVM(virCHDriver *driver, virCHMonitor *mon);
 int virCHMonitorBootVM(virCHMonitor *mon);
 int virCHMonitorShutdownVM(virCHMonitor *mon);
 int virCHMonitorRebootVM(virCHMonitor *mon);
@@ -123,3 +120,5 @@ size_t virCHMonitorGetThreadInfo(virCHMonitor *mon, bool refresh,
                                  virCHMonitorThreadInfo **threads);
 int virCHMonitorGetIOThreads(virCHMonitor *mon,
                              virDomainIOThreadInfo ***iothreads);
+int
+virCHMonitorBuildNetJson(virDomainNetDef *netdef, char **jsonstr);

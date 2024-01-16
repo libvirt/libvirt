@@ -22,6 +22,7 @@
 
 #include "ch_domain.h"
 #include "domain_driver.h"
+#include "domain_validate.h"
 #include "virchrdev.h"
 #include "virlog.h"
 #include "virtime.h"
@@ -354,4 +355,44 @@ virCHDomainObjFromDomain(virDomainPtr domain)
     }
 
     return vm;
+}
+
+int
+virCHDomainValidateActualNetDef(virDomainNetDef *net)
+{
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+
+    /* hypervisor-agnostic validation */
+    if (virDomainActualNetDefValidate(net) < 0)
+        return -1;
+
+    /* CH specific validation */
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        if (net->guestIP.nips > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ethernet type supports a single guest ip"));
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_NULL:
+    case VIR_DOMAIN_NET_TYPE_VDS:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+    default:
+        break;
+    }
+
+    return 0;
 }

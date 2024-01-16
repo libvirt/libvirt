@@ -7,6 +7,8 @@ ch_driver_sources = [
   'ch_domain.h',
   'ch_driver.c',
   'ch_driver.h',
+  'ch_interface.c',
+  'ch_interface.h',
   'ch_monitor.c',
   'ch_monitor.h',
   'ch_process.c',

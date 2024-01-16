@@ -23,6 +23,7 @@
 #include "virdomainobjlist.h"
 #include "virthread.h"
 #include "ch_capabilities.h"
+#include "virebtables.h"
 
 #define CH_DRIVER_NAME "CH"
 #define CH_CMD "cloud-hypervisor"
@@ -75,6 +76,9 @@ struct _virCHDriver
 
     /* pid file FD, ensures two copies of the driver can't use the same root */
     int lockFD;
+
+    /* Immutable pointer, lockless APIs. Pointless abstraction */
+    ebtablesContext *ebtables;
 };
 
 virCaps *virCHDriverCapsInit(void);
