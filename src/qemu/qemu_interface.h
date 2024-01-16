@@ -25,23 +25,12 @@
 #include "qemu_domain.h"
 #include "qemu_slirp.h"
 
-int qemuInterfaceStartDevice(virDomainNetDef *net);
-int qemuInterfaceStartDevices(virDomainDef *def);
-int qemuInterfaceStopDevice(virDomainNetDef *net);
-int qemuInterfaceStopDevices(virDomainDef *def);
-
 int qemuInterfaceDirectConnect(virDomainDef *def,
                                virQEMUDriver *driver,
                                virDomainNetDef *net,
                                int *tapfd,
                                size_t tapfdSize,
                                virNetDevVPortProfileOp vmop);
-
-int qemuInterfaceEthernetConnect(virDomainDef *def,
-                                 virQEMUDriver *driver,
-                                 virDomainNetDef *net,
-                                 int *tapfd,
-                                 size_t tapfdSize);
 
 int qemuInterfaceBridgeConnect(virDomainDef *def,
                                virQEMUDriver *driver,

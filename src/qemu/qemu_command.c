@@ -43,6 +43,7 @@
 #include "domain_nwfilter.h"
 #include "domain_addr.h"
 #include "domain_conf.h"
+#include "domain_interface.h"
 #include "netdev_bandwidth_conf.h"
 #include "virnetdevopenvswitch.h"
 #include "device_conf.h"
@@ -8644,8 +8645,11 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (qemuInterfaceEthernetConnect(vm->def, priv->driver, net,
-                                         tapfd, tapfdSize) < 0)
+        if (virDomainInterfaceEthernetConnect(vm->def, net,
+                                              priv->driver->ebtables,
+                                              priv->driver->config->macFilter,
+                                              priv->driver->privileged,
+                                              tapfd, tapfdSize) < 0)
             return -1;
         vhostfd = true;
         break;
