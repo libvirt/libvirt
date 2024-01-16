@@ -9059,24 +9059,29 @@ qemuDomainNeedsFDC(const virDomainDef *def)
 
 
 bool
-qemuDomainSupportsPCI(virDomainDef *def)
+qemuDomainSupportsPCI(const virDomainDef *def)
 {
-    if (def->os.arch != VIR_ARCH_ARMV6L &&
-        def->os.arch != VIR_ARCH_ARMV7L &&
-        def->os.arch != VIR_ARCH_AARCH64 &&
-        !ARCH_IS_RISCV(def->os.arch)) {
-        return true;
+    /* On Arm architectures, only the virt and versatilepb
+     * machine types support PCI */
+    if (ARCH_IS_ARM(def->os.arch)) {
+        if (qemuDomainIsARMVirt(def) ||
+            STREQ(def->os.machine, "versatilepb")) {
+            return true;
+        }
+        return false;
     }
 
-    if (STREQ(def->os.machine, "versatilepb"))
-        return true;
-
-    if (qemuDomainIsARMVirt(def) ||
-        qemuDomainIsRISCVVirt(def)) {
-        return true;
+    /* On RISC-V, only the virt machine type supports PCI */
+    if (ARCH_IS_RISCV(def->os.arch)) {
+        if (qemuDomainIsRISCVVirt(def)) {
+            return true;
+        }
+        return false;
     }
 
-    return false;
+    /* On all other architectures, PCI support is assumed to
+     * be present */
+    return true;
 }
 
 
