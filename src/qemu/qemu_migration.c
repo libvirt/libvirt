@@ -541,7 +541,6 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
                                const char *nbdURI,
                                const char *tls_alias)
 {
-    int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     virStorageNetHostDef server = {
@@ -610,22 +609,22 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("Cannot migrate empty or read-only disk %1$s"),
                            disk->dst);
-            goto cleanup;
+            return -1;
         }
 
         if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
-            goto cleanup;
+            return -1;
 
         if (!server_started &&
             server.transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
             if (server.port) {
                 if (virPortAllocatorSetUsed(server.port) < 0)
-                    goto cleanup;
+                    return -1;
             } else {
                 unsigned short port = 0;
 
                 if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
-                    goto cleanup;
+                    return -1;
 
                 server.port = port;
             }
@@ -635,7 +634,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
         }
 
         if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0)
-            goto cleanup;
+            return -1;
 
         if (!server_started) {
             if (qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
@@ -648,14 +647,11 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
         qemuDomainObjExitMonitor(vm);
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 
  exit_monitor:
     qemuDomainObjExitMonitor(vm);
-    goto cleanup;
+    return -1;
 }
 
 
