@@ -6,15 +6,9 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
-    <kernel>/aarch64.kernel</kernel>
-    <initrd>/aarch64.initrd</initrd>
-    <cmdline>earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait</cmdline>
-    <dtb>/aarch64.dtb</dtb>
     <boot dev='hd'/>
   </os>
   <features>
-    <apic/>
-    <pae/>
     <gic version='2'/>
   </features>
   <cpu mode='custom' match='exact' check='none'>
@@ -23,7 +17,7 @@
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
+  <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <audio id='1' type='none'/>
