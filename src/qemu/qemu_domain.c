@@ -4109,13 +4109,13 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
                                virDomainDef *def,
                                virQEMUCaps *qemuCaps)
 {
-    bool addDefaultUSB = true;
+    bool addDefaultUSB = false;
     int usbModel = -1; /* "default for machinetype" */
     int pciRoot;       /* index within def->controllers */
     bool addImplicitSATA = false;
     bool addPCIRoot = false;
     bool addPCIeRoot = false;
-    bool addDefaultMemballoon = true;
+    bool addDefaultMemballoon = false;
     bool addDefaultUSBKBD = false;
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
@@ -4129,10 +4129,14 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     switch (def->os.arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
+        addDefaultMemballoon = true;
+
         if (STREQ(def->os.machine, "isapc")) {
-            addDefaultUSB = false;
             break;
         }
+
+        addDefaultUSB = true;
+
         if (qemuDomainIsQ35(def)) {
             addPCIeRoot = true;
             addImplicitSATA = true;
@@ -4157,16 +4161,12 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         break;
 
     case VIR_ARCH_ARMV6L:
-        addDefaultUSB = false;
-        addDefaultMemballoon = false;
         if (STREQ(def->os.machine, "versatilepb"))
             addPCIRoot = true;
         break;
 
     case VIR_ARCH_ARMV7L:
     case VIR_ARCH_AARCH64:
-        addDefaultUSB = false;
-        addDefaultMemballoon = false;
         if (qemuDomainIsARMVirt(def))
             addPCIeRoot = true;
         break;
@@ -4174,8 +4174,10 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_PPC64:
     case VIR_ARCH_PPC64LE:
         addPCIRoot = true;
+        addDefaultUSB = true;
         addDefaultUSBKBD = true;
         addDefaultUSBMouse = true;
+        addDefaultMemballoon = true;
         /* For pSeries guests, the firmware provides the same
          * functionality as the pvpanic device, so automatically
          * add the definition if not already present */
@@ -4188,29 +4190,28 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_PPCEMB:
     case VIR_ARCH_SH4:
     case VIR_ARCH_SH4EB:
+        addDefaultUSB = true;
+        addDefaultMemballoon = true;
         addPCIRoot = true;
         break;
 
     case VIR_ARCH_RISCV32:
     case VIR_ARCH_RISCV64:
-        addDefaultUSB = false;
+        addDefaultMemballoon = true;
         if (qemuDomainIsRISCVVirt(def))
             addPCIeRoot = true;
         break;
 
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
-        addDefaultUSB = false;
+        addDefaultMemballoon = true;
         addPanicDevice = true;
         addPCIRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ZPCI);
         break;
 
-    case VIR_ARCH_SPARC:
-        addDefaultUSB = false;
-        addDefaultMemballoon = false;
-        break;
-
     case VIR_ARCH_SPARC64:
+        addDefaultUSB = true;
+        addDefaultMemballoon = true;
         addPCIRoot = true;
         break;
 
@@ -4218,6 +4219,8 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_MIPSEL:
     case VIR_ARCH_MIPS64:
     case VIR_ARCH_MIPS64EL:
+        addDefaultUSB = true;
+        addDefaultMemballoon = true;
         if (qemuDomainIsMipsMalta(def))
             addPCIRoot = true;
         break;
@@ -4233,6 +4236,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_PARISC:
     case VIR_ARCH_PARISC64:
     case VIR_ARCH_PPCLE:
+    case VIR_ARCH_SPARC:
     case VIR_ARCH_UNICORE32:
     case VIR_ARCH_XTENSA:
     case VIR_ARCH_XTENSAEB:
