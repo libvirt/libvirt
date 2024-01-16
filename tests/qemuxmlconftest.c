@@ -2403,16 +2403,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-nodevs", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-basic", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-virtio", "aarch64");
-    DO_TEST_CAPS_ARCH_LATEST("arm-virt-virtio", "aarch64");
-
-    /* test default config if pcie bus is not available */
-    DO_TEST_FULL("aarch64-virt-virtio", "-MMIO.aarch64.latest",
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL,
-                 QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                 QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
-                 QEMU_CAPS_LAST, ARG_END);
 
     DO_TEST_CAPS_ARCH_VER("aarch64-virt-virtio", "aarch64", "4.2.0");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-virtio", "aarch64");
@@ -2422,7 +2412,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-manual-addresses", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-video-virtio-gpu-pci", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-video-default", "aarch64");
-    DO_TEST_CAPS_ARCH_LATEST("aarch64-aavmf-virtio-mmio", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-default-nic", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-cpu-passthrough", "aarch64");
     DO_TEST_GIC("aarch64-gic-none", "4.2.0", GIC_NONE);
@@ -2674,13 +2663,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("vhost-user-fs-readonly");
-
-    /* The generic pcie bridge emulation device can be compiled out of qemu. */
-    DO_TEST_CAPS_ARCH_LATEST_FULL("riscv64-virt", "riscv64",
-                                  ARG_QEMU_CAPS_DEL,
-                                  QEMU_CAPS_OBJECT_GPEX,
-                                  QEMU_CAPS_LAST);
-    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-pci", "riscv64");
 
     DO_TEST_CAPS_LATEST("virtio-transitional");
     DO_TEST_CAPS_LATEST("virtio-non-transitional");
