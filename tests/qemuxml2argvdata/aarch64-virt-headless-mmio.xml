@@ -1,0 +1,48 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <metadata>
+    <libosinfo:libosinfo xmlns:libosinfo='http://libosinfo.org/xmlns/libvirt/domain/1.0'>
+      <libosinfo:os id='http://fedoraproject.org/fedora/29'/>
+    </libosinfo:libosinfo>
+  </metadata>
+  <memory>4194304</memory>
+  <currentMemory>4194304</currentMemory>
+  <vcpu>4</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt-4.0'>hvm</type>
+    <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
+    <nvram>/path/to/guest_VARS.raw</nvram>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <clock offset='utc'/>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/guest.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='virtio-mmio'/>
+    </disk>
+    <interface type='user'>
+      <mac address='52:54:00:09:a4:37'/>
+      <model type='virtio'/>
+      <address type='virtio-mmio'/>
+    </interface>
+    <console type='pty'/>
+    <channel type='unix'>
+      <source mode='bind'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+    </channel>
+    <memballoon model='virtio'>
+      <address type='virtio-mmio'/>
+    </memballoon>
+    <rng model='virtio'>
+      <backend model='random'>/dev/urandom</backend>
+      <address type='virtio-mmio'/>
+    </rng>
+  </devices>
+</domain>
