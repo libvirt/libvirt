@@ -50,6 +50,15 @@ virCHCapsInitCHVersionCaps(int version)
     if (version >= 18000000)
         virCHCapsSet(chCaps, CH_SERIAL_CONSOLE_IN_PARALLEL);
 
+    /* Starting Version 22, add-net api can accept multiple FDs in the request
+     * This is required to be able to configure queues for virtio-net devices
+     * from libvirt.
+     * This capability will be used to gate networking support for ch guests.
+     * https://github.com/cloud-hypervisor/cloud-hypervisor/releases/tag/v22.0
+     */
+    if (version >= 22000000)
+        virCHCapsSet(chCaps, CH_MULTIFD_IN_ADDNET);
+
     return g_steal_pointer(&chCaps);
 
 }
