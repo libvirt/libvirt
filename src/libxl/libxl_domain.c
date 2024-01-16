@@ -749,7 +749,7 @@ libxlNetworkUnwindDevices(virDomainDef *def)
                 g_autoptr(virConnect) conn = virGetConnectNetwork();
 
                 if (conn)
-                    virDomainNetReleaseActualDevice(conn, def, net);
+                    virDomainNetReleaseActualDevice(conn, net);
                 else
                     VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
             }

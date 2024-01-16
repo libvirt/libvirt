@@ -221,7 +221,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
         }
         if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (conn || (conn = virGetConnectNetwork()))
-                virDomainNetReleaseActualDevice(conn, vm->def, iface);
+                virDomainNetReleaseActualDevice(conn, iface);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(iface->ifname));
         }
@@ -643,7 +643,7 @@ virLXCProcessSetupInterfaces(virLXCDriver *driver,
                                 virDomainNetGetActualBridgeName(iface),
                                 iface->ifname));
             if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK && netconn)
-                virDomainNetReleaseActualDevice(netconn, def, iface);
+                virDomainNetReleaseActualDevice(netconn, iface);
         }
         virErrorRestore(&save_err);
     }

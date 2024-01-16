@@ -8606,7 +8606,7 @@ void qemuProcessStop(virQEMUDriver *driver,
         virDomainNetRemoveHostdev(def, net);
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (conn || (conn = virGetConnectNetwork()))
-                virDomainNetReleaseActualDevice(conn, vm->def, net);
+                virDomainNetReleaseActualDevice(conn, net);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
         }

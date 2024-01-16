@@ -3440,7 +3440,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivate *driver,
     } else {
         virDomainNetRemoveHostdev(vm->def, net);
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
-            virDomainNetReleaseActualDevice(conn, vm->def, net);
+            virDomainNetReleaseActualDevice(conn, net);
     }
     virObjectUnref(cfg);
     virErrorRestore(&save_err);
@@ -3911,7 +3911,7 @@ libxlDomainDetachNetDevice(libxlDriverPrivate *driver,
         if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             g_autoptr(virConnect) conn = virGetConnectNetwork();
             if (conn)
-                virDomainNetReleaseActualDevice(conn, vm->def, detach);
+                virDomainNetReleaseActualDevice(conn, detach);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(detach->ifname));
         }

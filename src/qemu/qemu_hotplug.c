@@ -1440,7 +1440,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (conn)
-                virDomainNetReleaseActualDevice(conn, vm->def, net);
+                virDomainNetReleaseActualDevice(conn, net);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
         }
@@ -4167,7 +4167,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
          * no need to change the pointer in the hostdev structure */
         if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (conn || (conn = virGetConnectNetwork()))
-                virDomainNetReleaseActualDevice(conn, vm->def, olddev);
+                virDomainNetReleaseActualDevice(conn, olddev);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(olddev->ifname));
         }
@@ -4208,7 +4208,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
      * replace the entire device object.
      */
     if (newdev && newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
-        virDomainNetReleaseActualDevice(conn, vm->def, newdev);
+        virDomainNetReleaseActualDevice(conn, newdev);
     virErrorRestore(&save_err);
 
     return ret;
@@ -4788,7 +4788,7 @@ qemuDomainRemoveHostDevice(virQEMUDriver *driver,
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             g_autoptr(virConnect) conn = virGetConnectNetwork();
             if (conn)
-                virDomainNetReleaseActualDevice(conn, vm->def, net);
+                virDomainNetReleaseActualDevice(conn, net);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
         }
@@ -4906,7 +4906,7 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         g_autoptr(virConnect) conn = virGetConnectNetwork();
         if (conn)
-            virDomainNetReleaseActualDevice(conn, vm->def, net);
+            virDomainNetReleaseActualDevice(conn, net);
         else
             VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
     } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET) {
