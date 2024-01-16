@@ -11,6 +11,8 @@
   </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
-    <memballoon model='virtio' autodeflate='on'/>
+    <memballoon model='virtio' autodeflate='on'>
+      <address type='virtio-mmio'/>
+    </memballoon>
   </devices>
 </domain>

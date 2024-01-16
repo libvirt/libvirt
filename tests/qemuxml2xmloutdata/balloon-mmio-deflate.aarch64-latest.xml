@@ -20,6 +20,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio' autodeflate='on'>
       <address type='virtio-mmio'/>
