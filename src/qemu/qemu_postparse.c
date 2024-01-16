@@ -1272,7 +1272,6 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
 
     case VIR_ARCH_RISCV32:
     case VIR_ARCH_RISCV64:
-        addDefaultMemballoon = true;
         if (qemuDomainIsRISCVVirt(def))
             addPCIeRoot = true;
         break;
