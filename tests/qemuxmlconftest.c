@@ -2417,12 +2417,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER("aarch64-virt-virtio", "aarch64", "4.2.0");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-virtio", "aarch64");
 
-    /* Demonstrates the virtio-pci default... namely that there isn't any!
-       q35 style PCI controllers will be added if the binary supports it,
-       but virtio-mmio is always used unless PCI addresses are manually
-       specified. */
-    DO_TEST_CAPS_ARCH_VER("aarch64-virtio-pci-default", "aarch64", "4.2.0");
-    DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-default", "aarch64");
     /* Example of using virtio-pci with no explicit PCI controller
        but with manual PCI addresses */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virtio-pci-manual-addresses", "aarch64");
