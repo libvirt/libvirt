@@ -1235,7 +1235,7 @@ mymain(void)
     g_unsetenv("PIPEWIRE_RUNTIME_DIR");
 
     DO_TEST_CAPS_LATEST("minimal");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("minimal-no-memory");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("no-memory");
 
     DO_TEST_CAPS_LATEST("genid");
     DO_TEST_CAPS_LATEST("genid-auto");
