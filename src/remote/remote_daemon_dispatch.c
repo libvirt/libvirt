@@ -3979,50 +3979,52 @@ remoteDispatchAuthPolkit(virNetServer *server,
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     int rv;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->lock);
 
-    action = virNetServerClientGetReadonly(client) ?
-        "org.libvirt.unix.monitor" :
-        "org.libvirt.unix.manage";
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->lock) {
+        action = virNetServerClientGetReadonly(client) ?
+            "org.libvirt.unix.monitor" :
+            "org.libvirt.unix.manage";
 
-    VIR_DEBUG("Start PolicyKit auth %d", virNetServerClientGetFD(client));
-    if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
-        VIR_ERROR(_("client tried invalid PolicyKit init request"));
-        goto authfail;
+        VIR_DEBUG("Start PolicyKit auth %d", virNetServerClientGetFD(client));
+        if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
+            VIR_ERROR(_("client tried invalid PolicyKit init request"));
+            goto authfail;
+        }
+
+        if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid,
+                                              &callerPid, &timestamp) < 0) {
+            goto authfail;
+        }
+
+        if (timestamp == 0) {
+            VIR_WARN("Failing polkit auth due to missing client (pid=%lld) start time",
+                     (long long)callerPid);
+            goto authfail;
+        }
+
+        VIR_INFO("Checking PID %lld running as %d",
+                 (long long) callerPid, callerUid);
+
+        rv = virPolkitCheckAuth(action,
+                                callerPid,
+                                timestamp,
+                                callerUid,
+                                NULL,
+                                true);
+        if (rv == -1)
+            goto authfail;
+        else if (rv == -2)
+            goto authdeny;
+
+        PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
+              "client=%p auth=%d identity=%s",
+              client, REMOTE_AUTH_POLKIT, ident);
+        VIR_INFO("Policy allowed action %s from pid %lld, uid %d",
+                 action, (long long) callerPid, callerUid);
+        ret->complete = 1;
     }
 
-    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid,
-                                          &callerPid, &timestamp) < 0) {
-        goto authfail;
-    }
-
-    if (timestamp == 0) {
-        VIR_WARN("Failing polkit auth due to missing client (pid=%lld) start time",
-                 (long long)callerPid);
-        goto authfail;
-    }
-
-    VIR_INFO("Checking PID %lld running as %d",
-             (long long) callerPid, callerUid);
-
-    rv = virPolkitCheckAuth(action,
-                            callerPid,
-                            timestamp,
-                            callerUid,
-                            NULL,
-                            true);
-    if (rv == -1)
-        goto authfail;
-    else if (rv == -2)
-        goto authdeny;
-
-    PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
-          "client=%p auth=%d identity=%s",
-          client, REMOTE_AUTH_POLKIT, ident);
-    VIR_INFO("Policy allowed action %s from pid %lld, uid %d",
-             action, (long long) callerPid, callerUid);
-    ret->complete = 1;
-
+    /* this must be called with the private data mutex unlocked */
     virNetServerSetClientAuthenticated(server, client);
     return 0;
 
