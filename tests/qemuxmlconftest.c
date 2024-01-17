@@ -1234,6 +1234,19 @@ mymain(void)
     g_unsetenv("PIPEWIRE_REMOTE");
     g_unsetenv("PIPEWIRE_RUNTIME_DIR");
 
+    DO_TEST_CAPS_LATEST("x86_64-pc-minimal");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("x86_64-pc-minimal");
+    DO_TEST_CAPS_LATEST("x86_64-q35-minimal");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("x86_64-q35-minimal");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-minimal", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("aarch64-virt-minimal", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-minimal", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("riscv64-virt-minimal", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-minimal", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-pseries-minimal", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-minimal", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("s390x-ccw-minimal", "s390x");
+
     DO_TEST_CAPS_LATEST("minimal");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("no-memory");
 
