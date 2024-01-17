@@ -72,6 +72,12 @@ v10.0.0 (2024-01-15)
     change in a future release and can be customized with the
     nbdkit_config_default build option.
 
+  * qemu: add ID mapping support for virtiofsd
+
+    New ``<idmap>`` element was added for virtiofsd-based ``<filesystem>``
+    devices. It can be used to set up UID and GID mapping between host
+    and guest, making running virtiofsd unprivileged much more useful.
+
 * **Improvements**
 
   * qemu: Improve migration XML use when persisting VM on destination
@@ -93,6 +99,11 @@ v10.0.0 (2024-01-15)
   * test driver: Support for hotplug/hotunplug of PCI devices
 
     The test driver now supports basic hotplug and hotunplug of PCI devices.
+
+  * qemu: allow virtiofsd to run unprivileged
+
+    Nowadays virtiofsd no longer requires to run with root privileges, so the
+    restriction to always run as root is now removed from libvirt too.
 
 * **Bug fixes**
 
