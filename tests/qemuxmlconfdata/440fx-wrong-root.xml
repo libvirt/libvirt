@@ -1,11 +1,6 @@
 <domain type='qemu'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
-  <title>A description of the test machine.</title>
-  <description>
-      A test of qemu&apos;s minimal configuration.
-      This test also tests the description and title elements.
-  </description>
   <memory unit='KiB'>219100</memory>
   <currentMemory unit='KiB'>219100</currentMemory>
   <os>
