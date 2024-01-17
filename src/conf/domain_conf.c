@@ -23783,8 +23783,8 @@ virDomainActualNetDefContentsFormat(virBuffer *buf,
 
     if (virNetDevVlanFormat(virDomainNetGetActualVlan(def), buf) < 0)
         return -1;
-    if (virNetDevVPortProfileFormat(virDomainNetGetActualVirtPortProfile(def), buf) < 0)
-        return -1;
+    virNetDevVPortProfileFormat(virDomainNetGetActualVirtPortProfile(def), buf);
+
     if (virNetDevBandwidthFormat(virDomainNetGetActualBandwidth(def), 0, buf) < 0)
         return -1;
     virNetworkPortOptionsFormat(virDomainNetGetActualPortOptionsIsolated(def), buf);
@@ -24257,8 +24257,8 @@ virDomainNetDefFormat(virBuffer *buf,
 
         if (virNetDevVlanFormat(&def->vlan, buf) < 0)
             return -1;
-        if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-            return -1;
+        virNetDevVPortProfileFormat(def->virtPortProfile, buf);
+
         if (virNetDevBandwidthFormat(def->bandwidth, 0, buf) < 0)
             return -1;
         virNetworkPortOptionsFormat(def->isolatedPort, buf);

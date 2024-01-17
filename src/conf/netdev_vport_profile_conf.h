@@ -39,6 +39,6 @@ typedef enum {
 virNetDevVPortProfile *
 virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags);
 
-int
+void
 virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
                             virBuffer *buf);

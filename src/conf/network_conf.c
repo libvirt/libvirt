@@ -2213,8 +2213,8 @@ virPortGroupDefFormat(virBuffer *buf,
     virBufferAdjustIndent(buf, 2);
     if (virNetDevVlanFormat(&def->vlan, buf) < 0)
         return -1;
-    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-        return -1;
+    virNetDevVPortProfileFormat(def->virtPortProfile, buf);
+
     virNetDevBandwidthFormat(def->bandwidth, 0, buf);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</portgroup>\n");
@@ -2466,8 +2466,7 @@ virNetworkDefFormatBuf(virBuffer *buf,
             return -1;
     }
 
-    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-        return -1;
+    virNetDevVPortProfileFormat(def->virtPortProfile, buf);
 
     for (i = 0; i < def->nPortGroups; i++)
         if (virPortGroupDefFormat(buf, &def->portGroups[i]) < 0)

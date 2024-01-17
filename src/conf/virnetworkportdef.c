@@ -307,8 +307,8 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
     virMacAddrFormat(&def->mac, macaddr);
     virBufferAsprintf(buf, "<mac address='%s'/>\n", macaddr);
 
-    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-        return -1;
+    virNetDevVPortProfileFormat(def->virtPortProfile, buf);
+
     if (def->bandwidth)
         virNetDevBandwidthFormat(def->bandwidth, def->class_id, buf);
     if (virNetDevVlanFormat(&def->vlan, buf) < 0)

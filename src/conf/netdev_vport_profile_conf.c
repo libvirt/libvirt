@@ -177,7 +177,7 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
 }
 
 
-int
+void
 virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
                             virBuffer *buf)
 {
@@ -185,7 +185,7 @@ virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
     bool noParameters;
 
     if (!virtPort)
-        return 0;
+        return;
 
     noParameters = !(virtPort->managerID_specified ||
                      virtPort->typeID_specified ||
@@ -197,13 +197,13 @@ virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
     type = virtPort->virtPortType;
     if (type == VIR_NETDEV_VPORT_PROFILE_NONE) {
         if (noParameters)
-            return 0;
+            return;
         virBufferAddLit(buf, "<virtualport>\n");
     } else {
         if (noParameters) {
             virBufferAsprintf(buf, "<virtualport type='%s'/>\n",
                               virNetDevVPortTypeToString(type));
-            return 0;
+            return;
         } else {
             virBufferAsprintf(buf, "<virtualport type='%s'>\n",
                               virNetDevVPortTypeToString(type));
@@ -255,5 +255,5 @@ virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
     virBufferAddLit(buf, "/>\n");
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</virtualport>\n");
-    return 0;
+    return;
 }
