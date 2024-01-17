@@ -386,7 +386,7 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
                  * */
                 if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
                     contTargetIndex <= 0) {
-                    if (virQEMUCapsHasPCIMultiBus(domainDef))
+                    if (qemuDomainSupportsPCIMultibus(domainDef))
                         contAlias = "pci.0";
                     else
                         contAlias = "pci";

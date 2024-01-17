@@ -2059,34 +2059,6 @@ virQEMUCapsGet(virQEMUCaps *qemuCaps,
 }
 
 
-bool virQEMUCapsHasPCIMultiBus(const virDomainDef *def)
-{
-    /* x86_64 and i686 support PCI-multibus on all machine types
-     * since forever */
-    if (ARCH_IS_X86(def->os.arch))
-        return true;
-
-    /* PPC supports multibus on all machine types which have pci since qemu-2.0.0 */
-    if (def->os.arch == VIR_ARCH_PPC ||
-        ARCH_IS_PPC64(def->os.arch)) {
-        return true;
-    }
-
-    /* S390 supports PCI-multibus. */
-    if (ARCH_IS_S390(def->os.arch))
-        return true;
-
-    /* If the virt machine, both on ARM and RISC-V, supports PCI,
-     * then it also supports multibus */
-    if (qemuDomainIsARMVirt(def) ||
-        qemuDomainIsRISCVVirt(def)) {
-        return true;
-    }
-
-    return false;
-}
-
-
 const char *virQEMUCapsGetBinary(virQEMUCaps *qemuCaps)
 {
     return qemuCaps->binary;

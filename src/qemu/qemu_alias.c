@@ -142,7 +142,7 @@ qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
         return;
 
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        if (!virQEMUCapsHasPCIMultiBus(domainDef)) {
+        if (!qemuDomainSupportsPCIMultibus(domainDef)) {
             /* qemus that don't support multiple PCI buses have
              * hardcoded the name of their single PCI controller as
              * "pci".
