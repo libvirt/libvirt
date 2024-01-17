@@ -1,0 +1,21 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory>4194304</memory>
+  <vcpu>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb'/>
+    <controller type='scsi'/>
+    <interface type='user'>
+      <mac address='52:54:00:09:a4:37'/>
+    </interface>
+    <serial type='pty'/>
+    <video/>
+    <memballoon model='none'/>
+    <panic/>
+  </devices>
+</domain>

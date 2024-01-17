@@ -1247,6 +1247,19 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-minimal", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("s390x-ccw-minimal", "s390x");
 
+    DO_TEST_CAPS_LATEST("x86_64-pc-default-models");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("x86_64-pc-default-models");
+    DO_TEST_CAPS_LATEST("x86_64-q35-default-models");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("x86_64-q35-default-models");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-default-models", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("aarch64-virt-default-models", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-default-models", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("riscv64-virt-default-models", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-default-models", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-pseries-default-models", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-default-models", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("s390x-ccw-default-models", "s390x");
+
     DO_TEST_CAPS_LATEST_PARSE_ERROR("no-memory");
 
     DO_TEST_CAPS_LATEST("genid");
