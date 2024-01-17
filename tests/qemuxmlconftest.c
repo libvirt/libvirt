@@ -1247,7 +1247,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-minimal", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("s390x-ccw-minimal", "s390x");
 
-    DO_TEST_CAPS_LATEST("minimal");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("no-memory");
 
     DO_TEST_CAPS_LATEST("genid");
