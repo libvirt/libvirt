@@ -47,6 +47,10 @@
 
 .integration_tests:
   stage: integration_tests
+  rules:
+    - if: '$LIBVIRT_CI_INTEGRATION == null'
+      when: never
+    - !reference [.gitlab_native_build_job, rules]
   before_script:
     - mkdir "$SCRATCH_DIR"
     - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/* libvirt-python-rpms/*
@@ -65,35 +69,13 @@
       - logs
     when: on_failure
 
-.integration_tests_prebuilt_env:
-  extends: .integration_tests
-  rules:
-    - if: '$LIBVIRT_CI_INTEGRATION == null'
-      when: never
-    - !reference [.gitlab_native_build_job_prebuilt_env, rules]
-
-.integration_tests_local_env:
-  extends: .integration_tests
-  rules:
-    - if: '$LIBVIRT_CI_INTEGRATION == null'
-      when: never
-    - !reference [.gitlab_native_build_job_local_env, rules]
-
 
 # YAML anchors don't work with Shell conditions so we can't use a variable
 # to conditionally build+install QEMU from source.
 # Instead, create a new test job template for this scenario.
 .integration_tests_upstream_qemu:
+  extends:
+    - .integration_tests
   before_script:
     - !reference [.integration_tests, before_script]
     - *qemu-build-template
-
-.integration_tests_upstream_qemu_prebuilt_env:
-  extends:
-    - .integration_tests_prebuilt_env
-    - .integration_tests_upstream_qemu
-
-.integration_tests_upstream_qemu_local_env:
-  extends:
-    - .integration_tests_local_env
-    - .integration_tests_upstream_qemu
