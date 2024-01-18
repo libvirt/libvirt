@@ -901,7 +901,7 @@ qemuNbdkitStartStorageSource(virQEMUDriver *driver,
     virStorageSource *backing;
 
     for (backing = src; backing != NULL; backing = backing->backingStore) {
-        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(backing);
 
         if (priv && priv->nbdkitProcess &&
             qemuNbdkitProcessStart(priv->nbdkitProcess, vm, driver) < 0)
@@ -919,7 +919,7 @@ qemuNbdkitStopStorageSource(virStorageSource *src,
     virStorageSource *backing;
 
     for (backing = src; backing != NULL; backing = backing->backingStore) {
-        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(backing);
 
         if (priv && priv->nbdkitProcess &&
             qemuNbdkitProcessStop(priv->nbdkitProcess, vm) < 0)
