@@ -5396,12 +5396,14 @@ static int
 qemuDomainDefaultNetModel(const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
-    if (ARCH_IS_S390(def->os.arch))
+    /* When there are no backwards compatibility concerns getting in
+     * the way, virtio is a good default */
+    if (ARCH_IS_S390(def->os.arch) ||
+        qemuDomainIsRISCVVirt(def)) {
         return VIR_DOMAIN_NET_MODEL_VIRTIO;
+    }
 
-    if (def->os.arch == VIR_ARCH_ARMV6L ||
-        def->os.arch == VIR_ARCH_ARMV7L ||
-        def->os.arch == VIR_ARCH_AARCH64) {
+    if (ARCH_IS_ARM(def->os.arch)) {
         if (STREQ(def->os.machine, "versatilepb"))
             return VIR_DOMAIN_NET_MODEL_SMC91C111;
 
@@ -5413,10 +5415,6 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
         return VIR_DOMAIN_NET_MODEL_LAN9118;
     }
 
-    /* virtio is a sensible default for RISC-V virt guests */
-    if (qemuDomainIsRISCVVirt(def))
-        return VIR_DOMAIN_NET_MODEL_VIRTIO;
-
     /* In all other cases the model depends on the capabilities. If they were
      * not provided don't report any default. */
     if (!qemuCaps)
@@ -5427,9 +5425,11 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
      * system than the previous one */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_RTL8139))
         return VIR_DOMAIN_NET_MODEL_RTL8139;
-    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_E1000))
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_E1000))
         return VIR_DOMAIN_NET_MODEL_E1000;
-    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_NET))
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_NET))
         return VIR_DOMAIN_NET_MODEL_VIRTIO;
 
     /* We've had no luck detecting support for any network device,
