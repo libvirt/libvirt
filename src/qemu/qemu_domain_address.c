@@ -99,32 +99,6 @@ qemuDomainSetSCSIControllerModel(const virDomainDef *def,
 }
 
 
-/**
- * @def: Domain definition
- * @info: Domain device info
- *
- * Using the device info, find the controller related to the
- * device by index and use that controller to return the model.
- *
- * Returns the model if found, -1 if not with an error message set
- */
-int
-qemuDomainFindSCSIControllerModel(const virDomainDef *def,
-                                  virDomainDeviceInfo *info)
-{
-    virDomainControllerDef *cont;
-
-    if (!(cont = virDomainDeviceFindSCSIController(def, &info->addr.drive))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to find a SCSI controller for idx=%1$d"),
-                       info->addr.drive.controller);
-        return -1;
-    }
-
-    return cont->model;
-}
-
-
 static int
 qemuDomainAssignVirtioSerialAddresses(virDomainDef *def)
 {

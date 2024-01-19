@@ -214,8 +214,17 @@ qemuAssignDeviceDiskAlias(virDomainDef *def,
     if (!disk->info.alias) {
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-                controllerModel = qemuDomainFindSCSIControllerModel(def,
-                                                                    &disk->info);
+                virDomainControllerDef *cont;
+
+                if (!(cont = virDomainDeviceFindSCSIController(def, &disk->info.addr.drive))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("unable to find a SCSI controller for idx=%1$d"),
+                                   disk->info.addr.drive.controller);
+                    return -1;
+                }
+
+                controllerModel = cont->model;
+
                 if (controllerModel < 0)
                     return -1;
             }
