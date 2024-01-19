@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-15 04:59+0000\n"
+"PO-Revision-Date: 2024-01-19 13:51+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23627,61 +23627,61 @@ msgstr "kunde inte tolka lästa iops per sekund %1$s"
 msgid "could not parse weight %1$s"
 msgstr "kunde inte tolka vikten %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse write bytes sec %1$s"
-msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
+msgstr "kunde inte tolka skrivna byte per sekund %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse write iops sec %1$s"
-msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
+msgstr "kunde inte tolka skrivna iops per sekund %1$s"
 
 msgid "could not read xml file"
-msgstr ""
+msgstr "kunde inte läsa xml-filen"
 
 #, c-format
 msgid "could not receive data from domain '%1$s'"
-msgstr ""
+msgstr "kunde inte ta emot data från domänen ”%1$s”"
 
 msgid "could not remove profile"
-msgstr ""
+msgstr "kunde inte ta bort profilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not remove profile for '%1$s'"
-msgstr "kan inte ta bort konfigurationen %1$s"
+msgstr "kunde inte ta bort profilen för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not restore snapshot for domain %1$s"
-msgstr "Kunde inte starta domänen: %1$s"
+msgstr "kunde inte återställa ögonblicskbilden för domänen %1$s"
 
 msgid "could not set IFS"
-msgstr ""
+msgstr "kunde inte sätta IFS"
 
 msgid "could not set PATH"
-msgstr ""
+msgstr "kunde inte sätta PATH"
 
 #, c-format
 msgid "could not set the memory size of the domain to: %1$llu Kb"
-msgstr ""
+msgstr "kunde inte sätta minnesstorleken på domänen till: %1$llu kB"
 
 #, c-format
 msgid "could not set the memory size of the domain to: %1$lu Kb"
-msgstr ""
+msgstr "kunde inte sätta minnesstorleken för domänen till: %1$lu kB"
 
 #, c-format
 msgid "could not set the number of cpus of the domain to: %1$u"
-msgstr ""
+msgstr "kunde inte sätta antalet cpu:er för domänen till: %1$u"
 
 #, c-format
 msgid "could not set the number of virtual CPUs to: %1$u"
-msgstr ""
+msgstr "kunde inte sätta antalet virtuella CPU:er till: %1$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not take a screenshot of %1$s"
-msgstr "Misslyckades att ta ögonblicksbild: %1$s"
+msgstr "kunde inte ta en skärmbild av %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not take snapshot of domain %1$s"
-msgstr "Kunde inte starta domänen: %1$s"
+msgstr "kunde inte ta en ögonblicksbild av domänen %1$s"
 
 msgid "could not use Xen hypervisor entry"
 msgstr "kunde inte använda akten för Xens hypervisor"
@@ -23691,109 +23691,120 @@ msgid "could not use Xen hypervisor entry %1$s"
 msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
 
 msgid "couldn't convert node device def to mdevctl JSON"
-msgstr ""
+msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
 
 msgid "couldn't fetch array of leases"
-msgstr ""
+msgstr "kunde inte hämta vektorn av hyror"
 
 #, c-format
 msgid "couldn't find IFLA_VF_INFO for VF %1$d in netlink response"
-msgstr ""
+msgstr "kunde inte hitta IFLA_VF_INFO för VF %1$d i netlink-svaret"
 
 #, c-format
 msgid ""
 "couldn't find a portgroup entry in network '%1$s' matching <portgroup "
 "name='%2$s'>"
 msgstr ""
+"kunde inte hitta en portgruppspost i nätverket ”%1$s” som matchar <portgroup "
+"name='%2$s'>"
 
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
 msgstr ""
+"kunde inte hitta en gränssnittspost i nätverket ”%1$s” som matchar "
+"<interface dev='%2$s'>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "couldn't find interface named '%1$s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "kunde inte hitta ett gränssnitt med namnet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "couldn't find interface named '%1$s': %2$s%3$s%4$s"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "lunde inte hitta ett gränssnitt med namnet ”%1$s” %2$s%3$s%4$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "couldn't find interface with MAC address '%1$s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "kunde inte hitta ett gränssnitt med MAC-adressen ”%1$s”"
 
 #, c-format
 msgid "couldn't find interface with MAC address '%1$s': %2$s%3$s%4$s"
-msgstr ""
+msgstr "kunde inte hitta ett gränssnitt med MAC-adressen ”%1$s”: %2$s%3$s%4$s"
 
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %1$s"
-msgstr ""
+msgstr "kunde inte hitta en matchande DNS HOST-post i nätverket %1$s"
 
 #, c-format
 msgid "couldn't locate a matching DNS SRV record in network %1$s"
-msgstr ""
+msgstr "kunde inte hitta en matchande DNS SRV-post i nätverket %1$s"
 
 #, c-format
 msgid "couldn't locate a matching DNS TXT record in network %1$s"
-msgstr ""
+msgstr "kunde inte hitta en matchande DNS TXT-post i nätverket %1$s"
 
 #, c-format
 msgid "couldn't locate a matching dhcp host entry in network '%1$s'"
-msgstr ""
+msgstr "kunde inte hitta en matchande dhcp host-post i nätverket ”%1$s”"
 
 #, c-format
 msgid "couldn't locate a matching dhcp range entry in network '%1$s'"
-msgstr ""
+msgstr "kunde inte hitta en matchande dhcp range-post i nätverket ”%1$s”"
 
 #, c-format
 msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
 "\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr ""
+"kunde inte hitta en befintlig dhcp host-post med ”mac=’%1$s’” ”name=’%2$s’” "
+"”ip=’%3$s’” i nätverket ”%4$s”"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
-msgstr ""
+msgstr "kunde inte hämta autentiseringsmetodslistan: %1$s"
 
 #, c-format
 msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %1$d in "
 "network '%2$s'"
 msgstr ""
+"kunde inte uppdatera dhcp host-posten – inget element <ip> finns vid index "
+"%1$d i nätverket ”%2$s”"
 
 #, c-format
 msgid ""
 "couldn't update dhcp host entry - no <ip> element found in network '%1$s'"
 msgstr ""
+"kunde inte uppdatera dhcp värd-posten – inget element <ip> finns i nätverket "
+"”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "couldn't write dnsmasq config file '%1$s'"
-msgstr "kan inte skriva konfigurationsfilen ”%1$s”"
+msgstr "kunde inte skriva dnsmasq-konfigurationsfilen ”%1$s”"
 
 #, c-format
 msgid ""
 "count of memory devices requiring memory slots '%1$zu' exceeds slots count "
 "'%2$u'"
 msgstr ""
+"antalet minnesenheter som kräver minnesfack ”%1$zu” överskrider antalet fack "
+"”%2$u”"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
-msgstr ""
+msgstr "funktionen cow kan endast användas för poolerna ”fs” och ”dir”"
 
 msgid "cpu affinity is not supported"
-msgstr ""
+msgstr "cpu-affinitet stödjs inte"
 
-#, fuzzy
 msgid "cpu count too large"
-msgstr "nparams är för stor"
+msgstr "cpu-antalet är för stor"
 
 msgid "cpu hotplug is not supported"
-msgstr ""
+msgstr "cpu-omkoppling i drift stödjs inte"
 
 msgid "cpu parameter is missing a model name"
-msgstr ""
+msgstr "cpu-parametern saknar ett modellnamn"
 
 #, c-format
 msgid "cpu topology results in more than %1$u cpus"
