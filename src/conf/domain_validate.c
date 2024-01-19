@@ -2264,6 +2264,7 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
     for (i = 0; i < def->nmems; i++) {
         const virDomainMemoryDef *other = def->mems[i];
         unsigned long long otherStart = 0;
+        unsigned long long otherEnd = 0;
 
         if (other == mem)
             continue;
@@ -2315,7 +2316,10 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
         if (thisStart == 0 || otherStart == 0)
             continue;
 
-        if (thisStart <= otherStart && thisEnd > otherStart) {
+        otherEnd = otherStart + other->size * 1024;
+
+        if ((thisStart <= otherStart && thisEnd > otherStart) ||
+            (otherStart <= thisStart && otherEnd > thisStart)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device (0x%3$llx)"),
                            thisStart, thisEnd, otherStart);
