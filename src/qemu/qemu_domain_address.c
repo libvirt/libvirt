@@ -74,31 +74,6 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
 }
 
 
-/**
- * @def: Domain definition
- * @cont: Domain controller def
- * @qemuCaps: qemu capabilities
- *
- * Set the controller model based on the existing value and the
- * capabilities if possible.
- *
- * Returns 0 on success, -1 on failure with error set.
- */
-int
-qemuDomainSetSCSIControllerModel(const virDomainDef *def,
-                                 virDomainControllerDef *cont,
-                                 virQEMUCaps *qemuCaps)
-{
-    int model = qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
-
-    if (model < 0)
-        return -1;
-
-    cont->model = model;
-    return 0;
-}
-
-
 static int
 qemuDomainAssignVirtioSerialAddresses(virDomainDef *def)
 {
