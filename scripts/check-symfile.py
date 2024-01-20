@@ -61,7 +61,7 @@ for elflib in elflibs:
 
     for line in nm:
         line = line.decode("utf-8")
-        symmatch = re.search(r'''^\S+\s(?:[TBD])\s(\S+)\s*$''', line)
+        symmatch = re.search(r'''^\S+\s(?:[TBSDG])\s(\S+)\s*$''', line)
         if symmatch is None:
             continue
 
