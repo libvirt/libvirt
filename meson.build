@@ -442,22 +442,17 @@ supported_cc_flags = []
 if get_option('warning_level') == '2'
   supported_cc_flags = cc.get_supported_arguments(cc_flags)
 
-  # on aarch64 error: -fstack-protector not supported for this target
-  if host_machine.cpu_family() != 'aarch64'
-    if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
-      # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
-      fstack_cflags = cc.first_supported_argument([
-        '-fstack-protector-strong',
-        '-fstack-protector-all',
-      ])
-      supported_cc_flags += fstack_cflags
+  # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
+  fstack_cflags = cc.first_supported_argument([
+    '-fstack-protector-strong',
+    '-fstack-protector-all',
+  ])
+  supported_cc_flags += fstack_cflags
 
-      # When building with mingw using -fstack-protector requires libssp library
-      # which is included by using -fstack-protector with linker.
-      if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
-        add_project_link_arguments(fstack_cflags, language: 'c')
-      endif
-    endif
+  # When building with mingw using -fstack-protector requires libssp library
+  # which is included by using -fstack-protector with linker.
+  if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
+    add_project_link_arguments(fstack_cflags, language: 'c')
   endif
 
   if supported_cc_flags.contains('-Wlogical-op')
