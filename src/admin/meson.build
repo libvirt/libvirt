@@ -15,7 +15,7 @@ admin_protocol_h = custom_target(
   output: 'admin_protocol.h',
   depend_files: rpcgen_src,
   command: [
-    meson_python_prog, python3_prog, rpcgen_prog,
+    rpcgen_prog,
     '--mode=header', '@INPUT@', '@OUTPUT@',
   ],
 )
@@ -27,7 +27,7 @@ admin_driver_generated += custom_target(
   output: 'admin_protocol.c',
   depend_files: rpcgen_src,
   command: [
-    meson_python_prog, python3_prog, rpcgen_prog,
+    rpcgen_prog,
     '--mode=source', '--header=admin_protocol.h', '@INPUT@', '@OUTPUT@',
   ],
 )

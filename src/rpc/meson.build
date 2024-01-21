@@ -54,7 +54,7 @@ foreach name : [ 'virnet', 'virkeepalive' ]
     output: header_file,
     depend_files: rpcgen_src,
     command: [
-      meson_python_prog, python3_prog, rpcgen_prog,
+      rpcgen_prog,
       '--mode=header', '@INPUT@', '@OUTPUT@',
     ],
   )
@@ -65,7 +65,7 @@ foreach name : [ 'virnet', 'virkeepalive' ]
     output: source_file,
     depend_files: rpcgen_src,
     command: [
-      meson_python_prog, python3_prog, rpcgen_prog,
+      rpcgen_prog,
       '--mode=source', '--header=' + header_file, '@INPUT@', '@OUTPUT@',
     ],
   )
