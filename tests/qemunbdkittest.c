@@ -129,7 +129,7 @@ typedef enum {
 static void
 testInfoSetPaths(TestInfo *info)
 {
-    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml",
+    info->infile = g_strdup_printf("%s/qemuxmlconfdata/%s.xml",
                                    abs_srcdir, info->name);
     info->outtemplate = g_strdup_printf("%s/qemunbdkitdata/%s",
                                         abs_srcdir, info->name);

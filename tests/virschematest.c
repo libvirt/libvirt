@@ -239,7 +239,7 @@ static const char *exceptions_qemuxml2xmloutdata[] = {
 
 static const struct testSchemaEntry schemaDomain[] = {
     { .dir = "tests/domainschemadata" },
-    { .dir = "tests/qemuxml2argvdata" },
+    { .dir = "tests/qemuxmlconfdata" },
     { .dir = "tests/xmconfigdata" },
     { .dir = "tests/qemuxml2xmloutdata",
       .exceptions = exceptions_qemuxml2xmloutdata,

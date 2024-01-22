@@ -175,7 +175,7 @@ testRunActive(const char *name,
     testQemuInfoSetArgs(info, ap);
     va_end(ap);
 
-    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir,
+    info->infile = g_strdup_printf("%s/qemuxmlconfdata/%s.xml", abs_srcdir,
                                    info->name);
 
     info->out_xml_active = g_strdup_printf("%s/qemuxmlactive2xmldata/%s-active%s.xml",

@@ -951,15 +951,15 @@ testConfXMLEnumerate(GHashTable *existingTestCases)
     if (virTestHasRangeBitmap())
         return 0;
 
-    if (virDirOpen(&dir, abs_srcdir "/qemuxml2argvdata") < 0)
+    if (virDirOpen(&dir, abs_srcdir "/qemuxmlconfdata") < 0)
         return -1;
 
-    while ((rc = virDirRead(dir, &ent, abs_srcdir "/qemuxml2argvdata")) > 0) {
+    while ((rc = virDirRead(dir, &ent, abs_srcdir "/qemuxmlconfdata")) > 0) {
         if (virStringHasSuffix(ent->d_name, ".xml") ||
             virStringHasSuffix(ent->d_name, ".args") ||
             virStringHasSuffix(ent->d_name, ".err")) {
             g_hash_table_insert(existingTestCases,
-                                g_strdup_printf(abs_srcdir "/qemuxml2argvdata/%s", ent->d_name),
+                                g_strdup_printf(abs_srcdir "/qemuxmlconfdata/%s", ent->d_name),
                                 NULL);
         }
     }
@@ -1001,11 +1001,11 @@ testRun(const char *name,
     testQemuInfoSetArgs(info, ap);
     va_end(ap);
 
-    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir, info->name);
+    info->infile = g_strdup_printf("%s/qemuxmlconfdata/%s.xml", abs_srcdir, info->name);
     if (info->flags & (FLAG_EXPECT_FAILURE | FLAG_EXPECT_PARSE_ERROR)) {
-        info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
+        info->errfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s.err", abs_srcdir, info->name, suffix);
     } else {
-        info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args", abs_srcdir, info->name, suffix);
+        info->outfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s.args", abs_srcdir, info->name, suffix);
     }
 
     if (!(info->flags & FLAG_EXPECT_PARSE_ERROR))

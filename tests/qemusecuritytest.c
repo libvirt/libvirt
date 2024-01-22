@@ -31,7 +31,7 @@
 
 struct testData {
     virQEMUDriver *driver;
-    const char *file; /* file name to load VM def XML from; qemuxml2argvdata/ */
+    const char *file; /* file name to load VM def XML from; qemuxmlconfdata/ */
 };
 
 
@@ -46,7 +46,7 @@ prepareObjects(virQEMUDriver *driver,
     g_autofree char *domxml = NULL;
     g_autofree char *latestCapsFile = NULL;
 
-    filename = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir, xmlname);
+    filename = g_strdup_printf("%s/qemuxmlconfdata/%s.xml", abs_srcdir, xmlname);
 
     if (virTestLoadFile(filename, &domxml) < 0)
         return -1;
