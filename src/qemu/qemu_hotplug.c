@@ -881,6 +881,11 @@ qemuDomainFindOrCreateSCSIDiskController(virDomainObj *vm,
     else
         cont->model = model;
 
+    if (cont->model < 0) {
+        VIR_FREE(cont);
+        return NULL;
+    }
+
     VIR_INFO("No SCSI controller present, hotplugging one model=%s",
              virDomainControllerModelSCSITypeToString(cont->model));
     if (qemuDomainAttachControllerDevice(vm, cont) < 0) {
