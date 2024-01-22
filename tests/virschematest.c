@@ -231,7 +231,7 @@ static const struct testSchemaEntry schemaCapability[] = {
 
 
 /* give exceptions for output files of invalid input XMLs */
-static const char *exceptions_qemuxml2xmloutdata[] = {
+static const char *exceptions_qemuxmlconfdata[] = {
     "disk-cdrom-empty-network-invalid.x86_64-latest.xml",
     "numatune-auto-nodeset-invalid.x86_64-latest.xml",
     NULL
@@ -239,11 +239,10 @@ static const char *exceptions_qemuxml2xmloutdata[] = {
 
 static const struct testSchemaEntry schemaDomain[] = {
     { .dir = "tests/domainschemadata" },
-    { .dir = "tests/qemuxmlconfdata" },
-    { .dir = "tests/xmconfigdata" },
-    { .dir = "tests/qemuxml2xmloutdata",
-      .exceptions = exceptions_qemuxml2xmloutdata,
+    { .dir = "tests/qemuxmlconfdata",
+      .exceptions = exceptions_qemuxmlconfdata,
     },
+    { .dir = "tests/xmconfigdata" },
     { .dir = "tests/lxcxml2xmldata" },
     { .dir = "tests/lxcxml2xmloutdata" },
     { .dir = "tests/bhyvexml2argvdata" },

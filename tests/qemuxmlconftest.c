@@ -1009,7 +1009,7 @@ testRun(const char *name,
     }
 
     if (!(info->flags & FLAG_EXPECT_PARSE_ERROR))
-        info->out_xml_inactive = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml", abs_srcdir, info->name, suffix);
+        info->out_xml_inactive = g_strdup_printf("%s/qemuxmlconfdata/%s%s.xml", abs_srcdir, info->name, suffix);
 
     virTestRunLog(ret, name_parse, testXMLParse, info);
     virTestRunLog(ret, name_xml, testCompareDef2XML, info);
