@@ -966,9 +966,9 @@ init_env(void)
         't', 'e', 's', 't', 'n', 'a', 'm', 'e',
         PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG, 0x16, 0x00,
         'P', 'N', 0x02, '4', '2',
-        'E', 'C', 0x04, '4', '2', '4', '2',
+        'E', 'C', 0x04, '4', '<', '>', '2',
         'V', 'A', 0x02, 'E', 'X',
-        'R', 'V', 0x02, 0x31, 0x00,
+        'R', 'V', 0x02, 0x1D, 0x00,
         PCI_VPD_RESOURCE_END_VAL
     };
     struct pciVPD exampleVPD = {

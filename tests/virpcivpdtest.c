@@ -424,7 +424,7 @@ testPCIVPDGetFieldValueFormat(const void *data G_GNUC_UNUSED)
 
 # define VPD_W_EXAMPLE_FIELDS \
     'V', 'Z', 0x02, '4', '2', \
-    'Y', 'A', 0x04, 'I', 'D', '4', '2', \
+    'Y', 'A', 0x04, '!', '<', '>', ':', \
     'Y', 'F', 0x02, 'E', 'X', \
     'Y', 'E', 0x00, \
     'R', 'W', 0x02, 0x00, 0x00
@@ -579,7 +579,7 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
     if (testVirPCIVPDValidateExampleReadOnlyFields(res))
         return -1;
 
-    if (STRNEQ_NULLABLE(res->rw->asset_tag, "ID42"))
+    if (STRNEQ_NULLABLE(res->rw->asset_tag, "!<>:"))
         return -1;
 
     if (!res->rw->vendor_specific)

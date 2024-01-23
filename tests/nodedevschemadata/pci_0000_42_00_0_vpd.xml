@@ -15,7 +15,7 @@
         <change_level>B1</change_level>
         <manufacture_id>foobar</manufacture_id>
         <part_number>MBF2H332A-AEEOT</part_number>
-        <serial_number>MT2113X00000</serial_number>
+        <serial_number>MT2113X00000&gt;&lt;</serial_number>
         <vendor_field index='0'>PCIeGen4 x8</vendor_field>
         <vendor_field index='2'>MBF2H332A-AEEOT</vendor_field>
         <vendor_field index='3'>3c53d07eec484d8aab34dabd24fe575aa</vendor_field>
@@ -25,7 +25,7 @@
         <asset_tag>fooasset</asset_tag>
         <vendor_field index='0'>vendorfield0</vendor_field>
         <vendor_field index='2'>vendorfield2</vendor_field>
-        <vendor_field index='A'>vendorfieldA</vendor_field>
+        <vendor_field index='A'>!@#$./&gt;&lt;</vendor_field>
         <system_field index='B'>systemfieldB</system_field>
         <system_field index='0'>systemfield0</system_field>
       </fields>
