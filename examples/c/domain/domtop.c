@@ -224,7 +224,7 @@ print_cpu_usage(size_t cpu,
          * performed has a bad effect on the precision, so instead of dividing
          * @now_params and @then_params by 1000 and then multiplying again by
          * 100, we divide only once by 10 and get the same result. */
-        usage = (now_params[pos].value.ul - then_params[pos].value.ul) /
+        usage = (double)(now_params[pos].value.ul - then_params[pos].value.ul) /
                 (now - then) / 10;
 
         if (delim)
