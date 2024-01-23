@@ -7958,6 +7958,33 @@ qemuProcessRefreshRxFilters(virDomainObj *vm,
         if (!virDomainNetGetActualTrustGuestRxFilters(def))
             continue;
 
+        /* rx-filters are supported only for virtio model and TUN/TAP based
+         * types. */
+        if (def->model != VIR_DOMAIN_NET_MODEL_VIRTIO)
+            continue;
+
+        switch (virDomainNetGetActualType(def)) {
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            break;
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_NULL:
+        case VIR_DOMAIN_NET_TYPE_VDS:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+        default:
+            continue;
+        }
+
         if (qemuDomainSyncRxFilter(vm, def, asyncJob) < 0)
             return -1;
     }
