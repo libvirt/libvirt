@@ -585,7 +585,7 @@ testInfoCheckDuplicate(testQemuInfo *info)
     if (info->flags & FLAG_ALLOW_DUPLICATE_OUTPUT)
         return 0;
 
-    if (info->flags & (FLAG_EXPECT_FAILURE | FLAG_EXPECT_PARSE_ERROR))
+    if (!path)
         path = info->errfile;
 
     if (g_hash_table_contains(info->conf->duplicateTests, path)) {
@@ -994,9 +994,14 @@ testRun(const char *name,
     va_end(ap);
 
     info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir, info->name);
-    info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args", abs_srcdir, info->name, suffix);
-    info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
-    info->out_xml_inactive = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml", abs_srcdir, info->name, suffix);
+    if (info->flags & (FLAG_EXPECT_FAILURE | FLAG_EXPECT_PARSE_ERROR)) {
+        info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err", abs_srcdir, info->name, suffix);
+    } else {
+        info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args", abs_srcdir, info->name, suffix);
+    }
+
+    if (!(info->flags & FLAG_EXPECT_PARSE_ERROR))
+        info->out_xml_inactive = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml", abs_srcdir, info->name, suffix);
 
     virTestRunLog(ret, name_parse, testXMLParse, info);
     virTestRunLog(ret, name_xml, testCompareDef2XML, info);
