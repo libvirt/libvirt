@@ -633,6 +633,12 @@ testQemuConfXMLCommon(testQemuInfo *info,
 
     /* mark test case as used */
     ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->infile));
+    if (info->outfile)
+        ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->outfile));
+    if (info->errfile)
+        ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->errfile));
+    if (info->out_xml_inactive)
+        ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->out_xml_inactive));
 
     if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
         goto cleanup;
@@ -925,7 +931,7 @@ testConfXMLCheck(GHashTable *existingTestCases)
         if (ret == 0)
             fprintf(stderr, "\n");
 
-        fprintf(stderr, "unused input file: %s\n", (const char *) items[i].key);
+        fprintf(stderr, "unused file: %s\n", (const char *) items[i].key);
         ret = -1;
     }
 
@@ -949,7 +955,9 @@ testConfXMLEnumerate(GHashTable *existingTestCases)
         return -1;
 
     while ((rc = virDirRead(dir, &ent, abs_srcdir "/qemuxml2argvdata")) > 0) {
-        if (virStringHasSuffix(ent->d_name, ".xml")) {
+        if (virStringHasSuffix(ent->d_name, ".xml") ||
+            virStringHasSuffix(ent->d_name, ".args") ||
+            virStringHasSuffix(ent->d_name, ".err")) {
             g_hash_table_insert(existingTestCases,
                                 g_strdup_printf(abs_srcdir "/qemuxml2argvdata/%s", ent->d_name),
                                 NULL);
