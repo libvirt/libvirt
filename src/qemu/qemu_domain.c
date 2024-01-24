@@ -5597,7 +5597,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
              * chance we will get away with using the legacy USB controller
              * when the relevant device is not available.
              *
-             * See qemuBuildControllerDevCommandLine() */
+             * See qemuBuildControllersCommandLine() */
 
             /* Default USB controller is piix3-uhci if available. */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
