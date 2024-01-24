@@ -61,19 +61,19 @@ virPCIVPDResourceGetKeywordPrefix(const char *keyword)
     g_autofree char *key = NULL;
 
     /* Keywords must have a length of 2 bytes. */
-    if (strlen(keyword) != 2) {
-        VIR_INFO("The keyword length is not 2 bytes: %s", keyword);
-        return NULL;
-    } else if (!(virPCIVPDResourceIsUpperOrNumber(keyword[0]) &&
-                 virPCIVPDResourceIsUpperOrNumber(keyword[1]))) {
-        VIR_INFO("The keyword is not comprised only of uppercase ASCII letters or digits");
-        return NULL;
-    }
+    if (strlen(keyword) != 2 ||
+        !(virPCIVPDResourceIsUpperOrNumber(keyword[0]) &&
+          virPCIVPDResourceIsUpperOrNumber(keyword[1])))
+        goto cleanup;
+
     /* Special-case the system-specific keywords since they share the "Y" prefix with "YA". */
     if (virPCIVPDResourceIsSystemKeyword(keyword) || virPCIVPDResourceIsVendorKeyword(keyword))
         key = g_strndup(keyword, 1);
     else
         key = g_strndup(keyword, 2);
+
+ cleanup:
+    VIR_DEBUG("keyword='%s' key='%s'", keyword, NULLSTR(key));
 
     return g_steal_pointer(&key);
 }
