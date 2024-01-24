@@ -2184,11 +2184,6 @@ mymain(void)
                  ARG_END);
 
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-virt-riscv64", "riscv64");
-    DO_TEST_FULL("usb-controller-default-fallback-virt-riscv64", ".riscv64-latest",
-                 ARG_CAPS_ARCH, "riscv64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
-                 ARG_END);
     DO_TEST_FULL("usb-controller-default-unavailable-virt-riscv64", ".riscv64-latest",
                  ARG_CAPS_ARCH, "riscv64",
                  ARG_CAPS_VER, "latest",

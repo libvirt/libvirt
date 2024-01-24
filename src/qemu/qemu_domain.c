@@ -4322,7 +4322,8 @@ qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
 {
     bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
 
-    if (ARCH_IS_LOONGARCH(def->os.arch)) {
+    if (ARCH_IS_LOONGARCH(def->os.arch) ||
+        qemuDomainIsRISCVVirt(def)) {
         /* Use qemu-xhci (USB3) with no fallback */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
             return VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
