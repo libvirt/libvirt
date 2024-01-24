@@ -313,20 +313,7 @@ bool
 virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
                                const char *const keyword, const char *const value)
 {
-    if (!res) {
-        VIR_INFO("Cannot update the resource: a NULL resource pointer has been provided.");
-        return false;
-    } else if (!keyword) {
-        VIR_INFO("Cannot update the resource: a NULL keyword pointer has been provided.");
-        return false;
-    }
-
     if (readOnly) {
-        if (!res->ro) {
-            VIR_INFO("Cannot update the read-only keyword: RO section not initialized.");
-            return false;
-        }
-
         if (STREQ("EC", keyword) || STREQ("change_level", keyword)) {
             g_free(res->ro->change_level);
             res->ro->change_level = g_strdup(value);
@@ -353,13 +340,7 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
             /* The CP keyword is currently not supported and is skipped. */
             return true;
         }
-
     } else {
-        if (!res->rw) {
-            VIR_INFO("Cannot update the read-write keyword: read-write section not initialized.");
-            return false;
-        }
-
         if (STREQ("YA", keyword) || STREQ("asset_tag", keyword)) {
             g_free(res->rw->asset_tag);
             res->rw->asset_tag = g_strdup(value);
