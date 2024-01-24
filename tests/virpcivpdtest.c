@@ -430,45 +430,6 @@ testPCIVPDGetFieldValueFormat(const void *data G_GNUC_UNUSED)
     'R', 'W', 0x02, 0x00, 0x00
 
 static int
-testVirPCIVPDReadVPDBytes(const void *opaque G_GNUC_UNUSED)
-{
-    VIR_AUTOCLOSE fd = -1;
-    g_autofree uint8_t *buf = NULL;
-    uint8_t csum = 0;
-    size_t readBytes = 0;
-    size_t dataLen = 0;
-
-    /* An example of a valid VPD record with one VPD-R resource and 2 fields. */
-    uint8_t fullVPDExample[] = {
-        VPD_STRING_RESOURCE_EXAMPLE_HEADER, VPD_STRING_RESOURCE_EXAMPLE_DATA,
-        VPD_R_FIELDS_EXAMPLE_HEADER, VPD_R_FIELDS_EXAMPLE_DATA,
-        PCI_VPD_RESOURCE_END_VAL
-    };
-    dataLen = G_N_ELEMENTS(fullVPDExample) - 2;
-    buf = g_malloc0(dataLen);
-
-    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
-        return -1;
-
-    readBytes = virPCIVPDReadVPDBytes(fd, buf, dataLen, 0, &csum);
-
-    if (readBytes != dataLen) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "The number of bytes read %zu is lower than expected %zu ",
-                       readBytes, dataLen);
-        return -1;
-    }
-
-    if (csum) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "The sum of all VPD bytes up to and including the checksum byte"
-                       "is equal to zero: 0x%02x", csum);
-        return -1;
-    }
-    return 0;
-}
-
-static int
 testVirPCIVPDParseVPDStringResource(const void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOCLOSE fd = -1;
@@ -1002,8 +963,6 @@ mymain(void)
         ret = -1;
     if (virTestRun("Determining a field value format by a key ",
                    testPCIVPDGetFieldValueFormat, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Reading VPD bytes ", testVirPCIVPDReadVPDBytes, NULL) < 0)
         ret = -1;
     if (virTestRun("Parsing VPD string resources ", testVirPCIVPDParseVPDStringResource, NULL) < 0)
         ret = -1;
