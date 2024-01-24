@@ -270,16 +270,13 @@ virPCIVPDResourceCustomCompareIndex(virPCIVPDResourceCustom *a, virPCIVPDResourc
  *
  * Returns: true if a value has been updated successfully, false otherwise.
  */
-bool
+void
 virPCIVPDResourceCustomUpsertValue(GPtrArray *arr, char index, const char *const value)
 {
     g_autoptr(virPCIVPDResourceCustom) custom = NULL;
     virPCIVPDResourceCustom *existing = NULL;
     guint pos = 0;
     bool found = false;
-
-    if (arr == NULL || value == NULL)
-        return false;
 
     custom = g_new0(virPCIVPDResourceCustom, 1);
     custom->idx = index;
@@ -294,7 +291,6 @@ virPCIVPDResourceCustomUpsertValue(GPtrArray *arr, char index, const char *const
     } else {
         g_ptr_array_add(arr, g_steal_pointer(&custom));
     }
-    return true;
 }
 
 /**
@@ -348,9 +344,7 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
             res->ro->serial_number = g_strdup(value);
             return true;
         } else if (virPCIVPDResourceIsVendorKeyword(keyword)) {
-            if (!virPCIVPDResourceCustomUpsertValue(res->ro->vendor_specific, keyword[1], value)) {
-                return false;
-            }
+            virPCIVPDResourceCustomUpsertValue(res->ro->vendor_specific, keyword[1], value);
             return true;
         } else if (STREQ("FG", keyword) || STREQ("LC", keyword) || STREQ("PG", keyword)) {
             /* Legacy PICMIG keywords are skipped on purpose. */
@@ -371,14 +365,10 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
             res->rw->asset_tag = g_strdup(value);
             return true;
         } else if (virPCIVPDResourceIsVendorKeyword(keyword)) {
-            if (!virPCIVPDResourceCustomUpsertValue(res->rw->vendor_specific, keyword[1], value)) {
-                return false;
-            }
+            virPCIVPDResourceCustomUpsertValue(res->rw->vendor_specific, keyword[1], value);
             return true;
         } else if (virPCIVPDResourceIsSystemKeyword(keyword)) {
-            if (!virPCIVPDResourceCustomUpsertValue(res->rw->system_specific, keyword[1], value)) {
-                return false;
-            }
+            virPCIVPDResourceCustomUpsertValue(res->rw->system_specific, keyword[1], value);
             return true;
         }
     }

@@ -244,8 +244,7 @@ testPCIVPDResourceCustomUpsertValue(const void *data G_GNUC_UNUSED)
 {
     g_autoptr(GPtrArray) arr = g_ptr_array_new_full(0, (GDestroyNotify)virPCIVPDResourceCustomFree);
     virPCIVPDResourceCustom *custom = NULL;
-    if (!virPCIVPDResourceCustomUpsertValue(arr, 'A', "testval"))
-        return -1;
+    virPCIVPDResourceCustomUpsertValue(arr, 'A', "testval");
 
     if (arr->len != 1)
         return -1;
@@ -255,8 +254,7 @@ testPCIVPDResourceCustomUpsertValue(const void *data G_GNUC_UNUSED)
         return -1;
 
     /* Idempotency */
-    if (!virPCIVPDResourceCustomUpsertValue(arr, 'A', "testval"))
-        return -1;
+    virPCIVPDResourceCustomUpsertValue(arr, 'A', "testval");
 
     if (arr->len != 1)
         return -1;
@@ -266,8 +264,7 @@ testPCIVPDResourceCustomUpsertValue(const void *data G_GNUC_UNUSED)
         return -1;
 
     /* Existing value updates. */
-    if (!virPCIVPDResourceCustomUpsertValue(arr, 'A', "testvalnew"))
-        return -1;
+    virPCIVPDResourceCustomUpsertValue(arr, 'A', "testvalnew");
 
     if (arr->len != 1)
         return -1;
@@ -277,8 +274,7 @@ testPCIVPDResourceCustomUpsertValue(const void *data G_GNUC_UNUSED)
         return -1;
 
     /* Inserting multiple values */
-    if (!virPCIVPDResourceCustomUpsertValue(arr, '1', "42"))
-        return -1;
+    virPCIVPDResourceCustomUpsertValue(arr, '1', "42");
 
     if (arr->len != 2)
         return -1;

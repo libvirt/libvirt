@@ -66,5 +66,5 @@ bool virPCIVPDResourceIsValidTextValue(const char *value);
 gboolean
 virPCIVPDResourceCustomCompareIndex(virPCIVPDResourceCustom *a, virPCIVPDResourceCustom *b);
 
-bool
+void
 virPCIVPDResourceCustomUpsertValue(GPtrArray *arr, char index, const char *const value);
