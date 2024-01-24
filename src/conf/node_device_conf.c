@@ -1023,9 +1023,6 @@ virNodeDeviceCapVPDParseReadOnlyFields(xmlXPathContextPtr ctxt, virPCIVPDResourc
                               "serial_number", "part_number", NULL};
     size_t i = 0;
 
-    if (res == NULL)
-        return -1;
-
     res->ro = virPCIVPDResourceRONew();
 
     while (keywords[i]) {
@@ -1060,9 +1057,6 @@ virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
     int nfields = -1;
     size_t i = 0;
     g_autoptr(virPCIVPDResource) newres = g_new0(virPCIVPDResource, 1);
-
-    if (res == NULL)
-        return -1;
 
     if (!(newres->name = virXPathString("string(./name)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
