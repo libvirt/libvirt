@@ -175,23 +175,18 @@ virPCIVPDResourceGetFieldValueFormat(const char *keyword)
 bool
 virPCIVPDResourceIsValidTextValue(const char *value)
 {
-    size_t i = 0;
+    const char *v;
+    bool ret = true;
 
-    if (value == NULL)
-        return false;
-
-    /* An empty string is a valid value. */
-    if (STREQ(value, ""))
-        return true;
-
-    while (i < strlen(value)) {
-        if (!g_ascii_isprint(value[i])) {
-            VIR_DEBUG("The provided value contains non-ASCII printable characters: %s", value);
-            return false;
+    for (v = value; *v; v++) {
+        if (!g_ascii_isprint(*v)) {
+            ret = false;
+            break;
         }
-        ++i;
     }
-    return true;
+
+    VIR_DEBUG("val='%s' ret='%d'", value, ret);
+    return ret;
 }
 
 void
