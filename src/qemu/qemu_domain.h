@@ -420,6 +420,8 @@ typedef struct _qemuDomainNetworkPrivate qemuDomainNetworkPrivate;
 struct _qemuDomainNetworkPrivate {
     virObject parent;
 
+    /* Don't forget to possibly copy these members in qemuDomainChangeNet(). */
+
     /* True if the device was created by us. Otherwise we should
      * avoid removing it. Currently only used for
      * VIR_DOMAIN_NET_TYPE_DIRECT. */

@@ -4166,6 +4166,11 @@ qemuDomainChangeNet(virQEMUDriver *driver,
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(olddev->ifname));
         }
+
+        /* Carry over fact whether we created the device or not. */
+        QEMU_DOMAIN_NETWORK_PRIVATE(newdev)->created =
+            QEMU_DOMAIN_NETWORK_PRIVATE(olddev)->created;
+
         virDomainNetDefFree(olddev);
         /* move newdev into the nets list, and NULL it out from the
          * virDomainDeviceDef that we were given so that the caller
