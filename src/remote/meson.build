@@ -7,8 +7,6 @@ remote_driver_generated = []
 
 foreach name : [ 'remote', 'qemu', 'lxc' ]
   client_bodies_h = '@0@_client_bodies.h'.format(name)
-  protocol_c = '@0@_protocol.c'.format(name)
-  protocol_h = '@0@_protocol.h'.format(name)
   protocol_x = '@0@_protocol.x'.format(name)
 
   remote_driver_generated += custom_target(
@@ -20,8 +18,16 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
     ],
     capture: true,
   )
+endforeach
 
-  remote_driver_generated += custom_target(
+remote_protocol_generated = []
+
+foreach name : [ 'remote', 'qemu', 'lxc' ]
+  protocol_c = '@0@_protocol.c'.format(name)
+  protocol_h = '@0@_protocol.h'.format(name)
+  protocol_x = '@0@_protocol.x'.format(name)
+
+  remote_protocol_generated += custom_target(
     protocol_h,
     input: protocol_x,
     output: protocol_h,
@@ -32,7 +38,7 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
     ],
   )
 
-  remote_driver_generated += custom_target(
+  remote_protocol_generated += custom_target(
     protocol_c,
     input: protocol_x,
     output: protocol_c,
@@ -143,6 +149,7 @@ if conf.has('WITH_REMOTE')
   remote_driver_lib = static_library(
     'virt_remote_driver',
     [
+      remote_protocol_generated,
       remote_driver_sources,
       remote_driver_generated,
     ],

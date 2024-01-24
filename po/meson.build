@@ -20,6 +20,7 @@ potfiles_dep = [
   access_gen_sources,
   admin_client_generated,
   admin_driver_generated,
+  remote_protocol_generated,
   remote_driver_generated,
   remote_daemon_generated,
 ]

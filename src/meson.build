@@ -616,7 +616,11 @@ foreach daemon : virt_daemons
   bin = executable(
     daemon['name'],
     [
-      daemon.get('sources', [ remote_daemon_sources, remote_daemon_generated ]),
+      daemon.get('sources', [
+        remote_protocol_generated,
+        remote_daemon_sources,
+        remote_daemon_generated
+      ]),
       dtrace_gen_objects,
     ],
     c_args: [
