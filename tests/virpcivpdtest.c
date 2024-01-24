@@ -84,17 +84,15 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
 
     /* Update keywords one by one and compare actual values with the expected ones. */
     for (i = 0; i < numROCases; ++i) {
-        if (!virPCIVPDResourceUpdateKeyword(res, true,
-                                            readOnlyCases[i].keyword,
-                                            readOnlyCases[i].value))
-            return -1;
+        virPCIVPDResourceUpdateKeyword(res, true,
+                                       readOnlyCases[i].keyword,
+                                       readOnlyCases[i].value);
         if (STRNEQ(readOnlyCases[i].value, *readOnlyCases[i].actual))
             return -1;
     }
 
     /* Do a basic vendor field check. */
-    if (!virPCIVPDResourceUpdateKeyword(res, true, "V0", "vendor0"))
-        return -1;
+    virPCIVPDResourceUpdateKeyword(res, true, "V0", "vendor0");
 
     if (res->ro->vendor_specific->len != 1)
         return -1;
@@ -105,25 +103,23 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
 
     /* Make sure unsupported RO keyword updates are not fatal. */
     for (i = 0; i < numUnsupportedCases; ++i) {
-        if (!virPCIVPDResourceUpdateKeyword(res, true,
-                                            unsupportedFieldCases[i].keyword,
-                                            unsupportedFieldCases[i].value))
-            return -1;
+        virPCIVPDResourceUpdateKeyword(res, true,
+                                       unsupportedFieldCases[i].keyword,
+                                       unsupportedFieldCases[i].value);
     }
 
     /* Initialize RW */
     res->rw = g_steal_pointer(&rw);
-    if (!virPCIVPDResourceUpdateKeyword(res, false, "YA", "tag1")
-        || STRNEQ(res->rw->asset_tag, "tag1"))
+    virPCIVPDResourceUpdateKeyword(res, false, "YA", "tag1");
+    if (STRNEQ(res->rw->asset_tag, "tag1"))
         return -1;
 
-    if (!virPCIVPDResourceUpdateKeyword(res, false, "asset_tag", "tag2")
-        || STRNEQ(res->rw->asset_tag, "tag2"))
+    virPCIVPDResourceUpdateKeyword(res, false, "asset_tag", "tag2");
+    if (STRNEQ(res->rw->asset_tag, "tag2"))
         return -1;
 
     /* Do a basic system field check. */
-    if (!virPCIVPDResourceUpdateKeyword(res, false, "Y0", "system0"))
-        return -1;
+    virPCIVPDResourceUpdateKeyword(res, false, "Y0", "system0");
 
     if (res->rw->system_specific->len != 1)
         return -1;
@@ -134,10 +130,12 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
 
     /* Make sure unsupported RW keyword updates are not fatal. */
     for (i = 0; i < numUnsupportedCases; ++i) {
-        if (!virPCIVPDResourceUpdateKeyword(res, false,
-                                            unsupportedFieldCases[i].keyword,
-                                            unsupportedFieldCases[i].value))
-            return -1;
+        /* This test is deliberately left in despite
+         * virPCIVPDResourceUpdateKeyword always succeeding to prevent
+         * possible regressions if the function is ever rewritten */
+        virPCIVPDResourceUpdateKeyword(res, false,
+                                       unsupportedFieldCases[i].keyword,
+                                       unsupportedFieldCases[i].value);
     }
 
 

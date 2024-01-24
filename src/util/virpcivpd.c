@@ -307,54 +307,48 @@ virPCIVPDResourceCustomUpsertValue(GPtrArray *arr, char index, const char *const
  * used in XML elements. For vendor-specific and system-specific keywords only V%s and Y%s
  * (except "YA" which is an asset tag) formatted values are accepted.
  *
- * Returns: true if a keyword has been updated successfully, false otherwise.
+ * Unknown or malformed values are ignored.
  */
-bool
-virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
-                               const char *const keyword, const char *const value)
+void
+virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res,
+                               const bool readOnly,
+                               const char *const keyword,
+                               const char *const value)
 {
     if (readOnly) {
         if (STREQ("EC", keyword) || STREQ("change_level", keyword)) {
             g_free(res->ro->change_level);
             res->ro->change_level = g_strdup(value);
-            return true;
         } else if (STREQ("MN", keyword) || STREQ("manufacture_id", keyword)) {
             g_free(res->ro->manufacture_id);
             res->ro->manufacture_id = g_strdup(value);
-            return true;
         } else if (STREQ("PN", keyword) || STREQ("part_number", keyword)) {
             g_free(res->ro->part_number);
             res->ro->part_number = g_strdup(value);
-            return true;
         } else if (STREQ("SN", keyword) || STREQ("serial_number", keyword)) {
             g_free(res->ro->serial_number);
             res->ro->serial_number = g_strdup(value);
-            return true;
         } else if (virPCIVPDResourceIsVendorKeyword(keyword)) {
             virPCIVPDResourceCustomUpsertValue(res->ro->vendor_specific, keyword[1], value);
-            return true;
         } else if (STREQ("FG", keyword) || STREQ("LC", keyword) || STREQ("PG", keyword)) {
             /* Legacy PICMIG keywords are skipped on purpose. */
-            return true;
         } else if (STREQ("CP", keyword)) {
             /* The CP keyword is currently not supported and is skipped. */
-            return true;
+        } else {
+            VIR_DEBUG("unhandled PCI VPD r/o keyword '%s'(val='%s')", keyword, value);
         }
     } else {
         if (STREQ("YA", keyword) || STREQ("asset_tag", keyword)) {
             g_free(res->rw->asset_tag);
             res->rw->asset_tag = g_strdup(value);
-            return true;
         } else if (virPCIVPDResourceIsVendorKeyword(keyword)) {
             virPCIVPDResourceCustomUpsertValue(res->rw->vendor_specific, keyword[1], value);
-            return true;
         } else if (virPCIVPDResourceIsSystemKeyword(keyword)) {
             virPCIVPDResourceCustomUpsertValue(res->rw->system_specific, keyword[1], value);
-            return true;
+        } else {
+            VIR_DEBUG("unhandled PCI VPD r/w keyword '%s'(val='%s')", keyword, value);
         }
     }
-    VIR_WARN("Tried to update an unsupported keyword %s: skipping.", keyword);
-    return true;
 }
 
 #ifdef __linux__
@@ -527,10 +521,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                 res->rw = virPCIVPDResourceRWNew();
         }
         /* The field format, keyword and value are determined. Attempt to update the resource. */
-        if (!virPCIVPDResourceUpdateKeyword(res, readOnly, fieldKeyword, fieldValue)) {
-            VIR_INFO("Could not update the VPD resource keyword: %s", fieldKeyword);
-            return false;
-        }
+        virPCIVPDResourceUpdateKeyword(res, readOnly, fieldKeyword, fieldValue);
     }
 
     /* May have exited the loop prematurely in case RV or RW were encountered and
