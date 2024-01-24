@@ -167,19 +167,15 @@ virPCIVPDResourceGetFieldValueFormat(const char *keyword)
  * value or text field value. The expectations are based on the keywords specified
  * in relevant sections of PCI(e) specifications
  * ("I.3. VPD Definitions" in PCI specs, "6.28.1 VPD Format" PCIe 4.0).
+ *
+ * The PCI(e) specs mention alphanumeric characters when talking about text fields
+ * and the string resource but also include spaces and dashes in the provided example.
+ * Dots, commas, equal signs have also been observed in values used by major device vendors.
  */
 bool
 virPCIVPDResourceIsValidTextValue(const char *value)
 {
     size_t i = 0;
-    /*
-     * The PCI(e) specs mention alphanumeric characters when talking about text fields
-     * and the string resource but also include spaces and dashes in the provided example.
-     * Dots, commas, equal signs have also been observed in values used by major device vendors.
-     * The specs do not specify a full set of allowed code points and for Libvirt it is important
-     * to keep values in the ranges allowed within XML elements (mainly excluding less-than,
-     * greater-than and ampersand).
-     */
 
     if (value == NULL)
         return false;
