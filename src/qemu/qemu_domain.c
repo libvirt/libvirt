@@ -4264,6 +4264,7 @@ qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
     /* Most new architectures should ideally use virtio */
     if (ARCH_IS_S390(def->os.arch) ||
         qemuDomainIsARMVirt(def) ||
+        qemuDomainIsRISCVVirt(def) ||
         qemuDomainIsLoongArchVirt(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
 
