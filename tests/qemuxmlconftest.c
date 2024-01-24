@@ -1822,11 +1822,20 @@ mymain(void)
                  ARG_CAPS_VER, "latest",
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
                  ARG_END);
+    /* q35 fails instead */
     DO_TEST_FULL("usb-controller-default-unavailable-q35", ".x86_64-latest",
                  ARG_CAPS_ARCH, "x86_64",
                  ARG_CAPS_VER, "latest",
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    /* However, if the USB controller is the one that gets added
+     * automatically for every guest instead of one that the user has
+     * explicitly asked for, we prefer simply skipping it */
+    DO_TEST_FULL("usb-controller-automatic-unavailable-q35", ".x86_64-latest",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_ICH9_USB_EHCI1, QEMU_CAPS_LAST,
                  ARG_END);
 
     DO_TEST_CAPS_LATEST("usb-none");
