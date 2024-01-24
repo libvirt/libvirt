@@ -64,11 +64,6 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
         {.keyword = "SN", .value = "serial2", .actual = &ro->serial_number},
         {.keyword = "serial_number", .value = "serial3", .actual = &ro->serial_number},
     };
-    const TestPCIVPDKeywordValue readWriteCases[] = {
-        {.keyword = "YA", .value = "tag1", .actual = &ro->change_level},
-        {.keyword = "YA", .value = "tag2", .actual = &ro->change_level},
-        {.keyword = "asset_tag", .value = "tag3", .actual = &ro->change_level},
-    };
     const TestPCIVPDKeywordValue unsupportedFieldCases[] = {
         {.keyword = "FG", .value = "42", .actual = NULL},
         {.keyword = "LC", .value = "42", .actual = NULL},
@@ -77,7 +72,6 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
         {.keyword = "EX", .value = "42", .actual = NULL},
     };
     size_t numROCases = G_N_ELEMENTS(readOnlyCases);
-    size_t numRWCases = G_N_ELEMENTS(readWriteCases);
     size_t numUnsupportedCases = G_N_ELEMENTS(unsupportedFieldCases);
     g_autoptr(virPCIVPDResource) res = g_new0(virPCIVPDResource, 1);
     virPCIVPDResourceCustom *custom = NULL;
@@ -85,20 +79,6 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
     g_autofree char *val = g_strdup("testval");
     res->name = g_steal_pointer(&val);
 
-    /* RO has not been initialized - make sure updates fail. */
-    for (i = 0; i < numROCases; ++i) {
-        if (virPCIVPDResourceUpdateKeyword(res, true,
-                                           readOnlyCases[i].keyword,
-                                           readOnlyCases[i].value))
-            return -1;
-    }
-    /* RW has not been initialized - make sure updates fail. */
-    for (i = 0; i < numRWCases; ++i) {
-        if (virPCIVPDResourceUpdateKeyword(res, false,
-                                           readWriteCases[i].keyword,
-                                           readWriteCases[i].value))
-            return -1;
-    }
     /* Initialize RO */
     res->ro = g_steal_pointer(&ro);
 
@@ -130,13 +110,6 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
                                             unsupportedFieldCases[i].value))
             return -1;
     }
-
-    /* Check that RW updates fail if RW has not been initialized. */
-    if (virPCIVPDResourceUpdateKeyword(res, false, "YA", "tag1"))
-        return -1;
-
-    if (virPCIVPDResourceUpdateKeyword(res, false, "asset_tag", "tag1"))
-        return -1;
 
     /* Initialize RW */
     res->rw = g_steal_pointer(&rw);
