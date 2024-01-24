@@ -3700,7 +3700,6 @@ virVHBAPathExists;
 # util/virpcivpd.h
 
 virPCIVPDParse;
-virPCIVPDParseVPDLargeResourceFields;
 virPCIVPDParseVPDLargeResourceString;
 virPCIVPDResourceCustomCompareIndex;
 virPCIVPDResourceCustomFree;

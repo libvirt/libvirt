@@ -436,7 +436,7 @@ virPCIVPDReadVPDBytes(int vpdFileFd, uint8_t *buf, size_t count, off_t offset, u
  * Returns: a pointer to a VPDResource which needs to be freed by the caller or
  * NULL if getting it failed for some reason.
  */
-bool
+static bool
 virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t resDataLen,
                                      bool readOnly, uint8_t *csum, virPCIVPDResource *res)
 {
@@ -736,19 +736,6 @@ bool
 virPCIVPDParseVPDLargeResourceString(int vpdFileFd G_GNUC_UNUSED,
                                      uint16_t resPos G_GNUC_UNUSED,
                                      uint16_t resDataLen G_GNUC_UNUSED,
-                                     uint8_t *csum G_GNUC_UNUSED,
-                                     virPCIVPDResource *res G_GNUC_UNUSED)
-{
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("PCI VPD reporting not available on this platform"));
-    return false;
-}
-
-bool
-virPCIVPDParseVPDLargeResourceFields(int vpdFileFd G_GNUC_UNUSED,
-                                     uint16_t resPos G_GNUC_UNUSED,
-                                     uint16_t resDataLen G_GNUC_UNUSED,
-                                     bool readOnly G_GNUC_UNUSED,
                                      uint8_t *csum G_GNUC_UNUSED,
                                      virPCIVPDResource *res G_GNUC_UNUSED)
 {
