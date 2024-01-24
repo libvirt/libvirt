@@ -401,7 +401,7 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res, const bool readOnly,
  * descriptor, it is reported and -1 is returned to the caller. If EOF is occurred, 0 is returned
  * to the caller.
  */
-size_t
+static size_t
 virPCIVPDReadVPDBytes(int vpdFileFd, uint8_t *buf, size_t count, off_t offset, uint8_t *csum)
 {
     ssize_t numRead = pread(vpdFileFd, buf, count, offset);
@@ -731,18 +731,6 @@ virPCIVPDParse(int vpdFileFd)
 }
 
 #else /* ! __linux__ */
-
-size_t
-virPCIVPDReadVPDBytes(int vpdFileFd G_GNUC_UNUSED,
-                      uint8_t *buf G_GNUC_UNUSED,
-                      size_t count G_GNUC_UNUSED,
-                      off_t offset G_GNUC_UNUSED,
-                      uint8_t *csum G_GNUC_UNUSED)
-{
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("PCI VPD reporting not available on this platform"));
-    return 0;
-}
 
 bool
 virPCIVPDParseVPDLargeResourceString(int vpdFileFd G_GNUC_UNUSED,

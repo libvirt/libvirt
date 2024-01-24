@@ -3702,7 +3702,6 @@ virVHBAPathExists;
 virPCIVPDParse;
 virPCIVPDParseVPDLargeResourceFields;
 virPCIVPDParseVPDLargeResourceString;
-virPCIVPDReadVPDBytes;
 virPCIVPDResourceCustomCompareIndex;
 virPCIVPDResourceCustomFree;
 virPCIVPDResourceCustomUpsertValue;
