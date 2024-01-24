@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-19 13:51+0000\n"
+"PO-Revision-Date: 2024-01-24 09:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23808,42 +23808,39 @@ msgstr "cpu-parametern saknar ett modellnamn"
 
 #, c-format
 msgid "cpu topology results in more than %1$u cpus"
-msgstr ""
+msgstr "cpu-topologin resulterar i fler än %1$u cpu:er"
 
 #, c-format
 msgid "cpuNum in %1$s only accepts %2$d as a negative value"
-msgstr ""
+msgstr "cpuNum i %1$s accepterar bara %2$d som ett negativt värde"
 
-#, fuzzy
 msgid "cpuacct parse error"
-msgstr "avläsningsfel"
+msgstr "cpuacct-tolkningsfel"
 
 #, c-format
 msgid "cpuid starting with %1$s is not supported, only libxl format is"
-msgstr ""
+msgstr "cpuid som startar med %1$s stödjs inte, endast libxl-format stödjs"
 
 msgid "cputune is not supported by vz driver"
-msgstr ""
+msgstr "cputune stödjs inte av vz-drivrutinen"
 
 msgid "crash the domain after core dump"
-msgstr ""
+msgstr "krascha domänen efter kärndumpen"
 
 msgid "crashed"
 msgstr "kraschad"
 
 msgid "create a bridge device and attach an existing network device to it"
-msgstr ""
+msgstr "skapa en bryggenhet och anslut en befintlig nätverksenhet till den"
 
-#, fuzzy
 msgid "create a device defined by an XML file on the node"
-msgstr "skapa en domän från en XML-fil"
+msgstr "skapa en enhet definerad av en XML-fil på noden"
 
 msgid "create a domain from an XML file"
 msgstr "skapa en domän från en XML-fil"
 
-#, fuzzy
 msgid "create a network filter binding from an XML file"
-msgstr "skapa ett nätverk från en XML-fil"
+msgstr "skapa ett nätverksfiltersbindning från en XML-fil"
 
 msgid "create a network from an XML file"
 msgstr "skapa ett nätverk från en XML-fil"
@@ -23861,12 +23858,14 @@ msgid ""
 "create a snapshot of current interfaces settings, which can be later "
 "committed (iface-commit) or restored (iface-rollback)"
 msgstr ""
+"skapa en ögonblicksbild av de aktuella gränssnittsinställningarna, som "
+"senare kan fastställas (iface-commit) eller återställas (iface-rollback)"
 
 msgid "create a vol from an XML file"
 msgstr "skapa en volym från en XML-fil"
 
 msgid "create a vol, using another volume as input"
-msgstr ""
+msgstr "skapa en volym, använd en annan volym som indata"
 
 msgid "create a volume from a set of args"
 msgstr "skapa en volym från en uppsättning argument"
@@ -23875,112 +23874,120 @@ msgid ""
 "creating a new group/updating existing with all tune parameters zero is not "
 "supported"
 msgstr ""
+"att skapa en ny grupp/uppdatera en befintlig med alla trimningsparametrar "
+"noll stödjs inte"
 
 msgid "creating checkpoint for incremental backup is not supported yet"
 msgstr ""
+"att skapa en ögonblicksbild för inkrementell säkerhetskopiering stödjs inte "
+"ännu"
 
 msgid "creating snapshot"
 msgstr "skapar en ögonblicksbild"
 
 msgid "creation of images with slice type='storage' is not supported"
-msgstr ""
+msgstr "att skapa avbilder med skivtyp=”storage” stödjs inte"
 
 msgid "creation of non-raw file images is not supported without qemu-img."
-msgstr ""
+msgstr "att skapa icke råa filavbilder stödjs inte utan qemu-img."
 
 msgid "creation of pid file requires daemonized command"
 msgstr "att skapa en pid-fil kräver daemonkommando"
 
 msgid "creation of qcow/qcow2 files supports only 'luks' encryption"
-msgstr ""
+msgstr "att skapa qcow/qcow2-filer stödjer bara ”luks”-kryptering"
 
 msgid "creation of qcow2 encrypted image is not supported"
-msgstr ""
+msgstr "att skapa en krypterad qcow2-avbild stödjs inte"
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
-msgstr ""
+msgstr "kryptobakänden %1$s stödjs inte"
 
 #, c-format
 msgid "crypto model %1$s is not supported"
-msgstr ""
+msgstr "kryptomodellen %1$s stödjs inte"
 
 #, c-format
 msgid "crypto type %1$s is not supported"
-msgstr ""
+msgstr "kryptotypen %1$s stödjs inte"
 
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
 "%3$s"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) returnerade ett fel: %1$s (%2$d) : "
+"%3$s"
 
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returnerade en negativ svarskod"
 
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returnerade ett fel: %1$s (%2$d)"
 
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
 "%3$s"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returnerade ett fel: %1$s (%2$d) : "
+"%3$s"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d)"
-msgstr ""
+msgstr "curl_easy_perform() returnerade ett fel: %1$s (%2$d)"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d) : %3$s"
-msgstr ""
+msgstr "curl_easy_perform() returnerade ett fel: %1$s (%2$d) : %3$s"
 
 msgid "current"
-msgstr ""
+msgstr "aktuell"
 
 msgid "current bridge device name"
-msgstr ""
+msgstr "aktuellt bryggenhetsnamn"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr ""
+msgstr "aktuellt jobb är inte utgående migrering i postkopieringsläge"
 
 msgid "current vcpu count must equal maximum"
-msgstr ""
+msgstr "aktuellt vcpu-antal måste vara lika med maximum"
 
 msgid "current vcpus must be equal to maxvcpus"
-msgstr ""
+msgstr "aktuella vcpu:er måste vara lika med maxvcpus"
 
-#, fuzzy
 msgid "custom alias name of disk device"
-msgstr "källa för skivenhet"
+msgstr "anpassat aliasnamn för diskenheten"
 
 msgid "custom alias name of interface device"
-msgstr ""
+msgstr "anpassat aliasnnamn för gränssnittsenheten"
 
 msgid "custom configuration parameters specified"
-msgstr ""
+msgstr "anpassade konfigurationsparametrar anginva"
 
 msgid "custom device configuration"
-msgstr ""
+msgstr "anpassad enhetskonfiguration"
 
 msgid "custom device tree blob used"
-msgstr ""
+msgstr "anpassad enhetsträds-blob använd"
 
 msgid "custom guest agent control commands issued"
-msgstr ""
+msgstr "anpassade styrkommandon för gästagenten skickade"
 
 msgid "custom monitor control commands issued"
-msgstr ""
+msgstr "anpassade styrkommandon för övervakning skickade"
 
 msgid "daemon"
-msgstr ""
+msgstr "demon"
 
-#, fuzzy
 msgid "daemon's admin server connection URI"
-msgstr "anslutnings-URI för hypervisor"
+msgstr "anslutnings-URI för demonens administrationsserver"
 
 #, c-format
 msgid "daemonized command cannot set working directory %1$s"
@@ -23990,13 +23997,13 @@ msgid "daemonized command cannot use virCommandRunAsync"
 msgstr "demonkommando kan inte använda virCommandRunAsync"
 
 msgid "dangling \\"
-msgstr ""
+msgstr "hängande \\"
 
 msgid "data sinks cannot be used for non-blocking streams"
-msgstr ""
+msgstr "datasänkor kan inte användas till icke blockerande strömmar"
 
 msgid "data sources cannot be used for non-blocking streams"
-msgstr ""
+msgstr "datakällor kan inte användas till icke blockerande strömmar"
 
 #, c-format
 msgid "dbus-daemon %1$s didn't show up"
@@ -24004,107 +24011,114 @@ msgstr "dbus-demonen %1$s dök inte upp"
 
 #, c-format
 msgid "dbus-daemon %1$s died unexpectedly"
-msgstr ""
+msgstr "dbus-daemon %1$s dog oväntat"
 
 #, c-format
 msgid "dbus-daemon died and reported: %1$s"
-msgstr ""
+msgstr "dbus-daemon dog och rapporterade: %1$s"
 
 msgid "default"
 msgstr "standard"
 
 #, c-format
 msgid "default_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "default_tls_x509_cert_dir directory ”%1$s” finns inte"
 
 msgid "define (but don't start) a domain from an XML file"
 msgstr "definiera (men start inte) en domän från en XML-fil"
 
 msgid "define a pool from a set of args"
-msgstr ""
+msgstr "definiera en pool från ett antal argument"
 
 msgid ""
 "define an inactive persistent physical host interface or modify an existing "
 "persistent one from an XML file"
 msgstr ""
+"definiera ett inaktivt beständigt fysiskt värdgränssnitt eller modifiera ett "
+"befintiligt beständigt från en XML-fil"
 
 msgid ""
 "define an inactive persistent storage pool or modify an existing persistent "
 "one from an XML file"
 msgstr ""
+"definiera ene inaktiv beständig lagringspool eller modifiera en befintlig "
+"beständig från en XML-fil"
 
 msgid ""
 "define an inactive persistent virtual network or modify an existing "
 "persistent one from an XML file"
 msgstr ""
+"definiera ett inaktivt beständigt virtuellt nätverk eller modifiera ett "
+"befintligt beständigt från en XML-fil"
 
-#, fuzzy
 msgid "define or modify a secret from an XML file"
-msgstr "avmontera enhet från en XML-fil"
+msgstr "definiera eller modifiera en hemlighet från en XML-fil"
 
-#, fuzzy
 msgid "define or update a network filter from an XML file"
-msgstr "skapa ett nätverk från en XML-fil"
+msgstr "definera eller uppdatera ett nätverksfilter från en XML-fil"
 
 #, c-format
 msgid "definition for checkpoint %1$s must use uuid %2$s"
-msgstr ""
+msgstr "definitionen av kontrollpunkten %1$s måste använda uuid %2$s"
 
 #, c-format
 msgid "definition for snapshot %1$s must use uuid %2$s"
-msgstr ""
+msgstr "definitionen av ögonblicsbilden %1$s måste använda uuid %2$s"
 
 msgid "deflate-on-oom is not supported by this QEMU binary"
-msgstr ""
+msgstr "deflate-on-oom stödjs inte av denna QEMU-binär"
 
 msgid "degraded"
-msgstr ""
+msgstr "försämrad"
 
-#, fuzzy
 msgid "delete a network filter binding"
-msgstr "anslut nätverksgränssnitt"
+msgstr "radera en nätverksfilterbindning"
 
 msgid "delete a pool"
-msgstr ""
+msgstr "radera en pool"
 
 msgid "delete a vol"
-msgstr ""
+msgstr "radera en volym"
 
 msgid "delete an IOThread from the guest domain"
 msgstr "radera en IOThread från gästdomänen"
 
 msgid "delete checkpoint and all children"
-msgstr ""
+msgstr "radera en kontrollpunkt och alla barn"
 
 msgid "delete children but not checkpoint"
-msgstr ""
+msgstr "radera barn men inte kontrollpunkten"
 
 msgid "delete children but not snapshot"
-msgstr ""
+msgstr "radera barn men inte ögonblicksbilden"
 
 msgid "delete current snapshot"
-msgstr ""
+msgstr "radera den aktuella ögonblicksbilden"
 
 msgid "delete files that were successfully committed"
-msgstr ""
+msgstr "radera filer som fastställdes"
 
 msgid "delete only libvirt metadata, leaving checkpoint contents behind"
-msgstr ""
+msgstr "radera endast libvrit-metadata, lämna kvar kontrollpunktsinnehållet"
 
 msgid "delete only libvirt metadata, leaving snapshot contents behind"
-msgstr ""
+msgstr "radera endast libvirt-metadata, lämna kvar ögonblicksbildsinnehållet"
 
 msgid "delete snapshot and all children"
-msgstr ""
+msgstr "radera ögonblicksbilden och alla barn"
 
 msgid ""
 "delete snapshots associated with volume (must be supported by storage driver)"
 msgstr ""
+"radera ögonblicksbilder associerade med volymen (måste stödjas av "
+"lagringsdrivrutinen)"
 
 msgid ""
 "delete snapshots associated with volume(s), requires --remove-all-storage "
 "(must be supported by storage driver)"
 msgstr ""
+"radera ögonblicksbilder associerade med volymer, kräver --remove-all-storage "
+"(måste stödjas av lagringsdrivrutinen)"
 
 msgid "delete the specified network port"
 msgstr "radera den angivna nätverksporten"
@@ -24112,57 +24126,63 @@ msgstr "radera den angivna nätverksporten"
 msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
+"att radera externa ögonblicksbilder som har interna ögonblicksbilder som "
+"förälder stödjs inte"
 
 msgid ""
 "deletion of active external snapshot that is not a leaf snapshot is not "
 "supported"
 msgstr ""
+"att radera aktiva externa ögonblicksbilder som inte är en lövögonblicksbild "
+"stödjs inte"
 
 msgid "deletion of external and internal children disk snapshots not supported"
-msgstr ""
+msgstr "att radera externa och interna barnögonblicksbilder stödjs inte"
 
 msgid "deletion of external children disk snapshots not supported"
-msgstr ""
+msgstr "att radera externa barnögonblicksbilder stödjs inte"
 
 msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
 msgstr ""
+"att radera externa diskögonblicksbilder med flera barnögonblicksbilder "
+"stödjs inte"
 
 msgid "deletion of external disk snapshots with children not supported"
-msgstr ""
+msgstr "att radera externa diskögonblicksbilder med barn stödjs inte"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
 "supported"
 msgstr ""
+"att radera externa ögonblicksbilder som inte är löv och inte i den aktiva "
+"kedjan stödjs inte"
 
 #, c-format
 msgid "deprecated configuration: %1$s"
-msgstr ""
+msgstr "föråldrad konfiguration: %1$s"
 
 msgid "description"
 msgstr "beskrivning"
 
 msgid "description of checkpoint"
-msgstr ""
+msgstr "beskrivning av kontrollpunkten"
 
 msgid "description of snapshot"
-msgstr ""
+msgstr "beskrivning av ögonblicksbilden"
 
 msgid "destroy (stop) a device on the node"
-msgstr ""
+msgstr "förstör (stoppa) en enhet på noden"
 
-#, fuzzy
 msgid "destroy (stop) a domain"
-msgstr "Återställ en domän."
+msgstr "förstör (stoppa) en domän"
 
-#, fuzzy
 msgid "destroy (stop) a network"
-msgstr "starta ett nätverk automatiskt"
+msgstr "förstör (stoppa) ett nätverk"
 
 msgid "destroy (stop) a pool"
-msgstr ""
+msgstr "förstör (stoppa) en pool"
 
 msgid "destroy a physical host interface (disable it / \"if-down\")"
 msgstr "förstör ett fysiskt värdgränssnitt (avaktivera det / ”if-down”)"
@@ -24173,9 +24193,8 @@ msgstr "förstörd"
 msgid "detach device from an XML file"
 msgstr "avmontera enhet från en XML-fil"
 
-#, fuzzy
 msgid "detach device from an alias"
-msgstr "avmontera enhet från en XML-fil"
+msgstr "koppla less en enhet från ett alias"
 
 msgid "detach disk device"
 msgstr "avmontera diskenhet"
@@ -24183,46 +24202,46 @@ msgstr "avmontera diskenhet"
 msgid "detach network interface"
 msgstr "anslut nätverksgränssnitt"
 
-#, fuzzy
 msgid "detach node device from its device driver"
-msgstr "avmontera enhet från en XML-fil"
+msgstr "koppla ifrån en nodenhet från sin enhetsdrivrutin"
 
 #, c-format
 msgid "detaching device type '%1$s' is unsupported"
-msgstr ""
+msgstr "att koppla ifrån enhetstypen ”%1$s” stödjs inte"
 
 msgid "detaching network device from VM is unsupported"
-msgstr ""
+msgstr "att koppla ifrån en nätverksenhet från VM:en stödjs inte"
 
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
+"att koppla ifrån <console/> stödjs inte. Försök med motsvarande <serial/"
+">istället"
 
 msgid "detaching serial console is not supported"
-msgstr ""
+msgstr "att koppla ifrån en seriekonsol stödjs inte"
 
-#, fuzzy
 msgid "detailed domain vcpu information"
-msgstr "domäninformation"
+msgstr "detaljerad domän-vcpu-information"
 
 msgid "detect_zeroes is not supported with vhostuser disk"
-msgstr ""
+msgstr "detect_zeroes stödjs inte med en vhostuser-disk"
 
 #, c-format
 msgid "dev->id buffer overflow: %1$d %2$d"
-msgstr ""
+msgstr "dev->id buffertspill: %1$d %2$d"
 
 #, c-format
 msgid "dev->id buffer overflow: %1$s %2$s"
-msgstr ""
+msgstr "dev->id buffertspill: %1$s %2$s"
 
 #, c-format
 msgid "dev->name buffer overflow: %1$.3d:%2$.3d"
-msgstr ""
+msgstr "dev->name buffertspill: %1$.3d:%2$.3d"
 
 #, c-format
 msgid "device %1$s iommu_group symlink %2$s has invalid group number %3$s"
-msgstr ""
+msgstr "enheten %1$s iommu_group symlänk %2$s har felaktigt gruppnummer %3$s"
 
 #, c-format
 msgid "device %1$s is already in use"
@@ -24230,21 +24249,21 @@ msgstr "enheten %1$s används redan"
 
 #, c-format
 msgid "device %1$s is not a PCI device"
-msgstr ""
+msgstr "enheten %1$s är inte en PCI-enhet"
 
 #, c-format
 msgid "device '%1$s' in network '%2$s' is not an SR-IOV Virtual Function"
-msgstr ""
+msgstr "enheten ”%1$s” i nätverket ”%2$s” är inte en SR-IOV Virtual Function"
 
 #, c-format
 msgid "device API '%1$s' not supported yet"
-msgstr ""
+msgstr "enhets-API:et ”%1$s” stödjs inte ännu"
 
 msgid "device alias"
-msgstr ""
+msgstr "enhetsalias"
 
 msgid "device alias not found: cannot set link state to down"
-msgstr ""
+msgstr "enhetsaliaset finns inte: kan inte sätta länkstatusen till nere"
 
 msgid "device cannot be detached: device is busy"
 msgstr ""
