@@ -141,57 +141,35 @@ void virSystemdHasLogindResetCachedValue(void)
 }
 
 
-/* -2 = machine1 is not supported on this machine
- * -1 = error
- *  0 = machine1 is available
+/**
+ * virSystemdHasService:
+ *
+ * Check whether a DBus @service is enabled and either the service itself is
+ * running or will be started on demand by a running systemd1 service.
+ *
+ * Returns
+ *   -2 when service is not supported on this machine
+ *   -1 on error
+ *    0 when service is available
  */
-int
-virSystemdHasMachined(void)
+static int
+virSystemdHasService(const char *service,
+                     int *cached)
 {
     int ret;
     int val;
 
-    val = g_atomic_int_get(&virSystemdHasMachinedCachedValue);
+    val = g_atomic_int_get(cached);
     if (val != -1)
         return val;
 
-    if ((ret = virGDBusIsServiceEnabled("org.freedesktop.machine1")) < 0) {
+    if ((ret = virGDBusIsServiceEnabled(service)) < 0) {
         if (ret == -2)
-            g_atomic_int_set(&virSystemdHasMachinedCachedValue, -2);
+            g_atomic_int_set(cached, -2);
         return ret;
     }
 
-    if ((ret = virGDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
-        return ret;
-    g_atomic_int_set(&virSystemdHasMachinedCachedValue, ret);
-    return ret;
-}
-
-int
-virSystemdHasLogind(void)
-{
-    int ret;
-    int val;
-
-    val = g_atomic_int_get(&virSystemdHasLogindCachedValue);
-    if (val != -1)
-        return val;
-
-    ret = virGDBusIsServiceEnabled("org.freedesktop.login1");
-    if (ret < 0) {
-        if (ret == -2)
-            g_atomic_int_set(&virSystemdHasLogindCachedValue, -2);
-        return ret;
-    }
-
-    /*
-     * Want to use logind if:
-     *   - logind is already running
-     * Or
-     *   - logind is not running, but this is a systemd host
-     *     (rely on dbus activation)
-     */
-    if ((ret = virGDBusIsServiceRegistered("org.freedesktop.login1")) == -1)
+    if ((ret = virGDBusIsServiceRegistered(service)) == -1)
         return ret;
 
     if (ret == -2) {
@@ -199,8 +177,24 @@ virSystemdHasLogind(void)
             return ret;
     }
 
-    g_atomic_int_set(&virSystemdHasLogindCachedValue, ret);
+    g_atomic_int_set(cached, ret);
     return ret;
+}
+
+
+int
+virSystemdHasMachined(void)
+{
+    return virSystemdHasService("org.freedesktop.machine1",
+                                &virSystemdHasMachinedCachedValue);
+}
+
+
+int
+virSystemdHasLogind(void)
+{
+    return virSystemdHasService("org.freedesktop.login1",
+                                &virSystemdHasLogindCachedValue);
 }
 
 
