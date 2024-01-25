@@ -914,8 +914,11 @@ qemuNbdkitStartStorageSource(virQEMUDriver *driver,
     virStorageSource *backing;
 
     for (backing = src; backing != NULL; backing = backing->backingStore) {
-        if (qemuNbdkitStartStorageSourceOne(driver, vm, backing) < 0)
+        if (qemuNbdkitStartStorageSourceOne(driver, vm, backing) < 0) {
+            /* roll back any previously-started sources */
+            qemuNbdkitStopStorageSource(src, vm, chain);
             return -1;
+        }
         if (!chain)
             break;
     }
