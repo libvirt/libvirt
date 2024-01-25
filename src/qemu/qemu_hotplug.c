@@ -1023,9 +1023,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
         if (qemuHotplugAttachManagedPR(vm, disk->src, VIR_ASYNC_JOB_NONE) < 0)
             goto cleanup;
-
-        if (qemuNbdkitStartStorageSource(driver, vm, disk->src, true) < 0)
-            goto cleanup;
     }
 
     ret = qemuDomainAttachDiskGeneric(vm, disk, VIR_ASYNC_JOB_NONE);
@@ -1050,8 +1047,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
         if (virStorageSourceChainHasManagedPR(disk->src))
             ignore_value(qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE));
-
-        qemuNbdkitStopStorageSource(disk->src, vm, true);
     }
     qemuDomainSecretDiskDestroy(disk);
     qemuDomainCleanupStorageSourceFD(disk->src);

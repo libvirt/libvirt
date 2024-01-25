@@ -8060,6 +8060,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriver *driver,
     bool revoke_namespace = false;
     bool revoke_nvme = false;
     bool revoke_lockspace = false;
+    bool revoke_nbdkit = false;
 
     VIR_DEBUG("src='%s' readonly=%d force_ro=%d force_rw=%d revoke=%d chain=%d",
               NULLSTR(src->path), src->readonly, force_ro, force_rw, revoke, chain);
@@ -8078,6 +8079,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriver *driver,
         revoke_namespace = true;
         revoke_nvme = true;
         revoke_lockspace = true;
+        revoke_nbdkit = true;
         ret = 0;
         goto revoke;
     }
@@ -8092,6 +8094,11 @@ qemuDomainStorageSourceAccessModify(virQEMUDriver *driver,
             goto revoke;
 
         revoke_nvme = true;
+
+        if (qemuNbdkitStartStorageSource(driver, vm, src, chain) < 0)
+            goto revoke;
+
+        revoke_nbdkit = true;
 
         if (qemuDomainNamespaceSetupDisk(vm, src, &revoke_namespace) < 0)
             goto revoke;
@@ -8146,6 +8153,9 @@ qemuDomainStorageSourceAccessModify(virQEMUDriver *driver,
         if (virDomainLockImageDetach(driver->lockManager, vm, src) < 0)
             VIR_WARN("Unable to release lock on %s", srcstr);
     }
+
+    if (revoke_nbdkit)
+        qemuNbdkitStopStorageSource(src, vm, chain);
 
  cleanup:
     src->readonly = was_readonly;

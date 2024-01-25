@@ -1190,6 +1190,13 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     struct nbd_handle *nbd = NULL;
 #endif
 
+    /* don't try to start nbdkit again if we've already started it */
+    if (proc->pid > 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Attempting to start nbdkit twice"));
+        return -1;
+    }
+
     if (!(cmd = qemuNbdkitProcessBuildCommand(proc)))
         return -1;
 
