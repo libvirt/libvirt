@@ -29,3 +29,4 @@
 
 void virSystemdHasMachinedResetCachedValue(void);
 void virSystemdHasLogindResetCachedValue(void);
+void virSystemdHasResolvedResetCachedValue(void);

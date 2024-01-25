@@ -49,6 +49,8 @@ int virSystemdHasMachined(void);
 
 int virSystemdHasLogind(void);
 
+int virSystemdHasResolved(void);
+
 int virSystemdCanSuspend(bool *result);
 
 int virSystemdCanHibernate(bool *result);

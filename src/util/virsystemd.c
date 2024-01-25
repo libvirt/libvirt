@@ -127,6 +127,7 @@ char *virSystemdMakeSliceName(const char *partition)
 
 static int virSystemdHasMachinedCachedValue = -1;
 static int virSystemdHasLogindCachedValue = -1;
+static int virSystemdHasResolvedCachedValue = -1;
 
 /* Reset the cache from tests for testing the underlying dbus calls
  * as well */
@@ -138,6 +139,12 @@ void virSystemdHasMachinedResetCachedValue(void)
 void virSystemdHasLogindResetCachedValue(void)
 {
     virSystemdHasLogindCachedValue = -1;
+}
+
+void
+virSystemdHasResolvedResetCachedValue(void)
+{
+    virSystemdHasResolvedCachedValue = -1;
 }
 
 
@@ -195,6 +202,14 @@ virSystemdHasLogind(void)
 {
     return virSystemdHasService("org.freedesktop.login1",
                                 &virSystemdHasLogindCachedValue);
+}
+
+
+int
+virSystemdHasResolved(void)
+{
+    return virSystemdHasService("org.freedesktop.resolve1",
+                                &virSystemdHasResolvedCachedValue);
 }
 
 

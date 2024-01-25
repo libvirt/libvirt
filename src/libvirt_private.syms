@@ -3489,6 +3489,8 @@ virSystemdHasLogind;
 virSystemdHasLogindResetCachedValue;
 virSystemdHasMachined;
 virSystemdHasMachinedResetCachedValue;
+virSystemdHasResolved;
+virSystemdHasResolvedResetCachedValue;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;
 virSystemdNotifyStartup;
