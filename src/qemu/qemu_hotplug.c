@@ -1024,7 +1024,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         if (qemuHotplugAttachManagedPR(vm, disk->src, VIR_ASYNC_JOB_NONE) < 0)
             goto cleanup;
 
-        if (qemuNbdkitStartStorageSource(driver, vm, disk->src) < 0)
+        if (qemuNbdkitStartStorageSource(driver, vm, disk->src, true) < 0)
             goto cleanup;
     }
 
@@ -1051,7 +1051,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         if (virStorageSourceChainHasManagedPR(disk->src))
             ignore_value(qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE));
 
-        qemuNbdkitStopStorageSource(disk->src, vm);
+        qemuNbdkitStopStorageSource(disk->src, vm, true);
     }
     qemuDomainSecretDiskDestroy(disk);
     qemuDomainCleanupStorageSourceFD(disk->src);
@@ -4568,7 +4568,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
         qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
-    qemuNbdkitStopStorageSource(disk->src, vm);
+    qemuNbdkitStopStorageSource(disk->src, vm, true);
 
     if (disk->transient) {
         VIR_DEBUG("Removing transient overlay '%s' of disk '%s'",

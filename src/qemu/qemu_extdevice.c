@@ -234,12 +234,12 @@ qemuExtDevicesStart(virQEMUDriver *driver,
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
-        if (qemuNbdkitStartStorageSource(driver, vm, disk->src) < 0)
+        if (qemuNbdkitStartStorageSource(driver, vm, disk->src, true) < 0)
             return -1;
     }
 
     if (def->os.loader && def->os.loader->nvram) {
-        if (qemuNbdkitStartStorageSource(driver, vm, def->os.loader->nvram) < 0)
+        if (qemuNbdkitStartStorageSource(driver, vm, def->os.loader->nvram, true) < 0)
             return -1;
     }
 
@@ -297,11 +297,11 @@ qemuExtDevicesStop(virQEMUDriver *driver,
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
-        qemuNbdkitStopStorageSource(disk->src, vm);
+        qemuNbdkitStopStorageSource(disk->src, vm, true);
     }
 
     if (def->os.loader && def->os.loader->nvram)
-        qemuNbdkitStopStorageSource(def->os.loader->nvram, vm);
+        qemuNbdkitStopStorageSource(def->os.loader->nvram, vm, true);
 }
 
 

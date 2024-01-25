@@ -890,37 +890,64 @@ qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps WITHOUT_NBDKIT_UNUSED,
 }
 
 
+static int
+qemuNbdkitStartStorageSourceOne(virQEMUDriver *driver,
+                                virDomainObj *vm,
+                                virStorageSource *src)
+{
+    qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+    if (priv && priv->nbdkitProcess &&
+        qemuNbdkitProcessStart(priv->nbdkitProcess, vm, driver) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuNbdkitStartStorageSource(virQEMUDriver *driver,
                              virDomainObj *vm,
-                             virStorageSource *src)
+                             virStorageSource *src,
+                             bool chain)
 {
     virStorageSource *backing;
 
     for (backing = src; backing != NULL; backing = backing->backingStore) {
-        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(backing);
-
-        if (priv && priv->nbdkitProcess &&
-            qemuNbdkitProcessStart(priv->nbdkitProcess, vm, driver) < 0)
+        if (qemuNbdkitStartStorageSourceOne(driver, vm, backing) < 0)
             return -1;
+        if (!chain)
+            break;
     }
 
     return 0;
 }
 
 
+static void
+qemuNbdkitStopStorageSourceOne(virStorageSource *src,
+                               virDomainObj *vm)
+{
+    qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+    if (priv && priv->nbdkitProcess &&
+        qemuNbdkitProcessStop(priv->nbdkitProcess, vm) < 0)
+        VIR_WARN("Unable to stop nbdkit for storage source '%s'",
+                 qemuBlockStorageSourceGetStorageNodename(src));
+}
+
+
 void
 qemuNbdkitStopStorageSource(virStorageSource *src,
-                            virDomainObj *vm)
+                            virDomainObj *vm,
+                            bool chain)
 {
     virStorageSource *backing;
 
     for (backing = src; backing != NULL; backing = backing->backingStore) {
-        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(backing);
-
-        if (priv && priv->nbdkitProcess &&
-            qemuNbdkitProcessStop(priv->nbdkitProcess, vm) < 0)
-            VIR_WARN("Unable to stop nbdkit for storage source '%s'", qemuBlockStorageSourceGetStorageNodename(src));
+        qemuNbdkitStopStorageSourceOne(backing, vm);
+        if (!chain)
+            break;
     }
 }
 

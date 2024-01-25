@@ -63,11 +63,13 @@ qemuNbdkitReconnectStorageSource(virStorageSource *source,
 int
 qemuNbdkitStartStorageSource(virQEMUDriver *driver,
                              virDomainObj *vm,
-                             virStorageSource *src);
+                             virStorageSource *src,
+                             bool chain);
 
 void
 qemuNbdkitStopStorageSource(virStorageSource *src,
-                            virDomainObj *vm);
+                            virDomainObj *vm,
+                            bool chain);
 
 int
 qemuNbdkitStorageSourceManageProcess(virStorageSource *src,
