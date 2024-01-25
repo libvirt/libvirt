@@ -87,6 +87,34 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                 reply = g_variant_new("()");
             }
         }
+    } else if (STREQ(bus_name, "org.freedesktop.resolve1")) {
+        g_autofree char *actual = NULL;
+
+        if (getenv("FAIL_BAD_SERVICE")) {
+            *error = g_dbus_error_new_for_dbus_error("org.freedesktop.systemd.badthing",
+                                                     "Contacting resolved failed");
+        } else if (STREQ(method_name, "SetLinkDomains")) {
+            const char *expected = getenv("TEST_RESOLVED_LINK_DOMAINS");
+            actual = g_variant_print(params, FALSE);
+
+            if (virTestCompareToString(expected, actual) < 0)
+                *error = g_dbus_error_new_for_dbus_error("org.freedesktop.systemd.badthing",
+                                                         "Unexpected params to SetLinkDomains");
+            else
+                reply = g_variant_new("()");
+        } else if (STREQ(method_name, "SetLinkDNS")) {
+            const char *expected = getenv("TEST_RESOLVED_LINK_DNS");
+            actual = g_variant_print(params, FALSE);
+
+            if (virTestCompareToString(expected, actual) < 0)
+                *error = g_dbus_error_new_for_dbus_error("org.freedesktop.systemd.badthing",
+                                                         "Unexpected params to SetLinkDNS");
+            else
+                reply = g_variant_new("()");
+        } else {
+            *error = g_dbus_error_new_for_dbus_error("org.freedesktop.systemd.badthing",
+                                                     "Unknown resolved method");
+        }
     } else if (STREQ(bus_name, "org.freedesktop.login1")) {
         reply = g_variant_new("(s)", getenv("RESULT_SUPPORT"));
     } else if (STREQ(bus_name, "org.freedesktop.DBus") &&
@@ -100,6 +128,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
         if (!getenv("FAIL_NO_SERVICE")) {
             g_variant_builder_add(&builder, "s", "org.freedesktop.machine1");
             g_variant_builder_add(&builder, "s", "org.freedesktop.login1");
+            g_variant_builder_add(&builder, "s", "org.freedesktop.resolve1");
         }
 
         reply = g_variant_new("(@as)", g_variant_builder_end(&builder));
@@ -114,6 +143,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
         if (!getenv("FAIL_NO_SERVICE") && !getenv("FAIL_NOT_REGISTERED")) {
             g_variant_builder_add(&builder, "s", "org.freedesktop.systemd1");
             g_variant_builder_add(&builder, "s", "org.freedesktop.login1");
+            g_variant_builder_add(&builder, "s", "org.freedesktop.resolve1");
         }
 
         reply = g_variant_new("(@as)", g_variant_builder_end(&builder));
@@ -613,6 +643,83 @@ testActivationEmpty(const void *opaque G_GNUC_UNUSED)
     return 0;
 }
 
+
+struct testResolvedData {
+    int link;
+    const char *env;
+    const char *dom;
+    const char *addr;
+    const char *expDomains;
+    const char *expDNS;
+};
+
+
+static int
+testResolvedFailed(const void *opaque)
+{
+    const struct testResolvedData *data = opaque;
+    virSocketAddr addr = {0};
+    int ret = -1;
+    int expected = -2;
+    int rv;
+
+    if (!data->env) {
+        fprintf(stderr, "%s",
+                "testResolvedFailed called without environment variable name");
+        return -1;
+    }
+
+    if (data->addr &&
+        virSocketAddrParse(&addr, data->addr, AF_UNSPEC) < 0)
+        return -1;
+
+    if (STREQ(data->env, "FAIL_BAD_SERVICE"))
+        expected = -1;
+
+    g_setenv(data->env, "1", TRUE);
+
+    rv = virSystemdResolvedRegisterNameServer(data->link, data->dom, &addr);
+
+    if (rv == 0)
+        fprintf(stderr, "%s", "Updating resolved succeeded unexpectedly\n");
+    else if (rv != expected)
+        fprintf(stderr, "%s", "Updating resolved failed unexpectedly\n");
+    else
+        ret = 0;
+
+    g_unsetenv(data->env);
+    return ret;
+}
+
+
+static int
+testResolved(const void *opaque)
+{
+    const struct testResolvedData *data = opaque;
+    virSocketAddr addr = {0};
+    int ret = -1;
+
+    if (data->addr &&
+        virSocketAddrParse(&addr, data->addr, AF_UNSPEC) < 0)
+        return -1;
+
+    g_setenv("TEST_RESOLVED_LINK_DOMAINS", data->expDomains, TRUE);
+    g_setenv("TEST_RESOLVED_LINK_DNS", data->expDNS, TRUE);
+
+    if (virSystemdResolvedRegisterNameServer(data->link, data->dom, &addr) < 0) {
+        fprintf(stderr, "%s", "Updating resolved failed unexpectedly\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    g_unsetenv("TEST_RESOLVED_LINK_DOMAINS");
+    g_unsetenv("TEST_RESOLVED_LINK_DNS");
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -731,6 +838,46 @@ mymain(void)
     } else {
         VIR_INFO("Skipping activation tests as FD 3/4/5 is open");
     }
+
+# define TEST_RESOLVED_HELPER(name, func, linkId, variable, domain, ip, \
+                              expectedDomains, expectedDNS) \
+    do { \
+        struct testResolvedData data = { \
+            .link = linkId, \
+            .env = variable, \
+            .dom = domain, \
+            .addr = ip, \
+            .expDomains = expectedDomains, \
+            .expDNS = expectedDNS, \
+        }; \
+        if (virTestRun("Test resolved " name, func, &data) < 0) \
+            ret = -1; \
+        virSystemdHasResolvedResetCachedValue(); \
+    } while (0)
+
+# define TEST_RESOLVED_FAILURE(name, variable, ip) \
+    TEST_RESOLVED_HELPER(name, testResolvedFailed, 42, variable, "virt", ip, NULL, NULL)
+
+# define TEST_RESOLVED_EXP(name, linkId, domain, ip, ipFamily, ipBytes) \
+    TEST_RESOLVED_HELPER(name, testResolved, linkId, NULL, domain, ip, \
+                         "(" #linkId ", [('" domain "', true)])", \
+                         "(" #linkId ", [(" #ipFamily ", [" ipBytes "])])")
+
+# define TEST_RESOLVED(name, linkId, domain, ip, ipFamily, ipBytes) \
+    TEST_RESOLVED_EXP(name, linkId, domain, ip, ipFamily, ipBytes)
+
+    TEST_RESOLVED_FAILURE("not enabled", "FAIL_NO_SERVICE", NULL);
+    TEST_RESOLVED_FAILURE("not registered", "FAIL_NOT_REGISTERED", NULL);
+    TEST_RESOLVED_FAILURE("bad service", "FAIL_BAD_SERVICE", "1.2.3.4");
+
+    TEST_RESOLVED("IPv4", 84, "private",
+                  "172.17.18.19", AF_INET,
+                  "0xac, 0x11, 0x12, 0x13");
+
+    TEST_RESOLVED("IPv6", 21, "virt.local",
+                  "e8f7:ae03:b089:d4e1:764a:53ec:658b:2547", AF_INET6,
+                  "0xe8, 0xf7, 0xae, 0x03, 0xb0, 0x89, 0xd4, 0xe1, "
+                  "0x76, 0x4a, 0x53, 0xec, 0x65, 0x8b, 0x25, 0x47");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
