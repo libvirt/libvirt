@@ -27,6 +27,15 @@ v10.1.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu_process: Skip over non-virtio non-TAP NIC models when refreshing rx-filter
+
+    If ``trustGuestRxFilters`` is enabled for a vNIC that doesn't support it,
+    libvirt may throw an error when such domain is being started, loaded from a
+    saved state, migrated, etc. These errors are now silenced, but make sure to
+    fix such configurations (after previous release it is even possible to
+    change ``trustGuestRxFilters`` value on live domains via
+    ``virDomainUpdateDeviceFlags()`` or ``virsh device-update``).
+
 
 v10.0.0 (2024-01-15)
 ====================
