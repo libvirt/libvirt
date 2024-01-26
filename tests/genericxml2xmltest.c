@@ -178,6 +178,8 @@ mymain(void)
 
     DO_TEST_FAIL_ACTIVE("name-slash-fail");
 
+    DO_TEST("title-and-description");
+
     DO_TEST("perf");
 
     DO_TEST("vcpus-individual");
