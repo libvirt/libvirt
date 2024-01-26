@@ -1,0 +1,15 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <vcpu placement='static'>8</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='scsi' index='0' model='auto'/>
+    <controller type='usb' index='0' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
