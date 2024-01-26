@@ -1129,9 +1129,11 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
 # define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, arch) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
-                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
-                                  ARG_END)
+    DO_TEST_FULL(name, "." arch "-latest.abi-update", \
+                 ARG_CAPS_ARCH, arch, \
+                 ARG_CAPS_VER, "latest", \
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
+                 ARG_END)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
@@ -1165,9 +1167,12 @@ mymain(void)
                                   ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
 # define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_FAILURE(name, arch) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
-                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
-                                  ARG_FLAGS, FLAG_EXPECT_FAILURE)
+    DO_TEST_FULL(name, "." arch "-latest.abi-update", \
+                 ARG_CAPS_ARCH, arch, \
+                 ARG_CAPS_VER, "latest", \
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE, \
+                 ARG_END)
 
 # define DO_TEST_CAPS_ARCH_VER_FAILURE(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, \
@@ -1187,9 +1192,12 @@ mymain(void)
                                   ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
 
 # define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR(name, arch) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
-                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
-                                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
+    DO_TEST_FULL(name, "." arch "-latest.abi-update", \
+                 ARG_CAPS_ARCH, arch, \
+                 ARG_CAPS_VER, "latest", \
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
+                 ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR, \
+                 ARG_END)
 
 # define DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, \
@@ -1370,12 +1378,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
-    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-abi-update");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-rw");
-    DO_TEST_CAPS_LATEST_ABI_UPDATE_PARSE_ERROR("firmware-auto-efi-rw-abi-update");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE_PARSE_ERROR("firmware-auto-efi-rw");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
-    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-loader-secure-abi-update");
+    DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-loader-secure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-insecure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-path");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-loader-path-nonstandard");
@@ -1386,7 +1394,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-enrolled-keys-no-secboot");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-smm-off");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
-    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-abi-update-aarch64", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-aarch64", "aarch64");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-template");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-nvram-template-nonstandard");
@@ -1400,7 +1408,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvram-qcow2-network-nbd");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-format-loader-raw", "aarch64");
-    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-format-loader-raw-abi-update", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-format-loader-raw", "aarch64");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-format-mismatch");
 
     DO_TEST_CAPS_LATEST("clock-utc");
@@ -2491,7 +2499,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm");
     DO_TEST_CAPS_LATEST("memory-hotplug-dimm-addr");
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-ppc64-nonuma", "ppc64");
-    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-ppc64-nonuma-abi-update", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-ppc64-nonuma", "ppc64");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-access");
     DO_TEST_CAPS_VER("memory-hotplug-nvdimm-label", "5.2.0");
@@ -2503,7 +2511,7 @@ mymain(void)
     DO_TEST_CAPS_VER("memory-hotplug-nvdimm-readonly", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-readonly");
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-nvdimm-ppc64", "ppc64");
-    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-nvdimm-ppc64-abi-update", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-nvdimm-ppc64", "ppc64");
     DO_TEST_CAPS_VER("memory-hotplug-virtio-pmem", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
@@ -2541,7 +2549,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("input-linux");
 
     DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
-    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-usb-controller-qemu-xhci", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-usb-controller", "ppc64");
 
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpmproxy-double", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpm-double", "ppc64");
