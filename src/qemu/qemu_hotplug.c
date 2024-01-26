@@ -873,9 +873,9 @@ qemuDomainFindOrCreateSCSIDiskController(virDomainObj *vm,
 
     /* No SCSI controller present, for backward compatibility we
      * now hotplug a controller */
-    cont = g_new0(virDomainControllerDef, 1);
-    cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
+    cont = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
     cont->idx = controller;
+
     if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT)
         cont->model = qemuDomainGetSCSIControllerModel(vm->def, cont, priv->qemuCaps);
     else
