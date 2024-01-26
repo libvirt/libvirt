@@ -1329,10 +1329,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-bios-not-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-features");
-    DO_TEST_CAPS_ARCH_LATEST_FULL("firmware-manual-efi-features", "x86_64",
-                                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR,
-                                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                                  ARG_END);
+    DO_TEST_CAPS_LATEST_ABI_UPDATE_PARSE_ERROR("firmware-manual-efi-features");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-legacy-paths");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-modern-paths");
