@@ -1,5 +1,5 @@
 nbdkit \
---unix /tmp/statedir-0/nbdkit-test-disk-0.socket \
+--unix /tmp/domain-QEMUGuest1/nbdkit-disk0-src0.socket \
 --foreground \
 --readonly curl \
 protocols=ftp \

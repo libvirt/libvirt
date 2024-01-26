@@ -1,0 +1,7 @@
+nbdkit \
+--unix /tmp/domain-QEMUGuest1/nbdkit-disk0-src1.socket \
+--foreground \
+--readonly curl \
+protocols=https \
+url=https://https.example2.org:8444/path/to/backing.qcow2 \
+cookie=-779

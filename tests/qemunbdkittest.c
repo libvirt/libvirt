@@ -174,7 +174,10 @@ testNbdkit(const void *data)
     const TestInfo *info = data;
     g_autoptr(virDomainDef) def = NULL;
     size_t i;
+    size_t n;
     int ret = 0;
+    virStorageSource *backing = NULL;
+    g_autofree char *statedir = NULL;
 
     /* restart mock pipe fds so tests are consistent */
     mockpipefd = PIPE_FD_START;
@@ -189,56 +192,61 @@ testNbdkit(const void *data)
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         return -1;
 
+    statedir = g_strdup_printf("/tmp/domain-%s", def->name);
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
-        g_autofree char *statedir = g_strdup_printf("/tmp/statedir-%zi", i);
-        g_autofree char *alias = g_strdup_printf("test-disk-%zi", i);
-        g_autofree char *cmdfile = g_strdup_printf("%s.args.disk%zi",
-                                                   info->outtemplate, i);
+        for (n = 0, backing = disk->src; backing != NULL; n++, backing = backing->backingStore) {
+            g_autofree char *alias = g_strdup_printf("disk%zi-src%zi", i, n);
+            g_autofree char *cmdfile = g_strdup_printf("%s.args.%s",
+                                                       info->outtemplate, alias);
 
-        if (qemuNbdkitInitStorageSource(info->nbdkitcaps, disk->src, statedir,
-                                        alias, 101, 101)) {
-            qemuDomainStorageSourcePrivate *srcPriv =
-                qemuDomainStorageSourcePrivateFetch(disk->src);
-            g_autoptr(virCommand) cmd = NULL;
-            g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
-            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-            g_autofree char *actualCmdline = NULL;
-            virCommandSendBuffer *sendbuffers;
-            int nsendbuffers;
-            size_t j;
+            if (qemuNbdkitInitStorageSource(info->nbdkitcaps, backing, statedir,
+                                            alias, 101, 101)) {
+                qemuDomainStorageSourcePrivate *srcPriv =
+                    qemuDomainStorageSourcePrivateFetch(backing);
+                g_autoptr(virCommand) cmd = NULL;
+                g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
+                g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+                g_autofree char *actualCmdline = NULL;
+                virCommandSendBuffer *sendbuffers;
+                int nsendbuffers;
+                size_t j;
 
-            virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
-            cmd = qemuNbdkitProcessBuildCommand(srcPriv->nbdkitProcess);
+                if (srcPriv->nbdkitProcess == NULL)
+                    continue;
 
-            if (virCommandRun(cmd, NULL) < 0) {
-                ret = -1;
-                continue;
-            }
-            virCommandPeekSendBuffers(cmd, &sendbuffers, &nsendbuffers);
+                virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
+                cmd = qemuNbdkitProcessBuildCommand(srcPriv->nbdkitProcess);
 
-            if (!(actualCmdline = virBufferContentAndReset(&buf))) {
-                ret = -1;
-                continue;
-            }
-
-            if (virTestCompareToFileFull(actualCmdline, cmdfile, false) < 0)
-                ret = -1;
-
-            for (j = 0; j < nsendbuffers; j++) {
-                virCommandSendBuffer *buffer = &sendbuffers[j];
-                g_autofree char *pipefile = g_strdup_printf("%s.pipe.%i",
-                                                            cmdfile,
-                                                            buffer->fd);
-
-                if (virTestCompareToFile((const char*)buffer->buffer, pipefile) < 0)
+                if (virCommandRun(cmd, NULL) < 0) {
                     ret = -1;
-            }
-        } else {
-            if (virFileExists(cmdfile)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               "qemuNbdkitInitStorageSource() was not expected to fail");
-                ret = -1;
+                    continue;
+                }
+                virCommandPeekSendBuffers(cmd, &sendbuffers, &nsendbuffers);
+
+                if (!(actualCmdline = virBufferContentAndReset(&buf))) {
+                    ret = -1;
+                    continue;
+                }
+
+                if (virTestCompareToFileFull(actualCmdline, cmdfile, false) < 0)
+                    ret = -1;
+
+                for (j = 0; j < nsendbuffers; j++) {
+                    virCommandSendBuffer *buffer = &sendbuffers[j];
+                    g_autofree char *pipefile = g_strdup_printf("%s.pipe.%i",
+                                                                cmdfile,
+                                                                buffer->fd);
+
+                    if (virTestCompareToFile((const char*)buffer->buffer, pipefile) < 0)
+                        ret = -1;
+                }
+            } else {
+                if (virFileExists(cmdfile)) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   "qemuNbdkitInitStorageSource() was not expected to fail");
+                    ret = -1;
+                }
             }
         }
     }

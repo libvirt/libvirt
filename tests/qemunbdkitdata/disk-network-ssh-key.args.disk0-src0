@@ -1,6 +1,6 @@
 SSH_AUTH_SOCK=/path/to/agent/socket \
 nbdkit \
---unix /tmp/statedir-0/nbdkit-test-disk-0.socket \
+--unix /tmp/domain-QEMUGuest1/nbdkit-disk0-src0.socket \
 --foreground ssh \
 host=example.org \
 port=2222 \

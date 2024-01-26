@@ -1,5 +1,5 @@
 nbdkit \
---unix /tmp/statedir-2/nbdkit-test-disk-2.socket \
+--unix /tmp/domain-QEMUGuest1/nbdkit-disk2-src0.socket \
 --foreground curl \
 protocols=http,https \
 url=http://example.org:1234/test3.img \
