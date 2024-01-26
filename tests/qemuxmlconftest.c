@@ -2544,7 +2544,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("input-linux");
 
     DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
-    DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller-legacy", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-usb-controller-qemu-xhci", "ppc64");
 
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpmproxy-double", "ppc64");
