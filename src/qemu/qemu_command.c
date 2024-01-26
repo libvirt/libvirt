@@ -505,7 +505,6 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
 
             break;
 
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
@@ -527,6 +526,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
             break;
 
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unexpected SCSI controller model %1$d"),
@@ -2685,7 +2685,6 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
         driver = "dc-390";
         break;
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90: /* It is built-in dev */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2693,6 +2692,7 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
                        virDomainControllerModelSCSITypeToString(def->model));
         return NULL;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected SCSI controller model %1$d"),

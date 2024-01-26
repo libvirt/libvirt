@@ -3364,7 +3364,6 @@ qemuValidateCheckSCSIControllerModel(virQEMUCaps *qemuCaps,
             return false;
         }
         break;
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported controller model: %1$s"),
@@ -3389,6 +3388,7 @@ qemuValidateCheckSCSIControllerModel(virQEMUCaps *qemuCaps,
         }
         return true;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected SCSI controller model %1$d"),

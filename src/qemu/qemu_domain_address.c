@@ -567,7 +567,6 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
 
         case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
             switch ((virDomainControllerModelSCSI) cont->model) {
-            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
                 return 0;
 
@@ -577,7 +576,6 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
 
             /* Transitional devices only work in conventional PCI slots */
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
-            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
@@ -588,6 +586,8 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
                 return pciFlags;
 
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
                 return 0;
             }
