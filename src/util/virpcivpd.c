@@ -616,7 +616,7 @@ virPCIVPDParse(int vpdFileFd)
 
     uint16_t resPos = 0, resDataLen;
     uint8_t tag = 0;
-    bool endResReached = false, hasReadOnly = false;
+    bool hasReadOnly = false;
 
     g_autoptr(virPCIVPDResource) res = g_new0(virPCIVPDResource, 1);
 
@@ -628,9 +628,8 @@ virPCIVPDParse(int vpdFileFd)
         /* 0x80 == 0b10000000 - the large resource data type flag. */
         if (tag & PCI_VPD_LARGE_RESOURCE_FLAG) {
             if (resPos > PCI_VPD_ADDR_MASK + 1 - 3) {
-                /* Bail if the large resource starts at the position
-                 * where the end tag should be. */
-                break;
+                /* Bail if the large resource starts at the position where the end tag should be. */
+                goto malformed;
             }
 
             /* Read the two length bytes of the large resource record. */
@@ -649,14 +648,21 @@ virPCIVPDParse(int vpdFileFd)
             /* Change the position to the byte past the byte containing tag and length bits. */
             resPos += 1;
         }
+
         if (tag == PCI_VPD_RESOURCE_END_TAG) {
             /* Stop VPD traversal since the end tag was encountered. */
-            endResReached = true;
-            break;
+            if (!hasReadOnly) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("failed to read the PCI VPD data: missing read-only section"));
+                return NULL;
+            }
+
+            return g_steal_pointer(&res);
         }
+
         if (resDataLen > PCI_VPD_ADDR_MASK + 1 - resPos) {
             /* Bail if the resource is too long to fit into the VPD address space. */
-            break;
+            goto malformed;
         }
 
         switch (tag) {
@@ -686,22 +692,16 @@ virPCIVPDParse(int vpdFileFd)
                 /* While we cannot parse unknown resource types, they can still be skipped
                  * based on the header and data length. */
                 VIR_DEBUG("Encountered an unexpected VPD resource tag: %#x", tag);
-                resPos += resDataLen;
-                continue;
         }
 
         /* Continue processing other resource records. */
         resPos += resDataLen;
     }
-    if (!hasReadOnly) {
-        VIR_DEBUG("Encountered an invalid VPD: does not have a VPD-R record");
-        return NULL;
-    } else if (!endResReached) {
-        /* Does not have an end tag. */
-        VIR_DEBUG("Encountered an invalid VPD");
-        return NULL;
-    }
-    return g_steal_pointer(&res);
+
+ malformed:
+    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                   _("failed to read the PCI VPD data: malformed data"));
+    return NULL;
 }
 
 #else /* ! __linux__ */
