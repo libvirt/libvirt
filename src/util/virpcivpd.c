@@ -557,10 +557,9 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
  * @resDataLen: A length of the data portion of a resource.
  * @csum: A pointer to a 1-byte checksum.
  *
- * Returns: a pointer to a VPDResource which needs to be freed by the caller or
- * NULL if getting it failed for some reason.
+ * Returns: 0 on success -1 and an error on failure
  */
-static bool
+static int
 virPCIVPDParseVPDLargeResourceString(int vpdFileFd, uint16_t resPos,
                                      uint16_t resDataLen, uint8_t *csum, virPCIVPDResource *res)
 {
@@ -570,15 +569,16 @@ virPCIVPDParseVPDLargeResourceString(int vpdFileFd, uint16_t resPos,
     g_autofree char *buf = g_malloc0(resDataLen + 1);
 
     if (virPCIVPDReadVPDBytes(vpdFileFd, (uint8_t *)buf, resDataLen, resPos, csum) < 0)
-        return false;
+        return -1;
 
     resValue = g_strdup(g_strstrip(buf));
     if (!virPCIVPDResourceIsValidTextValue(resValue)) {
-        VIR_INFO("The string resource has invalid characters in its value");
-        return false;
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to parse PCI VPD string value with invalid characters"));
+        return -1;
     }
     res->name = g_steal_pointer(&resValue);
-    return true;
+    return 0;
 }
 
 /**
@@ -652,8 +652,11 @@ virPCIVPDParse(int vpdFileFd)
         switch (tag) {
                 /* Large resource type which is also a string: 0x80 | 0x02 = 0x82 */
             case PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_STRING_RESOURCE_FLAG:
-                isWellFormed = virPCIVPDParseVPDLargeResourceString(vpdFileFd, resPos, resDataLen,
-                                                                    &csum, res);
+                if (virPCIVPDParseVPDLargeResourceString(vpdFileFd, resPos, resDataLen,
+                                                         &csum, res) < 0)
+                    return NULL;
+
+                isWellFormed = true;
                 break;
                 /* Large resource type which is also a VPD-R: 0x80 | 0x10 == 0x90 */
             case PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG:
