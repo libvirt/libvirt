@@ -361,33 +361,39 @@ virPCIVPDResourceUpdateKeyword(virPCIVPDResource *res,
  * @offset: The offset at which bytes need to be read.
  * @csum: A pointer to a byte containing the current checksum value. Mutated by this function.
  *
- * Returns: the number of VPD bytes read from the specified file descriptor. The csum value is
+ * Returns 0 if exactly @count bytes were read from @vpdFileFd. The csum value is
  * also modified as bytes are read. If an error occurs while reading data from the VPD file
- * descriptor, it is reported and -1 is returned to the caller. If EOF is occurred, 0 is returned
- * to the caller.
+ * descriptor, it is reported and -1 is returned to the caller.
  */
-static size_t
-virPCIVPDReadVPDBytes(int vpdFileFd, uint8_t *buf, size_t count, off_t offset, uint8_t *csum)
+static int
+virPCIVPDReadVPDBytes(int vpdFileFd,
+                      uint8_t *buf,
+                      size_t count,
+                      off_t offset,
+                      uint8_t *csum)
 {
     ssize_t numRead = pread(vpdFileFd, buf, count, offset);
 
-    if (numRead == -1) {
-        VIR_DEBUG("Unable to read %zu bytes at offset %zd from fd: %d",
-                  count, (ssize_t)offset, vpdFileFd);
-    } else if (numRead) {
-        /*
-         * Update the checksum for every byte read. Per the PCI(e) specs
-         * the checksum is correct if the sum of all bytes in VPD from
-         * VPD address 0 up to and including the VPD-R RV field's first
-         * data byte is zero.
-         */
-        while (count--) {
-            *csum += *buf;
-            buf++;
-        }
+    if (numRead != count) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to read the PCI VPD data"));
+        return -1;
     }
-    return numRead;
+
+    /*
+     * Update the checksum for every byte read. Per the PCI(e) specs
+     * the checksum is correct if the sum of all bytes in VPD from
+     * VPD address 0 up to and including the VPD-R RV field's first
+     * data byte is zero.
+     */
+    while (count--) {
+        *csum += *buf;
+        buf++;
+    }
+
+    return 0;
 }
+
 
 /**
  * virPCIVPDParseVPDLargeResourceFields:
@@ -423,12 +429,9 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         g_autofree char *fieldValue = NULL;
 
         /* Keyword resources consist of keywords (2 ASCII bytes per the spec) and 1-byte length. */
-        if (virPCIVPDReadVPDBytes(vpdFileFd, buf, 3, fieldPos, csum) != 3) {
-            /* Invalid field encountered which means the resource itself is invalid too. Report
-             * That VPD has invalid format and bail. */
-            VIR_INFO("Could not read a resource field header - VPD has invalid format");
+        if (virPCIVPDReadVPDBytes(vpdFileFd, buf, 3, fieldPos, csum) < 0)
             return false;
-        }
+
         fieldDataLen = buf[2];
         /* Change the position to the field's data portion skipping the keyword and length bytes. */
         fieldPos += 3;
@@ -474,10 +477,10 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
             VIR_INFO("A field data length violates the resource length boundary.");
             return false;
         }
-        if (virPCIVPDReadVPDBytes(vpdFileFd, buf, bytesToRead, fieldPos, csum) != bytesToRead) {
-            VIR_INFO("Could not parse a resource field data - VPD has invalid format");
+
+        if (virPCIVPDReadVPDBytes(vpdFileFd, buf, bytesToRead, fieldPos, csum) < 0)
             return false;
-        }
+
         /* Advance the position to the first byte of the next field. */
         fieldPos += fieldDataLen;
 
@@ -566,10 +569,9 @@ virPCIVPDParseVPDLargeResourceString(int vpdFileFd, uint16_t resPos,
     /* The resource value is not NULL-terminated so add one more byte. */
     g_autofree char *buf = g_malloc0(resDataLen + 1);
 
-    if (virPCIVPDReadVPDBytes(vpdFileFd, (uint8_t *)buf, resDataLen, resPos, csum) != resDataLen) {
-        VIR_INFO("Could not read a part of a resource - VPD has invalid format");
+    if (virPCIVPDReadVPDBytes(vpdFileFd, (uint8_t *)buf, resDataLen, resPos, csum) < 0)
         return false;
-    }
+
     resValue = g_strdup(g_strstrip(buf));
     if (!virPCIVPDResourceIsValidTextValue(resValue)) {
         VIR_INFO("The string resource has invalid characters in its value");
@@ -610,8 +612,8 @@ virPCIVPDParse(int vpdFileFd)
 
     while (resPos <= PCI_VPD_ADDR_MASK) {
         /* Read the resource data type tag. */
-        if (virPCIVPDReadVPDBytes(vpdFileFd, &tag, 1, resPos, &csum) != 1)
-            break;
+        if (virPCIVPDReadVPDBytes(vpdFileFd, &tag, 1, resPos, &csum) < 0)
+            return NULL;
 
         /* 0x80 == 0b10000000 - the large resource data type flag. */
         if (tag & PCI_VPD_LARGE_RESOURCE_FLAG) {
@@ -620,9 +622,10 @@ virPCIVPDParse(int vpdFileFd)
                  * where the end tag should be. */
                 break;
             }
+
             /* Read the two length bytes of the large resource record. */
-            if (virPCIVPDReadVPDBytes(vpdFileFd, headerBuf, 2, resPos + 1, &csum) != 2)
-                break;
+            if (virPCIVPDReadVPDBytes(vpdFileFd, headerBuf, 2, resPos + 1, &csum) < 0)
+                return NULL;
 
             resDataLen = headerBuf[0] + (headerBuf[1] << 8);
             /* Change the position to the byte following the tag and length bytes. */
