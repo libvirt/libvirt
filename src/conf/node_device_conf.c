@@ -242,23 +242,32 @@ virNodeDeviceCapMdevTypesFormat(virBuffer *buf,
 }
 
 static void
-virNodeDeviceCapVPDFormatCustomVendorField(virPCIVPDResourceCustom *field, virBuffer *buf)
+virNodeDeviceCapVPDFormatCustomField(virBuffer *buf,
+                                     const char *fieldtype,
+                                     virPCIVPDResourceCustom *field)
 {
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) content = VIR_BUFFER_INITIALIZER;
+
     if (field == NULL || field->value == NULL)
         return;
 
-    virBufferAsprintf(buf, "<vendor_field index='%c'>%s</vendor_field>\n", field->idx,
-                      field->value);
+    virBufferAsprintf(&attrBuf, " index='%c'", field->idx);
+    virBufferEscapeString(&content, "%s", field->value);
+
+    virXMLFormatElementInternal(buf, fieldtype, &attrBuf, &content, false, false);
+}
+
+static void
+virNodeDeviceCapVPDFormatCustomVendorField(virPCIVPDResourceCustom *field, virBuffer *buf)
+{
+    virNodeDeviceCapVPDFormatCustomField(buf, "vendor_field", field);
 }
 
 static void
 virNodeDeviceCapVPDFormatCustomSystemField(virPCIVPDResourceCustom *field, virBuffer *buf)
 {
-    if (field == NULL || field->value == NULL)
-        return;
-
-    virBufferAsprintf(buf, "<system_field index='%c'>%s</system_field>\n", field->idx,
-                      field->value);
+    virNodeDeviceCapVPDFormatCustomField(buf, "system_field", field);
 }
 
 static inline void
