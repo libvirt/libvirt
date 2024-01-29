@@ -869,7 +869,7 @@
 
   <define name="vpdFieldValueFormat">
     <data type="string">
-      <param name="pattern">[0-9a-zA-F -_,.:;=]{0,255}</param>
+      <param name="pattern">.{0,255}</param>
     </data>
   </define>
 
