@@ -2570,7 +2570,7 @@ static int remoteDomainGetBlockIoTune(virDomainPtr domain,
      */
     if (*nparams == 0) {
         *nparams = ret.nparams;
-        return -1;
+        return 0;
     }
 
     if (virTypedParamsDeserialize((struct _virTypedParameterRemote *) ret.params.params_val,
