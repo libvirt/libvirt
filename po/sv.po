@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-24 09:36+0000\n"
+"PO-Revision-Date: 2024-01-29 15:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24266,118 +24266,124 @@ msgid "device alias not found: cannot set link state to down"
 msgstr "enhetsaliaset finns inte: kan inte sätta länkstatusen till nere"
 
 msgid "device cannot be detached: device is busy"
-msgstr ""
+msgstr "enheten kan inte kopplas loss: enheten är upptagen"
 
 msgid "device is already in the domain configuration"
-msgstr ""
+msgstr "enheten finns redan i domänkonfigurationen"
 
 msgid "device key"
-msgstr ""
+msgstr "enhetsnyckel"
 
 msgid "device list is not an object"
-msgstr ""
+msgstr "enhetslistan är inte ett objekt"
 
 #, c-format
 msgid "device modalias file %1$s content has improper format"
-msgstr ""
+msgstr "innehållet i enhetens modalias-fil %1$s har felaktigt format"
 
 msgid "device name"
 msgstr "enhetsnamn"
 
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
-msgstr ""
+msgstr "enhetsnamn eller wwn-par i formatet ”wwnn,wwpn”"
 
-#, fuzzy
 msgid "device not found"
-msgstr "Domän hittades inte"
+msgstr "enheten finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "device not found: %1$s"
-msgstr "Domän hittades inte: %1$s"
+msgstr "enheten finns inte: %1$s"
 
-#, fuzzy
 msgid "device not present in domain configuration"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "enheten finns inte i domänkonfigurationen"
 
 #, c-format
 msgid "device of type '%1$s' has no device info"
-msgstr ""
+msgstr "enheten av typen ”%1$s” har ingen enhetsinformation"
 
-#, fuzzy, c-format
+#, c-format
 msgid "device path '%1$s' doesn't exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "enhetssökvägen ”%1$s” finns inte"
 
 msgid "device to set threshold for"
-msgstr ""
+msgstr "enheten att sätta tröskelvärde för"
 
 #, c-format
 msgid "device type '%1$s' cannot be attached"
-msgstr ""
+msgstr "enhetstypen ”%1$s” kan inte kopplas in"
 
 #, c-format
 msgid "device type '%1$s' cannot be detached"
-msgstr ""
+msgstr "enhetstypen ”%1$s” kan inte kopplas ifrån"
 
-#, fuzzy, c-format
+#, c-format
 msgid "device type '%1$s' cannot be updated"
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "enhetstypen ”%1$s” kan inte uppdateras"
 
-#, fuzzy, c-format
+#, c-format
 msgid "device type '%1$s' cannot hot unplugged"
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "enhetstypen ”%1$s” kan inte tas bort under drift"
 
 msgid "devices cgroup isn't mounted"
-msgstr ""
+msgstr "enhetsstyrgruppen är inte monterad"
 
 #, c-format
 msgid "dhcp is supported only for a single %1$s address on each network"
-msgstr ""
+msgstr "dhcp stödjs endast för en ensam %1$s-adress på varje nätverk"
 
 msgid "dhcp ranges cannot be modified, only added or deleted"
-msgstr ""
+msgstr "dhcp-intervall kan inte ändras, endast läggas till eller tas bort"
 
 #, c-format
 msgid "different iotunes for disks %1$s and %2$s"
-msgstr ""
+msgstr "olika iotunes för diskarna %1$s och %2$s"
 
 msgid "dimm memory info data is missing 'id'"
-msgstr ""
+msgstr "informationsdata för dimm-minne saknar ”id”"
 
 msgid "dir"
-msgstr ""
+msgstr "kat"
 
-#, fuzzy
 msgid "direct migration"
-msgstr "live-migrering"
+msgstr "direkt migrering"
 
 msgid "direct migration is not supported by the source host"
-msgstr ""
+msgstr "direkt migrering stödjs inte av källvärden"
 
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %1$s "
 "mode"
 msgstr ""
+"direkt inställning av vlan-taggen är inte tillåtet för hostdev-enheter med "
+"läget %1$s"
 
 msgid "directory to switch to (default: home or else root)"
-msgstr ""
+msgstr "katalog att byta till (standard: hem eller annars roten)"
 
 msgid ""
 "dirty page rate calculation mode, either of these 3 options 'page-sampling, "
 "dirty-bitmap, dirty-ring' can be specified."
 msgstr ""
+"beräkningsläge för hastighet av smutsiga sidor, ett av dessa tre alternativ "
+"”page-sampling, dirty-bitmap, dirty-ring” kan anges."
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
 msgstr ""
+"smutsiga ringen måste vara en potens av 2 och i intervallet [1024, 65536]"
 
 #, c-format
 msgid ""
 "dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
 "'%3$d'"
 msgstr ""
+"storleken på smutsiga ringen hos KVM-funktionen ”%1$s” skiljer: källa: ”%2$d”"
+", destination: ”%3$d”"
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
 msgstr ""
+"beräkningsläget för smutsig ring kräver att funktionen smutsig ring är "
+"aktiverad."
 
 msgid "disable"
 msgstr "avaktivera"
@@ -24386,27 +24392,28 @@ msgid "disable autostarting"
 msgstr "inaktivera autostartning"
 
 msgid "disable cpus specified by cpulist"
-msgstr ""
+msgstr "avaktivera cpu:er angivna av cpu-listan"
 
 msgid "disable cpus specified by cpumap"
-msgstr ""
+msgstr "avaktivera cpu:er angivna av cpu-avbildningen"
 
 msgid "disabled"
 msgstr "avaktiverad"
 
 #, c-format
 msgid "discard is not supported for model '%1$s'"
-msgstr ""
+msgstr "discard stödjs inte för modellen ”%1$s”"
 
 msgid "discard is not supported for nvdimms"
-msgstr ""
+msgstr "discard stödjs inte för nvdimm:ar"
 
 msgid "discard is not supported with vhostuser disk"
-msgstr ""
+msgstr "discard stödjs inte med en vhostuser-disk"
 
 #, c-format
 msgid "discarding %1$llu bytes failed on RBD image %2$s at offset %3$llu"
 msgstr ""
+"att kasta %1$llu byte misslyckades på RBD-avbilden %2$s på avståndet %3$llu"
 
 msgid "disconnect"
 msgstr "koppla från"
@@ -24415,248 +24422,256 @@ msgid "disconnected"
 msgstr "frånkopplad"
 
 msgid "discover potential storage pool sources"
-msgstr ""
+msgstr "upptäck potentiella källor till lagringspooler"
 
 #, c-format
 msgid "disk %1$s does not have an active block job"
-msgstr ""
+msgstr "disken %1$s har inte ett aktivt blockjobb"
 
 #, c-format
 msgid "disk %1$s has no source file to be committed"
-msgstr ""
+msgstr "disken %1$s har ingen källfil att fastställa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk %1$s not found"
-msgstr "Domän hittades inte"
+msgstr "disken %1$s finns inte"
 
 #, c-format
 msgid "disk '%1$s' already in active block job"
-msgstr ""
+msgstr "disken ”%1$s” är redan i ett aktivt blockjobb"
 
 #, c-format
 msgid "disk '%1$s' does not currently have a source assigned"
-msgstr ""
+msgstr "disken ”%1$s” har för närvarande inte någon källa tilldelad"
 
 #, c-format
 msgid "disk '%1$s' has a blockjob assigned"
-msgstr ""
+msgstr "disken ”%1$s” har ett blockjobb tilldelat"
 
 #, c-format
 msgid "disk '%1$s' has no media"
-msgstr ""
+msgstr "disken ”%1$s” har inget medium"
 
 #, c-format
 msgid "disk '%1$s' is empty or readonly"
-msgstr ""
+msgstr "disken ”%1$s” är tom eller endast läsbar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk '%1$s' must use snapshot mode '%2$s'"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "disken ”%1$s” måste använda ögonblicsbildsläget ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk '%1$s' not found"
-msgstr "Domän hittades inte"
+msgstr "disken ”%1$s” finns inte"
 
 #, c-format
 msgid "disk '%1$s' not found in domain"
-msgstr ""
+msgstr "disken ”%1$s” finns inte i domänen"
 
 #, c-format
 msgid "disk '%1$s' specified twice"
-msgstr ""
+msgstr "disken ”%1$s” angiven två gånger"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
-msgstr ""
+msgstr "disken ”%1$s” fanns inte i domänkonfigurationen"
 
 msgid ""
 "disk 'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
+"diskens ”queue”-antal måste konfigureras för explicit avbildning från "
+"iothread till queue"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
-msgstr ""
+msgstr "diskattribut: disk[,checkpoint=typ][,bitmap=namn]"
 
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
-msgstr ""
+msgstr "diskattribut: disk[,snapshot=typ][,driver=typ][,stype=typ][,file=namn]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
-msgstr ""
+msgstr "diskbakänden stödjs inte: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk bus '%1$s' cannot be hot unplugged."
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "diskbussen ”%1$s” kan inte tas bort under drift."
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk bus '%1$s' cannot be hotplugged."
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "diskbussen ”%1$s” kan inte läggas till under drift."
 
 #, c-format
 msgid "disk bus '%1$s' cannot be updated."
-msgstr ""
+msgstr "diskbussen ”%1$s” kan inte uppdateras."
 
 #, c-format
 msgid "disk bus '%1$s' doesn't support transiend disk backing image sharing"
 msgstr ""
+"diskbussen ”%1$s” stödjer inte transient avbildningsdelning av diskbackning"
 
-#, fuzzy
 msgid "disk device 'lun' doesn't support encryption"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "diskenhetens ”lun” stödjer inte kryptering"
 
 msgid "disk device 'lun' doesn't support storage slice"
-msgstr ""
+msgstr "diskenhetens ”lun” stödjer inte lagringsskivor"
 
 msgid "disk device 'lun' must use 'raw' format"
-msgstr ""
+msgstr "diskenhetens ”lun” måsta använta formatet ”raw”"
 
 #, c-format
 msgid "disk device type '%1$s' cannot be detached"
-msgstr ""
+msgstr "diskenhetstypen ”%1$s” kan inte kopplas ifrån"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk device type '%1$s' cannot be hotplugged"
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "diskenhetstypen ”%1$s” kan inte tas bort under drift"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk device='lun' is not supported for bus='%1$s'"
-msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
+msgstr "diskebgeteb=”lun” stödjs inte för bussen=”%1$s”"
 
 #, c-format
 msgid "disk device='lun' is not supported for protocol='%1$s'"
-msgstr ""
+msgstr "diskenheten=”lun” stödjs inte för protokollet=”%1$s”"
 
-#, fuzzy
 msgid "disk device='lun' is not supported for usb bus"
-msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
+msgstr "diskenheten=”lun” stödjs ubte för usb-bussen"
 
 msgid "disk device='lun' is only valid for block type disk source"
-msgstr ""
+msgstr "diskenheten=”lun” är endast giltig för diskkälla av blocktyp"
 
 msgid "disk does not have an alias"
-msgstr ""
+msgstr "disken har inte ett alias"
 
 #, c-format
 msgid "disk driver %1$s is not supported"
-msgstr ""
+msgstr "diskdrivrutinen %1$s stödjs inte"
 
 msgid ""
 "disk driver 'iothread' attribute can't be used together with 'iothreads' "
 "subelement"
 msgstr ""
+"diskdrivrutinens attribut ”iothread” kan inte användas tillsammans med "
+"underelementet ”iothreads”"
 
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "disk-event_idx-läge stödjs endast för virtio-bussen"
 
 #, c-format
 msgid "disk format %1$s is not supported"
-msgstr ""
+msgstr "diskformatet %1$s stödjs inte"
 
 #, c-format
 msgid ""
 "disk image '%1$s' for internal snapshot '%2$s' is not the same as disk image "
 "currently used by VM"
 msgstr ""
+"diskavbilden ”%1$s” för den interna ögonblicksbilden ”%2$s” är inte samma "
+"som diskavbilden som för närvarande används av VM:en"
 
 #, c-format
 msgid "disk image format not supported: %1$s"
-msgstr ""
+msgstr "diskavbildens format stödjs inte: %1$s"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
 
 #, c-format
 msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
+msgstr "diskens iothread-kö ”%1$u” är redan tilldelad"
 
 #, c-format
 msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
+msgstr "avbildningen för diskens iothread-kö ”%1$u” är utanför intervallet"
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
-msgstr ""
+msgstr "diskens iotune-fält ”%1$s” måste vara ett heltal"
 
 msgid "disk migration was active, but 'remaining' data was missing"
-msgstr ""
+msgstr "diskmigrering var aktivt, men ”återstående” data saknades"
 
 msgid "disk migration was active, but 'total' data was missing"
-msgstr ""
+msgstr "diskmigrering var aktivt, men ”total” data saknades"
 
 msgid "disk migration was active, but 'transferred' data was missing"
-msgstr ""
+msgstr "diskmigrering var aktivt, men ”överförd” data saknades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk model '%1$s' not supported for bus '%2$s'"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "diskmodellen ”%1$s” stödjs inte för bussen ”%2$s”"
 
 msgid "disk port address is not supported by tunnelled migration"
-msgstr ""
+msgstr "diskportadressen stödjs inte av tunnlad migrering"
 
 #, c-format
 msgid "disk product is more than %1$d characters"
-msgstr ""
+msgstr "diskprodukten är mer än %1$d tecken"
 
 msgid "disk product is not printable string"
-msgstr ""
+msgstr "diskprodukten är inte en skrivbar sträng"
 
 #, c-format
 msgid "disk snapshot image path '%1$s' must be absolute"
-msgstr ""
+msgstr "diskögonblicksbildens avbildssökväg %1$s måste vara absolut"
 
 msgid "disk snapshots not supported yet"
-msgstr ""
+msgstr "diskögonblicksbilder stödjs inte ännu"
 
 msgid "disk source can be changed only in removable drives"
-msgstr ""
+msgstr "diskkällan kan bara ändras i diskar som kan tas loss"
 
 msgid "disk source mode is only valid when storage pool is of iscsi type"
-msgstr ""
+msgstr "diskkällans läge är endast giltigt när lagringspoolen är av typen iscsi"
 
-#, fuzzy
 msgid "disk source path is missing"
-msgstr "säkerhetsetikett saknas"
+msgstr "diskkällans sökväg saknas"
 
 #, c-format
 msgid "disk startupPolicy '%1$s' is not allowed for disk of '%2$s' type"
 msgstr ""
+"diskens startupPolicy ”%1$s” är inte tillåten för en disk av typen ”%2$s”"
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
 msgstr ""
+"diskens startupPolicy ”requsite” är endast tillåten för cdrom eller floppy"
 
 #, c-format
 msgid "disk target %1$s not found"
-msgstr ""
+msgstr "diskmålet %1$s finns inte"
 
 #, c-format
 msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
-msgstr ""
+msgstr "disktypen ”%1$s” kräver cachningsläget ”%2$s” eller ”%3$s”"
 
 #, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
-msgstr ""
+msgstr "disktypen ”%1$s” stödjer inte utskjutbara medier"
 
 #, c-format
 msgid "disk vendor is more than %1$d characters"
-msgstr ""
+msgstr "diskleverantören är fler än %1$d tecken"
 
 msgid "disk vendor is not printable string"
-msgstr ""
+msgstr "diskleverantören är inte en skrivbar sträng"
 
 #, c-format
 msgid "disk-only flag for snapshot %1$s requires disk-snapshot state"
 msgstr ""
+"flaggan disk-only för ögonblicksbilden %1$s kräver tillståndet disk-snapshot"
 
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr ""
+"disk-only-ögonblicksbilder kräver att åtminstone en disk väljs till "
+"ögonblicksbilden"
 
-#, fuzzy
 msgid "display"
-msgstr "vnc-skärm"
+msgstr "display"
 
 msgid "display all block devices info"
-msgstr ""
+msgstr "visa alla blockenheters information"
 
 msgid "display available free memory for the NUMA cell."
 msgstr "visa oanvänt minne för NUMA-cellen."
@@ -24665,10 +24680,10 @@ msgid "display available free pages for the NUMA cell."
 msgstr "visa tillgängliga fria sidor för NUMA-cellen."
 
 msgid "display extended details for pools"
-msgstr ""
+msgstr "visa utökade detaljer för pooler"
 
 msgid "display extended details for volumes"
-msgstr ""
+msgstr "visa utökade detaljer för volymer"
 
 msgid "display the progress of dump"
 msgstr ""
