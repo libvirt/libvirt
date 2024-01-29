@@ -430,42 +430,6 @@ testPCIVPDGetFieldValueFormat(const void *data G_GNUC_UNUSED)
     'R', 'W', 0x02, 0x00, 0x00
 
 static int
-testVirPCIVPDParseVPDStringResource(const void *opaque G_GNUC_UNUSED)
-{
-    VIR_AUTOCLOSE fd = -1;
-    uint8_t csum = 0;
-    size_t dataLen = 0;
-    bool result = false;
-
-    g_autoptr(virPCIVPDResource) res = g_new0(virPCIVPDResource, 1);
-    const char *expectedValue = "testname";
-
-    const uint8_t stringResExample[] = {
-        VPD_STRING_RESOURCE_EXAMPLE_DATA
-    };
-
-    dataLen = G_N_ELEMENTS(stringResExample);
-    if ((fd = virCreateAnonymousFile(stringResExample, dataLen)) < 0)
-        return -1;
-
-    result = virPCIVPDParseVPDLargeResourceString(fd, 0, dataLen, &csum, res);
-
-    if (!result) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Could not parse the example resource.");
-        return -1;
-    }
-
-    if (STRNEQ(expectedValue, res->name)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Unexpected string resource value: %s, expected: %s",
-                       res->name, expectedValue);
-        return -1;
-    }
-    return 0;
-}
-
-static int
 testVirPCIVPDValidateExampleReadOnlyFields(virPCIVPDResource *res)
 {
     const char *expectedName = "testname";
@@ -963,8 +927,6 @@ mymain(void)
         ret = -1;
     if (virTestRun("Determining a field value format by a key ",
                    testPCIVPDGetFieldValueFormat, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Parsing VPD string resources ", testVirPCIVPDParseVPDStringResource, NULL) < 0)
         ret = -1;
     if (virTestRun("Parsing a VPD resource with a zero-length RW ",
                    testVirPCIVPDParseZeroLengthRW, NULL) < 0)
