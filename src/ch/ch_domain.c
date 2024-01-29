@@ -36,7 +36,7 @@ void
 virCHDomainRemoveInactive(virCHDriver *driver,
                           virDomainObj *vm)
 {
-    if (vm->persistent) {
+    if (!vm->persistent) {
         virDomainObjListRemove(driver->domains, vm);
     }
 }
