@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-11 22:17+0000\n"
+"PO-Revision-Date: 2024-01-29 15:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -13080,7 +13080,7 @@ msgstr "비밀번호는 ',' 문자를 포함할 수 없습니다"
 
 #, c-format
 msgid "Password set successfully for %1$s in %2$s"
-msgstr "%1$s의 %2$s에 대한 암호가 성공적으로 설정되었습니다"
+msgstr "%1$s의 %2$s에 대한 비밀번호가 성공적으로 설정되었습니다"
 
 msgid "Path"
 msgstr "경로"
@@ -35325,7 +35325,7 @@ msgstr ""
 "passt 네트워크 백엔드는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
 
 msgid "the password is already encrypted"
-msgstr "암호는 이미 암호화되어 있습니다"
+msgstr "비밀번호는 이미 암호화되어 있습니다"
 
 msgid "the process ID"
 msgstr "프로세스 ID"
@@ -38695,7 +38695,7 @@ msgid "vz driver doesn't support multihead video adapters."
 msgstr "vz 드라이버는 멀티헤드 비디오 어댑터를 지원하지 않습니다."
 
 msgid "vz driver doesn't support setting password expire time."
-msgstr "vz 드라이버는 암호 만료 시간 설정을 지원하지 않습니다."
+msgstr "vz 드라이버는 비밀번호 만료 시간 설정을 지원하지 않습니다."
 
 msgid "vz driver doesn't support setting video acceleration parameters."
 msgstr "vz 드라이버는 비디오 가속 매개변수 설정을 지원하지 않습니다."
