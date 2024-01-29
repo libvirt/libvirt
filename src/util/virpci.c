@@ -3081,17 +3081,12 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
 bool
 virPCIDeviceHasVPD(virPCIDevice *dev)
 {
-    g_autofree char *vpdPath = NULL;
+    g_autofree char *vpdPath = virPCIFile(dev->name, "vpd");
+    bool ret = virFileIsRegular(vpdPath);
 
-    vpdPath = virPCIFile(dev->name, "vpd");
-    if (!virFileExists(vpdPath)) {
-        VIR_INFO("Device VPD file does not exist %s", vpdPath);
-        return false;
-    } else if (!virFileIsRegular(vpdPath)) {
-        VIR_WARN("VPD path does not point to a regular file %s", vpdPath);
-        return false;
-    }
-    return true;
+    VIR_DEBUG("path='%s', exists='%d'", vpdPath, ret);
+
+    return ret;
 }
 
 /**
