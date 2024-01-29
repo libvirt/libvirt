@@ -960,11 +960,9 @@ virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource 
     g_autofree xmlNodePtr *nodes = NULL;
     size_t i = 0;
 
-    if ((nfields = virXPathNodeSet("./vendor_field[@index]", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                _("failed to evaluate <vendor_field> elements"));
+    if ((nfields = virXPathNodeSet("./vendor_field[@index]", ctxt, &nodes)) < 0)
         return -1;
-    }
+
     for (i = 0; i < nfields; i++) {
         g_autofree char *value = NULL;
         g_autofree char *index = NULL;
@@ -989,11 +987,9 @@ virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource 
     VIR_FREE(nodes);
 
     if (!readOnly) {
-        if ((nfields = virXPathNodeSet("./system_field[@index]", ctxt, &nodes)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                    _("failed to evaluate <system_field> elements"));
+        if ((nfields = virXPathNodeSet("./system_field[@index]", ctxt, &nodes)) < 0)
             return -1;
-        }
+
         for (i = 0; i < nfields; i++) {
             g_autofree char *value = NULL;
             g_autofree char *index = NULL;
@@ -1074,11 +1070,8 @@ virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
         return -1;
     }
 
-    if ((nfields = virXPathNodeSet("./fields[@access]", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                _("no VPD <fields> elements with an access type attribute found"));
+    if ((nfields = virXPathNodeSet("./fields[@access]", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < nfields; i++) {
         g_autofree char *access = NULL;

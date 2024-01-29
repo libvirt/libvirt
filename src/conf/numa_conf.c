@@ -135,11 +135,8 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
     size_t i = 0;
     g_autofree xmlNodePtr *nodes = NULL;
 
-    if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot extract memnode nodes"));
+    if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (!n)
         return 0;
@@ -700,7 +697,10 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
     if (!virXPathNode("./distances[1]", ctxt))
         return 0;
 
-    if ((sibling = virXPathNodeSet("./distances[1]/sibling", ctxt, &nodes)) <= 0) {
+    if ((sibling = virXPathNodeSet("./distances[1]/sibling", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    if (sibling == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("NUMA distances defined without siblings"));
         goto cleanup;
@@ -852,7 +852,10 @@ virDomainNumaDefParseXML(virDomainNuma *def,
     if (!virXPathNode("./cpu/numa[1]", ctxt))
         return 0;
 
-    if ((n = virXPathNodeSet("./cpu/numa[1]/cell", ctxt, &cell)) <= 0) {
+    if ((n = virXPathNodeSet("./cpu/numa[1]/cell", ctxt, &cell)) < 0)
+        return -1;
+
+    if (n == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("NUMA topology defined without NUMA cells"));
         return -1;

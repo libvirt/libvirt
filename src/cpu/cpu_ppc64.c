@@ -334,7 +334,10 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         }
     }
 
-    if ((n = virXPathNodeSet("./pvr", ctxt, &nodes)) <= 0) {
+    if ((n = virXPathNodeSet("./pvr", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing PVR information for CPU model %1$s"),
                        model->name);

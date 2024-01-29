@@ -400,11 +400,8 @@ qemuNbdkitCapsParseFlags(qemuNbdkitCaps *nbdkitCaps,
     size_t i;
     int n;
 
-    if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities flags"));
+    if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     VIR_DEBUG("Got flags %d", n);
     for (i = 0; i < n; i++) {

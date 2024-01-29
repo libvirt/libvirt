@@ -3986,11 +3986,8 @@ virQEMUCapsLoadCPUModels(virArch arch,
     int n;
     xmlNodePtr node;
 
-    if ((n = virXPathNodeSet(xpath, ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities cpus"));
+    if ((n = virXPathNodeSet(xpath, ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (n == 0)
         return 0;
@@ -4028,11 +4025,8 @@ virQEMUCapsLoadCPUModels(virArch arch,
         nblockers = virXPathNodeSet("./blocker", ctxt, &blockerNodes);
         ctxt->node = node;
 
-        if (nblockers < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to parse CPU blockers in QEMU capabilities"));
+        if (nblockers < 0)
             return -1;
-        }
 
         if (nblockers > 0) {
             size_t j;
@@ -4071,11 +4065,8 @@ virQEMUCapsLoadMachines(virQEMUCapsAccel *caps,
     size_t i;
     int n;
 
-    if ((n = virXPathNodeSet(xpath, ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities machines"));
+    if ((n = virXPathNodeSet(xpath, ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (n == 0)
         return 0;
@@ -4288,11 +4279,8 @@ virQEMUCapsParseSGXInfo(virQEMUCaps *qemuCaps,
         ctxt->node = sgxSections;
         nSgxSections = virXPathNodeSet("./section", ctxt, &sectionNodes);
 
-        if (nSgxSections < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to parse SGX sections in QEMU capabilities cache"));
+        if (nSgxSections < 0)
             return -1;
-        }
 
         sgx->nSgxSections = nSgxSections;
         sgx->sgxSections = g_new0(virSGXSection, nSgxSections);
@@ -4375,11 +4363,8 @@ virQEMUCapsParseFlags(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
     size_t i;
     int n;
 
-    if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities flags"));
+    if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     VIR_DEBUG("Got flags %d", n);
     for (i = 0; i < n; i++) {
@@ -4413,11 +4398,8 @@ virQEMUCapsParseGIC(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
     size_t i;
     int n;
 
-    if ((n = virXPathNodeSet("./gic", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities gic"));
+    if ((n = virXPathNodeSet("./gic", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (n > 0) {
         unsigned int uintValue;

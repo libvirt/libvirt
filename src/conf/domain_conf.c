@@ -17780,11 +17780,8 @@ virDomainResctrlMonDefParse(virDomainDef *def,
 
     ctxt->node = node;
 
-    if ((n = virXPathNodeSet("./monitor", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot extract monitor nodes"));
+    if ((n = virXPathNodeSet("./monitor", ctxt, &nodes)) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         domresmon = g_new0(virDomainResctrlMonDef, 1);
@@ -17912,11 +17909,8 @@ virDomainCachetuneDefParse(virDomainDef *def,
     if (virBitmapIsAllClear(vcpus))
         return 0;
 
-    if ((n = virXPathNodeSet("./cache", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot extract cache nodes under cachetune"));
+    if ((n = virXPathNodeSet("./cache", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (virDomainResctrlVcpuMatch(def, vcpus, &resctrl) < 0)
         return -1;
@@ -18182,11 +18176,8 @@ virDomainDefParseMemory(virDomainDef *def,
 
     if (virXPathNode("./memoryBacking/hugepages", ctxt)) {
         /* hugepages will be used */
-        if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot extract hugepages nodes"));
+        if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0)
             return -1;
-        }
 
         if (n) {
             def->mem.hugepages = g_new0(virDomainHugePage, n);
@@ -18270,11 +18261,8 @@ virDomainMemorytuneDefParse(virDomainDef *def,
     if (virBitmapIsAllClear(vcpus))
         return 0;
 
-    if ((n = virXPathNodeSet("./node", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot extract memory nodes under memorytune"));
+    if ((n = virXPathNodeSet("./node", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (virDomainResctrlVcpuMatch(def, vcpus, &resctrl) < 0)
         return -1;
@@ -18341,11 +18329,9 @@ virDomainDefTunablesParse(virDomainDef *def,
                      &def->blkio.weight) < 0)
         def->blkio.weight = 0;
 
-    if ((n = virXPathNodeSet("./blkiotune/device", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot extract blkiotune nodes"));
+    if ((n = virXPathNodeSet("./blkiotune/device", ctxt, &nodes)) < 0)
         return -1;
-    }
+
     if (n)
         def->blkio.devices = g_new0(virBlkioDevice, n);
 
@@ -18456,11 +18442,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./cputune/emulatorpin", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract emulatorpin nodes"));
+    if ((n = virXPathNodeSet("./cputune/emulatorpin", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (n) {
         if (n > 1) {
@@ -18475,11 +18458,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     VIR_FREE(nodes);
 
 
-    if ((n = virXPathNodeSet("./cputune/iothreadpin", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract iothreadpin nodes"));
+    if ((n = virXPathNodeSet("./cputune/iothreadpin", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < n; i++) {
         if (virDomainIOThreadPinDefParseXML(nodes[i], def) < 0)
@@ -18487,11 +18467,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./cputune/vcpusched", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract vcpusched nodes"));
+    if ((n = virXPathNodeSet("./cputune/vcpusched", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < n; i++) {
         if (virDomainVcpuThreadSchedParse(nodes[i], def) < 0)
@@ -18499,11 +18476,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./cputune/iothreadsched", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract iothreadsched nodes"));
+    if ((n = virXPathNodeSet("./cputune/iothreadsched", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < n; i++) {
         if (virDomainIOThreadSchedParse(nodes[i], def) < 0)
@@ -18511,11 +18485,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./cputune/emulatorsched", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract emulatorsched nodes"));
+    if ((n = virXPathNodeSet("./cputune/emulatorsched", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     if (n) {
         if (n > 1) {
@@ -18529,11 +18500,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./cputune/cachetune", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract cachetune nodes"));
+    if ((n = virXPathNodeSet("./cputune/cachetune", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < n; i++) {
         if (virDomainCachetuneDefParse(def, ctxt, nodes[i], flags) < 0)
@@ -18541,11 +18509,8 @@ virDomainDefTunablesParse(virDomainDef *def,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./cputune/memorytune", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract memorytune nodes"));
+    if ((n = virXPathNodeSet("./cputune/memorytune", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < n; i++) {
         if (virDomainMemorytuneDefParse(def, ctxt, nodes[i], flags) < 0)
@@ -18849,11 +18814,8 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         !virDomainIOThreadIDArrayHasPin(def))
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
 
-    if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot extract resource nodes"));
+    if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0)
         return NULL;
-    }
 
     if (n > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -18901,11 +18863,9 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         return NULL;
 
     /* analysis of the resource leases */
-    if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot extract device leases"));
+    if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0)
         return NULL;
-    }
+
     if (n)
         def->leases = g_new0(virDomainLeaseDef *, n);
     for (i = 0; i < n; i++) {
@@ -19024,11 +18984,9 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./devices/console", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot extract console devices"));
+    if ((n = virXPathNodeSet("./devices/console", ctxt, &nodes)) < 0)
         return NULL;
-    }
+
     if (n)
         def->consoles = g_new0(virDomainChrDef *, n);
 

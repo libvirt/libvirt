@@ -947,11 +947,8 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     g_autofree xmlNodePtr *interfaces = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    if ((n = virXPathNodeSet("./network/interface", ctxt, &interfaces)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing interface information"));
+    if ((n = virXPathNodeSet("./network/interface", ctxt, &interfaces)) < 0)
         return NULL;
-    }
 
     optr->nnets = n;
     optr->net = g_new0(qemuMigrationCookieNetData, optr->nnets);

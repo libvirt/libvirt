@@ -3155,11 +3155,8 @@ qemuDomainObjPrivateXMLParseSlirpFeatures(xmlNodePtr featuresNode,
 
     ctxt->node = featuresNode;
 
-    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("failed to parse slirp-helper features"));
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
         return -1;
-    }
 
     for (i = 0; i < n; i++) {
         g_autofree char *str = virXMLPropString(nodes[i], "name");
@@ -3273,11 +3270,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./qemuCaps/flag", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("failed to parse qemu capabilities flags"));
+    if ((n = virXPathNodeSet("./qemuCaps/flag", ctxt, &nodes)) < 0)
         return -1;
-    }
+
     if (n > 0) {
         qemuCaps = virQEMUCapsNew();
 
@@ -3305,11 +3300,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
 
-    if ((n = virXPathNodeSet("./devices/device", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu device list"));
+    if ((n = virXPathNodeSet("./devices/device", ctxt, &nodes)) < 0)
         return -1;
-    }
+
     if (n > 0) {
         /* NULL-terminated list */
         priv->qemuDevices = g_new0(char *, n + 1);
@@ -3325,11 +3318,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./slirp/helper", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse slirp helper list"));
+    if ((n = virXPathNodeSet("./slirp/helper", ctxt, &nodes)) < 0)
         return -1;
-    }
+
     for (i = 0; i < n; i++) {
         g_autofree char *alias = virXMLPropString(nodes[i], "alias");
         g_autofree char *pid = virXMLPropString(nodes[i], "pid");

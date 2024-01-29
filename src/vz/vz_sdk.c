@@ -4612,11 +4612,8 @@ prlsdkParseSnapshotTree(const char *treexml)
                             "ParallelsSavedStates", &ctxt, NULL, false)))
         goto cleanup;
 
-    if ((n = virXPathNodeSet("//SavedStateItem", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract snapshot nodes"));
+    if ((n = virXPathNodeSet("//SavedStateItem", ctxt, &nodes)) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         if (nodes[i]->parent == xmlDocGetRootElement(xml))
