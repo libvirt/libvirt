@@ -68,6 +68,3 @@ virPCIVPDResourceCustomCompareIndex(virPCIVPDResourceCustom *a, virPCIVPDResourc
 
 bool
 virPCIVPDResourceCustomUpsertValue(GPtrArray *arr, char index, const char *const value);
-
-bool virPCIVPDParseVPDLargeResourceString(int vpdFileFd, uint16_t resPos, uint16_t resDataLen,
-                                          uint8_t *csum, virPCIVPDResource *res);
