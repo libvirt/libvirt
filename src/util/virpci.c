@@ -3103,28 +3103,21 @@ virPCIDeviceHasVPD(virPCIDevice *dev)
 virPCIVPDResource *
 virPCIDeviceGetVPD(virPCIDevice *dev)
 {
-    g_autofree char *vpdPath = NULL;
-    int fd;
-    g_autoptr(virPCIVPDResource) res = NULL;
+    g_autofree char *vpdPath = virPCIFile(dev->name, "vpd");
+    VIR_AUTOCLOSE fd = -1;
 
-    vpdPath = virPCIFile(dev->name, "vpd");
     if (!virPCIDeviceHasVPD(dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Device %1$s does not have a VPD"),
-                virPCIDeviceGetName(dev));
+                       virPCIDeviceGetName(dev));
         return NULL;
     }
+
     if ((fd = open(vpdPath, O_RDONLY)) < 0) {
-        virReportSystemError(-fd, _("Failed to open a VPD file '%1$s'"), vpdPath);
-        return NULL;
-    }
-    res = virPCIVPDParse(fd);
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("Unable to close the VPD file, fd: %1$d"), fd);
+        virReportSystemError(errno, _("Failed to open a VPD file '%1$s'"), vpdPath);
         return NULL;
     }
 
-    return g_steal_pointer(&res);
+    return virPCIVPDParse(fd);
 }
 
 #else
