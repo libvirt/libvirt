@@ -3052,6 +3052,8 @@ virNodeDeviceGetPCIVPDDynamicCap(virNodeDevCapPCIDev *devCapPCIDev)
         if ((res = virPCIDeviceGetVPD(pciDev))) {
             devCapPCIDev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
             devCapPCIDev->vpd = g_steal_pointer(&res);
+        } else {
+            virResetLastError();
         }
     }
     return 0;
