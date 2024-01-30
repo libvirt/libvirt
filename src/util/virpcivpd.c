@@ -404,12 +404,15 @@ virPCIVPDReadVPDBytes(int vpdFileFd,
  * @csum: A pointer to a 1-byte checksum.
  * @res: A pointer to virPCIVPDResource.
  *
- * Returns: a pointer to a VPDResource which needs to be freed by the caller or
- * NULL if getting it failed for some reason.
+ * Returns 0 if the field was parsed sucessfully; -1 on error
  */
-static bool
-virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t resDataLen,
-                                     bool readOnly, uint8_t *csum, virPCIVPDResource *res)
+static int
+virPCIVPDParseVPDLargeResourceFields(int vpdFileFd,
+                                     uint16_t resPos,
+                                     uint16_t resDataLen,
+                                     bool readOnly,
+                                     uint8_t *csum,
+                                     virPCIVPDResource *res)
 {
     /* A buffer of up to one resource record field size (plus a zero byte) is needed. */
     g_autofree uint8_t *buf = g_malloc0(PCI_VPD_MAX_FIELD_SIZE + 1);
@@ -427,7 +430,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
 
         /* Keyword resources consist of keywords (2 ASCII bytes per the spec) and 1-byte length. */
         if (virPCIVPDReadVPDBytes(vpdFileFd, buf, 3, fieldPos, csum) < 0)
-            return false;
+            return -1;
 
         fieldDataLen = buf[2];
         /* Change the position to the field's data portion skipping the keyword and length bytes. */
@@ -444,8 +447,9 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
 
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR:
                 if (readOnly) {
-                    VIR_INFO("Unexpected RW keyword in the read-only section.");
-                    return false;
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("failed to read the PCI VPD data: unexpected RW keyword in read-only section"));
+                    return -1;
                 }
 
                 bytesToRead = fieldDataLen;
@@ -453,8 +457,9 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
 
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD:
                 if (!readOnly) {
-                    VIR_INFO("Unexpected RV keyword in the read-write section.");
-                    return false;
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("failed to read the PCI VPD data: unexpected RV keyword in read-write section"));
+                    return -1;
                 }
                 /* Only need one byte to be read and accounted towards
                  * the checksum calculation. */
@@ -472,12 +477,13 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         if (resPos + resDataLen < fieldPos + fieldDataLen) {
             /* In this case the field cannot simply be skipped since the position of the
              * next field is determined based on the length of a previous field. */
-            VIR_INFO("A field data length violates the resource length boundary.");
-            return false;
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("failed to read the PCI VPD data: data field length invalid"));
+            return -1;
         }
 
         if (virPCIVPDReadVPDBytes(vpdFileFd, buf, bytesToRead, fieldPos, csum) < 0)
-            return false;
+            return -1;
 
         /* Advance the position to the first byte of the next field. */
         fieldPos += fieldDataLen;
@@ -492,7 +498,6 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                 if (!virPCIVPDResourceIsValidTextValue(fieldValue)) {
                     /* Skip fields with invalid values - this is safe assuming field length is
                      * correctly specified. */
-                    VIR_DEBUG("A value for field %s contains invalid characters", fieldKeyword);
                     continue;
                 }
                 break;
@@ -512,8 +517,9 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD:
                 if (*csum) {
                     /* All bytes up to and including the checksum byte should add up to 0. */
-                    VIR_INFO("Checksum validation has failed");
-                    return false;
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("failed to read the PCI VPD data: invalid checksum"));
+                    return -1;
                 }
                 hasChecksum = true;
                 goto done;
@@ -540,16 +546,18 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
      * they were not the last fields in the section. */
     if ((fieldPos < resPos + resDataLen)) {
         /* unparsed data still present */
-        VIR_DEBUG("PCI VPD data parsing failed");
-        return false;
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to read the PCI VPD data: parsing ended prematurely"));
+        return -1;
     }
 
     if (readOnly && !hasChecksum) {
-        VIR_DEBUG("VPD-R does not contain the mandatory checksum");
-        return false;
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to read the PCI VPD data: missing mandatory checksum"));
+        return -1;
     }
 
-    return true;
+    return 0;
 }
 
 
@@ -606,7 +614,6 @@ virPCIVPDParse(int vpdFileFd)
     uint8_t csum = 0;
     uint8_t headerBuf[2];
 
-    bool isWellFormed = false;
     uint16_t resPos = 0, resDataLen;
     uint8_t tag = 0;
     bool endResReached = false, hasReadOnly = false;
@@ -659,20 +666,21 @@ virPCIVPDParse(int vpdFileFd)
                                                          &csum, res) < 0)
                     return NULL;
 
-                isWellFormed = true;
                 break;
                 /* Large resource type which is also a VPD-R: 0x80 | 0x10 == 0x90 */
             case PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG:
-                isWellFormed = virPCIVPDParseVPDLargeResourceFields(vpdFileFd, resPos,
-                                                                    resDataLen, true, &csum, res);
+                if (virPCIVPDParseVPDLargeResourceFields(vpdFileFd, resPos,
+                                                         resDataLen, true, &csum, res) < 0)
+                    return NULL;
                 /* Encountered the VPD-R tag. The resource record parsing also validates
                  * the presence of the required checksum in the RV field. */
                 hasReadOnly = true;
                 break;
                 /* Large resource type which is also a VPD-W: 0x80 | 0x11 == 0x91 */
             case PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_WRITE_LARGE_RESOURCE_FLAG:
-                isWellFormed = virPCIVPDParseVPDLargeResourceFields(vpdFileFd, resPos, resDataLen,
-                                                                    false, &csum, res);
+                if (virPCIVPDParseVPDLargeResourceFields(vpdFileFd, resPos, resDataLen,
+                                                         false, &csum, res) < 0)
+                    return NULL;
                 break;
             default:
                 /* While we cannot parse unknown resource types, they can still be skipped
@@ -680,11 +688,6 @@ virPCIVPDParse(int vpdFileFd)
                 VIR_DEBUG("Encountered an unexpected VPD resource tag: %#x", tag);
                 resPos += resDataLen;
                 continue;
-        }
-
-        if (!isWellFormed) {
-            VIR_DEBUG("Encountered an invalid VPD");
-            return NULL;
         }
 
         /* Continue processing other resource records. */
