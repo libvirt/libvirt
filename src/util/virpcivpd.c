@@ -415,10 +415,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
     g_autofree uint8_t *buf = g_malloc0(PCI_VPD_MAX_FIELD_SIZE + 1);
     uint16_t fieldDataLen = 0, bytesToRead = 0;
     uint16_t fieldPos = resPos;
-
     bool hasChecksum = false;
-    bool hasRW = false;
-    bool endReached = false;
 
     /* Note the equal sign - fields may have a zero length in which case they will
      * just occupy 3 header bytes. In the in case of the RW field this may mean that
@@ -507,7 +504,9 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
 
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR:
                 /* Skip the read-write space since it is used for indication only. */
-                hasRW = true;
+                /* The lack of RW is allowed on purpose in the read-write section since some vendors
+                 * violate the PCI/PCIe specs and do not include it, however, this does not prevent parsing
+                 * of valid data. */
                 goto done;
 
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD:
@@ -531,6 +530,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
             if (!res->rw)
                 res->rw = virPCIVPDResourceRWNew();
         }
+
         /* The field format, keyword and value are determined. Attempt to update the resource. */
         virPCIVPDResourceUpdateKeyword(res, readOnly, fieldKeyword, fieldValue);
     }
@@ -538,26 +538,20 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
  done:
     /* May have exited the loop prematurely in case RV or RW were encountered and
      * they were not the last fields in the section. */
-    endReached = (fieldPos >= resPos + resDataLen);
-    if (readOnly && !(hasChecksum && endReached)) {
-        VIR_DEBUG("VPD-R does not contain the mandatory RV field as the last field");
+    if ((fieldPos < resPos + resDataLen)) {
+        /* unparsed data still present */
+        VIR_DEBUG("PCI VPD data parsing failed");
         return false;
-    } else if (!readOnly && !endReached) {
-        /* The lack of RW is allowed on purpose in the read-write section since some vendors
-         * violate the PCI/PCIe specs and do not include it, however, this does not prevent parsing
-         * of valid data. If the RW is present, however, we make sure it is the last field in
-         * the read-write section. */
-        if (hasRW) {
-            VIR_DEBUG("VPD-W section parsing ended prematurely (RW is not the last field).");
-            return false;
-        } else {
-            VIR_DEBUG("VPD-W section parsing ended prematurely.");
-            return false;
-        }
+    }
+
+    if (readOnly && !hasChecksum) {
+        VIR_DEBUG("VPD-R does not contain the mandatory checksum");
+        return false;
     }
 
     return true;
 }
+
 
 /**
  * virPCIVPDParseVPDLargeResourceString:
