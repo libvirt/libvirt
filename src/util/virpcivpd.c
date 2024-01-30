@@ -470,9 +470,6 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                 VIR_DEBUG("Could not determine a field value format for keyword: %s", fieldKeyword);
                 bytesToRead = fieldDataLen;
                 break;
-            default:
-                VIR_INFO("Unexpected field value format encountered.");
-                return false;
         }
 
         if (resPos + resDataLen < fieldPos + fieldDataLen) {
