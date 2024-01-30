@@ -3815,7 +3815,7 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
         }
 
         if (snap != current && snap->nchildren != 0 &&
-            virDomainMomentIsAncestor(snap, current)) {
+            !virDomainMomentIsAncestor(current, snap)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("deletion of non-leaf external snapshot that is not in active chain is not supported"));
             return -1;
