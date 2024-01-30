@@ -1059,11 +1059,11 @@ virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
 
     if (!(newres->name = virXPathString("string(./name)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                _("Could not read a device name from the <name> element"));
+                       _("Could not read a device name from the <name> element"));
         return -1;
     }
 
-    if ((nfields = virXPathNodeSet("./fields[@access]", ctxt, &nodes)) < 0)
+    if ((nfields = virXPathNodeSet("./fields", ctxt, &nodes)) < 0)
         return -1;
 
     for (i = 0; i < nfields; i++) {
@@ -1071,27 +1071,19 @@ virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
         VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
         ctxt->node = nodes[i];
-        if (!(access = virXPathString("string(./@access[1])", ctxt))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                    _("VPD fields access type parsing has failed"));
+
+        if (!(access = virXMLPropStringRequired(nodes[i], "access")))
             return -1;
-        }
 
         if (STREQ(access, "readonly")) {
-            if (virNodeDeviceCapVPDParseReadOnlyFields(ctxt, newres) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                        _("Could not parse %1$s VPD resource fields"), access);
+            if (virNodeDeviceCapVPDParseReadOnlyFields(ctxt, newres) < 0)
                 return -1;
-            }
         } else if (STREQ(access, "readwrite")) {
-            if (virNodeDeviceCapVPDParseReadWriteFields(ctxt, newres) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                        _("Could not parse %1$s VPD resource fields"), access);
+            if (virNodeDeviceCapVPDParseReadWriteFields(ctxt, newres) < 0)
                 return -1;
-            }
         } else {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Unsupported VPD field access type specified %1$s"),
+                           _("Unsupported VPD field access type '%1$s'"),
                            access);
             return -1;
         }
