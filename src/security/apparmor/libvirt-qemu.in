@@ -196,7 +196,8 @@
     signal (receive) set=("term") peer=libvirtd,
     signal (receive) set=("term") peer=virtqemud,
 
-    owner /{,var/}run/libvirt/qemu/passt/* rw,
+    owner @{run}/user/[0-9]*/libvirt/qemu/run/passt/* rw,
+    owner @{run}/libvirt/qemu/passt/* rw,
 
     include if exists <abstractions/passt>
   }
