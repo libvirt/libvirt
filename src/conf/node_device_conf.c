@@ -270,14 +270,6 @@ virNodeDeviceCapVPDFormatCustomSystemField(virPCIVPDResourceCustom *field, virBu
     virNodeDeviceCapVPDFormatCustomField(buf, "system_field", field);
 }
 
-static inline void
-virNodeDeviceCapVPDFormatRegularField(virBuffer *buf, const char *keyword, const char *value)
-{
-    if (keyword == NULL || value == NULL)
-        return;
-
-    virBufferAsprintf(buf, "<%s>%s</%s>\n", keyword, value, keyword);
-}
 
 static void
 virNodeDeviceCapVPDFormat(virBuffer *buf, virPCIVPDResource *res)
@@ -290,31 +282,33 @@ virNodeDeviceCapVPDFormat(virBuffer *buf, virPCIVPDResource *res)
     virBufferEscapeString(buf, "<name>%s</name>\n", res->name);
 
     if (res->ro != NULL) {
-        virBufferEscapeString(buf, "<fields access='%s'>\n", "readonly");
-
+        virBufferAddLit(buf, "<fields access='readonly'>\n");
         virBufferAdjustIndent(buf, 2);
-        virNodeDeviceCapVPDFormatRegularField(buf, "change_level", res->ro->change_level);
-        virNodeDeviceCapVPDFormatRegularField(buf, "manufacture_id", res->ro->manufacture_id);
-        virNodeDeviceCapVPDFormatRegularField(buf, "part_number", res->ro->part_number);
-        virNodeDeviceCapVPDFormatRegularField(buf, "serial_number", res->ro->serial_number);
+
+        virBufferEscapeString(buf, "<change_level>%s</change_level>\n", res->ro->change_level);
+        virBufferEscapeString(buf, "<manufacture_id>%s</manufacture_id>\n", res->ro->manufacture_id);
+        virBufferEscapeString(buf, "<part_number>%s</part_number>\n", res->ro->part_number);
+        virBufferEscapeString(buf, "<serial_number>%s</serial_number>\n", res->ro->serial_number);
+
         g_ptr_array_foreach(res->ro->vendor_specific,
                             (GFunc)virNodeDeviceCapVPDFormatCustomVendorField, buf);
-        virBufferAdjustIndent(buf, -2);
 
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</fields>\n");
     }
 
     if (res->rw != NULL) {
-        virBufferEscapeString(buf, "<fields access='%s'>\n", "readwrite");
-
+        virBufferAddLit(buf, "<fields access='readwrite'>\n");
         virBufferAdjustIndent(buf, 2);
-        virNodeDeviceCapVPDFormatRegularField(buf, "asset_tag", res->rw->asset_tag);
+
+        virBufferEscapeString(buf, "<asset_tag>%s</asset_tag>\n", res->rw->asset_tag);
+
         g_ptr_array_foreach(res->rw->vendor_specific,
                             (GFunc)virNodeDeviceCapVPDFormatCustomVendorField, buf);
         g_ptr_array_foreach(res->rw->system_specific,
                             (GFunc)virNodeDeviceCapVPDFormatCustomSystemField, buf);
-        virBufferAdjustIndent(buf, -2);
 
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</fields>\n");
     }
 
