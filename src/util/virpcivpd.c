@@ -485,36 +485,43 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         /* Advance the position to the first byte of the next field. */
         fieldPos += fieldDataLen;
 
-        if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_TEXT) {
-            /* Trim whitespace around a retrieved value and set it to be a field's value. Cases
-             * where unnecessary whitespace was present around a field value have been encountered
-             * in the wild.
-             */
-            fieldValue = g_strstrip(g_strndup((char *)buf, fieldDataLen));
-            if (!virPCIVPDResourceIsValidTextValue(fieldValue)) {
-                /* Skip fields with invalid values - this is safe assuming field length is
-                 * correctly specified. */
-                VIR_DEBUG("A value for field %s contains invalid characters", fieldKeyword);
+        switch (fieldFormat) {
+            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_TEXT:
+                /* Trim whitespace around a retrieved value and set it to be a field's value. Cases
+                 * where unnecessary whitespace was present around a field value have been encountered
+                 * in the wild.
+                 */
+                fieldValue = g_strstrip(g_strndup((char *)buf, fieldDataLen));
+                if (!virPCIVPDResourceIsValidTextValue(fieldValue)) {
+                    /* Skip fields with invalid values - this is safe assuming field length is
+                     * correctly specified. */
+                    VIR_DEBUG("A value for field %s contains invalid characters", fieldKeyword);
+                    continue;
+                }
+                break;
+
+            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_BINARY:
+                fieldValue = g_malloc(fieldDataLen);
+                memcpy(fieldValue, buf, fieldDataLen);
+                break;
+
+            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR:
+                /* Skip the read-write space since it is used for indication only. */
+                hasRW = true;
+                goto done;
+
+            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD:
+                if (*csum) {
+                    /* All bytes up to and including the checksum byte should add up to 0. */
+                    VIR_INFO("Checksum validation has failed");
+                    return false;
+                }
+                hasChecksum = true;
+                goto done;
+
+            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_LAST:
+                /* Skip unknown fields */
                 continue;
-            }
-        } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD) {
-            if (*csum) {
-                /* All bytes up to and including the checksum byte should add up to 0. */
-                VIR_INFO("Checksum validation has failed");
-                return false;
-            }
-            hasChecksum = true;
-            break;
-        } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR) {
-            /* Skip the read-write space since it is used for indication only. */
-            hasRW = true;
-            break;
-        } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_LAST) {
-            /* Skip unknown fields */
-            continue;
-        } else {
-            fieldValue = g_malloc(fieldDataLen);
-            memcpy(fieldValue, buf, fieldDataLen);
         }
 
         if (readOnly) {
@@ -528,6 +535,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         virPCIVPDResourceUpdateKeyword(res, readOnly, fieldKeyword, fieldValue);
     }
 
+ done:
     /* May have exited the loop prematurely in case RV or RW were encountered and
      * they were not the last fields in the section. */
     endReached = (fieldPos >= resPos + resDataLen);
