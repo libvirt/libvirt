@@ -1582,14 +1582,26 @@ qemuSnapshotCreateXMLValidateDef(virDomainObj *vm,
  * to internal snapshots.
  */
 static bool
-qemuSnapshotCreateUseExternal(virDomainSnapshotDef *def,
+qemuSnapshotCreateUseExternal(virDomainObj *vm,
+                              virDomainSnapshotDef *def,
                               unsigned int flags)
 {
+    size_t i;
+
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY)
         return true;
 
     if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
         return true;
+
+    if (!virDomainObjIsActive(vm)) {
+        /* No need to check all disks as function qemuSnapshotPrepare() guarantees
+         * that we don't have a combination of internal and external location. */
+        for (i = 0; i < def->ndisks; i++) {
+            if (def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+                return true;
+        }
+    }
 
     return false;
 }
@@ -1623,7 +1635,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
             return -1;
     }
 
-    if (qemuSnapshotCreateUseExternal(def, flags)) {
+    if (qemuSnapshotCreateUseExternal(vm, def, flags)) {
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
         def->state = virDomainObjGetState(vm, NULL);
 
