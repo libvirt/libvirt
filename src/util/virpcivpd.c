@@ -438,23 +438,27 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
         fieldKeyword = g_strndup((char *)buf, 2);
         fieldFormat = virPCIVPDResourceGetFieldValueFormat(fieldKeyword);
 
-        /* Handle special cases first */
-        if (!readOnly && fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD) {
-            VIR_INFO("Unexpected RV keyword in the read-write section.");
-            return false;
-        } else if (readOnly && fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR) {
-            VIR_INFO("Unexpected RW keyword in the read-only section.");
-            return false;
-        }
-
         /* Determine how many bytes to read per field value type. */
         switch (fieldFormat) {
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_TEXT:
-            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR:
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_BINARY:
                 bytesToRead = fieldDataLen;
                 break;
+
+            case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR:
+                if (readOnly) {
+                    VIR_INFO("Unexpected RW keyword in the read-only section.");
+                    return false;
+                }
+
+                bytesToRead = fieldDataLen;
+                break;
+
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD:
+                if (!readOnly) {
+                    VIR_INFO("Unexpected RV keyword in the read-write section.");
+                    return false;
+                }
                 /* Only need one byte to be read and accounted towards
                  * the checksum calculation. */
                 bytesToRead = 1;
