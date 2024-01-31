@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-29 15:36+0000\n"
+"PO-Revision-Date: 2024-01-31 07:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -5634,7 +5634,7 @@ msgstr "Domänen ”%1$s” kör redan"
 
 #, c-format
 msgid "Domain '%1$s' is being rebooted\n"
-msgstr "Domänen ”%1$s” håller på att starts om\n"
+msgstr "Domänen ”%1$s” håller på att startas om\n"
 
 #, c-format
 msgid "Domain '%1$s' is being shutdown\n"
@@ -24686,30 +24686,29 @@ msgid "display extended details for volumes"
 msgstr "visa utökade detaljer för volymer"
 
 msgid "display the progress of dump"
-msgstr ""
+msgstr "visa dumpens förlopp"
 
-#, fuzzy
 msgid "display the progress of migration"
-msgstr "Visa informationen om systemversion"
+msgstr "visa migreringens förlopp"
 
 msgid "display the progress of save"
-msgstr ""
+msgstr "visa sparandeförloppet"
 
 #, c-format
 msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
-msgstr ""
+msgstr "dnsmasq version ≥ %1$u.%2$u krävs men %3$llu.%4$llu finns"
 
 msgid "do not enable STP for this bridge"
-msgstr ""
+msgstr "aktivera inte STP för denna brygga"
 
 msgid "do not overwrite any existing data"
-msgstr ""
+msgstr "skriv inte över befintliga data"
 
 msgid "do not pretty-print the fields"
-msgstr ""
+msgstr "skönskriv inte fälten"
 
 msgid "do not restart the domain on the destination host"
-msgstr ""
+msgstr "starta inte om domänen på målvärden"
 
 #, c-format
 msgid "domain %1$s exists already"
@@ -24717,7 +24716,7 @@ msgstr "domän %1$s finns redan"
 
 #, c-format
 msgid "domain %1$s has no snapshots with name %2$s"
-msgstr ""
+msgstr "domänen %1$s har ingen ögonblicksbild med namnet %2$s"
 
 #, c-format
 msgid "domain %1$s is already running"
@@ -24727,21 +24726,21 @@ msgstr "domänen %1$s kör redan"
 msgid "domain '%1$s' already exists with uuid %2$s"
 msgstr "domänen ”%1$s” finns redan med uuid %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' coredump: failed to open %2$s"
-msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
+msgstr "domänen ”%1$s” coredump: misslyckades att öppna %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' coredump: failed to write header to %2$s"
-msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
+msgstr "domänen ”%1$s” coredump: misslyckades att skriva huvudet till %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' coredump: write failed: %2$s"
-msgstr "att ta bort %1$s-enheten misslyckades: %2$s"
+msgstr "domänen ”%1$s” coredump: skrivningen misslyckades: %2$s"
 
 #, c-format
 msgid "domain '%1$s' has no capabilities recorded"
-msgstr ""
+msgstr "domänen ”%1$s” har inga förmågor noterade"
 
 #, c-format
 msgid "domain '%1$s' has no current snapshot"
@@ -24749,118 +24748,114 @@ msgstr "domänen ”%1$s” har ingen aktuell ögonblicksbild"
 
 #, c-format
 msgid "domain '%1$s' in %2$s must match connection"
-msgstr ""
+msgstr "domänen ”%1$s” i %2$s måste matcha förbindelsen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is already active"
-msgstr "Domänen är redan aktiv"
+msgstr "domänen ”%1$s” är redan aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is already being removed"
-msgstr "Domän %1$s håller på att starts om\n"
+msgstr "domänen ”%1$s” håller redan på att tas bort"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is already being started"
-msgstr "domänen ”%s” är redan definierat med UUID %s"
+msgstr "domänen ”%1$s” håller redan på att startas"
 
 #, c-format
 msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is not being migrated"
-msgstr "Domän %1$s håller på att starts om\n"
+msgstr "domänen ”%1$s” migreras inte"
 
 #, c-format
 msgid "domain '%1$s' is not processing incoming migration"
-msgstr ""
+msgstr "domänen ”%1$s” behandlar inte en inkommande migrering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is not running"
-msgstr "Domänen kör redan"
+msgstr "domänen ”%1$s” kör inte"
 
 #, c-format
 msgid "domain '%1$s' must match connection"
-msgstr ""
+msgstr "domänen ”%1$s” måste matcha förbindelsen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' not paused"
-msgstr "domän %1$s finns redan"
+msgstr "domänen ”%1$s” är inte pausad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' not running"
-msgstr "Domänen kör redan"
+msgstr "domänen ”%1$s” kör inte"
 
 msgid "domain already has VNC graphics"
-msgstr ""
+msgstr "domänen har redan VNC-grafik"
 
-#, fuzzy
 msgid "domain already has a vsock device"
-msgstr "Domänen är redan aktiv"
+msgstr "domänen har redan en vsock-enhet"
 
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "domänarkitektur (/domän/os/typ/@arkitektur)"
 
 msgid "domain backup XML"
-msgstr ""
+msgstr "domänens säkerhetskopierings-XML"
 
-#, fuzzy
 msgid "domain block device size information"
-msgstr "saknar enhetsinformation"
+msgstr "storleksinformation för domänens blockenhet"
 
 #, c-format
 msgid "domain can only have one watchdog with model '%1$s'"
-msgstr ""
+msgstr "domänen kan endast ha en vakthund med modellen ”%1$s”"
 
 msgid "domain capabilities"
 msgstr "domänförmågor"
 
-#, fuzzy
 msgid "domain checkpoint XML"
-msgstr "domäninformation i XML"
+msgstr "domänens kontrollpunkts-XML"
 
 msgid "domain config update needs VIR_DOMAIN_AFFECT_CONFIG flag to be set"
 msgstr ""
+"uppdatering av domänkonfiguration behöver ha flaggan "
+"VIR_DOMAIN_AFFECT_CONFIG satt"
 
 #, c-format
 msgid "domain configuration does not support rng model '%1$s'"
-msgstr ""
+msgstr "domänkonfigurationen stödjer inte rng-modellen ”%1$s”"
 
 #, c-format
 msgid "domain configuration does not support video model '%1$s'"
-msgstr ""
+msgstr "domänkonfigurationen stödjer inte videomodellen ”%1$s”"
 
-#, fuzzy
 msgid "domain control interface state"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "tillståndet hos domänstyrgränssnittet"
 
 msgid "domain core dump"
-msgstr ""
+msgstr "domän-coredump"
 
-#, fuzzy
 msgid "domain display connection URI"
-msgstr "anslutning skrivskyddad"
+msgstr "domänens display-förbindelse-URI"
 
-#, fuzzy
 msgid "domain does not have managed save image"
-msgstr "den här domänen har inte en enhet för att ta ögonblicksbilder"
+msgstr "domänen har inte en hanterad sparavbild"
 
 #, c-format
 msgid "domain event %1$d not registered"
 msgstr "domänhändelse %1$d är inte registrerad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain event callback %1$d not registered"
-msgstr "domänhändelse %1$d är inte registrerad"
+msgstr "domänens händelseåteranrop %1$d är inte registrerat"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
-msgstr ""
+msgstr "domänen har CPU-funktionen ”invtsc” men TSC-frekvensen är inte angiven"
 
 msgid "domain has active block job"
-msgstr ""
+msgstr "domänen har ett aktivt blockjobb"
 
 msgid "domain has assigned host devices"
-msgstr ""
+msgstr "domänen har en tilldelad värdenhet"
 
 #, fuzzy
 msgid "domain has no snapshots"
