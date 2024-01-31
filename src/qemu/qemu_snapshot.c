@@ -2870,6 +2870,7 @@ qemuSnapshotRevert(virDomainObj *vm,
     case VIR_DOMAIN_SNAPSHOT_SHUTDOWN:
     case VIR_DOMAIN_SNAPSHOT_SHUTOFF:
     case VIR_DOMAIN_SNAPSHOT_CRASHED:
+    case VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT:
         ret = qemuSnapshotRevertInactive(vm, snapshot, snap,
                                          driver, cfg,
                                          &inactiveConfig,
@@ -2881,8 +2882,6 @@ qemuSnapshotRevert(virDomainObj *vm,
                        _("qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"));
         goto endjob;
 
-    case VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT:
-        /* Rejected earlier as an external snapshot */
     case VIR_DOMAIN_SNAPSHOT_NOSTATE:
     case VIR_DOMAIN_SNAPSHOT_BLOCKED:
     case VIR_DOMAIN_SNAPSHOT_LAST:
