@@ -3495,6 +3495,7 @@ virSystemdHasResolvedResetCachedValue;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;
 virSystemdNotifyStartup;
+virSystemdResolvedRegisterNameServer;
 virSystemdTerminateMachine;
 
 

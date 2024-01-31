@@ -34,7 +34,6 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virhash.h"
-#include "virsocketaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSTEMD
 
@@ -1039,4 +1038,82 @@ virSystemdActivationFree(virSystemdActivation *act)
     g_clear_pointer(&act->fds, g_hash_table_unref);
 
     g_free(act);
+}
+
+
+/**
+ * virSystemdResolvedRegisterNameServer:
+ * @link: network interface ID
+ * @domain: registered domain
+ * @addr: address the DNS server is listening on
+ *
+ * Talk to systemd-resolved and register a DNS server listening on @addr
+ * as a resolver for @domain. This configuration is bound to @link interface
+ * and automatically dropped when the interface goes away.
+ *
+ * Returns -2 when systemd-resolved is unavailable,
+ *         -1 on error,
+ *          0 on success.
+ */
+int
+virSystemdResolvedRegisterNameServer(int link,
+                                     const char *domain,
+                                     virSocketAddr *addr)
+{
+    int rc;
+    GDBusConnection *conn;
+    GVariant *params;
+    GVariant *byteArray;
+    unsigned char addrBytes[16];
+    int nBytes;
+
+    if ((rc = virSystemdHasResolved()) < 0)
+        return rc;
+
+    if (!(conn = virGDBusGetSystemBus()))
+        return -1;
+
+    /*
+     * SetLinkDomains(in  i ifindex,
+     *                in  a(sb) domains);
+     */
+    params = g_variant_new_parsed("(%i, [(%s, true)])",
+                                  (gint32) link,
+                                  domain);
+
+    rc = virGDBusCallMethod(conn, NULL, NULL, NULL,
+                            "org.freedesktop.resolve1",
+                            "/org/freedesktop/resolve1",
+                            "org.freedesktop.resolve1.Manager",
+                            "SetLinkDomains",
+                            params);
+    g_variant_unref(params);
+
+    if (rc < 0)
+        return -1;
+
+    /*
+     * SetLinkDNS(in  i ifindex,
+     *            in  a(iay) addresses);
+     */
+    nBytes = virSocketAddrBytes(addr, addrBytes, sizeof(addrBytes));
+    byteArray = g_variant_new_fixed_array(G_VARIANT_TYPE("y"),
+                                          addrBytes, nBytes, 1);
+    params = g_variant_new_parsed("(%i, [(%i, %@ay)])",
+                                  (gint32) link,
+                                  VIR_SOCKET_ADDR_FAMILY(addr),
+                                  byteArray);
+
+    rc = virGDBusCallMethod(conn, NULL, NULL, NULL,
+                            "org.freedesktop.resolve1",
+                            "/org/freedesktop/resolve1",
+                            "org.freedesktop.resolve1.Manager",
+                            "SetLinkDNS",
+                            params);
+    g_variant_unref(params);
+
+    if (rc < 0)
+        return -1;
+
+    return 0;
 }
