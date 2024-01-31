@@ -30,6 +30,7 @@
  */
 typedef unsigned char virSocketAddrIPv4[4];
 typedef unsigned short virSocketAddrIPv6[8];
+typedef unsigned char virSocketAddrIPv6Bytes[16];
 typedef unsigned char virSocketAddrIPv6Nibbles[32];
 
 static int
@@ -67,6 +68,23 @@ virSocketAddrGetIPv6Addr(const virSocketAddr *addr, virSocketAddrIPv6 *tab)
 
     return 0;
 }
+
+
+static int
+virSocketAddrGetIPv6Bytes(const virSocketAddr *addr,
+                          virSocketAddrIPv6Bytes *tab)
+{
+    size_t i;
+
+    if (!addr || !tab || addr->data.stor.ss_family != AF_INET6)
+        return -1;
+
+    for (i = 0; i < 16; i++)
+        (*tab)[i] = addr->data.inet6.sin6_addr.s6_addr[i];
+
+    return 0;
+}
+
 
 static int
 virSocketAddrGetIPv6Nibbles(const virSocketAddr *addr,
@@ -1330,6 +1348,51 @@ virSocketAddrPTRDomain(const virSocketAddr *addr,
 
     return 0;
 }
+
+
+/**
+ * virSocketAddrBytes:
+ * @addr: address to convert to byte array
+ * @bytes: a preallocated array to store the address bytes to
+ * @maxBytes: the size of @bytes
+ *
+ * Extracts individual bytes of an IPv4 or IPv6 address in the provided @bytes
+ * array, which should be large enough to store 16 bytes (the size of an IPv6
+ * address). Bytes are stored in network order.
+ *
+ * Returns the number of bytes stored in @bytes on success or 0 when @bytes
+ * array is not big enough or @addr is not IPv4 or IPv6.
+ */
+int
+virSocketAddrBytes(const virSocketAddr *addr,
+                   unsigned char *bytes,
+                   int maxBytes)
+{
+    if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6)) {
+        virSocketAddrIPv6Bytes ip;
+
+        if (maxBytes < sizeof(ip))
+            return 0;
+
+        virSocketAddrGetIPv6Bytes(addr, &ip);
+        memcpy(bytes, ip, sizeof(ip));
+        return sizeof(ip);
+    }
+
+    if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) {
+        virSocketAddrIPv4 ip;
+
+        if (maxBytes < sizeof(ip))
+            return 0;
+
+        virSocketAddrGetIPv4Addr(addr, &ip);
+        memcpy(bytes, ip, sizeof(ip));
+        return sizeof(ip);
+    }
+
+    return 0;
+}
+
 
 void
 virSocketAddrFree(virSocketAddr *addr)

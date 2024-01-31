@@ -143,6 +143,10 @@ int virSocketAddrPTRDomain(const virSocketAddr *addr,
                            char **ptr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
+int virSocketAddrBytes(const virSocketAddr *addr,
+                       unsigned char *bytes,
+                       int maxBytes);
+
 void virSocketAddrFree(virSocketAddr *addr);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSocketAddr, virSocketAddrFree);
