@@ -88,7 +88,7 @@ to the physical LAN (if at all).
    ...
    <bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/>
    <mtu size="9000"/>
-   <domain name="example.com" localOnly="no"/>
+   <domain name="example.com" localOnly="no" register="no"/>
    <forward mode="nat" dev="eth0"/>
    ...
 
@@ -161,6 +161,13 @@ to the physical LAN (if at all).
    network's own DNS server - they will not be forwarded to the host's upstream
    DNS server. If ``localOnly`` is "no", and by default, unresolved requests
    **will** be forwarded. :since:`Since 1.2.12`
+
+   :since:`Since 10.1.0` the optional ``register`` attribute can be used to
+   request registering the DNS server for resolving this domain with the host's
+   DNS resolver. When set to "yes", the host resolver will forward all requests
+   for domain names from this domain to the DNS server created for this virtual
+   network. To avoid DNS loops ``localOnly`` has to be set to "yes" as well.
+   This feature requires ``systemd-resolved`` to be running on the host.
 
 ``forward``
    Inclusion of the ``forward`` element indicates that the virtual network is to

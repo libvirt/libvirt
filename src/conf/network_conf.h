@@ -245,6 +245,7 @@ struct _virNetworkDef {
     int  macTableManager; /* enum virNetworkBridgeMACTableManager */
     char *domain;
     virTristateBool domainLocalOnly; /* yes disables dns forwarding */
+    virTristateBool domainRegister;
     unsigned long delay;   /* Bridge forward delay (ms) */
     bool stp; /* Spanning tree protocol */
     unsigned int mtu; /* MTU for bridge, 0 means "default" i.e. unset in config */

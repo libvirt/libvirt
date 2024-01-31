@@ -258,6 +258,9 @@
             <optional>
               <attribute name="localOnly"><ref name="virYesNo"/></attribute>
             </optional>
+            <optional>
+              <attribute name="register"><ref name="virYesNo"/></attribute>
+            </optional>
           </element>
         </optional>
 

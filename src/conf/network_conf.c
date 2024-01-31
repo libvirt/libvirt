@@ -1582,6 +1582,19 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
                                &def->domainLocalOnly) < 0)
         return NULL;
 
+    if (virXMLPropTristateBool(domain_node, "register",
+                               VIR_XML_PROP_NONE,
+                               &def->domainRegister) < 0)
+        return NULL;
+
+    if (def->domainRegister == VIR_TRISTATE_BOOL_YES &&
+        def->domainLocalOnly != VIR_TRISTATE_BOOL_YES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("attribute 'register=yes' in <domain> element requires 'localOnly=yes' in network %1$s"),
+                       def->name);
+        return NULL;
+    }
+
     if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) &&
         virNetDevBandwidthParse(&def->bandwidth, NULL, bandwidthNode, false) < 0)
         return NULL;
@@ -2403,6 +2416,11 @@ virNetworkDefFormatBuf(virBuffer *buf,
                 return -1;
             }
             virBufferAsprintf(buf, " localOnly='%s'", local);
+        }
+
+        if (def->domainRegister) {
+            virBufferAsprintf(buf, " register='%s'",
+                              virTristateBoolTypeToString(def->domainRegister));
         }
 
         virBufferAddLit(buf, "/>\n");

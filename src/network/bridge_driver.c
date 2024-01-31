@@ -63,7 +63,7 @@
 #include "virjson.h"
 #include "virnetworkportdef.h"
 #include "virutil.h"
-
+#include "virsystemd.h"
 #include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
@@ -1902,6 +1902,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     bool dnsmasqStarted = false;
     bool devOnline = false;
     bool firewalRulesAdded = false;
+    virSocketAddr *dnsServer = NULL;
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(def) < 0)
@@ -1958,6 +1959,9 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
             v6present = true;
 
+        if (!dnsServer)
+            dnsServer = &ipdef->address;
+
         /* Add the IP address/netmask to the bridge */
         if (networkAddAddrToBridge(obj, ipdef) < 0)
             goto error;
@@ -2011,6 +2015,32 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
             goto error;
 
         dnsmasqStarted = true;
+
+        if (def->domain && def->domainRegister && dnsServer) {
+            unsigned int link;
+            int rc;
+
+            if ((link = if_nametoindex(def->bridge)) == 0) {
+                virReportSystemError(ENODEV,
+                                     _("unable to get interface index for %1$s"),
+                                     def->bridge);
+                goto error;
+            }
+
+            rc = virSystemdResolvedRegisterNameServer(link, def->domain,
+                                                      dnsServer);
+            if (rc == -2) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("failed to register name server: systemd-resolved is not available"));
+                goto error;
+            }
+
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to register name server"));
+                goto error;
+            }
+        }
     }
 
     if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
