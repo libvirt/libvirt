@@ -1362,8 +1362,9 @@ virNetworkForwardDefParseXML(const char *networkName,
 
     forwardDev = virXPathString("string(./@dev)", ctxt);
     if (forwardDev && (nForwardAddrs > 0 || nForwardPfs > 0)) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-elements are present in network %1$s"));
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-elements are present in network %1$s"),
+                       networkName);
         return -1;
     }
 
