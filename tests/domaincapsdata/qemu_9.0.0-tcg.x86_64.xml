@@ -52,6 +52,7 @@
       <feature policy='require' name='rdpid'/>
       <feature policy='require' name='pks'/>
       <feature policy='require' name='fsrm'/>
+      <feature policy='require' name='cmpccxadd'/>
       <feature policy='require' name='fzrm'/>
       <feature policy='require' name='fsrs'/>
       <feature policy='require' name='fsrc'/>

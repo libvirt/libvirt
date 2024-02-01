@@ -203,7 +203,7 @@
   <flag name='virtio-mem-pci.dynamic-memslots'/>
   <version>8002050</version>
   <microcodeVersion>43100245</microcodeVersion>
-  <package>v8.2.0-196-g7425b6277f</package>
+  <package>v8.2.0-952-g14639717bf</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -2273,7 +2273,7 @@
     <property name='perfctr-nb' type='boolean' value='false'/>
     <property name='rdrand' type='boolean' value='true' migratable='yes'/>
     <property name='rdseed' type='boolean' value='true' migratable='yes'/>
-    <property name='cmpccxadd' type='boolean' value='false'/>
+    <property name='cmpccxadd' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4vnniw' type='boolean' value='false'/>
     <property name='vme' type='boolean' value='false'/>
     <property name='vmx' type='boolean' value='false'/>

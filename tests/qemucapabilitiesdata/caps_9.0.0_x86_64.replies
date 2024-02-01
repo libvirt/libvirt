@@ -20,7 +20,7 @@
       "minor": 2,
       "major": 8
     },
-    "package": "v8.2.0-196-g7425b6277f"
+    "package": "v8.2.0-952-g14639717bf"
   },
   "id": "libvirt-2"
 }
@@ -1776,13 +1776,6 @@
           "type": "bool"
         },
         {
-          "name": "singlestep",
-          "type": "bool",
-          "features": [
-            "deprecated"
-          ]
-        },
-        {
           "name": "status",
           "type": "280"
         }
@@ -2686,6 +2679,11 @@
           "type": "str"
         },
         {
+          "name": "backing-mask-protocol",
+          "default": null,
+          "type": "bool"
+        },
+        {
           "name": "speed",
           "default": null,
           "type": "int"
@@ -3314,6 +3312,11 @@
           "name": "backing-file",
           "default": null,
           "type": "str"
+        },
+        {
+          "name": "backing-mask-protocol",
+          "default": null,
+          "type": "bool"
         },
         {
           "name": "bottom",
@@ -6123,6 +6126,7 @@
       "members": [
         {
           "name": "uri",
+          "default": null,
           "type": "str"
         },
         {
@@ -24033,6 +24037,10 @@
       "parent": "x86_64-cpu"
     },
     {
+      "name": "chardev-udp",
+      "parent": "chardev"
+    },
+    {
       "name": "i2c-bus",
       "parent": "bus"
     },
@@ -24159,10 +24167,6 @@
     {
       "name": "i82557a",
       "parent": "pci-device"
-    },
-    {
-      "name": "chardev-udp",
-      "parent": "chardev"
     },
     {
       "name": "pc-q35-2.8-machine",
@@ -31053,12 +31057,12 @@
       "type": "link<memory-region>"
     },
     {
-      "name": "start-powered-off",
-      "type": "bool"
-    },
-    {
       "name": "legacy-memory",
       "type": "str"
+    },
+    {
+      "name": "start-powered-off",
+      "type": "bool"
     },
     {
       "name": "vmx-invept-single-context",
@@ -41772,7 +41776,7 @@
         "perfctr-nb": false,
         "rdrand": true,
         "rdseed": true,
-        "cmpccxadd": false,
+        "cmpccxadd": true,
         "avx512-4vnniw": false,
         "vme": false,
         "vmx": false,
@@ -42153,7 +42157,7 @@
         "perfctr-nb": false,
         "rdrand": true,
         "rdseed": true,
-        "cmpccxadd": false,
+        "cmpccxadd": true,
         "avx512-4vnniw": false,
         "vme": false,
         "vmx": false,
