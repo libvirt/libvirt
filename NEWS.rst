@@ -23,6 +23,13 @@ v10.1.0 (unreleased)
     Additionally, if CPU clusters are present in the host topology, they will
     be reported as part of the capabilities XML.
 
+  * network: Make virtual domains resolvable from the host
+
+    When starting a virtual network with a new ``register='yes'`` attribute
+    in the ``<domain>`` element, libvirt will configure ``systemd-resolved``
+    to resolve names of the connected guests using the name server started
+    for this network.
+
 * **Improvements**
 
 * **Bug fixes**
