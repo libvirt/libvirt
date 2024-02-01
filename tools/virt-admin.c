@@ -102,6 +102,9 @@ vshAdmConnect(vshControl *ctl, unsigned int flags)
     priv->conn = virAdmConnectOpen(ctl->connname, flags);
 
     if (!priv->conn) {
+        if (!ctl->connname)
+            vshPrintExtra(ctl, "%s", _("NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. virtqemud:///system)\n"));
+
         if (priv->wantReconnect)
             vshError(ctl, "%s", _("Failed to reconnect to the admin server"));
         else
