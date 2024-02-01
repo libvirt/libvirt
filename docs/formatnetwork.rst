@@ -141,7 +141,7 @@ to the physical LAN (if at all).
    (which will also be managed using firewalld tools). :since:`Since 5.1.0`
 
 ``mtu``
-   The ``size`` attribute of the ``mtu>`` element specifies the Maximum
+   The ``size`` attribute of the ``<mtu>`` element specifies the Maximum
    Transmission Unit (MTU) for the network. :since:`Since 3.1.0` . In the case
    of a libvirt-managed network (one with forward mode of ``nat``, ``route``,
    ``open``, or no ``forward`` element (i.e. an isolated network), this will be
