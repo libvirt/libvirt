@@ -1,10 +1,10 @@
 <cpu mode='custom' match='exact'>
   <model fallback='forbid'>Snowridge</model>
   <vendor>Intel</vendor>
-  <feature policy='require' name='ss'/>
   <feature policy='require' name='vmx'/>
   <feature policy='require' name='pdcm'/>
   <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='ss'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='rdpid'/>
   <feature policy='require' name='md-clear'/>
@@ -39,9 +39,6 @@
   <feature policy='require' name='vmx-rdseed-exit'/>
   <feature policy='require' name='vmx-pml'/>
   <feature policy='require' name='vmx-xsaves'/>
-  <feature policy='require' name='vmx-invvpid'/>
-  <feature policy='require' name='vmx-invvpid-single-addr'/>
-  <feature policy='require' name='vmx-invvpid-all-context'/>
   <feature policy='require' name='vmx-ept-execonly'/>
   <feature policy='require' name='vmx-page-walk-4'/>
   <feature policy='require' name='vmx-ept-2mb'/>
@@ -50,6 +47,9 @@
   <feature policy='require' name='vmx-eptad'/>
   <feature policy='require' name='vmx-invept-single-context'/>
   <feature policy='require' name='vmx-invept-all-context'/>
+  <feature policy='require' name='vmx-invvpid'/>
+  <feature policy='require' name='vmx-invvpid-single-addr'/>
+  <feature policy='require' name='vmx-invvpid-all-context'/>
   <feature policy='require' name='vmx-intr-exit'/>
   <feature policy='require' name='vmx-nmi-exit'/>
   <feature policy='require' name='vmx-vnmi'/>

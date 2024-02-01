@@ -3,13 +3,6 @@
   <model>Westmere-IBRS</model>
   <vendor>Intel</vendor>
   <signature family='6' model='134' stepping='5'/>
-  <feature name='vme'/>
-  <feature name='ds'/>
-  <feature name='acpi'/>
-  <feature name='ss'/>
-  <feature name='ht'/>
-  <feature name='tm'/>
-  <feature name='pbe'/>
   <feature name='pclmuldq'/>
   <feature name='dtes64'/>
   <feature name='monitor'/>
@@ -26,6 +19,13 @@
   <feature name='xsave'/>
   <feature name='osxsave'/>
   <feature name='rdrand'/>
+  <feature name='vme'/>
+  <feature name='ds'/>
+  <feature name='acpi'/>
+  <feature name='ss'/>
+  <feature name='ht'/>
+  <feature name='tm'/>
+  <feature name='pbe'/>
   <feature name='arat'/>
   <feature name='fsgsbase'/>
   <feature name='tsc_adjust'/>
@@ -58,14 +58,14 @@
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
   <feature name='intel-pt-lip'/>
-  <feature name='rdtscp'/>
   <feature name='3dnowprefetch'/>
+  <feature name='rdtscp'/>
   <feature name='invtsc'/>
+  <feature name='split-lock-detect'/>
   <feature name='rdctl-no'/>
   <feature name='ibrs-all'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>
   <feature name='pschange-mc-no'/>
   <feature name='taa-no'/>
-  <feature name='split-lock-detect'/>
 </cpu>

@@ -3,20 +3,20 @@
   <model>Opteron_G3</model>
   <vendor>AMD</vendor>
   <signature family='16' model='2' stepping='3'/>
+  <feature name='monitor'/>
   <feature name='vme'/>
   <feature name='ht'/>
-  <feature name='monitor'/>
-  <feature name='mmxext'/>
-  <feature name='fxsr_opt'/>
-  <feature name='pdpe1gb'/>
-  <feature name='3dnowext'/>
-  <feature name='3dnow'/>
   <feature name='cmp_legacy'/>
   <feature name='extapic'/>
   <feature name='cr8legacy'/>
   <feature name='3dnowprefetch'/>
   <feature name='osvw'/>
   <feature name='ibs'/>
+  <feature name='mmxext'/>
+  <feature name='fxsr_opt'/>
+  <feature name='pdpe1gb'/>
+  <feature name='3dnowext'/>
+  <feature name='3dnow'/>
   <feature name='invtsc'/>
   <feature name='npt'/>
   <feature name='lbrv'/>

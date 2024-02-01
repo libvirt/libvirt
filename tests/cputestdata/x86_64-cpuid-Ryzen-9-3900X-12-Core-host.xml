@@ -3,9 +3,9 @@
   <model>EPYC-Rome</model>
   <vendor>AMD</vendor>
   <signature family='23' model='113' stepping='0'/>
-  <feature name='ht'/>
   <feature name='monitor'/>
   <feature name='osxsave'/>
+  <feature name='ht'/>
   <feature name='cmt'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>

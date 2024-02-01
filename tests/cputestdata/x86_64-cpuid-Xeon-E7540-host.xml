@@ -3,13 +3,6 @@
   <model>Nehalem-IBRS</model>
   <vendor>Intel</vendor>
   <signature family='6' model='46' stepping='6'/>
-  <feature name='vme'/>
-  <feature name='ds'/>
-  <feature name='acpi'/>
-  <feature name='ss'/>
-  <feature name='ht'/>
-  <feature name='tm'/>
-  <feature name='pbe'/>
   <feature name='dtes64'/>
   <feature name='monitor'/>
   <feature name='ds_cpl'/>
@@ -20,6 +13,13 @@
   <feature name='pdcm'/>
   <feature name='dca'/>
   <feature name='x2apic'/>
+  <feature name='vme'/>
+  <feature name='ds'/>
+  <feature name='acpi'/>
+  <feature name='ss'/>
+  <feature name='ht'/>
+  <feature name='tm'/>
+  <feature name='pbe'/>
   <feature name='stibp'/>
   <feature name='flush-l1d'/>
   <feature name='ssbd'/>

@@ -3,13 +3,6 @@
   <model>Broadwell-IBRS</model>
   <vendor>Intel</vendor>
   <signature family='6' model='79' stepping='1'/>
-  <feature name='vme'/>
-  <feature name='ds'/>
-  <feature name='acpi'/>
-  <feature name='ss'/>
-  <feature name='ht'/>
-  <feature name='tm'/>
-  <feature name='pbe'/>
   <feature name='dtes64'/>
   <feature name='monitor'/>
   <feature name='ds_cpl'/>
@@ -23,6 +16,13 @@
   <feature name='osxsave'/>
   <feature name='f16c'/>
   <feature name='rdrand'/>
+  <feature name='vme'/>
+  <feature name='ds'/>
+  <feature name='acpi'/>
+  <feature name='ss'/>
+  <feature name='ht'/>
+  <feature name='tm'/>
+  <feature name='pbe'/>
   <feature name='arat'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
@@ -31,7 +31,7 @@
   <feature name='xsaveopt'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
-  <feature name='pdpe1gb'/>
   <feature name='abm'/>
+  <feature name='pdpe1gb'/>
   <feature name='invtsc'/>
 </cpu>

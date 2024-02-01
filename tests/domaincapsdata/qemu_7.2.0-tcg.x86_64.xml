@@ -37,10 +37,10 @@
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>EPYC</model>
       <vendor>AMD</vendor>
-      <feature policy='require' name='acpi'/>
-      <feature policy='require' name='ss'/>
       <feature policy='require' name='monitor'/>
       <feature policy='require' name='hypervisor'/>
+      <feature policy='require' name='acpi'/>
+      <feature policy='require' name='ss'/>
       <feature policy='require' name='erms'/>
       <feature policy='require' name='mpx'/>
       <feature policy='require' name='pcommit'/>
@@ -59,11 +59,11 @@
       <feature policy='disable' name='rdseed'/>
       <feature policy='disable' name='sha-ni'/>
       <feature policy='disable' name='xsavec'/>
-      <feature policy='disable' name='fxsr_opt'/>
       <feature policy='disable' name='misalignsse'/>
       <feature policy='disable' name='3dnowprefetch'/>
       <feature policy='disable' name='osvw'/>
       <feature policy='disable' name='topoext'/>
+      <feature policy='disable' name='fxsr_opt'/>
       <feature policy='disable' name='nrip-save'/>
     </mode>
     <mode name='custom' supported='yes'>

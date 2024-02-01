@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc-q35-6.2,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -accel tcg \
--cpu Opteron_G3,acpi=on,ss=on,pclmulqdq=on,monitor=on,ssse3=on,sse4.1=on,sse4.2=on,movbe=on,aes=on,xsave=on,rdrand=on,hypervisor=on,arat=on,fsgsbase=on,bmi1=on,smep=on,bmi2=on,erms=on,mpx=on,adx=on,smap=on,pcommit=on,clflushopt=on,clwb=on,pku=on,la57=on,pks=on,xsaveopt=on,xgetbv1=on,mmxext=on,pdpe1gb=on,3dnowext=on,3dnow=on,cr8legacy=on,npt=on,vgif=on,svme-addr-chk=on,misalignsse=off \
+-cpu Opteron_G3,pclmulqdq=on,monitor=on,ssse3=on,sse4.1=on,sse4.2=on,movbe=on,aes=on,xsave=on,rdrand=on,hypervisor=on,acpi=on,ss=on,arat=on,fsgsbase=on,bmi1=on,smep=on,bmi2=on,erms=on,mpx=on,adx=on,smap=on,pcommit=on,clflushopt=on,clwb=on,pku=on,la57=on,pks=on,xsaveopt=on,xgetbv1=on,cr8legacy=on,mmxext=on,pdpe1gb=on,3dnowext=on,3dnow=on,npt=on,vgif=on,svme-addr-chk=on,misalignsse=off \
 -m size=219136k \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \

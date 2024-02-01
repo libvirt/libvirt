@@ -1,13 +1,6 @@
 <cpu mode='custom' match='exact'>
   <model fallback='forbid'>Westmere</model>
   <vendor>Intel</vendor>
-  <feature policy='require' name='vme'/>
-  <feature policy='require' name='ds'/>
-  <feature policy='require' name='acpi'/>
-  <feature policy='require' name='ss'/>
-  <feature policy='require' name='ht'/>
-  <feature policy='require' name='tm'/>
-  <feature policy='require' name='pbe'/>
   <feature policy='require' name='pclmuldq'/>
   <feature policy='require' name='dtes64'/>
   <feature policy='require' name='monitor'/>
@@ -21,6 +14,13 @@
   <feature policy='require' name='pcid'/>
   <feature policy='require' name='dca'/>
   <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='vme'/>
+  <feature policy='require' name='ds'/>
+  <feature policy='require' name='acpi'/>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='ht'/>
+  <feature policy='require' name='tm'/>
+  <feature policy='require' name='pbe'/>
   <feature policy='require' name='arat'/>
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='rdtscp'/>

@@ -1,18 +1,18 @@
 <cpu mode='custom' match='exact'>
   <model fallback='forbid'>Opteron_G5</model>
   <vendor>AMD</vendor>
-  <feature policy='require' name='vme'/>
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='vme'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='bmi1'/>
-  <feature policy='require' name='mmxext'/>
-  <feature policy='require' name='fxsr_opt'/>
   <feature policy='require' name='cmp_legacy'/>
   <feature policy='require' name='cr8legacy'/>
   <feature policy='require' name='osvw'/>
+  <feature policy='require' name='mmxext'/>
+  <feature policy='require' name='fxsr_opt'/>
   <feature policy='require' name='npt'/>
   <feature policy='require' name='nrip-save'/>
-  <feature policy='disable' name='rdtscp'/>
   <feature policy='disable' name='svm'/>
+  <feature policy='disable' name='rdtscp'/>
 </cpu>
