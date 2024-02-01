@@ -5,7 +5,8 @@
 
 -->
 <cpus>
-  <!-- standard features, ECX -->
+
+  <!-- cpuid level 0x00000001 (ecx) -->
   <feature name='pni'>
     <alias name='sse3' source='qemu'/>
     <cpuid eax_in='0x00000001' ecx='0x00000001'/>
@@ -104,7 +105,7 @@
     <cpuid eax_in='0x00000001' ecx='0x80000000'/>
   </feature>
 
-  <!-- standard features, EDX -->
+  <!-- cpuid level 0x00000001 (edx) -->
   <feature name='fpu'>
     <cpuid eax_in='0x00000001' edx='0x00000001'/>
   </feature>
@@ -196,12 +197,12 @@
     <cpuid eax_in='0x00000001' edx='0x80000000'/>
   </feature>
 
-  <!-- Termal Power and Management -->
+  <!-- cpuid level 0x00000006 (eax) -->
   <feature name='arat'>
     <cpuid eax_in='0x00000006' eax='0x00000004'/>
   </feature>
 
-  <!-- cpuid function 0x7 ecx 0x0 features -->
+  <!-- cpuid level 0x00000007, 0x0000 (ebx) -->
   <feature name='fsgsbase'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00000001'/>
   </feature>
@@ -292,6 +293,7 @@
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x80000000'/>
   </feature>
 
+  <!-- cpuid level 0x00000007, 0x0000 (ecx) -->
   <feature name='avx512vbmi'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ecx='0x00000002'/>
   </feature>
@@ -353,6 +355,7 @@
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ecx='0x80000000'/>
   </feature>
 
+  <!-- cpuid level 0x00000007, 0x0000 (edx) -->
   <feature name='avx512-4vnniw'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' edx='0x00000004'/>
   </feature>
@@ -413,6 +416,7 @@
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' edx='0x80000000'/>
   </feature>
 
+  <!-- cpuid level 0x00000007, 0x0001 (eax) -->
   <feature name='avx-vnni'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00000010'/>
   </feature>
@@ -438,6 +442,7 @@
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00800000'/>
   </feature>
 
+  <!-- cpuid level 0x00000007, 0x0001 (edx) -->
   <feature name='avx-vnni-int8'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00000010'/>
   </feature>
@@ -451,11 +456,12 @@
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00004000'/>
   </feature>
 
+  <!-- cpuid level 0x00000007, 0x0002 (edx) -->
   <feature name='mcdt-no'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000020'/>
   </feature>
 
-  <!-- Processor Extended State Enumeration sub leaf 1 -->
+  <!-- cpuid level 0x0000000d, 0x0001 (eax) -->
   <feature name='xsaveopt'>
     <cpuid eax_in='0x0000000d' ecx_in='0x00000001' eax='0x00000001'/>
   </feature>
@@ -472,7 +478,7 @@
     <cpuid eax_in='0x0000000d' ecx_in='0x00000001' eax='0x00000010'/>
   </feature>
 
-  <!-- cpuid level 0x0000000f:1 (edx) -->
+  <!-- cpuid level 0x0000000f, 0x0001 (edx) -->
   <feature name='mbm_total'>
     <cpuid eax_in='0x0000000f' ecx_in='0x00000001' edx='0x00000002'/>
   </feature>
@@ -480,7 +486,7 @@
     <cpuid eax_in='0x0000000f' ecx_in='0x00000001' edx='0x00000004'/>
   </feature>
 
-  <!-- cpuid level 0x00000012 ecx 0x0 features -->
+  <!-- cpuid level 0x00000012, 0x0000 (eax) -->
   <feature name='sgx1'>
     <cpuid eax_in='0x00000012' ecx_in='0x00000000' eax='0x00000001'/>
   </feature>
@@ -491,11 +497,12 @@
     <cpuid eax_in='0x00000012' ecx_in='0x00000000' eax='0x00000800'/>
   </feature>
 
+  <!-- cpuid level 0x00000012, 0x0000 (ebx) -->
   <feature name='sgx-exinfo'>
     <cpuid eax_in='0x00000012' ecx_in='0x00000000' ebx='0x00000001'/>
   </feature>
 
-  <!-- cpuid level 0x00000012 ecx 0x1 features -->
+  <!-- cpuid level 0x00000012, 0x0001 (eax) -->
   <feature name='sgx-debug'>
     <cpuid eax_in='0x00000012' ecx_in='0x00000001' eax='0x00000002'/>
   </feature>
@@ -515,12 +522,12 @@
     <cpuid eax_in='0x00000012' ecx_in='0x00000001' eax='0x00000400'/>
   </feature>
 
-  <!-- cpuid level 0x00000014 ecx 0x0 features -->
+  <!-- cpuid level 0x00000014, 0x0000 (ecx) -->
   <feature name='intel-pt-lip'>
     <cpuid eax_in='0x00000014' ecx_in='0x00000000' ecx='0x80000000'/>
   </feature>
 
-  <!-- extended features, ECX -->
+  <!-- cpuid level 0x80000001 (ecx) -->
   <feature name='lahf_lm'>
     <alias name='lahf-lm' source='qemu'/>
     <cpuid eax_in='0x80000001' ecx='0x00000001'/>
@@ -596,7 +603,7 @@
     <cpuid eax_in='0x80000001' ecx='0x01000000'/>
   </feature>
 
-  <!-- extended features, EDX -->
+  <!-- cpuid level 0x80000001 (edx) -->
   <feature name='syscall'>
     <cpuid eax_in='0x80000001' edx='0x00000800'/>
   </feature>
@@ -629,12 +636,12 @@
     <cpuid eax_in='0x80000001' edx='0x80000000'/>
   </feature>
 
-  <!-- Advanced Power Management edx features -->
+  <!-- cpuid level 0x80000007 (edx) -->
   <feature name='invtsc' migratable='no'>
     <cpuid eax_in='0x80000007' edx='0x00000100'/>
   </feature>
 
-  <!-- More AMD-specific features -->
+  <!-- cpuid level 0x80000008 (ebx) -->
   <feature name='clzero'>
     <cpuid eax_in='0x80000008' ebx='0x00000001'/>
   </feature>
@@ -669,7 +676,7 @@
     <cpuid eax_in='0x80000008' ebx='0x10000000'/>
   </feature>
 
-  <!-- SVM features -->
+  <!-- cpuid level 0x8000000a (edx) -->
   <feature name='npt'>
     <cpuid eax_in='0x8000000a' edx='0x00000001'/>
   </feature>
@@ -721,7 +728,7 @@
     <cpuid eax_in='0x8000000a' edx='0x10000000'/>
   </feature>
 
-  <!-- cpuid level 0x80000021 ecx 0x0 features -->
+  <!-- cpuid level 0x80000021 (eax) -->
   <feature name='no-nested-data-bp'>
     <cpuid eax_in='0x80000021' eax='0x00000001'/>
   </feature>
@@ -735,12 +742,12 @@
     <cpuid eax_in='0x80000021' eax='0x00000100'/>
   </feature>
 
-  <!-- IA32_CORE_CAPABILITIES features -->
+  <!-- msr 0x000000cf -->
   <feature name='split-lock-detect'>
     <msr index='0x000000cf' edx='0x00000000' eax='0x00000020'/>
   </feature>
 
-  <!-- IA32_ARCH_CAPABILITIES features -->
+  <!-- msr 0x0000010a -->
   <feature name='rdctl-no'>
     <msr index='0x0000010a' edx='0x00000000' eax='0x00000001'/>
   </feature>
@@ -787,6 +794,7 @@
     <msr index='0x0000010a' edx='0x00000000' eax='0x04000000'/>
   </feature>
 
+  <!-- msr 0x00000480 -->
   <feature name='vmx-ins-outs'>
     <msr index='0x00000480' edx='0x00400000' eax='0x00000000'/>
   </feature>
@@ -797,6 +805,7 @@
     <msr index='0x00000480' edx='0x01000000' eax='0x00000000'/>
   </feature>
 
+  <!-- msr 0x00000485 -->
   <feature name='vmx-store-lma'>
     <msr index='0x00000485' edx='0x00000000' eax='0x00000020'/>
   </feature>
@@ -816,6 +825,7 @@
     <msr index='0x00000485' edx='0x00000000' eax='0x40000000'/>
   </feature>
 
+  <!-- msr 0x0000048b -->
   <feature name='vmx-apicv-xapic'>
     <msr index='0x0000048b' edx='0x00000000' eax='0x00000001'/>
   </feature>
@@ -880,6 +890,7 @@
     <msr index='0x0000048b' edx='0x00000000' eax='0x04000000'/>
   </feature>
 
+  <!-- msr 0x0000048c -->
   <feature name='vmx-ept-execonly'>
     <msr index='0x0000048c' edx='0x00000000' eax='0x00000001'/>
   </feature>
@@ -933,6 +944,7 @@
     <msr index='0x0000048c' edx='0x00000800' eax='0x00000000'/>
   </feature>
 
+  <!-- msr 0x0000048d -->
   <feature name='vmx-intr-exit'>
     <msr index='0x0000048d' edx='0x00000000' eax='0x00000001'/>
   </feature>
@@ -949,6 +961,7 @@
     <msr index='0x0000048d' edx='0x00000000' eax='0x00000080'/>
   </feature>
 
+  <!-- msr 0x0000048e -->
   <feature name='vmx-vintr-pending'>
     <msr index='0x0000048e' edx='0x00000000' eax='0x00000004'/>
   </feature>
@@ -1013,6 +1026,7 @@
     <msr index='0x0000048e' edx='0x00000000' eax='0x80000000'/>
   </feature>
 
+  <!-- msr 0x0000048f -->
   <feature name='vmx-exit-nosave-debugctl'>
     <msr index='0x0000048f' edx='0x00000000' eax='0x00000004'/>
   </feature>
@@ -1047,6 +1061,7 @@
     <msr index='0x0000048f' edx='0x00000000' eax='0x20000000'/>
   </feature>
 
+  <!-- msr 0x00000490 -->
   <feature name='vmx-entry-noload-debugctl'>
     <msr index='0x00000490' edx='0x00000000' eax='0x00000004'/>
   </feature>
@@ -1072,6 +1087,7 @@
     <msr index='0x00000490' edx='0x00000000' eax='0x00400000'/>
   </feature>
 
+  <!-- msr 0x00000491 -->
   <feature name='vmx-eptp-switching'>
     <msr index='0x00000491' edx='0x00000000' eax='0x00000001'/>
   </feature>
