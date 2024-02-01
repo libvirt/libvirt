@@ -1,9 +1,8 @@
 <!--
-  After adding new features, update existing test files with
-
-    tests/cputestdata/cpu-data.py diff tests/cputestdata/x86_64-cpuid-*.json
-
+  Generated file, do not edit!
+  Use the sync_qemu_features_i386.py script to make changes.
 -->
+
 <cpus>
 
   <!-- cpuid level 0x00000001 (ecx) -->
