@@ -308,32 +308,9 @@ qemuMonitorIOWriteWithFD(qemuMonitor *mon,
                          size_t len,
                          int fd)
 {
-    struct msghdr msg = { 0 };
-    struct iovec iov[1];
-    int ret;
-    char control[CMSG_SPACE(sizeof(int))] = { 0 };
-    struct cmsghdr *cmsg;
+    int fds[] = { fd };
 
-    iov[0].iov_base = (void *)data;
-    iov[0].iov_len = len;
-
-    msg.msg_iov = iov;
-    msg.msg_iovlen = 1;
-
-    msg.msg_control = control;
-    msg.msg_controllen = sizeof(control);
-
-    cmsg = CMSG_FIRSTHDR(&msg);
-    cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-    cmsg->cmsg_level = SOL_SOCKET;
-    cmsg->cmsg_type = SCM_RIGHTS;
-    memcpy(CMSG_DATA(cmsg), &fd, sizeof(int));
-
-    do {
-        ret = sendmsg(mon->fd, &msg, 0);
-    } while (ret < 0 && errno == EINTR);
-
-    return ret;
+    return virSocketSendMsgWithFDs(mon->fd, data, len, fds, G_N_ELEMENTS(fds));
 }
 
 
