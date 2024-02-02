@@ -1473,6 +1473,7 @@ chmod 600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter/*.xml
     %if ! %{with_qemu}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_qemu.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
+rm -f $RPM_BUILD_ROOT%{_sysusersdir}/libvirt-qemu.conf
     %endif
 %find_lang %{name}
 
@@ -1834,16 +1835,19 @@ exit 0
 %pre daemon-driver-qemu
 %libvirt_sysconfig_pre virtqemud
 %libvirt_systemd_unix_pre virtqemud
+
 # We want soft static allocation of well-known ids, as disk images
-# are commonly shared across NFS mounts by id rather than name; see
-# https://fedoraproject.org/wiki/Packaging:UsersAndGroups
-getent group kvm >/dev/null || groupadd -f -g 36 -r kvm
-getent group qemu >/dev/null || groupadd -f -g 107 -r qemu
-if ! getent passwd qemu >/dev/null; then
-  if ! getent passwd 107 >/dev/null; then
-    useradd -r -u 107 -g qemu -G kvm -d / -s /sbin/nologin -c "qemu user" qemu
+# are commonly shared across NFS mounts by id rather than name.
+# See https://docs.fedoraproject.org/en-US/packaging-guidelines/UsersAndGroups/
+# We can not use the sysusers_create_compat macro here as we want to keep the
+# specfile standalone and not relying on additionnal files.
+getent group 'kvm' >/dev/null || groupadd -f -g '36' -r 'kvm' || :
+getent group 'qemu' >/dev/null || groupadd -f -g '107' -r 'qemu' || :
+if ! getent passwd 'qemu' >/dev/null; then
+  if ! getent passwd '107' >/dev/null; then
+    useradd -r -u '107' -g 'qemu' -G 'kvm' -d '/' -s '/sbin/nologin' -c 'qemu user' 'qemu' || :
   else
-    useradd -r -g qemu -G kvm -d / -s /sbin/nologin -c "qemu user" qemu
+    useradd -r -g 'qemu' -G 'kvm' -d '/' -s '/sbin/nologin' -c 'qemu user' 'qemu' || :
   fi
 fi
 exit 0
@@ -2246,6 +2250,7 @@ exit 0
 %{_bindir}/virt-qemu-run
 %{_mandir}/man1/virt-qemu-run.1*
 %{_mandir}/man8/virtqemud.8*
+%{_sysusersdir}/libvirt-qemu.conf
     %endif
 
     %if %{with_lxc}
