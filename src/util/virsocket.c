@@ -488,6 +488,7 @@ virSocketRecvFD(int sock, int fdflags)
  * virSocketSendMsgWithFDs:
  * @sock: socket to send payload and fds to
  * @payload: payload to send
+ * @payload_len: length of @payload
  * @fds: array of fds to send
  * @fds_len: len of fds array
 
@@ -496,7 +497,11 @@ virSocketRecvFD(int sock, int fdflags)
  * On error, set errno and return -1.
  */
 int
-virSocketSendMsgWithFDs(int sock, const char *payload, int *fds, size_t fds_len)
+virSocketSendMsgWithFDs(int sock,
+                        const char *payload,
+                        size_t payload_len,
+                        int *fds,
+                        size_t fds_len)
 {
     g_autofree char *control = NULL;
     const size_t control_size = CMSG_SPACE(sizeof(int) * fds_len);
@@ -508,7 +513,7 @@ virSocketSendMsgWithFDs(int sock, const char *payload, int *fds, size_t fds_len)
     control = g_new0(char, control_size);
 
     iov[0].iov_base = (void *) payload;
-    iov[0].iov_len = strlen(payload);
+    iov[0].iov_len = payload_len;
 
     msg.msg_iov = iov;
     msg.msg_iovlen = 1;
@@ -553,6 +558,7 @@ virSocketRecvFD(int sock G_GNUC_UNUSED, int fdflags G_GNUC_UNUSED)
 int
 virSocketSendMsgWithFDs(int sock G_GNUC_UNUSED,
                         const char *payload G_GNUC_UNUSED,
+                        size_t payload_len G_GNUC_UNUSED,
                         int *fds G_GNUC_UNUSED,
                         size_t fds_len G_GNUC_UNUSED)
 {

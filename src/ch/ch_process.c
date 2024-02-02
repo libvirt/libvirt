@@ -558,6 +558,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         g_autofree char *response = NULL;
         size_t j;
         size_t tapfd_len;
+        size_t payload_len;
         int saved_errno;
         int http_res;
         int rc;
@@ -595,9 +596,11 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         virBufferAsprintf(&buf, "%s", virBufferCurrentContent(&http_headers));
         virBufferAsprintf(&buf, "Content-Length: %ld\r\n\r\n", strlen(payload));
         virBufferAsprintf(&buf, "%s", payload);
+        payload_len = virBufferUse(&buf);
         payload = virBufferContentAndReset(&buf);
 
-        rc = virSocketSendMsgWithFDs(mon_sockfd, payload, tapfds, tapfd_len);
+        rc = virSocketSendMsgWithFDs(mon_sockfd, payload, payload_len,
+                                     tapfds, tapfd_len);
         saved_errno = errno;
 
         /* Close sent tap fds in Libvirt, as they have been dup()ed in CH */

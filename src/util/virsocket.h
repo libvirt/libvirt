@@ -22,8 +22,8 @@
 
 int virSocketSendFD(int sock, int fd);
 int virSocketRecvFD(int sock, int fdflags);
-int virSocketSendMsgWithFDs(int sock, const char *payload, int *fds,
-                            size_t fd_len);
+int virSocketSendMsgWithFDs(int sock, const char *payload, size_t payload_len,
+                            int *fds, size_t fds_len);
 
 #ifdef WIN32
 
