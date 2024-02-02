@@ -26,9 +26,6 @@
 #include "virlog.h"
 
 #include <fcntl.h>
-#include <poll.h>
-
-#define PKT_TIMEOUT_MS 500 /* ms */
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
