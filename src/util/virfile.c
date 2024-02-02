@@ -2445,9 +2445,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
             goto childerror;
         }
 
-        do {
-            ret = virSocketSendFD(pair[1], fd);
-        } while (ret < 0 && errno == EINTR);
+        ret = virSocketSendFD(pair[1], fd);
 
         if (ret < 0) {
             ret = -errno;

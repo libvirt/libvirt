@@ -382,38 +382,16 @@ vir_socket(int domain, int type, int protocol)
 /* virSocketSendFD sends the file descriptor fd along the socket
    to a process calling virSocketRecvFD on the other end.
 
-   Return 0 on success, or -1 with errno set in case of error.
+   Return 1 on success, or -1 with errno set in case of error.
 */
 int
 virSocketSendFD(int sock, int fd)
 {
     char byte = 0;
-    struct iovec iov;
-    struct msghdr msg = { 0 };
-    struct cmsghdr *cmsg;
-    char buf[CMSG_SPACE(sizeof(fd))];
+    int fds[] = { fd };
 
-    /* send at least one char */
-    iov.iov_base = &byte;
-    iov.iov_len = 1;
-    msg.msg_iov = &iov;
-    msg.msg_iovlen = 1;
-    msg.msg_name = NULL;
-    msg.msg_namelen = 0;
-
-    msg.msg_control = buf;
-    msg.msg_controllen = sizeof(buf);
-    cmsg = CMSG_FIRSTHDR(&msg);
-    cmsg->cmsg_level = SOL_SOCKET;
-    cmsg->cmsg_type = SCM_RIGHTS;
-    cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
-    /* Initialize the payload: */
-    memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
-    msg.msg_controllen = cmsg->cmsg_len;
-
-    if (sendmsg(sock, &msg, 0) != iov.iov_len)
-        return -1;
-    return 0;
+    return virSocketSendMsgWithFDs(sock, &byte, sizeof(byte),
+                                   fds, G_N_ELEMENTS(fds));
 }
 
 
