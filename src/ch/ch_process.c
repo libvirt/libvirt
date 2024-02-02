@@ -558,6 +558,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         g_autofree char *response = NULL;
         size_t j;
         size_t tapfd_len;
+        int saved_errno;
         int http_res;
         int rc;
 
@@ -597,6 +598,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         payload = virBufferContentAndReset(&buf);
 
         rc = virSocketSendMsgWithFDs(mon_sockfd, payload, tapfds, tapfd_len);
+        saved_errno = errno;
 
         /* Close sent tap fds in Libvirt, as they have been dup()ed in CH */
         for (j = 0; j < tapfd_len; j++) {
@@ -604,8 +606,8 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         }
 
         if (rc < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Failed to send net-add request to CH"));
+            virReportSystemError(saved_errno, "%s",
+                                 _("Failed to send net-add request to CH"));
             return -1;
         }
 

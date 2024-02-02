@@ -327,7 +327,6 @@ src/util/virscsi.c
 src/util/virscsihost.c
 src/util/virscsivhost.c
 src/util/virsecret.c
-src/util/virsocket.c
 src/util/virsocketaddr.c
 src/util/virstoragefile.c
 src/util/virstring.c

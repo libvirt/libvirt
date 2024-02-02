@@ -19,15 +19,11 @@
 
 #include <config.h>
 
-#include "virerror.h"
 #include "virsocket.h"
 #include "virutil.h"
 #include "virfile.h"
-#include "virlog.h"
 
 #include <fcntl.h>
-
-#define VIR_FROM_THIS VIR_FROM_NONE
 
 #ifdef WIN32
 
@@ -523,7 +519,7 @@ virSocketSendMsgWithFDs(int sock, const char *payload, int *fds, size_t fds_len)
     cmsg = CMSG_FIRSTHDR(&msg);
     /* check to eliminate "potential null pointer dereference" errors during build */
     if (!cmsg) {
-        virReportSystemError(EFAULT, "%s", _("Couldn't fit control msg header in msg"));
+        errno = ENOSPC;
         return -1;
     }
 
@@ -535,11 +531,6 @@ virSocketSendMsgWithFDs(int sock, const char *payload, int *fds, size_t fds_len)
     do {
         ret = sendmsg(sock, &msg, 0);
     } while (ret < 0 && errno == EINTR);
-
-    if (ret < 0) {
-        virReportSystemError(errno, "%s", _("sendmsg failed"));
-        return -1;
-    }
 
     return ret;
 }
@@ -565,8 +556,7 @@ virSocketSendMsgWithFDs(int sock G_GNUC_UNUSED,
                         int *fds G_GNUC_UNUSED,
                         size_t fds_len G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("FD passing is not supported on this platform"));
+    errno = ENOSYS;
     return -1;
 }
 #endif  /* WIN32 */
