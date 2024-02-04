@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-31 07:36+0000\n"
+"PO-Revision-Date: 2024-02-04 21:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24857,12 +24857,11 @@ msgstr "domänen har ett aktivt blockjobb"
 msgid "domain has assigned host devices"
 msgstr "domänen har en tilldelad värdenhet"
 
-#, fuzzy
 msgid "domain has no snapshots"
-msgstr "domännamn eller uuid"
+msgstr "domänen har inga ögonblicksbilder"
 
 msgid "domain has to be shutoff before renaming"
-msgstr ""
+msgstr "domänen måste vara avstängd innan namnet byts"
 
 msgid "domain id or name"
 msgstr "domännamn eller uuid"
@@ -24879,63 +24878,56 @@ msgstr "domäninformation i XML"
 msgid "domain is already running"
 msgstr "domänen kör redan"
 
-#, fuzzy
 msgid "domain is marked for auto destroy"
-msgstr "Domän %s markerad som autostartad\n"
+msgstr "domänän är markerad att förstöras automatiskt"
 
-#, fuzzy
 msgid "domain is no longer running"
-msgstr "Domänen kör redan"
+msgstr "domänen kör inte längre"
 
-#, fuzzy
 msgid "domain is not in running state"
-msgstr "Domänen kör redan"
+msgstr "domänen är inte i körande tillstånd"
 
-#, fuzzy
 msgid "domain is not in shutoff state"
-msgstr "Domänen är inte avstängd"
+msgstr "domänen är inte i avstängt tillstånd"
 
-#, fuzzy
 msgid "domain is not in suspend state"
-msgstr "Domän %s suspenderad\n"
+msgstr "domänen är inte i sovtillstånd"
 
 msgid "domain is not running"
 msgstr "domänen kör inte"
 
 msgid "domain is not running on destination host"
-msgstr ""
+msgstr "domänen kör inte på målvärden"
 
-#, fuzzy
 msgid "domain is not transient"
-msgstr "domäninformation"
+msgstr "domänen är inte transient"
 
-#, fuzzy
 msgid "domain is pmsuspended"
-msgstr "Domän %s suspenderad\n"
+msgstr "domänen är pm-sövd"
 
-#, fuzzy
 msgid "domain is transient"
-msgstr "domäntillstånd"
+msgstr "domänen är transient"
 
 msgid "domain job information"
 msgstr "domänjobbsinformation"
 
 #, c-format
 msgid "domain master key file doesn't exist in %1$s"
-msgstr ""
+msgstr "domänens huvudnyckelfil finns inte i %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain moment %1$s already exists"
-msgstr "oväntad domän %1$s finns redan"
+msgstr "domänens moment %1$s finns redan"
 
 msgid "domain must be in a paused state"
-msgstr ""
+msgstr "domänen måste vara i pausat tillstånd"
 
 msgid "domain must have at least one disk to perform backup"
 msgstr ""
+"domänen måste ha åtminstone en disk för att utföra en säkerhetskopiering"
 
 msgid "domain must have at least one disk to perform checkpoints"
-msgstr ""
+msgstr "domänen måste ha åtminstone en disk för att utföra en kontrollpunkt"
 
 msgid "domain name or uuid"
 msgstr "domännamn eller uuid"
@@ -24944,11 +24936,10 @@ msgid "domain name, id or uuid"
 msgstr "domännman, id eller uuid"
 
 msgid "domain save"
-msgstr ""
+msgstr "domänsparande"
 
-#, fuzzy
 msgid "domain snapshot XML"
-msgstr "domäntillstånd"
+msgstr "domänens ögonblicksbilds-XML"
 
 msgid "domain started"
 msgstr "domänen startad"
@@ -24956,9 +24947,8 @@ msgstr "domänen startad"
 msgid "domain state"
 msgstr "domäntillstånd"
 
-#, fuzzy
 msgid "domain stats query failed"
-msgstr "domäntillstånd"
+msgstr "domänens statistikfråga misslyckades"
 
 msgid "domain time"
 msgstr "domäntid"
@@ -24966,54 +24956,55 @@ msgstr "domäntid"
 msgid "domain type"
 msgstr "domäntyp"
 
-#, fuzzy
 msgid "domain type is not defined"
-msgstr "Domän %s har avdefinierats\n"
+msgstr "domänens type är inte definierat"
 
 msgid "domain vcpu counts"
-msgstr ""
+msgstr "domän-vcpu-antal"
 
 msgid "domain with a managed saved state can't be renamed"
 msgstr ""
+"det går inte att byta namn på en domän med ett hanterat sparat tillstånd"
 
 msgid "domain with managedsave data can only have runstate 'shutoff'"
-msgstr ""
+msgstr "domän med hanterade sparade data kan endast ha körtillståndet ”shutoff”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain with name '%1$s' already exists"
-msgstr "oväntad domän %1$s finns redan"
+msgstr "en domän med namnet %1$s finns redan"
 
 msgid "domain's dimm info lacks slot ID or base address"
-msgstr ""
+msgstr "domänens dimm-information saknar fack-ID eller basadress"
 
 msgid "domainMigratePrepare did not set uri"
-msgstr ""
+msgstr "domainMigratePrepare satte inte en uri"
 
 msgid "domainMigratePrepare2 did not set uri"
-msgstr ""
+msgstr "domainMigratePrepare2 satte inte en uri"
 
 msgid "domainMigratePrepare3 did not set uri"
-msgstr ""
+msgstr "domainMigratePrepare3 satte inte en uri"
 
 msgid "domains in 'doms' array must belong to a single connection"
-msgstr ""
+msgstr "domäner i vektorn ”doms” måste tillhöra en enda förbindelse"
 
 #, c-format
 msgid "doms array in %1$s must contain at least one domain"
-msgstr ""
+msgstr "doms-vektorn i %1$s måste innehålla åtminstone en domän"
 
 msgid "don't destroy statistics of a recently completed job when reading"
-msgstr ""
+msgstr "förstör inte statistik över nyligen avslutade jobb vid läsning"
 
 #, c-format
 msgid "don't know how to remove a %1$s device"
-msgstr ""
+msgstr "vet inte hur man kan ta bort en %1$s-enhet"
 
 msgid "don't start the bridge immediately"
-msgstr ""
+msgstr "starta inte bryggan omedelbart"
 
 msgid "don't start the detached interface immediately (not recommended)"
 msgstr ""
+"starta inte det losskopplade gränssnittet omedelbart (rekommenderas inte)"
 
 msgid "done"
 msgstr "klar"
@@ -25023,179 +25014,171 @@ msgstr "hämta volymens innehåll till en fil"
 
 #, c-format
 msgid "driver does not support FD passing for disk '%1$s'"
-msgstr ""
+msgstr "drivrutinen stödjer inte att skicka FB för disken ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "driver does not support net model '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "drivrutinen stödjer inte nätmodellen ”%1$s”"
 
 msgid "driver of disk device"
 msgstr "drivrutin för diskenhet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "driver serial '%1$s' contains unsafe characters"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "drivrutinens serienummer ”%1$s” innehåller osäkra tecken"
 
 msgid "driver type not set"
-msgstr ""
+msgstr "drivrutinstypen inte satt"
 
 msgid "dropped"
 msgstr "kastad"
 
 msgid "dump domain's memory only"
-msgstr ""
+msgstr "dumpa endast domänens minne"
 
 #, c-format
 msgid "dump query failed, status=%1$d"
-msgstr ""
+msgstr "dumpfrågan misslyckades, status=%1$d"
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "dumpa kärnan för en domän till en fil för analys"
 
 #, c-format
 msgid "dumpformat '%1$d' is not supported"
-msgstr ""
+msgstr "dumpformatet ”%1$d” stödjs inte"
 
 msgid "dumping"
 msgstr "dumpning"
 
 msgid "dup2(stderr) failed"
-msgstr ""
+msgstr "dup2(stdfel) misslyckades"
 
-#, fuzzy
 msgid "dup2(stdin) failed"
-msgstr "operation misslyckades"
+msgstr "dup2(stdin) misslyckades"
 
 msgid "dup2(stdout) failed"
-msgstr ""
+msgstr "dup2(stdut) misslyckades"
 
 #, c-format
 msgid "duplicate 'id' found in '%1$s'"
-msgstr ""
+msgstr "dubblerat ”id” i ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "duplicate blkio device path '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "dubblerad blkio-enhetssökväg ”%1$s”"
 
 #, c-format
 msgid "duplicate cookie '%1$s'"
-msgstr ""
+msgstr "dubblerad kaka ”%1$s”"
 
 #, c-format
 msgid "duplicate domain '%1$s'"
-msgstr ""
+msgstr "dubblerad domän ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "duplicate iothread id '%1$u' found"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "dubblerat iothread-id ”%1$u” funnet"
 
 #, c-format
 msgid "duplicate iothreadpin for same iothread '%1$u'"
-msgstr ""
+msgstr "dubblerad iothreadpin för samma iothread ”%1$u”"
 
 #, c-format
 msgid "duplicate key '%1$s'"
-msgstr ""
+msgstr "dubblerad nyckel ”%1$s”"
 
 msgid "duplicate native vlan setting"
-msgstr ""
+msgstr "dubblerad nativ vlan-inställning"
 
 #, c-format
 msgid "duplicate vcpu order '%1$u'"
-msgstr ""
+msgstr "dubblerad vcpu-ordning ”%1$u”"
 
 #, c-format
 msgid "duplicate vcpupin for vcpu '%1$d'"
-msgstr ""
+msgstr "dubblerad vcpupin för vcpu ”%1$d”"
 
 msgid "duration in seconds"
-msgstr ""
+msgstr "varaktighet i sekunder"
 
 msgid "duration in seconds to allow read I/O operations max"
-msgstr ""
+msgstr "varaktighet i sekunder som maximalt tillåts läs-I/O-åtgärder"
 
 msgid "duration in seconds to allow read max bytes"
-msgstr ""
+msgstr "varaktighet i sekunder som tillåts att läsa maximala byte"
 
 msgid "duration in seconds to allow total I/O operations max"
-msgstr ""
+msgstr "varaktighet i sekunder som maximalt tillåts I/O-åtgärder"
 
 msgid "duration in seconds to allow total max bytes"
-msgstr ""
+msgstr "varaktighet i sekunder som maximalt byte tillåts"
 
 msgid "duration in seconds to allow write I/O operations max"
-msgstr ""
+msgstr "varaktighet i sekunder som maximalt tillåts skriv-I/O-åtgärder"
 
 msgid "duration in seconds to allow write max bytes"
-msgstr ""
+msgstr "varaktighet i sekunder som maximalt byte tillåts skriva"
 
 msgid "dynamic label type must use resource relabeling"
-msgstr ""
+msgstr "en dynamisk etikettstyp måste använda resursometikettering"
 
 msgid "echo arguments. Used for internal testing."
-msgstr ""
+msgstr "eka argumenten. Används för intern testning."
 
-#, fuzzy
 msgid "edit XML configuration for a domain"
-msgstr "kunde inte läsa konfigurationsfilen"
+msgstr "redigera XML-konfigurationen för en domän"
 
-#, fuzzy
 msgid "edit XML configuration for a network"
-msgstr "syntaxfel i konfigurationsfilen"
+msgstr "redigera XML-konfigurationen för ett nätverk"
 
-#, fuzzy
 msgid "edit XML configuration for a network filter"
-msgstr "kunde inte läsa konfigurationsfilen"
+msgstr "redigera XML-konfigurationen för ett nätverksfilter"
 
-#, fuzzy
 msgid "edit XML configuration for a physical host interface"
-msgstr "starta ett fysiskt värdgränssnitt."
+msgstr "redigera XML-konfigurationen för ett fysiskt värdgränssnitt"
 
 msgid "edit XML configuration for a storage pool"
-msgstr ""
+msgstr "redigera XML-konfigurationen för en lagringspool"
 
 msgid "edit XML for a checkpoint"
-msgstr ""
+msgstr "redigera XML:en för en kontrollpunkt"
 
-#, fuzzy
 msgid "edit XML for a domain's managed save state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "redigera XML:en för en domäns hanterade sparade tillståndsfil"
 
-#, fuzzy
 msgid "edit XML for a domain's saved state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "redigera XML:en en domäns sparad tillståndsfil"
 
-#, fuzzy
 msgid "edit XML for a snapshot"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "redigera XML:en för en ögonblicksbild"
 
 msgid "either --list or --event <type> is required"
-msgstr ""
+msgstr "antingen --list eller --event <typ> krävs"
 
 msgid "either inbound average or floor is mandatory"
-msgstr ""
+msgstr "antingen inkommande genomsnitt eller golv är obligatoriskt"
 
 msgid "either secret uuid or usage expected"
-msgstr ""
+msgstr "antingen hemlighets-uuid eller användning förväntades"
 
 msgid "element"
 msgstr "element"
 
 #, c-format
 msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
-msgstr ""
+msgstr "elementet ”%1$s” kräver antingen attributet ”keyfile” eller ”agentsock”"
 
 msgid "element 'genid' can only appear once"
-msgstr ""
+msgstr "elementet ”genid” kan bara förekomma en gång"
 
 msgid "element 'name' is mandatory for RBD pool"
-msgstr ""
+msgstr "elementet ”name” är obligatoriskt för en RBD-pool"
 
 msgid "empty json array"
-msgstr ""
+msgstr "tom json-vektor"
 
 msgid "empty path"
-msgstr ""
+msgstr "tom sökväg"
 
 msgid "empty rbd option name specified"
 msgstr ""
