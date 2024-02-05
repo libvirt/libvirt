@@ -32,7 +32,9 @@
 #include "virenum.h"
 #include "virbitmap.h"
 
-#if WITH_YAJL
+#if WITH_JSON_C
+# include <json.h>
+#elif WITH_YAJL
 # include <yajl/yajl_gen.h>
 # include <yajl/yajl_parse.h>
 
@@ -1390,7 +1392,175 @@ virJSONValueCopy(const virJSONValue *in)
 }
 
 
-#if WITH_YAJL
+#if WITH_JSON_C
+static virJSONValue *
+virJSONValueFromJsonC(json_object *jobj)
+{
+    enum json_type type = json_object_get_type(jobj);
+    virJSONValue *ret = NULL;
+
+    switch (type) {
+    case json_type_null:
+        ret = virJSONValueNewNull();
+        break;
+    case json_type_boolean:
+        ret = virJSONValueNewBoolean(json_object_get_boolean(jobj));
+        break;
+    case json_type_double:
+    case json_type_int: {
+        ret = virJSONValueNewNumber(g_strdup(json_object_get_string(jobj)));
+        break;
+    }
+    case json_type_object: {
+        json_object_iter iter;
+
+        ret = virJSONValueNewObject();
+
+        json_object_object_foreachC(jobj, iter) {
+            virJSONValue *cur = virJSONValueFromJsonC(iter.val);
+
+            if (virJSONValueObjectAppend(ret, iter.key, &cur) < 0) {
+                g_free(ret);
+                return NULL;
+            }
+        }
+        break;
+    }
+    case json_type_array: {
+        size_t len;
+        size_t i;
+
+        ret = virJSONValueNewArray();
+        len = json_object_array_length(jobj);
+
+        for (i = 0; i < len; i++) {
+            virJSONValue *cur = NULL;
+            json_object *val = NULL;
+
+            val = json_object_array_get_idx(jobj, i);
+
+            cur = virJSONValueFromJsonC(val);
+
+            virJSONValueArrayAppend(ret, &cur);
+        }
+        break;
+    }
+    case json_type_string:
+        ret = virJSONValueNewString(g_strdup(json_object_get_string(jobj)));
+        break;
+    }
+
+    return ret;
+}
+
+
+virJSONValue *
+virJSONValueFromString(const char *jsonstring)
+{
+    json_object *jobj = NULL;
+    virJSONValue *ret = NULL;
+    json_tokener *tok = NULL;
+    enum json_tokener_error jerr;
+    int jsonflags = JSON_TOKENER_STRICT | JSON_TOKENER_VALIDATE_UTF8;
+
+    VIR_DEBUG("string=%s", jsonstring);
+
+    tok = json_tokener_new();
+    json_tokener_set_flags(tok, jsonflags);
+    jobj = json_tokener_parse_ex(tok, jsonstring, strlen(jsonstring));
+    jerr = json_tokener_get_error(tok);
+    if (jerr != json_tokener_success) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", json_tokener_error_desc(jerr));
+        goto cleanup;
+    }
+    ret = virJSONValueFromJsonC(jobj);
+
+ cleanup:
+    json_object_put(jobj);
+    json_tokener_free(tok);
+    return ret;
+}
+
+static json_object *
+virJSONValueToJsonC(virJSONValue *object)
+{
+    json_object *ret = NULL;
+    size_t i;
+
+    VIR_DEBUG("object=%p type=%d", object, object->type);
+
+    switch (object->type) {
+    case VIR_JSON_TYPE_OBJECT:
+        ret = json_object_new_object();
+        for (i = 0; i < object->data.object.npairs; i++) {
+            json_object *child = virJSONValueToJsonC(object->data.object.pairs[i].value);
+            json_object_object_add(ret, object->data.object.pairs[i].key, child);
+        }
+        return ret;
+    case VIR_JSON_TYPE_ARRAY:
+        /* json_object_new_array_ext was introduced in json-c 0.16 */
+# if JSON_C_VERSION_NUM < ((0 << 16) | (16 << 8))
+        ret = json_object_new_array();
+# else
+        ret = json_object_new_array_ext(object->data.array.nvalues);
+# endif
+        for (i = 0; i < object->data.array.nvalues; i++) {
+            json_object_array_add(ret,
+                                  virJSONValueToJsonC(object->data.array.values[i]));
+        }
+        return ret;
+
+    case VIR_JSON_TYPE_STRING:
+        return json_object_new_string(object->data.string);
+
+    case VIR_JSON_TYPE_NUMBER: {
+        /* Yes. That's a random value. json-c will use the provided
+           string representation in the JSON document it outputs. The
+           'json_object' tree created here is not used for anything
+           else besides the JSON string output, thus the actual numeric
+           value doesn't matter. */
+        return json_object_new_double_s(299792458, object->data.number);
+    }
+    case VIR_JSON_TYPE_BOOLEAN:
+        return json_object_new_boolean(object->data.boolean);
+
+    case VIR_JSON_TYPE_NULL:
+        return json_object_new_null();
+    default:
+        return NULL;
+    }
+    return NULL;
+}
+
+
+int
+virJSONValueToBuffer(virJSONValue *object,
+                     virBuffer *buf,
+                     bool pretty)
+{
+    json_object *jobj = NULL;
+    const char *str;
+    size_t len;
+    int jsonflags = JSON_C_TO_STRING_NOSLASHESCAPE;
+
+    if (pretty)
+        jsonflags |= JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_SPACED;
+
+    jobj = virJSONValueToJsonC(object);
+
+    str = json_object_to_json_string_length(jobj, jsonflags, &len);
+
+    virBufferAdd(buf, str, len);
+    if (pretty)
+        virBufferAddLit(buf, "\n");
+
+    json_object_put(jobj);
+    return 0;
+}
+
+
+#elif WITH_YAJL
 static int
 virJSONParserInsertValue(virJSONParser *parser,
                          virJSONValue **value)
