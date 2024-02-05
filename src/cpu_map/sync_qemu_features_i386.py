@@ -4,6 +4,11 @@ import argparse
 import os
 import re
 
+try:
+    import pycpuinfo
+except ImportError:
+    pycpuinfo = None
+
 
 # features in qemu that we do not want in libvirt
 FEATURES_IGNORE = (
@@ -23,6 +28,7 @@ FEATURES_IGNORE = (
     "kvm-steal-time",
     "kvmclock",
     "kvmclock-stable-bit",
+    "kvmclock2",
 
     "xstore",
     "xstore-en",
@@ -296,6 +302,53 @@ def add_feature_qemu(query, data):
             add_feature_cpuid(eax, ecx, reg, bit, name)
 
 
+def add_features_cpuinfo():
+    def decode_bit(value):
+        for i in range(0, 64):
+            if value == (1 << i):
+                return i
+
+    def decode_cpuid(v):
+        if v[0] != 0 and v[1] == 0 and v[2] == 0 and v[3] == 0:
+            reg, val = "eax", v[0]
+        if v[0] == 0 and v[1] != 0 and v[2] == 0 and v[3] == 0:
+            reg, val = "ebx", v[1]
+        if v[0] == 0 and v[1] == 0 and v[2] != 0 and v[3] == 0:
+            reg, val = "ecx", v[2]
+        if v[0] == 0 and v[1] == 0 and v[2] == 0 and v[3] != 0:
+            reg, val = "edx", v[3]
+
+        return reg, decode_bit(val)
+
+    x86 = pycpuinfo.Family.find("x86", "")
+
+    for feature in pycpuinfo.features():
+        if feature.family() != x86:
+            continue
+
+        if list(feature.features()):
+            continue
+
+        name = feature.name("libvirt")
+        if name in FEATURES_IGNORE:
+            continue
+
+        cpuid = feature.extra_x86_cpuid()
+        if cpuid:
+            eax = cpuid[0]
+            ecx = cpuid[1]
+            if ecx == pycpuinfo.x86.CPUINFO_X86_CPUID_ECX_NONE:
+                ecx = None
+            reg, bit = decode_cpuid(cpuid[2:])
+            add_feature_cpuid(eax, ecx, reg, bit, name)
+
+        msr = feature.extra_x86_msr()
+        if msr:
+            index = msr[0]
+            bit = decode_bit(msr[1] | (msr[2] << 32))
+            add_feature_msr(index, bit, name)
+
+
 # read the `feature_word_info` struct from qemu's cpu.c into a list of strings
 def read_cpu_c(path):
     pattern_comment = re.compile("/\\*.*?\\*/")
@@ -451,6 +504,12 @@ def main():
         nargs="?",
         type=os.path.realpath,
     )
+    if pycpuinfo:
+        parser.add_argument(
+            "--libcpuinfo",
+            help="Use libcpuinfo as data source instead",
+            action="store_true",
+        )
     parser.add_argument(
         "--output",
         "-o",
@@ -460,14 +519,18 @@ def main():
     )
     args = parser.parse_args()
 
-    if not os.path.isdir(args.qemu):
-        parser.print_help()
-        exit("qemu source directory not found")
+    if pycpuinfo and args.libcpuinfo:
+        add_features_cpuinfo()
+    else:
+        if not os.path.isdir(args.qemu):
+            parser.print_help()
+            exit("qemu source directory not found")
 
-    read_headers(args.qemu)
-    lines = read_cpu_c(args.qemu)
-    parse_feature_words(lines)
-    add_extra_features()
+        read_headers(args.qemu)
+        lines = read_cpu_c(args.qemu)
+        parse_feature_words(lines)
+        add_extra_features()
+
     write_output(args.output)
 
     print(

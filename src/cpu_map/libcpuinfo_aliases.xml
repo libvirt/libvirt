@@ -1,0 +1,75 @@
+<!--
+    libvirt uses slightly different names for some cpu features than other
+    software does. Install this file into libcpuinfo's alias directory
+    (e.g. /usr/share/libcpuinfo/aliases/libvirt.xml) to have libcpuinfo
+    automatically translate feature names into the names libvirt uses.
+-->
+
+<external_aliases>
+    <external_alias>
+        <type>feature</type>
+        <canonical>pclmulqdq</canonical>
+        <name>pclmuldq</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>ds-cpl</canonical>
+        <name>ds_cpl</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>sse4-1</canonical>
+        <name>sse4.1</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>sse4-2</canonical>
+        <name>sse4.2</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>tsc-adjust</canonical>
+        <name>tsc_adjust</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>lahf-lm</canonical>
+        <name>lahf_lm</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>cmp-legacy</canonical>
+        <name>cmp_legacy</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>nodeid-msr</canonical>
+        <name>nodeid_msr</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>perfctr-core</canonical>
+        <name>perfctr_core</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>perfctr-nb</canonical>
+        <name>perfctr_nb</name>
+        <domain>libvirt</domain>
+    </external_alias>
+    <external_alias>
+        <type>feature</type>
+        <canonical>fxsr-opt</canonical>
+        <name>fxsr_opt</name>
+        <domain>libvirt</domain>
+    </external_alias>
+</external_aliases>
