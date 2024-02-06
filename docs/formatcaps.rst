@@ -74,14 +74,14 @@ The ``<host/>`` element consists of the following child elements:
    ``die_id``
      Identifier for the die the CPU is in.
 
-     Note that not all architectures support CPU dies: if the current
-     architecture doesn't, the value will be 0 for all CPUs.
+     Note that, even if this attribute is present, you might not be able to
+     define guests with multiple CPU dies.
 
    ``cluster_id``
      Identifier for the cluster the CPU is in.
 
-     Note that not all architectures support CPU clusters: if the current
-     architecture doesn't, the value will be 0 for all CPUs.
+     Note that, even if this attribute is present, you might not be able to
+     define guests with multiple CPU clusters.
 
    ``core_id``
      Identifier for the core the CPU is in.
