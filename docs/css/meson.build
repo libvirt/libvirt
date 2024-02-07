@@ -2,6 +2,7 @@ docs_css_files = [
   'fonts.css',
   'generic.css',
   'libvirt.css',
+  'libvirt-template.css',
   'main.css',
   'mobile-template.css',
   'mobile-libvirt.css',
