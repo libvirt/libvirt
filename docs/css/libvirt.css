@@ -99,16 +99,6 @@ img.diagram {
     margin-right: auto;
 }
 
-
-table tbody td.y {
-    background: rgb(220,255,220);
-    text-align: center;
-}
-table tbody td.n {
-    background: rgb(255,220,220);
-    text-align: center;
-}
-
 .api {
     font-family: monospace;
 }
