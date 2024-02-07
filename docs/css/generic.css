@@ -83,3 +83,62 @@ dd code, p code, tt {
 pre {
   font-size: 90%;
 }
+
+pre {
+    border: 1px solid #999999;
+    background: #eeeeee;
+    color: black;
+    padding: 1em;
+}
+
+a {
+    color: rgb(0, 95, 97);
+}
+
+table {
+    border-collapse: collapse;
+    min-width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table th {
+    background: rgb(0, 95, 97);
+    color: rgb(255, 255, 255);
+    padding: 0.5em;
+}
+
+table th a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+table td, table th {
+    border: 1px solid rgb(60, 133, 124);
+}
+
+table td {
+    padding: 4px;
+}
+
+table tr:hover td, table col:hover td {
+    background: #eeeeee;
+}
+
+table tr td:hover {
+    background: #c5dbd8;
+}
+
+.literal, code {
+    font-family: monospace;
+    background: #eeeeee;
+}
+
+th p, td p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+span.del {
+    text-decoration: line-through;
+}
