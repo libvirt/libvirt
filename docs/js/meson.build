@@ -1,5 +1,6 @@
 docs_js_files = [
   'main.js',
+  'virt-tools-blog-planet.js',
 ]
 
 install_data(docs_js_files, install_dir: docs_html_dir / 'js')
