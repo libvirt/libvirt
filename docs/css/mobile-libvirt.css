@@ -1,0 +1,17 @@
+@media (max-width: 1000px) {
+    #the-virtualization-api > h1,
+    #the-virtualization-api > h2 {
+       display: none;
+    }
+
+    #the-virtualization-api section,
+    #the-virtualization-api .section,
+    #documentation section,
+    #documentation .section,
+    #knowledge-base section,
+    #knowledge-base .section {
+       width: 100%;
+       margin-left: 0px;
+       float: none;
+    }
+}

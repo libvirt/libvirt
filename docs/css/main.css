@@ -1,4 +1,5 @@
 @import url(fonts.css);
 @import url(generic.css);
 @import url(libvirt.css);
-@import url(mobile.css);
+@import url(mobile-template.css);
+@import url(mobile-libvirt.css);

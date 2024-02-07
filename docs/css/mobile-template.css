@@ -1,3 +1,4 @@
+/* Style for the page.xsl template */
 @media (max-width: 1000px) {
     #home {
        width: 100%;
@@ -19,10 +20,6 @@
     }
     #search form {
        padding: 5px;
-    }
-    #the-virtualization-api > h1,
-    #the-virtualization-api > h2 {
-       display: none;
     }
     #jumplinks {
        padding: 0px;
@@ -87,16 +84,6 @@
     }
     #body {
        margin-top: 180px;
-    }
-    #the-virtualization-api section,
-    #the-virtualization-api .section,
-    #documentation section,
-    #documentation .section,
-    #knowledge-base section,
-    #knowledge-base .section {
-       width: 100%;
-       margin-left: 0px;
-       float: none;
     }
     #advancedsearch {
        margin-top: 4em;
