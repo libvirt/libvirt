@@ -7,16 +7,10 @@
   exclude-result-prefixes="xsl exsl html"
   version="1.0">
 
-  <xsl:param name="builddir" select="'..'"/>
-
   <xsl:template match="node() | @*" mode="content">
     <xsl:copy>
       <xsl:apply-templates select="node() | @*" mode="content"/>
     </xsl:copy>
-  </xsl:template>
-
-  <xsl:template match="html:div[@id='include']" mode="content">
-    <xsl:call-template name="include"/>
   </xsl:template>
 
   <!-- This is the master page structure -->
@@ -123,14 +117,6 @@
         </div>
       </body>
     </html>
-  </xsl:template>
-
-  <xsl:template name="include">
-    <xsl:variable name="inchtml">
-      <xsl:copy-of select="document(concat($builddir, '/docs/', @filename))"/>
-    </xsl:variable>
-
-    <xsl:apply-templates select="exsl:node-set($inchtml)/html:html/html:body/*" mode="content"/>
   </xsl:template>
 
   <xsl:template match="html:h1 | html:h2 | html:h3 | html:h4 | html:h5 | html:h6" mode="content">

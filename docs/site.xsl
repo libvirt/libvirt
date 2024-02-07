@@ -8,6 +8,20 @@
 
   <xsl:import href="page.xsl"/>
 
+  <xsl:param name="builddir" select="'..'"/>
+
+  <xsl:template match="html:div[@id='include']" mode="content">
+    <xsl:call-template name="include"/>
+  </xsl:template>
+
+  <xsl:template name="include">
+    <xsl:variable name="inchtml">
+      <xsl:copy-of select="document(concat($builddir, '/docs/', @filename))"/>
+    </xsl:variable>
+
+    <xsl:apply-templates select="exsl:node-set($inchtml)/html:html/html:body/*" mode="content"/>
+  </xsl:template>
+
   <xsl:output
     method="xml"
     encoding="UTF-8"
