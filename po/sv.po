@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-02-04 21:35+0000\n"
+"PO-Revision-Date: 2024-02-07 10:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -25181,19 +25181,19 @@ msgid "empty path"
 msgstr "tom sökväg"
 
 msgid "empty rbd option name specified"
-msgstr ""
+msgstr "tomt namn angivet som rbd-alternativ"
 
 #, c-format
 msgid "empty rbd option value specified for name '%1$s'"
-msgstr ""
+msgstr "tomt värde angivet för rbd-alternativnamnet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "emulator '%1$s' is not executable"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "emulatorn ”%1$s” är inte körbar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "emulator '%1$s' not found"
-msgstr "Nätverk hittades inte"
+msgstr "emulatorn ”%1$s” finns inte"
 
 msgid "emulator:"
 msgstr "emulator:"
@@ -25202,205 +25202,204 @@ msgid "enable"
 msgstr "aktivera"
 
 msgid "enable cpus specified by cpulist"
-msgstr ""
+msgstr "aktivera cpu:er angivna av cpu-listan"
 
 msgid "enable cpus specified by cpumap"
-msgstr ""
+msgstr "aktivera cpu:er angivna av cpu-avbildningen"
 
-#, fuzzy
 msgid "enable parallel migration"
-msgstr "live-migrering"
+msgstr "aktivera parallell migrering"
 
 msgid "enable post-copy migration; switch to it using migrate-postcopy command"
 msgstr ""
+"aktivera migrering efter kopiering; byt till det genom att använda kommandot "
+"migrate-postcopy"
 
 msgid "enabled"
 msgstr "aktiverat"
 
 #, c-format
 msgid "encountered an error on interface %1$s index %2$d"
-msgstr ""
+msgstr "stötte på ett fel på gränssnittet %1$s index %2$d"
 
 msgid "encrypted ploop volumes are not supported with ploop init"
-msgstr ""
+msgstr "krypterade ploop-volymer stödjs inte med ploop init"
 
 #, c-format
 msgid "encryption format %1$d doesn't match expected format %2$d"
-msgstr ""
+msgstr "kryptieringsformatet %1$d stämmer inte med förväntat format %2$d"
 
 msgid "encryption format of inputvol must be LUKS"
-msgstr ""
+msgstr "krypteringsformatet på inputvol måste vara LUKS"
 
 msgid "encryption is not supported with vhostuser disk"
-msgstr ""
+msgstr "kryptering stödjs inte med en vhostuser-disk"
 
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
-msgstr ""
+msgstr "kryptering stödjs bara med avbilsdsformaten ”raw” och ”qcow2”"
 
 #, c-format
 msgid "end of range %1$s - %2$s in network %3$s/%4$d is the broadcast address"
 msgstr ""
+"slutet av intervallet %1$s-%2$s i nätverket %3$s/%4$d är utsändningsadressen "
+"(broadcast)"
 
 msgid "enforce requested stats parameters"
-msgstr ""
+msgstr "framtvinga begärda statistikparametrar"
 
 msgid "entry was missing 'device'"
-msgstr ""
+msgstr "posten saknade ”device”"
 
 msgid "entry was missing 'len'"
-msgstr ""
+msgstr "posten saknade ”len”"
 
 msgid "entry was missing 'offset'"
-msgstr ""
+msgstr "posten saknade ”offset”"
 
 msgid "entry was missing 'speed'"
-msgstr ""
+msgstr "posten saknade ”speed”"
 
 msgid "entry was missing 'type'"
-msgstr ""
+msgstr "posten saknade ”type”"
 
-#, fuzzy
 msgid "enumerate devices on this host"
-msgstr "migrera domän till en annan värd"
+msgstr "räkna upp enheter på denna värd"
 
 msgid "error"
 msgstr "fel"
 
 #, c-format
 msgid "error %1$d during port-profile setlink on interface %2$s (%3$d)"
-msgstr ""
+msgstr "fel %1$d vid port-profile setlink på gränssnittet %2$s (%3$d)"
 
 #, c-format
 msgid "error adding fdb entry for %1$s"
-msgstr ""
+msgstr "fel när fdb-post lades till för %1$s"
 
 msgid "error calling aa_change_profile()"
-msgstr ""
+msgstr "fel vid anrop av aa_change_profile()"
 
 msgid "error calling security_getenforce()"
-msgstr ""
+msgstr "fel vid anrop av security_getenforce()"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error changing profile to %1$s"
-msgstr "ingen konfigurationsfil för %1$s"
+msgstr "fel vid byte av profil till %1$s"
 
 msgid "error copying UUID"
-msgstr ""
+msgstr "fel vid kopiering av UUID"
 
 msgid "error copying profile name"
-msgstr ""
+msgstr "fel vid kopiering av profilnamn"
 
 msgid "error count:"
 msgstr "antal fel:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error creating %1$s interface %2$s@%3$s (%4$s)"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "fel när ett %1$s-gränssnitt skapades %2$s@%3$s (%4$s)"
 
 #, c-format
 msgid "error creating bridge interface %1$s"
-msgstr ""
+msgstr "fel när bryggränssnittet %1$s skapades"
 
 msgid "error creating directory for ploop volume"
-msgstr ""
+msgstr "fel när en katalog för ploop-volymen skapades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error destroying network device %1$s"
-msgstr "Misslyckades att förstöra nätverk %1$s"
+msgstr "fel när nätverksenheten %1$s förstördes"
 
 #, c-format
 msgid "error dumping %1$s (%2$d) interface"
-msgstr ""
+msgstr "fel när gränssnittet %1$s (%2$d) dumpades"
 
 msgid "error dumping neighbor table"
-msgstr ""
+msgstr "fel när grantabellen dumpades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error during virtual port configuration of ifindex %1$d"
-msgstr "kunde inte analysera konfigurationsfilen %s"
+msgstr "fel under konfigurering av virtuell port med ifindex %1$d"
 
-#, fuzzy
 msgid "error from service"
-msgstr "Inget felmeddelande gavs"
+msgstr "fel från tjänsten"
 
 #, c-format
 msgid "error from service: %1$s"
-msgstr ""
+msgstr "fel från tjänsten: %1$s"
 
 msgid "error getting profile status"
-msgstr ""
+msgstr "fel när profilstatus hämtades"
 
 msgid "error in poll call"
-msgstr ""
+msgstr "fel i poll-anrop"
 
 msgid "error parsing IFLA_PORT_SELF part"
-msgstr ""
+msgstr "fel vid tolkning av delen IFLA_PORT_SELF"
 
 msgid "error parsing IFLA_VF_INFO"
-msgstr ""
+msgstr "fel vid tolkning av IFLA_VF_INFO"
 
 msgid "error parsing IFLA_VF_PORT during error reporting"
-msgstr ""
+msgstr "fel vid tolkning av IFLA_VF_PORT under felrapportering"
 
 msgid "error parsing IFLA_VF_PORT part"
-msgstr ""
+msgstr "fel vid tolkning av delen IFLA_VF_PORT"
 
 msgid "error parsing IFLA_VF_STATS"
-msgstr ""
+msgstr "fel vid tolkning av IFLA_VF_STATS"
 
 msgid "error parsing pid of lldpad"
-msgstr ""
+msgstr "fel vid tolkning av pid för lldpad"
 
 msgid "error receiving signal from container"
-msgstr ""
+msgstr "fel när en signal togs emot från behållaren"
 
 msgid "error sending continue signal to daemon"
-msgstr ""
+msgstr "fel när en fortsättningssignal skickades till demonen"
 
 msgid "error waiting for continue signal from daemon"
-msgstr ""
+msgstr "fel vid väntan på fortsättningssignal från demonen"
 
 msgid "error while iterating over IFLA_VF_PORTS part"
-msgstr ""
+msgstr "fel under iterering över delen IFLA_VF_PORTS"
 
 #, c-format
 msgid "error while opening private key '%1$s', wrong passphrase?"
-msgstr ""
+msgstr "fel när den privata nyckeln ”%1$s” öppnades, fel lösenfras?"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error while reading private key '%1$s'"
-msgstr "Fel när domännamnet lästes"
+msgstr "fel när den privata nyckeln ”%1$s” lästes"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error while reading public key '%1$s'"
-msgstr "Fel när domännamnet lästes"
+msgstr "fel när den publika nyckeln ”%1$s” lästes"
 
-#, fuzzy
 msgid "error while resuming the domain"
-msgstr "Fel när domännamnet lästes"
+msgstr "fel när domänen återupptogs"
 
-#, fuzzy
 msgid "error while suspending the domain"
-msgstr "Fel när domännamnet lästes"
+msgstr "fel när domänen sövdes"
 
 msgid "error: "
 msgstr "fel: "
 
 msgid "error_policy is not supported with vhostuser disk"
-msgstr ""
+msgstr "error_policy stödjs inte med disken vhostuser"
 
 msgid "escape for XML use"
-msgstr ""
+msgstr "skydda för användning i XML"
 
 msgid "escape for shell use"
-msgstr ""
+msgstr "skydda för användning i ett skal"
 
 msgid "ethernet type supports a single guest ip"
-msgstr ""
+msgstr "ethernet-typen stödjer ett enda gäst-ip"
 
 #, c-format
 msgid "ethtool ioctl error on %1$s"
-msgstr ""
+msgstr "ethtool ioctl-fel på %1$s"
 
 #, c-format
 msgid "event '%1$s' for domain '%2$s'\n"
