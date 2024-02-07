@@ -11908,7 +11908,7 @@ virshGetDBusDisplay(vshControl *ctl, xmlXPathContext *ctxt)
 
     addr = virXPathString(xpath, ctxt);
     if (!addr)
-        return false;
+        return NULL;
 
     if (STRPREFIX(addr, "unix:path=")) {
         return g_strdup_printf("dbus+unix://%s", addr + 10);
