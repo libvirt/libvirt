@@ -815,7 +815,8 @@
         encoding="UTF-8">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
           <xsl:with-param name="timestamp" select="$timestamp"/>
-          <xsl:with-param name="href_base" select="$href_base"/>
+          <xsl:with-param name="link_href_base" select="$href_base"/>
+          <xsl:with-param name="asset_href_base" select="$href_base"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:for-each>
