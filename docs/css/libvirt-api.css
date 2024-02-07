@@ -1,0 +1,112 @@
+/* CSS styles for the generated API documents */
+
+div.api {
+    border: 1px solid #999999;
+    background: #eeeeee;
+    color: black;
+    padding: 3px;
+}
+
+div.api pre {
+    margin: 0px;
+    border: 0px;
+    background: inherit;
+    padding: inherit;
+}
+
+div.api table {
+    margin: 0px;
+    padding-left: 2em;
+    border-spacing: 0px;
+}
+
+div.api table td, div.variablelist table td {
+    vertical-align: top;
+    padding-left: 1em;
+}
+
+.api {
+    font-family: monospace;
+}
+
+.api .type {
+    font-weight: bold;
+    white-space: nowrap;
+    color: darkslateblue;
+}
+
+.api .keyword {
+    font-weight: bold;
+    color: #A2F;
+}
+
+.api .comment {
+    color: #080;
+    margin-left: 2em;
+    position: relative;
+}
+
+.api .comment:before {
+    content: ": ";
+    position: absolute;
+    left: -1.3em;
+}
+
+.api .undisclosed {
+    font-style: italic;
+    letter-spacing: .3ex;
+    font-weight: bolder;
+    text-transform: uppercase;
+    margin-left: 2em;
+}
+
+.api .directive {
+    color: teal;
+}
+
+.api :link:hover, .api :link:focus {
+    color: blue;
+    border-color: blue;
+}
+
+.api :link {
+    text-decoration: none;
+}
+
+.api table td,.api table th {
+    border: 0px;
+}
+
+.api table tr:hover td, .api table col:hover td {
+    background: inherit;
+}
+
+.api table tr td:hover {
+    background: inherit;
+}
+
+dl.variablelist > dt {
+    display: block;
+    float: left;
+    font-style: italic;
+    font-weight: inherit;
+}
+
+.variablelist dd {
+    padding-left: 10em;
+}
+
+dl.variablelist > dt:after {
+    content: ": ";
+}
+
+div.description pre.code {
+    border: 1px dashed grey;
+    background-color: inherit;
+    padding: 5px 10px 5px 10px;
+    margin-left: 2.5em;
+}
+
+td.enumvalue {
+    white-space: nowrap;
+}
