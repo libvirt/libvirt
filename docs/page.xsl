@@ -17,6 +17,7 @@
   <xsl:template match="/" mode="page">
     <xsl:param name="pagesrc"/>
     <xsl:param name="timestamp"/>
+    <xsl:param name="href_base"/>
     <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;
 </xsl:text>
     <html data-sourcedoc="{$pagesrc}">

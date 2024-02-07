@@ -24,7 +24,6 @@
 
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
-  <xsl:variable name="href_base">../</xsl:variable>
 
   <xsl:template name="aclinfo">
     <xsl:param name="acl"/>
@@ -816,6 +815,7 @@
         encoding="UTF-8">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
           <xsl:with-param name="timestamp" select="$timestamp"/>
+          <xsl:with-param name="href_base" select="$href_base"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:for-each>
