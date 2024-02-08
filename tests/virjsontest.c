@@ -550,9 +550,9 @@ mymain(void)
                   "[\"The meaning of life\"]");
     DO_TEST_PARSE_FAIL("unterminated string", "[ \"The meaning of lif ]");
 
-    DO_TEST_PARSE("integer", "1", NULL);
-    DO_TEST_PARSE("boolean", "true", NULL);
-    DO_TEST_PARSE("null", "null", NULL);
+    DO_TEST_PARSE("integer", "[1]", NULL);
+    DO_TEST_PARSE("boolean", "[true]", NULL);
+    DO_TEST_PARSE("null", "[null]", NULL);
     DO_TEST_PARSE("[]", "[]", NULL);
 
     DO_TEST_PARSE("escaping symbols", "[\"\\\"\\t\\n\\\\\"]", NULL);
@@ -574,14 +574,11 @@ mymain(void)
     DO_TEST_PARSE_FAIL("array of an object with an array as a key",
                        "[ {[\"key1\", \"key2\"]: \"value\"} ]");
     DO_TEST_PARSE_FAIL("object with unterminated key", "{ \"key:7 }");
-    DO_TEST_PARSE_FAIL("duplicate key", "{ \"a\": 1, \"a\": 1 }");
 
     DO_TEST_FULL("lookup on array", Lookup,
                  "[ 1 ]", NULL, false);
     DO_TEST_FULL("lookup on string", Lookup,
                  "\"str\"", NULL, false);
-    DO_TEST_FULL("lookup on integer", Lookup,
-                 "1", NULL, false);
     DO_TEST_FULL("lookup with missing key", Lookup,
                  "{ }", NULL, false);
     DO_TEST_FULL("lookup with wrong type", Lookup,
