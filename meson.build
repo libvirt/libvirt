@@ -1023,6 +1023,13 @@ glusterfs_dep = dependency('glusterfs-api', version: '>=' + glusterfs_version, r
 gnutls_version = '3.6.0'
 gnutls_dep = dependency('gnutls', version: '>=' + gnutls_version)
 
+json_c_version = '0.14'
+json_c_dep = dependency('json-c', version: '>=' + json_c_version, required: get_option('json_c'))
+if json_c_dep.found()
+  conf.set('WITH_JSON_C', 1)
+  conf.set('WITH_JSON', 1)
+endif
+
 # Check for BSD kvm (kernel memory interface)
 if host_machine.system() == 'freebsd'
   libkvm_dep = cc.find_library('kvm')
@@ -2342,6 +2349,7 @@ libs_summary = {
   'fuse': fuse_dep.found(),
   'glusterfs': glusterfs_dep.found(),
   'libbsd': libbsd_dep.found(),
+  'json-c': json_c_dep.found(),
   'libiscsi': libiscsi_dep.found(),
   'libkvm': libkvm_dep.found(),
   'libnbd': libnbd_dep.found(),

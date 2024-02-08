@@ -1367,6 +1367,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dapparmor_profiles=disabled \
            -Dsecdriver_apparmor=disabled \
            -Dudev=enabled \
+           -Djson_c=disabled \
            -Dyajl=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
@@ -1439,6 +1440,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dfuse=disabled \
   -Dglusterfs=disabled \
   -Dhost_validate=disabled \
+  -Djson_c=disabled \
   -Dlibiscsi=disabled \
   -Dnbdkit=disabled \
   -Dnbdkit_config_default=disabled \
