@@ -277,12 +277,11 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
                               virDomainDiskDef *disk,
                               unsigned long long capacity)
 {
-    int ret = -1;
-    virStoragePoolPtr pool = NULL;
-    virStorageVolPtr vol = NULL;
-    char *volName = NULL, *basePath = NULL;
-    char *volStr = NULL;
+    g_autoptr(virStoragePool) pool = NULL;
+    g_autoptr(virStorageVol) vol = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    char *volName = NULL;
+    g_autofree char *basePath = NULL;
     const char *format = NULL;
     const char *compat = NULL;
     unsigned int flags = 0;
@@ -303,7 +302,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("malformed disk path: %1$s"),
                            disk->src->path);
-            goto cleanup;
+            return -1;
         }
 
         *volName = '\0';
@@ -311,11 +310,11 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
 
         if (!*conn) {
             if (!(*conn = virGetConnectStorage()))
-                goto cleanup;
+                return -1;
         }
 
         if (!(pool = virStoragePoolLookupByTargetPath(*conn, basePath)))
-            goto cleanup;
+            return -1;
         format = virStorageFileFormatTypeToString(disk->src->format);
         if (disk->src->format == VIR_STORAGE_FILE_QCOW2) {
             flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
@@ -327,11 +326,11 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
     case VIR_STORAGE_TYPE_VOLUME:
         if (!*conn) {
             if (!(*conn = virGetConnectStorage()))
-                goto cleanup;
+                return -1;
         }
 
         if (!(pool = virStoragePoolLookupByName(*conn, disk->src->srcpool->pool)))
-            goto cleanup;
+            return -1;
         format = virStorageFileFormatTypeToString(disk->src->format);
         volName = disk->src->srcpool->volume;
         if (disk->src->format == VIR_STORAGE_FILE_QCOW2)
@@ -353,14 +352,13 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot precreate storage for disk type '%1$s'"),
                        virStorageTypeToString(disk->src->type));
-        goto cleanup;
+        return -1;
     }
 
     if ((vol = virStorageVolLookupByName(pool, volName))) {
         VIR_DEBUG("Skipping creation of already existing volume of name '%s'",
                   volName);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     virBufferAddLit(&buf, "<volume>\n");
@@ -377,22 +375,10 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
-    if (!(volStr = virBufferContentAndReset(&buf))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unable to create volume XML"));
-        goto cleanup;
-    }
+    if (!(vol = virStorageVolCreateXML(pool, virBufferCurrentContent(&buf), flags)))
+        return -1;
 
-    if (!(vol = virStorageVolCreateXML(pool, volStr, flags)))
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(basePath);
-    VIR_FREE(volStr);
-    virObjectUnref(vol);
-    virObjectUnref(pool);
-    return ret;
+    return 0;
 }
 
 static bool
