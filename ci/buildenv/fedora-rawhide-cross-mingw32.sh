@@ -48,6 +48,7 @@ function install_buildenv() {
         rpm-build \
         sed \
         systemd-rpm-macros
+    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
     dnf install -y \
         mingw32-curl \
         mingw32-dlfcn \

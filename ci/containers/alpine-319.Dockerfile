@@ -69,6 +69,7 @@ RUN apk update && \
         wireshark-dev \
         xen-dev \
         yajl-dev && \
+    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED && \
     apk list | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \

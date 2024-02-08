@@ -59,7 +59,8 @@ exec "$@"\n' > /usr/bin/nosync && \
                sed \
                systemd-rpm-macros && \
     nosync dnf autoremove -y && \
-    nosync dnf clean all -y
+    nosync dnf clean all -y && \
+    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
 
 ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 ENV LANG "en_US.UTF-8"
