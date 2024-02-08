@@ -110,6 +110,11 @@ int qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
                                        virDomainObj *vm,
                                        const char *path);
 
+int
+qemuSecurityDomainSetMountNSPathLabel(virQEMUDriver *driver,
+                                      virDomainObj *vm,
+                                      const char *path);
+
 int qemuSecurityCommandRun(virQEMUDriver *driver,
                            virDomainObj *vm,
                            virCommand *cmd,

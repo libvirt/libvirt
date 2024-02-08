@@ -565,7 +565,8 @@
 #cgroup_device_acl = [
 #    "/dev/null", "/dev/full", "/dev/zero",
 #    "/dev/random", "/dev/urandom",
-#    "/dev/ptmx", "/dev/kvm"
+#    "/dev/ptmx", "/dev/kvm",
+#    "/dev/userfaultfd"
 #]
 #
 # RDMA migration requires the following extra files to be added to the list:

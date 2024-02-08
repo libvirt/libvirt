@@ -616,6 +616,51 @@ qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
 
 
 /**
+ * qemuSecurityDomainSetMountNSPathLabel:
+ *
+ * Label given path in mount namespace. If mount namespace is not enabled,
+ * nothing is labeled at all.
+ *
+ * Because the label is only applied in mount namespace, there's no need to
+ * restore it.
+ *
+ * Returns 0 on success,
+ *         1 when mount namespace is not enabled,
+ *        -1 on error.
+ */
+int
+qemuSecurityDomainSetMountNSPathLabel(virQEMUDriver *driver,
+                                      virDomainObj *vm,
+                                      const char *path)
+{
+    int ret = -1;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        VIR_DEBUG("Not labeling '%s': mount namespace disabled for domain '%s'",
+                  path, vm->def->name);
+        return 1;
+    }
+
+    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerDomainSetPathLabel(driver->securityManager,
+                                             vm->def, path, false) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerTransactionCommit(driver->securityManager,
+                                            vm->pid, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
+
+
+/**
  * qemuSecurityCommandRun:
  * @driver: the QEMU driver
  * @vm: the domain object

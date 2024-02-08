@@ -2883,6 +2883,40 @@ qemuProcessStartManagedPRDaemon(virDomainObj *vm)
 
 
 static int
+qemuProcessAllowPostCopyMigration(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
+    const char *uffd = "/dev/userfaultfd";
+    int rc;
+
+    if (!virFileExists(uffd)) {
+        VIR_DEBUG("%s is not supported by the host", uffd);
+        return 0;
+    }
+
+    if (!devices)
+        devices = defaultDeviceACL;
+
+    if (!g_strv_contains(devices, uffd)) {
+        VIR_DEBUG("%s is not allowed by device ACL", uffd);
+        return 0;
+    }
+
+    VIR_DEBUG("Labeling %s in mount namespace", uffd);
+    if ((rc = qemuSecurityDomainSetMountNSPathLabel(driver, vm, uffd)) < 0)
+        return -1;
+
+    if (rc == 1)
+        VIR_DEBUG("Mount namespace is not enabled, leaving %s as is", uffd);
+
+    return 0;
+}
+
+
+static int
 qemuProcessInitPasswords(virQEMUDriver *driver,
                          virDomainObj *vm,
                          int asyncJob)
@@ -7800,6 +7834,10 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Setting up managed PR daemon");
     if (virDomainDefHasManagedPR(vm->def) &&
         qemuProcessStartManagedPRDaemon(vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting up permissions to allow post-copy migration");
+    if (qemuProcessAllowPostCopyMigration(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
