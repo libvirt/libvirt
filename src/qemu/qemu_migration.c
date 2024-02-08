@@ -465,11 +465,27 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
-        if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
+        switch (virStorageSourceGetActualType(disk->src)) {
+        case VIR_STORAGE_TYPE_FILE:
+        case VIR_STORAGE_TYPE_BLOCK:
+        case VIR_STORAGE_TYPE_DIR:
+            diskSrcPath = virDomainDiskGetSource(disk);
+            break;
+
+        case VIR_STORAGE_TYPE_NVME:
+            /* While NVMe disks are local, they are not accessible via src->path.
+             * Therefore, we have to return false here. */
             virPCIDeviceAddressGetSysfsFile(&disk->src->nvme->pciAddr, &nvmePath);
             diskSrcPath = nvmePath;
-        } else if (virStorageSourceIsLocalStorage(disk->src)) {
-            diskSrcPath = virDomainDiskGetSource(disk);
+            break;
+
+        case VIR_STORAGE_TYPE_NETWORK:
+        case VIR_STORAGE_TYPE_VOLUME:
+        case VIR_STORAGE_TYPE_VHOST_USER:
+        case VIR_STORAGE_TYPE_VHOST_VDPA:
+        case VIR_STORAGE_TYPE_LAST:
+        case VIR_STORAGE_TYPE_NONE:
+            break;
         }
 
         if (diskSrcPath) {
