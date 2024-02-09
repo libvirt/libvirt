@@ -4240,7 +4240,7 @@ qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
  * If the controller model is already defined, return it immediately;
  * otherwise, based on the @qemuCaps return a default model value.
  *
- * Returns model on success, -1 on failure with error set.
+ * Returns model on success, -1 on failure.
  */
 int
 qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
@@ -4261,9 +4261,6 @@ qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
     if (qemuDomainHasBuiltinESP(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
 
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Unable to determine model for SCSI controller idx=%1$d"),
-                   cont->idx);
     return -1;
 }
 

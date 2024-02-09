@@ -963,6 +963,9 @@ qemuDomainFindOrCreateSCSIDiskController(virDomainObj *vm,
         cont->model = model;
 
     if (cont->model < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to determine model for SCSI controller idx=%1$d"),
+                       cont->idx);
         VIR_FREE(cont);
         return NULL;
     }
