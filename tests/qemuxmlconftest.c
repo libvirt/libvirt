@@ -2319,8 +2319,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-rng-egd-crash");
     DO_TEST_CAPS_ARCH_LATEST("virtio-rng-ccw", "s390x");
 
-    DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-none", "s390x");
-    DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-controller", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-usb-none", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-usb-address", "s390x");
 
     DO_TEST_CAPS_ARCH_LATEST("s390-panic-no-address", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("s390-panic-address", "s390x");
