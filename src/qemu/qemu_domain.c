@@ -4234,22 +4234,27 @@ qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
 
 /**
  * @def: Domain definition
- * @cont: Domain controller def
  * @qemuCaps: qemu capabilities
  *
- * If the controller model is already defined, return it immediately;
- * otherwise, based on the @qemuCaps return a default model value.
+ * Choose a reasonable model to use for a SCSI controller where a
+ * specific one hasn't been provided by the user.
  *
- * Returns model on success, -1 on failure.
+ * The choice is based on a number of factors, including the guest's
+ * architecture and machine type. @qemuCaps, if provided, might be
+ * taken into consideration too.
+ *
+ * If no sensible choice can be made for the controller model,
+ * VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT will be returned. It's
+ * likely that a failure will need to be reported in this scenario,
+ * but the handling is entirely up to the caller.
+ *
+ * Returns: a valid virDomainControllerModelSCSI value if one could
+ *          be determined, or VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT
  */
-int
+virDomainControllerModelSCSI
 qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
-                                     const virDomainControllerDef *cont,
                                      virQEMUCaps *qemuCaps)
 {
-    if (cont->model > 0)
-        return cont->model;
-
     if (qemuDomainIsPSeries(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
     if (ARCH_IS_S390(def->os.arch) || qemuDomainIsARMVirt(def) ||
@@ -4262,7 +4267,7 @@ qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
     if (qemuDomainHasBuiltinESP(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
 
-    return -1;
+    return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT;
 }
 
 
