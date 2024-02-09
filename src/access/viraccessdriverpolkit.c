@@ -403,6 +403,10 @@ virAccessDriverPolkitCheckSecret(virAccessManager *manager,
                                          virAccessPermSecretTypeToString(perm),
                                          attrs);
     }   break;
+
+    case VIR_SECRET_USAGE_TYPE_LAST:
+        virReportEnumRangeError(virSecretUsageType, secret->usage_type);
+        return -1;
     }
 }
 

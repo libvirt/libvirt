@@ -51,27 +51,19 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr node = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *type_str = NULL;
-    int type;
 
     if (!(node = virXPathNode("./usage", ctxt)))
         return 0;
 
     ctxt->node = node;
 
-    type_str = virXMLPropString(node, "type");
-    if (type_str == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("unknown secret usage type"));
+    if (virXMLPropEnum(node, "type",
+                       virSecretUsageTypeFromString,
+                       VIR_XML_PROP_REQUIRED,
+                       &def->usage_type) < 0) {
         return -1;
     }
-    type = virSecretUsageTypeFromString(type_str);
-    if (type < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown secret usage type %1$s"), type_str);
-        return -1;
-    }
-    def->usage_type = type;
+
     switch (def->usage_type) {
     case VIR_SECRET_USAGE_TYPE_NONE:
         break;
@@ -121,6 +113,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         }
         break;
 
+    case VIR_SECRET_USAGE_TYPE_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected secret usage type %1$d"),
@@ -238,9 +231,8 @@ virSecretDefFormatUsage(virBuffer *buf,
         break;
 
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected secret usage type %1$d"),
-                       def->usage_type);
+    case VIR_SECRET_USAGE_TYPE_LAST:
+        virReportEnumRangeError(virSecretUsageType, def->usage_type);
         return -1;
     }
     virBufferAdjustIndent(buf, -2);
