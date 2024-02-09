@@ -2019,6 +2019,12 @@ elif get_option('sysctl_config').enabled()
   error('sysctl configuration is supported only on linux')
 endif
 
+if not get_option('userfaultfd_sysctl').disabled() and conf.has('WITH_SYSCTL')
+  conf.set('WITH_USERFAULTFD_SYSCTL', 1)
+elif get_option('userfaultfd_sysctl').enabled()
+  error('userfaultfd_sysctl option requires sysctl_config to be enabled')
+endif
+
 conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
 
 
@@ -2318,6 +2324,8 @@ misc_summary = {
   'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
   'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
   'TLS priority': conf.get_unquoted('TLS_PRIORITY'),
+  'sysctl config': conf.has('WITH_SYSCTL'),
+  'userfaultfd sysctl': conf.has('WITH_USERFAULTFD_SYSCTL'),
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
 

@@ -108,4 +108,5 @@ option('nbdkit', type: 'feature', value: 'auto', description: 'Build nbdkit stor
 option('nbdkit_config_default', type: 'feature', value: 'auto', description: 'Whether to use nbdkit storage backend for network disks by default (configurable)')
 option('pm_utils', type: 'feature', value: 'auto', description: 'use pm-utils for power management')
 option('sysctl_config', type: 'feature', value: 'auto', description: 'Whether to install sysctl configs')
+option('userfaultfd_sysctl', type: 'feature', value: 'auto', description: 'Whether to install sysctl config for enabling unprivileged userfaultfd')
 option('tls_priority', type: 'string', value: 'NORMAL', description: 'set the default TLS session priority string')
