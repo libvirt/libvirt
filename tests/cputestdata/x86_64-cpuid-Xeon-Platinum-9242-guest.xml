@@ -20,6 +20,7 @@
   <feature policy='require' name='pbe'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='cmt'/>
+  <feature policy='require' name='mpx'/>
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='pku'/>
   <feature policy='require' name='ospke'/>

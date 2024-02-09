@@ -4,5 +4,6 @@
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='ss'/>
   <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='mpx'/>
   <feature policy='require' name='clflushopt'/>
 </cpu>

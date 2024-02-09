@@ -46,7 +46,7 @@
     <feature name='mce'/>
     <feature name='mmx'/>
     <feature name='movbe'/>
-    <feature name='mpx'/>
+    <feature name='mpx' removed='yes'/>
     <feature name='msr'/>
     <feature name='mtrr'/>
     <feature name='nx'/>

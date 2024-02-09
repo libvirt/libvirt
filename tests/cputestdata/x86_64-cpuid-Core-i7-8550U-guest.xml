@@ -18,6 +18,7 @@
   <feature policy='require' name='pbe'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='sgx'/>
+  <feature policy='require' name='mpx'/>
   <feature policy='require' name='clflushopt'/>
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='md-clear'/>

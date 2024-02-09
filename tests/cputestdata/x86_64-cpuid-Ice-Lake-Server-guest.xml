@@ -21,6 +21,7 @@
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='sgx'/>
   <feature policy='require' name='cmt'/>
+  <feature policy='require' name='mpx'/>
   <feature policy='require' name='avx512ifma'/>
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='sha-ni'/>

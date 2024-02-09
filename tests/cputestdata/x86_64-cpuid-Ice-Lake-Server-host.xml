@@ -23,6 +23,7 @@
   <feature name='tsc_adjust'/>
   <feature name='sgx'/>
   <feature name='cmt'/>
+  <feature name='mpx'/>
   <feature name='avx512ifma'/>
   <feature name='intel-pt'/>
   <feature name='sha-ni'/>

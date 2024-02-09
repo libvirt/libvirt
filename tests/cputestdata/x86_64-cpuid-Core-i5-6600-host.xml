@@ -20,6 +20,7 @@
   <feature name='tm'/>
   <feature name='pbe'/>
   <feature name='tsc_adjust'/>
+  <feature name='mpx'/>
   <feature name='clflushopt'/>
   <feature name='intel-pt'/>
   <feature name='xsaves'/>

@@ -22,6 +22,7 @@
   <feature name='pbe'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
+  <feature name='mpx'/>
   <feature name='intel-pt'/>
   <feature name='pku'/>
   <feature name='ospke'/>
