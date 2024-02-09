@@ -90,6 +90,7 @@
 
 # Other optional features
 %define with_numactl          0%{!?_without_numactl:1}
+%define with_userfaultfd_sysctl 0%{!?_without_userfaultfd_sysctl:1}
 
 # A few optional bits off by default, we enable later
 %define with_fuse             0
@@ -244,6 +245,12 @@
     %define enable_werror -Dwerror=true
 %else
     %define enable_werror -Dwerror=false -Dgit_werror=disabled
+%endif
+
+# Fedora and RHEL-9 are new enough to support /dev/userfaultfd, which
+# does not require enabling vm.unprivileged_userfaultfd sysctl.
+%if 0%{?fedora} || 0%{?rhel} >= 9
+    %define with_userfaultfd_sysctl 0
 %endif
 
 %define tls_priority "@LIBVIRT,SYSTEM"
@@ -1276,6 +1283,12 @@ exit 1
     %define arg_remote_mode -Dremote_default_mode=legacy
 %endif
 
+%if %{with_userfaultfd_sysctl}
+    %define arg_userfaultfd_sysctl -Duserfaultfd_sysctl=enabled
+%else
+    %define arg_userfaultfd_sysctl -Duserfaultfd_sysctl=disabled
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1355,6 +1368,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dqemu_moddir=%{qemu_moddir} \
            -Dqemu_datadir=%{qemu_datadir} \
            -Dtls_priority=%{tls_priority} \
+           %{?arg_userfaultfd_sysctl} \
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
@@ -2215,7 +2229,9 @@ exit 0
     %if %{with_qemu}
 %files daemon-driver-qemu
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
+        %if %{with_userfaultfd_sysctl}
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-qemu-postcopy-migration.conf
+        %endif
 %{_datadir}/augeas/lenses/virtqemud.aug
 %{_datadir}/augeas/lenses/tests/test_virtqemud.aug
 %{_unitdir}/virtqemud.service
