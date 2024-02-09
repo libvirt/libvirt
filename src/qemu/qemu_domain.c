@@ -4243,9 +4243,9 @@ qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
  * Returns model on success, -1 on failure with error set.
  */
 int
-qemuDomainGetSCSIControllerModel(const virDomainDef *def,
-                                 const virDomainControllerDef *cont,
-                                 virQEMUCaps *qemuCaps)
+qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
+                                     const virDomainControllerDef *cont,
+                                     virQEMUCaps *qemuCaps)
 {
     if (cont->model > 0)
         return cont->model;

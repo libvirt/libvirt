@@ -958,7 +958,7 @@ qemuDomainFindOrCreateSCSIDiskController(virDomainObj *vm,
     cont->idx = controller;
 
     if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT)
-        cont->model = qemuDomainGetSCSIControllerModel(vm->def, cont, priv->qemuCaps);
+        cont->model = qemuDomainDefaultSCSIControllerModel(vm->def, cont, priv->qemuCaps);
     else
         cont->model = model;
 

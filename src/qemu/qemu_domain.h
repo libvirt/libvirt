@@ -838,9 +838,9 @@ bool qemuDomainHasBuiltinESP(const virDomainDef *def);
 bool qemuDomainNeedsFDC(const virDomainDef *def);
 bool qemuDomainSupportsPCI(const virDomainDef *def);
 bool qemuDomainSupportsPCIMultibus(const virDomainDef *def);
-int qemuDomainGetSCSIControllerModel(const virDomainDef *def,
-                                     const virDomainControllerDef *cont,
-                                     virQEMUCaps *qemuCaps);
+int qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
+                                         const virDomainControllerDef *cont,
+                                         virQEMUCaps *qemuCaps);
 
 int qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
                                         virDomainDef *def);

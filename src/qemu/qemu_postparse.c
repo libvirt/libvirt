@@ -344,7 +344,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
     switch (cont->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         /* Set the default SCSI controller model if not already set */
-        cont->model = qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
+        cont->model = qemuDomainDefaultSCSIControllerModel(def, cont, qemuCaps);
 
         if (cont->model < 0)
             return -1;
