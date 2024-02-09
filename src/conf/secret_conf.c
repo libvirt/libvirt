@@ -49,10 +49,17 @@ static int
 virSecretDefParseUsage(xmlXPathContextPtr ctxt,
                        virSecretDef *def)
 {
+    xmlNodePtr node = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type_str = NULL;
     int type;
 
-    type_str = virXPathString("string(./usage/@type)", ctxt);
+    if (!(node = virXPathNode("./usage", ctxt)))
+        return 0;
+
+    ctxt->node = node;
+
+    type_str = virXMLPropString(node, "type");
     if (type_str == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("unknown secret usage type"));
@@ -70,7 +77,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
-        def->usage_id = virXPathString("string(./usage/volume)", ctxt);
+        def->usage_id = virXPathString("string(./volume)", ctxt);
         if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("volume usage specified, but volume path is missing"));
@@ -79,7 +86,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
-        def->usage_id = virXPathString("string(./usage/name)", ctxt);
+        def->usage_id = virXPathString("string(./name)", ctxt);
         if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Ceph usage specified, but name is missing"));
@@ -88,7 +95,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
-        def->usage_id = virXPathString("string(./usage/target)", ctxt);
+        def->usage_id = virXPathString("string(./target)", ctxt);
         if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("iSCSI usage specified, but target is missing"));
@@ -97,7 +104,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_TLS:
-        def->usage_id = virXPathString("string(./usage/name)", ctxt);
+        def->usage_id = virXPathString("string(./name)", ctxt);
         if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("TLS usage specified, but name is missing"));
@@ -106,7 +113,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_VTPM:
-        def->usage_id = virXPathString("string(./usage/name)", ctxt);
+        def->usage_id = virXPathString("string(./name)", ctxt);
         if (!def->usage_id) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("vTPM usage specified, but name is missing"));
@@ -166,8 +173,8 @@ virSecretParseXML(xmlXPathContext *ctxt)
     }
 
     def->description = virXPathString("string(./description)", ctxt);
-    if (virXPathNode("./usage", ctxt) != NULL
-        && virSecretDefParseUsage(ctxt, def) < 0)
+
+    if (virSecretDefParseUsage(ctxt, def) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
