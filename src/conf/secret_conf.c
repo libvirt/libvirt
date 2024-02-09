@@ -195,39 +195,34 @@ static int
 virSecretDefFormatUsage(virBuffer *buf,
                         const virSecretDef *def)
 {
-    const char *type;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    type = virSecretUsageTypeToString(def->usage_type);
-    if (type == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected secret usage type %1$d"),
-                       def->usage_type);
-        return -1;
-    }
-    virBufferAsprintf(buf, "<usage type='%s'>\n", type);
-    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(&attrBuf, " type='%s'",
+                      virSecretUsageTypeToString(def->usage_type));
+
     switch (def->usage_type) {
     case VIR_SECRET_USAGE_TYPE_NONE:
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
-        virBufferEscapeString(buf, "<volume>%s</volume>\n", def->usage_id);
+        virBufferEscapeString(&childBuf, "<volume>%s</volume>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
-        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
+        virBufferEscapeString(&childBuf, "<name>%s</name>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
-        virBufferEscapeString(buf, "<target>%s</target>\n", def->usage_id);
+        virBufferEscapeString(&childBuf, "<target>%s</target>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_TLS:
-        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
+        virBufferEscapeString(&childBuf, "<name>%s</name>\n", def->usage_id);
         break;
 
     case VIR_SECRET_USAGE_TYPE_VTPM:
-        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
+        virBufferEscapeString(&childBuf, "<name>%s</name>\n", def->usage_id);
         break;
 
     default:
@@ -235,8 +230,8 @@ virSecretDefFormatUsage(virBuffer *buf,
         virReportEnumRangeError(virSecretUsageType, def->usage_type);
         return -1;
     }
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</usage>\n");
+
+    virXMLFormatElement(buf, "usage", &attrBuf, &childBuf);
 
     return 0;
 }
@@ -245,25 +240,23 @@ char *
 virSecretDefFormat(const virSecretDef *def)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const unsigned char *uuid;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(&buf);
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    virBufferAsprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",
+    virBufferAsprintf(&attrBuf, " ephemeral='%s' private='%s'",
                       def->isephemeral ? "yes" : "no",
                       def->isprivate ? "yes" : "no");
 
-    uuid = def->uuid;
-    virUUIDFormat(uuid, uuidstr);
-    virBufferAdjustIndent(&buf, 2);
-    virBufferEscapeString(&buf, "<uuid>%s</uuid>\n", uuidstr);
+    virUUIDFormat(def->uuid, uuidstr);
+    virBufferEscapeString(&childBuf, "<uuid>%s</uuid>\n", uuidstr);
     if (def->description != NULL)
-        virBufferEscapeString(&buf, "<description>%s</description>\n",
+        virBufferEscapeString(&childBuf, "<description>%s</description>\n",
                               def->description);
     if (def->usage_type != VIR_SECRET_USAGE_TYPE_NONE &&
-        virSecretDefFormatUsage(&buf, def) < 0)
+        virSecretDefFormatUsage(&childBuf, def) < 0)
         return NULL;
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAddLit(&buf, "</secret>\n");
 
+    virXMLFormatElement(&buf, "secret", &attrBuf, &childBuf);
     return virBufferContentAndReset(&buf);
 }
