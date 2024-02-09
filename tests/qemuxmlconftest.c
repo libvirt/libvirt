@@ -2321,6 +2321,7 @@ mymain(void)
 
     DO_TEST_CAPS_ARCH_LATEST("s390-usb-none", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("s390-usb-address", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_FAILURE("s390-usb-model", "s390x");
 
     DO_TEST_CAPS_ARCH_LATEST("s390-panic-no-address", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("s390-panic-address", "s390x");
