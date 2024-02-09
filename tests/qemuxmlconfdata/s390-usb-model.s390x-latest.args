@@ -11,13 +11,13 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-test/master-key.aes"}' \
 -machine s390-ccw-virtio,usb=off,dump-guest-core=off,memory-backend=s390.ram \
--accel kvm \
--cpu gen15a-base,aen=on,vxpdeh=on,aefsi=on,diag318=on,csske=on,msa9=on,msa8=on,msa7=on,msa6=on,msa5=on,msa4=on,msa3=on,msa2=on,msa1=on,sthyi=on,edat=on,deflate=on,etoken=on,vx=on,ap=on,vxeh=on,vxpd=on,esop=on,msa9_pckmo=on,vxeh2=on,esort=on,apft=on,els=on,iep=on,apqci=on,cte=on,ais=on,bpb=on,gs=on,ppa15=on,zpci=on,sea_esop2=on,te=on \
--m size=262144k \
--object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":268435456}' \
+-accel tcg \
+-cpu qemu \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
--uuid 9aa4b45c-b9dd-45ef-91fe-862b27b4231f \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
 -no-user-config \
 -nodefaults \
@@ -26,8 +26,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--chardev pty,id=charserial0 \
--device '{"driver":"sclpconsole","chardev":"charserial0","id":"serial0"}' \
+-device '{"driver":"zpci","uid":1,"fid":0,"target":"usb","id":"zpci1"}' \
+-device '{"driver":"qemu-xhci","id":"usb","bus":"pci.0","addr":"0x1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

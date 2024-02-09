@@ -36,15 +36,12 @@
       </enum>
     </mode>
     <mode name='host-model' supported='yes'>
-      <model fallback='forbid'>gen16a-base</model>
-      <feature policy='require' name='nnpa'/>
+      <model fallback='forbid'>gen15a-base</model>
       <feature policy='require' name='aen'/>
-      <feature policy='require' name='cmmnt'/>
       <feature policy='require' name='vxpdeh'/>
       <feature policy='require' name='aefsi'/>
       <feature policy='require' name='diag318'/>
       <feature policy='require' name='csske'/>
-      <feature policy='require' name='mepoch'/>
       <feature policy='require' name='msa9'/>
       <feature policy='require' name='msa8'/>
       <feature policy='require' name='msa7'/>
@@ -56,15 +53,9 @@
       <feature policy='require' name='msa1'/>
       <feature policy='require' name='sthyi'/>
       <feature policy='require' name='edat'/>
-      <feature policy='require' name='ri'/>
       <feature policy='require' name='deflate'/>
-      <feature policy='require' name='edat2'/>
       <feature policy='require' name='etoken'/>
       <feature policy='require' name='vx'/>
-      <feature policy='require' name='ipter'/>
-      <feature policy='require' name='pai'/>
-      <feature policy='require' name='paie'/>
-      <feature policy='require' name='mepochptff'/>
       <feature policy='require' name='ap'/>
       <feature policy='require' name='vxeh'/>
       <feature policy='require' name='vxpd'/>
@@ -72,7 +63,6 @@
       <feature policy='require' name='msa9_pckmo'/>
       <feature policy='require' name='vxeh2'/>
       <feature policy='require' name='esort'/>
-      <feature policy='require' name='apqi'/>
       <feature policy='require' name='apft'/>
       <feature policy='require' name='els'/>
       <feature policy='require' name='iep'/>
@@ -83,33 +73,28 @@
       <feature policy='require' name='gs'/>
       <feature policy='require' name='ppa15'/>
       <feature policy='require' name='zpci'/>
-      <feature policy='require' name='rdp'/>
       <feature policy='require' name='sea_esop2'/>
-      <feature policy='require' name='beareh'/>
       <feature policy='require' name='te'/>
-      <feature policy='require' name='cmm'/>
-      <feature policy='require' name='vxpdeh2'/>
     </mode>
     <mode name='custom' supported='yes'>
-      <model usable='yes' vendor='IBM'>gen16a-base</model>
-      <model usable='yes' vendor='IBM'>gen16a</model>
+      <model usable='no' vendor='IBM'>gen16a</model>
       <model usable='yes' vendor='IBM'>z800-base</model>
       <model usable='yes' vendor='IBM'>z890.2-base</model>
-      <model usable='yes' vendor='IBM'>z9EC.2</model>
-      <model usable='yes' vendor='IBM'>z13.2</model>
+      <model usable='no' vendor='IBM'>z9EC.2</model>
+      <model usable='no' vendor='IBM'>z13.2</model>
       <model usable='yes' vendor='IBM'>z990.5-base</model>
       <model usable='yes' vendor='IBM'>z9BC-base</model>
       <model usable='yes' vendor='IBM'>z890</model>
       <model usable='yes' vendor='IBM'>z890.2</model>
-      <model usable='yes' vendor='IBM'>z9BC</model>
-      <model usable='yes' vendor='IBM'>z13</model>
-      <model usable='yes' vendor='IBM'>z196</model>
-      <model usable='yes' vendor='IBM'>z13s</model>
-      <model usable='yes' vendor='IBM'>gen16b-base</model>
+      <model usable='no' vendor='IBM'>z9BC</model>
+      <model usable='no' vendor='IBM'>z196</model>
+      <model usable='no' vendor='IBM'>z13</model>
+      <model usable='no' vendor='IBM'>z13s</model>
+      <model usable='no' vendor='IBM'>gen16b-base</model>
       <model usable='yes' vendor='IBM'>z990.3</model>
       <model usable='yes' vendor='IBM'>z13s-base</model>
-      <model usable='yes' vendor='IBM'>z9EC</model>
-      <model usable='yes' vendor='IBM'>gen15a</model>
+      <model usable='no' vendor='IBM'>gen15a</model>
+      <model usable='no' vendor='IBM'>z9EC</model>
       <model usable='yes' vendor='IBM'>z14ZR1-base</model>
       <model usable='yes' vendor='IBM'>z14.2-base</model>
       <model usable='yes' vendor='IBM'>z900.3-base</model>
@@ -118,57 +103,58 @@
       <model usable='yes' vendor='IBM'>zBC12-base</model>
       <model usable='yes' vendor='IBM'>z9BC.2-base</model>
       <model usable='yes' vendor='IBM'>z900.2-base</model>
-      <model usable='yes' vendor='IBM'>z9EC.3</model>
-      <model usable='yes' vendor='IBM'>zEC12</model>
+      <model usable='no' vendor='IBM'>zEC12</model>
+      <model usable='no' vendor='IBM'>z9EC.3</model>
       <model usable='yes' vendor='IBM'>z900</model>
       <model usable='yes' vendor='IBM'>z114-base</model>
       <model usable='yes' vendor='IBM'>zEC12-base</model>
-      <model usable='yes' vendor='IBM'>z10EC.2</model>
+      <model usable='no' vendor='IBM'>z10EC.2</model>
       <model usable='yes' vendor='IBM'>z10EC-base</model>
       <model usable='yes' vendor='IBM'>z900.3</model>
-      <model usable='yes' vendor='IBM'>z14ZR1</model>
-      <model usable='yes' vendor='IBM'>z10BC</model>
+      <model usable='no' vendor='IBM'>z14ZR1</model>
+      <model usable='no' vendor='IBM'>z10BC</model>
       <model usable='yes' vendor='IBM'>z10BC.2-base</model>
-      <model usable='yes' vendor='IBM'>z9BC.2</model>
-      <model usable='yes' vendor='IBM'>z990.2</model>
+      <model usable='no' vendor='IBM'>z9BC.2</model>
       <model usable='yes' vendor='IBM'>z990</model>
-      <model usable='yes' vendor='IBM'>z14</model>
+      <model usable='yes' vendor='IBM'>z990.2</model>
+      <model usable='no' vendor='IBM'>z14</model>
       <model usable='yes' vendor='IBM'>gen15b-base</model>
       <model usable='yes' vendor='IBM'>z990.4</model>
       <model usable='yes' vendor='unknown'>max</model>
+      <model usable='no' vendor='IBM'>gen16b</model>
       <model usable='yes' vendor='IBM'>z10EC.2-base</model>
       <model usable='yes' vendor='IBM'>gen15a-base</model>
       <model usable='yes' vendor='IBM'>z800</model>
-      <model usable='yes' vendor='IBM'>z10EC</model>
-      <model usable='yes' vendor='IBM'>zEC12.2</model>
+      <model usable='no' vendor='IBM'>zEC12.2</model>
+      <model usable='no' vendor='IBM'>z10EC</model>
       <model usable='yes' vendor='IBM'>z990.2-base</model>
-      <model usable='yes' vendor='IBM'>gen16b</model>
       <model usable='yes' vendor='IBM'>z900-base</model>
-      <model usable='yes' vendor='IBM'>z10BC.2</model>
+      <model usable='no' vendor='IBM'>z10BC.2</model>
       <model usable='yes' vendor='IBM'>z9EC-base</model>
       <model usable='yes' vendor='IBM'>z9EC.3-base</model>
-      <model usable='yes' vendor='IBM'>z114</model>
+      <model usable='no' vendor='IBM'>z114</model>
       <model usable='yes' vendor='IBM'>z890.3</model>
       <model usable='yes' vendor='IBM'>z196-base</model>
       <model usable='yes' vendor='IBM'>z9EC.2-base</model>
-      <model usable='yes' vendor='IBM'>z196.2</model>
-      <model usable='yes' vendor='IBM'>z14.2</model>
+      <model usable='no' vendor='IBM'>z196.2</model>
+      <model usable='no' vendor='IBM'>z14.2</model>
       <model usable='yes' vendor='IBM'>z990-base</model>
-      <model usable='yes' vendor='IBM'>z900.2</model>
+      <model usable='no' vendor='IBM'>z10EC.3</model>
       <model usable='yes' vendor='IBM'>z890-base</model>
-      <model usable='yes' vendor='IBM'>z10EC.3</model>
+      <model usable='yes' vendor='IBM'>z900.2</model>
       <model usable='yes' vendor='IBM'>z14-base</model>
       <model usable='yes' vendor='IBM'>z990.4-base</model>
+      <model usable='yes' vendor='IBM'>zEC12.2-base</model>
       <model usable='yes' vendor='IBM'>z10EC.3-base</model>
       <model usable='yes' vendor='IBM'>z10BC-base</model>
       <model usable='yes' vendor='IBM'>z13-base</model>
       <model usable='yes' vendor='IBM'>z990.3-base</model>
       <model usable='yes' vendor='IBM'>z990.5</model>
-      <model usable='yes' vendor='IBM'>zEC12.2-base</model>
-      <model usable='yes' vendor='IBM'>zBC12</model>
+      <model usable='no' vendor='IBM'>zBC12</model>
       <model usable='yes' vendor='IBM'>z890.3-base</model>
       <model usable='yes' vendor='unknown'>qemu</model>
-      <model usable='yes' vendor='IBM'>gen15b</model>
+      <model usable='no' vendor='IBM'>gen15b</model>
+      <model usable='no' vendor='IBM'>gen16a-base</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>
@@ -190,6 +176,7 @@
         <value>fdc</value>
         <value>scsi</value>
         <value>virtio</value>
+        <value>usb</value>
       </enum>
       <enum name='model'>
         <value>virtio</value>
@@ -222,6 +209,7 @@
         <value>optional</value>
       </enum>
       <enum name='subsysType'>
+        <value>usb</value>
         <value>pci</value>
         <value>scsi</value>
       </enum>
