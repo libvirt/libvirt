@@ -390,6 +390,19 @@ virAccessDriverPolkitCheckSecret(virAccessManager *manager,
                                          virAccessPermSecretTypeToString(perm),
                                          attrs);
     }   break;
+    case VIR_SECRET_USAGE_TYPE_VTPM: {
+        const char *attrs[] = {
+                    "connect_driver", driverName,
+                    "secret_uuid", uuidstr,
+                    "secret_usage_name", secret->usage_id,
+                    NULL,
+                };
+
+        return virAccessDriverPolkitCheck(manager,
+                                         "secret",
+                                         virAccessPermSecretTypeToString(perm),
+                                         attrs);
+    }   break;
     }
 }
 
