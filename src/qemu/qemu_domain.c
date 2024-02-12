@@ -4378,6 +4378,64 @@ qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
 
 
 /**
+ * qemuDomainDefaultUSBControllerModelAutoAdded:
+ * @def: domain definition
+ * @qemuCaps: QEMU capabilities, or NULL
+ *
+ * Choose a reasonable model to use for a USB controller that is
+ * being automatically added to a domain.
+ *
+ * The choice is based on a number of factors, including the guest's
+ * architecture and machine type. @qemuCaps might be NULL, in which
+ * case the function must not make any decision based on device
+ * availability; it will be re-run later with a non-NULL qemuCaps.
+ *
+ * The return value can be a specific controller model, or
+ * VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT; the latter indicates that
+ * no suitable model could be identified. How to behave in that
+ * scenario is entirely up to the caller.
+ *
+ * Additionally, VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE can be returned
+ * to indicate that the caller should not auto-add the USB controller
+ * after all.
+ *
+ * Returns: the model
+ */
+virDomainControllerModelUSB
+qemuDomainDefaultUSBControllerModelAutoAdded(const virDomainDef *def,
+                                             virQEMUCaps *qemuCaps)
+{
+    virDomainControllerModelUSB model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+
+    if (ARCH_IS_X86(def->os.arch)) {
+        if (qemuDomainIsQ35(def)) {
+            /* Prefer adding a USB3 controller if supported, fall back
+             * to USB2 if there is no USB3 available, and if that's
+             * unavailable don't add anything.
+             */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+            else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+            else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_USB_EHCI1))
+                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1;
+            else
+                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+        }
+    }
+
+    if (ARCH_IS_ARM(def->os.arch)) {
+        if (STREQ(def->os.machine, "versatilepb") ||
+            STRPREFIX(def->os.machine, "realview-eb"))
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+    }
+
+    return model;
+}
+
+
+/**
  * qemuDomainDefNumaCPUsRectify:
  * @numa: pointer to numa definition
  * @maxCpus: number of CPUs this numa is supposed to have

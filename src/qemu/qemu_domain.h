@@ -845,6 +845,8 @@ virDomainControllerModelSCSI qemuDomainDefaultSCSIControllerModel(const virDomai
 virDomainControllerModelUSB qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
                                                                 virQEMUCaps *qemuCaps,
                                                                 unsigned int parseFlags);
+virDomainControllerModelUSB qemuDomainDefaultUSBControllerModelAutoAdded(const virDomainDef *def,
+                                                                         virQEMUCaps *qemuCaps);
 
 int qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
                                         virDomainDef *def);
