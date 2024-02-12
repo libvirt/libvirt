@@ -380,11 +380,9 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
                 cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
 
             if (ARCH_IS_S390(def->os.arch)) {
-                if (cont->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-                    /* set the default USB model to none for s390 unless an
-                     * address is found */
-                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
-                }
+                /* No default model on s390x, one has to be provided
+                 * explicitly by the user */
+                cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
             } else if (ARCH_IS_PPC64(def->os.arch)) {
                 /* To not break migration we need to set default USB controller
                  * for ppc64 to pci-ohci if we cannot change ABI of the VM.
@@ -412,6 +410,13 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
             }
         }
+
+        /* Make sure the 'none' USB controller doesn't have an address
+         * associated with it, as that would trip up later checks and
+         * it doesn't make sense anyway */
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+            cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
+
         /* forbid usb model 'qusb1' and 'qusb2' in this kind of hyperviosr */
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1 ||
             cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2) {
