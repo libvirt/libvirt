@@ -4295,6 +4295,89 @@ qemuDomainDefaultPanicModel(const virDomainDef *def)
 
 
 /**
+ * qemuDomainDefaultUSBControllerModel:
+ * @def: domain definition
+ * @qemuCaps: QEMU capabilities, or NULL
+ * @parseFlags: parse flags
+ *
+ * Choose a reasonable model to use for a USB controller where a
+ * specific one hasn't been provided by the user.
+ *
+ * The choice is based on a number of factors, including the guest's
+ * architecture and machine type. @qemuCaps might be NULL, in which
+ * case the function must not make any decision based on device
+ * availability; it will be re-run later with a non-NULL qemuCaps.
+ *
+ * The return value can be a specific controller model, or
+ * VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT; the latter indicates that
+ * no suitable model could be identified. How to behave in that
+ * scenario is entirely up to the caller.
+ *
+ * Returns: the model
+ */
+virDomainControllerModelUSB
+qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
+                                    virQEMUCaps *qemuCaps,
+                                    unsigned int parseFlags)
+{
+    virDomainControllerModelUSB model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+
+    /* Pick a suitable default model for the USB controller if none
+     * has been selected by the user and we have the qemuCaps for
+     * figuring out which controllers are supported.
+     *
+     * We rely on device availability instead of setting the model
+     * unconditionally because, for some machine types, there's a
+     * chance we will get away with using the legacy USB controller
+     * when the relevant device is not available.
+     *
+     * See qemuBuildControllersCommandLine() */
+
+    /* Default USB controller is piix3-uhci if available. Fall back to
+     * 'pci-ohci' otherwise which is the default for non-x86 machines
+     * which honour -usb */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+    else if (!ARCH_IS_X86(def->os.arch) &&
+             virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+
+    if (ARCH_IS_S390(def->os.arch)) {
+        /* No default model on s390x, one has to be provided
+         * explicitly by the user */
+        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+    } else if (ARCH_IS_PPC64(def->os.arch)) {
+        /* To not break migration we need to set default USB controller
+         * for ppc64 to pci-ohci if we cannot change ABI of the VM.
+         * The nec-usb-xhci or qemu-xhci controller is used as default
+         * only for newly defined domains or devices. */
+        if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI)) {
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+        } else if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
+                   virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI)) {
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI)) {
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+        } else {
+            /* Explicitly fallback to legacy USB controller for PPC64. */
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+        }
+    } else if (def->os.arch == VIR_ARCH_AARCH64) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+        else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+    } else if (ARCH_IS_LOONGARCH(def->os.arch)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+    }
+
+    return model;
+}
+
+
+/**
  * qemuDomainDefNumaCPUsRectify:
  * @numa: pointer to numa definition
  * @maxCpus: number of CPUs this numa is supposed to have

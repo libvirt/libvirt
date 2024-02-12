@@ -842,6 +842,9 @@ bool qemuDomainSupportsPCI(const virDomainDef *def);
 bool qemuDomainSupportsPCIMultibus(const virDomainDef *def);
 virDomainControllerModelSCSI qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
                                                                   virQEMUCaps *qemuCaps);
+virDomainControllerModelUSB qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
+                                                                virQEMUCaps *qemuCaps,
+                                                                unsigned int parseFlags);
 
 int qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
                                         virDomainDef *def);
