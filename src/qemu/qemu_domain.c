@@ -4320,60 +4320,76 @@ qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
                                     virQEMUCaps *qemuCaps,
                                     unsigned int parseFlags)
 {
-    virDomainControllerModelUSB model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+    bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
 
-    /* Pick a suitable default model for the USB controller if none
-     * has been selected by the user and we have the qemuCaps for
-     * figuring out which controllers are supported.
-     *
-     * We rely on device availability instead of setting the model
-     * unconditionally because, for some machine types, there's a
-     * chance we will get away with using the legacy USB controller
-     * when the relevant device is not available.
-     *
-     * See qemuBuildControllersCommandLine() */
+    if (ARCH_IS_LOONGARCH(def->os.arch)) {
+        /* Prefer qemu-xhci (USB3) */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
 
-    /* Default USB controller is piix3-uhci if available. Fall back to
-     * 'pci-ohci' otherwise which is the default for non-x86 machines
-     * which honour -usb */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
-    else if (!ARCH_IS_X86(def->os.arch) &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
-        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+        /* Allow piix3-uhci and pci-ohci (USB1) as fallback */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+    }
+
+    if (def->os.arch == VIR_ARCH_AARCH64) {
+        /* Prefer qemu-xhci or nec-xhci (USB3) */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+
+        /* Allow piix3-uhci and pci-ohci (USB1) as fallback */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+    }
 
     if (ARCH_IS_S390(def->os.arch)) {
         /* No default model on s390x, one has to be provided
          * explicitly by the user */
-        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
-    } else if (ARCH_IS_PPC64(def->os.arch)) {
-        /* To not break migration we need to set default USB controller
-         * for ppc64 to pci-ohci if we cannot change ABI of the VM.
-         * The nec-usb-xhci or qemu-xhci controller is used as default
-         * only for newly defined domains or devices. */
-        if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI)) {
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
-        } else if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
-                   virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI)) {
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI)) {
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
-        } else {
-            /* Explicitly fallback to legacy USB controller for PPC64. */
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
-        }
-    } else if (def->os.arch == VIR_ARCH_AARCH64) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
-        else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
-    } else if (ARCH_IS_LOONGARCH(def->os.arch)) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
     }
 
-    return model;
+    if (ARCH_IS_PPC64(def->os.arch)) {
+        /* Use qemu-xhci or nec-xhci (USB3) for newly-defined guests */
+        if (abiUpdate && virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+        if (abiUpdate && virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+
+        /* To preserve backwards compatibility, existing guests need to
+         * use pci-ohci (USB1) instead */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+    }
+
+    if (ARCH_IS_X86(def->os.arch)) {
+        /* Use piix3-uhci (USB1) for backwards compatibility */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
+    }
+
+    /* Most common architectures and machine types have been already
+     * handled above; for the remaining cases, use piix3-uhci or
+     * pci-ohci (USB1) as the most reasonable fallback */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+        return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+
+    return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
 }
 
 
