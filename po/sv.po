@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-02-07 10:36+0000\n"
+"PO-Revision-Date: 2024-02-13 15:10+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -25403,11 +25403,11 @@ msgstr "ethtool ioctl-fel på %1$s"
 
 #, c-format
 msgid "event '%1$s' for domain '%2$s'\n"
-msgstr ""
+msgstr "händelsen ”%1$s” för domänen ”%2$s”\n"
 
 #, c-format
 msgid "event '%1$s' for domain '%2$s': %3$s for %4$s %5$s\n"
-msgstr ""
+msgstr "händelsen ”%1$s” för domänen ”%2$s”: %3$s för %4$s %5$s\n"
 
 #, c-format
 msgid "event '%1$s' for node device %2$s\n"
@@ -25425,77 +25425,89 @@ msgstr "händelsen ”%1$s” för lagringspoolen %2$s\n"
 msgid ""
 "event 'agent-lifecycle' for domain '%1$s': state: '%2$s' reason: '%3$s'\n"
 msgstr ""
+"händelsen ”agent-lifecycle” för domänen ”%1$s”: tillstånd: ”%2$s” orsak: "
+"”%3$s”\n"
 
 #, c-format
 msgid "event 'balloon-change' for domain '%1$s': %2$lluKiB\n"
-msgstr ""
+msgstr "händelsen ”balloon-change” för domänen ”%1$s”: %2$llu KiB\n"
 
 #, c-format
 msgid ""
 "event 'block-threshold' for domain '%1$s': dev: %2$s(%3$s) %4$llu %5$llu\n"
 msgstr ""
+"händelsen ”block-threshold” för domänen ”%1$s”: enh: %2$s(%3$s) %4$llu %5$"
+"llu\n"
 
 #, c-format
 msgid "event 'device-added' for domain '%1$s': %2$s\n"
-msgstr ""
+msgstr "händelsen ”device-added” för domänen ”%1$s”: %2$s\n"
 
 #, c-format
 msgid "event 'device-removal-failed' for domain '%1$s': %2$s\n"
-msgstr ""
+msgstr "händelsen ”device-removal-failed” för domänen ”%1$s”: %2$s\n"
 
 #, c-format
 msgid "event 'device-removed' for domain '%1$s': %2$s\n"
-msgstr ""
+msgstr "händelsen ”device-removed” för domänen ”%1$s”: %2$s\n"
 
 #, c-format
 msgid "event 'disk-change' for domain '%1$s' disk %2$s: %3$s -> %4$s: %5$s\n"
 msgstr ""
+"händelsen ”disk-change” för domänen ”%1$s” disken %2$s: %3$s→%4$s: %5$s\n"
 
 #, c-format
 msgid ""
 "event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
 "%7$s %8$s] %9$s\n"
 msgstr ""
+"händelsen ”graphics” för domänen ”%1$s”: %2$s lokal[%3$s %4$s %5$s] fjärr[%6$"
+"s %7$s %8$s] %9$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
-msgstr ""
+msgstr "händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) ingen\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none due to %4$s\n"
 msgstr ""
+"händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) ingen på grund av %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause\n"
-msgstr ""
+msgstr "händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) paus\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) pause due to %4$s\n"
 msgstr ""
+"händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) paus på grund av %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
-msgstr ""
+msgstr "händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) rapport\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
 msgstr ""
+"händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) rapport på grund av %4$"
+"s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
-msgstr ""
+msgstr "händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) okänd\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
 msgstr ""
+"händelsen ”io-error” för domänen ”%1$s”: %2$s (%3$s) okänd på grund av %4$s\n"
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
-msgstr ""
+msgstr "händelsen ”job-completed” för domänen ”%1$s”:\n"
 
 #, c-format
 msgid "event 'lifecycle' for domain '%1$s': %2$s %3$s\n"
-msgstr ""
+msgstr "händelsen ”lifecycle” för domänen ”%1$s”: %2$s %3$s\n"
 
 #, c-format
 msgid "event 'lifecycle' for network %1$s: %2$s\n"
@@ -25519,6 +25531,9 @@ msgid ""
 "alias: %2$s\n"
 "size: %3$llu\n"
 msgstr ""
+"händelsen ”memory-device-size-change” för domänen ”%1$s”:\n"
+"alias: %2$s\n"
+"storlek: %3$llu\n"
 
 #, c-format
 msgid ""
@@ -25526,134 +25541,135 @@ msgid ""
 "recipient: %2$s\n"
 "action: %3$s\n"
 msgstr ""
+"händelsen ”memory-failure” för domänen ”%1$s”:\n"
+"mottagare: %2$s\n"
+"åtgärd: %3$s\n"
 
 #, c-format
 msgid "event 'metadata-change' for domain '%1$s': type %2$s, uri %3$s\n"
-msgstr ""
+msgstr "händelsen ”metadata-change” för domänen ”%1$s”: typ %2$s, uri %3$s\n"
 
 #, c-format
 msgid "event 'metadata-change' for network %1$s: type %2$s, uri %3$s\n"
-msgstr ""
+msgstr "händelsen ”metadata-change” för nätverket %1$s: typ %2$s, uri %3$s\n"
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
-msgstr ""
+msgstr "händelsen 'migration-iteration' för domänen ”%1$s”: iteration: ”%2$d”\n"
 
 #, c-format
 msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
-msgstr ""
+msgstr "händelsen ”rtc-change” för domänen ”%1$s”: %2$lld\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: closed\n"
-msgstr ""
+msgstr "händelsen ”tray-change” för domänen ”%1$s” disken %2$s: stängd\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: opened\n"
-msgstr ""
+msgstr "händelsen ”tray-change” för domänen ”%1$s” disken %2$s: öppen\n"
 
 #, c-format
 msgid "event 'tray-change' for domain '%1$s' disk %2$s: unknown\n"
-msgstr ""
+msgstr "händelsen ”tray-change” för domänen ”%1$s” disken %2$s: okänd\n"
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
-msgstr ""
+msgstr "händelsen 'tunable' fför domänen ”%1$s”:\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': debug\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: felsökning\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': inject-nmi\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: inject-nmi\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': none\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: ingen\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': pause\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: paus\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': poweroff\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: avstängning\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': reset\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: återställ\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': shutdown\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: stäng av\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': unknown\n"
-msgstr ""
+msgstr "händelsen ”watchdog” för domänen ”%1$s”: okänd\n"
 
 msgid "event callback already tracked"
-msgstr ""
+msgstr "händelseåteranropet är redan spårat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event callback function %1$p not registered"
-msgstr "domänhändelse %d är inte registrerad"
+msgstr "händelseåteranropsfunktionen %1$p är inte registrerad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event callback id %1$d not registered"
-msgstr "domänhändelse %1$d är inte registrerad"
+msgstr "händelseåteranropet med id %1$d är inte registrerat"
 
 #, c-format
 msgid "event from unexpected fd %1$d!=%2$d / watch %3$d!=%4$d"
 msgstr "händelse från oväntat fb %1$d≠%2$d / ser %3$d≠%4$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event from unexpected proc %1$ju!=%2$ju"
-msgstr "händelse från oväntat fb %d≠%d / ser %d≠%d"
+msgstr "händelse från oväntad process %1$ju≠%2$ju"
 
 msgid "event loop interrupted\n"
-msgstr ""
+msgstr "händelseslingan avbruten\n"
 
 msgid "event loop timed out\n"
-msgstr ""
+msgstr "händelseslingan överskred tidsgränsen\n"
 
 msgid "event wakeup"
 msgstr "uppväckt av händelse"
 
 #, c-format
 msgid "eventID in %1$s must be less than %2$d"
-msgstr ""
+msgstr "händelse-ID i %1$s måste vara mindre än %2$d"
 
 #, c-format
 msgid "eventID must be less than %1$d"
-msgstr ""
+msgstr "händelse-ID måste vara mindre än %1$d"
 
 #, c-format
 msgid "events received: %1$d\n"
-msgstr ""
+msgstr "mottagna händelser: %1$d\n"
 
 msgid "exactly one of 'device' and 'nodename' need to be specified"
-msgstr ""
+msgstr "exakt en av ”device” och ”nodename” behöver specificeras"
 
-#, fuzzy
 msgid "exclude <domain> from XML"
-msgstr "skapa en domän från en XML-fil"
+msgstr "uteslut <domain> från en XML-fil"
 
 msgid "execute command without timeout"
-msgstr ""
+msgstr "kör kommandot utan tidsgräns"
 
 msgid "execute command without waiting for timeout"
-msgstr ""
+msgstr "kör kommandot utan att vänta på en tidsgräns"
 
-#, fuzzy
 msgid "existing interface name"
-msgstr "förväntar mig ett namn"
+msgstr "befntligt gränssnittsnamn"
 
 #, c-format
 msgid "exit status %1$d"
-msgstr ""
+msgstr "slutstatus %1$d"
 
 msgid "expected exactly 1 device for the storage pool"
-msgstr ""
+msgstr "exakt 1 enhet förväntades för lagringspoolen"
 
 msgid "expected exactly 1 host for the storage pool"
 msgstr "exakt 1 värd förväntades för lagringspoolen"
@@ -25661,6 +25677,7 @@ msgstr "exakt 1 värd förväntades för lagringspoolen"
 #, c-format
 msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
+"protokollet ”%1$s” förväntades men fick ”%2$s” i URI JSON-volymdefinitionen"
 
 #, c-format
 msgid "expected syntax: --%1$s <%2$s>"
@@ -25668,36 +25685,35 @@ msgstr "förväntad syntax: --%1$s <%2$s>"
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
-msgstr ""
+msgstr "en unicast mac-adress förväntades, hittade multicast ”%1$s”"
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s' in network '%2$s'"
 msgstr ""
+"en unicast mac-adress förväntades, fick multicast ”%1$s” i nätverket ”%2$s”"
 
 #, c-format
 msgid "expecting %1$zu consoles, but got %2$zu tty file handlers"
-msgstr ""
+msgstr "%1$zu konsoler förväntades, men fick %2$zu tty-filhanterare"
 
 #, c-format
 msgid "expecting %1$zu veths, but got %2$zu"
-msgstr ""
+msgstr "%1$zu veth:er förväntades, men fick %2$zu"
 
-#, fuzzy
 msgid "expecting JSON array"
-msgstr "förväntar mig en separator"
+msgstr "en JSON-vektor förväntades"
 
-#, fuzzy
 msgid "expecting JSON object"
-msgstr "förväntar mig ett namn"
+msgstr "ett JSON-objekt förväntas"
 
 msgid "expecting a name"
 msgstr "förväntar mig ett namn"
 
 msgid "expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."
-msgstr ""
+msgstr "en adress pci:0000.00.00.00 eller ccw:00.0.0000 förväntas."
 
 msgid "expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."
-msgstr ""
+msgstr "en adress scsi:00.00.00 eller usb:00.00 eller sata:00.00.00 förväntas."
 
 msgid "expecting a separator"
 msgstr "förväntar mig en separator"
@@ -25710,7 +25726,7 @@ msgstr "förväntar sig ett värde"
 
 #, c-format
 msgid "expecting a value for value of type %1$s"
-msgstr ""
+msgstr "ett värde för värde av typen %1$s förväntas"
 
 #, c-format
 msgid "expecting absolute path: %1$s"
@@ -25720,206 +25736,204 @@ msgid "expecting an assignment"
 msgstr "förväntar mig en tilldelning"
 
 msgid "expecting an ide:00.00.00 address."
-msgstr ""
+msgstr "en adress ide:00.00.00 förväntas."
 
 #, c-format
 msgid "expecting root element of '%1$s', not '%2$s'"
-msgstr ""
+msgstr "ett rotelement ”%1$s”, inte ”%2$s” förväntas"
 
-#, fuzzy
 msgid "extended partition already exists"
-msgstr "oväntad domän %s finns redan"
+msgstr "en utökad partition finns redan"
 
 msgid "external"
 msgstr "extern"
 
 #, c-format
 msgid "external active snapshots are not supported on '%1$s' disks"
-msgstr ""
+msgstr "externa aktiva ögonblicksbilder stödjs inte på ”%1$s”-diskar"
 
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr ""
+"externa aktiva ögonblicksbilder stödjs inte på scsi-enheter med "
+"genomgångsläge"
 
 #, c-format
 msgid ""
 "external destination file for disk %1$s already exists and is not a block "
 "device: %2$s"
 msgstr ""
+"en extern destinationsfil för disken %1$s finns redan och är inte en "
+"blockenhet: %2$s"
 
 #, c-format
 msgid "external inactive snapshots are not supported on '%1$s' disks"
-msgstr ""
+msgstr "externa inaktiva ögonblicksbilder stödjs inte på ”%1$s”-diskar"
 
 #, c-format
 msgid ""
 "external inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
 msgstr ""
+"externa inaktiva ögonblicksbilder stödjs inte på ”network”-diskar som "
+"använder protokollet ”%1$s”"
 
 msgid "external memory snapshots require a filename"
-msgstr ""
+msgstr "externa minnesögonblicksbilder kräver ett filnamn"
 
 #, c-format
 msgid ""
 "external snapshot file for disk %1$s already exists and is not a block "
 "device: %2$s"
 msgstr ""
+"en extern ögoblicksbildsfil för disken %1$s finns redan och är inte en "
+"blockenhet: %2$s"
 
 #, c-format
 msgid "external snapshot format for disk %1$s is unsupported: %2$s"
-msgstr ""
+msgstr "formatet på externa ögonblicksbilder för disken %1$s stödjs inte: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "extra %1$s unsupported in <virtualport type='%2$s'>"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "extra %1$s stödjs inte i <virtualport type='%2$s'>"
 
 msgid "extract the value of the 'return' key from the returned string"
-msgstr ""
+msgstr "extrahera värdet av nyckeln ”return” från den returnerade strängen"
 
 msgid "f - force, try to redefine again"
-msgstr ""
+msgstr "f - force, försök att omdefiniera igen"
 
 msgid "failed"
 msgstr "misslyckades"
 
 msgid "failed Xen syscall"
-msgstr ""
+msgstr "misslyckat Xen-systemanrop"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed Xen syscall %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckat Xen-systemanrop %1$s"
 
-#, fuzzy
 msgid "failed probing capabilities"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att känna av förmågor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed reading from file '%1$s'"
-msgstr "kunde inte läsa konfigurationsfilen %1$s"
+msgstr "misslyckades att läsa från filen ”%1$s”"
 
 #, c-format
 msgid "failed recvfd for child creating '%1$s'"
-msgstr ""
+msgstr "misslyckades med recvfd för barnet som skapar ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to abort job for disk '%1$s'"
-msgstr "misslyckades att hämta nätverk '%1$s'"
+msgstr "misslyckades att avbryta jobbet för disken ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to access '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades med att komma åt ”%1$s”"
 
-#, fuzzy
 msgid "failed to acquire guest cid"
-msgstr "misslyckades att hämta URI"
+msgstr "misslyckades att hämta gäst-cid"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add chardev '%1$s' info"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades med att lägga till chardev ”%1$s”-information"
 
-#, fuzzy
 msgid "failed to add device into new map"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "misslyckades att lägga till enheten i en ny avbildning"
 
 msgid "failed to add metadata to XML document"
-msgstr ""
+msgstr "misslyckades att lägga till metadata till XML-dokumentet"
 
 #, c-format
 msgid ""
 "failed to add new filter rules to '%1$s' - attempting to restore old rules"
 msgstr ""
+"misslyckades att lägga till nya filterregler till ”%1$s” – försöker "
+"återställa gamla regler"
 
 msgid "failed to add subsystem filter"
-msgstr ""
+msgstr "misslyckades att lägga till subsystemsfilter"
 
 #, c-format
 msgid "failed to apply capabilities: %1$d"
 msgstr "det gick inte att sätta förmågor: %1$d"
 
-#, fuzzy
 msgid "failed to attach cgroup BPF prog"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "misslyckades att ansluta ett cgroup-BPF-program"
 
-#, fuzzy
 msgid "failed to attach the namespace"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "misslyckades att ansluta namnrymden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to authenticate using SSH agent: %1$s"
-msgstr "Misslyckades att ta ögonblicksbild: %1$s"
+msgstr "misslyckades att autentisera med SSH-agenten: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to authenticate using agent: %1$s"
-msgstr "Misslyckades att ta ögonblicksbild: %1$s"
+msgstr "misslyckades att autentisera med agenten: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to authenticate: %1$s"
-msgstr "Misslyckades att ta ögonblicksbild: %1$s"
+msgstr "misslyckades att autentisera: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to begin transaction: %1$s%2$s%3$s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "misslyckades att starta transaktionen: %1$s%2$s%3$s"
 
 msgid "failed to boot guest VM"
-msgstr ""
+msgstr "misslyckades att starta gäst-VM"
 
-#, fuzzy
 msgid "failed to calculate ssh host key hash"
-msgstr "Misslyckades att skapa uttag"
+msgstr "misslyckades att beräkna ssh-värdens nyckel-hash"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to change to directory '%1$s' in '%2$s'"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "misslyckades att byta till katalogen ”%1$s” i ”%2$s”"
 
-#, fuzzy
 msgid "failed to chown secret file"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats att göra chown på hemlighetsfilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to clone RBD volume %1$s to %2$s"
-msgstr "Misslyckades att spara domän %1$s till %2$s"
+msgstr "misslyckades att klona RBD-volymen %1$s till %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to clone files from '%1$s'"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att klona filer från ”%1$s”"
 
 msgid "failed to close file"
 msgstr "misslyckades att stänga filen"
 
-#, fuzzy
 msgid "failed to close or write to profile"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats att stänga eller skriva till profilen"
 
 msgid "failed to close screenshot file"
-msgstr ""
+msgstr "misslyckades att stänga skärmbildsfilen"
 
-#, fuzzy
 msgid "failed to collect snapshot list"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att samla ögonblickslistan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to commit transaction: %1$s%2$s%3$s"
-msgstr "Det gick inte grena av som demon: %s"
+msgstr "misslyckades att fastställa transaktionen: %1$s%2$s%3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to compile regex '%1$s': %2$s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "misslyckades att kompilera reguljäruttrycket ”%1$s”: %2$s"
 
 #, c-format
 msgid "failed to connect to %1$s"
 msgstr "misslyckades att ansluta till %1$s"
 
-#, fuzzy
 msgid "failed to connect to agent socket"
-msgstr "misslyckades att ansluta till hypervisor"
+msgstr "misslyckades att ansluta till agentuttaget"
 
-#, fuzzy
 msgid "failed to connect to monitor socket"
-msgstr "misslyckades att ansluta till hypervisor"
+msgstr "misslyckades att ansluta till övervakningsuttaget"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to connect to the RADOS monitor on: %1$s"
-msgstr "misslyckades att ansluta till hypervisor"
+msgstr "misslyckades att ansluta till RADOS-övervakaren på: %1$s"
 
 msgid "failed to connect to the hypervisor"
 msgstr "misslyckades att ansluta till hypervisor"
@@ -25927,55 +25941,52 @@ msgstr "misslyckades att ansluta till hypervisor"
 #, c-format
 msgid "failed to construct broadcast or network address for network %1$s/%2$d"
 msgstr ""
+"misslyckades att konstruera utsändnings- (broadcast) eller nätverksadressen "
+"för nätverket %1$s/%2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to convert size: '%1$s'"
-msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
+msgstr "misslyckades att konvertera storleken: ”%1$s”"
 
-#, fuzzy
 msgid "failed to convert the XML node tree"
-msgstr "misslyckades med att generera XML"
+msgstr "misslyckades att konvertera XML-nodträdet"
 
 msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
+msgstr "misslyckades att konvertera virJSONValue till yajl-data"
 
-#, fuzzy
 msgid "failed to copy all device rules"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "misslyckades att kopiera alla enhetsregler"
 
-#, fuzzy
 msgid "failed to count cgroup BPF map items"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att cgroup-BPF-avbildsposter"
 
 #, c-format
 msgid "failed to create %1$s"
 msgstr "misslyckades att skapa %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "misslyckades att skapa (starta) gränssnittet %1$s: %2$s%3$s%4$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att skapa en RBD-ögonblicksbild %1$s@%2$s"
 
 msgid "failed to create XML node"
-msgstr ""
+msgstr "misslyckades att skapa en XML-nod"
 
-#, fuzzy
 msgid "failed to create a new XML namespace"
-msgstr "Misslyckades att skapa XML"
+msgstr "misslyckades att skapa en ny XML-namnrymd"
 
 #, c-format
 msgid "failed to create channel dir '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa kanalkatalogen ”%1$s”"
 
 msgid "failed to create connection to CH socket"
-msgstr ""
+msgstr "misslyckades att skapa en förbindelse till CH-uttaget"
 
-#, fuzzy
 msgid "failed to create copy target"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats att skapa ett kopiemål"
 
 #, c-format
 msgid "failed to create directory '%1$s'"
@@ -25983,81 +25994,77 @@ msgstr "misslyckades att skapa katalogen ”%1$s”"
 
 #, c-format
 msgid "failed to create dump dir '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa dumpkatalogen ”%1$s”"
 
 #, c-format
 msgid "failed to create glfs object for '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa ett glfs-objekt för ”%1$s”"
 
 msgid "failed to create guest VM"
-msgstr ""
+msgstr "misslyckades att skapa ett gäst-VM"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create image file '%1$s'"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att skapa avbildsfilen ”%1$s”"
 
-#, fuzzy
 msgid "failed to create include file"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats att skapa inkluderingsfilen"
 
 msgid "failed to create json"
 msgstr "misslyckades att skapa json"
 
 #, c-format
 msgid "failed to create lib dir '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa bibliotekstekskatalogen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create libssh channel: %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att skapa en libssh-kanal: %1$s"
 
 #, c-format
 msgid "failed to create log dir '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa loggkatalogen ”%1$s”"
 
 #, c-format
 msgid "failed to create logfile %1$s"
 msgstr "det gick inte att skapa loggfilen %1$s"
 
 msgid "failed to create mdevctl thread"
-msgstr ""
+msgstr "misslyckades att skapa en mdevctl-tråd"
 
 msgid "failed to create profile"
 msgstr "misslyckats med att skapa profil"
 
 #, c-format
 msgid "failed to create save dir '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa katalog att spara i ”%1$s”"
 
 msgid "failed to create socket"
 msgstr "misslyckades att skapa uttag"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create socket needed for '%1$s'"
-msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
+msgstr "misslyckades att skapa uttaget till ”%1$s”"
 
 msgid "failed to create socketpair"
 msgstr "misslyckades att skapa ett uttagspar"
 
 #, c-format
 msgid "failed to create state dir '%1$s'"
-msgstr ""
+msgstr "misslyckades att skapa tillståndskatalogen ”%1$s”"
 
-#, fuzzy
 msgid "failed to create the RADOS cluster"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att skapa RADOS-klustret"
 
 #, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%1$s' exist?"
-msgstr ""
+msgstr "misslyckades att skapa RBD IoCTX. Finns poolen ”%1$s”?"
 
-#, fuzzy
 msgid "failed to create udev context"
-msgstr "misslyckades att spara innehåll"
+msgstr "misslyckades att skapa ett udev-kontext"
 
-#, fuzzy
 msgid "failed to create udev enumerate thread"
-msgstr "kunde inte läsa konfigurationsfilen"
+msgstr "misslyckades att skapa udev-uppräkningstråden"
 
 #, fuzzy
 msgid "failed to create udev handler thread"
