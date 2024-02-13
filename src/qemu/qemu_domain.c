@@ -4233,8 +4233,9 @@ qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
 
 
 /**
- * @def: Domain definition
- * @qemuCaps: qemu capabilities
+ * qemuDomainDefaultSCSIControllerModel:
+ * @def: domain definition
+ * @qemuCaps: QEMU capabilities, or NULL
  *
  * Choose a reasonable model to use for a SCSI controller where a
  * specific one hasn't been provided by the user.
@@ -4255,17 +4256,28 @@ virDomainControllerModelSCSI
 qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
                                      virQEMUCaps *qemuCaps)
 {
-    if (qemuDomainIsPSeries(def))
-        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
-    if (ARCH_IS_S390(def->os.arch) || qemuDomainIsARMVirt(def) ||
+    /* For machine types with built-in SCSI controllers, the choice
+     * of model is obvious */
+    if (qemuDomainHasBuiltinESP(def))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
+
+    /* Most new architectures should ideally use virtio */
+    if (ARCH_IS_S390(def->os.arch) ||
+        qemuDomainIsARMVirt(def) ||
         qemuDomainIsLoongArchVirt(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
+
+    /* pSeries has its own special default */
+    if (qemuDomainIsPSeries(def))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+
+    /* If there is no preference, base the choice on device
+     * availability. In this case, lsilogic is favored over
+     * virtio-scsi for backwards compatibility reasons */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-    if (qemuDomainHasBuiltinESP(def))
-        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
 
     return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT;
 }
