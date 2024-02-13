@@ -2581,8 +2581,9 @@ qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *def,
                                          virQEMUCaps *qemuCaps)
 {
     if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("no model provided for USB controller"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to determine model for USB controller idx=%1$d"),
+                       def->idx);
         return -1;
     }
 
