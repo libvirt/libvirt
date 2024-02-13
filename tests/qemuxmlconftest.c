@@ -1633,6 +1633,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-product-length");
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST_CAPS_LATEST("controller-scsi-auto");
+    DO_TEST_FULL("controller-scsi-default-unavailable", ".x86_64-latest",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_LAST,
+                 ARG_END);
     DO_TEST_CAPS_LATEST("disk-sata-device");
     DO_TEST_CAPS_LATEST("disk-sata-product");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-target-overflow");
