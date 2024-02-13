@@ -44,6 +44,7 @@ function install_buildenv() {
             libglusterfs-dev \
             libgnutls28-dev \
             libiscsi-dev \
+            libjson-c-dev \
             libnetcf-dev \
             libnl-3-dev \
             libnl-route-3-dev \

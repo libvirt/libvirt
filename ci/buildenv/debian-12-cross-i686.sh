@@ -71,6 +71,7 @@ function install_buildenv() {
             libglusterfs-dev:i386 \
             libgnutls28-dev:i386 \
             libiscsi-dev:i386 \
+            libjson-c-dev:i386 \
             libnl-3-dev:i386 \
             libnl-route-3-dev:i386 \
             libnuma-dev:i386 \

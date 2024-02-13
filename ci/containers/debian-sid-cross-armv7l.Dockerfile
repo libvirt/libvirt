@@ -81,6 +81,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libglib2.0-dev:armhf \
                       libgnutls28-dev:armhf \
                       libiscsi-dev:armhf \
+                      libjson-c-dev:armhf \
                       libnl-3-dev:armhf \
                       libnl-route-3-dev:armhf \
                       libnuma-dev:armhf \

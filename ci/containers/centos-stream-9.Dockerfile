@@ -39,6 +39,7 @@ RUN dnf distro-sync -y && \
         iproute-tc \
         iptables \
         iscsi-initiator-utils \
+        json-c-devel \
         kmod \
         libacl-devel \
         libattr-devel \

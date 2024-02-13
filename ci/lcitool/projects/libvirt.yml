@@ -30,6 +30,7 @@ packages:
   - ip
   - iptables
   - iscsiadm
+  - json-c
   - libacl
   - libattr
   - libaudit

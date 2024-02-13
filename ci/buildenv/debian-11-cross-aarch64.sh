@@ -70,6 +70,7 @@ function install_buildenv() {
             libglusterfs-dev:arm64 \
             libgnutls28-dev:arm64 \
             libiscsi-dev:arm64 \
+            libjson-c-dev:arm64 \
             libnl-3-dev:arm64 \
             libnl-route-3-dev:arm64 \
             libnuma-dev:arm64 \

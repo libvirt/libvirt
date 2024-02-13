@@ -37,6 +37,7 @@ function install_buildenv() {
         iproute-tc \
         iptables \
         iscsi-initiator-utils \
+        json-c-devel \
         kmod \
         libacl-devel \
         libattr-devel \

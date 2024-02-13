@@ -71,6 +71,7 @@ function install_buildenv() {
             libglusterfs-dev:s390x \
             libgnutls28-dev:s390x \
             libiscsi-dev:s390x \
+            libjson-c-dev:s390x \
             libnl-3-dev:s390x \
             libnl-route-3-dev:s390x \
             libnuma-dev:s390x \

@@ -71,6 +71,7 @@ function install_buildenv() {
             libglusterfs-dev:armel \
             libgnutls28-dev:armel \
             libiscsi-dev:armel \
+            libjson-c-dev:armel \
             libnl-3-dev:armel \
             libnl-route-3-dev:armel \
             libnuma-dev:armel \

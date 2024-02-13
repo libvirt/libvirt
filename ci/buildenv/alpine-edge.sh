@@ -31,6 +31,7 @@ function install_buildenv() {
         grep \
         iproute2 \
         iptables \
+        json-c-dev \
         kmod \
         libcap-ng-dev \
         libnl3-dev \

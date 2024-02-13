@@ -70,6 +70,7 @@ function install_buildenv() {
             libglusterfs-dev:mips64el \
             libgnutls28-dev:mips64el \
             libiscsi-dev:mips64el \
+            libjson-c-dev:mips64el \
             libnl-3-dev:mips64el \
             libnl-route-3-dev:mips64el \
             libnuma-dev:mips64el \

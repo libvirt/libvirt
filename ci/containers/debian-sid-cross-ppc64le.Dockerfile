@@ -82,6 +82,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libglusterfs-dev:ppc64el \
                       libgnutls28-dev:ppc64el \
                       libiscsi-dev:ppc64el \
+                      libjson-c-dev:ppc64el \
                       libnl-3-dev:ppc64el \
                       libnl-route-3-dev:ppc64el \
                       libnuma-dev:ppc64el \
