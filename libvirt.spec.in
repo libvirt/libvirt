@@ -1452,6 +1452,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dstorage_vstorage=disabled \
   -Dstorage_zfs=disabled \
   -Dsysctl_config=disabled \
+  -Duserfaultfd_sysctl=disabled \
   -Dtests=disabled \
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
