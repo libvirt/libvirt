@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-01-29 15:36+0000\n"
+"PO-Revision-Date: 2024-02-12 10:24+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -6005,7 +6005,7 @@ msgstr "예전에 볼륨에 있던 데이터는 향후 읽을 수 없다는 것�
 
 #, c-format
 msgid "Enter %1$s's password for %2$s"
-msgstr "%1$s에 대한 %2$s의 암호를 입력하십시오"
+msgstr "%1$s의 (%2$sd를 위해) 비밀번호를 입력하세요"
 
 msgid "Enter new value for secret:"
 msgstr "비밀을 위한 새로운 값을 입력합니다:"
@@ -7106,7 +7106,7 @@ msgid "Failed to enable controller '%1$s' for '%2$s'"
 msgstr "'%1$s'를 위한 제어기 '%2$s를 활성화 하는데 실패했습니다"
 
 msgid "Failed to escape password for XML"
-msgstr "XML에 대한 암호를 이스케이프하지 못했습니다"
+msgstr "XML에 대한 비밀번호 탈출에 실패했습니다"
 
 #, c-format
 msgid "Failed to execute symbol '%1$s' in module '%2$s'"
@@ -12375,7 +12375,7 @@ msgstr ""
 
 msgid ""
 "No user interaction callback provided: Can't retrieve private key passphrase"
-msgstr "제공된 사용자 상호 작용 콜백 없음: 개인 키 암호를 검색할 수 없습니다"
+msgstr "제공된 사용자 상호 작용 콜백 없음: 개인 키 암호문을 검색 할 수 없습니다"
 
 msgid ""
 "No user interaction callback provided: Can't verify the session host key"
@@ -31971,7 +31971,7 @@ msgid "no suitable method to retrieve authentication credentials"
 msgstr "인증 자격 증명을 검색하는 적절한 방법이 없습니다"
 
 msgid "no suitable method to retrieve key passphrase"
-msgstr "키 암호를 검색하는 적절한 방법이 없습니다"
+msgstr "키 암호문을 검색하는 적절한 방법이 없습니다"
 
 #, c-format
 msgid "no system UUID supplied for '%1$s'"
