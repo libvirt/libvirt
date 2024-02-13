@@ -2558,112 +2558,6 @@ qemuBuildFilesystemCommandLine(virCommand *cmd,
 }
 
 
-static bool
-qemuDomainControllerUSBIsPCI(const virDomainControllerDef *controller)
-{
-    switch ((virDomainControllerModelUSB)controller->model) {
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
-        /* The models above are PCI devices */
-        return true;
-
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2:
-        /* The models above are not relevant to the QEMU driver */
-        return false;
-
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST:
-    default:
-        return false;
-    }
-}
-
-
-static int
-qemuControllerModelUSBToCaps(int model)
-{
-    switch (model) {
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
-        return QEMU_CAPS_PIIX3_USB_UHCI;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
-        return QEMU_CAPS_PIIX4_USB_UHCI;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
-        return QEMU_CAPS_USB_EHCI;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
-        return QEMU_CAPS_ICH9_USB_EHCI1;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
-        return QEMU_CAPS_VT82C686B_USB_UHCI;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
-        return QEMU_CAPS_PCI_OHCI;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
-        return QEMU_CAPS_NEC_USB_XHCI;
-    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
-        return QEMU_CAPS_DEVICE_QEMU_XHCI;
-    default:
-        return -1;
-    }
-}
-
-
-static int
-qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *controller,
-                                         const virDomainDef *def,
-                                         virQEMUCaps *qemuCaps)
-{
-    if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
-        return 0;
-
-    if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to determine model for USB controller idx=%1$d"),
-                       controller->idx);
-        return -1;
-    }
-
-    if (qemuDomainControllerUSBIsPCI(controller) &&
-        !qemuDomainSupportsPCI(def)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("USB controller model '%1$s' requires PCI but machine type '%2$s' does not support PCI"),
-                       virDomainControllerModelUSBTypeToString(controller->model),
-                       def->os.machine);
-        return -1;
-    }
-
-    if (!virQEMUCapsGet(qemuCaps, qemuControllerModelUSBToCaps(controller->model))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("USB controller model '%1$s' not supported in this QEMU binary"),
-                       virDomainControllerModelUSBTypeToString(controller->model));
-        return -1;
-    }
-
-    if (controller->opts.usbopts.ports != -1) {
-        if (controller->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
-            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"),
-                           virDomainControllerModelUSBTypeToString(controller->model));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 static const char *
 qemuBuildUSBControllerFindMasterAlias(const virDomainDef *domainDef,
                                       const virDomainControllerDef *def)
@@ -2691,13 +2585,9 @@ qemuBuildUSBControllerFindMasterAlias(const virDomainDef *domainDef,
 
 static virJSONValue *
 qemuBuildUSBControllerDevProps(const virDomainDef *domainDef,
-                               virDomainControllerDef *def,
-                               virQEMUCaps *qemuCaps)
+                               virDomainControllerDef *def)
 {
     g_autoptr(virJSONValue) props = NULL;
-
-    if (qemuValidateDomainDeviceDefControllerUSB(def, domainDef, qemuCaps) < 0)
-        return NULL;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", qemuControllerModelUSBTypeToString(def->model),
@@ -2994,7 +2884,7 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (!(props = qemuBuildUSBControllerDevProps(domainDef, def, qemuCaps)))
+        if (!(props = qemuBuildUSBControllerDevProps(domainDef, def)))
             return -1;
 
         break;

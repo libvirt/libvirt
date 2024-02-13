@@ -1,1 +1,1 @@
-XML error: No PCI buses available
+unsupported configuration: USB controller model 'piix3-uhci' requires PCI but machine type 'isapc' does not support PCI

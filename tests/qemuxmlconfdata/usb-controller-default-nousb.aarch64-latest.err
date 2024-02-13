@@ -1,1 +1,1 @@
-XML error: No PCI buses available
+unsupported configuration: USB controller model 'qemu-xhci' requires PCI but machine type 'collie' does not support PCI
