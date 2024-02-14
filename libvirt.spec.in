@@ -1368,6 +1368,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dqemu_moddir=%{qemu_moddir} \
            -Dqemu_datadir=%{qemu_datadir} \
            -Dtls_priority=%{tls_priority} \
+           -Dsysctl_config=enabled \
            %{?arg_userfaultfd_sysctl} \
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
