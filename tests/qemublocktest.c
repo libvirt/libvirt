@@ -720,6 +720,7 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
     g_autofree char *expectpath = NULL;
     g_autoptr(virStorageSource) target = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *actual = NULL;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  backupDataPrefix, data->name);
@@ -748,7 +749,9 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
         virBufferAddLit(&buf, "NULL\n");
     }
 
-    return virTestCompareToFile(virBufferCurrentContent(&buf), expectpath);
+    actual = virJSONStringPrettifyBlanks(virBufferCurrentContent(&buf));
+
+    return virTestCompareToFile(actual, expectpath);
 }
 
 

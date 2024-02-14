@@ -118,13 +118,16 @@ testMACFlush(const void *opaque)
     const struct testData *data = opaque;
     g_autofree char *file = NULL;
     g_autofree char *str = NULL;
+    g_autofree char *actual = NULL;
 
     file = g_strdup_printf("%s/virmacmaptestdata/%s.json", abs_srcdir, data->file);
 
     if (virMacMapDumpStr(data->mgr, &str) < 0)
         return -1;
 
-    if (virTestCompareToFile(str, file) < 0)
+    actual = virJSONStringPrettifyBlanks(str);
+
+    if (virTestCompareToFile(actual, file) < 0)
         return -1;
 
     return 0;

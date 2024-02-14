@@ -137,6 +137,7 @@ qemuMigParamsTestJSON(const void *opaque)
     g_autoptr(virJSONValue) paramsIn = NULL;
     g_autoptr(virJSONValue) paramsOut = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
+    g_autofree char *formattedJSON = NULL;
     g_autofree char *actualJSON = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
 
@@ -156,8 +157,10 @@ qemuMigParamsTestJSON(const void *opaque)
         return -1;
 
     if (!(paramsOut = qemuMigrationParamsToJSON(migParams, false)) ||
-        !(actualJSON = virJSONValueToString(paramsOut, true)))
+        !(formattedJSON = virJSONValueToString(paramsOut, true)))
         return -1;
+
+    actualJSON = virJSONStringPrettifyBlanks(formattedJSON);
 
     if (testQEMUSchemaValidateCommand("migrate-set-parameters",
                                       paramsOut,
