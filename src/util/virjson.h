@@ -271,6 +271,8 @@ virJSONValueCopy(const virJSONValue *in);
 char *
 virJSONStringReformat(const char *jsonstr,
                       bool pretty);
+char *
+virJSONStringPrettifyBlanks(const char *jsonstr);
 
 virJSONValue *
 virJSONValueObjectDeflatten(virJSONValue *json);

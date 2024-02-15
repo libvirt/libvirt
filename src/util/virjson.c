@@ -1861,6 +1861,40 @@ virJSONStringReformat(const char *jsonstr,
     return virJSONValueToString(json, pretty);
 }
 
+/**
+ * virJSONStringPrettifyBlanks:
+ * @jsonstr: string to prettify
+ *
+ * In the pretty mode of printing, various versions of JSON libraries
+ * format empty arrays and objects differently.
+ *
+ * Unify this to "[]" and "{}" which are used by json-c 0.17 and newer.
+ * https://github.com/json-c/json-c/issues/778
+ *
+ * This format is also used by Python's 'json.dump' method.
+ *
+ * Returns the reformatted JSON string on success.
+ */
+char *virJSONStringPrettifyBlanks(const char *jsonstr)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *p;
+
+    for (p = jsonstr; *p && p[1]; p++) {
+        virBufferAddChar(&buf, *p);
+
+        if ((p[0] == '{' || p[0] == '[') && p[1] == '\n') {
+            const char *q = p + 1;
+
+            virSkipSpaces(&q);
+
+            if (*q == '}' || *q == ']')
+                p = q - 1;
+        }
+    }
+
+    return virBufferContentAndReset(&buf);
+}
 
 static virJSONValue *
 virJSONValueObjectDeflattenKeys(virJSONValue *json);
