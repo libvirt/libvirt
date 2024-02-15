@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-02-13 15:10+0000\n"
+"PO-Revision-Date: 2024-02-15 21:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3.1\n"
+"X-Generator: Weblate 5.4\n"
 
 msgid ""
 "\n"
@@ -26066,143 +26066,144 @@ msgstr "misslyckades att skapa ett udev-kontext"
 msgid "failed to create udev enumerate thread"
 msgstr "misslyckades att skapa udev-uppräkningstråden"
 
-#, fuzzy
 msgid "failed to create udev handler thread"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "misslyckades att skapa en udev-hanterartråd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create volume '%1$s/%2$s'"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "misslyckades att skapa volymen ”%1$s/%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to decode SASL data: %1$d (%2$s)"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "misslyckades att avkoda SASL-data: %1$d (%2$s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to delete root.hds of volume '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att radera root.hds av volymen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to destroy (stop) interface %1$s: %2$s%3$s%4$s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "misslyckades att förstöra (stoppa) gränssnittet %1$s: %2$s%3$s%4$s"
 
 msgid "failed to determine host name"
-msgstr ""
+msgstr "misslyckades att avgöra värdnamnet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to determine loop exit status: %1$s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "misslyckades att avgöra slingans slutstatus: %1$s"
 
 #, c-format
 msgid "failed to duplicate file descriptor for fd group '%1$s'"
-msgstr ""
+msgstr "misslyckades att duplicera filbeskrivare för fb-gruppen ”%1$s”"
 
 #, c-format
 msgid "failed to duplicate passed fd with index '%1$zu'"
-msgstr ""
+msgstr "misslyckades att duplicera skickad fb med index ”%1$zu”"
 
-#, fuzzy
 msgid "failed to enable IP forwarding"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att aktivera IP-vidarebefordran"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to enable mac filter in '%1$s'"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att aktivera mac-filter i ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to encode SASL data: %1$d (%2$s)"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "misslyckades att koda SASL-data: %1$d (%2$s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to encrypt the data: '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att kryptera datan: ”%1$s”"
 
 msgid "failed to evaluate <system_field> elements"
-msgstr ""
+msgstr "misslyckades att evaluera <system_field>-element"
 
 msgid "failed to evaluate <vendor_field> elements"
-msgstr ""
+msgstr "misslyckades att evaluera <vendor_field>-element"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to execute command '%1$s': %2$s"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "misslyckades att köra kommandot ”%1$s”: %2$s"
 
-#, fuzzy
 msgid "failed to extract gluster volume name"
-msgstr "misslyckades att få värdnamn"
+msgstr "misslyckades att extrahera gluster-volymnamnet"
 
 #, c-format
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
-msgstr ""
+msgstr "misslyckades att hitta USB-enheten bussnum:enhnum för %1$x:%2$x"
 
-#, fuzzy
 msgid "failed to find an empty memory slot"
-msgstr "Misslyckades att hitta nätverket: %s"
+msgstr "misslyckades att hitta ett tomt minnesfack"
 
 msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
+"misslyckades att hitta lämpliga vcpu:er som kan kopplas in i drift för att "
+"nå det önskade målantalet vcpu:er"
 
 #, c-format
 msgid "failed to find data for block node '%1$s'"
-msgstr ""
+msgstr "misslyckades att hitta data för blocknoden ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to find disk '%1$s'"
-msgstr "Misslyckades att binda uttag till ”%1$s”"
+msgstr "misslyckades att hitta disken ”%1$s”"
 
 #, c-format
 msgid "failed to find disk '%1$s' in snapshot VM XML"
-msgstr ""
+msgstr "misslyckades att hitta disken ”%1$s” i ögonblicksbilden av VM XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to find iothread id for '%1$s'"
-msgstr "Misslyckades att hitta nätverket: %1$s"
+msgstr "misslyckades att hitta iothread-id för ”%1$s”"
 
 msgid "failed to find parent disk source in backing chain"
-msgstr ""
+msgstr "misslyckades att hitta föräldradiskkällan i bakomliggande kedja"
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%1$s'"
-msgstr ""
+msgstr "misslyckades att hita VID:n för VLAN-enheten ”%1$s”"
 
 #, c-format
 msgid "failed to find the real device for the VLAN device '%1$s'"
-msgstr ""
+msgstr "misslyckades att hitta den verkliga enheten för VLAN-enheten ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to finish job for disk %1$s"
-msgstr "Misslyckades att hitta nätverket: %1$s"
+msgstr "misslyckades att avsluta jobbet för disken %1$s"
 
 msgid "failed to format JSON"
-msgstr ""
+msgstr "misslyckades att formatera JSON"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to format image: '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att formatera avbilden ”%1$s”"
 
 msgid "failed to generate XML"
 msgstr "misslyckades med att generera XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to generate byte stream: %1$s"
-msgstr "misslyckades med att generera XML"
+msgstr "misslyckades att generera en byteström: %1$s"
 
 msgid "failed to generate uuid"
 msgstr "misslyckades med att generera uuid"
 
-#, fuzzy
 msgid "failed to get CPU model names"
-msgstr "misslyckades att få värdnamn"
+msgstr "misslyckades att få CPU-modellnamn"
 
 #, c-format
 msgid "failed to get IPv4 address for start or end of range %1$s - %2$s"
 msgstr ""
+"misslyckades att få IPv4-adresser för starten och slutet på intervallet %1$s "
+"- %2$s"
 
 #, c-format
 msgid "failed to get IPv6 address for start or end of range %1$s - %2$s"
 msgstr ""
+"misslyckades att få IPv6-adresser för starten och slutet på intervallet %1$s "
+"- %2$s"
 
 msgid "failed to get URI"
 msgstr "misslyckades att hämta URI"
@@ -26210,21 +26211,17 @@ msgstr "misslyckades att hämta URI"
 msgid "failed to get capabilities"
 msgstr "misslyckades att hämta kapabiliteter"
 
-#, fuzzy
 msgid "failed to get cgroup BPF map FD"
-msgstr "misslyckades att hämta domän-UUID"
+msgstr "misslyckades att få cgroup-BPF-avbildnings-FB"
 
-#, fuzzy
 msgid "failed to get cgroup BPF map info"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "misslyckades att få cgroup-BPF-avbildningsinformation"
 
-#, fuzzy
 msgid "failed to get cgroup BPF prog FD"
-msgstr "misslyckades att hämta nätverks-UUID"
+msgstr "misslyckades att få cgroup-BPF-prog-FB"
 
-#, fuzzy
 msgid "failed to get cgroup BPF prog info"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att få cgroup-BPF-prog-information"
 
 #, c-format
 msgid "failed to get cgroup backend for '%1$s' controller '%2$u'"
