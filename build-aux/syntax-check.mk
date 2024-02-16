@@ -1,13 +1,12 @@
 #
-# Rules for running syntax-check, derived from gnulib's
-# maint.mk
+# Rules for running syntax-check, derived from gnulib's top/maint.mk
 #
 # Specifically, all shared code should match gnulib commit
 #
-#   dd2503c8e73621e919e8e214a29c495ac89d8a92 (2022-05-21)
+#   d5191e456737661d4a0df5287f6c2064ab74dbbe (2024-02-15)
 #
 # Copyright (C) 2008-2019 Red Hat, Inc.
-# Copyright (C) 2001-2022 Free Software Foundation, Inc.
+# Copyright (C) 2001-2024 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1083,7 +1082,8 @@ sc_prohibit_stdio--_without_use:
 	@h='stdio--.h' re='\<((f(re)?|p)open|tmpfile) *\(' \
 	  $(_sc_header_without_use)
 
-_stddef_syms_re = NULL|offsetof|ptrdiff_t|size_t|wchar_t
+_stddef_syms_re = \
+  NULL|max_align_t|nullptr_t|offsetof|ptrdiff_t|size_t|unreachable|wchar_t
 # Prohibit the inclusion of stddef.h without an actual use.
 sc_prohibit_stddef_without_use:
 	@h='stddef.h' \
@@ -1308,6 +1308,10 @@ sc_Wundef_boolean:
 sc_prohibit_path_max_allocation:
 	@prohibit='(\balloca *\([^)]*|\[[^]]*)\bPATH_MAX' \
 	halt='Avoid stack allocations of size PATH_MAX' \
+	  $(_sc_search_regexp)
+
+sc_unportable_grep_q:
+	@prohibit='grep ''-q' halt="unportable 'grep ""-q', use >/dev/null instead" \
 	  $(_sc_search_regexp)
 
 ifneq ($(_gl-Makefile),)
