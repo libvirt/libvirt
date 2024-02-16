@@ -1342,6 +1342,11 @@ sc_prohibit_enum_impl_with_vir_prefix_in_virsh:
 	halt='avoid "vir" prefix for enums in virsh' \
 	  $(_sc_search_regexp)
 
+sc_rst_since:
+	@prohibit=':since:`[^`]+$|:since:`[^`]+[.,;]`|:since:`[^`]+` [.,;]' \
+	halt='format :since: correctly' \
+	  $(_sc_search_regexp)
+
 
 ## ---------- ##
 ## Exceptions ##
