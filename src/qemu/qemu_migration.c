@@ -479,10 +479,13 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             diskSrcPath = nvmePath;
             break;
 
+        case VIR_STORAGE_TYPE_VHOST_VDPA:
+            diskSrcPath = disk->src->vdpadev;
+            break;
+
         case VIR_STORAGE_TYPE_NETWORK:
         case VIR_STORAGE_TYPE_VOLUME:
         case VIR_STORAGE_TYPE_VHOST_USER:
-        case VIR_STORAGE_TYPE_VHOST_VDPA:
         case VIR_STORAGE_TYPE_LAST:
         case VIR_STORAGE_TYPE_NONE:
             break;
