@@ -139,7 +139,7 @@ testme() {
 
     rule_missing=0
     if [ -n "$checkrule" ]; then
-        if ! grep -q "$checkrule" "$tmpout"; then
+        if ! grep "$checkrule" "$tmpout" >/dev/null; then
             echo "FAIL: missing rule '$checkrule'" >"$output"
             rule_missing=1
         fi

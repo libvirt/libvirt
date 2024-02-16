@@ -15,7 +15,7 @@ mock_xdg_ || framework_failure
 
 is_uri_good()
 {
-    echo "$1" | grep -q -F "$good_uri"
+    echo "$1" | grep -F "$good_uri" >/dev/null
 }
 
 test_uri_internal()
