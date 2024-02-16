@@ -3352,15 +3352,13 @@ paravirtualized driver is specified via the ``disk`` element.
       handle given queues. :since:`Since 10.0.0 (QEMU 9.0, virtio disks only)`.
       Example::
 
-        <driver name='qemu' queues='2'>
+        <driver name='qemu' queues='3'>
           <iothreads>
-            <iothread id='1'>
-              <queue id='1'/>
-            </iothread>
             <iothread id='2'>
               <queue id='1'/>
             </iothread>
             <iothread id='3'>
+              <queue id='0'/>
               <queue id='2'/>
             </iothread>
           </iothreads>
