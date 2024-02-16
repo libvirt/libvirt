@@ -242,6 +242,7 @@ virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
         return -1;
 
     virPCIDeviceSetManaged(actual, hostdev->managed);
+    virPCIDeviceSetStubDriverName(actual, pcisrc->driver.model);
 
     if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
         virPCIDeviceSetStubDriverType(actual, VIR_PCI_STUB_DRIVER_VFIO);
