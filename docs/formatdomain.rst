@@ -3368,7 +3368,7 @@ paravirtualized driver is specified via the ``disk`` element.
 
    -  The optional ``queues`` attribute specifies the number of virt queues for
       virtio-blk ( :since:`Since 3.9.0` ) or vhost-user-blk
-      ( :since `Since 7.1.0` )
+      ( :since:`Since 7.1.0` )
    -  The optional ``queue_size`` attribute specifies the size of each virt
       queue for virtio-blk or vhost-user-blk. ( :since:`Since 7.8.0` )
    -  For virtio disks, `Virtio-related options`_ can also
@@ -4559,7 +4559,7 @@ or:
    found is "problematic" in some way, the generic vfio-pci driver
    similarly be forced.
 
-   (Note: :since:`Since 1.0.5, the ``name`` attribute has been
+   (Note: :since:`Since 1.0.5,` the ``name`` attribute has been
    described to be used to select the type of PCI device assignment
    ("vfio", "kvm", or "xen"), but those values have been mostly
    useless, since the type of device assignment is actually determined
@@ -6347,7 +6347,7 @@ interaction with the admin.
            <audio id='1'>
          </graphics>
 
-      Where ``1`` is an id of the audio device (See`Audio backends`_). If no
+      Where ``1`` is an id of the audio device (See `Audio backends`_). If no
       ID is specified, then the default audio backend will be used.
       :since:`Since 7.2.0, qemu`.
 
