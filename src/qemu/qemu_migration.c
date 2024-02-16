@@ -452,8 +452,27 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             continue;
 
         switch (virStorageSourceGetActualType(disk->src)) {
-        case VIR_STORAGE_TYPE_FILE:
         case VIR_STORAGE_TYPE_BLOCK:
+            /* In case the destination of the storage migration is a block
+             * device it might be possible that for various reasons the size
+             * will not be identical. Since qemu refuses to do a blockdev-mirror
+             * into an image which doesn't have the exact same size we need to
+             * install a slice on top of the top image */
+            if (disk->src->format == VIR_STORAGE_FILE_RAW &&
+                disk->src->sliceStorage == NULL) {
+                qemuDomainObjPrivate *priv = vm->privateData;
+                g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+                qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+                if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) == 0 &&
+                    disk->src->physical > nbd->disks[i].capacity) {
+                    disk->src->sliceStorage = g_new0(virStorageSourceSlice, 1);
+                    disk->src->sliceStorage->size = nbd->disks[i].capacity;
+                    diskPriv->migrationslice = true;
+                }
+            }
+            G_GNUC_FALLTHROUGH;
+        case VIR_STORAGE_TYPE_FILE:
         case VIR_STORAGE_TYPE_DIR:
             diskSrcPath = virDomainDiskGetSource(disk);
             break;
@@ -478,26 +497,6 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
         }
 
         if (diskSrcPath) {
-            /* In case the destination of the storage migration is a block
-             * device it might be possible that for various reasons the size
-             * will not be identical. Since qemu refuses to do a blockdev-mirror
-             * into an image which doesn't have the exact same size we need to
-             * install a slice on top of the top image */
-            if (virStorageSourceIsBlockLocal(disk->src) &&
-                disk->src->format == VIR_STORAGE_FILE_RAW &&
-                disk->src->sliceStorage == NULL) {
-                qemuDomainObjPrivate *priv = vm->privateData;
-                g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
-                qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-
-                if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) == 0 &&
-                    disk->src->physical > nbd->disks[i].capacity) {
-                    disk->src->sliceStorage = g_new0(virStorageSourceSlice, 1);
-                    disk->src->sliceStorage->size = nbd->disks[i].capacity;
-                    diskPriv->migrationslice = true;
-                }
-            }
-
             /* don't pre-create existing disks */
             if (virFileExists(diskSrcPath)) {
                 VIR_DEBUG("Skipping pre-create of existing source for disk '%s'", disk->dst);
