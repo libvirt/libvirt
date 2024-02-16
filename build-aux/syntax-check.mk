@@ -1314,27 +1314,6 @@ sc_unportable_grep_q:
 	@prohibit='grep ''-q' halt="unportable 'grep ""-q', use >/dev/null instead" \
 	  $(_sc_search_regexp)
 
-ifneq ($(_gl-Makefile),)
-syntax-check: sc_spacing-check \
-	sc_prohibit-duplicate-header sc_mock-noinline sc_group-qemu-caps \
-        sc_header-ifdef
-	@if ! cppi --version >/dev/null 2>&1; then \
-		echo "*****************************************************" >&2; \
-		echo "* cppi not installed, some checks have been skipped *" >&2; \
-		echo "*****************************************************" >&2; \
-	fi; \
-	if [ -z "$(FLAKE8)" ]; then \
-		echo "*****************************************************" >&2; \
-		echo "* flake8 not installed, sc_flake8 has been skipped  *" >&2; \
-		echo "*****************************************************" >&2; \
-	fi
-	if [ -z "$(BLACK)" ]; then \
-		echo "*****************************************************" >&2; \
-		echo "* black not installed, sc_black has been skipped    *" >&2; \
-		echo "*****************************************************" >&2; \
-	fi
-endif
-
 # Don't include duplicate header in the source (either *.c or *.h)
 sc_prohibit-duplicate-header:
 	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[chx]$$' | $(RUNUTF8) xargs \
