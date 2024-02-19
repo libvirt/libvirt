@@ -338,10 +338,6 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        VIR_DEBUG("Skipping creation of network disk '%s'",
-                  disk->dst);
-        return 0;
-
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_DIR:
     case VIR_STORAGE_TYPE_NVME:
@@ -492,6 +488,12 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             exists = virFileExists(disk->src->vdpadev);
             break;
 
+        case VIR_STORAGE_TYPE_NETWORK:
+            /* For network disks we always assume they exist as the storage drivec
+             * can't create them */
+            exists = true;
+            break;
+
         case VIR_STORAGE_TYPE_VHOST_USER:
         case VIR_STORAGE_TYPE_DIR:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -499,7 +501,6 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
                            virStorageTypeToString(virStorageSourceGetActualType(disk->src)));
             return -1;
 
-        case VIR_STORAGE_TYPE_NETWORK:
         case VIR_STORAGE_TYPE_VOLUME:
         case VIR_STORAGE_TYPE_LAST:
         case VIR_STORAGE_TYPE_NONE:
