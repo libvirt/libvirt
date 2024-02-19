@@ -2225,6 +2225,53 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
 }
 
 
+/**
+ * virDomainMemoryGetMappedSize:
+ * @mem: memory device definition
+ *
+ * For given memory device definition (@mem) calculate size mapped into
+ * the guest. This is usually mem->size, except for NVDIMM where its
+ * label is mapped elsewhere.
+ *
+ * Returns: Number of bytes a memory device takes when mapped into a
+ * guest.
+ */
+static unsigned long long
+virDomainMemoryGetMappedSize(const virDomainMemoryDef *mem)
+{
+    unsigned long long ret = mem->size;
+
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        unsigned long long alignsize = mem->source.nvdimm.alignsize;
+        unsigned long long labelsize = 0;
+
+        /* For NVDIMM the situation is a bit more complicated. Firstly,
+         * its <label/> is not mapped as a part of memory device, so we
+         * must subtract label size from NVDIMM size. Secondly,
+         * remaining memory is then aligned again (rounded down). But
+         * for our purposes we might just round label size up and
+         * achieve the same (numeric) result. */
+
+        if (alignsize == 0) {
+            long pagesize = virGetSystemPageSizeKB();
+
+            /* If no alignment is specified in the XML, fallback to
+             * system page size alignment. */
+            if (pagesize > 0)
+                alignsize = pagesize;
+        }
+
+        if (alignsize > 0) {
+            labelsize = VIR_ROUND_UP(mem->target.nvdimm.labelsize, alignsize);
+
+            ret -= labelsize;
+        }
+    }
+
+    return ret * 1024;
+}
+
+
 static int
 virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
                                 const virDomainDef *def)
@@ -2259,7 +2306,7 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
     }
 
     /* thisStart and thisEnd are in bytes, mem->size in kibibytes */
-    thisEnd = thisStart + mem->size * 1024;
+    thisEnd = thisStart + virDomainMemoryGetMappedSize(mem);
 
     for (i = 0; i < def->nmems; i++) {
         const virDomainMemoryDef *other = def->mems[i];
@@ -2316,7 +2363,7 @@ virDomainMemoryDefCheckConflict(const virDomainMemoryDef *mem,
         if (thisStart == 0 || otherStart == 0)
             continue;
 
-        otherEnd = otherStart + other->size * 1024;
+        otherEnd = otherStart + virDomainMemoryGetMappedSize(other);
 
         if ((thisStart <= otherStart && thisEnd > otherStart) ||
             (otherStart <= thisStart && otherEnd > thisStart)) {
