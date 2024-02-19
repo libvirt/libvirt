@@ -909,8 +909,8 @@ be omitted or set to ``root``.
 | 0.8.5)`                 |                         | characters              |
 +-------------------------+-------------------------+-------------------------+
 | state :since:`(Since    | STRING                  | comma separated list of |
-| 0.8.5)`                 |                         | NEW,ESTA                |
-|                         |                         | BLISHED,RELATED,INVALID |
+| 0.8.5)`                 |                         | NEW, ESTABLISHED,       |
+|                         |                         | RELATED, INVALID        |
 |                         |                         | or NONE                 |
 +-------------------------+-------------------------+-------------------------+
 | flags :since:`(Since    | STRING                  | TCP-only: format of     |
@@ -984,8 +984,8 @@ be omitted or set to ``root``.
 | 0.8.5)`                 |                         | characters              |
 +-------------------------+-------------------------+-------------------------+
 | state :since:`(Since    | STRING                  | comma separated list of |
-| 0.8.5)`                 |                         | NEW,ESTA                |
-|                         |                         | BLISHED,RELATED,INVALID |
+| 0.8.5)`                 |                         | NEW, ESTABLISHED,       |
+|                         |                         | RELATED, INVALID        |
 |                         |                         | or NONE                 |
 +-------------------------+-------------------------+-------------------------+
 | ipset :since:`(Since    | STRING                  | The name of an IPSet    |
@@ -1048,8 +1048,8 @@ be omitted or set to ``root``.
 | 0.8.5)`                 |                         | characters              |
 +-------------------------+-------------------------+-------------------------+
 | state :since:`(Since    | STRING                  | comma separated list of |
-| 0.8.5)`                 |                         | NEW,ESTA                |
-|                         |                         | BLISHED,RELATED,INVALID |
+| 0.8.5)`                 |                         | NEW, ESTABLISHED,       |
+|                         |                         | RELATED, INVALID        |
 |                         |                         | or NONE                 |
 +-------------------------+-------------------------+-------------------------+
 | ipset :since:`(Since    | STRING                  | The name of an IPSet    |
@@ -1115,8 +1115,8 @@ be omitted or set to ``root``.
 | 0.8.5)`                 |                         | characters              |
 +-------------------------+-------------------------+-------------------------+
 | state :since:`(Since    | STRING                  | comma separated list of |
-| 0.8.5)`                 |                         | NEW,ESTA                |
-|                         |                         | BLISHED,RELATED,INVALID |
+| 0.8.5)`                 |                         | NEW, ESTABLISHED,       |
+|                         |                         | RELATED, INVALID        |
 |                         |                         | or NONE                 |
 +-------------------------+-------------------------+-------------------------+
 | flags :since:`(Since    | STRING                  | TCP-only: format of     |
@@ -1183,8 +1183,8 @@ be omitted or set to ``root``.
 | 0.8.5)`                 |                         | characters              |
 +-------------------------+-------------------------+-------------------------+
 | state :since:`(Since    | STRING                  | comma separated list of |
-| 0.8.5)`                 |                         | NEW,ESTA                |
-|                         |                         | BLISHED,RELATED,INVALID |
+| 0.8.5)`                 |                         | NEW, ESTABLISHED,       |
+|                         |                         | RELATED, INVALID        |
 |                         |                         | or NONE                 |
 +-------------------------+-------------------------+-------------------------+
 | ipset :since:`(Since    | STRING                  | The name of an IPSet    |
@@ -1240,8 +1240,8 @@ be omitted or set to ``root``.
 | 0.8.5)`                 |                         | characters              |
 +-------------------------+-------------------------+-------------------------+
 | state :since:`(Since    | STRING                  | comma separated list of |
-| 0.8.5)`                 |                         | NEW,ESTA                |
-|                         |                         | BLISHED,RELATED,INVALID |
+| 0.8.5)`                 |                         | NEW, ESTABLISHED,       |
+|                         |                         | RELATED, INVALID        |
 |                         |                         | or NONE                 |
 +-------------------------+-------------------------+-------------------------+
 | ipset :since:`(Since    | STRING                  | The name of an IPSet    |
