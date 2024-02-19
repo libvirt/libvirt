@@ -339,7 +339,7 @@ BuildRequires: xen-devel
 BuildRequires: glib2-devel >= 2.56
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
-BuildRequires: bash-completion >= 2.0
+BuildRequires: pkgconfig(bash-completion) >= 2.0
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
 BuildRequires: libattr-devel
