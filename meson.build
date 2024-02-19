@@ -795,12 +795,17 @@ endforeach
 
 # optional programs
 
-optional_programs = [
+optional_test_programs = [
   'augparse',
   'black',
+  'flake8',
+  'pdwtags',
+  'pytest',
+]
+
+optional_programs = [
   'dmidecode',
   'ebtables',
-  'flake8',
   'ip',
   'ip6tables',
   'iptables',
@@ -809,11 +814,9 @@ optional_programs = [
   'mm-ctl',
   'modprobe',
   'ovs-vsctl',
-  'pdwtags',
-  'pytest',
   'rmmod',
   'tc',
-]
+] + optional_test_programs
 
 foreach name : optional_programs
   prog = find_program(name, required: false, dirs: libvirt_sbin_path)
