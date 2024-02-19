@@ -17,6 +17,12 @@ v10.1.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for /dev/userfaultfd
+
+    On hosts with new enough kernel which supports /dev/userfaultfd libvirt will
+    now automatically grant QEMU access to this device. It's no longer needed to
+    set vm.unprivileged_userfaultfd sysctl.
+
   * qemu: Support clusters in CPU topology
 
     It is now possible to configure the guest CPU topology to use clusters.
