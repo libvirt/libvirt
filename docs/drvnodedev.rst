@@ -337,7 +337,7 @@ To start an instance of this device definition, use the following command:
    $ virsh nodedev-start <device-name>
 
 Active mediated device instances can be stopped using
-``virsh       nodedev-destroy``, and persistent device definitions can be
+``virsh nodedev-destroy``, and persistent device definitions can be
 removed using ``virsh nodedev-undefine``.
 
 If a mediated device is defined persistently, it can also be set to be

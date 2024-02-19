@@ -2238,7 +2238,7 @@ are:
    Possible values for the ``value`` attribute are ``broken`` (no protection),
    ``workaround`` (count cache flush), ``fixed-ibs`` (fixed by serializing
    indirect branches), ``fixed-ccd`` (fixed by disabling the cache count) and
-   ``fixed-na (fixed in           hardware - no longer applicable)``. If the
+   ``fixed-na`` (fixed in hardware - no longer applicable). If the
    attribute is not defined, the hypervisor default will be used. :since:`Since
    6.3.0` (QEMU/KVM only)
 ``tcg``
@@ -4725,7 +4725,7 @@ behaves like a physical USB CCID (Chip/Smart Card Interface Device) card.
    Rather than requiring a smartcard to be plugged into the host, it is possible
    to provide three NSS certificate names residing in a database on the host.
    These certificates can be generated via the command
-   ``certutil -d /etc/pki/nssdb -x -t       CT,CT,CT -S -s CN=cert1 -n cert1``,
+   ``certutil -d /etc/pki/nssdb -x -t CT,CT,CT -S -s CN=cert1 -n cert1``,
    and the resulting three certificate names must be supplied as the content of
    each of three ``<certificate>`` sub-elements. An additional sub-element
    ``<database>`` can specify the absolute path to an alternate directory
@@ -4810,7 +4810,7 @@ network may be totally isolated (no ``<forward>`` element given), NAT'ing to an
 explicit network device or to the default route (``<forward mode='nat'>``),
 routed with no NAT (``<forward mode='route'/>``), or connected directly to one
 of the host's network interfaces (via macvtap) or bridge devices
-((``<forward       mode='bridge|private|vepa|passthrough'/>`` :since:`Since
+(``<forward mode='bridge|private|vepa|passthrough'/>`` :since:`Since
 0.9.4` )
 
 For networks with a forward mode of bridge, private, vepa, and passthrough, it
@@ -5363,11 +5363,11 @@ domain, or ``transient`` to indicate a device that may periodically be
 removed, then later re-added to the domain. When type="transient", there should
 be a second attribute to ``<teaming>`` called ``persistent`` - this attribute
 should be set to the alias name of the other device in the pair (the one that
-has ``<teaming       type="persistent'/>``).
+has ``<teaming type="persistent'/>``).
 
 In the particular case of QEMU, libvirt's ``<teaming>`` element is used to setup
 a virtio-net "failover" device pair. For this setup, the persistent device must
-be an interface with ``<model       type="virtio"/>``, and the transient device
+be an interface with ``<model type="virtio"/>``, and the transient device
 must be ``<interface type='hostdev'/>`` (or ``<interface type='network'/>``
 where the referenced network defines a pool of SRIOV VFs). The guest will then
 have a simple network team/bond device made of the virtio NIC + hostdev NIC
@@ -5927,7 +5927,7 @@ connection types, including standard linux bridges and libvirt's own virtual
 networks, **do not** support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
 provide their own way (outside of libvirt) to tag guest traffic onto a specific
 VLAN. Each tag is given in a separate ``<tag>`` subelement of ``<vlan>`` (for
-example: ``<tag       id='42'/>``). For VLAN trunking of multiple tags (which is
+example: ``<tag id='42'/>``). For VLAN trunking of multiple tags (which is
 supported only on Open vSwitch connections), multiple ``<tag>`` subelements can
 be specified, which implies that the user wants to do VLAN trunking on the
 interface for all the specified tags. In the case that VLAN trunking of a single
@@ -7921,9 +7921,9 @@ Example: manually added device with static PCI slot 2 requested
 
 ``period``
    The optional ``period`` allows the QEMU virtio memory balloon driver to
-   provide statistics through the ``virsh dommemstat           [domain]``
+   provide statistics through the ``virsh dommemstat [domain]``
    command. By default, collection is not enabled. In order to enable, use the
-   ``virsh dommemstat [domain] --period           [number]`` command or
+   ``virsh dommemstat [domain] --period [number]`` command or
    ``virsh edit`` command to add the option to the XML definition. The
    ``virsh dommemstat`` will accept the options ``--live``, ``--current``, or
    ``--config``. If an option is not provided, the change for a running domain

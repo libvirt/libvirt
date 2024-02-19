@@ -529,7 +529,7 @@ connection types, including standard linux bridges and libvirt's own virtual
 networks, **do not** support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
 provide their own way (outside of libvirt) to tag guest traffic onto a specific
 VLAN. Each tag is given in a separate ``<tag>`` subelement of ``<vlan>`` (for
-example: ``<tag       id='42'/>``). For VLAN trunking of multiple tags (which is
+example: ``<tag id='42'/>``). For VLAN trunking of multiple tags (which is
 supported only on Open vSwitch connections), multiple ``<tag>`` subelements can
 be specified, which implies that the user wants to do VLAN trunking on the
 interface for all the specified tags. In the case that VLAN trunking of a single
