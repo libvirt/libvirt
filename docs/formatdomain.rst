@@ -2962,7 +2962,7 @@ paravirtualized driver is specified via the ``disk`` element.
       the client of a networked storage protocol. Supported for 'rbd'
       :since:`since 1.2.11 (QEMU only).`
    ``auth``
-      :since:`Since libvirt 3.9.0` , the ``auth`` element is supported for a
+      :since:`Since 3.9.0`, the ``auth`` element is supported for a
       disk ``type`` "network" that is using a ``source`` element with the
       ``protocol`` attributes "rbd", "iscsi", or "ssh". If present, the
       ``auth`` element provides the authentication credentials needed to access
@@ -2978,14 +2978,14 @@ paravirtualized driver is specified via the ``disk`` element.
       ``usage`` attribute matching the key that was specified in the secret
       object.
    ``encryption``
-      :since:`Since libvirt 3.9.0` , the ``encryption`` can be a sub-element of
+      :since:`Since 3.9.0`, the ``encryption`` can be a sub-element of
       the ``source`` element for encrypted storage sources. If present,
       specifies how the storage source is encrypted See the `Storage
       Encryption <formatstorageencryption.html>`__ page for more information.
       Note that the 'qcow' format of encryption is broken and thus is no longer
-      supported for use with disk images. ( :since:`Since libvirt 4.5.0` )
+      supported for use with disk images. ( :since:`Since 4.5.0` )
    ``reservations``
-      :since:`Since libvirt 4.4.0` , the ``reservations`` can be a sub-element
+      :since:`Since 4.4.0`, the ``reservations`` can be a sub-element
       of the ``source`` element for storage sources (QEMU driver only). If
       present it enables persistent reservations for SCSI based disks. The
       element has one mandatory attribute ``managed`` with accepted values
@@ -2998,7 +2998,7 @@ paravirtualized driver is specified via the ``disk`` element.
       specifying the role of hypervisor. It's recommended to allow libvirt
       manage the persistent reservations.
    ``initiator``
-      :since:`Since libvirt 4.7.0` , the ``initiator`` element is supported for
+      :since:`Since 4.7.0`, the ``initiator`` element is supported for
       a disk ``type`` "network" that is using a ``source`` element with the
       ``protocol`` attribute "iscsi". If present, the ``initiator`` element
       provides the initiator IQN needed to access the source via mandatory
@@ -3430,7 +3430,7 @@ paravirtualized driver is specified via the ``disk`` element.
    together with general boot elements in `BIOS bootloader`_
    section. :since:`Since 0.8.8`
 ``encryption``
-   Starting with :since:`libvirt 3.9.0` the ``encryption`` element is preferred
+   since:`Since 3.9.0` the ``encryption`` element is preferred
    to be a sub-element of the ``source`` element. If present, specifies how the
    volume is encrypted using "qcow". See the `Storage
    Encryption <formatstorageencryption.html>`__ page for more information.
@@ -3487,20 +3487,20 @@ paravirtualized driver is specified via the ``disk`` element.
    The ``type`` attribute is mandatory, and is typically "pci" or "drive". For a
    "pci" controller, additional attributes for ``bus``, ``slot``, and
    ``function`` must be present, as well as optional ``domain`` and
-   ``multifunction``. Multifunction defaults to 'off'; any other value requires
-   QEMU 0.1.3 and :since:`libvirt 0.9.7` . For a "drive" controller, additional
-   attributes ``controller``, ``bus``, ``target`` ( :since:`libvirt 0.9.11` ),
-   and ``unit`` are available, each defaulting to 0.
+   ``multifunction`` (:since:`since 0.9.7`). Multifunction defaults to 'off'.
+   For a "drive" controller, additional attributes ``controller``, ``bus``,
+   ``target`` (:since:`since 0.9.11`), and ``unit`` are available, each
+   defaulting to 0.
 ``auth``
-   Starting with :since:`libvirt 3.9.0` the ``auth`` element is preferred to be
+   :since:`Since 3.9.0`, the ``auth`` element is preferred to be
    a sub-element of the ``source`` element. The element is still read and
    managed as a ``disk`` sub-element. It is invalid to use ``auth`` as both a
-   sub-element of ``disk`` and ``source``. The ``auth`` element was introduced
-   as a ``disk`` sub-element in :since:`libvirt 0.9.7.`
+   sub-element of ``disk`` and ``source``.
+   :since:`Since 0.9.7`
 ``geometry``
    The optional ``geometry`` element provides the ability to override geometry
    settings. This mostly useful for S390 DASD-disks or older DOS-disks.
-   :since:`0.10.0`
+   :since:`Since 0.10.0`
 
    ``cyls``
       The ``cyls`` attribute is the number of cylinders.
@@ -4572,10 +4572,8 @@ or:
 ``shareable``
    If present, this indicates the device is expected to be shared between
    domains (assuming the hypervisor and OS support this). Only supported by SCSI
-   host device. :since:`Since 1.0.6`
-
-   Note: Although ``shareable`` was introduced :since:`in 1.0.6` , it did not
-   work as as expected until :since:`1.2.2` .
+   host device. :since:`Since 1.0.6`, but only works as expected
+   :since:`since 1.2.2`.
 
 Block / character devices
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -6460,8 +6458,8 @@ interaction with the admin.
       has better performance). Since this display type doesn't provide any
       window or graphical console like the other types, for practical reasons it
       should be paired with either ``vnc`` or ``spice`` graphics types. This
-      display type is only supported by QEMU domains (needs QEMU :since:`2.10`
-      or newer). :since:`5.0.0` this element accepts a ``<gl/>`` sub-element
+      display type is only supported by QEMU domains (needs QEMU 2.10 or
+      newer). :since:`Since 5.0.0` this element accepts a ``<gl/>`` sub-element
       with an optional attribute ``rendernode`` which can be used to specify an
       absolute path to a host's DRI device to be used for OpenGL rendering.
 
