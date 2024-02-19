@@ -434,8 +434,7 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
 
     for (i = 0; i < nbd->ndisks; i++) {
         virDomainDiskDef *disk;
-        const char *diskSrcPath = NULL;
-        g_autofree char *nvmePath = NULL;
+        bool exists = false;
 
         VIR_DEBUG("Looking up disk target '%s' (capacity=%llu)",
                   nbd->disks[i].target, nbd->disks[i].capacity);
@@ -471,21 +470,27 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
                     diskPriv->migrationslice = true;
                 }
             }
-            G_GNUC_FALLTHROUGH;
+
+            exists = virFileExists(disk->src->path);
+            break;
+
         case VIR_STORAGE_TYPE_FILE:
         case VIR_STORAGE_TYPE_DIR:
-            diskSrcPath = virDomainDiskGetSource(disk);
+            exists = virFileExists(disk->src->path);
             break;
 
-        case VIR_STORAGE_TYPE_NVME:
-            /* While NVMe disks are local, they are not accessible via src->path.
-             * Therefore, we have to return false here. */
+        case VIR_STORAGE_TYPE_NVME: {
+            /* While NVMe disks are local, they are not accessible via src->path */
+            g_autofree char *nvmePath = NULL;
+
             virPCIDeviceAddressGetSysfsFile(&disk->src->nvme->pciAddr, &nvmePath);
-            diskSrcPath = nvmePath;
+
+            exists = virFileExists(nvmePath);
             break;
+        }
 
         case VIR_STORAGE_TYPE_VHOST_VDPA:
-            diskSrcPath = disk->src->vdpadev;
+            exists = virFileExists(disk->src->vdpadev);
             break;
 
         case VIR_STORAGE_TYPE_NETWORK:
@@ -496,20 +501,17 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             break;
         }
 
-        if (diskSrcPath) {
-            /* don't pre-create existing disks */
-            if (virFileExists(diskSrcPath)) {
-                VIR_DEBUG("Skipping pre-create of existing source for disk '%s'", disk->dst);
-                continue;
-            }
-        }
+        VIR_DEBUG("target='%s' exists='%d'", disk->dst, exists);
+
+        if (exists)
+            continue;
 
         /* create the storage - if supported */
 
         if (incremental) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("pre-creation of storage target '%1$s' for incremental storage migration of disk '%2$s' is not supported"),
-                           NULLSTR(diskSrcPath), nbd->disks[i].target);
+                           _("pre-creation of storage target for incremental storage migration of disk '%1$s' is not supported"),
+                           nbd->disks[i].target);
             return -1;
         }
 
