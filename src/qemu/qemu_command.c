@@ -2922,7 +2922,7 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
 static bool
 qemuBuildDomainForbidLegacyUSBController(const virDomainDef *def)
 {
-    if (qemuDomainIsQ35(def) ||
+    if (ARCH_IS_X86(def->os.arch) ||
         qemuDomainIsARMVirt(def) ||
         qemuDomainIsRISCVVirt(def))
         return true;

@@ -1865,13 +1865,15 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-mac99", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-mac99ppc", "ppc");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-powernv9", "ppc64");
-    /* i440fx downgrades to use '-usb' if the explicit controller is not present */
+    /* Until qemu-8.1 (see commit 6fe4464c05f) it was possible to compile
+     * out USB support from i440fx; the implicit -usb controller still failed */
     DO_TEST_FULL("usb-controller-default-unavailable-i440fx", ".x86_64-latest",
                  ARG_CAPS_ARCH, "x86_64",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
                  ARG_END);
-    /* q35 fails instead */
+    /* The implicit controller can be compiled out for q35; initialization fails though */
     DO_TEST_FULL("usb-controller-default-unavailable-q35", ".x86_64-latest",
                  ARG_CAPS_ARCH, "x86_64",
                  ARG_CAPS_VER, "latest",
