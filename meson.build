@@ -818,6 +818,7 @@ optional_programs = [
   'tc',
 ] + optional_test_programs
 
+missing_optional_programs = []
 foreach name : optional_programs
   prog = find_program(name, required: false, dirs: libvirt_sbin_path)
   varname = name.underscorify()
@@ -825,6 +826,9 @@ foreach name : optional_programs
     prog_path = prog.full_path()
   else
     prog_path = name
+    if name in optional_test_programs
+      missing_optional_programs += [ name ]
+    endif
   endif
 
   conf.set_quoted(varname.to_upper(), prog_path)
@@ -2336,6 +2340,15 @@ devtools_summary = {
   'wireshark_dissector': wireshark_dep.found(),
 }
 summary(devtools_summary, section: 'Developer Tools', bool_yn: true)
+
+if missing_optional_programs.length() > 0
+  missing_list = ' '.join(missing_optional_programs)
+  missing_warn = ' (some tests will be skipped!)'
+  test_programs_summary = {
+    'Missing': missing_list + missing_warn,
+  }
+  summary(test_programs_summary, section: 'Optional programs', bool_yn: true)
+endif
 
 if conf.has('WITH_QEMU')
   qemu_warn = ''
