@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-01-09 09:05+0000\n"
-"PO-Revision-Date: 2024-02-15 21:35+0000\n"
+"PO-Revision-Date: 2024-02-19 15:01+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -26225,11 +26225,10 @@ msgstr "misslyckades att få cgroup-BPF-prog-information"
 
 #, c-format
 msgid "failed to get cgroup backend for '%1$s' controller '%2$u'"
-msgstr ""
+msgstr "misslyckades att få cgroup-bakände för ”%1$s” styrenheten ”%2$u”"
 
-#, fuzzy
 msgid "failed to get cmt scaling factor"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att få cmt-skalningsfaktor"
 
 msgid "failed to get current time"
 msgstr "misslyckades att ta reda på aktuell tid"
@@ -26244,13 +26243,12 @@ msgstr "misslyckades att hämta domän-UUID"
 msgid "failed to get domain xml"
 msgstr "misslyckades att hämta domänens xml"
 
-#, fuzzy
 msgid "failed to get emulator capabilities"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att hämta emulatorförmågor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get features from '%1$s'"
-msgstr "misslyckades att hämta nätverk '%1$s'"
+msgstr "misslyckades att hämta funktioner från ”%1$s”"
 
 #, c-format
 msgid "failed to get free memory for NUMA node number: %1$lu"
@@ -26262,21 +26260,20 @@ msgstr "misslyckades att få värdnamn"
 msgid "failed to get hypervisor type"
 msgstr "misslyckades att hämta typ av hypervisor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get interface '%1$s'"
-msgstr "Misslyckades med att förstöra gränssnittet %1$s"
+msgstr "misslyckades med hämta gränssnittet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get interface-types from '%1$s'"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "misslyckades att hämta gränssnittstyper från ”%1$s”"
 
-#, fuzzy
 msgid "failed to get launch security policy"
-msgstr "misslyckades att hämta typ av hypervisor"
+msgstr "misslyckades att starta säkerhetspolicyn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get list of %1$s interfaces on host"
-msgstr "Misslyckades med att förstöra gränssnittet %1$s"
+msgstr "misslyckades med få listan av %1$s gränssnitt på värden"
 
 #, c-format
 msgid "failed to get network '%1$s'"
@@ -26292,28 +26289,27 @@ msgstr "misslyckades att hämta nätverksporten '%1$s'"
 msgid "failed to get node information"
 msgstr "misslyckades att få nodinformation"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get number of %1$s interfaces on host"
-msgstr "Misslyckades med att förstöra gränssnittet %1$s"
+msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "misslyckades att hämta antalet värdgränssnitt: %1$s%2$s%3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get nwfilter '%1$s'"
-msgstr "misslyckades att hämta nätverk '%1$s'"
+msgstr "misslyckades att hämta nwfilter ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get nwfilter binding '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att hämta nwfilterindningen ”%1$s”"
 
-#, fuzzy
 msgid "failed to get parent pool"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats med hämta föräldrapoolen"
 
 msgid "failed to get persistent definition object"
-msgstr ""
+msgstr "misslyckades att hämta persistenta definitionsobjekt"
 
 #, c-format
 msgid "failed to get pool '%1$s'"
@@ -26322,75 +26318,69 @@ msgstr "misslyckades att hämta poolen '%1$s'"
 msgid "failed to get pool UUID"
 msgstr "misslyckades att hämta pool-UUID"
 
-#, fuzzy
 msgid "failed to get rdt event type"
-msgstr "misslyckades att hämta typ av hypervisor"
+msgstr "misslyckades att hämta rdt-händelsetypen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get secret '%1$s'"
-msgstr "misslyckades att hämta nätverk '%1$s'"
+msgstr "misslyckades att hämta hemligheten ”%1$s”"
 
-#, fuzzy
 msgid "failed to get source from sourceList"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att hämta källan från sourceList"
 
 #, c-format
 msgid "failed to get stat for '%1$s'"
-msgstr ""
+msgstr "misslyckades att hämta statistik för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get status of interface %1$s: %2$s%3$s%4$s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "misslyckades att hämta status för gränssnittet %1$s: %2$s%3$s%4$s"
 
-#, fuzzy
 msgid "failed to get storage pool capabilities"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att hämta lagringspoolsförmågor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get stripe count of RBD image %1$s"
-msgstr "misslyckades att skriva konfigurationsfilen: %1$s"
+msgstr "misslyckades att hämta remsantalet för RBD-avbilden %1$s"
 
-#, fuzzy
 msgid "failed to get sysinfo"
-msgstr "misslyckades att få värdnamn"
+msgstr "misslyckades att hämta sysinfo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get targets from '%1$s'"
-msgstr "misslyckades att hämta nätverk '%1$s'"
+msgstr "misslyckades att hämta mål från ”%1$s”"
 
-#, fuzzy
 msgid "failed to get the daemon version"
-msgstr "misslyckades att hämta biblioteksversion"
+msgstr "misslyckades att hämta demonversionen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get the features of RBD image %1$s"
-msgstr "misslyckades att hämta version av hypervisor"
+msgstr "misslyckades att hämta funktionerna hos RBD-avbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get the flags of RBD image %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att hämta flaggorna för RBD-avbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get the format of RBD image %1$s"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att hämta formatet på RBD-avbilden %1$s"
 
 msgid "failed to get the hypervisor version"
 msgstr "misslyckades att hämta version av hypervisor"
 
-#, fuzzy
 msgid "failed to get the key of the current session"
-msgstr "misslyckades att hämta version av hypervisor"
+msgstr "misslyckades att hämta nyckeln för den aktuella sessionen"
 
 msgid "failed to get the library version"
 msgstr "misslyckades att hämta biblioteksversion"
 
 #, c-format
 msgid "failed to get the stripe count of RBD image %1$s"
-msgstr ""
+msgstr "misslyckades att hämta remsantalet för RBD-avbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get the stripe unit of RBD image %1$s"
-msgstr "misslyckades att hämta version av hypervisor"
+msgstr "misslyckades att hämta remsenheten för RBD-avbilden %1$s"
 
 #, c-format
 msgid "failed to get vol '%1$s'"
@@ -26398,69 +26388,67 @@ msgstr "misslyckades att hämta volymen '%1$s'"
 
 #, c-format
 msgid "failed to get vol '%1$s', specifying --%2$s might help"
-msgstr ""
+msgstr "misslyckades att hämta volymen ”%1$s”, att ange --%2$s kan hjälpa"
 
 msgid "failed to initialize RADOS"
 msgstr "misslyckades med att initiera RADOS"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to initialize SASL library: %1$d (%2$s)"
-msgstr "misslyckades att serialisera S-Expr: %s"
+msgstr "misslyckades att initiera SASL-biblioteket: %1$d (%2$s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to initialize cipher: '%1$s'"
-msgstr "misslyckades att serialisera S-Expr: %1$s"
+msgstr "misslyckades att initiera chiffret: ”%1$s”"
 
-#, fuzzy
 msgid "failed to initialize device BPF map"
-msgstr "Kan inte initiera certifikat"
+msgstr "misslyckades att initiera enhets-BPF-avbildningen"
 
 msgid ""
 "failed to initialize device BPF map; locked memory limit for libvirtd "
 "probably needs to be raised"
 msgstr ""
+"misslyckades att initiera enhets-BPF-avbildningen; gränsen för låst minne "
+"för libvirtd behöver förmodligen ökas"
 
-#, fuzzy
 msgid "failed to initialize domain condition"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "misslyckades att initiera domänvillkoret"
 
 #, c-format
 msgid "failed to initialize gluster connection (src=%1$p priv=%2$p)"
-msgstr ""
+msgstr "misslyckades att initiera gluster-förbindelsen (källa=%1$p priv=%2$p)"
 
-#, fuzzy
 msgid "failed to initialize libssh"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "misslyckades att initiera libssh"
 
 msgid "failed to initialize netcf"
 msgstr "misslyckades med att initiera netcf"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to iterate RBD image '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att iterera RBD-avbilden ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to iterate RBD snapshot %1$s@%2$s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att iterera RBD-ögonblicksbilden %1$s@%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to list host interfaces: %1$s%2$s%3$s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "misslyckades att lista värdgränssnitten: %1$s%2$s%3$s"
 
 msgid "failed to load cgroup BPF prog"
-msgstr ""
+msgstr "misslyckades att ladda cgroup-BPF-programmet"
 
-#, fuzzy
 msgid "failed to lookup device in old map"
-msgstr "misslyckades att öppna fil"
+msgstr "misslyckades att alå upp enheten i den gamla avbildningen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to lookup interface with MAC address '%1$s'"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "misslyckades att slå upp gränssnittet med MAC-adress ”%1$s”"
 
 #, c-format
 msgid "failed to mark device %1$s as autostarted"
-msgstr ""
+msgstr "misslyckades att markera enheten %1$s som autostartad"
 
 #, c-format
 msgid "failed to mark network %1$s as autostarted"
@@ -26472,19 +26460,20 @@ msgstr "misslyckades att markera poolen %1$s som autostartad"
 
 #, c-format
 msgid "failed to monitor nbdkit process %1$i"
-msgstr ""
+msgstr "misslyckades att övervaka nbdkit-prcess %1$i"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to move file to %1$s "
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att flytta filen till %1$s "
 
 #, c-format
 msgid "failed to obtain list of available servers from %1$s"
-msgstr ""
+msgstr "misslyckades att hämta listan över tillgängliga servrar från %1$s"
 
 #, c-format
 msgid "failed to obtain list of connected clients from server '%1$s'"
 msgstr ""
+"misslyckades att hämta listan över anslutna klienter från servern ”%1$s”"
 
 #, c-format
 msgid "failed to open %1$s"
@@ -26498,10 +26487,10 @@ msgid "failed to open configuration file %1$s"
 msgstr "misslyckades att öppna konfigurationsfilen %1$s"
 
 msgid "failed to open domain master key file for read"
-msgstr ""
+msgstr "misslyckades att öppna domänens huvudnyckelfil för läsning"
 
 msgid "failed to open domain master key file for write"
-msgstr ""
+msgstr "misslyckades att öppna domänens huvudnyckelfil för skrivning"
 
 msgid "failed to open file"
 msgstr "misslyckades att öppna fil"
@@ -26518,55 +26507,52 @@ msgstr "misslyckades med att öppna netns %1$s"
 msgid "failed to open ns %1$s"
 msgstr "misslyckades med att öppna nr %1$s"
 
-#, fuzzy
 msgid "failed to open secret file for write"
-msgstr "misslyckades att öppna fil"
+msgstr "misslyckades att öppna hemlighetsfilen för skrivning"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open ssh channel: %1$s"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att öppna ssh-kanalen: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open the RBD image %1$s"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att öppna RBD-avbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open the RBD image '%1$s'"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att öppna RBD-avbilden ”%1$s”"
 
 msgid "failed to open the log file. check the log file path"
 msgstr "misslyckades att öppna loggfil. kontrollera sökvägen till loggfilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse %1$s"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse %1$sversion"
-msgstr "misslyckades att hämta biblioteksversion"
+msgstr "misslyckades att tolka versionen av %1$s"
 
-#, fuzzy
 msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att CPu-blockerare i QEMU-förmågor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse SCSI host '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka SCSI-värden ”%1$s”"
 
 msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr ""
+msgstr "misslyckades att tolka SGX-sektioner i QEMU-förmågecachen"
 
-#, fuzzy
 msgid "failed to parse agent timeout"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "misslyckades att tolka agentens tidsgräns"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse backing file location '%1$s'"
-msgstr "kunde inte analysera konfigurationsfilen %1$s"
+msgstr "misslyckades att tolka bakomliggande filplats ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse block device '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka blockenheten ”%1$s”"
 
 msgid "failed to parse configuration file"
 msgstr "kunde inte analysera konfigurationsfilen"
@@ -26575,9 +26561,9 @@ msgstr "kunde inte analysera konfigurationsfilen"
 msgid "failed to parse configuration file %1$s"
 msgstr "kunde inte analysera konfigurationsfilen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse device weight: '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka enhetsvikten: ”%1$s”"
 
 #, c-format
 msgid "failed to parse int: '%1$s'"
@@ -26587,78 +26573,70 @@ msgstr "misslyckades med att tolka heltalet: ”%1$s”"
 msgid "failed to parse integer: '%1$s'"
 msgstr "misslyckades med att tolka heltalet: ”%1$s”"
 
-#, fuzzy
 msgid "failed to parse json"
-msgstr "misslyckades att spara innehåll"
+msgstr "misslyckades att tolka json"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse multicast address from '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "misslyckades att tolka mångsändningsadressen (broadcast) från ”%1$s”"
 
-#, fuzzy
 msgid "failed to parse node name index"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att tolka nodnamnsindexet"
 
 msgid "failed to parse original memlock size"
-msgstr ""
+msgstr "misslyckades att tolka ursprunglig minneslåsstorlek"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse port number '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka portnumret ”%1$s”"
 
 msgid "failed to parse pre-migration memlock limit"
-msgstr ""
+msgstr "misslyckades att tolka minneslåsgränsen före migrering"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities cpus"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att tolka qemu-förmåge-cpu:er"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities flags"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att tolka qemu-förmåge-flaggor"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities gic"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att tolka qemu-förmåge-gic"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities machines"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "misslyckades att tolka qemu-förmåge-maskiner"
 
-#, fuzzy
 msgid "failed to parse qemu device list"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "misslyckades att qemu-enhetslistan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse read_bps_device: '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka read_bps_device: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse read_iops_device: '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades att tolka read_iops_device: ”%1$s”"
 
-#, fuzzy
 msgid "failed to parse slirp helper list"
-msgstr "kunde inte analysera konfigurationsfilen %s"
+msgstr "misslyckades att tolka slirp-hjälplistan"
 
 msgid "failed to parse slirp-helper features"
-msgstr ""
+msgstr "misslyckades att tolka slirp-hjälpfunktioner"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
-msgstr ""
+msgstr "misslyckades att tolka AP Card:et från sysfs-sökvägen: ”%1$s”"
 
 #, c-format
 msgid "failed to parse the AP Queue from sysfs path: '%1$s'"
-msgstr ""
+msgstr "misslyckades att tolka AP Queue:n från sysfs-sökvägen: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the CCW address from sysfs path: '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "misslyckades att tolka CCW-adressen från sysfs-sökvägen: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the PCI address from sysfs path: '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "misslyckades att tolka PCI-adressen från sysfs-sökvägen: ”%1$s”"
 
 #, fuzzy, c-format
 msgid "failed to parse the SCSI address from filename: '%1$s'"
