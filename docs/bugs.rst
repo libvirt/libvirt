@@ -99,13 +99,13 @@ that for the data to be really useful libvirt debug information must be present
 for example by installing libvirt debuginfo package on Fedora or Red Hat
 Enterprise Linux (with debuginfo-install libvirt) prior to running gdb.
 
-| It may also happen that the libvirt daemon itself crashes or gets stuck, in
-  the first case run it (as root) under gdb, and reproduce the sequence leading
-  to the crash, similarly to a normal program provide the "bt" backtrace
-  information to where gdb will have stopped.
-| But if libvirtd gets stuck, for example seems to stop processing commands, try
-  to attach to the faulty daemon and issue a gdb command "thread apply all bt"
-  to show all the threads backtraces, as in:
+It may also happen that the libvirt daemon itself crashes or gets stuck, in
+the first case run it (as root) under gdb, and reproduce the sequence leading
+to the crash, similarly to a normal program provide the "bt" backtrace
+information to where gdb will have stopped.
+But if libvirtd gets stuck, for example seems to stop processing commands, try
+to attach to the faulty daemon and issue a gdb command "thread apply all bt"
+to show all the threads backtraces, as in:
 
 ::
 

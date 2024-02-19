@@ -5118,14 +5118,15 @@ integration is required.
 Direct attachment to physical interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| Provides direct attachment of the virtual machine's NIC to the given physical
-  interface of the host. :since:`Since 0.7.7 (QEMU and KVM only)`
-| This setup requires the Linux macvtap driver to be available. :since:`(Since
-  Linux 2.6.34.)` One of the modes 'vepa' ( `'Virtual Ethernet Port
-  Aggregator' <https://www.ieee802.org/1/files/public/docs2009/new-evb-congdon-vepa-modular-0709-v01.pdf>`__),
-  'bridge' or 'private' can be chosen for the operation mode of the macvtap
-  device, 'vepa' being the default mode. The individual modes cause the delivery
-  of packets to behave as follows:
+Provides direct attachment of the virtual machine's NIC to the given physical
+interface of the host. :since:`Since 0.7.7 (QEMU and KVM only)`
+
+This setup requires the Linux macvtap driver to be available. :since:`(Since
+Linux 2.6.34.)` One of the modes 'vepa' ( `'Virtual Ethernet Port
+Aggregator' <https://www.ieee802.org/1/files/public/docs2009/new-evb-congdon-vepa-modular-0709-v01.pdf>`__),
+'bridge' or 'private' can be chosen for the operation mode of the macvtap
+device, 'vepa' being the default mode. The individual modes cause the delivery
+of packets to behave as follows:
 
 If the model type is set to ``virtio`` and interface's ``trustGuestRxFilters``
 attribute is set to ``yes``, changes made to the interface mac address,

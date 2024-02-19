@@ -77,8 +77,9 @@ LAN/WAN.
 The next rules depend on the type of connectivity allowed, and go in the main
 FORWARD chain:
 
--  | type=isolated
-   | Allow traffic between guests. Deny inbound. Deny outbound.
+-  type=isolated
+
+   Allow traffic between guests. Deny inbound. Deny outbound.
 
    ::
 
@@ -87,10 +88,11 @@ FORWARD chain:
       REJECT     all  --  *      virbr1  0.0.0.0/0            0.0.0.0/0           reject-with icmp-port-unreachable
       REJECT     all  --  virbr1 *       0.0.0.0/0            0.0.0.0/0           reject-with icmp-port-unreachable
 
--  | type=nat
-   | Allow inbound related to an established connection. Allow outbound, but
-     only from our expected subnet. Allow traffic between guests. Deny all other
-     inbound. Deny all other outbound.
+-  type=nat
+
+   Allow inbound related to an established connection. Allow outbound, but
+   only from our expected subnet. Allow traffic between guests. Deny all other
+   inbound. Deny all other outbound.
 
    ::
 
@@ -101,10 +103,11 @@ FORWARD chain:
       REJECT     all  --  *      virbr0  0.0.0.0/0            0.0.0.0/0           reject-with icmp-port-unreachable
       REJECT     all  --  virbr0 *       0.0.0.0/0            0.0.0.0/0           reject-with icmp-port-unreachable
 
--  | type=routed
-   | Allow inbound, but only to our expected subnet. Allow outbound, but only
-     from our expected subnet. Allow traffic between guests. Deny all other
-     inbound. Deny all other outbound.
+-  type=routed
+
+   Allow inbound, but only to our expected subnet. Allow outbound, but only
+   from our expected subnet. Allow traffic between guests. Deny all other
+   inbound. Deny all other outbound.
 
    ::
 
