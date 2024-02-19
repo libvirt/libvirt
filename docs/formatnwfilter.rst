@@ -472,13 +472,14 @@ A traffic filtering rule starts with the ``rule`` node. This node may contain up
 to three attributes
 
 -  action -- mandatory; must either be ``drop`` (matching the rule silently
-   discards the packet with no further analysis), ``reject`` (matching the rule
-   generates an ICMP reject message with no further analysis) :since:`(since
-   0.9.0)` , ``accept`` (matching the rule accepts the packet with no further
-   analysis), ``return`` (matching the rule passes this filter, but returns
-   control to the calling filter for further analysis) :since:`(since 0.9.7)` ,
-   or ``continue`` (matching the rule goes on to the next rule for further
-   analysis) :since:`(since 0.9.7)` .
+   discards the packet with no further analysis), ``reject``
+   (:since:`since 0.9.0`; matching the rule generates an ICMP reject message
+   with no further analysis),
+   ``accept`` (matching the rule accepts the packet with no further
+   analysis), ``return`` (:since:`since 0.9.7`; matching the rule passes this
+   filter, but returns control to the calling filter for further analysis),
+   or ``continue`` (:since:`since 0.9.7`; matching the rule goes on to the next
+   rule for further analysis).
 
 -  direction -- mandatory; must either be ``in``, ``out`` or ``inout`` if the
    rule is for incoming, outgoing or incoming-and-outgoing traffic
@@ -1600,8 +1601,8 @@ Second example custom filter
 
 In this example we now want to build a similar filter as in the example above,
 but extend the list of requirements with an ftp server located inside the VM.
-Further, we will be using features that have been added in :since:`version
-0.8.5` . The requirements for this filter are:
+Further, we will be using features that have been available
+:since:`since 0.8.5`. The requirements for this filter are:
 
 -  prevents a VM's interface from MAC, IP and ARP spoofing
 

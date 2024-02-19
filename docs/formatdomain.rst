@@ -50,9 +50,10 @@ General metadata
    The content of the ``uuid`` element provides a globally unique identifier for
    the virtual machine. The format must be RFC 4122 compliant, eg
    ``3e3fce45-4f53-4fa7-bb32-11f34168b82b``. If omitted when defining/creating a
-   new machine, a random UUID is generated. It is also possible to provide the
-   UUID via a `SMBIOS System Information`_ specification. :since:`Since 0.0.1,
-   sysinfo since 0.8.7`
+   new machine, a random UUID is generated. :since:`Since 0.0.1`
+
+   :since:`Since 0.8.7`, it is also possible to provide the UUID via a
+   `SMBIOS System Information`_ specification.
 ``genid``
    :since:`Since 4.4.0` , the ``genid`` element can be used to add a Virtual
    Machine Generation ID which exposes a 128-bit, cryptographically random,
@@ -338,8 +339,8 @@ them in production.
    This element has attribute ``useserial`` with possible values ``yes`` or
    ``no``. It enables or disables Serial Graphics Adapter which allows users to
    see BIOS messages on a serial port. Therefore, one needs to have `Serial port`_
-   defined. :since:`Since 0.9.4` . :since:`Since
-   0.10.2 (QEMU only)` there is another attribute, ``rebootTimeout`` that
+   defined. :since:`Since 0.9.4`.
+   The ``rebootTimeout`` attribute (:since:`since 0.10.2 (QEMU only)`)
    controls whether and after how long the guest should start booting again in
    case the boot fails (according to BIOS). The value is in milliseconds with
    maximum of ``65535`` and special value ``-1`` disables the reboot.
@@ -3285,20 +3286,23 @@ paravirtualized driver is specified via the ``disk`` element.
       "qcow2", and "qed".
    -  The optional ``cache`` attribute controls the cache mechanism, possible
       values are "default", "none", "writethrough", "writeback", "directsync"
-      (like "writethrough", but it bypasses the host page cache) and "unsafe"
-      (host may cache all disk io, and sync requests from guest are ignored).
-      :since:`Since 0.6.0, "directsync" since 0.9.5, "unsafe" since 0.9.7`
+      (:since:`since 0.9.5`; like "writethrough", but it bypasses the host page
+      cache) and "unsafe" (:since:`since 0.9.7`; host may cache all disk io,
+      and sync requests from guest are ignored).
+      :since:`Since 0.6.0`
    -  The optional ``error_policy`` attribute controls how the hypervisor will
       behave on a disk read or write error, possible values are "stop",
-      "report", "ignore", and "enospace". :since:`Since 0.8.0, "report" since
-      0.9.7` The default is left to the discretion of the hypervisor. There is
-      also an optional ``rerror_policy`` that controls behavior for read errors
-      only. :since:`Since 0.9.7` . If no rerror_policy is given, error_policy is
+      "report" (:since:`since 0.9.7`), "ignore", and "enospace".
+      The default is left to the discretion of the hypervisor.
+      :since:`Since 0.8.0`.
+   -  The optional ``rerror_policy`` attribute controls behavior for read
+      errors only. If no rerror_policy is given, error_policy is
       used for both read and write errors. If rerror_policy is given, it
       overrides the ``error_policy`` for read errors. Also note that "enospace"
       is not a valid policy for read errors, so if ``error_policy`` is set to
       "enospace" and no ``rerror_policy`` is given, the read error policy will
       be left at its default.
+      :since:`Since 0.9.7`
    -  The optional ``io`` attribute controls specific policies on I/O; qemu
       guests support "threads" and "native" :since:`Since 0.8.8` , io_uring
       :since:`Since 6.3.0 (QEMU 5.0)` .
@@ -4253,9 +4257,9 @@ Host device assignment
 USB / PCI / SCSI devices
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-USB, PCI and SCSI devices attached to the host can be passed through to the
-guest using the ``hostdev`` element. :since:`since after 0.4.4 for USB, 0.6.0
-for PCI (KVM only) and 1.0.6 for SCSI (KVM only)` :
+USB (:since:`since 0.4.4`), PCI (:since:`since 0.6.0, KVM only`) and
+SCSI (:since:`since 1.0.6, KVM only`) devices attached to the host can be
+passed through to the guest using the ``hostdev`` element.
 
 ::
 
@@ -5314,11 +5318,10 @@ requires QEMU 5.1.0 or newer)`
 Teaming a virtio/hostdev NIC pair
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:since:`Since 6.1.0 (QEMU and KVM only, requires QEMU 4.2.0 or newer and a guest
-virtio-net driver supporting the "failover" feature, such as the one included in
-Linux kernel 4.18 and newer)` The ``<teaming>`` element of two interfaces can
-be used to connect them as a team/bond device in the guest (assuming proper
-support in the hypervisor and the guest network driver).
+:since:`Since 6.1.0 (QEMU and KVM only)`, the ``<teaming>`` element of two
+interfaces can be used to connect them as a team/bond device in the guest.
+This requires a guest virtio-net driver supporting the "failover" feature,
+such as the one included in Linux 4.18.
 
 ::
 
@@ -5917,11 +5920,12 @@ Setting VLAN tag (on supported network types only)
 If (and only if) the network connection used by the guest supports VLAN tagging
 transparent to the guest, an optional ``<vlan>`` element can specify one or more
 VLAN tags to apply to the guest's network traffic :since:`Since 0.10.0` .
-Network connections that support guest-transparent VLAN tagging include 1)
-type='bridge' interfaces connected to an Open vSwitch bridge :since:`Since
-0.10.0` , 2) SRIOV Virtual Functions (VF) used via type='hostdev' (direct device
-assignment) :since:`Since 0.10.0` , and 3) SRIOV VFs used via type='direct' with
-mode='passthrough' (macvtap "passthru" mode) :since:`Since 1.3.5` . All other
+
+Network connections that support guest-transparent VLAN tagging include
+``type='bridge'`` interfaces connected to an Open vSwitch bridge, SRIOV
+Virtual Functions (VF) used via ``type='hostdev'`` (direct device assignment)
+and, :since:`since 1.3.5`, SRIOV VFs used via ``type='direct'`` with
+``mode='passthrough'`` (macvtap "passthru" mode). All other
 connection types, including standard linux bridges and libvirt's own virtual
 networks, **do not** support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
 provide their own way (outside of libvirt) to tag guest traffic onto a specific
@@ -8034,9 +8038,10 @@ Example: usage of the TPM passthrough device
 
 The emulator device type gives access to a TPM emulator providing TPM
 functionality for each VM. QEMU talks to it over a Unix socket. With the
-emulator device type each guest gets its own private TPM. :since:`'emulator'
-since 4.5.0` The state of the TPM emulator can be encrypted by providing an
-``encryption`` element. :since:`'encryption' since 5.6.0`
+emulator device type each guest gets its own private TPM. :since:`Since 4.5.0`
+
+:since:`Since 5.6.0`, the state of the TPM emulator can be encrypted by
+providing an ``encryption`` element.
 
 Example: usage of the TPM Emulator
 
@@ -8604,15 +8609,15 @@ Security label
 --------------
 
 The ``seclabel`` element allows control over the operation of the security
-drivers. There are three basic modes of operation, 'dynamic' where libvirt
-automatically generates a unique security label, 'static' where the
-application/administrator chooses the labels, or 'none' where confinement is
+drivers. There are three basic modes of operation, 'dynamic'
+(:since:`since 0.6.1`) where libvirt automatically generates a unique security
+label, 'static' (:since:`since 0.6.2`) where the application/administrator
+chooses the labels, or 'none' (:since:`since 0.9.10`) where confinement is
 disabled. With dynamic label generation, libvirt will always automatically
 relabel any resources associated with the virtual machine. With static label
 assignment, by default, the administrator or application must ensure labels are
 set correctly on any resources, however, automatic relabeling can be enabled if
-desired. :since:`'dynamic' since 0.6.1, 'static' since 0.6.2, and 'none' since
-0.9.10.`
+desired.
 
 If more than one security driver is used by libvirt, multiple ``seclabel`` tags
 can be used, one for each driver and the security driver referenced by each tag

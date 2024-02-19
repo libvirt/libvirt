@@ -489,9 +489,7 @@ follows, where accepted values for each attribute is an integer number.
    ``peak`` and ``burst`` attributes still require ``average``. Currently, the
    Linux kernel doesn't allow ingress qdiscs to have any classes therefore
    ``floor`` can be applied only on ``inbound`` and not ``outbound``.
-
-Attributes ``average``, ``peak``, and ``burst`` are available :since:`since
-0.9.4` , while the ``floor`` attribute is available :since:`since 1.0.1` .
+   :since:`Since 1.0.1`
 
 Setting VLAN tag (on supported network types only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -519,11 +517,12 @@ Setting VLAN tag (on supported network types only)
 If (and only if) the network connection used by the guest supports VLAN tagging
 transparent to the guest, an optional ``<vlan>`` element can specify one or more
 VLAN tags to apply to the guest's network traffic :since:`Since 0.10.0` .
-Network connections that support guest-transparent VLAN tagging include 1)
-type='bridge' interfaces connected to an Open vSwitch bridge :since:`Since
-0.10.0` , 2) SRIOV Virtual Functions (VF) used via type='hostdev' (direct device
-assignment) :since:`Since 0.10.0` , and 3) SRIOV VFs used via type='direct' with
-mode='passthrough' (macvtap "passthru" mode) :since:`Since 1.3.5` . All other
+
+Network connections that support guest-transparent VLAN tagging include
+``type='bridge'`` interfaces connected to an Open vSwitch bridge, SRIOV
+Virtual Functions (VF) used via ``type='hostdev'`` (direct device assignment)
+and, :since:`since 1.3.5`, SRIOV VFs used via ``type='direct'`` with
+``mode='passthrough'`` (macvtap "passthru" mode). All other
 connection types, including standard linux bridges and libvirt's own virtual
 networks, **do not** support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
 provide their own way (outside of libvirt) to tag guest traffic onto a specific
@@ -844,12 +843,13 @@ of 'route' or 'nat'.
          The optional ``bootp`` element specifies BOOTP options to be provided
          by the DHCP server for IPv4 only. Two attributes are supported:
          ``file`` is mandatory and gives the file to be used for the boot image;
-         ``server`` is optional and gives the address of the TFTP server from
+         ``server`` (:since:`since 0.7.3`) is optional and
+         gives the address of the TFTP server from
          which the boot image will be fetched. ``server`` defaults to the same
          host that runs the DHCP server, as is the case when the ``tftp``
          element is used. The BOOTP options currently have to be the same for
          all address ranges and statically assigned addresses. :since:`Since
-         0.7.1` (``server`` :since:`since 0.7.3` )
+         0.7.1`
 
       Optionally, ``range`` and ``host`` elements can have ``lease`` child
       element which specifies the lease time through it's attributes ``expiry``
