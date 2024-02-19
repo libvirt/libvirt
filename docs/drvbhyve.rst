@@ -268,7 +268,7 @@ these commands manually, most likely you might want to tweak them.
 Using ZFS volumes
 ~~~~~~~~~~~~~~~~~
 
-It's possible to use ZFS volumes as disk devices :since:`since 1.2.8` . An
+It's possible to use ZFS volumes as disk devices :since:`since 1.2.8`. An
 example of domain XML device entry for that will look like:
 
 ::
@@ -307,7 +307,7 @@ not have spaces or they will be tokenized incorrectly.
 Using UEFI bootrom, VNC, and USB tablet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:since:`Since 3.2.0` , in addition to
+:since:`Since 3.2.0`, in addition to
 `Using grub2-bhyve or Alternative Bootloaders`_, non-FreeBSD
 guests could be also booted using an UEFI boot ROM, provided both guest OS and
 installed ``bhyve(1)`` version support UEFI. To use that, ``loader`` should be
@@ -349,7 +349,7 @@ Please note that the tablet device requires to have a USB controller of the
 ``nec-xhci`` model. Currently, only a single controller of this type and a
 single tablet are supported per domain.
 
-:since:`Since 3.5.0` , it's possible to configure how the video device is
+:since:`Since 3.5.0`, it's possible to configure how the video device is
 exposed to the guest using the ``vgaconf`` attribute:
 
 ::
@@ -375,7 +375,7 @@ refer to the
 manual page and the `bhyve wiki <https://wiki.freebsd.org/bhyve>`__ for more
 details on using the ``vgaconf`` option.
 
-:since:`Since 3.7.0` , it's possible to use ``autoport`` to let libvirt allocate
+:since:`Since 3.7.0`, it's possible to use ``autoport`` to let libvirt allocate
 VNC port automatically (instead of explicitly specifying it with the ``port``
 attribute):
 
@@ -383,7 +383,7 @@ attribute):
 
        <graphics type='vnc' autoport='yes'>
 
-:since:`Since 6.8.0` , it's possible to set framebuffer resolution using the
+:since:`Since 6.8.0`, it's possible to set framebuffer resolution using the
 ``resolution`` sub-element:
 
 ::
@@ -394,7 +394,7 @@ attribute):
         </model>
       </video>
 
-:since:`Since 6.8.0` , VNC server can be configured to use password based
+:since:`Since 6.8.0`, VNC server can be configured to use password based
 authentication:
 
 ::
@@ -414,7 +414,7 @@ Originally bhyve supported only localtime for RTC. Support for UTC time was
 introduced in `FreeBSD changeset
 r284894 <https://svnweb.freebsd.org/changeset/base/284894>`__ for *10-STABLE*
 and in `changeset r279225 <https://svnweb.freebsd.org/changeset/base/279225>`__
-for *-CURRENT*. It's possible to use this in libvirt :since:`since 1.2.18` ,
+for *-CURRENT*. It's possible to use this in libvirt :since:`since 1.2.18`,
 just place the following to domain XML:
 
 ::
@@ -443,8 +443,8 @@ e1000 NIC
 
 As of `FreeBSD changeset
 r302504 <https://svnweb.freebsd.org/changeset/base/302504>`__ bhyve supports
-Intel e1000 network adapter emulation. It's supported in libvirt :since:`since
-3.1.0` and could be used as follows:
+Intel e1000 network adapter emulation. It's supported in libvirt
+:since:`since 3.1.0` and could be used as follows:
 
 ::
 
@@ -460,7 +460,7 @@ Sound device
 
 As of `FreeBSD changeset
 r349355 <https://svnweb.freebsd.org/changeset/base/349355>`__ bhyve supports
-sound device emulation. It's supported in libvirt :since:`since 6.7.0` .
+sound device emulation. It's supported in libvirt :since:`since 6.7.0`.
 
 ::
 
@@ -484,7 +484,7 @@ Virtio-9p filesystem
 As of `FreeBSD changeset
 r366413 <https://svnweb.freebsd.org/changeset/base/366413>`__ bhyve supports
 sharing arbitrary directory tree between the guest and the host. It's supported
-in libvirt :since:`since 6.9.0` .
+in libvirt :since:`since 6.9.0`.
 
 ::
 
@@ -506,7 +506,7 @@ In the Linux guest, this could be mounted using:
 Wiring guest memory
 ~~~~~~~~~~~~~~~~~~~
 
-:since:`Since 4.4.0` , it's possible to specify that guest memory should be
+:since:`Since 4.4.0`, it's possible to specify that guest memory should be
 wired and cannot be swapped out as follows:
 
 ::
@@ -522,7 +522,7 @@ wired and cannot be swapped out as follows:
 CPU topology
 ~~~~~~~~~~~~
 
-:since:`Since 4.5.0` , it's possible to specify guest CPU topology, if bhyve
+:since:`Since 4.5.0`, it's possible to specify guest CPU topology, if bhyve
 supports that. Support for specifying guest CPU topology was added to bhyve in
 `FreeBSD changeset r332298 <https://svnweb.freebsd.org/changeset/base/332298>`__
 for *-CURRENT*. Example:
@@ -540,7 +540,7 @@ for *-CURRENT*. Example:
 Ignoring unknown MSRs reads and writes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:since:`Since 5.1.0` , it's possible to make bhyve ignore accesses to
+:since:`Since 5.1.0`, it's possible to make bhyve ignore accesses to
 unimplemented Model Specific Registers (MSRs). Example:
 
 ::
@@ -558,7 +558,7 @@ unimplemented Model Specific Registers (MSRs). Example:
 Pass-through of arbitrary bhyve commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:since:`Since 5.1.0` , it's possible to pass additional command-line arguments
+:since:`Since 5.1.0`, it's possible to pass additional command-line arguments
 to the bhyve process when starting the domain using the ``<bhyve:commandline>``
 element under ``domain``. To supply an argument, use the element ``<bhyve:arg>``
 with the attribute ``value`` set to additional argument to be added. The arg

@@ -56,8 +56,9 @@ URIs have this general form (``[...]`` marks an optional part).
 
    type://[username@]hostname[:port]/[[folder/...]datacenter/[folder/...][cluster/]server][?extraparameters]
 
-The ``type://`` is either ``esx://`` or ``gsx://`` or ``vpx://`` :since:`since
-0.8.3` . The driver selects the default port depending on the ``type://``. For
+The ``type://`` is either ``esx://`` or ``gsx://`` or ``vpx://``
+:since:`since 0.8.3`.
+The driver selects the default port depending on the ``type://``. For
 ``esx://`` and ``vpx://`` the default HTTPS port is 443, for ``gsx://`` it is
 8333. If the port parameter is given, it overrides the default port.
 
@@ -75,7 +76,7 @@ of datacenter ``dc1``.
    vpx://example-vcenter.com/dc1/cluster1/example-esx.com
 
 Datacenters and clusters can be organized in folders, those have to be specified
-as well. The driver can handle folders :since:`since 0.9.7` .
+as well. The driver can handle folders :since:`since 0.9.7`.
 
 ::
 
@@ -129,12 +130,12 @@ The driver understands the extra parameters shown below.
 |                 |                             | set to 0, questions are     |
 |                 |                             | reported as errors. The     |
 |                 |                             | default value is 0.         |
-|                 |                             | :since:`Since 0.7.5` .      |
+|                 |                             | :since:`Since 0.7.5`.       |
 +-----------------+-----------------------------+-----------------------------+
 | ``proxy``       | ``[type://]host[:port]``    | Allows to specify a proxy   |
 |                 |                             | for HTTP and HTTPS          |
 |                 |                             | communication.              |
-|                 |                             | :since:`Since 0.8.2` . The  |
+|                 |                             | :since:`Since 0.8.2`. The   |
 |                 |                             | optional ``type`` part may  |
 |                 |                             | be one of: ``http``,        |
 |                 |                             | ``socks``, ``socks4``,      |
@@ -272,8 +273,8 @@ will complain if this restrictions are violated.
 -  Memory size has to be a multiple of 4096
 -  Number of virtual CPU has to be 1 or a multiple of 2. :since:`Since 4.10.0`
    any number of vCPUs is supported.
--  Valid MAC address prefixes are ``00:0c:29`` and ``00:50:56``. :since:`Since
-   0.7.6` arbitrary `MAC addresses`_ are supported.
+-  Valid MAC address prefixes are ``00:0c:29`` and ``00:50:56``.
+   :since:`Since 0.7.6` arbitrary `MAC addresses`_ are supported.
 
 Datastore references
 ~~~~~~~~~~~~~~~~~~~~
@@ -331,7 +332,7 @@ the ESX server from rejecting out-of-predefined-range MAC addresses.
 
    ethernet0.checkMACAddress = "false"
 
-:since:`Since 6.6.0` , one can force libvirt to keep the provided MAC address
+:since:`Since 6.6.0`, one can force libvirt to keep the provided MAC address
 when it's in the reserved VMware range by adding a ``type="static"`` attribute
 to the ``<mac/>`` element. Note that this attribute is useless if the provided
 MAC address is outside of the reserved VMWare ranges.
@@ -374,7 +375,7 @@ Here a domain XML snippet:
    <controller type='scsi' index='0' model='lsilogic'/>
    ...
 
-The controller element is supported :since:`since 0.8.2` . Prior to this
+The controller element is supported :since:`since 0.8.2`. Prior to this
 ``<driver name='lsilogic'/>`` was abused to specify the SCSI controller model.
 This attribute usage is deprecated now.
 

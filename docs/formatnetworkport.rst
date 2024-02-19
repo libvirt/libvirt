@@ -90,7 +90,7 @@ The following elements are common to one or more of the plug types listed later
    connection on the host - currently it is only supported for the virtio device
    model and for macvtap connections on the host.
 ``port``
-   :since:`Since 6.1.0.` The ``port`` element property ``isolated``, when set to
+   :since:`Since 6.1.0`. The ``port`` element property ``isolated``, when set to
    ``yes`` (default setting is ``no``) is used to isolate this port's network
    traffic from other ports on the same network that also have
    ``<port isolated='yes'/>``. This setting is only supported for emulated

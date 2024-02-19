@@ -115,7 +115,7 @@ Describes a device on the host's PCI bus. Sub-elements include:
       capability element will also have an attribute named ``maxCount``
       which is the maximum number of SRIOV VFs supported by this device,
       which could be higher than the number of VFs that are currently
-      active :since:`since 1.3.0` ; in this case, even if there are
+      active :since:`since 1.3.0`; in this case, even if there are
       currently no active VFs the virtual_functions capabililty will still
       be shown.
    ``pci-bridge`` or ``cardbus-bridge``
@@ -367,8 +367,8 @@ S390 architecture. Sub-elements include:
 ``vdpa``
 ^^^^^^^^
 
-Describes a virtual datapath acceleration (vDPA) network device.  :since:`Since
-6.9.0` . Sub-elements include:
+Describes a virtual datapath acceleration (vDPA) network device.
+:since:`Since 6.9.0`. Sub-elements include:
 
 ``chardev``
    The path to the character device that is used to access the device.

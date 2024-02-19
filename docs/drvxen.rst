@@ -139,7 +139,7 @@ using libvirt Domain XML into xl, xm, or sxpr config format.
 Pass-through of arbitrary command-line arguments to the qemu device model
 -------------------------------------------------------------------------
 
-:since:`Since 6.7.0` , the Xen driver supports passing arbitrary command-line
+:since:`Since 6.7.0`, the Xen driver supports passing arbitrary command-line
 arguments to the qemu device model used by Xen with the ``<xen:commandline>``
 element under ``domain``. In order to use command-line pass-through, an XML
 namespace request must be issued that pulls in

@@ -66,7 +66,7 @@ The volume type secret can be supplied either in volume XML during creation of a
 `storage volume <formatstorage.html#storage-volume-xml>`__ in order to provide
 the passphrase to encrypt the volume or in domain XML
 `disk device <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ in order to provide the
-passphrase to decrypt the volume, :since:`since 2.1.0` . An example follows:
+passphrase to decrypt the volume, :since:`since 2.1.0`. An example follows:
 
 ::
 
@@ -102,7 +102,7 @@ This secret is associated with a Ceph RBD (rados block device). The
 specifies a usage name for the secret. The Ceph secret can then be used by UUID
 or by this usage name via the ``<auth>`` element of a `disk
 device <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ or a `storage pool
-(rbd) <formatstorage.html>`__. :since:`Since 0.9.7` . The following is an
+(rbd) <formatstorage.html>`__. :since:`Since 0.9.7`. The following is an
 example of the steps to be taken. First create a ceph-secret.xml file:
 
 ::
@@ -158,7 +158,7 @@ This secret is associated with an iSCSI target for CHAP authentication. The
 specifies a usage name for the secret. The iSCSI secret can then be used by UUID
 or by this usage name via the ``<auth>`` element of a `disk
 device <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ or a `storage pool
-(iscsi) <formatstorage.html>`__. :since:`Since 1.0.4` . The following is an
+(iscsi) <formatstorage.html>`__. :since:`Since 1.0.4`. The following is an
 example of the XML that may be used to generate a secret for iSCSI CHAP
 authentication. Assume the following sample entry in an iSCSI authentication
 file:
@@ -231,7 +231,7 @@ Usage type "tls"
 This secret may be used in order to provide the passphrase for the private key
 used to provide TLS credentials. The ``<usage type='tls'>`` element must contain
 a single ``name`` element that specifies a usage name for the secret.
-:since:`Since 2.3.0` . The following is an example of the expected XML and
+:since:`Since 2.3.0`. The following is an example of the expected XML and
 processing to define the secret:
 
 ::
@@ -269,7 +269,7 @@ passphrase for deriving a key from for encrypting the state of the vTPM. The
 ``<usage type='vtpm'>`` element must contain a single ``name`` element that
 specifies a usage name for the secret. The vTPM secret can then be used by UUID
 via the ``<encryption>`` element of a `tpm <formatdomain.html#tpm-device>`__
-when using an emulator. :since:`Since 5.6.0` . The following is an example of
+when using an emulator. :since:`Since 5.6.0`. The following is an example of
 the steps to be taken. First create a vtpm-secret.xml file:
 
 ::

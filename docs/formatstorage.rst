@@ -48,8 +48,8 @@ Storage pool general metadata
 ``allocation``
    Providing the total storage allocation for the pool. This may be larger than
    the sum of the allocation of all volumes due to metadata overhead. This value
-   is in bytes. This is not applicable when creating a pool. :since:`Since
-   0.4.1`
+   is in bytes. This is not applicable when creating a pool.
+   :since:`Since 0.4.1`
 ``capacity``
    Providing the total storage capacity for the pool. Due to underlying device
    constraints it may not be possible to use the full capacity for storage
@@ -201,8 +201,8 @@ following child elements:
       "scsi_host". To keep backwards compatibility, this attribute is optional
       **only** for the "scsi_host" adapter, but is mandatory for the "fc_host"
       adapter. :since:`Since 1.0.5` A "fc_host" capable scsi_hostN can be
-      determined by using ``virsh nodedev-list --cap fc_host``. :since:`Since
-      1.2.8`
+      determined by using ``virsh nodedev-list --cap fc_host``.
+      :since:`Since 1.2.8`
 
       Note: Regardless of whether a "scsi_host" adapter type is defined using a
       ``name`` or a ``parentaddr``, it should refer to a real scsi_host adapter
@@ -360,8 +360,8 @@ following child elements:
    :since:`Since 0.8.4`
 ``product``
    Provides an optional product name of the storage device. This contains a
-   single attribute ``name`` whose value is backend specific. :since:`Since
-   0.8.4`
+   single attribute ``name`` whose value is backend specific.
+   :since:`Since 0.8.4`
 
 Storage pool target elements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -504,7 +504,7 @@ option in libvirt, and thus should never be used in production.
       </pool>
       ...
 
-   :since:`Since 5.1.0.`
+   :since:`Since 5.1.0`.
 
 ``rbd:config_opts``
    Provides an XML namespace mechanism to optionally utilize specifically named
@@ -545,13 +545,14 @@ option in libvirt, and thus should never be used in production.
         </rbd:config_opts>
       </pool>
 
-   :since:`Since 5.1.0.`
+   :since:`Since 5.1.0`.
 
 Storage volume XML
 ------------------
 
-A storage volume will generally be either a file or a device node; :since:`since
-1.2.0` , an optional output-only attribute ``type`` lists the actual type (file,
+A storage volume will generally be either a file or a device node;
+:since:`since 1.2.0`, an optional output-only attribute ``type`` lists
+the actual type (file,
 block, dir, network, netdir or ploop), which is also available from
 ``virStorageVolGetInfo()``. The storage volume XML format is available
 :since:`since 0.4.1`
@@ -609,12 +610,12 @@ Storage volume general metadata
 ``capacity``
    Providing the logical capacity for the volume. This value is in bytes by
    default, but a ``unit`` attribute can be specified with the same semantics as
-   for ``allocation`` This is compulsory when creating a volume. :since:`Since
-   0.4.1`
+   for ``allocation`` This is compulsory when creating a volume.
+   :since:`Since 0.4.1`
 ``physical``
    This output only element provides the host physical size of the target
-   storage volume. The default output ``unit`` will be in bytes. :since:`Since
-   3.0.0`
+   storage volume. The default output ``unit`` will be in bytes.
+   :since:`Since 3.0.0`
 ``source``
    Provides information about the underlying storage allocation of the volume.
    This may not be available for some pool types. :since:`Since 0.4.1`

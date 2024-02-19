@@ -148,11 +148,11 @@ The ``<guest/>`` element will typically wrap up the following elements:
       If present, 32-bit guests can use PAE address space extensions,
       :since:`since 0.4.1`
    ``nonpae``
-      If present, 32-bit guests can be run without requiring PAE, :since:`since
-      0.4.1`
+      If present, 32-bit guests can be run without requiring PAE,
+      :since:`since 0.4.1`
    ``ia64_be``
-      If present, IA64 guests can be run in big-endian mode, :since:`since
-      0.4.1`
+      If present, IA64 guests can be run in big-endian mode,
+      :since:`since 0.4.1`
    ``acpi``
       If this element is present, the ``default`` attribute describes whether
       the hypervisor exposes ACPI to the guest by default, and the ``toggle``

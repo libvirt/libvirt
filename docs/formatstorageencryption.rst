@@ -46,7 +46,7 @@ it using the specified ``uuid``.
 ``qcow`` format
 ~~~~~~~~~~~~~~~
 
-:since:`Since 4.5.0,` encryption formats ``default`` and ``qcow`` may no longer
+:since:`Since 4.5.0`, encryption formats ``default`` and ``qcow`` may no longer
 be used to create an encrypted volume. Usage of qcow encrypted volumes in QEMU
 began phasing out in QEMU 2.3 and by QEMU 2.9 creation of a qcow encrypted
 volume via qemu-img required usage of secret objects, but that support was not
@@ -59,7 +59,7 @@ The ``luks`` format is specific to a luks encrypted volume and the secret is
 used in order to either encrypt during volume creation or decrypt the volume for
 usage by the domain. A single ``<secret type='passphrase'...>`` element is
 expected (except for the case of RBD layered encryption mentioned above).
-:since:`Since 2.1.0` .
+:since:`Since 2.1.0`.
 
 For volume creation, it is possible to specify the encryption algorithm used to
 encrypt the luks volume. The following two optional elements may be provided for
@@ -116,7 +116,7 @@ The ``luks-any`` format is currently supported only by the ``librbd`` engine,
 and can only be applied to RBD network disks (RBD images). This format will try
 to parse the disk as either LUKS or LUKS2, depending on the actual on-disk
 format. A single ``<secret type='passphrase'...>`` element is expected (except
-for the case of RBD layered encryption mentioned above) :since:`Since 9.3.0` .
+for the case of RBD layered encryption mentioned above) :since:`Since 9.3.0`.
 
 Examples
 --------
@@ -133,7 +133,7 @@ domain volume definition:
    </encryption>
 
 Here is an example specifying use of the ``luks`` format for a specific cipher
-algorithm for volume creation. :since:`Since 6.10.0,` the ``target`` format can
+algorithm for volume creation. :since:`Since 6.10.0`, the ``target`` format can
 also support ``qcow2`` type with ``luks`` encryption.
 
 ::

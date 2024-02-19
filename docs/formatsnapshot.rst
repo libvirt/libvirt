@@ -199,8 +199,8 @@ The top-level ``domainsnapshot`` element may contain the following elements:
    uuid; reverting to a snapshot like this is risky if the current state of the
    domain differs from the state that the domain was created in, and requires
    the use of the ``VIR_DOMAIN_SNAPSHOT_REVERT_FORCE`` flag in
-   ``virDomainRevertToSnapshot()``.  Newer versions of libvirt ( :since:`since
-   0.9.5` ) store the entire inactive `domain configuration
+   ``virDomainRevertToSnapshot()``.  Newer versions of libvirt
+   (:since:`since 0.9.5`) store the entire inactive `domain configuration
    <formatdomain.html>`__ at the time of the snapshot ( :since:`since 0.9.5` ).
    The domain will have security-sensitive information omitted unless the flag
    ``VIR_DOMAIN_SNAPSHOT_XML_SECURE`` is provided on a read-write connection.
