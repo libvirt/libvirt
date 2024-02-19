@@ -502,6 +502,9 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             return -1;
 
         case VIR_STORAGE_TYPE_VOLUME:
+            /* Existance of 'volume' type disks are handled when pre-creating them */
+            break;
+
         case VIR_STORAGE_TYPE_LAST:
         case VIR_STORAGE_TYPE_NONE:
             break;
