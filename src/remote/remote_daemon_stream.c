@@ -747,6 +747,7 @@ daemonStreamHandleWrite(virNetServerClient *client,
              * Otherwise just carry on with processing stream
              * data. */
             ret = daemonStreamHandleHole(client, stream, msg);
+            status = msg->header.status;
         } else if (msg->header.type == VIR_NET_STREAM) {
             status = msg->header.status;
             switch (status) {
