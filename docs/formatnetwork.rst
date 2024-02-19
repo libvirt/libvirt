@@ -127,8 +127,7 @@ to the physical LAN (if at all).
    bridge (in particular, the port attaching the bridge to the physical
    network). However, it can also cause some networking setups to stop working
    (e.g. vlan tagging, multicast, guest-initiated changes to MAC address) and is
-   not supported by older kernels. :since:`Since 1.2.11, requires kernel 3.17 or
-   newer`
+   not supported by kernels older than 3.17. :since:`Since 1.2.11`
 
    The optional ``zone`` attribute of the ``bridge`` element is used to specify
    the `firewalld <https://firewalld.org>`__ zone for the bridge of a network
@@ -1110,7 +1109,8 @@ will be no restrictions on inbound or outbound connections).
 Using a macvtap "direct" connection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:since:`Since 0.9.4, QEMU and KVM only, requires Linux kernel 2.6.34 or newer`
+:since:`Since 0.9.4, QEMU and KVM only`. Requires Linux kernel 2.6.34 or newer.
+
 This shows how to use macvtap to connect to the physical network directly
 through one of a group of physical devices (without using a host bridge device).
 As with the host bridge network, the guests will effectively be directly
