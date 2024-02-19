@@ -475,7 +475,6 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             break;
 
         case VIR_STORAGE_TYPE_FILE:
-        case VIR_STORAGE_TYPE_DIR:
             exists = virFileExists(disk->src->path);
             break;
 
@@ -493,9 +492,15 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
             exists = virFileExists(disk->src->vdpadev);
             break;
 
+        case VIR_STORAGE_TYPE_VHOST_USER:
+        case VIR_STORAGE_TYPE_DIR:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("non-shared storage migration into '%1$s' target is not supported"),
+                           virStorageTypeToString(virStorageSourceGetActualType(disk->src)));
+            return -1;
+
         case VIR_STORAGE_TYPE_NETWORK:
         case VIR_STORAGE_TYPE_VOLUME:
-        case VIR_STORAGE_TYPE_VHOST_USER:
         case VIR_STORAGE_TYPE_LAST:
         case VIR_STORAGE_TYPE_NONE:
             break;
