@@ -1875,6 +1875,12 @@ mymain(void)
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_ICH9_USB_EHCI1, QEMU_CAPS_LAST,
                  ARG_END);
 
+    DO_TEST_FULL("usb-controller-default-unavailable-pseries", ".ppc64-latest",
+                 ARG_CAPS_ARCH, "ppc64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
     /* controller selection tests for various uncommon machine types */
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-versatilepb-aarch64", "aarch64");
     DO_TEST_FULL("usb-controller-default-fallback-versatilepb-aarch64", ".aarch64-latest",
