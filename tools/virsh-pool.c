@@ -1089,6 +1089,7 @@ static const vshCmdOptDef opts_pool_list[] = {
     {.name = "type",
      .type = VSH_OT_STRING,
      .completer = virshPoolTypeCompleter,
+     .completer_flags = VIRSH_POOL_TYPE_COMPLETER_COMMA,
      .help = N_("only list pool of specified type(s) (if supported)")
     },
     {.name = "details",
@@ -1414,6 +1415,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
     {.name = "type",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshPoolTypeCompleter,
      .help = N_("type of storage pool sources to find")
     },
     {.name = "host",
@@ -1501,6 +1503,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
     {.name = "type",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshPoolTypeCompleter,
      .help = N_("type of storage pool sources to discover")
     },
     {.name = "srcSpec",

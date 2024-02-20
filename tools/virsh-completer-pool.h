@@ -32,6 +32,10 @@ virshPoolEventNameCompleter(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags);
 
+enum {
+    VIRSH_POOL_TYPE_COMPLETER_COMMA = 1 << 0,
+};
+
 char **
 virshPoolTypeCompleter(vshControl *ctl,
                        const vshCmd *cmd,
