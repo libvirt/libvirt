@@ -22,6 +22,7 @@
 
 #include "configmake.h"
 #include "vircommand.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virobject.h"
 #include "virstring.h"
@@ -67,8 +68,16 @@ virCaps *virCHDriverCapsInit(void)
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     caps->host.arch, NULL, NULL, 0, NULL);
 
-    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                  NULL, NULL, 0, NULL);
+    if (virFileExists("/dev/kvm")) {
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                      NULL, NULL, 0, NULL);
+    }
+
+    if (virFileExists("/dev/mshv")) {
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HYPERV,
+                                      NULL, NULL, 0, NULL);
+    }
+
     return g_steal_pointer(&caps);
 }
 

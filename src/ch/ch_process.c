@@ -645,6 +645,46 @@ chProcessAddNetworkDevices(virCHDriver *driver,
 }
 
 /**
+ * virCHProcessStartValidate:
+ * @driver: pointer to driver structure
+ * @vm: domain object
+ *
+ * Checks done before starting a VM.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int
+virCHProcessStartValidate(virCHDriver *driver,
+                          virDomainObj *vm)
+{
+    if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
+        VIR_DEBUG("Checking for KVM availability");
+        if (!virCapabilitiesDomainSupported(driver->caps, -1,
+                                            VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Domain requires KVM, but it is not available. Check that virtualization is enabled in the host BIOS, and host configuration is setup to load the kvm modules."));
+            return -1;
+        }
+    } else if (vm->def->virtType == VIR_DOMAIN_VIRT_HYPERV) {
+        VIR_DEBUG("Checking for mshv availability");
+        if (!virCapabilitiesDomainSupported(driver->caps, -1,
+                                            VIR_ARCH_NONE, VIR_DOMAIN_VIRT_HYPERV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Domain requires MSHV device, but it is not available. Check that virtualization is enabled in the host BIOS, and host configuration is setup to load the mshv modules."));
+            return -1;
+        }
+
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("virt type '%1$s' is not supported"),
+                       virDomainVirtTypeToString(vm->def->virtType));
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
  * virCHProcessStart:
  * @driver: pointer to driver structure
  * @vm: pointer to virtual machine structure
@@ -668,6 +708,10 @@ virCHProcessStart(virCHDriver *driver,
     if (virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("VM is already active"));
+        return -1;
+    }
+
+    if (virCHProcessStartValidate(driver, vm) < 0) {
         return -1;
     }
 
