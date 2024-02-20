@@ -1246,6 +1246,9 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("armv7l-versatilepb-minimal", "armv7l");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-realview-minimal", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("aarch64-realview-minimal", "aarch64");
+    /* The '-nousb' test case tests machine without a built-in USB controller */
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-nousb-minimal", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("aarch64-nousb-minimal", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-minimal", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("riscv64-virt-minimal", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-minimal", "ppc64");
@@ -1902,6 +1905,19 @@ mymain(void)
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
                  ARG_END);
     DO_TEST_FULL("usb-controller-default-unavailable-realview", ".aarch64-latest",
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
+    /* The '-nousb' test case tests machine without a built-in USB controller */
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-nousb", "aarch64");
+    DO_TEST_FULL("usb-controller-default-fallback-nousb", ".aarch64-latest",
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-default-unavailable-nousb", ".aarch64-latest",
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
