@@ -2554,6 +2554,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
     DO_TEST_CAPS_LATEST("memory-hotplug-multiple");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("memory-hotplug-virtio-mem-overlap-address");
+    /* Test whether overlap calculation done in
+     * virDomainMemoryDefCheckConflict() works for NVDIMMs which are special
+     * than other memory devices because of how they handle <labelsize/> */
+    DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-overlap");
 
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-caps", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-cap", "s390x");
