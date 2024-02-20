@@ -2924,6 +2924,7 @@ qemuBuildDomainForbidLegacyUSBController(const virDomainDef *def)
 {
     if (ARCH_IS_X86(def->os.arch) ||
         qemuDomainIsARMVirt(def) ||
+        qemuDomainIsPSeries(def) ||
         qemuDomainIsRISCVVirt(def))
         return true;
 

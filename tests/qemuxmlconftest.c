@@ -1889,9 +1889,11 @@ mymain(void)
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_ICH9_USB_EHCI1, QEMU_CAPS_LAST,
                  ARG_END);
 
+    /* The USB controllers can be compiled out but downgrade to -usb fails in qemu */
     DO_TEST_FULL("usb-controller-default-unavailable-pseries", ".ppc64-latest",
                  ARG_CAPS_ARCH, "ppc64",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
