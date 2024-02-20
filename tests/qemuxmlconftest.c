@@ -1851,6 +1851,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-isapc");
     DO_TEST_CAPS_LATEST("usb-controller-default-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-default-q35");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-pseries", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("usb-controller-default-pseries", "ppc64");
     /* i440fx downgrades to use '-usb' if the explicit controller is not present */
     DO_TEST_FULL("usb-controller-default-unavailable-i440fx", ".x86_64-latest",
                  ARG_CAPS_ARCH, "x86_64",
@@ -2647,9 +2649,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-input-passthrough");
 
     DO_TEST_CAPS_LATEST("input-linux");
-
-    DO_TEST_CAPS_ARCH_LATEST("ppc64-usb-controller", "ppc64");
-    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-usb-controller", "ppc64");
 
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpmproxy-double", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("ppc64-tpm-double", "ppc64");
