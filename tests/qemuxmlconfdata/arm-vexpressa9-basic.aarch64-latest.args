@@ -30,7 +30,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -initrd /arm.initrd \
 -append 'console=ttyAMA0,115200n8 rw root=/dev/mmcblk0p3 rootwait physmap.enabled=0' \
 -dtb /arm.dtb \
--usb \
 -drive file=/arm.raw,format=raw,if=sd,index=0 \
 -netdev '{"type":"user","id":"hostnet0"}' \
 -net nic,macaddr=52:54:00:09:a4:37,netdev=hostnet0,model=lan9118,id=net0 \

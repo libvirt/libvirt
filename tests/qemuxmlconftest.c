@@ -1919,6 +1919,7 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-versatilepb-armv7l", ".armv7l-latest",
                  ARG_CAPS_ARCH, "armv7l",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 

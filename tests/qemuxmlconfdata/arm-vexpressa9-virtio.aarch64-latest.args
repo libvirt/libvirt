@@ -31,7 +31,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -append 'console=ttyAMA0,115200n8 rw root=/dev/vda3 rootwait physmap.enabled=0' \
 -dtb /arm.dtb \
 -device '{"driver":"virtio-serial-device","id":"virtio-serial0"}' \
--usb \
 -blockdev '{"driver":"file","filename":"/arm.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-device","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \

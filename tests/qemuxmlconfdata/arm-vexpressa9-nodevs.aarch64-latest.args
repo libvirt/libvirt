@@ -30,7 +30,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -initrd /arm.initrd \
 -append console=ttyAMA0,115200n8 \
 -dtb /arm.dtb \
--usb \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
