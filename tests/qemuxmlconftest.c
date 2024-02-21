@@ -1257,6 +1257,8 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-g3beige-minimal", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-mac99-minimal", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-mac99-minimal", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc-mac99-minimal", "ppc");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc-mac99-minimal", "ppc");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-powernv9-minimal", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("ppc64-powernv9-minimal", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-minimal", "s390x");
@@ -1861,6 +1863,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("usb-controller-default-pseries", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-g3beige", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-mac99", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-mac99ppc", "ppc");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-powernv9", "ppc64");
     /* i440fx downgrades to use '-usb' if the explicit controller is not present */
     DO_TEST_FULL("usb-controller-default-unavailable-i440fx", ".x86_64-latest",
@@ -1960,6 +1963,17 @@ mymain(void)
                  ARG_CAPS_ARCH, "ppc64",
                  ARG_CAPS_VER, "latest",
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
+    DO_TEST_FULL("usb-controller-default-fallback-mac99ppc", ".ppc-latest",
+                 ARG_CAPS_ARCH, "ppc",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-default-unavailable-mac99ppc", ".ppc-latest",
+                 ARG_CAPS_ARCH, "ppc",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     DO_TEST_FULL("usb-controller-default-fallback-powernv9", ".ppc64-latest",
