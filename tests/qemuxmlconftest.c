@@ -1955,6 +1955,7 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-g3beige", ".ppc64-latest",
                  ARG_CAPS_ARCH, "ppc64",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
@@ -1966,6 +1967,7 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-mac99", ".ppc64-latest",
                  ARG_CAPS_ARCH, "ppc64",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
@@ -1977,6 +1979,7 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-mac99ppc", ".ppc-latest",
                  ARG_CAPS_ARCH, "ppc",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
@@ -1988,6 +1991,7 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-powernv9", ".ppc64-latest",
                  ARG_CAPS_ARCH, "ppc64",
                  ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
                  ARG_END);
     DO_TEST_CAPS_LATEST("usb-none");
