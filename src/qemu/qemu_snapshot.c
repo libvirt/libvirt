@@ -2639,6 +2639,8 @@ typedef struct _qemuSnapshotDeleteExternalData {
     virDomainSnapshotDiskDef *snapDisk; /* snapshot disk definition */
     virDomainDiskDef *domDisk; /* VM disk definition */
     virStorageSource *diskSrc; /* source of disk we are deleting */
+    virStorageSource *diskSrcMetadata; /* copy of diskSrc to be used when updating
+                                          metadata because diskSrc is freed */
     virDomainMomentObj *parentSnap;
     virDomainDiskDef *parentDomDisk; /* disk definition from snapshot metadata */
     virStorageSource *parentDiskSrc; /* backing disk source of the @diskSrc */
@@ -2657,6 +2659,7 @@ qemuSnapshotDeleteExternalDataFree(qemuSnapshotDeleteExternalData *data)
     if (!data)
         return;
 
+    virObjectUnref(data->diskSrcMetadata);
     virObjectUnref(data->job);
     g_slist_free_full(data->disksWithBacking, g_free);
 
@@ -2893,6 +2896,8 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
                 if (!data->diskSrc)
                     return -1;
 
+                data->diskSrcMetadata = virStorageSourceCopy(data->diskSrc, false);
+
                 if (!virStorageSourceIsSameLocation(data->diskSrc, snapDiskSrc)) {
                     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                    _("VM disk source and snapshot disk source are not the same"));
@@ -3049,6 +3054,7 @@ typedef struct _qemuSnapshotUpdateDisksData qemuSnapshotUpdateDisksData;
 struct _qemuSnapshotUpdateDisksData {
     virDomainMomentObj *snap;
     virDomainObj *vm;
+    GSList *externalData;
     int error;
 };
 
@@ -3078,7 +3084,8 @@ static int
 qemuSnapshotUpdateDisksSingle(virDomainMomentObj *snap,
                               virDomainDef *def,
                               virDomainDef *parentDef,
-                              virDomainSnapshotDiskDef *snapDisk)
+                              virDomainSnapshotDiskDef *snapDisk,
+                              virStorageSource *diskSrc)
 {
     virDomainDiskDef *disk = NULL;
 
@@ -3091,7 +3098,7 @@ qemuSnapshotUpdateDisksSingle(virDomainMomentObj *snap,
         if (!(parentDisk = qemuDomainDiskByName(parentDef, snapDisk->name)))
             return -1;
 
-        if (virStorageSourceIsSameLocation(snapDisk->src, disk->src)) {
+        if (virStorageSourceIsSameLocation(diskSrc, disk->src)) {
             virObjectUnref(disk->src);
             disk->src = virStorageSourceCopy(parentDisk->src, false);
         }
@@ -3102,7 +3109,7 @@ qemuSnapshotUpdateDisksSingle(virDomainMomentObj *snap,
         virStorageSource *next = disk->src->backingStore;
 
         while (next) {
-            if (virStorageSourceIsSameLocation(snapDisk->src, next)) {
+            if (virStorageSourceIsSameLocation(diskSrc, next)) {
                 cur->backingStore = next->backingStore;
                 next->backingStore = NULL;
                 virObjectUnref(next);
@@ -3128,17 +3135,15 @@ qemuSnapshotDeleteUpdateDisks(void *payload,
     qemuDomainObjPrivate *priv = data->vm->privateData;
     virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(data->snap);
-    ssize_t i;
+    GSList *cur = NULL;
 
-    for (i = 0; i < snapdef->ndisks; i++) {
-        virDomainSnapshotDiskDef *snapDisk = &(snapdef->disks[i]);
-
-        if (snapDisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)
-            continue;
+    for (cur = data->externalData; cur; cur = g_slist_next(cur)) {
+        qemuSnapshotDeleteExternalData *curdata = cur->data;
 
         if (qemuSnapshotUpdateDisksSingle(snap, snap->def->dom,
-                                          data->snap->def->dom, snapDisk) < 0) {
+                                          data->snap->def->dom,
+                                          curdata->snapDisk,
+                                          curdata->diskSrcMetadata) < 0) {
             data->error = -1;
         }
 
@@ -3149,7 +3154,8 @@ qemuSnapshotDeleteUpdateDisks(void *payload,
                 dom = data->snap->def->dom;
 
             if (qemuSnapshotUpdateDisksSingle(snap, snap->def->inactiveDom,
-                                              dom, snapDisk) < 0) {
+                                              dom, curdata->snapDisk,
+                                              curdata->diskSrcMetadata) < 0) {
                 data->error = -1;
             }
         }
@@ -3513,6 +3519,7 @@ qemuSnapshotDeleteUpdateParent(virDomainObj *vm,
 static int
 qemuSnapshotDiscardMetadata(virDomainObj *vm,
                             virDomainMomentObj *snap,
+                            GSList *externalData,
                             bool update_parent)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -3540,6 +3547,7 @@ qemuSnapshotDiscardMetadata(virDomainObj *vm,
         if (virDomainSnapshotIsExternal(snap)) {
             data.snap = snap;
             data.vm = vm;
+            data.externalData = externalData;
             data.error = 0;
             virDomainMomentForEachDescendant(snap,
                                              qemuSnapshotDeleteUpdateDisks,
@@ -3643,7 +3651,7 @@ qemuSnapshotDiscardImpl(virQEMUDriver *driver,
         }
     }
 
-    if (qemuSnapshotDiscardMetadata(vm, snap, update_parent) < 0)
+    if (qemuSnapshotDiscardMetadata(vm, snap, externalData, update_parent) < 0)
         return -1;
 
     return 0;
