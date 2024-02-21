@@ -3537,14 +3537,16 @@ qemuSnapshotDiscardMetadata(virDomainObj *vm,
         if (rep.err < 0)
             ret = -1;
 
-        data.snap = snap;
-        data.vm = vm;
-        data.error = 0;
-        virDomainMomentForEachDescendant(snap,
-                                         qemuSnapshotDeleteUpdateDisks,
-                                         &data);
-        if (data.error < 0)
-            ret = -1;
+        if (virDomainSnapshotIsExternal(snap)) {
+            data.snap = snap;
+            data.vm = vm;
+            data.error = 0;
+            virDomainMomentForEachDescendant(snap,
+                                             qemuSnapshotDeleteUpdateDisks,
+                                             &data);
+            if (data.error < 0)
+                ret = -1;
+        }
 
         virDomainMomentMoveChildren(snap, snap->parent);
     }
