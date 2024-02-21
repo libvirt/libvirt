@@ -1,0 +1,12 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory>4194304</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='mac99'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+  </devices>
+</domain>
