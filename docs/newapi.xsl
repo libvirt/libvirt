@@ -26,30 +26,34 @@
   <xsl:template name="aclinfo">
     <xsl:param name="acl"/>
 
-    <xsl:if test="count($acl/check) > 0">
-      <h5>Access control parameter checks</h5>
-      <table>
-        <thead>
-          <tr>
-            <th>Object</th>
-            <th>Permission</th>
-            <th>Condition</th>
-          </tr>
-        </thead>
-        <xsl:apply-templates select="$acl/check" mode="acl"/>
-      </table>
-    </xsl:if>
-    <xsl:if test="count($acl/filter) > 0">
-      <h5>Access control return value filters</h5>
-      <table>
-        <thead>
-          <tr>
-            <th>Object</th>
-            <th>Permission</th>
-          </tr>
-        </thead>
-        <xsl:apply-templates select="$acl/filter" mode="acl"/>
-      </table>
+    <xsl:if test="count($acl/check) > 0 or count($acl/filter) > 0">
+      <div class="acl">
+        <xsl:if test="count($acl/check) > 0">
+          <h5>Access control parameter checks</h5>
+          <table>
+            <thead>
+              <tr>
+                <th>Object</th>
+                <th>Permission</th>
+                <th>Condition</th>
+              </tr>
+            </thead>
+            <xsl:apply-templates select="$acl/check" mode="acl"/>
+          </table>
+        </xsl:if>
+        <xsl:if test="count($acl/filter) > 0">
+          <h5>Access control return value filters</h5>
+          <table>
+            <thead>
+              <tr>
+                <th>Object</th>
+                <th>Permission</th>
+              </tr>
+            </thead>
+            <xsl:apply-templates select="$acl/filter" mode="acl"/>
+          </table>
+        </xsl:if>
+      </div>
     </xsl:if>
   </xsl:template>
 
@@ -702,11 +706,9 @@
         </xsl:if>
       </dl>
     </xsl:if>
-    <div class="acl">
-      <xsl:call-template name="aclinfo">
-        <xsl:with-param name="acl" select="acls"/>
-      </xsl:call-template>
-    </div>
+    <xsl:call-template name="aclinfo">
+      <xsl:with-param name="acl" select="acls"/>
+    </xsl:call-template>
   </xsl:template>
 
   <xsl:template match="exports" mode="toc">
