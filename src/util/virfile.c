@@ -467,7 +467,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
         goto error;
 
     if (VIR_CLOSE(pipefd[!output]) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("unable to close pipe"));
+        virReportSystemError(errno, "%s", _("unable to close pipe"));
         goto error;
     }
 
