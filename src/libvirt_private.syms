@@ -1373,6 +1373,7 @@ virNodeDeviceObjListRemoveLocked;
 virNodeDeviceObjSetActive;
 virNodeDeviceObjSetAutostart;
 virNodeDeviceObjSetPersistent;
+virNodeDeviceObjUpdateModificationImpact;
 
 
 # conf/virnwfilterbindingdef.h

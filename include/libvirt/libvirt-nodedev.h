@@ -189,6 +189,24 @@ int virNodeDeviceIsPersistent(virNodeDevicePtr dev);
 int virNodeDeviceIsActive(virNodeDevicePtr dev);
 
 /**
+ * virNodeDeviceUpdateFlags:
+ *
+ * Flags to control options for virNodeDeviceUpdate()
+ *
+ * Since: 10.1.0
+ */
+typedef enum {
+    VIR_NODE_DEVICE_UPDATE_AFFECT_CURRENT = 0,      /* affect live if node device is active,
+                                                       config if it's not active (Since: 10.1.0) */
+    VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE    = 1 << 0, /* affect live state of node device only (Since: 10.1.0) */
+    VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG  = 1 << 1, /* affect persistent config only (Since: 10.1.0) */
+} virNodeDeviceUpdateFlags;
+
+int virNodeDeviceUpdate(virNodeDevicePtr dev,
+                        const char *xmlDesc,
+                        unsigned int flags);
+
+/**
  * VIR_NODE_DEVICE_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one

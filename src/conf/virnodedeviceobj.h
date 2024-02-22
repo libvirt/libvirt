@@ -159,3 +159,6 @@ virNodeDeviceObj *
 virNodeDeviceObjListFind(virNodeDeviceObjList *devs,
                          virNodeDeviceObjListPredicate callback,
                          void *opaque);
+
+int virNodeDeviceObjUpdateModificationImpact(virNodeDeviceObj *obj,
+                                             unsigned int *flags);

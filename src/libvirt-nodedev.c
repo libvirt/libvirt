@@ -1174,3 +1174,48 @@ int virNodeDeviceIsActive(virNodeDevicePtr dev)
     virDispatchError(dev->conn);
     return -1;
 }
+
+
+/**
+ * virNodeDeviceUpdate:
+ * @dev: pointer to the node device object
+ * @xmlDesc: string containing an XML description of the device to be defined
+ * @flags: bitwise OR of virNodeDeviceUpdateFlags
+ *
+ * Update the definition of an existing node device, either its live running
+ * configuration, its persistent configuration, or both.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ *
+ * Since: 10.1.0
+ */
+int
+virNodeDeviceUpdate(virNodeDevicePtr dev,
+                    const char *xmlDesc,
+                    unsigned int flags)
+{
+    VIR_DEBUG("nodeDevice=%p, xmlDesc=%s, flags=0x%x",
+              dev, NULLSTR(xmlDesc), flags);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+
+    virCheckReadOnlyGoto(dev->conn->flags, error);
+    virCheckNonNullArgGoto(xmlDesc, error);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceUpdate) {
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceUpdate(dev, xmlDesc, flags);
+        if (retval < 0)
+            goto error;
+
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}

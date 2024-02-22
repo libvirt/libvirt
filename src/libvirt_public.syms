@@ -938,4 +938,9 @@ LIBVIRT_9.7.0 {
         virNetworkSetMetadata;
 } LIBVIRT_9.0.0;
 
+LIBVIRT_10.1.0 {
+    global:
+        virNodeDeviceUpdate;
+} LIBVIRT_9.7.0;
+
 # .... define new API here using predicted next version number ....

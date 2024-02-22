@@ -1673,6 +1673,11 @@ struct remote_node_device_is_active_args {
 struct remote_node_device_is_active_ret {
         int                        active;
 };
+struct remote_node_device_update_args {
+        remote_nonnull_string      name;
+        remote_nonnull_string      xml_desc;
+        u_int                      flags;
+};
 struct remote_connect_domain_event_register_ret {
         int                        cb_registered;
 };
@@ -3743,4 +3748,5 @@ enum remote_procedure {
         REMOTE_PROC_NETWORK_SET_METADATA = 444,
         REMOTE_PROC_NETWORK_GET_METADATA = 445,
         REMOTE_PROC_NETWORK_EVENT_CALLBACK_METADATA_CHANGE = 446,
+        REMOTE_PROC_NODE_DEVICE_UPDATE = 447,
 };

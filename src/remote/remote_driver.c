@@ -7983,6 +7983,7 @@ static virNodeDeviceDriver node_device_driver = {
     .nodeDeviceSetAutostart = remoteNodeDeviceSetAutostart, /* 7.8.0 */
     .nodeDeviceIsPersistent = remoteNodeDeviceIsPersistent, /* 7.8.0 */
     .nodeDeviceIsActive = remoteNodeDeviceIsActive, /* 7.8.0 */
+    .nodeDeviceUpdate = remoteNodeDeviceUpdate, /* 10.1.0 */
 };
 
 static virNWFilterDriver nwfilter_driver = {

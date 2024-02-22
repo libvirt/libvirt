@@ -1137,3 +1137,45 @@ virNodeDeviceObjListFind(virNodeDeviceObjList *devs,
                                       virNodeDeviceObjListFindHelper,
                                       &data);
 }
+
+
+/**
+ * virNodeDeviceObjUpdateModificationImpact:
+ * @obj: Pointer to node device object
+ * @flags: flags to update the modification impact on
+ *
+ * Resolves virNodeDeviceUpdateFlags flags in @flags so that they correctly
+ * apply to the actual state of @obj. @flags may be modified after call to this
+ * function.
+ *
+ * Returns 0 on success if @flags point to a valid combination for @obj or -1
+ * on error.
+ */
+int
+virNodeDeviceObjUpdateModificationImpact(virNodeDeviceObj *obj,
+                                         unsigned int *flags)
+{
+    bool isActive = virNodeDeviceObjIsActive(obj);
+
+    if ((*flags & (VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE | VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG)) ==
+        VIR_NODE_DEVICE_UPDATE_AFFECT_CURRENT) {
+        if (isActive)
+            *flags |= VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE;
+        else
+            *flags |= VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG;
+    }
+
+    if (!isActive && (*flags & VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("node device is not active"));
+        return -1;
+    }
+
+    if (!virNodeDeviceObjIsPersistent(obj) && (*flags & VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("transient node devices do not have any persistent config"));
+        return -1;
+    }
+
+    return 0;
+}
