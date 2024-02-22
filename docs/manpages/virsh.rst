@@ -5331,6 +5331,25 @@ If *--validate* is specified, validates the format of the XML document against
 an internal RNG schema.
 
 
+nodedev-update
+--------------
+
+**Syntax:**
+
+::
+
+   nodedev-update device FILE [[--live] [--config] | [--current]]
+
+Update a device on the host. *device* can be either device name or wwn pair
+in "wwnn,wwpn" format (only works for vHBA currently).  *file*
+contains xml for a top-level <device> description of the node device.
+*--current* can be either or both of *live* and *config*, depends on
+the hypervisor's implementation.
+Both *--live* and *--config* flags may be given, but *--current* is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
+
 nodedev-destroy
 ---------------
 

@@ -23,7 +23,8 @@ NPIV) <https://wiki.libvirt.org/page/NPIV_in_libvirt>`__).
 Persistent virtual devices are managed with ``virsh nodedev-define`` and
 ``virsh nodedev-undefine``. Persistent devices can be configured to start
 manually or automatically using ``virsh nodedev-autostart``. Inactive devices
-can be made active with ``virsh nodedev-start``.
+can be made active with ``virsh nodedev-start``. ``virsh nodedev-update``
+allows to modify devices (:since:`Since 10.1.0`).
 
 Transient virtual devices are started and stopped with the commands
 ``virsh nodedev-create`` and ``virsh nodedev-destroy``.
@@ -278,6 +279,7 @@ covers the following features:
 -  display device details ( :since:`Since 3.4.0` )
 -  create transient mediated devices ( :since:`Since 6.5.0` )
 -  define persistent mediated devices ( :since:`Since 7.3.0` )
+-  update mediated devices ( :since:`Since 10.1.0` )
 
 Because mediated devices are instantiated from vendor specific templates, simply
 called 'types', information describing these types is contained within the
