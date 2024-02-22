@@ -1547,16 +1547,39 @@ nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def,
 }
 
 
+static virNodeDeviceObj*
+findPersistentMdevNodeDevice(virNodeDeviceDef *def)
+{
+    virNodeDeviceObj *obj = NULL;
+
+    if (!nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV))
+        return NULL;
+
+    if (def->caps->data.mdev.uuid &&
+        def->caps->data.mdev.parent_addr &&
+        (obj = virNodeDeviceObjListFindMediatedDeviceByUUID(driver->devs,
+                                                            def->caps->data.mdev.uuid,
+                                                            def->caps->data.mdev.parent_addr)) &&
+        !virNodeDeviceObjIsPersistent(obj)) {
+        virNodeDeviceObjEndAPI(&obj);
+    }
+
+    return obj;
+}
+
+
 virNodeDevice*
 nodeDeviceDefineXML(virConnect *conn,
                     const char *xmlDesc,
                     unsigned int flags)
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
+    virNodeDeviceObj *persistent_obj = NULL;
     const char *virt_type = NULL;
     g_autofree char *uuid = NULL;
     g_autofree char *name = NULL;
     bool validate = flags & VIR_NODE_DEVICE_DEFINE_XML_VALIDATE;
+    bool modify_failed = false;
 
     virCheckFlags(VIR_NODE_DEVICE_DEFINE_XML_VALIDATE, NULL);
 
@@ -1584,13 +1607,26 @@ nodeDeviceDefineXML(virConnect *conn,
         return NULL;
     }
 
-    if (virMdevctlDefine(def, &uuid) < 0) {
-        return NULL;
-    }
+    if ((persistent_obj = findPersistentMdevNodeDevice(def))) {
+        /* virNodeDeviceObjUpdateModificationImpact() is not required we
+         * will modify the persistent config only.
+         * nodeDeviceDefValidateUpdate() is not required as uuid and
+         * parent are matching if def was found and changing the type in
+         * the persistent config is allowed. */
+        VIR_DEBUG("Update node device '%s' with mdevctl", def->name);
+        modify_failed = (virMdevctlModify(def, true, false) < 0);
+        virNodeDeviceObjEndAPI(&persistent_obj);
+        if (modify_failed)
+            return NULL;
+    } else {
+        VIR_DEBUG("Define node device '%s' with mdevctl", def->name);
+        if (virMdevctlDefine(def, &uuid) < 0)
+            return NULL;
 
-    if (uuid && uuid[0]) {
-        g_free(def->caps->data.mdev.uuid);
-        def->caps->data.mdev.uuid = g_steal_pointer(&uuid);
+        if (uuid && uuid[0]) {
+            g_free(def->caps->data.mdev.uuid);
+            def->caps->data.mdev.uuid = g_steal_pointer(&uuid);
+        }
     }
 
     mdevGenerateDeviceName(def);

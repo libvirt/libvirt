@@ -45,6 +45,11 @@ v10.1.0 (unreleased)
 
 * **Improvements**
 
+* nodedev: Add ability to update persistent mediated devices by defining them
+
+    Existing persistent mediated devices can now also be updated by
+    ``virNodeDeviceDefineXML()`` as long as parent and UUID remain unchanged.
+
 * **Bug fixes**
 
   * qemu_process: Skip over non-virtio non-TAP NIC models when refreshing rx-filter

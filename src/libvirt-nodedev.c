@@ -780,7 +780,9 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
  * @xmlDesc: string containing an XML description of the device to be defined
  * @flags: bitwise-OR of supported virNodeDeviceDefineXMLFlags
  *
- * Define a new device on the VM host machine, for example, a mediated device
+ * Define a new inactive persistent device or modify an existing persistent
+ * one from the XML description on the VM host machine, for example, a mediated
+ * device.
  *
  * virNodeDeviceFree should be used to free the resources after the
  * node device object is no longer needed.

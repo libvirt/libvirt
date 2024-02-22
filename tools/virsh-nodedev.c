@@ -1083,12 +1083,12 @@ cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
  */
 static const vshCmdInfo info_node_device_define[] = {
     {.name = "help",
-     .data = N_("Define a device by an xml file on a node")
+     .data = N_("Define or modify a device by an xml file on a node")
     },
     {.name = "desc",
-     .data = N_("Defines a persistent device on the node that can be "
-                "assigned to a domain. The device must be started before "
-                "it can be assigned to a domain.")
+     .data = N_("Defines or modifies a persistent device on the node that "
+                "can be assigned to a domain. The device must be started "
+                "before it can be assigned to a domain.")
     },
     {.name = NULL}
 };
