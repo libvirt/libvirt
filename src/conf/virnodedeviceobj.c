@@ -911,6 +911,14 @@ virNodeDeviceObjMatch(virNodeDeviceObj *obj,
             return false;
     }
 
+    if (flags & (VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_PERSISTENT)) {
+        if (!((MATCH(VIR_CONNECT_LIST_NODE_DEVICES_PERSISTENT) &&
+              virNodeDeviceObjIsPersistent(obj)) ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_TRANSIENT) &&
+               !virNodeDeviceObjIsPersistent(obj))))
+            return false;
+    }
+
     return true;
 }
 #undef MATCH
