@@ -131,6 +131,14 @@ static virCPUDef cpuAarch64Data = {
     .threads = 1,
 };
 
+static virCPUDef cpuArmV7lData = {
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_ARMV7L,
+    .sockets = 1,
+    .cores = 1,
+    .threads = 1,
+};
+
 static virCPUDef cpuS390Data = {
     .type = VIR_CPU_TYPE_HOST,
     .arch = VIR_ARCH_S390X,
@@ -196,6 +204,8 @@ testUtilsHostCpusGetDefForArch(virArch arch)
         return virCPUDefCopy(&cpuS390Data);
     else if (arch == VIR_ARCH_AARCH64)
         return virCPUDefCopy(&cpuAarch64Data);
+    else if (arch == VIR_ARCH_ARMV7L)
+        return virCPUDefCopy(&cpuArmV7lData);
     else if (arch == VIR_ARCH_SPARC)
         return virCPUDefCopy(&cpuSparcData);
     else if (arch == VIR_ARCH_RISCV64)
