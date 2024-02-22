@@ -151,11 +151,9 @@ struct _virNodeDevCapSystem {
 
 typedef struct _virNodeDevCapMdev virNodeDevCapMdev;
 struct _virNodeDevCapMdev {
-    char *type;
     unsigned int iommuGroupNumber;
     char *uuid;
-    virMediatedDeviceAttr **attributes;
-    size_t nattributes;
+    virMediatedDeviceConfig dev_config;
     char *parent_addr;
     bool autostart;
 };

@@ -609,17 +609,17 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
     g_autoptr(virJSONValue) json = virJSONValueNewObject();
     const char *startval = mdev->autostart ? "auto" : "manual";
 
-    if (virJSONValueObjectAppendString(json, "mdev_type", mdev->type) < 0)
+    if (virJSONValueObjectAppendString(json, "mdev_type", mdev->dev_config.type) < 0)
         return -1;
 
     if (virJSONValueObjectAppendString(json, "start", startval) < 0)
         return -1;
 
-    if (mdev->attributes) {
+    if (mdev->dev_config.attributes) {
         g_autoptr(virJSONValue) attributes = virJSONValueNewArray();
 
-        for (i = 0; i < mdev->nattributes; i++) {
-            virMediatedDeviceAttr *attr = mdev->attributes[i];
+        for (i = 0; i < mdev->dev_config.nattributes; i++) {
+            virMediatedDeviceAttr *attr = mdev->dev_config.attributes[i];
             g_autoptr(virJSONValue) jsonattr = virJSONValueNewObject();
 
             if (virJSONValueObjectAppendString(jsonattr, attr->name, attr->value) < 0)
@@ -1129,7 +1129,7 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     mdev = &child->caps->data.mdev;
     mdev->uuid = g_strdup(uuid);
     mdev->parent_addr = g_strdup(parent);
-    mdev->type =
+    mdev->dev_config.type =
         g_strdup(virJSONValueObjectGetString(props, "mdev_type"));
     start = virJSONValueObjectGetString(props, "start");
     mdev->autostart = STREQ_NULLABLE(start, "auto");
@@ -1140,8 +1140,8 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
         size_t i;
         int nattrs = virJSONValueArraySize(attrs);
 
-        mdev->attributes = g_new0(virMediatedDeviceAttr*, nattrs);
-        mdev->nattributes = nattrs;
+        mdev->dev_config.attributes = g_new0(virMediatedDeviceAttr*, nattrs);
+        mdev->dev_config.nattributes = nattrs;
 
         for (i = 0; i < nattrs; i++) {
             virJSONValue *attr = virJSONValueArrayGet(attrs, i);
@@ -1156,7 +1156,7 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
             attribute->name = g_strdup(virJSONValueObjectGetKey(attr, 0));
             value = virJSONValueObjectGetValue(attr, 0);
             attribute->value = g_strdup(virJSONValueGetString(value));
-            mdev->attributes[i] = attribute;
+            mdev->dev_config.attributes[i] = attribute;
         }
     }
     mdevGenerateDeviceName(child);
@@ -1762,39 +1762,39 @@ nodeDeviceUpdateMediatedDevices(void)
 
 /* returns true if any attributes were copied, else returns false */
 static bool
-virMediatedDeviceAttrsCopy(virNodeDevCapMdev *dst,
-                           virNodeDevCapMdev *src)
+virMediatedDeviceAttrsCopy(virMediatedDeviceConfig *dst_config,
+                           virMediatedDeviceConfig *src_config)
 {
     bool ret = false;
     size_t i;
 
-    if (src->nattributes != dst->nattributes) {
+    if (src_config->nattributes != dst_config->nattributes) {
         ret = true;
-        for (i = 0; i < dst->nattributes; i++)
-            virMediatedDeviceAttrFree(dst->attributes[i]);
-        g_free(dst->attributes);
+        for (i = 0; i < dst_config->nattributes; i++)
+            virMediatedDeviceAttrFree(dst_config->attributes[i]);
+        g_free(dst_config->attributes);
 
-        dst->nattributes = src->nattributes;
-        dst->attributes = g_new0(virMediatedDeviceAttr*,
-                                 src->nattributes);
-        for (i = 0; i < dst->nattributes; i++)
-            dst->attributes[i] = virMediatedDeviceAttrNew();
+        dst_config->nattributes = src_config->nattributes;
+        dst_config->attributes = g_new0(virMediatedDeviceAttr*,
+                                 src_config->nattributes);
+        for (i = 0; i < dst_config->nattributes; i++)
+            dst_config->attributes[i] = virMediatedDeviceAttrNew();
     }
 
-    for (i = 0; i < src->nattributes; i++) {
-        if (STRNEQ_NULLABLE(src->attributes[i]->name,
-                            dst->attributes[i]->name)) {
+    for (i = 0; i < src_config->nattributes; i++) {
+        if (STRNEQ_NULLABLE(src_config->attributes[i]->name,
+                            dst_config->attributes[i]->name)) {
             ret = true;
-            g_free(dst->attributes[i]->name);
-            dst->attributes[i]->name =
-                g_strdup(src->attributes[i]->name);
+            g_free(dst_config->attributes[i]->name);
+            dst_config->attributes[i]->name =
+                g_strdup(src_config->attributes[i]->name);
         }
-        if (STRNEQ_NULLABLE(src->attributes[i]->value,
-                            dst->attributes[i]->value)) {
+        if (STRNEQ_NULLABLE(src_config->attributes[i]->value,
+                            dst_config->attributes[i]->value)) {
             ret = true;
-            g_free(dst->attributes[i]->value);
-            dst->attributes[i]->value =
-                g_strdup(src->attributes[i]->value);
+            g_free(dst_config->attributes[i]->value);
+            dst_config->attributes[i]->value =
+                g_strdup(src_config->attributes[i]->value);
         }
     }
 
@@ -1813,10 +1813,10 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
     virNodeDevCapMdev *srcmdev = &src->caps->data.mdev;
     virNodeDevCapMdev *dstmdev = &dst->caps->data.mdev;
 
-    if (STRNEQ_NULLABLE(dstmdev->type, srcmdev->type)) {
+    if (STRNEQ_NULLABLE(dstmdev->dev_config.type, srcmdev->dev_config.type)) {
         ret = true;
-        g_free(dstmdev->type);
-        dstmdev->type = g_strdup(srcmdev->type);
+        g_free(dstmdev->dev_config.type);
+        dstmdev->dev_config.type = g_strdup(srcmdev->dev_config.type);
     }
 
     if (STRNEQ_NULLABLE(dstmdev->uuid, srcmdev->uuid)) {
@@ -1825,7 +1825,7 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
         dstmdev->uuid = g_strdup(srcmdev->uuid);
     }
 
-    if (virMediatedDeviceAttrsCopy(dstmdev, srcmdev))
+    if (virMediatedDeviceAttrsCopy(&dstmdev->dev_config, &srcmdev->dev_config))
         ret = true;
 
     if (dstmdev->autostart != srcmdev->autostart) {

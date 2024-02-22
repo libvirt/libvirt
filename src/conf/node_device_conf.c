@@ -593,15 +593,15 @@ virNodeDeviceCapMdevDefFormat(virBuffer *buf,
 {
     size_t i;
 
-    virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.type);
+    virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.dev_config.type);
     virBufferEscapeString(buf, "<uuid>%s</uuid>\n", data->mdev.uuid);
     virBufferEscapeString(buf, "<parent_addr>%s</parent_addr>\n",
                           data->mdev.parent_addr);
     virBufferAsprintf(buf, "<iommuGroup number='%u'/>\n",
                       data->mdev.iommuGroupNumber);
 
-    for (i = 0; i < data->mdev.nattributes; i++) {
-        virMediatedDeviceAttr *attr = data->mdev.attributes[i];
+    for (i = 0; i < data->mdev.dev_config.nattributes; i++) {
+        virMediatedDeviceAttr *attr = data->mdev.dev_config.attributes[i];
         virBufferAsprintf(buf, "<attr name='%s' value='%s'/>\n",
                           attr->name, attr->value);
     }
@@ -2183,7 +2183,7 @@ virNodeDevCapMdevAttributeParseXML(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    VIR_APPEND_ELEMENT(mdev->attributes, mdev->nattributes, attr);
+    VIR_APPEND_ELEMENT(mdev->dev_config.attributes, mdev->dev_config.nattributes, attr);
 
     return 0;
 }
@@ -2202,7 +2202,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
 
     ctxt->node = node;
 
-    if (!(mdev->type = virXPathString("string(./type[1]/@id)", ctxt))) {
+    if (!(mdev->dev_config.type = virXPathString("string(./type[1]/@id)", ctxt))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("missing type id attribute for '%1$s'"), def->name);
         return -1;
@@ -2577,11 +2577,11 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->sg.path);
         break;
     case VIR_NODE_DEV_CAP_MDEV:
-        g_free(data->mdev.type);
+        g_free(data->mdev.dev_config.type);
         g_free(data->mdev.uuid);
-        for (i = 0; i < data->mdev.nattributes; i++)
-            virMediatedDeviceAttrFree(data->mdev.attributes[i]);
-        g_free(data->mdev.attributes);
+        for (i = 0; i < data->mdev.dev_config.nattributes; i++)
+            virMediatedDeviceAttrFree(data->mdev.dev_config.attributes[i]);
+        g_free(data->mdev.dev_config.attributes);
         g_free(data->mdev.parent_addr);
         break;
     case VIR_NODE_DEV_CAP_CSS_DEV:

@@ -47,6 +47,12 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMediatedDeviceAttr, virMediatedDeviceAttrFree);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMediatedDeviceList, virObjectUnref);
 
+typedef struct _virMediatedDeviceConfig virMediatedDeviceConfig;
+struct _virMediatedDeviceConfig {
+    char *type;
+    virMediatedDeviceAttr **attributes;
+    size_t nattributes;
+};
 
 typedef struct _virMediatedDeviceType virMediatedDeviceType;
 struct _virMediatedDeviceType {

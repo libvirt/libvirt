@@ -1069,7 +1069,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
         return -1;
     }
 
-    data->type = g_path_get_basename(canonicalpath);
+    data->dev_config.type = g_path_get_basename(canonicalpath);
 
     data->uuid = g_strdup(udev_device_get_sysname(dev));
     if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(data->uuid)) < 0)
