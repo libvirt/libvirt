@@ -588,11 +588,22 @@ virNodeDeviceCapStorageDefFormat(virBuffer *buf,
 }
 
 static void
-virNodeDeviceCapMdevDefFormat(virBuffer *buf,
-                              const virNodeDevCapData *data)
+virNodeDeviceCapMdevAttrFormat(virBuffer *buf,
+                               const virMediatedDeviceConfig *config)
 {
     size_t i;
 
+    for (i = 0; i < config->nattributes; i++) {
+        virMediatedDeviceAttr *attr = config->attributes[i];
+        virBufferAsprintf(buf, "<attr name='%s' value='%s'/>\n",
+                          attr->name, attr->value);
+    }
+}
+
+static void
+virNodeDeviceCapMdevDefFormat(virBuffer *buf,
+                              const virNodeDevCapData *data)
+{
     virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.dev_config.type);
     virBufferEscapeString(buf, "<uuid>%s</uuid>\n", data->mdev.uuid);
     virBufferEscapeString(buf, "<parent_addr>%s</parent_addr>\n",
@@ -600,11 +611,7 @@ virNodeDeviceCapMdevDefFormat(virBuffer *buf,
     virBufferAsprintf(buf, "<iommuGroup number='%u'/>\n",
                       data->mdev.iommuGroupNumber);
 
-    for (i = 0; i < data->mdev.dev_config.nattributes; i++) {
-        virMediatedDeviceAttr *attr = data->mdev.dev_config.attributes[i];
-        virBufferAsprintf(buf, "<attr name='%s' value='%s'/>\n",
-                          attr->name, attr->value);
-    }
+    virNodeDeviceCapMdevAttrFormat(buf, &data->mdev.dev_config);
 }
 
 static void
@@ -2169,7 +2176,7 @@ virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
 static int
 virNodeDevCapMdevAttributeParseXML(xmlXPathContextPtr ctxt,
                                    xmlNodePtr node,
-                                   virNodeDevCapMdev *mdev)
+                                   virMediatedDeviceConfig *config)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autoptr(virMediatedDeviceAttr) attr = virMediatedDeviceAttrNew();
@@ -2183,7 +2190,7 @@ virNodeDevCapMdevAttributeParseXML(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    VIR_APPEND_ELEMENT(mdev->dev_config.attributes, mdev->dev_config.nattributes, attr);
+    VIR_APPEND_ELEMENT(config->attributes, config->nattributes, attr);
 
     return 0;
 }
@@ -2234,7 +2241,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
         return -1;
 
     for (i = 0; i < nattrs; i++)
-        virNodeDevCapMdevAttributeParseXML(ctxt, attrs[i], mdev);
+        virNodeDevCapMdevAttributeParseXML(ctxt, attrs[i], &mdev->dev_config);
 
     return 0;
 }

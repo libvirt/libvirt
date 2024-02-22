@@ -599,27 +599,16 @@ nodeDeviceHasCapability(virNodeDeviceDef *def, virNodeDevCapType type)
 }
 
 
-/* format a json string that provides configuration information about this mdev
- * to the mdevctl utility */
 static int
-nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
+nodeDeviceAttributesToJSON(virJSONValue *json,
+                           virMediatedDeviceConfig *config)
 {
     size_t i;
-    virNodeDevCapMdev *mdev = &def->caps->data.mdev;
-    g_autoptr(virJSONValue) json = virJSONValueNewObject();
-    const char *startval = mdev->autostart ? "auto" : "manual";
-
-    if (virJSONValueObjectAppendString(json, "mdev_type", mdev->dev_config.type) < 0)
-        return -1;
-
-    if (virJSONValueObjectAppendString(json, "start", startval) < 0)
-        return -1;
-
-    if (mdev->dev_config.attributes) {
+    if (config->attributes) {
         g_autoptr(virJSONValue) attributes = virJSONValueNewArray();
 
-        for (i = 0; i < mdev->dev_config.nattributes; i++) {
-            virMediatedDeviceAttr *attr = mdev->dev_config.attributes[i];
+        for (i = 0; i < config->nattributes; i++) {
+            virMediatedDeviceAttr *attr = config->attributes[i];
             g_autoptr(virJSONValue) jsonattr = virJSONValueNewObject();
 
             if (virJSONValueObjectAppendString(jsonattr, attr->name, attr->value) < 0)
@@ -632,6 +621,28 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
         if (virJSONValueObjectAppend(json, "attrs", &attributes) < 0)
             return -1;
     }
+
+    return 0;
+}
+
+
+/* format a json string that provides configuration information about this mdev
+ * to the mdevctl utility */
+static int
+nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
+{
+    virNodeDevCapMdev *mdev = &def->caps->data.mdev;
+    g_autoptr(virJSONValue) json = virJSONValueNewObject();
+    const char *startval = mdev->autostart ? "auto" : "manual";
+
+    if (virJSONValueObjectAppendString(json, "mdev_type", mdev->dev_config.type) < 0)
+        return -1;
+
+    if (virJSONValueObjectAppendString(json, "start", startval) < 0)
+        return -1;
+
+    if (nodeDeviceAttributesToJSON(json, &mdev->dev_config) < 0)
+        return -1;
 
     *buf = virJSONValueToString(json, false);
     if (!*buf)
@@ -1092,6 +1103,40 @@ matchDeviceAddress(virNodeDeviceObj *obj,
 }
 
 
+static int
+nodeDeviceParseMdevctlAttributes(virMediatedDeviceConfig *config,
+                                 virJSONValue *attrs)
+{
+    size_t i;
+
+    if (attrs && virJSONValueIsArray(attrs)) {
+        int nattrs = virJSONValueArraySize(attrs);
+
+        config->attributes = g_new0(virMediatedDeviceAttr*, nattrs);
+        config->nattributes = nattrs;
+
+        for (i = 0; i < nattrs; i++) {
+            virJSONValue *attr = virJSONValueArrayGet(attrs, i);
+            virMediatedDeviceAttr *attribute;
+            virJSONValue *value;
+
+            if (!virJSONValueIsObject(attr) ||
+                virJSONValueObjectKeysNumber(attr) != 1) {
+                return -1;
+            }
+
+            attribute = g_new0(virMediatedDeviceAttr, 1);
+            attribute->name = g_strdup(virJSONValueObjectGetKey(attr, 0));
+            value = virJSONValueObjectGetValue(attr, 0);
+            attribute->value = g_strdup(virJSONValueGetString(value));
+            config->attributes[i] = attribute;
+        }
+    }
+
+    return 0;
+}
+
+
 static virNodeDeviceDef*
 nodeDeviceParseMdevctlChildDevice(const char *parent,
                                   virJSONValue *json)
@@ -1099,7 +1144,6 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     virNodeDevCapMdev *mdev;
     const char *uuid;
     virJSONValue *props;
-    virJSONValue *attrs;
     g_autoptr(virNodeDeviceDef) child = g_new0(virNodeDeviceDef, 1);
     virNodeDeviceObj *parent_obj;
     const char *start = NULL;
@@ -1134,31 +1178,10 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     start = virJSONValueObjectGetString(props, "start");
     mdev->autostart = STREQ_NULLABLE(start, "auto");
 
-    attrs = virJSONValueObjectGet(props, "attrs");
+    if (nodeDeviceParseMdevctlAttributes(&mdev->dev_config,
+                                         virJSONValueObjectGet(props, "attrs")) < 0)
+        return NULL;
 
-    if (attrs && virJSONValueIsArray(attrs)) {
-        size_t i;
-        int nattrs = virJSONValueArraySize(attrs);
-
-        mdev->dev_config.attributes = g_new0(virMediatedDeviceAttr*, nattrs);
-        mdev->dev_config.nattributes = nattrs;
-
-        for (i = 0; i < nattrs; i++) {
-            virJSONValue *attr = virJSONValueArrayGet(attrs, i);
-            virMediatedDeviceAttr *attribute;
-            virJSONValue *value;
-
-            if (!virJSONValueIsObject(attr) ||
-                virJSONValueObjectKeysNumber(attr) != 1)
-                return NULL;
-
-            attribute = g_new0(virMediatedDeviceAttr, 1);
-            attribute->name = g_strdup(virJSONValueObjectGetKey(attr, 0));
-            value = virJSONValueObjectGetValue(attr, 0);
-            attribute->value = g_strdup(virJSONValueGetString(value));
-            mdev->dev_config.attributes[i] = attribute;
-        }
-    }
     mdevGenerateDeviceName(child);
 
     return g_steal_pointer(&child);
