@@ -5422,14 +5422,17 @@ nodedev-dumpxml
 
 ::
 
-   nodedev-dumpxml [--xpath EXPRESSION] [--wrap] device
+   nodedev-dumpxml [--inactive] [--xpath EXPRESSION] [--wrap] device
 
 Dump a <device> XML representation for the given node device, including
 such information as the device name, which bus owns the device, the
 vendor and product id, and any capabilities of the device usable by
 libvirt (such as whether device reset is supported). *device* can
 be either device name or wwn pair in "wwnn,wwpn" format (only works
-for HBA).
+for HBA). An additional option affecting the XML dump may be
+used. *--inactive* tells virsh to dump the node device configuration
+that will be used on next start of the node device as opposed to the
+current node device configuration.
 
 If the **--xpath** argument provides an XPath expression, it will be
 evaluated against the output XML and only those matching nodes will

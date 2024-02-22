@@ -575,6 +575,10 @@ static const vshCmdOptDef opts_node_device_dumpxml[] = {
      .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
      .completer = virshNodeDeviceNameCompleter,
     },
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .help = N_("show inactive defined XML"),
+    },
     {.name = "xpath",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_REQ_OPT,
@@ -594,6 +598,7 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshNodeDevice) device = NULL;
     g_autofree char *xml = NULL;
     const char *device_value = NULL;
+    unsigned int flags = 0;
     bool wrap = vshCommandOptBool(cmd, "wrap");
     const char *xpath = NULL;
 
@@ -608,7 +613,10 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!device)
         return false;
 
-    if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
+    if (vshCommandOptBool(cmd, "inactive"))
+        flags |= VIR_NODE_DEVICE_XML_INACTIVE;
+
+    if (!(xml = virNodeDeviceGetXMLDesc(device, flags)))
         return false;
 
     return virshDumpXML(ctl, xml, "node-device", xpath, wrap);
