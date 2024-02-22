@@ -109,12 +109,10 @@ file on a code change causing a change to the actual QMP query process.
 
 In such case a careful manual modification of the ``.replies`` is tolerated.
 
-To aid such modification the tool ``tests/qemucapabilitiesnumbering`` can be
+To aid such modification the tool ``scripts/qemu-replies-tool.py`` can be
 used.
 
 The tool validates and updates the numbering of the entries in the QMP dump in
 case something was modified.
 
 The tool also allows programatic modification of the ``.replies`` file.
-
-See ``tests/qemucapabilitiesnumbering.c``.
