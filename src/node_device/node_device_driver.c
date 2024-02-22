@@ -54,7 +54,7 @@ virNodeDeviceDriverState *driver;
 
 VIR_ENUM_IMPL(virMdevctlCommand,
               MDEVCTL_CMD_LAST,
-              "start", "stop", "define", "undefine", "create"
+              "start", "stop", "define", "undefine", "create", "modify"
 );
 
 
@@ -754,6 +754,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     case MDEVCTL_CMD_START:
     case MDEVCTL_CMD_DEFINE:
     case MDEVCTL_CMD_UNDEFINE:
+    case MDEVCTL_CMD_MODIFY:
         cmd = virCommandNewArgList(MDEVCTL, subcommand, NULL);
         break;
     case MDEVCTL_CMD_LAST:
@@ -767,6 +768,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     switch (cmd_type) {
     case MDEVCTL_CMD_CREATE:
     case MDEVCTL_CMD_DEFINE:
+    case MDEVCTL_CMD_MODIFY:
         if (!def->caps->data.mdev.parent_addr) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to find parent device '%1$s'"), def->parent);
@@ -783,7 +785,8 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
         virCommandAddArgPair(cmd, "--jsonfile", "/dev/stdin");
 
         virCommandSetInputBuffer(cmd, inbuf);
-        virCommandSetOutputBuffer(cmd, outbuf);
+        if (outbuf)
+            virCommandSetOutputBuffer(cmd, outbuf);
         break;
 
     case MDEVCTL_CMD_UNDEFINE:
@@ -864,6 +867,102 @@ virMdevctlDefine(virNodeDeviceDef *def, char **uuid)
 
     /* remove newline */
     *uuid = g_strstrip(*uuid);
+    return 0;
+}
+
+
+/* gets a virCommand object that executes a mdevctl command to modify a
+ * a device to an updated version
+ */
+virCommand*
+nodeDeviceGetMdevctlModifyCommand(virNodeDeviceDef *def,
+                                  bool defined,
+                                  bool live,
+                                  char **errmsg)
+{
+    virCommand *cmd = nodeDeviceGetMdevctlCommand(def,
+                                                  MDEVCTL_CMD_MODIFY,
+                                                  NULL, errmsg);
+
+    if (!cmd)
+        return NULL;
+
+    if (defined)
+        virCommandAddArg(cmd, "--defined");
+
+    if (live)
+        virCommandAddArg(cmd, "--live");
+
+    return cmd;
+}
+
+
+/* checks if mdevctl supports on the command modify the options live, defined
+ * and jsonfile
+ */
+static int
+nodeDeviceGetMdevctlModifySupportCheck(void)
+{
+    int status;
+    g_autoptr(virCommand) cmd = NULL;
+    const char *subcommand = virMdevctlCommandTypeToString(MDEVCTL_CMD_MODIFY);
+
+    cmd = virCommandNewArgList(MDEVCTL,
+                               subcommand,
+                               "--defined",
+                               "--live",
+                               "--jsonfile",
+                               "b",
+                               "--help",
+                               NULL);
+
+    if (!cmd)
+        return -1;
+
+    if (virCommandRun(cmd, &status) < 0)
+        return -1;
+
+    if (status != 0) {
+        /* update is unsupported */
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virMdevctlModify(virNodeDeviceDef *def,
+                 bool defined,
+                 bool live)
+{
+    int status;
+    g_autofree char *errmsg = NULL;
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlModifyCommand(def,
+                                                                  defined,
+                                                                  live,
+                                                                  &errmsg);
+
+    if (!cmd)
+        return -1;
+
+    if (nodeDeviceGetMdevctlModifySupportCheck() < 0) {
+        VIR_WARN("Installed mdevctl version does not support modify with options jsonfile, defined and live");
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Unable to modify mediated device: modify unsupported"));
+        return -1;
+    }
+
+    if (virCommandRun(cmd, &status) < 0)
+        return -1;
+
+    if (status != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to modify mediated device: %1$s"),
+                       MDEVCTL_ERROR(errmsg));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -2105,5 +2204,130 @@ nodeDeviceIsActive(virNodeDevice *device)
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
+    return ret;
+}
+
+
+static int
+nodeDeviceDefValidateUpdate(virNodeDeviceDef *def,
+                            virNodeDeviceDef *new_def,
+                            bool live)
+{
+    virNodeDevCapsDef *caps = NULL;
+    virNodeDevCapMdev *cap_mdev = NULL;
+    virNodeDevCapMdev *cap_new_mdev = NULL;
+
+    for (caps = def->caps; caps != NULL; caps = caps->next) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_MDEV) {
+            cap_mdev = &caps->data.mdev;
+        }
+    }
+    if (!cap_mdev)
+        return -1;
+
+    for (caps = new_def->caps; caps != NULL; caps = caps->next) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_MDEV) {
+            cap_new_mdev = &caps->data.mdev;
+        }
+    }
+    if (!cap_new_mdev)
+        return -1;
+
+    if (STRNEQ_NULLABLE(cap_mdev->uuid, cap_new_mdev->uuid)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"),
+                       def->name,
+                       cap_mdev->uuid);
+        return -1;
+    }
+
+    /* A live update cannot change the mdev type. Since the new config is
+     * stored in defined_config, compare that to the mdev type of the current
+     * live config to make sure they match */
+    if (live &&
+        STRNEQ_NULLABLE(cap_mdev->active_config.type, cap_new_mdev->defined_config.type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Cannot update device '%1$s', type mismatch (current type '%2$s')"),
+                       def->name,
+                       cap_mdev->active_config.type);
+        return -1;
+    }
+    if (STRNEQ_NULLABLE(cap_mdev->parent_addr, cap_new_mdev->parent_addr)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Cannot update device '%1$s', parent address mismatch (current parent address '%2$s')"),
+                       def->name,
+                       cap_mdev->parent_addr);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+nodeDeviceUpdate(virNodeDevice *device,
+                 const char *xmlDesc,
+                 unsigned int flags)
+{
+    int ret = -1;
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def;
+    g_autoptr(virNodeDeviceDef) new_def = NULL;
+    const char *virt_type = NULL;
+    bool updated = false;
+
+    virCheckFlags(VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE |
+                  VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG, -1);
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
+
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
+        return -1;
+    def = virNodeDeviceObjGetDef(obj);
+
+    virt_type = virConnectGetType(device->conn);
+
+    if (virNodeDeviceUpdateEnsureACL(device->conn, def, flags) < 0)
+        goto cleanup;
+
+    if (!(new_def = virNodeDeviceDefParse(xmlDesc, NULL, EXISTING_DEVICE, virt_type,
+                                          &driver->parserCallbacks, NULL, true)))
+        goto cleanup;
+
+    if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV) &&
+        nodeDeviceHasCapability(new_def, VIR_NODE_DEV_CAP_MDEV)) {
+        /* Checks flags are valid for the state and sets flags for
+         * current if flags not set. */
+        if (virNodeDeviceObjUpdateModificationImpact(obj, &flags) < 0)
+            goto cleanup;
+
+        /* Compare def and new_def for compatibility e.g. parent, type
+         * and uuid. */
+        if (nodeDeviceDefValidateUpdate(def, new_def,
+                                        (flags & VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE)) < 0)
+            goto cleanup;
+
+        /* Update now. */
+        VIR_DEBUG("Update node device '%s' with mdevctl", def->name);
+        if (virMdevctlModify(new_def,
+                             (flags & VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG),
+                             (flags & VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE)) < 0) {
+            goto cleanup;
+        };
+        /* Detect updates and also trigger events. */
+        updated = true;
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported device type"));
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virNodeDeviceObjEndAPI(&obj);
+    if (updated)
+        nodeDeviceUpdateMediatedDevices();
+
     return ret;
 }

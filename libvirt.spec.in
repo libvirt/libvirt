@@ -620,6 +620,7 @@ Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
 # For managing persistent mediated devices
+# Note: for nodedev-update support at least mdevctl v1.3.0 is required
 Requires: mdevctl
 # for modprobe of pci devices
 Requires: module-init-tools

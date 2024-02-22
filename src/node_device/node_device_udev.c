@@ -2403,6 +2403,7 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
     .nodeDeviceGetAutostart = nodeDeviceGetAutostart, /* 7.8.0 */
     .nodeDeviceIsPersistent = nodeDeviceIsPersistent, /* 7.8.0 */
     .nodeDeviceIsActive = nodeDeviceIsActive, /* 7.8.0 */
+    .nodeDeviceUpdate = nodeDeviceUpdate, /* 10.1.0 */
 };
 
 

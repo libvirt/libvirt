@@ -1,0 +1,25 @@
+mdevctl \
+modify \
+--parent=0.0.0052 \
+--jsonfile=/dev/stdin \
+--uuid=c60cc60c-c60c-c60c-c60c-c60cc60cc60c \
+--defined
+mdevctl \
+modify \
+--parent=0.0.0052 \
+--jsonfile=/dev/stdin \
+--uuid=c60cc60c-c60c-c60c-c60c-c60cc60cc60c \
+--live
+mdevctl \
+modify \
+--parent=0.0.0052 \
+--jsonfile=/dev/stdin \
+--uuid=c60cc60c-c60c-c60c-c60c-c60cc60cc60c \
+--live
+mdevctl \
+modify \
+--parent=0.0.0052 \
+--jsonfile=/dev/stdin \
+--uuid=c60cc60c-c60c-c60c-c60c-c60cc60cc60c \
+--defined \
+--live

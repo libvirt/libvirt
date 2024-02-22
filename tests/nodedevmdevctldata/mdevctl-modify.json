@@ -1,0 +1,4 @@
+{"mdev_type":"vfio_ccw-io","start":"manual"}
+{"mdev_type":"vfio_ccw-io","start":"manual","attrs":[{"add_attr_1":"val1"},{"add_attr_2":"val2"}]}
+{"mdev_type":"vfio_ccw-io","start":"manual"}
+{"mdev_type":"vfio_ccw-io","start":"manual","attrs":[{"add_attr_1":"val1"},{"add_attr_2":"val2"}]}

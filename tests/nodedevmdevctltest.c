@@ -33,7 +33,10 @@ testCommandDryRunCallback(const char *const*args G_GNUC_UNUSED,
 {
     char **stdinbuf = opaque;
 
-    *stdinbuf = g_strdup(input);
+    if (*stdinbuf)
+        *stdinbuf = g_strconcat(*stdinbuf, "\n", input, NULL);
+    else
+        *stdinbuf = g_strdup(input);
 }
 
 typedef virCommand * (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
@@ -63,6 +66,7 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
         case MDEVCTL_CMD_START:
         case MDEVCTL_CMD_STOP:
         case MDEVCTL_CMD_UNDEFINE:
+        case MDEVCTL_CMD_MODIFY:
             create = EXISTING_DEVICE;
             break;
         case MDEVCTL_CMD_LAST:
@@ -164,6 +168,85 @@ testMdevctlAutostart(const void *data G_GNUC_UNUSED)
         goto cleanup;
 
     if (virTestCompareToFileFull(actualCmdline, cmdlinefile, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+
+static int
+testMdevctlModify(const void *data G_GNUC_UNUSED)
+{
+    g_autoptr(virNodeDeviceDef) def = NULL;
+    g_autoptr(virNodeDeviceDef) def_update = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *actualCmdline = NULL;
+    int ret = -1;
+    g_autoptr(virCommand) definedcmd = NULL;
+    g_autoptr(virCommand) livecmd = NULL;
+    g_autoptr(virCommand) bothcmd = NULL;
+    g_autofree char *errmsg = NULL;
+    g_autofree char *stdinbuf = NULL;
+    g_autofree char *mdevxml =
+        g_strdup_printf("%s/nodedevschemadata/mdev_c60cc60c_c60c_c60c_c60c_c60cc60cc60c.xml",
+                        abs_srcdir);
+    g_autofree char *mdevxml_update =
+        g_strdup_printf("%s/nodedevmdevctldata/mdev_c60cc60c_c60c_c60c_c60c_c60cc60cc60c_update.xml",
+                        abs_srcdir);
+    /* just concatenate both calls into the same output files */
+    g_autofree char *cmdlinefile =
+        g_strdup_printf("%s/nodedevmdevctldata/mdevctl-modify.argv",
+                        abs_srcdir);
+    g_autofree char *jsonfile =
+        g_strdup_printf("%s/nodedevmdevctldata/mdevctl-modify.json",
+                        abs_srcdir);
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
+
+    if (!(def = virNodeDeviceDefParse(NULL, mdevxml, CREATE_DEVICE, VIRT_TYPE,
+                                      &parser_callbacks, NULL, false)))
+        return -1;
+
+    virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRunCallback, &stdinbuf);
+
+    if (!(definedcmd = nodeDeviceGetMdevctlModifyCommand(def, true, false, &errmsg)))
+        goto cleanup;
+
+    if (virCommandRun(definedcmd, NULL) < 0)
+        goto cleanup;
+
+    if (!(def_update = virNodeDeviceDefParse(NULL, mdevxml_update, EXISTING_DEVICE, VIRT_TYPE,
+                                             &parser_callbacks, NULL, false)))
+        goto cleanup;
+
+    if (!(livecmd = nodeDeviceGetMdevctlModifyCommand(def_update, false, true, &errmsg)))
+        goto cleanup;
+
+    if (virCommandRun(livecmd, NULL) < 0)
+        goto cleanup;
+
+    if (!(livecmd = nodeDeviceGetMdevctlModifyCommand(def, false, true, &errmsg)))
+        goto cleanup;
+
+    if (virCommandRun(livecmd, NULL) < 0)
+        goto cleanup;
+
+    if (!(bothcmd = nodeDeviceGetMdevctlModifyCommand(def_update, true, true, &errmsg)))
+        goto cleanup;
+
+    if (virCommandRun(bothcmd, NULL) < 0)
+        goto cleanup;
+
+    if (!(actualCmdline = virBufferCurrentContent(&buf)))
+        goto cleanup;
+
+    if (virTestCompareToFileFull(actualCmdline, cmdlinefile, false) < 0)
+        goto cleanup;
+
+    if (virTestCompareToFile(stdinbuf, jsonfile) < 0)
         goto cleanup;
 
     ret = 0;
@@ -457,6 +540,9 @@ mymain(void)
 #define DO_TEST_AUTOSTART() \
     DO_TEST_FULL("autostart mdevs", testMdevctlAutostart, NULL)
 
+#define DO_TEST_MODIFY() \
+    DO_TEST_FULL("modify mdevs", testMdevctlModify, NULL)
+
 #define DO_TEST_PARSE_JSON(filename) \
     DO_TEST_FULL("parse mdevctl json " filename, testMdevctlParse, filename)
 
@@ -484,6 +570,8 @@ mymain(void)
     DO_TEST_START("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 
     DO_TEST_AUTOSTART();
+
+    DO_TEST_MODIFY();
 
  done:
     nodedevTestDriverFree(driver);

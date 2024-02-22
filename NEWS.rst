@@ -17,6 +17,13 @@ v10.1.0 (unreleased)
 
 * **New features**
 
+  * nodedev: Support updating mdevs
+
+    The node device driver has been extended to allow updating mediated node
+    devices. Options are available to target the update against the persistent,
+    active or both configurations of a mediated device.
+    **Note:** The support is only available with at least mdevctl v1.3.0 installed.
+
   * qemu: Add support for /dev/userfaultfd
 
     On hosts with new enough kernel which supports /dev/userfaultfd libvirt will
