@@ -11,7 +11,7 @@ RUN zypper dist-upgrade -y && \
            audit-devel \
            augeas \
            augeas-lenses \
-           bash-completion \
+           bash-completion-devel \
            ca-certificates \
            ccache \
            clang \

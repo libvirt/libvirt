@@ -21,7 +21,7 @@ exec "$@"\n' > /usr/bin/nosync && \
     nosync dnf install -y \
                audit-libs-devel \
                augeas \
-               bash-completion \
+               bash-completion-devel \
                ca-certificates \
                ccache \
                clang \

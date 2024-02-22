@@ -20,7 +20,7 @@ exec "$@"\n' > /usr/bin/nosync && \
     nosync dnf distro-sync -y && \
     nosync dnf install -y \
                augeas \
-               bash-completion \
+               bash-completion-devel \
                ca-certificates \
                ccache \
                codespell \

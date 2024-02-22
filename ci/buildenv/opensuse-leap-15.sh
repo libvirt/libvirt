@@ -10,7 +10,7 @@ function install_buildenv() {
            audit-devel \
            augeas \
            augeas-lenses \
-           bash-completion \
+           bash-completion-devel \
            ca-certificates \
            ccache \
            clang \
