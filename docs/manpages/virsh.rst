@@ -5476,7 +5476,7 @@ used to list only transient devices. Not providing *--persistent* or
 *--transient* will list all devices unless filtered otherwise. *--transient*
 is mutually exclusive with *--persistent* and *--inactive*.
 If *--tree* is used, the output is formatted in a tree representing parents of
-each node.  *--tree* is mutually exclusive with all other options.
+each node. *--tree* is mutually exclusive with all other options but *--all*.
 
 
 nodedev-reattach
