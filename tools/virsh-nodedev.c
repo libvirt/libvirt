@@ -390,6 +390,14 @@ static const vshCmdOptDef opts_node_list_devices[] = {
      .type = VSH_OT_BOOL,
      .help = N_("list inactive & active devices")
     },
+    {.name = "persistent",
+     .type = VSH_OT_BOOL,
+     .help = N_("list persistent devices")
+    },
+    {.name = "transient",
+     .type = VSH_OT_BOOL,
+     .help = N_("list transient devices")
+    },
     {.name = NULL}
 };
 
@@ -407,6 +415,8 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     int cap_type = -1;
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool all = vshCommandOptBool(cmd, "all");
+    bool persistent = vshCommandOptBool(cmd, "persistent");
+    bool transient = vshCommandOptBool(cmd, "transient");
 
     ignore_value(vshCommandOptStringQuiet(ctl, cmd, "cap", &cap_str));
 
@@ -420,8 +430,13 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         return false;
     }
 
-    if (tree && (cap_str || inactive)) {
-        vshError(ctl, "%s", _("Option --tree is incompatible with --cap and --inactive"));
+    if (transient && (persistent || inactive)) {
+        vshError(ctl, "%s", _("Option --transient is incompatible with --persistent and --inactive"));
+        return false;
+    }
+
+    if (tree && (cap_str || inactive || persistent || transient)) {
+        vshError(ctl, "%s", _("Option --tree is incompatible with --cap, --inactive, --persistent and --transient"));
         return false;
     }
 
@@ -508,6 +523,11 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         flags |= VIR_CONNECT_LIST_NODE_DEVICES_INACTIVE;
     if (!inactive)
         flags |= VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE;
+
+    if (persistent)
+        flags |= VIR_CONNECT_LIST_NODE_DEVICES_PERSISTENT;
+    if (transient)
+        flags |= VIR_CONNECT_LIST_NODE_DEVICES_TRANSIENT;
 
     if (!(list = virshNodeDeviceListCollect(ctl, caps, ncaps, flags))) {
         ret = false;
