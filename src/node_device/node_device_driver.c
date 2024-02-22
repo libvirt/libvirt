@@ -338,7 +338,7 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr device,
     virNodeDeviceDef *def;
     char *ret = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NODE_DEVICE_XML_INACTIVE, NULL);
 
     if (nodeDeviceInitWait() < 0)
         return NULL;
@@ -356,7 +356,19 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr device,
     if (virNodeDeviceUpdateCaps(def) < 0)
         goto cleanup;
 
-    ret = virNodeDeviceDefFormat(def);
+    if (flags & VIR_NODE_DEVICE_XML_INACTIVE) {
+        if (!virNodeDeviceObjIsPersistent(obj)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("node device '%1$s' is not persistent"),
+                           def->name);
+            goto cleanup;
+        }
+    } else {
+        if (!virNodeDeviceObjIsActive(obj))
+            flags |= VIR_NODE_DEVICE_XML_INACTIVE;
+    }
+
+    ret = virNodeDeviceDefFormat(def, flags);
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
@@ -629,19 +641,20 @@ nodeDeviceAttributesToJSON(virJSONValue *json,
 /* format a json string that provides configuration information about this mdev
  * to the mdevctl utility */
 static int
-nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
+nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf, bool defined)
 {
     virNodeDevCapMdev *mdev = &def->caps->data.mdev;
+    virMediatedDeviceConfig *mdev_config = defined ? &mdev->defined_config : &mdev->active_config;
     g_autoptr(virJSONValue) json = virJSONValueNewObject();
     const char *startval = mdev->autostart ? "auto" : "manual";
 
-    if (virJSONValueObjectAppendString(json, "mdev_type", mdev->dev_config.type) < 0)
+    if (virJSONValueObjectAppendString(json, "mdev_type", mdev_config->type) < 0)
         return -1;
 
     if (virJSONValueObjectAppendString(json, "start", startval) < 0)
         return -1;
 
-    if (nodeDeviceAttributesToJSON(json, &mdev->dev_config) < 0)
+    if (nodeDeviceAttributesToJSON(json, mdev_config) < 0)
         return -1;
 
     *buf = virJSONValueToString(json, false);
@@ -760,7 +773,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
             return NULL;
         }
 
-        if (nodeDeviceDefToMdevctlConfig(def, &inbuf) < 0) {
+        if (nodeDeviceDefToMdevctlConfig(def, &inbuf, true) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("couldn't convert node device def to mdevctl JSON"));
             return NULL;
@@ -1139,9 +1152,11 @@ nodeDeviceParseMdevctlAttributes(virMediatedDeviceConfig *config,
 
 static virNodeDeviceDef*
 nodeDeviceParseMdevctlChildDevice(const char *parent,
-                                  virJSONValue *json)
+                                  virJSONValue *json,
+                                  bool defined)
 {
     virNodeDevCapMdev *mdev;
+    virMediatedDeviceConfig *mdev_config;
     const char *uuid;
     virJSONValue *props;
     g_autoptr(virNodeDeviceDef) child = g_new0(virNodeDeviceDef, 1);
@@ -1171,14 +1186,15 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     child->caps->data.type = VIR_NODE_DEV_CAP_MDEV;
 
     mdev = &child->caps->data.mdev;
+    mdev_config = defined ? &mdev->defined_config : &mdev->active_config;
     mdev->uuid = g_strdup(uuid);
     mdev->parent_addr = g_strdup(parent);
-    mdev->dev_config.type =
+    mdev_config->type =
         g_strdup(virJSONValueObjectGetString(props, "mdev_type"));
     start = virJSONValueObjectGetString(props, "start");
     mdev->autostart = STREQ_NULLABLE(start, "auto");
 
-    if (nodeDeviceParseMdevctlAttributes(&mdev->dev_config,
+    if (nodeDeviceParseMdevctlAttributes(mdev_config,
                                          virJSONValueObjectGet(props, "attrs")) < 0)
         return NULL;
 
@@ -1190,7 +1206,8 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
 
 int
 nodeDeviceParseMdevctlJSON(const char *jsonstring,
-                           virNodeDeviceDef ***devs)
+                           virNodeDeviceDef ***devs,
+                           bool defined)
 {
     int n;
     g_autoptr(virJSONValue) json_devicelist = NULL;
@@ -1260,7 +1277,7 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
             g_autoptr(virNodeDeviceDef) child = NULL;
             virJSONValue *child_obj = virJSONValueArrayGet(child_array, j);
 
-            if (!(child = nodeDeviceParseMdevctlChildDevice(parent, child_obj))) {
+            if (!(child = nodeDeviceParseMdevctlChildDevice(parent, child_obj, defined))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Unable to parse child device"));
                 goto error;
@@ -1403,7 +1420,7 @@ nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def,
         /* Active devices contain some additional information (e.g. sysfs
          * path) that is not provided by mdevctl, so re-use the existing
          * definition and copy over new mdev data */
-        changed = nodeDeviceDefCopyFromMdevctl(olddef, owned);
+        changed = nodeDeviceDefCopyFromMdevctl(olddef, owned, defined);
 
         if (was_defined && !changed) {
             /* if this device was already defined and the definition
@@ -1673,7 +1690,7 @@ virMdevctlList(bool defined,
         return -1;
     }
 
-    return nodeDeviceParseMdevctlJSON(output, devs);
+    return nodeDeviceParseMdevctlJSON(output, devs, defined);
 }
 
 
@@ -1830,16 +1847,24 @@ virMediatedDeviceAttrsCopy(virMediatedDeviceConfig *dst_config,
  * Returns true if anything was copied, else returns false */
 bool
 nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
-                             virNodeDeviceDef *src)
+                             virNodeDeviceDef *src,
+                             bool defined)
 {
     bool ret = false;
     virNodeDevCapMdev *srcmdev = &src->caps->data.mdev;
     virNodeDevCapMdev *dstmdev = &dst->caps->data.mdev;
+    virMediatedDeviceConfig *srcmdevconfig = &src->caps->data.mdev.active_config;
+    virMediatedDeviceConfig *dstmdevconfig = &dst->caps->data.mdev.active_config;
 
-    if (STRNEQ_NULLABLE(dstmdev->dev_config.type, srcmdev->dev_config.type)) {
+    if (defined) {
+        srcmdevconfig = &src->caps->data.mdev.defined_config;
+        dstmdevconfig = &dst->caps->data.mdev.defined_config;
+    }
+
+    if (STRNEQ_NULLABLE(dstmdevconfig->type, srcmdevconfig->type)) {
         ret = true;
-        g_free(dstmdev->dev_config.type);
-        dstmdev->dev_config.type = g_strdup(srcmdev->dev_config.type);
+        g_free(dstmdevconfig->type);
+        dstmdevconfig->type = g_strdup(srcmdevconfig->type);
     }
 
     if (STRNEQ_NULLABLE(dstmdev->uuid, srcmdev->uuid)) {
@@ -1848,7 +1873,7 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
         dstmdev->uuid = g_strdup(srcmdev->uuid);
     }
 
-    if (virMediatedDeviceAttrsCopy(&dstmdev->dev_config, &srcmdev->dev_config))
+    if (virMediatedDeviceAttrsCopy(dstmdevconfig, srcmdevconfig))
         ret = true;
 
     if (dstmdev->autostart != srcmdev->autostart) {

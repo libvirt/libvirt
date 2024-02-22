@@ -1069,7 +1069,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
         return -1;
     }
 
-    data->dev_config.type = g_path_get_basename(canonicalpath);
+    data->active_config.type = g_path_get_basename(canonicalpath);
 
     data->uuid = g_strdup(udev_device_get_sysname(dev));
     if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(data->uuid)) < 0)
@@ -1572,7 +1572,7 @@ udevAddOneDevice(struct udev_device *device)
         objdef = virNodeDeviceObjGetDef(obj);
 
         if (is_mdev)
-            nodeDeviceDefCopyFromMdevctl(def, objdef);
+            nodeDeviceDefCopyFromMdevctl(def, objdef, false);
 
         persistent = virNodeDeviceObjIsPersistent(obj);
         autostart = virNodeDeviceObjIsAutostart(obj);

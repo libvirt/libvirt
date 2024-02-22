@@ -7514,12 +7514,12 @@ testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
     virNodeDeviceObj *obj;
     char *ret = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NODE_DEVICE_XML_INACTIVE, NULL);
 
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         return NULL;
 
-    ret = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(obj));
+    ret = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(obj), flags);
 
     virNodeDeviceObjEndAPI(&obj);
     return ret;
@@ -7619,7 +7619,7 @@ testNodeDeviceMockCreateVport(testDriver *driver,
                                                    "scsi_host11")))
         goto cleanup;
 
-    xml = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(objcopy));
+    xml = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(objcopy), 0);
     virNodeDeviceObjEndAPI(&objcopy);
     if (!xml)
         goto cleanup;

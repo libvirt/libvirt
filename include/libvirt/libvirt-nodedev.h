@@ -117,6 +117,17 @@ int                     virNodeDeviceListCaps    (virNodeDevicePtr dev,
                                                   char **const names,
                                                   int maxnames);
 
+/**
+ * virNodeDeviceXMLFlags:
+ *
+ * Flags used to provide the state of the returned node device configuration.
+ *
+ * Since: 10.1.0
+ */
+typedef enum {
+    VIR_NODE_DEVICE_XML_INACTIVE            = 1 << 0, /* dump inactive device configuration (Since: 10.1.0) */
+} virNodeDeviceXMLFlags;
+
 char *                  virNodeDeviceGetXMLDesc (virNodeDevicePtr dev,
                                                  unsigned int flags);
 

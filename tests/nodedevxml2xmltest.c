@@ -11,14 +11,20 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+struct TestData {
+    const char *filename;
+    unsigned int flags;
+};
+
 static int
-testCompareXMLToXMLFiles(const char *xml, const char *outfile)
+testCompareXMLToXMLFiles(const char *xml, const char *outfile, unsigned int flags)
 {
     g_autofree char *xmlData = NULL;
     g_autofree char *actual = NULL;
     int ret = -1;
     virNodeDeviceDef *dev = NULL;
     virNodeDevCapsDef *caps;
+    size_t i;
 
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
@@ -46,9 +52,23 @@ testCompareXMLToXMLFiles(const char *xml, const char *outfile)
                                            data->storage.logical_block_size;
             }
         }
+
+        if (caps->data.type == VIR_NODE_DEV_CAP_MDEV &&
+            !(flags & VIR_NODE_DEVICE_XML_INACTIVE)) {
+            data->mdev.active_config.type = g_strdup(data->mdev.defined_config.type);
+            for (i = 0; i < data->mdev.defined_config.nattributes; i++) {
+                g_autoptr(virMediatedDeviceAttr) attr = g_new0(virMediatedDeviceAttr, 1);
+
+                attr->name = g_strdup(data->mdev.defined_config.attributes[i]->name);
+                attr->value = g_strdup(data->mdev.defined_config.attributes[i]->value);
+                VIR_APPEND_ELEMENT(data->mdev.active_config.attributes,
+                                   data->mdev.active_config.nattributes,
+                                   attr);
+            }
+        }
     }
 
-    if (!(actual = virNodeDeviceDefFormat(dev)))
+    if (!(actual = virNodeDeviceDefFormat(dev, flags)))
         goto fail;
 
     if (virTestCompareToFile(actual, outfile) < 0)
@@ -65,16 +85,21 @@ static int
 testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
+    const struct TestData *tdata = data;
     g_autofree char *xml = NULL;
     g_autofree char *outfile = NULL;
 
     xml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
-                          (const char *)data);
+                          tdata->filename);
 
-    outfile = g_strdup_printf("%s/nodedevxml2xmlout/%s.xml", abs_srcdir,
-                              (const char *)data);
+    if (tdata->flags & VIR_NODE_DEVICE_XML_INACTIVE)
+        outfile = g_strdup_printf("%s/nodedevxml2xmlout/%s_inactive.xml", abs_srcdir,
+                                  tdata->filename);
+    else
+        outfile = g_strdup_printf("%s/nodedevxml2xmlout/%s.xml", abs_srcdir,
+                                  tdata->filename);
 
-    result = testCompareXMLToXMLFiles(xml, outfile);
+    result = testCompareXMLToXMLFiles(xml, outfile, tdata->flags);
 
     return result;
 }
@@ -85,10 +110,20 @@ mymain(void)
 {
     int ret = 0;
 
+#define DO_TEST_FLAGS(desc, filename, flags) \
+    do { \
+        struct TestData data = { filename, flags }; \
+        if (virTestRun(desc, testCompareXMLToXMLHelper, &data) < 0) \
+            ret = -1; \
+       } \
+    while (0)
+
 #define DO_TEST(name) \
-    if (virTestRun("Node device XML-2-XML " name, \
-                   testCompareXMLToXMLHelper, (name)) < 0) \
-        ret = -1
+    DO_TEST_FLAGS("Node device XML-2-XML " name, name, 0)
+
+#define DO_TEST_INACTIVE(name) \
+    DO_TEST_FLAGS("Node device XML-2-XML INACTIVE " name, \
+                  name, VIR_NODE_DEVICE_XML_INACTIVE)
 
     DO_TEST("computer");
     DO_TEST("DVD_GCC_4247N");
@@ -121,6 +156,7 @@ mymain(void)
     DO_TEST("pci_0000_02_10_7_mdev_types");
     DO_TEST("pci_0000_42_00_0_vpd");
     DO_TEST("mdev_3627463d_b7f0_4fea_b468_f1da537d301b");
+    DO_TEST_INACTIVE("mdev_3627463d_b7f0_4fea_b468_f1da537d301b");
     DO_TEST("ccw_0_0_ffff");
     DO_TEST("css_0_0_ffff");
     DO_TEST("css_0_0_ffff_channel_dev_addr");
@@ -134,7 +170,13 @@ mymain(void)
     DO_TEST("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
     DO_TEST("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
     DO_TEST("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
+    DO_TEST_INACTIVE("mdev_ee0b88c4_f554_4dc1_809d_b2a01e8e48ad");
+    DO_TEST_INACTIVE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
+    DO_TEST_INACTIVE("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+    DO_TEST_INACTIVE("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
     DO_TEST("hba_vport_ops");
+    DO_TEST("mdev_c60cc60c_c60c_c60c_c60c_c60cc60cc60c");
+    DO_TEST_INACTIVE("mdev_c60cc60c_c60c_c60c_c60c_c60cc60cc60c");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

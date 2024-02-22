@@ -142,7 +142,8 @@ nodeDeviceGetMdevctlListCommand(bool defined,
 
 int
 nodeDeviceParseMdevctlJSON(const char *jsonstring,
-                           virNodeDeviceDef ***devs);
+                           virNodeDeviceDef ***devs,
+                           bool defined);
 
 int
 nodeDeviceUpdateMediatedDevices(void);
@@ -154,7 +155,8 @@ nodeDeviceGenerateName(virNodeDeviceDef *def,
                        const char *s);
 
 bool nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
-                                  virNodeDeviceDef *src);
+                                  virNodeDeviceDef *src,
+                                  bool defined);
 
 int
 nodeDeviceCreate(virNodeDevice *dev,

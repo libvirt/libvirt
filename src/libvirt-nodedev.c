@@ -264,7 +264,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 /**
  * virNodeDeviceGetXMLDesc:
  * @dev: pointer to the node device
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virNodeDeviceXMLFlags
  *
  * Fetch an XML document describing all aspects of
  * the device.

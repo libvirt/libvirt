@@ -1,0 +1,14 @@
+<device>
+  <name>mdev_c60cc60c_c60c_c60c_c60c_c60cc60cc60c_0_0_0052</name>
+  <path>/sys/devices/css0/0.0.0052/c60cc60c-c60c-c60c-c60c-c60cc60cc60c</path>
+  <parent>css_0_0_0052</parent>
+  <driver>
+    <name>vfio_ccw_mdev</name>
+  </driver>
+  <capability type='mdev'>
+    <type id='vfio_ccw-io'/>
+    <uuid>c60cc60c-c60c-c60c-c60c-c60cc60cc60c</uuid>
+    <parent_addr>0.0.0052</parent_addr>
+    <iommuGroup number='4'/>
+  </capability>
+</device>

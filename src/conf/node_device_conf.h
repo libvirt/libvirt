@@ -153,7 +153,8 @@ typedef struct _virNodeDevCapMdev virNodeDevCapMdev;
 struct _virNodeDevCapMdev {
     unsigned int iommuGroupNumber;
     char *uuid;
-    virMediatedDeviceConfig dev_config;
+    virMediatedDeviceConfig defined_config;
+    virMediatedDeviceConfig active_config;
     char *parent_addr;
     bool autostart;
 };
@@ -360,7 +361,7 @@ struct _virNodeDeviceDef {
 };
 
 char *
-virNodeDeviceDefFormat(const virNodeDeviceDef *def);
+virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags);
 
 
 typedef int (*virNodeDeviceDefPostParseCallback)(virNodeDeviceDef *dev,

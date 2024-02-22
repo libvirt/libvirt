@@ -229,13 +229,13 @@ testMdevctlParse(const void *data)
         return -1;
     }
 
-    if ((nmdevs = nodeDeviceParseMdevctlJSON(buf, &mdevs)) < 0) {
+    if ((nmdevs = nodeDeviceParseMdevctlJSON(buf, &mdevs, true)) < 0) {
         VIR_TEST_DEBUG("Unable to parse json for %s", filename);
         return -1;
     }
 
     for (i = 0; i < nmdevs; i++) {
-        g_autofree char *devxml = virNodeDeviceDefFormat(mdevs[i]);
+        g_autofree char *devxml = virNodeDeviceDefFormat(mdevs[i], VIR_NODE_DEVICE_XML_INACTIVE);
         if (!devxml)
             goto cleanup;
         virBufferAddStr(&xmloutbuf, devxml);

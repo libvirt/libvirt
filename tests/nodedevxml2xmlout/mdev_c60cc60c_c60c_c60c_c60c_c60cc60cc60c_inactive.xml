@@ -1,0 +1,9 @@
+<device>
+  <name>mdev_c60cc60c_c60c_c60c_c60c_c60cc60cc60c_0_0_0052</name>
+  <parent>css_0_0_0052</parent>
+  <capability type='mdev'>
+    <type id='vfio_ccw-io'/>
+    <uuid>c60cc60c-c60c-c60c-c60c-c60cc60cc60c</uuid>
+    <iommuGroup number='4'/>
+  </capability>
+</device>

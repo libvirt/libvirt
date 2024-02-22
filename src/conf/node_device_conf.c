@@ -602,16 +602,22 @@ virNodeDeviceCapMdevAttrFormat(virBuffer *buf,
 
 static void
 virNodeDeviceCapMdevDefFormat(virBuffer *buf,
-                              const virNodeDevCapData *data)
+                              const virNodeDevCapData *data,
+                              bool defined)
 {
-    virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.dev_config.type);
+    if (defined)
+        virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.defined_config.type);
+    else
+        virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.active_config.type);
     virBufferEscapeString(buf, "<uuid>%s</uuid>\n", data->mdev.uuid);
     virBufferEscapeString(buf, "<parent_addr>%s</parent_addr>\n",
                           data->mdev.parent_addr);
     virBufferAsprintf(buf, "<iommuGroup number='%u'/>\n",
                       data->mdev.iommuGroupNumber);
-
-    virNodeDeviceCapMdevAttrFormat(buf, &data->mdev.dev_config);
+    if (defined)
+        virNodeDeviceCapMdevAttrFormat(buf, &data->mdev.defined_config);
+    else
+        virNodeDeviceCapMdevAttrFormat(buf, &data->mdev.active_config);
 }
 
 static void
@@ -662,25 +668,29 @@ virNodeDeviceCapCSSDefFormat(virBuffer *buf,
 
 
 char *
-virNodeDeviceDefFormat(const virNodeDeviceDef *def)
+virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virNodeDevCapsDef *caps;
     size_t i = 0;
+    bool inactive_state = flags & VIR_NODE_DEVICE_XML_INACTIVE;
 
     virBufferAddLit(&buf, "<device>\n");
     virBufferAdjustIndent(&buf, 2);
     virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
-    virBufferEscapeString(&buf, "<path>%s</path>\n", def->sysfs_path);
-    virBufferEscapeString(&buf, "<devnode type='dev'>%s</devnode>\n",
-                          def->devnode);
-    if (def->devlinks) {
-        for (i = 0; def->devlinks[i]; i++)
-            virBufferEscapeString(&buf, "<devnode type='link'>%s</devnode>\n",
-                                  def->devlinks[i]);
+    if (!inactive_state) {
+        virBufferEscapeString(&buf, "<path>%s</path>\n", def->sysfs_path);
+        virBufferEscapeString(&buf, "<devnode type='dev'>%s</devnode>\n",
+                              def->devnode);
+        if (def->devlinks) {
+            for (i = 0; def->devlinks[i]; i++) {
+                virBufferEscapeString(&buf, "<devnode type='link'>%s</devnode>\n",
+                                      def->devlinks[i]);
+            }
+        }
     }
     virBufferEscapeString(&buf, "<parent>%s</parent>\n", def->parent);
-    if (def->driver) {
+    if (def->driver && !inactive_state) {
         virBufferAddLit(&buf, "<driver>\n");
         virBufferAdjustIndent(&buf, 2);
         virBufferEscapeString(&buf, "<name>%s</name>\n", def->driver);
@@ -741,7 +751,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virBufferEscapeString(&buf, "<type>%s</type>\n", virNodeDevDRMTypeToString(data->drm.type));
             break;
         case VIR_NODE_DEV_CAP_MDEV:
-            virNodeDeviceCapMdevDefFormat(&buf, data);
+            virNodeDeviceCapMdevDefFormat(&buf, data, inactive_state);
             break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
             virNodeDeviceCapCCWDefFormat(&buf, data);
@@ -2207,7 +2217,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
 
     ctxt->node = node;
 
-    if (!(mdev->dev_config.type = virXPathString("string(./type[1]/@id)", ctxt))) {
+    if (!(mdev->defined_config.type = virXPathString("string(./type[1]/@id)", ctxt))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("missing type id attribute for '%1$s'"), def->name);
         return -1;
@@ -2239,7 +2249,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
         return -1;
 
     for (i = 0; i < nattrs; i++)
-        virNodeDevCapMdevAttributeParseXML(ctxt, attrs[i], &mdev->dev_config);
+        virNodeDevCapMdevAttributeParseXML(ctxt, attrs[i], &mdev->defined_config);
 
     return 0;
 }
@@ -2582,11 +2592,15 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->sg.path);
         break;
     case VIR_NODE_DEV_CAP_MDEV:
-        g_free(data->mdev.dev_config.type);
+        g_free(data->mdev.defined_config.type);
+        g_free(data->mdev.active_config.type);
         g_free(data->mdev.uuid);
-        for (i = 0; i < data->mdev.dev_config.nattributes; i++)
-            virMediatedDeviceAttrFree(data->mdev.dev_config.attributes[i]);
-        g_free(data->mdev.dev_config.attributes);
+        for (i = 0; i < data->mdev.defined_config.nattributes; i++)
+            virMediatedDeviceAttrFree(data->mdev.defined_config.attributes[i]);
+        g_free(data->mdev.defined_config.attributes);
+        for (i = 0; i < data->mdev.active_config.nattributes; i++)
+            virMediatedDeviceAttrFree(data->mdev.active_config.attributes[i]);
+        g_free(data->mdev.active_config.attributes);
         g_free(data->mdev.parent_addr);
         break;
     case VIR_NODE_DEV_CAP_CSS_DEV:
