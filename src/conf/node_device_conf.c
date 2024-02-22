@@ -672,16 +672,14 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
     virBufferAdjustIndent(&buf, 2);
     virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
     virBufferEscapeString(&buf, "<path>%s</path>\n", def->sysfs_path);
-    if (def->devnode)
-        virBufferEscapeString(&buf, "<devnode type='dev'>%s</devnode>\n",
-                              def->devnode);
+    virBufferEscapeString(&buf, "<devnode type='dev'>%s</devnode>\n",
+                          def->devnode);
     if (def->devlinks) {
         for (i = 0; def->devlinks[i]; i++)
             virBufferEscapeString(&buf, "<devnode type='link'>%s</devnode>\n",
                                   def->devlinks[i]);
     }
-    if (def->parent)
-        virBufferEscapeString(&buf, "<parent>%s</parent>\n", def->parent);
+    virBufferEscapeString(&buf, "<parent>%s</parent>\n", def->parent);
     if (def->driver) {
         virBufferAddLit(&buf, "<driver>\n");
         virBufferAdjustIndent(&buf, 2);
