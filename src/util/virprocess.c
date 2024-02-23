@@ -551,7 +551,7 @@ int virProcessSetAffinity(pid_t pid,
             CPU_SET(i, &mask);
     }
 
-    if (cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
+    if (cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TIDPID, pid,
                            sizeof(mask), &mask) != 0) {
         if (quiet) {
             VIR_DEBUG("cannot set CPU affinity on process %d: %s",
@@ -574,7 +574,7 @@ virProcessGetAffinity(pid_t pid)
     virBitmap *ret = NULL;
 
     CPU_ZERO(&mask);
-    if (cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
+    if (cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TIDPID, pid,
                            sizeof(mask), &mask) != 0) {
         virReportSystemError(errno,
                              _("cannot get CPU affinity of process %1$d"), pid);
