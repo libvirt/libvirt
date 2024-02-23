@@ -453,6 +453,8 @@ int virProcessSetAffinity(pid_t pid,
     size_t i;
     cpuset_t mask;
 
+    VIR_DEBUG("Set process affinity on %lld", (long long)pid);
+
     CPU_ZERO(&mask);
     for (i = 0; i < virBitmapSize(map); i++) {
         if (virBitmapIsBitSet(map, i))
