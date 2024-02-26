@@ -4195,6 +4195,14 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         if (STREQ(def->os.machine, "versatilepb"))
             addPCIRoot = true;
 
+        /* Add default USB for the two machine types which historically
+         * supported -usb */
+        if (STREQ(def->os.machine, "versatilepb") ||
+            STRPREFIX(def->os.machine, "realview")) {
+            addDefaultUSB = true;
+            usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+        }
+
         if (qemuDomainIsARMVirt(def))
             addPCIeRoot = true;
 
