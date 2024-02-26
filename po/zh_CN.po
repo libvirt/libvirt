@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-01-09 09:05+0000\n"
+"POT-Creation-Date: 2024-02-26 13:37+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1127,6 +1127,10 @@ msgid "'%1$s'"
 msgstr "'%1$s'"
 
 #, c-format
+msgid "'%1$s' 'index' value '%2$s' malformed"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' D-Bus address is not handled"
 msgstr "'%1$s' D-Bus 地址没有被处理"
 
@@ -1666,21 +1670,9 @@ msgstr "<reservations/> 只允许 lun 设备"
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "目前只有 'rbd' 磁盘支持 <snapshot> 元素"
 
-msgid "<system_field> evaluation has failed"
-msgstr "<system_field> 评估失败"
-
-msgid "<system_field> value evaluation has failed"
-msgstr "<system_field> 值评估失败"
-
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid> 与 secret 文件名 '%1$s' 不匹配"
-
-msgid "<vendor_field> evaluation has failed"
-msgstr "<vendor_field> 评估失败"
-
-msgid "<vendor_field> value evaluation has failed"
-msgstr "<vendor_field> 值评估失败"
 
 #, c-format
 msgid ""
@@ -1993,6 +1985,9 @@ msgstr "尝试使用同步回复发送异步信息"
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "曾尝试重复使用 PCI 地址 %1$s"
+
+msgid "Attempting to start nbdkit twice"
+msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2803,18 +2798,6 @@ msgstr "无法在不影响其他域的前提下启用常规 autostart 选项"
 msgid "Cannot extract CPU definition from domain capabilities XML"
 msgstr "无法从域功能 XML 中提取 CPU 定义"
 
-msgid "Cannot extract cache nodes under cachetune"
-msgstr "无法提取 cachetune 下的缓存节点"
-
-msgid "Cannot extract memnode nodes"
-msgstr "无法提取 memnode 节点"
-
-msgid "Cannot extract memory nodes under memorytune"
-msgstr "无法提取 memorytune 下的内存节点"
-
-msgid "Cannot extract monitor nodes"
-msgstr "无法提取监控节点"
-
 #, c-format
 msgid "Cannot extract running %1$s hypervisor version\n"
 msgstr "无法提取运行的 %1$s管理程序版本\n"
@@ -3316,6 +3299,20 @@ msgstr "无法取消共享挂载名称空间"
 
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "无法取消共享未初始化的 CRUL 句柄"
+
+#, c-format
+msgid ""
+"Cannot update device '%1$s', parent address mismatch (current parent address "
+"'%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
+msgstr ""
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -4467,10 +4464,6 @@ msgid "Could not open TPM device's cancel path %1$s"
 msgstr "无法打开 TPM 设备的取消路径 %1$s"
 
 #, c-format
-msgid "Could not parse %1$s VPD resource fields"
-msgstr "无法解析 %1$s VPD 资源字段"
-
-#, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
 msgstr "无法为 '%1$s' 解析 'bonding/arp_interval' '%2$s'"
 
@@ -4973,9 +4966,6 @@ msgstr "DatastoreInfo 有意外类型"
 msgid "Default paths:"
 msgstr "默认路径："
 
-msgid "Define a device by an xml file on a node"
-msgstr "通过节点上的 xml 文件定义设备"
-
 msgid "Define a domain."
 msgstr "定义一个域。"
 
@@ -4984,6 +4974,9 @@ msgstr "定义新网络过滤器或者更新现有过滤器。"
 
 msgid "Define a pool."
 msgstr "定义池。"
+
+msgid "Define or modify a device by an xml file on a node"
+msgstr ""
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "定义或修改持久的物理主机接口。"
@@ -5001,11 +4994,9 @@ msgid "Defined"
 msgstr "已定义"
 
 msgid ""
-"Defines a persistent device on the node that can be assigned to a domain. "
-"The device must be started before it can be assigned to a domain."
+"Defines or modifies a persistent device on the node that can be assigned to "
+"a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
-"在可分配给某个域的节点上定义一个持久设备。必须先启动设备，然后才能将其分配给"
-"某个域。"
 
 msgid "Delete a domain checkpoint"
 msgstr "删除域检查点"
@@ -6362,6 +6353,9 @@ msgstr "将挂载目录 %1$s 捆绑到 %2$s 失败"
 msgid "Failed to bind socket to '%1$s'"
 msgstr "将插槽捆绑到 '%1$s' 失败"
 
+msgid "Failed to build net json"
+msgstr ""
+
 msgid "Failed to build pidfile path"
 msgstr "构建 pidfile 路径失败"
 
@@ -6461,6 +6455,9 @@ msgstr "显示树形列表失败"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "将插槽连接到 '%1$s' 失败"
+
+msgid "Failed to connect to mon socket"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7439,6 +7436,9 @@ msgstr "打开 %1$s 失败"
 msgid "Failed to open '%1$s'"
 msgstr "打开 '%1$s' 失败"
 
+msgid "Failed to open a UNIX socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
 msgstr "打开 VPD 文件 '%1$s' 失败"
@@ -7493,6 +7493,9 @@ msgstr "解析 %1$s 失败：仅支持 com1 和 com2。"
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
 msgstr "解析 CCW 地址 '%1$s' 失败"
+
+msgid "Failed to parse HTTP response code"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -7963,6 +7966,9 @@ msgstr "发送查询命令失败：%1$s"
 msgid "Failed to send migration data to destination host"
 msgstr "向目标主机发送迁移数据失败"
 
+msgid "Failed to send net-add request to CH"
+msgstr ""
+
 #, c-format
 msgid "Failed to send request to init control %1$s"
 msgstr "向初始化控制 %1$s 发送请求失败"
@@ -8310,6 +8316,10 @@ msgstr "更新接口链接状态失败"
 msgid "Failed to update network %1$s"
 msgstr "更新网络 %1$s 失败"
 
+#, c-format
+msgid "Failed to update node device %1$s from '%2$s'"
+msgstr ""
+
 msgid "Failed to verify peer's certificate"
 msgstr "对等证书验证失败"
 
@@ -8345,6 +8355,9 @@ msgstr "写入 vmx 文件 '%1$s' 失败"
 
 msgid "Failed to write xml description"
 msgstr "写入 xml 描述失败"
+
+msgid "Failed while adding guest interfaces"
+msgstr ""
 
 msgid "Failed! Volume not removed."
 msgstr "失败！卷已被删除。"
@@ -8786,6 +8799,9 @@ msgstr "虚拟机代理不响应：%1$s"
 
 msgid "Guest agent not available for now"
 msgstr "现在无法使用虚拟机代理"
+
+msgid "Guest networking is not supported by this version of ch"
+msgstr ""
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "此 QEMU 不支持 HMAT"
@@ -11383,6 +11399,11 @@ msgstr "不支持 NIC 型号"
 msgid "NOTE"
 msgstr "注意"
 
+msgid ""
+"NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
+"virtqemud:///system)\n"
+msgstr ""
+
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON 类型不能转换为命令行"
 
@@ -12239,6 +12260,9 @@ msgstr "仅支持 'credit' 和 'credit2' 调度程序"
 msgid "Only 1 IDE controller is supported"
 msgstr "仅支持 1 个 IDE 控制器"
 
+msgid "Only 1 cluster per die is supported"
+msgstr ""
+
 msgid "Only 1 die per socket is supported"
 msgstr "每个套接字只支持 1 个模具"
 
@@ -12458,8 +12482,13 @@ msgstr "选项 --all 与 --inactive 不兼容"
 msgid "Option --file is required"
 msgstr "选项 --file 是必需的"
 
-msgid "Option --tree is incompatible with --cap and --inactive"
-msgstr "选项 --tree 与 --cap 和 --inactive 不兼容"
+msgid "Option --transient is incompatible with --persistent and --inactive"
+msgstr ""
+
+msgid ""
+"Option --tree is incompatible with --cap, --inactive, --persistent and --"
+"transient"
+msgstr ""
 
 msgid "Option argument is empty"
 msgstr "选项参数为空"
@@ -12806,6 +12835,14 @@ msgstr "策略工具包拒绝来自 <anonymous> 的操作 %1$s"
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "尝试了 polkit 验证，即使 polkit 不可用"
+
+#, c-format
+msgid "Poll on sock %1$d failed"
+msgstr ""
+
+#, c-format
+msgid "Poll on sock %1$d timed out"
+msgstr ""
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13265,6 +13302,10 @@ msgstr "所需操作无效"
 #, c-format
 msgid "Requested operation is not valid: %1$s"
 msgstr "所需操作无效：%1$s"
+
+#, c-format
+msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -14577,6 +14618,10 @@ msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "目标 CPU 检查 %1$s 与源 %2$s 不匹配"
 
 #, c-format
+msgid "Target CPU clusters %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
 msgstr "目标 CPU core %1$d 与源 %2$d 不符"
 
@@ -15109,6 +15154,11 @@ msgstr "目标输入型号 %1$s 与源 %2$s 不匹配"
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "目标最大内存 '%1$llu' 与源 '%2$llu' 不匹配"
+
+msgid ""
+"Target memory device 'dynamicMemslots' property doesn't match source memory "
+"device"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16310,10 +16360,6 @@ msgstr "无法关闭磁盘子项"
 msgid "Unable to close recursively all disks"
 msgstr "无法递归关闭所有磁盘"
 
-#, c-format
-msgid "Unable to close the VPD file, fd: %1$d"
-msgstr "无法关闭 VPD 文件，fd: %1$d"
-
 msgid "Unable to close the new medium"
 msgstr "无法关闭新介质"
 
@@ -17137,6 +17183,13 @@ msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "无法修改实时设备"
+
+#, c-format
+msgid "Unable to modify mediated device: %1$s"
+msgstr ""
+
+msgid "Unable to modify mediated device: modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -18230,6 +18283,10 @@ msgstr "意外的产品线"
 msgid "Unexpected protocol %1$d"
 msgstr "意外协议 %1$d"
 
+#, c-format
+msgid "Unexpected response from CH: %1$d"
+msgstr ""
+
 msgid "Unexpected root filesystem without loop device"
 msgstr "意外的没有循环设备的 root 文件系统"
 
@@ -18670,6 +18727,10 @@ msgid "Unsupported NUMA memory tuning mode '%1$s'"
 msgstr "不支持的 NUMA 内存调优模式 '%1$s'"
 
 #, c-format
+msgid "Unsupported Network type %1$d"
+msgstr ""
+
+#, c-format
 msgid "Unsupported OS type: %1$s"
 msgstr "不支持的 OS 类型：%1$s"
 
@@ -18701,8 +18762,8 @@ msgid "Unsupported URI scheme '%1$s'"
 msgstr "不支持的 URI 模式 '%1$s'"
 
 #, c-format
-msgid "Unsupported VPD field access type specified %1$s"
-msgstr "不支持的指定 %1$s 的 VPD 字段访问类型"
+msgid "Unsupported VPD field access type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -18952,6 +19013,9 @@ msgstr "已使用"
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "%1$s/devices/%2$s/class 中的异常值：%3$s"
 
+msgid "Update a active and/or inactive node device"
+msgstr ""
+
 msgid "Update device from an XML <file>."
 msgstr "从 XML <file> 中关系设备"
 
@@ -18976,8 +19040,23 @@ msgstr "更新了网络 %1$s 持久配置"
 msgid "Updated network %1$s persistent config and live state"
 msgstr "更新了网络 %1$s 持久配置和实时状态"
 
+#, c-format
+msgid "Updated node device %1$s live state"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config and live state"
+msgstr ""
+
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr "在运行的域上的更新需要 VIR_DOMAIN_AFFECT_LIVE 标志"
+
+msgid "Updates the configuration of a node device"
+msgstr ""
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "升级到支持namespace的内核"
@@ -19180,9 +19259,6 @@ msgstr "VNC 电源控制不可用"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC 只支持 connected='keep'"
-
-msgid "VPD fields access type parsing has failed"
-msgstr "VPD 字段访问类型解析失败"
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
@@ -19599,17 +19675,26 @@ msgstr "影响当前域"
 msgid "affect current state of network"
 msgstr "影响网络的当前状态"
 
+msgid "affect current state of node device"
+msgstr ""
+
 msgid "affect next boot"
 msgstr "影响下一次引导"
 
 msgid "affect next network startup"
 msgstr "影响下一次网络引导"
 
+msgid "affect next node device startup"
+msgstr ""
+
 msgid "affect running domain"
 msgstr "影响运行的域"
 
 msgid "affect running network"
 msgstr "影响运行的网络"
+
+msgid "affect running node device"
+msgstr ""
 
 msgid "after reverting, change state to paused"
 msgstr "转换后将状态改为 paused"
@@ -19852,6 +19937,12 @@ msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "尝试将虚拟端口与未匹配类型（%1$s 和 %2$s）合并"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
+#, c-format
+msgid ""
+"attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
+"network %1$s"
 msgstr ""
 
 #, c-format
@@ -20877,45 +20968,6 @@ msgstr "无法从私钥 '%1$s' 导出公钥"
 #, c-format
 msgid "cannot extend file '%1$s'"
 msgstr "无法扩展文件 '%1$s'"
-
-msgid "cannot extract blkiotune nodes"
-msgstr "无法提取 blkiotune 节点"
-
-msgid "cannot extract cachetune nodes"
-msgstr "无法提取缓存调优节点"
-
-msgid "cannot extract console devices"
-msgstr "无法提取控制台设备"
-
-msgid "cannot extract device leases"
-msgstr "无法提取设备租约"
-
-msgid "cannot extract emulatorpin nodes"
-msgstr "无法提取 emulatorpin 节点"
-
-msgid "cannot extract emulatorsched nodes"
-msgstr "无法提取仿真调度节点"
-
-msgid "cannot extract hugepages nodes"
-msgstr "无法提取 hugepage 节点"
-
-msgid "cannot extract iothreadpin nodes"
-msgstr "无法提取 iothreadpin 节点"
-
-msgid "cannot extract iothreadsched nodes"
-msgstr "无法提取 iothreadsched 节点"
-
-msgid "cannot extract memorytune nodes"
-msgstr "无法提取内存调优节点"
-
-msgid "cannot extract resource nodes"
-msgstr "无法提取资源节点"
-
-msgid "cannot extract snapshot nodes"
-msgstr "无法提取快照节点"
-
-msgid "cannot extract vcpusched nodes"
-msgstr "无法提取 vcpusched 节点"
 
 #, c-format
 msgid "cannot fill file '%1$s'"
@@ -25115,12 +25167,6 @@ msgstr "无法编码 SASL 数据：%1$d (%2$s)"
 msgid "failed to encrypt the data: '%1$s'"
 msgstr "无法加密数据：'%1$s'"
 
-msgid "failed to evaluate <system_field> elements"
-msgstr "无法评估 <system_field> 元素"
-
-msgid "failed to evaluate <vendor_field> elements"
-msgstr "无法评估 <vendor_field> 元素"
-
 #, c-format
 msgid "failed to execute command '%1$s': %2$s"
 msgstr "无法执行命令 '%1$s'：%2$s"
@@ -25524,15 +25570,12 @@ msgstr "解析 %1$s 失败"
 msgid "failed to parse %1$sversion"
 msgstr "无法解析 %1$sversion"
 
-msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "无法在 QEMU 功能中解析 CPU 块程序"
+msgid "failed to parse PCI VPD string value with invalid characters"
+msgstr ""
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "无法解析 SCSI 主机 '%1$s'"
-
-msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr "在 QEMU 功能缓存中解析 SGX 部分失败"
 
 msgid "failed to parse agent timeout"
 msgstr "无法解析代理超时"
@@ -25584,18 +25627,6 @@ msgstr "无法解析端口号 '%1$s'"
 msgid "failed to parse pre-migration memlock limit"
 msgstr "无法解析预迁移 memlock 限制"
 
-msgid "failed to parse qemu capabilities cpus"
-msgstr "无法解析 qemu 功能 cpus"
-
-msgid "failed to parse qemu capabilities flags"
-msgstr "无法解析 qemu 功能标志"
-
-msgid "failed to parse qemu capabilities gic"
-msgstr "无法解析 qemu 功能 gic"
-
-msgid "failed to parse qemu capabilities machines"
-msgstr "无法解析 qemu 功能机器 machines"
-
 msgid "failed to parse qemu device list"
 msgstr "无法解析 qemu 设备列表"
 
@@ -25609,9 +25640,6 @@ msgstr "无法解析 read_iops_device : '%1$s'"
 
 msgid "failed to parse slirp helper list"
 msgstr "无法解析 slirp 帮助程序列表"
-
-msgid "failed to parse slirp-helper features"
-msgstr "无法解析 slirp-helper 功能"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
@@ -25719,6 +25747,35 @@ msgstr "无法读取 qemu 头"
 msgid "failed to read temporary file created with template %1$s"
 msgstr "无法读取用模板 %1$s 创建的临时文件"
 
+msgid "failed to read the PCI VPD data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: data field length invalid"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: invalid checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: malformed data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing mandatory checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing read-only section"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: parsing ended prematurely"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
+msgstr ""
+
 msgid "failed to reboot domain"
 msgstr "无法重启域"
 
@@ -25727,6 +25784,12 @@ msgstr "无法从 udev 监控接收设备"
 
 msgid "failed to regenerate genid"
 msgstr "无法重新生成 genid"
+
+msgid "failed to register name server"
+msgstr ""
+
+msgid "failed to register name server: systemd-resolved is not available"
+msgstr ""
 
 msgid "failed to register udev interface driver"
 msgstr "无法注册 udev 接口驱动程序"
@@ -27280,42 +27343,6 @@ msgstr "选项 --%1$s 后面不需要'='"
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr "vhostuser 磁盘源的无效的 'type' 属性"
 
-#, c-format
-msgid "invalid <address> element found in <forward> of network %1$s"
-msgstr "网络 %1$s 的 <forward> 中发现无效的 <address> 元素"
-
-#, c-format
-msgid "invalid <forwarder> element found in <dns> of network %1$s"
-msgstr "网络 %1$s 的 <dns> 中发现无效的 <forwarder> 元素"
-
-#, c-format
-msgid "invalid <host> element found in <dns> of network %1$s"
-msgstr "网络 %1$s 的 <dns> 中发现无效的 <host> 元素"
-
-#, c-format
-msgid "invalid <interface> element found in <forward> of network %1$s"
-msgstr "网络 %1$s 的 <forward> 中发现无效的 <interface> 元素"
-
-#, c-format
-msgid "invalid <nat> element found in <forward> of network %1$s"
-msgstr "网络 %1$s 的 <forward> 中发现无效的 <nat> 元素"
-
-#, c-format
-msgid "invalid <pf> element found in <forward> of network %1$s"
-msgstr "网络 %1$s 的 <forward> 中发现无效的 <pf> 元素"
-
-#, c-format
-msgid "invalid <port> element found in <forward> of network %1$s"
-msgstr "网络 %1$s 的 <forward> 中发现无效的 <port> 元素"
-
-#, c-format
-msgid "invalid <srv> element found in <dns> of network %1$s"
-msgstr "网络 %1$s 的 <dns> 中发现无效的 <srv> 元素"
-
-#, c-format
-msgid "invalid <txt> element found in <dns> of network %1$s"
-msgstr "网络 %1$s 的 <dns> 中发现无效的 <txt> 元素"
-
 msgid "invalid CPU cache level, must be in range [1,3]"
 msgstr "无效的 CPU 缓存级，必须在范围 [1,3] 内"
 
@@ -28494,6 +28521,9 @@ msgstr "只列出快照不列出其上级"
 msgid "list only transient domains"
 msgstr "只列出临时的域"
 
+msgid "list persistent devices"
+msgstr ""
+
 msgid "list persistent domains"
 msgstr "列出持久域"
 
@@ -28532,6 +28562,9 @@ msgstr "列出表格（默认）"
 
 msgid "list the name, rather than the full xml"
 msgstr "列出名称儿不是完整 xml"
+
+msgid "list transient devices"
+msgstr ""
 
 msgid "list transient domains"
 msgstr "列出临时域"
@@ -29733,9 +29766,6 @@ msgstr "缺少输入设备类型"
 msgid "missing input volume target path"
 msgstr "缺少输入卷目标路径"
 
-msgid "missing interface information"
-msgstr "缺少接口信息"
-
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
 msgstr ""
@@ -30433,6 +30463,9 @@ msgstr "协商 SSF %1$d 不够强大"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr "不支持嵌套 JSON 数组到命令行的转换"
 
+msgid "net definition failed validation"
+msgstr ""
+
 msgid "netcat path not valid with native proxy mode"
 msgstr "netcat 路径对原生代理模式无效"
 
@@ -30809,9 +30842,6 @@ msgstr "没有为 '%1$s' 提供 USB 产品 ID"
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
 msgstr "没有为 '%1$s' 提供 USB 经销商 ID"
-
-msgid "no VPD <fields> elements with an access type attribute found"
-msgstr "没有找到带有访问类型属性的 VPD <fields> 元素"
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
@@ -31259,6 +31289,10 @@ msgstr "节点 cpu 映射"
 msgid "node device '%1$s' in %2$s must match connection"
 msgstr "%1$s 中的节点设备 '%2$s' 必须与连接匹配"
 
+#, c-format
+msgid "node device '%1$s' is not persistent"
+msgstr ""
+
 msgid "node device details in XML"
 msgstr "XML 中的节点设备详情"
 
@@ -31268,6 +31302,9 @@ msgstr "节点设备事件回调 %1$d 未注册"
 
 msgid "node device information"
 msgstr "节点设备信息"
+
+msgid "node device is not active"
+msgstr ""
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr "在这个平台中未采用 node get memory 参数"
@@ -31307,6 +31344,10 @@ msgstr "如果 'placement' 是 'static' 则必须设定 NUMA 内存调试的 nod
 #, c-format
 msgid "non unique alias detected: %1$s"
 msgstr "检测到非唯一别名：%1$s"
+
+#, c-format
+msgid "non-shared storage migration into '%1$s' target is not supported"
+msgstr ""
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "非零 ncpus 与 NULL cpus 不匹配"
@@ -32294,8 +32335,8 @@ msgstr "prctl 无法设定 KEEPCAPS"
 
 #, c-format
 msgid ""
-"pre-creation of storage target '%1$s' for incremental storage migration of "
-"disk '%2$s' is not supported"
+"pre-creation of storage target for incremental storage migration of disk "
+"'%1$s' is not supported"
 msgstr ""
 
 msgid "preallocate is not supported on this platform"
@@ -32844,6 +32885,10 @@ msgstr "recv 处理程序失败"
 
 msgid "recv holeHandler failed"
 msgstr "recv holeHandler 失败"
+
+#, c-format
+msgid "recv on sock %1$d failed"
+msgstr ""
 
 msgid "redefine metadata for existing checkpoint"
 msgstr "重新定义现有检查点的元数据"
@@ -33706,11 +33751,8 @@ msgstr "shmem 名称不能等于 '..'"
 msgid "shmem name cannot include '/' character"
 msgstr "shmem 名称不能包含 '/' 字符"
 
-msgid "shmem size must be a power of two"
-msgstr "shmem 大小必须是 2 的幂"
-
-msgid "shmem size must be at least 1 MiB (1024 KiB)"
-msgstr "shmem 大小必须至少为 1 MiB(1024 KiB)"
+msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
+msgstr ""
 
 msgid "show all possible graphical displays"
 msgstr "显示所有可能的图形显示"
@@ -35079,6 +35121,9 @@ msgstr "临时域没有任何持久的配置"
 msgid "transient is not supported with vhostuser disk"
 msgstr "vhostuser 磁盘不支持临时磁盘"
 
+msgid "transient node devices do not have any persistent config"
+msgstr ""
+
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "transport '%1$s' 不支持 socket 属性"
@@ -35260,9 +35305,6 @@ msgstr "无法为 %1$s 生成 selinux 上下文"
 msgid "unable to create socket pair"
 msgstr "无法创建套接字对"
 
-msgid "unable to create volume XML"
-msgstr "无法创建卷 XML"
-
 #, c-format
 msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
@@ -35374,6 +35416,10 @@ msgstr "无法获得 cpu 数"
 #, c-format
 msgid "unable to get current process context '%1$s'"
 msgstr "无法获得当前进程上下文 '%1$s'"
+
+#, c-format
+msgid "unable to get interface index for %1$s"
+msgstr ""
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -36439,13 +36485,6 @@ msgstr "未知的 rng-random 后端"
 msgid "unknown secret type '%1$s'"
 msgstr "未知的 secret 类型 '%1$s'"
 
-msgid "unknown secret usage type"
-msgstr "未知的 secret 用法类型"
-
-#, c-format
-msgid "unknown secret usage type %1$s"
-msgstr "未知的 secret 用法类型 %1$s"
-
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "未知的 smbios 模式 ‘%1$s’"
@@ -37358,9 +37397,6 @@ msgstr "不支持 vhost-user 类型 '%1$s'"
 msgid "vhost-user-gpu failed to start"
 msgstr "vhost-user-gpu 无法启动"
 
-msgid "vhost_user type support UNIX socket in this CH"
-msgstr "vhost_user 类型在这个 CH 中支持 UNIX 套接字"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr "vhostuser 磁盘只支持 virtio 总线"
 
@@ -37539,6 +37575,9 @@ msgstr "控制器 %1$u 上的 virtio 串行端口 %2$u 已被占用"
 
 msgid "virtio-mem device is missing <requested/>"
 msgstr "缺少 virtio-mem 设备 <requested/>"
+
+msgid "virtio-mem does not support dynamicMemslots"
+msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 virtio-mem"
@@ -37980,6 +38019,185 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "<system_field> evaluation has failed"
+#~ msgstr "<system_field> 评估失败"
+
+#~ msgid "<system_field> value evaluation has failed"
+#~ msgstr "<system_field> 值评估失败"
+
+#~ msgid "<vendor_field> evaluation has failed"
+#~ msgstr "<vendor_field> 评估失败"
+
+#~ msgid "<vendor_field> value evaluation has failed"
+#~ msgstr "<vendor_field> 值评估失败"
+
+#~ msgid "Cannot extract cache nodes under cachetune"
+#~ msgstr "无法提取 cachetune 下的缓存节点"
+
+#~ msgid "Cannot extract memnode nodes"
+#~ msgstr "无法提取 memnode 节点"
+
+#~ msgid "Cannot extract memory nodes under memorytune"
+#~ msgstr "无法提取 memorytune 下的内存节点"
+
+#~ msgid "Cannot extract monitor nodes"
+#~ msgstr "无法提取监控节点"
+
+#, c-format
+#~ msgid "Could not parse %1$s VPD resource fields"
+#~ msgstr "无法解析 %1$s VPD 资源字段"
+
+#~ msgid "Define a device by an xml file on a node"
+#~ msgstr "通过节点上的 xml 文件定义设备"
+
+#~ msgid ""
+#~ "Defines a persistent device on the node that can be assigned to a domain. "
+#~ "The device must be started before it can be assigned to a domain."
+#~ msgstr ""
+#~ "在可分配给某个域的节点上定义一个持久设备。必须先启动设备，然后才能将其分配"
+#~ "给某个域。"
+
+#~ msgid "Option --tree is incompatible with --cap and --inactive"
+#~ msgstr "选项 --tree 与 --cap 和 --inactive 不兼容"
+
+#, c-format
+#~ msgid "Unable to close the VPD file, fd: %1$d"
+#~ msgstr "无法关闭 VPD 文件，fd: %1$d"
+
+#, c-format
+#~ msgid "Unsupported VPD field access type specified %1$s"
+#~ msgstr "不支持的指定 %1$s 的 VPD 字段访问类型"
+
+#~ msgid "VPD fields access type parsing has failed"
+#~ msgstr "VPD 字段访问类型解析失败"
+
+#~ msgid "cannot extract blkiotune nodes"
+#~ msgstr "无法提取 blkiotune 节点"
+
+#~ msgid "cannot extract cachetune nodes"
+#~ msgstr "无法提取缓存调优节点"
+
+#~ msgid "cannot extract console devices"
+#~ msgstr "无法提取控制台设备"
+
+#~ msgid "cannot extract device leases"
+#~ msgstr "无法提取设备租约"
+
+#~ msgid "cannot extract emulatorpin nodes"
+#~ msgstr "无法提取 emulatorpin 节点"
+
+#~ msgid "cannot extract emulatorsched nodes"
+#~ msgstr "无法提取仿真调度节点"
+
+#~ msgid "cannot extract hugepages nodes"
+#~ msgstr "无法提取 hugepage 节点"
+
+#~ msgid "cannot extract iothreadpin nodes"
+#~ msgstr "无法提取 iothreadpin 节点"
+
+#~ msgid "cannot extract iothreadsched nodes"
+#~ msgstr "无法提取 iothreadsched 节点"
+
+#~ msgid "cannot extract memorytune nodes"
+#~ msgstr "无法提取内存调优节点"
+
+#~ msgid "cannot extract resource nodes"
+#~ msgstr "无法提取资源节点"
+
+#~ msgid "cannot extract snapshot nodes"
+#~ msgstr "无法提取快照节点"
+
+#~ msgid "cannot extract vcpusched nodes"
+#~ msgstr "无法提取 vcpusched 节点"
+
+#~ msgid "failed to evaluate <system_field> elements"
+#~ msgstr "无法评估 <system_field> 元素"
+
+#~ msgid "failed to evaluate <vendor_field> elements"
+#~ msgstr "无法评估 <vendor_field> 元素"
+
+#~ msgid "failed to parse CPU blockers in QEMU capabilities"
+#~ msgstr "无法在 QEMU 功能中解析 CPU 块程序"
+
+#~ msgid "failed to parse SGX sections in QEMU capabilities cache"
+#~ msgstr "在 QEMU 功能缓存中解析 SGX 部分失败"
+
+#~ msgid "failed to parse qemu capabilities cpus"
+#~ msgstr "无法解析 qemu 功能 cpus"
+
+#~ msgid "failed to parse qemu capabilities flags"
+#~ msgstr "无法解析 qemu 功能标志"
+
+#~ msgid "failed to parse qemu capabilities gic"
+#~ msgstr "无法解析 qemu 功能 gic"
+
+#~ msgid "failed to parse qemu capabilities machines"
+#~ msgstr "无法解析 qemu 功能机器 machines"
+
+#~ msgid "failed to parse slirp-helper features"
+#~ msgstr "无法解析 slirp-helper 功能"
+
+#, c-format
+#~ msgid "invalid <address> element found in <forward> of network %1$s"
+#~ msgstr "网络 %1$s 的 <forward> 中发现无效的 <address> 元素"
+
+#, c-format
+#~ msgid "invalid <forwarder> element found in <dns> of network %1$s"
+#~ msgstr "网络 %1$s 的 <dns> 中发现无效的 <forwarder> 元素"
+
+#, c-format
+#~ msgid "invalid <host> element found in <dns> of network %1$s"
+#~ msgstr "网络 %1$s 的 <dns> 中发现无效的 <host> 元素"
+
+#, c-format
+#~ msgid "invalid <interface> element found in <forward> of network %1$s"
+#~ msgstr "网络 %1$s 的 <forward> 中发现无效的 <interface> 元素"
+
+#, c-format
+#~ msgid "invalid <nat> element found in <forward> of network %1$s"
+#~ msgstr "网络 %1$s 的 <forward> 中发现无效的 <nat> 元素"
+
+#, c-format
+#~ msgid "invalid <pf> element found in <forward> of network %1$s"
+#~ msgstr "网络 %1$s 的 <forward> 中发现无效的 <pf> 元素"
+
+#, c-format
+#~ msgid "invalid <port> element found in <forward> of network %1$s"
+#~ msgstr "网络 %1$s 的 <forward> 中发现无效的 <port> 元素"
+
+#, c-format
+#~ msgid "invalid <srv> element found in <dns> of network %1$s"
+#~ msgstr "网络 %1$s 的 <dns> 中发现无效的 <srv> 元素"
+
+#, c-format
+#~ msgid "invalid <txt> element found in <dns> of network %1$s"
+#~ msgstr "网络 %1$s 的 <dns> 中发现无效的 <txt> 元素"
+
+#~ msgid "missing interface information"
+#~ msgstr "缺少接口信息"
+
+#~ msgid "no VPD <fields> elements with an access type attribute found"
+#~ msgstr "没有找到带有访问类型属性的 VPD <fields> 元素"
+
+#~ msgid "shmem size must be a power of two"
+#~ msgstr "shmem 大小必须是 2 的幂"
+
+#~ msgid "shmem size must be at least 1 MiB (1024 KiB)"
+#~ msgstr "shmem 大小必须至少为 1 MiB(1024 KiB)"
+
+#~ msgid "unable to create volume XML"
+#~ msgstr "无法创建卷 XML"
+
+#~ msgid "unknown secret usage type"
+#~ msgstr "未知的 secret 用法类型"
+
+#, c-format
+#~ msgid "unknown secret usage type %1$s"
+#~ msgstr "未知的 secret 用法类型 %1$s"
+
+#~ msgid "vhost_user type support UNIX socket in this CH"
+#~ msgstr "vhost_user 类型在这个 CH 中支持 UNIX 套接字"
 
 #~ msgid "Cannot use direct socket mode if no URI is set"
 #~ msgstr "如果没有设置 URI，则无法使用直接套接字模式"

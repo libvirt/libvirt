@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-01-09 09:05+0000\n"
+"POT-Creation-Date: 2024-02-26 13:37+0000\n"
 "PO-Revision-Date: 2024-02-12 10:24+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1135,6 +1135,10 @@ msgid "'%1$s'"
 msgstr "'%1$s'"
 
 #, c-format
+msgid "'%1$s' 'index' value '%2$s' malformed"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' D-Bus address is not handled"
 msgstr "'%1$s' D-Bus 주소를 다루지 않습니다"
 
@@ -1704,21 +1708,9 @@ msgstr ""
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "<snapshot> (복구) 요소는 현재 'rdb' 디스크에서만 지원됩니다"
 
-msgid "<system_field> evaluation has failed"
-msgstr "<system_field> 평가가 실패했습니다"
-
-msgid "<system_field> value evaluation has failed"
-msgstr "<system_field> 가치 평가가 실패했습니다"
-
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid>가 비밀 정보 파일 이름 '%1$s'와 일치하지 않습니다"
-
-msgid "<vendor_field> evaluation has failed"
-msgstr "<vendor_field> 평가가 실패했습니다"
-
-msgid "<vendor_field> value evaluation has failed"
-msgstr "<vendor_field> 가치 평가가 실패했습니다"
 
 #, c-format
 msgid ""
@@ -2061,6 +2053,9 @@ msgstr "비동기 메시지를 동기화식 대답을 사용하여 보내려고 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "PCI 주소 %1$s를 이중으로 사용하려고 시도했습니다"
+
+msgid "Attempting to start nbdkit twice"
+msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2917,18 +2912,6 @@ msgstr ""
 msgid "Cannot extract CPU definition from domain capabilities XML"
 msgstr "도메인 기능 XML에서 CPU 정의를 추출 할 수 없습니다"
 
-msgid "Cannot extract cache nodes under cachetune"
-msgstr "캐쉬튠하에서 캐쉬 노드를 추출 할 수 없습니다"
-
-msgid "Cannot extract memnode nodes"
-msgstr "memnode 노드를 추출 할 수 없습니다"
-
-msgid "Cannot extract memory nodes under memorytune"
-msgstr "메모리튠하에서 메모리 노드를 추출 할 수 없습니다"
-
-msgid "Cannot extract monitor nodes"
-msgstr "모니터 노드에서 추출 할 수 없습니다"
-
 #, c-format
 msgid "Cannot extract running %1$s hypervisor version\n"
 msgstr "실행중인 %1$s 하이퍼바이저 버전을 추출 할 수 없음\n"
@@ -3442,6 +3425,20 @@ msgid "Cannot unshare uninitialized CURL handle"
 msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 
 #, c-format
+msgid ""
+"Cannot update device '%1$s', parent address mismatch (current parent address "
+"'%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
+msgstr ""
+
+#, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "%1$s 전송을 위한 다이렉트 소켓 모드를 사용 할 수 없습니다"
 
@@ -3449,9 +3446,9 @@ msgid ""
 "Cannot use direct socket mode if no URI is set. For more information see "
 "https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
-"만약 URI가 아닌 설정이면 직접 소켓 방식을 사용 할 수 없습니다. 더 많은 "
-"정보를 위해 https://libvirt.org/kbase/failed_connection_after_install.html를 "
-"참고하세요"
+"만약 URI가 아닌 설정이면 직접 소켓 방식을 사용 할 수 없습니다. 더 많은 정보"
+"를 위해 https://libvirt.org/kbase/failed_connection_after_install.html를 참고"
+"하세요"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -4613,10 +4610,6 @@ msgid "Could not open TPM device's cancel path %1$s"
 msgstr "TPM 장치의 취소 경로 %1$s를 열 수 없습니다"
 
 #, c-format
-msgid "Could not parse %1$s VPD resource fields"
-msgstr "%1$s VPD 자원 부분을 구문 분석 할 수 없습니다"
-
-#, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
 msgstr "'%1$s'의 'bonding/arp_interval' '%2$s'를 구문 분석 할 수 없습니다"
 
@@ -5129,9 +5122,6 @@ msgstr "데이터 저장소 정보에 예상치 않은 유형이 있습니다"
 msgid "Default paths:"
 msgstr "기본 경로:"
 
-msgid "Define a device by an xml file on a node"
-msgstr "노드의 xml 파일로 장치를 정의하십시오"
-
 msgid "Define a domain."
 msgstr "도메인 정의."
 
@@ -5140,6 +5130,9 @@ msgstr "새로운 네트워크 필터 정의 또는 기존의 것 최신화."
 
 msgid "Define a pool."
 msgstr "풀(Pool) 정의."
+
+msgid "Define or modify a device by an xml file on a node"
+msgstr ""
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "물리적 호스트 연결장치 목록 반환."
@@ -5157,11 +5150,9 @@ msgid "Defined"
 msgstr "정의된"
 
 msgid ""
-"Defines a persistent device on the node that can be assigned to a domain. "
-"The device must be started before it can be assigned to a domain."
+"Defines or modifies a persistent device on the node that can be assigned to "
+"a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
-"도메인에 할당할 수 있는 노드의 영구 장치를 정의합니다. 장치를 도메인에 할당하"
-"려면 먼저 장치를 시작해야 합니다."
 
 msgid "Delete a domain checkpoint"
 msgstr "도메인 점검점 삭제"
@@ -6573,6 +6564,9 @@ msgstr "적재 디렉토리 %1$s를 %2$s에 바인딩하는데 실패했습니�
 msgid "Failed to bind socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 바인딩하지 못했습니다"
 
+msgid "Failed to build net json"
+msgstr ""
+
 msgid "Failed to build pidfile path"
 msgstr "pidfile 경로 만들기 실패"
 
@@ -6672,6 +6666,9 @@ msgstr "나무 목록을 완료하지 못했습니다"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 연결하지 못했습니다"
+
+msgid "Failed to connect to mon socket"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7659,6 +7656,9 @@ msgstr "%1$s 열기 실패"
 msgid "Failed to open '%1$s'"
 msgstr "'%1$s' 열기 실패"
 
+msgid "Failed to open a UNIX socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
 msgstr "VPD 파일 '%1$s'를 열 수 없습니다"
@@ -7714,6 +7714,9 @@ msgstr ""
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
 msgstr "CCW 주소 '%1$s'를 구문 분석 할 수 없음"
+
+msgid "Failed to parse HTTP response code"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -8191,6 +8194,9 @@ msgstr "조회 명령을 보내지 못했습니다. %1$s"
 msgid "Failed to send migration data to destination host"
 msgstr "이전 자료를 대상 호스트로 보내는데 실패함"
 
+msgid "Failed to send net-add request to CH"
+msgstr ""
+
 #, c-format
 msgid "Failed to send request to init control %1$s"
 msgstr "제어 %1$s 초기화에 대한 요청을 보내지 못했습니다"
@@ -8547,6 +8553,10 @@ msgstr "인터페이스 연결 상태 최신화에 실패함"
 msgid "Failed to update network %1$s"
 msgstr "네트워크 %1$s 최신화에 실패함"
 
+#, c-format
+msgid "Failed to update node device %1$s from '%2$s'"
+msgstr ""
+
 msgid "Failed to verify peer's certificate"
 msgstr "피어의 인증서를 확인하지 못했습니다"
 
@@ -8582,6 +8592,9 @@ msgstr "vmx 파일 '%1$s' 쓰기에 실패"
 
 msgid "Failed to write xml description"
 msgstr "xml 설명을 쓰지 못했습니다"
+
+msgid "Failed while adding guest interfaces"
+msgstr ""
 
 msgid "Failed! Volume not removed."
 msgstr "실패하였습니다! 볼륨은 제거되었습니다."
@@ -9041,6 +9054,9 @@ msgstr "게스트 에이전트가 응답하지 않음: %1$s"
 msgid "Guest agent not available for now"
 msgstr "지금은 게스트 에이전트를 사용 할 수 없습니다"
 
+msgid "Guest networking is not supported by this version of ch"
+msgstr ""
+
 msgid "HMAT is not supported with this QEMU"
 msgstr "이 QEMU에서는 HMAT가 지원되지 않습니다"
 
@@ -9311,8 +9327,9 @@ msgstr "IO쓰레드 식별번호"
 
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
-msgstr "디스크 '%1$s'를 위한 IO 쓰레드 대응은 이 QEMU 바이너리와 함께 사용 할 수 "
-"없습니다"
+msgstr ""
+"디스크 '%1$s'를 위한 IO 쓰레드 대응은 이 QEMU 바이너리와 함께 사용 할 수 없습"
+"니다"
 
 msgid "IOThread to be used by supported device"
 msgstr "지원되는 장치에서 사용할 IOThread"
@@ -11726,6 +11743,11 @@ msgstr "NIC 모델은 지원되지 않습니다"
 msgid "NOTE"
 msgstr "기록"
 
+msgid ""
+"NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
+"virtqemud:///system)\n"
+msgstr ""
+
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON 유형은 명령줄로 변환할 수 없습니다"
 
@@ -12375,7 +12397,8 @@ msgstr ""
 
 msgid ""
 "No user interaction callback provided: Can't retrieve private key passphrase"
-msgstr "제공된 사용자 상호 작용 콜백 없음: 개인 키 암호문을 검색 할 수 없습니다"
+msgstr ""
+"제공된 사용자 상호 작용 콜백 없음: 개인 키 암호문을 검색 할 수 없습니다"
 
 msgid ""
 "No user interaction callback provided: Can't verify the session host key"
@@ -12590,6 +12613,9 @@ msgstr "'credit' 및 'credit2' 스케줄러만 지원됩니다"
 
 msgid "Only 1 IDE controller is supported"
 msgstr "1개의 IDE 컨트롤러만 지원됩니다"
+
+msgid "Only 1 cluster per die is supported"
+msgstr ""
 
 msgid "Only 1 die per socket is supported"
 msgstr "소켓당 1개의 다이만 지원됩니다"
@@ -12817,8 +12843,13 @@ msgstr "--all 옵션은 --inactive와 호환되지 않습니다"
 msgid "Option --file is required"
 msgstr "옵션 --file이 필요합니다"
 
-msgid "Option --tree is incompatible with --cap and --inactive"
-msgstr "--tree 옵션은 --cap 및 --inactive와 호환되지 않습니다"
+msgid "Option --transient is incompatible with --persistent and --inactive"
+msgstr ""
+
+msgid ""
+"Option --tree is incompatible with --cap, --inactive, --persistent and --"
+"transient"
+msgstr ""
 
 msgid "Option argument is empty"
 msgstr "옵션 인수가 비어 있습니다"
@@ -13180,6 +13211,14 @@ msgstr "Policy kit가 동작 %1$s을 <anonymous>에서 거부했습니다"
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "폴킷을 사용할 수 없는 경우에도 폴킷 인증을 시도했습니다"
+
+#, c-format
+msgid "Poll on sock %1$d failed"
+msgstr ""
+
+#, c-format
+msgid "Poll on sock %1$d timed out"
+msgstr ""
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13661,6 +13700,10 @@ msgstr "요청한 동작이 바르지 않습니다"
 #, c-format
 msgid "Requested operation is not valid: %1$s"
 msgstr "요청한 동작이 바르지 않습니다: %1$s"
+
+#, c-format
+msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -15004,6 +15047,10 @@ msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "대상 CPU 점검 %1$s는 소스 %2$s와 일치하지 않습니다"
 
 #, c-format
+msgid "Target CPU clusters %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
 msgstr "대상 CPU 코어는 %1$d 소스 %2$d와 일치하지 않습니다"
 
@@ -15562,6 +15609,11 @@ msgstr "대상 입력 모델 %1$s은 소스 %2$s와 일치하지 않습니다"
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "대상 최대 메모리 크기 '%1$llu'이(가) 소스 '%2$llu'와 일치하지 않습니다"
+
+msgid ""
+"Target memory device 'dynamicMemslots' property doesn't match source memory "
+"device"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16814,10 +16866,6 @@ msgstr "디스크 하위 항목을 닫을 수 없습니다"
 msgid "Unable to close recursively all disks"
 msgstr "모든 디스크를 재귀적으로 닫을 수 없음"
 
-#, c-format
-msgid "Unable to close the VPD file, fd: %1$d"
-msgstr "fd인 VPD 파일을 닫을 수 없습니다: %1$d"
-
 msgid "Unable to close the new medium"
 msgstr "새로운 미디어를 닫을 수 없습니다"
 
@@ -17643,6 +17691,13 @@ msgstr "FD를 일괄 종료 할 수 없음 (처음=%1$zd, 마지막=%2$zd)"
 
 msgid "Unable to modify live devices"
 msgstr "라이브 장치를 수정 할 수 없습니다"
+
+#, c-format
+msgid "Unable to modify mediated device: %1$s"
+msgstr ""
+
+msgid "Unable to modify mediated device: modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -18748,6 +18803,10 @@ msgstr "뜻밖의 제품군"
 msgid "Unexpected protocol %1$d"
 msgstr "예상치 못한 통신규약 %1$d"
 
+#, c-format
+msgid "Unexpected response from CH: %1$d"
+msgstr ""
+
 msgid "Unexpected root filesystem without loop device"
 msgstr "루프 장치가 없는 예기치 않은 루트 파일 시스템"
 
@@ -19190,6 +19249,10 @@ msgid "Unsupported NUMA memory tuning mode '%1$s'"
 msgstr "지원되지 않는 NUMA 메모리 튜닝 모드 '%1$s'"
 
 #, c-format
+msgid "Unsupported Network type %1$d"
+msgstr ""
+
+#, c-format
 msgid "Unsupported OS type: %1$s"
 msgstr "지원되지 않는 OS 유형: %1$s"
 
@@ -19221,8 +19284,8 @@ msgid "Unsupported URI scheme '%1$s'"
 msgstr "지원되지 않는 URI 체계 '%1$s'"
 
 #, c-format
-msgid "Unsupported VPD field access type specified %1$s"
-msgstr "지원되지 않는 VPD 입력부분 접근 유형이 %1$s로 지정되었습니다"
+msgid "Unsupported VPD field access type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -19474,6 +19537,9 @@ msgstr "미사용"
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "%1$s/devices/%2$s/class의 비정상적인 값: %3$s"
 
+msgid "Update a active and/or inactive node device"
+msgstr ""
+
 msgid "Update device from an XML <file>."
 msgstr "XML <file>에서 장치 최신화."
 
@@ -19498,8 +19564,23 @@ msgstr "최신화된 네트워크 %1$s 영구적 설정"
 msgid "Updated network %1$s persistent config and live state"
 msgstr "최신화된 네트워크 %1$s 영구적 설정과 라이브 상태"
 
+#, c-format
+msgid "Updated node device %1$s live state"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config and live state"
+msgstr ""
+
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr "실행 중인 도메인의 최신화는 VIR_DOMAIN_AFFECT_LIVE 플래그가 필요합니다"
+
+msgid "Updates the configuration of a node device"
+msgstr ""
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "이름공간을 지원하는 커널로 향상"
@@ -19714,9 +19795,6 @@ msgstr "VNC 전원 제어를 사용할 수 없습니다"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC는 connected='keep'만을 지원합니다"
-
-msgid "VPD fields access type parsing has failed"
-msgstr "VPD 입력부분 접근 유형 구문분석에 실패했습니다"
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
@@ -20139,17 +20217,26 @@ msgstr "현재 도메인에 영향"
 msgid "affect current state of network"
 msgstr "네트워크의 현재 상태에 영향"
 
+msgid "affect current state of node device"
+msgstr ""
+
 msgid "affect next boot"
 msgstr "다음 부팅에 영향을 줍니다"
 
 msgid "affect next network startup"
 msgstr "다음 네트워크 시작 중에 영향을 줍니다"
 
+msgid "affect next node device startup"
+msgstr ""
+
 msgid "affect running domain"
 msgstr "실행중인 도메인 영향"
 
 msgid "affect running network"
 msgstr "실행 중인 네트워크에 영향을 미치다"
+
+msgid "affect running node device"
+msgstr ""
 
 msgid "after reverting, change state to paused"
 msgstr "되돌린 후 상태를 일시 중지됨으로 변경하십시오"
@@ -20396,6 +20483,12 @@ msgstr "유형이 일치하지 않는 가상 포트 병합 시도(%1$s 및 %2$s)
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
 msgstr "속성 'limit'은 maxphysaddr 방식 'passthrough'용으로만 지원됩니다"
+
+#, c-format
+msgid ""
+"attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
+"network %1$s"
+msgstr ""
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -20718,7 +20811,8 @@ msgstr "vhostuser 디스크에는 블록 크기 조정이 지원되지 않습니
 msgid ""
 "block resize to full capacity supported only with 'raw' local block-based "
 "disks"
-msgstr "블록은 '원시' 로컬 블록-기반의 디스크에서만 지원되는 전체 용량으로 조정합니다"
+msgstr ""
+"블록은 '원시' 로컬 블록-기반의 디스크에서만 지원되는 전체 용량으로 조정합니다"
 
 msgid "block size must be a power of two"
 msgstr "블록 크기는 2의 제곱이어야 합니다"
@@ -21450,45 +21544,6 @@ msgstr "개인 키 '%1$s'에서 공개 키를 내보낼 수 없습니다"
 #, c-format
 msgid "cannot extend file '%1$s'"
 msgstr "파일 '%1$s'를 확장할 수 없음"
-
-msgid "cannot extract blkiotune nodes"
-msgstr "blkiotune 노드를 추출할 수 없음"
-
-msgid "cannot extract cachetune nodes"
-msgstr "캐쉬튠 노드를 추출 할 수 없습니다"
-
-msgid "cannot extract console devices"
-msgstr "콘솔 장치를 추출할 수 없음"
-
-msgid "cannot extract device leases"
-msgstr "장치 임대를 추출할 수 없음"
-
-msgid "cannot extract emulatorpin nodes"
-msgstr "emulatorpin 노드를 추출할 수 없음"
-
-msgid "cannot extract emulatorsched nodes"
-msgstr "emulatorsched 노드를 추출 할 수 없습니다"
-
-msgid "cannot extract hugepages nodes"
-msgstr "거대 페이지 노드를 추출할 수 없습니다"
-
-msgid "cannot extract iothreadpin nodes"
-msgstr "iothreadpin 노드를 추출할 수 없습니다"
-
-msgid "cannot extract iothreadsched nodes"
-msgstr "iothreadsched 노드를 추출할 수 없습니다"
-
-msgid "cannot extract memorytune nodes"
-msgstr "memorytune 노드를 추출할 수 없습니다"
-
-msgid "cannot extract resource nodes"
-msgstr "리소스 노드를 추출할 수 없음"
-
-msgid "cannot extract snapshot nodes"
-msgstr "순간찍기 노드를 추출 할 수 없습니다"
-
-msgid "cannot extract vcpusched nodes"
-msgstr "vcpusched 노드를 추출할 수 없습니다"
 
 #, c-format
 msgid "cannot fill file '%1$s'"
@@ -24152,8 +24207,9 @@ msgstr "도메인 구성에서 디스크 '%1$s'을(를) 찾을 수 없습니다"
 
 msgid ""
 "disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr "디스크 '대기줄' 계수는 대기줄 대응에 대한 명시적인 io쓰레드를 위해 "
-"구성되어야만 합니다"
+msgstr ""
+"디스크 '대기줄' 계수는 대기줄 대응에 대한 명시적인 io쓰레드를 위해 구성되어야"
+"만 합니다"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "디스크 속성: 디스크[,검사점=유형][,비트맵=이름]"
@@ -24225,8 +24281,9 @@ msgstr "디스크 드라이버 %1$s는 지원되지 않습니다"
 msgid ""
 "disk driver 'iothread' attribute can't be used together with 'iothreads' "
 "subelement"
-msgstr "디스크 드라이버 'io쓰레드' 속성은 'io쓰레드' 하위요소와 함께 사용 될 수 "
-"없습니다"
+msgstr ""
+"디스크 드라이버 'io쓰레드' 속성은 'io쓰레드' 하위요소와 함께 사용 될 수 없습"
+"니다"
 
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "디스크 event_idx 모드는 virtio 버스에 대해서만 지원됩니다"
@@ -25774,12 +25831,6 @@ msgstr "SASL 데이터 인코딩 실패: %1$d(%2$s)"
 msgid "failed to encrypt the data: '%1$s'"
 msgstr "데이터 암호화 실패: '%1$s'"
 
-msgid "failed to evaluate <system_field> elements"
-msgstr "<system_field> 요소 평가에 실패함"
-
-msgid "failed to evaluate <vendor_field> elements"
-msgstr "<vendor_field> 요소 평가에 실패함"
-
 #, c-format
 msgid "failed to execute command '%1$s': %2$s"
 msgstr "명령 '%1$s' 실행 실패: %2$s"
@@ -26189,15 +26240,12 @@ msgstr "%1$s 구문 분석 실패"
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion을(를) 구문 분석하지 못했습니다"
 
-msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "QEMU 기능에서 CPU 차단기를 구문 분석하지 못했습니다"
+msgid "failed to parse PCI VPD string value with invalid characters"
+msgstr ""
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "SCSI 호스트 '%1$s'을(를) 구문 분석하지 못했습니다"
-
-msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr "QEMU 가용 캐쉬에서 STX 부분을 구문 분석하는데 실패함"
 
 msgid "failed to parse agent timeout"
 msgstr "에이전트 시간 초과를 구문 분석하지 못했습니다"
@@ -26249,18 +26297,6 @@ msgstr "포트 번호 '%1$s'을(를) 구문 분석하지 못했습니다"
 msgid "failed to parse pre-migration memlock limit"
 msgstr "사전-이전 memlock 제한을 구문 분석 할 수 없음"
 
-msgid "failed to parse qemu capabilities cpus"
-msgstr "qemu 기능 CPU를 구문 분석하지 못했습니다"
-
-msgid "failed to parse qemu capabilities flags"
-msgstr "qemu 기능 플래그를 구문 분석하지 못했습니다"
-
-msgid "failed to parse qemu capabilities gic"
-msgstr "qemu 기능 gic을 구문 분석하지 못했습니다"
-
-msgid "failed to parse qemu capabilities machines"
-msgstr "qemu 기능 시스템을 구문 분석하지 못했습니다"
-
 msgid "failed to parse qemu device list"
 msgstr "qemu 장치 목록을 구문 분석하지 못했습니다"
 
@@ -26274,9 +26310,6 @@ msgstr "read_iops_device를 구문 분석하지 못했습니다: '%1$s'"
 
 msgid "failed to parse slirp helper list"
 msgstr "slirp 도움 목록을 구문 분석하는데 실패함"
-
-msgid "failed to parse slirp-helper features"
-msgstr "slirp-도움 기능을 구문 분석하는데 실패함"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
@@ -26384,6 +26417,35 @@ msgstr "qemu 헤더를 읽는 것을 실패"
 msgid "failed to read temporary file created with template %1$s"
 msgstr "템플릿 %1$s로 생성된 임시 파일을 읽는 데 실패"
 
+msgid "failed to read the PCI VPD data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: data field length invalid"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: invalid checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: malformed data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing mandatory checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing read-only section"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: parsing ended prematurely"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
+msgstr ""
+
 msgid "failed to reboot domain"
 msgstr "도메인 재부팅 실패"
 
@@ -26392,6 +26454,12 @@ msgstr "udev 모니터에서 장치를 수신하지 못했습니다"
 
 msgid "failed to regenerate genid"
 msgstr "genid 생성에 실패"
+
+msgid "failed to register name server"
+msgstr ""
+
+msgid "failed to register name server: systemd-resolved is not available"
+msgstr ""
 
 msgid "failed to register udev interface driver"
 msgstr "udev 인터페이스 드라이버를 등록하는데 실패"
@@ -27993,42 +28061,6 @@ msgstr "--%1$s 옵션 뒤의 잘못된 '='"
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr "vhostuser 디스크 소스에 대한 잘못된 '유형' 속성"
 
-#, c-format
-msgid "invalid <address> element found in <forward> of network %1$s"
-msgstr "네트워크 %1$s의 <forward>에서 잘못된 <address> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <forwarder> element found in <dns> of network %1$s"
-msgstr "네트워크 %1$s의 <dns>에서 잘못된 <forwarder> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <host> element found in <dns> of network %1$s"
-msgstr "네트워크 %1$s의 <dns>에서 잘못된 <host> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <interface> element found in <forward> of network %1$s"
-msgstr "네트워크 %1$s의 <forward>에서 잘못된 <interface> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <nat> element found in <forward> of network %1$s"
-msgstr "네트워크 %1$s의 <forward>에서 잘못된 <nat> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <pf> element found in <forward> of network %1$s"
-msgstr "네트워크 %1$s의 <forward>에서 잘못된 <pf> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <port> element found in <forward> of network %1$s"
-msgstr "네트워크 %1$s의 <forward>에서 잘못된 <port> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <srv> element found in <dns> of network %1$s"
-msgstr "네트워크 %1$s의 <dns>에서 잘못된 <srv> 요소가 발견되었습니다"
-
-#, c-format
-msgid "invalid <txt> element found in <dns> of network %1$s"
-msgstr "네트워크 %1$s의 <dns>에서 잘못된 <txt> 요소가 발견되었습니다"
-
 msgid "invalid CPU cache level, must be in range [1,3]"
 msgstr "잘못된 CPU 캐시 수준, [1,3] 범위에 있어야 합니다"
 
@@ -28732,8 +28764,9 @@ msgstr "iothread는 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
-msgstr "대기줄 대응하는 io쓰레드는 모든 io쓰레드를 위해 제공되거나 제공되지 않아야 "
-"합니다"
+msgstr ""
+"대기줄 대응하는 io쓰레드는 모든 io쓰레드를 위해 제공되거나 제공되지 않아야 합"
+"니다"
 
 msgid "iothread_id for the IOThread to delete"
 msgstr "삭제할 IOThread의 iothread_id"
@@ -29223,6 +29256,9 @@ msgstr "상위 항목 없는 순간찍기만 나열합니다"
 msgid "list only transient domains"
 msgstr "임시 도메인만 목록화합니다"
 
+msgid "list persistent devices"
+msgstr ""
+
 msgid "list persistent domains"
 msgstr "영구 도메인 나열"
 
@@ -29261,6 +29297,9 @@ msgstr "목록 테이블(기본값)"
 
 msgid "list the name, rather than the full xml"
 msgstr "전체 xml 대신에 이름을 나열합니다"
+
+msgid "list transient devices"
+msgstr ""
 
 msgid "list transient domains"
 msgstr "임시 도메인 목록"
@@ -30483,9 +30522,6 @@ msgstr "입력 장치 타입 빠짐"
 msgid "missing input volume target path"
 msgstr "누락된 입력 볼륨 대상 경로"
 
-msgid "missing interface information"
-msgstr "누락된 인터페이스 정보"
-
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
 msgstr "대기줄 '%1$zd'를 위한 io쓰레드 대응이 누락"
@@ -30978,7 +31014,8 @@ msgstr "설명 대신 제목 수정/가져오기"
 msgid ""
 "modprobe reported success loading module '%1$s', but module is missing from /"
 "sys/module"
-msgstr "modprobe가 성공적은 모듈 적재를 보고했습니다' %1$s', 하지만 모듈은 /sys/"
+msgstr ""
+"modprobe가 성공적은 모듈 적재를 보고했습니다' %1$s', 하지만 모듈은 /sys/"
 "module에서 누락되어 있습니다"
 
 #, c-format
@@ -31198,6 +31235,9 @@ msgstr "SSF %1$d 협상이 충분히 강력하지 않았습니다"
 
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr "중첩된 JSON 배열에서 명령줄로의 변환은 지원되지 않습니다"
+
+msgid "net definition failed validation"
+msgstr ""
 
 msgid "netcat path not valid with native proxy mode"
 msgstr "netcat 경로가 기본 프락시 방식에서 유효하지 않습니다"
@@ -31590,9 +31630,6 @@ msgstr "'%1$s'에 대해 USB 상품 ID가 지정되지 않았습니다"
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
 msgstr "'%1$s'를 위해 공급된 잘못된 USB 제조사 ID"
-
-msgid "no VPD <fields> elements with an access type attribute found"
-msgstr "접근 유형 속성을 갖는 VPD <field> 요소를 찾을 수 없습니다"
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
@@ -32044,6 +32081,10 @@ msgstr "노드 cpu 맵"
 msgid "node device '%1$s' in %2$s must match connection"
 msgstr "%1$s의 노드 장치 '%2$s'는 연결과 일치해야 합니다"
 
+#, c-format
+msgid "node device '%1$s' is not persistent"
+msgstr ""
+
 msgid "node device details in XML"
 msgstr "XML로 된 노드 장치 상세정보"
 
@@ -32053,6 +32094,9 @@ msgstr "노드 장치 이벤트 콜백 %1$d가 등록되지 않았습니다"
 
 msgid "node device information"
 msgstr "노드 장치 정보"
+
+msgid "node device is not active"
+msgstr ""
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr "이 기술환경에서 구현되지 않은 노드 가져오기 메모리 매개변수"
@@ -32093,6 +32137,10 @@ msgstr ""
 #, c-format
 msgid "non unique alias detected: %1$s"
 msgstr "고유하지 않은 별칭이 감지됨: %1$s"
+
+#, c-format
+msgid "non-shared storage migration into '%1$s' target is not supported"
+msgstr ""
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "0이 아닌 ncpus는 NULL cpus와 합치하지 않습니다"
@@ -32819,8 +32867,9 @@ msgstr "pci 장치 할당 백엔드 드라이버 (예: 'vfio' 또는 'xen')"
 
 #, c-format
 msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
-msgstr "pci 드라이버 '%1$s'(모듈 '%2$s'에 의해 적재된 것으로 추정되는)가 sysfs에서 "
-"발견되지 않았습니다"
+msgstr ""
+"pci 드라이버 '%1$s'(모듈 '%2$s'에 의해 적재된 것으로 추정되는)가 sysfs에서 발"
+"견되지 않았습니다"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -33086,10 +33135,9 @@ msgstr "prctl이 KEEPCAPS를 설정하지 못했습니다"
 
 #, c-format
 msgid ""
-"pre-creation of storage target '%1$s' for incremental storage migration of "
-"disk '%2$s' is not supported"
-msgstr "저장소 대상 '%1$s'의 사전-생성(디스크 '%2$s'의 증분 저장소 이전을 위해)은 "
-"지원되지 않습니다"
+"pre-creation of storage target for incremental storage migration of disk "
+"'%1$s' is not supported"
+msgstr ""
 
 msgid "preallocate is not supported on this platform"
 msgstr "이 기술환경에서는 사전 할당이 지원되지 않습니다"
@@ -33649,6 +33697,10 @@ msgstr "recv 핸들러 실패"
 
 msgid "recv holeHandler failed"
 msgstr "recv holeHandler가 실패했습니다"
+
+#, c-format
+msgid "recv on sock %1$d failed"
+msgstr ""
 
 msgid "redefine metadata for existing checkpoint"
 msgstr "기존 체크포인트에 대한 메타데이터 재정의"
@@ -34529,11 +34581,8 @@ msgstr "shmem 이름은 '..'와 같을 수 없습니다"
 msgid "shmem name cannot include '/' character"
 msgstr "shmem 이름은 '/' 문자를 포함할 수 없습니다"
 
-msgid "shmem size must be a power of two"
-msgstr "shmem 크기는 2의 거듭제곱이어야 합니다"
-
-msgid "shmem size must be at least 1 MiB (1024 KiB)"
-msgstr "shmem 크기는 1MiB(1024KiB) 이상이어야 합니다"
+msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
+msgstr ""
 
 msgid "show all possible graphical displays"
 msgstr "가능한 모든 그래픽 표시"
@@ -35953,6 +36002,9 @@ msgstr "임시 도메인에는 영구적 설정이 없습니다"
 msgid "transient is not supported with vhostuser disk"
 msgstr "임시는 vhostuser 디스크에서 지원되지 않습니다"
 
+msgid "transient node devices do not have any persistent config"
+msgstr ""
+
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "전송 '%1$s'는 소켓 특성을 지원하지 않습니다"
@@ -36136,9 +36188,6 @@ msgstr "%1$s에 대한 selinux 컨텍스트를 생성할 수 없습니다"
 msgid "unable to create socket pair"
 msgstr "소켓 쌍을 생성할 수 없음"
 
-msgid "unable to create volume XML"
-msgstr "볼륨 XML을 생성할 수 없습니다"
-
 #, c-format
 msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
@@ -36252,6 +36301,10 @@ msgstr "CPU 계정을 얻을 수 없습니다"
 #, c-format
 msgid "unable to get current process context '%1$s'"
 msgstr "현재 프로세스 문맥 '%1$s'을 얻을 수 없음"
+
+#, c-format
+msgid "unable to get interface index for %1$s"
+msgstr ""
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -37320,13 +37373,6 @@ msgstr "알 수 없는 rng 무작위 백엔드"
 msgid "unknown secret type '%1$s'"
 msgstr "알 수 없는 비밀 유형 '%1$s'"
 
-msgid "unknown secret usage type"
-msgstr "알려져 있지 않은 비밀 사용 유형"
-
-#, c-format
-msgid "unknown secret usage type %1$s"
-msgstr "알려져 있지 않은 비밀 사용 유형 %1$s"
-
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "알려지지 않은 smbios 모드 '%1$s'"
@@ -38259,9 +38305,6 @@ msgstr "가상 호스트 사용자 유형 '%1$s'가 지원되지 않습니다"
 msgid "vhost-user-gpu failed to start"
 msgstr "vhost-user-gpu를 시작하지 못했습니다"
 
-msgid "vhost_user type support UNIX socket in this CH"
-msgstr "vhost_user 유형은 이 CH에서 UNIX 소켓을 지원합니다"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr "vhostuser 디스크는 virtio 버스만 지원합니다"
 
@@ -38447,6 +38490,9 @@ msgstr "컨트롤러 %1$u의 virtio 직렬 포트 %2$u가 이미 사용 중입�
 
 msgid "virtio-mem device is missing <requested/>"
 msgstr "virtio-mem 장치가 누락 <requested/>"
+
+msgid "virtio-mem does not support dynamicMemslots"
+msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem은 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -38903,6 +38949,195 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "<system_field> evaluation has failed"
+#~ msgstr "<system_field> 평가가 실패했습니다"
+
+#~ msgid "<system_field> value evaluation has failed"
+#~ msgstr "<system_field> 가치 평가가 실패했습니다"
+
+#~ msgid "<vendor_field> evaluation has failed"
+#~ msgstr "<vendor_field> 평가가 실패했습니다"
+
+#~ msgid "<vendor_field> value evaluation has failed"
+#~ msgstr "<vendor_field> 가치 평가가 실패했습니다"
+
+#~ msgid "Cannot extract cache nodes under cachetune"
+#~ msgstr "캐쉬튠하에서 캐쉬 노드를 추출 할 수 없습니다"
+
+#~ msgid "Cannot extract memnode nodes"
+#~ msgstr "memnode 노드를 추출 할 수 없습니다"
+
+#~ msgid "Cannot extract memory nodes under memorytune"
+#~ msgstr "메모리튠하에서 메모리 노드를 추출 할 수 없습니다"
+
+#~ msgid "Cannot extract monitor nodes"
+#~ msgstr "모니터 노드에서 추출 할 수 없습니다"
+
+#, c-format
+#~ msgid "Could not parse %1$s VPD resource fields"
+#~ msgstr "%1$s VPD 자원 부분을 구문 분석 할 수 없습니다"
+
+#~ msgid "Define a device by an xml file on a node"
+#~ msgstr "노드의 xml 파일로 장치를 정의하십시오"
+
+#~ msgid ""
+#~ "Defines a persistent device on the node that can be assigned to a domain. "
+#~ "The device must be started before it can be assigned to a domain."
+#~ msgstr ""
+#~ "도메인에 할당할 수 있는 노드의 영구 장치를 정의합니다. 장치를 도메인에 할"
+#~ "당하려면 먼저 장치를 시작해야 합니다."
+
+#~ msgid "Option --tree is incompatible with --cap and --inactive"
+#~ msgstr "--tree 옵션은 --cap 및 --inactive와 호환되지 않습니다"
+
+#, c-format
+#~ msgid "Unable to close the VPD file, fd: %1$d"
+#~ msgstr "fd인 VPD 파일을 닫을 수 없습니다: %1$d"
+
+#, c-format
+#~ msgid "Unsupported VPD field access type specified %1$s"
+#~ msgstr "지원되지 않는 VPD 입력부분 접근 유형이 %1$s로 지정되었습니다"
+
+#~ msgid "VPD fields access type parsing has failed"
+#~ msgstr "VPD 입력부분 접근 유형 구문분석에 실패했습니다"
+
+#~ msgid "cannot extract blkiotune nodes"
+#~ msgstr "blkiotune 노드를 추출할 수 없음"
+
+#~ msgid "cannot extract cachetune nodes"
+#~ msgstr "캐쉬튠 노드를 추출 할 수 없습니다"
+
+#~ msgid "cannot extract console devices"
+#~ msgstr "콘솔 장치를 추출할 수 없음"
+
+#~ msgid "cannot extract device leases"
+#~ msgstr "장치 임대를 추출할 수 없음"
+
+#~ msgid "cannot extract emulatorpin nodes"
+#~ msgstr "emulatorpin 노드를 추출할 수 없음"
+
+#~ msgid "cannot extract emulatorsched nodes"
+#~ msgstr "emulatorsched 노드를 추출 할 수 없습니다"
+
+#~ msgid "cannot extract hugepages nodes"
+#~ msgstr "거대 페이지 노드를 추출할 수 없습니다"
+
+#~ msgid "cannot extract iothreadpin nodes"
+#~ msgstr "iothreadpin 노드를 추출할 수 없습니다"
+
+#~ msgid "cannot extract iothreadsched nodes"
+#~ msgstr "iothreadsched 노드를 추출할 수 없습니다"
+
+#~ msgid "cannot extract memorytune nodes"
+#~ msgstr "memorytune 노드를 추출할 수 없습니다"
+
+#~ msgid "cannot extract resource nodes"
+#~ msgstr "리소스 노드를 추출할 수 없음"
+
+#~ msgid "cannot extract snapshot nodes"
+#~ msgstr "순간찍기 노드를 추출 할 수 없습니다"
+
+#~ msgid "cannot extract vcpusched nodes"
+#~ msgstr "vcpusched 노드를 추출할 수 없습니다"
+
+#~ msgid "failed to evaluate <system_field> elements"
+#~ msgstr "<system_field> 요소 평가에 실패함"
+
+#~ msgid "failed to evaluate <vendor_field> elements"
+#~ msgstr "<vendor_field> 요소 평가에 실패함"
+
+#~ msgid "failed to parse CPU blockers in QEMU capabilities"
+#~ msgstr "QEMU 기능에서 CPU 차단기를 구문 분석하지 못했습니다"
+
+#~ msgid "failed to parse SGX sections in QEMU capabilities cache"
+#~ msgstr "QEMU 가용 캐쉬에서 STX 부분을 구문 분석하는데 실패함"
+
+#~ msgid "failed to parse qemu capabilities cpus"
+#~ msgstr "qemu 기능 CPU를 구문 분석하지 못했습니다"
+
+#~ msgid "failed to parse qemu capabilities flags"
+#~ msgstr "qemu 기능 플래그를 구문 분석하지 못했습니다"
+
+#~ msgid "failed to parse qemu capabilities gic"
+#~ msgstr "qemu 기능 gic을 구문 분석하지 못했습니다"
+
+#~ msgid "failed to parse qemu capabilities machines"
+#~ msgstr "qemu 기능 시스템을 구문 분석하지 못했습니다"
+
+#~ msgid "failed to parse slirp-helper features"
+#~ msgstr "slirp-도움 기능을 구문 분석하는데 실패함"
+
+#, c-format
+#~ msgid "invalid <address> element found in <forward> of network %1$s"
+#~ msgstr ""
+#~ "네트워크 %1$s의 <forward>에서 잘못된 <address> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <forwarder> element found in <dns> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <dns>에서 잘못된 <forwarder> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <host> element found in <dns> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <dns>에서 잘못된 <host> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <interface> element found in <forward> of network %1$s"
+#~ msgstr ""
+#~ "네트워크 %1$s의 <forward>에서 잘못된 <interface> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <nat> element found in <forward> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <forward>에서 잘못된 <nat> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <pf> element found in <forward> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <forward>에서 잘못된 <pf> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <port> element found in <forward> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <forward>에서 잘못된 <port> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <srv> element found in <dns> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <dns>에서 잘못된 <srv> 요소가 발견되었습니다"
+
+#, c-format
+#~ msgid "invalid <txt> element found in <dns> of network %1$s"
+#~ msgstr "네트워크 %1$s의 <dns>에서 잘못된 <txt> 요소가 발견되었습니다"
+
+#~ msgid "missing interface information"
+#~ msgstr "누락된 인터페이스 정보"
+
+#~ msgid "no VPD <fields> elements with an access type attribute found"
+#~ msgstr "접근 유형 속성을 갖는 VPD <field> 요소를 찾을 수 없습니다"
+
+#, c-format
+#~ msgid ""
+#~ "pre-creation of storage target '%1$s' for incremental storage migration "
+#~ "of disk '%2$s' is not supported"
+#~ msgstr ""
+#~ "저장소 대상 '%1$s'의 사전-생성(디스크 '%2$s'의 증분 저장소 이전을 위해)은 "
+#~ "지원되지 않습니다"
+
+#~ msgid "shmem size must be a power of two"
+#~ msgstr "shmem 크기는 2의 거듭제곱이어야 합니다"
+
+#~ msgid "shmem size must be at least 1 MiB (1024 KiB)"
+#~ msgstr "shmem 크기는 1MiB(1024KiB) 이상이어야 합니다"
+
+#~ msgid "unable to create volume XML"
+#~ msgstr "볼륨 XML을 생성할 수 없습니다"
+
+#~ msgid "unknown secret usage type"
+#~ msgstr "알려져 있지 않은 비밀 사용 유형"
+
+#, c-format
+#~ msgid "unknown secret usage type %1$s"
+#~ msgstr "알려져 있지 않은 비밀 사용 유형 %1$s"
+
+#~ msgid "vhost_user type support UNIX socket in this CH"
+#~ msgstr "vhost_user 유형은 이 CH에서 UNIX 소켓을 지원합니다"
 
 #~ msgid "Cannot use direct socket mode if no URI is set"
 #~ msgstr ""

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-01-09 09:05+0000\n"
+"POT-Creation-Date: 2024-02-26 13:37+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1064,6 +1064,10 @@ msgid "'%1$s'"
 msgstr "'%1$s'"
 
 #, c-format
+msgid "'%1$s' 'index' value '%2$s' malformed"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' D-Bus address is not handled"
 msgstr ""
 
@@ -1630,21 +1634,9 @@ msgstr ""
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "VFIO साधन वाटप आत्ता या प्रणालीवर समर्थीत नाही"
 
-msgid "<system_field> evaluation has failed"
-msgstr ""
-
-msgid "<system_field> value evaluation has failed"
-msgstr ""
-
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid> गोपणीय फाइल नाव '%1$s' सह जुळत नाही"
-
-msgid "<vendor_field> evaluation has failed"
-msgstr ""
-
-msgid "<vendor_field> value evaluation has failed"
-msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -1981,6 +1973,9 @@ msgstr "सिंक्रोनस प्रतिसादसह सिंक�
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "PCI पत्ता %1$s चे दोनवेळा वापरकरिता प्रयत्न केले"
+
+msgid "Attempting to start nbdkit twice"
+msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2811,21 +2806,6 @@ msgstr "इतर डोमेनवर प्रभाव न पाडता �
 msgid "Cannot extract CPU definition from domain capabilities XML"
 msgstr ""
 
-#, fuzzy
-msgid "Cannot extract cache nodes under cachetune"
-msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
-
-msgid "Cannot extract memnode nodes"
-msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
-
-#, fuzzy
-msgid "Cannot extract memory nodes under memorytune"
-msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
-
-#, fuzzy
-msgid "Cannot extract monitor nodes"
-msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
-
 #, c-format
 msgid "Cannot extract running %1$s hypervisor version\n"
 msgstr "चालू %1$s हाइपरवाइजर आवृत्ती काढू शकत नाही\n"
@@ -3344,6 +3324,20 @@ msgstr "mount namespace unshare करणे अशक्य"
 
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "अनइनिशिअलाइज्ड् CURL हँडलला शेअरअशक्य करणे अशक्य"
+
+#, c-format
+msgid ""
+"Cannot update device '%1$s', parent address mismatch (current parent address "
+"'%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -4543,10 +4537,6 @@ msgid "Could not open TPM device's cancel path %1$s"
 msgstr "इंपुट मार्ग '%1$s' उघडणे अशक्य"
 
 #, c-format
-msgid "Could not parse %1$s VPD resource fields"
-msgstr ""
-
-#, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
 msgstr "'%2$s' करिता 'bonding/arp_interval' '%1$s' पुनःप्राप्ति अशक्य"
 
@@ -5060,9 +5050,6 @@ msgstr "DatastoreInfo मध्ये अनपेक्षित प्रक�
 msgid "Default paths:"
 msgstr ""
 
-msgid "Define a device by an xml file on a node"
-msgstr ""
-
 msgid "Define a domain."
 msgstr "डोमेन व्याख्यीत करा."
 
@@ -5071,6 +5058,9 @@ msgstr "नवीन नेटवर्क फिल्टर व्याख्
 
 msgid "Define a pool."
 msgstr "संग्रह व्याख्यीत करा."
+
+msgid "Define or modify a device by an xml file on a node"
+msgstr ""
 
 #, fuzzy
 msgid "Define or modify a persistent physical host interface."
@@ -5091,8 +5081,8 @@ msgid "Defined"
 msgstr "ठरविलेले"
 
 msgid ""
-"Defines a persistent device on the node that can be assigned to a domain. "
-"The device must be started before it can be assigned to a domain."
+"Defines or modifies a persistent device on the node that can be assigned to "
+"a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
 
 #, fuzzy
@@ -6511,6 +6501,9 @@ msgstr "माउंट डिरेक्ट्री %1$s ला %2$s कर�
 msgid "Failed to bind socket to '%1$s'"
 msgstr "'%1$s' करिता सॉकेट बाइंड करण्यास अपयशी"
 
+msgid "Failed to build net json"
+msgstr ""
+
 msgid "Failed to build pidfile path"
 msgstr "pidfile मार्ग बिल्ड करण्यास अपयशी"
 
@@ -6610,6 +6603,9 @@ msgstr "ट्रि सूची पूर्ण करण्यास अप�
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "सॉकेटला '%1$s' शी जोडणी करण्यास अपयशी"
+
+msgid "Failed to connect to mon socket"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7606,6 +7602,9 @@ msgstr "%1$s उघडण्यास अपयशी"
 msgid "Failed to open '%1$s'"
 msgstr "'%1$s' उघडणे अपयशी"
 
+msgid "Failed to open a UNIX socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
@@ -7659,6 +7658,9 @@ msgstr "URI घटक %1$s चे मूल्य वाचण्यास अ�
 
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
+msgstr ""
+
+msgid "Failed to parse HTTP response code"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8140,6 +8142,9 @@ msgstr "डोमेन %1$s निलंबित करण्यास अप�
 msgid "Failed to send migration data to destination host"
 msgstr "लक्ष्य यजमानकरिता माइग्रेशन डाटा पाठविण्यास अपयशी"
 
+msgid "Failed to send net-add request to CH"
+msgstr ""
+
 #, c-format
 msgid "Failed to send request to init control %1$s"
 msgstr "init कंट्रोल %1$s करिता विनंती पाठवण्यास अपयशी"
@@ -8491,6 +8496,10 @@ msgstr "इंटरफेस लिंक स्तर सुधारित �
 msgid "Failed to update network %1$s"
 msgstr "नेटवर्क %1$s सुधारित करण्यास अपयशी"
 
+#, c-format
+msgid "Failed to update node device %1$s from '%2$s'"
+msgstr ""
+
 msgid "Failed to verify peer's certificate"
 msgstr "पिअरचे सर्टिफिकेट तपासण्यास अपयशी"
 
@@ -8526,6 +8535,9 @@ msgstr "vmx फाइल '%1$s' लिहण्यास अपयशी"
 
 msgid "Failed to write xml description"
 msgstr "xml वर्णन लिहण्यास अपयशी"
+
+msgid "Failed while adding guest interfaces"
+msgstr ""
 
 msgid "Failed! Volume not removed."
 msgstr "अपयशी! खंड काढून टाकले नाही."
@@ -8981,6 +8993,9 @@ msgstr "अतिथी एजंट प्रतिसाद देत ना�
 
 msgid "Guest agent not available for now"
 msgstr "अतिथी एजंट आत्ता अनुपलब्ध"
+
+msgid "Guest networking is not supported by this version of ch"
+msgstr ""
 
 msgid "HMAT is not supported with this QEMU"
 msgstr ""
@@ -11693,6 +11708,11 @@ msgstr "hpet टाइमर समर्थीत नाही"
 msgid "NOTE"
 msgstr "टिप"
 
+msgid ""
+"NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
+"virtqemud:///system)\n"
+msgstr ""
+
 msgid "NULL JSON type can't be converted to commandline"
 msgstr ""
 
@@ -12585,6 +12605,9 @@ msgstr ""
 msgid "Only 1 IDE controller is supported"
 msgstr "फक्त PTY कंसोर प्रकार समर्थीत आहेत"
 
+msgid "Only 1 cluster per die is supported"
+msgstr ""
+
 #, fuzzy
 msgid "Only 1 die per socket is supported"
 msgstr "फक्त एक रिसोअर्स एलिमेंट समर्थीत आहे"
@@ -12824,7 +12847,12 @@ msgstr ""
 msgid "Option --file is required"
 msgstr ""
 
-msgid "Option --tree is incompatible with --cap and --inactive"
+msgid "Option --transient is incompatible with --persistent and --inactive"
+msgstr ""
+
+msgid ""
+"Option --tree is incompatible with --cap, --inactive, --persistent and --"
+"transient"
 msgstr ""
 
 msgid "Option argument is empty"
@@ -13188,6 +13216,14 @@ msgstr "<anonymous> पासून पॉलिसि किटने कृत
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "Polkit ओळख पटवण्याचा प्रयत्न केला, polkit अनुपलब्ध असल्यावरही"
+
+#, c-format
+msgid "Poll on sock %1$d failed"
+msgstr ""
+
+#, c-format
+msgid "Poll on sock %1$d timed out"
+msgstr ""
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13669,6 +13705,10 @@ msgstr "विनंतीकृत कार्यपद्धती वैध 
 #, c-format
 msgid "Requested operation is not valid: %1$s"
 msgstr "विनंतीकृत कार्यपद्धती वैध नाही: %1$s"
+
+#, c-format
+msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -15038,6 +15078,10 @@ msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "लक्ष्य CPU आर्क %1$s स्रोत %2$s सह जुळत नाही"
 
 #, c-format
+msgid "Target CPU clusters %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
 msgstr "लक्ष्य CPU कोरस् %1$d, स्रोत %2$d सह जुळत नाही"
 
@@ -15580,6 +15624,11 @@ msgstr "लक्ष्य CPU मोड %1$s स्रोत %2$s सह जु
 #, fuzzy, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "लक्ष्य डोमैन कमाल मेमरि %lld स्रोत %lld सह जुळत नाही"
+
+msgid ""
+"Target memory device 'dynamicMemslots' property doesn't match source memory "
+"device"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16793,10 +16842,6 @@ msgstr "डिस्क चिल्डरन बंद करणे अशक�
 msgid "Unable to close recursively all disks"
 msgstr "सर्व डिस्क्सना पाठोपाठ बंद करणे अशक्य"
 
-#, c-format
-msgid "Unable to close the VPD file, fd: %1$d"
-msgstr ""
-
 msgid "Unable to close the new medium"
 msgstr ""
 
@@ -17653,6 +17698,13 @@ msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "लाइव्ह साधनांना संपादित करणे अशक्य"
+
+#, c-format
+msgid "Unable to modify mediated device: %1$s"
+msgstr ""
+
+msgid "Unable to modify mediated device: modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -18780,6 +18832,10 @@ msgstr "अनपेक्षित प्रोटोकॉल %d"
 msgid "Unexpected protocol %1$d"
 msgstr "अनपेक्षित प्रोटोकॉल %1$d"
 
+#, c-format
+msgid "Unexpected response from CH: %1$d"
+msgstr ""
+
 msgid "Unexpected root filesystem without loop device"
 msgstr "लूप साधनविना अनपेक्षीत रूट फाइलप्रणाली"
 
@@ -19224,6 +19280,10 @@ msgid "Unsupported NUMA memory tuning mode '%1$s'"
 msgstr "असमर्थीत NUMA मेमरि ट्युनिंग मोड '%1$s'"
 
 #, c-format
+msgid "Unsupported Network type %1$d"
+msgstr ""
+
+#, c-format
 msgid "Unsupported OS type: %1$s"
 msgstr "असमर्थीत OS प्रकार: %1$s"
 
@@ -19256,7 +19316,7 @@ msgid "Unsupported URI scheme '%1$s'"
 msgstr "असमर्थीत SMBIOS मोड '%1$s'"
 
 #, c-format
-msgid "Unsupported VPD field access type specified %1$s"
+msgid "Unsupported VPD field access type '%1$s'"
 msgstr ""
 
 #, c-format
@@ -19514,6 +19574,9 @@ msgstr "न वापरलेले"
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "%1$s/devices/%2$s/class: %3$s अंतर्गत असामान्य मूल्य"
 
+msgid "Update a active and/or inactive node device"
+msgstr ""
+
 msgid "Update device from an XML <file>."
 msgstr "XML <file> पासून साधन सुधारित करा."
 
@@ -19538,7 +19601,22 @@ msgstr "नेटवर्क पर्सिस्टंस् माहित�
 msgid "Updated network %1$s persistent config and live state"
 msgstr "पर्सिस्टंट काँफिग प्राप्ति अपयशी"
 
+#, c-format
+msgid "Updated node device %1$s live state"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config and live state"
+msgstr ""
+
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
+msgstr ""
+
+msgid "Updates the configuration of a node device"
 msgstr ""
 
 msgid "Upgrade to a kernel supporting namespaces"
@@ -19739,9 +19817,6 @@ msgstr ""
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC फक्त connected='keep' करिता समर्थन पुरवते"
-
-msgid "VPD fields access type parsing has failed"
-msgstr ""
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
@@ -20175,17 +20250,26 @@ msgstr "सध्याचे डोमेन प्रभावीत"
 msgid "affect current state of network"
 msgstr "सध्याचे नेटवर्क स्तर प्रभावीत करते"
 
+msgid "affect current state of node device"
+msgstr ""
+
 msgid "affect next boot"
 msgstr "पुढील बूट प्रभावित होते"
 
 msgid "affect next network startup"
 msgstr "पुढील नेटवर्क स्टार्टअप प्रभावीत करते"
 
+msgid "affect next node device startup"
+msgstr ""
+
 msgid "affect running domain"
 msgstr "सुरू डोमेन प्रभावीत"
 
 msgid "affect running network"
 msgstr "कार्यरत नेटवर्क प्रभावीत करते"
+
+msgid "affect running node device"
+msgstr ""
 
 msgid "after reverting, change state to paused"
 msgstr "पूर्वस्थितीत आल्यानंतर, स्तराला थांबवलेकरिता बदलवा"
@@ -20440,6 +20524,12 @@ msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "जुळणी अशक्य प्रकार (%1$s व %2$s) सह वर्च्युअलपोर्टस् एकत्र करण्याचा प्रयत्न"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
+#, c-format
+msgid ""
+"attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
+"network %1$s"
 msgstr ""
 
 #, c-format
@@ -21491,51 +21581,6 @@ msgstr "लक्ष्य '%1$s' पासून विभाजन क्र�
 #, c-format
 msgid "cannot extend file '%1$s'"
 msgstr "फाइल '%1$s' वाढवणे अशक्य"
-
-msgid "cannot extract blkiotune nodes"
-msgstr "blkiotune नोडस् प्राप्त करणे अशक्य"
-
-#, fuzzy
-msgid "cannot extract cachetune nodes"
-msgstr "numatune नोडस् प्राप्त करणे अशक्य"
-
-msgid "cannot extract console devices"
-msgstr "कंसोल साधने प्राप्त करणे अशक्य"
-
-msgid "cannot extract device leases"
-msgstr "डिव्हाइस लिजेस् प्राप्त करणे अशक्य"
-
-msgid "cannot extract emulatorpin nodes"
-msgstr "emulatorpin नोड्स् प्राप्त करणे अशक्य"
-
-#, fuzzy
-msgid "cannot extract emulatorsched nodes"
-msgstr "emulatorpin नोड्स् प्राप्त करणे अशक्य"
-
-msgid "cannot extract hugepages nodes"
-msgstr "ह्युजपेजेस नोड्जची प्राप्ति अशक्य"
-
-msgid "cannot extract iothreadpin nodes"
-msgstr "iothreadpin नोड्ज प्राप्ति अशक्य"
-
-#, fuzzy
-msgid "cannot extract iothreadsched nodes"
-msgstr "iothreadpin नोड्ज प्राप्ति अशक्य"
-
-#, fuzzy
-msgid "cannot extract memorytune nodes"
-msgstr "numatune नोडस् प्राप्त करणे अशक्य"
-
-msgid "cannot extract resource nodes"
-msgstr "रिसोअर्स नोड्स प्राप्त करणे अशक्य"
-
-#, fuzzy
-msgid "cannot extract snapshot nodes"
-msgstr "numatune नोडस् प्राप्त करणे अशक्य"
-
-#, fuzzy
-msgid "cannot extract vcpusched nodes"
-msgstr "रिसोअर्स नोड्स प्राप्त करणे अशक्य"
 
 #, c-format
 msgid "cannot fill file '%1$s'"
@@ -25879,12 +25924,6 @@ msgstr "SASL डाटा: %1$d (%2$s) एंकोड करण्यास अ
 msgid "failed to encrypt the data: '%1$s'"
 msgstr "RBD प्रतिमा '%1$s' उघडण्यास अपयशी"
 
-msgid "failed to evaluate <system_field> elements"
-msgstr ""
-
-msgid "failed to evaluate <vendor_field> elements"
-msgstr ""
-
 #, c-format
 msgid "failed to execute command '%1$s': %2$s"
 msgstr "आदेश '%1$s': %2$s चालवण्यास अपयशी"
@@ -26308,16 +26347,12 @@ msgstr "%1$s वाचण्यास अपयशी"
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion वाचण्यास अपयशी"
 
-#, fuzzy
-msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
+msgid "failed to parse PCI VPD string value with invalid characters"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "int: '%1$s' वाचण्यास अपयशी"
-
-msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr ""
 
 #, fuzzy
 msgid "failed to parse agent timeout"
@@ -26371,19 +26406,6 @@ msgstr "पोर्ट क्रमांक '%1$s' वाचण्यास �
 msgid "failed to parse pre-migration memlock limit"
 msgstr ""
 
-msgid "failed to parse qemu capabilities cpus"
-msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
-
-msgid "failed to parse qemu capabilities flags"
-msgstr "qemu क्षमता फ्लॅग्स् वाचणे अशक्य"
-
-#, fuzzy
-msgid "failed to parse qemu capabilities gic"
-msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
-
-msgid "failed to parse qemu capabilities machines"
-msgstr "qemu क्षमता मशीन्स वाचण्यास अपयशी"
-
 msgid "failed to parse qemu device list"
 msgstr "qemu साधन सूची वाचणे अपयशी"
 
@@ -26398,10 +26420,6 @@ msgstr "read_iops_device: '%1$s' वाचण्यास अपयशी"
 #, fuzzy
 msgid "failed to parse slirp helper list"
 msgstr "qemu साधन सूची वाचणे अपयशी"
-
-#, fuzzy
-msgid "failed to parse slirp-helper features"
-msgstr "इंटिजर: '%s' वाचण्यास अपयशी"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
@@ -26512,6 +26530,35 @@ msgstr "qemu शिर्षक वाचू शकले नाही"
 msgid "failed to read temporary file created with template %1$s"
 msgstr "प्रारूप %1$s सह बनवलेली तात्पूर्ती फाइल वाचण्यास अपयशी"
 
+msgid "failed to read the PCI VPD data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: data field length invalid"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: invalid checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: malformed data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing mandatory checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing read-only section"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: parsing ended prematurely"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
+msgstr ""
+
 msgid "failed to reboot domain"
 msgstr ""
 
@@ -26522,6 +26569,12 @@ msgstr "%s पासून नोड उपकरण निर्माण क�
 #, fuzzy
 msgid "failed to regenerate genid"
 msgstr "uuid निर्माण करण्यास अपयशी"
+
+msgid "failed to register name server"
+msgstr ""
+
+msgid "failed to register name server: systemd-resolved is not available"
+msgstr ""
 
 msgid "failed to register udev interface driver"
 msgstr "udev इंटरफेस ड्राइव्हरची नोंदणी करण्यास अपयशी"
@@ -28115,42 +28168,6 @@ msgstr "पर्याय --%1$s नंतर अवैधन '='"
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
 
-#, c-format
-msgid "invalid <address> element found in <forward> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <address> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <forwarder> element found in <dns> of network %1$s"
-msgstr "नेटवर्क %1$s च्या <dns> अंतर्गत अवैध <forwarder> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <host> element found in <dns> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <dns> मध्ये अवैध <host> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <interface> element found in <forward> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <interface> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <nat> element found in <forward> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <nat> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <pf> element found in <forward> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <pf> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <port> element found in <forward> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <forward> मध्ये अवैध <port> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <srv> element found in <dns> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <dns>मध्ये अवैध <host> एलिमेंट आढळले"
-
-#, c-format
-msgid "invalid <txt> element found in <dns> of network %1$s"
-msgstr "नेटवर्क %1$sच्या <dns> मध्ये अवैध <txt> एलिमेंट आढळले"
-
 #, fuzzy
 msgid "invalid CPU cache level, must be in range [1,3]"
 msgstr "rebootTimeout करिता अवैध मूल्य, व्याप्ति [-1,65535] असणे आवश्यक"
@@ -29369,6 +29386,9 @@ msgstr "फक्त पॅरेंटविना स्नॅपशॉट्�
 msgid "list only transient domains"
 msgstr "फक्त ट्रांजिएंट डोमेन्स दाखवा"
 
+msgid "list persistent devices"
+msgstr ""
+
 msgid "list persistent domains"
 msgstr "पर्सिस्टंट डोमेन्स् सूचीत दाखवा"
 
@@ -29407,6 +29427,9 @@ msgstr "तक्त (पूर्वनिर्धारित) सूची�
 
 msgid "list the name, rather than the full xml"
 msgstr "संपूर्ण xml ऐवजी, नाव सूचीत दाखवा"
+
+msgid "list transient devices"
+msgstr ""
 
 msgid "list transient domains"
 msgstr "ट्रांजिएंट डोमेन्स् सूचीत दाखवा"
@@ -30680,9 +30703,6 @@ msgstr "इंपुट साधन प्रकार आढळले ना�
 msgid "missing input volume target path"
 msgstr "इंपुट वॉल्युम लक्ष्य मार्ग आढळले नाही"
 
-msgid "missing interface information"
-msgstr "इंटरफेस माहिती आढळली नाही"
-
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
 msgstr ""
@@ -31421,6 +31441,9 @@ msgstr "मध्यस्थी SSF %1$d अपेक्षीतरित्�
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+msgid "net definition failed validation"
+msgstr ""
+
 msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
@@ -31810,9 +31833,6 @@ msgstr "'%1$s' अवैध USB उत्पादन ID पुरविले �
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
 msgstr "'%1$s' करिता USB विक्रेता ID पुरविले गेले नाही"
-
-msgid "no VPD <fields> elements with an access type attribute found"
-msgstr ""
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
@@ -32275,6 +32295,10 @@ msgstr "node cpu मॅप"
 msgid "node device '%1$s' in %2$s must match connection"
 msgstr "डोमेन '%1$s', %2$s अंतर्गत, जोडणीसह जुळले पाहिजे"
 
+#, c-format
+msgid "node device '%1$s' is not persistent"
+msgstr ""
+
 msgid "node device details in XML"
 msgstr "XML अंतर्गत नोड साधन तपशील"
 
@@ -32283,6 +32307,9 @@ msgid "node device event callback %1$d not registered"
 msgstr "डोमेन इव्हेंट कॉलबॅक %1$d ची नोंदणी केली नाही"
 
 msgid "node device information"
+msgstr ""
+
+msgid "node device is not active"
 msgstr ""
 
 msgid "node get memory parameters not implemented on this platform"
@@ -32326,6 +32353,10 @@ msgstr ""
 
 #, c-format
 msgid "non unique alias detected: %1$s"
+msgstr ""
+
+#, c-format
+msgid "non-shared storage migration into '%1$s' target is not supported"
 msgstr ""
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
@@ -33358,8 +33389,8 @@ msgstr "prctl KEEPCAPS सेट करण्यास अपयशी"
 
 #, c-format
 msgid ""
-"pre-creation of storage target '%1$s' for incremental storage migration of "
-"disk '%2$s' is not supported"
+"pre-creation of storage target for incremental storage migration of disk "
+"'%1$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -33936,6 +33967,10 @@ msgstr "nl_recv अपयशी"
 #, fuzzy
 msgid "recv holeHandler failed"
 msgstr "पुन्हप्रारंभ कार्यपद्धती अपयशी"
+
+#, c-format
+msgid "recv on sock %1$d failed"
+msgstr ""
 
 #, fuzzy
 msgid "redefine metadata for existing checkpoint"
@@ -34837,10 +34872,7 @@ msgstr ""
 msgid "shmem name cannot include '/' character"
 msgstr "ipset नावात अवैध अक्षरे समाविष्टीत आहे"
 
-msgid "shmem size must be a power of two"
-msgstr ""
-
-msgid "shmem size must be at least 1 MiB (1024 KiB)"
+msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
 msgstr ""
 
 #, fuzzy
@@ -36220,6 +36252,9 @@ msgstr "ट्रांजिएंट डोमेन्सकरिता प�
 msgid "transient is not supported with vhostuser disk"
 msgstr ""
 
+msgid "transient node devices do not have any persistent config"
+msgstr ""
+
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "ट्रांस्पोर्ट '%1$s' सॉकेट गुणधर्मकरिता समर्थन पुरवत नाही"
@@ -36405,10 +36440,6 @@ msgstr "selinux संदर्भ निर्माण करणे अशक�
 msgid "unable to create socket pair"
 msgstr "सॉकेट जोडी बनवण्यास अशक्य"
 
-#, fuzzy
-msgid "unable to create volume XML"
-msgstr "नियम निर्माण अशक्य"
-
 #, c-format
 msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
@@ -36523,6 +36554,10 @@ msgstr "cpu खाते प्राप्त करण्यास अशक�
 #, c-format
 msgid "unable to get current process context '%1$s'"
 msgstr "सध्याचे प्रोसेस संदर्भ '%1$s' प्राप्त करणे अशक्य"
+
+#, c-format
+msgid "unable to get interface index for %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -37608,13 +37643,6 @@ msgstr ""
 msgid "unknown secret type '%1$s'"
 msgstr "अपरिचीत साधन प्रकार '%1$s'"
 
-msgid "unknown secret usage type"
-msgstr "अपरिचीत गोपणीयता वापरणी प्रकार"
-
-#, c-format
-msgid "unknown secret usage type %1$s"
-msgstr "अपरिचीत गोपणीयता वापरणी प्रकार %1$s"
-
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "अपरिचीत smbios मोड '%1$s'"
@@ -38541,9 +38569,6 @@ msgstr "vhost-user प्रकार '%1$s' समर्थीत नाही"
 msgid "vhost-user-gpu failed to start"
 msgstr "अतिथी सुरू होण्यास अपयशी: %s"
 
-msgid "vhost_user type support UNIX socket in this CH"
-msgstr ""
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
@@ -38727,6 +38752,9 @@ msgid "virtio serial port %1$u on controller %2$u is already occupied"
 msgstr ""
 
 msgid "virtio-mem device is missing <requested/>"
+msgstr ""
+
+msgid "virtio-mem does not support dynamicMemslots"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
@@ -39189,6 +39217,137 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot extract cache nodes under cachetune"
+#~ msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
+
+#~ msgid "Cannot extract memnode nodes"
+#~ msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
+
+#, fuzzy
+#~ msgid "Cannot extract memory nodes under memorytune"
+#~ msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
+
+#, fuzzy
+#~ msgid "Cannot extract monitor nodes"
+#~ msgstr "memnode नोड्ज पुन्हप्राप्ति अशक्य"
+
+#~ msgid "cannot extract blkiotune nodes"
+#~ msgstr "blkiotune नोडस् प्राप्त करणे अशक्य"
+
+#, fuzzy
+#~ msgid "cannot extract cachetune nodes"
+#~ msgstr "numatune नोडस् प्राप्त करणे अशक्य"
+
+#~ msgid "cannot extract console devices"
+#~ msgstr "कंसोल साधने प्राप्त करणे अशक्य"
+
+#~ msgid "cannot extract device leases"
+#~ msgstr "डिव्हाइस लिजेस् प्राप्त करणे अशक्य"
+
+#~ msgid "cannot extract emulatorpin nodes"
+#~ msgstr "emulatorpin नोड्स् प्राप्त करणे अशक्य"
+
+#, fuzzy
+#~ msgid "cannot extract emulatorsched nodes"
+#~ msgstr "emulatorpin नोड्स् प्राप्त करणे अशक्य"
+
+#~ msgid "cannot extract hugepages nodes"
+#~ msgstr "ह्युजपेजेस नोड्जची प्राप्ति अशक्य"
+
+#~ msgid "cannot extract iothreadpin nodes"
+#~ msgstr "iothreadpin नोड्ज प्राप्ति अशक्य"
+
+#, fuzzy
+#~ msgid "cannot extract iothreadsched nodes"
+#~ msgstr "iothreadpin नोड्ज प्राप्ति अशक्य"
+
+#, fuzzy
+#~ msgid "cannot extract memorytune nodes"
+#~ msgstr "numatune नोडस् प्राप्त करणे अशक्य"
+
+#~ msgid "cannot extract resource nodes"
+#~ msgstr "रिसोअर्स नोड्स प्राप्त करणे अशक्य"
+
+#, fuzzy
+#~ msgid "cannot extract snapshot nodes"
+#~ msgstr "numatune नोडस् प्राप्त करणे अशक्य"
+
+#, fuzzy
+#~ msgid "cannot extract vcpusched nodes"
+#~ msgstr "रिसोअर्स नोड्स प्राप्त करणे अशक्य"
+
+#, fuzzy
+#~ msgid "failed to parse CPU blockers in QEMU capabilities"
+#~ msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
+
+#~ msgid "failed to parse qemu capabilities cpus"
+#~ msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
+
+#~ msgid "failed to parse qemu capabilities flags"
+#~ msgstr "qemu क्षमता फ्लॅग्स् वाचणे अशक्य"
+
+#, fuzzy
+#~ msgid "failed to parse qemu capabilities gic"
+#~ msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
+
+#~ msgid "failed to parse qemu capabilities machines"
+#~ msgstr "qemu क्षमता मशीन्स वाचण्यास अपयशी"
+
+#, fuzzy
+#~ msgid "failed to parse slirp-helper features"
+#~ msgstr "इंटिजर: '%s' वाचण्यास अपयशी"
+
+#, c-format
+#~ msgid "invalid <address> element found in <forward> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <address> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <forwarder> element found in <dns> of network %1$s"
+#~ msgstr "नेटवर्क %1$s च्या <dns> अंतर्गत अवैध <forwarder> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <host> element found in <dns> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <dns> मध्ये अवैध <host> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <interface> element found in <forward> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <interface> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <nat> element found in <forward> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <nat> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <pf> element found in <forward> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <forward>मध्ये अवैध <pf> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <port> element found in <forward> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <forward> मध्ये अवैध <port> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <srv> element found in <dns> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <dns>मध्ये अवैध <host> एलिमेंट आढळले"
+
+#, c-format
+#~ msgid "invalid <txt> element found in <dns> of network %1$s"
+#~ msgstr "नेटवर्क %1$sच्या <dns> मध्ये अवैध <txt> एलिमेंट आढळले"
+
+#~ msgid "missing interface information"
+#~ msgstr "इंटरफेस माहिती आढळली नाही"
+
+#, fuzzy
+#~ msgid "unable to create volume XML"
+#~ msgstr "नियम निर्माण अशक्य"
+
+#~ msgid "unknown secret usage type"
+#~ msgstr "अपरिचीत गोपणीयता वापरणी प्रकार"
+
+#, c-format
+#~ msgid "unknown secret usage type %1$s"
+#~ msgstr "अपरिचीत गोपणीयता वापरणी प्रकार %1$s"
 
 #, fuzzy
 #~ msgid "Missing network port driver name"

@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-01-09 09:05+0000\n"
+"POT-Creation-Date: 2024-02-26 13:37+0000\n"
 "PO-Revision-Date: 2023-06-09 13:20+0000\n"
 "Last-Translator: Malte Linke <malte.linke@outlook.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1029,6 +1029,10 @@ msgid "'%1$s'"
 msgstr "'%1$s'"
 
 #, c-format
+msgid "'%1$s' 'index' value '%2$s' malformed"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' D-Bus address is not handled"
 msgstr ""
 
@@ -1599,21 +1603,9 @@ msgstr ""
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr ""
 
-msgid "<system_field> evaluation has failed"
-msgstr ""
-
-msgid "<system_field> value evaluation has failed"
-msgstr ""
-
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid> entspricht nicht dem Secret-Dateinamen '%1$s'"
-
-msgid "<vendor_field> evaluation has failed"
-msgstr ""
-
-msgid "<vendor_field> value evaluation has failed"
-msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -1962,6 +1954,9 @@ msgstr ""
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "Versuchte doppelte Verwendung der PCI-Adresse %1$s"
+
+msgid "Attempting to start nbdkit twice"
+msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2819,22 +2814,6 @@ msgstr ""
 msgid "Cannot extract CPU definition from domain capabilities XML"
 msgstr ""
 
-#, fuzzy
-msgid "Cannot extract cache nodes under cachetune"
-msgstr "Controller-Einheiten können nicht extrahiert werden"
-
-#, fuzzy
-msgid "Cannot extract memnode nodes"
-msgstr "Kann numatune Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "Cannot extract memory nodes under memorytune"
-msgstr "Speicher kann nicht höher als maximaler Speicher festgesetzt werden"
-
-#, fuzzy
-msgid "Cannot extract monitor nodes"
-msgstr "Kann emulatorpin Knoten nicht extrahieren"
-
 #, c-format
 msgid "Cannot extract running %1$s hypervisor version\n"
 msgstr "Kann laufende %1$s Hypervisorversion nicht ermitteln\n"
@@ -3380,6 +3359,20 @@ msgstr "Freigabe des Mount-Namespace kann nicht rückgängig gemacht werden"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr ""
 "Kann nicht für uninitialisierte CURL-Handle die gemeinsame Nutzung aufheben"
+
+#, c-format
+msgid ""
+"Cannot update device '%1$s', parent address mismatch (current parent address "
+"'%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -4610,10 +4603,6 @@ msgid "Could not open TPM device's cancel path %1$s"
 msgstr "Kann Eingabepfad '%1$s' nicht öffnen"
 
 #, c-format
-msgid "Could not parse %1$s VPD resource fields"
-msgstr ""
-
-#, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
 msgstr "Konnte 'bonding/arp_interval' '%1$s' für '%2$s' nicht analysieren"
 
@@ -5146,9 +5135,6 @@ msgstr "Datenspeicher-Information hat unerwarteten Typ"
 msgid "Default paths:"
 msgstr ""
 
-msgid "Define a device by an xml file on a node"
-msgstr ""
-
 msgid "Define a domain."
 msgstr "Domain definieren."
 
@@ -5158,6 +5144,9 @@ msgstr ""
 
 msgid "Define a pool."
 msgstr "Definiere einen Pool."
+
+msgid "Define or modify a device by an xml file on a node"
+msgstr ""
 
 #, fuzzy
 msgid "Define or modify a persistent physical host interface."
@@ -5179,8 +5168,8 @@ msgid "Defined"
 msgstr "Domain definieren."
 
 msgid ""
-"Defines a persistent device on the node that can be assigned to a domain. "
-"The device must be started before it can be assigned to a domain."
+"Defines or modifies a persistent device on the node that can be assigned to "
+"a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
 
 #, fuzzy
@@ -6652,6 +6641,9 @@ msgstr "Verbinden von Verzeichnis %1$s mit %2$s fehlgeschlagen"
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Verbindung mit Socket '%1$s' fehlgeschlagen"
 
+msgid "Failed to build net json"
+msgstr ""
+
 msgid "Failed to build pidfile path"
 msgstr "Konnte PID-Pfad nicht erstellen."
 
@@ -6751,6 +6743,9 @@ msgstr "Konnte die Baum-Auflistung nicht abschließen"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "Socket-Erstellung zu '%1$s' fehlgeschlagen"
+
+msgid "Failed to connect to mon socket"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7766,6 +7761,9 @@ msgstr "Öffnen von '%1$s' fehlgeschlagen"
 msgid "Failed to open '%1$s'"
 msgstr "Öffnen von '%1$s' fehlgeschlagen"
 
+msgid "Failed to open a UNIX socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
@@ -7819,6 +7817,9 @@ msgstr "Konnte den Wert der URI Komponente %1$s nicht analysieren"
 
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
+msgstr ""
+
+msgid "Failed to parse HTTP response code"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8308,6 +8309,9 @@ msgstr "Anhalten von Domain %1$s schlug fehl"
 msgid "Failed to send migration data to destination host"
 msgstr "Verbindung zum Ziel-Host verloren"
 
+msgid "Failed to send net-add request to CH"
+msgstr ""
+
 #, c-format
 msgid "Failed to send request to init control %1$s"
 msgstr "Fehler beim Senden einer Anforderung an init Steuerung %1$s"
@@ -8672,6 +8676,10 @@ msgstr "Fehler beim update des Schnittstellen-Link Status"
 msgid "Failed to update network %1$s"
 msgstr "Netzwerk %1$s konnte nicht aktualisiert werden"
 
+#, c-format
+msgid "Failed to update node device %1$s from '%2$s'"
+msgstr ""
+
 msgid "Failed to verify peer's certificate"
 msgstr "Kann Partner-Zertifikat nicht verifizieren"
 
@@ -8708,6 +8716,9 @@ msgstr "Schreiben von vmx Datei '%1$s' fehlgeschlagen"
 
 msgid "Failed to write xml description"
 msgstr "Schreiben der XML Beschreibung fehlgeschlagen"
+
+msgid "Failed while adding guest interfaces"
+msgstr ""
 
 msgid "Failed! Volume not removed."
 msgstr "Fehlgeschlagen! Datenträger nicht gelöscht."
@@ -9179,6 +9190,9 @@ msgstr "Gast-Agent antwortet nicht: %1$s"
 
 msgid "Guest agent not available for now"
 msgstr "Gast-Agent derzeit nicht verfügbar"
+
+msgid "Guest networking is not supported by this version of ch"
+msgstr ""
 
 msgid "HMAT is not supported with this QEMU"
 msgstr ""
@@ -11959,6 +11973,11 @@ msgstr "hostdev-Modus '%s' nicht unterstützt"
 msgid "NOTE"
 msgstr "BEACHTE"
 
+msgid ""
+"NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
+"virtqemud:///system)\n"
+msgstr ""
+
 msgid "NULL JSON type can't be converted to commandline"
 msgstr ""
 
@@ -12874,6 +12893,9 @@ msgstr ""
 msgid "Only 1 IDE controller is supported"
 msgstr "Nur PTY Konsol Typen werden "
 
+msgid "Only 1 cluster per die is supported"
+msgstr ""
+
 #, fuzzy
 msgid "Only 1 die per socket is supported"
 msgstr "Nur ein Ressource-Element ist unterstützt"
@@ -13122,7 +13144,12 @@ msgstr ""
 msgid "Option --file is required"
 msgstr ""
 
-msgid "Option --tree is incompatible with --cap and --inactive"
+msgid "Option --transient is incompatible with --persistent and --inactive"
+msgstr ""
+
+msgid ""
+"Option --tree is incompatible with --cap, --inactive, --persistent and --"
+"transient"
 msgstr ""
 
 msgid "Option argument is empty"
@@ -13496,6 +13523,14 @@ msgid "Policy kit denied action %1$s from <anonymous>"
 msgstr "Richtlinien Satz verweigert Aktion %1$s von <anonymous>"
 
 msgid "Polkit auth attempted, even though polkit is not available"
+msgstr ""
+
+#, c-format
+msgid "Poll on sock %1$d failed"
+msgstr ""
+
+#, c-format
+msgid "Poll on sock %1$d timed out"
 msgstr ""
 
 #, c-format
@@ -14007,6 +14042,10 @@ msgstr "Angeforderte Operation ist nicht gültig"
 #, c-format
 msgid "Requested operation is not valid: %1$s"
 msgstr "Angeforderte Operation ist nicht gültig: %1$s"
+
+#, c-format
+msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -15430,6 +15469,10 @@ msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "Ziel-CPU arch %1$s stimmt nicht mit der Quelle %2$s überein"
 
 #, c-format
+msgid "Target CPU clusters %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
 msgstr "Ziel-CPU Kerne %1$d stimmen nicht mit der Quelle %2$d überein"
 
@@ -16032,6 +16075,11 @@ msgstr "Ziel-CPU Modell %1$s stimmt nicht mit der Quelle %2$s überein"
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "Ziel Domain maximaler Speicher %lld stimmt nicht mit der Quelle %lld überein"
+
+msgid ""
+"Target memory device 'dynamicMemslots' property doesn't match source memory "
+"device"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -17286,10 +17334,6 @@ msgstr "Kann %s nicht schließen"
 msgid "Unable to close recursively all disks"
 msgstr "Ressource %s kann nicht geöffnet werden"
 
-#, c-format
-msgid "Unable to close the VPD file, fd: %1$d"
-msgstr ""
-
 msgid "Unable to close the new medium"
 msgstr ""
 
@@ -18175,6 +18219,13 @@ msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "Kann Live-Einheiten nicht ändern"
+
+#, c-format
+msgid "Unable to modify mediated device: %1$s"
+msgstr ""
+
+msgid "Unable to modify mediated device: modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -19327,6 +19378,10 @@ msgstr "Unerwarteter Pool-Typ"
 msgid "Unexpected protocol %1$d"
 msgstr "Unerwarteter Pool-Typ"
 
+#, c-format
+msgid "Unexpected response from CH: %1$d"
+msgstr ""
+
 msgid "Unexpected root filesystem without loop device"
 msgstr "Unerwartetes Stamm-Dateisystem ohne Loop-Einheit"
 
@@ -19776,6 +19831,10 @@ msgid "Unsupported NUMA memory tuning mode '%1$s'"
 msgstr "Nicht unterstützter NUMA Speicher-Optimierungs Modus '%1$s'"
 
 #, c-format
+msgid "Unsupported Network type %1$d"
+msgstr ""
+
+#, c-format
 msgid "Unsupported OS type: %1$s"
 msgstr "Nicht unterstützter Betriebssystemtyp: %1$s"
 
@@ -19808,7 +19867,7 @@ msgid "Unsupported URI scheme '%1$s'"
 msgstr "Nicht unterstützter SMBIOS Modus '%1$s'"
 
 #, c-format
-msgid "Unsupported VPD field access type specified %1$s"
+msgid "Unsupported VPD field access type '%1$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -20066,6 +20125,9 @@ msgstr "Unbenutzt"
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr ""
 
+msgid "Update a active and/or inactive node device"
+msgstr ""
+
 msgid "Update device from an XML <file>."
 msgstr "Aktualiseren Einheit von einer XML <file>"
 
@@ -20091,7 +20153,22 @@ msgstr "Konnte Dauerhaftigkeits-Information für Netzwerk nicht erhalten"
 msgid "Updated network %1$s persistent config and live state"
 msgstr "Dauerhafte Konfiguration erhalten fehlgeschlagen"
 
+#, c-format
+msgid "Updated node device %1$s live state"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config and live state"
+msgstr ""
+
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
+msgstr ""
+
+msgid "Updates the configuration of a node device"
 msgstr ""
 
 msgid "Upgrade to a kernel supporting namespaces"
@@ -20301,9 +20378,6 @@ msgstr ""
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC unterstützt nur connected='keep'"
-
-msgid "VPD fields access type parsing has failed"
-msgstr ""
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
@@ -20752,17 +20826,26 @@ msgstr "Einfluss auf aktuelle Domain"
 msgid "affect current state of network"
 msgstr "Einfluss auf aktuellen Status des Netzwerks"
 
+msgid "affect current state of node device"
+msgstr ""
+
 msgid "affect next boot"
 msgstr "Einfluss auf nächsten Systemstart"
 
 msgid "affect next network startup"
 msgstr "Einfluss auf nächsten Netzwerk-Start"
 
+msgid "affect next node device startup"
+msgstr ""
+
 msgid "affect running domain"
 msgstr "Einfluss auf laufende Domain"
 
 msgid "affect running network"
 msgstr "Einfluss auf laufendes Netzwerk"
+
+msgid "affect running node device"
+msgstr ""
 
 msgid "after reverting, change state to paused"
 msgstr "nach dem Zurücksetzen Zustand auf Pause ändern"
@@ -21031,6 +21114,12 @@ msgstr ""
 "zusammenzuführen"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
+#, c-format
+msgid ""
+"attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
+"network %1$s"
 msgstr ""
 
 #, c-format
@@ -22104,53 +22193,6 @@ msgstr "Kann Partitionsnummer von Ziel '%1$s' nicht parsen"
 #, c-format
 msgid "cannot extend file '%1$s'"
 msgstr "Kann Datei '%1$s' nicht erweitern"
-
-msgid "cannot extract blkiotune nodes"
-msgstr "kann blkiotune Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract cachetune nodes"
-msgstr "Kann numatune Knoten nicht extrahieren"
-
-msgid "cannot extract console devices"
-msgstr "Controller-Einheiten können nicht extrahiert werden"
-
-msgid "cannot extract device leases"
-msgstr "Kann Einheiten-Leases nicht extrahieren"
-
-msgid "cannot extract emulatorpin nodes"
-msgstr "Kann emulatorpin Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract emulatorsched nodes"
-msgstr "Kann emulatorpin Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract hugepages nodes"
-msgstr "Kann numatune Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract iothreadpin nodes"
-msgstr "Kann emulatorpin Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract iothreadsched nodes"
-msgstr "Kann Ressource-Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract memorytune nodes"
-msgstr "Kann numatune Knoten nicht extrahieren"
-
-msgid "cannot extract resource nodes"
-msgstr "Kann Ressource-Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract snapshot nodes"
-msgstr "Kann numatune Knoten nicht extrahieren"
-
-#, fuzzy
-msgid "cannot extract vcpusched nodes"
-msgstr "Kann Ressource-Knoten nicht extrahieren"
 
 #, c-format
 msgid "cannot fill file '%1$s'"
@@ -26591,12 +26633,6 @@ msgstr "Kodierung der SASL-Daten fehlgeschlagen: %1$d (%2$s)"
 msgid "failed to encrypt the data: '%1$s'"
 msgstr "Konnte RBD-Image '%1$s' nicht öffnen"
 
-msgid "failed to evaluate <system_field> elements"
-msgstr ""
-
-msgid "failed to evaluate <vendor_field> elements"
-msgstr ""
-
 #, c-format
 msgid "failed to execute command '%1$s': %2$s"
 msgstr "Ausführung des Befehls '%1$s': %2$s fehlgeschlagen"
@@ -27028,16 +27064,12 @@ msgstr "Verarbeiten von %1$s fehlgeschlagen"
 msgid "failed to parse %1$sversion"
 msgstr "Verarbeiten von %1$s fehlgeschlagen"
 
-#, fuzzy
-msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
+msgid "failed to parse PCI VPD string value with invalid characters"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "Analyse des Modus '%1$s' fehlgeschlagen"
-
-msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr ""
 
 #, fuzzy
 msgid "failed to parse agent timeout"
@@ -27092,21 +27124,6 @@ msgstr "Kann Port Nummer nicht analysieren"
 msgid "failed to parse pre-migration memlock limit"
 msgstr ""
 
-#, fuzzy
-msgid "failed to parse qemu capabilities cpus"
-msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
-
-msgid "failed to parse qemu capabilities flags"
-msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
-
-#, fuzzy
-msgid "failed to parse qemu capabilities gic"
-msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
-
-#, fuzzy
-msgid "failed to parse qemu capabilities machines"
-msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
-
 msgid "failed to parse qemu device list"
 msgstr "Konnte QEMU Einheiten-Liste nicht analysieren"
 
@@ -27121,10 +27138,6 @@ msgstr "Analyse des Modus '%1$s' fehlgeschlagen"
 #, fuzzy
 msgid "failed to parse slirp helper list"
 msgstr "Konnte QEMU Einheiten-Liste nicht analysieren"
-
-#, fuzzy
-msgid "failed to parse slirp-helper features"
-msgstr "Analyse des Wertes von %s fehlgeschlagen"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
@@ -27236,6 +27249,35 @@ msgstr "Konnte qemu-Header nicht lesen"
 msgid "failed to read temporary file created with template %1$s"
 msgstr "Konnte die mit der Vorlage %1$s erstellte temporäre Datei nicht lesen"
 
+msgid "failed to read the PCI VPD data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: data field length invalid"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: invalid checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: malformed data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing mandatory checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing read-only section"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: parsing ended prematurely"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
+msgstr ""
+
 msgid "failed to reboot domain"
 msgstr ""
 
@@ -27246,6 +27288,12 @@ msgstr "Erstellen eines Knoten-Geräts aus %s fehlgeschlagen"
 #, fuzzy
 msgid "failed to regenerate genid"
 msgstr "UUID generieren fehlgeschlagen"
+
+msgid "failed to register name server"
+msgstr ""
+
+msgid "failed to register name server: systemd-resolved is not available"
+msgstr ""
 
 msgid "failed to register udev interface driver"
 msgstr "konnte udev Schnittstellen-Treiber nicht registrieren"
@@ -28884,42 +28932,6 @@ msgstr "Ungültiges '=' nach Option --%1$s"
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
 
-#, c-format
-msgid "invalid <address> element found in <forward> of network %1$s"
-msgstr "Ungültiges <address> Element in <forward> von Netzwerk %1$s gefunden"
-
-#, fuzzy, c-format
-msgid "invalid <forwarder> element found in <dns> of network %1$s"
-msgstr "Ungültiges <srv> Element in <dns> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <host> element found in <dns> of network %1$s"
-msgstr "Ungültiges <host> Element in <dns> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <interface> element found in <forward> of network %1$s"
-msgstr "Ungültiges <interface> Element in <forward> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <nat> element found in <forward> of network %1$s"
-msgstr "Ungültiges <nat> Element in <forward> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <pf> element found in <forward> of network %1$s"
-msgstr "Ungültiges <pf> Element in <forward> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <port> element found in <forward> of network %1$s"
-msgstr "Ungültiges <port> Element in <forward> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <srv> element found in <dns> of network %1$s"
-msgstr "Ungültiges <srv> Element in <dns> von Netzwerk %1$s gefunden"
-
-#, c-format
-msgid "invalid <txt> element found in <dns> of network %1$s"
-msgstr "Ungültiges <txt> Element in <dns> von Netzwerk %1$s gefunden"
-
 #, fuzzy
 msgid "invalid CPU cache level, must be in range [1,3]"
 msgstr "ungültiger Wert für rebootTimeout, muss im Bereich [-1,65535] liegen"
@@ -30165,6 +30177,9 @@ msgstr "Listen nur Snapshots ohne übergeordnete"
 msgid "list only transient domains"
 msgstr "Vorübergehende Domains auflisten"
 
+msgid "list persistent devices"
+msgstr ""
+
 msgid "list persistent domains"
 msgstr "Bleibende Domains auflisten"
 
@@ -30203,6 +30218,9 @@ msgstr "Tabelle auflisten (Standard)"
 
 msgid "list the name, rather than the full xml"
 msgstr "Namen statt der vollständigen XML anzeigen"
+
+msgid "list transient devices"
+msgstr ""
 
 msgid "list transient domains"
 msgstr "Vorübergehende Domains auflisten"
@@ -31493,9 +31511,6 @@ msgstr "Fehlender Eingabegerätetyp"
 msgid "missing input volume target path"
 msgstr "Fehlender Zielpfad für Eingabe-Datenträger"
 
-msgid "missing interface information"
-msgstr "fehlende Schnittstellen Information"
-
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
 msgstr ""
@@ -32251,6 +32266,9 @@ msgstr "Verhandlungs-SSF %1$d war nicht stark genug"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+msgid "net definition failed validation"
+msgstr ""
+
 msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
@@ -32654,9 +32672,6 @@ msgstr "Keine USB-Produktkennung angegeben für '%1$s'"
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
 msgstr "Keine USB-Herstellerkennung angegeben für '%1$s'"
-
-msgid "no VPD <fields> elements with an access type attribute found"
-msgstr ""
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
@@ -33130,6 +33145,10 @@ msgstr "Knoten CPU Übersicht"
 msgid "node device '%1$s' in %2$s must match connection"
 msgstr ""
 
+#, c-format
+msgid "node device '%1$s' is not persistent"
+msgstr ""
+
 msgid "node device details in XML"
 msgstr "Knoten-Gerät-Details in XML"
 
@@ -33138,6 +33157,9 @@ msgid "node device event callback %1$d not registered"
 msgstr "Domainereignis %1$d nicht registriert"
 
 msgid "node device information"
+msgstr ""
+
+msgid "node device is not active"
 msgstr ""
 
 msgid "node get memory parameters not implemented on this platform"
@@ -33184,6 +33206,10 @@ msgstr ""
 
 #, c-format
 msgid "non unique alias detected: %1$s"
+msgstr ""
+
+#, c-format
+msgid "non-shared storage migration into '%1$s' target is not supported"
 msgstr ""
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
@@ -34244,8 +34270,8 @@ msgstr "prctl konnte KEEPCAPS nicht setzen"
 
 #, c-format
 msgid ""
-"pre-creation of storage target '%1$s' for incremental storage migration of "
-"disk '%2$s' is not supported"
+"pre-creation of storage target for incremental storage migration of disk "
+"'%1$s' is not supported"
 msgstr ""
 
 #, fuzzy
@@ -34831,6 +34857,10 @@ msgstr "nl_recv fehlgeschlagen"
 #, fuzzy
 msgid "recv holeHandler failed"
 msgstr "Resume-Operation fehlgeschlagen"
+
+#, c-format
+msgid "recv on sock %1$d failed"
+msgstr ""
 
 #, fuzzy
 msgid "redefine metadata for existing checkpoint"
@@ -35772,10 +35802,7 @@ msgstr ""
 msgid "shmem name cannot include '/' character"
 msgstr "ipset Name enthält ungültige Zeichen"
 
-msgid "shmem size must be a power of two"
-msgstr ""
-
-msgid "shmem size must be at least 1 MiB (1024 KiB)"
+msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
 msgstr ""
 
 msgid "show all possible graphical displays"
@@ -37213,6 +37240,9 @@ msgstr "vorübergehende Domänen haben keine anhaltende Konfiguration"
 msgid "transient is not supported with vhostuser disk"
 msgstr ""
 
+msgid "transient node devices do not have any persistent config"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "Pool-Typ '%1$s' unterstützt keine Quell-Entdeckung"
@@ -37400,10 +37430,6 @@ msgstr "Sicherheitskontext %1$s konnte nicht erstellt werden"
 msgid "unable to create socket pair"
 msgstr "Kann kein Socket-Paar erstellen"
 
-#, fuzzy
-msgid "unable to create volume XML"
-msgstr "Kann epoll fd nicht erstellen"
-
 #, c-format
 msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
@@ -37518,6 +37544,10 @@ msgstr "Kann CPU Benutzerkonto nicht erhalten"
 #, c-format
 msgid "unable to get current process context '%1$s'"
 msgstr "Aktueller Prozesskontext »%1$s« kann nicht abgerufen werden"
+
+#, c-format
+msgid "unable to get interface index for %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -38611,13 +38641,6 @@ msgstr ""
 msgid "unknown secret type '%1$s'"
 msgstr "Unbekannter Einheiten Typ '%1$s'"
 
-msgid "unknown secret usage type"
-msgstr "Unbekannter geheimer Gebrauchstyp"
-
-#, c-format
-msgid "unknown secret usage type %1$s"
-msgstr "Unbekannter geheimer Gebrauchstyp %1$s"
-
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "Unbekannter smbios Modus '%1$s'"
@@ -39552,9 +39575,6 @@ msgstr "hostdev-Subsys-Modus '%1$s' nicht unterstützt"
 msgid "vhost-user-gpu failed to start"
 msgstr "Gast konnte nicht gestartet werden: %s"
 
-msgid "vhost_user type support UNIX socket in this CH"
-msgstr ""
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
@@ -39746,6 +39766,9 @@ msgid "virtio serial port %1$u on controller %2$u is already occupied"
 msgstr ""
 
 msgid "virtio-mem device is missing <requested/>"
+msgstr ""
+
+msgid "virtio-mem does not support dynamicMemslots"
 msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
@@ -40215,6 +40238,144 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot extract cache nodes under cachetune"
+#~ msgstr "Controller-Einheiten können nicht extrahiert werden"
+
+#, fuzzy
+#~ msgid "Cannot extract memnode nodes"
+#~ msgstr "Kann numatune Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "Cannot extract memory nodes under memorytune"
+#~ msgstr "Speicher kann nicht höher als maximaler Speicher festgesetzt werden"
+
+#, fuzzy
+#~ msgid "Cannot extract monitor nodes"
+#~ msgstr "Kann emulatorpin Knoten nicht extrahieren"
+
+#~ msgid "cannot extract blkiotune nodes"
+#~ msgstr "kann blkiotune Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract cachetune nodes"
+#~ msgstr "Kann numatune Knoten nicht extrahieren"
+
+#~ msgid "cannot extract console devices"
+#~ msgstr "Controller-Einheiten können nicht extrahiert werden"
+
+#~ msgid "cannot extract device leases"
+#~ msgstr "Kann Einheiten-Leases nicht extrahieren"
+
+#~ msgid "cannot extract emulatorpin nodes"
+#~ msgstr "Kann emulatorpin Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract emulatorsched nodes"
+#~ msgstr "Kann emulatorpin Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract hugepages nodes"
+#~ msgstr "Kann numatune Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract iothreadpin nodes"
+#~ msgstr "Kann emulatorpin Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract iothreadsched nodes"
+#~ msgstr "Kann Ressource-Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract memorytune nodes"
+#~ msgstr "Kann numatune Knoten nicht extrahieren"
+
+#~ msgid "cannot extract resource nodes"
+#~ msgstr "Kann Ressource-Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract snapshot nodes"
+#~ msgstr "Kann numatune Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "cannot extract vcpusched nodes"
+#~ msgstr "Kann Ressource-Knoten nicht extrahieren"
+
+#, fuzzy
+#~ msgid "failed to parse CPU blockers in QEMU capabilities"
+#~ msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
+
+#, fuzzy
+#~ msgid "failed to parse qemu capabilities cpus"
+#~ msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
+
+#~ msgid "failed to parse qemu capabilities flags"
+#~ msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
+
+#, fuzzy
+#~ msgid "failed to parse qemu capabilities gic"
+#~ msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
+
+#, fuzzy
+#~ msgid "failed to parse qemu capabilities machines"
+#~ msgstr "Konnte QEMU Funktionalitäts-Flags nicht analysieren"
+
+#, fuzzy
+#~ msgid "failed to parse slirp-helper features"
+#~ msgstr "Analyse des Wertes von %s fehlgeschlagen"
+
+#, c-format
+#~ msgid "invalid <address> element found in <forward> of network %1$s"
+#~ msgstr ""
+#~ "Ungültiges <address> Element in <forward> von Netzwerk %1$s gefunden"
+
+#, fuzzy, c-format
+#~ msgid "invalid <forwarder> element found in <dns> of network %1$s"
+#~ msgstr "Ungültiges <srv> Element in <dns> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <host> element found in <dns> of network %1$s"
+#~ msgstr "Ungültiges <host> Element in <dns> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <interface> element found in <forward> of network %1$s"
+#~ msgstr ""
+#~ "Ungültiges <interface> Element in <forward> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <nat> element found in <forward> of network %1$s"
+#~ msgstr "Ungültiges <nat> Element in <forward> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <pf> element found in <forward> of network %1$s"
+#~ msgstr "Ungültiges <pf> Element in <forward> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <port> element found in <forward> of network %1$s"
+#~ msgstr "Ungültiges <port> Element in <forward> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <srv> element found in <dns> of network %1$s"
+#~ msgstr "Ungültiges <srv> Element in <dns> von Netzwerk %1$s gefunden"
+
+#, c-format
+#~ msgid "invalid <txt> element found in <dns> of network %1$s"
+#~ msgstr "Ungültiges <txt> Element in <dns> von Netzwerk %1$s gefunden"
+
+#~ msgid "missing interface information"
+#~ msgstr "fehlende Schnittstellen Information"
+
+#, fuzzy
+#~ msgid "unable to create volume XML"
+#~ msgstr "Kann epoll fd nicht erstellen"
+
+#~ msgid "unknown secret usage type"
+#~ msgstr "Unbekannter geheimer Gebrauchstyp"
+
+#, c-format
+#~ msgid "unknown secret usage type %1$s"
+#~ msgstr "Unbekannter geheimer Gebrauchstyp %1$s"
 
 #, fuzzy
 #~ msgid "Missing network port driver name"

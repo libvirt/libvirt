@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-01-09 09:05+0000\n"
+"POT-Creation-Date: 2024-02-26 13:37+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1175,6 +1175,10 @@ msgid "'%1$s'"
 msgstr "'%1$s'"
 
 #, c-format
+msgid "'%1$s' 'index' value '%2$s' malformed"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' D-Bus address is not handled"
 msgstr "'%1$s' D-Bus アドレスが処理されていません"
 
@@ -1741,21 +1745,9 @@ msgstr "<reservations/> は lun デバイスでのみ許可されます"
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "<snapshot> 要素は現在、'rbd' ディスクでのみサポートされます"
 
-msgid "<system_field> evaluation has failed"
-msgstr "<system_field> の評価に失敗しました"
-
-msgid "<system_field> value evaluation has failed"
-msgstr "<system_field> 値の評価に失敗しました"
-
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid>秘密ファイル名 '%1$s' に一致しません"
-
-msgid "<vendor_field> evaluation has failed"
-msgstr "<vendor_field> の評価に失敗しました"
-
-msgid "<vendor_field> value evaluation has failed"
-msgstr "<vendor_field> 値の評価に失敗しました"
 
 #, c-format
 msgid ""
@@ -2096,6 +2088,9 @@ msgstr "同期応答で非同期メッセージの送信を試行します"
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "PCI アドレス %1$s の二重使用が試行されました"
+
+msgid "Attempting to start nbdkit twice"
+msgstr ""
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2969,18 +2964,6 @@ msgstr ""
 msgid "Cannot extract CPU definition from domain capabilities XML"
 msgstr "ドメインケイパビリティー XML から CPU 定義を抽出できません"
 
-msgid "Cannot extract cache nodes under cachetune"
-msgstr "cachetune 配下でキャッシュノードを抽出できません"
-
-msgid "Cannot extract memnode nodes"
-msgstr "memnode ノードを抽出できません"
-
-msgid "Cannot extract memory nodes under memorytune"
-msgstr "memorytune 配下でメモリーノードを抽出できません"
-
-msgid "Cannot extract monitor nodes"
-msgstr "モニターノードを抽出できません"
-
 #, c-format
 msgid "Cannot extract running %1$s hypervisor version\n"
 msgstr "実行中の %1$s ハイパーバイザーのバージョンを抽出できません\n"
@@ -3492,6 +3475,20 @@ msgstr "マウントの名前空間の共有解除できません"
 
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "初期化していない CURL ハンドルを共有解除できません"
+
+#, c-format
+msgid ""
+"Cannot update device '%1$s', parent address mismatch (current parent address "
+"'%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
+msgstr ""
+
+#, c-format
+msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
+msgstr ""
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -4690,10 +4687,6 @@ msgid "Could not open TPM device's cancel path %1$s"
 msgstr "TPM デバイスのキャンセルパス %1$s を開くことができませんでした"
 
 #, c-format
-msgid "Could not parse %1$s VPD resource fields"
-msgstr "%1$s VPD リソースフィールドを解析できませんでした"
-
-#, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
 msgstr "'bonding/arp_interval' '%1$s' ('%2$s' 向け) を解析できませんでした"
 
@@ -5207,9 +5200,6 @@ msgstr "DatastoreInfo が予期しないタイプを持ちます"
 msgid "Default paths:"
 msgstr "デフォルトのパス:"
 
-msgid "Define a device by an xml file on a node"
-msgstr "ノード上の xml ファイルでデバイスを定義します"
-
 msgid "Define a domain."
 msgstr "ドメインを登録します。"
 
@@ -5218,6 +5208,9 @@ msgstr "新規ネットワークフィルターを定義します、または既
 
 msgid "Define a pool."
 msgstr "プールを定義します。"
+
+msgid "Define or modify a device by an xml file on a node"
+msgstr ""
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "永続的な物理ホストインターフェイスを定義または変更します。"
@@ -5235,11 +5228,9 @@ msgid "Defined"
 msgstr "定義済み"
 
 msgid ""
-"Defines a persistent device on the node that can be assigned to a domain. "
-"The device must be started before it can be assigned to a domain."
+"Defines or modifies a persistent device on the node that can be assigned to "
+"a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
-"ドメインに割り当てることができるノード上の永続デバイスを定義します。デバイス"
-"をドメインに割り当てる前に、デバイスを起動する必要があります。"
 
 msgid "Delete a domain checkpoint"
 msgstr "ドメインチェックポイントを削除します"
@@ -6687,6 +6678,9 @@ msgstr "マウントディレクトリー %1$s を %2$s にバインドできま
 msgid "Failed to bind socket to '%1$s'"
 msgstr "ソケットを '%1$s' にバインドできません"
 
+msgid "Failed to build net json"
+msgstr ""
+
 msgid "Failed to build pidfile path"
 msgstr "pidfile パスの構築に失敗しました"
 
@@ -6786,6 +6780,9 @@ msgstr "ツリーの一覧化が完了できませんでした"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "ソケットの '%1$s' への接続に失敗しました"
+
+msgid "Failed to connect to mon socket"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7787,6 +7784,9 @@ msgstr "%1$s のオープンに失敗しました"
 msgid "Failed to open '%1$s'"
 msgstr "'%1$s' を開けませんでした"
 
+msgid "Failed to open a UNIX socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
 msgstr "VPD ファイル '%1$s'を開くことができませんでした"
@@ -7843,6 +7843,9 @@ msgstr "%1$s の解析に失敗しました: com1 と com2 のみがサポート
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
 msgstr "CCW アドレス '%1$s' の解析に失敗しました。"
+
+msgid "Failed to parse HTTP response code"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -8321,6 +8324,9 @@ msgstr "照会コマンドの送信に失敗しました: %1$s"
 msgid "Failed to send migration data to destination host"
 msgstr "マイグレーションデータを宛先ホストに送信できませんでした"
 
+msgid "Failed to send net-add request to CH"
+msgstr ""
+
 #, c-format
 msgid "Failed to send request to init control %1$s"
 msgstr "リクエストを init control %1$s に送信することに失敗しました"
@@ -8686,6 +8692,10 @@ msgstr "インターフェイスのリンクステートの更新に失敗しま
 msgid "Failed to update network %1$s"
 msgstr "ネットワーク %1$s の更新に失敗しました"
 
+#, c-format
+msgid "Failed to update node device %1$s from '%2$s'"
+msgstr ""
+
 msgid "Failed to verify peer's certificate"
 msgstr "ピアの証明書の検証に失敗しました"
 
@@ -8722,6 +8732,9 @@ msgstr "vmx ファイル '%1$s' の書き込みに失敗しました"
 
 msgid "Failed to write xml description"
 msgstr "XML 記述の書き込みに失敗しました"
+
+msgid "Failed while adding guest interfaces"
+msgstr ""
 
 msgid "Failed! Volume not removed."
 msgstr "失敗！ボリュームが削除されませんでした。"
@@ -9193,6 +9206,9 @@ msgstr "ゲストエージェントが応答しません: %1$s"
 
 msgid "Guest agent not available for now"
 msgstr "ゲストエージェントが今のところ利用できません"
+
+msgid "Guest networking is not supported by this version of ch"
+msgstr ""
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "この QEMU では HMAT はサポートされません"
@@ -11953,6 +11969,11 @@ msgstr "NIC モデルはサポートされません"
 msgid "NOTE"
 msgstr "注記"
 
+msgid ""
+"NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
+"virtqemud:///system)\n"
+msgstr ""
+
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON タイプをコマンドラインに変換できません"
 
@@ -12830,6 +12851,9 @@ msgstr "'credit' および 'credit2' スケジューラーのみがサポート�
 msgid "Only 1 IDE controller is supported"
 msgstr "1 つの IDE コントローラーのみがサポートされます"
 
+msgid "Only 1 cluster per die is supported"
+msgstr ""
+
 msgid "Only 1 die per socket is supported"
 msgstr "ソケットごとに 1 つのダイのみがサポートされます"
 
@@ -13067,8 +13091,13 @@ msgstr "オプション --all は --inactive と互換性がありません"
 msgid "Option --file is required"
 msgstr "オプション --file が必要です"
 
-msgid "Option --tree is incompatible with --cap and --inactive"
-msgstr "オプション --tree は --cap および --inactive と互換性がありません"
+msgid "Option --transient is incompatible with --persistent and --inactive"
+msgstr ""
+
+msgid ""
+"Option --tree is incompatible with --cap, --inactive, --persistent and --"
+"transient"
+msgstr ""
 
 msgid "Option argument is empty"
 msgstr "オプション引数が空です"
@@ -13440,6 +13469,14 @@ msgstr "Policy kit が <anonymous> からのアクション %1$s を拒否しま
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "polkit を利用できないにもかかわらず、polkit 認証が試行されました"
+
+#, c-format
+msgid "Poll on sock %1$d failed"
+msgstr ""
+
+#, c-format
+msgid "Poll on sock %1$d timed out"
+msgstr ""
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13939,6 +13976,10 @@ msgstr "要求された操作は有効ではありません"
 #, c-format
 msgid "Requested operation is not valid: %1$s"
 msgstr "要求された操作は有効ではありません: %1$s"
+
+#, c-format
+msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -15330,6 +15371,10 @@ msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "ターゲット CPU チェック %1$s がソース %2$s と一致しません"
 
 #, c-format
+msgid "Target CPU clusters %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
 msgstr "ターゲットの CPU コア数 %1$d がソースの %2$d と一致しません"
 
@@ -15932,6 +15977,11 @@ msgstr "ターゲットの入力モデル %1$s がソース %2$s と一致しま
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
 "ターゲットの最大メモリーサイズ '%1$llu' がソース '%2$llu' と一致しません"
+
+msgid ""
+"Target memory device 'dynamicMemslots' property doesn't match source memory "
+"device"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -17221,10 +17271,6 @@ msgstr "ディスクの子を閉じることができません"
 msgid "Unable to close recursively all disks"
 msgstr "すべてのディスクを再帰的に閉じることができません"
 
-#, c-format
-msgid "Unable to close the VPD file, fd: %1$d"
-msgstr "VPD ファイル、fd を閉じることができません: %1$d"
-
 msgid "Unable to close the new medium"
 msgstr "新しいメディアを閉じられません"
 
@@ -18055,6 +18101,13 @@ msgstr ""
 
 msgid "Unable to modify live devices"
 msgstr "稼働中のデバイスを変更できません"
+
+#, c-format
+msgid "Unable to modify mediated device: %1$s"
+msgstr ""
+
+msgid "Unable to modify mediated device: modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -19157,6 +19210,10 @@ msgstr "予期しない製品ライン"
 msgid "Unexpected protocol %1$d"
 msgstr "予期しないプロトコル %1$d"
 
+#, c-format
+msgid "Unexpected response from CH: %1$d"
+msgstr ""
+
 msgid "Unexpected root filesystem without loop device"
 msgstr "loop デバイスのない予期しない root ファイルシステム"
 
@@ -19607,6 +19664,10 @@ msgid "Unsupported NUMA memory tuning mode '%1$s'"
 msgstr "サポートされない NUMA メモリーチューニングモード '%1$s'"
 
 #, c-format
+msgid "Unsupported Network type %1$d"
+msgstr ""
+
+#, c-format
 msgid "Unsupported OS type: %1$s"
 msgstr "サポートされない OS の種類: %1$s"
 
@@ -19638,8 +19699,8 @@ msgid "Unsupported URI scheme '%1$s'"
 msgstr "サポートされない URI スキーム '%1$s'"
 
 #, c-format
-msgid "Unsupported VPD field access type specified %1$s"
-msgstr "サポートされない VPD フィールドアクセスタイプが指定されました %1$s"
+msgid "Unsupported VPD field access type '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -19898,6 +19959,9 @@ msgstr "未使用"
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "%1$s/devices/%2$s/class に異常な値があります: %3$s"
 
+msgid "Update a active and/or inactive node device"
+msgstr ""
+
 msgid "Update device from an XML <file>."
 msgstr "XML <file> によりデバイスを更新します。"
 
@@ -19922,8 +19986,23 @@ msgstr "更新されたネットワーク %1$s の永続的な設定"
 msgid "Updated network %1$s persistent config and live state"
 msgstr "更新されたネットワーク %1$s の永続的な設定とライブ状態"
 
+#, c-format
+msgid "Updated node device %1$s live state"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config"
+msgstr ""
+
+#, c-format
+msgid "Updated node device %1$s persistent config and live state"
+msgstr ""
+
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr "実行中のドメインの更新には VIR_DOMAIN_AFFECT_LIVE フラグが必要です"
+
+msgid "Updates the configuration of a node device"
+msgstr ""
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "名前空間をサポートするカーネルにアップグレードします"
@@ -20152,9 +20231,6 @@ msgstr "VNC 電源制御は利用できません"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC は connected='keep' のみをサポートします"
-
-msgid "VPD fields access type parsing has failed"
-msgstr "VPD フィールドのアクセスタイプの解析に失敗しました"
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
@@ -20596,17 +20672,26 @@ msgstr "カレントドメインに有効になります"
 msgid "affect current state of network"
 msgstr "ネットワークの現在の状態に反映"
 
+msgid "affect current state of node device"
+msgstr ""
+
 msgid "affect next boot"
 msgstr "次回起動時に有効になります"
 
 msgid "affect next network startup"
 msgstr "ネットワークの次回起動時に反映"
 
+msgid "affect next node device startup"
+msgstr ""
+
 msgid "affect running domain"
 msgstr "実行中のドメインに有効になります"
 
 msgid "affect running network"
 msgstr "実行中のネットワークに反映"
+
+msgid "affect running node device"
+msgstr ""
 
 msgid "after reverting, change state to paused"
 msgstr "復帰後、一時停止状態への変更"
@@ -20862,6 +20947,12 @@ msgid "attempt to merge virtualports with mismatched types (%1$s and %2$s)"
 msgstr "一致しないタイプ (%1$s および %2$s) を持つ仮想ポートの統合の試行"
 
 msgid "attribute 'limit' is only supported for maxphysaddr mode 'passthrough'"
+msgstr ""
+
+#, c-format
+msgid ""
+"attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
+"network %1$s"
 msgstr ""
 
 #, c-format
@@ -21945,45 +22036,6 @@ msgstr "秘密鍵 '%1$s' から公開鍵をエクスポートできません"
 #, c-format
 msgid "cannot extend file '%1$s'"
 msgstr "ファイル '%1$s' を拡張できません"
-
-msgid "cannot extract blkiotune nodes"
-msgstr "blkiotune ノードを抽出できません"
-
-msgid "cannot extract cachetune nodes"
-msgstr "cachetune ノードを抽出できません"
-
-msgid "cannot extract console devices"
-msgstr "コンソールデバイスを抽出できません"
-
-msgid "cannot extract device leases"
-msgstr "デバイスのリースを抽出できません"
-
-msgid "cannot extract emulatorpin nodes"
-msgstr "emulatorpin ノードを抽出できません"
-
-msgid "cannot extract emulatorsched nodes"
-msgstr "emulatorsched ノードを抽出できません"
-
-msgid "cannot extract hugepages nodes"
-msgstr "hugepage ノードを抽出できません"
-
-msgid "cannot extract iothreadpin nodes"
-msgstr "iothreadpin ノードを抽出できません"
-
-msgid "cannot extract iothreadsched nodes"
-msgstr "iothreadsched ノードを抽出できません"
-
-msgid "cannot extract memorytune nodes"
-msgstr "memorytune ノードを抽出できません"
-
-msgid "cannot extract resource nodes"
-msgstr "リソースノードを抽出できません"
-
-msgid "cannot extract snapshot nodes"
-msgstr "snapshot ノードを抽出できません"
-
-msgid "cannot extract vcpusched nodes"
-msgstr "vcpusched ノードを抽出できません"
 
 #, c-format
 msgid "cannot fill file '%1$s'"
@@ -26336,12 +26388,6 @@ msgstr "SASL データのエンコードに失敗しました: %1$d (%2$s)"
 msgid "failed to encrypt the data: '%1$s'"
 msgstr "データの暗号化に失敗しました: '%1$s'"
 
-msgid "failed to evaluate <system_field> elements"
-msgstr "<system_field> 要素の評価に失敗しました"
-
-msgid "failed to evaluate <vendor_field> elements"
-msgstr "<vendor_field> 要素の評価に失敗しました"
-
 #, c-format
 msgid "failed to execute command '%1$s': %2$s"
 msgstr "コマンド '%1$s' の実行に失敗しました: %2$s"
@@ -26754,15 +26800,12 @@ msgstr "%1$s の解析に失敗しました"
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion の解析に失敗しました"
 
-msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "QEMU ケイパビリティーでの CPU ブロッカーの解析に失敗しました"
+msgid "failed to parse PCI VPD string value with invalid characters"
+msgstr ""
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "SCSI ホスト '%1$s' の解析に失敗しました"
-
-msgid "failed to parse SGX sections in QEMU capabilities cache"
-msgstr "QEMU ケイパビリティーキャッシュで SGX セクションの解析に失敗しました"
 
 msgid "failed to parse agent timeout"
 msgstr "エージェントタイムアウトの解析に失敗しました"
@@ -26814,18 +26857,6 @@ msgstr "ポート番号 '%1$s' の解析に失敗しました"
 msgid "failed to parse pre-migration memlock limit"
 msgstr "移行前メムロック制限の解析に失敗しました"
 
-msgid "failed to parse qemu capabilities cpus"
-msgstr "qemu ケイパビリティー cpus の解析に失敗しました"
-
-msgid "failed to parse qemu capabilities flags"
-msgstr "QEMU のケイパビリティーのフラグを解析できませんでした"
-
-msgid "failed to parse qemu capabilities gic"
-msgstr "qemu ケイパビリティー gic の解析に失敗しました"
-
-msgid "failed to parse qemu capabilities machines"
-msgstr "qemu ケイパビリティーマシンの解析に失敗しました"
-
 msgid "failed to parse qemu device list"
 msgstr "QEMU のデバイス一覧の解析に失敗しました"
 
@@ -26839,9 +26870,6 @@ msgstr "read_iops_device の解析に失敗しました: '%1$s'"
 
 msgid "failed to parse slirp helper list"
 msgstr "slirp ヘルパーリストの解析に失敗しました"
-
-msgid "failed to parse slirp-helper features"
-msgstr "slirp-helper 機能の解析に失敗しました"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
@@ -26949,6 +26977,35 @@ msgstr "qemu ヘッダーの読み込みに失敗しました"
 msgid "failed to read temporary file created with template %1$s"
 msgstr "テンプレート %1$s で作成された一時ファイルの読み込みに失敗しました"
 
+msgid "failed to read the PCI VPD data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: data field length invalid"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: invalid checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: malformed data"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing mandatory checksum"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: missing read-only section"
+msgstr ""
+
+msgid "failed to read the PCI VPD data: parsing ended prematurely"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
+msgstr ""
+
+msgid ""
+"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
+msgstr ""
+
 msgid "failed to reboot domain"
 msgstr "ドメインの再起動に失敗しました"
 
@@ -26957,6 +27014,12 @@ msgstr "udev モニターからのデバイスの受信に失敗しました"
 
 msgid "failed to regenerate genid"
 msgstr "genid の再生成に失敗しました"
+
+msgid "failed to register name server"
+msgstr ""
+
+msgid "failed to register name server: systemd-resolved is not available"
+msgstr ""
 
 msgid "failed to register udev interface driver"
 msgstr "udev インターフェイスドライバーの登録に失敗しました"
@@ -28587,43 +28650,6 @@ msgstr "オプション --%1$s の後に無効な '=' があります"
 msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr "vhostuser ディスクソースの無効な 'type' 属性"
 
-#, c-format
-msgid "invalid <address> element found in <forward> of network %1$s"
-msgstr "無効な <address> 要素がネットワーク %1$s の <forward> に見つかりました"
-
-#, c-format
-msgid "invalid <forwarder> element found in <dns> of network %1$s"
-msgstr "無効な <forwarder> 要素がネットワーク %1$s の <dns> に見つかりました"
-
-#, c-format
-msgid "invalid <host> element found in <dns> of network %1$s"
-msgstr "無効な <host> 要素がネットワーク %1$s の <dns> に見つかりました"
-
-#, c-format
-msgid "invalid <interface> element found in <forward> of network %1$s"
-msgstr ""
-"無効な <interface> 要素がネットワーク %1$s の <forward> に見つかりました"
-
-#, c-format
-msgid "invalid <nat> element found in <forward> of network %1$s"
-msgstr "無効な <nat> 要素がネットワーク %1$s の <forward> に見つかりました"
-
-#, c-format
-msgid "invalid <pf> element found in <forward> of network %1$s"
-msgstr "無効な <pf> 要素がネットワーク %1$s の <forward> に見つかりました"
-
-#, c-format
-msgid "invalid <port> element found in <forward> of network %1$s"
-msgstr "無効な <port> 要素がネットワーク %1$s の <forward> に見つかりました"
-
-#, c-format
-msgid "invalid <srv> element found in <dns> of network %1$s"
-msgstr "無効な <srv> 要素がネットワーク %1$s の <dns> に見つかりました"
-
-#, c-format
-msgid "invalid <txt> element found in <dns> of network %1$s"
-msgstr "無効な <txt> 要素がネットワーク %1$s の <dns> に見つかりました"
-
 msgid "invalid CPU cache level, must be in range [1,3]"
 msgstr "無効な CPU キャッシュレベル、範囲 [1,3] 内にある必要があります"
 
@@ -29845,6 +29871,9 @@ msgstr "親のないスナップショットのみの表示"
 msgid "list only transient domains"
 msgstr "一時ドメインのみを一覧表示します"
 
+msgid "list persistent devices"
+msgstr ""
+
 msgid "list persistent domains"
 msgstr "永続ドメインの一覧表示"
 
@@ -29883,6 +29912,9 @@ msgstr "表形式の一覧表示 (初期値)"
 
 msgid "list the name, rather than the full xml"
 msgstr "完全な XML の代わりに名前の一覧表示"
+
+msgid "list transient devices"
+msgstr ""
 
 msgid "list transient domains"
 msgstr "一時ドメインの一覧表示"
@@ -31137,9 +31169,6 @@ msgstr "入力デバイスタイプがありません"
 msgid "missing input volume target path"
 msgstr "入力ボリュームターゲットパスがありません"
 
-msgid "missing interface information"
-msgstr "インターフェイス情報がありません"
-
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
 msgstr ""
@@ -31885,6 +31914,9 @@ msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 "ネストされた JSON 配列からコマンドラインへの変換はサポートされていません"
 
+msgid "net definition failed validation"
+msgstr ""
+
 msgid "netcat path not valid with native proxy mode"
 msgstr "ネイティブプロキシーモードでは netcat パスが無効です"
 
@@ -32284,9 +32316,6 @@ msgstr "'%1$s' の USB プロダクト ID がありません"
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
 msgstr "%1$s' の USB ベンダー ID がありません"
-
-msgid "no VPD <fields> elements with an access type attribute found"
-msgstr "アクセスタイプ属性を持つVPD <fields> 要素が見つかりません"
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
@@ -32743,6 +32772,10 @@ msgstr "ノード CPU マップ"
 msgid "node device '%1$s' in %2$s must match connection"
 msgstr "%1$s のノードデバイス '%2$s' は接続と一致する必要があります"
 
+#, c-format
+msgid "node device '%1$s' is not persistent"
+msgstr ""
+
 msgid "node device details in XML"
 msgstr "XML 形式のノードデバイス詳細"
 
@@ -32752,6 +32785,9 @@ msgstr "ノードデバイスのイベントコールバック %1$d は登録さ
 
 msgid "node device information"
 msgstr "ノードデバイス情報"
+
+msgid "node device is not active"
+msgstr ""
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr ""
@@ -32797,6 +32833,10 @@ msgstr ""
 #, c-format
 msgid "non unique alias detected: %1$s"
 msgstr "一意でないエイリアスが検出されました: %1$s"
+
+#, c-format
+msgid "non-shared storage migration into '%1$s' target is not supported"
+msgstr ""
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "0 以外の ncpus は空白の cpus と一致しません"
@@ -33833,8 +33873,8 @@ msgstr "prctl が KEEPCAPS の設定に失敗しました"
 
 #, c-format
 msgid ""
-"pre-creation of storage target '%1$s' for incremental storage migration of "
-"disk '%2$s' is not supported"
+"pre-creation of storage target for incremental storage migration of disk "
+"'%1$s' is not supported"
 msgstr ""
 
 msgid "preallocate is not supported on this platform"
@@ -34407,6 +34447,10 @@ msgstr "recv ハンドラーが失敗しました"
 
 msgid "recv holeHandler failed"
 msgstr "recv holeHandler が失敗しました"
+
+#, c-format
+msgid "recv on sock %1$d failed"
+msgstr ""
 
 msgid "redefine metadata for existing checkpoint"
 msgstr "既存のチェックポイントのメタデータを再定義します"
@@ -35319,11 +35363,8 @@ msgstr "shmem 名を '..' と等しくすることはできません"
 msgid "shmem name cannot include '/' character"
 msgstr "shmem 名に '/' 文字を含めることはできません"
 
-msgid "shmem size must be a power of two"
-msgstr "shmem のサイズは 2 のべき乗でなければなりません"
-
-msgid "shmem size must be at least 1 MiB (1024 KiB)"
-msgstr "shmem サイズは少なくとも 1 MiB (1024 KiB) である必要があります"
+msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
+msgstr ""
 
 msgid "show all possible graphical displays"
 msgstr "すべての可能なグラフィクディスプレイを表示します"
@@ -36780,6 +36821,9 @@ msgstr "一時ドメインは永続設定を持ちません"
 msgid "transient is not supported with vhostuser disk"
 msgstr "transient は、vhostuser ディスクではサポートされません"
 
+msgid "transient node devices do not have any persistent config"
+msgstr ""
+
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "トランスポート '%1$s' はソケット属性をサポートしません"
@@ -36964,9 +37008,6 @@ msgstr "SELinux コンテキストを作成できません: %1$s"
 msgid "unable to create socket pair"
 msgstr "ソケット組を作成できません"
 
-msgid "unable to create volume XML"
-msgstr "ボリューム XML を作成できません"
-
 #, c-format
 msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
@@ -37079,6 +37120,10 @@ msgstr "cpu account を取得できません"
 #, c-format
 msgid "unable to get current process context '%1$s'"
 msgstr "現在のプロセスコンテキスト '%1$s' を取得できません"
+
+#, c-format
+msgid "unable to get interface index for %1$s"
+msgstr ""
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -38153,13 +38198,6 @@ msgstr "不明な rng-random バックエンド"
 msgid "unknown secret type '%1$s'"
 msgstr "不明な秘密のタイプ '%1$s'"
 
-msgid "unknown secret usage type"
-msgstr "不明なシークレット使用タイプ"
-
-#, c-format
-msgid "unknown secret usage type %1$s"
-msgstr "不明なシークレット使用タイプ %1$s"
-
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "不明な smbios モード '%1$s'"
@@ -39102,9 +39140,6 @@ msgstr "vhost-user タイプ '%1$s' はサポートされません"
 msgid "vhost-user-gpu failed to start"
 msgstr "vhost-user-gpu を開始できませんでした"
 
-msgid "vhost_user type support UNIX socket in this CH"
-msgstr "vhost_user タイプは、この CH で UNIX ソケットをサポートします"
-
 msgid "vhostuser disk supports only virtio bus"
 msgstr "vhostuser ディスクは virtio バスのみをサポートします"
 
@@ -39297,6 +39332,9 @@ msgstr ""
 
 msgid "virtio-mem device is missing <requested/>"
 msgstr "virtio-mem デバイスに <requested/> がありません"
+
+msgid "virtio-mem does not support dynamicMemslots"
+msgstr ""
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、virtio-mem はサポートされません"
@@ -39777,6 +39815,189 @@ msgstr ""
 #, c-format
 msgid "{[--%1$s] <string>}..."
 msgstr "{[--%1$s] <string>}..."
+
+#~ msgid "<system_field> evaluation has failed"
+#~ msgstr "<system_field> の評価に失敗しました"
+
+#~ msgid "<system_field> value evaluation has failed"
+#~ msgstr "<system_field> 値の評価に失敗しました"
+
+#~ msgid "<vendor_field> evaluation has failed"
+#~ msgstr "<vendor_field> の評価に失敗しました"
+
+#~ msgid "<vendor_field> value evaluation has failed"
+#~ msgstr "<vendor_field> 値の評価に失敗しました"
+
+#~ msgid "Cannot extract cache nodes under cachetune"
+#~ msgstr "cachetune 配下でキャッシュノードを抽出できません"
+
+#~ msgid "Cannot extract memnode nodes"
+#~ msgstr "memnode ノードを抽出できません"
+
+#~ msgid "Cannot extract memory nodes under memorytune"
+#~ msgstr "memorytune 配下でメモリーノードを抽出できません"
+
+#~ msgid "Cannot extract monitor nodes"
+#~ msgstr "モニターノードを抽出できません"
+
+#, c-format
+#~ msgid "Could not parse %1$s VPD resource fields"
+#~ msgstr "%1$s VPD リソースフィールドを解析できませんでした"
+
+#~ msgid "Define a device by an xml file on a node"
+#~ msgstr "ノード上の xml ファイルでデバイスを定義します"
+
+#~ msgid ""
+#~ "Defines a persistent device on the node that can be assigned to a domain. "
+#~ "The device must be started before it can be assigned to a domain."
+#~ msgstr ""
+#~ "ドメインに割り当てることができるノード上の永続デバイスを定義します。デバイ"
+#~ "スをドメインに割り当てる前に、デバイスを起動する必要があります。"
+
+#~ msgid "Option --tree is incompatible with --cap and --inactive"
+#~ msgstr "オプション --tree は --cap および --inactive と互換性がありません"
+
+#, c-format
+#~ msgid "Unable to close the VPD file, fd: %1$d"
+#~ msgstr "VPD ファイル、fd を閉じることができません: %1$d"
+
+#, c-format
+#~ msgid "Unsupported VPD field access type specified %1$s"
+#~ msgstr "サポートされない VPD フィールドアクセスタイプが指定されました %1$s"
+
+#~ msgid "VPD fields access type parsing has failed"
+#~ msgstr "VPD フィールドのアクセスタイプの解析に失敗しました"
+
+#~ msgid "cannot extract blkiotune nodes"
+#~ msgstr "blkiotune ノードを抽出できません"
+
+#~ msgid "cannot extract cachetune nodes"
+#~ msgstr "cachetune ノードを抽出できません"
+
+#~ msgid "cannot extract console devices"
+#~ msgstr "コンソールデバイスを抽出できません"
+
+#~ msgid "cannot extract device leases"
+#~ msgstr "デバイスのリースを抽出できません"
+
+#~ msgid "cannot extract emulatorpin nodes"
+#~ msgstr "emulatorpin ノードを抽出できません"
+
+#~ msgid "cannot extract emulatorsched nodes"
+#~ msgstr "emulatorsched ノードを抽出できません"
+
+#~ msgid "cannot extract hugepages nodes"
+#~ msgstr "hugepage ノードを抽出できません"
+
+#~ msgid "cannot extract iothreadpin nodes"
+#~ msgstr "iothreadpin ノードを抽出できません"
+
+#~ msgid "cannot extract iothreadsched nodes"
+#~ msgstr "iothreadsched ノードを抽出できません"
+
+#~ msgid "cannot extract memorytune nodes"
+#~ msgstr "memorytune ノードを抽出できません"
+
+#~ msgid "cannot extract resource nodes"
+#~ msgstr "リソースノードを抽出できません"
+
+#~ msgid "cannot extract snapshot nodes"
+#~ msgstr "snapshot ノードを抽出できません"
+
+#~ msgid "cannot extract vcpusched nodes"
+#~ msgstr "vcpusched ノードを抽出できません"
+
+#~ msgid "failed to evaluate <system_field> elements"
+#~ msgstr "<system_field> 要素の評価に失敗しました"
+
+#~ msgid "failed to evaluate <vendor_field> elements"
+#~ msgstr "<vendor_field> 要素の評価に失敗しました"
+
+#~ msgid "failed to parse CPU blockers in QEMU capabilities"
+#~ msgstr "QEMU ケイパビリティーでの CPU ブロッカーの解析に失敗しました"
+
+#~ msgid "failed to parse SGX sections in QEMU capabilities cache"
+#~ msgstr ""
+#~ "QEMU ケイパビリティーキャッシュで SGX セクションの解析に失敗しました"
+
+#~ msgid "failed to parse qemu capabilities cpus"
+#~ msgstr "qemu ケイパビリティー cpus の解析に失敗しました"
+
+#~ msgid "failed to parse qemu capabilities flags"
+#~ msgstr "QEMU のケイパビリティーのフラグを解析できませんでした"
+
+#~ msgid "failed to parse qemu capabilities gic"
+#~ msgstr "qemu ケイパビリティー gic の解析に失敗しました"
+
+#~ msgid "failed to parse qemu capabilities machines"
+#~ msgstr "qemu ケイパビリティーマシンの解析に失敗しました"
+
+#~ msgid "failed to parse slirp-helper features"
+#~ msgstr "slirp-helper 機能の解析に失敗しました"
+
+#, c-format
+#~ msgid "invalid <address> element found in <forward> of network %1$s"
+#~ msgstr ""
+#~ "無効な <address> 要素がネットワーク %1$s の <forward> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <forwarder> element found in <dns> of network %1$s"
+#~ msgstr ""
+#~ "無効な <forwarder> 要素がネットワーク %1$s の <dns> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <host> element found in <dns> of network %1$s"
+#~ msgstr "無効な <host> 要素がネットワーク %1$s の <dns> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <interface> element found in <forward> of network %1$s"
+#~ msgstr ""
+#~ "無効な <interface> 要素がネットワーク %1$s の <forward> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <nat> element found in <forward> of network %1$s"
+#~ msgstr "無効な <nat> 要素がネットワーク %1$s の <forward> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <pf> element found in <forward> of network %1$s"
+#~ msgstr "無効な <pf> 要素がネットワーク %1$s の <forward> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <port> element found in <forward> of network %1$s"
+#~ msgstr "無効な <port> 要素がネットワーク %1$s の <forward> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <srv> element found in <dns> of network %1$s"
+#~ msgstr "無効な <srv> 要素がネットワーク %1$s の <dns> に見つかりました"
+
+#, c-format
+#~ msgid "invalid <txt> element found in <dns> of network %1$s"
+#~ msgstr "無効な <txt> 要素がネットワーク %1$s の <dns> に見つかりました"
+
+#~ msgid "missing interface information"
+#~ msgstr "インターフェイス情報がありません"
+
+#~ msgid "no VPD <fields> elements with an access type attribute found"
+#~ msgstr "アクセスタイプ属性を持つVPD <fields> 要素が見つかりません"
+
+#~ msgid "shmem size must be a power of two"
+#~ msgstr "shmem のサイズは 2 のべき乗でなければなりません"
+
+#~ msgid "shmem size must be at least 1 MiB (1024 KiB)"
+#~ msgstr "shmem サイズは少なくとも 1 MiB (1024 KiB) である必要があります"
+
+#~ msgid "unable to create volume XML"
+#~ msgstr "ボリューム XML を作成できません"
+
+#~ msgid "unknown secret usage type"
+#~ msgstr "不明なシークレット使用タイプ"
+
+#, c-format
+#~ msgid "unknown secret usage type %1$s"
+#~ msgstr "不明なシークレット使用タイプ %1$s"
+
+#~ msgid "vhost_user type support UNIX socket in this CH"
+#~ msgstr "vhost_user タイプは、この CH で UNIX ソケットをサポートします"
 
 #~ msgid "Cannot use direct socket mode if no URI is set"
 #~ msgstr ""
