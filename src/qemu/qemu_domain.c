@@ -4189,14 +4189,15 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         break;
 
     case VIR_ARCH_ARMV6L:
+    case VIR_ARCH_ARMV7L:
+    case VIR_ARCH_ARMV7B:
+    case VIR_ARCH_AARCH64:
         if (STREQ(def->os.machine, "versatilepb"))
             addPCIRoot = true;
-        break;
 
-    case VIR_ARCH_ARMV7L:
-    case VIR_ARCH_AARCH64:
         if (qemuDomainIsARMVirt(def))
             addPCIeRoot = true;
+
         break;
 
     case VIR_ARCH_PPC64:
@@ -4253,7 +4254,6 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
             addPCIRoot = true;
         break;
 
-    case VIR_ARCH_ARMV7B:
     case VIR_ARCH_CRIS:
     case VIR_ARCH_ITANIUM:
     case VIR_ARCH_LM32:

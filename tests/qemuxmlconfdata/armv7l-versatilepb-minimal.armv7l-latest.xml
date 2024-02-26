@@ -17,6 +17,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-armv7l</emulator>
+    <controller type='pci' index='0' model='pci-root'/>
     <audio id='1' type='none'/>
     <memballoon model='none'/>
   </devices>

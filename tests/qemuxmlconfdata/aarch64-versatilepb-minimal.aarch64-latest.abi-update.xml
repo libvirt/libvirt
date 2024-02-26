@@ -15,6 +15,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='pci' index='0' model='pci-root'/>
     <audio id='1' type='none'/>
     <memballoon model='none'/>
   </devices>
