@@ -18,7 +18,7 @@ build_task:
     - @UPDATE_COMMAND@
     - @UPGRADE_COMMAND@
     - @INSTALL_COMMAND@ @PKGS@
-    - if test -n "@PYPI_PKGS@" ; then @PIP3@ install @PYPI_PKGS@ ; fi
+    - if test -n "@PYPI_PKGS@" ; then @PIP3@ install --break-system-packages @PYPI_PKGS@ ; fi
   clone_script:
     - git clone --depth 100 "$CI_REPOSITORY_URL" .
     - git fetch origin "${CI_MERGE_REQUEST_REF_PATH:-$CI_COMMIT_REF_NAME}"
