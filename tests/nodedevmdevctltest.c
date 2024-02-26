@@ -33,10 +33,12 @@ testCommandDryRunCallback(const char *const*args G_GNUC_UNUSED,
 {
     char **stdinbuf = opaque;
 
-    if (*stdinbuf)
-        *stdinbuf = g_strconcat(*stdinbuf, "\n", input, NULL);
-    else
+    if (*stdinbuf) {
+        g_autofree char *oldbuf = g_steal_pointer(stdinbuf);
+        *stdinbuf = g_strconcat(oldbuf, "\n", input, NULL);
+    } else {
         *stdinbuf = g_strdup(input);
+    }
 }
 
 typedef virCommand * (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
@@ -188,6 +190,7 @@ testMdevctlModify(const void *data G_GNUC_UNUSED)
     int ret = -1;
     g_autoptr(virCommand) definedcmd = NULL;
     g_autoptr(virCommand) livecmd = NULL;
+    g_autoptr(virCommand) livecmd_update = NULL;
     g_autoptr(virCommand) bothcmd = NULL;
     g_autofree char *errmsg = NULL;
     g_autofree char *stdinbuf = NULL;
@@ -222,10 +225,10 @@ testMdevctlModify(const void *data G_GNUC_UNUSED)
                                              &parser_callbacks, NULL, false)))
         goto cleanup;
 
-    if (!(livecmd = nodeDeviceGetMdevctlModifyCommand(def_update, false, true, &errmsg)))
+    if (!(livecmd_update = nodeDeviceGetMdevctlModifyCommand(def_update, false, true, &errmsg)))
         goto cleanup;
 
-    if (virCommandRun(livecmd, NULL) < 0)
+    if (virCommandRun(livecmd_update, NULL) < 0)
         goto cleanup;
 
     if (!(livecmd = nodeDeviceGetMdevctlModifyCommand(def, false, true, &errmsg)))
