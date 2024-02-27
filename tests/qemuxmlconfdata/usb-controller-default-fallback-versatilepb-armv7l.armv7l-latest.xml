@@ -18,7 +18,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-armv7l</emulator>
     <controller type='pci' index='0' model='pci-root'/>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='pci-ohci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
     <audio id='1' type='none'/>

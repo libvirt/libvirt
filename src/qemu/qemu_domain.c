@@ -5641,9 +5641,14 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
              *
              * See qemuBuildControllersCommandLine() */
 
-            /* Default USB controller is piix3-uhci if available. */
+            /* Default USB controller is piix3-uhci if available. Fall back to
+             * 'pci-ohci' otherwise which is the default for non-x86 machines
+             * which honour -usb */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
                 cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+            else if (!ARCH_IS_X86(def->os.arch) &&
+                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
 
             if (ARCH_IS_S390(def->os.arch)) {
                 if (cont->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
