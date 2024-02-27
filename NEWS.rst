@@ -13,6 +13,21 @@ v10.1.0 (unreleased)
 
 * **Security**
 
+  * ``CVE-2024-1441``: Fix off-by-one error leading to a crash
+
+    In **libvirt-1.0.0** there were couple of interface listing APIs
+    introduced which had an off-by-one error.  That error could lead to a
+    very rare crash if an array was passed to those functions which did
+    not fit all the interfaces.
+
+    In **libvirt-5.10** a check for non-NULL arrays has been adjusted to
+    allow for NULL arrays with size 0 instead of rejecting all NULL
+    arrays.  However that made the above issue significantly worse since
+    that off-by-one error now did not write beyond an array, but
+    dereferenced said NULL pointer making the crash certain in a
+    specific scenario in which a NULL array of size 0 was passed to the
+    aforementioned functions.
+
 * **Removed features**
 
 * **New features**
