@@ -5658,7 +5658,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
                 } else {
                     /* Explicitly fallback to legacy USB controller for PPC64. */
-                    cont->model = -1;
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
                 }
             } else if (def->os.arch == VIR_ARCH_AARCH64) {
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
