@@ -33,6 +33,7 @@
 #include "virfile.h"
 #include "virjson.h"
 #include "virlog.h"
+#include "virnuma.h"
 #include "virstring.h"
 #include "ch_interface.h"
 

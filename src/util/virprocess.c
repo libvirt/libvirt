@@ -500,7 +500,7 @@ virProcessGetAffinity(pid_t pid)
     return ret;
 }
 
-#elif WITH_DECL_CPU_SET_T
+#elif defined(WITH_SCHED_GETAFFINITY)
 
 int virProcessSetAffinity(pid_t pid, virBitmap *map, bool quiet)
 {
@@ -592,7 +592,7 @@ virProcessGetAffinity(pid_t pid)
     return ret;
 }
 
-#else /* WITH_DECL_CPU_SET_T */
+#else /* ! (defined(WITH_BSD_CPU_AFFINITY) || defined(WITH_SCHED_GETAFFINITY)) */
 
 int virProcessSetAffinity(pid_t pid G_GNUC_UNUSED,
                           virBitmap *map G_GNUC_UNUSED,
@@ -612,7 +612,7 @@ virProcessGetAffinity(pid_t pid G_GNUC_UNUSED)
                          _("Process CPU affinity is not supported on this platform"));
     return NULL;
 }
-#endif /* WITH_DECL_CPU_SET_T */
+#endif /* ! (defined(WITH_BSD_CPU_AFFINITY) || defined(WITH_SCHED_GETAFFINITY)) */
 
 
 int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)

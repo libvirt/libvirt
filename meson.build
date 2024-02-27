@@ -584,6 +584,7 @@ functions = [
   'posix_fallocate',
   'posix_memalign',
   'prlimit',
+  'sched_getaffinity',
   'sched_setscheduler',
   'setgroups',
   'setrlimit',
@@ -682,8 +683,6 @@ symbols = [
 
   # Check for BSD approach for setting MAC addr
   [ 'net/if_dl.h', 'link_addr', '#include <sys/types.h>\n#include <sys/socket.h>' ],
-
-  [ 'sched.h', 'cpu_set_t' ],
 ]
 
 if host_machine.system() == 'linux'
