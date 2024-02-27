@@ -2919,62 +2919,6 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
 }
 
 
-static bool
-qemuBuildDomainForbidLegacyUSBController(const virDomainDef *def)
-{
-    if (ARCH_IS_X86(def->os.arch) ||
-        ARCH_IS_PPC(def->os.arch) ||
-        ARCH_IS_ARM(def->os.arch) ||
-        qemuDomainIsRISCVVirt(def))
-        return true;
-
-    return false;
-}
-
-
-static int
-qemuBuildLegacyUSBControllerCommandLine(virCommand *cmd,
-                                        const virDomainDef *def)
-{
-    size_t i;
-    size_t nlegacy = 0;
-    size_t nusb = 0;
-
-    for (i = 0; i < def->ncontrollers; i++) {
-        virDomainControllerDef *cont = def->controllers[i];
-
-        if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_USB)
-            continue;
-
-        /* If we have mode='none', there are no other USB controllers */
-        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
-            return 0;
-
-        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)
-            nlegacy++;
-        else
-            nusb++;
-    }
-
-    if (nlegacy > 1) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Multiple legacy USB controllers are not supported"));
-        return -1;
-    }
-
-    if (nusb == 0 &&
-        !qemuBuildDomainForbidLegacyUSBController(def) &&
-        !ARCH_IS_S390(def->os.arch)) {
-        /* We haven't added any USB controller yet, but we haven't been asked
-         * not to add one either. Add a legacy USB controller, unless we're
-         * creating a kind of guest we want to keep legacy-free */
-        virCommandAddArg(cmd, "-usb");
-    }
-
-    return 0;
-}
-
-
 /**
  * qemuBuildSkipController:
  * @controller: Controller to check
@@ -3055,29 +2999,16 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
         if (qemuBuildSkipController(cont, def))
             continue;
 
-        /* skip USB controllers with type none.*/
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
-            continue;
-        }
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
 
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT &&
-            !qemuBuildDomainForbidLegacyUSBController(def)) {
+            /* skip USB controllers with type none*/
+            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+                continue;
 
-            /* An appropriate default USB controller model should already
-             * have been selected in qemuDomainDeviceDefPostParse(); if
-             * we still have no model by now, we have to fall back to the
-             * legacy USB controller.
-             *
-             * Note that we *don't* want to end up with the legacy USB
-             * controller for q35 and virt machines, so we go ahead and
-             * fail in qemuBuildControllerDevProps(); on the other hand,
-             * for s390 machines we want to ignore any USB controller
-             * (see 548ba43028 for the full story), so we skip
-             * qemuBuildControllerDevProps() but we don't ultimately end
-             * up adding the legacy USB controller */
-            continue;
+            /* skip 'default' controllers on s390 for legacy reasons */
+            if (ARCH_IS_S390(def->os.arch) &&
+                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)
+                continue;
         }
 
         if (qemuBuildControllerDevProps(def, cont, qemuCaps, &props) < 0)
@@ -3134,9 +3065,6 @@ qemuBuildControllersCommandLine(virCommand *cmd,
         if (qemuBuildControllersByTypeCommandLine(cmd, def, qemuCaps, contOrder[i]) < 0)
             return -1;
     }
-
-    if (qemuBuildLegacyUSBControllerCommandLine(cmd, def) < 0)
-        return -1;
 
     return 0;
 }

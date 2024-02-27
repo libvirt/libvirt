@@ -24,7 +24,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--usb \
 -blockdev '{"driver":"file","filename":"/home/berrange/VirtualMachines/redhat-6.2-sparc.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","file":"libvirt-2-storage"}' \
 -device scsi-hd,bus=scsi.0,scsi-id=0,device_id=drive-scsi0-0-0-0,drive=libvirt-2-format,id=scsi0-0-0-0,bootindex=1 \
