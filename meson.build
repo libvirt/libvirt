@@ -584,6 +584,7 @@ functions = [
   'posix_fallocate',
   'posix_memalign',
   'prlimit',
+  'sched_get_priority_min',
   'sched_getaffinity',
   'sched_setscheduler',
   'setgroups',

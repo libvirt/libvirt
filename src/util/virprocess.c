@@ -1573,7 +1573,7 @@ virProcessExitWithStatus(int status)
     exit(value);
 }
 
-#if WITH_SCHED_SETSCHEDULER
+#if defined(WITH_SCHED_SETSCHEDULER) && defined(WITH_SCHED_GET_PRIORITY_MIN)
 
 static int
 virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
@@ -1667,7 +1667,7 @@ virProcessSetScheduler(pid_t pid,
     return 0;
 }
 
-#else /* ! WITH_SCHED_SETSCHEDULER */
+#else /* ! (defined(WITH_SCHED_SETSCHEDULER) && defined(WITH_SCHED_GET_PRIORITY_MIN)) */
 
 int
 virProcessSetScheduler(pid_t pid G_GNUC_UNUSED,
@@ -1682,7 +1682,7 @@ virProcessSetScheduler(pid_t pid G_GNUC_UNUSED,
     return -1;
 }
 
-#endif /* !WITH_SCHED_SETSCHEDULER */
+#endif /* ! (defined(WITH_SCHED_SETSCHEDULER) && defined(WITH_SCHED_GET_PRIORITY_MIN)) */
 
 /*
  * Get all stat fields for a process based on pid and tid:
