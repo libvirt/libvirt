@@ -6903,6 +6903,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @acl: node_device:write
+     * @acl: node_device:save
      */
     REMOTE_PROC_NODE_DEVICE_DEFINE_XML = 428,
 
