@@ -462,28 +462,11 @@ cmdNetworkDesc(vshControl *ctl, const vshCmd *cmd)
             descArg = g_strdup(descNet);
 
         if (edit) {
-            g_autoptr(vshTempFile) tmp = NULL;
             g_autofree char *desc_edited = NULL;
-            char *tmpstr;
 
             /* Create and open the temporary file. */
-            if (!(tmp = vshEditWriteToTempFile(ctl, descArg)))
+            if (vshEditString(ctl, &desc_edited, descArg) < 0)
                 return false;
-
-            /* Start the editor. */
-            if (vshEditFile(ctl, tmp) == -1)
-                return false;
-
-            /* Read back the edited file. */
-            if (!(desc_edited = vshEditReadBackFile(ctl, tmp)))
-                return false;
-
-            /* strip a possible newline at the end of file; some
-             * editors enforce a newline, this makes editing the title
-             * more convenient */
-            if ((tmpstr = strrchr(desc_edited, '\n')) &&
-                *(tmpstr+1) == '\0')
-                *tmpstr = '\0';
 
             /* Compare original XML with edited.  Has it changed at all? */
             if (STREQ(descNet, desc_edited)) {

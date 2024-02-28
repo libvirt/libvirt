@@ -350,6 +350,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(vshTempFile, vshEditUnlinkTempfile);
 char *vshEditWriteToTempFile(vshControl *ctl, const char *doc);
 int vshEditFile(vshControl *ctl, const char *filename);
 char *vshEditReadBackFile(vshControl *ctl, const char *filename);
+int vshEditString(vshControl *ctl, char **output, const char *string);
 int vshAskReedit(vshControl *ctl, const char *msg, bool relax_avail);
 
 /* terminal modifications */

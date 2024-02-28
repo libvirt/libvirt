@@ -2506,6 +2506,35 @@ vshEditReadBackFile(vshControl *ctl, const char *filename)
     return ret;
 }
 
+int
+vshEditString(vshControl *ctl,
+              char **output,
+              const char *string)
+{
+    g_autoptr(vshTempFile) tmp = NULL;
+    char *tmpstr;
+
+    /* Create and open the temporary file. */
+    if (!(tmp = vshEditWriteToTempFile(ctl, string)))
+        return -1;
+
+    /* Start the editor. */
+    if (vshEditFile(ctl, tmp) == -1)
+        return -1;
+
+    /* Read back the edited file. */
+    if (!(*output = vshEditReadBackFile(ctl, tmp)))
+        return -1;
+
+    /* strip a possible newline at the end of file; some
+     * editors enforce a newline, this makes editing
+     * more convenient */
+    if ((tmpstr = strrchr(*output, '\n')) &&
+        *(tmpstr+1) == '\0')
+        *tmpstr = '\0';
+
+    return 0;
+}
 
 /* Tree listing helpers.  */
 
