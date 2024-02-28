@@ -481,8 +481,7 @@ cmdNetworkDesc(vshControl *ctl, const vshCmd *cmd)
             /* strip a possible newline at the end of file; some
              * editors enforce a newline, this makes editing the title
              * more convenient */
-            if (title &&
-                (tmpstr = strrchr(desc_edited, '\n')) &&
+            if ((tmpstr = strrchr(desc_edited, '\n')) &&
                 *(tmpstr+1) == '\0')
                 *tmpstr = '\0';
 

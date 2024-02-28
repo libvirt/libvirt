@@ -8525,10 +8525,9 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                 return false;
 
             /* strip a possible newline at the end of file; some
-             * editors enforce a newline, this makes editing the title
+             * editors enforce a newline, this makes editing
              * more convenient */
-            if (title &&
-                (tmpstr = strrchr(desc_edited, '\n')) &&
+            if ((tmpstr = strrchr(desc_edited, '\n')) &&
                 *(tmpstr+1) == '\0')
                 *tmpstr = '\0';
 
