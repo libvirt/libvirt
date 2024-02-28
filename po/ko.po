@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-02-26 13:37+0000\n"
-"PO-Revision-Date: 2024-02-28 13:55+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-02-28 14:01+0000\n"
+"Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -38376,25 +38376,25 @@ msgid "virGetGroupID is not available"
 msgstr "virGetGroupID를 사용할 수 없습니다"
 
 msgid "virGetGroupName is not available"
-msgstr "virGetGroupName을 사용할 수 없습니다"
+msgstr "virGetGroupName을 사용 할 수 없습니다"
 
 msgid "virGetUserDirectory is not available"
-msgstr "virGetUserDirectory를 사용할 수 없습니다"
+msgstr "virGetUserDirectory를 사용 할 수 없습니다"
 
 msgid "virGetUserID is not available"
-msgstr "virGetUserID를 사용할 수 없습니다"
+msgstr "virGetUserID를 사용 할 수 없습니다"
 
 msgid "virGetUserName is not available"
-msgstr "virGetUserName을 사용할 수 없습니다"
+msgstr "virGetUserName을 사용 할 수 없습니다"
 
 msgid "virGetUserShell is not available"
-msgstr "virGetUserShell을 사용할 수 없습니다"
+msgstr "virGetUserShell을 사용 할 수 없습니다"
 
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL 정의"
 
 msgid "virInterfaceDefFormat missing interface name"
-msgstr "virInterfaceDefFormat 인터페이스 이름 빠짐"
+msgstr "virInterfaceDefFormat 연결장치 이름이 누락됨"
 
 msgid "virInterfaceDefFormat unknown startmode"
 msgstr "알려져 있지 않은 startmode virInterfaceDefFormat"
@@ -38495,7 +38495,7 @@ msgid "virtio-mem device is missing <requested/>"
 msgstr "virtio-mem 장치가 누락 <requested/>"
 
 msgid "virtio-mem does not support dynamicMemslots"
-msgstr ""
+msgstr "virtio-mem은 dynamicMemslots을 지원하지 않습니다"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem은 이 QEMU 바이너리에서 지원되지 않습니다"
