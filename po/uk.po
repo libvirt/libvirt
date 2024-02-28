@@ -8,7 +8,7 @@
 # Maxim Dziumanenko <dziumanenko@gmail.com>, 2007
 # Rax Garfield <admin@dvizho.ks.ua>, 2012
 # Sergey <dmytserg@gmail.com>, 2011
-# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023.
+# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024.
 # Данило Коростіль <ted.korostiled@gmail.com>, 2011
 # Daniel Berrange <dan-zanata@berrange.com>, 2018
 msgid ""
@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-02-26 13:37+0000\n"
-"PO-Revision-Date: 2023-09-28 05:14+0000\n"
+"PO-Revision-Date: 2024-02-28 13:55+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0.2\n"
+"X-Generator: Weblate 5.4\n"
 
 msgid ""
 "\n"
@@ -1189,7 +1189,7 @@ msgstr "«%1$s»"
 
 #, c-format
 msgid "'%1$s' 'index' value '%2$s' malformed"
-msgstr ""
+msgstr "Помилкове форматування значення «index» «%1$s», «%2$s»"
 
 #, c-format
 msgid "'%1$s' D-Bus address is not handled"
@@ -2136,7 +2136,7 @@ msgid "Attempted double use of PCI Address %1$s"
 msgstr "Спроба подвійного використання адреси PCI %1$s"
 
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "Спроба повторного запуску nbdkit"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2346,7 +2346,7 @@ msgstr "Сертифікат CA:"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
-msgstr ""
+msgstr "Підтримки адрес CCW для типу машин «%1$s» не передбачено"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -3581,14 +3581,20 @@ msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
 msgstr ""
+"Не вдалося оновити пристрій «%1$s», невідповідність батьківських адрес ("
+"поточна батьківська адреса «%2$s»)"
 
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
 msgstr ""
+"Не вдалося оновити пристрій «%1$s», невідповідність типів (поточний тип "
+"«%2$s»)"
 
 #, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
 msgstr ""
+"Не вдалося оновити пристрій «%1$s», невідповідність uuid (поточний uuid "
+"«%2$s»)"
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -3600,6 +3606,9 @@ msgid ""
 "Cannot use direct socket mode if no URI is set. For more information see "
 "https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
+"Не можна використовувати режим безпосередніх сокетів, якщо не встановлено "
+"адреси. Щоб дізнатися більше, див. https://libvirt.org/kbase/"
+"failed_connection_after_install.html"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -5369,7 +5378,7 @@ msgid "Define a pool."
 msgstr "Визначити буфер."
 
 msgid "Define or modify a device by an xml file on a node"
-msgstr ""
+msgstr "Визначити або змінити пристрій за файлом xml на вузлі"
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "Визначити або змінити постійний фізичний інтерфейс основної системи."
@@ -5390,6 +5399,8 @@ msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
+"Визначає або змінює на вузлі сталий пристрій, який можна буде пов'язати із "
+"доменом. Пристрій має запускатися до пов'язування із доменом."
 
 msgid "Delete a domain checkpoint"
 msgstr "Вилучити контрольну точку домену"
@@ -5608,7 +5619,7 @@ msgstr "Не знайдено каналу пристрій USB, канал:%1$u
 
 #, c-format
 msgid "Did not get all free page data for node %1$d"
-msgstr ""
+msgstr "Не отримано усі дані щодо вільних сторінок для вузла %1$d"
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -6145,7 +6156,7 @@ msgstr "Дублювання даних для латентностей NUMA"
 
 #, c-format
 msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
+msgstr "Дублювання прив'язки для потоку введення-виведення «%1$u»"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -6851,7 +6862,7 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "Не вдається прив'язати сокет до «%1$s»"
 
 msgid "Failed to build net json"
-msgstr ""
+msgstr "Не вдалося побудувати json net"
 
 msgid "Failed to build pidfile path"
 msgstr "Не вдалося побудувати шлях до файла PID"
@@ -6954,7 +6965,7 @@ msgid "Failed to connect socket to '%1$s'"
 msgstr "Не вдалося з'єднати сокет з «%1$s»"
 
 msgid "Failed to connect to mon socket"
-msgstr ""
+msgstr "Не вдалося встановити з'єднання з сокетом mon"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7812,7 +7823,7 @@ msgstr "Не вдалося побудувати список томів"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: %2$s"
-msgstr ""
+msgstr "Не вдалося завантажити модуль драйвера PCI %1$s: %2$s"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
@@ -7966,7 +7977,7 @@ msgid "Failed to open '%1$s'"
 msgstr "Не вдалося відкрити «%1$s»"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
+msgstr "Не вдалося відкрити сокет UNIX"
 
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
@@ -8025,7 +8036,7 @@ msgid "Failed to parse CCW address '%1$s'"
 msgstr "Не вдалося обробити адресу CCW «%1$s»"
 
 msgid "Failed to parse HTTP response code"
-msgstr ""
+msgstr "Не вдалося обробити код відповіді HTTP"
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -8515,7 +8526,7 @@ msgid "Failed to send migration data to destination host"
 msgstr "Не вдалося надіслати дані для перенесення на вузол призначення"
 
 msgid "Failed to send net-add request to CH"
-msgstr ""
+msgstr "Не вдалося надіслати запит net-add до CH"
 
 #, c-format
 msgid "Failed to send request to init control %1$s"
@@ -8897,7 +8908,7 @@ msgstr "Не вдалося оновити запис мережі, %1$s"
 
 #, c-format
 msgid "Failed to update node device %1$s from '%2$s'"
-msgstr ""
+msgstr "Не вдалося оновити пристрій вузла %1$s з «%2$s»"
 
 msgid "Failed to verify peer's certificate"
 msgstr "Не вдалося перевірити сертифікат вузла"
@@ -8937,7 +8948,7 @@ msgid "Failed to write xml description"
 msgstr "Не вдалося записати опис у форматі XML"
 
 msgid "Failed while adding guest interfaces"
-msgstr ""
+msgstr "Помилка під час додавання інтерфейсів гостьової системи"
 
 msgid "Failed! Volume not removed."
 msgstr "Помилка! Том не вилучено."
@@ -9423,7 +9434,7 @@ msgid "Guest agent not available for now"
 msgstr "Агент гостьової системи зараз недоступний"
 
 msgid "Guest networking is not supported by this version of ch"
-msgstr ""
+msgstr "У цій версії ch не передбачено підтримки мережі у гостьовій системі"
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "підтримки HMAT у цьому QEMU не передбачено"
@@ -9718,6 +9729,8 @@ msgstr "Номер ідентифікатора потоку введення-в
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
+"Прив'язка IOThread для диска «%1$s» є недоступною для цього виконуваного "
+"файла QEMU"
 
 msgid "IOThread to be used by supported device"
 msgstr "IOThread, який буде використано підтримуваним пристроєм"
@@ -12267,6 +12280,8 @@ msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
 msgstr ""
+"УВАГА! Встановлення з'єднання із типовою фоновою службою. Вкажіть фонову "
+"службу за допомогою «-c» (наприклад virtqemud:///system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "Тип JSON NULL не можна перетиворити на рядок commandline"
@@ -13177,7 +13192,7 @@ msgid "Only 1 IDE controller is supported"
 msgstr "Передбачено підтримку лише одного контролера IDE"
 
 msgid "Only 1 cluster per die is supported"
-msgstr ""
+msgstr "Передбачено підтримку лише 1 кластера на кристал"
 
 msgid "Only 1 die per socket is supported"
 msgstr "Передбачено підтримку лише одного кристала на сокет"
@@ -13421,12 +13436,13 @@ msgid "Option --file is required"
 msgstr "Слід вказати параметр --file"
 
 msgid "Option --transient is incompatible with --persistent and --inactive"
-msgstr ""
+msgstr "Параметр --transient є несумісним із --persistent і --inactive"
 
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
 msgstr ""
+"Параметр --tree є несумісним з --cap, --inactive, --persistent і --transient"
 
 msgid "Option argument is empty"
 msgstr "Порожній аргумент параметра"
@@ -13813,11 +13829,11 @@ msgstr ""
 
 #, c-format
 msgid "Poll on sock %1$d failed"
-msgstr ""
+msgstr "Помилка опитування на сокеті %1$d"
 
 #, c-format
 msgid "Poll on sock %1$d timed out"
-msgstr ""
+msgstr "Перевищення часу очікування для опитування на сокеті %1$d"
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -14338,6 +14354,8 @@ msgstr "Запитана дія є некоректною: %1$s"
 #, c-format
 msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
 msgstr ""
+"Надіслано запит щодо зміни розмірів до «%1$llu», але розмір пристрою "
+"дорівнює «%2$llu»"
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -15792,6 +15810,8 @@ msgstr ""
 #, c-format
 msgid "Target CPU clusters %1$d does not match source %2$d"
 msgstr ""
+"Кількість кластерів процесора призначення %1$d не відповідає кількості ядер "
+"джерела %2$d"
 
 #, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
@@ -16032,6 +16052,8 @@ msgid ""
 "Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
 "%6$04x"
 msgstr ""
+"Адреса CCW пристрою призначення %1$x.%2$x.%3$04x не відповідає джерелу "
+"%4$x.%5$x.%6$04x"
 
 #, c-format
 msgid ""
@@ -16500,6 +16522,8 @@ msgid ""
 "Target memory device 'dynamicMemslots' property doesn't match source memory "
 "device"
 msgstr ""
+"Властивість «dynamicMemslots» пристрою пам'яті призначення не відповідає "
+"пристрою пам'яті джерела"
 
 #, c-format
 msgid ""
@@ -18681,10 +18705,10 @@ msgstr "Внесення змін до інтерактивних пристро
 
 #, c-format
 msgid "Unable to modify mediated device: %1$s"
-msgstr ""
+msgstr "Не вдалося змінити проміжний пристрій: %1$s"
 
 msgid "Unable to modify mediated device: modify unsupported"
-msgstr ""
+msgstr "Не вдалося змінити проміжний пристрій: підтримки зміни не передбачено"
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -19816,7 +19840,7 @@ msgstr "Неочікуваний протокол, %1$d"
 
 #, c-format
 msgid "Unexpected response from CH: %1$d"
-msgstr ""
+msgstr "Неочікувана відповідь від CH: %1$d"
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "Неочікувана коренева файлова система без петльового пристрою (loop)"
@@ -20273,7 +20297,7 @@ msgstr "Непідтримуваний режим налаштування па�
 
 #, c-format
 msgid "Unsupported Network type %1$d"
-msgstr ""
+msgstr "Непідтримуваний тип мережі %1$d"
 
 #, c-format
 msgid "Unsupported OS type: %1$s"
@@ -20308,7 +20332,7 @@ msgstr "Непідтримувана схема URI, «%1$s»"
 
 #, c-format
 msgid "Unsupported VPD field access type '%1$s'"
-msgstr ""
+msgstr "Вказано непідтримуваний тип доступу до поля «%1$s»"
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -20562,7 +20586,7 @@ msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "Невідоме значення у %1$s/devices/%2$s/class: %3$s"
 
 msgid "Update a active and/or inactive node device"
-msgstr ""
+msgstr "Оновити активний і/або неактивний пристрій вузла"
 
 msgid "Update device from an XML <file>."
 msgstr "Оновити запис пристрою на основі <файла> XML."
@@ -20590,22 +20614,22 @@ msgstr "Оновлено сталі налаштування мережі %1$s �
 
 #, c-format
 msgid "Updated node device %1$s live state"
-msgstr ""
+msgstr "Оновлено стан інтерактивності пристрою вузла %1$s"
 
 #, c-format
 msgid "Updated node device %1$s persistent config"
-msgstr ""
+msgstr "Оновлено сталі налаштування пристрою вузла %1$s"
 
 #, c-format
 msgid "Updated node device %1$s persistent config and live state"
-msgstr ""
+msgstr "Оновлено сталі налаштування та стан інтерактивності пристрою вузла %1$s"
 
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr ""
 "Оновлення у запущеному домені потребують прапорця VIR_DOMAIN_AFFECT_LIVE"
 
 msgid "Updates the configuration of a node device"
-msgstr ""
+msgstr "Оновлює налаштування пристрою вузла"
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "Оновіть ядро до версії з підтримкою просторів назв"
@@ -20776,7 +20800,7 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr "у цій системі поки що не передбачено призначення пристроїв VFIO"
 
 msgid "VFIO device assignment is not available on this platform"
-msgstr ""
+msgstr "Призначення пристрою VFIO є недоступним на цій платформі"
 
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "Джерело диска ВМ і джерело диска знімка не є тотожними"
@@ -21042,7 +21066,7 @@ msgstr "Задіяно XBZRLE, але не вказано даних «pages»"
 
 #, c-format
 msgid "XEN does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "У XEN не передбачено підтримки режиму призначення пристроїв «%1$s»"
 
 msgid "XML description is invalid or not well formed"
 msgstr "Опис XML є некоректним або має помилкове форматування"
@@ -21284,7 +21308,7 @@ msgid "affect current state of network"
 msgstr "вплине на поточний стан мережі"
 
 msgid "affect current state of node device"
-msgstr ""
+msgstr "стосується поточного стану пристрою вузла"
 
 msgid "affect next boot"
 msgstr "стосується наступного завантаження"
@@ -21293,7 +21317,7 @@ msgid "affect next network startup"
 msgstr "вплине під час наступного запуску мережі"
 
 msgid "affect next node device startup"
-msgstr ""
+msgstr "стосується наступного запуску пристрою вузла"
 
 msgid "affect running domain"
 msgstr "стосується запущеного домену"
@@ -21302,7 +21326,7 @@ msgid "affect running network"
 msgstr "вплине на вже запущену мережу"
 
 msgid "affect running node device"
-msgstr ""
+msgstr "стосується запущеного пристрою вузла"
 
 msgid "after reverting, change state to paused"
 msgstr "після повернення змінити стан на «призупинений»"
@@ -21580,6 +21604,8 @@ msgid ""
 "attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
 "network %1$s"
 msgstr ""
+"атрибут «register=yes» у елементі <domain> потребує «localOnly=yes» у мережі "
+"%1$s"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -21806,7 +21832,7 @@ msgstr "драйвер стану bhyve є неактивним"
 
 #, c-format
 msgid "binary '%1$s' does not exist in $PATH"
-msgstr ""
+msgstr "виконуваного файла «%1$s» не існує у $PATH"
 
 #, c-format
 msgid "binding '%1$s' already exists"
@@ -21880,6 +21906,8 @@ msgstr "блоковий пристрій"
 #, c-format
 msgid "block device backed disk must be resized to its actual size '%1$llu'"
 msgstr ""
+"розмір базового диска блокового пристрою має бути змінено до його "
+"справжнього розміру «%1$llu»"
 
 #, c-format
 msgid "block device snapshot target '%1$s' doesn't exist"
@@ -21938,6 +21966,8 @@ msgid ""
 "block resize to full capacity supported only with 'raw' local block-based "
 "disks"
 msgstr ""
+"підтримку зміни розмірів блоку до повної місткості передбачено лише для "
+"локальних заснованих на блоках дисків «raw»"
 
 msgid "block size must be a power of two"
 msgstr "розмір блоку має бути степенем двійки"
@@ -22262,6 +22292,7 @@ msgstr ""
 
 msgid "can't query rx filters: device alias not found"
 msgstr ""
+"не вдалося опитати фільтри rx: альтернативної назви пристрою не знайдено"
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr ""
@@ -25297,7 +25328,7 @@ msgstr "список пристроїв не є об'єктом"
 
 #, c-format
 msgid "device modalias file %1$s content has improper format"
-msgstr ""
+msgstr "вміст файла modalias пристрою %1$s має неналежний формат"
 
 msgid "device name"
 msgstr "назва пристрою"
@@ -25496,6 +25527,8 @@ msgstr "у налаштуваннях домену не знайдено дис�
 msgid ""
 "disk 'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
+"має бути налаштовано лічильник «queue» диска для явного iothread для "
+"прив'язки черги"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "атрибути диска: диск[,checkpoint=тип][,bitmap=назва]"
@@ -25572,6 +25605,8 @@ msgid ""
 "disk driver 'iothread' attribute can't be used together with 'iothreads' "
 "subelement"
 msgstr ""
+"атрибут драйвера диска «iothread» не можна використовувати з піделементом "
+"«iothreads»"
 
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "режим event_idx роботи диска підтримується лише для каналу virtio"
@@ -25597,11 +25632,11 @@ msgstr "режим роботи дисків ioeventfd підтримуєтьс�
 
 #, c-format
 msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
+msgstr "чергу iothread диска «%1$u» вже призначено"
 
 #, c-format
 msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
+msgstr "прив'язка черги iothread диска «%1$u» поза припустимим діапазоном"
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
@@ -27578,7 +27613,7 @@ msgid "failed to parse %1$sversion"
 msgstr "не вдалося обробити версію %1$s"
 
 msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
+msgstr "не вдалося обробити рядок VPD PCI із некоректними символами"
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -27757,33 +27792,40 @@ msgstr ""
 "%1$s"
 
 msgid "failed to read the PCI VPD data"
-msgstr ""
+msgstr "не вдалося прочитати дані VPD PCI"
 
 msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
+msgstr "не вдалося прочитати дані VPD PCI: некоректна довжина поля даних"
 
 msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
+msgstr "не вдалося прочитати дані VPD PCI: некоректна контрольна сума"
 
 msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
+msgstr "не вдалося прочитати дані VPD PCI: помилкове форматування даних"
 
 msgid "failed to read the PCI VPD data: missing mandatory checksum"
 msgstr ""
+"не вдалося прочитати дані VPD PCI: пропущено обов'язкову контрольну суму"
 
 msgid "failed to read the PCI VPD data: missing read-only section"
 msgstr ""
+"не вдалося прочитати дані VPD PCI: пропущено призначений лише для читання "
+"розділ"
 
 msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
+msgstr "не вдалося прочитати дані VPD PCI: передчасне завершення обробки"
 
 msgid ""
 "failed to read the PCI VPD data: unexpected RV keyword in read-write section"
 msgstr ""
+"не вдалося прочитати дані VPD PCI: неочікуване ключове слово RV у розділі, "
+"який призначено для читання і запису"
 
 msgid ""
 "failed to read the PCI VPD data: unexpected RW keyword in read-only section"
 msgstr ""
+"не вдалося прочитати дані VPD PCI: неочікуване ключове слово RW у розділі, "
+"який призначено лише для читання"
 
 msgid "failed to reboot domain"
 msgstr "не вдалося перезавантажити домен"
@@ -27795,10 +27837,10 @@ msgid "failed to regenerate genid"
 msgstr "не вдалося повторно створити genid"
 
 msgid "failed to register name server"
-msgstr ""
+msgstr "не вдалося зареєструвати сервер назв"
 
 msgid "failed to register name server: systemd-resolved is not available"
-msgstr ""
+msgstr "не вдалося зареєструвати сервер назв: немає доступу до systemd-resolved"
 
 msgid "failed to register udev interface driver"
 msgstr "не вдалося зареєструвати драйвер інтерфейсу udev"
@@ -28000,7 +28042,7 @@ msgstr "не вдалося оновити дані щодо місткості 
 
 #, c-format
 msgid "failed to update capacity of '%1$s'"
-msgstr ""
+msgstr "не вдалося оновити місткість «%1$s»"
 
 msgid "failed to update device in BPF cgroup map"
 msgstr "не вдалося оновити пристрій у карті cgroup BPF"
@@ -29289,6 +29331,8 @@ msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "devel@lists.libvirt.org"
 msgstr ""
+"Переповнення цілого типу у %1$s. Будь ласка, повідомте про це команду "
+"розробників libvirt за адресою devel@lists.libvirt.org"
 
 #, c-format
 msgid ""
@@ -30238,6 +30282,8 @@ msgstr "підтримки iothread для дисків vhostuser не пере�
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
 msgstr ""
+"iothread для прив'язки черги має бути надано для усіх потоків введення-"
+"виведення або для жодного з них"
 
 msgid "iothread_id for the IOThread to delete"
 msgstr "iothread_id для потоку введення-виведення для вилучення"
@@ -30752,7 +30798,7 @@ msgid "list only transient domains"
 msgstr "вивести список лише проміжних доменів"
 
 msgid "list persistent devices"
-msgstr ""
+msgstr "вивести список сталих пристроїв"
 
 msgid "list persistent domains"
 msgstr "показати список постійних доменів"
@@ -30794,7 +30840,7 @@ msgid "list the name, rather than the full xml"
 msgstr "показати назву, а не xml повністю"
 
 msgid "list transient devices"
-msgstr ""
+msgstr "вивести список проміжних пристроїв"
 
 msgid "list transient domains"
 msgstr "показати список тимчасових доменів"
@@ -32138,7 +32184,7 @@ msgstr "не вказано шляху призначення на томі вх
 
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
-msgstr ""
+msgstr "пропущено прив'язку iothread для черги «%1$zd»"
 
 msgid "missing ivgen info name string"
 msgstr "пропущено рядок назви у інформації щодо ivgen"
@@ -32662,10 +32708,12 @@ msgid ""
 "modprobe reported success loading module '%1$s', but module is missing from /"
 "sys/module"
 msgstr ""
+"modprobe повідомлено про успішне завантаження модуля «%1$s», але модуля "
+"немає у /sys/module"
 
 #, c-format
 msgid "module '%1$s' does not implement any pci driver"
-msgstr ""
+msgstr "модуль «%1$s» не реалізує жодного драйвера pci"
 
 msgid "monitor failure"
 msgstr "помилка монітора"
@@ -32888,7 +32936,7 @@ msgstr ""
 "підтримки перетворення вкладеного масиву JSON на рядок команди не передбачено"
 
 msgid "net definition failed validation"
-msgstr ""
+msgstr "мережеве визначення не пройшло перевірки"
 
 msgid "netcat path not valid with native proxy mode"
 msgstr ""
@@ -33759,7 +33807,7 @@ msgstr "пристрій вузла «%1$s» у %2$s має відповідат
 
 #, c-format
 msgid "node device '%1$s' is not persistent"
-msgstr ""
+msgstr "пристрій вузла «%1$s» не є сталим"
 
 msgid "node device details in XML"
 msgstr "дані щодо вузла пристрою у форматі XML"
@@ -33772,7 +33820,7 @@ msgid "node device information"
 msgstr "відомості щодо вузлового пристрою"
 
 msgid "node device is not active"
-msgstr ""
+msgstr "пристрій вузла не є активним"
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr "на цій платформі отримання параметрів пам'яті вузлів не передбачено"
@@ -33820,6 +33868,8 @@ msgstr "виявлено повторення альтернативної на�
 #, c-format
 msgid "non-shared storage migration into '%1$s' target is not supported"
 msgstr ""
+"підтримки перенесення сховища без спільного доступу до цілі «%1$s» не "
+"передбачено"
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "ненульове значення ncpus не відповідає значенню NULL cpus"
@@ -34594,7 +34644,7 @@ msgstr "pcap_setfilter: %1$s"
 
 #, c-format
 msgid "pci backend driver type '%1$s' is not supported"
-msgstr ""
+msgstr "підтримки типу драйвера модуля обробки pci «%1$s» не передбачено"
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
@@ -34606,6 +34656,7 @@ msgstr "драйвер обробки призначення пристроїв 
 #, c-format
 msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
+"драйвера pci «%1$s», який мав завантажити модуль «%2$s» не знайдено у sysfs"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -34903,6 +34954,8 @@ msgid ""
 "pre-creation of storage target for incremental storage migration of disk "
 "'%1$s' is not supported"
 msgstr ""
+"підтримки попереднього створення цілі сховища даних для нарощувального "
+"перенесення сховища диска «%1$s» не передбачено"
 
 msgid "preallocate is not supported on this platform"
 msgstr ""
@@ -35511,7 +35564,7 @@ msgstr "помилка отримання holeHandler"
 
 #, c-format
 msgid "recv on sock %1$d failed"
-msgstr ""
+msgstr "помилка recv на сокеті %1$d"
 
 msgid "redefine metadata for existing checkpoint"
 msgstr "перевизначити метадані для поточної контрольної точки"
@@ -35819,19 +35872,24 @@ msgstr "змінити розміри тому"
 
 msgid "resize of a 'sd' disk with storage slice is not supported"
 msgstr ""
+"підтримки зміни розмірів диска «sd» із зрізом сховища даних не передбачено"
 
 msgid "resize of a disk with storage slice is supported only for 'raw' images"
 msgstr ""
+"підтримку зміни розмірів диска із зрізом сховища даних передбачено лише для "
+"образів «raw»"
 
 msgid ""
 "resize of a disk with storage slice with non-zero 'offset' is not supported"
 msgstr ""
+"підтримки зміни розмірів диска із зрізом сховища із ненульовим «offset» не "
+"передбачено"
 
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "зміни розміру шифрованого образу qcow2 не передбачено"
 
 msgid "resize to capacity of source (block device)"
-msgstr ""
+msgstr "змінити розмір до місткості джерела (блокового пристрою)"
 
 msgid "resource busy"
 msgstr "ресурс зайнято"
@@ -35864,6 +35922,8 @@ msgstr "відновити домен"
 
 msgid "resume a paused guest after connecting to console"
 msgstr ""
+"відновити роботу призупиненої гостьової системи після встановлення з'єднання "
+"із консоллю"
 
 msgid "resume failed post-copy migration"
 msgstr "не вдалося відновити перенесення із пост-копіюванням"
@@ -36461,6 +36521,7 @@ msgstr "Назва shmem не може містити символів «/»"
 
 msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
 msgstr ""
+"розмір shmem має бути степенем 2 і дорівнювати принаймні 1 МіБ (1024 КіБ)"
 
 msgid "show all possible graphical displays"
 msgstr "показати усі можливі графічні дисплеї"
@@ -37178,6 +37239,8 @@ msgstr "перервати у м'якому режимі"
 #, c-format
 msgid "test hypervisor does not support device assignment mode '%1$s'"
 msgstr ""
+"у тестовому гіпервізорі не передбачено підтримки режиму призначення "
+"пристроїв «%1$s»"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: вкажіть шлях або використовуйте test:///default"
@@ -37937,7 +38000,7 @@ msgid "transient is not supported with vhostuser disk"
 msgstr "підтримки transient для дисків vhostuser не передбачено"
 
 msgid "transient node devices do not have any persistent config"
-msgstr ""
+msgstr "тимчасові пристрої вузла не мають будь-яких сталих налаштувань"
 
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
@@ -38189,6 +38252,8 @@ msgstr "не вдалося знайти звуковий модуль для з
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
 msgstr ""
+"не вдалося знайти диск-ціль «%1$s» для перенесення без сховища спільного "
+"використання"
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -38245,7 +38310,7 @@ msgstr "не вдалося отримати контекст поточного
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr ""
+msgstr "не вдалося отримати індекс інтерфейсу для %1$s"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -38872,7 +38937,7 @@ msgstr ""
 
 #, c-format
 msgid "unexpected pci hostdev driver name %1$d"
-msgstr ""
+msgstr "неочікувана назва драйвера пристрою основної системи pci %1$d"
 
 msgid "unexpected pool type"
 msgstr "неочікуваний тип буфера"
@@ -40489,7 +40554,7 @@ msgid "virtio-mem device is missing <requested/>"
 msgstr "У записі пристрою virtio-mem пропущено <requested/>"
 
 msgid "virtio-mem does not support dynamicMemslots"
-msgstr ""
+msgstr "у virtio-mem не передбачено підтримки dynamicMemslots"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "підтримки virtio-mem не передбачено у цьому виконуваному файлі QEMU"
