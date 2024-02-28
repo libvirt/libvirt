@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-02-26 13:37+0000\n"
-"PO-Revision-Date: 2024-02-12 10:24+0000\n"
+"PO-Revision-Date: 2024-02-28 13:55+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3.1\n"
+"X-Generator: Weblate 5.4\n"
 
 msgid ""
 "\n"
@@ -1136,7 +1136,7 @@ msgstr "'%1$s'"
 
 #, c-format
 msgid "'%1$s' 'index' value '%2$s' malformed"
-msgstr ""
+msgstr "'%1$s' 'index' 값 '%2$s' 형식이 잘못되었습니다"
 
 #, c-format
 msgid "'%1$s' D-Bus address is not handled"
@@ -2055,7 +2055,7 @@ msgid "Attempted double use of PCI Address %1$s"
 msgstr "PCI 주소 %1$s를 이중으로 사용하려고 시도했습니다"
 
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "nbdkit를 두 번 시작하려고 시도 중"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -3428,15 +3428,17 @@ msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
-msgstr ""
+msgstr "장치 '%1$s'를 최신화 할 수 없으며, 상위 주소가 일치하지 않습니다 (현재 상위 "
+"주소 '%2$s')"
 
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
-msgstr ""
+msgstr "장치 '%1$s'를 최신화 할 수 없으며, 유형이 일치하지 않습니다 (현재 유형 "
+"'%2$s')"
 
 #, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
-msgstr ""
+msgstr "장치 '%1$s를 최신화 할 수 없으며, uuid가 일치하지 않습니다 (현재 uuid '%2$s')"
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -5132,7 +5134,7 @@ msgid "Define a pool."
 msgstr "풀(Pool) 정의."
 
 msgid "Define or modify a device by an xml file on a node"
-msgstr ""
+msgstr "노드의 xml 파일에서 장치를 정의하거나 수정합니다"
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "물리적 호스트 연결장치 목록 반환."
