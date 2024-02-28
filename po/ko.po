@@ -12,13 +12,14 @@
 # Kim InSoo <simmon@nplob.com>, 2022.
 # 김인수 <simmon@nplob.com>, 2022, 2023, 2024.
 # Jan Tomko <jtomko@redhat.com>, 2022.
+# Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-02-26 13:37+0000\n"
 "PO-Revision-Date: 2024-02-28 13:55+0000\n"
-"Last-Translator: 김인수 <simmon@nplob.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -36306,7 +36307,7 @@ msgstr "현재 프로세스 문맥 '%1$s'을 얻을 수 없음"
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr ""
+msgstr "%1$s를 위한 연결장치 색인을 가져 올 수 없습니다"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
