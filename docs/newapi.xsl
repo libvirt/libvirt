@@ -317,9 +317,9 @@
           <tr>
             <td><a id="{@name}"><xsl:value-of select="@name"/></a></td>
             <td><xsl:text> = </xsl:text></td>
+            <td class="enumvalue"><xsl:call-template name="enumvalue"/></td>
             <xsl:choose>
               <xsl:when test="@info != ''">
-                <td class="enumvalue"><xsl:call-template name="enumvalue"/></td>
                 <td>
                   <div class="comment">
                     <xsl:call-template name="dumptext">
@@ -329,7 +329,7 @@
                 </td>
               </xsl:when>
               <xsl:otherwise>
-                <td colspan="2" class="enumvalue"><xsl:call-template name="enumvalue"/></td>
+                <td><xsl:comment> </xsl:comment></td>
               </xsl:otherwise>
             </xsl:choose>
           </tr>
