@@ -22,10 +22,7 @@
     <xsl:apply-templates select="exsl:node-set($inchtml)/html:html/html:body/*" mode="content"/>
   </xsl:template>
 
-  <xsl:output
-    method="xml"
-    encoding="UTF-8"
-    indent="yes"/>
+  <xsl:output method="xml" omit-xml-declaration="yes" encoding="UTF-8" indent="yes"/>
 
   <xsl:template match="/">
     <xsl:apply-templates select="." mode="page">

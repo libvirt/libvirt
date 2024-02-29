@@ -17,8 +17,6 @@
   <!-- Import the main part of the site stylesheets -->
   <xsl:import href="page.xsl"/>
 
-  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
-
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
@@ -811,8 +809,9 @@
       <xsl:document
         href="{concat($htmldir, '/libvirt-', @name, '.html')}"
         method="xml"
-        indent="yes"
-        encoding="UTF-8">
+        omit-xml-declaration="yes"
+        encoding="UTF-8"
+        indent="yes">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
           <xsl:with-param name="timestamp" select="$timestamp"/>
           <xsl:with-param name="link_href_base" select="$href_base"/>
