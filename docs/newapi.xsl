@@ -62,7 +62,7 @@
       <td><a href="../acl.html#object_{@object}"><xsl:value-of select="@object"/></a></td>
       <td><a href="../acl.html#perm_{@object}_{@perm}"><xsl:value-of select="@perm"/></a></td>
       <xsl:choose>
-        <xsl:when test="@flags">
+        <xsl:when test="@flags != ''">
           <td><xsl:value-of select="@flags"/></td>
         </xsl:when>
         <xsl:otherwise>
