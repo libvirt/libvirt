@@ -62,6 +62,23 @@ testParseFormatFW(const void *opaque)
 
 
 static int
+testParseFailureFW(const void *opaque)
+{
+    const char *filename = opaque;
+    g_autofree char *inpath = NULL;
+
+    inpath = g_strdup_printf("%s/qemufirmwaredata/%s", abs_srcdir, filename);
+
+    /* This is a negative test case, so if the file was parsed
+     * successfully we need to report a failure  */
+    if (qemuFirmwareParse(inpath))
+        return -1;
+
+    return 0;
+}
+
+
+static int
 testFWPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     g_autofree char *fakehome = NULL;
@@ -73,6 +90,7 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/40-edk2-ovmf-4m-qcow2-x64-sb.json",
         PREFIX "/share/qemu/firmware/41-edk2-ovmf-2m-raw-x64-sb.json",
         PREFIX "/share/qemu/firmware/50-edk2-aarch64-qcow2.json",
+        PREFIX "/share/qemu/firmware/50-edk2-loongarch64.json",
         PREFIX "/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json",
         PREFIX "/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json",
         PREFIX "/share/qemu/firmware/51-edk2-aarch64-raw.json",
@@ -238,11 +256,19 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+#define DO_PARSE_FAILURE_TEST(filename) \
+    do { \
+        if (virTestRun("QEMU FW FAILURE " filename, \
+                       testParseFailureFW, filename) < 0) \
+            ret = -1; \
+    } while (0)
+
     DO_PARSE_TEST("usr/share/qemu/firmware/30-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/31-edk2-ovmf-2m-raw-x64-sb-enrolled.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/40-edk2-ovmf-4m-qcow2-x64-sb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/41-edk2-ovmf-2m-raw-x64-sb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-aarch64-qcow2.json");
+    DO_PARSE_FAILURE_TEST("usr/share/qemu/firmware/50-edk2-loongarch64.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/51-edk2-aarch64-raw.json");
