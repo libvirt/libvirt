@@ -102,6 +102,7 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/60-edk2-ovmf-x64-inteltdx.json",
         PREFIX "/share/qemu/firmware/90-combined.json",
         PREFIX "/share/qemu/firmware/91-bios.json",
+        PREFIX "/share/qemu/firmware/93-invalid.json",
         NULL
     };
     const char **e;
@@ -279,6 +280,7 @@ mymain(void)
     DO_PARSE_TEST("usr/share/qemu/firmware/60-edk2-ovmf-x64-inteltdx.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/90-combined.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/91-bios.json");
+    DO_PARSE_FAILURE_TEST("usr/share/qemu/firmware/93-invalid.json");
 
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
         ret = -1;
