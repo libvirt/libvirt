@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-02-26 13:37+0000\n"
-"PO-Revision-Date: 2024-02-28 14:01+0000\n"
+"PO-Revision-Date: 2024-02-29 14:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -5155,7 +5155,8 @@ msgstr "정의된"
 msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
-msgstr ""
+msgstr "도메인에 할당 될 수 있는 노드에서 영구 장치를 정의하거나 수정합니다. 장치는 "
+"도메인에 할당 되기전에 시작되어 있어야만 합니다."
 
 msgid "Delete a domain checkpoint"
 msgstr "도메인 점검점 삭제"
@@ -6568,7 +6569,7 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 바인딩하지 못했습니다"
 
 msgid "Failed to build net json"
-msgstr ""
+msgstr "net json 제작에 실패함"
 
 msgid "Failed to build pidfile path"
 msgstr "pidfile 경로 만들기 실패"
@@ -6671,7 +6672,7 @@ msgid "Failed to connect socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 연결하지 못했습니다"
 
 msgid "Failed to connect to mon socket"
-msgstr ""
+msgstr "mon 소켓으로 연결하는데 실패"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -7439,13 +7440,13 @@ msgid "Failed to list active domains"
 msgstr "활성화 도메인 보기 실패"
 
 msgid "Failed to list active interfaces"
-msgstr "활성화된 인터페이스 목록 얻기 실패"
+msgstr "활성화 연결장치를 나열하는데 실패"
 
 msgid "Failed to list active networks"
-msgstr "활성화 네트워크 보들기 실패"
+msgstr "활성화 네트워크를 나열하는데 실패"
 
 msgid "Failed to list active pools"
-msgstr "활성화 풀 목록 얻기 실패"
+msgstr "활성화 풀을 나열하는데 실패"
 
 msgid "Failed to list domains"
 msgstr "도메인 목록을 나열하는데 실패"
@@ -7469,7 +7470,7 @@ msgid "Failed to list network filter bindings"
 msgstr "네트워크 필터 바인딩을 목록화 하는데 실패"
 
 msgid "Failed to list network filters"
-msgstr "네트워크 필터를 목록화 하는데 실패"
+msgstr "네트워크 필터를 목록화하는데 실패"
 
 msgid "Failed to list networks"
 msgstr "네트워크 목록 나열 실패"
@@ -7569,7 +7570,7 @@ msgid "Failed to make dnsmasq (PID: %1$d) reload config files."
 msgstr "dnsmasq(PID: %1$d)가 구성 파일을 다시 로드하도록 하지 못했습니다."
 
 msgid "Failed to make domain persistent after migration"
-msgstr "이전 이후 도메인을 영구적으로 만드는 데 실패"
+msgstr "이전 이후 도메인을 영구적으로 만드는데 실패"
 
 #, c-format
 msgid "Failed to make domain persistent after migration: %1$s"
@@ -7660,7 +7661,7 @@ msgid "Failed to open '%1$s'"
 msgstr "'%1$s' 열기 실패"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
+msgstr "유닉스 소켓을 여는데 실패"
 
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
@@ -7719,7 +7720,7 @@ msgid "Failed to parse CCW address '%1$s'"
 msgstr "CCW 주소 '%1$s'를 구문 분석 할 수 없음"
 
 msgid "Failed to parse HTTP response code"
-msgstr ""
+msgstr "HTTP 응답 코드를 구문 분석하는데 실패"
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -8198,7 +8199,7 @@ msgid "Failed to send migration data to destination host"
 msgstr "이전 자료를 대상 호스트로 보내는데 실패함"
 
 msgid "Failed to send net-add request to CH"
-msgstr ""
+msgstr "net-add 요청을 CH로 전송하는데 실패"
 
 #, c-format
 msgid "Failed to send request to init control %1$s"
@@ -8558,7 +8559,7 @@ msgstr "네트워크 %1$s 최신화에 실패함"
 
 #, c-format
 msgid "Failed to update node device %1$s from '%2$s'"
-msgstr ""
+msgstr "노드 장치 %1$s를('%2$s'에서) 최신화하는데 실패"
 
 msgid "Failed to verify peer's certificate"
 msgstr "피어의 인증서를 확인하지 못했습니다"
@@ -8597,7 +8598,7 @@ msgid "Failed to write xml description"
 msgstr "xml 설명을 쓰지 못했습니다"
 
 msgid "Failed while adding guest interfaces"
-msgstr ""
+msgstr "게스트 연결장치를 추가하는 중에 실패"
 
 msgid "Failed! Volume not removed."
 msgstr "실패하였습니다! 볼륨은 제거되었습니다."
@@ -9058,7 +9059,7 @@ msgid "Guest agent not available for now"
 msgstr "지금은 게스트 에이전트를 사용 할 수 없습니다"
 
 msgid "Guest networking is not supported by this version of ch"
-msgstr ""
+msgstr "ch의 해당 버전에서 게스트 네트워킹은 지원되지 않습니다"
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "이 QEMU에서는 HMAT가 지원되지 않습니다"
@@ -11749,7 +11750,8 @@ msgstr "기록"
 msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
-msgstr ""
+msgstr "참고: 기본 데몬에 연결 중. '-c'를 사용하여 데몬을 지정합니다 (예: "
+"virtqemud:///system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON 유형은 명령줄로 변환할 수 없습니다"
@@ -12618,7 +12620,7 @@ msgid "Only 1 IDE controller is supported"
 msgstr "1개의 IDE 컨트롤러만 지원됩니다"
 
 msgid "Only 1 cluster per die is supported"
-msgstr ""
+msgstr "다이(die)당 1 클러스트만 지원됩니다"
 
 msgid "Only 1 die per socket is supported"
 msgstr "소켓당 1개의 다이만 지원됩니다"
@@ -12847,12 +12849,13 @@ msgid "Option --file is required"
 msgstr "옵션 --file이 필요합니다"
 
 msgid "Option --transient is incompatible with --persistent and --inactive"
-msgstr ""
+msgstr "옵션 --transient는 --persistent 및 --inactive와 호환되지 않습니다"
 
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
-msgstr ""
+msgstr "옵션 --tree는 --cap, --inactive, --persistent 및 --transient와 호환되지 "
+"않습니다"
 
 msgid "Option argument is empty"
 msgstr "옵션 인수가 비어 있습니다"
@@ -13217,11 +13220,11 @@ msgstr "폴킷을 사용할 수 없는 경우에도 폴킷 인증을 시도했�
 
 #, c-format
 msgid "Poll on sock %1$d failed"
-msgstr ""
+msgstr "sock %1$d에서 poll이 실패함"
 
 #, c-format
 msgid "Poll on sock %1$d timed out"
-msgstr ""
+msgstr "sock %1$d에서 poll이 시간 만료됨"
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13706,7 +13709,7 @@ msgstr "요청한 동작이 바르지 않습니다: %1$s"
 
 #, c-format
 msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
-msgstr ""
+msgstr "크기 재조정이 '%1$llu'로 요청되어었지만 장치 크기는 '%2$llu'입니다"
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -15051,7 +15054,7 @@ msgstr "대상 CPU 점검 %1$s는 소스 %2$s와 일치하지 않습니다"
 
 #, c-format
 msgid "Target CPU clusters %1$d does not match source %2$d"
-msgstr ""
+msgstr "대상 CPU 클러스터 %1$d는 원천 %2$d와 일치하지 않습니다"
 
 #, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
@@ -15616,7 +15619,8 @@ msgstr "대상 최대 메모리 크기 '%1$llu'이(가) 소스 '%2$llu'와 일�
 msgid ""
 "Target memory device 'dynamicMemslots' property doesn't match source memory "
 "device"
-msgstr ""
+msgstr "대상 메모리 장치 'dynamicMemslots' 자원은 원천 메모리 장치와 일치하지 "
+"않습니다"
 
 #, c-format
 msgid ""
@@ -17697,10 +17701,10 @@ msgstr "라이브 장치를 수정 할 수 없습니다"
 
 #, c-format
 msgid "Unable to modify mediated device: %1$s"
-msgstr ""
+msgstr "중재된 장치를 수정 할 수 없음: %1$s"
 
 msgid "Unable to modify mediated device: modify unsupported"
-msgstr ""
+msgstr "중재된 장치를 수정 할 수 없음: 미지원 수정"
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -18808,7 +18812,7 @@ msgstr "예상치 못한 통신규약 %1$d"
 
 #, c-format
 msgid "Unexpected response from CH: %1$d"
-msgstr ""
+msgstr "CH에서 예상치 못한 응답: %1$d"
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "루프 장치가 없는 예기치 않은 루트 파일 시스템"
@@ -19253,7 +19257,7 @@ msgstr "지원되지 않는 NUMA 메모리 튜닝 모드 '%1$s'"
 
 #, c-format
 msgid "Unsupported Network type %1$d"
-msgstr ""
+msgstr "미지원 네트워크 유형 %1$d"
 
 #, c-format
 msgid "Unsupported OS type: %1$s"
@@ -19288,7 +19292,7 @@ msgstr "지원되지 않는 URI 체계 '%1$s'"
 
 #, c-format
 msgid "Unsupported VPD field access type '%1$s'"
-msgstr ""
+msgstr "미지원 VPD 영역 접근 유형 %1$s'"
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -19541,7 +19545,7 @@ msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "%1$s/devices/%2$s/class의 비정상적인 값: %3$s"
 
 msgid "Update a active and/or inactive node device"
-msgstr ""
+msgstr "활성화 및/또는 비활성화 노드 장치 최신화"
 
 msgid "Update device from an XML <file>."
 msgstr "XML <file>에서 장치 최신화."
@@ -19569,21 +19573,21 @@ msgstr "최신화된 네트워크 %1$s 영구적 설정과 라이브 상태"
 
 #, c-format
 msgid "Updated node device %1$s live state"
-msgstr ""
+msgstr "노드 장치 %1$s 라이브 상태 최신화됨"
 
 #, c-format
 msgid "Updated node device %1$s persistent config"
-msgstr ""
+msgstr "노드 장치 %1$s 영구 구성이 최신화됨"
 
 #, c-format
 msgid "Updated node device %1$s persistent config and live state"
-msgstr ""
+msgstr "노드 장치 %1$s 영구 구성 및 라이브 상태가 최신화됨"
 
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr "실행 중인 도메인의 최신화는 VIR_DOMAIN_AFFECT_LIVE 플래그가 필요합니다"
 
 msgid "Updates the configuration of a node device"
-msgstr ""
+msgstr "노드 장치의 구성을 최신화"
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "이름공간을 지원하는 커널로 향상"
@@ -20221,7 +20225,7 @@ msgid "affect current state of network"
 msgstr "네트워크의 현재 상태에 영향"
 
 msgid "affect current state of node device"
-msgstr ""
+msgstr "노드 장치의 현재 상태에 영향을 미치다"
 
 msgid "affect next boot"
 msgstr "다음 부팅에 영향을 줍니다"
@@ -20230,7 +20234,7 @@ msgid "affect next network startup"
 msgstr "다음 네트워크 시작 중에 영향을 줍니다"
 
 msgid "affect next node device startup"
-msgstr ""
+msgstr "다음 노드 장치의 초기시작에 영향을 미치다"
 
 msgid "affect running domain"
 msgstr "실행중인 도메인 영향"
@@ -20239,7 +20243,7 @@ msgid "affect running network"
 msgstr "실행 중인 네트워크에 영향을 미치다"
 
 msgid "affect running node device"
-msgstr ""
+msgstr "동작 중인 노드 장치에 영향을 미치다"
 
 msgid "after reverting, change state to paused"
 msgstr "되돌린 후 상태를 일시 중지됨으로 변경하십시오"
@@ -20491,7 +20495,8 @@ msgstr "속성 'limit'은 maxphysaddr 방식 'passthrough'용으로만 지원됩
 msgid ""
 "attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
 "network %1$s"
-msgstr ""
+msgstr "<domain> 요소에서 속성 'register=yes'은 네트워크 %1$s에서 'localOnly=yes'가 "
+"필요합니다"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -26244,7 +26249,7 @@ msgid "failed to parse %1$sversion"
 msgstr "%1$sversion을(를) 구문 분석하지 못했습니다"
 
 msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
+msgstr "잘못된 문자와 함께 PCI VPD 문자열 값을 구문 분석하는데 실패함"
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -26421,33 +26426,33 @@ msgid "failed to read temporary file created with template %1$s"
 msgstr "템플릿 %1$s로 생성된 임시 파일을 읽는 데 실패"
 
 msgid "failed to read the PCI VPD data"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함"
 
 msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 자료 부분 길이가 잘못됨"
 
 msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 잘못된 체크썸"
 
 msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 잘못된 자료"
 
 msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 누락된 필수 체크썸"
 
 msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 누락된 읽기-전용 부분"
 
 msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 구문 분석이 조기에 종료됨"
 
 msgid ""
 "failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 일기-쓰기 부분에서 예상치 못한 RV 키워드"
 
 msgid ""
 "failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
+msgstr "PCI VPD 자료를 읽는데 실패함: 읽기-전용 부분에서 예상치 못한 RW 키워드"
 
 msgid "failed to reboot domain"
 msgstr "도메인 재부팅 실패"
@@ -26459,10 +26464,10 @@ msgid "failed to regenerate genid"
 msgstr "genid 생성에 실패"
 
 msgid "failed to register name server"
-msgstr ""
+msgstr "네임 서버를 등록하는데 실패함"
 
 msgid "failed to register name server: systemd-resolved is not available"
-msgstr ""
+msgstr "네임 서버를 등록하는데 실패함: systemd-resolved는 사용 할 수 없습니다"
 
 msgid "failed to register udev interface driver"
 msgstr "udev 인터페이스 드라이버를 등록하는데 실패"
@@ -29260,7 +29265,7 @@ msgid "list only transient domains"
 msgstr "임시 도메인만 목록화합니다"
 
 msgid "list persistent devices"
-msgstr ""
+msgstr "영구 장치를 나열합니다"
 
 msgid "list persistent domains"
 msgstr "영구 도메인 나열"
@@ -29302,7 +29307,7 @@ msgid "list the name, rather than the full xml"
 msgstr "전체 xml 대신에 이름을 나열합니다"
 
 msgid "list transient devices"
-msgstr ""
+msgstr "임시 장치를 나열합니다"
 
 msgid "list transient domains"
 msgstr "임시 도메인 목록"
@@ -31240,7 +31245,7 @@ msgid "nested JSON array to commandline conversion is not supported"
 msgstr "중첩된 JSON 배열에서 명령줄로의 변환은 지원되지 않습니다"
 
 msgid "net definition failed validation"
-msgstr ""
+msgstr "net 정의 검증에 실패함"
 
 msgid "netcat path not valid with native proxy mode"
 msgstr "netcat 경로가 기본 프락시 방식에서 유효하지 않습니다"
@@ -32086,7 +32091,7 @@ msgstr "%1$s의 노드 장치 '%2$s'는 연결과 일치해야 합니다"
 
 #, c-format
 msgid "node device '%1$s' is not persistent"
-msgstr ""
+msgstr "노드 장치 '%1$s'는 영구적이지 않습니다"
 
 msgid "node device details in XML"
 msgstr "XML로 된 노드 장치 상세정보"
@@ -32099,7 +32104,7 @@ msgid "node device information"
 msgstr "노드 장치 정보"
 
 msgid "node device is not active"
-msgstr ""
+msgstr "노드 장치가 활성화되지 않았습니다"
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr "이 기술환경에서 구현되지 않은 노드 가져오기 메모리 매개변수"
@@ -32143,7 +32148,7 @@ msgstr "고유하지 않은 별칭이 감지됨: %1$s"
 
 #, c-format
 msgid "non-shared storage migration into '%1$s' target is not supported"
-msgstr ""
+msgstr "%1$s' 대상인 비-공유된 저장소 이전은 지원되지 않습니다"
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "0이 아닌 ncpus는 NULL cpus와 합치하지 않습니다"
@@ -33140,7 +33145,8 @@ msgstr "prctl이 KEEPCAPS를 설정하지 못했습니다"
 msgid ""
 "pre-creation of storage target for incremental storage migration of disk "
 "'%1$s' is not supported"
-msgstr ""
+msgstr "디스크 '%1$s'의 증분 저장소 이동을 위한 저장소 대상의 사전-생성은 지원되지 "
+"않습니다"
 
 msgid "preallocate is not supported on this platform"
 msgstr "이 기술환경에서는 사전 할당이 지원되지 않습니다"
@@ -33703,7 +33709,7 @@ msgstr "recv holeHandler가 실패했습니다"
 
 #, c-format
 msgid "recv on sock %1$d failed"
-msgstr ""
+msgstr "sock %1$d에서 recv가 실패함"
 
 msgid "redefine metadata for existing checkpoint"
 msgstr "기존 체크포인트에 대한 메타데이터 재정의"
@@ -34585,7 +34591,7 @@ msgid "shmem name cannot include '/' character"
 msgstr "shmem 이름은 '/' 문자를 포함할 수 없습니다"
 
 msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
-msgstr ""
+msgstr "shmem 크기는 2의 거듭제곱과 1MiB (1024KiB) 이상이어야 합니다"
 
 msgid "show all possible graphical displays"
 msgstr "가능한 모든 그래픽 표시"
@@ -36006,7 +36012,7 @@ msgid "transient is not supported with vhostuser disk"
 msgstr "임시는 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid "transient node devices do not have any persistent config"
-msgstr ""
+msgstr "임시 노드 장치는 영구적인 구성을 갖고 있지 않습니다"
 
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
