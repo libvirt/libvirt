@@ -43,12 +43,28 @@ v10.1.0 (unreleased)
     to resolve names of the connected guests using the name server started
     for this network.
 
+  * qemu: Introduce dynamicMemslots attribute for virtio-mem
+
+    QEMU now allows setting ``.dynamic-memslots`` attribute for virtio-mem-pci
+    devices. When turned on, it allows memory exposed to guest to be split into
+    multiple memory slots and thus smaller memory footprint (see the original
+    commit for detailed explanation).
+
 * **Improvements**
 
 * nodedev: Add ability to update persistent mediated devices by defining them
 
     Existing persistent mediated devices can now also be updated by
     ``virNodeDeviceDefineXML()`` as long as parent and UUID remain unchanged.
+
+  * ch: Enable ``ethernet`` interface mode support
+
+    ``<interface type='ethernet'/>`` can now be used for CH domains.
+
+  * viraccessdriverpolkit: Add missing vtpm case
+
+    Secrets with ``<usage type='vtpm'>`` were left unable to be checked for in
+    the access driver, i.e. in ACL rules. Missing code was provided.
 
 * **Bug fixes**
 
@@ -60,6 +76,32 @@ v10.1.0 (unreleased)
     fix such configurations (after previous release it is even possible to
     change ``trustGuestRxFilters`` value on live domains via
     ``virDomainUpdateDeviceFlags()`` or ``virsh device-update``).
+
+  * domain: Fix check for overlapping ``<memory/>`` devices
+
+    A bug was identified which caused libvirt to report two NVDIMMs as
+    overlapping even though they weren't. This now fixed.
+
+  * vmx: Accept empty fileName for cdrom-image
+
+    Turns out, ``fileName`` attribute (which contains path to CDROM image) can
+    be set to an empty string (``""``) to denote a state in which the CDROM has
+    no medium in it. Libvirt used to reject such configuration file, but not
+    anymore.
+
+  * qemu_hotplug: Don't lose 'created' flag in qemuDomainChangeNet()
+
+    When starting a domain, libvirt tracks what resources it created for it and
+    which were pre-existing and uses this information to preserve pre-existing
+    resources when cleaning up after said domain is shut off. But for macvtaps
+    this information was lost after the macvtap device was changed (e.g. via
+    ``virsh update-device``).
+
+  * Fix virStream hole handling
+
+    When a client sent multiple holes into a virStream it may have caused
+    daemon hangup as the daemon stopped processing RPC from the client
+    temporarily. This is now fixed.
 
 
 v10.0.0 (2024-01-15)
