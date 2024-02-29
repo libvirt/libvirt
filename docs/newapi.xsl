@@ -384,7 +384,7 @@
           <xsl:for-each select="field">
             <xsl:choose>
               <xsl:when test='@type = "union"'>
-                <tr><td><span class="keyword">union</span> {</td></tr>
+                <tr><td colspan="3"><span class="keyword">union</span> {</td></tr>
                 <tr>
                   <td><table>
                     <xsl:for-each select="union/field">
@@ -397,31 +397,35 @@
                           </span>
                         </td>
                         <td><xsl:value-of select="@name"/></td>
-                        <xsl:if test="@info != ''">
-                          <td>
+                        <td>
+                          <xsl:if test="@info != ''">
                             <div class="comment">
                               <xsl:call-template name="dumptext">
                                 <xsl:with-param name="text" select="@info"/>
                               </xsl:call-template>
                             </div>
-                          </td>
-                        </xsl:if>
+                          </xsl:if>
+                          <xsl:comment> </xsl:comment>
+                        </td>
                       </tr>
                     </xsl:for-each>
                   </table></td>
-                <td></td></tr>
-                <tr><td>}</td>
-                <td><xsl:value-of select="@name"/></td>
-                <xsl:if test="@info != ''">
+                  <td colspan="2"><xsl:comment> </xsl:comment></td>
+                </tr>
+                <tr>
+                  <td>}</td>
+                  <td><xsl:value-of select="@name"/></td>
                   <td>
-                    <div class="comment">
-                      <xsl:call-template name="dumptext">
-                        <xsl:with-param name="text" select="@info"/>
-                      </xsl:call-template>
-                    </div>
+                    <xsl:if test="@info != ''">
+                      <div class="comment">
+                        <xsl:call-template name="dumptext">
+                          <xsl:with-param name="text" select="@info"/>
+                        </xsl:call-template>
+                      </div>
+                    </xsl:if>
+                    <xsl:comment> </xsl:comment>
                   </td>
-                </xsl:if>
-                <td></td></tr>
+                </tr>
               </xsl:when>
               <xsl:otherwise>
                 <tr>
@@ -433,15 +437,16 @@
                     </span>
                   </td>
                   <td><xsl:value-of select="@name"/></td>
-                  <xsl:if test="@info != ''">
-                    <td>
+                  <td>
+                    <xsl:if test="@info != ''">
                       <div class="comment">
                         <xsl:call-template name="dumptext">
                         <xsl:with-param name="text" select="@info"/>
                         </xsl:call-template>
                       </div>
-                    </td>
-                  </xsl:if>
+                    </xsl:if>
+                    <xsl:comment> </xsl:comment>
+                  </td>
                 </tr>
               </xsl:otherwise>
             </xsl:choose>
