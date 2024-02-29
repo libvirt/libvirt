@@ -44,8 +44,9 @@
             <meta name="go-import" content="{/html:html/html:head/html:meta[@name='go-import']/@content}"/>
         </xsl:if>
 
-        <script type="text/javascript" src="{$asset_href_base}js/main.js">
-          <xsl:comment>// forces non-empty element</xsl:comment>
+        <!-- force non-empty script tag -->
+        <script src="{$asset_href_base}js/main.js">
+          <xsl:text> </xsl:text>
         </script>
       </head>
       <body onload="pageload()">
