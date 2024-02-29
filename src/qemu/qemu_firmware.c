@@ -1562,35 +1562,49 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
                                qemuFirmware ***firmwaresRet,
                                char ***pathsRet)
 {
-    g_auto(GStrv) paths = NULL;
-    size_t npaths;
+    g_auto(GStrv) possiblePaths = NULL;
+    char **currentPath = NULL;
     qemuFirmware **firmwares = NULL;
-    size_t i;
+    char **paths = NULL;
+    size_t nfirmwares = 0;
+    size_t npaths = 0;
 
-    if (qemuFirmwareFetchConfigs(&paths, privileged) < 0)
+    if (qemuFirmwareFetchConfigs(&possiblePaths, privileged) < 0)
         return -1;
 
-    if (!paths)
+    if (!possiblePaths)
         return 0;
 
-    npaths = g_strv_length(paths);
+    for (currentPath = possiblePaths; *currentPath; currentPath++) {
+        qemuFirmware *firmware = qemuFirmwareParse(*currentPath);
 
-    firmwares = g_new0(qemuFirmware *, npaths);
-
-    for (i = 0; i < npaths; i++) {
-        if (!(firmwares[i] = qemuFirmwareParse(paths[i])))
+        if (!firmware)
             goto error;
+
+        VIR_APPEND_ELEMENT(firmwares, nfirmwares, firmware);
+
+        if (pathsRet) {
+            char *path = g_strdup(*currentPath);
+            VIR_APPEND_ELEMENT(paths, npaths, path);
+        }
     }
 
-    *firmwaresRet = g_steal_pointer(&firmwares);
-    if (pathsRet)
-        *pathsRet = g_steal_pointer(&paths);
-    return npaths;
+    *firmwaresRet = firmwares;
+    if (pathsRet) {
+        char *terminator = NULL;
+        VIR_APPEND_ELEMENT(paths, npaths, terminator);
+        *pathsRet = paths;
+    }
+
+    return nfirmwares;
 
  error:
-    while (i > 0)
-        qemuFirmwareFree(firmwares[--i]);
+    while (nfirmwares > 0)
+        qemuFirmwareFree(firmwares[--nfirmwares]);
     VIR_FREE(firmwares);
+    while (npaths > 0)
+        VIR_FREE(paths[--npaths]);
+    VIR_FREE(paths);
     return -1;
 }
 
