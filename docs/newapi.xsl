@@ -222,6 +222,19 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:template name="formattextdiv">
+    <xsl:param name="text"/>
+    <xsl:param name="divclass"/>
+
+    <xsl:if test="$text">
+      <div class="{$divclass}">
+        <xsl:call-template name="formattext">
+          <xsl:with-param name="text" select="$text"/>
+        </xsl:call-template>
+      </div>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="macro" mode="toc">
     <span class="directive">#define</span><xsl:text> </xsl:text>
     <a href="#{@name}"><xsl:value-of select="@name"/></a>
@@ -287,11 +300,10 @@
   <xsl:template match="typedef[@type = 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
     <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
-    <div class="description">
-    <xsl:call-template name="formattext">
+    <xsl:call-template name="formattextdiv">
       <xsl:with-param name="text" select="info"/>
+      <xsl:with-param name="divclass">description</xsl:with-param>
     </xsl:call-template>
-    </div>
     <div class="api">
       <pre>
         <span class="keyword">enum</span><xsl:text> </xsl:text>
@@ -343,11 +355,10 @@
         <xsl:text>;</xsl:text>
       </pre>
     </div>
-    <div class="description">
-    <xsl:call-template name="formattext">
+    <xsl:call-template name="formattextdiv">
       <xsl:with-param name="text" select="info"/>
+      <xsl:with-param name="divclass">description</xsl:with-param>
     </xsl:call-template>
-    </div>
   </xsl:template>
 
   <xsl:template match="struct" mode="toc">
@@ -452,11 +463,11 @@
     <xsl:variable name="name" select="string(@name)"/>
     <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="api"><span class="directive">#define</span><xsl:text> </xsl:text><xsl:value-of select="$name"/></pre>
-    <div class="description">
-    <xsl:call-template name="formattext">
+    <xsl:call-template name="formattextdiv">
       <xsl:with-param name="text" select="info"/>
+      <xsl:with-param name="divclass">description</xsl:with-param>
     </xsl:call-template>
-    </div><xsl:text>
+    <xsl:text>
 </xsl:text>
   </xsl:template>
 
@@ -604,11 +615,10 @@
     <xsl:text>)
 </xsl:text>
     </pre>
-    <div class="description">
-    <xsl:call-template name="formattext">
+    <xsl:call-template name="formattextdiv">
       <xsl:with-param name="text" select="info"/>
+      <xsl:with-param name="divclass">description</xsl:with-param>
     </xsl:call-template>
-    </div>
     <xsl:if test="arg | return">
       <dl class="variablelist">
       <xsl:for-each select="arg">
@@ -680,11 +690,11 @@
     </xsl:for-each>
     <xsl:text>)</xsl:text>
     </pre>
-    <div class="description">
-    <xsl:call-template name="formattext">
+    <xsl:call-template name="formattextdiv">
       <xsl:with-param name="text" select="info"/>
+      <xsl:with-param name="divclass">description</xsl:with-param>
     </xsl:call-template>
-    </div><xsl:text>
+    <xsl:text>
 </xsl:text>
     <xsl:if test="arg | return/@info">
       <dl class="variablelist">
