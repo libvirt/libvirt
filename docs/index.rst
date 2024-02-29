@@ -65,7 +65,7 @@ Blog Planet
 
 .. raw:: html
 
-   <script type="text/javascript" src="js/virt-tools-blog-planet.js">
+   <script src="js/virt-tools-blog-planet.js">
    </script>
    <div id="planet"> </div>
 
