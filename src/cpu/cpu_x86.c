@@ -3019,6 +3019,14 @@ virCPUx86UpdateLive(virCPUDef *cpu,
                  x86DataIsSubset(&modelDisabled->data, &feature->data))
             expected = VIR_CPU_FEATURE_DISABLE;
 
+        if (x86DataIsSubset(&enabled, &feature->data) &&
+            x86DataIsSubset(&disabled, &feature->data)) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and disabled at the same time"),
+                           feature->name);
+            return -1;
+        }
+
         if (expected == VIR_CPU_FEATURE_DISABLE &&
             x86DataIsSubset(&enabled, &feature->data)) {
             VIR_DEBUG("Feature '%s' enabled by the hypervisor", feature->name);
