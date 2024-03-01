@@ -9546,7 +9546,7 @@ static const vshCmdOptDef opts_numatune[] = {
     {.name = "mode",
      .type = VSH_OT_STRING,
      .completer = virshDomainNumatuneModeCompleter,
-     .help = N_("NUMA mode, one of strict, preferred and interleave \n"
+     .help = N_("NUMA mode, one of strict, preferred and interleave "
                 "or a number from the virDomainNumatuneMemMode enum")
     },
     {.name = "nodeset",
