@@ -52,7 +52,7 @@ v10.1.0 (unreleased)
 
 * **Improvements**
 
-* nodedev: Add ability to update persistent mediated devices by defining them
+  * nodedev: Add ability to update persistent mediated devices by defining them
 
     Existing persistent mediated devices can now also be updated by
     ``virNodeDeviceDefineXML()`` as long as parent and UUID remain unchanged.
@@ -65,6 +65,12 @@ v10.1.0 (unreleased)
 
     Secrets with ``<usage type='vtpm'>`` were left unable to be checked for in
     the access driver, i.e. in ACL rules. Missing code was provided.
+
+  * virt-admin: Notify users to use explicit URI if connection fails
+
+    ``virt-admin`` doesn't try to guess the URI of the daemon to manage so a
+    failure to connect may be confusing for users if modular daemons are used.
+    Add a hint to use the URI of the dameon to manage.
 
 * **Bug fixes**
 
@@ -102,6 +108,16 @@ v10.1.0 (unreleased)
     When a client sent multiple holes into a virStream it may have caused
     daemon hangup as the daemon stopped processing RPC from the client
     temporarily. This is now fixed.
+
+  * nodedev: Don't generate broken XML with certain hardware
+
+    A broken node device XML would be generated in a rare case when a hardware
+    device had certain characters in the VPD fields.
+
+  * qemu: Fix reservation of manually specified port for disk migration
+
+    A manually specified port would not be relased after disk migration making
+    it impossible to use it again.
 
 
 v10.0.0 (2024-01-15)
