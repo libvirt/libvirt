@@ -770,6 +770,9 @@ const char *virQEMUCapsGetMachineDefaultCPU(virQEMUCaps *qemuCaps,
 bool virQEMUCapsIsCPUDeprecated(virQEMUCaps *qemuCaps,
                                 virDomainVirtType type,
                                 const char *model);
+bool virQEMUCapsIsCPUUsable(virQEMUCaps *qemuCaps,
+                            virDomainVirtType type,
+                            virCPUDef *cpu);
 bool virQEMUCapsIsMachineDeprecated(virQEMUCaps *qemuCaps,
                                     virDomainVirtType type,
                                     const char *machine);

@@ -2433,6 +2433,53 @@ virQEMUCapsIsCPUDeprecated(virQEMUCaps *qemuCaps,
 }
 
 
+/**
+ * virQEMUCapsIsCPUUsable:
+ * @qemuCaps: QEMU capabilities
+ * @type: virtualization type (kvm vs tcg)
+ * @cpu: CPU definition to check, including explicitly configured features
+ *
+ * Checks whether @cpu is considered usable by QEMU, i.e., all features
+ * required by the CPU model are supported and can be enabled. If so, we can
+ * avoid checking the CPU according to its definition in the CPU map when
+ * starting a domain with check='partial'. Our checks could be inaccurate
+ * anyway because QEMU might have changed the definition of the CPU model
+ * since we added it into the CPU map.
+ *
+ * The CPU is considered usable based on the QEMU capabilities if QEMU reports
+ * it as such and @cpu would only request removal of features.
+ *
+ * Returns true iff @cpu is usable.
+ */
+bool
+virQEMUCapsIsCPUUsable(virQEMUCaps *qemuCaps,
+                       virDomainVirtType type,
+                       virCPUDef *cpu)
+{
+    qemuMonitorCPUDefs *defs;
+    size_t i;
+
+    if (!cpu->model ||
+        !(defs = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels))
+        return false;
+
+    /* CPU model usability is valid only when CPU def does not contain any
+     * features or all features are disabled.
+     */
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (cpu->features[i].policy != VIR_CPU_FEATURE_DISABLE)
+            return false;
+    }
+
+    for (i = 0; i < defs->ncpus; i++) {
+        if (STREQ(defs->cpus[i].name, cpu->model))
+            return defs->cpus[i].usable == VIR_DOMCAPS_CPU_USABLE_YES;
+    }
+
+    return false;
+}
+
+
 bool
 virQEMUCapsIsMachineDeprecated(virQEMUCaps *qemuCaps,
                                virDomainVirtType type,

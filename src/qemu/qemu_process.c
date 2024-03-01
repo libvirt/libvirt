@@ -6288,6 +6288,7 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
         g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
 
         if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
+            !virQEMUCapsIsCPUUsable(qemuCaps, def->virtType, def->cpu) &&
             virCPUCompare(hostarch,
                           virQEMUCapsGetHostModel(qemuCaps, def->virtType,
                                                   VIR_QEMU_CAPS_HOST_CPU_FULL),
