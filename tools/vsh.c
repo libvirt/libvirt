@@ -619,7 +619,6 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
 static bool
 vshCmddefHelp(const vshCmdDef *def)
 {
-    char buf[256];
     bool shortopt = false; /* true if 'arg' works instead of '--opt arg' */
 
     fputs(_("  NAME\n"), stdout);
@@ -701,33 +700,44 @@ vshCmddefHelp(const vshCmdDef *def)
         const vshCmdOptDef *opt;
         fputs(_("\n  OPTIONS\n"), stdout);
         for (opt = def->opts; opt->name; opt++) {
+            bool required_option = opt->flags & VSH_OFLAG_REQ;
+            g_autofree char *optstr = NULL;
+
             switch (opt->type) {
             case VSH_OT_BOOL:
-                g_snprintf(buf, sizeof(buf), "--%s", opt->name);
+                optstr = g_strdup_printf("--%s", opt->name);
                 break;
+
             case VSH_OT_INT:
-                g_snprintf(buf, sizeof(buf),
-                           (opt->flags & VSH_OFLAG_REQ) ? _("[--%1$s] <number>")
-                           : _("--%1$s <number>"), opt->name);
+                if (required_option) {
+                    optstr = g_strdup_printf(_("[--%1$s] <number>"), opt->name);
+                } else {
+                    optstr = g_strdup_printf(_("--%1$s <number>"), opt->name);
+                }
                 break;
+
             case VSH_OT_STRING:
-                g_snprintf(buf, sizeof(buf), _("--%1$s <string>"), opt->name);
+                optstr = g_strdup_printf(_("--%1$s <string>"), opt->name);
                 break;
+
             case VSH_OT_DATA:
-                g_snprintf(buf, sizeof(buf), _("[--%1$s] <string>"),
-                           opt->name);
+                optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
                 break;
+
             case VSH_OT_ARGV:
-                g_snprintf(buf, sizeof(buf),
-                           shortopt ? _("[--%1$s] <string>") : _("<%1$s>"),
-                           opt->name);
+                if (shortopt) {
+                    optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
+                } else {
+                    optstr = g_strdup_printf("<%s>", opt->name);
+                }
                 break;
+
             case VSH_OT_ALIAS:
             case VSH_OT_NONE:
                 continue;
             }
 
-            fprintf(stdout, "    %-15s  %s\n", buf, _(opt->help));
+            fprintf(stdout, "    %-15s  %s\n", optstr, _(opt->help));
         }
     }
     fputc('\n', stdout);
