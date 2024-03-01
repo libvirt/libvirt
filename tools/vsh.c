@@ -324,10 +324,24 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1; /* too many options */
         }
 
-        if (missingCompleters &&
-            (opt->type == VSH_OT_STRING || opt->type == VSH_OT_DATA) &&
-            !opt->completer)
-            virBufferStrcat(&complbuf, opt->name, ", ", NULL);
+        if (missingCompleters && !opt->completer) {
+            switch (opt->type) {
+            case VSH_OT_STRING:
+            case VSH_OT_DATA:
+            case VSH_OT_ARGV:
+                virBufferStrcat(&complbuf, opt->name, ", ", NULL);
+                break;
+
+            case VSH_OT_BOOL:
+                /* only name is completed */
+            case VSH_OT_INT:
+                /* no point in completing numbers */
+            case VSH_OT_ALIAS:
+                /* alias is handled in the referenced command */
+            case VSH_OT_NONE:
+                break;
+            }
+        }
 
         switch (opt->type) {
         case VSH_OT_NONE:
