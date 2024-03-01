@@ -376,7 +376,7 @@ static const vshCmdInfo info_srv_threadpool_info[] = {
      .data = N_("get server workerpool parameters")
     },
     {.name = "desc",
-     .data = N_("Retrieve threadpool attributes from a server. ")
+     .data = N_("Retrieve threadpool attributes from a server.")
     },
     {.name = NULL}
 };
@@ -784,7 +784,7 @@ static const vshCmdInfo info_srv_clients_info[] = {
      .data = N_("get server's client-related configuration limits")
     },
     {.name = "desc",
-     .data = N_("Retrieve server's client-related configuration limits ")
+     .data = N_("Retrieve server's client-related configuration limits")
     },
     {.name = NULL}
 };
