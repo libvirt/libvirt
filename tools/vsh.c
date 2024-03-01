@@ -630,47 +630,63 @@ vshCmddefHelp(const vshCmdDef *def)
     if (def->opts) {
         const vshCmdOptDef *opt;
         for (opt = def->opts; opt->name; opt++) {
-            const char *fmt = "%s";
+            bool required_option = opt->flags & VSH_OFLAG_REQ;
+
             switch (opt->type) {
             case VSH_OT_BOOL:
-                fmt = "[--%s]";
+                fprintf(stdout, " [--%s]", opt->name);
                 break;
+
             case VSH_OT_INT:
-                /* xgettext:c-format */
-                fmt = ((opt->flags & VSH_OFLAG_REQ) ? "<%s>"
-                       : _("[--%1$s <number>]"));
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
-                    shortopt = true;
-                break;
-            case VSH_OT_STRING:
-                /* xgettext:c-format */
-                fmt = _("[--%1$s <string>]");
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
-                    shortopt = true;
-                break;
-            case VSH_OT_DATA:
-                fmt = ((opt->flags & VSH_OFLAG_REQ) ? "<%s>" : "[<%s>]");
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
-                    shortopt = true;
-                break;
-            case VSH_OT_ARGV:
-                /* xgettext:c-format */
-                if (shortopt) {
-                    fmt = (opt->flags & VSH_OFLAG_REQ)
-                        ? _("{[--%1$s] <string>}...")
-                        : _("[[--%1$s] <string>]...");
+                if (required_option) {
+                    fprintf(stdout, " <%s>", opt->name);
                 } else {
-                    fmt = (opt->flags & VSH_OFLAG_REQ) ? _("<%1$s>...")
-                        : _("[<%1$s>]...");
+                    fprintf(stdout, _(" [--%1$s <number>]"), opt->name);
+                }
+
+                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+                    shortopt = true;
+                break;
+
+            case VSH_OT_STRING:
+                fprintf(stdout, _(" [--%1$s <string>]"), opt->name);
+
+                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+                    shortopt = true;
+                break;
+
+            case VSH_OT_DATA:
+                if (required_option) {
+                    fprintf(stdout, " <%s>", opt->name);
+                } else {
+                    fprintf(stdout, " [<%s>]", opt->name);
+                }
+
+                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+                    shortopt = true;
+                break;
+
+            case VSH_OT_ARGV:
+                if (shortopt) {
+                    if (required_option) {
+                        fprintf(stdout, _(" {[--%1$s] <string>}..."), opt->name);
+                    } else {
+                        fprintf(stdout, _(" [[--%1$s] <string>]..."), opt->name);
+                    }
+                } else {
+                    if (required_option) {
+                        fprintf(stdout, " <%s>...", opt->name);
+                    } else {
+                        fprintf(stdout, " [<%s>]...", opt->name);
+                    }
                 }
                 break;
+
             case VSH_OT_ALIAS:
             case VSH_OT_NONE:
                 /* aliases are intentionally undocumented */
                 continue;
             }
-            fputc(' ', stdout);
-            fprintf(stdout, fmt, opt->name);
         }
     }
     fputc('\n', stdout);
