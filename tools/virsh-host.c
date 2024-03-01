@@ -1505,9 +1505,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
 static const vshCmdInfo info_node_memory_tune[] = {
     {"help", N_("Get or set node memory parameters")},
-    {"desc", N_("Get or set node memory parameters\n"
-                "    To get the memory parameters, use following command: \n\n"
-                "    virsh # node-memory-tune")},
+    {"desc", N_("Get or set node memory parameters")},
     {NULL, NULL}
 };
 

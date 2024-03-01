@@ -1528,10 +1528,7 @@ static const vshCmdInfo info_blkiotune[] = {
      .data = N_("Get or set blkio parameters")
     },
     {.name = "desc",
-     .data = N_("Get or set the current blkio parameters for a guest"
-                " domain.\n"
-                "    To get the blkio parameters use following command: \n\n"
-                "    virsh # blkiotune <domain>")
+     .data = N_("Get or set the current blkio parameters for a guest domain.")
     },
     {.name = NULL}
 };
@@ -9238,10 +9235,7 @@ static const vshCmdInfo info_memtune[] = {
      .data = N_("Get or set memory parameters")
     },
     {.name = "desc",
-     .data = N_("Get or set the current memory parameters for a guest"
-                " domain.\n"
-                "    To get the memory parameters use following command: \n\n"
-                "    virsh # memtune <domain>")
+     .data = N_("Get or set the current memory parameters for a guest domain.")
     },
     {.name = NULL}
 };
@@ -9413,10 +9407,7 @@ static const vshCmdInfo info_perf[] = {
         .data = N_("Get or set perf event")
     },
     {.name = "desc",
-        .data = N_("Get or set the current perf events for a guest"
-                   " domain.\n"
-                   "    To get the perf events list use following command: \n\n"
-                   "    virsh # perf <domain>")
+        .data = N_("Get or set the current perf events for a guest domain.")
     },
     {.name = NULL}
 };
@@ -9545,10 +9536,7 @@ static const vshCmdInfo info_numatune[] = {
      .data = N_("Get or set numa parameters")
     },
     {.name = "desc",
-     .data = N_("Get or set the current numa parameters for a guest"
-                " domain.\n"
-                "    To get the numa parameters use following command: \n\n"
-                "    virsh # numatune <domain>")
+     .data = N_("Get or set the current numa parameters for a guest domain.")
     },
     {.name = NULL}
 };
