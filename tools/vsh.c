@@ -255,7 +255,8 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
     return NULL;
 }
 
-/* Check if the internal command definitions are correct */
+/* Check if the internal command definitions are correct.
+ * None of the errors are to be marked as translatable. */
 static int
 vshCmddefCheckInternals(vshControl *ctl,
                         const vshCmdDef *cmd,
@@ -271,39 +272,39 @@ vshCmddefCheckInternals(vshControl *ctl,
         const vshCmdDef *alias;
 
         if (!cmd->alias) {
-            vshError(ctl, _("command '%1$s' has inconsistent alias"), cmd->name);
+            vshError(ctl, "command '%s' has inconsistent alias", cmd->name);
             return -1;
         }
 
         if (!(alias = vshCmddefSearch(cmd->alias))) {
-            vshError(ctl, _("command alias '%1$s' is pointing to a non-existent command '%2$s'"),
+            vshError(ctl, "command alias '%s' is pointing to a non-existent command '%s'",
                      cmd->name, cmd->alias);
             return -1;
         }
 
         if (alias->flags & VSH_CMD_FLAG_ALIAS) {
-            vshError(ctl, _("command alias '%1$s' is pointing to another command alias '%2$s'"),
+            vshError(ctl, "command alias '%s' is pointing to another command alias '%s'",
                      cmd->name, cmd->alias);
             return -1;
         }
 
         if (cmd->handler) {
-            vshError(ctl, _("command '%1$s' has handler set"), cmd->name);
+            vshError(ctl, "command '%s' has handler set", cmd->name);
             return -1;
         }
 
         if (cmd->opts) {
-            vshError(ctl, _("command '%1$s' has options set"), cmd->name);
+            vshError(ctl, "command '%s' has options set", cmd->name);
             return -1;
         }
 
         if (cmd->info) {
-            vshError(ctl, _("command '%1$s' has info set"), cmd->name);
+            vshError(ctl, "command '%s' has info set", cmd->name);
             return -1;
         }
 
         if (cmd->flags & ~VSH_CMD_FLAG_ALIAS) {
-            vshError(ctl, _("command '%1$s' has multiple flags set"), cmd->name);
+            vshError(ctl, "command '%s' has multiple flags set", cmd->name);
             return -1;
         }
 
@@ -313,7 +314,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 
     /* Each command has to provide a non-empty help string. */
     if (!(help = vshCmddefGetInfo(cmd, "help")) || !*help) {
-        vshError(ctl, _("command '%1$s' lacks help"), cmd->name);
+        vshError(ctl, "command '%s' lacks help", cmd->name);
         return -1;
     }
 
@@ -324,7 +325,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         const vshCmdOptDef *opt = &cmd->opts[i];
 
         if (i > 63) {
-            vshError(ctl, _("command '%1$s' has too many options"), cmd->name);
+            vshError(ctl, "command '%s' has too many options", cmd->name);
             return -1; /* too many options */
         }
 
@@ -336,7 +337,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         switch (opt->type) {
         case VSH_OT_BOOL:
             if (opt->completer || opt->completer_flags) {
-                vshError(ctl, _("bool parameter '%1$s' of command '%2$s' has completer set"),
+                vshError(ctl, "bool parameter '%s' of command '%s' has completer set",
                          opt->name, cmd->name);
                 return -1;
             }
@@ -345,7 +346,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 
         case VSH_OT_STRING:
             if (opt->flags & VSH_OFLAG_REQ) {
-                vshError(ctl, _("parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"),
+                vshError(ctl, "parameter '%s' of command '%s' misused VSH_OFLAG_REQ",
                          opt->name, cmd->name);
                 return -1; /* neither bool nor string options can be mandatory */
             }
@@ -359,9 +360,9 @@ vshCmddefCheckInternals(vshControl *ctl,
             char *p;
 
             if (opt->flags || !opt->help) {
-                vshError(ctl, _("parameter '%1$s' of command '%2$s' has incorrect alias option"),
+                vshError(ctl, "parameter '%s' of command '%s' has incorrect alias option",
                          opt->name, cmd->name);
-                return -1; /* alias options are tracked by the original name */
+                return -1;
             }
             if ((p = strchr(opt->help, '=')))
                 name = g_strndup(opt->help, p - opt->help);
@@ -375,46 +376,46 @@ vshCmddefCheckInternals(vshControl *ctl,
             if (p) {
                 /* If alias comes with value, replacement must not be bool */
                 if (cmd->opts[j].type == VSH_OT_BOOL) {
-                    vshError(ctl, _("alias '%1$s' of command '%2$s' has mismatched alias type"),
+                    vshError(ctl, "alias '%s' of command '%s' has mismatched alias type",
                              opt->name, cmd->name);
                     return -1;
                 }
             }
             if (!cmd->opts[j].name) {
-                vshError(ctl, _("alias '%1$s' of command '%2$s' has missing alias option"),
+                vshError(ctl, "alias '%s' of command '%s' has missing alias option",
                          opt->name, cmd->name);
-                return -1; /* alias option must map to a later option name */
+                return -1;
             }
         }
             break;
         case VSH_OT_ARGV:
             if (cmd->opts[i + 1].name) {
-                vshError(ctl, _("parameter '%1$s' of command '%2$s' must be listed last"),
+                vshError(ctl, "parameter '%s' of command '%s' must be listed last",
                          opt->name, cmd->name);
-                return -1; /* argv option must be listed last */
+                return -1;
             }
             break;
 
         case VSH_OT_DATA:
             if (!(opt->flags & VSH_OFLAG_REQ)) {
-                vshError(ctl, _("parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"),
+                vshError(ctl, "parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag",
                          opt->name, cmd->name);
-                return -1; /* OT_DATA should always be required. */
+                return -1;
             }
 
             if (seenOptionalOption) {
-                vshError(ctl, _("parameter '%1$s' of command '%2$s' must be listed before optional parameters"),
+                vshError(ctl, "parameter '%s' of command '%s' must be listed before optional parameters",
                          opt->name, cmd->name);
-                return -1;  /* mandatory options must be listed first */
+                return -1;
             }
             break;
 
         case VSH_OT_INT:
             if (opt->flags & VSH_OFLAG_REQ) {
                 if (seenOptionalOption) {
-                    vshError(ctl, _("parameter '%1$s' of command '%2$s' must be listed before optional parameters"),
+                    vshError(ctl, "parameter '%s' of command '%s' must be listed before optional parameters",
                              opt->name, cmd->name);
-                    return -1;  /* mandatory options must be listed first */
+                    return -1;
                 }
             } else {
                 seenOptionalOption = true;
