@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v10.1.0 (unreleased)
+v10.1.0 (2024-03-01)
 ====================
 
 * **Security**
@@ -27,8 +27,6 @@ v10.1.0 (unreleased)
     dereferenced said NULL pointer making the crash certain in a
     specific scenario in which a NULL array of size 0 was passed to the
     aforementioned functions.
-
-* **Removed features**
 
 * **New features**
 
