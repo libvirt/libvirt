@@ -1262,7 +1262,7 @@ vshAdmUsage(void)
         fprintf(stdout, _(" %1$s (help keyword '%2$s')\n"),
                 grp->name, grp->keyword);
         for (cmd = grp->commands; cmd->name; cmd++) {
-            if (cmd->flags & VSH_CMD_FLAG_ALIAS ||
+            if (cmd->alias ||
                 cmd->flags & VSH_CMD_FLAG_HIDDEN)
                 continue;
             fprintf(stdout,
@@ -1429,7 +1429,6 @@ static const vshCmdDef vshAdmCmds[] = {
 
 static const vshCmdDef monitoringCmds[] = {
     {.name = "srv-list",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "server-list"
     },
     {.name = "server-list",
@@ -1439,7 +1438,6 @@ static const vshCmdDef monitoringCmds[] = {
      .flags = 0
     },
     {.name = "srv-threadpool-info",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "server-threadpool-info"
     },
     {.name = "server-threadpool-info",
@@ -1449,7 +1447,6 @@ static const vshCmdDef monitoringCmds[] = {
      .flags = 0
     },
     {.name = "srv-clients-list",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "client-list"
     },
     {.name = "client-list",
@@ -1465,7 +1462,6 @@ static const vshCmdDef monitoringCmds[] = {
      .flags = 0
     },
     {.name = "srv-clients-info",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "server-clients-info"
     },
     {.name = "server-clients-info",
@@ -1479,7 +1475,6 @@ static const vshCmdDef monitoringCmds[] = {
 
 static const vshCmdDef managementCmds[] = {
     {.name = "srv-threadpool-set",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "server-threadpool-set"
     },
     {.name = "server-threadpool-set",
@@ -1495,7 +1490,6 @@ static const vshCmdDef managementCmds[] = {
      .flags = 0
     },
     {.name = "srv-clients-set",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "server-clients-set"
     },
     {.name = "server-clients-set",
@@ -1505,7 +1499,6 @@ static const vshCmdDef managementCmds[] = {
      .flags = 0
     },
     {.name = "srv-update-tls",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "server-update-tls"
     },
     {.name = "server-update-tls",

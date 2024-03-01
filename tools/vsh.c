@@ -268,13 +268,8 @@ vshCmddefCheckInternals(vshControl *ctl,
     g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
 
     /* in order to perform the validation resolve the alias first */
-    if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
+    if (cmd->alias) {
         const vshCmdDef *alias;
-
-        if (!cmd->alias) {
-            vshError(ctl, "command '%s' has inconsistent alias", cmd->name);
-            return -1;
-        }
 
         if (!(alias = vshCmddefSearch(cmd->alias))) {
             vshError(ctl, "command alias '%s' is pointing to a non-existent command '%s'",
@@ -282,7 +277,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
         }
 
-        if (alias->flags & VSH_CMD_FLAG_ALIAS) {
+        if (alias->alias) {
             vshError(ctl, "command alias '%s' is pointing to another command alias '%s'",
                      cmd->name, cmd->alias);
             return -1;
@@ -303,7 +298,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
         }
 
-        if (cmd->flags & ~VSH_CMD_FLAG_ALIAS) {
+        if (cmd->flags != 0) {
             vshError(ctl, "command '%s' has multiple flags set", cmd->name);
             return -1;
         }
@@ -615,7 +610,7 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
              grp->keyword);
 
     for (cmd = grp->commands; cmd->name; cmd++) {
-        if (cmd->flags & VSH_CMD_FLAG_ALIAS ||
+        if (cmd->alias ||
             cmd->flags & VSH_CMD_FLAG_HIDDEN)
             continue;
         vshPrint(ctl, "    %-30s %s\n", cmd->name,
@@ -1407,7 +1402,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 }
 
                 /* aliases need to be resolved to the actual commands */
-                if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
+                if (cmd->alias) {
                     VIR_FREE(tkdata);
                     tkdata = g_strdup(cmd->alias);
                     if (!(cmd = vshCmddefSearch(tkdata))) {
@@ -2630,7 +2625,7 @@ vshReadlineCommandGenerator(void)
         for (cmd_list_index = 0; cmds[cmd_list_index].name; cmd_list_index++) {
             const char *name = cmds[cmd_list_index].name;
 
-            if (cmds[cmd_list_index].flags & VSH_CMD_FLAG_ALIAS ||
+            if (cmds[cmd_list_index].alias ||
                 cmds[cmd_list_index].flags & VSH_CMD_FLAG_HIDDEN)
                 continue;
 
@@ -3131,7 +3126,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
                      grp->keyword);
 
             for (def = grp->commands; def->name; def++) {
-                if (def->flags & VSH_CMD_FLAG_ALIAS ||
+                if (def->alias ||
                     def->flags & VSH_CMD_FLAG_HIDDEN)
                     continue;
                 vshPrint(ctl, "    %-30s %s\n", def->name,
@@ -3145,7 +3140,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((def = vshCmddefSearch(name))) {
-        if (def->flags & VSH_CMD_FLAG_ALIAS)
+        if (def->alias)
             def = vshCmddefSearch(def->alias);
     }
 

@@ -162,8 +162,7 @@ struct _vshCmdOpt {
  */
 enum {
     VSH_CMD_FLAG_NOCONNECT = (1 << 0),  /* no prior connection needed */
-    VSH_CMD_FLAG_ALIAS     = (1 << 1),  /* command is an alias */
-    VSH_CMD_FLAG_HIDDEN    = (1 << 2),  /* command is hidden/internal */
+    VSH_CMD_FLAG_HIDDEN    = (1 << 1),  /* command is hidden/internal */
 };
 
 /*

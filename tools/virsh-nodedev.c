@@ -1415,7 +1415,6 @@ const vshCmdDef nodedevCmds[] = {
      .flags = 0
     },
     {.name = "nodedev-dettach",
-     .flags = VSH_CMD_FLAG_ALIAS,
      .alias = "nodedev-detach"
     },
     {.name = "nodedev-dumpxml",
