@@ -3351,6 +3351,10 @@ const vshCmdOptDef opts_selftest[] = {
      .type = VSH_OT_BOOL,
      .help = N_("output the list of options which are missing completers")
     },
+    {.name = "dump-help",
+     .type = VSH_OT_BOOL,
+     .help = N_("output help for each command")
+    },
     {.name = NULL}
 };
 const vshCmdInfo info_selftest[] = {
@@ -3369,9 +3373,14 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd)
     const vshCmdGrp *grp;
     const vshCmdDef *def;
     bool completers = vshCommandOptBool(cmd, "completers-missing");
+    bool dumphelp = vshCommandOptBool(cmd, "dump-help");
 
     for (grp = cmdGroups; grp->name; grp++) {
         for (def = grp->commands; def->name; def++) {
+
+            if (dumphelp && !def->alias)
+                vshCmddefHelp(def);
+
             if (vshCmddefCheckInternals(ctl, def, completers) < 0)
                 return false;
         }
