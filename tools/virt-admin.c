@@ -167,14 +167,9 @@ vshAdmReconnect(vshControl *ctl)
  * 'uri' command
  */
 
-static const vshCmdInfo info_uri[] = {
-    {.name = "help",
-     .data = N_("print the admin server URI")
-    },
-    {.name = "desc",
-     .data = ""
-    },
-    {.name = NULL}
+static const vshCmdInfo info_uri = {
+    .help = N_("print the admin server URI"),
+    .desc = "",
 };
 
 static bool
@@ -198,14 +193,9 @@ cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
  * "version" command
  */
 
-static const vshCmdInfo info_version[] = {
-    {.name = "help",
-     .data = N_("show version")
-    },
-    {.name = "desc",
-     .data = N_("Display the system and also the daemon version information.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_version = {
+    .help = N_("show version"),
+    .desc = N_("Display the system and also the daemon version information."),
 };
 
 static bool
@@ -270,14 +260,9 @@ static const vshCmdOptDef opts_connect[] = {
     {.name = NULL}
 };
 
-static const vshCmdInfo info_connect[] = {
-    {.name = "help",
-     .data = N_("connect to daemon's admin server")
-    },
-    {.name = "desc",
-     .data = N_("Connect to a daemon's administrating server.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_connect = {
+    .help = N_("connect to daemon's admin server"),
+    .desc = N_("Connect to a daemon's administrating server."),
 };
 
 static bool
@@ -308,14 +293,9 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
  * -------------------
  */
 
-static const vshCmdInfo info_srv_list[] = {
-    {.name = "help",
-     .data = N_("list available servers on a daemon")
-    },
-    {.name = "desc",
-     .data = N_("List all manageable servers on a daemon.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_srv_list = {
+    .help = N_("list available servers on a daemon"),
+    .desc = N_("List all manageable servers on a daemon."),
 };
 
 static bool
@@ -371,14 +351,9 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
  * ------------------------------
  */
 
-static const vshCmdInfo info_srv_threadpool_info[] = {
-    {.name = "help",
-     .data = N_("get server workerpool parameters")
-    },
-    {.name = "desc",
-     .data = N_("Retrieve threadpool attributes from a server.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_srv_threadpool_info = {
+    .help = N_("get server workerpool parameters"),
+    .desc = N_("Retrieve threadpool attributes from a server."),
 };
 
 static const vshCmdOptDef opts_srv_threadpool_info[] = {
@@ -432,15 +407,10 @@ cmdSrvThreadpoolInfo(vshControl *ctl, const vshCmd *cmd)
  * -----------------------------
  */
 
-static const vshCmdInfo info_srv_threadpool_set[] = {
-    {.name = "help",
-     .data = N_("set server workerpool parameters")
-    },
-    {.name = "desc",
-     .data = N_("Tune threadpool attributes on a server. See OPTIONS for "
-                "currently supported attributes.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_srv_threadpool_set = {
+     .help = N_("set server workerpool parameters"),
+     .desc = N_("Tune threadpool attributes on a server. See OPTIONS for "
+                "currently supported attributes."),
 };
 
 static const vshCmdOptDef opts_srv_threadpool_set[] = {
@@ -539,14 +509,9 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
  * ---------------------------
  */
 
-static const vshCmdInfo info_srv_clients_list[] = {
-    {.name = "help",
-     .data = N_("list clients connected to <server>")
-    },
-    {.name = "desc",
-     .data = N_("List all manageable clients connected to <server>.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_srv_clients_list = {
+    .help = N_("list clients connected to <server>"),
+    .desc = N_("List all manageable clients connected to <server>."),
 };
 
 static const vshCmdOptDef opts_srv_clients_list[] = {
@@ -626,14 +591,9 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
  * -------------------
  */
 
-static const vshCmdInfo info_client_info[] = {
-    {.name = "help",
-     .data = N_("retrieve client's identity info from server")
-    },
-    {.name = "desc",
-     .data = N_("Retrieve identity details about <client> from <server>")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_client_info = {
+    .help = N_("retrieve client's identity info from server"),
+    .desc = N_("Retrieve identity details about <client> from <server>"),
 };
 
 static const vshCmdOptDef opts_client_info[] = {
@@ -712,15 +672,10 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
  * -------------------------
  */
 
-static const vshCmdInfo info_client_disconnect[] = {
-    {.name = "help",
-     .data = N_("force disconnect a client from the given server")
-    },
-    {.name = "desc",
-     .data = N_("Force close a specific client's connection to the given "
-                "server.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_client_disconnect = {
+     .help = N_("force disconnect a client from the given server"),
+     .desc = N_("Force close a specific client's connection to the given "
+                "server."),
 };
 
 static const vshCmdOptDef opts_client_disconnect[] = {
@@ -779,14 +734,9 @@ cmdClientDisconnect(vshControl *ctl, const vshCmd *cmd)
  * ---------------------------
  */
 
-static const vshCmdInfo info_srv_clients_info[] = {
-    {.name = "help",
-     .data = N_("get server's client-related configuration limits")
-    },
-    {.name = "desc",
-     .data = N_("Retrieve server's client-related configuration limits")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_srv_clients_info = {
+    .help = N_("get server's client-related configuration limits"),
+    .desc = N_("Retrieve server's client-related configuration limits"),
 };
 
 static const vshCmdOptDef opts_srv_clients_info[] = {
@@ -837,15 +787,10 @@ cmdSrvClientsInfo(vshControl *ctl, const vshCmd *cmd)
  * --------------------------
  */
 
-static const vshCmdInfo info_srv_clients_set[] = {
-    {.name = "help",
-     .data = N_("set server's client-related configuration limits")
-    },
-    {.name = "desc",
-     .data = N_("Tune server's client-related configuration limits. "
-                "See OPTIONS for currently supported attributes.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_srv_clients_set = {
+     .help = N_("set server's client-related configuration limits"),
+     .desc = N_("Tune server's client-related configuration limits. "
+                "See OPTIONS for currently supported attributes."),
 };
 
 static const vshCmdOptDef opts_srv_clients_set[] = {
@@ -938,16 +883,11 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
  *  Command server-update-tls
  * --------------------------
  */
-static const vshCmdInfo info_srv_update_tls_file[] = {
-    {.name = "help",
-     .data = N_("notify server to update TLS related files online.")
-    },
-    {.name = "desc",
-     .data = N_("notify server to update the CA cert, "
+static const vshCmdInfo info_srv_update_tls_file = {
+     .help = N_("notify server to update TLS related files online."),
+     .desc = N_("notify server to update the CA cert, "
                 "CA CRL, server cert / key without restarts. "
-                "See OPTIONS for currently supported attributes.")
-    },
-    {.name = NULL}
+                "See OPTIONS for currently supported attributes."),
 };
 
 static const vshCmdOptDef opts_srv_update_tls_file[] = {
@@ -992,17 +932,12 @@ cmdSrvUpdateTlsFiles(vshControl *ctl, const vshCmd *cmd)
  * Command daemon-log-filters
  * --------------------------
  */
-static const vshCmdInfo info_daemon_log_filters[] = {
-    {.name = "help",
-     .data = N_("fetch or set the currently defined set of logging filters on "
-                "daemon")
-    },
-    {.name = "desc",
-     .data = N_("Depending on whether run with or without options, the command "
+static const vshCmdInfo info_daemon_log_filters = {
+     .help = N_("fetch or set the currently defined set of logging filters on "
+                "daemon"),
+     .desc = N_("Depending on whether run with or without options, the command "
                 "fetches or redefines the existing active set of filters on "
-                "daemon.")
-    },
-    {.name = NULL}
+                "daemon."),
 };
 
 static const vshCmdOptDef opts_daemon_log_filters[] = {
@@ -1045,17 +980,12 @@ cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
  * Command daemon-log-outputs
  * --------------------------
  */
-static const vshCmdInfo info_daemon_log_outputs[] = {
-    {.name = "help",
-     .data = N_("fetch or set the currently defined set of logging outputs on "
-                "daemon")
-    },
-    {.name = "desc",
-     .data = N_("Depending on whether run with or without options, the command "
+static const vshCmdInfo info_daemon_log_outputs = {
+     .help = N_("fetch or set the currently defined set of logging outputs on "
+                "daemon"),
+     .desc = N_("Depending on whether run with or without options, the command "
                 "fetches or redefines the existing active set of outputs on "
-                "daemon.")
-    },
-    {.name = NULL}
+                "daemon."),
 };
 
 static const vshCmdOptDef opts_daemon_timeout[] = {
@@ -1087,14 +1017,9 @@ cmdDaemonTimeout(vshControl *ctl, const vshCmd *cmd)
  * Command daemon-timeout
  * --------------------------
  */
-static const vshCmdInfo info_daemon_timeout[] = {
-    {.name = "help",
-     .data = N_("set the auto shutdown timeout of the daemon")
-    },
-    {.name = "desc",
-     .data = N_("set the auto shutdown timeout of the daemon")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_daemon_timeout = {
+    .help = N_("set the auto shutdown timeout of the daemon"),
+    .desc = N_("set the auto shutdown timeout of the daemon"),
 };
 
 static const vshCmdOptDef opts_daemon_log_outputs[] = {
@@ -1266,8 +1191,7 @@ vshAdmUsage(void)
                 cmd->flags & VSH_CMD_FLAG_HIDDEN)
                 continue;
             fprintf(stdout,
-                    "    %-30s %s\n", cmd->name,
-                    _(vshCmddefGetInfo(cmd, "help")));
+                    "    %-30s %s\n", cmd->name, _(cmd->info->help));
         }
         fprintf(stdout, "\n");
     }
@@ -1409,19 +1333,19 @@ static const vshCmdDef vshAdmCmds[] = {
     {.name = "uri",
      .handler = cmdURI,
      .opts = NULL,
-     .info = info_uri,
+     .info = &info_uri,
      .flags = 0
     },
     {.name = "version",
      .handler = cmdVersion,
      .opts = NULL,
-     .info = info_version,
+     .info = &info_version,
      .flags = 0
     },
     {.name = "connect",
      .handler = cmdConnect,
      .opts = opts_connect,
-     .info = info_connect,
+     .info = &info_connect,
      .flags = VSH_CMD_FLAG_NOCONNECT
     },
     {.name = NULL}
@@ -1434,7 +1358,7 @@ static const vshCmdDef monitoringCmds[] = {
     {.name = "server-list",
      .handler = cmdSrvList,
      .opts = NULL,
-     .info = info_srv_list,
+     .info = &info_srv_list,
      .flags = 0
     },
     {.name = "srv-threadpool-info",
@@ -1443,7 +1367,7 @@ static const vshCmdDef monitoringCmds[] = {
     {.name = "server-threadpool-info",
      .handler = cmdSrvThreadpoolInfo,
      .opts = opts_srv_threadpool_info,
-     .info = info_srv_threadpool_info,
+     .info = &info_srv_threadpool_info,
      .flags = 0
     },
     {.name = "srv-clients-list",
@@ -1452,13 +1376,13 @@ static const vshCmdDef monitoringCmds[] = {
     {.name = "client-list",
      .handler = cmdSrvClientsList,
      .opts = opts_srv_clients_list,
-     .info = info_srv_clients_list,
+     .info = &info_srv_clients_list,
      .flags = 0
     },
     {.name = "client-info",
      .handler = cmdClientInfo,
      .opts = opts_client_info,
-     .info = info_client_info,
+     .info = &info_client_info,
      .flags = 0
     },
     {.name = "srv-clients-info",
@@ -1467,7 +1391,7 @@ static const vshCmdDef monitoringCmds[] = {
     {.name = "server-clients-info",
      .handler = cmdSrvClientsInfo,
      .opts = opts_srv_clients_info,
-     .info = info_srv_clients_info,
+     .info = &info_srv_clients_info,
      .flags = 0
     },
     {.name = NULL}
@@ -1480,13 +1404,13 @@ static const vshCmdDef managementCmds[] = {
     {.name = "server-threadpool-set",
      .handler = cmdSrvThreadpoolSet,
      .opts = opts_srv_threadpool_set,
-     .info = info_srv_threadpool_set,
+     .info = &info_srv_threadpool_set,
      .flags = 0
     },
     {.name = "client-disconnect",
      .handler = cmdClientDisconnect,
      .opts = opts_client_disconnect,
-     .info = info_client_disconnect,
+     .info = &info_client_disconnect,
      .flags = 0
     },
     {.name = "srv-clients-set",
@@ -1495,7 +1419,7 @@ static const vshCmdDef managementCmds[] = {
     {.name = "server-clients-set",
      .handler = cmdSrvClientsSet,
      .opts = opts_srv_clients_set,
-     .info = info_srv_clients_set,
+     .info = &info_srv_clients_set,
      .flags = 0
     },
     {.name = "srv-update-tls",
@@ -1504,25 +1428,25 @@ static const vshCmdDef managementCmds[] = {
     {.name = "server-update-tls",
      .handler = cmdSrvUpdateTlsFiles,
      .opts = opts_srv_update_tls_file,
-     .info = info_srv_update_tls_file,
+     .info = &info_srv_update_tls_file,
      .flags = 0
     },
     {.name = "daemon-log-filters",
      .handler = cmdDaemonLogFilters,
      .opts = opts_daemon_log_filters,
-     .info = info_daemon_log_filters,
+     .info = &info_daemon_log_filters,
      .flags = 0
     },
     {.name = "daemon-log-outputs",
      .handler = cmdDaemonLogOutputs,
      .opts = opts_daemon_log_outputs,
-     .info = info_daemon_log_outputs,
+     .info = &info_daemon_log_outputs,
      .flags = 0
     },
     {.name = "daemon-timeout",
      .handler = cmdDaemonTimeout,
      .opts = opts_daemon_timeout,
-     .info = info_daemon_timeout,
+     .info = &info_daemon_timeout,
      .flags = 0
     },
     {.name = NULL}

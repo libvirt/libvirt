@@ -71,15 +71,10 @@ virshCheckpointCreate(vshControl *ctl,
 /*
  * "checkpoint-create" command
  */
-static const vshCmdInfo info_checkpoint_create[] = {
-    {.name = "help",
-     .data = N_("Create a checkpoint from XML")
-    },
-    {.name = "desc",
-     .data = N_("Create a checkpoint from XML for use in "
-                "future incremental backups")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_create = {
+     .help = N_("Create a checkpoint from XML"),
+     .desc = N_("Create a checkpoint from XML for use in "
+                "future incremental backups"),
 };
 
 static const vshCmdOptDef opts_checkpoint_create[] = {
@@ -183,15 +178,10 @@ virshParseCheckpointDiskspec(vshControl *ctl,
     return ret;
 }
 
-static const vshCmdInfo info_checkpoint_create_as[] = {
-    {.name = "help",
-     .data = N_("Create a checkpoint from a set of args")
-    },
-    {.name = "desc",
-     .data = N_("Create a checkpoint from arguments for use in "
-                "future incremental backups")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_create_as = {
+     .help = N_("Create a checkpoint from a set of args"),
+     .desc = N_("Create a checkpoint from arguments for use in "
+                "future incremental backups"),
 };
 
 static const vshCmdOptDef opts_checkpoint_create_as[] = {
@@ -309,14 +299,9 @@ virshLookupCheckpoint(vshControl *ctl,
 /*
  * "checkpoint-edit" command
  */
-static const vshCmdInfo info_checkpoint_edit[] = {
-    {.name = "help",
-     .data = N_("edit XML for a checkpoint")
-    },
-    {.name = "desc",
-     .data = N_("Edit the domain checkpoint XML for a named checkpoint")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_edit = {
+    .help = N_("edit XML for a checkpoint"),
+    .desc = N_("Edit the domain checkpoint XML for a named checkpoint"),
 };
 
 static const vshCmdOptDef opts_checkpoint_edit[] = {
@@ -425,14 +410,9 @@ virshGetCheckpointParent(vshControl *ctl,
 /*
  * "checkpoint-info" command
  */
-static const vshCmdInfo info_checkpoint_info[] = {
-    {.name = "help",
-     .data = N_("checkpoint information")
-    },
-    {.name = "desc",
-     .data = N_("Returns basic information about a checkpoint.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_info = {
+    .help = N_("checkpoint information"),
+    .desc = N_("Returns basic information about a checkpoint."),
 };
 
 static const vshCmdOptDef opts_checkpoint_info[] = {
@@ -623,14 +603,9 @@ virshCheckpointListLookup(int id,
 /*
  * "checkpoint-list" command
  */
-static const vshCmdInfo info_checkpoint_list[] = {
-    {.name = "help",
-     .data = N_("List checkpoints for a domain")
-    },
-    {.name = "desc",
-     .data = N_("Checkpoint List")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_list = {
+    .help = N_("List checkpoints for a domain"),
+    .desc = N_("Checkpoint List"),
 };
 
 static const vshCmdOptDef opts_checkpoint_list[] = {
@@ -825,14 +800,9 @@ cmdCheckpointList(vshControl *ctl,
 /*
  * "checkpoint-dumpxml" command
  */
-static const vshCmdInfo info_checkpoint_dumpxml[] = {
-    {.name = "help",
-     .data = N_("Dump XML for a domain checkpoint")
-    },
-    {.name = "desc",
-     .data = N_("Checkpoint Dump XML")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_dumpxml = {
+    .help = N_("Dump XML for a domain checkpoint"),
+    .desc = N_("Checkpoint Dump XML"),
 };
 
 static const vshCmdOptDef opts_checkpoint_dumpxml[] = {
@@ -906,14 +876,9 @@ cmdCheckpointDumpXML(vshControl *ctl,
 /*
  * "checkpoint-parent" command
  */
-static const vshCmdInfo info_checkpoint_parent[] = {
-    {.name = "help",
-     .data = N_("Get the name of the parent of a checkpoint")
-    },
-    {.name = "desc",
-     .data = N_("Extract the checkpoint's parent, if any")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_parent = {
+    .help = N_("Get the name of the parent of a checkpoint"),
+    .desc = N_("Extract the checkpoint's parent, if any"),
 };
 
 static const vshCmdOptDef opts_checkpoint_parent[] = {
@@ -959,14 +924,9 @@ cmdCheckpointParent(vshControl *ctl,
 /*
  * "checkpoint-delete" command
  */
-static const vshCmdInfo info_checkpoint_delete[] = {
-    {.name = "help",
-     .data = N_("Delete a domain checkpoint")
-    },
-    {.name = "desc",
-     .data = N_("Checkpoint Delete")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_checkpoint_delete = {
+    .help = N_("Delete a domain checkpoint"),
+    .desc = N_("Checkpoint Delete"),
 };
 
 static const vshCmdOptDef opts_checkpoint_delete[] = {
@@ -1034,49 +994,49 @@ const vshCmdDef checkpointCmds[] = {
     {.name = "checkpoint-create",
      .handler = cmdCheckpointCreate,
      .opts = opts_checkpoint_create,
-     .info = info_checkpoint_create,
+     .info = &info_checkpoint_create,
      .flags = 0
     },
     {.name = "checkpoint-create-as",
      .handler = cmdCheckpointCreateAs,
      .opts = opts_checkpoint_create_as,
-     .info = info_checkpoint_create_as,
+     .info = &info_checkpoint_create_as,
      .flags = 0
     },
     {.name = "checkpoint-delete",
      .handler = cmdCheckpointDelete,
      .opts = opts_checkpoint_delete,
-     .info = info_checkpoint_delete,
+     .info = &info_checkpoint_delete,
      .flags = 0
     },
     {.name = "checkpoint-dumpxml",
      .handler = cmdCheckpointDumpXML,
      .opts = opts_checkpoint_dumpxml,
-     .info = info_checkpoint_dumpxml,
+     .info = &info_checkpoint_dumpxml,
      .flags = 0
     },
     {.name = "checkpoint-edit",
      .handler = cmdCheckpointEdit,
      .opts = opts_checkpoint_edit,
-     .info = info_checkpoint_edit,
+     .info = &info_checkpoint_edit,
      .flags = 0
     },
     {.name = "checkpoint-info",
      .handler = cmdCheckpointInfo,
      .opts = opts_checkpoint_info,
-     .info = info_checkpoint_info,
+     .info = &info_checkpoint_info,
      .flags = 0
     },
     {.name = "checkpoint-list",
      .handler = cmdCheckpointList,
      .opts = opts_checkpoint_list,
-     .info = info_checkpoint_list,
+     .info = &info_checkpoint_list,
      .flags = 0
     },
     {.name = "checkpoint-parent",
      .handler = cmdCheckpointParent,
      .opts = opts_checkpoint_parent,
-     .info = info_checkpoint_parent,
+     .info = &info_checkpoint_parent,
      .flags = 0
     },
     {.name = NULL}

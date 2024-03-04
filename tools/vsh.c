@@ -239,22 +239,6 @@ vshReportError(vshControl *ctl)
  */
 static int disconnected; /* we may have been disconnected */
 
-/* ---------------
- * Utils for work with command definition
- * ---------------
- */
-const char *
-vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
-{
-    const vshCmdInfo *info;
-
-    for (info = cmd->info; info && info->name; info++) {
-        if (STREQ(info->name, name))
-            return info->data;
-    }
-    return NULL;
-}
-
 /* Check if the internal command definitions are correct.
  * None of the errors are to be marked as translatable. */
 static int
@@ -263,7 +247,6 @@ vshCmddefCheckInternals(vshControl *ctl,
                         bool missingCompleters)
 {
     size_t i;
-    const char *help = NULL;
     bool seenOptionalOption = false;
     g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
 
@@ -308,7 +291,7 @@ vshCmddefCheckInternals(vshControl *ctl,
     }
 
     /* Each command has to provide a non-empty help string. */
-    if (!(help = vshCmddefGetInfo(cmd, "help")) || !*help) {
+    if (!cmd->info || !cmd->info->help || !*cmd->info->help) {
         vshError(ctl, "command '%s' lacks help", cmd->name);
         return -1;
     }
@@ -627,8 +610,7 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
         if (cmd->alias ||
             cmd->flags & VSH_CMD_FLAG_HIDDEN)
             continue;
-        vshPrint(ctl, "    %-30s %s\n", cmd->name,
-                 _(vshCmddefGetInfo(cmd, "help")));
+        vshPrint(ctl, "    %-30s %s\n", cmd->name, _(cmd->info->help));
     }
 
     return true;
@@ -637,13 +619,11 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
 static bool
 vshCmddefHelp(const vshCmdDef *def)
 {
-    const char *desc = NULL;
     char buf[256];
     bool shortopt = false; /* true if 'arg' works instead of '--opt arg' */
 
     fputs(_("  NAME\n"), stdout);
-    fprintf(stdout, "    %s - %s\n", def->name,
-            _(vshCmddefGetInfo(def, "help")));
+    fprintf(stdout, "    %s - %s\n", def->name, _(def->info->help));
 
     fputs(_("\n  SYNOPSIS\n"), stdout);
     fprintf(stdout, "    %s", def->name);
@@ -695,11 +675,10 @@ vshCmddefHelp(const vshCmdDef *def)
     }
     fputc('\n', stdout);
 
-    desc = vshCmddefGetInfo(def, "desc");
-    if (desc && *desc) {
+    if (def->info->desc && *def->info->desc) {
         /* Print the description only if it's not empty.  */
         fputs(_("\n  DESCRIPTION\n"), stdout);
-        fprintf(stdout, "    %s\n", _(desc));
+        fprintf(stdout, "    %s\n", _(def->info->desc));
     }
 
     if (def->opts && def->opts->name) {
@@ -3114,15 +3093,10 @@ const vshCmdOptDef opts_help[] = {
     {.name = NULL}
 };
 
-const vshCmdInfo info_help[] = {
-    {.name = "help",
-     .data = N_("print help")
-    },
-    {.name = "desc",
-     .data = N_("Prints global help, command specific help, or help for a\n"
-                "    group of related commands")
-    },
-    {.name = NULL}
+const vshCmdInfo info_help = {
+     .help = N_("print help"),
+     .desc = N_("Prints global help, command specific help, or help for a\n"
+                "    group of related commands"),
 };
 
 bool
@@ -3143,8 +3117,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
                 if (def->alias ||
                     def->flags & VSH_CMD_FLAG_HIDDEN)
                     continue;
-                vshPrint(ctl, "    %-30s %s\n", def->name,
-                         _(vshCmddefGetInfo(def, "help")));
+                vshPrint(ctl, "    %-30s %s\n", def->name, _(def->info->help));
             }
 
             vshPrint(ctl, "\n");
@@ -3176,14 +3149,9 @@ const vshCmdOptDef opts_cd[] = {
     {.name = NULL}
 };
 
-const vshCmdInfo info_cd[] = {
-    {.name = "help",
-     .data = N_("change the current directory")
-    },
-    {.name = "desc",
-     .data = N_("Change the current directory.")
-    },
-    {.name = NULL}
+const vshCmdInfo info_cd = {
+    .help = N_("change the current directory"),
+    .desc = N_("Change the current directory."),
 };
 
 bool
@@ -3243,14 +3211,9 @@ const vshCmdOptDef opts_echo[] = {
     {.name = NULL}
 };
 
-const vshCmdInfo info_echo[] = {
-    {.name = "help",
-     .data = N_("echo arguments. Used for internal testing.")
-    },
-    {.name = "desc",
-     .data = N_("Echo back arguments, possibly with quoting. Used for internal testing.")
-    },
-    {.name = NULL}
+const vshCmdInfo info_echo = {
+    .help = N_("echo arguments. Used for internal testing."),
+    .desc = N_("Echo back arguments, possibly with quoting. Used for internal testing."),
 };
 
 /* Exists mainly for debugging virsh, but also handy for adding back
@@ -3305,14 +3268,9 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
-const vshCmdInfo info_pwd[] = {
-    {.name = "help",
-     .data = N_("print the current directory")
-    },
-    {.name = "desc",
-     .data = N_("Print the current directory.")
-    },
-    {.name = NULL}
+const vshCmdInfo info_pwd = {
+    .help = N_("print the current directory"),
+    .desc = N_("Print the current directory."),
 };
 
 bool
@@ -3325,14 +3283,9 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     return true;
 }
 
-const vshCmdInfo info_quit[] = {
-    {.name = "help",
-     .data = N_("quit this interactive terminal")
-    },
-    {.name = "desc",
-     .data = ""
-    },
-    {.name = NULL}
+const vshCmdInfo info_quit = {
+    .help = N_("quit this interactive terminal"),
+    .desc = "",
 };
 
 bool
@@ -3357,14 +3310,9 @@ const vshCmdOptDef opts_selftest[] = {
     },
     {.name = NULL}
 };
-const vshCmdInfo info_selftest[] = {
-    {.name = "help",
-     .data = N_("internal command for testing virt shells")
-    },
-    {.name = "desc",
-     .data = N_("internal use only")
-    },
-    {.name = NULL}
+const vshCmdInfo info_selftest = {
+    .help = N_("internal command for testing virt shells"),
+    .desc = N_("internal use only"),
 };
 
 bool
@@ -3402,14 +3350,9 @@ const vshCmdOptDef opts_complete[] = {
     {.name = NULL}
 };
 
-const vshCmdInfo info_complete[] = {
-    {.name = "help",
-     .data = N_("internal command for autocompletion")
-    },
-    {.name = "desc",
-     .data = N_("internal use only")
-    },
-    {.name = NULL}
+const vshCmdInfo info_complete = {
+    .help = N_("internal command for autocompletion"),
+    .desc = N_("internal use only"),
 };
 
 

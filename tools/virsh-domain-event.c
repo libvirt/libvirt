@@ -859,14 +859,9 @@ virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
 }
 
 
-static const vshCmdInfo info_event[] = {
-    {.name = "help",
-     .data = N_("Domain Events")
-    },
-    {.name = "desc",
-     .data = N_("List event types, or wait for domain events to occur")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_event = {
+    .help = N_("Domain Events"),
+    .desc = N_("List event types, or wait for domain events to occur"),
 };
 
 static const vshCmdOptDef opts_event[] = {
@@ -1017,7 +1012,7 @@ const vshCmdDef domEventCmds[] = {
     {.name = "event",
      .handler = cmdEvent,
      .opts = opts_event,
-     .info = info_event,
+     .info = &info_event,
      .flags = 0
     },
     {.name = NULL}

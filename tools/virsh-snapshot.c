@@ -100,14 +100,9 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
 /*
  * "snapshot-create" command
  */
-static const vshCmdInfo info_snapshot_create[] = {
-    {.name = "help",
-     .data = N_("Create a snapshot from XML")
-    },
-    {.name = "desc",
-     .data = N_("Create a snapshot (disk and RAM) from XML")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_create = {
+    .help = N_("Create a snapshot from XML"),
+    .desc = N_("Create a snapshot (disk and RAM) from XML"),
 };
 
 static const vshCmdOptDef opts_snapshot_create[] = {
@@ -309,14 +304,9 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBuffer *buf, const char *str)
     return ret;
 }
 
-static const vshCmdInfo info_snapshot_create_as[] = {
-    {.name = "help",
-     .data = N_("Create a snapshot from a set of args")
-    },
-    {.name = "desc",
-     .data = N_("Create a snapshot (disk and RAM) from arguments")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_create_as = {
+    .help = N_("Create a snapshot from a set of args"),
+    .desc = N_("Create a snapshot (disk and RAM) from arguments"),
 };
 
 static const vshCmdOptDef opts_snapshot_create_as[] = {
@@ -486,14 +476,9 @@ virshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
 /*
  * "snapshot-edit" command
  */
-static const vshCmdInfo info_snapshot_edit[] = {
-    {.name = "help",
-     .data = N_("edit XML for a snapshot")
-    },
-    {.name = "desc",
-     .data = N_("Edit the domain snapshot XML for a named snapshot")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_edit = {
+    .help = N_("edit XML for a snapshot"),
+    .desc = N_("Edit the domain snapshot XML for a named snapshot"),
 };
 
 static const vshCmdOptDef opts_snapshot_edit[] = {
@@ -596,14 +581,9 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 /*
  * "snapshot-current" command
  */
-static const vshCmdInfo info_snapshot_current[] = {
-    {.name = "help",
-     .data = N_("Get or set the current snapshot")
-    },
-    {.name = "desc",
-     .data = N_("Get or set the current snapshot")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_current = {
+    .help = N_("Get or set the current snapshot"),
+    .desc = N_("Get or set the current snapshot"),
 };
 
 static const vshCmdOptDef opts_snapshot_current[] = {
@@ -808,14 +788,9 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
 /*
  * "snapshot-info" command
  */
-static const vshCmdInfo info_snapshot_info[] = {
-    {.name = "help",
-     .data = N_("snapshot information")
-    },
-    {.name = "desc",
-     .data = N_("Returns basic information about a snapshot.")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_info = {
+    .help = N_("snapshot information"),
+    .desc = N_("Returns basic information about a snapshot."),
 };
 
 static const vshCmdOptDef opts_snapshot_info[] = {
@@ -1342,14 +1317,9 @@ virshSnapshotListLookup(int id, bool parent, void *opaque)
 /*
  * "snapshot-list" command
  */
-static const vshCmdInfo info_snapshot_list[] = {
-    {.name = "help",
-     .data = N_("List snapshots for a domain")
-    },
-    {.name = "desc",
-     .data = N_("Snapshot List")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_list = {
+    .help = N_("List snapshots for a domain"),
+    .desc = N_("Snapshot List"),
 };
 
 static const vshCmdOptDef opts_snapshot_list[] = {
@@ -1589,14 +1559,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 /*
  * "snapshot-dumpxml" command
  */
-static const vshCmdInfo info_snapshot_dumpxml[] = {
-    {.name = "help",
-     .data = N_("Dump XML for a domain snapshot")
-    },
-    {.name = "desc",
-     .data = N_("Snapshot Dump XML")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_dumpxml = {
+    .help = N_("Dump XML for a domain snapshot"),
+    .desc = N_("Snapshot Dump XML"),
 };
 
 static const vshCmdOptDef opts_snapshot_dumpxml[] = {
@@ -1659,14 +1624,9 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
 /*
  * "snapshot-parent" command
  */
-static const vshCmdInfo info_snapshot_parent[] = {
-    {.name = "help",
-     .data = N_("Get the name of the parent of a snapshot")
-    },
-    {.name = "desc",
-     .data = N_("Extract the snapshot's parent, if any")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_parent = {
+    .help = N_("Get the name of the parent of a snapshot"),
+    .desc = N_("Extract the snapshot's parent, if any"),
 };
 
 static const vshCmdOptDef opts_snapshot_parent[] = {
@@ -1711,14 +1671,9 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 /*
  * "snapshot-revert" command
  */
-static const vshCmdInfo info_snapshot_revert[] = {
-    {.name = "help",
-     .data = N_("Revert a domain to a snapshot")
-    },
-    {.name = "desc",
-     .data = N_("Revert domain to snapshot")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_revert = {
+    .help = N_("Revert a domain to a snapshot"),
+    .desc = N_("Revert domain to snapshot"),
 };
 
 static const vshCmdOptDef opts_snapshot_revert[] = {
@@ -1797,14 +1752,9 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
 /*
  * "snapshot-delete" command
  */
-static const vshCmdInfo info_snapshot_delete[] = {
-    {.name = "help",
-     .data = N_("Delete a domain snapshot")
-    },
-    {.name = "desc",
-     .data = N_("Snapshot Delete")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_snapshot_delete = {
+    .help = N_("Delete a domain snapshot"),
+    .desc = N_("Snapshot Delete"),
 };
 
 static const vshCmdOptDef opts_snapshot_delete[] = {
@@ -1872,61 +1822,61 @@ const vshCmdDef snapshotCmds[] = {
     {.name = "snapshot-create",
      .handler = cmdSnapshotCreate,
      .opts = opts_snapshot_create,
-     .info = info_snapshot_create,
+     .info = &info_snapshot_create,
      .flags = 0
     },
     {.name = "snapshot-create-as",
      .handler = cmdSnapshotCreateAs,
      .opts = opts_snapshot_create_as,
-     .info = info_snapshot_create_as,
+     .info = &info_snapshot_create_as,
      .flags = 0
     },
     {.name = "snapshot-current",
      .handler = cmdSnapshotCurrent,
      .opts = opts_snapshot_current,
-     .info = info_snapshot_current,
+     .info = &info_snapshot_current,
      .flags = 0
     },
     {.name = "snapshot-delete",
      .handler = cmdSnapshotDelete,
      .opts = opts_snapshot_delete,
-     .info = info_snapshot_delete,
+     .info = &info_snapshot_delete,
      .flags = 0
     },
     {.name = "snapshot-dumpxml",
      .handler = cmdSnapshotDumpXML,
      .opts = opts_snapshot_dumpxml,
-     .info = info_snapshot_dumpxml,
+     .info = &info_snapshot_dumpxml,
      .flags = 0
     },
     {.name = "snapshot-edit",
      .handler = cmdSnapshotEdit,
      .opts = opts_snapshot_edit,
-     .info = info_snapshot_edit,
+     .info = &info_snapshot_edit,
      .flags = 0
     },
     {.name = "snapshot-info",
      .handler = cmdSnapshotInfo,
      .opts = opts_snapshot_info,
-     .info = info_snapshot_info,
+     .info = &info_snapshot_info,
      .flags = 0
     },
     {.name = "snapshot-list",
      .handler = cmdSnapshotList,
      .opts = opts_snapshot_list,
-     .info = info_snapshot_list,
+     .info = &info_snapshot_list,
      .flags = 0
     },
     {.name = "snapshot-parent",
      .handler = cmdSnapshotParent,
      .opts = opts_snapshot_parent,
-     .info = info_snapshot_parent,
+     .info = &info_snapshot_parent,
      .flags = 0
     },
     {.name = "snapshot-revert",
      .handler = cmdDomainSnapshotRevert,
      .opts = opts_snapshot_revert,
-     .info = info_snapshot_revert,
+     .info = &info_snapshot_revert,
      .flags = 0
     },
     {.name = NULL}

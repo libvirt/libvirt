@@ -24,15 +24,10 @@
 /*
  * "backup-begin" command
  */
-static const vshCmdInfo info_backup_begin[] = {
-    {.name = "help",
-     .data = N_("Start a disk backup of a live domain")
-    },
-    {.name = "desc",
-     .data = N_("Use XML to start a full or incremental disk backup of a live "
-                "domain, optionally creating a checkpoint")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_backup_begin = {
+     .help = N_("Start a disk backup of a live domain"),
+     .desc = N_("Use XML to start a full or incremental disk backup of a live "
+                "domain, optionally creating a checkpoint"),
 };
 
 static const vshCmdOptDef opts_backup_begin[] = {
@@ -103,14 +98,9 @@ cmdBackupBegin(vshControl *ctl,
 /*
  * "backup-dumpxml" command
  */
-static const vshCmdInfo info_backup_dumpxml[] = {
-    {.name = "help",
-     .data = N_("Dump XML for an ongoing domain block backup job")
-    },
-    {.name = "desc",
-     .data = N_("Backup Dump XML")
-    },
-    {.name = NULL}
+static const vshCmdInfo info_backup_dumpxml = {
+    .help = N_("Dump XML for an ongoing domain block backup job"),
+    .desc = N_("Backup Dump XML"),
 };
 
 static const vshCmdOptDef opts_backup_dumpxml[] = {
@@ -154,13 +144,13 @@ const vshCmdDef backupCmds[] = {
     {.name = "backup-begin",
      .handler = cmdBackupBegin,
      .opts = opts_backup_begin,
-     .info = info_backup_begin,
+     .info = &info_backup_begin,
      .flags = 0
     },
     {.name = "backup-dumpxml",
      .handler = cmdBackupDumpXML,
      .opts = opts_backup_dumpxml,
-     .info = info_backup_dumpxml,
+     .info = &info_backup_dumpxml,
      .flags = 0
     },
     {.name = NULL}
