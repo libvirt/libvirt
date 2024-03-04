@@ -336,6 +336,7 @@ VIR_ENUM_IMPL(virDomainDevice,
               "vsock",
               "audio",
               "crypto",
+              "gvdpa"
 );
 
 VIR_ENUM_IMPL(virDomainDiskDevice,
@@ -3626,6 +3627,9 @@ void virDomainDeviceDefFree(virDomainDeviceDef *def)
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virDomainCryptoDefFree(def->data.crypto);
         break;
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        virDomainGVdpaDefFree(def->data.gvdpa);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -3982,6 +3986,10 @@ void virDomainDefFree(virDomainDef *def)
     for (i = 0; i < def->ncryptos; i++)
         virDomainCryptoDefFree(def->cryptos[i]);
     g_free(def->cryptos);
+
+    for (i = 0; i < def->ngvdpas; i++)
+        virDomainGVdpaDefFree(def->gvdpas[i]);
+    g_free(def->gvdpas);
 
     virDomainIOMMUDefFree(def->iommu);
 
@@ -4542,6 +4550,8 @@ virDomainDeviceGetInfo(const virDomainDeviceDef *device)
         return &device->data.vsock->info;
     case VIR_DOMAIN_DEVICE_CRYPTO:
         return &device->data.crypto->info;
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        return &device->data.gvdpa->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -4646,6 +4656,9 @@ virDomainDeviceSetData(virDomainDeviceDef *device,
         break;
     case VIR_DOMAIN_DEVICE_CRYPTO:
         device->data.crypto = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        device->data.gvdpa = devicedata;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -4865,6 +4878,13 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
             return rc;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_GVDPA;
+    for (i = 0; i < def->ngvdpas; i++) {
+        device.data.gvdpa = def->gvdpas[i];
+        if ((rc = cb(def, &device, &def->gvdpas[i]->info, opaque)) != 0)
+            return rc;
+    }
+
     /* If the flag below is set, make sure @cb can handle @info being NULL */
     if (iteratorFlags & DOMAIN_DEVICE_ITERATE_MISSING_INFO) {
         device.type = VIR_DOMAIN_DEVICE_GRAPHICS;
@@ -4924,6 +4944,7 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         break;
     }
 #endif
@@ -13891,6 +13912,41 @@ virDomainCryptoDefParseXML(virDomainXMLOption *xmlopt,
     return g_steal_pointer(&def);
 }
 
+static virDomainGVdpaDef *
+virDomainGVdpaDefParseXML(virDomainXMLOption *xmlopt,
+                           xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           unsigned int flags)
+{
+    g_autoptr(virDomainGVdpaDef) def = NULL;
+    int nsources;
+    g_autofree xmlNodePtr *sources = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    def = g_new0(virDomainGVdpaDef, 1);
+    ctxt->node = node;
+
+    if ((nsources = virXPathNodeSet("./source", ctxt, &sources)) < 0)
+        return NULL;
+
+    if (nsources != 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one gvdpa source is supported"));
+        return NULL;
+    }
+
+    if (!(def->dev = virXMLPropString(sources[0], "dev"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing dev element"));
+        return NULL;
+    }
+
+    if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
+        return NULL;
+
+    return g_steal_pointer(&def);
+}
+
 
 static int
 virDomainDeviceDefParseType(const char *typestr,
@@ -14068,6 +14124,11 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_CRYPTO:
         if (!(dev->data.crypto = virDomainCryptoDefParseXML(xmlopt, node, ctxt,
+                                                            flags)))
+            return NULL;
+        break;
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        if (!(dev->data.gvdpa = virDomainGVdpaDefParseXML(xmlopt, node, ctxt,
                                                             flags)))
             return NULL;
         break;
@@ -19226,6 +19287,21 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
+    /* Parse the gvdpa devices */
+    if ((n = virXPathNodeSet("./devices/gvdpa", ctxt, &nodes)) < 0)
+        return NULL;
+    if (n)
+        def->gvdpas = g_new0(virDomainGVdpaDef *, n);
+    for (i = 0; i < n; i++) {
+        virDomainGVdpaDef *gvdpa = virDomainGVdpaDefParseXML(xmlopt, nodes[i],
+                                                                ctxt, flags);
+        if (!gvdpa)
+            return NULL;
+
+        def->gvdpas[def->ngvdpas++] = gvdpa;
+    }
+    VIR_FREE(nodes);
+
     /* Parse the TPM devices */
     if ((n = virXPathNodeSet("./devices/tpm", ctxt, &nodes)) < 0)
         return NULL;
@@ -21784,6 +21860,7 @@ virDomainDefCheckABIStabilityFlags(virDomainDef *src,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         break;
     }
 #endif
@@ -25330,6 +25407,22 @@ virDomainCryptoDefFormat(virBuffer *buf,
     virXMLFormatElement(buf, "crypto", &attrBuf, &childBuf);
 }
 
+static void
+virDomainGVdpaDefFormat(virBuffer *buf,
+                         virDomainGVdpaDef *def,
+                         unsigned int flags)
+{
+    virBufferAddLit(buf, "<gvdpa>\n");
+
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<source dev='%s'/>\n", def->dev);
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</gvdpa>\n");
+}
+
+
 void
 virDomainCryptoDefFree(virDomainCryptoDef *def)
 {
@@ -25341,6 +25434,16 @@ virDomainCryptoDefFree(virDomainCryptoDef *def)
     g_free(def);
 }
 
+void
+virDomainGVdpaDefFree(virDomainGVdpaDef *def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+    g_free(def->dev);
+    g_free(def);
+}
 
 static int
 virDomainMemorySourceDefFormat(virBuffer *buf,
@@ -28134,6 +28237,9 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
 
     for (n = 0; n < def->ncryptos; n++) {
         virDomainCryptoDefFormat(buf, def->cryptos[n], flags);
+    }
+    for (n = 0; n < def->ngvdpas; n++) {
+        virDomainGVdpaDefFormat(buf, def->gvdpas[n], flags);
     }
     if (def->iommu)
         virDomainIOMMUDefFormat(buf, def->iommu);

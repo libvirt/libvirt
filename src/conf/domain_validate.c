@@ -2576,6 +2576,14 @@ virDomainCryptoDefValidate(const virDomainCryptoDef *crypto)
     return 0;
 }
 
+static int
+virDomainGVdpaDefValidate(const virDomainGVdpaDef *gvdpa)
+{
+    if (!gvdpa->dev)
+        return -1;
+
+    return 0;
+}
 
 static int
 virDomainInputDefValidate(const virDomainInputDef *input,
@@ -3057,6 +3065,9 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_CRYPTO:
         return virDomainCryptoDefValidate(dev->data.crypto);
+
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        return virDomainGVdpaDefValidate(dev->data.gvdpa);
 
     case VIR_DOMAIN_DEVICE_INPUT:
         return virDomainInputDefValidate(dev->data.input, def);

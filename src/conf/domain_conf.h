@@ -87,6 +87,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_VSOCK,
     VIR_DOMAIN_DEVICE_AUDIO,
     VIR_DOMAIN_DEVICE_CRYPTO,
+    VIR_DOMAIN_DEVICE_GVDPA,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -120,6 +121,7 @@ struct _virDomainDeviceDef {
         virDomainVsockDef *vsock;
         virDomainAudioDef *audio;
         virDomainCryptoDef *crypto;
+        virDomainGVdpaDef *gvdpa;
     } data;
 };
 
@@ -2942,6 +2944,11 @@ struct _virDomainCryptoDef {
     virDomainVirtioOptions *virtio;
 };
 
+struct _virDomainGVdpaDef {
+    char *dev;
+    virDomainDeviceInfo info;
+};
+
 struct _virDomainVirtioOptions {
     virTristateSwitch iommu;
     virTristateSwitch ats;
@@ -3110,6 +3117,9 @@ struct _virDomainDef {
 
     size_t ncryptos;
     virDomainCryptoDef **cryptos;
+
+    size_t ngvdpas;
+    virDomainGVdpaDef **gvdpas;
 
     size_t nwatchdogs;
     virDomainWatchdogDef **watchdogs;
@@ -3568,6 +3578,8 @@ void virDomainVsockDefFree(virDomainVsockDef *vsock);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVsockDef, virDomainVsockDefFree);
 void virDomainCryptoDefFree(virDomainCryptoDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCryptoDef, virDomainCryptoDefFree);
+void virDomainGVdpaDefFree(virDomainGVdpaDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainGVdpaDef, virDomainGVdpaDefFree);
 void virDomainNetTeamingInfoFree(virDomainNetTeamingInfo *teaming);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetTeamingInfo, virDomainNetTeamingInfoFree);
 void virDomainNetPortForwardFree(virDomainNetPortForward *pf);

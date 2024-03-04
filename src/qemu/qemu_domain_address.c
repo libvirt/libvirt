@@ -464,6 +464,7 @@ qemuDomainDeviceSupportZPCI(virDomainDeviceDef *device)
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         break;
 
     case VIR_DOMAIN_DEVICE_NONE:
@@ -976,6 +977,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             return 0;
         }
         break;
+
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        return pciFlags;
 
     case VIR_DOMAIN_DEVICE_PANIC:
         switch ((virDomainPanicModel) dev->data.panic->model) {
@@ -2386,6 +2390,15 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->cryptos[i]->info) < 0)
+            return -1;
+    }
+
+    /* gvdpa */
+    for (i = 0; i < def->ngvdpas; i++) {
+        if (!virDeviceInfoPCIAddressIsWanted(&def->gvdpas[i]->info)) //qiyunfeng
+            continue;
+
+        if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->gvdpas[i]->info) < 0)
             return -1;
     }
 

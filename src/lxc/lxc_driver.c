@@ -3054,6 +3054,7 @@ lxcDomainAttachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
          virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("persistent attach of device is not supported"));
          break;
@@ -3119,6 +3120,7 @@ lxcDomainUpdateDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("persistent update of device is not supported"));
         break;
@@ -3199,6 +3201,7 @@ lxcDomainDetachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
     case VIR_DOMAIN_DEVICE_AUDIO:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("persistent detach of device is not supported"));
@@ -3301,6 +3304,7 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected device type %1$d"),
                        data->def->type);
@@ -3972,6 +3976,7 @@ lxcDomainAttachDeviceLive(virLXCDriver *driver,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("device type '%1$s' cannot be attached"),
                        virDomainDeviceTypeToString(dev->type));
@@ -4396,6 +4401,7 @@ lxcDomainDetachDeviceLive(virLXCDriver *driver,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_GVDPA:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("device type '%1$s' cannot be detached"),
                        virDomainDeviceTypeToString(dev->type));

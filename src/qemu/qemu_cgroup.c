@@ -845,6 +845,12 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
             return -1;
     }
 
+    for (i = 0; i < vm->def->ngvdpas; i++) {
+        if (qemuCgroupAllowDevicePath(vm, vm->def->gvdpas[i]->dev,
+				    VIR_CGROUP_DEVICE_RW, false) < 0)
+        return -1;
+    }
+
     if (vm->def->sec &&
         vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV &&
         qemuSetupSEVCgroup(vm) < 0)

@@ -657,6 +657,24 @@ qemuAssignDeviceCryptoAlias(virDomainDef *def,
     crypto->info.alias = g_strdup_printf("crypto%d", maxidx);
 }
 
+static void
+qemuAssignDeviceGVdpaAlias(virDomainDef *def,
+                            virDomainGVdpaDef *gvdpa)
+{
+    size_t i;
+    int maxidx = 0;
+    int idx;
+
+    if (gvdpa->info.alias)
+        return;
+
+    for (i = 0; i < def->ngvdpas; i++) {
+        if ((idx = qemuDomainDeviceAliasIndex(&def->gvdpas[i]->info, "gvdpa")) >= maxidx)
+            maxidx = idx + 1;
+    }
+
+    gvdpa->info.alias = g_strdup_printf("gvdpa%d", maxidx);
+}
 
 int
 qemuAssignDeviceAliases(virDomainDef *def)
@@ -746,6 +764,9 @@ qemuAssignDeviceAliases(virDomainDef *def)
         qemuAssignDeviceIOMMUAlias(def->iommu);
     for (i = 0; i < def->ncryptos; i++) {
         qemuAssignDeviceCryptoAlias(def, def->cryptos[i]);
+    }
+    for (i = 0; i < def->ngvdpas; i++) {
+        qemuAssignDeviceGVdpaAlias(def, def->gvdpas[i]);
     }
 
     return 0;

@@ -968,6 +968,7 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
         case VIR_DOMAIN_DEVICE_IOMMU:
         case VIR_DOMAIN_DEVICE_AUDIO:
         case VIR_DOMAIN_DEVICE_LAST:
+        case VIR_DOMAIN_DEVICE_GVDPA:
         default:
             break;
     }
@@ -10291,6 +10292,58 @@ qemuBuildCryptoCommandLine(virCommand *cmd,
     return 0;
 }
 
+static virJSONValue *
+qemuBuildGVdpaDevProps(const virDomainDef *def,
+                        virDomainGVdpaDef *dev)
+{
+    g_autoptr(virJSONValue) props = NULL;
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:driver", "vhost-vdpa-device-pci",
+                              "s:vhostdev", dev->dev,
+                              "s:id", dev->info.alias,
+                              "p:bootindex", dev->info.effectiveBootIndex,
+                              NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
+}
+
+static int
+qemuBuildGVdpaCommandLine(virCommand *cmd,
+                           const virDomainDef *def,
+                           virQEMUCaps *qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->ngvdpas; i++) {
+        g_autoptr(virJSONValue) props = NULL;
+        virDomainGVdpaDef *gvdpa = def->gvdpas[i];
+        g_autoptr(virJSONValue) devprops = NULL;
+
+        if (!gvdpa->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("GVdpa device is missing alias"));
+            return -1;
+        }
+
+        /* add the device */
+        if (qemuCommandAddExtDevice(cmd, &gvdpa->info, def, qemuCaps) < 0)
+            return -1;
+
+        if (!(devprops = qemuBuildGVdpaDevProps(def, gvdpa)))
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 
 static int
 qemuBuildAsyncTeardownCommandLine(virCommand *cmd,
@@ -10663,6 +10716,9 @@ qemuBuildCommandLine(virDomainObj *vm,
         return NULL;
 
     if (qemuBuildCryptoCommandLine(cmd, def, qemuCaps) < 0)
+        return NULL;
+
+    if (qemuBuildGVdpaCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildAsyncTeardownCommandLine(cmd, def, qemuCaps) < 0)

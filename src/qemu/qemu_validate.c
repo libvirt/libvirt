@@ -4566,6 +4566,14 @@ qemuValidateDomainDeviceDefCrypto(virDomainCryptoDef *crypto,
 
 
 static int
+qemuValidateDomainDeviceDefGVdpa(virDomainGVdpaDef *gvdpa G_GNUC_UNUSED,
+                                  const virDomainDef *def G_GNUC_UNUSED,
+                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+{
+    return 0;
+}
+
+static int
 qemuSoundCodecTypeToCaps(int type)
 {
     switch (type) {
@@ -5263,6 +5271,9 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_CRYPTO:
         return qemuValidateDomainDeviceDefCrypto(dev->data.crypto, def, qemuCaps);
+
+    case VIR_DOMAIN_DEVICE_GVDPA:
+        return qemuValidateDomainDeviceDefGVdpa(dev->data.gvdpa, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_PANIC:
