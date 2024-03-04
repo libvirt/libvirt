@@ -85,6 +85,7 @@ typedef enum {
  * vshCmdOptType - command option type
  */
 typedef enum {
+    VSH_OT_NONE = 0, /* cannary to catch programming errors */
     VSH_OT_BOOL,     /* optional boolean option */
     VSH_OT_STRING,   /* optional string option */
     VSH_OT_INT,      /* optional or mandatory int option */

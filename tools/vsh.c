@@ -335,6 +335,11 @@ vshCmddefCheckInternals(vshControl *ctl,
             virBufferStrcat(&complbuf, opt->name, ", ", NULL);
 
         switch (opt->type) {
+        case VSH_OT_NONE:
+            vshError(ctl, "invalid type 'NONE' of option '%s' of command '%s'",
+                     opt->name, cmd->name);
+            return -1;
+
         case VSH_OT_BOOL:
             if (opt->completer || opt->completer_flags) {
                 vshError(ctl, "bool parameter '%s' of command '%s' has completer set",
@@ -671,6 +676,7 @@ vshCmddefHelp(const vshCmdDef *def)
                 }
                 break;
             case VSH_OT_ALIAS:
+            case VSH_OT_NONE:
                 /* aliases are intentionally undocumented */
                 continue;
             }
@@ -713,6 +719,7 @@ vshCmddefHelp(const vshCmdDef *def)
                            opt->name);
                 break;
             case VSH_OT_ALIAS:
+            case VSH_OT_NONE:
                 continue;
             }
 
