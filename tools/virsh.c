@@ -878,7 +878,7 @@ main(int argc, char **argv)
 
     virFileActivateDirOverrideForProg(argv[0]);
 
-    if (!vshInit(ctl, cmdGroups, NULL))
+    if (!vshInit(ctl, cmdGroups))
         exit(EXIT_FAILURE);
 
     if (!virshParseArgv(ctl, argc, argv) ||

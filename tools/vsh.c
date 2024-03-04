@@ -56,7 +56,6 @@ vshControl *autoCompleteOpaque;
  * and only relies on static data accessible from the user-side callback
  */
 const vshCmdGrp *cmdGroups;
-const vshCmdDef *cmdSet;
 
 
 double
@@ -572,8 +571,8 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint64_t opts_required,
     return -1;
 }
 
-static const vshCmdDef *
-vshCmdDefSearchGrp(const char *cmdname)
+const vshCmdDef *
+vshCmddefSearch(const char *cmdname)
 {
     const vshCmdGrp *g;
     const vshCmdDef *c;
@@ -586,28 +585,6 @@ vshCmdDefSearchGrp(const char *cmdname)
     }
 
     return NULL;
-}
-
-static const vshCmdDef *
-vshCmdDefSearchSet(const char *cmdname)
-{
-    const vshCmdDef *s;
-
-    for (s = cmdSet; s->name; s++) {
-        if (STREQ(s->name, cmdname))
-            return s;
-        }
-
-    return NULL;
-}
-
-const vshCmdDef *
-vshCmddefSearch(const char *cmdname)
-{
-    if (cmdGroups)
-        return vshCmdDefSearchGrp(cmdname);
-    else
-        return vshCmdDefSearchSet(cmdname);
 }
 
 const vshCmdGrp *
@@ -1425,7 +1402,11 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
                     VIR_FREE(tkdata);
                     tkdata = g_strdup(cmd->alias);
-                    cmd = vshCmddefSearch(tkdata);
+                    if (!(cmd = vshCmddefSearch(tkdata))) {
+                        /* self-test ensures that the alias exists */
+                        vshError(ctl, _("unknown command: '%1$s'"), tkdata);
+                        goto syntaxError;
+                    }
                 }
 
                 vshCmddefOptParse(cmd, &opts_need_arg, &opts_required);
@@ -1550,7 +1531,10 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 if (STRNEQ(tmpopt->def->name, "help"))
                     continue;
 
-                help = vshCmddefSearch("help");
+                /* the self-test code ensures that help exists */
+                if (!(help = vshCmddefSearch("help")))
+                    break;
+
                 vshCommandOptFree(first);
                 first = g_new0(vshCmdOpt, 1);
                 first->def = help->opts;
@@ -3041,20 +3025,19 @@ vshInitDebug(vshControl *ctl)
  * Initialize global data
  */
 bool
-vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set)
+vshInit(vshControl *ctl, const vshCmdGrp *groups)
 {
     if (!ctl->hooks) {
         vshError(ctl, "%s", _("client hooks cannot be NULL"));
         return false;
     }
 
-    if (!groups && !set) {
-        vshError(ctl, "%s", _("command groups and command set cannot both be NULL"));
+    if (!groups) {
+        vshError(ctl, "%s", _("command groups must be non-NULL"));
         return false;
     }
 
     cmdGroups = groups;
-    cmdSet = set;
 
     if (vshInitDebug(ctl) < 0 ||
         (ctl->imode && vshReadlineInit(ctl) < 0))
@@ -3066,8 +3049,8 @@ vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set)
 bool
 vshInitReload(vshControl *ctl)
 {
-    if (!cmdGroups && !cmdSet) {
-        vshError(ctl, "%s", _("command groups and command are both NULL run vshInit before reloading"));
+    if (!cmdGroups) {
+        vshError(ctl, "%s", _("command groups is NULL run vshInit before reloading"));
         return false;
     }
 
@@ -3156,6 +3139,9 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
     if ((def = vshCmddefSearch(name))) {
         if (def->flags & VSH_CMD_FLAG_ALIAS)
             def = vshCmddefSearch(def->alias);
+    }
+
+    if (def) {
         return vshCmddefHelp(def);
     } else if ((grp = vshCmdGrpSearch(name))) {
         return vshCmdGrpHelp(ctl, grp);

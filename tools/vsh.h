@@ -310,7 +310,7 @@ void vshPrint(vshControl *ctl, const char *format, ...)
     G_GNUC_PRINTF(2, 3);
 void vshPrintExtra(vshControl *ctl, const char *format, ...)
     G_GNUC_PRINTF(2, 3);
-bool vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set);
+bool vshInit(vshControl *ctl, const vshCmdGrp *groups);
 bool vshInitReload(vshControl *ctl);
 void vshDeinit(vshControl *ctl);
 void vshDebug(vshControl *ctl, int level, const char *format, ...)
