@@ -237,10 +237,12 @@ more details about it:
    using the CPU model and no additional feature elements. Models marked as
    usable (``usable='yes'``) can be safely used in domain XMLs with
    ``check='none'`` as the hypervisor guarantees the model can be used on the
-   current host and additional checks done by libvirt are redundant. In fact,
-   disabling libvirt checks via ``check='none'`` for such models is recommended
-   to avoid needless issues with starting domains when libvirt's definition of
-   a particular model differs from hypervisor's definition. The
+   current host and additional checks done by libvirt are redundant.
+   :since:`Since 10.2.0` libvirt automatically detects this situation and
+   avoids the redundant checks even when ``check='partial'`` is used, with
+   older releases disabling libvirt checks via ``check='none'`` for such models
+   is recommended to avoid needless issues with starting domains when libvirt's
+   definition of a particular model differs from hypervisor's definition. The
    ``deprecated`` attribute reflects the hypervisor's policy on usage of this
    model :since:`(since 7.1.0)`. The ``vendor`` attribute :since:`(since 8.9.0)`
    contains the vendor of the CPU model for users who want to use CPU models
