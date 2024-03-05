@@ -2048,7 +2048,11 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report only stats that are accessible instantly"),
     },
-    VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(N_("list of domains to get stats for"), 0),
+    {.name = "domain",
+     .type = VSH_OT_ARGV,
+     .help = N_("list of domains to get stats for"),
+     .completer = virshDomainNameCompleter,
+    },
     {.name = NULL}
 };
 
