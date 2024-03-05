@@ -426,9 +426,14 @@ vshCmddefCheckInternals(vshControl *ctl,
                              opt->name, cmd->name);
                     return -1;
                 }
-                seenPositionalOption = true;
-                isPositional = true;
+
                 isRequired = true;
+
+                /* allow INT arguments which are required and non-positional */
+                if (!(opt->flags & VSH_OFLAG_REQ_OPT)) {
+                    seenPositionalOption = true;
+                    isPositional = true;
+                }
             } else {
                 isPositional = false;
                 isRequired = false;

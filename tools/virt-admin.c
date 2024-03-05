@@ -1011,7 +1011,6 @@ static const vshCmdInfo info_daemon_log_outputs = {
 static const vshCmdOptDef opts_daemon_timeout[] = {
     {.name = "timeout",
      .type = VSH_OT_INT,
-     .positional = true,
      .required = true,
      .help = N_("number of seconds the daemon will run without any active connection"),
      .flags = VSH_OFLAG_REQ | VSH_OFLAG_REQ_OPT
