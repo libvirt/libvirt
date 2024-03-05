@@ -131,7 +131,6 @@ static const vshCmdOptDef opts_secret_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
@@ -187,7 +186,6 @@ static const vshCmdOptDef opts_secret_set_value[] = {
     },
     {.name = "file",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompletePathLocalExisting,
      .help = N_("read secret from file"),
     },

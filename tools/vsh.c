@@ -244,14 +244,12 @@ static int disconnected; /* we may have been disconnected */
 static int
 vshCmddefCheckInternals(vshControl *ctl,
                         const vshCmdDef *cmd,
-                        bool missingCompleters,
-                        int brokenPositionals)
+                        bool missingCompleters)
 {
     size_t i;
     bool seenOptionalOption = false;
     const char *seenOptionalPositionalOption = NULL;
     g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) posbuf = VIR_BUFFER_INITIALIZER;
 
     /* in order to perform the validation resolve the alias first */
     if (cmd->alias) {
@@ -320,29 +318,6 @@ vshCmddefCheckInternals(vshControl *ctl,
             case VSH_OT_BOOL:
                 /* only name is completed */
             case VSH_OT_INT:
-                /* no point in completing numbers */
-            case VSH_OT_ALIAS:
-                /* alias is handled in the referenced command */
-            case VSH_OT_NONE:
-                break;
-            }
-        }
-
-        if (brokenPositionals >= 0) {
-            switch (opt->type) {
-            case VSH_OT_INT:
-            case VSH_OT_STRING:
-            case VSH_OT_ARGV:
-                if (brokenPositionals == 0 ||
-                    brokenPositionals == opt->type) {
-                    if (!(opt->flags & VSH_OFLAG_REQ_OPT) &&
-                        !(opt->positional || opt->unwanted_positional))
-                        virBufferStrcat(&posbuf, opt->name, ", ", NULL);
-                }
-                break;
-
-            case VSH_OT_BOOL:
-                /* only name is completed */
                 /* no point in completing numbers */
             case VSH_OT_ALIAS:
                 /* alias is handled in the referenced command */
@@ -471,14 +446,9 @@ vshCmddefCheckInternals(vshControl *ctl,
     }
 
     virBufferTrim(&complbuf, ", ");
-    virBufferTrim(&posbuf, ", ");
 
     if (missingCompleters && virBufferUse(&complbuf) > 0)
         vshPrintExtra(ctl, "%s: %s\n", cmd->name, virBufferCurrentContent(&complbuf));
-
-    if (virBufferUse(&posbuf)) {
-        vshPrintExtra(ctl, "%s: %s\n", cmd->name, virBufferCurrentContent(&posbuf));
-    }
 
     return 0;
 }
@@ -508,7 +478,7 @@ vshCmddefOptParse(const vshCmdDef *cmd,
         if (opt->type == VSH_OT_ALIAS)
             continue; /* skip the alias option */
 
-        if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+        if (opt->positional || opt->unwanted_positional)
             *opts_need_arg |= 1ULL << i;
 
         if (opt->required)
@@ -3387,11 +3357,6 @@ const vshCmdOptDef opts_selftest[] = {
      .type = VSH_OT_BOOL,
      .help = N_("output help for each command")
     },
-    {.name = "broken-positionals",
-     .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
-     .help = N_("debug positional args")
-    },
     {.name = NULL}
 };
 const vshCmdInfo info_selftest = {
@@ -3406,9 +3371,6 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd)
     const vshCmdDef *def;
     bool completers = vshCommandOptBool(cmd, "completers-missing");
     bool dumphelp = vshCommandOptBool(cmd, "dump-help");
-    int brokenPositionals = -1;
-
-    ignore_value(vshCommandOptInt(ctl, cmd, "broken-positionals", &brokenPositionals));
 
     for (grp = cmdGroups; grp->name; grp++) {
         for (def = grp->commands; def->name; def++) {
@@ -3416,7 +3378,7 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd)
             if (dumphelp && !def->alias)
                 vshCmddefHelp(def);
 
-            if (vshCmddefCheckInternals(ctl, def, completers, brokenPositionals) < 0)
+            if (vshCmddefCheckInternals(ctl, def, completers) < 0)
                 return false;
         }
     }

@@ -359,7 +359,6 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     },
     {.name = "memspec",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("memory attributes: [file=]name[,snapshot=type]")
     },
     {.name = "diskspec",
@@ -1587,7 +1586,6 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },

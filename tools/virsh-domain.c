@@ -434,38 +434,31 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "targetbus",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("target bus of disk device")
     },
     {.name = "driver",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("driver of disk device")
     },
     {.name = "subdriver",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("subdriver of disk device")
     },
     {.name = "iothread",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("IOThread to be used by supported device")
     },
     {.name = "cache",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("cache mode of disk device")
     },
     {.name = "io",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("io policy of disk device")
     },
     {.name = "type",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("target device type")
     },
     {.name = "shareable",
@@ -474,29 +467,24 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "mode",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("mode of device reading and writing")
     },
     {.name = "sourcetype",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("type of source (block|file|network)")
     },
     {.name = "serial",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("serial of disk device")
     },
     {.name = "wwn",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("wwn of disk device")
     },
     {.name = "alias",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("custom alias name of disk device")
     },
@@ -506,7 +494,6 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "address",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("address of disk device")
     },
@@ -520,23 +507,19 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "source-protocol",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("protocol used by disk device source")
     },
     {.name = "source-host-name",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("host name for source of disk device")
     },
     {.name = "source-host-transport",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("host transport for source of disk device")
     },
     {.name = "source-host-socket",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("host socket for source of disk device")
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
@@ -1229,7 +1212,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total throughput limit, as scaled integer (default bytes)")
     },
     {.name = "read_bytes_sec",
@@ -1238,7 +1220,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read throughput limit, as scaled integer (default bytes)")
     },
     {.name = "write_bytes_sec",
@@ -1247,7 +1228,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help =  N_("write throughput limit, as scaled integer (default bytes)")
     },
     {.name = "total_iops_sec",
@@ -1256,7 +1236,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-iops-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total I/O operations limit per second")
     },
     {.name = "read_iops_sec",
@@ -1265,7 +1244,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-iops-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read I/O operations limit per second")
     },
     {.name = "write_iops_sec",
@@ -1274,7 +1252,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-iops-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("write I/O operations limit per second")
     },
     {.name = "total_bytes_sec_max",
@@ -1283,7 +1260,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec-max",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total max, as scaled integer (default bytes)")
     },
     {.name = "read_bytes_sec_max",
@@ -1292,7 +1268,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec-max",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read max, as scaled integer (default bytes)")
     },
     {.name = "write_bytes_sec_max",
@@ -1301,7 +1276,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec-max",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("write max, as scaled integer (default bytes)")
     },
     {.name = "total_iops_sec_max",
@@ -1310,7 +1284,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-iops-sec-max",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total I/O operations max")
     },
     {.name = "read_iops_sec_max",
@@ -1319,7 +1292,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-iops-sec-max",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read I/O operations max")
     },
     {.name = "write_iops_sec_max",
@@ -1328,7 +1300,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-iops-sec-max",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("write I/O operations max")
     },
     {.name = "size_iops_sec",
@@ -1337,7 +1308,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "size-iops-sec",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("I/O size in bytes")
     },
     {.name = "group_name",
@@ -1346,7 +1316,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "group-name",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("group name to share I/O quota between multiple drives")
     },
@@ -1356,7 +1325,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec-max-length",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow total max bytes")
     },
     {.name = "read_bytes_sec_max_length",
@@ -1365,7 +1333,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec-max-length",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow read max bytes")
     },
     {.name = "write_bytes_sec_max_length",
@@ -1374,7 +1341,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec-max-length",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow write max bytes")
     },
     {.name = "total_iops_sec_max_length",
@@ -1383,7 +1349,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-iops-sec-max-length",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow total I/O operations max")
     },
     {.name = "read_iops_sec_max_length",
@@ -1392,7 +1357,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-iops-sec-max-length",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow read I/O operations max")
     },
     {.name = "write_iops_sec_max_length",
@@ -1401,7 +1365,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-iops-sec-max-length",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow write I/O operations max")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -3506,7 +3469,6 @@ static const vshCmdOptDef opts_dom_pm_suspend[] = {
     },
     {.name = "duration",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds")
     },
     {.name = NULL}
@@ -4544,7 +4506,6 @@ static const vshCmdOptDef opts_save_image_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
@@ -4950,7 +4911,6 @@ static const vshCmdOptDef opts_managed_save_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
@@ -5060,12 +5020,10 @@ static const vshCmdOptDef opts_schedinfo[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "weight",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("weight for XEN_CREDIT")
     },
     {.name = "cap",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("cap for XEN_CREDIT")
     },
     VIRSH_COMMON_OPT_CURRENT(N_("get/set current scheduler info")),
@@ -8576,13 +8534,11 @@ static const vshCmdOptDef opts_send_key[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "codeset",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCodesetNameCompleter,
      .help = N_("the codeset of keycodes, default:linux")
     },
     {.name = "holdtime",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("the time (in milliseconds) how long the keys will be held")
     },
     {.name = "keycode",
@@ -9524,12 +9480,10 @@ static const vshCmdOptDef opts_domsetlaunchsecstate[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "secrethdr",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("path to file containing the secret header"),
     },
     {.name = "secret",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("path to file containing the secret"),
     },
     {.name = "set-address",
@@ -9702,7 +9656,6 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     },
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... along with the command")
     },
@@ -10091,7 +10044,6 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "timeout",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("timeout seconds. must be positive.")
     },
     {.name = "async",
@@ -10329,7 +10281,6 @@ static const vshCmdOptDef opts_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
@@ -10441,7 +10392,6 @@ static const vshCmdOptDef opts_domxmltonative[] = {
     },
     {.name = "domain",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("domain name, id or uuid"),
      .completer = virshDomainNameCompleter,
     },
@@ -10797,49 +10747,40 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "disks-uri",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("URI to use for disks migration (overrides --disks-port)")
     },
     {.name = "comp-methods",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshDomainMigrateCompMethodsCompleter,
      .help = N_("comma separated list of compression methods to be used")
     },
     {.name = "comp-mt-level",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("compress level for multithread compression")
     },
     {.name = "comp-mt-threads",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("number of compression threads for multithread compression")
     },
     {.name = "comp-mt-dthreads",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("number of decompression threads for multithread compression")
     },
     {.name = "comp-xbzrle-cache",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("page cache size for xbzrle compression")
     },
     {.name = "auto-converge-initial",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("initial CPU throttling rate for auto-convergence")
     },
     {.name = "auto-converge-increment",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("CPU throttling rate increment for auto-convergence")
     },
     {.name = "persistent-xml",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated persistent XML for the target")
     },
@@ -10849,38 +10790,31 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "postcopy-bandwidth",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("post-copy migration bandwidth limit in MiB/s")
     },
     {.name = "parallel",
      .type = VSH_OT_BOOL,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("enable parallel migration")
     },
     {.name = "parallel-connections",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("number of connections for parallel migration")
     },
     {.name = "bandwidth",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("migration bandwidth limit in MiB/s")
     },
     {.name = "tls-destination",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("override the destination host name used for TLS verification")
     },
     {.name = "comp-zlib-level",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("compress level for zlib compression")
     },
     {.name = "comp-zstd-level",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("compress level for zstd compression")
     },
     {.name = NULL}
@@ -11439,7 +11373,6 @@ static const vshCmdOptDef opts_migrate_compcache[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "size",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("requested size of the cache (in bytes) used for compression")
     },
     {.name = NULL}
@@ -13100,7 +13033,6 @@ static const vshCmdOptDef opts_guest_agent_timeout[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "timeout",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("timeout seconds.")
     },
     {.name = NULL}
@@ -13448,7 +13380,6 @@ static const vshCmdOptDef opts_domdisplay_reload[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "type",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("graphics display type")
     },
     {.name = NULL}

@@ -45,7 +45,6 @@ static const vshCmdInfo info_capabilities = {
 static const vshCmdOptDef opts_capabilities[] = {
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
@@ -108,7 +107,6 @@ static const vshCmdOptDef opts_domcapabilities[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },

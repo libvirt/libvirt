@@ -277,7 +277,6 @@ static const vshCmdOptDef opts_dommemstat[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "period",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("period in seconds to set collection")
     },
     VIRSH_COMMON_OPT_CONFIG(N_("affect next boot")),
