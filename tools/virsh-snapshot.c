@@ -1570,7 +1570,6 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("snapshot name"),
      .completer = virshSnapshotNameCompleter,
     },

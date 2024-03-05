@@ -98,7 +98,6 @@ typedef enum {
  */
 enum {
     VSH_OFLAG_NONE     = 0,        /* without flags */
-    VSH_OFLAG_REQ      = (1 << 0), /* option required */
     VSH_OFLAG_EMPTY_OK = (1 << 1), /* empty string option allowed */
     VSH_OFLAG_REQ_OPT  = (1 << 2), /* --optionname required */
 };

@@ -35,7 +35,6 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .flags = VSH_OFLAG_REQ, \
      .help = _helpstr, \
      .completer = virshNetworkNameCompleter, \
      .completer_flags = cflags, \
@@ -60,7 +59,6 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .flags = VSH_OFLAG_REQ, \
      .help = N_("port UUID"), \
      .completer = virshNetworkPortUUIDCompleter, \
      .completer_flags = cflags, \
@@ -508,7 +506,6 @@ static const vshCmdOptDef opts_network_metadata[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("URI of the namespace")
     },
     VIRSH_COMMON_OPT_LIVE(N_("modify/get running state")),
@@ -1135,7 +1132,6 @@ static const vshCmdOptDef opts_network_name[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshNetworkUUIDCompleter,
      .help = N_("network uuid")
     },
@@ -1234,7 +1230,6 @@ static const vshCmdOptDef opts_network_update[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshNetworkUpdateCommandCompleter,
      .help = N_("type of update (add-first, add-last (add), delete, or modify)")
     },
@@ -1242,7 +1237,6 @@ static const vshCmdOptDef opts_network_update[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshNetworkUpdateSectionCompleter,
      .help = N_("which section of network configuration to update")
     },
@@ -1250,7 +1244,6 @@ static const vshCmdOptDef opts_network_update[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("name of file containing xml (or, if it starts with '<', the complete "
                 "xml element itself) to add/modify, or to be matched for search")

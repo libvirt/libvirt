@@ -361,7 +361,6 @@ static const vshCmdOptDef opts_srv_threadpool_info[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("Server to retrieve threadpool attributes from."),
     },
@@ -420,7 +419,6 @@ static const vshCmdOptDef opts_srv_threadpool_set[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("Server to alter threadpool attributes on."),
     },
@@ -523,7 +521,6 @@ static const vshCmdOptDef opts_srv_clients_list[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("server which to list connected clients from"),
     },
@@ -607,7 +604,6 @@ static const vshCmdOptDef opts_client_info[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("server to which <client> is connected to"),
     },
@@ -615,7 +611,6 @@ static const vshCmdOptDef opts_client_info[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("client which to retrieve identity information for"),
     },
     {.name = NULL}
@@ -693,7 +688,6 @@ static const vshCmdOptDef opts_client_disconnect[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("server which the client is currently connected to"),
     },
@@ -701,7 +695,6 @@ static const vshCmdOptDef opts_client_disconnect[] = {
      .type = VSH_OT_INT,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("client which to disconnect, specified by ID"),
     },
     {.name = NULL}
@@ -758,7 +751,6 @@ static const vshCmdOptDef opts_srv_clients_info[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("Server to retrieve the client limits from."),
     },
@@ -814,7 +806,6 @@ static const vshCmdOptDef opts_srv_clients_set[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = vshAdmServerCompleter,
      .help = N_("Server to alter the client-related configuration limits on."),
     },
@@ -913,7 +904,6 @@ static const vshCmdOptDef opts_srv_update_tls_file[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("Available servers on a daemon. "
                 "Currently only supports 'libvirtd' or 'virtproxyd'.")
     },
@@ -1013,7 +1003,7 @@ static const vshCmdOptDef opts_daemon_timeout[] = {
      .type = VSH_OT_INT,
      .required = true,
      .help = N_("number of seconds the daemon will run without any active connection"),
-     .flags = VSH_OFLAG_REQ | VSH_OFLAG_REQ_OPT
+     .flags = VSH_OFLAG_REQ_OPT
     },
     {.name = NULL}
 };

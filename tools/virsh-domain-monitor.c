@@ -740,7 +740,6 @@ static const vshCmdOptDef opts_domif_getlink[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
     },
@@ -1042,7 +1041,6 @@ static const vshCmdOptDef opts_domifstat[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device specified by name or MAC Address")
     },

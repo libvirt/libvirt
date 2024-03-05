@@ -345,8 +345,8 @@ vshCmddefCheckInternals(vshControl *ctl,
                 return -1;
             }
 
-            if (opt->flags & VSH_OFLAG_REQ) {
-                vshError(ctl, "parameter '%s' of command '%s' misused VSH_OFLAG_REQ",
+            if (opt->required) {
+                vshError(ctl, "parameter '%s' of command '%s' misused 'required' flag",
                          opt->name, cmd->name);
                 return -1; /* bool can't be mandatory */
             }
@@ -445,7 +445,7 @@ vshCmddefOptParse(const vshCmdDef *cmd,
         if (!(opt->flags & VSH_OFLAG_REQ_OPT))
             *opts_need_arg |= 1ULL << i;
 
-        if (opt->flags & VSH_OFLAG_REQ)
+        if (opt->required)
             *opts_required |= 1ULL << i;
     }
 }
@@ -800,7 +800,7 @@ vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt,
     if (!cmd->skipChecks)
         assert(valid && (!needData || valid->type != VSH_OT_BOOL));
 
-    if (valid && valid->flags & VSH_OFLAG_REQ)
+    if (valid && valid->required)
         ret = -1;
 
     /* See if option is present on command line.  */

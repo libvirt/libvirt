@@ -422,14 +422,13 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ | VSH_OFLAG_EMPTY_OK,
+     .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("source of disk device or name of network disk")
     },
     {.name = "target",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("target of disk device")
     },
@@ -818,14 +817,12 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("network interface type")
     },
     {.name = "source",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("source of network interface")
     },
     {.name = "target",
@@ -1198,7 +1195,6 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },
@@ -1993,7 +1989,6 @@ static const vshCmdOptDef opts_blockcommit[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
     },
@@ -2214,7 +2209,6 @@ static const vshCmdOptDef opts_blockcopy[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of source disk")
     },
@@ -2548,7 +2542,6 @@ static const vshCmdOptDef opts_blockjob[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
     },
@@ -2761,7 +2754,6 @@ static const vshCmdOptDef opts_blockpull[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
     },
@@ -2905,7 +2897,6 @@ static const vshCmdOptDef opts_blockresize[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("Fully-qualified path of block device")
     },
@@ -3064,7 +3055,6 @@ static const vshCmdOptDef opts_domif_setlink[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
     },
@@ -3072,7 +3062,6 @@ static const vshCmdOptDef opts_domif_setlink[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceStateCompleter,
      .help = N_("new state of the device")
     },
@@ -3214,7 +3203,6 @@ static const vshCmdOptDef opts_domiftune[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
     },
@@ -3441,7 +3429,6 @@ static const vshCmdOptDef opts_dom_pm_suspend[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshNodeSuspendTargetCompleter,
      .help = N_("mem(Suspend-to-RAM), "
                 "disk(Suspend-to-Disk), "
@@ -4126,7 +4113,6 @@ static const vshCmdOptDef opts_save[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("where to save the data")
     },
     {.name = "bypass-cache",
@@ -4477,7 +4463,6 @@ static const vshCmdOptDef opts_save_image_dumpxml[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("saved state file to read")
     },
     {.name = "security-info",
@@ -4536,14 +4521,12 @@ static const vshCmdOptDef opts_save_image_define[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("saved state file to modify")
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
@@ -4603,7 +4586,6 @@ static const vshCmdOptDef opts_save_image_edit[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("saved state file to edit")
     },
     {.name = "running",
@@ -4944,7 +4926,6 @@ static const vshCmdOptDef opts_managed_save_define[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
@@ -5222,7 +5203,6 @@ static const vshCmdOptDef opts_restore[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("the state to restore")
     },
     {.name = "bypass-cache",
@@ -5307,7 +5287,6 @@ static const vshCmdOptDef opts_dump[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("where to dump the core")
     },
     VIRSH_COMMON_OPT_LIVE(N_("perform a live core dump if supported")),
@@ -5608,7 +5587,6 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainLifecycleCompleter,
      .help = N_("lifecycle type to modify")
     },
@@ -5616,7 +5594,6 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainLifecycleActionCompleter,
      .help = N_("lifecycle action to set")
     },
@@ -5704,14 +5681,12 @@ static const vshCmdOptDef opts_set_user_password[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("the username")
     },
     {.name = "password",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("the new password")
     },
@@ -7128,7 +7103,6 @@ static const vshCmdOptDef opts_setvcpus[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("number of virtual CPUs")
     },
     {.name = "maximum",
@@ -7296,7 +7270,6 @@ static const vshCmdOptDef opts_setvcpu[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainVcpulistCompleter,
      .help = N_("ids of vcpus to manipulate")
     },
@@ -7372,7 +7345,6 @@ static const vshCmdOptDef opts_domblkthreshold[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("device to set threshold for")
     },
@@ -7380,7 +7352,6 @@ static const vshCmdOptDef opts_domblkthreshold[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("threshold as a scaled number (by default bytes)")
     },
     {.name = NULL}
@@ -7504,7 +7475,6 @@ static const vshCmdOptDef opts_iothreadpin[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("IOThread ID number")
     },
@@ -7512,7 +7482,6 @@ static const vshCmdOptDef opts_iothreadpin[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set")
     },
@@ -7581,7 +7550,6 @@ static const vshCmdOptDef opts_iothreadadd[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("iothread for the new IOThread")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -7639,7 +7607,6 @@ static const vshCmdOptDef opts_iothreadset[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("iothread id of existing IOThread")
     },
@@ -7757,7 +7724,6 @@ static const vshCmdOptDef opts_iothreaddel[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("iothread_id for the IOThread to delete")
     },
@@ -8349,7 +8315,6 @@ static const vshCmdOptDef opts_metadata[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("URI of the namespace")
     },
     VIRSH_COMMON_OPT_LIVE(N_("modify/get running state")),
@@ -8528,7 +8493,6 @@ static const vshCmdOptDef opts_send_key[] = {
     {.name = "keycode",
      .type = VSH_OT_ARGV,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshKeycodeNameCompleter,
      .help = N_("the key code")
     },
@@ -8614,7 +8578,6 @@ static const vshCmdOptDef opts_send_process_signal[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("the process ID")
     },
@@ -8622,7 +8585,6 @@ static const vshCmdOptDef opts_send_process_signal[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainSignalCompleter,
      .help = N_("the signal number or name")
     },
@@ -8712,7 +8674,6 @@ static const vshCmdOptDef opts_setmem[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("new memory size, as scaled integer (default KiB)")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -8783,7 +8744,6 @@ static const vshCmdOptDef opts_setmaxmem[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("new maximum memory size, as scaled integer (default KiB)")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -9558,7 +9518,6 @@ static const vshCmdOptDef opts_dom_fd_associate[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("name of the FD group")
     },
@@ -9566,7 +9525,6 @@ static const vshCmdOptDef opts_dom_fd_associate[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("file descriptors N,M,... to associate")
     },
@@ -9643,7 +9601,6 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("command")
     },
     {.name = NULL}
@@ -9980,7 +9937,6 @@ static const vshCmdOptDef opts_qemu_attach[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("pid")
     },
@@ -10038,7 +9994,6 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("command")
     },
     {.name = NULL}
@@ -10135,7 +10090,6 @@ static const vshCmdOptDef opts_lxc_enter_namespace[] = {
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("command to run")
     },
     {.name = NULL}
@@ -10316,14 +10270,12 @@ static const vshCmdOptDef opts_domxmlfromnative[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("source config data format")
     },
     {.name = "config",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("config data file to import from")
     },
@@ -10368,7 +10320,6 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("target config data type format")
     },
     VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(VSH_OFLAG_REQ_OPT, 0),
@@ -10437,7 +10388,6 @@ static const vshCmdOptDef opts_domname[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainUUIDCompleter,
      .help = N_("domain id or uuid")
     },
@@ -10472,7 +10422,6 @@ static const vshCmdOptDef opts_domrename[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("new domain name")
     },
@@ -10576,7 +10525,6 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")
     },
@@ -11275,7 +11223,6 @@ static const vshCmdOptDef opts_migrate_setmaxdowntime[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("maximum tolerable downtime (in milliseconds) for migration")
     },
     {.name = NULL}
@@ -11395,7 +11342,6 @@ static const vshCmdOptDef opts_migrate_setspeed[] = {
      .type = VSH_OT_INT,
      .required = true,
      .positional = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("migration bandwidth limit in MiB/s")
     },
     {.name = "postcopy",
@@ -11986,7 +11932,6 @@ static const vshCmdOptDef opts_detach_device_alias[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDeviceAliasCompleter,
      .help = N_("device alias")
     },
@@ -12116,7 +12061,6 @@ static const vshCmdOptDef opts_detach_interface[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("network interface type")
     },
     {.name = "mac",
@@ -12490,7 +12434,6 @@ static const vshCmdOptDef opts_detach_disk[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("target of disk device")
     },
@@ -12652,7 +12595,6 @@ static const vshCmdOptDef opts_change_media[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("Fully-qualified path or target of disk device")
     },
@@ -13128,7 +13070,6 @@ static const vshCmdOptDef opts_get_user_sshkeys[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("user to list authorized keys for"),
     },
     {.name = NULL}
@@ -13177,7 +13118,6 @@ static const vshCmdOptDef opts_set_user_sshkeys[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("user to set authorized keys for"),
     },
     {.name = "file",

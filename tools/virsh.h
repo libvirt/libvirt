@@ -60,7 +60,6 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .flags = VSH_OFLAG_REQ, \
      .help = _helpstr, \
      .completer = virshStoragePoolNameCompleter, \
      .completer_flags = cflags, \
@@ -71,7 +70,6 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .flags = VSH_OFLAG_REQ, \
      .help = _helpstr, \
      .completer = virshDomainNameCompleter, \
      .completer_flags = cflags, \
@@ -107,7 +105,6 @@
      .type = VSH_OT_STRING, \
      .required = required_, \
      .positional = required_, \
-     .flags = required_ ? VSH_OFLAG_REQ : VSH_OFLAG_NONE, \
      .completer = virshCompletePathLocalExisting, \
      .help = _helpstr \
     }

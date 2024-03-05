@@ -60,7 +60,6 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .flags = VSH_OFLAG_REQ, \
      .completer = virshCompleteEmpty, \
      .help = N_("name of the pool") \
     }, \
@@ -68,7 +67,6 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .flags = VSH_OFLAG_REQ, \
      .completer = virshPoolTypeCompleter, \
      .help = N_("type of the pool") \
     }, \
@@ -1360,7 +1358,6 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshPoolTypeCompleter,
      .help = N_("type of storage pool sources to find")
     },
@@ -1445,7 +1442,6 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_REQ,
      .completer = virshPoolTypeCompleter,
      .help = N_("type of storage pool sources to discover")
     },
