@@ -69,6 +69,13 @@ virCHProcessUpdateConsoleDevice(virDomainObj *vm,
     if (!config)
         return;
 
+    /* This method is used to extract pty info from cloud-hypervisor and capture
+     * it in domain configuration. This step can be skipped for serial devices
+     * with unix backend.*/
+    if (STREQ(device, "serial") &&
+        vm->def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX)
+        return;
+
     dev = virJSONValueObjectGet(config, device);
     if (!dev) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
