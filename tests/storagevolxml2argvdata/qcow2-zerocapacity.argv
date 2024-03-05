@@ -1,6 +1,6 @@
 qemu-img \
 create \
 -f qcow2 \
--o compat=0.10 \
+-o compat=1.1 \
 /var/lib/libvirt/images/OtherDemo.img \
 0K

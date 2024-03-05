@@ -2,5 +2,5 @@ qemu-img \
 create \
 -f qcow2 \
 -b /dev/null \
--o backing_fmt=raw,compat=0.10 \
+-o backing_fmt=raw,compat=1.1 \
 /var/lib/libvirt/images/OtherDemo.img

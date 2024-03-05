@@ -765,7 +765,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDef *encinfo,
     if (info->compat)
         virBufferAsprintf(&buf, "compat=%s,", info->compat);
     else if (info->format == VIR_STORAGE_FILE_QCOW2)
-        virBufferAddLit(&buf, "compat=0.10,");
+        virBufferAddLit(&buf, "compat=1.1,");
 
     if (info->clusterSize > 0)
         virBufferAsprintf(&buf, "cluster_size=%llu,", info->clusterSize);

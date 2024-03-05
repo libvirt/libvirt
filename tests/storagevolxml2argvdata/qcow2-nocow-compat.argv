@@ -2,6 +2,6 @@ qemu-img \
 create \
 -f qcow2 \
 -b /dev/null \
--o backing_fmt=raw,nocow=on,compat=0.10 \
+-o backing_fmt=raw,nocow=on,compat=1.1 \
 /var/lib/libvirt/images/OtherDemo.img \
 5242880K

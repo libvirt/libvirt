@@ -1,7 +1,7 @@
 qemu-img \
 create \
 -f qcow2 \
--o compat=0.10 \
+-o compat=1.1 \
 /var/lib/libvirt/images/sparse-qcow2.img \
 1073741824K
 qemu-img \

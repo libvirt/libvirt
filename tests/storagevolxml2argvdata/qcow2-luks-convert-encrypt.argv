@@ -2,7 +2,7 @@ qemu-img \
 create \
 -f qcow2 \
 --object secret,id=OtherDemoLuks.img_encrypt0,file=/path/to/secretFile \
--o encrypt.format=luks,encrypt.key-secret=OtherDemoLuks.img_encrypt0,compat=0.10 \
+-o encrypt.format=luks,encrypt.key-secret=OtherDemoLuks.img_encrypt0,compat=1.1 \
 /var/lib/libvirt/images/OtherDemoLuks.img \
 5242880K
 qemu-img \
