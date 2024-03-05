@@ -335,8 +335,10 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
-    if (vshCommandOptScaledInt(ctl, cmd, "pagesize", &bytes, 1024, UINT_MAX) < 0)
+    if (vshCommandOptScaledInt(ctl, cmd, "pagesize", &bytes,
+                               1024, UINT_MAX * 1024ULL) < 0) {
         goto cleanup;
+    }
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
     if (all) {
