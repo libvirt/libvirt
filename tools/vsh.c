@@ -642,31 +642,33 @@ vshCmddefHelp(const vshCmdDef *def)
     if (def->opts) {
         const vshCmdOptDef *opt;
         for (opt = def->opts; opt->name; opt++) {
-            bool required_option = opt->flags & VSH_OFLAG_REQ;
 
             switch (opt->type) {
             case VSH_OT_BOOL:
                 fprintf(stdout, " [--%s]", opt->name);
                 break;
 
-            case VSH_OT_INT:
-                if (required_option) {
-                    fprintf(stdout, " <%s>", opt->name);
-                } else {
-                    fprintf(stdout, _(" [--%1$s <number>]"), opt->name);
-                }
-                break;
-
             case VSH_OT_STRING:
-                fprintf(stdout, _(" [--%1$s <string>]"), opt->name);
-                break;
-
             case VSH_OT_DATA:
-                if (required_option) {
-                    fprintf(stdout, " <%s>", opt->name);
+            case VSH_OT_INT:
+                if (opt->required) {
+                    fprintf(stdout, " ");
                 } else {
-                    fprintf(stdout, " [<%s>]", opt->name);
+                    fprintf(stdout, " [");
                 }
+
+                if (opt->positional) {
+                    fprintf(stdout, "<%s>", opt->name);
+                } else {
+                    if (opt->type == VSH_OT_INT) {
+                        fprintf(stdout, _("--%1$s <number>"), opt->name);
+                    } else {
+                        fprintf(stdout, _("--%1$s <string>"), opt->name);
+                    }
+                }
+
+                if (!opt->required)
+                    fprintf(stdout, "]");
                 break;
 
             case VSH_OT_ARGV:
@@ -704,7 +706,6 @@ vshCmddefHelp(const vshCmdDef *def)
         const vshCmdOptDef *opt;
         fputs(_("\n  OPTIONS\n"), stdout);
         for (opt = def->opts; opt->name; opt++) {
-            bool required_option = opt->flags & VSH_OFLAG_REQ;
             g_autofree char *optstr = NULL;
 
             switch (opt->type) {
@@ -713,7 +714,7 @@ vshCmddefHelp(const vshCmdDef *def)
                 break;
 
             case VSH_OT_INT:
-                if (required_option) {
+                if (opt->positional) {
                     optstr = g_strdup_printf(_("[--%1$s] <number>"), opt->name);
                 } else {
                     optstr = g_strdup_printf(_("--%1$s <number>"), opt->name);
@@ -721,11 +722,12 @@ vshCmddefHelp(const vshCmdDef *def)
                 break;
 
             case VSH_OT_STRING:
-                optstr = g_strdup_printf(_("--%1$s <string>"), opt->name);
-                break;
-
             case VSH_OT_DATA:
-                optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
+                if (opt->positional) {
+                    optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
+                } else {
+                    optstr = g_strdup_printf(_("--%1$s <string>"), opt->name);
+                }
                 break;
 
             case VSH_OT_ARGV:
