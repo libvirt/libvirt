@@ -329,6 +329,13 @@ vshCmddefCheckInternals(vshControl *ctl,
             }
         }
 
+        /* require that positional non-argv options are required */
+        if (opt->positional && !opt->required && opt->type != VSH_OT_ARGV) {
+            vshError(ctl, "positional argument '%s' of command '%s' must be required",
+                     opt->name, cmd->name);
+            return -1;
+        }
+
         switch (opt->type) {
         case VSH_OT_NONE:
             vshError(ctl, "invalid type 'NONE' of option '%s' of command '%s'",
