@@ -468,9 +468,14 @@ static vshCmdOptDef helpopt = {
     .type = VSH_OT_BOOL,
     .help = N_("print help for this function")
 };
+
 static const vshCmdOptDef *
-vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
-                   uint64_t *opts_seen, size_t *opt_index, char **optstr,
+vshCmddefGetOption(vshControl *ctl,
+                   const vshCmdDef *cmd,
+                   const char *name,
+                   uint64_t *opts_seen,
+                   size_t *opt_index,
+                   char **optstr,
                    bool report)
 {
     size_t i;
@@ -482,39 +487,43 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
     for (i = 0; cmd->opts && cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
 
-        if (STREQ(opt->name, name)) {
-            if (opt->type == VSH_OT_ALIAS) {
-                char *value;
+        if (STRNEQ(opt->name, name))
+            continue;
 
-                /* Two types of replacements:
-                   opt->help = "string": straight replacement of name
-                   opt->help = "string=value": treat boolean flag as
-                   alias of option and its default value */
-                alias = g_strdup(opt->help);
-                name = alias;
-                if ((value = strchr(name, '='))) {
-                    *value = '\0';
-                    if (*optstr) {
-                        if (report)
-                            vshError(ctl, _("invalid '=' after option --%1$s"),
-                                     opt->name);
-                        return NULL;
-                    }
-                    *optstr = g_strdup(value + 1);
+        if (opt->type == VSH_OT_ALIAS) {
+            char *value;
+
+            /* Two types of replacements:
+               opt->help = "string": straight replacement of name
+               opt->help = "string=value": treat boolean flag as
+               alias of option and its default value */
+            alias = g_strdup(opt->help);
+            name = alias;
+            if ((value = strchr(name, '='))) {
+                *value = '\0';
+                if (*optstr) {
+                    if (report)
+                        vshError(ctl, _("invalid '=' after option --%1$s"),
+                                 opt->name);
+                    return NULL;
                 }
-                continue;
+                *optstr = g_strdup(value + 1);
             }
-            if ((*opts_seen & (1ULL << i)) && opt->type != VSH_OT_ARGV) {
-                if (report)
-                    vshError(ctl, _("option --%1$s already seen"), name);
-                return NULL;
-            }
-            *opts_seen |= 1ULL << i;
-            *opt_index = i;
-            return opt;
+            continue;
         }
+
+        if ((*opts_seen & (1ULL << i)) && opt->type != VSH_OT_ARGV) {
+            if (report)
+                vshError(ctl, _("option --%1$s already seen"), name);
+            return NULL;
+        }
+
+        *opts_seen |= 1ULL << i;
+        *opt_index = i;
+        return opt;
     }
 
+    /* The 'help' command ignores extra options */
     if (STRNEQ(cmd->name, "help") && report) {
         vshError(ctl, _("command '%1$s' doesn't support option --%2$s"),
                  cmd->name, name);
