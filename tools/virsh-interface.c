@@ -21,6 +21,8 @@
 #define VIRSH_COMMON_OPT_INTERFACE(cflags) \
     {.name = "interface", \
      .type = VSH_OT_DATA, \
+     .positional = true, \
+     .required = true, \
      .flags = VSH_OFLAG_REQ, \
      .help = N_("interface name or MAC address"), \
      .completer = virshInterfaceNameCompleter, \
@@ -383,6 +385,8 @@ static const vshCmdInfo info_interface_name = {
 static const vshCmdOptDef opts_interface_name[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshInterfaceMacCompleter,
      .help = N_("interface mac")
@@ -414,6 +418,8 @@ static const vshCmdInfo info_interface_mac = {
 static const vshCmdOptDef opts_interface_mac[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshInterfaceNameCompleter,
      .help = N_("interface name")
@@ -716,12 +722,16 @@ static const vshCmdInfo info_interface_bridge = {
 static const vshCmdOptDef opts_interface_bridge[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshInterfaceNameCompleter,
      .help = N_("existing interface name")
     },
     {.name = "bridge",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("new bridge device name")
     },
@@ -943,6 +953,8 @@ static const vshCmdInfo info_interface_unbridge = {
 static const vshCmdOptDef opts_interface_unbridge[] = {
     {.name = "bridge",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("current bridge device name")
     },

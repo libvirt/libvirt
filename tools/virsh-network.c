@@ -33,6 +33,8 @@
 #define VIRSH_COMMON_OPT_NETWORK(_helpstr, cflags) \
     {.name = "network", \
      .type = VSH_OT_DATA, \
+     .positional = true, \
+     .required = true, \
      .flags = VSH_OFLAG_REQ, \
      .help = _helpstr, \
      .completer = virshNetworkNameCompleter, \
@@ -56,6 +58,8 @@
 #define VIRSH_COMMON_OPT_NETWORK_PORT(cflags) \
     {.name = "port", \
      .type = VSH_OT_DATA, \
+     .positional = true, \
+     .required = true, \
      .flags = VSH_OFLAG_REQ, \
      .help = N_("port UUID"), \
      .completer = virshNetworkPortUUIDCompleter, \
@@ -502,6 +506,8 @@ static const vshCmdOptDef opts_network_metadata[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "uri",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("URI of the namespace")
     },
@@ -1127,6 +1133,8 @@ static const vshCmdInfo info_network_name = {
 static const vshCmdOptDef opts_network_name[] = {
     {.name = "network",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshNetworkUUIDCompleter,
      .help = N_("network uuid")
@@ -1224,18 +1232,24 @@ static const vshCmdOptDef opts_network_update[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "command",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshNetworkUpdateCommandCompleter,
      .help = N_("type of update (add-first, add-last (add), delete, or modify)")
     },
     {.name = "section",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshNetworkUpdateSectionCompleter,
      .help = N_("which section of network configuration to update")
     },
     {.name = "xml",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("name of file containing xml (or, if it starts with '<', the complete "

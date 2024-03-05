@@ -248,6 +248,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 {
     size_t i;
     bool seenOptionalOption = false;
+    bool seenPositionalOption = false;
     g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
 
     /* in order to perform the validation resolve the alias first */
@@ -301,6 +302,8 @@ vshCmddefCheckInternals(vshControl *ctl,
 
     for (i = 0; cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
+        bool isPositional = false;
+        bool isRequired = false;
 
         if (i > 63) {
             vshError(ctl, "command '%s' has too many options", cmd->name);
@@ -385,12 +388,17 @@ vshCmddefCheckInternals(vshControl *ctl,
             }
         }
             break;
+
         case VSH_OT_ARGV:
             if (cmd->opts[i + 1].name) {
                 vshError(ctl, "parameter '%s' of command '%s' must be listed last",
                          opt->name, cmd->name);
                 return -1;
             }
+
+            isRequired = opt->flags & VSH_OFLAG_REQ;
+            /* ARGV argument is positional if there are no positional options */
+            isPositional = !seenPositionalOption;
             break;
 
         case VSH_OT_DATA:
@@ -399,6 +407,10 @@ vshCmddefCheckInternals(vshControl *ctl,
                          opt->name, cmd->name);
                 return -1;
             }
+
+            isRequired = true;
+            isPositional = true;
+            seenPositionalOption = true;
 
             if (seenOptionalOption) {
                 vshError(ctl, "parameter '%s' of command '%s' must be listed before optional parameters",
@@ -414,11 +426,27 @@ vshCmddefCheckInternals(vshControl *ctl,
                              opt->name, cmd->name);
                     return -1;
                 }
+                seenPositionalOption = true;
+                isPositional = true;
+                isRequired = true;
             } else {
-                seenOptionalOption = true;
+                isPositional = false;
+                isRequired = false;
             }
 
             break;
+        }
+
+        if (opt->required != isRequired) {
+            vshError(ctl, "parameter '%s' of command '%s' 'required' state mismatch",
+                     opt->name, cmd->name);
+            return -1;
+        }
+
+        if (opt->positional != isPositional) {
+            vshError(ctl, "parameter '%s' of command '%s' 'positional' state mismatch",
+                     opt->name, cmd->name);
+            return -1;
         }
     }
 
@@ -3241,6 +3269,7 @@ const vshCmdOptDef opts_echo[] = {
     },
     {.name = "string",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .help = N_("arguments to echo")
     },
     {.name = NULL}
@@ -3379,6 +3408,7 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd)
 const vshCmdOptDef opts_complete[] = {
     {.name = "string",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("partial string to autocomplete")
     },

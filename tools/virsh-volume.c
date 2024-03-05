@@ -57,6 +57,8 @@
 #define VIRSH_COMMON_OPT_VOL_NAME(_helpstr) \
     {.name = "vol", \
      .type = VSH_OT_DATA, \
+     .positional = true, \
+     .required = true, \
      .flags = VSH_OFLAG_REQ, \
      .help = _helpstr, \
      .completer = virshStorageVolNameCompleter, \
@@ -65,6 +67,8 @@
 #define VIRSH_COMMON_OPT_VOL_KEY(_helpstr) \
     {.name = "vol", \
      .type = VSH_OT_DATA, \
+     .positional = true, \
+     .required = true, \
      .flags = VSH_OFLAG_REQ, \
      .help = _helpstr, \
      .completer = virshStorageVolKeyCompleter, \
@@ -173,12 +177,16 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     VIRSH_COMMON_OPT_POOL_NAME,
     {.name = "name",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("name of the volume")
     },
     {.name = "capacity",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("size of the vol, as scaled integer (default bytes)")
@@ -520,6 +528,8 @@ static const vshCmdOptDef opts_vol_clone[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     {.name = "newname",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("clone name")
@@ -1024,6 +1034,8 @@ static const vshCmdOptDef opts_vol_resize[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     {.name = "capacity",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("new capacity for the vol, as scaled integer (default bytes)")

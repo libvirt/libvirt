@@ -133,6 +133,8 @@ struct _vshCmdInfo {
 struct _vshCmdOptDef {
     const char *name;           /* the name of option, or NULL for list end */
     vshCmdOptType type;         /* option type */
+    bool required;              /* option is required */
+    bool positional;            /* option is a positional option (not requiring '--optionname') */
     unsigned int flags;         /* flags */
     const char *help;           /* non-NULL help string; or for VSH_OT_ALIAS
                                  * the name of a later public option */

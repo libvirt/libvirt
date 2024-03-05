@@ -420,11 +420,15 @@ static const vshCmdOptDef opts_attach_disk[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "source",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ | VSH_OFLAG_EMPTY_OK,
      .help = N_("source of disk device or name of network disk")
     },
     {.name = "target",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("target of disk device")
@@ -812,11 +816,15 @@ static const vshCmdOptDef opts_attach_interface[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "type",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("network interface type")
     },
     {.name = "source",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("source of network interface")
     },
@@ -1188,6 +1196,8 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "device",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
@@ -1981,6 +1991,8 @@ static const vshCmdOptDef opts_blockcommit[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
@@ -2200,6 +2212,8 @@ static const vshCmdOptDef opts_blockcopy[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of source disk")
@@ -2532,6 +2546,8 @@ static const vshCmdOptDef opts_blockjob[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
@@ -2743,6 +2759,8 @@ static const vshCmdOptDef opts_blockpull[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
@@ -2885,6 +2903,8 @@ static const vshCmdOptDef opts_blockresize[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("Fully-qualified path of block device")
@@ -3042,12 +3062,16 @@ static const vshCmdOptDef opts_domif_setlink[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
     },
     {.name = "state",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceStateCompleter,
      .help = N_("new state of the device")
@@ -3188,6 +3212,8 @@ static const vshCmdOptDef opts_domiftune[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
@@ -3413,6 +3439,8 @@ static const vshCmdOptDef opts_dom_pm_suspend[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_RUNNING),
     {.name = "target",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshNodeSuspendTargetCompleter,
      .help = N_("mem(Suspend-to-RAM), "
@@ -4096,6 +4124,8 @@ static const vshCmdOptDef opts_save[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "file",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("where to save the data")
     },
@@ -4445,6 +4475,8 @@ static const vshCmdInfo info_save_image_dumpxml = {
 static const vshCmdOptDef opts_save_image_dumpxml[] = {
     {.name = "file",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("saved state file to read")
     },
@@ -4502,11 +4534,15 @@ static const vshCmdInfo info_save_image_define = {
 static const vshCmdOptDef opts_save_image_define[] = {
     {.name = "file",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("saved state file to modify")
     },
     {.name = "xml",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
@@ -4565,6 +4601,8 @@ static const vshCmdInfo info_save_image_edit = {
 static const vshCmdOptDef opts_save_image_edit[] = {
     {.name = "file",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("saved state file to edit")
     },
@@ -4904,6 +4942,8 @@ static const vshCmdOptDef opts_managed_save_define[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE),
     {.name = "xml",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
@@ -5180,6 +5220,8 @@ static const vshCmdInfo info_restore = {
 static const vshCmdOptDef opts_restore[] = {
     {.name = "file",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("the state to restore")
     },
@@ -5263,6 +5305,8 @@ static const vshCmdOptDef opts_dump[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "file",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("where to dump the core")
     },
@@ -5562,12 +5606,16 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "type",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainLifecycleCompleter,
      .help = N_("lifecycle type to modify")
     },
     {.name = "action",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainLifecycleActionCompleter,
      .help = N_("lifecycle action to set")
@@ -5654,11 +5702,15 @@ static const vshCmdOptDef opts_set_user_password[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "user",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("the username")
     },
     {.name = "password",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("the new password")
@@ -7074,6 +7126,8 @@ static const vshCmdOptDef opts_setvcpus[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "count",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("number of virtual CPUs")
     },
@@ -7240,6 +7294,8 @@ static const vshCmdOptDef opts_setvcpu[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "vcpulist",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainVcpulistCompleter,
      .help = N_("ids of vcpus to manipulate")
@@ -7314,12 +7370,16 @@ static const vshCmdOptDef opts_domblkthreshold[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "dev",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("device to set threshold for")
     },
     {.name = "threshold",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("threshold as a scaled number (by default bytes)")
     },
@@ -7442,12 +7502,16 @@ static const vshCmdOptDef opts_iothreadpin[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "iothread",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("IOThread ID number")
     },
     {.name = "cpulist",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set")
@@ -7515,6 +7579,8 @@ static const vshCmdOptDef opts_iothreadadd[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "id",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("iothread for the new IOThread")
     },
@@ -7571,6 +7637,8 @@ static const vshCmdOptDef opts_iothreadset[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "id",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("iothread id of existing IOThread")
@@ -7687,6 +7755,8 @@ static const vshCmdOptDef opts_iothreaddel[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "id",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("iothread_id for the IOThread to delete")
@@ -8277,6 +8347,8 @@ static const vshCmdOptDef opts_metadata[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "uri",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("URI of the namespace")
     },
@@ -8455,6 +8527,7 @@ static const vshCmdOptDef opts_send_key[] = {
     },
     {.name = "keycode",
      .type = VSH_OT_ARGV,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshKeycodeNameCompleter,
      .help = N_("the key code")
@@ -8539,12 +8612,16 @@ static const vshCmdOptDef opts_send_process_signal[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "pid",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("the process ID")
     },
     {.name = "signame",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainSignalCompleter,
      .help = N_("the signal number or name")
@@ -8633,6 +8710,8 @@ static const vshCmdOptDef opts_setmem[] = {
     },
     {.name = "size",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("new memory size, as scaled integer (default KiB)")
     },
@@ -8702,6 +8781,8 @@ static const vshCmdOptDef opts_setmaxmem[] = {
     },
     {.name = "size",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("new maximum memory size, as scaled integer (default KiB)")
     },
@@ -9475,12 +9556,16 @@ static const vshCmdOptDef opts_dom_fd_associate[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "name",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("name of the FD group")
     },
     {.name = "pass-fds",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("file descriptors N,M,... to associate")
@@ -9557,6 +9642,7 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("command")
     },
@@ -9892,6 +9978,8 @@ static const vshCmdInfo info_qemu_attach = {
 static const vshCmdOptDef opts_qemu_attach[] = {
     {.name = "pid",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("pid")
@@ -9949,6 +10037,7 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
     },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("command")
     },
@@ -10045,6 +10134,7 @@ static const vshCmdOptDef opts_lxc_enter_namespace[] = {
     },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("command to run")
     },
@@ -10224,11 +10314,15 @@ static const vshCmdInfo info_domxmlfromnative = {
 static const vshCmdOptDef opts_domxmlfromnative[] = {
     {.name = "format",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("source config data format")
     },
     {.name = "config",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompletePathLocalExisting,
      .help = N_("config data file to import from")
@@ -10272,6 +10366,8 @@ static const vshCmdInfo info_domxmltonative = {
 static const vshCmdOptDef opts_domxmltonative[] = {
     {.name = "format",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("target config data type format")
     },
@@ -10339,6 +10435,8 @@ static const vshCmdInfo info_domname = {
 static const vshCmdOptDef opts_domname[] = {
     {.name = "domain",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainUUIDCompleter,
      .help = N_("domain id or uuid")
@@ -10372,6 +10470,8 @@ static const vshCmdOptDef opts_domrename[] = {
                             VIR_CONNECT_LIST_DOMAINS_INACTIVE),
     {.name = "new-name",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("new domain name")
@@ -10474,6 +10574,8 @@ static const vshCmdOptDef opts_migrate[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "desturi",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshCompleteEmpty,
      .help = N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")
@@ -11171,6 +11273,8 @@ static const vshCmdOptDef opts_migrate_setmaxdowntime[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "downtime",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("maximum tolerable downtime (in milliseconds) for migration")
     },
@@ -11289,6 +11393,8 @@ static const vshCmdOptDef opts_migrate_setspeed[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "bandwidth",
      .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("migration bandwidth limit in MiB/s")
     },
@@ -11878,6 +11984,8 @@ static const vshCmdOptDef opts_detach_device_alias[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "alias",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDeviceAliasCompleter,
      .help = N_("device alias")
@@ -12006,6 +12114,8 @@ static const vshCmdOptDef opts_detach_interface[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "type",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("network interface type")
     },
@@ -12378,6 +12488,8 @@ static const vshCmdOptDef opts_detach_disk[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "target",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("target of disk device")
@@ -12538,6 +12650,8 @@ static const vshCmdOptDef opts_change_media[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "path",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("Fully-qualified path or target of disk device")
@@ -13012,6 +13126,8 @@ static const vshCmdOptDef opts_get_user_sshkeys[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "user",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("user to list authorized keys for"),
     },
@@ -13059,6 +13175,8 @@ static const vshCmdOptDef opts_set_user_sshkeys[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "user",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("user to set authorized keys for"),
     },

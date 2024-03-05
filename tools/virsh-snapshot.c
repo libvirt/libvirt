@@ -1568,6 +1568,8 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT),
     {.name = "snapshotname",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("snapshot name"),
      .completer = virshSnapshotNameCompleter,

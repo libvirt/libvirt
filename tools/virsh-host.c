@@ -468,12 +468,16 @@ static const vshCmdInfo info_allocpages = {
 static const vshCmdOptDef opts_allocpages[] = {
     {.name = "pagesize",
      .type = VSH_OT_INT,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshAllocpagesPagesizeCompleter,
      .help = N_("page size (in kibibytes)")
     },
     {.name = "pagecount",
      .type = VSH_OT_INT,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("page count")
     },
@@ -943,6 +947,8 @@ static const vshCmdInfo info_nodesuspend = {
 static const vshCmdOptDef opts_node_suspend[] = {
     {.name = "target",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshNodeSuspendTargetCompleter,
      .help = N_("mem(Suspend-to-RAM), disk(Suspend-to-Disk), "
@@ -950,6 +956,8 @@ static const vshCmdOptDef opts_node_suspend[] = {
     },
     {.name = "duration",
      .type = VSH_OT_INT,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .help = N_("Suspend duration in seconds, at least 60")
     },
@@ -1270,6 +1278,8 @@ static const vshCmdInfo info_cpu_models = {
 static const vshCmdOptDef opts_cpu_models[] = {
     {.name = "arch",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .completer = virshArchCompleter,
      .flags = VSH_OFLAG_REQ,
      .help = N_("architecture")

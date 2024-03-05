@@ -738,6 +738,8 @@ static const vshCmdOptDef opts_domif_getlink[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
@@ -1038,6 +1040,8 @@ static const vshCmdOptDef opts_domifstat[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "interface",
      .type = VSH_OT_DATA,
+     .positional = true,
+     .required = true,
      .flags = VSH_OFLAG_REQ,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device specified by name or MAC Address")
@@ -2050,6 +2054,7 @@ static const vshCmdOptDef opts_domstats[] = {
     },
     {.name = "domain",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .help = N_("list of domains to get stats for"),
      .completer = virshDomainNameCompleter,
     },
