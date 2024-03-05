@@ -59,6 +59,12 @@ virCHCapsInitCHVersionCaps(int version)
     if (version >= 22000000)
         virCHCapsSet(chCaps, CH_MULTIFD_IN_ADDNET);
 
+    /* Starting v36, Cloud-Hypervisor accepts Unix Socket as a backend for
+     * guest's serial port.
+     * https://github.com/cloud-hypervisor/cloud-hypervisor/releases/tag/v36.0 */
+    if (version >= 36000000)
+        virCHCapsSet(chCaps, CH_SOCKET_BACKEND_SERIAL_PORT);
+
     return g_steal_pointer(&chCaps);
 
 }

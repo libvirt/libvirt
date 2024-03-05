@@ -195,15 +195,14 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 
     if (!virBitmapIsBitSet(driver->chCaps, CH_SERIAL_CONSOLE_IN_PARALLEL)) {
         if ((def->nconsoles &&
-                def->consoles[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)
-            && (def->nserials &&
-                def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)) {
+             def->consoles[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY) &&
+            (def->nserials &&
+             def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Only a single console or serial can be configured for this domain"));
+                           _("Only a single console or serial can be configured for this domain"));
             return -1;
         }
     }
-
 
     if (def->nconsoles > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -219,15 +218,25 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 
     if (def->nconsoles && def->consoles[0]->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Console can only be enabled for a PTY"));
+                       _("Console only works in PTY mode"));
         return -1;
     }
 
-    if (def->nserials && def->serials[0]->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Serial can only be enabled for a PTY"));
-        return -1;
+    if (def->nserials) {
+        if (def->serials[0]->source->type != VIR_DOMAIN_CHR_TYPE_PTY &&
+            def->serials[0]->source->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Serial only works in UNIX/PTY modes"));
+            return -1;
+        }
+        if (!virBitmapIsBitSet(driver->chCaps, CH_SOCKET_BACKEND_SERIAL_PORT) &&
+            def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unix Socket backend is not supported by this version of ch."));
+            return -1;
+        }
     }
+
     return 0;
 }
 

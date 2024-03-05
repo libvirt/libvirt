@@ -27,6 +27,7 @@ typedef enum {
     CH_KERNEL_API_DEPRCATED, /* Use `payload` in place of `kernel` api */
     CH_SERIAL_CONSOLE_IN_PARALLEL, /* Serial and Console ports can work in parallel */
     CH_MULTIFD_IN_ADDNET, /* Cloud-hypervisor can accept multiple FDs in add-net api */
+    CH_SOCKET_BACKEND_SERIAL_PORT, /* Support Unix socket as a backend for a serial port */
 
     CH_CAPS_LAST /* this must always be the last item */
 } virCHCapsFlags;
