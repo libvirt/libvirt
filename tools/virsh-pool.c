@@ -57,7 +57,7 @@
 
 #define VIRSH_COMMON_OPT_POOL_X_AS \
     {.name = "name", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -65,7 +65,7 @@
      .help = N_("name of the pool") \
     }, \
     {.name = "type", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -1357,7 +1357,7 @@ static const vshCmdInfo info_find_storage_pool_sources_as = {
 
 static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
     {.name = "type",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1442,7 +1442,7 @@ static const vshCmdInfo info_find_storage_pool_sources = {
 
 static const vshCmdOptDef opts_find_storage_pool_sources[] = {
     {.name = "type",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

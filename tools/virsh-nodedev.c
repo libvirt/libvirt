@@ -96,7 +96,7 @@ static const vshCmdOptDef opts_node_device_destroy[] = {
      .help = "device"
     },
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -572,7 +572,7 @@ static const vshCmdInfo info_node_device_dumpxml = {
 
 static const vshCmdOptDef opts_node_device_dumpxml[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -637,7 +637,7 @@ static const vshCmdInfo info_node_device_detach = {
 
 static const vshCmdOptDef opts_node_device_detach[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -701,7 +701,7 @@ static const vshCmdInfo info_node_device_reattach = {
 
 static const vshCmdOptDef opts_node_device_reattach[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -748,7 +748,7 @@ static const vshCmdInfo info_node_device_reset = {
 
 static const vshCmdOptDef opts_node_device_reset[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1011,7 +1011,7 @@ static const vshCmdInfo info_node_device_undefine = {
 
 static const vshCmdOptDef opts_node_device_undefine[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1104,7 +1104,7 @@ static const vshCmdInfo info_node_device_start = {
 
 static const vshCmdOptDef opts_node_device_start[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1151,7 +1151,7 @@ static const vshCmdInfo info_node_device_autostart = {
 
 static const vshCmdOptDef opts_node_device_autostart[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1210,7 +1210,7 @@ static const vshCmdInfo info_node_device_info = {
 
 static const vshCmdOptDef opts_node_device_info[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1262,7 +1262,7 @@ static const vshCmdInfo info_node_device_update = {
 
 static const vshCmdOptDef opts_node_device_update[] = {
     {.name = "device",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

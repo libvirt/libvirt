@@ -89,7 +89,6 @@ typedef enum {
     VSH_OT_BOOL,     /* optional boolean option */
     VSH_OT_STRING,   /* optional string option */
     VSH_OT_INT,      /* optional or mandatory int option */
-    VSH_OT_DATA,     /* string data (as non-option) */
     VSH_OT_ARGV,     /* remaining arguments */
     VSH_OT_ALIAS,    /* alternate spelling for a later argument */
 } vshCmdOptType;

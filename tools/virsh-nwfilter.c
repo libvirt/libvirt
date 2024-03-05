@@ -128,7 +128,7 @@ static const vshCmdInfo info_nwfilter_undefine = {
 
 static const vshCmdOptDef opts_nwfilter_undefine[] = {
     {.name = "nwfilter",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -168,7 +168,7 @@ static const vshCmdInfo info_nwfilter_dumpxml = {
 
 static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
     {.name = "nwfilter",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -394,7 +394,7 @@ static const vshCmdInfo info_nwfilter_edit = {
 
 static const vshCmdOptDef opts_nwfilter_edit[] = {
     {.name = "nwfilter",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -531,7 +531,7 @@ static const vshCmdInfo info_nwfilter_binding_delete = {
 
 static const vshCmdOptDef opts_nwfilter_binding_delete[] = {
     {.name = "binding",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -573,7 +573,7 @@ static const vshCmdInfo info_nwfilter_binding_dumpxml = {
 
 static const vshCmdOptDef opts_nwfilter_binding_dumpxml[] = {
     {.name = "binding",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

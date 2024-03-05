@@ -32,7 +32,7 @@
 
 #define VIRSH_COMMON_OPT_NETWORK(_helpstr, cflags) \
     {.name = "network", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -57,7 +57,7 @@
 
 #define VIRSH_COMMON_OPT_NETWORK_PORT(cflags) \
     {.name = "port", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -505,7 +505,7 @@ static const vshCmdInfo info_network_metadata = {
 static const vshCmdOptDef opts_network_metadata[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "uri",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1132,7 +1132,7 @@ static const vshCmdInfo info_network_name = {
 
 static const vshCmdOptDef opts_network_name[] = {
     {.name = "network",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1231,7 +1231,7 @@ static const vshCmdInfo info_network_update = {
 static const vshCmdOptDef opts_network_update[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "command",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1239,7 +1239,7 @@ static const vshCmdOptDef opts_network_update[] = {
      .help = N_("type of update (add-first, add-last (add), delete, or modify)")
     },
     {.name = "section",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1247,7 +1247,7 @@ static const vshCmdOptDef opts_network_update[] = {
      .help = N_("which section of network configuration to update")
     },
     {.name = "xml",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

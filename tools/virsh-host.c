@@ -946,7 +946,7 @@ static const vshCmdInfo info_nodesuspend = {
 
 static const vshCmdOptDef opts_node_suspend[] = {
     {.name = "target",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1277,7 +1277,7 @@ static const vshCmdInfo info_cpu_models = {
 
 static const vshCmdOptDef opts_cpu_models[] = {
     {.name = "arch",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .completer = virshArchCompleter,

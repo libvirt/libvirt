@@ -123,7 +123,7 @@ static const vshCmdInfo info_secret_dumpxml = {
 
 static const vshCmdOptDef opts_secret_dumpxml[] = {
     {.name = "secret",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -180,7 +180,7 @@ static const vshCmdInfo info_secret_set_value = {
 
 static const vshCmdOptDef opts_secret_set_value[] = {
     {.name = "secret",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -293,7 +293,7 @@ static const vshCmdInfo info_secret_get_value = {
 
 static const vshCmdOptDef opts_secret_get_value[] = {
     {.name = "secret",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -348,7 +348,7 @@ static const vshCmdInfo info_secret_undefine = {
 
 static const vshCmdOptDef opts_secret_undefine[] = {
     {.name = "secret",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

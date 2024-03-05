@@ -57,7 +57,7 @@
  */
 #define VIRSH_COMMON_OPT_POOL(_helpstr, cflags) \
     {.name = "pool", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -68,7 +68,7 @@
 
 #define VIRSH_COMMON_OPT_DOMAIN(_helpstr, cflags) \
     {.name = "domain", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -104,7 +104,7 @@
 
 #define VIRSH_COMMON_OPT_FILE_FULL(_helpstr, required_) \
     {.name = "file", \
-     .type = required_ ? VSH_OT_DATA : VSH_OT_STRING, \
+     .type = VSH_OT_STRING, \
      .required = required_, \
      .positional = required_, \
      .flags = required_ ? VSH_OFLAG_REQ : VSH_OFLAG_NONE, \

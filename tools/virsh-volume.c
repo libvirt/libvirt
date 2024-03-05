@@ -56,7 +56,7 @@
 
 #define VIRSH_COMMON_OPT_VOL_NAME(_helpstr) \
     {.name = "vol", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -66,7 +66,7 @@
 
 #define VIRSH_COMMON_OPT_VOL_KEY(_helpstr) \
     {.name = "vol", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -176,7 +176,7 @@ static const vshCmdInfo info_vol_create_as = {
 static const vshCmdOptDef opts_vol_create_as[] = {
     VIRSH_COMMON_OPT_POOL_NAME,
     {.name = "name",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -184,7 +184,7 @@ static const vshCmdOptDef opts_vol_create_as[] = {
      .help = N_("name of the volume")
     },
     {.name = "capacity",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -527,7 +527,7 @@ static const vshCmdInfo info_vol_clone = {
 static const vshCmdOptDef opts_vol_clone[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     {.name = "newname",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -1033,7 +1033,7 @@ static const vshCmdInfo info_vol_resize = {
 static const vshCmdOptDef opts_vol_resize[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     {.name = "capacity",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

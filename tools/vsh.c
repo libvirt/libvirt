@@ -310,7 +310,6 @@ vshCmddefCheckInternals(vshControl *ctl,
         if (missingCompleters && !opt->completer) {
             switch (opt->type) {
             case VSH_OT_STRING:
-            case VSH_OT_DATA:
             case VSH_OT_ARGV:
                 virBufferStrcat(&complbuf, opt->name, ", ", NULL);
                 break;
@@ -346,16 +345,12 @@ vshCmddefCheckInternals(vshControl *ctl,
                 return -1;
             }
 
-            G_GNUC_FALLTHROUGH;
-
-        case VSH_OT_STRING:
             if (opt->flags & VSH_OFLAG_REQ) {
                 vshError(ctl, "parameter '%s' of command '%s' misused VSH_OFLAG_REQ",
                          opt->name, cmd->name);
-                return -1; /* neither bool nor string options can be mandatory */
+                return -1; /* bool can't be mandatory */
             }
 
-            seenOptionalOption = true;
             break;
 
         case VSH_OT_ALIAS: {
@@ -401,29 +396,15 @@ vshCmddefCheckInternals(vshControl *ctl,
             }
             break;
 
-        case VSH_OT_DATA:
-            if (!(opt->flags & VSH_OFLAG_REQ)) {
-                vshError(ctl, "parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag",
-                         opt->name, cmd->name);
-                return -1;
-            }
-
-            if (seenOptionalOption) {
+        case VSH_OT_INT:
+        case VSH_OT_STRING:
+            if (opt->positional && seenOptionalOption) {
                 vshError(ctl, "parameter '%s' of command '%s' must be listed before optional parameters",
                          opt->name, cmd->name);
                 return -1;
             }
-            break;
 
-        case VSH_OT_INT:
-            if (opt->flags & VSH_OFLAG_REQ) {
-                if (seenOptionalOption) {
-                    vshError(ctl, "parameter '%s' of command '%s' must be listed before optional parameters",
-                             opt->name, cmd->name);
-                    return -1;
-                }
-            }
-
+            seenOptionalOption = !opt->required;
             break;
         }
     }
@@ -575,7 +556,7 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint64_t opts_required,
             const vshCmdOptDef *opt = &def->opts[i];
 
             vshError(ctl,
-                     opt->type == VSH_OT_DATA || opt->type == VSH_OT_ARGV ?
+                     opt->positional ?
                      _("command '%1$s' requires <%2$s> option") :
                      _("command '%1$s' requires --%2$s option"),
                      def->name, opt->name);
@@ -649,7 +630,6 @@ vshCmddefHelp(const vshCmdDef *def)
                 break;
 
             case VSH_OT_STRING:
-            case VSH_OT_DATA:
             case VSH_OT_INT:
                 if (opt->required) {
                     fprintf(stdout, " ");
@@ -722,7 +702,6 @@ vshCmddefHelp(const vshCmdDef *def)
                 break;
 
             case VSH_OT_STRING:
-            case VSH_OT_DATA:
                 if (opt->positional) {
                     optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
                 } else {

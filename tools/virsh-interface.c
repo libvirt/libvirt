@@ -20,7 +20,7 @@
 
 #define VIRSH_COMMON_OPT_INTERFACE(cflags) \
     {.name = "interface", \
-     .type = VSH_OT_DATA, \
+     .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
      .flags = VSH_OFLAG_REQ, \
@@ -384,7 +384,7 @@ static const vshCmdInfo info_interface_name = {
 
 static const vshCmdOptDef opts_interface_name[] = {
     {.name = "interface",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -417,7 +417,7 @@ static const vshCmdInfo info_interface_mac = {
 
 static const vshCmdOptDef opts_interface_mac[] = {
     {.name = "interface",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -721,7 +721,7 @@ static const vshCmdInfo info_interface_bridge = {
 
 static const vshCmdOptDef opts_interface_bridge[] = {
     {.name = "interface",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -729,7 +729,7 @@ static const vshCmdOptDef opts_interface_bridge[] = {
      .help = N_("existing interface name")
     },
     {.name = "bridge",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -952,7 +952,7 @@ static const vshCmdInfo info_interface_unbridge = {
 
 static const vshCmdOptDef opts_interface_unbridge[] = {
     {.name = "bridge",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,

@@ -358,7 +358,7 @@ static const vshCmdInfo info_srv_threadpool_info = {
 
 static const vshCmdOptDef opts_srv_threadpool_info[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -417,7 +417,7 @@ static const vshCmdInfo info_srv_threadpool_set = {
 
 static const vshCmdOptDef opts_srv_threadpool_set[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -520,7 +520,7 @@ static const vshCmdInfo info_srv_clients_list = {
 
 static const vshCmdOptDef opts_srv_clients_list[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -604,7 +604,7 @@ static const vshCmdInfo info_client_info = {
 
 static const vshCmdOptDef opts_client_info[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -612,7 +612,7 @@ static const vshCmdOptDef opts_client_info[] = {
      .help = N_("server to which <client> is connected to"),
     },
     {.name = "client",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -690,7 +690,7 @@ static const vshCmdInfo info_client_disconnect = {
 
 static const vshCmdOptDef opts_client_disconnect[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -755,7 +755,7 @@ static const vshCmdInfo info_srv_clients_info = {
 
 static const vshCmdOptDef opts_srv_clients_info[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -811,7 +811,7 @@ static const vshCmdInfo info_srv_clients_set = {
 
 static const vshCmdOptDef opts_srv_clients_set[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
@@ -910,7 +910,7 @@ static const vshCmdInfo info_srv_update_tls_file = {
 
 static const vshCmdOptDef opts_srv_update_tls_file[] = {
     {.name = "server",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
      .flags = VSH_OFLAG_REQ,
