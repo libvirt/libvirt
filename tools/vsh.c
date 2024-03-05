@@ -634,8 +634,6 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
 static bool
 vshCmddefHelp(const vshCmdDef *def)
 {
-    bool shortopt = false; /* true if 'arg' works instead of '--opt arg' */
-
     fputs(_("  NAME\n"), stdout);
     fprintf(stdout, "    %s - %s\n", def->name, _(def->info->help));
 
@@ -657,16 +655,10 @@ vshCmddefHelp(const vshCmdDef *def)
                 } else {
                     fprintf(stdout, _(" [--%1$s <number>]"), opt->name);
                 }
-
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
-                    shortopt = true;
                 break;
 
             case VSH_OT_STRING:
                 fprintf(stdout, _(" [--%1$s <string>]"), opt->name);
-
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
-                    shortopt = true;
                 break;
 
             case VSH_OT_DATA:
@@ -675,23 +667,20 @@ vshCmddefHelp(const vshCmdDef *def)
                 } else {
                     fprintf(stdout, " [<%s>]", opt->name);
                 }
-
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT))
-                    shortopt = true;
                 break;
 
             case VSH_OT_ARGV:
-                if (shortopt) {
-                    if (required_option) {
-                        fprintf(stdout, _(" {[--%1$s] <string>}..."), opt->name);
-                    } else {
-                        fprintf(stdout, _(" [[--%1$s] <string>]..."), opt->name);
-                    }
-                } else {
-                    if (required_option) {
+                if (opt->positional) {
+                    if (opt->required) {
                         fprintf(stdout, " <%s>...", opt->name);
                     } else {
                         fprintf(stdout, " [<%s>]...", opt->name);
+                    }
+                } else {
+                    if (opt->required) {
+                        fprintf(stdout, _(" {[--%1$s] <string>}..."), opt->name);
+                    } else {
+                        fprintf(stdout, _(" [[--%1$s] <string>]..."), opt->name);
                     }
                 }
                 break;
@@ -740,10 +729,10 @@ vshCmddefHelp(const vshCmdDef *def)
                 break;
 
             case VSH_OT_ARGV:
-                if (shortopt) {
-                    optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
-                } else {
+                if (opt->positional) {
                     optstr = g_strdup_printf("<%s>", opt->name);
+                } else {
+                    optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
                 }
                 break;
 
