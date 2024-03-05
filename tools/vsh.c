@@ -248,7 +248,6 @@ vshCmddefCheckInternals(vshControl *ctl,
 {
     size_t i;
     bool seenOptionalOption = false;
-    bool seenPositionalOption = false;
     g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
 
     /* in order to perform the validation resolve the alias first */
@@ -302,8 +301,6 @@ vshCmddefCheckInternals(vshControl *ctl,
 
     for (i = 0; cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
-        bool isPositional = false;
-        bool isRequired = false;
 
         if (i > 63) {
             vshError(ctl, "command '%s' has too many options", cmd->name);
@@ -402,10 +399,6 @@ vshCmddefCheckInternals(vshControl *ctl,
                          opt->name, cmd->name);
                 return -1;
             }
-
-            isRequired = opt->flags & VSH_OFLAG_REQ;
-            /* ARGV argument is positional if there are no positional options */
-            isPositional = !seenPositionalOption;
             break;
 
         case VSH_OT_DATA:
@@ -414,10 +407,6 @@ vshCmddefCheckInternals(vshControl *ctl,
                          opt->name, cmd->name);
                 return -1;
             }
-
-            isRequired = true;
-            isPositional = true;
-            seenPositionalOption = true;
 
             if (seenOptionalOption) {
                 vshError(ctl, "parameter '%s' of command '%s' must be listed before optional parameters",
@@ -433,32 +422,9 @@ vshCmddefCheckInternals(vshControl *ctl,
                              opt->name, cmd->name);
                     return -1;
                 }
-
-                isRequired = true;
-
-                /* allow INT arguments which are required and non-positional */
-                if (!(opt->flags & VSH_OFLAG_REQ_OPT)) {
-                    seenPositionalOption = true;
-                    isPositional = true;
-                }
-            } else {
-                isPositional = false;
-                isRequired = false;
             }
 
             break;
-        }
-
-        if (opt->required != isRequired) {
-            vshError(ctl, "parameter '%s' of command '%s' 'required' state mismatch",
-                     opt->name, cmd->name);
-            return -1;
-        }
-
-        if (opt->positional != isPositional) {
-            vshError(ctl, "parameter '%s' of command '%s' 'positional' state mismatch",
-                     opt->name, cmd->name);
-            return -1;
         }
     }
 
