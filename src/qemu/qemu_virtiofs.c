@@ -102,7 +102,7 @@ qemuVirtioFSOpenChardev(virQEMUDriver *driver,
     chrdev->data.nix.listen = true;
     chrdev->data.nix.path = g_strdup(socket_path);
 
-    if (qemuSecuritySetDaemonSocketLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSecuritySetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
     fd = qemuOpenChrChardevUNIXSocket(chrdev);
     if (fd < 0) {
