@@ -379,7 +379,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *memspec = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = 0;
-    const vshCmdOpt *opt = NULL;
+    const char **diskspec;
 
     if (vshCommandOptBool(cmd, "no-metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA;
@@ -416,11 +416,12 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (memspec && virshParseSnapshotMemspec(ctl, &buf, memspec) < 0)
         return false;
 
-    if (vshCommandOptBool(cmd, "diskspec")) {
+    if ((diskspec = vshCommandOptArgv(cmd, "diskspec"))) {
         virBufferAddLit(&buf, "<disks>\n");
         virBufferAdjustIndent(&buf, 2);
-        while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-            if (virshParseSnapshotDiskspec(ctl, &buf, opt->data) < 0)
+
+        for (; *diskspec; diskspec++) {
+            if (virshParseSnapshotDiskspec(ctl, &buf, *diskspec) < 0)
                 return false;
         }
         virBufferAdjustIndent(&buf, -2);

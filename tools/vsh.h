@@ -147,6 +147,8 @@ struct _vshCmdOptDef {
 struct _vshCmdOpt {
     const vshCmdOptDef *def;    /* non-NULL pointer to option definition */
     char *data;                 /* allocated data, or NULL for bool option */
+    const char **argv;          /* for VSH_OT_ARGV, the list of options */
+    char *argvstr;              /* space-joined @argv */
     bool completeThis;          /* true if this is the option user's wishing to
                                    autocomplete */
     vshCmdOpt *next;
@@ -292,8 +294,12 @@ bool vshCommandRun(vshControl *ctl, const vshCmd *cmd);
 bool vshCommandStringParse(vshControl *ctl, char *cmdstr,
                            vshCmd **partial, size_t point);
 
-const vshCmdOpt *vshCommandOptArgv(vshControl *ctl, const vshCmd *cmd,
-                                   const vshCmdOpt *opt);
+const char **
+vshCommandOptArgv(const vshCmd *cmd,
+                  const char *name);
+const char *
+vshCommandOptArgvString(const vshCmd *cmd,
+                        const char *name);
 bool vshCommandArgvParse(vshControl *ctl, int nargs, char **argv);
 int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 

@@ -226,7 +226,7 @@ cmdCheckpointCreateAs(vshControl *ctl,
     const char *desc = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = 0;
-    const vshCmdOpt *opt = NULL;
+    const char **diskspec = NULL;
 
     if (vshCommandOptBool(cmd, "quiesce"))
         flags |= VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE;
@@ -243,13 +243,15 @@ cmdCheckpointCreateAs(vshControl *ctl,
     virBufferEscapeString(&buf, "<name>%s</name>\n", name);
     virBufferEscapeString(&buf, "<description>%s</description>\n", desc);
 
-    if (vshCommandOptBool(cmd, "diskspec")) {
+    if ((diskspec = vshCommandOptArgv(cmd, "diskspec"))) {
         virBufferAddLit(&buf, "<disks>\n");
         virBufferAdjustIndent(&buf, 2);
-        while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-            if (virshParseCheckpointDiskspec(ctl, &buf, opt->data) < 0)
+
+        for (; *diskspec; diskspec++) {
+            if (virshParseCheckpointDiskspec(ctl, &buf, *diskspec) < 0)
                 return false;
         }
+
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</disks>\n");
     }

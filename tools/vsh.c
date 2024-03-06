@@ -779,6 +779,9 @@ vshCommandOptFree(vshCmdOpt * arg)
         a = a->next;
 
         g_free(tmp->data);
+        /* 'argv' doesn't own the strings themselves */
+        g_free(tmp->argv);
+        g_free(tmp->argvstr);
         g_free(tmp);
     }
 }
@@ -1226,30 +1229,80 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
     return vshCommandOpt(cmd, name, &dummy, false) == 1;
 }
 
+
+static vshCmdOpt *
+vshCommandOptArgvInternal(const vshCmd *cmd,
+                          const char *name)
+{
+    vshCmdOpt *first = NULL;
+    vshCmdOpt *opt;
+    size_t nargv = 0;
+    size_t nargv_alloc = 0;
+
+    for (opt = cmd->opts; opt; opt = opt->next) {
+        if (STRNEQ(opt->def->name, name))
+            continue;
+
+        if (!first) {
+            /* Return existing data if we'we already processed it */
+            if (opt->argv)
+                return opt;
+
+            first = opt;
+        }
+
+        /* extra NULL terminator */
+        VIR_RESIZE_N(first->argv, nargv_alloc, nargv, 2);
+        first->argv[nargv++] = opt->data;
+    }
+
+    if (first)
+        first->argvstr = g_strjoinv(" ", (GStrv) first->argv);
+
+    return first;
+}
+
+
 /**
  * vshCommandOptArgv:
- * @ctl virtshell control structure
- * @cmd command reference
- * @opt starting point for the search
+ * @cmd: command reference
+ * @name: name of argument
  *
- * Returns the next argv argument after OPT (or the first one if OPT
- * is NULL), or NULL if no more are present.
- *
- * Requires that a VSH_OT_ARGV option be last in the
- * list of supported options in CMD->def->opts.
+ * Returns a NULL terminated list of strings of values passed as argument of
+ * ARGV argument named @name. The returned string list is owned by @cmd and
+ * caller must not free or modify it.
  */
-const vshCmdOpt *
-vshCommandOptArgv(vshControl *ctl G_GNUC_UNUSED, const vshCmd *cmd,
-                  const vshCmdOpt *opt)
+const char **
+vshCommandOptArgv(const vshCmd *cmd,
+                  const char *name)
 {
-    opt = opt ? opt->next : cmd->opts;
+    vshCmdOpt *opt = vshCommandOptArgvInternal(cmd, name);
 
-    while (opt) {
-        if (opt->def->type == VSH_OT_ARGV)
-            return opt;
-        opt = opt->next;
-    }
-    return NULL;
+    if (!opt)
+        return NULL;
+
+    return opt->argv;
+}
+
+
+/**
+ * vshCommandOptArgvString:
+ * @cmd: command reference
+ * @name: name of argument
+ *
+ * Returns a string containing all values passed as ARGV argument @name
+ * delimited/concatenated by adding spaces.
+ */
+const char *
+vshCommandOptArgvString(const vshCmd *cmd,
+                        const char *name)
+{
+    vshCmdOpt *opt = vshCommandOptArgvInternal(cmd, name);
+
+    if (!opt)
+        return NULL;
+
+    return opt->argvstr;
 }
 
 
@@ -3279,9 +3332,9 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     bool err = vshCommandOptBool(cmd, "err");
     bool split = vshCommandOptBool(cmd, "split");
     const char *prefix;
-    const vshCmdOpt *opt = NULL;
     g_autofree char *arg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char **o;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(shell, xml);
     VSH_EXCLUSIVE_OPTIONS_VAR(shell, split);
@@ -3292,8 +3345,8 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     if (prefix)
         virBufferAsprintf(&buf, "%s ", prefix);
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        const char *curr = opt->data;
+    for (o = vshCommandOptArgv(cmd, "string"); o && *o; o++) {
+        const char *curr = *o;
 
         if (xml) {
             virBufferEscapeString(&buf, "%s", curr);
@@ -3435,14 +3488,14 @@ bool
 cmdComplete(vshControl *ctl, const vshCmd *cmd)
 {
     const vshClientHooks *hooks = ctl->hooks;
-    const char *arg = "";
-    const vshCmdOpt *opt = NULL;
+    const char *lastArg = NULL;
+    const char **args = NULL;
     g_auto(GStrv) matches = NULL;
     char **iter;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (vshCommandOptStringQuiet(ctl, cmd, "string", &arg) <= 0)
-        return false;
+    /* The completer needs also the last component */
+    for (args = vshCommandOptArgv(cmd, "string"); args && *args; args++)
+        lastArg = *args;
 
     /* This command is flagged VSH_CMD_FLAG_NOCONNECT because we
      * need to prevent auth hooks reading any input. Therefore, we
@@ -3455,23 +3508,16 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     if (!(hooks && hooks->connHandler && hooks->connHandler(ctl)))
         return false;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        if (virBufferUse(&buf) != 0)
-            virBufferAddChar(&buf, ' ');
-        virBufferAddStr(&buf, opt->data);
-        arg = opt->data;
-    }
-
     vshReadlineInit(ctl);
 
-    if (!(rl_line_buffer = virBufferContentAndReset(&buf)))
+    if (!(rl_line_buffer = g_strdup(vshCommandOptArgvString(cmd, "string"))))
         rl_line_buffer = g_strdup("");
 
     /* rl_point is current cursor position in rl_line_buffer.
      * In our case it's at the end of the whole line. */
     rl_point = strlen(rl_line_buffer);
 
-    matches = vshReadlineCompletion(arg, 0, 0);
+    matches = vshReadlineCompletion(lastArg, 0, 0);
     g_clear_pointer(&rl_line_buffer, g_free);
 
     if (!matches)

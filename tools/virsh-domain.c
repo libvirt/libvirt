@@ -5065,15 +5065,15 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
 {
     char *set_val = NULL;
     const char *val = NULL;
-    const vshCmdOpt *opt = NULL;
+    const char **opt;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
     int ret = -1;
     int rv;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        g_autofree char *set_field = g_strdup(opt->data);
+    for (opt = vshCommandOptArgv(cmd, "set"); opt && *opt; opt++) {
+        g_autofree char *set_field = g_strdup(*opt);
 
         if (!(set_val = strchr(set_field, '='))) {
             vshError(ctl, "%s", _("Invalid syntax for --set, expecting name=value"));
@@ -8248,8 +8248,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     int state;
     int type;
     g_autofree char *descArg = NULL;
-    const vshCmdOpt *opt = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     unsigned int queryflags = 0;
 
@@ -8274,12 +8272,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     else
         type = VIR_DOMAIN_METADATA_DESCRIPTION;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-        virBufferAsprintf(&buf, "%s ", opt->data);
-
-    virBufferTrim(&buf, " ");
-
-    descArg = virBufferContentAndReset(&buf);
+    descArg = g_strdup(vshCommandOptArgvString(cmd, "new-desc"));
 
     if (edit || descArg) {
         g_autofree char *descDom = NULL;
@@ -8559,7 +8552,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
     int codeset;
     unsigned int holdtime = 0;
     int count = 0;
-    const vshCmdOpt *opt = NULL;
+    const char **opt = NULL;
     int keycode;
     unsigned int keycodes[VIR_DOMAIN_SEND_KEY_MAX_KEYS];
 
@@ -8583,15 +8576,15 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
+    for (opt = vshCommandOptArgv(cmd, "keycode"); opt && *opt; opt++) {
         if (count == VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
             vshError(ctl, _("too many keycodes"));
             return false;
         }
 
-        if ((keycode = virshKeyCodeGetInt(opt->data)) < 0) {
-            if ((keycode = virKeycodeValueFromString(codeset, opt->data)) < 0) {
-                vshError(ctl, _("invalid keycode: '%1$s'"), opt->data);
+        if ((keycode = virshKeyCodeGetInt(*opt)) < 0) {
+            if ((keycode = virKeycodeValueFromString(codeset, *opt)) < 0) {
+                vshError(ctl, _("invalid keycode: '%1$s'"), *opt);
                 return false;
             }
         }
@@ -9660,30 +9653,14 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
 
 
 static char *
-cmdQemuMonitorCommandConcatCmd(vshControl *ctl,
-                               const vshCmd *cmd,
-                               const vshCmdOpt *opt)
-{
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-        virBufferAsprintf(&buf, "%s ", opt->data);
-
-    virBufferTrim(&buf, " ");
-
-    return virBufferContentAndReset(&buf);
-}
-
-
-static char *
 cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
                              const vshCmd *cmd)
 {
-    g_autofree char *fullcmd = cmdQemuMonitorCommandConcatCmd(ctl, cmd, NULL);
+    const char *fullcmd = vshCommandOptArgvString(cmd, "cmd");
     g_autoptr(virJSONValue) fullcmdjson = NULL;
     g_autofree char *fullargs = NULL;
     g_autoptr(virJSONValue) fullargsjson = NULL;
-    const vshCmdOpt *opt = NULL;
+    const char **opt = NULL;
     const char *commandname = NULL;
     g_autoptr(virJSONValue) command = NULL;
     g_autoptr(virJSONValue) arguments = NULL;
@@ -9695,16 +9672,17 @@ cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
 
     /* if we've got a JSON object, pass it through */
     if (virJSONValueIsObject(fullcmdjson))
-        return g_steal_pointer(&fullcmd);
+        return g_strdup(fullcmd);
 
     /* we try to wrap the command and possible arguments into a JSON object, if
      * we as fall back we pass through what we've got from the user */
 
-    if ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-        commandname = opt->data;
+    opt = vshCommandOptArgv(cmd, "cmd");
+    commandname = *opt;
+    opt++;
 
     /* now we process arguments similarly to how we've dealt with the full command */
-    if ((fullargs = cmdQemuMonitorCommandConcatCmd(ctl, cmd, opt)) &&
+    if ((fullargs = g_strjoinv(" ", (GStrv) opt)) &&
         !(fullargsjson = virJSONValueFromString(fullargs))) {
         /* Reset the error before adding wrapping. */
         vshResetLibvirtError();
@@ -9721,8 +9699,8 @@ cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
         virBufferAddLit(&buf, "{");
         /* opt points to the _ARGV option bit containing the command so we'll
          * iterate through the arguments now */
-        while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-            virBufferAsprintf(&buf, "%s,", opt->data);
+        for (; *opt; opt++)
+            virBufferAsprintf(&buf, "%s,", *opt);
 
         virBufferTrim(&buf, ",");
         virBufferAddLit(&buf, "}");
@@ -9767,7 +9745,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "hmp")) {
         flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
-        monitor_cmd = cmdQemuMonitorCommandConcatCmd(ctl, cmd, NULL);
+        monitor_cmd = g_strdup(vshCommandOptArgvString(cmd, "cmd"));
     } else {
         monitor_cmd = cmdQemuMonitorCommandQMPWrap(ctl, cmd);
     }
@@ -10062,25 +10040,15 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
-    g_autofree char *guest_agent_cmd = NULL;
     char *result = NULL;
     int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
     int judge = 0;
     unsigned int flags = 0;
-    const vshCmdOpt *opt = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virJSONValue *pretty = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
-
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-        virBufferAsprintf(&buf, "%s ", opt->data);
-
-    virBufferTrim(&buf, " ");
-
-    guest_agent_cmd = virBufferContentAndReset(&buf);
 
     judge = vshCommandOptInt(ctl, cmd, "timeout", &timeout);
     if (judge < 0)
@@ -10106,7 +10074,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
+    result = virDomainQemuAgentCommand(dom, vshCommandOptArgvString(cmd, "cmd"), timeout, flags);
     if (!result)
         goto cleanup;
 
@@ -10158,9 +10126,7 @@ static bool
 cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    const vshCmdOpt *opt = NULL;
-    g_autofree char **cmdargv = NULL;
-    size_t ncmdargv = 0;
+    const char **cmdargv = NULL;
     pid_t pid;
     int nfdlist;
     int *fdlist;
@@ -10178,12 +10144,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "noseclabel"))
         setlabel = false;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        VIR_EXPAND_N(cmdargv, ncmdargv, 1);
-        cmdargv[ncmdargv-1] = opt->data;
-    }
-    VIR_EXPAND_N(cmdargv, ncmdargv, 1);
-    cmdargv[ncmdargv - 1] = NULL;
+    cmdargv = vshCommandOptArgv(cmd, "cmd");
 
     if ((nfdlist = virDomainLxcOpenNamespace(dom, &fdlist, 0)) < 0)
         return false;
@@ -10233,7 +10194,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
         _exit(EXIT_CANCELED);
 
     if (pid == 0) {
-        execv(cmdargv[0], cmdargv);
+        execv(cmdargv[0], (char **) cmdargv);
         _exit(errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE);
     }
 
@@ -12872,18 +12833,15 @@ static bool
 cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    const vshCmdOpt *opt = NULL;
-    g_autofree const char **mountpoints = NULL;
+    const char **mountpoints = vshCommandOptArgv(cmd, "mountpoint");
     size_t nmountpoints = 0;
     int count = 0;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        VIR_EXPAND_N(mountpoints, nmountpoints, 1);
-        mountpoints[nmountpoints-1] = opt->data;
-    }
+    if (mountpoints)
+        nmountpoints = g_strv_length((GStrv) mountpoints);
 
     if ((count = virDomainFSFreeze(dom, mountpoints, nmountpoints, 0)) < 0) {
         vshError(ctl, _("Unable to freeze filesystems"));
@@ -12913,18 +12871,15 @@ static bool
 cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    const vshCmdOpt *opt = NULL;
-    g_autofree const char **mountpoints = NULL;
+    const char **mountpoints = vshCommandOptArgv(cmd, "mountpoint");
     size_t nmountpoints = 0;
     int count = 0;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        VIR_EXPAND_N(mountpoints, nmountpoints, 1);
-        mountpoints[nmountpoints-1] = opt->data;
-    }
+    if (mountpoints)
+        nmountpoints = g_strv_length((GStrv) mountpoints);
 
     if ((count = virDomainFSThaw(dom, mountpoints, nmountpoints, 0)) < 0) {
         vshError(ctl, _("Unable to thaw filesystems"));

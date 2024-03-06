@@ -2096,7 +2096,7 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
     virDomainStatsRecordPtr *next;
     bool raw = vshCommandOptBool(cmd, "raw");
     int flags = 0;
-    const vshCmdOpt *opt = NULL;
+    const char **doms;
     bool ret = false;
     virshControl *priv = ctl->privData;
 
@@ -2166,12 +2166,12 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "nowait"))
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT;
 
-    if (vshCommandOptBool(cmd, "domain")) {
+    if ((doms = vshCommandOptArgv(cmd, "domain"))) {
         domlist = g_new0(virDomainPtr, 1);
         ndoms = 1;
 
-        while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-            if (!(dom = virshLookupDomainBy(ctl, opt->data,
+        for (; *doms; doms++) {
+            if (!(dom = virshLookupDomainBy(ctl, *doms,
                                             VIRSH_BYID |
                                             VIRSH_BYUUID | VIRSH_BYNAME)))
                 goto cleanup;

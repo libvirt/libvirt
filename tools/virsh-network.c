@@ -388,8 +388,6 @@ cmdNetworkDesc(vshControl *ctl, const vshCmd *cmd)
 
     int type;
     g_autofree char *descArg = NULL;
-    const vshCmdOpt *opt = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = VIR_NETWORK_UPDATE_AFFECT_CURRENT;
     unsigned int queryflags = 0;
 
@@ -411,12 +409,7 @@ cmdNetworkDesc(vshControl *ctl, const vshCmd *cmd)
     else
         type = VIR_NETWORK_METADATA_DESCRIPTION;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-        virBufferAsprintf(&buf, "%s ", opt->data);
-
-    virBufferTrim(&buf, " ");
-
-    descArg = virBufferContentAndReset(&buf);
+    descArg = g_strdup(vshCommandOptArgvString(cmd, "new-desc"));
 
     if (edit || descArg) {
         g_autofree char *descNet = NULL;
