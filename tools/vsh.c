@@ -1476,170 +1476,254 @@ vshCmdNew(vshControl *ctl,
 }
 
 
-static bool
-vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
+static int
+vshCmdOptAssignPositional(vshControl *ctl,
+                          vshCmd *cmd,
+                          const char *val,
+                          bool report)
 {
-    g_autoptr(vshCmd) cmd = NULL;
-    char *tkdata = NULL;
-    vshCmd *clast = NULL;
+    vshCmdOpt *opt;
 
-    if (!partial) {
+    if (!(opt = vshCmdGetNextPositionalOpt(cmd))) {
+        /* ignore spurious arguments for 'help' command */
+        if (STREQ(cmd->def->name, "help"))
+            return 0;
+
+        if (report)
+            vshError(ctl, _("unexpected data '%1$s'"), val);
+
+        return -1;
+    }
+
+    vshCmdOptAssign(ctl, cmd, opt, val, report);
+    return 0;
+}
+
+
+typedef enum {
+    VSH_CMD_PARSER_STATE_START,
+    VSH_CMD_PARSER_STATE_COMMENT,
+    VSH_CMD_PARSER_STATE_COMMAND,
+    VSH_CMD_PARSER_STATE_ASSIGN_OPT,
+    VSH_CMD_PARSER_STATE_POSITIONAL_ONLY,
+} vshCommandParserState;
+
+static bool
+vshCommandParse(vshControl *ctl,
+                vshCommandParser *parser,
+                vshCmd **partial)
+{
+    g_autoptr(vshCmd) cmds = NULL; /* linked list of all parsed commands in this session */
+    vshCmd *cmds_last = NULL;
+    g_autoptr(vshCmd) cmd = NULL; /* currently parsed command */
+    vshCommandParserState state = VSH_CMD_PARSER_STATE_START;
+    vshCmdOpt *opt = NULL;
+    g_autofree char *optionvalue = NULL;
+    bool report = !partial;
+    bool ret = false;
+
+    if (partial) {
+        g_clear_pointer(partial, vshCommandFree);
+    } else {
         g_clear_pointer(&ctl->cmd, vshCommandFree);
     }
 
     while (1) {
-        vshCommandToken tk;
-        bool data_only = false;
+        /* previous iteration might have already gotten a value. Store it as the
+         * token in this iteration */
+        g_autofree char *tkdata = g_steal_pointer(&optionvalue);
 
-        if (partial) {
-            g_clear_pointer(partial, vshCommandFree);
+        /* If we have a value already or the option to fill is a boolean we
+         * don't want to fetch a new token */
+        if (!(tkdata ||
+              (opt && opt->def->type == VSH_OT_BOOL))) {
+            vshCommandToken tk;
+
+            tk = parser->getNextArg(ctl, parser, &tkdata, report);
+
+            switch (tk) {
+            case VSH_TK_ARG:
+                /* will be handled below */
+                break;
+
+            case VSH_TK_ERROR:
+                goto out;
+
+            case VSH_TK_END:
+            case VSH_TK_SUBCMD_END:
+                /* The last argument name expects a value, but it's missing */
+                if (opt) {
+                    if (partial) {
+                        /* for completion to work we need to also store the
+                         * last token into the last 'opt' */
+                        vshCmdOptAssign(ctl, cmd, opt, tkdata, report);
+                    } else {
+                        if (opt->def->type == VSH_OT_INT)
+                            vshError(ctl, _("expected syntax: --%1$s <number>"),
+                                 opt->def->name);
+                        else
+                            vshError(ctl, _("expected syntax: --%1$s <string>"),
+                                 opt->def->name);
+
+                        goto out;
+                    }
+                }
+
+                /* command parsed -- allocate new struct for the command */
+                if (cmd) {
+                    /* if we encountered --help, replace parsed command with 'help <cmdname>' */
+                    if (cmd->helpOptionSeen) {
+                        vshCmd *helpcmd = vshCmdNewHelp(cmd->def->name);
+
+                        vshCommandFree(cmd);
+                        cmd = helpcmd;
+                    }
+
+                    if (!partial &&
+                        vshCommandCheckOpts(ctl, cmd) < 0)
+                        goto out;
+
+                    if (!cmds)
+                        cmds = cmd;
+                    if (cmds_last)
+                        cmds_last->next = cmd;
+                    cmds_last = g_steal_pointer(&cmd);
+                }
+
+
+                /* everything parsed */
+                if (tk == VSH_TK_END) {
+                    ret = true;
+                    goto out;
+                }
+
+                /* after processing the command we need to start over again to
+                 * fetch another token */
+                state = VSH_CMD_PARSER_STATE_START;
+                continue;
+            }
         }
 
-        while (1) {
-            vshCmdOpt *opt = NULL;
+        /* at this point we know that @tkdata is an argument */
+        switch (state) {
+        case VSH_CMD_PARSER_STATE_START:
+            if (*tkdata == '#') {
+                state = VSH_CMD_PARSER_STATE_COMMENT;
+            } else {
+                state = VSH_CMD_PARSER_STATE_COMMAND;
 
-            tkdata = NULL;
-            tk = parser->getNextArg(ctl, parser, &tkdata, true);
+                if (!(cmd = vshCmdNew(ctl, tkdata, !partial)))
+                    goto out;
+            }
 
-            if (tk == VSH_TK_ERROR)
-                goto syntaxError;
-            if (tk != VSH_TK_ARG) {
-                VIR_FREE(tkdata);
+            break;
+
+        case VSH_CMD_PARSER_STATE_COMMENT:
+            /* continue eating tokens until end of line or end of input */
+            state = VSH_CMD_PARSER_STATE_COMMENT;
+            break;
+
+        case VSH_CMD_PARSER_STATE_COMMAND: {
+            /* parsing individual options for the command. There are following options:
+             *   --option
+             *   --option value
+             *   --option=value
+             *   --aliasoptionwithvalue (value is part of the alias definition)
+             *   value
+             *   -- (terminate accepting '--option', fill only positional args)
+             */
+            const char *optionname = tkdata + 2;
+            char *sep;
+
+            if (!STRPREFIX(tkdata, "--")) {
+                if (vshCmdOptAssignPositional(ctl, cmd, tkdata, report) < 0)
+                    goto out;
                 break;
             }
 
-            if (cmd == NULL) {
-                /* first token must be command name or comment */
-                if (*tkdata == '#') {
-                    do {
-                        VIR_FREE(tkdata);
-                        tk = parser->getNextArg(ctl, parser, &tkdata, false);
-                    } while (tk == VSH_TK_ARG);
-                    VIR_FREE(tkdata);
+            if (STREQ(tkdata, "--")) {
+                state = VSH_CMD_PARSER_STATE_POSITIONAL_ONLY;
+                break;
+            }
+
+            if ((sep = strchr(optionname, '='))) {
+                *(sep++) = '\0';
+
+                /* 'optionvalue' has lifetime until next iteration */
+                optionvalue = g_strdup(sep);
+            }
+
+            /* lookup the option. Note that vshCmdGetOption also resolves aliases
+             * and thus the value possibly contained in the alias */
+            if (!(opt = vshCmdGetOption(ctl, cmd, optionname, &optionvalue, report))) {
+                if (STRNEQ(cmd->def->name, "help"))
+                    goto out;
+
+                /* ignore spurious arguments for 'help' command */
+                g_clear_pointer(&optionvalue, g_free);
+                state = VSH_CMD_PARSER_STATE_COMMAND;
+            } else {
+                state = VSH_CMD_PARSER_STATE_ASSIGN_OPT;
+            }
+        }
+            break;
+
+        case VSH_CMD_PARSER_STATE_ASSIGN_OPT:
+            /* Parameter for a boolean was passed via --boolopt=val */
+            if (tkdata && opt->def->type == VSH_OT_BOOL) {
+                if (report)
+                    vshError(ctl, _("invalid '=' after option --%1$s"),
+                             opt->def->name);
+                goto out;
+            }
+
+            vshCmdOptAssign(ctl, cmd, opt, tkdata, report);
+            opt = NULL;
+            state = VSH_CMD_PARSER_STATE_COMMAND;
+            break;
+
+        case VSH_CMD_PARSER_STATE_POSITIONAL_ONLY:
+            state = VSH_CMD_PARSER_STATE_POSITIONAL_ONLY;
+
+            if (vshCmdOptAssignPositional(ctl, cmd, tkdata, report) < 0)
+                goto out;
+            break;
+        }
+    }
+
+ out:
+
+    if (partial) {
+        /* When parsing a command for command completion, the last processed
+         * command or the one being currently parsed */
+        if (cmd) {
+            *partial = g_steal_pointer(&cmd);
+        } else if (cmds == cmds_last) {
+            *partial = g_steal_pointer(&cmds);
+        } else {
+            /* break the last command out of the linked list and let the rest be freed */
+            vshCmd *nc;
+
+            for (nc = cmds; nc; nc = nc->next) {
+                if (nc->next == cmds_last) {
+                    nc->next = NULL;
                     break;
                 }
-
-                if (!(cmd = vshCmdNew(ctl, tkdata, !partial)))
-                    goto syntaxError;
-
-                VIR_FREE(tkdata);
-            } else if (data_only) {
-                goto get_data;
-            } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
-                       g_ascii_isalnum(tkdata[2])) {
-                char *optstr = strchr(tkdata + 2, '=');
-
-                if (optstr) {
-                    *optstr = '\0'; /* convert the '=' to '\0' */
-                    optstr = g_strdup(optstr + 1);
-                }
-
-                /* Special case 'help' to ignore all spurious options */
-                if (!(opt = vshCmdGetOption(ctl, cmd, tkdata + 2,
-                                            &optstr, partial == NULL))) {
-                    VIR_FREE(optstr);
-                    if (STREQ(cmd->def->name, "help"))
-                        continue;
-                    goto syntaxError;
-                }
-                VIR_FREE(tkdata);
-
-                if (opt->def->type != VSH_OT_BOOL) {
-                    /* option data */
-                    if (optstr)
-                        tkdata = optstr;
-                    else
-                        tk = parser->getNextArg(ctl, parser, &tkdata, partial == NULL);
-                    if (tk == VSH_TK_ERROR)
-                        goto syntaxError;
-                    if (tk != VSH_TK_ARG) {
-                        if (partial) {
-                            vshCmdOptAssign(ctl, cmd, opt, tkdata, !partial);
-                            VIR_FREE(tkdata);
-                        } else {
-                            vshError(ctl,
-                                     _("expected syntax: --%1$s <%2$s>"),
-                                     opt->def->name,
-                                     opt->def->type ==
-                                     VSH_OT_INT ? _("number") : _("string"));
-                        }
-                        goto syntaxError;
-                    }
-                } else {
-                    tkdata = NULL;
-                    if (optstr) {
-                        if (!partial)
-                            vshError(ctl, _("invalid '=' after option --%1$s"),
-                                     opt->def->name);
-                        VIR_FREE(optstr);
-                        goto syntaxError;
-                    }
-                }
-            } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
-                       tkdata[2] == '\0') {
-                VIR_FREE(tkdata);
-                data_only = true;
-                continue;
-            } else {
- get_data:
-                /* Special case 'help' to ignore spurious data */
-                if (!(opt = vshCmdGetNextPositionalOpt(cmd)) &&
-                    STRNEQ(cmd->def->name, "help")) {
-                    if (!partial)
-                        vshError(ctl, _("unexpected data '%1$s'"), tkdata);
-                    goto syntaxError;
-                }
             }
 
-            if (opt) {
-                vshCmdOptAssign(ctl, cmd, opt, tkdata, !partial);
-                VIR_FREE(tkdata);
-            }
+            *partial = cmds_last;
         }
-
-        /* command parsed -- allocate new struct for the command */
-        if (cmd) {
-            /* if we encountered --help, replace parsed command with 'help <cmdname>' */
-            if (cmd->helpOptionSeen) {
-                vshCmd *helpcmd = vshCmdNewHelp(cmd->def->name);
-
-                vshCommandFree(cmd);
-                cmd = helpcmd;
-            }
-
-            if (!partial &&
-                vshCommandCheckOpts(ctl, cmd) < 0) {
-                vshCommandFree(cmd);
-                goto syntaxError;
-            }
-
-            if (partial) {
-                vshCommandFree(*partial);
-                *partial = g_steal_pointer(&cmd);
-            } else {
-                if (!ctl->cmd)
-                    ctl->cmd = cmd;
-                if (clast)
-                    clast->next = cmd;
-                clast = g_steal_pointer(&cmd);
-            }
-        }
-
-        if (tk == VSH_TK_END)
-            break;
-    }
-
-    return true;
-
- syntaxError:
-    if (partial) {
-        *partial = g_steal_pointer(&cmd);
     } else {
-        g_clear_pointer(&ctl->cmd, vshCommandFree);
+        /* for normal command parsing use the whole parsed command list, but
+         * only on success */
+        if (ret == true) {
+            ctl->cmd = g_steal_pointer(&cmds);
+        }
     }
-    VIR_FREE(tkdata);
-    return false;
+
+    return ret;
 }
+
 
 /* --------------------
  * Command argv parsing
