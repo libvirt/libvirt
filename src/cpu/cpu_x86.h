@@ -48,3 +48,6 @@ bool virCPUx86FeatureFilterSelectMSR(const char *name,
 bool virCPUx86FeatureFilterDropMSR(const char *name,
                                    virCPUFeaturePolicy policy,
                                    void *opaque);
+
+int virCPUx86GetAddedFeatures(const char *modelName,
+                              const char * const **features);

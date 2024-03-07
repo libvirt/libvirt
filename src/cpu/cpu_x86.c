@@ -148,6 +148,17 @@ struct _virCPUx86Model {
     virCPUx86Signatures *signatures;
     virCPUx86Data data;
     GStrv removedFeatures;
+
+    /* Features added to the CPU model after its original version was released.
+     * Such features are not really considered part of the model, but the
+     * compatibility check will not complain if they are enabled by the
+     * hypervisor even though they were not explicitly mentioned in the CPU
+     * definition. This should only be used for features which were always
+     * included in the CPU model by the hypervisor, but libvirt didn't support
+     * them when introducing the CPU model. In other words, they were enabled,
+     * but we ignored them.
+     */
+    GStrv addedFeatures;
 };
 
 typedef struct _virCPUx86Map virCPUx86Map;
@@ -1276,6 +1287,7 @@ x86ModelFree(virCPUx86Model *model)
     virCPUx86SignaturesFree(model->signatures);
     virCPUx86DataClear(&model->data);
     g_strfreev(model->removedFeatures);
+    g_strfreev(model->addedFeatures);
     g_free(model);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Model, x86ModelFree);
@@ -1291,6 +1303,7 @@ x86ModelCopy(virCPUx86Model *model)
     copy->signatures = virCPUx86SignaturesCopy(model->signatures);
     x86DataCopy(&copy->data, &model->data);
     copy->removedFeatures = g_strdupv(model->removedFeatures);
+    copy->addedFeatures = g_strdupv(model->addedFeatures);
     copy->vendor = model->vendor;
 
     return g_steal_pointer(&copy);
@@ -1596,17 +1609,20 @@ x86ModelParseFeatures(virCPUx86Model *model,
     g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     size_t nremoved = 0;
+    size_t nadded = 0;
     int n;
 
     if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) <= 0)
         return n;
 
     model->removedFeatures = g_new0(char *, n + 1);
+    model->addedFeatures = g_new0(char *, n + 1);
 
     for (i = 0; i < n; i++) {
         g_autofree char *ftname = NULL;
         virCPUx86Feature *feature;
         virTristateBool rem;
+        virTristateBool added;
 
         if (!(ftname = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1632,10 +1648,21 @@ x86ModelParseFeatures(virCPUx86Model *model,
             continue;
         }
 
+        if (virXMLPropTristateBool(nodes[i], "added",
+                                   VIR_XML_PROP_NONE,
+                                   &added) < 0)
+            return -1;
+
+        if (added == VIR_TRISTATE_BOOL_YES) {
+            model->addedFeatures[nadded++] = g_strdup(ftname);
+            continue;
+        }
+
         x86DataAdd(&model->data, &feature->data);
     }
 
     model->removedFeatures = g_renew(char *, model->removedFeatures, nremoved + 1);
+    model->addedFeatures = g_renew(char *, model->addedFeatures, nadded + 1);
 
     return 0;
 }
@@ -3030,11 +3057,18 @@ virCPUx86UpdateLive(virCPUDef *cpu,
         if (expected == VIR_CPU_FEATURE_DISABLE &&
             x86DataIsSubset(&enabled, &feature->data)) {
             VIR_DEBUG("Feature '%s' enabled by the hypervisor", feature->name);
-            if (cpu->check == VIR_CPU_CHECK_FULL)
+
+            /* Extra features enabled by the hypervisor are ignored by
+             * check='full' in case they were added to the model later for
+             * backward compatibility with the older definition of the model.
+             */
+            if (cpu->check == VIR_CPU_CHECK_FULL &&
+                !g_strv_contains((const char **) model->addedFeatures, feature->name)) {
                 virBufferAsprintf(&bufAdded, "%s,", feature->name);
-            else if (virCPUDefUpdateFeature(cpu, feature->name,
-                                            VIR_CPU_FEATURE_REQUIRE) < 0)
+            } else if (virCPUDefUpdateFeature(cpu, feature->name,
+                                              VIR_CPU_FEATURE_REQUIRE) < 0) {
                 return -1;
+            }
         }
 
         if (x86DataIsSubset(&disabled, &feature->data) ||
@@ -3496,6 +3530,40 @@ virCPUx86FeatureFilterDropMSR(const char *name,
                               void *opaque G_GNUC_UNUSED)
 {
     return !virCPUx86FeatureIsMSR(name);
+}
+
+
+/**
+ * virCPUx86GetAddedFeatures:
+ * @modelName: CPU model
+ * @features: where to store a pointer to the list of added features
+ *
+ * Gets a list of features added to a specified CPU model after its original
+ * version was already released. The @features will be set to NULL if the list
+ * is empty or it will point to internal structures and thus it must not be
+ * freed or modified by the caller. The pointer is valid for the whole lifetime
+ * of the process.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virCPUx86GetAddedFeatures(const char *modelName,
+                          const char * const **features)
+{
+    virCPUx86Map *map;
+    virCPUx86Model *model;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFind(map, modelName))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown CPU model %1$s"), modelName);
+        return -1;
+    }
+
+    *features = (const char **) model->addedFeatures;
+    return 0;
 }
 
 
