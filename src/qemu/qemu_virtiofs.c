@@ -388,6 +388,9 @@ qemuVirtioFSPrepareIdMap(virDomainFSDef *fs)
     username = virGetUserName(euid);
     groupname = virGetGroupName(egid);
 
+    if (!username || !groupname)
+        return -1;
+
     fs->idmap.uidmap = g_new0(virDomainIdMapEntry, 2);
     fs->idmap.gidmap = g_new0(virDomainIdMapEntry, 2);
 
