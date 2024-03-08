@@ -15811,8 +15811,11 @@ virDomainDefGetDefaultEmulator(virDomainDef *def,
     g_autofree virCapsDomainData *capsdata = NULL;
 
     if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-            def->os.arch, def->virtType, NULL, NULL)))
+                                                     def->os.arch,
+                                                     def->virtType, NULL, NULL,
+                                                     true))) {
         return NULL;
+    }
 
     retemu = g_strdup(capsdata->emulator);
 

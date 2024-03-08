@@ -1784,11 +1784,11 @@ int virQEMUCapsGetDefaultVersion(virCaps *caps,
 
     hostarch = virArchFromHost();
     if (!(capsdata = virCapabilitiesDomainDataLookup(caps,
-            VIR_DOMAIN_OSTYPE_HVM, hostarch, VIR_DOMAIN_VIRT_NONE,
-            NULL, NULL))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find suitable emulator for %1$s"),
-                       virArchToString(hostarch));
+                                                     VIR_DOMAIN_OSTYPE_HVM,
+                                                     hostarch,
+                                                     VIR_DOMAIN_VIRT_NONE,
+                                                     NULL, NULL,
+                                                     true))) {
         return -1;
     }
 

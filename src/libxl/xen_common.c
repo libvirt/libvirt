@@ -1387,8 +1387,11 @@ xenParseGeneralMeta(virConf *conf, virDomainDef *def, virCaps *caps)
     }
 
     if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-            VIR_ARCH_NONE, def->virtType, NULL, NULL)))
+                                                     VIR_ARCH_NONE,
+                                                     def->virtType, NULL,
+                                                     NULL, true))) {
         goto out;
+    }
 
     def->os.arch = capsdata->arch;
     def->os.machine = g_strdup(capsdata->machinetype);

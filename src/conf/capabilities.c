@@ -591,7 +591,8 @@ virCapabilitiesDomainDataLookupInternal(virCaps *caps,
                                         virArch arch,
                                         virDomainVirtType domaintype,
                                         const char *emulator,
-                                        const char *machinetype)
+                                        const char *machinetype,
+                                        bool reportError)
 {
     virCapsGuest *foundguest = NULL;
     virCapsGuestDomain *founddomain = NULL;
@@ -680,6 +681,10 @@ virCapabilitiesDomainDataLookupInternal(virCaps *caps,
     /* XXX check default_emulator, see how it uses this */
     if (!foundguest) {
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+        if (!reportError)
+            return NULL;
+
         if (ostype)
             virBufferAsprintf(&buf, "ostype=%s ",
                               virDomainOSTypeToString(ostype));
@@ -699,7 +704,7 @@ virCapabilitiesDomainDataLookupInternal(virCaps *caps,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find capabilities for %1$s"),
                        virBufferCurrentContent(&buf));
-        return ret;
+        return NULL;
     }
 
     ret = g_new0(virCapsDomainData, 1);
@@ -726,6 +731,7 @@ virCapabilitiesDomainDataLookupInternal(virCaps *caps,
  * @domaintype: domain type to search for, of enum virDomainVirtType
  * @emulator: Emulator path to search for
  * @machinetype: Machine type to search for
+ * @reportError: whether to report error if no match is found
  *
  * Search capabilities for the passed values, and if found return
  * virCapabilitiesDomainDataLookup filled in with the default values
@@ -736,7 +742,8 @@ virCapabilitiesDomainDataLookup(virCaps *caps,
                                 virArch arch,
                                 int domaintype,
                                 const char *emulator,
-                                const char *machinetype)
+                                const char *machinetype,
+                                bool reportError)
 {
     virCapsDomainData *ret;
 
@@ -745,14 +752,16 @@ virCapabilitiesDomainDataLookup(virCaps *caps,
         ret = virCapabilitiesDomainDataLookupInternal(caps, ostype,
                                                       caps->host.arch,
                                                       domaintype,
-                                                      emulator, machinetype);
+                                                      emulator, machinetype,
+                                                      reportError);
         if (ret)
             return ret;
     }
 
     return virCapabilitiesDomainDataLookupInternal(caps, ostype,
                                                    arch, domaintype,
-                                                   emulator, machinetype);
+                                                   emulator, machinetype,
+                                                   reportError);
 }
 
 
@@ -767,7 +776,8 @@ virCapabilitiesDomainSupported(virCaps *caps,
     capsdata = virCapabilitiesDomainDataLookup(caps, ostype,
                                                arch,
                                                virttype,
-                                               NULL, NULL);
+                                               NULL, NULL,
+                                               true);
 
     return capsdata != NULL;
 }
