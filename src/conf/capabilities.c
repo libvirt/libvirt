@@ -769,7 +769,8 @@ bool
 virCapabilitiesDomainSupported(virCaps *caps,
                                int ostype,
                                virArch arch,
-                               int virttype)
+                               int virttype,
+                               bool reportError)
 {
     g_autofree virCapsDomainData *capsdata = NULL;
 
@@ -777,7 +778,7 @@ virCapabilitiesDomainSupported(virCaps *caps,
                                                arch,
                                                virttype,
                                                NULL, NULL,
-                                               true);
+                                               reportError);
 
     return capsdata != NULL;
 }

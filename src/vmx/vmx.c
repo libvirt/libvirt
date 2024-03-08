@@ -613,7 +613,8 @@ virVMXDomainDefPostParse(virDomainDef *def,
     virCaps *caps = opaque;
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
-                                        def->virtType))
+                                        def->virtType,
+                                        true))
         return -1;
 
     return 0;

@@ -125,11 +125,14 @@ virCHDomainDefPostParse(virDomainDef *def,
 {
     virCHDriver *driver = opaque;
     g_autoptr(virCaps) caps = virCHDriverGetCapabilities(driver, false);
+
     if (!caps)
         return -1;
+
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
-                                        def->virtType))
+                                        def->virtType,
+                                        true))
         return -1;
 
     return 0;

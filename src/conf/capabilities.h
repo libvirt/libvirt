@@ -316,7 +316,8 @@ bool
 virCapabilitiesDomainSupported(virCaps *caps,
                                int ostype,
                                virArch arch,
-                               int domaintype);
+                               int domaintype,
+                               bool reportError);
 
 
 void

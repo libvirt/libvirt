@@ -89,7 +89,8 @@ bhyveDomainDefPostParse(virDomainDef *def,
 
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
-                                        def->virtType))
+                                        def->virtType,
+                                        true))
         return -1;
 
     /* Add an implicit PCI root controller */

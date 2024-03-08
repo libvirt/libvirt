@@ -660,7 +660,7 @@ virCHProcessStartValidate(virCHDriver *driver,
     if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
         VIR_DEBUG("Checking for KVM availability");
         if (!virCapabilitiesDomainSupported(driver->caps, -1,
-                                            VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM)) {
+                                            VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM, false)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Domain requires KVM, but it is not available. Check that virtualization is enabled in the host BIOS, and host configuration is setup to load the kvm modules."));
             return -1;
@@ -668,7 +668,7 @@ virCHProcessStartValidate(virCHDriver *driver,
     } else if (vm->def->virtType == VIR_DOMAIN_VIRT_HYPERV) {
         VIR_DEBUG("Checking for mshv availability");
         if (!virCapabilitiesDomainSupported(driver->caps, -1,
-                                            VIR_ARCH_NONE, VIR_DOMAIN_VIRT_HYPERV)) {
+                                            VIR_ARCH_NONE, VIR_DOMAIN_VIRT_HYPERV, false)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Domain requires MSHV device, but it is not available. Check that virtualization is enabled in the host BIOS, and host configuration is setup to load the mshv modules."));
             return -1;

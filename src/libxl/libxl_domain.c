@@ -309,7 +309,8 @@ libxlDomainDefValidate(const virDomainDef *def,
 
     if (!virCapabilitiesDomainSupported(cfg->caps, def->os.type,
                                         def->os.arch,
-                                        def->virtType))
+                                        def->virtType,
+                                        true))
         return -1;
 
     /* Xen+ovmf does not support secure boot */

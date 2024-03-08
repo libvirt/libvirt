@@ -241,7 +241,8 @@ vzDomainDefPostParse(virDomainDef *def,
     struct _vzDriver *driver = opaque;
     if (!virCapabilitiesDomainSupported(driver->caps, def->os.type,
                                         def->os.arch,
-                                        def->virtType))
+                                        def->virtType,
+                                        true))
         return -1;
 
     if (vzDomainDefAddDefaultInputDevices(def) < 0)

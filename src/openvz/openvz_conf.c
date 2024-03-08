@@ -1007,7 +1007,8 @@ openvzDomainDefPostParse(virDomainDef *def,
     struct openvz_driver *driver = opaque;
     if (!virCapabilitiesDomainSupported(driver->caps, def->os.type,
                                         def->os.arch,
-                                        def->virtType))
+                                        def->virtType,
+                                        true))
         return -1;
 
     /* fill the init path */
