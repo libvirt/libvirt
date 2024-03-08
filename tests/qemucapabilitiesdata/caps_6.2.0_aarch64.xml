@@ -148,6 +148,7 @@
   <flag name='pvpanic-pci'/>
   <flag name='virtio-gpu.blob'/>
   <flag name='display-reload'/>
+  <flag name='usb-mtp'/>
   <version>6001050</version>
   <microcodeVersion>61700244</microcodeVersion>
   <package></package>

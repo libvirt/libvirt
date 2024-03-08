@@ -125,6 +125,7 @@
   <flag name='virtio-net.rss'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
+  <flag name='usb-mtp'/>
   <version>5002000</version>
   <microcodeVersion>42900243</microcodeVersion>
   <package>v5.2.0</package>

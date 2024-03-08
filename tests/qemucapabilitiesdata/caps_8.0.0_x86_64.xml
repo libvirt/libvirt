@@ -197,6 +197,7 @@
   <flag name='rbd-encryption-luks-any'/>
   <flag name='smp-clusters'/>
   <flag name='display-reload'/>
+  <flag name='usb-mtp'/>
   <version>8000000</version>
   <microcodeVersion>43100244</microcodeVersion>
   <package>v8.0.0</package>

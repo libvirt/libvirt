@@ -151,6 +151,7 @@
   <flag name='virtio-gpu.blob'/>
   <flag name='smp-clusters'/>
   <flag name='display-reload'/>
+  <flag name='usb-mtp'/>
   <version>7002000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-7.2.0-6.fc37</package>

@@ -203,6 +203,7 @@
   <flag name='virtio-mem-pci.dynamic-memslots'/>
   <flag name='blockjob.backing-mask-protocol'/>
   <flag name='display-reload'/>
+  <flag name='usb-mtp'/>
   <version>8002050</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v8.2.0-952-g14639717bf</package>

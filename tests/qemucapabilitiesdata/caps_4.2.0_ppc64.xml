@@ -105,6 +105,7 @@
   <flag name='virtio-blk.queue-size'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
+  <flag name='usb-mtp'/>
   <version>4002000</version>
   <microcodeVersion>42900242</microcodeVersion>
   <package>v4.1.0-2198-g9e583f2</package>

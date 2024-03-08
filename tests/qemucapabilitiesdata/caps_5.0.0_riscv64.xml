@@ -112,6 +112,7 @@
   <flag name='virtio-iommu-pci'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
+  <flag name='usb-mtp'/>
   <version>5000000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>v5.0.0</package>
