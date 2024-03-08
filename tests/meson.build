@@ -350,6 +350,9 @@ if conf.has('WITH_CH')
   tests += [
     { 'name': 'chxml2xmltest', 'link_with': [ ch_driver_impl ] },
   ]
+  mock_libs += [
+    { 'name': 'chxml2xmlmock' },
+  ]
 endif
 
 if conf.has('WITH_ESX')
