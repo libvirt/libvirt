@@ -461,6 +461,34 @@ virCHProcessSetupVcpus(virDomainObj *vm)
     return 0;
 }
 
+static int
+virCHProcessSetup(virDomainObj *vm)
+{
+    virCHDomainObjPrivate *priv = vm->privateData;
+
+    virCHDomainRefreshThreadInfo(vm);
+
+    VIR_DEBUG("Setting emulator tuning/settings");
+    if (virCHProcessSetupEmulatorThreads(vm) < 0)
+        return -1;
+
+    VIR_DEBUG("Setting iothread tuning/settings");
+    if (virCHProcessSetupIOThreads(vm) < 0)
+        return -1;
+
+    VIR_DEBUG("Setting global CPU cgroup (if required)");
+    if (virDomainCgroupSetupGlobalCpuCgroup(vm,
+                                            priv->cgroup) < 0)
+        return -1;
+
+    VIR_DEBUG("Setting vCPU tuning/settings");
+    if (virCHProcessSetupVcpus(vm) < 0)
+        return -1;
+
+    virCHProcessUpdateInfo(vm);
+    return 0;
+}
+
 
 #define PKT_TIMEOUT_MS 500 /* ms */
 
@@ -764,26 +792,9 @@ virCHProcessStart(virCHDriver *driver,
         goto cleanup;
     }
 
-    virCHDomainRefreshThreadInfo(vm);
-
-    VIR_DEBUG("Setting emulator tuning/settings");
-    if (virCHProcessSetupEmulatorThreads(vm) < 0)
+    if (virCHProcessSetup(vm) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting iothread tuning/settings");
-    if (virCHProcessSetupIOThreads(vm) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Setting global CPU cgroup (if required)");
-    if (virDomainCgroupSetupGlobalCpuCgroup(vm,
-                                            priv->cgroup) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Setting vCPU tuning/settings");
-    if (virCHProcessSetupVcpus(vm) < 0)
-        goto cleanup;
-
-    virCHProcessUpdateInfo(vm);
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
     return 0;
