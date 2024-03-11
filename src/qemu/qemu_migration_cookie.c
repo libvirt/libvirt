@@ -545,7 +545,7 @@ qemuMigrationCookieAddCPU(qemuMigrationCookie *mig,
 
     mig->cpu = virCPUDefCopy(vm->def->cpu);
 
-    if (qemuDomainMakeCPUMigratable(mig->cpu) < 0)
+    if (qemuDomainMakeCPUMigratable(vm->def->os.arch, mig->cpu) < 0)
         return -1;
 
     mig->flags |= QEMU_MIGRATION_COOKIE_CPU;

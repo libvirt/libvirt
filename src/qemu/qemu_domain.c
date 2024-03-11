@@ -6644,10 +6644,15 @@ qemuDomainDefCopy(virQEMUDriver *driver,
 
 
 int
-qemuDomainMakeCPUMigratable(virCPUDef *cpu)
+qemuDomainMakeCPUMigratable(virArch arch,
+                            virCPUDef *cpu)
 {
-    if (cpu->mode == VIR_CPU_MODE_CUSTOM &&
-        STREQ_NULLABLE(cpu->model, "Icelake-Server")) {
+    if (cpu->mode != VIR_CPU_MODE_CUSTOM ||
+        !cpu->model ||
+        !ARCH_IS_X86(arch))
+        return 0;
+
+    if (STREQ(cpu->model, "Icelake-Server")) {
         /* Originally Icelake-Server CPU model contained pconfig CPU feature.
          * It was never actually enabled and thus it was removed. To enable
          * migration to QEMU 3.1.0 (with both new and old libvirt), we
@@ -6837,7 +6842,8 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
                 return -1;
         }
 
-        if (def->cpu && qemuDomainMakeCPUMigratable(def->cpu) < 0)
+        if (def->cpu &&
+            qemuDomainMakeCPUMigratable(def->os.arch, def->cpu) < 0)
             return -1;
 
         /* Old libvirt doesn't understand <audio> elements so

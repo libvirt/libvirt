@@ -1048,7 +1048,8 @@ qemuDomainSupportsCheckpointsBlockjobs(virDomainObj *vm)
     G_GNUC_WARN_UNUSED_RESULT;
 
 int
-qemuDomainMakeCPUMigratable(virCPUDef *cpu);
+qemuDomainMakeCPUMigratable(virArch arch,
+                            virCPUDef *cpu);
 
 int
 qemuDomainInitializePflashStorageSource(virDomainObj *vm,
