@@ -206,6 +206,7 @@ chDomainCreateXML(virConnectPtr conn,
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    g_autofree char *managed_save_path = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_VALIDATE, NULL);
 
@@ -227,6 +228,15 @@ chDomainCreateXML(virConnectPtr conn,
                                        VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
+
+    /* cleanup if there's any stale managedsave dir */
+    managed_save_path = chDomainManagedSavePath(driver, vm);
+    if (virFileDeleteTree(managed_save_path) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to cleanup stale managed save dir '%1$s'"),
+                             managed_save_path);
+        goto cleanup;
+    }
 
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
@@ -315,6 +325,7 @@ chDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     g_autoptr(virDomainDef) vmdef = NULL;
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
+    g_autofree char *managed_save_path = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
@@ -336,6 +347,15 @@ chDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
                                    driver->xmlopt,
                                    0, NULL)))
         goto cleanup;
+
+    /* cleanup if there's any stale managedsave dir */
+    managed_save_path = chDomainManagedSavePath(driver, vm);
+    if (virFileDeleteTree(managed_save_path) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to cleanup stale managed save dir '%1$s'"),
+                             managed_save_path);
+        goto cleanup;
+    }
 
     vm->persistent = 1;
 
