@@ -529,10 +529,11 @@ chMonitorCreateSocket(const char *socket_path)
 }
 
 virCHMonitor *
-virCHMonitorNew(virDomainObj *vm, const char *socketdir)
+virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg)
 {
     g_autoptr(virCHMonitor) mon = NULL;
     g_autoptr(virCommand) cmd = NULL;
+    const char *socketdir = cfg->stateDir;
     int socket_fd = 0;
 
     if (virCHMonitorInitialize() < 0)

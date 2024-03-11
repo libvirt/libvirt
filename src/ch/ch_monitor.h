@@ -101,7 +101,7 @@ struct _virCHMonitor {
     virCHMonitorThreadInfo *threads;
 };
 
-virCHMonitor *virCHMonitorNew(virDomainObj *vm, const char *socketdir);
+virCHMonitor *virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg);
 void virCHMonitorClose(virCHMonitor *mon);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHMonitor, virCHMonitorClose);
 

@@ -52,7 +52,7 @@ virCHProcessConnectMonitor(virCHDriver *driver,
     virCHMonitor *monitor = NULL;
     virCHDriverConfig *cfg = virCHDriverGetConfig(driver);
 
-    monitor = virCHMonitorNew(vm, cfg->stateDir);
+    monitor = virCHMonitorNew(vm, cfg);
 
     virObjectUnref(cfg);
     return monitor;
