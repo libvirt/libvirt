@@ -771,6 +771,99 @@ chDomainSave(virDomainPtr dom, const char *to)
     return chDomainSaveFlags(dom, to, NULL, 0);
 }
 
+static char *
+chDomainSaveXMLRead(int fd)
+{
+    g_autofree char *xml = NULL;
+    CHSaveXMLHeader hdr;
+
+    if (saferead(fd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to read CHSaveXMLHeader header"));
+        return NULL;
+    }
+
+    if (memcmp(hdr.magic, CH_SAVE_MAGIC, sizeof(hdr.magic))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("save image magic is incorrect"));
+        return NULL;
+    }
+
+    if (hdr.xmlLen <= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("invalid XML length: %1$d"), hdr.xmlLen);
+        return NULL;
+    }
+
+    xml = g_new0(char, hdr.xmlLen);
+
+    if (saferead(fd, xml, hdr.xmlLen) != hdr.xmlLen) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("failed to read XML"));
+        return NULL;
+    }
+
+    return g_steal_pointer(&xml);
+}
+
+static int chDomainSaveImageRead(virCHDriver *driver,
+                                 const char *path,
+                                 virDomainDef **ret_def)
+{
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
+    g_autoptr(virDomainDef) def = NULL;
+    g_autofree char *from = NULL;
+    g_autofree char *xml = NULL;
+    VIR_AUTOCLOSE fd = -1;
+    int ret = -1;
+
+    from = g_strdup_printf("%s/%s", path, CH_SAVE_XML);
+    if ((fd = virFileOpenAs(from, O_RDONLY, 0, cfg->user, cfg->group, 0)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to open domain save file '%1$s'"),
+                             from);
+        goto end;
+    }
+
+    if (!(xml = chDomainSaveXMLRead(fd)))
+        goto end;
+
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt, NULL,
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+        goto end;
+
+    *ret_def = g_steal_pointer(&def);
+    ret = 0;
+
+ end:
+    return ret;
+}
+
+static char *
+chDomainSaveImageGetXMLDesc(virConnectPtr conn,
+                            const char *path,
+                            unsigned int flags)
+{
+    virCHDriver *driver = conn->privateData;
+    g_autoptr(virDomainDef) def = NULL;
+    char *ret = NULL;
+
+    virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
+
+    if (chDomainSaveImageRead(driver, path, &def) < 0)
+        goto cleanup;
+
+    if (virDomainSaveImageGetXMLDescEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    ret = virDomainDefFormat(def, driver->xmlopt,
+                             virDomainDefFormatConvertXMLFlags(flags));
+
+ cleanup:
+    return ret;
+}
+
 static int
 chDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
@@ -807,6 +900,89 @@ chDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
  endjob:
     virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+chDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
+{
+    virCHDriver *driver = dom->conn->privateData;
+    virDomainObj *vm;
+    int ret = -1;
+    g_autofree char *path = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = virCHDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainManagedSaveRemoveEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    path = chDomainManagedSavePath(driver, vm);
+
+    if (virFileDeleteTree(path) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to remove managed save path '%1$s'"),
+                             path);
+        goto cleanup;
+    }
+
+    vm->hasManagedSave = false;
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static char *
+chDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
+{
+    virCHDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    g_autoptr(virDomainDef) def = NULL;
+    char *ret = NULL;
+    g_autofree char *path = NULL;
+
+    virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
+
+    if (!(vm = virCHDomainObjFromDomain(dom)))
+        goto cleanup;
+
+    path = chDomainManagedSavePath(driver, vm);
+    if (chDomainSaveImageRead(driver, path, &def) < 0)
+        goto cleanup;
+
+    if (virDomainManagedSaveGetXMLDescEnsureACL(dom->conn, def, flags) < 0)
+        goto cleanup;
+
+    ret = virDomainDefFormat(def, driver->xmlopt,
+                             virDomainDefFormatConvertXMLFlags(flags));
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+chDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = virCHDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainHasManagedSaveImageEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    ret = vm->hasManagedSave;
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1936,7 +2112,11 @@ static virHypervisorDriver chHypervisorDriver = {
     .domainGetNumaParameters = chDomainGetNumaParameters,   /* 8.1.0 */
     .domainSave = chDomainSave,                             /* 10.2.0 */
     .domainSaveFlags = chDomainSaveFlags,                   /* 10.2.0 */
+    .domainSaveImageGetXMLDesc = chDomainSaveImageGetXMLDesc,   /* 10.2.0 */
     .domainManagedSave = chDomainManagedSave,               /* 10.2.0 */
+    .domainManagedSaveRemove = chDomainManagedSaveRemove,   /* 10.2.0 */
+    .domainManagedSaveGetXMLDesc = chDomainManagedSaveGetXMLDesc,   /* 10.2.0 */
+    .domainHasManagedSaveImage = chDomainHasManagedSaveImage,   /* 10.2.0 */
 };
 
 static virConnectDriver chConnectDriver = {
