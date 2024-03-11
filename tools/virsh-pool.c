@@ -180,7 +180,7 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
 
     virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     if (cmd->skipChecks && !n)
@@ -286,7 +286,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     build = vshCommandOptBool(cmd, "build");
@@ -340,31 +340,31 @@ virshBuildPoolXML(vshControl *ctl,
 
     VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+    if (vshCommandOptString(ctl, cmd, "name", &name) < 0)
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+    if (vshCommandOptString(ctl, cmd, "type", &type) < 0)
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "source-host", &srcHost) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-path", &srcPath) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-dev", &srcDev) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-name", &srcName) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-format", &srcFormat) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "target", &target) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "auth-type", &authType) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "auth-username", &authUsername) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "secret-usage", &secretUsage) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "secret-uuid", &secretUUID) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-name", &adapterName) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-wwnn", &adapterWwnn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-wwpn", &adapterWwpn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-parent", &adapterParent) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-initiator", &srcInitiator) < 0) {
+    if (vshCommandOptString(ctl, cmd, "source-host", &srcHost) < 0 ||
+        vshCommandOptString(ctl, cmd, "source-path", &srcPath) < 0 ||
+        vshCommandOptString(ctl, cmd, "source-dev", &srcDev) < 0 ||
+        vshCommandOptString(ctl, cmd, "source-name", &srcName) < 0 ||
+        vshCommandOptString(ctl, cmd, "source-format", &srcFormat) < 0 ||
+        vshCommandOptString(ctl, cmd, "target", &target) < 0 ||
+        vshCommandOptString(ctl, cmd, "auth-type", &authType) < 0 ||
+        vshCommandOptString(ctl, cmd, "auth-username", &authUsername) < 0 ||
+        vshCommandOptString(ctl, cmd, "secret-usage", &secretUsage) < 0 ||
+        vshCommandOptString(ctl, cmd, "secret-uuid", &secretUUID) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-name", &adapterName) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-wwnn", &adapterWwnn) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-wwpn", &adapterWwpn) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-parent", &adapterParent) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
+        vshCommandOptString(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0 ||
+        vshCommandOptString(ctl, cmd, "source-protocol-ver", &protoVer) < 0 ||
+        vshCommandOptString(ctl, cmd, "source-initiator", &srcInitiator) < 0) {
         return false;
     }
 
@@ -530,7 +530,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "validate"))
@@ -1124,7 +1124,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     if (vshCommandOptBool(cmd, "name"))
         name = true;
 
-    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+    if (vshCommandOptString(ctl, cmd, "type", &type) < 0)
         return false;
 
     VSH_EXCLUSIVE_OPTIONS("details", "uuid");
@@ -1407,16 +1407,16 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
     const char *initiator = NULL;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "host", &host) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "initiator", &initiator) < 0)
+    if (vshCommandOptString(ctl, cmd, "type", &type) < 0 ||
+        vshCommandOptString(ctl, cmd, "host", &host) < 0 ||
+        vshCommandOptString(ctl, cmd, "initiator", &initiator) < 0)
         return false;
 
     if (host) {
         const char *port = NULL;
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-        if (vshCommandOptStringReq(ctl, cmd, "port", &port) < 0) {
+        if (vshCommandOptString(ctl, cmd, "port", &port) < 0) {
             vshError(ctl, "%s", _("missing argument"));
             return false;
         }
@@ -1480,10 +1480,10 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
     char *srcSpec = NULL, *srcList;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+    if (vshCommandOptString(ctl, cmd, "type", &type) < 0)
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "srcSpec", &srcSpecFile) < 0)
+    if (vshCommandOptString(ctl, cmd, "srcSpec", &srcSpecFile) < 0)
         return false;
 
     if (srcSpecFile && virFileReadAll(srcSpecFile, VSH_MAX_XML_FILE,
@@ -1952,7 +1952,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
+    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (!eventName) {
         vshError(ctl, "%s", _("either --list or --event <type> is required"));

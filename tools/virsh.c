@@ -269,7 +269,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     bool ro = vshCommandOptBool(cmd, "readonly");
     const char *name = NULL;
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+    if (vshCommandOptString(ctl, cmd, "name", &name) < 0)
         return false;
 
     if (virshReconnect(ctl, name, ro, true) < 0)

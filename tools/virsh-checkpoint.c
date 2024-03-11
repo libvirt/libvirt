@@ -121,7 +121,7 @@ cmdCheckpointCreate(vshControl *ctl,
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "xmlfile", &from) < 0)
         return false;
     if (!from) {
         buffer = g_strdup("<domaincheckpoint/>");
@@ -234,8 +234,8 @@ cmdCheckpointCreateAs(vshControl *ctl,
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "description", &desc) < 0)
+    if (vshCommandOptString(ctl, cmd, "name", &name) < 0 ||
+        vshCommandOptString(ctl, cmd, "description", &desc) < 0)
         return false;
 
     virBufferAddLit(&buf, "<domaincheckpoint>\n");
@@ -281,7 +281,7 @@ virshLookupCheckpoint(vshControl *ctl,
 {
     const char *chkname = NULL;
 
-    if (vshCommandOptStringReq(ctl, cmd, arg, &chkname) < 0)
+    if (vshCommandOptString(ctl, cmd, arg, &chkname) < 0)
         return -1;
 
     if (!(*chk = virDomainCheckpointLookupByName(dom, chkname, 0)))

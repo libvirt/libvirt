@@ -130,10 +130,10 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
     bool wrap = vshCommandOptBool(cmd, "wrap");
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0 ||
+    if (vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptString(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
+        vshCommandOptString(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptString(ctl, cmd, "machine", &machine) < 0 ||
         vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
         return false;
 
@@ -605,7 +605,7 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(xmlXPathContext) ctxt = NULL;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+    if (vshCommandOptString(ctl, cmd, "type", &type) < 0)
         return false;
 
     if ((caps = virConnectGetDomainCapabilities(priv->conn, NULL, NULL, NULL,
@@ -977,7 +977,7 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     long long duration;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
+    if (vshCommandOptString(ctl, cmd, "target", &target) < 0)
         return false;
 
     if (vshCommandOptLongLong(ctl, cmd, "duration", &duration) < 0)
@@ -1189,7 +1189,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "validate"))
         flags |= VIR_CONNECT_COMPARE_CPU_VALIDATE_XML;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (!(cpus = vshExtractCPUDefXMLs(ctl, from)))
@@ -1258,7 +1258,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "migratable"))
         flags |= VIR_CONNECT_BASELINE_CPU_MIGRATABLE;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (!(list = vshExtractCPUDefXMLs(ctl, from)))
@@ -1300,7 +1300,7 @@ cmdCPUModelNames(vshControl *ctl, const vshCmd *cmd)
     const char *arch = NULL;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0)
+    if (vshCommandOptString(ctl, cmd, "arch", &arch) < 0)
         return false;
 
     nmodels = virConnectGetCPUModelNames(priv->conn, arch, &models, 0);
@@ -1598,11 +1598,11 @@ cmdHypervisorCPUCompare(vshControl *ctl,
     if (vshCommandOptBool(cmd, "validate"))
         flags |= VIR_CONNECT_COMPARE_CPU_VALIDATE_XML;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0 ||
+        vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptString(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptString(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptString(ctl, cmd, "machine", &machine) < 0)
         return false;
 
     if (!(cpus = vshExtractCPUDefXMLs(ctl, from)))
@@ -1718,12 +1718,12 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
     if (vshCommandOptBool(cmd, "migratable"))
         flags |= VIR_CONNECT_BASELINE_CPU_MIGRATABLE;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "model", &model) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0 ||
+        vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptString(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptString(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptString(ctl, cmd, "machine", &machine) < 0 ||
+        vshCommandOptString(ctl, cmd, "model", &model) < 0)
         return false;
 
     VSH_ALTERNATIVE_OPTIONS_EXPR("file", from, "model", model);

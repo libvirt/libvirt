@@ -182,7 +182,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "xmlfile", &from) < 0)
         return false;
     if (!from) {
         buffer = g_strdup("<domainsnapshot/>");
@@ -401,8 +401,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "description", &desc) < 0)
+    if (vshCommandOptString(ctl, cmd, "name", &name) < 0 ||
+        vshCommandOptString(ctl, cmd, "description", &desc) < 0)
         return false;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
@@ -410,7 +410,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     virBufferEscapeString(&buf, "<name>%s</name>\n", name);
     virBufferEscapeString(&buf, "<description>%s</description>\n", desc);
 
-    if (vshCommandOptStringReq(ctl, cmd, "memspec", &memspec) < 0)
+    if (vshCommandOptString(ctl, cmd, "memspec", &memspec) < 0)
         return false;
 
     if (memspec && virshParseSnapshotMemspec(ctl, &buf, memspec) < 0)
@@ -451,7 +451,7 @@ virshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
     bool current = vshCommandOptBool(cmd, "current");
     const char *snapname = NULL;
 
-    if (vshCommandOptStringReq(ctl, cmd, arg, &snapname) < 0)
+    if (vshCommandOptString(ctl, cmd, arg, &snapname) < 0)
         return -1;
 
     if (exclusive && current && snapname) {
@@ -629,7 +629,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, &domname)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "snapshotname", &snapshotname) < 0)
+    if (vshCommandOptString(ctl, cmd, "snapshotname", &snapshotname) < 0)
         goto cleanup;
 
     if (snapshotname) {
@@ -1616,7 +1616,7 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
-    if (vshCommandOptStringReq(ctl, cmd, "snapshotname", &name) < 0)
+    if (vshCommandOptString(ctl, cmd, "snapshotname", &name) < 0)
         return false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))

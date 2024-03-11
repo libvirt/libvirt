@@ -265,8 +265,8 @@ int vshCommandOptULWrap(vshControl *ctl, const vshCmd *cmd,
 int vshCommandOptStringQuiet(vshControl *ctl, const vshCmd *cmd,
                              const char *name, const char **value)
     ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;
-int vshCommandOptStringReq(vshControl *ctl, const vshCmd *cmd,
-                           const char *name, const char **value)
+int vshCommandOptString(vshControl *ctl, const vshCmd *cmd,
+                        const char *name, const char **value)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;
 int vshCommandOptLongLong(vshControl *ctl, const vshCmd *cmd,

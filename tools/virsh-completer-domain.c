@@ -381,7 +381,7 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
         return NULL;
 
-    if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
+    if (vshCommandOptString(ctl, cmd, "interface", &iface) < 0)
         return NULL;
 
     /* normalize the mac addr */

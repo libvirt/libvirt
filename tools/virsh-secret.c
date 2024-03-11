@@ -41,7 +41,7 @@ virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     const char *optname = "secret";
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_DEBUG,
@@ -86,7 +86,7 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "validate"))
@@ -227,10 +227,10 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     if (!(secret = virshCommandOptSecret(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "base64", &base64) < 0)
+    if (vshCommandOptString(ctl, cmd, "base64", &base64) < 0)
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &filename) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &filename) < 0)
         return false;
 
     if (base64) {
@@ -763,7 +763,7 @@ cmdSecretEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
+    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (!eventName) {
         vshError(ctl, "%s", _("either --list or --event <type> is required"));

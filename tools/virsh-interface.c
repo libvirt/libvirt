@@ -58,7 +58,7 @@ virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     if (!optname)
        optname = "interface";
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
@@ -515,7 +515,7 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "validate"))
@@ -770,7 +770,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Name for new bridge device */
-    if (vshCommandOptStringReq(ctl, cmd, "bridge", &br_name) < 0)
+    if (vshCommandOptString(ctl, cmd, "bridge", &br_name) < 0)
         goto cleanup;
 
     /* make sure "new" device doesn't already exist */

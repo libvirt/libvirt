@@ -1036,7 +1036,7 @@ vshCommandOptStringQuiet(vshControl *ctl G_GNUC_UNUSED, const vshCmd *cmd,
 }
 
 /**
- * vshCommandOptStringReq:
+ * vshCommandOptString:
  * @ctl virtshell control structure
  * @cmd command structure
  * @name option name
@@ -1049,10 +1049,10 @@ vshCommandOptStringQuiet(vshControl *ctl G_GNUC_UNUSED, const vshCmd *cmd,
  * returned and error message printed.
  */
 int
-vshCommandOptStringReq(vshControl *ctl,
-                       const vshCmd *cmd,
-                       const char *name,
-                       const char **value)
+vshCommandOptString(vshControl *ctl,
+                    const vshCmd *cmd,
+                    const char *name,
+                    const char **value)
 {
     vshCmdOpt *arg;
     int ret;

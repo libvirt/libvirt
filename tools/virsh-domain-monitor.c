@@ -765,7 +765,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     int ninterfaces;
     unsigned int flags = 0;
 
-    if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
+    if (vshCommandOptString(ctl, cmd, "interface", &iface) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "config"))
@@ -934,7 +934,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
        string to denote 'all devices'. A NULL device arg would violate
        API contract.
      */
-    if (vshCommandOptStringReq(ctl, cmd, "device", &device) < 0)
+    if (vshCommandOptString(ctl, cmd, "device", &device) < 0)
         return false;
 
     if (!device)
@@ -1058,7 +1058,7 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "interface", &device) < 0)
+    if (vshCommandOptString(ctl, cmd, "interface", &device) < 0)
         return false;
 
     if (virDomainInterfaceStats(dom, device, &stats, sizeof(stats)) == -1) {
@@ -2254,9 +2254,9 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     const char *sourcestr = NULL;
     int source = VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE;
 
-    if (vshCommandOptStringReq(ctl, cmd, "interface", &ifacestr) < 0)
+    if (vshCommandOptString(ctl, cmd, "interface", &ifacestr) < 0)
         return false;
-    if (vshCommandOptStringReq(ctl, cmd, "source", &sourcestr) < 0)
+    if (vshCommandOptString(ctl, cmd, "source", &sourcestr) < 0)
         return false;
 
     if (sourcestr &&

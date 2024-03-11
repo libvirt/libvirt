@@ -68,7 +68,7 @@ cmdBackupBegin(vshControl *ctl,
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "backupxml", &backup_from) < 0)
+    if (vshCommandOptString(ctl, cmd, "backupxml", &backup_from) < 0)
         return false;
 
     if (!backup_from) {
@@ -80,7 +80,7 @@ cmdBackupBegin(vshControl *ctl,
         }
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "checkpointxml", &check_from) < 0)
+    if (vshCommandOptString(ctl, cmd, "checkpointxml", &check_from) < 0)
         return false;
     if (check_from) {
         if (virFileReadAll(check_from, VSH_MAX_XML_FILE, &check_buffer) < 0) {

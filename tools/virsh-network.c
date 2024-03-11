@@ -65,7 +65,7 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
 
     virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
@@ -103,7 +103,7 @@ virshCommandOptNetworkPort(vshControl *ctl, const vshCmd *cmd,
     const char *n = NULL;
     const char *optname = "port";
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
@@ -193,7 +193,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "validate"))
@@ -244,7 +244,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "validate"))
@@ -570,9 +570,9 @@ cmdNetworkMetadata(vshControl *ctl, const vshCmd *cmd)
     if (!(net = virshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "uri", &uri) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "key", &key) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "set", &set) < 0)
+    if (vshCommandOptString(ctl, cmd, "uri", &uri) < 0 ||
+        vshCommandOptString(ctl, cmd, "key", &key) < 0 ||
+        vshCommandOptString(ctl, cmd, "set", &set) < 0)
         return false;
 
     if ((set || edit) && !key) {
@@ -1281,7 +1281,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "command", &commandStr) < 0)
+    if (vshCommandOptString(ctl, cmd, "command", &commandStr) < 0)
         goto cleanup;
 
     if (STREQ(commandStr, "add")) {
@@ -1295,7 +1295,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "section", &sectionStr) < 0)
+    if (vshCommandOptString(ctl, cmd, "section", &sectionStr) < 0)
         goto cleanup;
 
     section = virshNetworkSectionTypeFromString(sectionStr);
@@ -1314,7 +1314,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
      * the desired xml.
      */
 
-    if (vshCommandOptStringReq(ctl, cmd, "xml", &xml) < 0)
+    if (vshCommandOptString(ctl, cmd, "xml", &xml) < 0)
         goto cleanup;
 
     if (*xml != '<') {
@@ -1631,7 +1631,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
+    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (!eventName) {
         vshError(ctl, "%s", _("either --list or --event <type> is required"));
@@ -1736,7 +1736,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshNetwork) network = NULL;
     g_autoptr(vshTable) table = NULL;
 
-    if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
+    if (vshCommandOptString(ctl, cmd, "mac", &mac) < 0)
         return false;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, &name)))
@@ -1829,7 +1829,7 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     if (network == NULL)
         goto cleanup;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         goto cleanup;
 
     if (vshCommandOptBool(cmd, "validate"))

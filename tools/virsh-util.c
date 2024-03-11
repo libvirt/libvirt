@@ -87,7 +87,7 @@ virshCommandOptDomainBy(vshControl *ctl,
     const char *n = NULL;
     const char *optname = "domain";
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",

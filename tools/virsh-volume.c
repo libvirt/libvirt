@@ -92,11 +92,11 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
 
     virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
-    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+    if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     if (pooloptname != NULL &&
-        vshCommandOptStringReq(ctl, cmd, pooloptname, &p) < 0)
+        vshCommandOptString(ctl, cmd, pooloptname, &p) < 0)
         return NULL;
 
     if (p) {
@@ -249,10 +249,10 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+    if (vshCommandOptString(ctl, cmd, "name", &name) < 0)
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "capacity", &capacityStr) < 0)
+    if (vshCommandOptString(ctl, cmd, "capacity", &capacityStr) < 0)
         return false;
 
     if (virshVolSize(capacityStr, &capacity) < 0) {
@@ -266,10 +266,9 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "format", &format) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "backing-vol", &snapshotStrVol) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "backing-vol-format",
-                               &snapshotStrFormat) < 0)
+    if (vshCommandOptString(ctl, cmd, "format", &format) < 0 ||
+        vshCommandOptString(ctl, cmd, "backing-vol", &snapshotStrVol) < 0 ||
+        vshCommandOptString(ctl, cmd, "backing-vol-format", &snapshotStrFormat) < 0)
         return false;
 
     virBufferAddLit(&buf, "<volume>\n");
@@ -404,7 +403,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
@@ -477,7 +476,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "validate"))
         flags |= VIR_STORAGE_VOL_CREATE_VALIDATE;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (!(inputvol = virshCommandOptVol(ctl, cmd, "vol", "inputpool", NULL)))
@@ -577,7 +576,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "newname", &name) < 0)
+    if (vshCommandOptString(ctl, cmd, "newname", &name) < 0)
         return false;
 
     if (!(origxml = virStorageVolGetXMLDesc(origvol, 0)))
@@ -656,7 +655,7 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &file) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &file) < 0)
         return false;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
@@ -768,7 +767,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "file", &file) < 0)
+    if (vshCommandOptString(ctl, cmd, "file", &file) < 0)
         goto cleanup;
 
     if (vshCommandOptBool(cmd, "sparse"))
@@ -908,7 +907,7 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "algorithm", &algorithm_str) < 0)
+    if (vshCommandOptString(ctl, cmd, "algorithm", &algorithm_str) < 0)
         return false;
 
     if (algorithm_str &&
@@ -1078,7 +1077,7 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "capacity", &capacityStr) < 0)
+    if (vshCommandOptString(ctl, cmd, "capacity", &capacityStr) < 0)
         return false;
     virSkipSpaces(&capacityStr);
     if (*capacityStr == '-') {

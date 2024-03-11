@@ -927,7 +927,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
+    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
         return false;
 
     if (!eventName && !all) {

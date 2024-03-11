@@ -227,10 +227,10 @@ virshCPUModelCompleter(vshControl *ctl,
 
     virCheckFlags(0, NULL);
 
-    if (vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+    if (vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptString(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptString(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptString(ctl, cmd, "machine", &machine) < 0)
         return NULL;
 
     if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)

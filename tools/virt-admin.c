@@ -273,7 +273,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     vshAdmControl *priv = ctl->privData;
     bool connected = priv->conn;
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+    if (vshCommandOptString(ctl, cmd, "name", &name) < 0)
         return false;
 
     if (name) {
@@ -379,7 +379,7 @@ cmdSrvThreadpoolInfo(vshControl *ctl, const vshCmd *cmd)
     virAdmServerPtr srv = NULL;
     vshAdmControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
     if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
@@ -454,7 +454,7 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
     virAdmServerPtr srv = NULL;
     vshAdmControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
 #define PARSE_CMD_TYPED_PARAM(NAME, FIELD) \
@@ -545,7 +545,7 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
     vshAdmControl *priv = ctl->privData;
     g_autoptr(vshTable) table = NULL;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
     if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
@@ -638,7 +638,7 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptULongLong(ctl, cmd, "client", &id) < 0)
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
     if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)) ||
@@ -714,7 +714,7 @@ cmdClientDisconnect(vshControl *ctl, const vshCmd *cmd)
     virAdmClientPtr client = NULL;
     vshAdmControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
     if (vshCommandOptULongLongWrap(ctl, cmd, "client", &id) < 0)
@@ -772,7 +772,7 @@ cmdSrvClientsInfo(vshControl *ctl, const vshCmd *cmd)
     virAdmServerPtr srv = NULL;
     vshAdmControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
     if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
@@ -841,7 +841,7 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL;
     vshAdmControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
 #define PARSE_CMD_TYPED_PARAM(NAME, FIELD) \
@@ -925,7 +925,7 @@ cmdSrvUpdateTlsFiles(vshControl *ctl, const vshCmd *cmd)
     virAdmServerPtr srv = NULL;
     vshAdmControl *priv = ctl->privData;
 
-    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+    if (vshCommandOptString(ctl, cmd, "server", &srvname) < 0)
         return false;
 
     if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
@@ -973,7 +973,7 @@ cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "filters")) {
         const char *filters = NULL;
-        if ((vshCommandOptStringReq(ctl, cmd, "filters", &filters) < 0 ||
+        if ((vshCommandOptString(ctl, cmd, "filters", &filters) < 0 ||
              virAdmConnectSetLoggingFilters(priv->conn, filters, 0) < 0)) {
             vshError(ctl, _("Unable to change daemon logging settings"));
             return false;
@@ -1056,7 +1056,7 @@ cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "outputs")) {
         const char *outputs = NULL;
-        if ((vshCommandOptStringReq(ctl, cmd, "outputs", &outputs) < 0 ||
+        if ((vshCommandOptString(ctl, cmd, "outputs", &outputs) < 0 ||
              virAdmConnectSetLoggingOutputs(priv->conn, outputs, 0) < 0)) {
             vshError(ctl, _("Unable to change daemon logging settings"));
             return false;
