@@ -557,6 +557,13 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg)
         return NULL;
     }
 
+    if (g_mkdir_with_parents(cfg->saveDir, 0777) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot create save directory '%1$s'"),
+                             cfg->saveDir);
+        return NULL;
+    }
+
     cmd = virCommandNew(vm->def->emulator);
     virCommandSetUmask(cmd, 0x002);
     socket_fd = chMonitorCreateSocket(mon->socketpath);

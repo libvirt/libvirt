@@ -37,6 +37,7 @@ struct _virCHDriverConfig {
 
     char *stateDir;
     char *logDir;
+    char *saveDir;
 
     int cgroupControllers;
 

@@ -178,6 +178,14 @@ static char *chConnectGetCapabilities(virConnectPtr conn)
     return xml;
 }
 
+static char *
+chDomainManagedSavePath(virCHDriver *driver, virDomainObj *vm)
+{
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
+    return g_strdup_printf("%s/%s.save", cfg->saveDir, vm->def->name);
+}
+
+
 /**
  * chDomainCreateXML:
  * @conn: pointer to connection
@@ -761,6 +769,48 @@ static int
 chDomainSave(virDomainPtr dom, const char *to)
 {
     return chDomainSaveFlags(dom, to, NULL, 0);
+}
+
+static int
+chDomainManagedSave(virDomainPtr dom, unsigned int flags)
+{
+    virCHDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    g_autofree char *to = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = virCHDomainObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainManagedSaveEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot do managed save for transient domain"));
+        goto endjob;
+    }
+
+    to = chDomainManagedSavePath(driver, vm);
+    if (chDoDomainSave(driver, vm, to, true) < 0)
+        goto endjob;
+
+    ret = 0;
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
 }
 
 static virDomainPtr chDomainLookupByID(virConnectPtr conn,
@@ -1886,6 +1936,7 @@ static virHypervisorDriver chHypervisorDriver = {
     .domainGetNumaParameters = chDomainGetNumaParameters,   /* 8.1.0 */
     .domainSave = chDomainSave,                             /* 10.2.0 */
     .domainSaveFlags = chDomainSaveFlags,                   /* 10.2.0 */
+    .domainManagedSave = chDomainManagedSave,               /* 10.2.0 */
 };
 
 static virConnectDriver chConnectDriver = {
