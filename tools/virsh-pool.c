@@ -37,21 +37,18 @@
 #define VIRSH_COMMON_OPT_POOL_BUILD \
     {.name = "build", \
      .type = VSH_OT_BOOL, \
-     .flags = 0, \
      .help = N_("build the pool as normal") \
     }
 
 #define VIRSH_COMMON_OPT_POOL_NO_OVERWRITE \
     {.name = "no-overwrite", \
      .type = VSH_OT_BOOL, \
-     .flags = 0, \
      .help = N_("do not overwrite any existing data") \
     }
 
 #define VIRSH_COMMON_OPT_POOL_OVERWRITE \
     {.name = "overwrite", \
      .type = VSH_OT_BOOL, \
-     .flags = 0, \
      .help = N_("overwrite any existing data") \
     }
 

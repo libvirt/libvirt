@@ -393,7 +393,6 @@ vshCmddefCheckInternals(vshControl *ctl,
                 opt->positional ||
                 opt->unwanted_positional ||
                 opt->completer ||
-                opt->flags ||
                 !opt->help) {
                 vshError(ctl, "parameter '%s' of command '%s' has incorrect alias option",
                          opt->name, cmd->name);

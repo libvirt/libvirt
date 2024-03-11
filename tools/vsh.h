@@ -93,13 +93,6 @@ typedef enum {
     VSH_OT_ALIAS,    /* alternate spelling for a later argument */
 } vshCmdOptType;
 
-/*
- * Command Option Flags
- */
-enum {
-    VSH_OFLAG_NONE     = 0,        /* without flags */
-};
-
 /* forward declarations */
 typedef struct _vshClientHooks vshClientHooks;
 typedef struct _vshCmd vshCmd;
@@ -138,7 +131,6 @@ struct _vshCmdOptDef {
      * 'unwanted_positional' flag. New options must not use this flag */
     bool unwanted_positional;
 
-    unsigned int flags;         /* flags */
     bool allowEmpty;            /* allow empty string */
     const char *help;           /* non-NULL help string; or for VSH_OT_ALIAS
                                  * the name of a later public option */

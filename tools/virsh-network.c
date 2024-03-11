@@ -1700,7 +1700,6 @@ static const vshCmdOptDef opts_network_dhcp_leases[] = {
     {.name = "mac",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("MAC address"),
      .completer = virshNetworkDhcpMacCompleter,
     },

@@ -2290,7 +2290,6 @@ static const vshCmdOptDef opts_blockcopy[] = {
     {.name = "format",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .flags = VSH_OFLAG_NONE,
      .completer = virshDomainStorageFileFormatCompleter,
      .help = N_("format of the destination file")
     },
@@ -5032,7 +5031,6 @@ static const vshCmdOptDef opts_schedinfo[] = {
     {.name = "set",
      .type = VSH_OT_ARGV,
      .positional = true,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("parameter=value")
     },
     {.name = NULL}
@@ -5345,7 +5343,6 @@ static const vshCmdOptDef opts_dump[] = {
     },
     {.name = "format",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_NONE,
      .unwanted_positional = true,
      .completer = virshDomainCoreDumpFormatCompleter,
      .help = N_("specify the format of memory-only dump")
@@ -11874,7 +11871,6 @@ static const vshCmdOptDef opts_domhostname[] = {
     {.name = "source",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .flags = VSH_OFLAG_NONE,
      .completer = virshDomainHostnameSourceCompleter,
      .help = N_("address source: 'lease' or 'agent'")},
     {.name = NULL}
