@@ -270,6 +270,9 @@ virCPUDefCheckFeatures(virCPUDef *cpu,
                        void *opaque,
                        char ***features);
 
+char **
+virCPUDefListExplicitFeatures(const virCPUDef *def);
+
 virCPUDef **
 virCPUDefListParse(const char **xmlCPUs,
                    unsigned int ncpus,

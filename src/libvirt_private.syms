@@ -111,6 +111,7 @@ virCPUDefFree;
 virCPUDefFreeFeatures;
 virCPUDefFreeModel;
 virCPUDefIsEqual;
+virCPUDefListExplicitFeatures;
 virCPUDefListFree;
 virCPUDefListParse;
 virCPUDefNew;

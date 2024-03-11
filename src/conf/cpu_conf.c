@@ -982,6 +982,30 @@ virCPUDefFindFeature(const virCPUDef *def,
 }
 
 
+/**
+ * virCPUDefListExplicitFeatures:
+ * @def: CPU definition
+ *
+ * Provides a list of feature names explicitly mentioned in the CPU definition
+ * regardless of the policy. The caller is responsible for freeing the list.
+ *
+ * Returns a NULL-terminated list of feature names.
+ */
+char **
+virCPUDefListExplicitFeatures(const virCPUDef *def)
+{
+    char **list;
+    size_t i;
+
+    list = g_new0(char *, def->nfeatures + 1);
+
+    for (i = 0; i < def->nfeatures; i++)
+        list[i] = g_strdup(def->features[i].name);
+
+    return list;
+}
+
+
 int
 virCPUDefFilterFeatures(virCPUDef *cpu,
                         virCPUDefFeatureFilter filter,
