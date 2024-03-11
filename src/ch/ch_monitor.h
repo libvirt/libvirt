@@ -37,6 +37,8 @@
 #define URL_VM_Suspend "vm.pause"
 #define URL_VM_RESUME "vm.resume"
 #define URL_VM_INFO "vm.info"
+#define URL_VM_SAVE "vm.snapshot"
+#define URL_VM_RESTORE "vm.restore"
 
 #define VIRCH_THREAD_NAME_LEN   16
 
@@ -110,6 +112,8 @@ int virCHMonitorShutdownVM(virCHMonitor *mon);
 int virCHMonitorRebootVM(virCHMonitor *mon);
 int virCHMonitorSuspendVM(virCHMonitor *mon);
 int virCHMonitorResumeVM(virCHMonitor *mon);
+int virCHMonitorSaveVM(virCHMonitor *mon, const char *to);
+int virCHMonitorRestoreVM(virCHMonitor *mon, const char *from);
 int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);
 
 void virCHMonitorCPUInfoFree(virCHMonitorCPUInfo *cpus);
