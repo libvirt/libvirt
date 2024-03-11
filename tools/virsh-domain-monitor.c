@@ -864,8 +864,8 @@ static const vshCmdOptDef opts_domblkstat[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "device",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_EMPTY_OK,
      .positional = true,
+     .allowEmpty = true,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },

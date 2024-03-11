@@ -422,7 +422,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .flags = VSH_OFLAG_EMPTY_OK,
+     .allowEmpty = true,
      .help = N_("source of disk device or name of network disk")
     },
     {.name = "target",
@@ -6838,7 +6838,7 @@ static const vshCmdOptDef opts_vcpupin[] = {
     {.name = "cpulist",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .flags = VSH_OFLAG_EMPTY_OK,
+     .allowEmpty = true,
      .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
@@ -7047,7 +7047,7 @@ static const vshCmdOptDef opts_emulatorpin[] = {
     {.name = "cpulist",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .flags = VSH_OFLAG_EMPTY_OK,
+     .allowEmpty = true,
      .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set, or omit option to query")
     },

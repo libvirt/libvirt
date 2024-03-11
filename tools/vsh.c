@@ -1030,7 +1030,7 @@ vshCommandOptStringQuiet(vshControl *ctl G_GNUC_UNUSED, const vshCmd *cmd,
     if ((ret = vshCommandOpt(cmd, name, &arg, true)) <= 0)
         return ret;
 
-    if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
+    if (!arg->def->allowEmpty && *arg->data == '\0')
         return -1;
     *value = arg->data;
     return 1;
@@ -1069,7 +1069,7 @@ vshCommandOptStringReq(vshControl *ctl,
     /* this should not be propagated here, just to be sure */
     if (ret == -1)
         error = N_("Mandatory option not present");
-    else if (arg && !*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
+    else if (arg && *arg->data == '\0' && !arg->def->allowEmpty)
         error = N_("Option argument is empty");
 
     if (error) {
@@ -3394,7 +3394,7 @@ const vshCmdOptDef opts_complete[] = {
     {.name = "string",
      .type = VSH_OT_ARGV,
      .positional = true,
-     .flags = VSH_OFLAG_EMPTY_OK,
+     .allowEmpty = true,
      .help = N_("partial string to autocomplete")
     },
     {.name = NULL}

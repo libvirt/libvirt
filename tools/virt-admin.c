@@ -255,7 +255,7 @@ static const vshCmdOptDef opts_connect[] = {
     {.name = "name",
      .type = VSH_OT_STRING,
      .positional = true,
-     .flags = VSH_OFLAG_EMPTY_OK,
+     .allowEmpty = true,
      .help = N_("daemon's admin server connection URI")
     },
     {.name = NULL}
@@ -961,7 +961,7 @@ static const vshCmdOptDef opts_daemon_log_filters[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .help = N_("redefine the existing set of logging filters"),
-     .flags = VSH_OFLAG_EMPTY_OK
+     .allowEmpty = true
     },
     {.name = NULL}
 };
@@ -1044,7 +1044,7 @@ static const vshCmdOptDef opts_daemon_log_outputs[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .help = N_("redefine the existing set of logging outputs"),
-     .flags = VSH_OFLAG_EMPTY_OK
+     .allowEmpty = true
     },
     {.name = NULL}
 };

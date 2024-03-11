@@ -98,7 +98,6 @@ typedef enum {
  */
 enum {
     VSH_OFLAG_NONE     = 0,        /* without flags */
-    VSH_OFLAG_EMPTY_OK = (1 << 1), /* empty string option allowed */
 };
 
 /* forward declarations */
@@ -140,6 +139,7 @@ struct _vshCmdOptDef {
     bool unwanted_positional;
 
     unsigned int flags;         /* flags */
+    bool allowEmpty;            /* allow empty string */
     const char *help;           /* non-NULL help string; or for VSH_OT_ALIAS
                                  * the name of a later public option */
     vshCompleter completer;         /* option completer */
