@@ -679,6 +679,26 @@ chDomainDestroy(virDomainPtr dom)
     return chDomainDestroyFlags(dom, 0);
 }
 
+static int
+chDomainSaveAdditionalValidation(virDomainDef *vmdef)
+{
+    /*
+    SAVE and RESTORE are functional only without any networking and
+    device passthrough configuration
+    */
+    if (vmdef->nnets > 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot save domain with network interfaces"));
+        return -1;
+    }
+    if  (vmdef->nhostdevs > 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot save domain with host devices"));
+        return -1;
+    }
+    return 0;
+}
+
 /**
  * chDoDomainSave:
  * @driver: pointer to driver structure
@@ -701,13 +721,17 @@ chDoDomainSave(virCHDriver *driver,
     g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
     virCHDomainObjPrivate *priv = vm->privateData;
     CHSaveXMLHeader hdr;
+    virDomainState domainState;
     g_autofree char *to = NULL;
     g_autofree char *xml = NULL;
     uint32_t xml_len;
     VIR_AUTOCLOSE fd = -1;
     int ret = -1;
 
-    virDomainState domainState = virDomainObjGetState(vm, NULL);
+    if (chDomainSaveAdditionalValidation(vm->def) < 0)
+        goto end;
+
+    domainState = virDomainObjGetState(vm, NULL);
     if (domainState == VIR_DOMAIN_RUNNING) {
         if (virCHMonitorSuspendVM(priv->monitor) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
