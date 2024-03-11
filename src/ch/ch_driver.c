@@ -252,6 +252,8 @@ chDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     virCHDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
+    virCHDomainObjPrivate *priv;
+    g_autofree char *managed_save_path = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -265,8 +267,34 @@ chDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
-    ret = virCHProcessStart(driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
+    if (vm->hasManagedSave) {
+        priv = vm->privateData;
+        managed_save_path = chDomainManagedSavePath(driver, vm);
+        if (virCHProcessStartRestore(driver, vm, managed_save_path) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to restore domain from managed save"));
+            goto endjob;
+        }
+        if (virCHMonitorResumeVM(priv->monitor) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to resume domain after restore from managed save"));
+            goto endjob;
+        }
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_RESTORED);
+        /* cleanup the save dir after restore */
+        if (virFileDeleteTree(managed_save_path) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to remove managed save path '%1$s'"),
+                                 managed_save_path);
+            goto endjob;
+        }
+        vm->hasManagedSave = false;
+        ret = 0;
+    } else {
+        ret = virCHProcessStart(driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
+    }
 
+ endjob:
     virDomainObjEndJob(vm);
 
  cleanup:
@@ -987,6 +1015,70 @@ chDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
+}
+
+static int
+chDomainRestoreFlags(virConnectPtr conn,
+                     const char *from,
+                     const char *dxml,
+                     unsigned int flags)
+{
+    virCHDriver *driver = conn->privateData;
+    virDomainObj *vm = NULL;
+    virCHDomainObjPrivate *priv;
+    g_autoptr(virDomainDef) def = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (dxml) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("xml modification unsupported"));
+        return -1;
+    }
+
+    if (chDomainSaveImageRead(driver, from, &def) < 0)
+        goto cleanup;
+
+    if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    if (!(vm = virDomainObjListAdd(driver->domains, &def,
+                                   driver->xmlopt,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virCHProcessStartRestore(driver, vm, from) < 0)
+        goto endjob;
+
+    priv = vm->privateData;
+    if (virCHMonitorResumeVM(priv->monitor) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to resume domain after restore"));
+        goto endjob;
+    }
+    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_RESTORED);
+    ret = 0;
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    if (vm && ret < 0)
+        virCHDomainRemoveInactive(driver, vm);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+chDomainRestore(virConnectPtr conn, const char *from)
+{
+    return chDomainRestoreFlags(conn, from, NULL, 0);
 }
 
 static virDomainPtr chDomainLookupByID(virConnectPtr conn,
@@ -2117,6 +2209,8 @@ static virHypervisorDriver chHypervisorDriver = {
     .domainManagedSaveRemove = chDomainManagedSaveRemove,   /* 10.2.0 */
     .domainManagedSaveGetXMLDesc = chDomainManagedSaveGetXMLDesc,   /* 10.2.0 */
     .domainHasManagedSaveImage = chDomainHasManagedSaveImage,   /* 10.2.0 */
+    .domainRestore = chDomainRestore,                       /* 10.2.0 */
+    .domainRestoreFlags = chDomainRestoreFlags,             /* 10.2.0 */
 };
 
 static virConnectDriver chConnectDriver = {

@@ -32,3 +32,7 @@ int virCHProcessStop(virCHDriver *driver,
 
 int virCHProcessSetupVcpu(virDomainObj *vm,
                           unsigned int vcpuid);
+
+int virCHProcessStartRestore(virCHDriver *driver,
+                         virDomainObj *vm,
+                         const char *from);
