@@ -540,12 +540,15 @@ static int
 qemuMigrationCookieAddCPU(qemuMigrationCookie *mig,
                           virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+
     if (mig->cpu)
         return 0;
 
     mig->cpu = virCPUDefCopy(vm->def->cpu);
 
-    if (qemuDomainMakeCPUMigratable(vm->def->os.arch, mig->cpu) < 0)
+    if (qemuDomainMakeCPUMigratable(vm->def->os.arch, mig->cpu,
+                                    priv->origCPU) < 0)
         return -1;
 
     mig->flags |= QEMU_MIGRATION_COOKIE_CPU;

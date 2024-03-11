@@ -66,6 +66,7 @@
 #include "backup_conf.h"
 #include "virutil.h"
 #include "virsecureerase.h"
+#include "cpu/cpu_x86.h"
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -6643,10 +6644,36 @@ qemuDomainDefCopy(virQEMUDriver *driver,
 }
 
 
+typedef struct {
+    const char * const *added;
+    GStrv keep;
+} qemuDomainDropAddedCPUFeaturesData;
+
+
+static bool
+qemuDomainDropAddedCPUFeatures(const char *name,
+                               virCPUFeaturePolicy policy G_GNUC_UNUSED,
+                               void *opaque)
+{
+    qemuDomainDropAddedCPUFeaturesData *data = opaque;
+
+    if (!g_strv_contains(data->added, name))
+        return true;
+
+    if (data->keep && g_strv_contains((const char **) data->keep, name))
+        return true;
+
+    return false;
+}
+
+
 int
 qemuDomainMakeCPUMigratable(virArch arch,
-                            virCPUDef *cpu)
+                            virCPUDef *cpu,
+                            virCPUDef *origCPU)
 {
+    qemuDomainDropAddedCPUFeaturesData data = { 0 };
+
     if (cpu->mode != VIR_CPU_MODE_CUSTOM ||
         !cpu->model ||
         !ARCH_IS_X86(arch))
@@ -6661,6 +6688,25 @@ qemuDomainMakeCPUMigratable(virArch arch,
          * will drop it from the XML before starting the domain on new QEMU.
          */
         if (virCPUDefUpdateFeature(cpu, "pconfig", VIR_CPU_FEATURE_DISABLE) < 0)
+            return -1;
+    }
+
+    if (virCPUx86GetAddedFeatures(cpu->model, &data.added) < 0)
+        return -1;
+
+    /* Drop features marked as added in a cpu model, but only
+     * when they are not mentioned in origCPU, i.e., when they were not
+     * explicitly mentioned by the user.
+     */
+    if (data.added) {
+        g_auto(GStrv) keep = NULL;
+
+        if (origCPU) {
+            keep = virCPUDefListExplicitFeatures(origCPU);
+            data.keep = keep;
+        }
+
+        if (virCPUDefFilterFeatures(cpu, qemuDomainDropAddedCPUFeatures, &data) < 0)
             return -1;
     }
 
@@ -6843,7 +6889,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
         }
 
         if (def->cpu &&
-            qemuDomainMakeCPUMigratable(def->os.arch, def->cpu) < 0)
+            qemuDomainMakeCPUMigratable(def->os.arch, def->cpu, origCPU) < 0)
             return -1;
 
         /* Old libvirt doesn't understand <audio> elements so
