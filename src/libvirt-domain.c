@@ -852,11 +852,11 @@ virDomainPMWakeup(virDomainPtr dom,
 /**
  * virDomainSave:
  * @domain: a domain object
- * @to: path for the output file
+ * @to: path for the output save file / directory
  *
- * This method will suspend a domain and save its memory contents to
- * a file on disk. After the call, if successful, the domain is not
- * listed as running anymore (this ends the life of a transient domain).
+ * This method will suspend a domain and save its memory contents to a file or
+ * direcotry (based on the vmm) on disk. After the call, if successful,the domain
+ * is not listed as running anymore (this ends the life of a transient domain).
  * Use virDomainRestore() to restore a domain after saving.
  *
  * See virDomainSaveFlags() and virDomainSaveParams() for more control.
@@ -1053,7 +1053,7 @@ virDomainSaveParams(virDomainPtr domain,
 /**
  * virDomainRestore:
  * @conn: pointer to the hypervisor connection
- * @from: path to the input file
+ * @from: path to the input save file / directory
  *
  * This method will restore a domain saved to disk by virDomainSave().
  *
