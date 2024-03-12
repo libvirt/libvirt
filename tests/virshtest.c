@@ -581,77 +581,66 @@ mymain(void)
             ret = -1; \
     } while (0);
 
-    /* It's a bit awkward listing result before argument, but that's a
-     * limitation of C99 vararg macros.  */
-# define DO_TEST(i, result, ...) \
+# define DO_TEST_FULL(testname_, filter, result, ...) \
     do { \
-        const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL }; \
+        const char *testname = testname_; \
+        const char *myargv[] = { __VA_ARGS__, NULL }; \
         const struct testInfo info = { NULL, NULL, myargv, result }; \
-        if (virTestRun("virsh echo " #i, testCompare, &info) < 0) \
+        if (virTestRun(testname, testCompare, &info) < 0) \
             ret = -1; \
     } while (0)
 
+    /* automatically numbered test invocation */
+# define DO_TEST(result, ...) \
+    DO_TEST_FULL(virTestCounterNext(), NULL, result, VIRSH_DEFAULT, __VA_ARGS__);
+
+
     /* Arg parsing quote removal tests.  */
-    DO_TEST(3, "a b\n",
-            "echo a \t b");
-    DO_TEST(4, "a \t b\n",
-            "echo \"a \t b\"");
-    DO_TEST(5, "a \t b\n",
-            "echo 'a \t b'");
-    DO_TEST(6, "a \t b\n",
-            "echo a\\ \\\t\\ b");
-    DO_TEST(9, "' \" \\;echo\ta\n",
-            "echo", "'", "\"", "\\;echo\ta");
-    DO_TEST(10, "' \" ;echo a\n",
-            "echo \\' \\\" \\;echo\ta");
-    DO_TEST(11, "' \" \\\na\n",
-            "echo \\' \\\" \\\\;echo\ta");
-    DO_TEST(12, "' \" \\\\\n",
-            "echo  \"'\"  '\"'  '\\'\"\\\\\"");
+    virTestCounterReset("echo-quote-removal-");
+    DO_TEST("a b\n", "echo a \t b");
+    DO_TEST("a \t b\n", "echo \"a \t b\"");
+    DO_TEST("a \t b\n", "echo 'a \t b'");
+    DO_TEST("a \t b\n", "echo a\\ \\\t\\ b");
+    DO_TEST("' \" \\;echo\ta\n", "echo", "'", "\"", "\\;echo\ta");
+    DO_TEST("' \" ;echo a\n", "echo \\' \\\" \\;echo\ta");
+    DO_TEST("' \" \\\na\n", "echo \\' \\\" \\\\;echo\ta");
+    DO_TEST("' \" \\\\\n", "echo  \"'\"  '\"'  '\\'\"\\\\\"");
 
     /* Tests of echo flags.  */
     DO_TEST_SCRIPT("echo-escaping", NULL, VIRSH_DEFAULT);
-    DO_TEST(13, "a A 0 + * ; . ' \" / ? =   \n < > &\n",
-            "echo", "a", "A", "0", "+", "*", ";", ".", "'", "\"", "/", "?",
-            "=", " ", "\n", "<", ">", "&");
-    DO_TEST(14, "a A 0 + '*' ';' . ''\\''' '\"' / '?' = ' ' '\n' '<' '>' '&'\n",
-            "echo", "--shell", "a", "A", "0", "+", "*", ";", ".", "'", "\"",
-            "/", "?", "=", " ", "\n", "<", ">", "&");
-    DO_TEST(15, "a A 0 + * ; . &apos; &quot; / ? =   \n &lt; &gt; &amp;\n",
-            "echo", "--xml", "a", "A", "0", "+", "*", ";", ".", "'", "\"",
-            "/", "?", "=", " ", "\n", "<", ">", "&");
+
+    virTestCounterReset("echo-escaping-");
+    DO_TEST("a A 0 + * ; . ' \" / ? =   \n < > &\n", "echo", "a", "A", "0", "+", "*", ";", ".", "'", "\"", "/", "?", "=", " ", "\n", "<", ">", "&");
+    DO_TEST("a A 0 + '*' ';' . ''\\''' '\"' / '?' = ' ' '\n' '<' '>' '&'\n", "echo", "--shell", "a", "A", "0", "+", "*", ";", ".", "'", "\"", "/", "?", "=", " ", "\n", "<", ">", "&");
+    DO_TEST("a A 0 + * ; . &apos; &quot; / ? =   \n &lt; &gt; &amp;\n", "echo", "--xml", "a", "A", "0", "+", "*", ";", ".", "'", "\"", "/", "?", "=", " ", "\n", "<", ">", "&");
 
     /* Tests of -- handling.  */
-    DO_TEST(25, "a\n",
-            "--", "echo", "--shell", "a");
-    DO_TEST(26, "a\n",
-            "--", "echo", "a", "--shell");
-    DO_TEST(27, "a --shell\n",
-            "--", "echo", "--", "a", "--shell");
-    DO_TEST(28, "-- --shell a\n",
-            "echo", "--", "--", "--shell", "a");
-    DO_TEST(29, "a\n",
-            "echo --s\\h'e'\"l\"l -- a");
-    DO_TEST(30, "--shell a\n",
-            "echo \t '-'\"-\" \t --shell \t a");
+    virTestCounterReset("dash-dash-argument-");
+    DO_TEST("a\n", "--", "echo", "--shell", "a");
+    DO_TEST("a\n", "--", "echo", "a", "--shell");
+    DO_TEST("a --shell\n", "--", "echo", "--", "a", "--shell");
+    DO_TEST("-- --shell a\n", "echo", "--", "--", "--shell", "a");
+    DO_TEST("a\n", "echo --s\\h'e'\"l\"l -- a");
+    DO_TEST("--shell a\n", "echo \t '-'\"-\" \t --shell \t a");
 
     /* Tests of alias handling.  */
     DO_TEST_SCRIPT("echo-alias", NULL, VIRSH_DEFAULT);
-    DO_TEST(33, "hello\n", "echo", "--str", "hello");
+    DO_TEST_FULL("echo-alias-argv", NULL, "hello\n", VIRSH_DEFAULT, "echo", "--str", "hello");
 
     /* Tests of multiple commands.  */
-    DO_TEST(36, "a\nb\n", " echo a; echo b;");
-    DO_TEST(37, "a\nb\n", "\necho a\n echo b\n");
-    DO_TEST(38, "a\nb\n", "ec\\\nho a\n echo \\\n b;");
-    DO_TEST(39, "a\n b\n", "\"ec\\\nho\" a\n echo \"\\\n b\";");
-    DO_TEST(40, "a\n\\\n b\n", "ec\\\nho a\n echo '\\\n b';");
-    DO_TEST(41, "a\n", "echo a # b");
-    DO_TEST(42, "a\nc\n", "echo a #b\necho c");
-    DO_TEST(43, "a\nc\n", "echo a # b\\\necho c");
-    DO_TEST(44, "a # b\n", "echo a '#' b");
-    DO_TEST(45, "a # b\n", "echo a \\# b");
-    DO_TEST(46, "a\n", "#unbalanced; 'quotes\"\necho a # b");
-    DO_TEST(47, "a\n", "\\# ignored;echo a\n'#also' ignored");
+    virTestCounterReset("multiple-commands-");
+    DO_TEST("a\nb\n", " echo a; echo b;");
+    DO_TEST("a\nb\n", "\necho a\n echo b\n");
+    DO_TEST("a\nb\n", "ec\\\nho a\n echo \\\n b;");
+    DO_TEST("a\n b\n", "\"ec\\\nho\" a\n echo \"\\\n b\";");
+    DO_TEST("a\n\\\n b\n", "ec\\\nho a\n echo '\\\n b';");
+    DO_TEST("a\n", "echo a # b");
+    DO_TEST("a\nc\n", "echo a #b\necho c");
+    DO_TEST("a\nc\n", "echo a # b\\\necho c");
+    DO_TEST("a # b\n", "echo a '#' b");
+    DO_TEST("a # b\n", "echo a \\# b");
+    DO_TEST("a\n", "#unbalanced; 'quotes\"\necho a # b");
+    DO_TEST("a\n", "\\# ignored;echo a\n'#also' ignored");
 
     /* test of splitting in vshStringToArray */
     DO_TEST_SCRIPT("echo-split", NULL, VIRSH_DEFAULT, "-q");
