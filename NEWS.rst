@@ -21,6 +21,18 @@ v10.2.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix migration from libvirt older than 9.10.0 when vmx is enabled
+
+    A domain with vmx feature enabled (which may be even done automatically
+    with ``mode='host-model'``) started by libvirt 9.9.0 or older cannot be
+    migrated to libvirt 9.10.0, 10.0.0, and 10.1.0 as the target host would
+    complain about a lot of extra ``vmx-*`` features. Migration of similar
+    domains started by the affected releases to libvirt 9.9.0 and older
+    does not work either. Since libvirt 10.2.0 migration works again with
+    libvirt 9.9.0 and older in both directions. Migration from the affected
+    releases to 10.2.0 works as well, but the other direction remains broken
+    unless the fix is backported.
+
 
 v10.1.0 (2024-03-01)
 ====================
