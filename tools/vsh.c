@@ -1390,6 +1390,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
     char *tkdata = NULL;
     vshCmd *clast = NULL;
     vshCmdOpt *first = NULL;
+    vshCmdOpt *last = NULL;
     const vshCmdDef *cmd = NULL;
 
     if (!partial) {
@@ -1397,7 +1398,6 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
     }
 
     while (1) {
-        vshCmdOpt *last = NULL;
         vshCommandToken tk;
         bool data_only = false;
         uint64_t opts_need_arg = 0;
@@ -1406,6 +1406,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
         cmd = NULL;
         first = NULL;
+        last = NULL;
 
         if (partial) {
             g_clear_pointer(partial, vshCommandFree);
@@ -1589,6 +1590,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
             }
 
             c->opts = g_steal_pointer(&first);
+            c->lastopt = last;
             c->def = cmd;
             c->next = NULL;
 
@@ -1622,6 +1624,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
         tmp = g_new0(vshCmd, 1);
         tmp->opts = first;
+        tmp->lastopt = last;
         tmp->def = cmd;
 
         *partial = tmp;
@@ -2735,27 +2738,6 @@ vshReadlineOptionsGenerator(const vshCmdDef *cmd,
 }
 
 
-static const vshCmdOptDef *
-vshReadlineCommandFindOpt(const vshCmd *partial)
-{
-    const vshCmd *tmp = partial;
-
-    while (tmp) {
-        const vshCmdOpt *opt = tmp->opts;
-
-        while (opt) {
-            if (opt->completeThis)
-                return opt->def;
-
-            opt = opt->next;
-        }
-        tmp = tmp->next;
-    }
-
-    return NULL;
-}
-
-
 static int
 vshCompleterFilter(char ***list,
                    const char *text)
@@ -2802,7 +2784,6 @@ vshReadlineParse(const char *text, int state)
     if (!state) {
         g_autoptr(vshCmd) partial = NULL;
         const vshCmdDef *cmd = NULL;
-        const vshCmdOptDef *opt = NULL;
         g_autofree char *line = g_strdup(rl_line_buffer);
 
         g_clear_pointer(&list, g_strfreev);
@@ -2828,16 +2809,36 @@ vshReadlineParse(const char *text, int state)
             cmd = NULL;
         }
 
-        opt = vshReadlineCommandFindOpt(partial);
-
         if (!cmd) {
             list = vshReadlineCommandGenerator();
-        } else if (!opt || opt->type == VSH_OT_BOOL) {
-            list = vshReadlineOptionsGenerator(cmd, partial);
-        } else if (opt && opt->completer) {
-            list = opt->completer(autoCompleteOpaque,
-                                  partial,
-                                  opt->completer_flags);
+        } else {
+            bool complete_argument = false;
+
+            /* attempt completion only when:
+                - there is an argument
+                - it has the 'data' field filled
+                - it has a completer (rules out booleans)
+            */
+            if (partial->lastopt && partial->lastopt->data && partial->lastopt->def->completer) {
+                /* Furthermore we want to do the completion only at the point of
+                 * user's cursor. This is the case if:
+                 * - value in 'data' is equal to 'text' (last component of the completed command)
+                 * - value in 'data' is a space when 'text' is empty (quirk)
+                 */
+                if (STREQ_NULLABLE(partial->lastopt->data, text))
+                    complete_argument = true;
+
+                if (STREQ_NULLABLE(partial->lastopt->data, " ") && *text == '\0')
+                    complete_argument = true;
+            }
+
+            if (complete_argument) {
+                list = partial->lastopt->def->completer(autoCompleteOpaque,
+                                                        partial,
+                                                        partial->lastopt->def->completer_flags);
+            } else {
+                list = vshReadlineOptionsGenerator(cmd, partial);
+            }
         }
 
         /* Escape completions, if needed (i.e. argument
