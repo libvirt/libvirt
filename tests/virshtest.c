@@ -108,8 +108,10 @@ static int testFilterLine(char *buffer,
 }
 
 static int
-testCompareOutputLit(const char *expectData,
-                     const char *filter, const char *const argv[])
+testCompareOutputLit(const char *expectFile,
+                     const char *expectData,
+                     const char *filter,
+                     const char *const argv[])
 {
     g_autofree char *actualData = NULL;
     const char *empty = "";
@@ -134,8 +136,14 @@ testCompareOutputLit(const char *expectData,
     if (filter && testFilterLine(actualData, filter) < 0)
         return -1;
 
-    if (virTestCompareToString(expectData, actualData) < 0) {
-        return -1;
+    if (expectData) {
+        if (virTestCompareToString(expectData, actualData) < 0)
+            return -1;
+    }
+
+    if (expectFile) {
+        if (virTestCompareToFileFull(actualData, expectFile, false) < 0)
+            return -1;
     }
 
     return 0;
@@ -151,7 +159,7 @@ static char *custom_uri;
     "--connect", \
     custom_uri
 
-static int testCompareListDefault(const void *data G_GNUC_UNUSED)
+static int testCompareListDefault(const void *data)
 {
     const char *const argv[] = { VIRSH_DEFAULT, "list", NULL };
     const char *exp = "\
@@ -159,10 +167,10 @@ static int testCompareListDefault(const void *data G_GNUC_UNUSED)
 ----------------------\n\
  1    test   running\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareListCustom(const void *data G_GNUC_UNUSED)
+static int testCompareListCustom(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "list", NULL };
     const char *exp = "\
@@ -172,10 +180,10 @@ static int testCompareListCustom(const void *data G_GNUC_UNUSED)
  2    fc4    running\n\
  3    fc5    running\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareNodeinfoDefault(const void *data G_GNUC_UNUSED)
+static int testCompareNodeinfoDefault(const void *data)
 {
     const char *const argv[] = { VIRSH_DEFAULT, "nodeinfo", NULL };
     const char *exp = "\
@@ -188,10 +196,10 @@ Thread(s) per core:  2\n\
 NUMA cell(s):        2\n\
 Memory size:         3145728 KiB\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareNodeinfoCustom(const void *data G_GNUC_UNUSED)
+static int testCompareNodeinfoCustom(const void *data)
 {
     const char *const argv[] = {
         VIRSH_CUSTOM,
@@ -208,115 +216,115 @@ Thread(s) per core:  2\n\
 NUMA cell(s):        4\n\
 Memory size:         8192000 KiB\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDominfoByID(const void *data G_GNUC_UNUSED)
+static int testCompareDominfoByID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "2", NULL };
     const char *exp = dominfo_fc4;
-    return testCompareOutputLit(exp, "\nCPU time:", argv);
+    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
 }
 
-static int testCompareDominfoByUUID(const void *data G_GNUC_UNUSED)
+static int testCompareDominfoByUUID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_FC4_UUID, NULL };
     const char *exp = dominfo_fc4;
-    return testCompareOutputLit(exp, "\nCPU time:", argv);
+    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
 }
 
-static int testCompareDominfoByName(const void *data G_GNUC_UNUSED)
+static int testCompareDominfoByName(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc4", NULL };
     const char *exp = dominfo_fc4;
-    return testCompareOutputLit(exp, "\nCPU time:", argv);
+    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
 }
 
-static int testCompareTaintedDominfoByName(const void *data G_GNUC_UNUSED)
+static int testCompareTaintedDominfoByName(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc5", NULL };
     const char *exp = dominfo_fc5;
-    return testCompareOutputLit(exp, "\nCPU time:", argv);
+    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
 }
 
-static int testCompareDomuuidByID(const void *data G_GNUC_UNUSED)
+static int testCompareDomuuidByID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "2", NULL };
     const char *exp = domuuid_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomuuidByName(const void *data G_GNUC_UNUSED)
+static int testCompareDomuuidByName(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "fc4", NULL };
     const char *exp = domuuid_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomidByName(const void *data G_GNUC_UNUSED)
+static int testCompareDomidByName(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domid", "fc4", NULL };
     const char *exp = domid_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomidByUUID(const void *data G_GNUC_UNUSED)
+static int testCompareDomidByUUID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_FC4_UUID, NULL };
     const char *exp = domid_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomnameByID(const void *data G_GNUC_UNUSED)
+static int testCompareDomnameByID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domname", "2", NULL };
     const char *exp = domname_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomnameByUUID(const void *data G_GNUC_UNUSED)
+static int testCompareDomnameByUUID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_FC4_UUID, NULL };
     const char *exp = domname_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomstateByID(const void *data G_GNUC_UNUSED)
+static int testCompareDomstateByID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstate", "2", NULL };
     const char *exp = domstate_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomstateByUUID(const void *data G_GNUC_UNUSED)
+static int testCompareDomstateByUUID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_FC4_UUID, NULL };
     const char *exp = domstate_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomstateByName(const void *data G_GNUC_UNUSED)
+static int testCompareDomstateByName(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstate", "fc4", NULL };
     const char *exp = domstate_fc4;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareDomControlInfoByName(const void *data G_GNUC_UNUSED)
+static int testCompareDomControlInfoByName(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domcontrol", "fc4", NULL };
     const char *exp = "ok\n\n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareGetBlkioParameters(const void *data G_GNUC_UNUSED)
+static int testCompareGetBlkioParameters(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "blkiotune", "fv0", NULL };
     const char *exp = get_blkio_parameters;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testCompareSetBlkioParameters(const void *data G_GNUC_UNUSED)
+static int testCompareSetBlkioParameters(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "blkiotune fv0\
                                  --weight 500\
@@ -332,10 +340,10 @@ static int testCompareSetBlkioParameters(const void *data G_GNUC_UNUSED)
                                  " SET_BLKIO_PARAMETER ";\
                                  blkiotune fv0", NULL };
     const char *exp = set_blkio_parameters;
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testIOThreadAdd(const void *data G_GNUC_UNUSED)
+static int testIOThreadAdd(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "iothreadinfo --domain fc4;\
                                  iothreadadd --domain fc4 --id 6;\
@@ -353,10 +361,10 @@ static int testIOThreadAdd(const void *data G_GNUC_UNUSED)
  4             0\n\
  6             0\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testIOThreadDel(const void *data G_GNUC_UNUSED)
+static int testIOThreadDel(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "iothreadinfo --domain fc4;\
                                  iothreaddel --domain fc4 --id 2;\
@@ -372,10 +380,10 @@ static int testIOThreadDel(const void *data G_GNUC_UNUSED)
 -----------------------------\n\
  4             0\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testIOThreadSet(const void *data G_GNUC_UNUSED)
+static int testIOThreadSet(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstats --domain fc4;\
                                  iothreadset --domain fc4\
@@ -404,10 +412,10 @@ Domain: 'fc4'\n\
   iothread.4.poll-max-ns" EQUAL "32768\n\
   iothread.4.poll-grow" EQUAL "0\n\
   iothread.4.poll-shrink" EQUAL "0\n\n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
-static int testIOThreadPin(const void *data G_GNUC_UNUSED)
+static int testIOThreadPin(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM,
                                  "iothreadadd --domain fc5 --id 2;\
@@ -425,18 +433,27 @@ static int testIOThreadPin(const void *data G_GNUC_UNUSED)
 -----------------------------\n\
  2             0\n\
 \n";
-    return testCompareOutputLit(exp, NULL, argv);
+    return testCompareOutputLit((const char *) data, exp, NULL, argv);
 }
 
 struct testInfo {
+    const char *testname; /* used to generate output filename */
+    const char *filter;
     const char *const *argv;
     const char *result;
 };
 
-static int testCompareEcho(const void *data)
+static int testCompare(const void *data)
 {
     const struct testInfo *info = data;
-    return testCompareOutputLit(info->result, NULL, info->argv);
+    g_autofree char *outfile = NULL;
+
+    if (info->testname) {
+        outfile = g_strdup_printf("%s/virshtestdata/%s.out",
+                                  abs_srcdir, info->testname);
+    }
+
+    return testCompareOutputLit(outfile, info->result, info->filter, info->argv);
 }
 
 
@@ -549,9 +566,8 @@ mymain(void)
 # define DO_TEST(i, result, ...) \
     do { \
         const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL }; \
-        const struct testInfo info = { myargv, result }; \
-        if (virTestRun("virsh echo " #i, \
-                       testCompareEcho, &info) < 0) \
+        const struct testInfo info = { NULL, NULL, myargv, result }; \
+        if (virTestRun("virsh echo " #i, testCompare, &info) < 0) \
             ret = -1; \
     } while (0)
 

@@ -1386,7 +1386,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/vir(file|event)\.c|src/libvirt-stream\.c|tests/(vir.+mock\.c|commandhelper\.c|qemusecuritymock\.c)|tools/nss/libvirt_nss_(leases|macs)\.c)|tools/virt-qemu-qmp-proxy$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  ((^tests/(nodedevmdevctl|viracpi|virhostcpu|virpcitest|virstoragetest|qemunbdkit)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)|\.bin)
+  ((^tests/(nodedevmdevctl|viracpi|virhostcpu|virpcitest|virstoragetest|qemunbdkit|virshtest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)|\.bin)
 
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^(src/(util/(vircommand|virdaemon)|lxc/lxc_controller)|tests/testutils)\.c$$)
@@ -1437,7 +1437,7 @@ exclude_file_name_regexp--sc_require_config_h_first = \
 	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers\.c$$|scripts/rpcgen/tests/test_demo\.c$$)
 
 exclude_file_name_regexp--sc_trailing_blank = \
-  /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo$$
+  /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo|tests/virshtestdata/.*$$
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(scripts/apibuild.py|tests/virt-aa-helper-test|docs/js/.*\.js)$$
@@ -1466,7 +1466,7 @@ exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
   ^src/(vbox/vbox_CAPI.*.h|esx/esx_vi.(c|h)|esx/esx_storage_backend_iscsi.c)$$
 
 exclude_file_name_regexp--sc_prohibit_empty_first_line = \
-  ^tests/vmwareverdata/fusion-5.0.3.txt|scripts/rpcgen/tests/demo\.c$$
+  ^tests/vmwareverdata/fusion-5.0.3.txt|scripts/rpcgen/tests/demo\.c|^tests/virshtestdata/.*$$
 
 exclude_file_name_regexp--sc_prohibit_useless_translation = \
   ^tests/virpolkittest.c
