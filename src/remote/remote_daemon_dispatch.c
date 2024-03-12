@@ -2108,7 +2108,7 @@ remoteDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
         STREQ(type, "Xen") ||
         STREQ(type, "LXC") ||
         STREQ(type, "VBOX") ||
-        STREQ(type, "bhyve") ||
+        STREQ(type, "BHYVE") ||
         STREQ(type, "vz") ||
         STREQ(type, "Parallels") ||
         STREQ(type, "CH")) {
