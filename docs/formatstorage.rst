@@ -700,10 +700,15 @@ host filesystem. It can contain the following child elements:
    Encryption <formatstorageencryption.html>`__ page for more information.
 ``compat``
    Specify compatibility level. So far, this is only used for ``type='qcow2'``
-   volumes. Valid values are ``0.10`` and ``1.1`` so far, specifying QEMU
-   version the images should be compatible with. If the ``feature`` element is
-   present, 1.1 is used. :since:`Since 1.1.0` If omitted, 0.10 is used.
-   :since:`Since 1.1.2`
+   volumes. Valid values are ``0.10`` (QCOW2 v2) and ``1.1`` (QCOW2 v3) so far.
+   The values were meant to specify QEMU version the images should be compatible
+   with.
+
+   The default, if the ``feature`` element is present is ``1.1``. :since:`Since 1.1.0`
+   If ``feature`` is not present, ``0.10`` was used :since:`Since 1.1.2` and
+   :since:`Since 10.2.0` ``1.1`` is used as it's the default of ``qemu-img``.
+
+   Any tool depending on a specific version should specify this field explicitly.
 ``nocow``
    Turn off COW of the newly created volume. So far, this is only valid for a
    file image in btrfs file system. It will improve performance when the file
