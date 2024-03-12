@@ -585,7 +585,7 @@ mymain(void)
     do { \
         const char *testname = testname_; \
         const char *myargv[] = { __VA_ARGS__, NULL }; \
-        const struct testInfo info = { NULL, NULL, myargv, result }; \
+        const struct testInfo info = { testname, NULL, myargv, result }; \
         if (virTestRun(testname, testCompare, &info) < 0) \
             ret = -1; \
     } while (0)
