@@ -96,6 +96,7 @@ struct testInfo {
     bool expensive;
     const char *const *env; /* extra environment variables to pass */
     bool forbid_root;
+    bool need_readline;
 };
 
 static int testCompare(const void *data)
@@ -108,6 +109,11 @@ static int testCompare(const void *data)
 
     if (info->forbid_root && geteuid() == 0)
         return EXIT_AM_SKIP;
+
+# ifndef WITH_READLINE
+    if (info->need_readline)
+        return EXIT_AM_SKIP;
+# endif
 
     if (info->testname) {
         outfile = g_strdup_printf("%s/virshtestdata/%s.out",
@@ -206,6 +212,7 @@ static int
 mymain(void)
 {
     int ret = 0;
+    bool need_readline = false;
 
     custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
                                  abs_srcdir);
@@ -217,7 +224,7 @@ mymain(void)
                                                   abs_srcdir, testname); \
         const char *myargv[] = { __VA_ARGS__, NULL, NULL }; \
         const char **tmp = myargv; \
-        const struct testInfo info = { testname, testfilter, myargv, expensive, NULL, false}; \
+        const struct testInfo info = { testname, testfilter, myargv, expensive, NULL, false, need_readline}; \
         g_autofree char *scriptarg = NULL; \
         if (virFileReadAll(infile, 256 * 1024, &scriptarg) < 0) { \
             fprintf(stderr, "\nfailed to load '%s'\n", infile); \
@@ -246,7 +253,7 @@ mymain(void)
 # define DO_TEST_FULL(testname, filter, ...) \
     do { \
         const char *myargv[] = { __VA_ARGS__, NULL }; \
-        const struct testInfo info = { testname, NULL, myargv, false, NULL, false }; \
+        const struct testInfo info = { testname, NULL, myargv, false, NULL, false, need_readline }; \
         DO_TEST_INFO(&info); \
     } while (0)
 
@@ -342,6 +349,48 @@ mymain(void)
                  "checkpoint-create test --redefine checkpoint-c2.xml ;"
                  "checkpoint-info test c2");
 
+    /* completion doesn't work on non-readline builds */
+    need_readline = true;
+
+    DO_TEST_FULL("completion-command", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "ech");
+    DO_TEST_FULL("completion-command-complete", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo");
+    DO_TEST_FULL("completion-args", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo", "");
+    DO_TEST_FULL("completion-arg-partial", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo", "--xm", "--s");
+    DO_TEST_FULL("completion-arg-full-bool", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo", "--nonexistant-arg", "--xml");
+    DO_TEST_FULL("completion-arg-full-bool-next", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo", "--nonexistant-arg", "--xml", "");
+    DO_TEST_FULL("completion-arg-full-string", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo", "--nonexistant-arg", "--prefix");
+    DO_TEST_FULL("completion-arg-full-string-next", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "echo", "--nonexistant-arg", "--prefix", "");
+    DO_TEST_FULL("completion-arg-full-argv", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstats", "--domain");
+    DO_TEST_FULL("completion-arg-full-argv-next", NULL, VIRSH_DEFAULT,
+                 "complete", "--", "domstats", "--domain", "");
+    DO_TEST_FULL("completion-argv-multiple", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstats", "--domain", "fc", "--domain", "fv");
+    DO_TEST_FULL("completion-argv-multiple-next", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstats", "--domain", "fv", "--domain", "fc", "");
+    DO_TEST_FULL("completion-argv-multiple-positional", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstats", "--domain", "fc", "fv");
+    DO_TEST_FULL("completion-argv-multiple-positional-next", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstats", "--domain", "fc", "fv", "");
+    DO_TEST_FULL("completion-arg-positional-empty", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstate", "");
+    DO_TEST_FULL("completion-arg-positional-partial", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstate", "fv");
+    DO_TEST_FULL("completion-arg-positional-partial-next", NULL, VIRSH_CUSTOM,
+                 "complete", "--", "domstate", "fv", "");
+
+    DO_TEST_SCRIPT("completion", NULL, VIRSH_DEFAULT);
+
+    need_readline = false;
+
     if (virTestRun("read-big-pipe", testVirshPipe, NULL) < 0)
         ret = -1;
 
@@ -369,7 +418,7 @@ mymain(void)
         const char *uriTest = "uri; connect; uri";
         const char *myargv_noconnect[] = { abs_top_builddir "/tools/virsh", uriTest, NULL };
         const char *xdgDirBad = "XDG_CONFIG_HOME=" abs_srcdir "/virshtestdata/uriprecedence-xdg/bad/";
-        struct testInfo info = { NULL, NULL, myargv_noconnect, false, NULL, false };
+        struct testInfo info = { NULL, NULL, myargv_noconnect, false, NULL, false, false };
 
         /* test 1 - default from config */
         {

@@ -1,0 +1,16 @@
+complete -- ech
+complete -- echo
+complete -- echo ''
+complete -- echo --xm --s
+complete -- echo --nonexistant-arg --xml
+complete -- echo --nonexistant-arg --xml ''
+complete -- echo --nonexistant-arg --prefix
+complete -- echo --nonexistant-arg --prefix ''
+complete -- domstats --domain
+complete -- domstats --domain ''
+complete -- domstats --domain f
+complete -- domstats --domain fc --domain fv
+complete -- domstats --domain fv --domain fc ''
+complete -- domstats --domain fc fv
+complete -- domstate ''
+complete -- domstate fv
