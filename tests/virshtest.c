@@ -113,36 +113,37 @@ testCompareOutputLit(const char *expectFile,
                      const char *filter,
                      const char *const argv[])
 {
-    g_autofree char *actualData = NULL;
+    g_autofree char *actual = NULL;
     const char *empty = "";
     g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *errbuf = NULL;
+    int exitstatus = 0;
 
     cmd = virCommandNewArgs(argv);
 
     virCommandAddEnvString(cmd, "LANG=C");
     virCommandSetInputBuffer(cmd, empty);
-    virCommandSetOutputBuffer(cmd, &actualData);
-    virCommandSetErrorBuffer(cmd, &errbuf);
+    virCommandSetOutputBuffer(cmd, &actual);
+    virCommandSetErrorBuffer(cmd, &actual);
 
-    if (virCommandRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, &exitstatus) < 0)
         return -1;
 
-    if (STRNEQ(errbuf, "")) {
-        fprintf(stderr, "Command reported error: %s", errbuf);
-        return -1;
+    if (exitstatus != 0) {
+        g_autofree char *tmp = g_steal_pointer(&actual);
+
+        actual = g_strdup_printf("%s\n## Exit code: %d\n", tmp, exitstatus);
     }
 
-    if (filter && testFilterLine(actualData, filter) < 0)
+    if (filter && testFilterLine(actual, filter) < 0)
         return -1;
 
     if (expectData) {
-        if (virTestCompareToString(expectData, actualData) < 0)
+        if (virTestCompareToString(expectData, actual) < 0)
             return -1;
     }
 
     if (expectFile) {
-        if (virTestCompareToFileFull(actualData, expectFile, false) < 0)
+        if (virTestCompareToFileFull(actual, expectFile, false) < 0)
             return -1;
     }
 
