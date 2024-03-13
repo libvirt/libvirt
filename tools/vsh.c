@@ -334,7 +334,8 @@ vshCmddefCheckInternals(vshControl *ctl,
             case VSH_OT_ARGV:
                 if (brokenPositionals == 0 ||
                     brokenPositionals == opt->type) {
-                    if (!(opt->flags & VSH_OFLAG_REQ_OPT) && !opt->positional)
+                    if (!(opt->flags & VSH_OFLAG_REQ_OPT) &&
+                        !(opt->positional || opt->unwanted_positional))
                         virBufferStrcat(&posbuf, opt->name, ", ", NULL);
                 }
                 break;
@@ -363,6 +364,12 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
         }
 
+        if (opt->unwanted_positional && opt->positional) {
+            vshError(ctl, "unwanted_positional flag of argument '%s' of command '%s' must not be used together with positional",
+                     opt->name, cmd->name);
+            return -1;
+        }
+
         switch (opt->type) {
         case VSH_OT_NONE:
             vshError(ctl, "invalid type 'NONE' of option '%s' of command '%s'",
@@ -376,7 +383,7 @@ vshCmddefCheckInternals(vshControl *ctl,
                 return -1;
             }
 
-            if (opt->positional) {
+            if (opt->positional || opt->unwanted_positional) {
                 vshError(ctl, "boolean parameter '%s' of command '%s' must not be positional",
                          opt->name, cmd->name);
                 return -1;
@@ -397,6 +404,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 
             if (opt->required ||
                 opt->positional ||
+                opt->unwanted_positional ||
                 opt->completer ||
                 opt->flags ||
                 !opt->help) {

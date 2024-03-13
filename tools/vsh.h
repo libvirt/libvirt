@@ -133,6 +133,13 @@ struct _vshCmdOptDef {
     vshCmdOptType type;         /* option type */
     bool required;              /* option is required */
     bool positional;            /* option is a positional option (not requiring '--optionname') */
+
+    /* Historically the command parser in virsh allowed many optional arguments
+     * which were documented as non-positional to be filled positionally. To
+     * preserve this functionality those need to be annotated with the
+     * 'unwanted_positional' flag. New options must not use this flag */
+    bool unwanted_positional;
+
     unsigned int flags;         /* flags */
     const char *help;           /* non-NULL help string; or for VSH_OT_ALIAS
                                  * the name of a later public option */
