@@ -13290,6 +13290,7 @@ static const vshCmdOptDef opts_domdisplay_reload[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "type",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("graphics display type")
     },
     {.name = NULL}

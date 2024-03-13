@@ -1790,7 +1790,7 @@ domdisplay-reload
 
 ::
 
-    domdisplay-reload <domain> [[--type] <type>]
+    domdisplay-reload <domain> [--type <type>]
 
 Reload the domain's graphical display. This reloads its TLS certificates
 without restarting the domain. ``type`` can be any constant from the
