@@ -434,31 +434,38 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "targetbus",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("target bus of disk device")
     },
     {.name = "driver",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("driver of disk device")
     },
     {.name = "subdriver",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("subdriver of disk device")
     },
     {.name = "iothread",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshDomainIOThreadIdCompleter,
      .help = N_("IOThread to be used by supported device")
     },
     {.name = "cache",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("cache mode of disk device")
     },
     {.name = "io",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("io policy of disk device")
     },
     {.name = "type",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("target device type")
     },
     {.name = "shareable",
@@ -467,24 +474,29 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("mode of device reading and writing")
     },
     {.name = "sourcetype",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("type of source (block|file|network)")
     },
     {.name = "serial",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("serial of disk device")
     },
     {.name = "wwn",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("wwn of disk device")
     },
     {.name = "alias",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("custom alias name of disk device")
     },
@@ -494,6 +506,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "address",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("address of disk device")
     },
@@ -507,19 +520,23 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "source-protocol",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("protocol used by disk device source")
     },
     {.name = "source-host-name",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("host name for source of disk device")
     },
     {.name = "source-host-transport",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("host transport for source of disk device")
     },
     {.name = "source-host-socket",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("host socket for source of disk device")
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
