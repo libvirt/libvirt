@@ -76,80 +76,99 @@
     }, \
     {.name = "source-host", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .completer = virshCompleteEmpty, \
      .help = N_("source-host for underlying storage") \
     }, \
     {.name = "source-path", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("source path for underlying storage") \
     }, \
     {.name = "source-dev", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("source device for underlying storage") \
     }, \
     {.name = "source-name", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("source name for underlying storage") \
     }, \
     {.name = "target", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("target for underlying storage") \
     }, \
     {.name = "source-format", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("format for underlying storage") \
     }, \
     {.name = "auth-type", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("auth type to be used for underlying storage") \
     }, \
     {.name = "auth-username", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .completer = virshCompleteEmpty, \
      .help = N_("auth username to be used for underlying storage") \
     }, \
     {.name = "secret-usage", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("auth secret usage to be used for underlying storage") \
     }, \
     {.name = "secret-uuid", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("auth secret UUID to be used for underlying storage") \
     }, \
     {.name = "adapter-name", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter name to be used for underlying storage") \
     }, \
     {.name = "adapter-wwnn", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter wwnn to be used for underlying storage") \
     }, \
     {.name = "adapter-wwpn", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter wwpn to be used for underlying storage") \
     }, \
     {.name = "adapter-parent", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter parent scsi_hostN to be used for underlying vHBA storage") \
     }, \
     {.name = "adapter-parent-wwnn", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter parent scsi_hostN wwnn to be used for underlying vHBA storage") \
     }, \
     {.name = "adapter-parent-wwpn", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter parent scsi_hostN wwpn to be used for underlying vHBA storage") \
     }, \
     {.name = "adapter-parent-fabric-wwn", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("adapter parent scsi_hostN fabric_wwn to be used for underlying vHBA storage") \
     }, \
     {.name = "source-protocol-ver", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .help = N_("nfsvers value for NFS pool mount option") \
     }, \
     {.name = "source-initiator", \
      .type = VSH_OT_STRING, \
+     .unwanted_positional = true, \
      .completer = virshCompleteEmpty, \
      .help = N_("initiator iqn for underlying storage") \
     }
