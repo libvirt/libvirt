@@ -24,25 +24,21 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 
-#include "virusb.h"
+#include "virmock.h"
 
 #define USB_SYSFS "/sys/bus/usb"
 #define FAKE_USB_SYSFS "virusbtestdata/sys_bus_usb"
 
-static int (*realopen)(const char *pathname, int flags, ...);
-static DIR *(*realopendir)(const char *name);
+static int (*real_open)(const char *pathname, int flags, ...);
+static DIR *(*real_opendir)(const char *name);
 
 static void init_syms(void)
 {
-    if (realopen)
+    if (real_open)
         return;
 
-    realopen = dlsym(RTLD_NEXT, "open");
-    realopendir = dlsym(RTLD_NEXT, "opendir");
-    if (!realopen || !realopendir) {
-        fprintf(stderr, "Error getting symbols");
-        abort();
-    }
+    VIR_MOCK_REAL_INIT(open);
+    VIR_MOCK_REAL_INIT(opendir);
 }
 
 static char *get_fake_path(const char *real_path)
@@ -66,7 +62,7 @@ DIR *opendir(const char *name)
 
     path = get_fake_path(name);
 
-    return realopendir(path);
+    return real_opendir(path);
 }
 
 int open(const char *pathname, int flags, ...)
@@ -91,6 +87,6 @@ int open(const char *pathname, int flags, ...)
         va_end(ap);
     }
 
-    ret = realopen(path, flags, mode);
+    ret = real_open(path, flags, mode);
     return ret;
 }
