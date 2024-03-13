@@ -5000,6 +5000,7 @@ static const vshCmdOptDef opts_schedinfo[] = {
     VIRSH_COMMON_OPT_LIVE(N_("get/set value from running domain")),
     {.name = "set",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .flags = VSH_OFLAG_NONE,
      .help = N_("parameter=value")
     },
@@ -8188,6 +8189,7 @@ static const vshCmdOptDef opts_desc[] = {
     },
     {.name = "new-desc",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .help = N_("message")
     },
     {.name = NULL}
@@ -8493,6 +8495,7 @@ static const vshCmdOptDef opts_send_key[] = {
     {.name = "keycode",
      .type = VSH_OT_ARGV,
      .required = true,
+     .positional = true,
      .completer = virshKeycodeNameCompleter,
      .help = N_("the key code")
     },
@@ -9600,6 +9603,7 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .required = true,
      .help = N_("command")
     },
@@ -9996,6 +10000,7 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
     },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .required = true,
      .help = N_("command")
     },
@@ -10092,6 +10097,7 @@ static const vshCmdOptDef opts_lxc_enter_namespace[] = {
     },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .required = true,
      .help = N_("command to run")
     },
@@ -12795,6 +12801,7 @@ static const vshCmdOptDef opts_domfsfreeze[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "mountpoint",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .completer = virshDomainFSMountpointsCompleter,
      .help = N_("mountpoint path to be frozen")
     },
@@ -12835,6 +12842,7 @@ static const vshCmdOptDef opts_domfsthaw[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "mountpoint",
      .type = VSH_OT_ARGV,
+     .positional = true,
      .completer = virshDomainFSMountpointsCompleter,
      .help = N_("mountpoint path to be thawed")
     },
