@@ -206,6 +206,7 @@ static const vshCmdOptDef opts_checkpoint_create_as[] = {
     },
     {.name = "diskspec",
      .type = VSH_OT_ARGV,
+     .unwanted_positional = true,
      .help = N_("disk attributes: disk[,checkpoint=type][,bitmap=name]")
     },
     {.name = NULL}

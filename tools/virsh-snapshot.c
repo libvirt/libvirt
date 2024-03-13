@@ -361,6 +361,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     },
     {.name = "diskspec",
      .type = VSH_OT_ARGV,
+     .unwanted_positional = true,
      .help = N_("disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]")
     },
     {.name = NULL}
