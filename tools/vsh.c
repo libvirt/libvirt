@@ -714,9 +714,9 @@ vshCmddefHelp(const vshCmdDef *def)
                     }
                 } else {
                     if (opt->required) {
-                        fprintf(stdout, _(" {[--%1$s] <string>}..."), opt->name);
+                        fprintf(stdout, _(" --%1$s <string>..."), opt->name);
                     } else {
-                        fprintf(stdout, _(" [[--%1$s] <string>]..."), opt->name);
+                        fprintf(stdout, _(" [--%1$s <string>]..."), opt->name);
                     }
                 }
                 break;
@@ -765,9 +765,9 @@ vshCmddefHelp(const vshCmdDef *def)
 
             case VSH_OT_ARGV:
                 if (opt->positional) {
-                    optstr = g_strdup_printf("<%s>", opt->name);
+                    optstr = g_strdup_printf(_("[--%1$s] <string>..."), opt->name);
                 } else {
-                    optstr = g_strdup_printf(_("[--%1$s] <string>"), opt->name);
+                    optstr = g_strdup_printf(_("--%1$s <string>..."), opt->name);
                 }
                 break;
 
