@@ -30,6 +30,9 @@
 # include "vircgroupv2devices.h"
 
 static int (*real_open)(const char *path, int flags, ...);
+# if WITH___OPEN_2
+static int (*real___open_2)(const char *path, int flags);
+# endif
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
 static int (*real_mkdir)(const char *path, mode_t mode);
@@ -302,6 +305,9 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
+# if WITH___OPEN_2
+    VIR_MOCK_REAL_INIT(__open_2);
+# endif
 }
 
 
@@ -588,6 +594,42 @@ int open(const char *path, int flags, ...)
     free(newpath);
     return ret;
 }
+
+# if WITH___OPEN_2
+int
+__open_2(const char *path, int flags)
+{
+    int ret;
+    char *newpath = NULL;
+
+    init_syms();
+
+    if (STREQ(path, SYSFS_CPU_PRESENT)) {
+        init_sysfs();
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfscgroupdir,
+                     SYSFS_CPU_PRESENT_MOCKED) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+    }
+
+    if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
+        init_sysfs();
+        if (asprintf(&newpath, "%s%s",
+                     fakesysfscgroupdir,
+                     path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+    }
+
+    ret = real___open_2(newpath ? newpath : path, flags);
+
+    free(newpath);
+    return ret;
+}
+# endif
 
 bool
 virCgroupV2DevicesAvailable(virCgroup *group G_GNUC_UNUSED)

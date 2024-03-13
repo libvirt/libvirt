@@ -38,6 +38,9 @@ static const char **prefixes;
 
 /* TODO: callbacks */
 static int (*real_open)(const char *path, int flags, ...);
+# if WITH___OPEN_2
+static int (*real___open_2)(const char *path, int flags);
+# endif
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
 static int (*real_mkdir)(const char *path, mode_t mode);
@@ -54,6 +57,9 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
+# if WITH___OPEN_2
+    VIR_MOCK_REAL_INIT(__open_2);
+# endif
 # if defined(__APPLE__) && defined(__x86_64__)
     VIR_MOCK_REAL_INIT_ALIASED(opendir, "opendir$INODE64");
 # else
@@ -175,6 +181,18 @@ int open(const char *path, int flags, ...)
 
     return real_open(newpath ? newpath : path, flags, mode);
 }
+
+# if WITH___OPEN_2
+int
+__open_2(const char *path, int flags)
+{
+    g_autofree char *newpath = NULL;
+
+    PATH_OVERRIDE(newpath, path);
+
+    return real___open_2(newpath ? newpath : path, flags);
+}
+# endif
 
 DIR *opendir(const char *path)
 {

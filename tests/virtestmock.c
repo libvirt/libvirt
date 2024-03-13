@@ -29,6 +29,9 @@
 #include "virfile.h"
 
 static int (*real_open)(const char *path, int flags, ...);
+#if WITH___OPEN_2
+static int (*real___open_2)(const char *path, int flags);
+#endif
 static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
 static int (*real_connect)(int fd, const struct sockaddr *addr, socklen_t addrlen);
@@ -44,6 +47,9 @@ static void init_syms(void)
         return;
 
     VIR_MOCK_REAL_INIT(open);
+#if WITH___OPEN_2
+    VIR_MOCK_REAL_INIT(__open_2);
+#endif
     VIR_MOCK_REAL_INIT(fopen);
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT(connect);
@@ -152,6 +158,20 @@ int open(const char *path, int flags, ...)
     }
     return ret;
 }
+
+
+#if WITH___OPEN_2
+int
+__open_2(const char *path, int flags)
+{
+    init_syms();
+
+    CHECK_PATH(path);
+
+    return real___open_2(path, flags);
+}
+#endif
+
 
 FILE *fopen(const char *path, const char *mode)
 {

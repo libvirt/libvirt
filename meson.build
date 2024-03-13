@@ -604,6 +604,12 @@ stat_functions = [
 
 functions += stat_functions
 
+open_functions = [
+  '__open_2',
+]
+
+functions += open_functions
+
 foreach function : functions
   if cc.has_function(function)
     conf.set('WITH_@0@'.format(function.to_upper()), 1)
@@ -613,6 +619,13 @@ endforeach
 
 foreach function : stat_functions
   if cc.has_header_symbol('sys/stat.h', function)
+    conf.set('WITH_@0@_DECL'.format(function.to_upper()), 1)
+  endif
+endforeach
+
+
+foreach function : open_functions
+  if cc.has_header_symbol('fcntl.h', function)
     conf.set('WITH_@0@_DECL'.format(function.to_upper()), 1)
   endif
 endforeach

@@ -29,6 +29,9 @@
 # include "configmake.h"
 
 static int (*real_open)(const char *path, int flags, ...);
+# if WITH___OPEN_2
+static int (*real___open_2)(const char *path, int flags);
+# endif
 static DIR * (*real_opendir)(const char *name);
 static int (*real_access)(const char *path, int mode);
 
@@ -44,6 +47,9 @@ init_syms(void)
         return;
 
     VIR_MOCK_REAL_INIT(open);
+# if WITH___OPEN_2
+    VIR_MOCK_REAL_INIT(__open_2);
+# endif
     VIR_MOCK_REAL_INIT(opendir);
     VIR_MOCK_REAL_INIT(access);
 }
@@ -89,6 +95,26 @@ open(const char *path, int flags, ...)
     free(newpath);
     return ret;
 }
+
+# if WITH___OPEN_2
+int
+__open_2(const char *path, int flags)
+{
+    int ret;
+    char *newpath = NULL;
+
+    init_syms();
+
+    if (STRPREFIX(path, LEASEDIR) &&
+        getrealpath(&newpath, path) < 0)
+        return -1;
+
+    ret = real___open_2(newpath ? newpath : path, flags);
+
+    free(newpath);
+    return ret;
+}
+# endif
 
 DIR *
 opendir(const char *path)

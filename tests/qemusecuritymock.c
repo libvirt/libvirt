@@ -58,6 +58,9 @@
 
 static int (*real_chown)(const char *path, uid_t uid, gid_t gid);
 static int (*real_open)(const char *path, int flags, ...);
+#if WITH___OPEN_2
+static int (*real___open_2)(const char *path, int flags);
+#endif
 static int (*real_close)(int fd);
 #ifdef WITH_SELINUX
 static int (*real_setfilecon_raw)(const char *path, const char *context);
@@ -112,6 +115,9 @@ init_syms(void)
 
     VIR_MOCK_REAL_INIT(chown);
     VIR_MOCK_REAL_INIT(open);
+#if WITH___OPEN_2
+    VIR_MOCK_REAL_INIT(__open_2);
+#endif
     VIR_MOCK_REAL_INIT(close);
 #ifdef WITH_SELINUX
     VIR_MOCK_REAL_INIT(setfilecon_raw);
@@ -323,6 +329,24 @@ open(const char *path, int flags, ...)
     return ret;
 }
 
+
+#if WITH___OPEN_2
+int
+__open_2(const char *path, int flags)
+{
+    int ret;
+
+    init_syms();
+
+    if (getenv(ENVVAR)) {
+        ret = 42; /* Some dummy FD */
+    } else {
+        ret = real___open_2(path, flags);
+    }
+
+    return ret;
+}
+#endif
 
 int
 close(int fd)

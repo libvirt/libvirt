@@ -30,6 +30,9 @@
 #define FAKE_USB_SYSFS "virusbtestdata/sys_bus_usb"
 
 static int (*real_open)(const char *pathname, int flags, ...);
+#if WITH___OPEN_2
+static int (*real___open_2)(const char *path, int flags);
+#endif
 static DIR *(*real_opendir)(const char *name);
 
 static void init_syms(void)
@@ -38,6 +41,9 @@ static void init_syms(void)
         return;
 
     VIR_MOCK_REAL_INIT(open);
+#if WITH___OPEN_2
+    VIR_MOCK_REAL_INIT(__open_2);
+#endif
     VIR_MOCK_REAL_INIT(opendir);
 }
 
@@ -90,3 +96,19 @@ int open(const char *pathname, int flags, ...)
     ret = real_open(path, flags, mode);
     return ret;
 }
+
+#if WITH___OPEN_2
+int
+__open_2(const char *pathname, int flags)
+{
+    g_autofree char *path = NULL;
+
+    init_syms();
+
+    path = get_fake_path(pathname);
+    if (!path)
+        return -1;
+
+    return real_open(path, flags);
+}
+#endif
