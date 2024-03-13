@@ -725,7 +725,6 @@ vshCmddefHelp(const vshCmdDef *def)
             fprintf(stdout, "    %-15s  %s\n", optstr, _(opt->help));
         }
     }
-    fputc('\n', stdout);
 
     return true;
 }
