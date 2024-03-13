@@ -10653,26 +10653,31 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "migrateuri",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("migration URI, usually can be omitted")
     },
     {.name = "graphicsuri",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("graphics URI to be used for seamless graphics migration")
     },
     {.name = "listen-address",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("listen address that destination should bind to for incoming migration")
     },
     {.name = "dname",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("rename to new name during migration (if supported)")
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("run action specified by --timeout-* option (suspend by "
                 "default) if live migration exceeds timeout (in seconds)")
     },
@@ -10686,54 +10691,66 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "migrate-disks",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainMigrateDisksCompleter,
      .help = N_("comma separated list of disks to be migrated")
     },
     {.name = "disks-port",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("port to use by target server for incoming disks migration")
     },
     {.name = "disks-uri",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("URI to use for disks migration (overrides --disks-port)")
     },
     {.name = "comp-methods",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshDomainMigrateCompMethodsCompleter,
      .help = N_("comma separated list of compression methods to be used")
     },
     {.name = "comp-mt-level",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("compress level for multithread compression")
     },
     {.name = "comp-mt-threads",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("number of compression threads for multithread compression")
     },
     {.name = "comp-mt-dthreads",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("number of decompression threads for multithread compression")
     },
     {.name = "comp-xbzrle-cache",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("page cache size for xbzrle compression")
     },
     {.name = "auto-converge-initial",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("initial CPU throttling rate for auto-convergence")
     },
     {.name = "auto-converge-increment",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("CPU throttling rate increment for auto-convergence")
     },
     {.name = "persistent-xml",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated persistent XML for the target")
     },
@@ -10743,31 +10760,38 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "postcopy-bandwidth",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("post-copy migration bandwidth limit in MiB/s")
     },
     {.name = "parallel",
      .type = VSH_OT_BOOL,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("enable parallel migration")
     },
     {.name = "parallel-connections",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("number of connections for parallel migration")
     },
     {.name = "bandwidth",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("migration bandwidth limit in MiB/s")
     },
     {.name = "tls-destination",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("override the destination host name used for TLS verification")
     },
     {.name = "comp-zlib-level",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("compress level for zlib compression")
     },
     {.name = "comp-zstd-level",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("compress level for zstd compression")
     },
     {.name = NULL}
