@@ -4390,6 +4390,14 @@ or:
       starting the guest or hot-plugging the device and
       ``virNodeDeviceReAttach`` (or ``virsh nodedev-reattach``) after hot-unplug
       or stopping the guest.
+      :since:`Since 10.3.0` an optional ``display`` attribute may be used to
+      enable using a vgpu device as a display device for the guest. Supported
+      values are either ``on`` or ``off`` (default). There is also an optional
+      ``ramfb`` attribute with values of either ``on`` or ``off`` (default).
+      When enabled, the ``ramfb`` attribute provides a memory framebuffer device
+      to the guest. This framebuffer allows the vgpu to be used as a boot display
+      before the gpu driver is loaded within the guest. ``ramfb`` requires the
+      ``display`` attribute to be set to ``on``.
    ``scsi``
       For SCSI devices, user is responsible to make sure the device is not used
       by host. If supported by the hypervisor and OS, the optional ``sgio`` (

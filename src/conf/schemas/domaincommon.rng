@@ -6267,6 +6267,7 @@
           <ref name="pciaddress"/>
         </element>
       </element>
+      <ref name="hostdevsubsysvfiodisplay"/>
     </interleave>
   </define>
 
@@ -6386,6 +6387,19 @@
     </element>
   </define>
 
+  <define name="hostdevsubsysvfiodisplay">
+    <optional>
+      <attribute name="ramfb">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="display">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
+  </define>
+
   <define name="hostdevsubsysmdev">
     <attribute name="type">
       <value>mdev</value>
@@ -6397,16 +6411,7 @@
         <value>vfio-ap</value>
       </choice>
     </attribute>
-    <optional>
-      <attribute name="ramfb">
-        <ref name="virOnOff"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="display">
-        <ref name="virOnOff"/>
-      </attribute>
-    </optional>
+    <ref name="hostdevsubsysvfiodisplay"/>
     <element name="source">
       <ref name="mdevaddress"/>
     </element>

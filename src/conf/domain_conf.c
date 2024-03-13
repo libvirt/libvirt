@@ -6306,6 +6306,16 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                                      VIR_XML_PROP_NONE,
                                      &mdevsrc->ramfb) < 0)
             return -1;
+    } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+        if (virXMLPropTristateSwitch(node, "display",
+                                     VIR_XML_PROP_NONE,
+                                     &pcisrc->display) < 0)
+            return -1;
+
+        if (virXMLPropTristateSwitch(node, "ramfb",
+                                     VIR_XML_PROP_NONE,
+                                     &pcisrc->ramfb) < 0)
+            return -1;
     }
 
     switch (def->source.subsys.type) {
@@ -26251,6 +26261,7 @@ virDomainHostdevDefFormat(virBuffer *buf,
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     virDomainHostdevSubsysSCSI *scsisrc = &def->source.subsys.u.scsi;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &def->source.subsys.u.mdev;
+    virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIVHost *scsihostsrc = &def->source.subsys.u.scsi_host;
     const char *type;
 
@@ -26319,7 +26330,14 @@ virDomainHostdevDefFormat(virBuffer *buf,
                 virBufferAsprintf(buf, " ramfb='%s'",
                                   virTristateSwitchTypeToString(mdevsrc->ramfb));
         }
-
+        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            if (pcisrc->display != VIR_TRISTATE_SWITCH_ABSENT)
+                virBufferAsprintf(buf, " display='%s'",
+                                  virTristateSwitchTypeToString(pcisrc->display));
+            if (pcisrc->ramfb != VIR_TRISTATE_SWITCH_ABSENT)
+                virBufferAsprintf(buf, " ramfb='%s'",
+                                  virTristateSwitchTypeToString(pcisrc->ramfb));
+        }
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
