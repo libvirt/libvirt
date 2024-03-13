@@ -1204,6 +1204,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total throughput limit, as scaled integer (default bytes)")
     },
     {.name = "read_bytes_sec",
@@ -1212,6 +1213,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read throughput limit, as scaled integer (default bytes)")
     },
     {.name = "write_bytes_sec",
@@ -1220,6 +1222,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help =  N_("write throughput limit, as scaled integer (default bytes)")
     },
     {.name = "total_iops_sec",
@@ -1228,6 +1231,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-iops-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total I/O operations limit per second")
     },
     {.name = "read_iops_sec",
@@ -1236,6 +1240,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-iops-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read I/O operations limit per second")
     },
     {.name = "write_iops_sec",
@@ -1244,6 +1249,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-iops-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("write I/O operations limit per second")
     },
     {.name = "total_bytes_sec_max",
@@ -1252,6 +1258,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec-max",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total max, as scaled integer (default bytes)")
     },
     {.name = "read_bytes_sec_max",
@@ -1260,6 +1267,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec-max",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read max, as scaled integer (default bytes)")
     },
     {.name = "write_bytes_sec_max",
@@ -1268,6 +1276,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec-max",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("write max, as scaled integer (default bytes)")
     },
     {.name = "total_iops_sec_max",
@@ -1276,6 +1285,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-iops-sec-max",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("total I/O operations max")
     },
     {.name = "read_iops_sec_max",
@@ -1284,6 +1294,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-iops-sec-max",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read I/O operations max")
     },
     {.name = "write_iops_sec_max",
@@ -1292,6 +1303,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-iops-sec-max",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("write I/O operations max")
     },
     {.name = "size_iops_sec",
@@ -1300,6 +1312,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "size-iops-sec",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("I/O size in bytes")
     },
     {.name = "group_name",
@@ -1308,6 +1321,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "group-name",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("group name to share I/O quota between multiple drives")
     },
@@ -1317,6 +1331,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec-max-length",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow total max bytes")
     },
     {.name = "read_bytes_sec_max_length",
@@ -1325,6 +1340,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec-max-length",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow read max bytes")
     },
     {.name = "write_bytes_sec_max_length",
@@ -1333,6 +1349,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec-max-length",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow write max bytes")
     },
     {.name = "total_iops_sec_max_length",
@@ -1341,6 +1358,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-iops-sec-max-length",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow total I/O operations max")
     },
     {.name = "read_iops_sec_max_length",
@@ -1349,6 +1367,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-iops-sec-max-length",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow read I/O operations max")
     },
     {.name = "write_iops_sec_max_length",
@@ -1357,6 +1376,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-iops-sec-max-length",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("duration in seconds to allow write I/O operations max")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
