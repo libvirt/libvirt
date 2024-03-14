@@ -281,16 +281,8 @@ virshLookupCheckpoint(vshControl *ctl,
     if (vshCommandOptStringReq(ctl, cmd, arg, &chkname) < 0)
         return -1;
 
-    if (chkname) {
-        *chk = virDomainCheckpointLookupByName(dom, chkname, 0);
-    } else {
-        vshError(ctl, _("--%1$s is required"), arg);
+    if (!(*chk = virDomainCheckpointLookupByName(dom, chkname, 0)))
         return -1;
-    }
-    if (!*chk) {
-        vshReportError(ctl);
-        return -1;
-    }
 
     *name = virDomainCheckpointGetName(*chk);
     return 0;
@@ -309,6 +301,8 @@ static const vshCmdOptDef opts_checkpoint_edit[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
      .help = N_("checkpoint name"),
      .completer = virshCheckpointNameCompleter,
     },
@@ -420,6 +414,8 @@ static const vshCmdOptDef opts_checkpoint_info[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
      .help = N_("checkpoint name"),
      .completer = virshCheckpointNameCompleter,
     },
@@ -810,6 +806,8 @@ static const vshCmdOptDef opts_checkpoint_dumpxml[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
      .help = N_("checkpoint name"),
      .completer = virshCheckpointNameCompleter,
     },
@@ -886,6 +884,8 @@ static const vshCmdOptDef opts_checkpoint_parent[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
      .help = N_("find parent of checkpoint name"),
      .completer = virshCheckpointNameCompleter,
     },
@@ -935,6 +935,8 @@ static const vshCmdOptDef opts_checkpoint_delete[] = {
                                  VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
      .help = N_("checkpoint name"),
      .completer = virshCheckpointNameCompleter,
     },
