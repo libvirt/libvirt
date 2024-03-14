@@ -81,6 +81,7 @@ static const vshCmdOptDef opts_checkpoint_create[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "xmlfile",
      .type = VSH_OT_STRING,
+     .positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("domain checkpoint XML")
     },
