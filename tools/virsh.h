@@ -109,19 +109,6 @@
      .help = _helpstr \
     }
 
-#define VIRSH_COMMON_OPT_DOMAIN_OT_STRING(_helpstr, oflags, cflags) \
-    {.name = "domain", \
-     .type = VSH_OT_STRING, \
-     .flags = oflags, \
-     .help = _helpstr, \
-     .completer = virshDomainNameCompleter, \
-     .completer_flags = cflags, \
-    }
-
-#define VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(oflags, cflags) \
-    VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("domain name, id or uuid"), \
-                                      oflags, cflags)
-
 typedef struct _virshControl virshControl;
 
 typedef struct _virshCtrlData virshCtrlData;

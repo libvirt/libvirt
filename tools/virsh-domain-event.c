@@ -865,8 +865,11 @@ static const vshCmdInfo info_event = {
 };
 
 static const vshCmdOptDef opts_event[] = {
-    VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("filter by domain name, id or uuid"),
-                                      0, 0),
+    {.name = "domain",
+     .type = VSH_OT_STRING,
+     .help = N_("filter by domain name, id or uuid"),
+     .completer = virshDomainNameCompleter,
+    },
     {.name = "event",
      .type = VSH_OT_STRING,
      .completer = virshDomainEventNameCompleter,

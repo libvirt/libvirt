@@ -9826,8 +9826,11 @@ static const vshCmdInfo info_qemu_monitor_event = {
 };
 
 static const vshCmdOptDef opts_qemu_monitor_event[] = {
-    VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("filter by domain name, id or uuid"),
-                                      0, 0),
+    {.name = "domain",
+     .type = VSH_OT_STRING,
+     .help = N_("filter by domain name, id or uuid"),
+     .completer = virshDomainNameCompleter,
+    },
     {.name = "event",
      .type = VSH_OT_STRING,
      .help = N_("filter by event name")
@@ -10322,7 +10325,12 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .required = true,
      .help = N_("target config data type format")
     },
-    VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(VSH_OFLAG_REQ_OPT, 0),
+    {.name = "domain",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("domain name, id or uuid"),
+     .completer = virshDomainNameCompleter,
+    },
     {.name = "xml",
      .type = VSH_OT_STRING,
      .completer = virshCompletePathLocalExisting,
