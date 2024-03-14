@@ -163,7 +163,7 @@ openvzReadNetworkConf(virDomainDef *def,
 {
     int ret;
     virDomainNetDef *net = NULL;
-    char *temp = NULL;
+    g_autofree char *temp = NULL;
     char *token, *saveptr = NULL;
 
     /*parse routing network configuration*
@@ -258,12 +258,9 @@ openvzReadNetworkConf(virDomainDef *def,
         }
     }
 
-    VIR_FREE(temp);
-
     return 0;
 
  error:
-    VIR_FREE(temp);
     virDomainNetDefFree(net);
     return -1;
 }
@@ -276,7 +273,7 @@ openvzReadFSConf(virDomainDef *def,
     int ret;
     virDomainFSDef *fs = NULL;
     g_autofree char *veid_str = NULL;
-    char *temp = NULL;
+    g_autofree char *temp = NULL;
     const char *param;
     unsigned long long barrier, limit;
 
@@ -337,11 +334,8 @@ openvzReadFSConf(virDomainDef *def,
 
     VIR_APPEND_ELEMENT(def->fss, def->nfss, fs);
 
-    VIR_FREE(temp);
-
     return 0;
  error:
-    VIR_FREE(temp);
     virDomainFSDefFree(fs);
     return -1;
 }
@@ -351,7 +345,7 @@ static int
 openvzReadMemConf(virDomainDef *def, int veid)
 {
     int ret = -1;
-    char *temp = NULL;
+    g_autofree char *temp = NULL;
     unsigned long long barrier, limit;
     const char *param;
     long kb_per_pages;
@@ -411,7 +405,6 @@ openvzReadMemConf(virDomainDef *def, int veid)
 
     ret = 0;
  error:
-    VIR_FREE(temp);
     return ret;
 }
 
@@ -549,7 +542,7 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     g_autofree char *temp_file = NULL;
     int temp_fd = -1;
     FILE *fp;
-    char *line = NULL;
+    g_autofree char *line = NULL;
     size_t line_size = 0;
 
     temp_file = g_strdup_printf("%s.tmp", conf_file);
@@ -586,12 +579,9 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     if (rename(temp_file, conf_file) < 0)
         goto error;
 
-    VIR_FREE(line);
-
     return 0;
 
  error:
-    VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(temp_fd);
     if (temp_file)
@@ -602,14 +592,13 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
 int
 openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value)
 {
-    char *conf_file;
+    g_autofree char *conf_file = NULL;
     int ret;
 
     if (openvzLocateConfFile(vpsid, &conf_file, "conf") < 0)
         return -1;
 
     ret = openvzWriteConfigParam(conf_file, param, value);
-    VIR_FREE(conf_file);
     return ret;
 }
 
@@ -622,7 +611,7 @@ openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value)
 int
 openvzReadConfigParam(const char *conf_file, const char *param, char **value)
 {
-    char *line = NULL;
+    g_autofree char *line = NULL;
     size_t line_size = 0;
     FILE *fp;
     int err = 0;
@@ -652,7 +641,6 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
             /* keep going - last entry wins */
         }
     }
-    VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
 
     return err ? -1 : *value ? 1 : 0;
@@ -672,21 +660,20 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
 int
 openvzReadVPSConfigParam(int vpsid, const char *param, char **value)
 {
-    char *conf_file;
+    g_autofree char *conf_file = NULL;
     int ret;
 
     if (openvzLocateConfFile(vpsid, &conf_file, "conf") < 0)
         return -1;
 
     ret = openvzReadConfigParam(conf_file, param, value);
-    VIR_FREE(conf_file);
     return ret;
 }
 
 static int
 openvz_copyfile(char* from_path, char* to_path)
 {
-    char *line = NULL;
+    g_autofree char *line = NULL;
     size_t line_size = 0;
     FILE *fp;
     int copy_fd;
@@ -715,12 +702,9 @@ openvz_copyfile(char* from_path, char* to_path)
     if (VIR_CLOSE(copy_fd) < 0)
         goto error;
 
-    VIR_FREE(line);
-
     return 0;
 
  error:
-    VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(copy_fd);
     return -1;
@@ -734,10 +718,10 @@ openvz_copyfile(char* from_path, char* to_path)
 int
 openvzCopyDefaultConfig(int vpsid)
 {
-    char *confdir = NULL;
-    char *default_conf_file = NULL;
-    char *configfile_value = NULL;
-    char *conf_file = NULL;
+    g_autofree char *confdir = NULL;
+    g_autofree char *default_conf_file = NULL;
+    g_autofree char *configfile_value = NULL;
+    g_autofree char *conf_file = NULL;
     int ret = -1;
 
     if (openvzReadConfigParam(VZ_CONF_FILE, "CONFIGFILE", &configfile_value) < 0)
@@ -758,10 +742,6 @@ openvzCopyDefaultConfig(int vpsid)
 
     ret = 0;
  cleanup:
-    VIR_FREE(confdir);
-    VIR_FREE(default_conf_file);
-    VIR_FREE(configfile_value);
-    VIR_FREE(conf_file);
     return ret;
 }
 
@@ -771,7 +751,7 @@ openvzCopyDefaultConfig(int vpsid)
 static int
 openvzLocateConfFileDefault(int vpsid, char **conffile, const char *ext)
 {
-    char *confdir;
+    g_autofree char *confdir = NULL;
     int ret = 0;
 
     confdir = openvzLocateConfDir();
@@ -780,7 +760,6 @@ openvzLocateConfFileDefault(int vpsid, char **conffile, const char *ext)
 
     *conffile = g_strdup_printf("%s/%d.%s", confdir, vpsid, ext ? ext : "conf");
 
-    VIR_FREE(confdir);
     return ret;
 }
 
@@ -828,8 +807,8 @@ openvz_readline(int fd, char *ptr, int maxlen)
 static int
 openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 {
-    char *conf_file;
-    char *line = NULL;
+    g_autofree char *conf_file = NULL;
+    g_autofree char *line = NULL;
     size_t line_size = 0;
     char *saveptr = NULL;
     char *uuidbuf;
@@ -868,9 +847,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
     }
     retval = 0;
  cleanup:
-    VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
-    VIR_FREE(conf_file);
 
     return retval;
 }
@@ -881,7 +858,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 int
 openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
 {
-    char *conf_file;
+    g_autofree char *conf_file = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     FILE *fp = NULL;
     int ret = -1;
@@ -912,7 +889,6 @@ openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
     ret = 0;
  cleanup:
     VIR_FORCE_FCLOSE(fp);
-    VIR_FREE(conf_file);
     return ret;
 }
 
@@ -941,7 +917,7 @@ static int openvzAssignUUIDs(void)
 {
     g_autoptr(DIR) dp = NULL;
     struct dirent *dent;
-    char *conf_dir;
+    g_autofree char *conf_dir = NULL;
     int vpsid;
     char *ext;
     int ret = 0;
@@ -951,7 +927,6 @@ static int openvzAssignUUIDs(void)
         return -1;
 
     if (virDirOpenQuiet(&dp, conf_dir) < 0) {
-        VIR_FREE(conf_dir);
         return 0;
     }
 
@@ -964,7 +939,6 @@ static int openvzAssignUUIDs(void)
             openvzSetUUID(vpsid);
     }
 
-    VIR_FREE(conf_dir);
     return ret;
 }
 
