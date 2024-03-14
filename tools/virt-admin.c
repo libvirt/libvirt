@@ -425,14 +425,17 @@ static const vshCmdOptDef opts_srv_threadpool_set[] = {
     },
     {.name = "min-workers",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Change bottom limit to number of workers."),
     },
     {.name = "max-workers",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Change upper limit to number of workers."),
     },
     {.name = "priority-workers",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Change the current number of priority workers"),
     },
     {.name = NULL}
@@ -812,11 +815,13 @@ static const vshCmdOptDef opts_srv_clients_set[] = {
     },
     {.name = "max-clients",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Change the upper limit to overall number of clients "
                 "connected to the server."),
     },
     {.name = "max-unauth-clients",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Change the upper limit to number of clients waiting for "
                 "authentication to be connected to the server"),
     },
@@ -954,6 +959,7 @@ static const vshCmdInfo info_daemon_log_filters = {
 static const vshCmdOptDef opts_daemon_log_filters[] = {
     {.name = "filters",
      .type = VSH_OT_STRING,
+     .positional = true,
      .help = N_("redefine the existing set of logging filters"),
      .flags = VSH_OFLAG_EMPTY_OK
     },
@@ -1037,6 +1043,7 @@ static const vshCmdInfo info_daemon_timeout = {
 static const vshCmdOptDef opts_daemon_log_outputs[] = {
     {.name = "outputs",
      .type = VSH_OT_STRING,
+     .positional = true,
      .help = N_("redefine the existing set of logging outputs"),
      .flags = VSH_OFLAG_EMPTY_OK
     },
