@@ -49,6 +49,7 @@
 #define VIRSH_COMMON_OPT_POOL_OPTIONAL \
     {.name = "pool", \
      .type = VSH_OT_STRING, \
+     .positional = true, \
      .help = N_("pool name or uuid"), \
      .completer = virshStoragePoolNameCompleter, \
      .completer_flags = VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE, \
