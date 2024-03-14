@@ -43,17 +43,6 @@
 #define VIRSH_COMMON_OPT_NETWORK_FULL(cflags) \
     VIRSH_COMMON_OPT_NETWORK(N_("network name or uuid"), cflags)
 
-#define VIRSH_COMMON_OPT_NETWORK_OT_STRING(_helpstr, cflags) \
-    {.name = "network", \
-     .type = VSH_OT_STRING, \
-     .help = _helpstr, \
-     .completer = virshNetworkNameCompleter, \
-     .completer_flags = cflags, \
-    }
-
-#define VIRSH_COMMON_OPT_NETWORK_OT_STRING_FULL(cflags) \
-    VIRSH_COMMON_OPT_NETWORK_OT_STRING(N_("network name or uuid"), cflags)
-
 #define VIRSH_COMMON_OPT_NETWORK_PORT(cflags) \
     {.name = "port", \
      .type = VSH_OT_STRING, \
@@ -1587,7 +1576,11 @@ static const vshCmdInfo info_network_event = {
 };
 
 static const vshCmdOptDef opts_network_event[] = {
-    VIRSH_COMMON_OPT_NETWORK_OT_STRING(N_("filter by network name or uuid"), 0),
+    {.name = "network",
+     .type = VSH_OT_STRING,
+     .help = N_("filter by network name or uuid"),
+     .completer = virshNetworkNameCompleter,
+    },
     {.name = "event",
      .type = VSH_OT_STRING,
      .completer = virshNetworkEventNameCompleter,
