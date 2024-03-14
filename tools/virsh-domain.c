@@ -2939,6 +2939,7 @@ static const vshCmdOptDef opts_blockresize[] = {
     },
     {.name = "size",
      .type = VSH_OT_INT,
+     .positional = true,
      .help = N_("New size of the block device, as scaled integer (default KiB)")
     },
     {.name = "capacity",
@@ -5805,6 +5806,7 @@ static const vshCmdOptDef opts_shutdown[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .positional = true,
      .completer = virshDomainShutdownModeCompleter,
      .help = N_("shutdown mode: acpi|agent|initctl|signal|paravirt")
     },
@@ -5880,6 +5882,7 @@ static const vshCmdOptDef opts_reboot[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .positional = true,
      .completer = virshDomainShutdownModeCompleter,
      .help = N_("shutdown mode: acpi|agent|initctl|signal|paravirt")
     },
@@ -11531,6 +11534,7 @@ static const vshCmdOptDef opts_domdisplay[] = {
     },
     {.name = "type",
      .type = VSH_OT_STRING,
+     .positional = true,
      .help = N_("select particular graphical display "
                 "(e.g. \"vnc\", \"spice\", \"rdp\", \"dbus\")")
     },
@@ -12675,6 +12679,7 @@ static const vshCmdOptDef opts_change_media[] = {
     },
     {.name = "source",
      .type = VSH_OT_STRING,
+     .positional = true,
      .help = N_("source of the media")
     },
     {.name = "eject",
@@ -13199,6 +13204,7 @@ static const vshCmdOptDef opts_set_user_sshkeys[] = {
     },
     {.name = "file",
      .type = VSH_OT_STRING,
+     .positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("optional file to read keys from"),
     },

@@ -385,6 +385,7 @@ static const vshCmdOptDef opts_domblkinfo[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "device",
      .type = VSH_OT_STRING,
+     .positional = true,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },
@@ -865,6 +866,7 @@ static const vshCmdOptDef opts_domblkstat[] = {
     {.name = "device",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
+     .positional = true,
      .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },
@@ -2219,6 +2221,7 @@ static const vshCmdOptDef opts_domifaddr[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "interface",
      .type = VSH_OT_STRING,
+     .positional = true,
      .flags = VSH_OFLAG_NONE,
      .completer = virshDomainInterfaceCompleter,
      .help = N_("network interface name")},
