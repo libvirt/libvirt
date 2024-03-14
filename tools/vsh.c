@@ -332,6 +332,13 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
         }
 
+        /* Mandate no completer flags if no completer is specified */
+        if (opt->completer_flags != 0 && !opt->completer) {
+            vshError(ctl, "completer_flags of argument '%s' of command '%s' must be 0 if no completer is used",
+                     opt->name, cmd->name);
+            return -1;
+        }
+
         switch (opt->type) {
         case VSH_OT_NONE:
             vshError(ctl, "invalid type 'NONE' of option '%s' of command '%s'",
@@ -339,8 +346,14 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
 
         case VSH_OT_BOOL:
-            if (opt->completer || opt->completer_flags) {
+            if (opt->completer) {
                 vshError(ctl, "bool parameter '%s' of command '%s' has completer set",
+                         opt->name, cmd->name);
+                return -1;
+            }
+
+            if (opt->positional) {
+                vshError(ctl, "boolean parameter '%s' of command '%s' must not be positional",
                          opt->name, cmd->name);
                 return -1;
             }
@@ -358,7 +371,11 @@ vshCmddefCheckInternals(vshControl *ctl,
             g_autofree char *name = NULL;
             char *p;
 
-            if (opt->flags || !opt->help) {
+            if (opt->required ||
+                opt->positional ||
+                opt->completer ||
+                opt->flags ||
+                !opt->help) {
                 vshError(ctl, "parameter '%s' of command '%s' has incorrect alias option",
                          opt->name, cmd->name);
                 return -1;
