@@ -1635,8 +1635,11 @@ static const vshCmdInfo info_hypervisor_cpu_baseline = {
 };
 
 static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
-    VIRSH_COMMON_OPT_FILE_FULL(N_("file containing XML CPU descriptions"),
-                               false),
+    {.name = "file",
+     .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
+     .help = N_("file containing XML CPU descriptions"),
+    },
     {.name = "virttype",
      .type = VSH_OT_STRING,
      .completer = virshDomainVirtTypeCompleter,
