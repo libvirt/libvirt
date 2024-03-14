@@ -2478,6 +2478,14 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                _("Write filtering of PCI device configuration space is not supported by qemu"));
                 return -1;
             }
+
+            if (hostdev->source.subsys.u.pci.display == VIR_TRISTATE_SWITCH_ON) {
+                if (def->ngraphics == 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("graphics device is needed for attribute value 'display=on' in <hostdev>"));
+                    return -1;
+                }
+            }
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:

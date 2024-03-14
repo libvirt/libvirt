@@ -4735,10 +4735,16 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     virDomainNetTeamingInfo *teaming;
     g_autofree char *host = virPCIDeviceAddressAsString(&pcisrc->addr);
     const char *failover_pair_id = NULL;
+    const char *driver = NULL;
 
     /* caller has to assign proper passthrough driver name */
     switch (pcisrc->driver.name) {
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
+        /* ramfb support requires the nohotplug variant */
+        if (pcisrc->ramfb == VIR_TRISTATE_SWITCH_ON)
+            driver = "vfio-pci-nohotplug";
+        else
+            driver = "vfio-pci";
         break;
 
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
@@ -4762,11 +4768,13 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
         failover_pair_id = teaming->persistent;
 
     if (virJSONValueObjectAdd(&props,
-                              "s:driver", "vfio-pci",
+                              "s:driver", driver,
                               "s:host", host,
                               "s:id", dev->info->alias,
                               "p:bootindex", dev->info->effectiveBootIndex,
                               "S:failover_pair_id", failover_pair_id,
+                              "S:display", qemuOnOffAuto(pcisrc->display),
+                              "B:ramfb", pcisrc->ramfb,
                               NULL) < 0)
         return NULL;
 
