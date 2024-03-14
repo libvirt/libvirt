@@ -249,6 +249,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 {
     size_t i;
     bool seenOptionalOption = false;
+    const char *seenOptionalPositionalOption = NULL;
     g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) posbuf = VIR_BUFFER_INITIALIZER;
 
@@ -350,10 +351,21 @@ vshCmddefCheckInternals(vshControl *ctl,
             }
         }
 
-        /* require that positional non-argv options are required */
-        if (opt->positional && !opt->required && opt->type != VSH_OT_ARGV) {
-            vshError(ctl, "positional argument '%s' of command '%s' must be required",
-                     opt->name, cmd->name);
+        /* allow at most one optional positional option */
+        if (opt->positional && !opt->required) {
+            if (seenOptionalPositionalOption) {
+                vshError(ctl, "multiple optional positional arguments (%s, %s) of command '%s' are not allowed",
+                         seenOptionalPositionalOption, opt->name, cmd->name);
+                return -1;
+            }
+
+            seenOptionalPositionalOption = opt->name;
+        }
+
+        /* all optional positional arguments must be defined after the required ones */
+        if (seenOptionalPositionalOption && opt->positional && opt->required) {
+            vshError(ctl, "required positional argument '%s' declared after an optional positional argument '%s' of command '%s'",
+                     opt->name, seenOptionalPositionalOption, cmd->name);
             return -1;
         }
 
