@@ -506,11 +506,13 @@ static const vshCmdOptDef opts_network_metadata[] = {
      .help = N_("use an editor to change the metadata")
     },
     {.name = "key",
+     .unwanted_positional = true,
      .type = VSH_OT_STRING,
      .help = N_("key to be used as a namespace identifier"),
     },
     {.name = "set",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("new metadata to set"),
     },
@@ -1240,6 +1242,7 @@ static const vshCmdOptDef opts_network_update[] = {
     },
     {.name = "parent-index",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("which parent object to search through")
     },
     VIRSH_COMMON_OPT_CONFIG(N_("affect next network startup")),
@@ -1579,11 +1582,13 @@ static const vshCmdInfo info_network_event = {
 static const vshCmdOptDef opts_network_event[] = {
     {.name = "network",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("filter by network name or uuid"),
      .completer = virshNetworkNameCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshNetworkEventNameCompleter,
      .help = N_("which event type to wait for")
     },
@@ -1593,6 +1598,7 @@ static const vshCmdOptDef opts_network_event[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("timeout seconds")
     },
     {.name = "list",
@@ -1694,6 +1700,7 @@ static const vshCmdOptDef opts_network_dhcp_leases[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_ACTIVE),
     {.name = "mac",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .flags = VSH_OFLAG_NONE,
      .help = N_("MAC address"),
      .completer = virshNetworkDhcpMacCompleter,

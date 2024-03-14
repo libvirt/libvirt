@@ -1349,6 +1349,7 @@ static const vshCmdOptDef opts_domtime[] = {
     },
     {.name = "time",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("time to set")
     },
     {.name = NULL}
@@ -2231,6 +2232,7 @@ static const vshCmdOptDef opts_domifaddr[] = {
      .help = N_("always display names and MACs of interfaces")},
     {.name = "source",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .flags = VSH_OFLAG_NONE,
      .completer = virshDomainInterfaceAddrSourceCompleter,
      .help = N_("address source: 'lease', 'agent', or 'arp'")},

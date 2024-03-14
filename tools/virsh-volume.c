@@ -190,19 +190,23 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     },
     {.name = "allocation",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("initial allocation size, as scaled integer (default bytes)")
     },
     {.name = "format",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("file format type raw,bochs,qcow,qcow2,qed,vmdk")
     },
     {.name = "backing-vol",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("the backing volume if taking a snapshot")
     },
     {.name = "backing-vol-format",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("format of backing volume if taking a snapshot")
     },
     {.name = "prealloc-metadata",
@@ -432,6 +436,7 @@ static const vshCmdOptDef opts_vol_create_from[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     {.name = "inputpool",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshStoragePoolNameCompleter,
      .help = N_("pool name or uuid of the input volume's pool")
     },
@@ -613,10 +618,12 @@ static const vshCmdOptDef opts_vol_upload[] = {
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("volume offset to upload to")
     },
     {.name = "length",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("amount of data to upload")
     },
     {.name = "sparse",
@@ -721,10 +728,12 @@ static const vshCmdOptDef opts_vol_download[] = {
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("volume offset to download from")
     },
     {.name = "length",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("amount of data to download")
     },
     {.name = "sparse",
@@ -875,6 +884,7 @@ static const vshCmdOptDef opts_vol_wipe[] = {
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "algorithm",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshStorageVolWipeAlgorithmCompleter,
      .help = N_("perform selected wiping algorithm")
     },

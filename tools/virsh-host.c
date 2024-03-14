@@ -86,20 +86,24 @@ static const vshCmdInfo info_domcapabilities = {
 static const vshCmdOptDef opts_domcapabilities[] = {
     {.name = "virttype",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainVirtTypeCompleter,
      .help = N_("virtualization type (/domain/@type)"),
     },
     {.name = "emulatorbin",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("path to emulator binary (/domain/devices/emulator)"),
     },
     {.name = "arch",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshArchCompleter,
      .help = N_("domain architecture (/domain/os/type/@arch)"),
     },
     {.name = "machine",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("machine type (/domain/os/type/@machine)"),
     },
     {.name = "xpath",
@@ -156,6 +160,7 @@ static const vshCmdInfo info_freecell = {
 static const vshCmdOptDef opts_freecell[] = {
     {.name = "cellno",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .completer = virshCellnoCompleter,
      .help = N_("NUMA cell number")
     },
@@ -264,11 +269,13 @@ static const vshCmdInfo info_freepages = {
 static const vshCmdOptDef opts_freepages[] = {
     {.name = "cellno",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .completer = virshCellnoCompleter,
      .help = N_("NUMA cell number")
     },
     {.name = "pagesize",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .completer = virshAllocpagesPagesizeCompleter,
      .help = N_("page size (in kibibytes)")
     },
@@ -481,6 +488,7 @@ static const vshCmdOptDef opts_allocpages[] = {
     },
     {.name = "cellno",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .completer = virshCellnoCompleter,
      .help = N_("NUMA cell number")
     },
@@ -582,6 +590,7 @@ static const vshCmdInfo info_maxvcpus = {
 static const vshCmdOptDef opts_maxvcpus[] = {
     {.name = "type",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainVirtTypeCompleter,
      .help = N_("domain type")
     },
@@ -712,6 +721,7 @@ static const vshCmdInfo info_nodecpustats = {
 static const vshCmdOptDef opts_node_cpustats[] = {
     {.name = "cpu",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .completer = virshNodeCpuCompleter,
      .help = N_("prints specified cpu statistics only.")
     },
@@ -850,6 +860,7 @@ static const vshCmdInfo info_nodememstats = {
 static const vshCmdOptDef opts_node_memstats[] = {
     {.name = "cell",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("prints specified cell statistics only.")
     },
     {.name = NULL}
@@ -1421,16 +1432,19 @@ static const vshCmdInfo info_node_memory_tune = {
 static const vshCmdOptDef opts_node_memory_tune[] = {
     {.name = "shm-pages-to-scan",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help =  N_("number of pages to scan before the shared memory service "
                  "goes to sleep")
     },
     {.name = "shm-sleep-millisecs",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help =  N_("number of millisecs the shared memory service should "
                  "sleep before next scan")
     },
     {.name = "shm-merge-across-nodes",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help =  N_("Specifies if pages from different numa nodes can be merged")
     },
     {.name = NULL}
@@ -1535,20 +1549,24 @@ static const vshCmdOptDef opts_hypervisor_cpu_compare[] = {
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML CPU description")),
     {.name = "virttype",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainVirtTypeCompleter,
      .help = N_("virtualization type (/domain/@type)"),
     },
     {.name = "emulator",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("path to emulator binary (/domain/devices/emulator)"),
     },
     {.name = "arch",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshArchCompleter,
      .help = N_("CPU architecture (/domain/os/type/@arch)"),
     },
     {.name = "machine",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("machine type (/domain/os/type/@machine)"),
     },
     {.name = "error",
@@ -1637,25 +1655,30 @@ static const vshCmdInfo info_hypervisor_cpu_baseline = {
 static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
     {.name = "file",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("file containing XML CPU descriptions"),
     },
     {.name = "virttype",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainVirtTypeCompleter,
      .help = N_("virtualization type (/domain/@type)"),
     },
     {.name = "emulator",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("path to emulator binary (/domain/devices/emulator)"),
     },
     {.name = "arch",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshArchCompleter,
      .help = N_("CPU architecture (/domain/os/type/@arch)"),
     },
     {.name = "machine",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("machine type (/domain/os/type/@machine)"),
     },
     {.name = "features",
@@ -1668,6 +1691,7 @@ static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
     },
     {.name = "model",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCPUModelCompleter,
      .help = N_("Shortcut for calling the command with a single CPU model "
                 "and no additional features")

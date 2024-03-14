@@ -736,6 +736,7 @@ static const vshCmdOptDef opts_interface_bridge[] = {
     },
     {.name = "delay",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("number of seconds to squelch traffic on newly connected ports")
     },
     {.name = "no-start",

@@ -365,6 +365,7 @@ static const vshCmdOptDef opts_node_list_devices[] = {
     },
     {.name = "cap",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshNodeDeviceCapabilityNameCompleter,
      .help = N_("capability names, separated by comma")
     },
@@ -643,6 +644,7 @@ static const vshCmdOptDef opts_node_device_detach[] = {
     },
     {.name = "driver",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshNodeDevicePCIBackendCompleter,
      .help = N_("pci device assignment backend driver (e.g. 'vfio' or 'xen')")
     },
@@ -884,11 +886,13 @@ static const vshCmdInfo info_node_device_event = {
 static const vshCmdOptDef opts_node_device_event[] = {
     {.name = "device",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("filter by node device name"),
      .completer = virshNodeDeviceNameCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshNodeDeviceEventNameCompleter,
      .help = N_("which event type to wait for")
     },
@@ -898,6 +902,7 @@ static const vshCmdOptDef opts_node_device_event[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("timeout seconds")
     },
     {.name = "list",

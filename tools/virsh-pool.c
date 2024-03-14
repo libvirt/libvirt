@@ -1055,6 +1055,7 @@ static const vshCmdOptDef opts_pool_list[] = {
     {.name = "type",
      .type = VSH_OT_STRING,
      .completer = virshPoolTypeCompleter,
+     .unwanted_positional = true,
      .completer_flags = VIRSH_POOL_TYPE_COMPLETER_COMMA,
      .help = N_("only list pool of specified type(s) (if supported)")
     },
@@ -1382,16 +1383,19 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
     },
     {.name = "host",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("optional host to query")
     },
     {.name = "port",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("optional port to query")
     },
     {.name = "initiator",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("optional initiator IQN to use for query")
     },
@@ -1466,6 +1470,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
     },
     {.name = "srcSpec",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("optional file of source xml to query for pools")
     },
@@ -1901,11 +1906,13 @@ static const vshCmdInfo info_pool_event = {
 static const vshCmdOptDef opts_pool_event[] = {
     {.name = "pool",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshStoragePoolNameCompleter,
      .help = N_("filter by storage pool name or uuid")
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshPoolEventNameCompleter,
      .help = N_("which event type to wait for")
     },
@@ -1915,6 +1922,7 @@ static const vshCmdOptDef opts_pool_event[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("timeout seconds")
     },
     {.name = "list",

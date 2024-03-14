@@ -867,11 +867,13 @@ static const vshCmdInfo info_event = {
 static const vshCmdOptDef opts_event[] = {
     {.name = "domain",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("filter by domain name, id or uuid"),
      .completer = virshDomainNameCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainEventNameCompleter,
      .help = N_("which event type to wait for")
     },
@@ -885,6 +887,7 @@ static const vshCmdOptDef opts_event[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("timeout seconds")
     },
     {.name = "list",

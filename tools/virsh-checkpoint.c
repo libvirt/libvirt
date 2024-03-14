@@ -189,11 +189,13 @@ static const vshCmdOptDef opts_checkpoint_create_as[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "name",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("name of checkpoint")
     },
     {.name = "description",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("description of checkpoint")
     },
@@ -630,6 +632,7 @@ static const vshCmdOptDef opts_checkpoint_list[] = {
     },
     {.name = "from",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("limit list to children of given checkpoint"),
      .completer = virshCheckpointNameCompleter,
     },

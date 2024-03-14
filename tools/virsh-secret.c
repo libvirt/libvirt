@@ -201,6 +201,7 @@ static const vshCmdOptDef opts_secret_set_value[] = {
     },
     {.name = "base64",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("base64-encoded secret value")
     },
@@ -714,11 +715,13 @@ static const vshCmdInfo info_secret_event = {
 static const vshCmdOptDef opts_secret_event[] = {
     {.name = "secret",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("filter by secret name or uuid"),
      .completer = virshSecretUUIDCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshSecretEventNameCompleter,
      .help = N_("which event type to wait for")
     },
@@ -728,6 +731,7 @@ static const vshCmdOptDef opts_secret_event[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("timeout seconds")
     },
     {.name = "list",

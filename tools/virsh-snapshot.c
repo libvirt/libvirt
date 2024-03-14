@@ -314,11 +314,13 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "name",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("name of snapshot")
     },
     {.name = "description",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("description of snapshot")
     },
@@ -1379,6 +1381,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     },
     {.name = "from",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshSnapshotNameCompleter,
      .help = N_("limit list to children of given snapshot")
     },

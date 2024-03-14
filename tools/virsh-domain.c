@@ -844,34 +844,41 @@ static const vshCmdOptDef opts_attach_interface[] = {
     },
     {.name = "target",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("target network name")
     },
     {.name = "mac",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("MAC address")
     },
     {.name = "script",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("script used to bridge network interface")
     },
     {.name = "model",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("model type")
     },
     {.name = "alias",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("custom alias name of interface device")
     },
     {.name = "inbound",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("control domain's incoming traffics")
     },
     {.name = "outbound",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("control domain's outgoing traffics")
     },
@@ -889,6 +896,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
     },
     {.name = "source-mode",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainInterfaceSourceModeCompleter,
      .help = N_("mode attribute of <source/> element")
     },
@@ -1550,30 +1558,36 @@ static const vshCmdOptDef opts_blkiotune[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "weight",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("IO Weight")
     },
     {.name = "device-weights",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("per-device IO Weights, in the form of /path/to/device,weight,...")
     },
     {.name = "device-read-iops-sec",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("per-device read I/O limit per second, in the form of /path/to/device,read_iops_sec,...")
     },
     {.name = "device-write-iops-sec",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("per-device write I/O limit per second, in the form of /path/to/device,write_iops_sec,...")
     },
     {.name = "device-read-bytes-sec",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("per-device bytes read per second, in the form of /path/to/device,read_bytes_sec,...")
     },
     {.name = "device-write-bytes-sec",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("per-device bytes wrote per second, in the form of /path/to/device,write_bytes_sec,...")
     },
@@ -2031,10 +2045,12 @@ static const vshCmdOptDef opts_blockcommit[] = {
     },
     {.name = "bandwidth",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "base",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainBlockjobBaseTopCompleter,
      .help = N_("path of base file to commit into (default bottom of chain)")
     },
@@ -2044,6 +2060,7 @@ static const vshCmdOptDef opts_blockcommit[] = {
     },
     {.name = "top",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainBlockjobBaseTopCompleter,
      .help = N_("path of top file to commit from (default top of chain)")
     },
@@ -2066,6 +2083,7 @@ static const vshCmdOptDef opts_blockcommit[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("implies --wait, abort if copy exceeds timeout (in seconds)")
     },
     {.name = "pivot",
@@ -2251,10 +2269,12 @@ static const vshCmdOptDef opts_blockcopy[] = {
     },
     {.name = "dest",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("path of the copy to create")
     },
     {.name = "bandwidth",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "shallow",
@@ -2283,6 +2303,7 @@ static const vshCmdOptDef opts_blockcopy[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("implies --wait, abort if copy exceeds timeout (in seconds)")
     },
     {.name = "pivot",
@@ -2299,21 +2320,25 @@ static const vshCmdOptDef opts_blockcopy[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing XML description of the copy destination")
     },
     {.name = "format",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .flags = VSH_OFLAG_NONE,
      .completer = virshDomainStorageFileFormatCompleter,
      .help = N_("format of the destination file")
     },
     {.name = "granularity",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("power-of-two granularity to use during the copy")
     },
     {.name = "buf-size",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("maximum amount of in-flight data during the copy")
     },
     {.name = "bytes",
@@ -2608,6 +2633,7 @@ static const vshCmdOptDef opts_blockjob[] = {
     },
     {.name = "bandwidth",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("set the bandwidth limit in MiB/s")
     },
     {.name = NULL}
@@ -2796,10 +2822,12 @@ static const vshCmdOptDef opts_blockpull[] = {
     },
     {.name = "bandwidth",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("bandwidth limit in MiB/s")
     },
     {.name = "base",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainBlockjobBaseTopCompleter,
      .help = N_("path of backing file in chain for a partial pull")
     },
@@ -2813,6 +2841,7 @@ static const vshCmdOptDef opts_blockpull[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("with --wait, abort if pull exceeds timeout (in seconds)")
     },
     {.name = "async",
@@ -3000,6 +3029,7 @@ static const vshCmdOptDef opts_console[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "devname", /* sc_prohibit_devname */
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainConsoleCompleter,
      .help = N_("character device name")
     },
@@ -3246,11 +3276,13 @@ static const vshCmdOptDef opts_domiftune[] = {
     },
     {.name = "inbound",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("control domain's incoming traffics")
     },
     {.name = "outbound",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("control domain's outgoing traffics")
     },
@@ -3568,6 +3600,7 @@ static const vshCmdOptDef opts_undefine[] = {
     },
     {.name = "storage",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainUndefineStorageDisksCompleter,
      .help = N_("remove associated storage volumes (comma separated list of "
                 "targets or source paths) (see domblklist)")
@@ -4013,6 +4046,7 @@ static const vshCmdOptDef opts_start[] = {
     },
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... to the guest")
     },
@@ -4159,6 +4193,7 @@ static const vshCmdOptDef opts_save[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
@@ -5250,6 +5285,7 @@ static const vshCmdOptDef opts_restore[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
@@ -5352,6 +5388,7 @@ static const vshCmdOptDef opts_dump[] = {
     {.name = "format",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
+     .unwanted_positional = true,
      .completer = virshDomainCoreDumpFormatCompleter,
      .help = N_("specify the format of memory-only dump")
     },
@@ -5495,11 +5532,13 @@ static const vshCmdOptDef opts_screenshot[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "file",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("where to store the screenshot")
     },
     {.name = "screen",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("ID of a screen to take screenshot of")
     },
     {.name = NULL}
@@ -6834,11 +6873,13 @@ static const vshCmdOptDef opts_vcpupin[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "vcpu",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .completer = virshDomainVcpuCompleter,
      .help = N_("vcpu number")
     },
     {.name = "cpulist",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .flags = VSH_OFLAG_EMPTY_OK,
      .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set, or omit option to query")
@@ -7047,6 +7088,7 @@ static const vshCmdOptDef opts_emulatorpin[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "cpulist",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .flags = VSH_OFLAG_EMPTY_OK,
      .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set, or omit option to query")
@@ -7231,6 +7273,7 @@ static const vshCmdOptDef opts_guestvcpus[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "cpulist",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainVcpulistViaAgentCompleter,
      .help = N_("list of cpus to enable or disable")
     },
@@ -7653,22 +7696,27 @@ static const vshCmdOptDef opts_iothreadset[] = {
     },
     {.name = "poll-max-ns",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("set the maximum IOThread polling time in ns")
     },
     {.name = "poll-grow",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("set the value to increase the IOThread polling time")
     },
     {.name = "poll-shrink",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("set the value for reduction of the IOThread polling time")
     },
     {.name = "thread-pool-min",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("lower boundary for worker thread pool")
     },
     {.name = "thread-pool-max",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("upper boundary for worker thread pool")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -7824,10 +7872,12 @@ static const vshCmdOptDef opts_cpu_stats[] = {
     },
     {.name = "start",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Show statistics from this CPU")
     },
     {.name = "count",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Number of shown CPUs at most")
     },
     {.name = NULL}
@@ -8010,6 +8060,7 @@ static const vshCmdOptDef opts_create[] = {
     },
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... to the guest")
     },
@@ -8368,10 +8419,12 @@ static const vshCmdOptDef opts_metadata[] = {
     },
     {.name = "key",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("key to be used as a namespace identifier"),
     },
     {.name = "set",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompleteEmpty,
      .help = N_("new metadata to set"),
     },
@@ -8856,15 +8909,18 @@ static const vshCmdOptDef opts_update_memory_device[] = {
     },
     {.name = "alias",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainDeviceAliasCompleter,
      .help = N_("memory device alias")
     },
     {.name = "node",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("memory device target node")
     },
     {.name = "requested-size",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("new value of <requested/> size, as scaled integer (default KiB)")
     },
     {.name = NULL}
@@ -8998,18 +9054,22 @@ static const vshCmdOptDef opts_memtune[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "hard-limit",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Max memory, as scaled integer (default KiB)")
     },
     {.name = "soft-limit",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Memory during contention, as scaled integer (default KiB)")
     },
     {.name = "swap-hard-limit",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Max memory plus swap, as scaled integer (default KiB)")
     },
     {.name = "min-guarantee",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Min guaranteed memory, as scaled integer (default KiB)")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -9165,11 +9225,13 @@ static const vshCmdOptDef opts_perf[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "enable",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainPerfEnableCompleter,
      .help = N_("perf events which will be enabled")
     },
     {.name = "disable",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainPerfDisableCompleter,
      .help = N_("perf events which will be disabled")
     },
@@ -9289,12 +9351,14 @@ static const vshCmdOptDef opts_numatune[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainNumatuneModeCompleter,
      .help = N_("NUMA mode, one of strict, preferred and interleave "
                 "or a number from the virDomainNumatuneMemMode enum")
     },
     {.name = "nodeset",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("NUMA node selections to set")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -9470,6 +9534,7 @@ static const vshCmdOptDef opts_domsetlaunchsecstate[] = {
     },
     {.name = "set-address",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("physical address within the guest domain's memory to set the secret"),
     },
     {.name = NULL}
@@ -9872,11 +9937,13 @@ static const vshCmdInfo info_qemu_monitor_event = {
 static const vshCmdOptDef opts_qemu_monitor_event[] = {
     {.name = "domain",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("filter by domain name, id or uuid"),
      .completer = virshDomainNameCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .help = N_("filter by event name")
     },
     {.name = "pretty",
@@ -9889,6 +9956,7 @@ static const vshCmdOptDef opts_qemu_monitor_event[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("timeout seconds")
     },
     {.name = "regex",
@@ -10379,6 +10447,7 @@ static const vshCmdOptDef opts_domxmltonative[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshCompletePathLocalExisting,
      .help = N_("xml data file to export from")
     },
@@ -11871,6 +11940,7 @@ static const vshCmdOptDef opts_domhostname[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "source",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .flags = VSH_OFLAG_NONE,
      .completer = virshDomainHostnameSourceCompleter,
      .help = N_("address source: 'lease' or 'agent'")},
@@ -12144,6 +12214,7 @@ static const vshCmdOptDef opts_detach_interface[] = {
     },
     {.name = "mac",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainInterfaceCompleter,
      .completer_flags = VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC,
      .help = N_("MAC address")
@@ -12823,11 +12894,13 @@ static const vshCmdOptDef opts_domfstrim[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "minimum",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("Just a hint to ignore contiguous "
                 "free ranges smaller than this (Bytes)")
     },
     {.name = "mountpoint",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainFSMountpointsCompleter,
      .help = N_("which mount point to trim")
     },
@@ -13295,11 +13368,13 @@ static const vshCmdOptDef opts_domdirtyrate_calc[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "seconds",
      .type = VSH_OT_INT,
+     .unwanted_positional = true,
      .help = N_("calculate memory dirty rate within specified seconds, "
                 "the supported value range from 1 to 60, default to 1.")
     },
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .unwanted_positional = true,
      .completer = virshDomainDirtyRateCalcModeCompleter,
      .help = N_("dirty page rate calculation mode, either of these 3 options "
                 "'page-sampling, dirty-bitmap, dirty-ring' can be specified.")
