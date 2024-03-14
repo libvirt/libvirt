@@ -3163,6 +3163,7 @@ vshCompleteHelpCommand(vshControl *ctl G_GNUC_UNUSED,
 const vshCmdOptDef opts_help[] = {
     {.name = "command",
      .type = VSH_OT_STRING,
+     .positional = true,
      .completer = vshCompleteHelpCommand,
      .help = N_("Prints global help, command specific help, or help for a group of related commands")
     },
@@ -3220,6 +3221,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
 const vshCmdOptDef opts_cd[] = {
     {.name = "dir",
      .type = VSH_OT_STRING,
+     .positional = true,
      .help = N_("directory to switch to (default: home or else root)")
     },
     {.name = NULL}

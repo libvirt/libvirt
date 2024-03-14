@@ -245,6 +245,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
 static const vshCmdOptDef opts_connect[] = {
     {.name = "name",
      .type = VSH_OT_STRING,
+     .positional = true,
      .flags = VSH_OFLAG_EMPTY_OK,
      .completer = virshCompleteEmpty,
      .help = N_("hypervisor connection URI")

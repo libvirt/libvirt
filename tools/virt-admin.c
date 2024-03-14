@@ -254,6 +254,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 static const vshCmdOptDef opts_connect[] = {
     {.name = "name",
      .type = VSH_OT_STRING,
+     .positional = true,
      .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("daemon's admin server connection URI")
     },
