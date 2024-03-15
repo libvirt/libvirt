@@ -1577,6 +1577,9 @@ virNetworkPortGetParameters(virNetworkPortPtr port,
     virCheckNetworkPortReturn(port, -1);
     conn = port->net->conn;
 
+    virCheckNonNullArgGoto(nparams, error);
+    virCheckNonNegativeArgGoto(*nparams, error);
+
     if (conn->networkDriver && conn->networkDriver->networkPortGetParameters) {
         int ret;
         ret = conn->networkDriver->networkPortGetParameters(port, params, nparams, flags);
