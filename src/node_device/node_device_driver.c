@@ -439,7 +439,7 @@ nodeDeviceListCaps(virNodeDevicePtr device,
 {
     virNodeDeviceObj *obj;
     virNodeDeviceDef *def;
-    virNodeDevCapType *list = NULL;
+    g_autofree virNodeDevCapType *list = NULL;
     int ncaps = 0;
     int ret = -1;
     size_t i = 0;
@@ -472,8 +472,6 @@ nodeDeviceListCaps(virNodeDevicePtr device,
         for (j = 0; j < i; j++)
             VIR_FREE(names[j]);
     }
-
-    VIR_FREE(list);
     return ret;
 }
 
