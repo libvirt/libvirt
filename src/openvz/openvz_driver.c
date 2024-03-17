@@ -615,7 +615,7 @@ openvzGenerateVethName(int veid, char *dev_name_ve)
 static char *
 openvzGenerateContainerVethName(int veid)
 {
-    char *temp = NULL;
+    g_autofree char *temp = NULL;
     char *name = NULL;
 
     /* try to get line "^NETIF=..." from config */
@@ -637,8 +637,6 @@ openvzGenerateContainerVethName(int veid)
         /* set new name */
         name = g_strdup_printf("eth%d", max + 1);
     }
-
-    VIR_FREE(temp);
 
     return name;
 }
@@ -750,7 +748,6 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
 {
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *param;
     int first = 1;
     struct openvz_driver *driver =  conn->privateData;
 
@@ -771,15 +768,15 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
     }
 
     if (driver->version < VZCTL_BRIDGE_MIN_VERSION && def->nnets) {
+        g_autofree char *param = NULL;
+
         param = virBufferContentAndReset(&buf);
         if (param) {
             if (openvzWriteVPSConfigParam(strtoI(def->name), "NETIF", param) < 0) {
-                VIR_FREE(param);
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot replace NETIF config"));
                 return -1;
             }
-            VIR_FREE(param);
         }
     }
 
@@ -1075,7 +1072,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObj *vm;
-    char *value = NULL;
+    g_autofree char *value = NULL;
     int ret = -1;
 
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
@@ -1093,8 +1090,6 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     ret = 0;
 
  cleanup:
-    VIR_FREE(value);
-
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -1405,7 +1400,7 @@ static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid)
 {
     FILE *fp;
-    char *line = NULL;
+    g_autofree char *line = NULL;
     size_t line_size = 0;
     unsigned long long usertime, systime, nicetime;
     int readvps = vpsid + 1;  /* ensure readvps is initially different */
@@ -1442,7 +1437,6 @@ Version: 2.2
         }
     }
 
-    VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     if (err)
         return -1;
