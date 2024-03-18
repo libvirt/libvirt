@@ -1,0 +1,29 @@
+Test the <timeout> option (numeric option converted to ms)
+Non-numeric value
+error: Numeric value 'abc' for <timeout> option is malformed or out of range
+
+Numeric value that is too big to be converted to ms and still
+fit inside an int
+error: Numeric value '2147484' for <timeout> option is malformed or out of range
+
+Numeric value with invalid suffix
+error: Numeric value '42WB' for <timeout> option is malformed or out of range
+
+Numeric value with valid suffix. Suffixes are not supported for
+the <timeout> option, so this value is rejected
+error: Numeric value '42MB' for <timeout> option is malformed or out of range
+
+Negative value
+error: Numeric value '-1' for <timeout> option is malformed or out of range
+
+Zero. This is not a valid timeout, but the value is parsed
+correctly
+error: Numeric value '0' for <timeout> option is malformed or out of range
+
+Numeric value. No events will be received and the command will
+fail after a second, but the value has been parsed correctly
+event loop timed out
+events received: 0
+
+
+## Exit code: 1

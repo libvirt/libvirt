@@ -83,12 +83,16 @@ struct testInfo {
     const char *testname; /* used to generate output filename */
     const char *filter;
     const char *const *argv;
+    bool expensive;
 };
 
 static int testCompare(const void *data)
 {
     const struct testInfo *info = data;
     g_autofree char *outfile = NULL;
+
+    if (info->expensive && virTestGetExpensive() == 0)
+        return EXIT_AM_SKIP;
 
     if (info->testname) {
         outfile = g_strdup_printf("%s/virshtestdata/%s.out",
@@ -107,14 +111,14 @@ mymain(void)
     custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
                                  abs_srcdir);
 
-# define DO_TEST_SCRIPT(testname_, testfilter, ...) \
+# define DO_TEST_SCRIPT_FULL(testname_, expensive, testfilter, ...) \
     { \
         const char *testname = testname_; \
         g_autofree char *infile = g_strdup_printf("%s/virshtestdata/%s.in", \
                                                   abs_srcdir, testname); \
         const char *myargv[] = { __VA_ARGS__, NULL, NULL }; \
         const char **tmp = myargv; \
-        const struct testInfo info = { testname, testfilter, myargv }; \
+        const struct testInfo info = { testname, testfilter, myargv, expensive }; \
         g_autofree char *scriptarg = NULL; \
         if (virFileReadAll(infile, 256 * 1024, &scriptarg) < 0) { \
             fprintf(stderr, "\nfailed to load '%s'\n", infile); \
@@ -127,6 +131,9 @@ mymain(void)
             ret = -1; \
     } while (0);
 
+# define DO_TEST_SCRIPT(testname_, testfilter, ...) \
+    DO_TEST_SCRIPT_FULL(testname_, false, testfilter, __VA_ARGS__);
+
     DO_TEST_SCRIPT("info-default", NULL, VIRSH_DEFAULT);
     DO_TEST_SCRIPT("info-custom", NULL, VIRSH_CUSTOM);
     DO_TEST_SCRIPT("domain-id", "\nCPU time:", VIRSH_CUSTOM);
@@ -137,7 +144,7 @@ mymain(void)
     do { \
         const char *testname = testname_; \
         const char *myargv[] = { __VA_ARGS__, NULL }; \
-        const struct testInfo info = { testname, NULL, myargv }; \
+        const struct testInfo info = { testname, NULL, myargv, false }; \
         if (virTestRun(testname, testCompare, &info) < 0) \
             ret = -1; \
     } while (0)
@@ -202,6 +209,9 @@ mymain(void)
     DO_TEST_SCRIPT("argument-assignment", NULL, VIRSH_DEFAULT, "-k0", "-d0");
     DO_TEST_SCRIPT("snapshot-create-args", NULL, VIRSH_DEFAULT, "-q");
     DO_TEST_SCRIPT("numeric-parsing", NULL, VIRSH_DEFAULT);
+    /* The 'numeric-parsing-event' invokes virsh event with a 1 second timeout,
+     * thus is marked expensive */
+    DO_TEST_SCRIPT_FULL("numeric-parsing-event", true, NULL, VIRSH_DEFAULT);
 
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

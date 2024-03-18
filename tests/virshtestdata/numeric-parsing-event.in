@@ -1,0 +1,26 @@
+echo Test the <timeout> option (numeric option converted to ms)
+
+echo Non-numeric value
+event --all --timeout abc
+
+echo Numeric value that is too big to be converted to ms and still
+echo fit inside an int
+event --all --timeout 2147484
+
+echo Numeric value with invalid suffix
+event --all --timeout 42WB
+
+echo Numeric value with valid suffix. Suffixes are not supported for
+echo the <timeout> option, so this value is rejected
+event --all --timeout 42MB
+
+echo Negative value
+event --all --timeout -1
+
+echo Zero. This is not a valid timeout, but the value is parsed
+echo correctly
+event --all --timeout 0
+
+echo Numeric value. No events will be received and the command will
+echo fail after a second, but the value has been parsed correctly
+event --all --timeout 1
