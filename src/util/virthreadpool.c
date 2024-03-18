@@ -184,7 +184,7 @@ virThreadPoolExpand(virThreadPool *pool, size_t gain, bool priority)
     size_t i = 0;
     struct virThreadPoolWorkerData *data = NULL;
 
-    VIR_EXPAND_N(*workers, *curWorkers, gain);
+    VIR_REALLOC_N(*workers, *curWorkers + gain);
 
     for (i = 0; i < gain; i++) {
         g_autofree char *name = NULL;
@@ -199,7 +199,7 @@ virThreadPoolExpand(virThreadPool *pool, size_t gain, bool priority)
         else
             name = g_strdup(pool->jobName);
 
-        if (virThreadCreateFull(&(*workers)[i],
+        if (virThreadCreateFull(&(*workers)[*curWorkers],
                                 false,
                                 virThreadPoolWorker,
                                 name,
@@ -207,15 +207,13 @@ virThreadPoolExpand(virThreadPool *pool, size_t gain, bool priority)
                                 data) < 0) {
             VIR_FREE(data);
             virReportSystemError(errno, "%s", _("Failed to create thread"));
-            goto error;
+            return -1;
         }
+
+        (*curWorkers)++;
     }
 
     return 0;
-
- error:
-    *curWorkers -= gain - i;
-    return -1;
 }
 
 virThreadPool *
