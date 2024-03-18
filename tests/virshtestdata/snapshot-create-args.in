@@ -1,0 +1,9 @@
+snapshot-create-as --print-xml test name desc vda vdb
+snapshot-create-as --print-xml test name desc --diskspec vda vdb
+snapshot-create-as --print-xml test name desc --diskspec vda --diskspec vdb
+snapshot-create-as --print-xml test name desc vda vdb
+snapshot-create-as --print-xml test --diskspec vda name --diskspec vdb desc
+snapshot-create-as --print-xml --description desc --name name --domain test vda vdb
+snapshot-create-as --print-xml --description desc --diskspec vda --name name --domain test vdb
+snapshot-create-as --print-xml test name vda vdb
+snapshot-create-as --print-xml test --diskspec vda,file=a&b,,c,snapshot=external --description 1<2 --diskspec vdb --memspec file=d,,e

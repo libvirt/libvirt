@@ -1,0 +1,82 @@
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <name>name</name>
+  <description>vda</description>
+  <disks>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+<domainsnapshot>
+  <description>1&lt;2</description>
+  <memory file='d,e'/>
+  <disks>
+    <disk name='vda' snapshot='external'>
+      <source file='a&amp;b,c'/>
+    </disk>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+

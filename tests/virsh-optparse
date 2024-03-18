@@ -32,66 +32,6 @@ fail=0
 
 test_url=test:///default
 
-# Another complex parsing example
-cat <<\EOF > exp-out || framework_failure
-<domainsnapshot>
-  <description>1&lt;2</description>
-  <memory file='d,e'/>
-  <disks>
-    <disk name='vda' snapshot='external'>
-      <source file='a&amp;b,c'/>
-    </disk>
-    <disk name='vdb'/>
-  </disks>
-</domainsnapshot>
-
-EOF
-$VIRSH -q -c $test_url snapshot-create-as --print-xml test \
-  --diskspec 'vda,file=a&b,,c,snapshot=external' --description '1<2' \
-  --diskspec vdb --memspec file=d,,e >out 2>>err || fail=1
-compare exp-out out || fail=1
-
-cat <<\EOF > exp-out || framework_failure
-<domainsnapshot>
-  <name>name</name>
-  <description>vda</description>
-  <disks>
-    <disk name='vdb'/>
-  </disks>
-</domainsnapshot>
-
-EOF
-$VIRSH -q -c $test_url snapshot-create-as  --print-xml test name vda vdb \
-  >out 2>>err || fail=1
-compare exp-out out || fail=1
-
-cat <<\EOF > exp-out || framework_failure
-<domainsnapshot>
-  <name>name</name>
-  <description>desc</description>
-  <disks>
-    <disk name='vda'/>
-    <disk name='vdb'/>
-  </disks>
-</domainsnapshot>
-
-EOF
-for args in \
-    'test name desc vda vdb' \
-    'test name desc --diskspec vda vdb' \
-    'test name desc --diskspec vda --diskspec vdb' \
-    'test name desc vda vdb' \
-    'test --diskspec vda name --diskspec vdb desc' \
-    '--description desc --name name --domain test vda vdb' \
-    '--description desc --diskspec vda --name name --domain test vdb' \
-; do
-  $VIRSH -q -c $test_url snapshot-create-as --print-xml $args \
-    >out 2>>err || fail=1
-  compare exp-out out || fail=1
-done
-
-test -s err && fail=1
-
 # Test a required argv
 cat <<\EOF > exp-err || framework_failure
 error: this function is not supported by the connection driver: virDomainQemuMonitorCommand
