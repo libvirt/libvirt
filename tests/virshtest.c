@@ -198,6 +198,9 @@ mymain(void)
     DO_TEST_SCRIPT("echo-split", NULL, VIRSH_DEFAULT, "-q");
 # undef DO_TEST
 
+    /* comprehensive coverage of argument assignment */
+    DO_TEST_SCRIPT("argument-assignment", NULL, VIRSH_DEFAULT, "-k0", "-d0");
+
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

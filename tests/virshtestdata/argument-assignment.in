@@ -1,0 +1,15 @@
+setvcpus test 2
+setvcpus --domain test 2
+setvcpus --domain=test 2
+setvcpus test --count 2
+setvcpus test --count=2
+setvcpus --domain test --count 2
+setvcpus --domain=test --count 2
+setvcpus --domain test --count=2
+setvcpus --domain=test --count=2
+setvcpus --count 2 --domain test
+setvcpus --count 2 --domain=test
+setvcpus --count=2 --domain test
+setvcpus --count=2 --domain=test
+setvcpus --count 2 test
+setvcpus --count=2 test

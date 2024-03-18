@@ -1,0 +1,91 @@
+commands: "setvcpus test 2
+setvcpus --domain test 2
+setvcpus --domain=test 2
+setvcpus test --count 2
+setvcpus test --count=2
+setvcpus --domain test --count 2
+setvcpus --domain=test --count 2
+setvcpus --domain test --count=2
+setvcpus --domain=test --count=2
+setvcpus --count 2 --domain test
+setvcpus --count 2 --domain=test
+setvcpus --count=2 --domain test
+setvcpus --count=2 --domain=test
+setvcpus --count 2 test
+setvcpus --count=2 test
+"
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: count(optdata): 2
+setvcpus: domain(optdata): test
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+
+setvcpus: found option <domain>: test
+setvcpus: <domain> trying as domain NAME
+

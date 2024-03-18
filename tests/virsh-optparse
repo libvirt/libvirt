@@ -28,38 +28,9 @@ if test "$VERBOSE" = yes; then
   $VIRSH --version
 fi
 
-cat <<\EOF > exp-out || framework_failure
-
-setvcpus: <domain> trying as domain NAME
-setvcpus: count(optdata): 2
-setvcpus: domain(optdata): test
-setvcpus: found option <domain>: test
-EOF
-
 fail=0
 
 test_url=test:///default
-
-for args in \
-    'test 2' \
-    '--domain test 2' \
-    '--domain=test 2' \
-    'test --count 2' \
-    'test --count=2' \
-    '--domain test --count 2' \
-    '--domain=test --count 2' \
-    '--domain test --count=2' \
-    '--domain=test --count=2' \
-    '--count 2 --domain test' \
-    '--count 2 --domain=test' \
-    '--count=2 --domain test' \
-    '--count=2 --domain=test' \
-    '--count 2 test' \
-    '--count=2 test' \
-; do
-  $VIRSH -k0 -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
-  LC_ALL=C sort out | compare exp-out - || fail=1
-done
 
 # Another complex parsing example
 cat <<\EOF > exp-out || framework_failure
