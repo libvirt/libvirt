@@ -201,6 +201,7 @@ mymain(void)
     /* comprehensive coverage of argument assignment */
     DO_TEST_SCRIPT("argument-assignment", NULL, VIRSH_DEFAULT, "-k0", "-d0");
     DO_TEST_SCRIPT("snapshot-create-args", NULL, VIRSH_DEFAULT, "-q");
+    DO_TEST_SCRIPT("numeric-parsing", NULL, VIRSH_DEFAULT);
 
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

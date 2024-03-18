@@ -1,0 +1,43 @@
+echo Test a regular numeric option
+
+echo Non-numeric value
+cpu-stats test --start abc
+
+echo Numeric value with invalid suffix
+cpu-stats test --start 42WB
+
+echo Numeric value with valid suffix. Suffixes are not supported for
+echo regular numeric options, so this value is rejected
+cpu-stats test --start 42MB
+
+echo Numeric value bigger than INT_MAX
+cpu-stats test --start 2147483648
+
+echo Negative numeric value. The value is not valid for the command
+echo we are testing, but it has been parsed correctly
+cpu-stats test --start -1
+
+echo Test a scaled numeric option
+
+echo Non-numeric value
+setmaxmem test abc
+
+echo Numeric value with invalid suffix
+setmaxmem test 42WB
+
+echo Numeric value with valid suffix
+setmaxmem test 42MB --config
+
+echo Numeric value bigger than INT_MAX. No failure here because
+echo scaled numeric values are unsigned long long
+setmaxmem test 2147483648 --config
+
+echo Negative numeric value
+setmaxmem test -1
+
+echo Zero. The value is not valid for the command were testing, but
+echo it has been parsed correctly
+setmaxmem test 0
+
+echo Numeric value
+setmaxmem test 42 --config

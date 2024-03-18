@@ -1,0 +1,41 @@
+Test a regular numeric option
+Non-numeric value
+error: Numeric value 'abc' for <start> option is malformed or out of range
+
+Numeric value with invalid suffix
+error: Numeric value '42WB' for <start> option is malformed or out of range
+
+Numeric value with valid suffix. Suffixes are not supported for
+regular numeric options, so this value is rejected
+error: Numeric value '42MB' for <start> option is malformed or out of range
+
+Numeric value bigger than INT_MAX
+error: Numeric value '2147483648' for <start> option is malformed or out of range
+
+Negative numeric value. The value is not valid for the command
+we are testing, but it has been parsed correctly
+error: Invalid value for start CPU
+
+Test a scaled numeric option
+Non-numeric value
+error: Scaled numeric value 'abc' for <size> option is malformed or out of range
+
+Numeric value with invalid suffix
+error: Scaled numeric value '42WB' for <size> option is malformed or out of range
+error: invalid argument: unknown suffix 'WB'
+
+Numeric value with valid suffix
+
+Numeric value bigger than INT_MAX. No failure here because
+scaled numeric values are unsigned long long
+
+Negative numeric value
+error: Scaled numeric value '-1' for <size> option is malformed or out of range
+
+Zero. The value is not valid for the command were testing, but
+it has been parsed correctly
+error: Unable to change MaxMemorySize
+error: memory in virDomainSetMemoryFlags must not be zero
+
+Numeric value
+
