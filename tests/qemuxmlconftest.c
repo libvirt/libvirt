@@ -2966,6 +2966,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tap-vhost-incorrect");
     DO_TEST_CAPS_LATEST("tap-vhost");
 
+    DO_TEST_CAPS_LATEST("mtp-usb-device")
+
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)
         ret = -1;

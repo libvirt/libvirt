@@ -1,0 +1,27 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>2d4d4b20-b19b-4713-af0a-bf1cab8b455b</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'/>
+    <filesystem type='mount'>
+      <driver type='mtp'/>
+      <source dir='/tmp/testdir1'/>
+      <target dir='readwrite-fs'/>
+    </filesystem>
+    <filesystem type='mount'>
+      <driver type='mtp'/>
+      <source dir='/tmp/testdir2'/>
+      <target dir='readonly-fs'/>
+      <readonly/>
+    </filesystem>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

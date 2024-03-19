@@ -2311,6 +2311,33 @@ qemuBuildDisksCommandLine(virCommand *cmd,
 }
 
 
+static int
+qemuBuildMTPCommandLine(virCommand *cmd,
+                          virDomainFSDef *fs,
+                          const virDomainDef *def,
+                          virQEMUCaps *qemuCaps)
+{
+    g_autoptr(virJSONValue) props = NULL;
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:driver", "usb-mtp",
+                              "s:id", fs->info.alias,
+                              "s:rootdir", fs->src->path,
+                              "s:desc", fs->dst,
+                              "b:readonly", fs->readonly,
+                              NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceAddressProps(props, def, &fs->info) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 virJSONValue *
 qemuBuildVHostUserFsDevProps(virDomainFSDef *fs,
                              const virDomainDef *def,
@@ -2494,10 +2521,15 @@ qemuBuildFilesystemCommandLine(virCommand *cmd,
                 return -1;
             break;
 
+        case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
+            /* Media Transfer Protocol over USB */
+            if (qemuBuildMTPCommandLine(cmd, def->fss[i], def, qemuCaps) < 0)
+                return -1;
+            break;
+
         case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
         case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
-        case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
             break;
         }
