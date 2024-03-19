@@ -611,6 +611,7 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
     case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
     case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
     case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
     case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported filesystem driver '%1$s'"),

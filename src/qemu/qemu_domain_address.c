@@ -642,6 +642,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             /* vhost-user-fs-pci */
             return virtioFlags;
 
+        case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
         case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
@@ -2074,8 +2075,10 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
         if (!virDeviceInfoPCIAddressIsWanted(&def->fss[i]->info))
             continue;
 
-        /* Only support VirtIO-9p-pci so far. If that changes,
-         * we might need to skip devices here */
+        /* Skip MTP device */
+        if (def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_MTP)
+            continue;
+
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->fss[i]->info) < 0)
             return -1;
     }

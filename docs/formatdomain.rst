@@ -3590,6 +3590,11 @@ A directory on the host that can be accessed directly from the guest.
          <source socket='/tmp/sock'/>
          <target dir='tag'/>
      </filesystem>
+     <filesystem type='mount'>
+         <driver type='mtp'/>
+         <source dir='/export/to/guest'/>
+         <target dir='mtptag'/>
+     </filesystem>
      ...
    </devices>
    ...
@@ -3702,6 +3707,8 @@ A directory on the host that can be accessed directly from the guest.
       can also be set. ( :since:`Since 3.5.0` )
    -  For ``virtiofs``, the ``queue`` attribute can be used to specify the queue
       size (i.e. how many requests can the queue fit). ( :since:`Since 6.2.0` )
+   -  QEMU supports ``mtp`` which exposes a virtual USB MTP device to the
+      guest. ( :since:`Since 10.2.0` )
 
 ``binary``
    The optional ``binary`` element can tune the options for virtiofsd. All of

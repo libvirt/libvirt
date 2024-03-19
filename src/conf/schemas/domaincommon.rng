@@ -3253,6 +3253,11 @@
           </optional>
           <ref name="virtioOptions"/>
         </group>
+        <group>
+          <attribute name="type">
+            <value>mtp</value>
+          </attribute>
+        </group>
         <empty/>
       </choice>
     </element>

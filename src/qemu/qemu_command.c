@@ -861,6 +861,7 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
                 *baseName = "vhost-user-fs";
                 break;
 
+            case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
             case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
             case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
             case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
@@ -2496,6 +2497,7 @@ qemuBuildFilesystemCommandLine(virCommand *cmd,
         case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
         case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
             break;
         }

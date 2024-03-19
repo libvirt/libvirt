@@ -4469,6 +4469,19 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
         }
         break;
 
+    case VIR_DOMAIN_FS_DRIVER_TYPE_MTP:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_MTP)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("mtp is not supported with this QEMU binary"));
+            return -1;
+        }
+        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("mtp only supports passthrough accessmode"));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainFSDriverType, fs->fsdriver);
