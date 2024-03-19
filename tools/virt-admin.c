@@ -112,7 +112,7 @@ vshAdmConnect(vshControl *ctl, unsigned int flags)
         return -1;
     } else {
         if (virAdmConnectRegisterCloseCallback(priv->conn, vshAdmCatchDisconnect,
-                                               NULL, NULL) < 0)
+                                               ctl, NULL) < 0)
             vshError(ctl, "%s", _("Unable to register disconnect callback"));
 
         if (priv->wantReconnect)
