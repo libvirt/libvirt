@@ -17,6 +17,12 @@ v10.2.0 (unreleased)
 
 * **New features**
 
+  * qemu: Support for driver type ``mtp`` in ``<filesystem/>`` devices
+
+    The ``mtp`` driver type exposes the ``usb-mtp`` device in QEMU. The
+    guest can access files on this driver through the Media Transfer
+    Protocol (MTP).
+
 * **Improvements**
 
 * **Bug fixes**
