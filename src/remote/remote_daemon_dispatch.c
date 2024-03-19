@@ -180,21 +180,21 @@ static bool
 remoteRelayNetworkEventCheckACL(virNetServerClient *client,
                                 virConnectPtr conn, virNetworkPtr net)
 {
-    virNetworkDef def;
+    g_autofree virNetworkDef *def = g_new0(virNetworkDef, 1);
     g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virNetworkDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
-    def.name = net->name;
-    memcpy(def.uuid, net->uuid, VIR_UUID_BUFLEN);
+    def->name = net->name;
+    memcpy(def->uuid, net->uuid, VIR_UUID_BUFLEN);
 
     if (!(identity = virNetServerClientGetIdentity(client)))
         goto cleanup;
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
-    ret = virConnectNetworkEventRegisterAnyCheckACL(conn, &def);
+    ret = virConnectNetworkEventRegisterAnyCheckACL(conn, def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
@@ -206,21 +206,21 @@ remoteRelayStoragePoolEventCheckACL(virNetServerClient *client,
                                     virConnectPtr conn,
                                     virStoragePoolPtr pool)
 {
-    virStoragePoolDef def;
+    g_autofree virStoragePoolDef *def = g_new0(virStoragePoolDef, 1);
     g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virStoragePoolDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
-    def.name = pool->name;
-    memcpy(def.uuid, pool->uuid, VIR_UUID_BUFLEN);
+    def->name = pool->name;
+    memcpy(def->uuid, pool->uuid, VIR_UUID_BUFLEN);
 
     if (!(identity = virNetServerClientGetIdentity(client)))
         goto cleanup;
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
-    ret = virConnectStoragePoolEventRegisterAnyCheckACL(conn, &def);
+    ret = virConnectStoragePoolEventRegisterAnyCheckACL(conn, def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
@@ -232,20 +232,20 @@ remoteRelayNodeDeviceEventCheckACL(virNetServerClient *client,
                                    virConnectPtr conn,
                                    virNodeDevicePtr dev)
 {
-    virNodeDeviceDef def;
+    g_autofree virNodeDeviceDef *def = g_new0(virNodeDeviceDef, 1);
     g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virNodeDeviceDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
-    def.name = dev->name;
+    def->name = dev->name;
 
     if (!(identity = virNetServerClientGetIdentity(client)))
         goto cleanup;
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
-    ret = virConnectNodeDeviceEventRegisterAnyCheckACL(conn, &def);
+    ret = virConnectNodeDeviceEventRegisterAnyCheckACL(conn, def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
@@ -257,22 +257,22 @@ remoteRelaySecretEventCheckACL(virNetServerClient *client,
                                virConnectPtr conn,
                                virSecretPtr secret)
 {
-    virSecretDef def;
+    g_autofree virSecretDef *def = g_new0(virSecretDef, 1);
     g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virSecretDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
-    memcpy(def.uuid, secret->uuid, VIR_UUID_BUFLEN);
-    def.usage_type = secret->usageType;
-    def.usage_id = secret->usageID;
+    memcpy(def->uuid, secret->uuid, VIR_UUID_BUFLEN);
+    def->usage_type = secret->usageType;
+    def->usage_id = secret->usageID;
 
     if (!(identity = virNetServerClientGetIdentity(client)))
         goto cleanup;
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
-    ret = virConnectSecretEventRegisterAnyCheckACL(conn, &def);
+    ret = virConnectSecretEventRegisterAnyCheckACL(conn, def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
