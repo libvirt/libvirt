@@ -1,0 +1,343 @@
+<disk type='file'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='block'>
+  <source dev='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+error: Unknown source type: 'nothing'
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='block' device='disk'>
+  <source dev='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='cdrom'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='block' device='cdrom'>
+  <source dev='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='blah'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='block' device='blah'>
+  <source dev='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver name='testdriver'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver type='qcow2'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver type='raw'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver cache='none'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver type='qcow2' cache='none'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver type='qcow2'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <serial>TEST_SERIAL</serial>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <readonly/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <shareable/>
+</disk>
+
+error: No support for whatever in command 'attach-disk'
+
+<disk type='file' device='disk'>
+  <driver type='qcow2'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <alias name='testalias'/>
+</disk>
+
+<disk type='file' device='disk' rawio='yes'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <driver name='qemu' type='qcow2' iothread='3' cache='none'/>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <readonly/>
+  <alias name='testalias'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <address type='drive' controller='1' bus='2' unit='3'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <address type='drive' controller='1' bus='2' unit='4'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='hda'/>
+  <address type='drive' controller='1' bus='2' unit='5'/>
+</disk>
+
+error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
+
+error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='usb' bus='12' port='34'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='usb' bus='12' port='3'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='usb' bus='12' port='34'/>
+</disk>
+
+error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
+
+error: expecting an ide:00.00.00 address.
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='drive' controller='1' bus='2' unit='3'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='drive' controller='1' bus='2' unit='4'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='drive' controller='1' bus='2' unit='5'/>
+</disk>
+
+error: expecting an ide:00.00.00 address.
+
+error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='drive' controller='1' bus='2' unit='3'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='drive' controller='1' bus='2' unit='4'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='sda'/>
+  <address type='drive' controller='1' bus='2' unit='5'/>
+</disk>
+
+error: expecting an ide:00.00.00 address.
+
+error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0xaa'/>
+</disk>
+
+error: expecting an ide:00.00.00 address.
+
+error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78' multifunction='on'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78' multifunction='on'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0xaa' multifunction='on'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056'/>
+</disk>
+
+<disk type='file' device='disk'>
+  <source file='/nonexistent/file'/>
+  <target dev='vda'/>
+  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056'/>
+</disk>
+
+error: expecting an ide:00.00.00 address.
+
+error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
+
+error: Invalid address.
+
+error: Invalid address.
+
+error: Invalid address.
+
+error: --source-protocol option requires --sourcetype network
+
+error: --source-protocol option requires --sourcetype network
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='hostname'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='hostname' port='port'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='hostname' port=''/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='' port='port'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='' port=''/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host transport='trnsp' name='hostname' port='port'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host transport='trnsp'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host transport='trnsp' socket='/nonexistent/socket'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
+error: Option --source-host-transport is required by option --source-host-socket
+
+
+## Exit code: 1

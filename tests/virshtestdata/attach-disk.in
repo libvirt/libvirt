@@ -1,0 +1,79 @@
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype block
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype nothing
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype block --type disk
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type cdrom
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype block --type cdrom
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type blah
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype block --type blah
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --driver testdriver
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --subdriver qcow2
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --subdriver raw
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --cache none
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --subdriver qcow2 --cache none
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --subdriver qcow2 --serial TEST_SERIAL
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --mode readonly
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --mode shareable
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --mode whatever
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --subdriver qcow2 --alias testalias
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --rawio
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --multifunction
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --subdriver qcow2 --alias testalias --iothread 3 --mode readonly --cache none --driver qemu
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address ide:1.2.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address ide:1.2.4
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address ide:1:2:5
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address ide:1.2.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address ide:1.2.3
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address usb:12.34
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address usb:12.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address usb:12:34
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address usb:12.34
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address usb:12.34
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address scsi:1.2.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address scsi:1.2.4
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address scsi:1:2:5
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address scsi:1.2.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address scsi:1.2.3
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address sata:1.2.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address sata:1.2.4
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address sata:1:2:5
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address sata:1.2.3
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address sata:1.2.3
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address pci:12.34.56.78
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address pci:12:34:56:78
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address pci:12.34.56.aa
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address pci:12.34.56.aa
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address pci:12.34.56.aa
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address pci:12.34.56.78 --multifunction
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address pci:12:34:56:78 --multifunction
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address pci:12.34.56.aa --multifunction
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address ccw:12.34.56
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address ccw:12:34:56
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address ccw:12.34.56
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype file --type disk --address ccw:12.34.56
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target sda --sourcetype file --type disk --address ccw:12.34.56
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address test:12.34.56
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address test:12:34:56
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target vda --sourcetype file --type disk --address test:12.34.56
+
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --source-protocol AAA --sourcetype file
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-name hostname
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-name :port
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-name :
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port --source-host-transport trnsp
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp --source-host-socket /nonexistent/socket
+attach-disk --print-xml --domain testdom --source /nonexistent/file --target hda --sourcetype network --source-protocol TEST --source-host-socket /nonexistent/socket

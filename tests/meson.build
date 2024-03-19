@@ -695,7 +695,6 @@ if conf.has('WITH_LIBVIRTD')
     'virsh-cpuset',
     'virsh-define-dev-segfault',
     'virsh-int-overflow',
-    'virsh-output',
     'virsh-read-bufsiz',
     'virsh-read-non-seekable',
     'virsh-schedinfo',

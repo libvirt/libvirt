@@ -212,6 +212,7 @@ mymain(void)
     /* The 'numeric-parsing-event' invokes virsh event with a 1 second timeout,
      * thus is marked expensive */
     DO_TEST_SCRIPT_FULL("numeric-parsing-event", true, NULL, VIRSH_DEFAULT);
+    DO_TEST_SCRIPT("attach-disk", NULL, VIRSH_DEFAULT);
 
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
