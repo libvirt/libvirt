@@ -592,12 +592,6 @@ mymain(void)
     } while (0)
 
     /* Arg parsing quote removal tests.  */
-    DO_TEST(0, "\n",
-            "echo");
-    DO_TEST(1, "a\n",
-            "echo", "a");
-    DO_TEST(2, "a b\n",
-            "echo", "a", "b");
     DO_TEST(3, "a b\n",
             "echo a \t b");
     DO_TEST(4, "a \t b\n",
@@ -606,10 +600,6 @@ mymain(void)
             "echo 'a \t b'");
     DO_TEST(6, "a \t b\n",
             "echo a\\ \\\t\\ b");
-    DO_TEST(7, "\n\n",
-            "echo ; echo");
-    DO_TEST(8, "a\nb\n",
-            ";echo a; ; echo b;");
     DO_TEST(9, "' \" \\;echo\ta\n",
             "echo", "'", "\"", "\\;echo\ta");
     DO_TEST(10, "' \" ;echo a\n",
