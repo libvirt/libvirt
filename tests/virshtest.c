@@ -682,16 +682,7 @@ mymain(void)
     DO_TEST(47, "a\n", "\\# ignored;echo a\n'#also' ignored");
 
     /* test of splitting in vshStringToArray */
-    DO_TEST(48, "a\nb,c,\nd,,e,,\nf,,,e\n",
-            "-q", "echo", "--split", "a,b,,c,,,d,,,,e,,,,,f,,,,,,e");
-    DO_TEST(49, "\na\nb,c,\nd,,e,,\nf,,,e\n\n",
-            "-q", "echo", "--split", ",a,b,,c,,,d,,,,e,,,,,f,,,,,,e,");
-    DO_TEST(50, ",a\nb,c,\nd,,e,,\nf,,,e,\n",
-            "-q", "echo", "--split", ",,a,b,,c,,,d,,,,e,,,,,f,,,,,,e,,");
-    DO_TEST(51, ",\na\nb,c,\nd,,e,,\nf,,,e,\n\n",
-            "-q", "echo", "--split", ",,,a,b,,c,,,d,,,,e,,,,,f,,,,,,e,,,");
-    DO_TEST(52, ",,a\nb,c,\nd,,e,,\nf,,,e,,\n",
-            "-q", "echo", "--split", ",,,,a,b,,c,,,d,,,,e,,,,,f,,,,,,e,,,,");
+    DO_TEST_SCRIPT("echo-split", NULL, VIRSH_DEFAULT, "-q");
 # undef DO_TEST
 
     VIR_FREE(custom_uri);
