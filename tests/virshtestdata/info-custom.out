@@ -1,0 +1,15 @@
+ Id   Name   State
+----------------------
+ 1    fv0    running
+ 2    fc4    running
+ 3    fc5    running
+
+CPU model:           i986
+CPU(s):              50
+CPU frequency:       6000 MHz
+CPU socket(s):       4
+Core(s) per socket:  4
+Thread(s) per core:  2
+NUMA cell(s):        4
+Memory size:         8192000 KiB
+

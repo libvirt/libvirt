@@ -159,66 +159,6 @@ static char *custom_uri;
     "--connect", \
     custom_uri
 
-static int testCompareListDefault(const void *data)
-{
-    const char *const argv[] = { VIRSH_DEFAULT, "list", NULL };
-    const char *exp = "\
- Id   Name   State\n\
-----------------------\n\
- 1    test   running\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareListCustom(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "list", NULL };
-    const char *exp = "\
- Id   Name   State\n\
-----------------------\n\
- 1    fv0    running\n\
- 2    fc4    running\n\
- 3    fc5    running\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareNodeinfoDefault(const void *data)
-{
-    const char *const argv[] = { VIRSH_DEFAULT, "nodeinfo", NULL };
-    const char *exp = "\
-CPU model:           i686\n\
-CPU(s):              16\n\
-CPU frequency:       1400 MHz\n\
-CPU socket(s):       2\n\
-Core(s) per socket:  2\n\
-Thread(s) per core:  2\n\
-NUMA cell(s):        2\n\
-Memory size:         3145728 KiB\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareNodeinfoCustom(const void *data)
-{
-    const char *const argv[] = {
-        VIRSH_CUSTOM,
-        "nodeinfo",
-        NULL
-    };
-    const char *exp = "\
-CPU model:           i986\n\
-CPU(s):              50\n\
-CPU frequency:       6000 MHz\n\
-CPU socket(s):       4\n\
-Core(s) per socket:  4\n\
-Thread(s) per core:  2\n\
-NUMA cell(s):        4\n\
-Memory size:         8192000 KiB\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
 static int testCompareDominfoByID(const void *data)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "2", NULL };
@@ -464,22 +404,6 @@ mymain(void)
     custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
                                  abs_srcdir);
 
-    if (virTestRun("virsh list (default)",
-                   testCompareListDefault, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh list (custom)",
-                   testCompareListCustom, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh nodeinfo (default)",
-                   testCompareNodeinfoDefault, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh nodeinfo (custom)",
-                   testCompareNodeinfoCustom, NULL) != 0)
-        ret = -1;
-
     if (virTestRun("virsh dominfo (by id)",
                    testCompareDominfoByID, NULL) != 0)
         ret = -1;
@@ -579,6 +503,9 @@ mymain(void)
         if (virTestRun(testname, testCompare, &info) < 0) \
             ret = -1; \
     } while (0);
+
+    DO_TEST_SCRIPT("info-default", NULL, VIRSH_DEFAULT);
+    DO_TEST_SCRIPT("info-custom", NULL, VIRSH_CUSTOM);
 
 # define DO_TEST_FULL(testname_, filter, ...) \
     do { \

@@ -1,0 +1,13 @@
+ Id   Name   State
+----------------------
+ 1    test   running
+
+CPU model:           i686
+CPU(s):              16
+CPU frequency:       1400 MHz
+CPU socket(s):       2
+Core(s) per socket:  2
+Thread(s) per core:  2
+NUMA cell(s):        2
+Memory size:         3145728 KiB
+
