@@ -18,8 +18,6 @@ main(void)
 
 #else
 
-# define EQUAL "="
-
 static void testFilterLine(char *buffer,
                            const char *toRemove)
 {
@@ -89,99 +87,6 @@ static char *custom_uri;
     "--connect", \
     custom_uri
 
-static int testIOThreadAdd(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "iothreadinfo --domain fc4;\
-                                 iothreadadd --domain fc4 --id 6;\
-                                 iothreadinfo --domain fc4", NULL};
-    const char *exp = "\
- IOThread ID   CPU Affinity\n\
------------------------------\n\
- 2             0\n\
- 4             0\n\
-\n\
-\n\
- IOThread ID   CPU Affinity\n\
------------------------------\n\
- 2             0\n\
- 4             0\n\
- 6             0\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testIOThreadDel(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "iothreadinfo --domain fc4;\
-                                 iothreaddel --domain fc4 --id 2;\
-                                 iothreadinfo --domain fc4", NULL};
-    const char *exp = "\
- IOThread ID   CPU Affinity\n\
------------------------------\n\
- 2             0\n\
- 4             0\n\
-\n\
-\n\
- IOThread ID   CPU Affinity\n\
------------------------------\n\
- 4             0\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testIOThreadSet(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domstats --domain fc4;\
-                                 iothreadset --domain fc4\
-                                 --id 2 --poll-max-ns 100\
-                                 --poll-shrink 10 --poll-grow 10;\
-                                 domstats --domain fc4", NULL};
-    const char *exp = "\
-Domain: 'fc4'\n\
-  state.state" EQUAL "1\n\
-  state.reason" EQUAL "0\n\
-  iothread.count" EQUAL "2\n\
-  iothread.2.poll-max-ns" EQUAL "32768\n\
-  iothread.2.poll-grow" EQUAL "0\n\
-  iothread.2.poll-shrink" EQUAL "0\n\
-  iothread.4.poll-max-ns" EQUAL "32768\n\
-  iothread.4.poll-grow" EQUAL "0\n\
-  iothread.4.poll-shrink" EQUAL "0\n\n\
-\n\
-Domain: 'fc4'\n\
-  state.state" EQUAL "1\n\
-  state.reason" EQUAL "0\n\
-  iothread.count" EQUAL "2\n\
-  iothread.2.poll-max-ns" EQUAL "100\n\
-  iothread.2.poll-grow" EQUAL "10\n\
-  iothread.2.poll-shrink" EQUAL "10\n\
-  iothread.4.poll-max-ns" EQUAL "32768\n\
-  iothread.4.poll-grow" EQUAL "0\n\
-  iothread.4.poll-shrink" EQUAL "0\n\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testIOThreadPin(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM,
-                                 "iothreadadd --domain fc5 --id 2;\
-                                 iothreadinfo --domain fc5;\
-                                 iothreadpin --domain fc5 --iothread 2\
-                                 --cpulist 0;\
-                                 iothreadinfo --domain fc5", NULL};
-    const char *exp = "\n\
- IOThread ID   CPU Affinity\n\
------------------------------\n\
- 2             0-3\n\
-\n\
-\n\
- IOThread ID   CPU Affinity\n\
------------------------------\n\
- 2             0\n\
-\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
 struct testInfo {
     const char *testname; /* used to generate output filename */
     const char *filter;
@@ -210,22 +115,6 @@ mymain(void)
     custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
                                  abs_srcdir);
 
-    if (virTestRun("virsh iothreadadd",
-                   testIOThreadAdd, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh iothreaddel",
-                   testIOThreadDel, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh iothreadset",
-                   testIOThreadSet, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh iothreadpin",
-                   testIOThreadPin, NULL) != 0)
-        ret = -1;
-
 # define DO_TEST_SCRIPT(testname_, testfilter, ...) \
     { \
         const char *testname = testname_; \
@@ -250,6 +139,7 @@ mymain(void)
     DO_TEST_SCRIPT("info-custom", NULL, VIRSH_CUSTOM);
     DO_TEST_SCRIPT("domain-id", "\nCPU time:", VIRSH_CUSTOM);
     DO_TEST_SCRIPT("blkiotune", NULL, VIRSH_CUSTOM);
+    DO_TEST_SCRIPT("iothreads", NULL, VIRSH_CUSTOM);
 
 # define DO_TEST_FULL(testname_, filter, ...) \
     do { \

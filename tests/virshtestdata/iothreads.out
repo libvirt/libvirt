@@ -1,0 +1,51 @@
+ IOThread ID   CPU Affinity
+-----------------------------
+ 2             0
+ 4             0
+
+
+ IOThread ID   CPU Affinity
+-----------------------------
+ 2             0
+ 4             0
+ 6             0
+
+
+ IOThread ID   CPU Affinity
+-----------------------------
+ 4             0
+ 6             0
+
+Domain: 'fc4'
+  state.state=1
+  state.reason=0
+  iothread.count=2
+  iothread.4.poll-max-ns=32768
+  iothread.4.poll-grow=0
+  iothread.4.poll-shrink=0
+  iothread.6.poll-max-ns=32768
+  iothread.6.poll-grow=0
+  iothread.6.poll-shrink=0
+
+
+Domain: 'fc4'
+  state.state=1
+  state.reason=0
+  iothread.count=2
+  iothread.4.poll-max-ns=32768
+  iothread.4.poll-grow=0
+  iothread.4.poll-shrink=0
+  iothread.6.poll-max-ns=100
+  iothread.6.poll-grow=10
+  iothread.6.poll-shrink=10
+
+
+ IOThread ID   CPU Affinity
+-----------------------------
+ 2             0-3
+
+
+ IOThread ID   CPU Affinity
+-----------------------------
+ 2             0
+

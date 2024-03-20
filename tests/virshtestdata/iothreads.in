@@ -1,0 +1,14 @@
+iothreadinfo --domain fc4
+iothreadadd --domain fc4 --id 6
+iothreadinfo --domain fc4
+iothreaddel --domain fc4 --id 2
+iothreadinfo --domain fc4
+
+domstats --domain fc4
+iothreadset --domain fc4 --id 6 --poll-max-ns 100 --poll-shrink 10 --poll-grow 10
+domstats --domain fc4
+
+iothreadadd --domain fc5 --id 2
+iothreadinfo --domain fc5
+iothreadpin --domain fc5 --iothread 2 --cpulist 0
+iothreadinfo --domain fc5
