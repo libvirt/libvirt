@@ -1,0 +1,15 @@
+weight         : 800
+device_weight  : /dev/hda,700
+device_read_iops_sec: /dev/hda,700
+device_write_iops_sec: /dev/hda,700
+device_read_bytes_sec: /dev/hda,700
+device_write_bytes_sec: /dev/hda,700
+
+
+weight         : 500
+device_weight  : /dev/hda,1000
+device_read_iops_sec: /dev/hda,1000
+device_write_iops_sec: /dev/hda,1000
+device_read_bytes_sec: /dev/hda,1000
+device_write_bytes_sec: /dev/hda,1000
+

@@ -1,0 +1,3 @@
+blkiotune fv0
+blkiotune fv0 --weight 500 --device-weights /dev/hda,1000 --device-read-iops-sec /dev/hda,1000 --device-write-iops-sec /dev/hda,1000 --device-read-bytes-sec /dev/hda,1000 --device-write-bytes-sec /dev/hda,1000
+blkiotune fv0

@@ -18,28 +18,7 @@ main(void)
 
 #else
 
-# define GET_BLKIO_PARAMETER "/dev/hda,700"
-# define SET_BLKIO_PARAMETER "/dev/hda,1000"
 # define EQUAL "="
-
-static const char *get_blkio_parameters = "\
-weight         : 800\n\
-device_weight  : " GET_BLKIO_PARAMETER "\n\
-device_read_iops_sec: " GET_BLKIO_PARAMETER "\n\
-device_write_iops_sec: " GET_BLKIO_PARAMETER "\n\
-device_read_bytes_sec: " GET_BLKIO_PARAMETER "\n\
-device_write_bytes_sec: " GET_BLKIO_PARAMETER "\n\
-\n";
-
-static const char *set_blkio_parameters = "\
-\n\
-weight         : 500\n\
-device_weight  : " SET_BLKIO_PARAMETER "\n\
-device_read_iops_sec: " SET_BLKIO_PARAMETER "\n\
-device_write_iops_sec: " SET_BLKIO_PARAMETER "\n\
-device_read_bytes_sec: " SET_BLKIO_PARAMETER "\n\
-device_write_bytes_sec: " SET_BLKIO_PARAMETER "\n\
-\n";
 
 static void testFilterLine(char *buffer,
                            const char *toRemove)
@@ -109,32 +88,6 @@ static char *custom_uri;
 # define VIRSH_CUSTOM  abs_top_builddir "/tools/virsh", \
     "--connect", \
     custom_uri
-
-static int testCompareGetBlkioParameters(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "blkiotune", "fv0", NULL };
-    const char *exp = get_blkio_parameters;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareSetBlkioParameters(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "blkiotune fv0\
-                                 --weight 500\
-                                 --device-weights\
-                                 " SET_BLKIO_PARAMETER "\
-                                 --device-read-iops-sec\
-                                 " SET_BLKIO_PARAMETER "\
-                                 --device-write-iops-sec\
-                                 " SET_BLKIO_PARAMETER "\
-                                 --device-read-bytes-sec\
-                                 " SET_BLKIO_PARAMETER "\
-                                 --device-write-bytes-sec\
-                                 " SET_BLKIO_PARAMETER ";\
-                                 blkiotune fv0", NULL };
-    const char *exp = set_blkio_parameters;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
 
 static int testIOThreadAdd(const void *data)
 {
@@ -257,14 +210,6 @@ mymain(void)
     custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
                                  abs_srcdir);
 
-    if (virTestRun("virsh blkiotune (get parameters)",
-                   testCompareGetBlkioParameters, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh blkiotune (set parameters)",
-                   testCompareSetBlkioParameters, NULL) != 0)
-        ret = -1;
-
     if (virTestRun("virsh iothreadadd",
                    testIOThreadAdd, NULL) != 0)
         ret = -1;
@@ -304,6 +249,7 @@ mymain(void)
     DO_TEST_SCRIPT("info-default", NULL, VIRSH_DEFAULT);
     DO_TEST_SCRIPT("info-custom", NULL, VIRSH_CUSTOM);
     DO_TEST_SCRIPT("domain-id", "\nCPU time:", VIRSH_CUSTOM);
+    DO_TEST_SCRIPT("blkiotune", NULL, VIRSH_CUSTOM);
 
 # define DO_TEST_FULL(testname_, filter, ...) \
     do { \
