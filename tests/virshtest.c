@@ -561,6 +561,26 @@ mymain(void)
                    testIOThreadPin, NULL) != 0)
         ret = -1;
 
+# define DO_TEST_SCRIPT(testname_, testfilter, ...) \
+    { \
+        const char *testname = testname_; \
+        g_autofree char *infile = g_strdup_printf("%s/virshtestdata/%s.in", \
+                                                  abs_srcdir, testname); \
+        const char *myargv[] = { __VA_ARGS__, NULL, NULL }; \
+        const char **tmp = myargv; \
+        const struct testInfo info = { testname, testfilter, myargv, NULL }; \
+        g_autofree char *scriptarg = NULL; \
+        if (virFileReadAll(infile, 256 * 1024, &scriptarg) < 0) { \
+            fprintf(stderr, "\nfailed to load '%s'\n", infile); \
+            ret = -1; \
+        } \
+        while (*tmp) \
+            tmp++; \
+        *tmp = scriptarg; \
+        if (virTestRun(testname, testCompare, &info) < 0) \
+            ret = -1; \
+    } while (0);
+
     /* It's a bit awkward listing result before argument, but that's a
      * limitation of C99 vararg macros.  */
 # define DO_TEST(i, result, ...) \
@@ -644,11 +664,8 @@ mymain(void)
             "echo \t '-'\"-\" \t --shell \t a");
 
     /* Tests of alias handling.  */
-    DO_TEST(31, "hello\n", "echo", "--string", "hello");
-    DO_TEST(32, "hello\n", "echo --string hello");
+    DO_TEST_SCRIPT("echo-alias", NULL, VIRSH_DEFAULT);
     DO_TEST(33, "hello\n", "echo", "--str", "hello");
-    DO_TEST(34, "hello\n", "echo --str hello");
-    DO_TEST(35, "hello\n", "echo --hi");
 
     /* Tests of multiple commands.  */
     DO_TEST(36, "a\nb\n", " echo a; echo b;");
