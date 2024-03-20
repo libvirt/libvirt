@@ -18,58 +18,9 @@ main(void)
 
 #else
 
-# define DOM_FC4_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
-# define DOM_FC5_UUID "08721f99-3d1d-4aec-96eb-97803297bb36"
-# define SECURITY_LABEL "libvirt-test (enforcing)"
-# define FC4_MESSAGES "tainted: network configuration using opaque shell scripts"
-# define FC5_MESSAGES "tainted: running with undesirable elevated privileges\n\
-                tainted: network configuration using opaque shell scripts\n\
-                tainted: use of host cdrom passthrough\n\
-                tainted: custom device tree blob used\n\
-                tainted: use of deprecated configuration settings\n\
-                deprecated configuration: CPU model Deprecated-Test"
 # define GET_BLKIO_PARAMETER "/dev/hda,700"
 # define SET_BLKIO_PARAMETER "/dev/hda,1000"
 # define EQUAL "="
-
-static const char *dominfo_fc4 = "\
-Id:             2\n\
-Name:           fc4\n\
-UUID:           " DOM_FC4_UUID "\n\
-OS Type:        linux\n\
-State:          running\n\
-CPU(s):         1\n\
-Max memory:     261072 KiB\n\
-Used memory:    131072 KiB\n\
-Persistent:     yes\n\
-Autostart:      disable\n\
-Managed save:   no\n\
-Security model: testSecurity\n\
-Security DOI:   \n\
-Security label: " SECURITY_LABEL "\n\
-Messages:       " FC4_MESSAGES "\n\
-\n";
-static const char *domuuid_fc4 = DOM_FC4_UUID "\n\n";
-static const char *domid_fc4 = "2\n\n";
-static const char *domname_fc4 = "fc4\n\n";
-static const char *domstate_fc4 = "running\n\n";
-static const char *dominfo_fc5 = "\
-Id:             3\n\
-Name:           fc5\n\
-UUID:           " DOM_FC5_UUID "\n\
-OS Type:        linux\n\
-State:          running\n\
-CPU(s):         4\n\
-Max memory:     2097152 KiB\n\
-Used memory:    2097152 KiB\n\
-Persistent:     yes\n\
-Autostart:      disable\n\
-Managed save:   no\n\
-Security model: testSecurity\n\
-Security DOI:   \n\
-Security label: " SECURITY_LABEL "\n\
-Messages:       " FC5_MESSAGES "\n\
-\n";
 
 static const char *get_blkio_parameters = "\
 weight         : 800\n\
@@ -158,104 +109,6 @@ static char *custom_uri;
 # define VIRSH_CUSTOM  abs_top_builddir "/tools/virsh", \
     "--connect", \
     custom_uri
-
-static int testCompareDominfoByID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "2", NULL };
-    const char *exp = dominfo_fc4;
-    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
-}
-
-static int testCompareDominfoByUUID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_FC4_UUID, NULL };
-    const char *exp = dominfo_fc4;
-    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
-}
-
-static int testCompareDominfoByName(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc4", NULL };
-    const char *exp = dominfo_fc4;
-    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
-}
-
-static int testCompareTaintedDominfoByName(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc5", NULL };
-    const char *exp = dominfo_fc5;
-    return testCompareOutputLit((const char *) data, exp, "\nCPU time:", argv);
-}
-
-static int testCompareDomuuidByID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "2", NULL };
-    const char *exp = domuuid_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomuuidByName(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "fc4", NULL };
-    const char *exp = domuuid_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomidByName(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domid", "fc4", NULL };
-    const char *exp = domid_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomidByUUID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_FC4_UUID, NULL };
-    const char *exp = domid_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomnameByID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domname", "2", NULL };
-    const char *exp = domname_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomnameByUUID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_FC4_UUID, NULL };
-    const char *exp = domname_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomstateByID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domstate", "2", NULL };
-    const char *exp = domstate_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomstateByUUID(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_FC4_UUID, NULL };
-    const char *exp = domstate_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomstateByName(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domstate", "fc4", NULL };
-    const char *exp = domstate_fc4;
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
-
-static int testCompareDomControlInfoByName(const void *data)
-{
-    const char *const argv[] = { VIRSH_CUSTOM, "domcontrol", "fc4", NULL };
-    const char *exp = "ok\n\n";
-    return testCompareOutputLit((const char *) data, exp, NULL, argv);
-}
 
 static int testCompareGetBlkioParameters(const void *data)
 {
@@ -404,62 +257,6 @@ mymain(void)
     custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
                                  abs_srcdir);
 
-    if (virTestRun("virsh dominfo (by id)",
-                   testCompareDominfoByID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh dominfo (by uuid)",
-                   testCompareDominfoByUUID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh dominfo (by name)",
-                   testCompareDominfoByName, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh dominfo (by name, more tainted messages)",
-                   testCompareTaintedDominfoByName, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domid (by name)",
-                   testCompareDomidByName, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domid (by uuid)",
-                   testCompareDomidByUUID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domuuid (by id)",
-                   testCompareDomuuidByID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domuuid (by name)",
-                   testCompareDomuuidByName, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domname (by id)",
-                   testCompareDomnameByID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domname (by uuid)",
-                   testCompareDomnameByUUID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domstate (by id)",
-                   testCompareDomstateByID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domstate (by uuid)",
-                   testCompareDomstateByUUID, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domstate (by name)",
-                   testCompareDomstateByName, NULL) != 0)
-        ret = -1;
-
-    if (virTestRun("virsh domcontrol (by name)",
-                   testCompareDomControlInfoByName, NULL) != 0)
-        ret = -1;
-
     if (virTestRun("virsh blkiotune (get parameters)",
                    testCompareGetBlkioParameters, NULL) != 0)
         ret = -1;
@@ -506,6 +303,7 @@ mymain(void)
 
     DO_TEST_SCRIPT("info-default", NULL, VIRSH_DEFAULT);
     DO_TEST_SCRIPT("info-custom", NULL, VIRSH_CUSTOM);
+    DO_TEST_SCRIPT("domain-id", "\nCPU time:", VIRSH_CUSTOM);
 
 # define DO_TEST_FULL(testname_, filter, ...) \
     do { \

@@ -1,0 +1,73 @@
+Id:             2
+Name:           fc4
+UUID:           ef861801-45b9-11cb-88e3-afbfe5370493
+OS Type:        linux
+State:          running
+CPU(s):         1
+Max memory:     261072 KiB
+Used memory:    131072 KiB
+Persistent:     yes
+Autostart:      disable
+Managed save:   no
+Security model: testSecurity
+Security DOI:   
+Security label: libvirt-test (enforcing)
+Messages:       tainted: network configuration using opaque shell scripts
+
+Id:             2
+Name:           fc4
+UUID:           ef861801-45b9-11cb-88e3-afbfe5370493
+OS Type:        linux
+State:          running
+CPU(s):         1
+Max memory:     261072 KiB
+Used memory:    131072 KiB
+Persistent:     yes
+Autostart:      disable
+Managed save:   no
+Security model: testSecurity
+Security DOI:   
+Security label: libvirt-test (enforcing)
+Messages:       tainted: network configuration using opaque shell scripts
+
+Id:             3
+Name:           fc5
+UUID:           08721f99-3d1d-4aec-96eb-97803297bb36
+OS Type:        linux
+State:          running
+CPU(s):         4
+Max memory:     2097152 KiB
+Used memory:    2097152 KiB
+Persistent:     yes
+Autostart:      disable
+Managed save:   no
+Security model: testSecurity
+Security DOI:   
+Security label: libvirt-test (enforcing)
+Messages:       tainted: running with undesirable elevated privileges
+                tainted: network configuration using opaque shell scripts
+                tainted: use of host cdrom passthrough
+                tainted: custom device tree blob used
+                tainted: use of deprecated configuration settings
+                deprecated configuration: CPU model Deprecated-Test
+
+2
+
+2
+
+ef861801-45b9-11cb-88e3-afbfe5370493
+
+ef861801-45b9-11cb-88e3-afbfe5370493
+
+fc4
+
+fc4
+
+running
+
+running
+
+running
+
+ok
+
