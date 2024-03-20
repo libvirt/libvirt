@@ -1,0 +1,11 @@
+echo         a A 0 + * . \' / ? =  < > &
+echo --xml   a A 0 + * . \' / ? =  < > &
+echo --shell a A 0 + * . \' / ? =  < > &
+echo ""
+echo --shell
+echo --xml
+echo --shell
+echo ''
+echo --shell ""
+echo --xml ''
+echo --shell ""''

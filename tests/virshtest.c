@@ -610,6 +610,7 @@ mymain(void)
             "echo  \"'\"  '\"'  '\\'\"\\\\\"");
 
     /* Tests of echo flags.  */
+    DO_TEST_SCRIPT("echo-escaping", NULL, VIRSH_DEFAULT);
     DO_TEST(13, "a A 0 + * ; . ' \" / ? =   \n < > &\n",
             "echo", "a", "A", "0", "+", "*", ";", ".", "'", "\"", "/", "?",
             "=", " ", "\n", "<", ">", "&");
@@ -619,25 +620,6 @@ mymain(void)
     DO_TEST(15, "a A 0 + * ; . &apos; &quot; / ? =   \n &lt; &gt; &amp;\n",
             "echo", "--xml", "a", "A", "0", "+", "*", ";", ".", "'", "\"",
             "/", "?", "=", " ", "\n", "<", ">", "&");
-    DO_TEST(16, "a A 0 + '*' ';' . ''\\''' '\"' / '?' = ' ' '\n' '<' '>' '&'\n",
-            "echo", "--shell", "a", "A", "0", "+", "*", ";", ".", "\'",
-            "\"", "/", "?", "=", " ", "\n", "<", ">", "&");
-    DO_TEST(17, "\n",
-            "echo", "");
-    DO_TEST(18, "''\n",
-            "echo", "--shell", "");
-    DO_TEST(19, "\n",
-            "echo", "--xml", "");
-    DO_TEST(20, "''\n",
-            "echo", "--shell", "");
-    DO_TEST(21, "\n",
-            "echo ''");
-    DO_TEST(22, "''\n",
-            "echo --shell \"\"");
-    DO_TEST(23, "\n",
-            "echo --xml ''");
-    DO_TEST(24, "''\n",
-            "echo --shell \"\"''");
 
     /* Tests of -- handling.  */
     DO_TEST(25, "a\n",
