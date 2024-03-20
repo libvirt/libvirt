@@ -90,21 +90,20 @@ device_read_bytes_sec: " SET_BLKIO_PARAMETER "\n\
 device_write_bytes_sec: " SET_BLKIO_PARAMETER "\n\
 \n";
 
-static int testFilterLine(char *buffer,
-                          const char *toRemove)
+static void testFilterLine(char *buffer,
+                           const char *toRemove)
 {
     char *start;
-    char *end;
 
-    if (!(start = strstr(buffer, toRemove)))
-      return -1;
+    while ((start = strstr(buffer, toRemove))) {
+        char *end;
 
-    if (!(end = strstr(start+1, "\n"))) {
-      *start = '\0';
-    } else {
-      memmove(start, end, strlen(end)+1);
+        if (!(end = strstr(start+1, "\n"))) {
+            *start = '\0';
+        } else {
+            memmove(start, end, strlen(end)+1);
+        }
     }
-    return 0;
 }
 
 static int
@@ -134,8 +133,8 @@ testCompareOutputLit(const char *expectFile,
         actual = g_strdup_printf("%s\n## Exit code: %d\n", tmp, exitstatus);
     }
 
-    if (filter && testFilterLine(actual, filter) < 0)
-        return -1;
+    if (filter)
+        testFilterLine(actual, filter);
 
     if (expectData) {
         if (virTestCompareToString(expectData, actual) < 0)
