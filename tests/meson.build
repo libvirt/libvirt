@@ -696,8 +696,6 @@ if conf.has('WITH_LIBVIRTD')
     'virsh-read-non-seekable',
     'virsh-self-test',
     'virsh-snapshot',
-    'virsh-start',
-    'virsh-undefine',
     'virsh-uriprecedence',
     'virt-admin-self-test',
   ]

@@ -1,0 +1,23 @@
+list --all
+
+echo test failure when starting already running guest
+start fv0
+
+echo undefine a running domain - by domain name
+dominfo fc4
+undefine fc4
+dominfo fc4
+shutdown fc4
+dominfo fc4
+
+echo undefine a running domain - by domain id
+dominfo 3
+undefine 3
+dominfo 3
+shutdown 3
+dominfo fc5
+
+echo shutdown then undefine
+shutdown fv0
+undefine fv0
+dominfo fv0

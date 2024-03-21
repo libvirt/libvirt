@@ -213,6 +213,7 @@ mymain(void)
     DO_TEST_SCRIPT_FULL("numeric-parsing-event", true, NULL, VIRSH_DEFAULT);
     DO_TEST_SCRIPT("attach-disk", NULL, VIRSH_DEFAULT);
     DO_TEST_SCRIPT("vcpupin", NULL, VIRSH_DEFAULT);
+    DO_TEST_SCRIPT("lifecycle", "\nCPU time:", VIRSH_CUSTOM);
 
     DO_TEST_FULL("domain-id-overflow", NULL, VIRSH_CUSTOM, "-q", "domname", "4294967298");
     DO_TEST_FULL("schedinfo-invalid-argument", NULL, VIRSH_DEFAULT, "schedinfo", "1", "--set", "j=k");
