@@ -689,7 +689,6 @@ test_scripts = []
 if conf.has('WITH_LIBVIRTD')
   test_scripts += [
     'libvirtd-fail',
-    'libvirtd-pool',
     'virsh-auth',
     'virsh-self-test',
     'virsh-uriprecedence',

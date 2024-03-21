@@ -1,0 +1,12 @@
+<pool type='dir'>
+  <name>P</name>
+  <source>
+    <host name='src-host'/>
+    <dir path='/src/path'/>
+    <device path='/src/dev'/>
+    <name>S</name>
+  </source>
+  <target>
+    <path>/target-path</path>
+  </target>
+</pool>

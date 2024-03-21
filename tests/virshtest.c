@@ -304,6 +304,9 @@ mymain(void)
 
     DO_TEST_FULL("domain-id-overflow", NULL, VIRSH_CUSTOM, "-q", "domname", "4294967298");
     DO_TEST_FULL("schedinfo-invalid-argument", NULL, VIRSH_DEFAULT, "schedinfo", "1", "--set", "j=k");
+    DO_TEST_FULL("pool-define-as", NULL, VIRSH_DEFAULT, "-q",
+                 "pool-define-as", "--print-xml", "P", "dir", "src-host",
+                 "/src/path", "/src/dev", "S", "/target-path");
 
     DO_TEST_SCRIPT("snapshot", "<creationTime", VIRSH_DEFAULT);
     DO_TEST_FULL("snapshot-redefine", NULL, VIRSH_DEFAULT,
