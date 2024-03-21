@@ -7481,7 +7481,7 @@ testConnectListAllNodeDevices(virConnectPtr conn,
 {
     testDriver *driver = conn->privateData;
 
-    virCheckFlags(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP, -1);
+    virCheckFlags(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_ALL, -1);
 
     return virNodeDeviceObjListExport(conn, driver->devs, devices,
                                       NULL, flags);
