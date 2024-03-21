@@ -16,11 +16,12 @@ v10.2.0 (unreleased)
 * **Removed features**
 
 * **New features**
+
   * ch: Basic save and restore support for ch driver
 
-      The ch driver now supports basic save and restore operations. This is functional
-      on domains without any network, host device config defined. The `path` parameter
-      for save and restore should be a directory.
+    The ch driver now supports basic save and restore operations. This is
+    functional on domains without any network, host device config defined.
+    The `path` parameter for save and restore should be a directory.
 
   * qemu: Support for driver type ``mtp`` in ``<filesystem/>`` devices
 
