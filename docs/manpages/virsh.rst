@@ -326,8 +326,6 @@ Will change current directory to *directory*.  The default directory
 for the ``cd`` command is the home directory or, if there is no *HOME*
 variable in the environment, the root directory.
 
-This command is only available in interactive mode.
-
 
 pwd
 ---

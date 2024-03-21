@@ -3207,11 +3207,6 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
     const char *dir = NULL;
     g_autofree char *dir_malloced = NULL;
 
-    if (!ctl->imode) {
-        vshError(ctl, "%s", _("cd: command valid only in interactive mode"));
-        return false;
-    }
-
     if (vshCommandOptStringQuiet(ctl, cmd, "dir", &dir) <= 0)
         dir = dir_malloced = virGetUserDirectory();
     if (!dir)
