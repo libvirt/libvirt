@@ -1,0 +1,13 @@
+
+Redefine must be in topological order; this will fail
+error: invalid argument: parent c3 for moment c2 not found
+
+correct order
+Domain checkpoint c3 created from 'checkpoint-c3.xml'
+Domain checkpoint c2 created from 'checkpoint-c2.xml'
+Name:           c2
+Domain:         test
+Parent:         c3
+Children:       0
+Descendants:    0
+

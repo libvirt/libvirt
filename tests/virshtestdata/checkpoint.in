@@ -1,0 +1,35 @@
+echo Create a series of checkpoints, with names that intentionally sort
+echo differently by topology than by name. For now, it is not possible
+echo to create fanout without hacking through redefines.
+checkpoint-create-as test c1
+checkpoint-create-as test c1
+checkpoint-create-as test c3
+checkpoint-create-as test c2
+
+echo snapshots cannot be created while checkpoints exist
+snapshot-create-as test s1
+
+echo Checking tree view (siblings sorted alphabetically)
+checkpoint-list test --tree
+
+echo Demonstrate list filtering
+checkpoint-list test --roots --name
+checkpoint-list test --leaves --name
+checkpoint-list test --parent --no-leaves --name
+checkpoint-list test --from c3 --name
+checkpoint-list test --from c1 --descendants --name
+
+echo Now the tree is linear, so we have an unambiguous topological order
+checkpoint-list test --name
+checkpoint-list test --name --topological
+
+echo validate XML
+checkpoint-delete test c1
+checkpoint-dumpxml test c3
+checkpoint-dumpxml test c2
+
+echo Deleting current checkpoint moves current up to remaining parent
+checkpoint-delete test --children-only c3
+checkpoint-list test --leaves --name
+checkpoint-delete test --children c3
+checkpoint-list test --leaves --name

@@ -228,6 +228,16 @@ mymain(void)
                  "snapshot-create test --redefine snapshot-s2.xml --current --validate ;"
                  "snapshot-info test --current");
 
+    DO_TEST_SCRIPT("checkpoint", "<creationTime", VIRSH_DEFAULT);
+    DO_TEST_FULL("checkpoint-redefine", NULL, VIRSH_DEFAULT,
+                 "cd " abs_srcdir "/virshtestdata ;"
+                 "echo 'Redefine must be in topological order; this will fail' ;"
+                 "checkpoint-create test --redefine checkpoint-c2.xml ;"
+                 "echo 'correct order' ;"
+                 "checkpoint-create test --redefine checkpoint-c3.xml ;"
+                 "checkpoint-create test --redefine checkpoint-c2.xml ;"
+                 "checkpoint-info test c2");
+
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

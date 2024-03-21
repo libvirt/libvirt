@@ -1,0 +1,38 @@
+<domaincheckpoint>
+  <name>c3</name>
+  <creationTime>5678</creationTime>
+  <disks>
+    <disk name='vda' checkpoint='bitmap' bitmap='c3'/>
+  </disks>
+  <domain type='test'>
+    <name>test</name>
+    <uuid>6695eb01-f6a4-8304-79aa-97f2502e193f</uuid>
+    <memory unit='KiB'>8388608</memory>
+    <currentMemory unit='KiB'>2097152</currentMemory>
+    <vcpu placement='static'>2</vcpu>
+    <os>
+      <type arch='i686'>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <clock offset='utc'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>destroy</on_crash>
+    <devices>
+      <disk type='file' device='disk'>
+        <source file='/guest/diskimage1'/>
+        <target dev='vda' bus='virtio'/>
+        <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+      </disk>
+      <interface type='network'>
+        <mac address='aa:bb:cc:dd:ee:ff'/>
+        <source network='default'/>
+        <target dev='testnet0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      </interface>
+      <memballoon model='virtio'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </memballoon>
+    </devices>
+  </domain>
+</domaincheckpoint>
