@@ -1,0 +1,26 @@
+Invalid syntax.
+error: Numeric value 'a' for <vcpu> option is malformed or out of range
+
+An out-of-range vCPU number deserves a diagnostic, too.
+error: invalid argument: requested vcpu '100' is not present in the domain
+
+Negative number
+error: Numeric value '-100' for <vcpu> option is malformed or out of range
+
+missing argument
+error: vcpupin: Missing vCPU number in pin mode.
+
+An out-of-range vCPU number when get information with live flag
+error: vcpu 100 is out of range of live cpu count 2
+
+An out-of-range vCPU number when get information without flag
+error: vcpu 100 is out of range of live cpu count 2
+
+An out-of-range vCPU number when get information with config flag
+error: vcpu 100 is out of range of persistent cpu count 2
+
+An out-of-range vCPU number when get information with current flag
+error: vcpu 100 is out of range of live cpu count 2
+
+
+## Exit code: 1

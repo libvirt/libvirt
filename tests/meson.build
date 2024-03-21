@@ -701,7 +701,6 @@ if conf.has('WITH_LIBVIRTD')
     'virsh-start',
     'virsh-undefine',
     'virsh-uriprecedence',
-    'virsh-vcpupin',
     'virt-admin-self-test',
   ]
 

@@ -1,0 +1,23 @@
+echo Invalid syntax.
+vcpupin test a 0,1
+
+echo An out-of-range vCPU number deserves a diagnostic, too.
+vcpupin test 100 0,1
+
+echo Negative number
+vcpupin test -100 0,1
+
+echo missing argument
+vcpupin test --cpulist 0,1
+
+echo An out-of-range vCPU number when get information with live flag
+vcpupin test 100 --live
+
+echo An out-of-range vCPU number when get information without flag
+vcpupin test 100
+
+echo An out-of-range vCPU number when get information with config flag
+vcpupin test 100 --config
+
+echo An out-of-range vCPU number when get information with current flag
+vcpupin test 100 --current
