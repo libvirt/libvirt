@@ -1146,7 +1146,8 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
                                       NULL, NULL, 0, NULL);
     }
 
-    if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64))
+    if (ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64 ||
+        ARCH_IS_LOONGARCH(guestarch))
         virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_ACPI,
                                                  true, true);
 
@@ -2696,7 +2697,7 @@ static const char *preferredMachines[] =
     NULL, /* VIR_ARCH_ITANIUM (doesn't exist in QEMU any more) */
     "lm32-evr", /* VIR_ARCH_LM32 */
 
-    NULL, /* VIR_ARCH_LOONGARCH64 */
+    "virt", /* VIR_ARCH_LOONGARCH64 */
     "mcf5208evb", /* VIR_ARCH_M68K */
     "petalogix-s3adsp1800", /* VIR_ARCH_MICROBLAZE */
     "petalogix-s3adsp1800", /* VIR_ARCH_MICROBLAZEEL */
@@ -3771,7 +3772,7 @@ virQEMUCapsInitCPUModel(virQEMUCaps *qemuCaps,
     } else if (ARCH_IS_X86(qemuCaps->arch)) {
         ret = virQEMUCapsInitCPUModelX86(qemuCaps, type, modelInfo,
                                          cpu, migratable);
-    } else if (ARCH_IS_ARM(qemuCaps->arch)) {
+    } else if (ARCH_IS_ARM(qemuCaps->arch) || ARCH_IS_LOONGARCH(qemuCaps->arch)) {
         ret = 2;
     }
 

@@ -828,6 +828,7 @@ bool qemuDomainIsQ35(const virDomainDef *def);
 bool qemuDomainIsI440FX(const virDomainDef *def);
 bool qemuDomainIsS390CCW(const virDomainDef *def);
 bool qemuDomainIsARMVirt(const virDomainDef *def);
+bool qemuDomainIsLoongArchVirt(const virDomainDef *def);
 bool qemuDomainIsRISCVVirt(const virDomainDef *def);
 bool qemuDomainIsPSeries(const virDomainDef *def);
 bool qemuDomainIsMipsMalta(const virDomainDef *def);

@@ -2064,6 +2064,7 @@ qemuValidateDomainChrDef(const virDomainChrDef *dev,
                 isCompatible = false;
             }
             if (dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A &&
+                !qemuDomainIsLoongArchVirt(def) &&
                 !qemuDomainIsRISCVVirt(def)) {
                 isCompatible = false;
             }
