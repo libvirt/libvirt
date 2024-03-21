@@ -269,7 +269,7 @@ mymain(void)
     DO_PARSE_TEST("usr/share/qemu/firmware/40-edk2-ovmf-4m-qcow2-x64-sb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/41-edk2-ovmf-2m-raw-x64-sb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-aarch64-qcow2.json");
-    DO_PARSE_FAILURE_TEST("usr/share/qemu/firmware/50-edk2-loongarch64.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-loongarch64.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/51-edk2-aarch64-raw.json");

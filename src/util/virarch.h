@@ -36,36 +36,37 @@ typedef enum {
     VIR_ARCH_ITANIUM,      /* Itanium     64 LE https://en.wikipedia.org/wiki/Itanium */
     VIR_ARCH_LM32,         /* MilkyMist   32 BE https://en.wikipedia.org/wiki/Milkymist */
 
+    VIR_ARCH_LOONGARCH64,  /* LoongArch   64 LE https://en.wikipedia.org/wiki/Loongson#LoongArch */
     VIR_ARCH_M68K,         /* m68k        32 BE https://en.wikipedia.org/wiki/Motorola_68000_family */
     VIR_ARCH_MICROBLAZE,   /* Microblaze  32 BE https://en.wikipedia.org/wiki/MicroBlaze */
     VIR_ARCH_MICROBLAZEEL, /* Microblaze  32 LE https://en.wikipedia.org/wiki/MicroBlaze */
     VIR_ARCH_MIPS,         /* MIPS        32 BE https://en.wikipedia.org/wiki/MIPS_architecture */
-    VIR_ARCH_MIPSEL,       /* MIPS        32 LE https://en.wikipedia.org/wiki/MIPS_architecture */
 
+    VIR_ARCH_MIPSEL,       /* MIPS        32 LE https://en.wikipedia.org/wiki/MIPS_architecture */
     VIR_ARCH_MIPS64,       /* MIPS        64 BE https://en.wikipedia.org/wiki/MIPS_architecture */
     VIR_ARCH_MIPS64EL,     /* MIPS        64 LE https://en.wikipedia.org/wiki/MIPS_architecture */
     VIR_ARCH_OR32,         /* OpenRisc    32 BE https://en.wikipedia.org/wiki/OpenRISC#QEMU_support */
     VIR_ARCH_PARISC,       /* PA-Risc     32 BE https://en.wikipedia.org/wiki/PA-RISC */
-    VIR_ARCH_PARISC64,     /* PA-Risc     64 BE https://en.wikipedia.org/wiki/PA-RISC */
 
+    VIR_ARCH_PARISC64,     /* PA-Risc     64 BE https://en.wikipedia.org/wiki/PA-RISC */
     VIR_ARCH_PPC,          /* PowerPC     32 BE https://en.wikipedia.org/wiki/PowerPC */
     VIR_ARCH_PPCLE,        /* PowerPC     32 LE https://en.wikipedia.org/wiki/PowerPC */
     VIR_ARCH_PPC64,        /* PowerPC     64 BE https://en.wikipedia.org/wiki/PowerPC */
     VIR_ARCH_PPC64LE,      /* PowerPC     64 LE https://en.wikipedia.org/wiki/PowerPC */
-    VIR_ARCH_PPCEMB,       /* PowerPC     32 BE https://en.wikipedia.org/wiki/PowerPC */
 
+    VIR_ARCH_PPCEMB,       /* PowerPC     32 BE https://en.wikipedia.org/wiki/PowerPC */
     VIR_ARCH_RISCV32,      /* RISC-V      32 LE https://en.wikipedia.org/wiki/RISC-V */
     VIR_ARCH_RISCV64,      /* RISC-V      64 LE https://en.wikipedia.org/wiki/RISC-V */
     VIR_ARCH_S390,         /* S390        32 BE https://en.wikipedia.org/wiki/S390 */
     VIR_ARCH_S390X,        /* S390        64 BE https://en.wikipedia.org/wiki/S390x */
-    VIR_ARCH_SH4,          /* SuperH4     32 LE https://en.wikipedia.org/wiki/SuperH */
 
+    VIR_ARCH_SH4,          /* SuperH4     32 LE https://en.wikipedia.org/wiki/SuperH */
     VIR_ARCH_SH4EB,        /* SuperH4     32 BE https://en.wikipedia.org/wiki/SuperH */
     VIR_ARCH_SPARC,        /* Sparc       32 BE https://en.wikipedia.org/wiki/Sparc */
     VIR_ARCH_SPARC64,      /* Sparc       64 BE https://en.wikipedia.org/wiki/Sparc */
     VIR_ARCH_UNICORE32,    /* UniCore     32 LE https://en.wikipedia.org/wiki/Unicore */
-    VIR_ARCH_X86_64,       /* x86         64 LE https://en.wikipedia.org/wiki/X86 */
 
+    VIR_ARCH_X86_64,       /* x86         64 LE https://en.wikipedia.org/wiki/X86 */
     VIR_ARCH_XTENSA,       /* XTensa      32 LE https://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
     VIR_ARCH_XTENSAEB,     /* XTensa      32 BE https://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
 
@@ -105,6 +106,8 @@ typedef enum {
 
 #define ARCH_IS_SH4(arch) ((arch) == VIR_ARCH_SH4 ||\
                            (arch) == VIR_ARCH_SH4EB)
+
+#define ARCH_IS_LOONGARCH(arch)  ((arch) == VIR_ARCH_LOONGARCH64)
 
 typedef enum {
     VIR_ARCH_LITTLE_ENDIAN,

@@ -444,6 +444,7 @@
       <value>i686</value>
       <value>ia64</value>
       <value>lm32</value>
+      <value>loongarch64</value>
       <value>m68k</value>
       <value>microblaze</value>
       <value>microblazeel</value>

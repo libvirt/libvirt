@@ -1,6 +1,7 @@
 cpu_sources = [
   'cpu.c',
   'cpu_arm.c',
+  'cpu_loongarch.c',
   'cpu_map.c',
   'cpu_ppc64.c',
   'cpu_riscv64.c',

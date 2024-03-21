@@ -51,36 +51,37 @@ static const struct virArchData {
     { "ia64",         64, VIR_ARCH_LITTLE_ENDIAN },
     { "lm32",         32, VIR_ARCH_BIG_ENDIAN },
 
+    { "loongarch64",  64, VIR_ARCH_LITTLE_ENDIAN },
     { "m68k",         32, VIR_ARCH_BIG_ENDIAN },
     { "microblaze",   32, VIR_ARCH_BIG_ENDIAN },
     { "microblazeel", 32, VIR_ARCH_LITTLE_ENDIAN},
     { "mips",         32, VIR_ARCH_BIG_ENDIAN },
-    { "mipsel",       32, VIR_ARCH_LITTLE_ENDIAN },
 
+    { "mipsel",       32, VIR_ARCH_LITTLE_ENDIAN },
     { "mips64",       64, VIR_ARCH_BIG_ENDIAN },
     { "mips64el",     64, VIR_ARCH_LITTLE_ENDIAN },
     { "openrisc",     32, VIR_ARCH_BIG_ENDIAN },
     { "parisc",       32, VIR_ARCH_BIG_ENDIAN },
-    { "parisc64",     64, VIR_ARCH_BIG_ENDIAN },
 
+    { "parisc64",     64, VIR_ARCH_BIG_ENDIAN },
     { "ppc",          32, VIR_ARCH_BIG_ENDIAN },
     { "ppcle",        32, VIR_ARCH_LITTLE_ENDIAN },
     { "ppc64",        64, VIR_ARCH_BIG_ENDIAN },
     { "ppc64le",      64, VIR_ARCH_LITTLE_ENDIAN },
-    { "ppcemb",       32, VIR_ARCH_BIG_ENDIAN },
 
+    { "ppcemb",       32, VIR_ARCH_BIG_ENDIAN },
     { "riscv32",      32, VIR_ARCH_LITTLE_ENDIAN },
     { "riscv64",      64, VIR_ARCH_LITTLE_ENDIAN },
     { "s390",         32, VIR_ARCH_BIG_ENDIAN },
     { "s390x",        64, VIR_ARCH_BIG_ENDIAN },
-    { "sh4",          32, VIR_ARCH_LITTLE_ENDIAN },
 
+    { "sh4",          32, VIR_ARCH_LITTLE_ENDIAN },
     { "sh4eb",        64, VIR_ARCH_BIG_ENDIAN },
     { "sparc",        32, VIR_ARCH_BIG_ENDIAN },
     { "sparc64",      64, VIR_ARCH_BIG_ENDIAN },
     { "unicore32",    32, VIR_ARCH_LITTLE_ENDIAN },
-    { "x86_64",       64, VIR_ARCH_LITTLE_ENDIAN },
 
+    { "x86_64",       64, VIR_ARCH_LITTLE_ENDIAN },
     { "xtensa",       32, VIR_ARCH_LITTLE_ENDIAN },
     { "xtensaeb",     32, VIR_ARCH_BIG_ENDIAN },
 };

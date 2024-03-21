@@ -2696,36 +2696,37 @@ static const char *preferredMachines[] =
     NULL, /* VIR_ARCH_ITANIUM (doesn't exist in QEMU any more) */
     "lm32-evr", /* VIR_ARCH_LM32 */
 
+    NULL, /* VIR_ARCH_LOONGARCH64 */
     "mcf5208evb", /* VIR_ARCH_M68K */
     "petalogix-s3adsp1800", /* VIR_ARCH_MICROBLAZE */
     "petalogix-s3adsp1800", /* VIR_ARCH_MICROBLAZEEL */
     "malta", /* VIR_ARCH_MIPS */
-    "malta", /* VIR_ARCH_MIPSEL */
 
+    "malta", /* VIR_ARCH_MIPSEL */
     "malta", /* VIR_ARCH_MIPS64 */
     "malta", /* VIR_ARCH_MIPS64EL */
     "or1k-sim", /* VIR_ARCH_OR32 */
     NULL, /* VIR_ARCH_PARISC (no QEMU impl) */
-    NULL, /* VIR_ARCH_PARISC64 (no QEMU impl) */
 
+    NULL, /* VIR_ARCH_PARISC64 (no QEMU impl) */
     "g3beige", /* VIR_ARCH_PPC */
     "g3beige", /* VIR_ARCH_PPCLE */
     "pseries", /* VIR_ARCH_PPC64 */
     "pseries", /* VIR_ARCH_PPC64LE */
-    "bamboo", /* VIR_ARCH_PPCEMB */
 
+    "bamboo", /* VIR_ARCH_PPCEMB */
     "virt", /* VIR_ARCH_RISCV32 */
     "virt", /* VIR_ARCH_RISCV64 */
     NULL, /* VIR_ARCH_S390 (no QEMU impl) */
     "s390-ccw-virtio", /* VIR_ARCH_S390X */
-    "shix", /* VIR_ARCH_SH4 */
 
+    "shix", /* VIR_ARCH_SH4 */
     "shix", /* VIR_ARCH_SH4EB */
     "SS-5", /* VIR_ARCH_SPARC */
     "sun4u", /* VIR_ARCH_SPARC64 */
     "puv3", /* VIR_ARCH_UNICORE32 */
-    "pc", /* VIR_ARCH_X86_64 */
 
+    "pc", /* VIR_ARCH_X86_64 */
     "sim", /* VIR_ARCH_XTENSA */
     "sim", /* VIR_ARCH_XTENSAEB */
 };

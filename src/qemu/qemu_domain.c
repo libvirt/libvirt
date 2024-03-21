@@ -4266,6 +4266,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_CRIS:
     case VIR_ARCH_ITANIUM:
     case VIR_ARCH_LM32:
+    case VIR_ARCH_LOONGARCH64:
     case VIR_ARCH_M68K:
     case VIR_ARCH_MICROBLAZE:
     case VIR_ARCH_MICROBLAZEEL:
