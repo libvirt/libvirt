@@ -1,0 +1,17 @@
+
+Redefine must be in topological order; this will fail
+error: invalid argument: parent s3 for moment s2 not found
+
+correct order
+Domain snapshot s3 created from 'snapshot-s3.xml'
+Domain snapshot s2 created from 'snapshot-s2.xml'
+Name:           s2
+Domain:         test
+Current:        yes
+State:          running
+Location:       internal
+Parent:         s3
+Children:       0
+Descendants:    0
+Metadata:       yes
+

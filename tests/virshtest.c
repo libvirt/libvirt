@@ -218,6 +218,16 @@ mymain(void)
     DO_TEST_FULL("domain-id-overflow", NULL, VIRSH_CUSTOM, "-q", "domname", "4294967298");
     DO_TEST_FULL("schedinfo-invalid-argument", NULL, VIRSH_DEFAULT, "schedinfo", "1", "--set", "j=k");
 
+    DO_TEST_SCRIPT("snapshot", "<creationTime", VIRSH_DEFAULT);
+    DO_TEST_FULL("snapshot-redefine", NULL, VIRSH_DEFAULT,
+                 "cd " abs_srcdir "/virshtestdata ;"
+                 "echo 'Redefine must be in topological order; this will fail' ;"
+                 "snapshot-create test --redefine snapshot-s2.xml --validate ;"
+                 "echo 'correct order' ;"
+                 "snapshot-create test --redefine snapshot-s3.xml --validate ;"
+                 "snapshot-create test --redefine snapshot-s2.xml --current --validate ;"
+                 "snapshot-info test --current");
+
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

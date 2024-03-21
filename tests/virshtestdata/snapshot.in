@@ -1,0 +1,54 @@
+echo Create a series of snapshots, with names that intentionally sort
+echo differently by topology than by name. Use revert to create fanout.
+snapshot-create-as test s1
+snapshot-create-as test s1
+snapshot-create-as test s3
+snapshot-create-as test s2
+snapshot-revert test s3
+snapshot-create-as test s6
+snapshot-create-as test s5
+snapshot-revert test s6
+snapshot-create-as test s4
+snapshot-revert test s1
+snapshot-create-as test s7
+snapshot-create-as test s8
+
+echo checkpoints cannot be created while snapshots exist
+checkpoint-create-as test c1
+
+echo Checking tree view (siblings sorted alphabetically)
+snapshot-list test --tree
+
+echo Current was last one created, but we can change that
+snapshot-current test --name
+snapshot-current test s1
+snapshot-current test --name
+
+echo Deleting current root leads to multiple roots, demonstrate list filtering
+snapshot-delete test --current
+snapshot-current test --name
+
+echo list roots
+snapshot-list test --roots --name
+echo list leaves
+snapshot-list test --leaves --name
+echo list no-leaves
+snapshot-list test --parent --no-leaves --name
+echo list from
+snapshot-list test --from s3 --name
+snapshot-list test --from s3 --descendants --name
+
+echo More fun with delete flags, current node moves up to remaining parent
+snapshot-current test s4
+snapshot-delete test --children-only s6
+snapshot-current test --name
+snapshot-delete test --children s7
+snapshot-current test --name
+snapshot-delete test s6
+snapshot-current test --name
+
+echo Now the tree is linear, so we have an unambiguous topological order
+snapshot-list test --name
+snapshot-list test --name --topological
+snapshot-dumpxml test s3
+snapshot-dumpxml test s2
