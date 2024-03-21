@@ -694,7 +694,6 @@ if conf.has('WITH_LIBVIRTD')
     'virsh-checkpoint',
     'virsh-read-bufsiz',
     'virsh-read-non-seekable',
-    'virsh-schedinfo',
     'virsh-self-test',
     'virsh-snapshot',
     'virsh-start',
