@@ -379,8 +379,8 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
                                    VIR_DOMAIN_VIRT_KVM, opaque) < 0)
                 ret = -1;
         }
-    } else if (STRPREFIX(arch, "riscv")) {
-        /* For riscv64 we test two combinations:
+    } else if (STRPREFIX(arch, "riscv") || STRPREFIX(arch, "loongarch64")) {
+        /* For riscv64 or loongarch64 we test two combinations:
          *
          *   - KVM with virt machine
          *   - TCG with virt machine

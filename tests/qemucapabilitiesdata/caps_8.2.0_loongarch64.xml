@@ -1,0 +1,177 @@
+<qemuCaps>
+  <emulator>/usr/bin/qemu-system-loongarch64</emulator>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='kvm'/>
+  <flag name='sdl'/>
+  <flag name='spice'/>
+  <flag name='hda-duplex'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
+  <flag name='piix3-usb-uhci'/>
+  <flag name='piix4-usb-uhci'/>
+  <flag name='usb-ehci'/>
+  <flag name='ich9-usb-ehci1'/>
+  <flag name='pci-ohci'/>
+  <flag name='usb-redir'/>
+  <flag name='usb-hub'/>
+  <flag name='ich9-ahci'/>
+  <flag name='virtio-blk-pci.scsi'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='hda-micro'/>
+  <flag name='nec-usb-xhci'/>
+  <flag name='lsi'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='usb-redir.filter'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='vnc'/>
+  <flag name='VGA'/>
+  <flag name='cirrus-vga'/>
+  <flag name='usb-serial'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='megasas'/>
+  <flag name='pci-bridge'/>
+  <flag name='vfio-pci'/>
+  <flag name='dmi-to-pci-bridge'/>
+  <flag name='usb-storage'/>
+  <flag name='ich9-intel-hda'/>
+  <flag name='usb-kbd'/>
+  <flag name='usb-audio'/>
+  <flag name='migrate-rdma'/>
+  <flag name='VGA.vgamem_mb'/>
+  <flag name='pc-dimm'/>
+  <flag name='pci-serial'/>
+  <flag name='ioh3420'/>
+  <flag name='x3130-upstream'/>
+  <flag name='xio3130-downstream'/>
+  <flag name='rtl8139'/>
+  <flag name='e1000'/>
+  <flag name='virtio-net'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='mptsas1068'/>
+  <flag name='virtio-vga'/>
+  <flag name='ivshmem-plain'/>
+  <flag name='ivshmem-doorbell'/>
+  <flag name='vhost-scsi'/>
+  <flag name='query-cpu-model-expansion'/>
+  <flag name='nvdimm'/>
+  <flag name='pcie-root-port'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='qemu-xhci'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='vmcoreinfo'/>
+  <flag name='pcie-pci-bridge'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='screendump_device'/>
+  <flag name='hda-output'/>
+  <flag name='vhost-vsock'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='nvdimm.unarmed'/>
+  <flag name='virtio-pci-non-transitional'/>
+  <flag name='nbd-bitmap'/>
+  <flag name='bochs-display'/>
+  <flag name='migration-file-drop-cache'/>
+  <flag name='dbus-vmstate'/>
+  <flag name='vhost-user-gpu'/>
+  <flag name='vhost-user-vga'/>
+  <flag name='incremental-backup'/>
+  <flag name='ramfb'/>
+  <flag name='drive-nvme'/>
+  <flag name='smp-dies'/>
+  <flag name='rng-builtin'/>
+  <flag name='vhost-user-fs'/>
+  <flag name='query-named-block-nodes.flat'/>
+  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <flag name='blockdev-reopen'/>
+  <flag name='fsdev.multidevs'/>
+  <flag name='pcie-root-port.hotplug'/>
+  <flag name='aio.io_uring'/>
+  <flag name='tcg'/>
+  <flag name='virtio-blk-pci.scsi.default.disabled'/>
+  <flag name='pvscsi'/>
+  <flag name='numa.hmat'/>
+  <flag name='usb-host.hostdevice'/>
+  <flag name='virtio-balloon.free-page-reporting'/>
+  <flag name='block-export-add'/>
+  <flag name='netdev.vhost-vdpa'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
+  <flag name='vhost-user-fs.bootindex'/>
+  <flag name='vhost-user-blk'/>
+  <flag name='cpu-max'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+  <flag name='migration-param.block-bitmap-mapping'/>
+  <flag name='vnc-power-control'/>
+  <flag name='object.qapified'/>
+  <flag name='rotation-rate'/>
+  <flag name='compat-deprecated'/>
+  <flag name='acpi-index'/>
+  <flag name='input-linux'/>
+  <flag name='confidential-guest-support'/>
+  <flag name='set-action'/>
+  <flag name='virtio-blk.queue-size'/>
+  <flag name='memory-backend-file.reserve'/>
+  <flag name='netdev.json'/>
+  <flag name='query-dirty-rate'/>
+  <flag name='rbd-encryption'/>
+  <flag name='sev-guest-kernel-hashes'/>
+  <flag name='device.json+hotplug'/>
+  <flag name='calc-dirty-rate'/>
+  <flag name='dirtyrate-param.mode'/>
+  <flag name='blockdev.nbd.tls-hostname'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='virtio-iommu-pci'/>
+  <flag name='virtio-iommu.boot-bypass'/>
+  <flag name='virtio-net.rss'/>
+  <flag name='chardev.qemu-vdagent'/>
+  <flag name='display-dbus'/>
+  <flag name='iothread.thread-pool-max'/>
+  <flag name='usb-host.guest-resets-all'/>
+  <flag name='migration.blocked-reasons'/>
+  <flag name='query-stats'/>
+  <flag name='query-stats-schemas'/>
+  <flag name='thread-context'/>
+  <flag name='screenshot-format-png'/>
+  <flag name='netdev.stream'/>
+  <flag name='virtio-crypto'/>
+  <flag name='cryptodev-backend-lkcf'/>
+  <flag name='pvpanic-pci'/>
+  <flag name='netdev.stream.reconnect'/>
+  <flag name='virtio-gpu.blob'/>
+  <flag name='rbd-encryption-layering'/>
+  <flag name='rbd-encryption-luks-any'/>
+  <flag name='qcow2-discard-no-unref'/>
+  <flag name='run-with.async-teardown'/>
+  <flag name='smp-clusters'/>
+  <flag name='display-reload'/>
+  <flag name='usb-mtp'/>
+  <version>8002000</version>
+  <microcodeVersion>106300246</microcodeVersion>
+  <package>v8.2.0</package>
+  <arch>loongarch64</arch>
+  <cpu type='kvm' name='la132' typename='la132-loongarch-cpu'/>
+  <cpu type='kvm' name='la464' typename='la464-loongarch-cpu'/>
+  <cpu type='kvm' name='max' typename='max-loongarch-cpu'/>
+  <machine type='kvm' name='virt' maxCpus='256' default='yes' defaultCPU='la464-loongarch-cpu' numaMemSupported='yes' defaultRAMid='loongarch.ram' acpi='yes'/>
+  <machine type='kvm' name='x-remote' maxCpus='1' acpi='no'/>
+  <hostCPU type='tcg' model='max' migratability='no'>
+    <property name='lasx' type='boolean' value='true'/>
+    <property name='lsx' type='boolean' value='true'/>
+  </hostCPU>
+  <cpu type='tcg' name='la132' typename='la132-loongarch-cpu'/>
+  <cpu type='tcg' name='la464' typename='la464-loongarch-cpu'/>
+  <cpu type='tcg' name='max' typename='max-loongarch-cpu'/>
+  <machine type='tcg' name='virt' maxCpus='256' default='yes' defaultCPU='la464-loongarch-cpu' numaMemSupported='yes' defaultRAMid='loongarch.ram' acpi='yes'/>
+  <machine type='tcg' name='x-remote' maxCpus='1' acpi='no'/>
+</qemuCaps>

@@ -1,0 +1,34 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>63840878-0deb-4095-97e6-fc444d9bc9fa</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os firmware='efi'>
+    <type arch='loongarch64' machine='virt'>hvm</type>
+    <firmware>
+      <feature enabled='no' name='enrolled-keys'/>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
+    <loader readonly='yes' type='pflash'>/usr/share/edk2/loongarch64/QEMU_EFI.fd</loader>
+    <nvram template='/usr/share/edk2/loongarch64/QEMU_VARS.fd'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>la464</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-loongarch64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

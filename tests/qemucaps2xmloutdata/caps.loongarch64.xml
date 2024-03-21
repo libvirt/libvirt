@@ -1,0 +1,28 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>loongarch64</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='loongarch64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-loongarch64</emulator>
+      <domain type='qemu'/>
+      <domain type='kvm'/>
+    </arch>
+    <features>
+      <acpi default='on' toggle='yes'/>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+</capabilities>

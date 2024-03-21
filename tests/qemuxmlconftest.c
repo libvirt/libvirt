@@ -1249,6 +1249,8 @@ mymain(void)
     /* The '-nousb' test case tests machine without a built-in USB controller */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-nousb-minimal", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("aarch64-nousb-minimal", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("loongarch64-virt-minimal", "loongarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("loongarch64-virt-minimal", "loongarch64");
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-minimal", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("riscv64-virt-minimal", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-minimal", "ppc64");
@@ -1270,6 +1272,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_ABI_UPDATE("x86_64-q35-default-models");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-default-models", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("aarch64-virt-default-models", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("loongarch64-virt-default-models", "loongarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("loongarch64-virt-default-models", "loongarch64");
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-default-models", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("riscv64-virt-default-models", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-default-models", "ppc64");
@@ -1437,6 +1441,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-efi-smm-off");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-aarch64", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-loongarch64", "loongarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-loongarch64", "loongarch64");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-template");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-nvram-template-nonstandard");
@@ -2433,6 +2439,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("default-video-type-x86_64");
 
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("default-video-type-loongarch64", "loongarch64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-s390x", "s390x");
@@ -2851,6 +2858,7 @@ mymain(void)
     /* Simple headless guests for various architectures */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless-mmio", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("loongarch64-virt-headless", "loongarch64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-headless", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-headless", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-headless-mmio", "riscv64");
@@ -2860,6 +2868,7 @@ mymain(void)
 
     /* Simple guests with graphics for various architectures */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-graphics", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("loongarch64-virt-graphics", "loongarch64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-graphics", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-graphics", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-graphics", "s390x");
