@@ -1516,12 +1516,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         snap_name = virDomainSnapshotGetName(snapshot);
         assert(snap_name);
 
-        if (name) {
-            /* just print the snapshot name */
-            vshPrint(ctl, "%s\n", snap_name);
-            continue;
-        }
-
         if (!(doc = virDomainSnapshotGetXMLDesc(snapshot, 0)))
             continue;
 
@@ -1531,6 +1525,18 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (parent)
             parent_snap = virXPathString("string(/domainsnapshot/parent/name)",
                                          ctxt);
+
+        if (name) {
+            vshPrint(ctl, "%s", snap_name);
+
+            if (parent_snap)
+                vshPrint(ctl, "\t%s", parent_snap);
+
+            vshPrint(ctl, "\n");
+
+            /* just print the snapshot name */
+            continue;
+        }
 
         if (!(state = virXPathString("string(/domainsnapshot/state)", ctxt)))
             continue;

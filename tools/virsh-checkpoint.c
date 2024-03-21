@@ -754,12 +754,6 @@ cmdCheckpointList(vshControl *ctl,
         chk_name = virDomainCheckpointGetName(checkpoint);
         assert(chk_name);
 
-        if (name) {
-            /* just print the checkpoint name */
-            vshPrint(ctl, "%s\n", chk_name);
-            continue;
-        }
-
         if (!(doc = virDomainCheckpointGetXMLDesc(checkpoint, 0)))
             continue;
 
@@ -769,6 +763,18 @@ cmdCheckpointList(vshControl *ctl,
         if (parent)
             parent_chk = virXPathString("string(/domaincheckpoint/parent/name)",
                                         ctxt);
+
+        if (name) {
+            vshPrint(ctl, "%s", chk_name);
+
+            if (parent_chk)
+                vshPrint(ctl, "\t%s", parent_chk);
+
+            vshPrint(ctl, "\n");
+
+            /* just print the checkpoint name */
+            continue;
+        }
 
         if (virXPathLongLong("string(/domaincheckpoint/creationTime)", ctxt,
                              &creation_longlong) < 0)
