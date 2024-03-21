@@ -215,6 +215,8 @@ mymain(void)
     DO_TEST_SCRIPT("attach-disk", NULL, VIRSH_DEFAULT);
     DO_TEST_SCRIPT("vcpupin", NULL, VIRSH_DEFAULT);
 
+    DO_TEST_FULL("domain-id-overflow", NULL, VIRSH_CUSTOM, "-q", "domname", "4294967298");
+
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

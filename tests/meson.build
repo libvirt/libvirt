@@ -692,7 +692,6 @@ if conf.has('WITH_LIBVIRTD')
     'libvirtd-pool',
     'virsh-auth',
     'virsh-checkpoint',
-    'virsh-int-overflow',
     'virsh-read-bufsiz',
     'virsh-read-non-seekable',
     'virsh-schedinfo',
