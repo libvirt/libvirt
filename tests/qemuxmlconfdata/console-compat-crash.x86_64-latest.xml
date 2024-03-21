@@ -1,0 +1,65 @@
+<domain type='kvm'>
+  <name>D</name>
+  <uuid>aaa3ae22-fed2-bfbd-ac02-3bea3bcfad82</uuid>
+  <memory unit='KiB'>262144</memory>
+  <currentMemory unit='KiB'>262144</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='cdrom'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <serial type='pty'>
+      <target type='isa-serial' port='1'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <serial type='pty'>
+      <target type='isa-serial' port='2'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <parallel type='pty'>
+      <target port='0'/>
+    </parallel>
+    <parallel type='pty'>
+      <target port='1'/>
+    </parallel>
+    <parallel type='pty'>
+      <target port='2'/>
+    </parallel>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <sound model='pcspk'/>
+    <sound model='es1370'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </sound>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

@@ -1799,6 +1799,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("console-compat");
     DO_TEST_CAPS_LATEST("console-compat-auto");
+    DO_TEST_CAPS_LATEST("console-compat-crash");
 
     DO_TEST_CAPS_LATEST("serial-vc-chardev");
     DO_TEST_CAPS_LATEST("serial-pty-chardev");
@@ -2287,6 +2288,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cputune-numatune");
     DO_TEST_CAPS_LATEST("vcpu-placement-static");
     DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("cpuset-invalid");
 
     DO_TEST_CAPS_LATEST_PARSE_ERROR("numatune-memory-invalid-nodeset");
     DO_TEST_CAPS_VER("numatune-memnode", "5.2.0");

@@ -1,0 +1,46 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-D \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-D/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-D/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-D/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=D,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-D/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,pcspk-audiodev=audio1,acpi=on \
+-accel kvm \
+-cpu qemu64 \
+-m size=262144k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":268435456}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid aaa3ae22-fed2-bfbd-ac02-3bea3bcfad82 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-chardev pty,id=charserial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-chardev pty,id=charserial1 \
+-device '{"driver":"isa-serial","chardev":"charserial1","id":"serial1","index":1}' \
+-chardev pty,id=charserial2 \
+-device '{"driver":"isa-serial","chardev":"charserial2","id":"serial2","index":2}' \
+-chardev pty,id=charparallel0 \
+-device '{"driver":"isa-parallel","chardev":"charparallel0","id":"parallel0"}' \
+-chardev pty,id=charparallel1 \
+-device '{"driver":"isa-parallel","chardev":"charparallel1","id":"parallel1"}' \
+-chardev pty,id=charparallel2 \
+-device '{"driver":"isa-parallel","chardev":"charparallel2","id":"parallel2"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"ES1370","id":"sound1","audiodev":"audio1","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

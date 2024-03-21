@@ -1,26 +1,11 @@
-#!/bin/sh
-# Exercise a bug whereby defining a valid domain could kill libvirtd.
-# The bug can also be exercised with a simple define/dumpxml pair to virsh.
-
-. "$(dirname $0)/test-lib.sh"
-
-if test "$VERBOSE" = yes; then
-  set -x
-  $abs_top_builddir/tools/virsh --version
-fi
-
-fail=0
-
-# Domain definition from Cole Robinson.
-cat <<\EOF > D.xml || fail=1
-<domain type='test'>
+<domain type='kvm'>
   <name>D</name>
   <uuid>aaa3ae22-fed2-bfbd-ac02-3bea3bcfad82</uuid>
   <memory unit='KiB'>262144</memory>
   <currentMemory unit='KiB'>262144</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='cdrom'/>
   </os>
   <features>
@@ -31,7 +16,7 @@ cat <<\EOF > D.xml || fail=1
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i386</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <controller type='usb' index='0'/>
     <serial type='pty'>
       <target port='0'/>
@@ -59,18 +44,3 @@ cat <<\EOF > D.xml || fail=1
     <memballoon model='virtio'/>
   </devices>
 </domain>
-EOF
-
-url=test:///default
-$abs_top_builddir/tools/virsh --connect "$url" 'define D.xml; dumpxml D' > out 2>&1 || fail=1
-
-cat > exp <<EOF || fail=1
-Domain 'D' defined from D.xml
-
-$(cat D.xml)
-
-EOF
-
-compare exp out || fail=1
-
-exit $fail
