@@ -29,6 +29,13 @@ v10.2.0 (unreleased)
     guest can access files on this driver through the Media Transfer
     Protocol (MTP).
 
+  * qemu: Added support for the loongarch64 architecture
+
+    It is now possible for libvirt to run loongarch64 guests, including on
+    other architectures via TCG. For the best results, it is recommended to
+    use the upcoming QEMU 9.0.0 release together with the development version
+    of edk2.
+
 * **Improvements**
 
 * **Bug fixes**
