@@ -575,6 +575,8 @@ virHostCPUParseFrequency(FILE *cpuinfo,
         prefix = "clock";
     else if (ARCH_IS_S390(arch))
         prefix = "cpu MHz dynamic";
+    else if (ARCH_IS_LOONGARCH(arch))
+        prefix = "CPU MHz";
 
     if (!prefix) {
         VIR_WARN("%s is not supported by the %s parser",
@@ -601,7 +603,7 @@ virHostCPUParsePhysAddrSize(FILE *cpuinfo, unsigned int *addrsz)
         char *str;
         char *endptr;
 
-        if (!(str = STRSKIP(line, "address sizes")))
+        if (!(str = STRCASESKIP(line, "address sizes")))
             continue;
 
         /* Skip the colon. */
@@ -1672,7 +1674,8 @@ virHostCPUGetPhysAddrSize(const virArch hostArch,
 {
     g_autoptr(FILE) cpuinfo = NULL;
 
-    if (!(ARCH_IS_X86(hostArch) || ARCH_IS_SH4(hostArch))) {
+    if (!(ARCH_IS_X86(hostArch) || ARCH_IS_SH4(hostArch) ||
+          ARCH_IS_LOONGARCH(hostArch))) {
         /* Ensure size is set to 0 as physical address size is unknown */
         *size = 0;
         return 0;
