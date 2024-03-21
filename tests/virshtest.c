@@ -1,10 +1,13 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "internal.h"
 #include "testutils.h"
 #include "vircommand.h"
+
+#include "util/virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -100,6 +103,90 @@ static int testCompare(const void *data)
     }
 
     return testCompareOutputLit(outfile, info->filter, info->argv);
+}
+
+
+static void
+testPipeFeeder(void *opaque)
+{
+    /* feed more than observed buffer size which was historically 128k in the
+     * test this was adapted from */
+    size_t emptyspace = 140 * 1024;
+    const char *pipepath = opaque;
+    const char *xml =
+        "<domain type='test' id='2'>\n"
+        "  <name>t2</name>\n"
+        "  <uuid>004b96e1-2d78-c30f-5aa5-000000000000</uuid>\n"
+        "  <memory>8388608</memory>\n"
+        "  <vcpu>2</vcpu>\n"
+        "  <os>\n"
+        "    <type>xen</type>\n"
+        "  </os>\n"
+        "</domain>\n";
+    size_t xmlsize = strlen(xml);
+    g_autofree char *doc = g_new0(char, emptyspace + xmlsize + 1);
+    VIR_AUTOCLOSE fd = -1;
+
+    if ((fd = open(pipepath, O_RDWR)) < 0) {
+        fprintf(stderr, "\nfailed to open pipe '%s': %s\n", pipepath, g_strerror(errno));
+        return;
+    }
+
+    memset(doc, ' ', emptyspace);
+    virStrcpy(doc + emptyspace, xml, xmlsize);
+
+    if (safewrite(fd, doc, emptyspace + xmlsize + 1) < 0) {
+        fprintf(stderr, "\nfailed to write to pipe '%s': %s\n", pipepath, g_strerror(errno));
+        return;
+    }
+}
+
+
+static int
+testVirshPipe(const void *data G_GNUC_UNUSED)
+{
+    char tmpdir[] = "/tmp/libvirt_virshtest_XXXXXXX";
+    g_autofree char *pipepath = NULL;
+    virThread feeder;
+    bool join = false;
+    g_autofree char *cmdstr = NULL;
+    const char *argv[] = { VIRSH_DEFAULT, NULL, NULL };
+    int ret = -1;
+
+    if (!g_mkdtemp(tmpdir)) {
+        fprintf(stderr, "\nfailed to create temporary directory\n");
+        return -1;
+    }
+
+    pipepath = g_strdup_printf("%s/pipe", tmpdir);
+
+
+    cmdstr = g_strdup_printf("define %s ; list --all", pipepath);
+    argv[3] = cmdstr;
+
+    if (mkfifo(pipepath, 0600) < 0) {
+        fprintf(stderr, "\nfailed to create pipe '%s': %s\n", pipepath, g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (virThreadCreate(&feeder, true, testPipeFeeder, pipepath) < 0)
+        goto cleanup;
+
+    join = true;
+
+    if (testCompareOutputLit(abs_srcdir "/virshtestdata/read-big-pipe.out",
+                             "/tmp/libvirt_virshtest", argv) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (join)
+        virThreadJoin(&feeder);
+    unlink(pipepath);
+    rmdir(tmpdir);
+
+    return ret;
 }
 
 
@@ -237,6 +324,9 @@ mymain(void)
                  "checkpoint-create test --redefine checkpoint-c3.xml ;"
                  "checkpoint-create test --redefine checkpoint-c2.xml ;"
                  "checkpoint-info test c2");
+
+    if (virTestRun("read-big-pipe", testVirshPipe, NULL) < 0)
+        ret = -1;
 
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

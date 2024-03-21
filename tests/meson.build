@@ -691,8 +691,6 @@ if conf.has('WITH_LIBVIRTD')
     'libvirtd-fail',
     'libvirtd-pool',
     'virsh-auth',
-    'virsh-read-bufsiz',
-    'virsh-read-non-seekable',
     'virsh-self-test',
     'virsh-uriprecedence',
     'virt-admin-self-test',
