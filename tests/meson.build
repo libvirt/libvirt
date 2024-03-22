@@ -619,6 +619,20 @@ test(
   suite: 'script',
 )
 
+# vsh based client self-test, which can be run directly from meson
+test('virsh self-test',
+  virsh_prog,
+  args: [ '-q', '-c', 'test:///default', 'self-test' ],
+  suite: 'bin',
+)
+
+if conf.has('WITH_REMOTE')
+  test('virt-admin self-test',
+    virt_admin_prog,
+    args: [ '-q', 'self-test' ],
+    suite: 'bin',
+  )
+endif
 
 # helpers:
 #   each entry is a dictionary with following items:
@@ -690,9 +704,7 @@ if conf.has('WITH_LIBVIRTD')
   test_scripts += [
     'libvirtd-fail',
     'virsh-auth',
-    'virsh-self-test',
     'virsh-uriprecedence',
-    'virt-admin-self-test',
   ]
 
   if conf.has('WITH_SECDRIVER_APPARMOR')
