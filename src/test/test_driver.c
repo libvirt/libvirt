@@ -7794,6 +7794,21 @@ testNodeDeviceIsActive(virNodeDevicePtr dev)
     return ret;
 }
 
+static int
+testNodeDeviceIsPersistent(virNodeDevicePtr dev)
+{
+    testDriver *privconn = dev->conn->privateData;
+    virNodeDeviceObj *obj = NULL;
+    int ret = -1;
+
+    if (!(obj = testNodeDeviceObjFindByName(privconn, dev->name)))
+        return -1;
+
+    ret = virNodeDeviceObjIsPersistent(obj);
+    virNodeDeviceObjEndAPI(&obj);
+    return ret;
+}
+
 
 /* Domain event implementations */
 static int
@@ -10673,6 +10688,7 @@ static virNodeDeviceDriver testNodeDeviceDriver = {
     .nodeDeviceCreateXML = testNodeDeviceCreateXML, /* 0.7.3 */
     .nodeDeviceDestroy = testNodeDeviceDestroy, /* 0.7.3 */
     .nodeDeviceIsActive = testNodeDeviceIsActive, /* 10.3.0 */
+    .nodeDeviceIsPersistent = testNodeDeviceIsPersistent, /* 10.3.0 */
 };
 
 static virConnectDriver testConnectDriver = {
