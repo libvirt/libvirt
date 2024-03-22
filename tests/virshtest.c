@@ -40,6 +40,7 @@ static void testFilterLine(char *buffer,
 static int
 testCompareOutputLit(const char *expectFile,
                      const char *filter,
+                     const char *const *env,
                      const char *const argv[])
 {
     g_autofree char *actual = NULL;
@@ -50,6 +51,12 @@ testCompareOutputLit(const char *expectFile,
     cmd = virCommandNewArgs(argv);
 
     virCommandAddEnvString(cmd, "LANG=C");
+
+    while (env && *env) {
+        virCommandAddEnvString(cmd, *env);
+        env++;
+    }
+
     virCommandSetInputBuffer(cmd, empty);
     virCommandSetOutputBuffer(cmd, &actual);
     virCommandSetErrorBuffer(cmd, &actual);
@@ -87,6 +94,8 @@ struct testInfo {
     const char *filter;
     const char *const *argv;
     bool expensive;
+    const char *const *env; /* extra environment variables to pass */
+    bool forbid_root;
 };
 
 static int testCompare(const void *data)
@@ -97,12 +106,15 @@ static int testCompare(const void *data)
     if (info->expensive && virTestGetExpensive() == 0)
         return EXIT_AM_SKIP;
 
+    if (info->forbid_root && geteuid() == 0)
+        return EXIT_AM_SKIP;
+
     if (info->testname) {
         outfile = g_strdup_printf("%s/virshtestdata/%s.out",
                                   abs_srcdir, info->testname);
     }
 
-    return testCompareOutputLit(outfile, info->filter, info->argv);
+    return testCompareOutputLit(outfile, info->filter, info->env, info->argv);
 }
 
 
@@ -175,7 +187,7 @@ testVirshPipe(const void *data G_GNUC_UNUSED)
     join = true;
 
     if (testCompareOutputLit(abs_srcdir "/virshtestdata/read-big-pipe.out",
-                             "/tmp/libvirt_virshtest", argv) < 0)
+                             "/tmp/libvirt_virshtest", NULL, argv) < 0)
         goto cleanup;
 
     ret = 0;
@@ -205,7 +217,7 @@ mymain(void)
                                                   abs_srcdir, testname); \
         const char *myargv[] = { __VA_ARGS__, NULL, NULL }; \
         const char **tmp = myargv; \
-        const struct testInfo info = { testname, testfilter, myargv, expensive }; \
+        const struct testInfo info = { testname, testfilter, myargv, expensive, NULL, false}; \
         g_autofree char *scriptarg = NULL; \
         if (virFileReadAll(infile, 256 * 1024, &scriptarg) < 0) { \
             fprintf(stderr, "\nfailed to load '%s'\n", infile); \
@@ -227,13 +239,15 @@ mymain(void)
     DO_TEST_SCRIPT("blkiotune", NULL, VIRSH_CUSTOM);
     DO_TEST_SCRIPT("iothreads", NULL, VIRSH_CUSTOM);
 
-# define DO_TEST_FULL(testname_, filter, ...) \
+# define DO_TEST_INFO(infostruct) \
+    if (virTestRun((infostruct)->testname, testCompare, (infostruct)) < 0) \
+        ret = -1;
+
+# define DO_TEST_FULL(testname, filter, ...) \
     do { \
-        const char *testname = testname_; \
         const char *myargv[] = { __VA_ARGS__, NULL }; \
-        const struct testInfo info = { testname, NULL, myargv, false }; \
-        if (virTestRun(testname, testCompare, &info) < 0) \
-            ret = -1; \
+        const struct testInfo info = { testname, NULL, myargv, false, NULL, false }; \
+        DO_TEST_INFO(&info); \
     } while (0)
 
     /* automatically numbered test invocation */
@@ -330,6 +344,102 @@ mymain(void)
 
     if (virTestRun("read-big-pipe", testVirshPipe, NULL) < 0)
         ret = -1;
+
+    /* Test precedence of URI lookup in virsh:
+     *
+     * Precedence is the following (lowest priority first):
+     *
+     * 1) if run as root, 'uri_default' from /etc/libvirtd/libvirt.conf,
+     * otherwise qemu:///session.  There is no way to mock this file for
+     * virsh/libvirt.so and the user may have set anything in there that
+     * would spoil the test, so we don't test this
+     *
+     * 2) 'uri_default' from $XDG_CONFIG_HOME/libvirt/libvirt.conf
+     *
+     * 3) LIBVIRT_DEFAULT_URI
+     *
+     * 4) VIRSH_DEFAULT_CONNECT_URI
+     *
+     * 5) parameter -c (--connect)
+     *
+     * There are two pre-prepared directories in tests/virshtestdata/ serving
+     * as mock XDG_CONFIG_HOME containing the test configs.
+     */
+    {
+        const char *uriTest = "uri; connect; uri";
+        const char *myargv_noconnect[] = { abs_top_builddir "/tools/virsh", uriTest, NULL };
+        const char *xdgDirBad = "XDG_CONFIG_HOME=" abs_srcdir "/virshtestdata/uriprecedence-xdg/bad/";
+        struct testInfo info = { NULL, NULL, myargv_noconnect, false, NULL, false };
+
+        /* test 1 - default from config */
+        {
+            const char *myenv[] = {
+                "XDG_CONFIG_HOME=" abs_srcdir "/virshtestdata/uriprecedence-xdg/good/",
+                NULL,
+            };
+
+            info.testname = "uriprecedence-xdg-config";
+            info.env = myenv;
+            info.forbid_root = true;
+
+            DO_TEST_INFO(&info);
+        }
+
+        /* all other tests don't care */
+        info.forbid_root = false;
+
+        /* test 2 - LIBVIRT_DEFAULT_URI env variable */
+        {
+            const char *myenv[] = {
+                xdgDirBad,
+                "LIBVIRT_DEFAULT_URI=test:///default?good_uri",
+                NULL,
+            };
+
+            info.testname = "uriprecedence-LIBVIRT_DEFAULT_URI";
+            info.env = myenv;
+
+            DO_TEST_INFO(&info);
+        }
+
+        /* test 3 - VIRSH_DEFAULT_CONNECT_URI env variable */
+        {
+            const char *myenv[] = {
+                xdgDirBad,
+                "LIBVIRT_DEFAULT_URI=test:///default?bad_uri",
+                "VIRSH_DEFAULT_CONNECT_URI=test:///default?good_uri",
+                NULL,
+            };
+
+            info.testname = "uriprecedence-VIRSH_DEFAULT_CONNECT_URI";
+            info.env = myenv;
+
+            DO_TEST_INFO(&info);
+        }
+
+        /* test 3 - --connect parameter */
+        {
+            const char *myenv[] = {
+                xdgDirBad,
+                "LIBVIRT_DEFAULT_URI=test:///default?bad_uri",
+                "VIRSH_DEFAULT_CONNECT_URI=test:///default?bad_uri",
+                NULL,
+            };
+
+            const char *myargv[] = {
+                 abs_top_builddir "/tools/virsh",
+                 "--connect", "test:///default?good_uri",
+                 uriTest,
+                 NULL,
+            };
+
+            info.testname = "uriprecedence-param";
+            info.env = myenv;
+            info.argv = myargv;
+
+            DO_TEST_INFO(&info);
+        }
+    }
 
     VIR_FREE(custom_uri);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

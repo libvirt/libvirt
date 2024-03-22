@@ -710,7 +710,6 @@ if conf.has('WITH_LIBVIRTD')
 
   test_scripts += [
     'virsh-auth',
-    'virsh-uriprecedence',
   ]
 
   if conf.has('WITH_SECDRIVER_APPARMOR')
