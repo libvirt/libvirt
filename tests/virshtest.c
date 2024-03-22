@@ -36,7 +36,6 @@ static void testFilterLine(char *buffer,
 
 static int
 testCompareOutputLit(const char *expectFile,
-                     const char *expectData,
                      const char *filter,
                      const char *const argv[])
 {
@@ -64,15 +63,8 @@ testCompareOutputLit(const char *expectFile,
     if (filter)
         testFilterLine(actual, filter);
 
-    if (expectData) {
-        if (virTestCompareToString(expectData, actual) < 0)
-            return -1;
-    }
-
-    if (expectFile) {
-        if (virTestCompareToFileFull(actual, expectFile, false) < 0)
-            return -1;
-    }
+    if (virTestCompareToFileFull(actual, expectFile, false) < 0)
+        return -1;
 
     return 0;
 }
@@ -103,7 +95,7 @@ static int testCompare(const void *data)
                                   abs_srcdir, info->testname);
     }
 
-    return testCompareOutputLit(outfile, NULL, info->filter, info->argv);
+    return testCompareOutputLit(outfile, info->filter, info->argv);
 }
 
 
