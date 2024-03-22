@@ -332,4 +332,4 @@ mymain(void)
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/libsecurityselinuxhelper.so")
+VIR_TEST_MAIN_PRELOAD(mymain, "libsecurityselinuxhelper.so")
