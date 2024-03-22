@@ -701,8 +701,14 @@ endforeach
 test_scripts = []
 
 if conf.has('WITH_LIBVIRTD')
+  test('libvirtd fail with missing config',
+    libvirtd_prog,
+    args: [ '--config=no-such-conf', '--timeout=5' ],
+    should_fail: true,
+    suite: 'bin',
+  )
+
   test_scripts += [
-    'libvirtd-fail',
     'virsh-auth',
     'virsh-uriprecedence',
   ]

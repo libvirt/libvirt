@@ -654,6 +654,11 @@ foreach daemon : virt_daemons
     install_dir: sbindir,
     install_rpath: libvirt_rpath,
   )
+
+   # libvirtd_prog is needed by the test suite
+  if daemon['name'] == 'libvirtd'
+    libvirtd_prog = bin
+  endif
 endforeach
 
 
