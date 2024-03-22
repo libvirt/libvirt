@@ -3847,8 +3847,6 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (newdev->info.bootIndex == 0)
-        newdev->info.bootIndex = olddev->info.bootIndex;
     if (olddev->info.bootIndex != newdev->info.bootIndex) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device boot index setting"));
