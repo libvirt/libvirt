@@ -825,6 +825,9 @@ virSecurityDACRestoreFileLabelInternal(virSecurityManager *mgr,
         virStorageSourceIsLocalStorage(src))
         path = src->path;
 
+    if (!virFileExists(path))
+        return 0;
+
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
 

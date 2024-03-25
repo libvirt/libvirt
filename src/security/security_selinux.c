@@ -1488,6 +1488,8 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManager *mgr,
      */
     if (!path)
         return 0;
+    if (!virFileExists(path))
+        return 0;
 
     VIR_INFO("Restoring SELinux context on '%s'", path);
 
