@@ -130,9 +130,9 @@ testme() {
     echo "': " >$output
     set +e
     if [ -n "$input" ]; then
-        LD_LIBRARY_PATH="$ld_library_path" $exe $extra_args $args < $input >"$tmpout" 2>&1
+        LD_LIBRARY_PATH="$ld_library_path" "${exe}" $extra_args $args < $input >"$tmpout" 2>&1
     else
-        LD_LIBRARY_PATH="$ld_library_path" $exe $extra_args $args >"$tmpout" 2>&1
+        LD_LIBRARY_PATH="$ld_library_path" "${exe}" $extra_args $args >"$tmpout" 2>&1
     fi
     rc="$?"
     cat "$tmpout" >"$output"
