@@ -38,6 +38,7 @@
       <model fallback='forbid'>EPYC</model>
       <vendor>AMD</vendor>
       <feature policy='require' name='monitor'/>
+      <feature policy='require' name='x2apic'/>
       <feature policy='require' name='hypervisor'/>
       <feature policy='require' name='acpi'/>
       <feature policy='require' name='ss'/>

@@ -204,9 +204,9 @@
   <flag name='blockjob.backing-mask-protocol'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
-  <version>8002050</version>
+  <version>8002091</version>
   <microcodeVersion>43100245</microcodeVersion>
-  <package>v8.2.0-952-g14639717bf</package>
+  <package>v9.0.0-rc1-55-g7fcf7575f3</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -367,6 +367,7 @@
     <property name='pcommit' type='boolean' value='false'/>
     <property name='vmx-vpid' type='boolean' value='false'/>
     <property name='syscall' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm-asyncpf-vmexit' type='boolean' value='true' migratable='yes'/>
     <property name='avx512dq' type='boolean' value='false'/>
     <property name='svm' type='boolean' value='true' migratable='yes'/>
     <property name='invtsc' type='boolean' value='true' migratable='no'/>
@@ -1916,7 +1917,7 @@
   <machine type='kvm' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-9.0' alias='q35' hotplugCpus='yes' maxCpus='1024' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-9.0' alias='q35' hotplugCpus='yes' maxCpus='4096' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-7.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
@@ -1941,8 +1942,8 @@
   <machine type='kvm' name='pc-i440fx-5.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-6.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-7.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <hostCPU type='tcg' model='base' migratability='yes'>
@@ -2074,7 +2075,7 @@
     <property name='pfthreshold' type='boolean' value='false'/>
     <property name='vmx-invpcid-exit' type='boolean' value='false'/>
     <property name='amx-int8' type='boolean' value='false'/>
-    <property name='x2apic' type='boolean' value='false'/>
+    <property name='x2apic' type='boolean' value='true' migratable='yes'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='avx512vnni' type='boolean' value='false'/>
     <property name='sgx-edeccssa' type='boolean' value='false'/>
@@ -2104,6 +2105,7 @@
     <property name='pcommit' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vpid' type='boolean' value='false'/>
     <property name='syscall' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm-asyncpf-vmexit' type='boolean' value='false'/>
     <property name='avx512dq' type='boolean' value='false'/>
     <property name='svm' type='boolean' value='true' migratable='yes'/>
     <property name='invtsc' type='boolean' value='false'/>
@@ -2345,7 +2347,6 @@
   </cpu>
   <cpu type='tcg' name='Westmere' typename='Westmere-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='Snowridge-v4' typename='Snowridge-v4-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='gfni'/>
     <blocker name='cldemote'/>
@@ -2358,7 +2359,6 @@
     <blocker name='xsaves'/>
   </cpu>
   <cpu type='tcg' name='Snowridge-v3' typename='Snowridge-v3-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='gfni'/>
     <blocker name='cldemote'/>
@@ -2373,7 +2373,6 @@
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='tcg' name='Snowridge-v2' typename='Snowridge-v2-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='gfni'/>
     <blocker name='cldemote'/>
@@ -2387,7 +2386,6 @@
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='tcg' name='Snowridge-v1' typename='Snowridge-v1-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='gfni'/>
     <blocker name='cldemote'/>
@@ -2401,7 +2399,6 @@
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='tcg' name='Snowridge' typename='Snowridge-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='gfni'/>
     <blocker name='cldemote'/>
@@ -2416,7 +2413,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-v5' typename='Skylake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2430,7 +2426,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-v4' typename='Skylake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2443,7 +2438,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-v3' typename='Skylake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2456,7 +2450,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-v2' typename='Skylake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2471,7 +2464,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-v1' typename='Skylake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2485,7 +2477,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-noTSX-IBRS' typename='Skylake-Server-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2498,7 +2489,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server-IBRS' typename='Skylake-Server-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2513,7 +2503,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Server' typename='Skylake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2527,7 +2516,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client-v4' typename='Skylake-Client-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
@@ -2536,7 +2524,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client-v3' typename='Skylake-Client-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
@@ -2544,7 +2531,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client-v2' typename='Skylake-Client-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2554,7 +2540,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client-v1' typename='Skylake-Client-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2563,7 +2548,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client-noTSX-IBRS' typename='Skylake-Client-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
@@ -2571,7 +2555,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client-IBRS' typename='Skylake-Client-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2581,7 +2564,6 @@
   </cpu>
   <cpu type='tcg' name='Skylake-Client' typename='Skylake-Client-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2590,7 +2572,6 @@
   </cpu>
   <cpu type='tcg' name='SapphireRapids-v2' typename='SapphireRapids-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2626,7 +2607,6 @@
   </cpu>
   <cpu type='tcg' name='SapphireRapids-v1' typename='SapphireRapids-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2662,7 +2642,6 @@
   </cpu>
   <cpu type='tcg' name='SapphireRapids' typename='SapphireRapids-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2697,21 +2676,17 @@
     <blocker name='xfd'/>
   </cpu>
   <cpu type='tcg' name='SandyBridge-v2' typename='SandyBridge-v2-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='SandyBridge-v1' typename='SandyBridge-v1-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
   </cpu>
   <cpu type='tcg' name='SandyBridge-IBRS' typename='SandyBridge-IBRS-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='SandyBridge' typename='SandyBridge-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
   </cpu>
   <cpu type='tcg' name='Penryn-v1' typename='Penryn-v1-x86_64-cpu' usable='yes'/>
@@ -2761,7 +2736,6 @@
   </cpu>
   <cpu type='tcg' name='Nehalem' typename='Nehalem-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='KnightsMill-v1' typename='KnightsMill-v1-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='avx512f'/>
     <blocker name='avx512pf'/>
@@ -2772,7 +2746,6 @@
     <blocker name='avx512-4fmaps'/>
   </cpu>
   <cpu type='tcg' name='KnightsMill' typename='KnightsMill-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='avx512f'/>
     <blocker name='avx512pf'/>
@@ -2783,26 +2756,21 @@
     <blocker name='avx512-4fmaps'/>
   </cpu>
   <cpu type='tcg' name='IvyBridge-v2' typename='IvyBridge-v2-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='IvyBridge-v1' typename='IvyBridge-v1-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
   </cpu>
   <cpu type='tcg' name='IvyBridge-IBRS' typename='IvyBridge-IBRS-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='IvyBridge' typename='IvyBridge-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v6' typename='Icelake-Server-v6-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2826,7 +2794,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v5' typename='Icelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2850,7 +2817,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v4' typename='Icelake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2873,7 +2839,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2895,7 +2860,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v2' typename='Icelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2916,7 +2880,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v1' typename='Icelake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2939,7 +2902,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server-noTSX' typename='Icelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -2960,7 +2922,6 @@
   </cpu>
   <cpu type='tcg' name='Icelake-Server' typename='Icelake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2983,14 +2944,12 @@
   </cpu>
   <cpu type='tcg' name='Haswell-v4' typename='Haswell-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='Haswell-v3' typename='Haswell-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -2999,13 +2958,11 @@
   </cpu>
   <cpu type='tcg' name='Haswell-v2' typename='Haswell-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
   </cpu>
   <cpu type='tcg' name='Haswell-v1' typename='Haswell-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3013,20 +2970,17 @@
   </cpu>
   <cpu type='tcg' name='Haswell-noTSX-IBRS' typename='Haswell-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='Haswell-noTSX' typename='Haswell-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
   </cpu>
   <cpu type='tcg' name='Haswell-IBRS' typename='Haswell-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3035,7 +2989,6 @@
   </cpu>
   <cpu type='tcg' name='Haswell' typename='Haswell-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3043,7 +2996,6 @@
   </cpu>
   <cpu type='tcg' name='GraniteRapids-v1' typename='GraniteRapids-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3082,7 +3034,6 @@
   </cpu>
   <cpu type='tcg' name='GraniteRapids' typename='GraniteRapids-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3409,7 +3360,6 @@
     <blocker name='xsavec'/>
   </cpu>
   <cpu type='tcg' name='Denverton-v3' typename='Denverton-v3-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
     <blocker name='arch-capabilities'/>
@@ -3418,7 +3368,6 @@
     <blocker name='xsaves'/>
   </cpu>
   <cpu type='tcg' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
     <blocker name='arch-capabilities'/>
@@ -3426,7 +3375,6 @@
     <blocker name='xsavec'/>
   </cpu>
   <cpu type='tcg' name='Denverton-v1' typename='Denverton-v1-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
     <blocker name='arch-capabilities'/>
@@ -3434,7 +3382,6 @@
     <blocker name='xsavec'/>
   </cpu>
   <cpu type='tcg' name='Denverton' typename='Denverton-x86_64-cpu' usable='no'>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='spec-ctrl'/>
     <blocker name='arch-capabilities'/>
@@ -3443,7 +3390,6 @@
   </cpu>
   <cpu type='tcg' name='Cooperlake-v2' typename='Cooperlake-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3464,7 +3410,6 @@
   </cpu>
   <cpu type='tcg' name='Cooperlake-v1' typename='Cooperlake-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3484,7 +3429,6 @@
   </cpu>
   <cpu type='tcg' name='Cooperlake' typename='Cooperlake-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3506,7 +3450,6 @@
   <cpu type='tcg' name='Conroe' typename='Conroe-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='Cascadelake-Server-v5' typename='Cascadelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -3523,7 +3466,6 @@
   </cpu>
   <cpu type='tcg' name='Cascadelake-Server-v4' typename='Cascadelake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -3539,7 +3481,6 @@
   </cpu>
   <cpu type='tcg' name='Cascadelake-Server-v3' typename='Cascadelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -3555,7 +3496,6 @@
   </cpu>
   <cpu type='tcg' name='Cascadelake-Server-v2' typename='Cascadelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3573,7 +3513,6 @@
   </cpu>
   <cpu type='tcg' name='Cascadelake-Server-v1' typename='Cascadelake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3590,7 +3529,6 @@
   </cpu>
   <cpu type='tcg' name='Cascadelake-Server-noTSX' typename='Cascadelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='avx512f'/>
@@ -3606,7 +3544,6 @@
   </cpu>
   <cpu type='tcg' name='Cascadelake-Server' typename='Cascadelake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3623,14 +3560,12 @@
   </cpu>
   <cpu type='tcg' name='Broadwell-v4' typename='Broadwell-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='Broadwell-v3' typename='Broadwell-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3639,13 +3574,11 @@
   </cpu>
   <cpu type='tcg' name='Broadwell-v2' typename='Broadwell-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
   </cpu>
   <cpu type='tcg' name='Broadwell-v1' typename='Broadwell-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3653,20 +3586,17 @@
   </cpu>
   <cpu type='tcg' name='Broadwell-noTSX-IBRS' typename='Broadwell-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
     <blocker name='spec-ctrl'/>
   </cpu>
   <cpu type='tcg' name='Broadwell-noTSX' typename='Broadwell-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='invpcid'/>
   </cpu>
   <cpu type='tcg' name='Broadwell-IBRS' typename='Broadwell-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3675,7 +3605,6 @@
   </cpu>
   <cpu type='tcg' name='Broadwell' typename='Broadwell-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='x2apic'/>
     <blocker name='tsc-deadline'/>
     <blocker name='hle'/>
     <blocker name='invpcid'/>
@@ -3716,7 +3645,7 @@
   <machine type='tcg' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-9.0' alias='q35' hotplugCpus='yes' maxCpus='1024' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-9.0' alias='q35' hotplugCpus='yes' maxCpus='4096' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-7.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
@@ -3741,8 +3670,8 @@
   <machine type='tcg' name='pc-i440fx-5.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-6.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-7.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
   <hypervCapabilities supported='yes'>
