@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -493,6 +493,10 @@ msgid " Storage:"
 msgstr " 存储："
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
@@ -503,6 +507,10 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1628,14 +1636,6 @@ msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64 位 PCI hole 设置仅适用于 root PCI 控制器"
 
 #, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
-
-#, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
 msgstr "<active_pcr_banks/> 需要 TPM 版本 '%1$s'"
 
@@ -2735,6 +2735,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "无法创建 resctrl 目录 '%1$s'"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr "无法创建套接字 '%1$s'"
 
@@ -2856,10 +2860,6 @@ msgstr "无法找到 pid %1$d 的启动时间"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "无法为给定数据找到合适的 CPU 型号"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "无法找到适合 %1$s 的模拟器"
 
 msgid "Cannot get all servers from daemon"
 msgstr "无法从守护进程获取所有服务器"
@@ -3744,8 +3744,8 @@ msgstr "已连接到管理服务器"
 msgid "Connections from inside daemon must be direct"
 msgstr "来自内部守护进程的连接必须是直接连接"
 
-msgid "Console can only be enabled for a PTY"
-msgstr "控制台只为 PTY 启用"
+msgid "Console only works in PTY mode"
+msgstr ""
 
 msgid "Constant pages:"
 msgstr "常数页："
@@ -5572,6 +5572,12 @@ msgstr ""
 "域需要 KVM，但不可用。在主机 BIOS 中启用了检查虚拟化，同时将主机配置为载入 "
 "kvm 模块。"
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr "域需要至少 1 个 vCPU"
 
@@ -6412,6 +6418,10 @@ msgid "Failed to clean up %1$s"
 msgstr "清除 %1$s 失败"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "为 %1$s 的代理清除安全上下文失败"
 
@@ -6523,6 +6533,10 @@ msgstr "生成 '%1$s' 失败：%2$s"
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "创建 SASL 客户端环境失败：%1$d（%2$s）"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "创建XML失败"
@@ -6710,6 +6724,10 @@ msgstr "创建卷 %1$s 失败"
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "在 %1$s 中创建卷失败"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7456,6 +7474,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "打开域映像文件 '%1$s' 失败"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "打开文件 '%1$s' 失败"
 
@@ -7797,6 +7819,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr "删除域 '%1$s' 的受管保存镜像失败"
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "删除存储卷 '%1$s'(%2$s) 失败"
 
@@ -7931,6 +7957,9 @@ msgstr "为 '%1$s' 保存 '%2$s' 失败"
 
 msgid "Failed to save VM settings"
 msgstr "保存虚拟机设置失败"
+
+msgid "Failed to save domain"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8116,6 +8145,9 @@ msgstr "使用 libxenlight 关闭域 '%1$d' 失败"
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
 msgstr "关闭域 '%1$s' 失败"
+
+msgid "Failed to shutoff after domain save"
+msgstr ""
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8335,6 +8367,9 @@ msgstr "使用路径 '%1$zu' 在存储卷中写入 %2$s 字节失败"
 msgid "Failed to write '%1$s'"
 msgstr "写 '%1$s' 失败"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr "写像素数据失败"
 
@@ -8352,6 +8387,9 @@ msgstr "写入 pid 文件 '%1$s' 失败"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "写入 vmx 文件 '%1$s' 失败"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "写入 xml 描述失败"
@@ -8492,13 +8530,6 @@ msgstr "固件条目缺少 'name' 属性"
 
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr "固件条目必须有值或 'file' 属性"
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr "意外的固件闪存模式值 '%1$s'"
-
-msgid "Firmware flash mode value was malformed"
-msgstr "固件闪存模式值不正确"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -8650,65 +8681,23 @@ msgstr "获取或者数值内存参数"
 msgid "Get or set node memory parameters"
 msgstr "获取或者设定节点内存参数"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"获取或者设定节点内存参数\n"
-"    要获取内存参数，请使用以下命令： \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "获取或者数值 numa 参数"
 
 msgid "Get or set perf event"
 msgstr "获取或设置 perf 事件"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"为虚拟机域获取或者数值当前 blkio 参数。\n"
-"    请使用以下命令获取 blkio 参数： \n"
-"\n"
-"    virsh # blkiotune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"为虚拟机域获取或者设定当前内存参数。\n"
-"要获取内存参数请使用以下命令：\n"
-"\n"
-"virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"为虚拟机域获取或者设定当前内存参数。\n"
-"要获取内存参数请使用以下命令：\n"
-"\n"
-"virsh # numatune <domain>"
 
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"获取或设置 guest 域的当前 perf 事件。\n"
-"要获取 perf 事件列表，请使用以下命令：\n"
-"virsh # perf <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "获取或者设定当前快照"
@@ -11360,9 +11349,6 @@ msgstr "不支持多个图形设备"
 msgid "Multiple interfaces attached to bridge"
 msgstr "附加到桥接的多个接口"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "不支持多传统 USB 控制器"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr "含 cellid %1$u 的多个 memnode 元素"
@@ -11448,11 +11434,9 @@ msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr "只在单一节点中支持将 NUMA 内存调整为 'preferred' 模式"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
-"NUMA 模式，一个严格的、首选的和交错的模式，或者来自 virDomainNumatuneMemMode "
-"枚举的一个数字"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -13229,6 +13213,9 @@ msgstr "正则表达式 '%1$s' 必须正好有 1 个匹配组，而不是 %2$d"
 msgid "Relative backing during copy not supported yet"
 msgstr "还不支持复制过程中的相对备份"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "使用非零代码终止的远程命令：%1$d"
@@ -13404,11 +13391,11 @@ msgstr "恢复 $uri URI 中的虚拟机"
 msgid "Retrieve identity details about <client> from <server>"
 msgstr "从 <server> 中获取有关 <client> 的详细信息"
 
-msgid "Retrieve server's client-related configuration limits "
-msgstr "查询可接入到server的client的数量 "
+msgid "Retrieve server's client-related configuration limits"
+msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
-msgstr "获取某个server中线程池的属性 "
+msgid "Retrieve threadpool attributes from a server."
+msgstr ""
 
 msgid "Return pool info in bytes"
 msgstr "以字节为单位的返回池信息"
@@ -13864,15 +13851,15 @@ msgstr "向虚拟机中的进程发送信号"
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "这个插槽不支持发送文件描述符"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr "只能为 PTY 启用串口"
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
 msgstr ""
 "目标类型为 '%1$s' 且目标型号为 '%2$s' 的串行设备与客户机架构或机器类型不兼容"
+
+msgid "Serial only works in UNIX/PTY modes"
+msgstr ""
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -18319,6 +18306,9 @@ msgstr "意外地得到没有网桥的网络端口"
 msgid "Unexpectedly got a network port without a plug"
 msgstr "意外地得到没有插件的网络端口"
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr "此平台上不支持 UNIX 文件描述符"
 
@@ -19501,28 +19491,12 @@ msgid "You must map the root user of container"
 msgstr "您必须匹配容器的 root 用户"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -19705,14 +19679,6 @@ msgstr "转换后将状态改为 running"
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "不支持 algorithm=%1$d"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr "命令 '%1$s' 的别名 '%2$s' 有不匹配的别名类型"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr "命令 '%1$s' 的别名 '%2$s' 缺少别名选项"
 
 msgid "all CPU models are accepted"
 msgstr "所有 CPU 型号都被接受"
@@ -20328,10 +20294,6 @@ msgstr "绑定接口缺少绑定元素"
 
 msgid "bool"
 msgstr "布尔值"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr "命令 '%1$s' 的 bool 参数 '%2$s' 有完备集"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -21737,6 +21699,12 @@ msgstr "无法检索不活跃域的 vcpu 信息"
 msgid "cannot revert snapshot of running domain"
 msgstr "无法转换运行中的域的快照"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "无法保存文件 '%1$s'"
@@ -22268,34 +22236,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "命令 '%1$s' 不支持选项 --%2$s"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr "命令 '%1$s' 有处理程序集"
-
-#, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "命令 '%1$s' 有不一致的别名"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr "命令 '%1$s' 有信息集"
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr "命令 '%1$s' 有多个标志集"
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr "命令 '%1$s' 有选项集"
-
-#, c-format
-msgid "command '%1$s' has too many options"
-msgstr "命令 '%1$s' 有很多选项"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr "命令 '%1$s' 缺少帮助"
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "命令 '%1$s' 需要 --%2$s 选项"
 
@@ -22303,19 +22243,11 @@ msgstr "命令 '%1$s' 需要 --%2$s 选项"
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "命令 '%1$s' 需要 <%2$s> 选项"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-msgstr "命令别名 '%1$s' 指向不存在的命令 '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
+msgstr ""
 
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr "命令别名 '%1$s' 指向另一个命令别名 '%2$s'"
-
-msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr "命令组和命令集同时为空。需要先运行vshInit，然后再重置"
-
-msgid "command groups and command set cannot both be NULL"
-msgstr "命令组和命令集不能同时为空"
+msgid "command groups must be non-NULL"
+msgstr ""
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -25304,10 +25236,6 @@ msgstr "无法获得 hypervisor 类型"
 msgid "failed to get interface '%1$s'"
 msgstr "无法获得接口 '%1$s'"
 
-#, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "无法从 '%1$s' 获得 interface-types"
-
 msgid "failed to get launch security policy"
 msgstr "无法获得启动安全策略"
 
@@ -25385,10 +25313,6 @@ msgstr "无法获得 RBD 镜像 %1$s 的条带数"
 
 msgid "failed to get sysinfo"
 msgstr "无法获得系统信息"
-
-#, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "无法从 '%1$s' 获得目标"
 
 msgid "failed to get the daemon version"
 msgstr "无法获得守护进程的版本"
@@ -25710,6 +25634,9 @@ msgstr "无法读取 '%1$s'"
 msgid "failed to read AppArmor template"
 msgstr "无法读取 AppArmor 模板"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "无法读取 XML"
 
@@ -25829,8 +25756,20 @@ msgstr "无法解析相对后备名称：基础镜像不在后备链中"
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "无法解析符号链接 %1$s ：%2$s"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "无法恢复域"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 msgid "failed to retrieve XML"
 msgstr "无法检索 XML"
@@ -25945,6 +25884,9 @@ msgstr "无法将 %1$lld 保存为 %2$s"
 
 msgid "failed to suspend domain"
 msgstr "无法挂起域"
+
+msgid "failed to suspend domain before saving"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "截屏失败"
@@ -26614,6 +26556,9 @@ msgstr "无空隙图形迁移中使用的图形 URI"
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr "<hostdev> 中的属性值 'display=on' 需要图形设备"
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -26947,6 +26892,12 @@ msgstr "hypervisor 连接没有打开"
 
 msgid "hypervisor feature autodetection override"
 msgstr "hypervisor 功能自动探测覆盖"
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
+msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - 关闭有效性检查并再次重新生成配置"
@@ -28908,6 +28859,9 @@ msgstr "管理外部启动的配置"
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr "操作给定用户的授权的 SSH 密钥文件（通过代理）"
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "标记有管理的保存状态的域"
 
@@ -28942,11 +28896,17 @@ msgstr "maxWorkers 不能从零切换到非零，反之亦然"
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors 太大"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "最大值"
@@ -28986,6 +28946,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -29013,8 +28976,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr "mdev 属性缺少名称或值"
@@ -29344,10 +29313,6 @@ msgstr "缺少 'DateTime' 元素"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr "缺少 qemu:device 的 'alias' 属性"
 
-#, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "'%1$s' 中缺少 'architecture'"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr "cloud-hypervisor 中的信息查询结果中缺少 'config'"
 
@@ -29362,10 +29327,6 @@ msgid ""
 msgstr "网络 %1$s 中 <forward> 中的 <nat> 中的 <address> 元素中缺少 'end' 属性"
 
 #, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "'%1$s' 中缺少 'executable'"
-
-#, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr "cloud-hypervisor 中的 '%1$s' 中缺少 'file'"
 
@@ -29376,23 +29337,11 @@ msgstr "selinux lxc 上下文文件 '%1$s' 中缺少 'file' 值"
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "JSON 后备卷定义中缺少 'filename' 字段"
 
-#, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "'%1$s' 中缺少 'filename'"
-
-#, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "'%1$s' 中缺少 'format'"
-
 msgid "missing 'guid' attribute"
 msgstr "缺少 'guid' 属性"
 
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "中介设备的 <type> 元素缺少 'id' 属性"
-
-#, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "'%1$s' 中缺少 'machines'"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -29401,10 +29350,6 @@ msgstr "QEMU 功能缓存中缺少主机 CPU model 属性的 'name' 属性"
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr "缺少 qemu:property 的 'name' 属性"
-
-#, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "'%1$s' 中缺少 'nvram-template'"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr "缺少 vhostuser 磁盘源的 'path' 属性"
@@ -29631,10 +29576,6 @@ msgstr "<interface> 元素中缺少 dev 属性"
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "缺少中介设备类型 '%1$s' 的设备 API"
 
-#, c-format
-msgid "missing device type in '%1$s'"
-msgstr "'%1$s' 中缺少设备类型"
-
 msgid "missing devices information"
 msgstr "丢失设备信息"
 
@@ -29798,10 +29739,6 @@ msgstr "缺少图形的 listen 元素"
 
 msgid "missing listen element for spice graphics"
 msgstr "缺少 spice 图形的 listen 元素"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr "'%1$s' 中缺少映射"
 
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "QEMU 功能缓存中缺少 microcode 版本"
@@ -30296,6 +30233,12 @@ msgstr "要解冻的挂载点路径"
 msgid "msi option is only supported with a server"
 msgstr "只在服务器在和支持 msi 选项"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -30420,6 +30363,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -31390,6 +31336,9 @@ msgstr "%1$s 中的 nparams 必须为 %2$d"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s 中的 nparams 必须等于 %2$d"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparmas 过大"
 
@@ -31602,6 +31551,9 @@ msgstr "只能重启正在运行的/暂停的域"
 
 msgid "only can resume paused domain"
 msgstr "只能恢复暂停的域"
+
+msgid "only can save running/paused domain"
+msgstr ""
 
 msgid "only can shutdown running/paused domain"
 msgstr "只能关闭正在运行的/暂停的域"
@@ -31838,6 +31790,9 @@ msgstr "这个 QEMU 二进制文件不支持出去的 RDMA 迁移"
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "在可能的情况下为 hypervisor sysinfo 输出 XML 字符串"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr "输出缺少补全符的选项列表"
 
@@ -31930,27 +31885,6 @@ msgstr "不支持参数 '%1$s'"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "多次出现参数 '%1$s'"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr "命令 '%1$s' 的 参数 '%2$s' 有不正确的 alias 选项"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr "命令 '%1$s' 的参数 '%2$s' 误用了 VSH_OFLAG_REQ"
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr "命令 '%1$s' 的参数 '%2$s' 必须列在可选的参数之前"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr "命令 '%1$s' 的参数 '%2$s' 必须列在最后"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr "命令 '%1$s' 的参数 '%2$s' 必须使用 VSH_OFLAG_REQ 标志"
 
 msgid "parameter=value"
 msgstr "parameter=value"
@@ -33352,6 +33286,9 @@ msgstr "取消保存"
 
 msgid "save image is incomplete"
 msgstr "保存映像不完整"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "已保存"
@@ -35192,6 +35129,10 @@ msgstr "不支持类型 %1$s"
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "事件中的类型不匹配（实际 0x%1$x，期望 0x%2$x）"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr "源类型(block|file|network)"
 
@@ -36212,10 +36153,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr "QEMU 功缓存中未知的架构 %1$s"
 
 #, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "未知的架构 '%1$s'"
-
-#, c-format
 msgid "unknown architecture: %1$s"
 msgstr "未知的架构: %1$s"
 
@@ -36302,10 +36239,6 @@ msgid "unknown device type '%1$s'"
 msgstr "未知的设备类型 '%1$s'"
 
 #, c-format
-msgid "unknown device type in '%1$s'"
-msgstr "'%1$s' 中未知的设备类型"
-
-#, c-format
 msgid "unknown disk snapshot driver '%1$s'"
 msgstr "未知的磁盘快照驱动程序 '%1$s'"
 
@@ -36388,10 +36321,6 @@ msgstr "未知的接口链接状态 '%1$s'"
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "未知的网络接口起始模式 %1$s"
-
-#, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "未知的接口类型：'%1$s'"
 
 #, c-format
 msgid "unknown ip address type '%1$s'"
@@ -37528,6 +37457,10 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext 中没有设定 parseFileName 功能"
 
 #, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "virtio（非）转换型号不支持地址类型=%1$s"
@@ -38017,8 +37950,248 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "无法找到适合 %1$s 的模拟器"
+
+#~ msgid "Console can only be enabled for a PTY"
+#~ msgstr "控制台只为 PTY 启用"
+
+#, c-format
+#~ msgid "Firmware flash mode value '%1$s' unexpected"
+#~ msgstr "意外的固件闪存模式值 '%1$s'"
+
+#~ msgid "Firmware flash mode value was malformed"
+#~ msgstr "固件闪存模式值不正确"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "获取或者设定节点内存参数\n"
+#~ "    要获取内存参数，请使用以下命令： \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "为虚拟机域获取或者数值当前 blkio 参数。\n"
+#~ "    请使用以下命令获取 blkio 参数： \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "为虚拟机域获取或者设定当前内存参数。\n"
+#~ "要获取内存参数请使用以下命令：\n"
+#~ "\n"
+#~ "virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "为虚拟机域获取或者设定当前内存参数。\n"
+#~ "要获取内存参数请使用以下命令：\n"
+#~ "\n"
+#~ "virsh # numatune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "获取或设置 guest 域的当前 perf 事件。\n"
+#~ "要获取 perf 事件列表，请使用以下命令：\n"
+#~ "virsh # perf <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "不支持多传统 USB 控制器"
+
+#~ msgid ""
+#~ "NUMA mode, one of strict, preferred and interleave \n"
+#~ "or a number from the virDomainNumatuneMemMode enum"
+#~ msgstr ""
+#~ "NUMA 模式，一个严格的、首选的和交错的模式，或者来自 "
+#~ "virDomainNumatuneMemMode 枚举的一个数字"
+
+#~ msgid "Retrieve server's client-related configuration limits "
+#~ msgstr "查询可接入到server的client的数量 "
+
+#~ msgid "Retrieve threadpool attributes from a server. "
+#~ msgstr "获取某个server中线程池的属性 "
+
+#~ msgid "Serial can only be enabled for a PTY"
+#~ msgstr "只能为 PTY 启用串口"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+#~ msgstr "命令 '%1$s' 的别名 '%2$s' 有不匹配的别名类型"
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
+#~ msgstr "命令 '%1$s' 的别名 '%2$s' 缺少别名选项"
+
+#, c-format
+#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+#~ msgstr "命令 '%1$s' 的 bool 参数 '%2$s' 有完备集"
+
+#, c-format
+#~ msgid "command '%1$s' has handler set"
+#~ msgstr "命令 '%1$s' 有处理程序集"
+
+#, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "命令 '%1$s' 有不一致的别名"
+
+#, c-format
+#~ msgid "command '%1$s' has info set"
+#~ msgstr "命令 '%1$s' 有信息集"
+
+#, c-format
+#~ msgid "command '%1$s' has multiple flags set"
+#~ msgstr "命令 '%1$s' 有多个标志集"
+
+#, c-format
+#~ msgid "command '%1$s' has options set"
+#~ msgstr "命令 '%1$s' 有选项集"
+
+#, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "命令 '%1$s' 有很多选项"
+
+#, c-format
+#~ msgid "command '%1$s' lacks help"
+#~ msgstr "命令 '%1$s' 缺少帮助"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+#~ msgstr "命令别名 '%1$s' 指向不存在的命令 '%2$s'"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+#~ msgstr "命令别名 '%1$s' 指向另一个命令别名 '%2$s'"
+
+#~ msgid ""
+#~ "command groups and command are both NULL run vshInit before reloading"
+#~ msgstr "命令组和命令集同时为空。需要先运行vshInit，然后再重置"
+
+#~ msgid "command groups and command set cannot both be NULL"
+#~ msgstr "命令组和命令集不能同时为空"
+
+#, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "无法从 '%1$s' 获得 interface-types"
+
+#, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "无法从 '%1$s' 获得目标"
+
+#, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "'%1$s' 中缺少 'architecture'"
+
+#, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "'%1$s' 中缺少 'executable'"
+
+#, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "'%1$s' 中缺少 'filename'"
+
+#, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "'%1$s' 中缺少 'format'"
+
+#, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "'%1$s' 中缺少 'machines'"
+
+#, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "'%1$s' 中缺少 'nvram-template'"
+
+#, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "'%1$s' 中缺少设备类型"
+
+#, c-format
+#~ msgid "missing mapping in '%1$s'"
+#~ msgstr "'%1$s' 中缺少映射"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+#~ msgstr "命令 '%1$s' 的 参数 '%2$s' 有不正确的 alias 选项"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
+#~ msgstr "命令 '%1$s' 的参数 '%2$s' 误用了 VSH_OFLAG_REQ"
+
+#, c-format
+#~ msgid ""
+#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
+#~ "parameters"
+#~ msgstr "命令 '%1$s' 的参数 '%2$s' 必须列在可选的参数之前"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
+#~ msgstr "命令 '%1$s' 的参数 '%2$s' 必须列在最后"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
+#~ msgstr "命令 '%1$s' 的参数 '%2$s' 必须使用 VSH_OFLAG_REQ 标志"
+
+#, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "未知的架构 '%1$s'"
+
+#, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "'%1$s' 中未知的设备类型"
+
+#, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "未知的接口类型：'%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #~ msgid "<system_field> evaluation has failed"
 #~ msgstr "<system_field> 评估失败"

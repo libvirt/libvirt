@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -490,6 +490,10 @@ msgid " Storage:"
 msgstr " ストレージ:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
@@ -500,6 +504,10 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1701,14 +1709,6 @@ msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64 ビット PCI 全体の設定は root PCI コントローラーに対してのみです"
 
 #, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
-
-#, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
 msgstr "<active_pcr_banks/> には TPM バージョン '%1$s' が必要です"
 
@@ -2899,6 +2899,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "resctrl ディレクトリー '%1$s' を作成できません"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr "ソケット '%1$s' を作成できません"
 
@@ -3022,10 +3026,6 @@ msgstr "pid %1$d の開始時刻を見つけることができません"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "与えられたデータ向けの適切な CPU モデルを見つけられません"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "%1$s の適切なエミュレーターを見つけられません"
 
 msgid "Cannot get all servers from daemon"
 msgstr "デーモンからすべてのサーバーを取得できません"
@@ -3944,8 +3944,8 @@ msgstr "管理サーバーに接続しました"
 msgid "Connections from inside daemon must be direct"
 msgstr "内部デーモンからの接続は、直接接続でなければなりません"
 
-msgid "Console can only be enabled for a PTY"
-msgstr "コンソールは PTY に対してのみ有効にできます"
+msgid "Console only works in PTY mode"
+msgstr ""
 
 msgid "Constant pages:"
 msgstr "不変ページ:"
@@ -5837,6 +5837,12 @@ msgstr ""
 "トの BIOS において有効になっていること、およびホストの設定が kvm モジュールを"
 "読み込むために設定されていることを確認してください。"
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr "ドメインには少なくとも 1 つの vCPU が必要です"
 
@@ -6737,6 +6743,10 @@ msgid "Failed to clean up %1$s"
 msgstr "%1$s のクリーンアップに失敗しました"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "%1$s のエージェントのセキュリティコンテキストを解除できません"
 
@@ -6848,6 +6858,10 @@ msgstr "'%1$s' の作成に失敗しました: %2$s"
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "SASL クライアントコンテキストの作成に失敗しました: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "XML の作成に失敗しました"
@@ -7042,6 +7056,10 @@ msgstr "ボリューム %1$s の作成に失敗しました"
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "%1$s からのボリューム作成に失敗しました"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7804,6 +7822,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "ドメインのイメージファイル '%1$s' を開けませんでした"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "ファイル '%1$s' を開けませんでした"
 
@@ -8149,6 +8171,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr "ドメイン '%1$s' の管理保存イメージの削除に失敗しました"
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "ストレージボリューム '%1$s'(%2$s) の削除に失敗しました"
 
@@ -8289,6 +8315,9 @@ msgstr "'%1$s' の '%2$s' の保存に失敗しました"
 
 msgid "Failed to save VM settings"
 msgstr "仮想マシンの設定の保存に失敗しました"
+
+msgid "Failed to save domain"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8489,6 +8518,9 @@ msgstr "libxenlight を用いたドメイン '%1$d' のシャットダウンに�
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
 msgstr "ドメイン '%1$s' のシャットダウンに失敗しました"
+
+msgid "Failed to shutoff after domain save"
+msgstr ""
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8712,6 +8744,9 @@ msgstr ""
 msgid "Failed to write '%1$s'"
 msgstr "'%1$s' の書き込みに失敗しました"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr "ピクセルデータの書き込みに失敗しました"
 
@@ -8729,6 +8764,9 @@ msgstr "プロセス ID ファイル '%1$s' に書き込めません"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "vmx ファイル '%1$s' の書き込みに失敗しました"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "XML 記述の書き込みに失敗しました"
@@ -8880,13 +8918,6 @@ msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 "Firmware エントリーには、値または 'file' 属性のいずれかを指定する必要がありま"
 "す"
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr "ファームウェアフラッシュモード値 '%1$s' は予想されていませんでした"
-
-msgid "Firmware flash mode value was malformed"
-msgstr "ファームウェアフラッシュモード値の形式が正しくありませんでした"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -9055,66 +9086,23 @@ msgstr "メモリーのパラメーターの取得または設定"
 msgid "Get or set node memory parameters"
 msgstr "ノードメモリーパラメーターの取得または設定"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"ノードのメモリーパラメーターを取得または設定します。\n"
-"    メモリーパラメーターを取得するには、以下のコマンドを使用します: \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "NUMA パラメーターの取得または設定"
 
 msgid "Get or set perf event"
 msgstr "perf イベントを取得または設定します"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"ゲストドメインの現在のブロック I/O パラメーターを取得または設定します。\n"
-"    ブロック I/O パラメーターを取得するために、以下のコマンドを使用します: \n"
-"\n"
-"    virsh # blkiotune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"ゲストドメインのカレントメモリーパラメーターを取得または設定します。\n"
-"    メモリーパラメーターを取得するために、以下のコマンドを使用します: \n"
-"\n"
-"    virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"ゲストドメインの現在の NUMA パラメーターを取得または設定します。\n"
-"    NUMA パラメーターを取得するには以下のコマンドを使用します: \n"
-"\n"
-"    virsh # numatune <domain>"
 
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"ゲストドメインの現在の perf イベントを取得または設定します。\n"
-"    perf イベントリストを取得するには、次のコマンドを使用します: \n"
-"\n"
-"   virsh # perf <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "現在のスナップショットの取得または設定"
@@ -11926,9 +11914,6 @@ msgstr "複数のグラフィックデバイスはサポートされません"
 msgid "Multiple interfaces attached to bridge"
 msgstr "複数のインターフェイスがブリッジに接続されています"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "複数のレガシー USB コントローラーはサポートされません"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr "cellid %1$u を持つ複数の memnode 要素"
@@ -12020,11 +12005,9 @@ msgstr ""
 "トされます"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
-"NUMA モード (strict、preferred、interleave のうちの 1 つ)\n"
-"または virDomainNumatuneMemMode enum からの数値"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -13897,6 +13880,9 @@ msgstr ""
 msgid "Relative backing during copy not supported yet"
 msgstr "コピー中の相対的なバッキングはまだサポートされていません"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "リモートコマンドが 0 以外のコードで終了しました: %1$d"
@@ -14081,11 +14067,11 @@ msgstr "URI $uri においてゲストを再開しています..."
 msgid "Retrieve identity details about <client> from <server>"
 msgstr "<server> から <client> の ID 情報を取得します"
 
-msgid "Retrieve server's client-related configuration limits "
-msgstr "サーバーのクライアント関連の設定制限を取得します "
+msgid "Retrieve server's client-related configuration limits"
+msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
-msgstr "サーバーからスレッドプール属性を取得します。 "
+msgid "Retrieve threadpool attributes from a server."
+msgstr ""
 
 msgid "Return pool info in bytes"
 msgstr "プール情報をバイト単位で返します"
@@ -14556,9 +14542,6 @@ msgstr "仮想マシンにおいてシグナルをプロセスに送信する"
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "ファイルディスクリプターの送信はこのソケットにおいてサポートされません"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr "シリアルは PTY に対してのみ有効にできます"
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
@@ -14566,6 +14549,9 @@ msgid ""
 msgstr ""
 "ターゲットタイプ '%1$s' およびターゲットモデル '%2$s' のシリアルデバイスは、"
 "ゲストアーキテクチャーまたはマシンタイプとは互換性がありません"
+
+msgid "Serial only works in UNIX/PTY modes"
+msgstr ""
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -19246,6 +19232,9 @@ msgstr "予期せずに、ネットワークブリッジのないネットワー
 msgid "Unexpectedly got a network port without a plug"
 msgstr "予期せずに、プラグのないネットワークポートを取得しました"
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr "このプラットフォームではサポートされない Unix ファイル記述子"
 
@@ -20483,28 +20472,12 @@ msgid "You must map the root user of container"
 msgstr "コンテナーの root ユーザーを対応付ける必要があります"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -20702,16 +20675,6 @@ msgstr "復帰後、実行状態への変更"
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d はサポートされません"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
-"コマンド '%1$s' のエイリアス '%2$s' では、エイリアスタイプが一致しません"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
-"コマンド '%1$s' のエイリアス '%2$s' には、エイリアスオプションがありません"
 
 msgid "all CPU models are accepted"
 msgstr "すべての CPU モデルを受け入れます"
@@ -21359,12 +21322,6 @@ msgstr "bond インターフェイスに bond 要素がありません"
 
 msgid "bool"
 msgstr "真偽"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr ""
-"コマンド '%1$s' の bool パラメーター '%2$s' にはコンプリーターセットがありま"
-"す"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22817,6 +22774,12 @@ msgstr "非アクティブなドメインの vcpu 情報を取得できません
 msgid "cannot revert snapshot of running domain"
 msgstr "実行中のドメインのスナップショットを復元できません"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "ファイル '%1$s' を保存できません"
@@ -23367,34 +23330,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "コマンド '%1$s' はオプション --%2$s をサポートしていません"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr "コマンド '%1$s' にはハンドラーが設定されています"
-
-#, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "コマンド '%1$s' には一貫性のないエイリアスがあります"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr "コマンド '%1$s' には情報が設定されています"
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr "コマンド '%1$s' には複数のフラグが設定されています"
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr "コマンド '%1$s' にはオプションが設定されています"
-
-#, c-format
-msgid "command '%1$s' has too many options"
-msgstr "コマンド '%1$s' にはオプションが多すぎます"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr "コマンド '%1$s' にはヘルプがありません"
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "コマンド '%1$s' には --%2$s オプションが必要です"
 
@@ -23402,22 +23337,11 @@ msgstr "コマンド '%1$s' には --%2$s オプションが必要です"
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "コマンド '%1$s' には <%2$s> オプションが必要です"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-msgstr "コマンドエイリアス '%1$s' は、存在しないコマンド '%2$s' を指しています"
-
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
-"コマンドエイリアス '%1$s' は、別のコマンドエイリアス '%2$s' を指しています"
 
-msgid "command groups and command are both NULL run vshInit before reloading"
+msgid "command groups must be non-NULL"
 msgstr ""
-"コマンドグループとコマンドは両方とも NULL です。リロードする前に vshInit を実"
-"行してください"
-
-msgid "command groups and command set cannot both be NULL"
-msgstr "コマンドグループとコマンドセットの両方を NULL にすることはできません"
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -26529,10 +26453,6 @@ msgstr "ハイパーバイザータイプの取得に失敗しました"
 msgid "failed to get interface '%1$s'"
 msgstr "インターフェイス '%1$s' を取得できませんでした"
 
-#, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "'%1$s' から interface-types を取得できませんでした"
-
 msgid "failed to get launch security policy"
 msgstr "起動セキュリティーポリシーを取得できませんでした"
 
@@ -26610,10 +26530,6 @@ msgstr "RBD イメージ %1$s のストライプカウントの取得に失敗�
 
 msgid "failed to get sysinfo"
 msgstr "システム情報を取得できませんでした"
-
-#, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "'%1$s' からターゲットを取得できませんでした"
 
 msgid "failed to get the daemon version"
 msgstr "デーモンのバージョンを取得できませんでした"
@@ -26940,6 +26856,9 @@ msgstr "'%1$s' の読み込みに失敗しました"
 msgid "failed to read AppArmor template"
 msgstr "AppArmor テンプレートの読み込みに失敗しました"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "XML の読み込みに失敗しました"
 
@@ -27061,8 +26980,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "シンボリックリンク %1$s の解決に失敗しました: %2$s"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "ドメインの再開に失敗しました"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 msgid "failed to retrieve XML"
 msgstr "XML の取得に失敗しました"
@@ -27180,6 +27111,9 @@ msgstr "%1$lld を %2$s に保存することに失敗しました"
 
 msgid "failed to suspend domain"
 msgstr "ドメインの一時停止に失敗しました"
+
+msgid "failed to suspend domain before saving"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "スクリーンショットの取得に失敗しました"
@@ -27876,6 +27810,9 @@ msgstr "シームレスグラフィックマイグレーションのために使
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr "グラフィックデバイスは <hostdev> の属性値 'display=on' で必要です"
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -28220,6 +28157,12 @@ msgstr "ハイパーバイザー接続が開いていません"
 
 msgid "hypervisor feature autodetection override"
 msgstr "ハイパーバイザー機能の自動検出のオーバーライド"
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
+msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - 検証をオフにして、再定義を再試行します"
@@ -30265,6 +30208,9 @@ msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
 "特定のユーザーの承認された SSH キーファイルを操作します (エージェント経由)"
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "管理済み保存状態を持つ停止状態のドメインに印をつけます"
 
@@ -30299,11 +30245,17 @@ msgstr "maxWorkers をゼロからゼロ以外に、またはその逆に切り�
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors が大きすぎます"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "最大"
@@ -30343,6 +30295,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -30370,8 +30325,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr "mdev 属性に名前または値がありません"
@@ -30730,10 +30691,6 @@ msgstr "'DateTime' 要素がありません"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr "qemu:device の 'alias' 属性がありません"
 
-#, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "'%1$s' に 'architecture' がありません"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr "cloud-hypervisor からの情報クエリー結果に 'config' がありません"
 
@@ -30750,10 +30707,6 @@ msgstr ""
 "性がありません"
 
 #, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "'%1$s' に 'executable' がありません"
-
-#, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr "cloud-hypervisor の '%1$s' に 'file' がありません"
 
@@ -30764,23 +30717,11 @@ msgstr "selinux lxc コンテキストファイル '%1$s' に 'file' 値があ�
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "JSON バッキングボリューム定義に 'filename' フィールドがありません"
 
-#, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "'%1$s' に 'filename' がありません"
-
-#, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "'%1$s' に 'format' がありません"
-
 msgid "missing 'guid' attribute"
 msgstr "'guid' 属性がありません"
 
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "仲介デバイスの <type> 要素の 'id' 属性がありません"
-
-#, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "'%1$s' に 'machines' がありません"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -30791,10 +30732,6 @@ msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr "qemu:property の 'name' 属性がありません"
-
-#, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "'%1$s' の 'nvram-template' がありません"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr "vhostuser ディスクソースの 'path' 属性がありません"
@@ -31029,10 +30966,6 @@ msgstr "<interface> 要素に dev 属性がありません"
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "仲介デバイスタイプ '%1$s' のデバイス API がありません"
 
-#, c-format
-msgid "missing device type in '%1$s'"
-msgstr "'%1$s' のデバイスタイプがありません"
-
 msgid "missing devices information"
 msgstr "デバイス情報がありません"
 
@@ -31202,10 +31135,6 @@ msgstr "グラフィックの listen 要素がありません"
 
 msgid "missing listen element for spice graphics"
 msgstr "spice グラフィックの listen 要素がありません"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr "'%1$s' にマッピングがありません"
 
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "QEMU ケイパビリティーキャッシュにマイクロコードバージョンがありません"
@@ -31738,6 +31667,12 @@ msgstr "解凍されるマウントポイントパス"
 msgid "msi option is only supported with a server"
 msgstr "msi オプションはサーバーでのみサポートされます"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31869,6 +31804,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32880,6 +32818,9 @@ msgstr "%1$s のパラメーター数は %2$d である必要があります"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s のパラメーター数は %2$d と一致する必要があります"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams が大きすぎます"
 
@@ -33102,6 +33043,9 @@ msgstr "実行中/一時停止したドメインのみを再起動できます"
 
 msgid "only can resume paused domain"
 msgstr "一時停止したドメインのみを再開できます"
+
+msgid "only can save running/paused domain"
+msgstr ""
 
 msgid "only can shutdown running/paused domain"
 msgstr "実行中/一時停止したドメインのみをシャットダウンできます"
@@ -33345,6 +33289,9 @@ msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "取得可能ならば、ハイパーバイザーのシステム情報の XML 文字列を出力します"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr "コンプリーターがないオプションのリストを出力します"
 
@@ -33443,34 +33390,6 @@ msgstr "パラメーター '%1$s' はサポートされません"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "パラメーター '%1$s' が複数回現れています"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-"コマンド '%1$s' のパラメーター '%2$s' のエイリアスオプションが正しくありませ"
-"ん"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr "コマンド '%1$s' のパラメーター '%2$s' が VSH_OFLAG_REQ を誤用しました"
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-"コマンド '%1$s' のパラメーター '%2$s' は、オプションのパラメーターの前に記載"
-"する必要があります"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
-"コマンド '%1$s' のパラメーター '%2$s' は、最後に記載されなければなりません"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr ""
-"コマンド '%1$s' のパラメーター '%2$s' は、VSH_OFLAG_REQ フラグを使用する必要"
-"があります"
 
 msgid "parameter=value"
 msgstr "パラメーター=値"
@@ -34933,6 +34852,9 @@ msgstr "保存が取り消されました"
 
 msgid "save image is incomplete"
 msgstr "保存イメージが不完全です"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "保存されました"
@@ -36895,6 +36817,10 @@ msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr ""
 "イベントでのタイプの不一致 (0x%1$x を予想していましたが、実際は 0x%2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr "ソースのタイプ (ブロック | ファイル | ネットワーク)"
 
@@ -37925,10 +37851,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr "QEMU ケイパビリティーキャッシュ内の不明なアーチ %1$s"
 
 #, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "不明なアーキテクチャー '%1$s'"
-
-#, c-format
 msgid "unknown architecture: %1$s"
 msgstr "不明なアーキテクチャー: %1$s"
 
@@ -38015,10 +37937,6 @@ msgid "unknown device type '%1$s'"
 msgstr "不明なデバイスタイプ '%1$s'"
 
 #, c-format
-msgid "unknown device type in '%1$s'"
-msgstr "'%1$s' の不明なデバイスタイプ"
-
-#, c-format
 msgid "unknown disk snapshot driver '%1$s'"
 msgstr "不明なディスクスナップショットドライバー '%1$s'"
 
@@ -38101,10 +38019,6 @@ msgstr "不明なインターフェイスリンクステート '%1$s' です"
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "インターフェイスの不明な開始モード %1$s"
-
-#, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "不明なインターフェイスタイプ: '%1$s'"
 
 #, c-format
 msgid "unknown ip address type '%1$s'"
@@ -39279,6 +39193,10 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext は parseFileName ファンクションセットを持ちません"
 
 #, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "virtio (非) 遷移モデルはアドレス type=%1$s ではサポートされません"
@@ -39813,8 +39731,267 @@ msgstr ""
 "はありません"
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "%1$s の適切なエミュレーターを見つけられません"
+
+#~ msgid "Console can only be enabled for a PTY"
+#~ msgstr "コンソールは PTY に対してのみ有効にできます"
+
+#, c-format
+#~ msgid "Firmware flash mode value '%1$s' unexpected"
+#~ msgstr "ファームウェアフラッシュモード値 '%1$s' は予想されていませんでした"
+
+#~ msgid "Firmware flash mode value was malformed"
+#~ msgstr "ファームウェアフラッシュモード値の形式が正しくありませんでした"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "ノードのメモリーパラメーターを取得または設定します。\n"
+#~ "    メモリーパラメーターを取得するには、以下のコマンドを使用します: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "ゲストドメインの現在のブロック I/O パラメーターを取得または設定します。\n"
+#~ "    ブロック I/O パラメーターを取得するために、以下のコマンドを使用しま"
+#~ "す: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "ゲストドメインのカレントメモリーパラメーターを取得または設定します。\n"
+#~ "    メモリーパラメーターを取得するために、以下のコマンドを使用します: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "ゲストドメインの現在の NUMA パラメーターを取得または設定します。\n"
+#~ "    NUMA パラメーターを取得するには以下のコマンドを使用します: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "ゲストドメインの現在の perf イベントを取得または設定します。\n"
+#~ "    perf イベントリストを取得するには、次のコマンドを使用します: \n"
+#~ "\n"
+#~ "   virsh # perf <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "複数のレガシー USB コントローラーはサポートされません"
+
+#~ msgid ""
+#~ "NUMA mode, one of strict, preferred and interleave \n"
+#~ "or a number from the virDomainNumatuneMemMode enum"
+#~ msgstr ""
+#~ "NUMA モード (strict、preferred、interleave のうちの 1 つ)\n"
+#~ "または virDomainNumatuneMemMode enum からの数値"
+
+#~ msgid "Retrieve server's client-related configuration limits "
+#~ msgstr "サーバーのクライアント関連の設定制限を取得します "
+
+#~ msgid "Retrieve threadpool attributes from a server. "
+#~ msgstr "サーバーからスレッドプール属性を取得します。 "
+
+#~ msgid "Serial can only be enabled for a PTY"
+#~ msgstr "シリアルは PTY に対してのみ有効にできます"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+#~ msgstr ""
+#~ "コマンド '%1$s' のエイリアス '%2$s' では、エイリアスタイプが一致しません"
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
+#~ msgstr ""
+#~ "コマンド '%1$s' のエイリアス '%2$s' には、エイリアスオプションがありません"
+
+#, c-format
+#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+#~ msgstr ""
+#~ "コマンド '%1$s' の bool パラメーター '%2$s' にはコンプリーターセットがあり"
+#~ "ます"
+
+#, c-format
+#~ msgid "command '%1$s' has handler set"
+#~ msgstr "コマンド '%1$s' にはハンドラーが設定されています"
+
+#, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "コマンド '%1$s' には一貫性のないエイリアスがあります"
+
+#, c-format
+#~ msgid "command '%1$s' has info set"
+#~ msgstr "コマンド '%1$s' には情報が設定されています"
+
+#, c-format
+#~ msgid "command '%1$s' has multiple flags set"
+#~ msgstr "コマンド '%1$s' には複数のフラグが設定されています"
+
+#, c-format
+#~ msgid "command '%1$s' has options set"
+#~ msgstr "コマンド '%1$s' にはオプションが設定されています"
+
+#, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "コマンド '%1$s' にはオプションが多すぎます"
+
+#, c-format
+#~ msgid "command '%1$s' lacks help"
+#~ msgstr "コマンド '%1$s' にはヘルプがありません"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+#~ msgstr ""
+#~ "コマンドエイリアス '%1$s' は、存在しないコマンド '%2$s' を指しています"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+#~ msgstr ""
+#~ "コマンドエイリアス '%1$s' は、別のコマンドエイリアス '%2$s' を指しています"
+
+#~ msgid ""
+#~ "command groups and command are both NULL run vshInit before reloading"
+#~ msgstr ""
+#~ "コマンドグループとコマンドは両方とも NULL です。リロードする前に vshInit "
+#~ "を実行してください"
+
+#~ msgid "command groups and command set cannot both be NULL"
+#~ msgstr ""
+#~ "コマンドグループとコマンドセットの両方を NULL にすることはできません"
+
+#, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "'%1$s' から interface-types を取得できませんでした"
+
+#, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "'%1$s' からターゲットを取得できませんでした"
+
+#, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "'%1$s' に 'architecture' がありません"
+
+#, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "'%1$s' に 'executable' がありません"
+
+#, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "'%1$s' に 'filename' がありません"
+
+#, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "'%1$s' に 'format' がありません"
+
+#, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "'%1$s' に 'machines' がありません"
+
+#, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "'%1$s' の 'nvram-template' がありません"
+
+#, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "'%1$s' のデバイスタイプがありません"
+
+#, c-format
+#~ msgid "missing mapping in '%1$s'"
+#~ msgstr "'%1$s' にマッピングがありません"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+#~ msgstr ""
+#~ "コマンド '%1$s' のパラメーター '%2$s' のエイリアスオプションが正しくありま"
+#~ "せん"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
+#~ msgstr ""
+#~ "コマンド '%1$s' のパラメーター '%2$s' が VSH_OFLAG_REQ を誤用しました"
+
+#, c-format
+#~ msgid ""
+#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
+#~ "parameters"
+#~ msgstr ""
+#~ "コマンド '%1$s' のパラメーター '%2$s' は、オプションのパラメーターの前に記"
+#~ "載する必要があります"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
+#~ msgstr ""
+#~ "コマンド '%1$s' のパラメーター '%2$s' は、最後に記載されなければなりません"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
+#~ msgstr ""
+#~ "コマンド '%1$s' のパラメーター '%2$s' は、VSH_OFLAG_REQ フラグを使用する必"
+#~ "要があります"
+
+#, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "不明なアーキテクチャー '%1$s'"
+
+#, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "'%1$s' の不明なデバイスタイプ"
+
+#, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "不明なインターフェイスタイプ: '%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #~ msgid "<system_field> evaluation has failed"
 #~ msgstr "<system_field> の評価に失敗しました"

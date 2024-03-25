@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -363,11 +363,19 @@ msgid " Storage:"
 msgstr " সংৰক্ষণ:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+msgstr ""
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1520,14 +1528,6 @@ msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-bit PCI হৌল সংহতি কেৱল ৰুট PCI নিয়ন্ত্ৰকসমূহৰ বাবে"
-
-#, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
@@ -2687,6 +2687,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "লগ পঞ্জিকা '%1$s' নিৰ্মাণ কৰিবলৈ ব্যৰ্থ"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr ""
 
@@ -2809,10 +2813,6 @@ msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "প্ৰদত্ত তথ্য অনুযায়ী প্ৰযোজ্য কোনো CPU মডেল পোৱা নাযায়"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "%1$s ৰ বাবে উপযোগী ইমুলেটৰ সন্ধান কৰিব নোৱাৰি"
 
 msgid "Cannot get all servers from daemon"
 msgstr ""
@@ -3755,7 +3755,7 @@ msgstr "ডোমেইন %s লৈ সংযুক্ত\n"
 msgid "Connections from inside daemon must be direct"
 msgstr ""
 
-msgid "Console can only be enabled for a PTY"
+msgid "Console only works in PTY mode"
 msgstr ""
 
 msgid "Constant pages:"
@@ -5659,6 +5659,12 @@ msgstr ""
 "ডমেইনৰ KVM ৰ প্ৰয়োজন, কিন্তু ই উপলব্ধ নহয়। হস্ট BIOS ত ভাৰছুৱেলাইজেষণ সামৰ্থবান আছে "
 "নে, আৰু kvm মডিউলসমূহ ল'ড কৰিবলে হস্ট সংৰূপ সংস্থাপন কৰা আছে নে নিৰীক্ষণ কৰক।"
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr ""
 
@@ -6559,6 +6565,10 @@ msgid "Failed to clean up %1$s"
 msgstr "%1$s পৰিষ্কাৰ কৰিবলে ব্যৰ্থ"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "%1$s ৰ সহায়কৰ বাবে সুৰক্ষা পৰিপ্ৰেক্ষতিত পৰিষ্কাৰ কৰিবলে ব্যৰ্থ"
 
@@ -6672,6 +6682,10 @@ msgstr "'%1$s' নিৰ্মাণ কৰিবলৈ ব্যৰ্থ: %2$s
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "SASL গ্ৰাহক context নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "XML নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -6866,6 +6880,10 @@ msgstr "%1$s সমষ্টি নিৰ্মাণ কৰোঁতে ব্�
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "%1$sৰ পৰা ডোমেইন নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7624,6 +7642,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "ডমেইন ছবি ফাইল '%1$s' খোলিবলে ব্যৰ্থ"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "'%1$s' ফাইল খোলোঁতে ব্যৰ্থ"
 
@@ -7974,6 +7996,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "সংৰক্ষণ ভলিউম '%1$s'(%2$s) আতৰাবলে ব্যৰ্থ"
 
@@ -8109,6 +8135,9 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "%1$s ডোমেইন %2$s এ সংৰক্ষণ কৰোঁতে ব্যৰ্থ"
 
 msgid "Failed to save VM settings"
+msgstr ""
+
+msgid "Failed to save domain"
 msgstr ""
 
 #, c-format
@@ -8299,6 +8328,9 @@ msgstr "libxenlight ৰ সৈতে ডমেইন '%1$d' বন্ধ কৰ�
 
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
+msgstr ""
+
+msgid "Failed to shutoff after domain save"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8522,6 +8554,9 @@ msgstr "%1$zu অৱস্থান '%2$s' পথ সহ সংৰক্ষণ�
 msgid "Failed to write '%1$s'"
 msgstr "'%1$s' পঢ়িবলৈ ব্যৰ্থৈ কৰোঁতে ব্যৰ্থ"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr ""
 
@@ -8539,6 +8574,9 @@ msgstr "pid ফাইল '%1$s' লে লিখিবলে ব্যৰ্থ"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "vmx ফাইল '%1$s' লিখিবলে ব্যৰ্থ"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "xml বিৱৰণ লিখিবলে ব্যৰ্থ"
@@ -8683,13 +8721,6 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
-msgstr ""
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr ""
-
-msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -8849,17 +8880,6 @@ msgstr "মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত ক
 msgid "Get or set node memory parameters"
 msgstr "ন'ড মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"ন'ড মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক\n"
-"    মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে, নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "numa প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক"
 
@@ -8867,50 +8887,17 @@ msgstr "numa প্ৰাচলসমূহ প্ৰাপ্ত কৰক অ�
 msgid "Get or set perf event"
 msgstr "মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"এটা অতিথি ডমেইনৰ বাবে বৰ্তমান blkio প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
-"    blkio প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
-"\n"
-"    virsh # blkiotune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"এটা অতিথি ডমেইনৰ বাবে বৰ্তমান মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
-"    মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
-"\n"
-"    virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"এটা অতিথি ডমেইনৰ বাবে বৰ্তমান numa প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
-"    numa প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
-"\n"
-"    virsh # numatune <domain>"
 
-#, fuzzy
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"এটা অতিথি ডমেইনৰ বাবে বৰ্তমান মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
-"    মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
-"\n"
-"    virsh # memtune <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "বৰ্তমান স্নেপশ্বট প্ৰাপ্ত কৰক অথবা সংস্থাপন কৰক"
@@ -11681,9 +11668,6 @@ msgstr "বহু-হেড ভিডিঅ' ডিভাইচসমূহ অ�
 msgid "Multiple interfaces attached to bridge"
 msgstr "ব্ৰিজৰ সৈতে একাধিক আন্তঃপৃষ্ঠ সংলগ্ন"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "একাধিক কিম্বদন্তি USB নিয়ন্ত্ৰকসমূহ সমৰ্থিত নহয়"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr "cellid %1$u ৰ সৈতে একাধিক memnode উপাদান"
@@ -11775,8 +11759,8 @@ msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr "'preferred' অৱস্থাত NUMA মেমৰি টিউনিং দ্বাৰা কেৱল একক অৱস্থা সমৰ্থন কৰা হয়"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13664,6 +13648,9 @@ msgstr ""
 msgid "Relative backing during copy not supported yet"
 msgstr "পৰিবৰ্তনশীল ডিস্কসমূহ এতিয়াও সমৰ্থিত নহয়"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "অ-শূন্য ক'ডৰ সৈতে দূৰৱৰ্তী কমান্ডৰ অন্ত হল: %1$d"
@@ -13841,10 +13828,10 @@ msgstr "$uri URI ত অতিথিসকল অব্যাহত ৰখা �
 msgid "Retrieve identity details about <client> from <server>"
 msgstr ""
 
-msgid "Retrieve server's client-related configuration limits "
+msgid "Retrieve server's client-related configuration limits"
 msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
+msgid "Retrieve threadpool attributes from a server."
 msgstr ""
 
 msgid "Return pool info in bytes"
@@ -14313,13 +14300,13 @@ msgstr "অতিথিত প্ৰক্ৰিয়াসমূহলে সং�
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "এই চকেটত ফাইল বিৱৰকসমূহ পঠোৱা সমৰ্থিত নহয়"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr ""
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
+msgstr ""
+
+msgid "Serial only works in UNIX/PTY modes"
 msgstr ""
 
 #, c-format
@@ -18993,6 +18980,9 @@ msgstr ""
 msgid "Unexpectedly got a network port without a plug"
 msgstr ""
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
@@ -20185,28 +20175,12 @@ msgid "You must map the root user of container"
 msgstr "আপুনি বৈয়ামৰ ৰুট ব্যৱহাৰকাৰীক মেপ কৰিব লাগিব"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -20404,14 +20378,6 @@ msgstr "উভতি যোৱাৰ পিছত, অৱস্থাক চল�
 #, fuzzy, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "এলগৰিথম %1$d মচি পেলোৱাটো সমৰ্থিত নহয়"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
 
 #, fuzzy
 msgid "all CPU models are accepted"
@@ -21052,10 +21018,6 @@ msgstr "bond সংযোগমাধ্যমত bond স্বত্বা অ
 
 msgid "bool"
 msgstr "bool"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22520,6 +22482,12 @@ msgstr "নিষ্ক্ৰিয় ডোমেইনত vcpu pin কৰা স
 msgid "cannot revert snapshot of running domain"
 msgstr "চলি থকা ডমেইনৰ স্নেপশ্বট উভতাব নোৱাৰি"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "ফাইল '%1$s' ক সংৰক্ষণ কৰিব নোৱাৰি"
@@ -23079,34 +23047,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "আদেশ '%1$s' ৰ দ্বাৰা   %2$s বিকল্প সমৰ্থিত নহয়"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "ডমেইন '%1$s' ৰ কোনো বৰ্তমান স্নেপশ্বট নাই"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has too many options"
-msgstr "আদেশ '%s' ৰ সৈতে   %s বিকল্প প্ৰয়োগ কৰা আৱশ্যক"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr ""
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "আদেশ '%1$s' ৰ সৈতে   %2$s বিকল্প প্ৰয়োগ কৰা আৱশ্যক"
 
@@ -23114,18 +23054,10 @@ msgstr "আদেশ '%1$s' ৰ সৈতে   %2$s বিকল্প প্ৰ
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "'%1$s' আদেশৰ সৈতে <%2$s> বিকল্প প্ৰয়োগ কৰা আৱশ্যক"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
 
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr ""
-
-msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr ""
-
-msgid "command groups and command set cannot both be NULL"
+msgid "command groups must be non-NULL"
 msgstr ""
 
 #, c-format
@@ -26240,10 +26172,6 @@ msgstr "হাইপাৰ ভাইসৰৰ প্ৰকৃতি প্ৰা
 msgid "failed to get interface '%1$s'"
 msgstr "সংযোগমাধ্যম '%1$s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
 
-#, fuzzy, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "সংযোগমাধ্যম '%1$s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
-
 #, fuzzy
 msgid "failed to get launch security policy"
 msgstr "পেৰেণ্ট পুল পাবলৈ বিফল"
@@ -26324,10 +26252,6 @@ msgstr "RBD ছবি '%1$s' পুনৰআকাৰ দিবলে ব্য�
 
 msgid "failed to get sysinfo"
 msgstr "sysinfo প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
-
-#, fuzzy, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "গোপনীয় তথ্য '%1$s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থতে ব্যৰ্থ"
 
 msgid "failed to get the daemon version"
 msgstr "ডিমন সংস্কৰণ প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
@@ -26664,6 +26588,9 @@ msgstr "'%1$s' পঢ়িবলৈ ব্যৰ্থৈ কৰোঁতে ব�
 msgid "failed to read AppArmor template"
 msgstr "AppArmor টেমপ্লেইট পঢ়িবলে ব্যৰ্থ"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "XML পঢ়োঁতে ব্যৰ্থ"
 
@@ -26788,8 +26715,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "'%1$s' symlink ক '%2$s' লৈ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "ডোমেইন পুনৰাৰম্ভ কৰোঁতে ব্যৰ্থ"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 #, fuzzy
 msgid "failed to retrieve XML"
@@ -26905,6 +26844,9 @@ msgid "failed to store %1$lld to %2$s"
 msgstr "%1$lld ক %2$s ত সংৰক্ষণ কৰিবলে ব্যৰ্থ"
 
 msgid "failed to suspend domain"
+msgstr ""
+
+msgid "failed to suspend domain before saving"
 msgstr ""
 
 msgid "failed to take screenshot"
@@ -27600,6 +27542,9 @@ msgstr "বাধাবিহিন প্ৰব্ৰজনৰ বাবে গ
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -27948,6 +27893,12 @@ msgid "hypervisor connection not open"
 msgstr "হাইপাৰ ভাইসৰ সংযোগৰ URI"
 
 msgid "hypervisor feature autodetection override"
+msgstr ""
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
 msgstr ""
 
 #, fuzzy
@@ -29996,6 +29947,9 @@ msgstr ""
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "ব্যৱস্থাপিত সংৰক্ষণ অৱস্থাৰ সৈতে নিষ্ক্ৰিয় ডমেইনসমূহ চিহ্নিত কৰক"
 
@@ -30035,11 +29989,17 @@ msgstr ""
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors অতি ডাঙৰ"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "সৰ্বাধিক"
@@ -30080,6 +30040,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -30107,8 +30070,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr ""
@@ -30453,10 +30422,6 @@ msgstr "root সামগ্ৰী অনুপস্থিত"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "CPU স্থাপত্য অনুপস্থিত"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
 
@@ -30471,10 +30436,6 @@ msgid ""
 msgstr ""
 "নেটৱৰ্ক %1$s ৰ <forward> ৰ <nat> ৰ <address> উপাদানত সন্ধানহীন 'end' বৈশিষ্ট্য"
 
-#, fuzzy, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "প্ৰয়োজনীয় সংৰূপ প্ৰৱিষ্টি '%1$s' সন্ধানহীন"
-
 #, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr ""
@@ -30487,14 +30448,6 @@ msgstr "SELinux পৰিপ্ৰেক্ষতিত ভূমিকা '%1$s
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "JSON অৱস্থা দস্তাবেজত auth ফিল্ড নাই"
 
-#, fuzzy, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "%1$s ত নামৰ তথ্য সন্ধানহীন"
-
-#, fuzzy, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "%1$s ত নামৰ তথ্য সন্ধানহীন"
-
 #, fuzzy
 msgid "missing 'guid' attribute"
 msgstr "সন্ধানহীন বুট ক্ৰম বৈশিষ্ট"
@@ -30503,10 +30456,6 @@ msgstr "সন্ধানহীন বুট ক্ৰম বৈশিষ্ট
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "আন্তঃপৃষ্ঠৰ <actual> উপাদানত সন্ধানহীন ধৰণ বৈশিষ্ট"
 
-#, fuzzy, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "স্নেপশ্বটত ডমেইন সন্ধানহীন"
-
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
@@ -30514,10 +30463,6 @@ msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "%1$s ত নামৰ তথ্য সন্ধানহীন"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr ""
@@ -30768,10 +30713,6 @@ msgstr "<interface> উপাদানত dev বৈশিষ্ট্য সন
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "%1$s ৰ বাবে ডিভাইচসমূহৰ তথ্য নাই"
 
-#, fuzzy, c-format
-msgid "missing device type in '%1$s'"
-msgstr "সন্ধানহীন হাব ডিভাইচ ধৰণ"
-
 msgid "missing devices information"
 msgstr "ডিভাইচসমূহৰ তথ্য নাই"
 
@@ -30952,10 +30893,6 @@ msgstr "লিছৰ বাবে সন্ধানহীন 'key' উপাদ
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "লিছৰ বাবে সন্ধানহীন 'key' উপাদান"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr ""
 
 #, fuzzy
 msgid "missing microcode version in QEMU capabilities cache"
@@ -31484,6 +31421,12 @@ msgstr ""
 msgid "msi option is only supported with a server"
 msgstr "sgio কেৱল scsi হস্ট ডিভাইচৰ বাবে সমৰ্থিত"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31613,6 +31556,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32626,6 +32572,9 @@ msgstr "%1$s ত nparams %2$d হব লাগিব"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s ত nparams %2$d ৰ সমান হব লাগিব"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams বৰ ডাঙৰ"
 
@@ -32851,6 +32800,9 @@ msgid "only can reboot running/paused domain"
 msgstr ""
 
 msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can save running/paused domain"
 msgstr ""
 
 msgid "only can shutdown running/paused domain"
@@ -33104,6 +33056,9 @@ msgstr "vhost-net এই QEMU বাইনাৰিৰ সৈতে সমৰ্
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "হাইপাৰভাইছৰ sysinfo ৰ বাবে এটা XML স্ট্ৰিং আউটপুট কৰক, যদি উপলব্ধ"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr ""
 
@@ -33204,27 +33159,6 @@ msgstr "প্ৰাচল '%1$s' সমৰ্থিত নহয়"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "প্ৰাচল '%1$s' বহুবাৰ উপস্থিত হয়"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr ""
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr ""
 
 msgid "parameter=value"
 msgstr "value array বিতৰণ কৰক"
@@ -34698,6 +34632,9 @@ msgstr "সংৰক্ষণ বাতিল কৰা হল"
 
 msgid "save image is incomplete"
 msgstr "ছবি সংৰক্ষণ অসম্পূৰ্ণ"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "সংৰক্ষিত"
@@ -36586,6 +36523,10 @@ msgstr "হাব ধৰণ %1$s সমৰ্থিত নহয়"
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "প্ৰোগ্ৰাম অমিল (প্ৰকৃত %1$x, প্ৰত্যাশিত %2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr ""
 
@@ -37633,10 +37574,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "অজ্ঞাত স্থাপত্য %1$s"
-
-#, fuzzy, c-format
 msgid "unknown architecture: %1$s"
 msgstr "অজ্ঞাত স্থাপত্য %1$s"
 
@@ -37720,10 +37657,6 @@ msgstr "অজ্ঞাত সংযোগিত মান %1$s"
 
 #, c-format
 msgid "unknown device type '%1$s'"
-msgstr "অজ্ঞাত ডিভাইচ ধৰণ '%1$s'"
-
-#, fuzzy, c-format
-msgid "unknown device type in '%1$s'"
 msgstr "অজ্ঞাত ডিভাইচ ধৰণ '%1$s'"
 
 #, c-format
@@ -37811,10 +37744,6 @@ msgstr "অজ্ঞাত আন্তঃপৃষ্ঠ লিঙ্ক অৱ
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "অজ্ঞাত সংযোগমাধ্যম startmode %1$s"
-
-#, fuzzy, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "অজ্ঞাত সংযোগমাধ্যমৰ ধৰণ '%1$s'"
 
 #, fuzzy, c-format
 msgid "unknown ip address type '%1$s'"
@@ -38971,6 +38900,10 @@ msgstr "virVMXContext ৰ কোনো formatFileName ফলন সংহতি 
 msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext ৰ কোনো parseFileName ফলন সংহতি নাই"
 
+#, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
@@ -39485,8 +39418,151 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "%1$s ৰ বাবে উপযোগী ইমুলেটৰ সন্ধান কৰিব নোৱাৰি"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "ন'ড মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক\n"
+#~ "    মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে, নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "এটা অতিথি ডমেইনৰ বাবে বৰ্তমান blkio প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
+#~ "    blkio প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "এটা অতিথি ডমেইনৰ বাবে বৰ্তমান মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
+#~ "    মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "এটা অতিথি ডমেইনৰ বাবে বৰ্তমান numa প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
+#~ "    numa প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "এটা অতিথি ডমেইনৰ বাবে বৰ্তমান মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰক অথবা সংহতি কৰক।\n"
+#~ "    মেমৰি প্ৰাচলসমূহ প্ৰাপ্ত কৰিবলে নিম্নলিখিত কমান্ড ব্যৱহাৰ কৰক: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "একাধিক কিম্বদন্তি USB নিয়ন্ত্ৰকসমূহ সমৰ্থিত নহয়"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "ডমেইন '%1$s' ৰ কোনো বৰ্তমান স্নেপশ্বট নাই"
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "আদেশ '%s' ৰ সৈতে   %s বিকল্প প্ৰয়োগ কৰা আৱশ্যক"
+
+#, fuzzy, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "সংযোগমাধ্যম '%1$s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
+
+#, fuzzy, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "গোপনীয় তথ্য '%1$s' প্ৰাপ্ত কৰিবলৈ ব্যৰ্থতে ব্যৰ্থ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "CPU স্থাপত্য অনুপস্থিত"
+
+#, fuzzy, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "প্ৰয়োজনীয় সংৰূপ প্ৰৱিষ্টি '%1$s' সন্ধানহীন"
+
+#, fuzzy, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "%1$s ত নামৰ তথ্য সন্ধানহীন"
+
+#, fuzzy, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "%1$s ত নামৰ তথ্য সন্ধানহীন"
+
+#, fuzzy, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "স্নেপশ্বটত ডমেইন সন্ধানহীন"
+
+#, fuzzy, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "%1$s ত নামৰ তথ্য সন্ধানহীন"
+
+#, fuzzy, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "সন্ধানহীন হাব ডিভাইচ ধৰণ"
+
+#, fuzzy, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "অজ্ঞাত স্থাপত্য %1$s"
+
+#, fuzzy, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "অজ্ঞাত ডিভাইচ ধৰণ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "অজ্ঞাত সংযোগমাধ্যমৰ ধৰণ '%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #, fuzzy
 #~ msgid "Cannot extract cache nodes under cachetune"

@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -369,11 +369,19 @@ msgid " Storage:"
 msgstr "ശേഖരണം:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+msgstr ""
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1529,14 +1537,6 @@ msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ സജ്ജീകരണം റൂട്ട് പിസിഐ കണ്ട്രോളറുകള്‍ക്കു് മാത്രമുള്ളതാകുന്നു"
-
-#, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
@@ -2697,6 +2697,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "'%1$s' ലോഗ് ഡയറക്ടറി തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr ""
 
@@ -2819,10 +2823,6 @@ msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "നല്‍കിയ ഡേറ്റായ്ക്കുചിതമായ സിപിയു മോഡല്‍ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "%1$s-നു് ഉചിതമായ എമുലേറ്റര്‍ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "Cannot get all servers from daemon"
 msgstr ""
@@ -3760,7 +3760,7 @@ msgstr "ഡൊമെയിന്‍ %s-ലേക്ക് കണക്ട് ച
 msgid "Connections from inside daemon must be direct"
 msgstr ""
 
-msgid "Console can only be enabled for a PTY"
+msgid "Console only works in PTY mode"
 msgstr ""
 
 msgid "Constant pages:"
@@ -5665,6 +5665,12 @@ msgstr ""
 "ഡൊമെയിനു് കെവിഎം ആവശ്യമുണ്ടു്, പക്ഷേ ലഭ്യമല്ല. ഹോസ്റ്റ് ബയോസില്‍ വിര്‍ച്ച്വലൈസേഷന്‍ പ്രവര്‍ത്തന "
 "സജ്ജമെന്നും കെവിഎം ഘടകങ്ങള്‍ ഹോസ്റ്റ് ക്രമീകരണത്തില്‍ സജ്ജമെന്നും ഉറപ്പാക്കുക"
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr ""
 
@@ -6567,6 +6573,10 @@ msgid "Failed to clean up %1$s"
 msgstr "വെടിപ്പാക്കുവന്നതില്‍ പരാജയം %1$s"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "%1$s-നുള്ള ഏജന്റിനുള്ള സുരക്ഷ കോണ്ടക്സ്റ്റ് വെടിപ്പാക്കുന്നതില്‍ പരാജയം."
 
@@ -6681,6 +6691,10 @@ msgstr "'%1$s' ഉണ്ടാക്കുന്നതില്‍ പരാജ�
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "എസ്എഎസ്എല്‍ ക്ലയന്റ് കോണ്ടെക്സ്റ്റ് തയ്യാറാക്കുന്നതില്‍ പരാജയം: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "XML ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
@@ -6875,6 +6889,10 @@ msgstr "വോള്യം %1$s ഉണ്ടാക്കുന്നതില്
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "%1$s-ല്‍ നിന്നും വോള്യം ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7638,6 +7656,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "ഡൊമെയിന്‍ ഇമേജ് ഫയല്‍ '%1$s' തുറക്കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "ഫയല്‍ '%1$s' തുറക്കുന്നതില്‍ പരാജയം"
 
@@ -7988,6 +8010,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "'%1$s'(%2$s) എന്ന വോള്യം നീക്കാന്‍ പറ്റിയില്ല"
 
@@ -8126,6 +8152,9 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "ഡൊമെയിന്‍ %1$s-നെ %2$s ആയി സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
 
 msgid "Failed to save VM settings"
+msgstr ""
+
+msgid "Failed to save domain"
 msgstr ""
 
 #, c-format
@@ -8322,6 +8351,9 @@ msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '
 
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
+msgstr ""
+
+msgid "Failed to shutoff after domain save"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8547,6 +8579,9 @@ msgstr "%1$zu ബൈറ്റുകള്‍ പാഥ് '%2$s'-നൊപ്പ
 msgid "Failed to write '%1$s'"
 msgstr "'%1$s' ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr ""
 
@@ -8564,6 +8599,9 @@ msgstr "'%1$s' എന്ന പിഐഡി ഫയലിലേയ്ക്കു
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "vmx ഫയല്‍ '%1$s'-ലേക്കു് സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "xml വിവരണം സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8709,13 +8747,6 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
-msgstr ""
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr ""
-
-msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -8877,17 +8908,6 @@ msgstr "മെമ്മറി പാരമീറ്റര്‍ നോക്ക�
 msgid "Get or set node memory parameters"
 msgstr "നോഡ് മെമ്മറി പാരമീറ്റര്‍ നോക്കുകയോ ക്രമീകരിക്കുകയോ ചെയ്യുക"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"നോഡ് മെമ്മറി പരാമീറ്ററുകള്‍ ലഭ്യമാക്കുക അല്ലെങ്കില്‍ സജ്ജമാക്കുക\n"
-"    മെമ്മറി പരാമീറ്ററുകള്‍ ലഭിയ്ക്കുന്നതിനു്, ഈ കമാന്‍ഡ് ഉപയോഗിയ്ക്കുക: \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "numa പാരമീറ്റര്‍ നോക്കുകയോ ക്രമീകരിക്കുകയോ ചെയ്യുക"
 
@@ -8895,52 +8915,17 @@ msgstr "numa പാരമീറ്റര്‍ നോക്കുകയോ ക�
 msgid "Get or set perf event"
 msgstr "മെമ്മറി പാരമീറ്റര്‍ നോക്കുകയോ ക്രമീകരിക്കുകയോ ചെയ്യുക"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി blkio പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ ക്രമീകരിക്കുക.\n"
-"    blkio പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
-"\n"
-"   virsh # blkiotune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി ഇപ്പോഴത്തെ മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ "
-"ക്രമീകരിക്കുക.\n"
-"    മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
-"\n"
-"   virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി ഇപ്പോഴത്തെ numa പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ ക്രമീകരിക്കുക.\n"
-"    numa പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
-"\n"
-"   virsh # numatune <domain>"
 
-#, fuzzy
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി ഇപ്പോഴത്തെ മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ "
-"ക്രമീകരിക്കുക.\n"
-"    മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
-"\n"
-"   virsh # memtune <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "ഇപ്പോഴത്തെ സ്നാപ്പ്ഷോട്ട് കിട്ടുക അല്ലെങ്കില്‍ ക്രമീകരിക്കുക"
@@ -11726,9 +11711,6 @@ msgstr "മള്‍ട്ടി-ഹെഡ് വീഡിയോ ഡിവൈസ
 msgid "Multiple interfaces attached to bridge"
 msgstr "പാലത്തില്‍ പല ഇന്റെര്‍ഫേസ് കൂട്ടിചേര്‍ത്തിട്ടുണ്ട്"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "ഒന്നിലധികം  ലെഗസി USB കണ്ട്രോളുകള്‍ പിന്തുണക്കില്ല"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr ""
@@ -11822,8 +11804,8 @@ msgstr ""
 "പിന്തുണക്കുന്നുള്ളൂ"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13727,6 +13709,9 @@ msgstr ""
 msgid "Relative backing during copy not supported yet"
 msgstr "ട്രാന്‍സിയന്റ് ഡിസ്കുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "പൂജ്യമല്ലാത്ത കോഡുമായി റിമോട്ട് കമാന്‍ഡ് പുറത്തു് കടന്നു: %1$d"
@@ -13906,10 +13891,10 @@ msgstr "$uri യുആര്‍ഐയില്‍ ഗസ്റ്റുകള്
 msgid "Retrieve identity details about <client> from <server>"
 msgstr ""
 
-msgid "Retrieve server's client-related configuration limits "
+msgid "Retrieve server's client-related configuration limits"
 msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
+msgid "Retrieve threadpool attributes from a server."
 msgstr ""
 
 msgid "Return pool info in bytes"
@@ -14377,13 +14362,13 @@ msgstr "ഗസ്റ്റില്‍ പ്രക്രിയകളിലേ�
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "ഫയല്‍ വിവരണങ്ങള്‍ അയയ്ക്കുന്നതു് ഈ സോക്കറ്റില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr ""
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
+msgstr ""
+
+msgid "Serial only works in UNIX/PTY modes"
 msgstr ""
 
 #, c-format
@@ -19086,6 +19071,9 @@ msgstr ""
 msgid "Unexpectedly got a network port without a plug"
 msgstr ""
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
@@ -20273,28 +20261,12 @@ msgid "You must map the root user of container"
 msgstr "കണ്ടെയിനറിന്റെ റൂട്ട് ഉപയോക്താവു് മാപ്പ് ചെയ്യണം"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -20490,14 +20462,6 @@ msgstr "തിരിച്ച് പോയ ശേഷം സ്ഥിതി പ�
 #, fuzzy, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "വൈപ്പിങ് ആല്‍ഗോരിഥം %1$d പിന്തുണയ്ക്കുന്നില്ല"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
 
 #, fuzzy
 msgid "all CPU models are accepted"
@@ -21146,10 +21110,6 @@ msgstr "ബോണ്ട് ഇഡ്ജ് ഇന്റര്‍ല്‍ ബോ
 
 msgid "bool"
 msgstr "ബൂള്‍"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22616,6 +22576,12 @@ msgstr "നിര്‍ജ്ജീവമായൊരു ഡൊമെയിന�
 msgid "cannot revert snapshot of running domain"
 msgstr "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനുള്ള സ്നാപ്പ്ഷോട്ട് തിരികെ ലഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "'%1$s' എന്ന ഫയല്‍ സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമാകുന്നില്ല"
@@ -23178,34 +23144,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "കമാന്‍ഡ് '%1$s' ഉപാധി --%2$s-നെ പിന്തുണയ്ക്കുന്നില്ല"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "'%1$s' ഡൊമൈനില്‍ ഇപ്പോള്‍ സ്നാപ്ഷോട്ട് ഇല്ല"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has too many options"
-msgstr "കമാന്‍ഡ് '%s'-ന് ഉപാധി --%s ആവശ്യമുണ്ട്"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr ""
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "കമാന്‍ഡ് '%1$s'-ന് ഉപാധി --%2$s ആവശ്യമുണ്ട്"
 
@@ -23213,18 +23151,10 @@ msgstr "കമാന്‍ഡ് '%1$s'-ന് ഉപാധി --%2$s ആവശ�
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "കമാന്‍ഡ് '%1$s'-ന് ഉപാധി <%2$s> ആവശ്യമുണ്ട്"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
 
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr ""
-
-msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr ""
-
-msgid "command groups and command set cannot both be NULL"
+msgid "command groups must be non-NULL"
 msgstr ""
 
 #, c-format
@@ -26340,10 +26270,6 @@ msgstr "ഹൈപ്പര്‍വൈസര്‍ തരം ലഭ്യമാ�
 msgid "failed to get interface '%1$s'"
 msgstr "ഇന്റര്‍ഫെയിസ് '%1$s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#, fuzzy, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "ഇന്റര്‍ഫെയിസ് '%1$s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
-
 #, fuzzy
 msgid "failed to get launch security policy"
 msgstr "പേരന്റ് പൂള്‍ ലഭ്യമാക്കുന്നതില്‍േ പരാജയം"
@@ -26424,10 +26350,6 @@ msgstr "ആര്‍ബിഡി ചിത്രം '%1$s'-ന്റെ വ്�
 
 msgid "failed to get sysinfo"
 msgstr "sysinfo ലഭിക്കുന്നതില്‌ പരാജയപ്പെട്ടു"
-
-#, fuzzy, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "രഹസ്യം '%1$s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
 msgid "failed to get the daemon version"
 msgstr "ചാത്തന്റെ വേര്‍ഷന്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
@@ -26766,6 +26688,9 @@ msgstr "'%1$s' ഫയല്‍ ലഭ്യമാക്കുന്നതില�
 msgid "failed to read AppArmor template"
 msgstr "AppArmor മാതൃക തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "XML വായിക്കുന്നതില്‍ പരാജയം"
 
@@ -26890,8 +26815,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "'%1$s -> '%2$s' സിംലിങ്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുന്നതില്‍ പരാജയം"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 #, fuzzy
 msgid "failed to retrieve XML"
@@ -27007,6 +26944,9 @@ msgid "failed to store %1$lld to %2$s"
 msgstr "%1$lld, %2$s-ലേക്കു് സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "failed to suspend domain"
+msgstr ""
+
+msgid "failed to suspend domain before saving"
 msgstr ""
 
 msgid "failed to take screenshot"
@@ -27706,6 +27646,9 @@ msgstr "സീമ്‌ലെസ്സ് ഗ്രാഫിക്സ് നീ�
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -28054,6 +27997,12 @@ msgid "hypervisor connection not open"
 msgstr "ഹൈപ്പര്‍വൈസര്‍ കണക്ഷനുളള യുഐര്‍ഐ"
 
 msgid "hypervisor feature autodetection override"
+msgstr ""
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
 msgstr ""
 
 #, fuzzy
@@ -30108,6 +30057,9 @@ msgstr ""
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "നിഷ്ക്രിയമായ ഡൊമെയിനുകള്‍ നിയന്ത്രിത സൂക്ഷിപ്പ് തത്സ്വരൂപം ഉപയോഗിച്ച് മുദ്രണം ചെയ്യുക"
 
@@ -30147,11 +30099,17 @@ msgstr ""
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors വളരെ വലുതു്"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "ഏറ്റവും കൂടിയ"
@@ -30192,6 +30150,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -30219,8 +30180,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr ""
@@ -30564,10 +30531,6 @@ msgstr "റൂട്ട് എലമെന്റ് ലഭ്യമല്ല"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "അറിയാത്ത സി.പി.യു മോഡല്‍"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
 
@@ -30583,10 +30546,6 @@ msgstr ""
 "<address> എലമെന്റിലുള്ള 'end' വിശേഷത ലഭ്യമല്ല, <nat>-ല്‍, <forward> -ല്‍, %1$s "
 "നെറ്റ്‌വര്‍ക്കിലുള്ളതു്"
 
-#, fuzzy, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "അത്യാവശ്യ ക്രമീകരണ എന്‍ട്രി '%1$s' ലഭ്യമല്ല"
-
 #, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr ""
@@ -30599,14 +30558,6 @@ msgstr "SELinux കോണ്ടെക്സ്റ്റ് നിയമനം '%
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "JSON അവസ്ഥയുടെ രേഖയില്‍ auth ഫീള്‍ഡ് ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
-
 #, fuzzy
 msgid "missing 'guid' attribute"
 msgstr "boot order വിശേഷണം ഇല്ല"
@@ -30615,10 +30566,6 @@ msgstr "boot order വിശേഷണം ഇല്ല"
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "ഇന്റര്‍ഫെയിസിന്റെ  <actual> എലമെന്റില്‍ വിശേഷത രീതി ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "സ്നാപ്പ്ഷോട്ടില്‍ ഡൊമെയിന്‍ ലഭ്യമല്ല"
-
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
@@ -30626,10 +30573,6 @@ msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr ""
@@ -30883,10 +30826,6 @@ msgstr " <interface> എലമെന്റിലുള്ള  dev വിശേ�
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "%1$s-നുളള ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
-#, fuzzy, c-format
-msgid "missing device type in '%1$s'"
-msgstr "ഹബ് ഡിവൈസ് തരം ലഭ്യമല്ല"
-
 msgid "missing devices information"
 msgstr "ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
@@ -31070,10 +31009,6 @@ msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല�
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല്ല"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr ""
 
 #, fuzzy
 msgid "missing microcode version in QEMU capabilities cache"
@@ -31601,6 +31536,12 @@ msgstr ""
 msgid "msi option is only supported with a server"
 msgstr "scsi ഹോസ്റ്റ് ഡിവൈസിനു് മാത്രമേ sgio പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31728,6 +31669,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32743,6 +32687,9 @@ msgstr "%1$s-ലുള്ള nparams %2$d ആയിരിയ്ക്കണം"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s-ലുള്ള nparams %2$d-നു് സമമായിരിയ്ക്കണം"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams വളരെ വലുതു്"
 
@@ -32968,6 +32915,9 @@ msgid "only can reboot running/paused domain"
 msgstr ""
 
 msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can save running/paused domain"
 msgstr ""
 
 msgid "only can shutdown running/paused domain"
@@ -33224,6 +33174,9 @@ msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണ�
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "ഹൈപ്പര്‍വൈസറിന്‍റെ സിസ്‌ഇന്‍ഫോയുടെ XML സ്ട്രിങ്ങ് ഉണ്ടെങ്കില്‍ കാണിക്കുക"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr ""
 
@@ -33324,27 +33277,6 @@ msgstr "%1$s' എന്ന പരാമീറ്ററിനുള്ള പി�
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "'%1$s' പരാമീറ്റര്‍ ഒന്നിലധികം തവണ വരുന്നുണ്ടു്"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr ""
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr ""
 
 msgid "parameter=value"
 msgstr "പരാമീറ്റര്‍=മൂല്ല്യം"
@@ -34815,6 +34747,9 @@ msgstr "സൂക്ഷിയ്ക്കുന്നതു് റദ്ദാ�
 
 msgid "save image is incomplete"
 msgstr "സൂക്ഷിച്ച ചിത്രം പൂര്‍ണ്ണമല്ല"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "സംരക്ഷിച്ചു"
@@ -36711,6 +36646,10 @@ msgstr "hub തരം %1$s പിന്തുണയ്ക്കുന്നി�
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "പ്രോഗ്രാം പൊരുത്തക്കേടു് (actual %1$x, expected %2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr ""
 
@@ -37754,10 +37693,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "അപരിചിതമായ ആര്‍ക്കിറ്റക്ചര്‍ %1$s"
-
-#, fuzzy, c-format
 msgid "unknown architecture: %1$s"
 msgstr "അപരിചിതമായ ആര്‍ക്കിറ്റക്ചര്‍ %1$s"
 
@@ -37841,10 +37776,6 @@ msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂ
 
 #, c-format
 msgid "unknown device type '%1$s'"
-msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%1$s'"
-
-#, fuzzy, c-format
-msgid "unknown device type in '%1$s'"
 msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%1$s'"
 
 #, c-format
@@ -37932,10 +37863,6 @@ msgstr "അപരിചിതമായ ഇന്റര്‍ഫെയിസ് �
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "അപരിചിതമായ ഇന്റര്‍ഫെയിസ് startmode %1$s"
-
-#, fuzzy, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "അപരിചിതമായ ഇന്റര്‍ഫെയിസ് തരം '%1$s'"
 
 #, fuzzy, c-format
 msgid "unknown ip address type '%1$s'"
@@ -39095,6 +39022,10 @@ msgstr "virVMXContext നു formatFileName പ്രവര്‍ത്തനര
 msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext നു parseFileName പ്രവര്‍ത്തനരേഖ ക്രമീകരിച്ചിട്ടില്ല "
 
+#, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
@@ -39606,8 +39537,154 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "%1$s-നു് ഉചിതമായ എമുലേറ്റര്‍ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "നോഡ് മെമ്മറി പരാമീറ്ററുകള്‍ ലഭ്യമാക്കുക അല്ലെങ്കില്‍ സജ്ജമാക്കുക\n"
+#~ "    മെമ്മറി പരാമീറ്ററുകള്‍ ലഭിയ്ക്കുന്നതിനു്, ഈ കമാന്‍ഡ് ഉപയോഗിയ്ക്കുക: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി blkio പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ ക്രമീകരിക്കുക.\n"
+#~ "    blkio പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
+#~ "\n"
+#~ "   virsh # blkiotune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി ഇപ്പോഴത്തെ മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ "
+#~ "ക്രമീകരിക്കുക.\n"
+#~ "    മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
+#~ "\n"
+#~ "   virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി ഇപ്പോഴത്തെ numa പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ "
+#~ "ക്രമീകരിക്കുക.\n"
+#~ "    numa പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
+#~ "\n"
+#~ "   virsh # numatune <domain>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "ഒരു അഥിതി ഡൊമൈനിന് വേണ്ടി ഇപ്പോഴത്തെ മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടുക അല്ലെങ്കില്‍ "
+#~ "ക്രമീകരിക്കുക.\n"
+#~ "    മെമ്മറി പരാമീറ്ററുകള്‍ കിട്ടാന്‍ താഴെകാണുന്ന കമാന്റ് ഉപയോഗിക്കുക:\n"
+#~ "\n"
+#~ "   virsh # memtune <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "ഒന്നിലധികം  ലെഗസി USB കണ്ട്രോളുകള്‍ പിന്തുണക്കില്ല"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "'%1$s' ഡൊമൈനില്‍ ഇപ്പോള്‍ സ്നാപ്ഷോട്ട് ഇല്ല"
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "കമാന്‍ഡ് '%s'-ന് ഉപാധി --%s ആവശ്യമുണ്ട്"
+
+#, fuzzy, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "ഇന്റര്‍ഫെയിസ് '%1$s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
+
+#, fuzzy, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "രഹസ്യം '%1$s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
+
+#, fuzzy, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "അറിയാത്ത സി.പി.യു മോഡല്‍"
+
+#, fuzzy, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "അത്യാവശ്യ ക്രമീകരണ എന്‍ട്രി '%1$s' ലഭ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "സ്നാപ്പ്ഷോട്ടില്‍ ഡൊമെയിന്‍ ലഭ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "ഹബ് ഡിവൈസ് തരം ലഭ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "അപരിചിതമായ ആര്‍ക്കിറ്റക്ചര്‍ %1$s"
+
+#, fuzzy, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "അപരിചിതമായ ഇന്റര്‍ഫെയിസ് തരം '%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #, fuzzy
 #~ msgid "Cannot extract cache nodes under cachetune"

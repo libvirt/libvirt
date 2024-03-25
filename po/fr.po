@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -496,6 +496,10 @@ msgid " Storage:"
 msgstr " Stockage :"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
@@ -506,6 +510,10 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1753,14 +1761,6 @@ msgstr ""
 "racines"
 
 #, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
-
-#, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
 msgstr "<active_pcr_banks/> nécessite la version TPM '%1$s'"
 
@@ -3002,6 +3002,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "Impossible de créer le répertoire resctrl '%1$s'"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr "Impossible de créer le socket '%1$s'"
 
@@ -3137,10 +3141,6 @@ msgstr "Impossible de trouver l'heure de début pour le pid %1$d"
 msgid "Cannot find suitable CPU model for given data"
 msgstr ""
 "Impossible de trouver un modèle de CPU approprié pour les données fournies"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "Impossible de trouver un émulateur approprié pour %1$s"
 
 msgid "Cannot get all servers from daemon"
 msgstr "Impossible de récupérer tous les serveurs à partir du démon"
@@ -4110,8 +4110,8 @@ msgstr "Connecté au serveur d'administration"
 msgid "Connections from inside daemon must be direct"
 msgstr "Les connexions à l'intérieur du démon doivent être directes"
 
-msgid "Console can only be enabled for a PTY"
-msgstr "La console ne peut être activée que pour un PTY"
+msgid "Console only works in PTY mode"
+msgstr ""
 
 msgid "Constant pages:"
 msgstr "Pages constantes :"
@@ -6057,6 +6057,12 @@ msgstr ""
 "virtualisation est activée dans le BIOS de l'hôte et que la configuration de "
 "l'hôte permet de charger les modules KVM."
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr "Le domaine nécessite au moins 1 vCPU"
 
@@ -6969,6 +6975,10 @@ msgid "Failed to clean up %1$s"
 msgstr "Échec du nettoyage %1$s"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "Échec de l'effacement du contexte de sécurité de l'agent pour %1$s"
 
@@ -7083,6 +7093,10 @@ msgstr "Échec de la création de '%1$s' : %2$s"
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "Échec de la création du contexte client SASL : %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "Impossible de créer XML"
@@ -7283,6 +7297,10 @@ msgstr "Impossible de créer le volume %1$s"
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "Impossible de créer le volume depuis %1$s"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -8055,6 +8073,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "Impossible d'ouvrir le fichier image du domaine '%1$s'"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "Impossible d'ouvrir le fichier '%1$s'"
 
@@ -8403,6 +8425,10 @@ msgstr ""
 "Impossible de supprimer l'image de sauvegarde gérée pour le domaine '%1$s'"
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "Échec de la suppression du volume de stockage '%1$s'(%2$s)"
 
@@ -8545,6 +8571,9 @@ msgstr "Impossible de sauvegarder '%1$s' pour '%2$s'"
 
 msgid "Failed to save VM settings"
 msgstr "Échec de la sauvegarde des paramètres de la VM"
+
+msgid "Failed to save domain"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8758,6 +8787,9 @@ msgstr "Échec de la fermeture du domaine '%1$d' avec libxenlight"
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
 msgstr "Échec de la fermeture du domaine '%1$s'"
+
+msgid "Failed to shutoff after domain save"
+msgstr ""
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8983,6 +9015,9 @@ msgstr ""
 msgid "Failed to write '%1$s'"
 msgstr "Échec de l'écriture de '%1$s'"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr "Échec de l'écriture des données de pixel"
 
@@ -9000,6 +9035,9 @@ msgstr "Echec de l'écriture dans le fichier pid '%1$s'"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "Échec de l'écriture du fichier vmx '%1$s'"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "Échec de l'écriture de la description xml"
@@ -9154,13 +9192,6 @@ msgstr "L'entrée du micrologiciel ne comporte pas l'attribut \"name\""
 
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr "L'entrée du micrologiciel doit avoir une valeur ou l'attribut \"file\""
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr "Valeur du mode flash du micrologiciel '%1$s' inattendu"
-
-msgid "Firmware flash mode value was malformed"
-msgstr "La valeur du mode flash du micrologiciel était malformée"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -9340,71 +9371,23 @@ msgstr "Obtenir ou définir les paramètres de la mémoire"
 msgid "Get or set node memory parameters"
 msgstr "Obtenir ou définir les paramètres de la mémoire du nœud"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"Obtenir ou définir les paramètres de mémoire du nœud\n"
-"    Pour obtenir les paramètres de la mémoire, utilisez la commande "
-"suivante : \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "Obtenir ou définir les paramètres du numa"
 
 msgid "Get or set perf event"
 msgstr "Obtenir ou définir un événement de perfusion"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"Obtenir ou définir les paramètres actuels de blkio pour un domaine invité.\n"
-"    Pour obtenir les paramètres blkio, utilisez la commande suivante : \n"
-"\n"
-"    virsh # blkiotune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"Obtenir ou définir les paramètres de mémoire actuels pour un domaine "
-"invité.\n"
-"    Pour obtenir les paramètres de la mémoire, utilisez la commande "
-"suivante : \n"
-"\n"
-"    virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"Obtenir ou définir les paramètres numa actuels pour un domaine invité.\n"
-"    Pour obtenir les paramètres numa, utilisez la commande suivante : \n"
-"\n"
-"    virsh # numatune <domain>"
 
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"Obtenez ou définissez les événements de perf actuels pour un domaine "
-"invité.\n"
-"    Pour obtenir la liste des événements de perf, utilisez la commande "
-"suivante : \n"
-"\n"
-"    virsh # perf <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "Obtenir ou définir l'instantané actuel"
@@ -12313,9 +12296,6 @@ msgstr "Les périphériques graphiques multiples ne sont pas pris en charge"
 msgid "Multiple interfaces attached to bridge"
 msgstr "Plusieurs interfaces attachées au pont"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "Les contrôleurs USB multiples ne sont pas pris en charge"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr "Plusieurs éléments memnode avec cellid %1$u"
@@ -12410,11 +12390,9 @@ msgstr ""
 "seul nœud"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
-"Mode NUMA, l'un des modes suivants : strict, préféré et interleave \n"
-"ou un nombre de l'enum virDomainNumatuneMemMode"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -14373,6 +14351,9 @@ msgid "Relative backing during copy not supported yet"
 msgstr ""
 "La sauvegarde relative pendant la copie n'est pas encore prise en charge"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "La commande à distance s'est terminée par un code non nul : %1$d"
@@ -14565,11 +14546,11 @@ msgstr "Reprise des invités sur $uri URI..."
 msgid "Retrieve identity details about <client> from <server>"
 msgstr "Prélever les détails de l'identité de <client> à partir de <server>"
 
-msgid "Retrieve server's client-related configuration limits "
-msgstr "Récupérer les limites de configuration du serveur liées au client "
+msgid "Retrieve server's client-related configuration limits"
+msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
-msgstr "Télécharger les attributs du groupe d’unités d’exécution du serveur. "
+msgid "Retrieve threadpool attributes from a server."
+msgstr ""
 
 msgid "Return pool info in bytes"
 msgstr "Renvoie les informations du pool en octets"
@@ -15053,9 +15034,6 @@ msgid "Sending file descriptors is not supported on this socket"
 msgstr ""
 "L'envoi de descripteurs de fichiers n'est pas pris en charge par ce socket"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr "La liaison série ne peut être activée que pour un PTY"
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
@@ -15063,6 +15041,9 @@ msgid ""
 msgstr ""
 "Périphérique série avec le type de cible '%1$s' et le modèle de cible '%2$s' "
 "non compatible avec l'architecture ou le type de machine invité"
+
+msgid "Serial only works in UNIX/PTY modes"
+msgstr ""
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -19977,6 +19958,9 @@ msgstr "Obtention inattendue d'un port réseau sans pont réseau"
 msgid "Unexpectedly got a network port without a plug"
 msgstr "J'ai obtenu de manière inattendue un port réseau sans fiche"
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 "Les descripteurs de fichiers Unix ne sont pas pris en charge par cette plate-"
@@ -21246,28 +21230,12 @@ msgid "You must map the root user of container"
 msgstr "Vous devez mapper l'utilisateur root du conteneur"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -21472,14 +21440,6 @@ msgstr "après le retour en arrière, changer l'état en cours d'exécution"
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithme=%1$d n'est pas pris en charge"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr "l'alias '%1$s' de la commande '%2$s' a un type d'alias incorrect"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr "L'alias '%1$s' de la commande '%2$s' n'a pas d'option d'alias"
 
 msgid "all CPU models are accepted"
 msgstr "tous les modèles de CPU sont acceptés"
@@ -22180,10 +22140,6 @@ msgstr "l'interface de liaison manque l'élément de liaison"
 
 msgid "bool"
 msgstr "bool"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr "bool paramètre '%1$s' de la commande '%2$s' a un compléteur défini"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23727,6 +23683,12 @@ msgstr "impossible de récupérer les informations vcpu pour un domaine inactif"
 msgid "cannot revert snapshot of running domain"
 msgstr "Impossible de rétablir un instantané d'un domaine en cours d'exécution"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "ne peut pas enregistrer le fichier '%1$s'"
@@ -24318,34 +24280,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "la commande '%1$s' ne prend pas en charge l’option --%2$s"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr "la commande '%1$s' a un gestionnaire défini"
-
-#, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "la commande '%1$s' a un alias incohérent"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr "La commande '%1$s' a des informations définies"
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr "la commande '%1$s' a plusieurs indicateurs définis"
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr "la commande '%1$s' a des options définies"
-
-#, c-format
-msgid "command '%1$s' has too many options"
-msgstr "La commande '%1$s' a trop d'options"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr "La commande '%1$s' manque d'aide"
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "la commande '%1$s' nécessite l’option --%2$s"
 
@@ -24353,24 +24287,11 @@ msgstr "la commande '%1$s' nécessite l’option --%2$s"
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "la commande '%1$s' nécessite l’option <%2$s>"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-msgstr "L'alias de commande '%1$s' pointe vers une commande inexistante '%2$s'"
-
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
-"L'alias de commande '%1$s' pointe vers un autre alias de commande '%2$s'"
 
-msgid "command groups and command are both NULL run vshInit before reloading"
+msgid "command groups must be non-NULL"
 msgstr ""
-"les groupes de commande et la commande sont tous les deux NULL exécuter "
-"vshInit avant le rechargement"
-
-msgid "command groups and command set cannot both be NULL"
-msgstr ""
-"les groupes de commandes et le jeu de commandes ne peuvent pas être tous "
-"deux NULL"
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -27553,10 +27474,6 @@ msgstr "impossible de récupérer le type d’hyperviseur"
 msgid "failed to get interface '%1$s'"
 msgstr "ne parvient pas à obtenir l'interface '%1$s'"
 
-#, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "ne parvient pas à obtenir les types d'interface de '%1$s'"
-
 msgid "failed to get launch security policy"
 msgstr "échec de l'obtention de la politique de sécurité de lancement"
 
@@ -27634,10 +27551,6 @@ msgstr "n’a pas pu obtenir le nombre de bandes de l'image RBD %1$s"
 
 msgid "failed to get sysinfo"
 msgstr "échec de la récupération du sysinfo"
-
-#, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "n'a pas réussi à obtenir les cibles de '%1$s'"
 
 msgid "failed to get the daemon version"
 msgstr "échec de la récupération de la version du démon"
@@ -27967,6 +27880,9 @@ msgstr "n'a pas réussi à lire '%1$s'"
 msgid "failed to read AppArmor template"
 msgstr "échec de la lecture du modèle AppArmor"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "échec de la lecture de XML"
 
@@ -28088,8 +28004,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "échec de la résolution du lien symbolique %1$s : %2$s"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "échec de la reprise du domaine"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 msgid "failed to retrieve XML"
 msgstr "échec de la récupération du XML"
@@ -28213,6 +28141,9 @@ msgstr "échec à stocker %1$lld dans %2$s"
 
 msgid "failed to suspend domain"
 msgstr "échec de la suspension du domaine"
+
+msgid "failed to suspend domain before saving"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "échec de la capture d'écran"
@@ -28921,6 +28852,9 @@ msgstr ""
 "un périphérique graphique est nécessaire pour la valeur de l'attribut "
 "\"display=on\" dans <hostdev>"
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -29284,6 +29218,12 @@ msgstr "Connexion à l'hyperviseur non ouverte"
 
 msgid "hypervisor feature autodetection override"
 msgstr "neutralisation de l'autodétection des fonctions de l'hyperviseur"
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
+msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - désactiver la validation et essayer de redéfinir à nouveau"
@@ -31390,6 +31330,9 @@ msgstr ""
 "manipuler le fichier des clés SSH autorisées pour un utilisateur donné (via "
 "l'agent)"
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "marquer les domaines inactifs avec un état de sauvegarde géré"
 
@@ -31424,11 +31367,17 @@ msgstr "maxWorkers ne doit pas passer de zéro à non-zéro et vice-versa"
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors trop grand"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "maximum"
@@ -31471,6 +31420,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -31498,8 +31450,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr "Nom ou valeur manquant pour l'attribut mdev"
@@ -31879,10 +31837,6 @@ msgstr "élément \"DateTime\" manquant"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr "attribut 'alias' manquant pour qemu:device"
 
-#, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "le mot 'architecture' manque dans '%1$s'"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
 "le mot \"config\" manque dans le résultat d'une requête d'information "
@@ -31902,10 +31856,6 @@ msgstr ""
 "dans le réseau %1$s"
 
 #, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "le mot \"exécutable\" manque dans \"%1$s\""
-
-#, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr "'file' manquant dans '%1$s' du cloud-hypervisor"
 
@@ -31917,24 +31867,12 @@ msgid "missing 'filename' field in JSON backing volume definition"
 msgstr ""
 "champ \"filename\" manquant dans la définition du volume de sauvegarde JSON"
 
-#, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "'filename' manquant dans '%1$s'"
-
-#, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "'format' manquant dans '%1$s'"
-
 msgid "missing 'guid' attribute"
 msgstr "attribut \"guid\" manquant"
 
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr ""
 "attribut \"id\" manquant pour l'élément <type> du périphérique médiatisé"
-
-#, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "'machines' manquant dans '%1$s'"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -31945,10 +31883,6 @@ msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr "attribut 'name' manquant pour qemu:property"
-
-#, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "'nvram-template' manquant dans '%1$s'"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr "attribut 'path' manquant pour la source de disque de vhostuser"
@@ -32193,10 +32127,6 @@ msgid "missing device API for mediated device type '%1$s'"
 msgstr ""
 "API de périphérique manquante pour le type de périphérique médié '%1$s'"
 
-#, c-format
-msgid "missing device type in '%1$s'"
-msgstr "type de périphérique manquant dans '%1$s'"
-
 msgid "missing devices information"
 msgstr "périphériques non spécifiés"
 
@@ -32370,10 +32300,6 @@ msgstr "élément d'écoute manquant pour les graphiques"
 
 msgid "missing listen element for spice graphics"
 msgstr "l'élément d'écoute manquant pour les graphiques spice"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr "cartographie manquante dans '%1$s'"
 
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "version de microcode manquante dans le cache des capacités de QEMU"
@@ -32923,6 +32849,12 @@ msgstr "chemin du point de montage à décongeler"
 msgid "msi option is only supported with a server"
 msgstr "L'option msi n'est prise en charge qu'avec un serveur"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -33059,6 +32991,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -34082,6 +34017,9 @@ msgstr "nparams dans %1$s doit être %2$d"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "nparams dans %1$s doit être égal à %2$d"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nombre de paramètres trop grand"
 
@@ -34326,6 +34264,9 @@ msgstr "peut seulement redémarrer un domaine en cours d'exécution/en pause"
 
 msgid "only can resume paused domain"
 msgstr "peut seulement reprendre le domaine en pause"
+
+msgid "only can save running/paused domain"
+msgstr ""
 
 msgid "only can shutdown running/paused domain"
 msgstr "peut uniquement arrêter un domaine en cours d'exécution ou en pause"
@@ -34581,6 +34522,9 @@ msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "sortie d'une chaîne XML pour le sysinfo de l'hyperviseur, si disponible"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr ""
 "sortie de la liste des options pour lesquelles il manque des compléteurs"
@@ -34683,32 +34627,6 @@ msgstr "paramètre '%1$s' non pris en charge"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "le paramètre '%1$s' apparaît plusieurs fois"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-"le paramètre '%1$s' de la commande '%2$s' a une option d'alias incorrecte"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr "paramètre '%1$s' de la commande '%2$s' mal utilisé VSH_OFLAG_REQ"
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-"le paramètre '%1$s' de la commande '%2$s' doit être listé avant les "
-"paramètres optionnels"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr "le paramètre '%1$s' de la commande '%2$s' doit être listé en dernier"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr ""
-"le paramètre '%1$s' de la commande '%2$s' doit utiliser l’indicateur "
-"VSH_OFLAG_REQ"
 
 msgid "parameter=value"
 msgstr "paramètre=valeur"
@@ -36261,6 +36179,9 @@ msgstr "sauvegarde annulée"
 
 msgid "save image is incomplete"
 msgstr "l'image de sauvegarde est incomplète"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "sauvegardé"
@@ -38305,6 +38226,10 @@ msgstr "Le type %1$s n'est pas pris en charge"
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "erreur de type dans l'événement (réel 0x%1$x, attendu 0x%2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr "type de source (bloc|fichier|réseau)"
 
@@ -39350,10 +39275,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr "arch inconnu %1$s dans le cache des capacités de QEMU"
 
 #, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "architecture inconnue '%1$s'"
-
-#, c-format
 msgid "unknown architecture: %1$s"
 msgstr "architecture inconnue : %1$s"
 
@@ -39440,10 +39361,6 @@ msgid "unknown device type '%1$s'"
 msgstr "type de périphérique inconnu '%1$s'"
 
 #, c-format
-msgid "unknown device type in '%1$s'"
-msgstr "type de périphérique inconnu dans '%1$s'"
-
-#, c-format
 msgid "unknown disk snapshot driver '%1$s'"
 msgstr "pilote d'instantané de disque inconnu '%1$s'"
 
@@ -39526,10 +39443,6 @@ msgstr "état '%1$s' du lien de l’interface inconnu"
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "startmode de l’interface %1$s inconnu"
-
-#, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "type d'interface inconnu : '%1$s'"
 
 #, c-format
 msgid "unknown ip address type '%1$s'"
@@ -40727,6 +40640,10 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext n'a pas de fonction parseFileName définie"
 
 #, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr ""
@@ -41277,8 +41194,268 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "Impossible de trouver un émulateur approprié pour %1$s"
+
+#~ msgid "Console can only be enabled for a PTY"
+#~ msgstr "La console ne peut être activée que pour un PTY"
+
+#, c-format
+#~ msgid "Firmware flash mode value '%1$s' unexpected"
+#~ msgstr "Valeur du mode flash du micrologiciel '%1$s' inattendu"
+
+#~ msgid "Firmware flash mode value was malformed"
+#~ msgstr "La valeur du mode flash du micrologiciel était malformée"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "Obtenir ou définir les paramètres de mémoire du nœud\n"
+#~ "    Pour obtenir les paramètres de la mémoire, utilisez la commande "
+#~ "suivante : \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "Obtenir ou définir les paramètres actuels de blkio pour un domaine "
+#~ "invité.\n"
+#~ "    Pour obtenir les paramètres blkio, utilisez la commande suivante : \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "Obtenir ou définir les paramètres de mémoire actuels pour un domaine "
+#~ "invité.\n"
+#~ "    Pour obtenir les paramètres de la mémoire, utilisez la commande "
+#~ "suivante : \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "Obtenir ou définir les paramètres numa actuels pour un domaine invité.\n"
+#~ "    Pour obtenir les paramètres numa, utilisez la commande suivante : \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "Obtenez ou définissez les événements de perf actuels pour un domaine "
+#~ "invité.\n"
+#~ "    Pour obtenir la liste des événements de perf, utilisez la commande "
+#~ "suivante : \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "Les contrôleurs USB multiples ne sont pas pris en charge"
+
+#~ msgid ""
+#~ "NUMA mode, one of strict, preferred and interleave \n"
+#~ "or a number from the virDomainNumatuneMemMode enum"
+#~ msgstr ""
+#~ "Mode NUMA, l'un des modes suivants : strict, préféré et interleave \n"
+#~ "ou un nombre de l'enum virDomainNumatuneMemMode"
+
+#~ msgid "Retrieve server's client-related configuration limits "
+#~ msgstr "Récupérer les limites de configuration du serveur liées au client "
+
+#~ msgid "Retrieve threadpool attributes from a server. "
+#~ msgstr ""
+#~ "Télécharger les attributs du groupe d’unités d’exécution du serveur. "
+
+#~ msgid "Serial can only be enabled for a PTY"
+#~ msgstr "La liaison série ne peut être activée que pour un PTY"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+#~ msgstr "l'alias '%1$s' de la commande '%2$s' a un type d'alias incorrect"
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
+#~ msgstr "L'alias '%1$s' de la commande '%2$s' n'a pas d'option d'alias"
+
+#, c-format
+#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+#~ msgstr "bool paramètre '%1$s' de la commande '%2$s' a un compléteur défini"
+
+#, c-format
+#~ msgid "command '%1$s' has handler set"
+#~ msgstr "la commande '%1$s' a un gestionnaire défini"
+
+#, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "la commande '%1$s' a un alias incohérent"
+
+#, c-format
+#~ msgid "command '%1$s' has info set"
+#~ msgstr "La commande '%1$s' a des informations définies"
+
+#, c-format
+#~ msgid "command '%1$s' has multiple flags set"
+#~ msgstr "la commande '%1$s' a plusieurs indicateurs définis"
+
+#, c-format
+#~ msgid "command '%1$s' has options set"
+#~ msgstr "la commande '%1$s' a des options définies"
+
+#, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "La commande '%1$s' a trop d'options"
+
+#, c-format
+#~ msgid "command '%1$s' lacks help"
+#~ msgstr "La commande '%1$s' manque d'aide"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+#~ msgstr ""
+#~ "L'alias de commande '%1$s' pointe vers une commande inexistante '%2$s'"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+#~ msgstr ""
+#~ "L'alias de commande '%1$s' pointe vers un autre alias de commande '%2$s'"
+
+#~ msgid ""
+#~ "command groups and command are both NULL run vshInit before reloading"
+#~ msgstr ""
+#~ "les groupes de commande et la commande sont tous les deux NULL exécuter "
+#~ "vshInit avant le rechargement"
+
+#~ msgid "command groups and command set cannot both be NULL"
+#~ msgstr ""
+#~ "les groupes de commandes et le jeu de commandes ne peuvent pas être tous "
+#~ "deux NULL"
+
+#, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "ne parvient pas à obtenir les types d'interface de '%1$s'"
+
+#, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "n'a pas réussi à obtenir les cibles de '%1$s'"
+
+#, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "le mot 'architecture' manque dans '%1$s'"
+
+#, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "le mot \"exécutable\" manque dans \"%1$s\""
+
+#, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "'filename' manquant dans '%1$s'"
+
+#, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "'format' manquant dans '%1$s'"
+
+#, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "'machines' manquant dans '%1$s'"
+
+#, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "'nvram-template' manquant dans '%1$s'"
+
+#, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "type de périphérique manquant dans '%1$s'"
+
+#, c-format
+#~ msgid "missing mapping in '%1$s'"
+#~ msgstr "cartographie manquante dans '%1$s'"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+#~ msgstr ""
+#~ "le paramètre '%1$s' de la commande '%2$s' a une option d'alias incorrecte"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
+#~ msgstr "paramètre '%1$s' de la commande '%2$s' mal utilisé VSH_OFLAG_REQ"
+
+#, c-format
+#~ msgid ""
+#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
+#~ "parameters"
+#~ msgstr ""
+#~ "le paramètre '%1$s' de la commande '%2$s' doit être listé avant les "
+#~ "paramètres optionnels"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
+#~ msgstr ""
+#~ "le paramètre '%1$s' de la commande '%2$s' doit être listé en dernier"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
+#~ msgstr ""
+#~ "le paramètre '%1$s' de la commande '%2$s' doit utiliser l’indicateur "
+#~ "VSH_OFLAG_REQ"
+
+#, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "architecture inconnue '%1$s'"
+
+#, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "type de périphérique inconnu dans '%1$s'"
+
+#, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "type d'interface inconnu : '%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #~ msgid "<system_field> evaluation has failed"
 #~ msgstr "L’évaluation <system_field> a échoué"

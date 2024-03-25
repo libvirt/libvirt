@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -315,11 +315,19 @@ msgid " Storage:"
 msgstr " Opslag:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+msgstr ""
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1455,14 +1463,6 @@ msgid "3d acceleration is supported only with 'virtio' video device"
 msgstr ""
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
-msgstr ""
-
-#, c-format
-msgid "<%1$s>"
-msgstr ""
-
-#, c-format
-msgid "<%1$s>..."
 msgstr ""
 
 #, c-format
@@ -2608,6 +2608,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "Kan log map '%1$s' niet aanmaken"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr ""
 
@@ -2735,10 +2739,6 @@ msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Kan geen geschikt CPU model vinden voor gegeven data"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "Kan geen geschikte emulator voor %1$s vinden"
 
 msgid "Cannot get all servers from daemon"
 msgstr ""
@@ -3686,7 +3686,7 @@ msgstr "Verbinden met domein %s\n"
 msgid "Connections from inside daemon must be direct"
 msgstr ""
 
-msgid "Console can only be enabled for a PTY"
+msgid "Console only works in PTY mode"
 msgstr ""
 
 msgid "Constant pages:"
@@ -5615,6 +5615,12 @@ msgid ""
 "modules."
 msgstr ""
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr ""
 
@@ -6514,6 +6520,10 @@ msgstr "Apparaat %1$s maken mislukte"
 msgid "Failed to clean up %1$s"
 msgstr "%1$s aanmaken mislukte"
 
+#, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "Opschonen van beveiliging context voor monitor voor %1$s mislukt."
@@ -6634,6 +6644,10 @@ msgstr "Aanmaken van '%1$s' mislukte: %2$s"
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "SASL cliënt context aanmaken mislukte: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "Aanmaken van XML mislukte"
@@ -6833,6 +6847,10 @@ msgstr "Aanmaken van volume %1$s mislukte"
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "Aanmaken van volume uit %1$s mislukte"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7631,6 +7649,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "Aanmaken van domein opslag bestand '%1$s' mislukte"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "Openen van bestand '%1$s' mislukte"
 
@@ -7988,6 +8010,10 @@ msgstr "Aanmaken van domein opslag bestand '%1$s' mislukte"
 msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr ""
 
+#, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "Openen van opslag volume met pad '%s' mislukte"
@@ -8133,6 +8159,9 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "Opslaan van domein %1$s naar %2$s mislukte"
 
 msgid "Failed to save VM settings"
+msgstr ""
+
+msgid "Failed to save domain"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8327,6 +8356,9 @@ msgstr "Afsluiten van domein '%1$d' met libxenlight mislukte"
 
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
+msgstr ""
+
+msgid "Failed to shutoff after domain save"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8552,6 +8584,9 @@ msgstr "Schrijven van %1$zu bytes naar opslag volume met pad '%2$s' mislukte"
 msgid "Failed to write '%1$s'"
 msgstr "Lezen van '%1$s' mislukte"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr ""
 
@@ -8570,6 +8605,9 @@ msgstr "Schrijven naar vmx bestand '%1$s' mislukte"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "Schrijven naar vmx bestand '%1$s' mislukte"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to write xml description"
@@ -8721,13 +8759,6 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
-msgstr ""
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr ""
-
-msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -8892,20 +8923,6 @@ msgid "Get or set node memory parameters"
 msgstr "Verkrijgen of instellen van geheugen parameters"
 
 #, fuzzy
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
-"domein.\n"
-"    Om de geheugen parameters te verkrijgen gebruik je het volgende "
-"commando: \n"
-"\n"
-"    virsh # memtune <domein>"
-
-#, fuzzy
 msgid "Get or set numa parameters"
 msgstr "Verkrijgen of instellen van geheugen parameters"
 
@@ -8913,60 +8930,17 @@ msgstr "Verkrijgen of instellen van geheugen parameters"
 msgid "Get or set perf event"
 msgstr "Verkrijgen of instellen van geheugen parameters"
 
-#, fuzzy
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
-"domein.\n"
-"    Om de geheugen parameters te verkrijgen gebruik je het volgende "
-"commando: \n"
-"\n"
-"    virsh # memtune <domein>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
-"domein.\n"
-"    Om de geheugen parameters te verkrijgen gebruik je het volgende "
-"commando: \n"
-"\n"
-"    virsh # memtune <domein>"
 
-#, fuzzy
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
-"domein.\n"
-"    Om de geheugen parameters te verkrijgen gebruik je het volgende "
-"commando: \n"
-"\n"
-"    virsh # memtune <domein>"
 
-#, fuzzy
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
-"domein.\n"
-"    Om de geheugen parameters te verkrijgen gebruik je het volgende "
-"commando: \n"
-"\n"
-"    virsh # memtune <domein>"
 
 #, fuzzy
 msgid "Get or set the current snapshot"
@@ -11746,10 +11720,6 @@ msgstr "Multi-kop video apparaten worden niet ondersteund"
 msgid "Multiple interfaces attached to bridge"
 msgstr "meerdere interfaces met overeenkomend MAC adres"
 
-#, fuzzy
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "meerdere streams callbacks niet ondersteund"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr ""
@@ -11840,8 +11810,8 @@ msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr ""
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13725,6 +13695,9 @@ msgstr ""
 msgid "Relative backing during copy not supported yet"
 msgstr ""
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr ""
@@ -13902,10 +13875,10 @@ msgstr "Gasten hervatten op $uri URI..."
 msgid "Retrieve identity details about <client> from <server>"
 msgstr ""
 
-msgid "Retrieve server's client-related configuration limits "
+msgid "Retrieve server's client-related configuration limits"
 msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
+msgid "Retrieve threadpool attributes from a server."
 msgstr ""
 
 msgid "Return pool info in bytes"
@@ -14372,13 +14345,13 @@ msgstr ""
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Proces CPU affiniteit wordt op dit platform niet ondersteund"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr ""
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
+msgstr ""
+
+msgid "Serial only works in UNIX/PTY modes"
 msgstr ""
 
 #, c-format
@@ -19164,6 +19137,9 @@ msgstr ""
 msgid "Unexpectedly got a network port without a plug"
 msgstr ""
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
@@ -20371,27 +20347,11 @@ msgid "You must map the root user of container"
 msgstr "Kon geen eth naam voor container genereren"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <nummer>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <tekenreeks>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <nummer>"
 
 #, c-format
 msgid "[--%1$s] <string>"
-msgstr "[--%1$s] <tekenreeks>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr ""
-
-#, fuzzy, c-format
-msgid "[[--%1$s] <string>]..."
 msgstr "[--%1$s] <tekenreeks>"
 
 msgid ""
@@ -20585,14 +20545,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "Netwerk type %1$d wordt niet ondersteund."
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
 
 msgid "all CPU models are accepted"
 msgstr ""
@@ -21231,10 +21183,6 @@ msgstr "binding interface mist het bond element"
 
 msgid "bool"
 msgstr "bool"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22708,6 +22656,12 @@ msgstr "kan vcpu vastzetten niet tonen voor inactief domein"
 msgid "cannot revert snapshot of running domain"
 msgstr "kan snapshot van draaiend domein niet terugdraaien"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "cannot save file '%1$s'"
 msgstr "kan stat bestand '%1$s' niet uitvoeren"
@@ -23275,34 +23229,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "commando '%1$s' ondersteunt optie --%2$s niet"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has too many options"
-msgstr "commando '%s' vereist --%s optie"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr ""
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "commando '%1$s' vereist --%2$s optie"
 
@@ -23310,18 +23236,10 @@ msgstr "commando '%1$s' vereist --%2$s optie"
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "commando '%1$s' vereist <%2$s> optie"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
 
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr ""
-
-msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr ""
-
-msgid "command groups and command set cannot both be NULL"
+msgid "command groups must be non-NULL"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26446,10 +26364,6 @@ msgstr "verkrijgen van hypervisor type mislukte"
 msgid "failed to get interface '%1$s'"
 msgstr "verkrijgen van interface '%1$s' mislukte"
 
-#, fuzzy, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "verkrijgen van interface '%1$s' mislukte"
-
 #, fuzzy
 msgid "failed to get launch security policy"
 msgstr "krijgen van ouder pool mislukte"
@@ -26530,10 +26444,6 @@ msgstr "verkrijgen van interface '%1$s' mislukte"
 
 msgid "failed to get sysinfo"
 msgstr "Kan sysinfo niet ophalen"
-
-#, fuzzy, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "verkrijgen van geheim '%1$s' mislukte"
 
 #, fuzzy
 msgid "failed to get the daemon version"
@@ -26874,6 +26784,9 @@ msgstr "Lezen van '%1$s' mislukte"
 msgid "failed to read AppArmor template"
 msgstr "AppArmor sjabloon lezen mislukte"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "XML lezen mislukte"
 
@@ -27001,8 +26914,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "Aanmaken van symlink '%1$s' naar '%2$s' mislukte"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "domein hervatten mislukte"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 #, fuzzy
 msgid "failed to retrieve XML"
@@ -27121,6 +27046,9 @@ msgid "failed to store %1$lld to %2$s"
 msgstr "bestand verplaatsen naar %s mislukte"
 
 msgid "failed to suspend domain"
+msgstr ""
+
+msgid "failed to suspend domain before saving"
 msgstr ""
 
 #, fuzzy
@@ -27819,6 +27747,9 @@ msgstr ""
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -28167,6 +28098,12 @@ msgid "hypervisor connection not open"
 msgstr "hypervisor verbinding URI"
 
 msgid "hypervisor feature autodetection override"
+msgstr ""
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
 msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
@@ -30264,6 +30201,9 @@ msgstr ""
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 #, fuzzy
 msgid "mark inactive domains with managed save state"
 msgstr "Controleren voor domein beheerde opslag image mislukte"
@@ -30305,6 +30245,9 @@ msgstr ""
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 #, fuzzy
 msgid "maxerrors too large"
 msgstr "nparams te groot"
@@ -30312,6 +30255,9 @@ msgstr "nparams te groot"
 #, fuzzy
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "maxumum"
@@ -30351,6 +30297,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 #, fuzzy
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
@@ -30387,9 +30336,15 @@ msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 #, fuzzy
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr ""
@@ -30742,10 +30697,6 @@ msgstr "ontbrekend root element"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "Ontbrekende CPU architectuur"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
 
@@ -30759,10 +30710,6 @@ msgid ""
 "network %1$s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "Essentieel configuratie ingang '%1$s' ontbreekt"
-
 #, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr ""
@@ -30774,14 +30721,6 @@ msgstr ""
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "ontbrekende naam voor host"
-
-#, fuzzy, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "domein toestand ontbreekt"
-
 #, fuzzy
 msgid "missing 'guid' attribute"
 msgstr "ontbrekend opstartvolgorde attribuut"
@@ -30789,20 +30728,12 @@ msgstr "ontbrekend opstartvolgorde attribuut"
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "domein toestand ontbreekt"
-
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
-msgstr ""
-
-#, c-format
-msgid "missing 'nvram-template' in '%1$s'"
 msgstr ""
 
 msgid "missing 'path' attribute for vhostuser disk source"
@@ -31054,10 +30985,6 @@ msgstr "ontbrekend volume naam element"
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "ontbrekende apparaten informatie voor %1$s"
 
-#, fuzzy, c-format
-msgid "missing device type in '%1$s'"
-msgstr "ontbrekend invoer apparaat type"
-
 msgid "missing devices information"
 msgstr "ontbrekende apparaten informatie"
 
@@ -31243,10 +31170,6 @@ msgid "missing listen element for graphics"
 msgstr "ontbrekende naam voor host"
 
 msgid "missing listen element for spice graphics"
-msgstr ""
-
-#, c-format
-msgid "missing mapping in '%1$s'"
 msgstr ""
 
 msgid "missing microcode version in QEMU capabilities cache"
@@ -31783,6 +31706,12 @@ msgstr ""
 msgid "msi option is only supported with a server"
 msgstr "deze functie wordt niet ondersteund door de verbinding driver"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31909,6 +31838,9 @@ msgstr ""
 #, fuzzy
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32921,6 +32853,9 @@ msgstr ""
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr ""
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams te groot"
 
@@ -33154,6 +33089,9 @@ msgid "only can reboot running/paused domain"
 msgstr ""
 
 msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can save running/paused domain"
 msgstr ""
 
 msgid "only can shutdown running/paused domain"
@@ -33413,6 +33351,9 @@ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "genereer een XML-string voor de hypervisor-sysinfo, indien beschikbaar"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr ""
 
@@ -33511,27 +33452,6 @@ msgstr "hostdev mode '%1$s' niet ondersteund"
 
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr ""
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
 msgstr ""
 
 msgid "parameter=value"
@@ -34998,6 +34918,9 @@ msgstr ""
 #, fuzzy
 msgid "save image is incomplete"
 msgstr "image magic is niet correct"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr ""
@@ -36870,6 +36793,10 @@ msgstr "Netwerk type %d wordt niet ondersteund."
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "versie komt niet overeen (actueel %1$x, verwacht %2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr ""
 
@@ -37930,10 +37857,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "onbekend interface type '%1$s'"
-
-#, fuzzy, c-format
 msgid "unknown architecture: %1$s"
 msgstr "onbekende procedure: %d"
 
@@ -38021,10 +37944,6 @@ msgid "unknown device type '%1$s'"
 msgstr "onbekend chr apparaat type '%1$s'"
 
 #, fuzzy, c-format
-msgid "unknown device type in '%1$s'"
-msgstr "onbekend chr apparaat type '%1$s'"
-
-#, fuzzy, c-format
 msgid "unknown disk snapshot driver '%1$s'"
 msgstr "onbekende schijf io mode '%1$s'"
 
@@ -38109,10 +38028,6 @@ msgstr "onbekend interface type '%1$s'"
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "onbekende interface start mode %1$s"
-
-#, fuzzy, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "onbekend interface type '%1$s'"
 
 #, fuzzy, c-format
 msgid "unknown ip address type '%1$s'"
@@ -39278,6 +39193,10 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext heeft geen parseFileName functie ingesteld"
 
 #, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr ""
@@ -39787,9 +39706,146 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "Kan geen geschikte emulator voor %1$s vinden"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
+#~ "domein.\n"
+#~ "    Om de geheugen parameters te verkrijgen gebruik je het volgende "
+#~ "commando: \n"
+#~ "\n"
+#~ "    virsh # memtune <domein>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
+#~ "domein.\n"
+#~ "    Om de geheugen parameters te verkrijgen gebruik je het volgende "
+#~ "commando: \n"
+#~ "\n"
+#~ "    virsh # memtune <domein>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
+#~ "domein.\n"
+#~ "    Om de geheugen parameters te verkrijgen gebruik je het volgende "
+#~ "commando: \n"
+#~ "\n"
+#~ "    virsh # memtune <domein>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
+#~ "domein.\n"
+#~ "    Om de geheugen parameters te verkrijgen gebruik je het volgende "
+#~ "commando: \n"
+#~ "\n"
+#~ "    virsh # memtune <domein>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "Verkrijgen of instellen van de huidige geheugen parameters voor het gast "
+#~ "domein.\n"
+#~ "    Om de geheugen parameters te verkrijgen gebruik je het volgende "
+#~ "commando: \n"
+#~ "\n"
+#~ "    virsh # memtune <domein>"
+
+#, fuzzy
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "meerdere streams callbacks niet ondersteund"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <nummer>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <tekenreeks>]"
+
 #, fuzzy, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "[--%1$s] <tekenreeks>"
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[--%1$s] <tekenreeks>"
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "commando '%s' vereist --%s optie"
+
+#, fuzzy, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "verkrijgen van interface '%1$s' mislukte"
+
+#, fuzzy, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "verkrijgen van geheim '%1$s' mislukte"
+
+#, fuzzy, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "Ontbrekende CPU architectuur"
+
+#, fuzzy, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "Essentieel configuratie ingang '%1$s' ontbreekt"
+
+#, fuzzy, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "ontbrekende naam voor host"
+
+#, fuzzy, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "domein toestand ontbreekt"
+
+#, fuzzy, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "domein toestand ontbreekt"
+
+#, fuzzy, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "ontbrekend invoer apparaat type"
+
+#, fuzzy, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "onbekend interface type '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "onbekend chr apparaat type '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "onbekend interface type '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "[--%1$s] <tekenreeks>"
 
 #, fuzzy
 #~ msgid "Cannot extract memnode nodes"

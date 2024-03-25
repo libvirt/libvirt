@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -488,6 +488,10 @@ msgid " Storage:"
 msgstr " Úložiště:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
@@ -498,6 +502,10 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1685,14 +1693,6 @@ msgstr "3D akcelerace je podporována pouze s video zařízením 'virtio'"
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
 "nastavení 64bitové PCI díry je podporováno pouze pro kořenové PCI řadiče"
-
-#, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>…"
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
@@ -2892,6 +2892,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "Nedaří se vytvořit resctrl složku „%1$s“"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr "Nedaří se vytvořit soket „%1$s“"
 
@@ -3020,10 +3024,6 @@ msgstr "Nepodařilo se najít čas spuštění pro pid %1$d"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Pro daná data není možné nalézt použitelný model procesoru"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "Nedaří se najít příhodný emulátor pro %1$s"
 
 msgid "Cannot get all servers from daemon"
 msgstr "Nedaří se z procesu služby získat všechny servery"
@@ -3965,8 +3965,8 @@ msgstr "Připojeno ke správnímu serveru"
 msgid "Connections from inside daemon must be direct"
 msgstr "Je třeba, aby spojení zevnitř procesu služby byla přímá"
 
-msgid "Console can only be enabled for a PTY"
-msgstr "Konzoli je možné zapnout pouze pro pseudoterminál (PTY)"
+msgid "Console only works in PTY mode"
+msgstr ""
 
 msgid "Constant pages:"
 msgstr "Konstantní stránky:"
@@ -5861,6 +5861,12 @@ msgstr ""
 "virtualizace zapnutí v BIOS/UEFI hostitele a hostitel je nastavení tak, aby "
 "načítal moduly kvm."
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr ""
 "Doména vyžaduje alespoň jeden virt. procesor nejsou podporovány se zdrojem "
@@ -6762,6 +6768,10 @@ msgid "Failed to clean up %1$s"
 msgstr "Nepodařilo se uklidit %1$s"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "Nepodařilo se vyčistit kontext zabezpečení pro agenta pro %1$s"
 
@@ -6873,6 +6883,10 @@ msgstr "Nezdařilo se vytvoření „%1$s“: %2$s"
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "Nepodařilo se vytvořit kontext SASL klienta: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "Nepodařilo se vytvořit XML"
@@ -7067,6 +7081,10 @@ msgstr "Nepodařilo se vytvořit svazek %1$s"
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "Nepodařilo se vytvořit svazek z %1$s"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7826,6 +7844,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "Nepodařilo se otevřít soubor s obrazem domény „%1$s“"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "Nepodařilo se otevřít soubor „%1$s“"
 
@@ -8170,6 +8192,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr "Nepodařilo se odebrat spravovaný obraz uložení pro doménu „%1$s“"
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "Nepodařilo se odebrat svazek úložiště „%1$s“(%2$s)"
 
@@ -8310,6 +8336,9 @@ msgstr "Nepodařilo se uložit „%1$s“ pro „%2$s“"
 
 msgid "Failed to save VM settings"
 msgstr "Nepodařilo se uložit nastavení virt. stroje"
+
+msgid "Failed to save domain"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8508,6 +8537,9 @@ msgstr "Nepodařilo se vypnout doménu „%1$d“ s libxenlight"
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
 msgstr "Nepodařilo se vypnout doménu „%1$s“"
+
+msgid "Failed to shutoff after domain save"
+msgstr ""
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8731,6 +8763,9 @@ msgstr "Nepodařilo se zapsat %1$zu bajtů do svazku úložiště v umístění 
 msgid "Failed to write '%1$s'"
 msgstr "Nepodařilo se zapsat „%1$s“"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr "Nepodařilo se zapsat pixelová data"
 
@@ -8748,6 +8783,9 @@ msgstr "Nepodařilo se zapsat do pid souboru „%1$s“"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "Nezdařilo se zapsání vmx souboru „%1$s“"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "Nepodařilo se zapsat xml popis"
@@ -8895,13 +8933,6 @@ msgstr "Položka pro firmware postrádá atribut 'name'"
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 "Je třeba, aby položka s firmware obsahovala buď hodnotu nebo atribut 'file'"
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr "Hodnota režimu flash firmware '%1$s' neočekávána"
-
-msgid "Firmware flash mode value was malformed"
-msgstr "Hodnota u režimu flash firmware neměla správný formát"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -9064,66 +9095,23 @@ msgstr "Zobrazit/nastavit parametry paměti"
 msgid "Get or set node memory parameters"
 msgstr "Získat nebo nastavit parametry uzlu"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"Získat nebo nastavit parametry paměti uzlu\n"
-"    Pro získání parametrů paměti, použijte následující příkaz: \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "Získat nebo nastavit parametry numa"
 
 msgid "Get or set perf event"
 msgstr "Získat nebo nastavit událost výkonu"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"Nedaří se získat nebo nastavit stávající blkio parametry pro doménu hosta.\n"
-"    Pro získání blkio parametrů použijte následující příkaz: \n"
-"\n"
-"    virsh # blkiotune <doména>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"Získat nebo nastavit stávající parametry paměti pro doménu hosta.\n"
-"    Pro získání parametrů paměti použijte následující příkaz: \n"
-"\n"
-"    virsh # memtune <doména>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"Získat nebo nastavit stávající numa parametry pro doménu hosta.\n"
-"    Pro získání numa parametrů použijte následující příkaz: \n"
-"\n"
-"    virsh # numatune <domena>"
 
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"Získat nebo nastavit stávající události výkonu pro doménu hosta.\n"
-"    Pro získání seznamu událostí výkonu použijte následující příkaz: \n"
-"\n"
-"    virsh # perf <doména>"
 
 msgid "Get or set the current snapshot"
 msgstr "Zjistit nebo nastavit stávající zachycený stav"
@@ -11939,9 +11927,6 @@ msgstr "Vícero grafických zařízení v rámci jednoho stroje není podporová
 msgid "Multiple interfaces attached to bridge"
 msgstr "K mostu je připojeno vícero zařízení"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "Vícero starých USB řadičů není podporováno"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr "Vícero prvků memnode s cellid %1$u"
@@ -12032,12 +12017,9 @@ msgstr ""
 "pouze jeden uzel"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
-"NUMA režim – jedno z strict (striktní), preferred (upřednostňované) nebo "
-"interleave (prokládané) \n"
-"nebo číslo z virDomainNumatuneMemMode vyčíslení"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -13903,6 +13885,9 @@ msgid "Relative backing during copy not supported yet"
 msgstr ""
 "Relativní na čem je založené v průběhu kopírování zatím není podporováno"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "Příkaz na protějšku ukončen s nenulovým kódem: %1$d"
@@ -14087,11 +14072,11 @@ msgstr "Obnovování chodu hosta na URI $uri…"
 msgid "Retrieve identity details about <client> from <server>"
 msgstr "Získat podrobnosti o identitě <client> ze <server>"
 
-msgid "Retrieve server's client-related configuration limits "
-msgstr "Získat limity nastavení serveru související s klienty "
+msgid "Retrieve server's client-related configuration limits"
+msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
-msgstr "Získat atributy threadpool ze serveru. "
+msgid "Retrieve threadpool attributes from a server."
+msgstr ""
 
 msgid "Return pool info in bytes"
 msgstr "Vrátit informace o fondu v bajtech"
@@ -14558,9 +14543,6 @@ msgstr "Poslat signál procesům v hostovi"
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Posílání popisovačů souboru není na tomto soketu podporováno"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr "Sériovou konzoli je možné zapnout pouze pro pseudoterminál (PTY)"
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
@@ -14568,6 +14550,9 @@ msgid ""
 msgstr ""
 "Sériové zařízení s typem cíle „%1$s“ a modelem cíle „%2$s“ není kompatibilní "
 "s architekturou hosta nebo typem stroje"
+
+msgid "Serial only works in UNIX/PTY modes"
+msgstr ""
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -19211,6 +19196,9 @@ msgstr "Neočekávaně obdržen síťový port bez síťového mostu"
 msgid "Unexpectedly got a network port without a plug"
 msgstr "Neočekávaně získán síťový port bez zapojení"
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr "Na této platformě nejsou podporovány unixové popisovače souborů"
 
@@ -20423,28 +20411,12 @@ msgid "You must map the root user of container"
 msgstr "Je třeba namapovat uživatele-správce (root) kontejneru"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <číslo>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <řetězec>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <číslo>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <řetězec>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]…"
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <řetězec>]…"
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -20651,17 +20623,6 @@ msgstr "po navrácení, nastavit stav na spuštěný"
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d není podporováno"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
-"alternativní název '%1$s' příkazu'%2$s' má neshodu v typu alternativního "
-"názvu"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
-"alternativní názvu '%1$s' příkazu '%2$s' chybí volba alternativní název"
 
 msgid "all CPU models are accepted"
 msgstr "všechny modely procesorů jsou přijímány"
@@ -21325,10 +21286,6 @@ msgstr "rozhraní typu most postrádá prvek bond"
 
 msgid "bool"
 msgstr "bool"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr "boolean parametr '%1$s' příkazu '%2$s' má úplnější sadu"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22798,6 +22755,12 @@ msgstr "není možné získat informace o virt. procesoru pro neaktivní doménu
 msgid "cannot revert snapshot of running domain"
 msgstr "není možné vracet spuštěnou doménu do podoby zachyceného stavu"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "nedaří se uložit soubor „%1$s“"
@@ -23352,34 +23315,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "příkaz „%1$s“ nepodporuje volbu --%2$s"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr "příkaz '%1$s' má nastavenou obsluhu"
-
-#, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "příkaz „%1$s“ má nekonzistentní alias"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr "příkaz '%1$s' má nastavenou informaci"
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr "příkaz '%1$s' má nastaveno vícero příznaků"
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr "příkaz '%1$s' má nastaveny volby"
-
-#, c-format
-msgid "command '%1$s' has too many options"
-msgstr "příkaz „%1$s“ má příliš mnoho voleb"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr "příkaz „%1$s“ postrádá nápovědu"
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "příkaz „%1$s“ vyžaduje volbu --%2$s"
 
@@ -23387,24 +23322,11 @@ msgstr "příkaz „%1$s“ vyžaduje volbu --%2$s"
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "příkaz „%1$s“ vyžaduje volbu <%2$s>"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
-"alternativní název příkazu '%1$s' odkazuje na neexistující příkaz '%2$s'"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgid "command groups must be non-NULL"
 msgstr ""
-"alternativní název příkazu '%1$s' odkazuje na alternativní název jiného "
-"příkazu '%2$s'"
-
-msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr ""
-"command groups a command jsou obojí prázdné – před znovunačtením spusťte "
-"vshInit"
-
-msgid "command groups and command set cannot both be NULL"
-msgstr "command groups a command set nemůže být obojí prázdné"
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -26508,10 +26430,6 @@ msgstr "nepodařilo se získat typ hypervizoru"
 msgid "failed to get interface '%1$s'"
 msgstr "nepodařilo se získat rozhraní '%1$s'"
 
-#, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "nepodařilo se získat typy rozhraní z '%1$s'"
-
 msgid "failed to get launch security policy"
 msgstr "nepodařilo se spustit zásadu zabezpečení spouštění"
 
@@ -26589,10 +26507,6 @@ msgstr "nepodařilo se získat počet proužků RBD obrazu %1$s"
 
 msgid "failed to get sysinfo"
 msgstr "nepodařilo se získat systémové informace"
-
-#, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "nepodařilo se získat cíle z „%1$s“"
 
 msgid "failed to get the daemon version"
 msgstr "nepodařilo se získat verzi procesu služby"
@@ -26919,6 +26833,9 @@ msgstr "nepodařilo se číst „%1$s“"
 msgid "failed to read AppArmor template"
 msgstr "nepodařilo se číst AppArmor šablonu"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "nezdařilo se čtení XML"
 
@@ -27040,8 +26957,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "nepodařilo se přeložit symbolický odkaz %1$s: %2$s"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "nepodařilo se obnovit chod domény"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 msgid "failed to retrieve XML"
 msgstr "nepodařilo se získat XML"
@@ -27159,6 +27088,9 @@ msgstr "nepodařilo se uložit %1$lld do %2$s"
 
 msgid "failed to suspend domain"
 msgstr "nepodařil ose uspat doménu"
+
+msgid "failed to suspend domain before saving"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "nepodařilo se pořídit snímek obrazovky"
@@ -27864,6 +27796,9 @@ msgstr ""
 "pro hodnotu atributu 'display=on' v <hostdev> je zapotřebí grafického "
 "zařízení"
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -28215,6 +28150,12 @@ msgstr "spojení s hypervizorem není otevřené"
 
 msgid "hypervisor feature autodetection override"
 msgstr "přebití automatického zjišťování funkce hypervizoru"
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
+msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i – vypnout ověřování správnosti a zkusit znovu definovat"
@@ -30286,6 +30227,9 @@ msgstr ""
 "manipulovat se souborem s pověřenými SSH klíči pro daného uživatele "
 "(prostřednictvím agenta)"
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "označit neaktivní domény se spravovaným stavem uložení"
 
@@ -30320,11 +30264,17 @@ msgstr "maxWorkers nemůže být přepínáno z nuly na nenulové a obráceně"
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors příliš velké"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "maximum"
@@ -30371,6 +30321,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -30398,8 +30351,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr "atributu mdev chybí název nebo hodnota"
@@ -30756,10 +30715,6 @@ msgstr "chybí prvek 'DateTime'"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr "chybí atribut 'alias' pro qemu:device"
 
-#, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "chybí 'architecture' v '%1$s'"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr "chybí 'config' ve výsledku informačního dotazu na cloud-hypervisor"
 
@@ -30775,10 +30730,6 @@ msgstr ""
 "v síti %1$s, v prvku <address> v <nat>, ve <forward> chybí atribut 'end'"
 
 #, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "chybějící 'executable' v '%1$s'"
-
-#, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr "chybějící 'file' v '%1$s' z cloud-hypervisor"
 
@@ -30791,14 +30742,6 @@ msgstr ""
 "V JSON definici svazku, na kterém je založené, chybí kolonka "
 "'filename' (název souboru)"
 
-#, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "chybějící 'filename' v '%1$s'"
-
-#, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "chybějící 'format' v '%1$s'"
-
 msgid "missing 'guid' attribute"
 msgstr "chybí atribut „guid“"
 
@@ -30806,10 +30749,6 @@ msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr ""
 "chybí atribut 'id' (identifikátor) pro prvek <type> zprostředkovaného "
 "zařízení"
-
-#, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "v '%1$s' chybí 'machines'"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -30820,10 +30759,6 @@ msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr "u qemu:property chybí atribut 'name'"
-
-#, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "v '%1$s' chybí 'nvram-template'"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr "chybí atribut 'path' pro zdroj vhostuser disku"
@@ -31058,10 +30993,6 @@ msgid "missing device API for mediated device type '%1$s'"
 msgstr ""
 "chybí aplikační programové rozhraní pro zprostředkované zařízení typu „%1$s“"
 
-#, c-format
-msgid "missing device type in '%1$s'"
-msgstr "v '%1$s' chybí typ zařízení"
-
 msgid "missing devices information"
 msgstr "chybí informace o zařízení"
 
@@ -31233,10 +31164,6 @@ msgstr "chybí prvek listen (očekávání spojení) pro grafiku"
 
 msgid "missing listen element for spice graphics"
 msgstr "chybí prvek listen (očekávání spojení) pro grafiku typu spice"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr "chybí mapování v '%1$s'"
 
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "v mezipaměti schopností QEMU chybí verze mikrokódu"
@@ -31766,6 +31693,12 @@ msgstr "přípojný bod, který rozmrazit"
 msgid "msi option is only supported with a server"
 msgstr "volba msi je podporována pouze se serverem"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31894,6 +31827,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32899,6 +32835,9 @@ msgstr "je třeba, aby nparams v %1$s bylo %2$d"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "je třeba, aby nparams v %1$s bylo rovno %2$d"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams jsou příliš velké"
 
@@ -33128,6 +33067,9 @@ msgstr "restartovat je možné pouze spuštěnou/pozastavenou doménu"
 
 msgid "only can resume paused domain"
 msgstr "navázat v chodu je možné pouze u pozastavené domény"
+
+msgid "only can save running/paused domain"
+msgstr ""
 
 msgid "only can shutdown running/paused domain"
 msgstr "vypnout je možné pouze spuštěnou/pozastavenou doménu"
@@ -33369,6 +33311,9 @@ msgstr ""
 "vypsat XML řetězec se systémovými informacemi o hypervizoru, pokud jsou k "
 "dispozici"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr "vypsat seznam voleb které postrádají kompletovače"
 
@@ -33463,33 +33408,6 @@ msgstr "parametr „%1$s“ nepodporován"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "parametr „%1$s“ se vyskytuje vícekrát"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-"parametr '%1$s' příkazu '%2$s' nemá správnou volbu alternativního názvu"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr "parametr '%1$s' příkazu '%2$s' špatně používá VSH_OFLAG_REQ"
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-"je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden před volitelnými "
-"parametry"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
-"je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden až jako poslední"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr ""
-"je třeba, aby parametr '%1$s' příkazu '%2$s' byl používal příznak "
-"VSH_OFLAG_REQ"
 
 msgid "parameter=value"
 msgstr "parametr=hodnota"
@@ -34973,6 +34891,9 @@ msgstr "uložení zrušeno"
 
 msgid "save image is incomplete"
 msgstr "uložení obrazu je dokončeno"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "uloženo"
@@ -36923,6 +36844,10 @@ msgstr "typ %1$s není podporován"
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "neshoda typu v události (skutečná 0x%1$x, očekáváno 0x%2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr "typ zdroje (block|file|network)"
 
@@ -37953,10 +37878,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr "neznámá architektura %1$s v mezipaměti schopností QEMU"
 
 #, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "neznámá architektura '%1$s'"
-
-#, c-format
 msgid "unknown architecture: %1$s"
 msgstr "neznámá architektura: %1$s"
 
@@ -38043,10 +37964,6 @@ msgid "unknown device type '%1$s'"
 msgstr "neznámý typ zařízení „%1$s“"
 
 #, c-format
-msgid "unknown device type in '%1$s'"
-msgstr "neznámý typ zařízení v „%1$s“"
-
-#, c-format
 msgid "unknown disk snapshot driver '%1$s'"
 msgstr "neznámý ovladač zachyceného stavu disku „%1$s“"
 
@@ -38129,10 +38046,6 @@ msgstr "neznámý stav linky rozhraní „%1$s“"
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "neznámý režim spouštění rozhraní %1$s"
-
-#, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "neznámý typ rozhraní „%1$s“"
 
 #, c-format
 msgid "unknown ip address type '%1$s'"
@@ -39308,6 +39221,10 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext nemá nastavenou funkci parseFileName"
 
 #, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "virtio (ne-)přechodné modely nejsou podporovány pro adresu type=%1$s"
@@ -39826,8 +39743,265 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <řetězec>}…"
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>…"
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "Nedaří se najít příhodný emulátor pro %1$s"
+
+#~ msgid "Console can only be enabled for a PTY"
+#~ msgstr "Konzoli je možné zapnout pouze pro pseudoterminál (PTY)"
+
+#, c-format
+#~ msgid "Firmware flash mode value '%1$s' unexpected"
+#~ msgstr "Hodnota režimu flash firmware '%1$s' neočekávána"
+
+#~ msgid "Firmware flash mode value was malformed"
+#~ msgstr "Hodnota u režimu flash firmware neměla správný formát"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "Získat nebo nastavit parametry paměti uzlu\n"
+#~ "    Pro získání parametrů paměti, použijte následující příkaz: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "Nedaří se získat nebo nastavit stávající blkio parametry pro doménu "
+#~ "hosta.\n"
+#~ "    Pro získání blkio parametrů použijte následující příkaz: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <doména>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "Získat nebo nastavit stávající parametry paměti pro doménu hosta.\n"
+#~ "    Pro získání parametrů paměti použijte následující příkaz: \n"
+#~ "\n"
+#~ "    virsh # memtune <doména>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "Získat nebo nastavit stávající numa parametry pro doménu hosta.\n"
+#~ "    Pro získání numa parametrů použijte následující příkaz: \n"
+#~ "\n"
+#~ "    virsh # numatune <domena>"
+
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "Získat nebo nastavit stávající události výkonu pro doménu hosta.\n"
+#~ "    Pro získání seznamu událostí výkonu použijte následující příkaz: \n"
+#~ "\n"
+#~ "    virsh # perf <doména>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "Vícero starých USB řadičů není podporováno"
+
+#~ msgid ""
+#~ "NUMA mode, one of strict, preferred and interleave \n"
+#~ "or a number from the virDomainNumatuneMemMode enum"
+#~ msgstr ""
+#~ "NUMA režim – jedno z strict (striktní), preferred (upřednostňované) nebo "
+#~ "interleave (prokládané) \n"
+#~ "nebo číslo z virDomainNumatuneMemMode vyčíslení"
+
+#~ msgid "Retrieve server's client-related configuration limits "
+#~ msgstr "Získat limity nastavení serveru související s klienty "
+
+#~ msgid "Retrieve threadpool attributes from a server. "
+#~ msgstr "Získat atributy threadpool ze serveru. "
+
+#~ msgid "Serial can only be enabled for a PTY"
+#~ msgstr "Sériovou konzoli je možné zapnout pouze pro pseudoterminál (PTY)"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <číslo>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <řetězec>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]…"
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <řetězec>]…"
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+#~ msgstr ""
+#~ "alternativní název '%1$s' příkazu'%2$s' má neshodu v typu alternativního "
+#~ "názvu"
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
+#~ msgstr ""
+#~ "alternativní názvu '%1$s' příkazu '%2$s' chybí volba alternativní název"
+
+#, c-format
+#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+#~ msgstr "boolean parametr '%1$s' příkazu '%2$s' má úplnější sadu"
+
+#, c-format
+#~ msgid "command '%1$s' has handler set"
+#~ msgstr "příkaz '%1$s' má nastavenou obsluhu"
+
+#, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "příkaz „%1$s“ má nekonzistentní alias"
+
+#, c-format
+#~ msgid "command '%1$s' has info set"
+#~ msgstr "příkaz '%1$s' má nastavenou informaci"
+
+#, c-format
+#~ msgid "command '%1$s' has multiple flags set"
+#~ msgstr "příkaz '%1$s' má nastaveno vícero příznaků"
+
+#, c-format
+#~ msgid "command '%1$s' has options set"
+#~ msgstr "příkaz '%1$s' má nastaveny volby"
+
+#, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "příkaz „%1$s“ má příliš mnoho voleb"
+
+#, c-format
+#~ msgid "command '%1$s' lacks help"
+#~ msgstr "příkaz „%1$s“ postrádá nápovědu"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+#~ msgstr ""
+#~ "alternativní název příkazu '%1$s' odkazuje na neexistující příkaz '%2$s'"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+#~ msgstr ""
+#~ "alternativní název příkazu '%1$s' odkazuje na alternativní název jiného "
+#~ "příkazu '%2$s'"
+
+#~ msgid ""
+#~ "command groups and command are both NULL run vshInit before reloading"
+#~ msgstr ""
+#~ "command groups a command jsou obojí prázdné – před znovunačtením spusťte "
+#~ "vshInit"
+
+#~ msgid "command groups and command set cannot both be NULL"
+#~ msgstr "command groups a command set nemůže být obojí prázdné"
+
+#, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "nepodařilo se získat typy rozhraní z '%1$s'"
+
+#, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "nepodařilo se získat cíle z „%1$s“"
+
+#, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "chybí 'architecture' v '%1$s'"
+
+#, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "chybějící 'executable' v '%1$s'"
+
+#, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "chybějící 'filename' v '%1$s'"
+
+#, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "chybějící 'format' v '%1$s'"
+
+#, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "v '%1$s' chybí 'machines'"
+
+#, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "v '%1$s' chybí 'nvram-template'"
+
+#, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "v '%1$s' chybí typ zařízení"
+
+#, c-format
+#~ msgid "missing mapping in '%1$s'"
+#~ msgstr "chybí mapování v '%1$s'"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+#~ msgstr ""
+#~ "parametr '%1$s' příkazu '%2$s' nemá správnou volbu alternativního názvu"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
+#~ msgstr "parametr '%1$s' příkazu '%2$s' špatně používá VSH_OFLAG_REQ"
+
+#, c-format
+#~ msgid ""
+#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
+#~ "parameters"
+#~ msgstr ""
+#~ "je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden před volitelnými "
+#~ "parametry"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
+#~ msgstr ""
+#~ "je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden až jako poslední"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
+#~ msgstr ""
+#~ "je třeba, aby parametr '%1$s' příkazu '%2$s' byl používal příznak "
+#~ "VSH_OFLAG_REQ"
+
+#, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "neznámá architektura '%1$s'"
+
+#, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "neznámý typ zařízení v „%1$s“"
+
+#, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "neznámý typ rozhraní „%1$s“"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <řetězec>}…"
 
 #~ msgid "<system_field> evaluation has failed"
 #~ msgstr "vyhodnocení <system_field> se nezdařilo"

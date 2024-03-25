@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -364,11 +364,19 @@ msgid " Storage:"
 msgstr " ಶೇಖರಣೆ:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
+msgstr ""
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1558,14 +1566,6 @@ msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
 
 #, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
-
-#, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
 msgstr ""
 
@@ -2746,6 +2746,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "ದಾಖಲೆ ಕೋಶ '%1$s' ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr ""
 
@@ -2869,10 +2873,6 @@ msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "ಒದಗಿಸಲಾದ ದತ್ತಾಂಶಕ್ಕೆ ಸೂಕ್ತವಾದ CPU ಮಾದರಿಯನ್ನು ಪತ್ತೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "%1$s ಗಾಗಿ ಸೂಕ್ತವಾದ ಎಮ್ಯುಲೇಟರ್ ಕಂಡುಬಂದಿಲ್ಲ"
 
 msgid "Cannot get all servers from daemon"
 msgstr ""
@@ -3820,7 +3820,7 @@ msgstr "ಡೊಮೇನ್‌ %s ಗೆ ಸಂಪರ್ಕ ಜೋಡಿಸಲಾ
 msgid "Connections from inside daemon must be direct"
 msgstr ""
 
-msgid "Console can only be enabled for a PTY"
+msgid "Console only works in PTY mode"
 msgstr ""
 
 msgid "Constant pages:"
@@ -5736,6 +5736,12 @@ msgstr ""
 "ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆಯೆ, ಮತ್ತು kvm ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ಲೋಡ್‌ ಮಾಡಲು ಆತಿಥೇಯ ಗಣಕದ "
 "ಸಂರಚನೆಯನ್ನು ಸಿದ್ಧಗೊಳಿಸಲಾಗಿದೆಯೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ."
 
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
+
 msgid "Domain requires at least 1 vCPU"
 msgstr ""
 
@@ -6648,6 +6654,10 @@ msgid "Failed to clean up %1$s"
 msgstr "%1$s ಅನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr ""
 "'%1$s' ಗಾಗಿನ ಮಧ್ಯವರ್ತಿಗಾಗಿ ಸುರಕ್ಷತಾ ಸನ್ನಿವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -6764,6 +6774,10 @@ msgstr "'%1$s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊ
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "SASL ಕ್ಲೈಂಟ್ ಸನ್ನಿವೇಶವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "XML ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -6959,6 +6973,10 @@ msgstr "%1$s ಪರಿಮಾಣವನ್ನು ನಿರ್ಮಿಸುವಲ್
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "%1$s ದಿಂದ ಪರಿಮಾಣವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7731,6 +7749,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "ಡೊಮೇನ್ ಚಿತ್ರಿಕಾ ಕಡತ '%1$s' ಅನ್ನು ತೆರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "'%1$s' ಅನ್ನು ತೆರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -8081,6 +8103,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "ಶೇಖರಣಾ ಪರಿಮಾಣ '%1$s'(%2$s) ಅನ್ನು ತೆಗೆದುಹಾಕಲು ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -8218,6 +8244,9 @@ msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "%1$s ಡೊಮೇನ್‌ ಅನ್ನು %2$s ಗೆ ಉಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "Failed to save VM settings"
+msgstr ""
+
+msgid "Failed to save domain"
 msgstr ""
 
 #, c-format
@@ -8418,6 +8447,9 @@ msgstr "libxenlight ನೊಂದಿಗೆ '%1$d' ಡೊಮೇನ್‌ ಅನ್
 
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
+msgstr ""
+
+msgid "Failed to shutoff after domain save"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8647,6 +8679,9 @@ msgstr ""
 msgid "Failed to write '%1$s'"
 msgstr "'%1$s' ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr ""
 
@@ -8664,6 +8699,9 @@ msgstr "'%1$s' pid ಕಡತಕ್ಕೆ ಬರೆಯುವಲ್ಲಿ ವಿ�
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "'%1$s' vmx ಕಡತಕ್ಕೆ ಬರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "xml ವಿವರಣೆಯನ್ನು ಬರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -8811,13 +8849,6 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
-msgstr ""
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr ""
-
-msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -8984,17 +9015,6 @@ msgstr "ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅ
 msgid "Get or set node memory parameters"
 msgstr "ನೋಡ್ ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"ನೋಡ್ ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು\n"
-"    ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಲು, ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
-"\n"
-"    virsh # node-memory-tune"
-
 msgid "Get or set numa parameters"
 msgstr "ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು"
 
@@ -9002,50 +9022,17 @@ msgstr "ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅ
 msgid "Get or set perf event"
 msgstr "ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಪ್ರಸಕ್ತ blkio ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
-"    blkio ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
-"\n"
-"    virsh # numatune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿ ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
-"    ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
-"\n"
-"    virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಪ್ರಸಕ್ತ ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
-"    ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
-"\n"
-"    virsh # numatune <domain>"
 
-#, fuzzy
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿ ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
-"    ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
-"\n"
-"    virsh # memtune <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "ಪ್ರಸಕ್ತ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು"
@@ -11852,9 +11839,6 @@ msgstr "ಮಲ್ಟಿ-ಹೆಡ್ ವೀಡಿಯೊ ಸಾಧನಗಳಿಗ
 msgid "Multiple interfaces attached to bridge"
 msgstr "ಅನೇಕ ಸಂಪರ್ಕಸಾಧನಗಳನ್ನು ಬ್ರಿಡ್ಜಿಗೆ ಲಗತ್ತಿಸಲಾಗಿದೆ"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "ಅನೇಕ ಸಾಂಪ್ರದಾಯಿಕ USB ನಿಯಂತ್ರಕಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr ""
@@ -11947,8 +11931,8 @@ msgstr ""
 "'preferred' ಕ್ರಮದಲ್ಲಿ NUMA ಮೆಮೊರಿ ಟ್ಯೂನಿಂಗ್ ಕೇವಲ ಒಂದು ನೋಡ್ ಅನ್ನು ಮಾತ್ರ ಬೆಂಬಲಿಸುತ್ತದೆ"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13862,6 +13846,9 @@ msgstr ""
 msgid "Relative backing during copy not supported yet"
 msgstr "ಅಸ್ಥಿರ ಡಿಸ್ಕುಗಳಿಗಾಗಿ ಇನ್ನೂ ಸಹ ಬೆಂಬಲವಿಲ್ಲ"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "ದೂರಸ್ಥ ಆದೇಶವು ಒಂದು ಸೊನ್ನೆವಲ್ಲದ ಸಂಕೇತದಿಂದ ಕೊನೆಗೊಂಡಿದೆ: %1$d"
@@ -14039,10 +14026,10 @@ msgstr "$uri URI ನಲ್ಲಿನ ಅತಿಥಿಗಳನ್ನು ಮರಳ�
 msgid "Retrieve identity details about <client> from <server>"
 msgstr ""
 
-msgid "Retrieve server's client-related configuration limits "
+msgid "Retrieve server's client-related configuration limits"
 msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
+msgid "Retrieve threadpool attributes from a server."
 msgstr ""
 
 msgid "Return pool info in bytes"
@@ -14511,13 +14498,13 @@ msgid "Sending file descriptors is not supported on this socket"
 msgstr ""
 "ಕಡತದ ವಿವರಣೆಗಾರಗಳನ್ನು (ಡಿಸ್ಕ್ರಿಪ್ಟರ್) ಕಳುಹಿಸುವುದನ್ನು ಈ ಸಾಕೆಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr ""
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
+msgstr ""
+
+msgid "Serial only works in UNIX/PTY modes"
 msgstr ""
 
 #, c-format
@@ -19243,6 +19230,9 @@ msgstr ""
 msgid "Unexpectedly got a network port without a plug"
 msgstr ""
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
@@ -20434,28 +20424,12 @@ msgid "You must map the root user of container"
 msgstr "ನೀವು ಕಂಟೇನರಿನ ಮೂಲ ಬಳಕೆದಾರರನ್ನು ಮ್ಯಾಪ್ ಮಾಡಬೇಕು"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -20656,14 +20630,6 @@ msgstr "ಮರಳಿಸಿದ ನಂತರ, ಸ್ಥಿತಿಯನ್ನು �
 #, fuzzy, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "%1$d ಅಲ್ಗಾರಿತಮ್‌ ಅನ್ನು ಅಳಿಸುವುದಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr ""
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr ""
 
 #, fuzzy
 msgid "all CPU models are accepted"
@@ -21316,10 +21282,6 @@ msgstr "ಬಾಂಡ್‌ ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ ಬಾ�
 
 msgid "bool"
 msgstr "bool"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22785,6 +22747,12 @@ msgstr "ಒಂದು ನಿಷ್ಕ್ರಿಯ ಡೊಮೇನ್‌ ಮೇಲ
 msgid "cannot revert snapshot of running domain"
 msgstr "ಚಾಲನೆಯಲ್ಲಿರುವ ಡೊಮೇನ್‌ನ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಹಿಮ್ಮರಳಿಸಲಾಗಿಲ್ಲ"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "'%1$s' ಕಡತವನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -23347,34 +23315,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "ಆದೇಶ '%1$s' ಆಯ್ಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ --%2$s"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "'%1$s' ಡೊಮೈನ್ ಪ್ರಸಕ್ತ ಯಾವುದೆ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಹೊಂದಿಲ್ಲ"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr ""
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%1$s' has too many options"
-msgstr "ಆದೇಶ '%s' ಗೆ --%s ಆಯ್ಕೆಯ ಅಗತ್ಯವಿದೆ"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr ""
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "ಆದೇಶ '%1$s' ಗೆ --%2$s ಆಯ್ಕೆಯ ಅಗತ್ಯವಿದೆ"
 
@@ -23382,18 +23322,10 @@ msgstr "ಆದೇಶ '%1$s' ಗೆ --%2$s ಆಯ್ಕೆಯ ಅಗತ್ಯವ�
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "ಆದೇಶ '%1$s' ಗೆ <%2$s> ಆಯ್ಕೆಯ ಅಗತ್ಯವಿದೆ"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
 
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr ""
-
-msgid "command groups and command are both NULL run vshInit before reloading"
-msgstr ""
-
-msgid "command groups and command set cannot both be NULL"
+msgid "command groups must be non-NULL"
 msgstr ""
 
 #, c-format
@@ -26520,10 +26452,6 @@ msgstr "ಹೈಪರ್ವೈಸರಿನ ಬಗೆಯನ್ನು ಪಡೆದ�
 msgid "failed to get interface '%1$s'"
 msgstr "ಸಂಪರ್ಕ ಸಾಧನ '%1$s' ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, fuzzy, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "ಸಂಪರ್ಕ ಸಾಧನ '%1$s' ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
 #, fuzzy
 msgid "failed to get launch security policy"
 msgstr "ಮೂಲ ಪೂಲ್ ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -26604,10 +26532,6 @@ msgstr "RBD ಚಿತ್ರ '%1$s' ಅನ್ನು ಮರುಗಾತ್ರಿ�
 
 msgid "failed to get sysinfo"
 msgstr "sysinfo ಅನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
-#, fuzzy, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "'%1$s' ಸೀಕ್ರೆಟ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "failed to get the daemon version"
 msgstr "ಡೀಮನ್ ಆವೃತ್ತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -26951,6 +26875,9 @@ msgstr "'%1$s' ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡ
 msgid "failed to read AppArmor template"
 msgstr "AppArmor ಸಿದ್ಧವಿನ್ಯಾಸವನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "XML ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -27075,8 +27002,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "ಸಿಮ್‌ಲಿಂಕ್‌ '%1$s' ಅನ್ನು '%2$s' ಗಾಗಿ ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "ಡೊಮೇನ್‌ ಅನ್ನು ಪುನರಾರಂಭಗೊಳಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 #, fuzzy
 msgid "failed to retrieve XML"
@@ -27192,6 +27131,9 @@ msgid "failed to store %1$lld to %2$s"
 msgstr "%1$lld ಅನ್ನು %2$s ಎಂಬಲ್ಲಿ ಶೇಖರಿಸಿ ಇಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "failed to suspend domain"
+msgstr ""
+
+msgid "failed to suspend domain before saving"
 msgstr ""
 
 msgid "failed to take screenshot"
@@ -27892,6 +27834,9 @@ msgstr "ತೊಡಕಿಲ್ಲದ ಗ್ರಾಫಿಕ್ಸ್ ವರ್ಗ�
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -28245,6 +28190,12 @@ msgid "hypervisor connection not open"
 msgstr "URI ಗೆ ಹೈಪರ್ವೈಸರ್ ಸಂಪರ್ಕ"
 
 msgid "hypervisor feature autodetection override"
+msgstr ""
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
 msgstr ""
 
 #, fuzzy
@@ -30315,6 +30266,9 @@ msgstr ""
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "ನಿರ್ವಹಿಸಲಾದ ಉಳಿಸುವ ಸ್ಥಿತಿಯೊಂದಿಗಿನ ಡೊಮೇನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯ ಎಂದು ಗುರುತುಹಾಕು"
 
@@ -30354,11 +30308,17 @@ msgstr ""
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerror ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "ಗರಿಷ್ಟ"
@@ -30400,6 +30360,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
@@ -30427,8 +30390,14 @@ msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr ""
@@ -30776,10 +30745,6 @@ msgstr "ಮೂಲ ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "CPU ಆರ್ಕಿಟೆಕ್ಚರ್ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
 
@@ -30795,10 +30760,6 @@ msgstr ""
 "%1$s ಜಾಲಬಂಧದಲ್ಲಿನ <forward> ನ <nat> ನಲ್ಲಿ <address> ಘಟಕದಲ್ಲಿ 'end' ಗುಣವಿಶೇಷವು "
 "ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "ಆವಶ್ಯಕ ಸಂರಚನಾ ನಮೂದು '%1$s' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 #, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr ""
@@ -30811,14 +30772,6 @@ msgstr "SELinux ಸನ್ನಿವೇಶ ಪಾತ್ರ '%1$s' ಅನ್ನು 
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "JSON ಸ್ಥಿತಿ ದಸ್ತಾವೇಜಿನಲ್ಲಿ auth ಸ್ಥಳವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "%1$s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-#, fuzzy, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "%1$s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 #, fuzzy
 msgid "missing 'guid' attribute"
 msgstr "ಬೂಟ್ ಆರ್ಡರ್ ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -30827,10 +30780,6 @@ msgstr "ಬೂಟ್ ಆರ್ಡರ್ ವೈಶಿಷ್ಟ್ಯವು ಕಾ
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "ಸಂಪರ್ಕಸಾಧನದ <actual> ಘಟಕದಲ್ಲಿ ಬಗೆಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನಲ್ಲಿ ಡೊಮೇನ್‌ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
@@ -30838,10 +30787,6 @@ msgstr ""
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "%1$s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr ""
@@ -31096,10 +31041,6 @@ msgstr "<interface> ನಲ್ಲಿ dev ಗುಣವೈಶಿಷ್ಟ್ಯವ�
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "%1$s ಗಾಗಿ ಸಾಧನದ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "missing device type in '%1$s'"
-msgstr "ಹಬ್ ಸಾಧನದ ಬಗೆಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 msgid "missing devices information"
 msgstr "ಸಾಧನದ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -31283,10 +31224,6 @@ msgstr "ಲೀಸ್‌ಗಾಗಿ 'key' ಘಟಕವು ಕಾಣುತ್ತ�
 #, fuzzy
 msgid "missing listen element for spice graphics"
 msgstr "ಲೀಸ್‌ಗಾಗಿ 'key' ಘಟಕವು ಕಾಣುತ್ತಿಲ್ಲ"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr ""
 
 #, fuzzy
 msgid "missing microcode version in QEMU capabilities cache"
@@ -31821,6 +31758,12 @@ msgstr ""
 msgid "msi option is only supported with a server"
 msgstr "sgio ಅನ್ನು ಕೇವಲ scsi ಆತಿಥೇಯ ಸಾಧನಕ್ಕಾಗಿ ಮಾತ್ರ ಬೆಂಬಲಿಸಲಾಗುತ್ತದೆ"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31953,6 +31896,9 @@ msgstr ""
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32977,6 +32923,9 @@ msgstr "%1$s ನಲ್ಲಿನ nparams %2$d ಆಗಿರಬೇಕು"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s ನಲ್ಲಿನ nparams %2$d ಗೆ ಸಮನಾಗಿರಬೇಕು"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
 
@@ -33203,6 +33152,9 @@ msgid "only can reboot running/paused domain"
 msgstr ""
 
 msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can save running/paused domain"
 msgstr ""
 
 msgid "only can shutdown running/paused domain"
@@ -33459,6 +33411,9 @@ msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ vhost-net ಗೆ ಬೆಂ
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "ಲಭ್ಯವಿದ್ದಲ್ಲಿ, ಒಂದು XML ವಾಕ್ಯಾಂಶವನ್ನು ಹೈಪರ್ವೈಸರ್ sysinfo ಗಾಗಿ ಔಟ್‌ಪುಟ್ ಮಾಡು"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr ""
 
@@ -33559,27 +33514,6 @@ msgstr "'%1$s' ನಿಯತಾಂಕಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "'%1$s' ನಿಯತಾಂಕವು ಹಲವಾರು ಬಾರಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr ""
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr ""
 
 msgid "parameter=value"
 msgstr "parameter=value"
@@ -35061,6 +34995,9 @@ msgstr "ಉಳಿಸುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳ�
 
 msgid "save image is incomplete"
 msgstr "ಉಳಿಸು ಚಿತ್ರಿಕೆಯು ಅಪೂರ್ಣವಾಗಿದೆ"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "ಉಳಿಸಲಾಗಿದೆ"
@@ -36975,6 +36912,10 @@ msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr ""
 "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %1$x, ಆದರೆ %2$x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr ""
 
@@ -38021,10 +37962,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "ಗೊತ್ತಿರದ ಆರ್ಕಿಟೆಕ್ಚರ್ %1$s"
-
-#, fuzzy, c-format
 msgid "unknown architecture: %1$s"
 msgstr "ಗೊತ್ತಿರದ ಆರ್ಕಿಟೆಕ್ಚರ್ %1$s"
 
@@ -38109,10 +38046,6 @@ msgstr "ಅಜ್ಞಾತವಾದ ಸಂಪರ್ಕಿತ ಮೌಲ್ಯ %1$
 
 #, c-format
 msgid "unknown device type '%1$s'"
-msgstr "ಗೊತ್ತಿರದ ಸಾಧನದ ಬಗೆ '%1$s'"
-
-#, fuzzy, c-format
-msgid "unknown device type in '%1$s'"
 msgstr "ಗೊತ್ತಿರದ ಸಾಧನದ ಬಗೆ '%1$s'"
 
 #, c-format
@@ -38200,10 +38133,6 @@ msgstr "ಅಜ್ಞಾತ ಸಂಪರ್ಕಸಾಧನದ ಕೊಂಡಿಯ 
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "ಅಜ್ಞಾತ ಸಂಪರ್ಕಸಾಧನದ ಆರಂಭದಕ್ರಮ %1$s"
-
-#, fuzzy, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "ಅಜ್ಞಾತ ಸಂಪರ್ಕಸಾಧನದ ಬಗೆ '%1$s'"
 
 #, fuzzy, c-format
 msgid "unknown ip address type '%1$s'"
@@ -39371,6 +39300,10 @@ msgstr "virVMXContext ಯಾವುದೆ formatFileName ಕ್ರಿಯೆಯ �
 msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext ಯಾವುದೆ parseFileName ಕ್ರಿಯೆಯ ಸೆಟ್ ಅನ್ನು ಹೊಂದಿಲ್ಲ"
 
+#, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
@@ -39886,8 +39819,151 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "%1$s ಗಾಗಿ ಸೂಕ್ತವಾದ ಎಮ್ಯುಲೇಟರ್ ಕಂಡುಬಂದಿಲ್ಲ"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "ನೋಡ್ ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆ ಅಥವ ಹೊಂದಿಸು\n"
+#~ "    ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಲು, ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಪ್ರಸಕ್ತ blkio ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
+#~ "    blkio ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿ ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
+#~ "    ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಪ್ರಸಕ್ತ ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
+#~ "    ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "ಒಂದು ಅತಿಥಿ ಡೊಮೇನ್‌ಗಾಗಿ ಮೆಮೊರಿ ನ್ಯುಮಾ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆಯಿರಿ ಅಥವ ಹೊಂದಿಸಿ.\n"
+#~ "    ಮೆಮೊರಿ ನಿಯತಾಂಕಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಈ ಕೆಳಗಿನ ಆದೇಶವನ್ನು ಬಳಸಿ: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "ಅನೇಕ ಸಾಂಪ್ರದಾಯಿಕ USB ನಿಯಂತ್ರಕಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "'%1$s' ಡೊಮೈನ್ ಪ್ರಸಕ್ತ ಯಾವುದೆ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಹೊಂದಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "ಆದೇಶ '%s' ಗೆ --%s ಆಯ್ಕೆಯ ಅಗತ್ಯವಿದೆ"
+
+#, fuzzy, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "ಸಂಪರ್ಕ ಸಾಧನ '%1$s' ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, fuzzy, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "'%1$s' ಸೀಕ್ರೆಟ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "CPU ಆರ್ಕಿಟೆಕ್ಚರ್ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "ಆವಶ್ಯಕ ಸಂರಚನಾ ನಮೂದು '%1$s' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "%1$s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "%1$s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನಲ್ಲಿ ಡೊಮೇನ್‌ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "%1$s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "ಹಬ್ ಸಾಧನದ ಬಗೆಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "ಗೊತ್ತಿರದ ಆರ್ಕಿಟೆಕ್ಚರ್ %1$s"
+
+#, fuzzy, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "ಗೊತ್ತಿರದ ಸಾಧನದ ಬಗೆ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "ಅಜ್ಞಾತ ಸಂಪರ್ಕಸಾಧನದ ಬಗೆ '%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #, fuzzy
 #~ msgid "Cannot extract cache nodes under cachetune"

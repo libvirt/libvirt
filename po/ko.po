@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-02-26 13:37+0000\n"
+"POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2024-02-29 14:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -481,6 +481,10 @@ msgid " Storage:"
 msgstr " 저장소:"
 
 #, c-format
+msgid " [[--%1$s] <string>]..."
+msgstr ""
+
+#, c-format
 msgid ""
 " type=%1$s\n"
 " bandwidth=%2$lu\n"
@@ -491,6 +495,10 @@ msgstr ""
 " 대역폭=%2$lu\n"
 " 현재=%3$llu\n"
 " 끝=%4$llu\n"
+
+#, c-format
+msgid " {[--%1$s] <string>}..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1659,14 +1667,6 @@ msgstr "3d 가속은 'virtio' 비디오 장치에서만 지원됩니다"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-비트 PCI 슬롯 환경설정은 오직 root PCI 조종장비에서만 가능합니다"
-
-#, c-format
-msgid "<%1$s>"
-msgstr "<%1$s>"
-
-#, c-format
-msgid "<%1$s>..."
-msgstr "<%1$s>..."
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
@@ -2849,6 +2849,10 @@ msgid "Cannot create resctrl directory '%1$s'"
 msgstr "resctrl 디렉토리 '%1$s'를 생성 할 수 없음"
 
 #, c-format
+msgid "Cannot create save directory '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot create socket '%1$s'"
 msgstr "소켓 '%1$s'를 생성할 수 없습니다"
 
@@ -2972,10 +2976,6 @@ msgstr "pid %1$d를 위한 시작 시간을 찾을 수 없습니다"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "주어진 데이터에 들어맞는 CPU 모델을 찾을 수 없음"
-
-#, c-format
-msgid "Cannot find suitable emulator for %1$s"
-msgstr "%1$s에 적합한 모의장치를 찾을 수 없음"
 
 msgid "Cannot get all servers from daemon"
 msgstr "데몬에서 모든 서버를 가져올 수 없습니다"
@@ -3429,17 +3429,20 @@ msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
-msgstr "장치 '%1$s'를 최신화 할 수 없으며, 상위 주소가 일치하지 않습니다 (현재 상위 "
+msgstr ""
+"장치 '%1$s'를 최신화 할 수 없으며, 상위 주소가 일치하지 않습니다 (현재 상위 "
 "주소 '%2$s')"
 
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
-msgstr "장치 '%1$s'를 최신화 할 수 없으며, 유형이 일치하지 않습니다 (현재 유형 "
+msgstr ""
+"장치 '%1$s'를 최신화 할 수 없으며, 유형이 일치하지 않습니다 (현재 유형 "
 "'%2$s')"
 
 #, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
-msgstr "장치 '%1$s를 최신화 할 수 없으며, uuid가 일치하지 않습니다 (현재 uuid '%2$s')"
+msgstr ""
+"장치 '%1$s를 최신화 할 수 없으며, uuid가 일치하지 않습니다 (현재 uuid '%2$s')"
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -3884,8 +3887,8 @@ msgstr "관리용 서버로 연결되었습니다"
 msgid "Connections from inside daemon must be direct"
 msgstr "내부 데몬에서 직접 연결해야 합니다"
 
-msgid "Console can only be enabled for a PTY"
-msgstr "콘솔은 PTY에서만 활성화됩니다"
+msgid "Console only works in PTY mode"
+msgstr ""
 
 msgid "Constant pages:"
 msgstr "고정 페이지:"
@@ -5155,7 +5158,8 @@ msgstr "정의된"
 msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
-msgstr "도메인에 할당 될 수 있는 노드에서 영구 장치를 정의하거나 수정합니다. 장치는 "
+msgstr ""
+"도메인에 할당 될 수 있는 노드에서 영구 장치를 정의하거나 수정합니다. 장치는 "
 "도메인에 할당 되기전에 시작되어 있어야만 합니다."
 
 msgid "Delete a domain checkpoint"
@@ -5748,6 +5752,12 @@ msgstr ""
 "도메인에는 KVM이 필요하지만 사용할 수 없습니다. 호스트 BIOS에서 가상화가 활성"
 "화되어 있고 호스트 구성이 kvm 모듈을 로드하도록 설정되어 있는지 확인해보십시"
 "오."
+
+msgid ""
+"Domain requires MSHV device, but it is not available. Check that "
+"virtualization is enabled in the host BIOS, and host configuration is setup "
+"to load the mshv modules."
+msgstr ""
 
 msgid "Domain requires at least 1 vCPU"
 msgstr "도메인에는 최소 1개의 vCPU가 필요합니다"
@@ -6627,6 +6637,10 @@ msgid "Failed to clean up %1$s"
 msgstr "%1$s 삭제 실패"
 
 #, c-format
+msgid "Failed to cleanup stale managed save dir '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to clear security context for agent for %1$s"
 msgstr "%1$s를 위한 에이젠트의 보안 문맥을 삭제하는데 실패하였습니다"
 
@@ -6738,6 +6752,10 @@ msgstr "'%1$s' 생성 실패: %2$s"
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "SASL 클라이언트 문맥을 생성하는 데 실패: %1$d (%2$s)"
+
+#, c-format
+msgid "Failed to create SAVE dir %1$s"
+msgstr ""
 
 msgid "Failed to create XML"
 msgstr "XML 생성하기 실패"
@@ -6927,6 +6945,10 @@ msgstr "%1$s 볼륨을 얻는 데 실패"
 #, c-format
 msgid "Failed to create vol from %1$s"
 msgstr "%1$s에서 볼륨 생성하기 실패"
+
+#, c-format
+msgid "Failed to create/open domain save xml file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7680,6 +7702,10 @@ msgid "Failed to open domain image file '%1$s'"
 msgstr "도메인 이미지 파일 '%1$s'을(를) 열지 못했습니다"
 
 #, c-format
+msgid "Failed to open domain save file '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to open file '%1$s'"
 msgstr "'%1$s' 파일 열기 실패"
 
@@ -8024,6 +8050,10 @@ msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr "도메인 '%1$s'에 대한 관리되는 저장 이미지를 제거하지 못했습니다"
 
 #, c-format
+msgid "Failed to remove managed save path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "저장소 볼륨 '%1$s'(%2$s)을 제거하지 못했습니다"
 
@@ -8163,6 +8193,9 @@ msgstr "'%1$s'에 대한 '%2$s'을(를) 저장하지 못했습니다"
 
 msgid "Failed to save VM settings"
 msgstr "VM 설정을 저장하는데 실패함"
+
+msgid "Failed to save domain"
+msgstr ""
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8354,6 +8387,9 @@ msgstr "libxenlight와 함께 도메인 '%1$d'를 종료하기 실패"
 #, c-format
 msgid "Failed to shutdown domain '%1$s'"
 msgstr "도메인 '%1$s'를 종료하지 못했습니다"
+
+msgid "Failed to shutoff after domain save"
+msgstr ""
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8576,6 +8612,9 @@ msgstr "%1$zu 바이트를 저장소 볼륨(경로 '%2$s')에 쓰는 데 실패�
 msgid "Failed to write '%1$s'"
 msgstr "'%1$s' 쓰기에 실패"
 
+msgid "Failed to write file header"
+msgstr ""
+
 msgid "Failed to write pixel data"
 msgstr "픽셀 데이터 쓰기 실패했습니다"
 
@@ -8593,6 +8632,9 @@ msgstr "pid 파일 '%1$s'에 쓰기 실패"
 #, c-format
 msgid "Failed to write vmx file '%1$s'"
 msgstr "vmx 파일 '%1$s' 쓰기에 실패"
+
+msgid "Failed to write xml definition"
+msgstr ""
 
 msgid "Failed to write xml description"
 msgstr "xml 설명을 쓰지 못했습니다"
@@ -8738,13 +8780,6 @@ msgstr "펌웨어 항목에 '이름' 속성이 없습니다"
 
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr "펌웨어 항목에는 값 또는 '파일' 속성이 있어야 합니다"
-
-#, c-format
-msgid "Firmware flash mode value '%1$s' unexpected"
-msgstr "펌웨어 플래쉬 방식 값 '%1$s'가 예상되지 않음"
-
-msgid "Firmware flash mode value was malformed"
-msgstr "펌웨어 플래쉬 방식 값이 잘못되었습니다"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -8906,66 +8941,23 @@ msgstr "메모리 매개 변수를 설정할 수 없음"
 msgid "Get or set node memory parameters"
 msgstr "노드 메모리 매개 변수 설정"
 
-msgid ""
-"Get or set node memory parameters\n"
-"    To get the memory parameters, use following command: \n"
-"\n"
-"    virsh # node-memory-tune"
-msgstr ""
-"노드 메모리 매개변수 가져오기 또는 설정\n"
-"    메모리 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
-"\n"
-"    virsh # 노드 메모리 조정"
-
 msgid "Get or set numa parameters"
 msgstr "numa 매개 변수 설정"
 
 msgid "Get or set perf event"
 msgstr "perf 이벤트 가져오기 또는 설정"
 
-msgid ""
-"Get or set the current blkio parameters for a guest domain.\n"
-"    To get the blkio parameters use following command: \n"
-"\n"
-"    virsh # blkiotune <domain>"
+msgid "Get or set the current blkio parameters for a guest domain."
 msgstr ""
-"게스트 도메인에 대한 현재 blkio 매개변수를 가져오거나 설정합니다.\n"
-"    blkio 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
-"\n"
-"    virsh # blkiotune <domain>"
 
-msgid ""
-"Get or set the current memory parameters for a guest domain.\n"
-"    To get the memory parameters use following command: \n"
-"\n"
-"    virsh # memtune <domain>"
+msgid "Get or set the current memory parameters for a guest domain."
 msgstr ""
-"게스트 도메인에 대한 현재 메모리 매개변수를 가져오거나 설정합니다.\n"
-"    메모리 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
-"\n"
-"    virsh # memtune <domain>"
 
-msgid ""
-"Get or set the current numa parameters for a guest domain.\n"
-"    To get the numa parameters use following command: \n"
-"\n"
-"    virsh # numatune <domain>"
+msgid "Get or set the current numa parameters for a guest domain."
 msgstr ""
-"게스트 도메인에 대한 현재 numa 매개변수를 가져오거나 설정합니다.\n"
-"    numa 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
-"\n"
-"    virsh # numatune <domain>"
 
-msgid ""
-"Get or set the current perf events for a guest domain.\n"
-"    To get the perf events list use following command: \n"
-"\n"
-"    virsh # perf <domain>"
+msgid "Get or set the current perf events for a guest domain."
 msgstr ""
-"게스트 도메인에 대한 현재 성능 이벤트를 가져오거나 설정합니다.\n"
-"    성능 이벤트 목록을 얻으려면 다음 명령을 사용하십시오:\n"
-"\n"
-"    virsh # perf <domain>"
 
 msgid "Get or set the current snapshot"
 msgstr "현재 순간찍기를 가져오거나 설정합니다"
@@ -11707,9 +11699,6 @@ msgstr "다중 그래픽 장치는 지원되지 않음"
 msgid "Multiple interfaces attached to bridge"
 msgstr "브릿지에 여러 연결장치가 첨부되어 있습니다"
 
-msgid "Multiple legacy USB controllers are not supported"
-msgstr "여러 레거시 USB 컨트롤러는 지원되지 않습니다"
-
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
 msgstr "셀 ID가 %1$u인 다중 memnode 요소"
@@ -11750,7 +11739,8 @@ msgstr "기록"
 msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
-msgstr "참고: 기본 데몬에 연결 중. '-c'를 사용하여 데몬을 지정합니다 (예: "
+msgstr ""
+"참고: 기본 데몬에 연결 중. '-c'를 사용하여 데몬을 지정합니다 (예: "
 "virtqemud:///system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
@@ -11797,11 +11787,9 @@ msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr "'선호' 모드의 NUMA 메모리 튜닝은 단일 노드만 지원합니다"
 
 msgid ""
-"NUMA mode, one of strict, preferred and interleave \n"
-"or a number from the virDomainNumatuneMemMode enum"
+"NUMA mode, one of strict, preferred and interleave or a number from the "
+"virDomainNumatuneMemMode enum"
 msgstr ""
-"NUMA 모드는 엄격, 선호 및 인터리브 중 하나\n"
-"또는 virDomainNumatuneMemMode 열거형의 숫자로 구성되어 있습니다"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -12854,8 +12842,9 @@ msgstr "옵션 --transient는 --persistent 및 --inactive와 호환되지 않습
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
-msgstr "옵션 --tree는 --cap, --inactive, --persistent 및 --transient와 호환되지 "
-"않습니다"
+msgstr ""
+"옵션 --tree는 --cap, --inactive, --persistent 및 --transient와 호환되지 않습"
+"니다"
 
 msgid "Option argument is empty"
 msgstr "옵션 인수가 비어 있습니다"
@@ -13630,6 +13619,9 @@ msgstr "정규식 '%1$s'에는 %2$d가 아닌 정확히 1개의 일치 그룹이
 msgid "Relative backing during copy not supported yet"
 msgstr "복사 중에 상대적인 백업은 아직 지원하지 않습니다"
 
+msgid "Reload domain's graphics display certificates"
+msgstr ""
+
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
 msgstr "원격 명령이 0이 아닌 코드로 종료됨: %1$d"
@@ -13811,11 +13803,11 @@ msgstr "$uri URI에서 게스트 재개 중..."
 msgid "Retrieve identity details about <client> from <server>"
 msgstr "<server>에서 <client>에 대한 ID 세부 정보 검색"
 
-msgid "Retrieve server's client-related configuration limits "
-msgstr "서버의 클라이언트 관련 구성 제한 검색 "
+msgid "Retrieve server's client-related configuration limits"
+msgstr ""
 
-msgid "Retrieve threadpool attributes from a server. "
-msgstr "서버에서 쓰레드 풀 속성을 검색합니다. "
+msgid "Retrieve threadpool attributes from a server."
+msgstr ""
 
 msgid "Return pool info in bytes"
 msgstr "바이트 단위로 풀 정보 반환"
@@ -14278,9 +14270,6 @@ msgstr "게스트의 프로세스에 신호 보내기"
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "파일 설명자 전송하기는 이 소켓에서 지원되지 않습니다"
 
-msgid "Serial can only be enabled for a PTY"
-msgstr "시리얼은 PTY를 위해서만 활성화 될 수 있습니다"
-
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
@@ -14288,6 +14277,9 @@ msgid ""
 msgstr ""
 "대상 유형이 '%1$s'이고 대상 모델이 '%2$s'인 직렬 장치가 게스트 아키텍처 또는 "
 "머신 유형과 호환되지 않습니다"
+
+msgid "Serial only works in UNIX/PTY modes"
+msgstr ""
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -15619,8 +15611,9 @@ msgstr "대상 최대 메모리 크기 '%1$llu'이(가) 소스 '%2$llu'와 일�
 msgid ""
 "Target memory device 'dynamicMemslots' property doesn't match source memory "
 "device"
-msgstr "대상 메모리 장치 'dynamicMemslots' 자원은 원천 메모리 장치와 일치하지 "
-"않습니다"
+msgstr ""
+"대상 메모리 장치 'dynamicMemslots' 자원은 원천 메모리 장치와 일치하지 않습니"
+"다"
 
 #, c-format
 msgid ""
@@ -18846,6 +18839,9 @@ msgstr "네트워크 브리지 없이 네트워크 포트가 예기치 않게 �
 msgid "Unexpectedly got a network port without a plug"
 msgstr "예기치 않게 플러그가 없는 네트워크 포트가 있음"
 
+msgid "Unix Socket backend is not supported by this version of ch."
+msgstr ""
+
 msgid "Unix file descriptors not supported on this platform"
 msgstr "이 기술환경에서 지원되지 않는 유닉스 파일 설명자"
 
@@ -20044,28 +20040,12 @@ msgid "You must map the root user of container"
 msgstr "컨테이너 root 사용자를 매핑해야 합니다"
 
 #, c-format
-msgid "[--%1$s <number>]"
-msgstr "[--%1$s <number>]"
-
-#, c-format
-msgid "[--%1$s <string>]"
-msgstr "[--%1$s <string>]"
-
-#, c-format
 msgid "[--%1$s] <number>"
 msgstr "[--%1$s] <number>"
 
 #, c-format
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
-
-#, c-format
-msgid "[<%1$s>]..."
-msgstr "[<%1$s>]..."
-
-#, c-format
-msgid "[[--%1$s] <string>]..."
-msgstr "[[--%1$s] <string>]..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -20254,14 +20234,6 @@ msgstr "되돌린 후 상태를 실행 중으로 변경하십시오"
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d는 지원되지 않습니다"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 유형이 일치하지 않습니다"
-
-#, c-format
-msgid "alias '%1$s' of command '%2$s' has missing alias option"
-msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 옵션이 없습니다"
 
 msgid "all CPU models are accepted"
 msgstr "모든 CPU 모델이 허용됩니다"
@@ -20495,7 +20467,8 @@ msgstr "속성 'limit'은 maxphysaddr 방식 'passthrough'용으로만 지원됩
 msgid ""
 "attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
 "network %1$s"
-msgstr "<domain> 요소에서 속성 'register=yes'은 네트워크 %1$s에서 'localOnly=yes'가 "
+msgstr ""
+"<domain> 요소에서 속성 'register=yes'은 네트워크 %1$s에서 'localOnly=yes'가 "
 "필요합니다"
 
 #, c-format
@@ -20887,11 +20860,6 @@ msgstr "본드 인터페이스에 bond 요소가 빠졌습니다"
 
 msgid "bool"
 msgstr "bool"
-
-#, c-format
-msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-msgstr ""
-"명령 '%1$s'의 불(bool) 매개변수 '%2$s'는 완성자 묶음(set)을 가지고 있습니다"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22338,6 +22306,12 @@ msgstr "비활성 도메인에 대한 vcpu 정보를 검색할 수 없습니다"
 msgid "cannot revert snapshot of running domain"
 msgstr "동작 중인 도메인의 순간찍기를 되돌릴 수 없습니다"
 
+msgid "cannot save domain with host devices"
+msgstr ""
+
+msgid "cannot save domain with network interfaces"
+msgstr ""
+
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "파일 '%1$s'을 저장 할 수 없습니다"
@@ -22879,34 +22853,6 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "명령 '%1$s'는 --%2$s 옵션을 지원하지 않음"
 
 #, c-format
-msgid "command '%1$s' has handler set"
-msgstr "명령 '%1$s'는 handler set를 가지고 있습니다"
-
-#, c-format
-msgid "command '%1$s' has inconsistent alias"
-msgstr "명령 '%1$s'에 일치하지 않는 별칭이 있습니다"
-
-#, c-format
-msgid "command '%1$s' has info set"
-msgstr "명령 '%1$s'는 정보 설정(set)을 가지고 있습니다"
-
-#, c-format
-msgid "command '%1$s' has multiple flags set"
-msgstr "명령 '%1$s'는 다중 플래그 구성(set)을 가지고 있습니다"
-
-#, c-format
-msgid "command '%1$s' has options set"
-msgstr "명령 '%1$s'는 선택(옵션) 설정(set)을 가지고 있습니다"
-
-#, c-format
-msgid "command '%1$s' has too many options"
-msgstr "명령 '%1$s'에 옵션이 너무 많습니다"
-
-#, c-format
-msgid "command '%1$s' lacks help"
-msgstr "명령 '%1$s'에 도움이 부족합니다"
-
-#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "'%1$s' 명령은 --%2$s 옵션이 필요함"
 
@@ -22914,20 +22860,11 @@ msgstr "'%1$s' 명령은 --%2$s 옵션이 필요함"
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "'%1$s' 명령은 <%2$s> 옵션이 필요함"
 
-#, c-format
-msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-msgstr "명령 별칭 '%1$s'는 존재하지 않는 명령 '%2$s'로 지시합니다"
-
-#, c-format
-msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-msgstr "명령 별칭 '%1$s'는 다른 명령 별칭 '%2$s'를 지시하고 있습니다"
-
-msgid "command groups and command are both NULL run vshInit before reloading"
+msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
-"명령 그룹과 명령이 모두 NULL입니다. 다시 로드하기 전에 vshInit를 실행합니다"
 
-msgid "command groups and command set cannot both be NULL"
-msgstr "명령 그룹과 명령 집합은 둘 다 NULL일 수 없습니다"
+msgid "command groups must be non-NULL"
+msgstr ""
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -25978,10 +25915,6 @@ msgstr "하이퍼바이저 유형 보기 실패"
 msgid "failed to get interface '%1$s'"
 msgstr "인터페이스 '%1$s'를 가져오는 데 실패"
 
-#, c-format
-msgid "failed to get interface-types from '%1$s'"
-msgstr "'%1$s'에서 인터페이스 유형을 가져오지 못했습니다"
-
 msgid "failed to get launch security policy"
 msgstr "시작 보안 정책을 가져오지 못했습니다"
 
@@ -26059,10 +25992,6 @@ msgstr "RBD 이미지 %1$s의 스트라이프 수를 가져오지 못했습니�
 
 msgid "failed to get sysinfo"
 msgstr "시스템 정보 가져오기 실패"
-
-#, c-format
-msgid "failed to get targets from '%1$s'"
-msgstr "'%1$s'에서 대상을 가져오지 못했습니다"
 
 msgid "failed to get the daemon version"
 msgstr "데몬 버전을 얻는데 실패"
@@ -26388,6 +26317,9 @@ msgstr "'%1$s' 읽기에 실패"
 msgid "failed to read AppArmor template"
 msgstr "AppArmor 템플릿을 읽는데 실패"
 
+msgid "failed to read CHSaveXMLHeader header"
+msgstr ""
+
 msgid "failed to read XML"
 msgstr "XML을 읽는 것을 실패"
 
@@ -26508,8 +26440,20 @@ msgstr ""
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "심볼릭 링크 %1$s을(를) 확인하지 못했습니다: %2$s"
 
+msgid "failed to restore domain"
+msgstr ""
+
+msgid "failed to restore domain from managed save"
+msgstr ""
+
 msgid "failed to resume domain"
 msgstr "도메인을 재개하는 것에 실패"
+
+msgid "failed to resume domain after restore"
+msgstr ""
+
+msgid "failed to resume domain after restore from managed save"
+msgstr ""
 
 msgid "failed to retrieve XML"
 msgstr "XML을 검색하지 못했습니다"
@@ -26626,6 +26570,9 @@ msgstr "%1$lld을(를) %2$s에 저장하지 못했습니다"
 
 msgid "failed to suspend domain"
 msgstr "도메인을 일시 중단하지 못했습니다"
+
+msgid "failed to suspend domain before saving"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "스크린샷을 찍지 못했습니다"
@@ -27311,6 +27258,9 @@ msgstr "원활한 그래픽 이전을 위해 사용 될 그래픽 URI"
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr "<hostdev>의 속성 값 'display=on'에 그래픽 장치가 필요합니다"
 
+msgid "graphics display type"
+msgstr ""
+
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -27650,6 +27600,12 @@ msgstr "하이퍼바이저 연결이 열리지 않았습니다"
 
 msgid "hypervisor feature autodetection override"
 msgstr "하이퍼바이저 기능 자동 감지 재정의"
+
+#, c-format
+msgid ""
+"hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
+"disabled at the same time"
+msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - 유효성 검사를 끄고 다시 재정의하십시오"
@@ -29653,6 +29609,9 @@ msgstr "외부에서 실행된 구성 관리"
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr "지정된 사용자에 대한 승인된 SSH 키 파일 조작(에이전트를 통해)"
 
+msgid "maplen must be non-negative"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "관리되는 저장 상태로 비활성 도메인 표시"
 
@@ -29688,11 +29647,17 @@ msgstr ""
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
+msgid "maxcells must be non-negative"
+msgstr ""
+
 msgid "maxerrors too large"
 msgstr "maxerrors가 너무 큽니다"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "최대 ID > REMOTE_DOMAIN_LIST_MAX"
+
+msgid "maxids must be non-negative"
+msgstr ""
 
 msgid "maximum"
 msgstr "최대"
@@ -29732,6 +29697,9 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
+msgid "maxinfo must be non-negative"
+msgstr ""
+
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "최대 이름 > REMOTE_DOMAIN_LIST_MAX"
 
@@ -29759,8 +29727,14 @@ msgstr "최대 이름 > REMOTE_STORAGE_POOL_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "최대 이름 > REMOTE_STORAGE_VOL_LIST_MAX"
 
+msgid "maxnames must be non-negative"
+msgstr ""
+
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "최대 ID > REMOTE_SECRET_LIST_MAX"
+
+msgid "maxuuids must be non-negative"
+msgstr ""
 
 msgid "mdev attribute missing name or value"
 msgstr "mdev 속성에 이름 또는 값이 없습니다"
@@ -30101,10 +30075,6 @@ msgstr "누락된 'DateTime' 요소"
 msgid "missing 'alias' attribute for qemu:device"
 msgstr "qemu를 위해 누락된 'alias' 속성:device"
 
-#, c-format
-msgid "missing 'architecture' in '%1$s'"
-msgstr "'%1$s'에서 '구조'가 누락되었습니다"
-
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr "클라우드-하이퍼바이저에서 정보 쿼리 결과에 있는 'config'가 누락됨"
 
@@ -30121,10 +30091,6 @@ msgstr ""
 "락됨"
 
 #, c-format
-msgid "missing 'executable' in '%1$s'"
-msgstr "'%1$s'에 '실행 파일'이 없습니다"
-
-#, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
 msgstr "클라우드-하이퍼바이저에서 '%1$s'에 있는 'file'이 누락됨"
 
@@ -30135,23 +30101,11 @@ msgstr "selinux lxc 컨텍스트 파일 '%1$s'에 '파일' 값이 없습니다"
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "JSON 백업 볼륨 정의에서 누락된 '파일 이름' 필드"
 
-#, c-format
-msgid "missing 'filename' in '%1$s'"
-msgstr "'%1$s'에 '파일 이름'이 없습니다"
-
-#, c-format
-msgid "missing 'format' in '%1$s'"
-msgstr "'%1$s'에 '형식'이 없습니다"
-
 msgid "missing 'guid' attribute"
 msgstr "누락된 'guid' 속성"
 
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "미디에이션된 기기의 <type> 요소에 대한 'id' 속성이 없습니다"
-
-#, c-format
-msgid "missing 'machines' in '%1$s'"
-msgstr "'%1$s'에 '머신'이 없습니다"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -30160,10 +30114,6 @@ msgstr "QEMU 기능 캐시에서 호스트 CPU 모델 속성에 대한 '이름' 
 
 msgid "missing 'name' attribute for qemu:property"
 msgstr "qemu를 위해 누락된 'name' 속성:property"
-
-#, c-format
-msgid "missing 'nvram-template' in '%1$s'"
-msgstr "'%1$s'에 'nvram-template'이 없습니다"
 
 msgid "missing 'path' attribute for vhostuser disk source"
 msgstr "vhostuser 디스크 원천에 대한 '경로' 속성 누락"
@@ -30394,10 +30344,6 @@ msgstr "<interface> 요소에 dev 속성이 누락됨"
 msgid "missing device API for mediated device type '%1$s'"
 msgstr "미디에이션된 장치 유형 '%1$s'에 대한 장치 API가 없습니다"
 
-#, c-format
-msgid "missing device type in '%1$s'"
-msgstr "'%1$s'에 누락된 장치 유형"
-
 msgid "missing devices information"
 msgstr "장치 정보 부재"
 
@@ -30562,10 +30508,6 @@ msgstr "그래픽에 대한 청취 요소 누락"
 
 msgid "missing listen element for spice graphics"
 msgstr "향신료 그래픽에 대한 청취 요소 누락"
-
-#, c-format
-msgid "missing mapping in '%1$s'"
-msgstr "'%1$s'에 누락된 매핑"
 
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에 누락된 마이크로코드 버전"
@@ -31070,6 +31012,12 @@ msgstr "해동할 마운트 지점 경로"
 msgid "msi option is only supported with a server"
 msgstr "msi 옵션은 서버에서만 지원됩니다"
 
+msgid "mtp is not supported with this QEMU binary"
+msgstr ""
+
+msgid "mtp only supports passthrough accessmode"
+msgstr ""
+
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
@@ -31200,6 +31148,9 @@ msgstr "nbdkit 지원이 비활성화 되었습니다"
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
+
+msgid "ncpumaps must be non-negative"
+msgstr ""
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32191,6 +32142,9 @@ msgstr "%1$s의 nparams는 %2$d여야 합니다"
 msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s의 nparams는 %2$d와 같아야 합니다"
 
+msgid "nparams must be non-negative"
+msgstr ""
+
 msgid "nparams too large"
 msgstr "nparams가 너무 큽니다"
 
@@ -32408,6 +32362,9 @@ msgstr "실행/일시 중지된 도메인만 재부팅할 수 있습니다"
 
 msgid "only can resume paused domain"
 msgstr "일시중지된 도메인만 재개할 수 있습니다"
+
+msgid "only can save running/paused domain"
+msgstr ""
 
 msgid "only can shutdown running/paused domain"
 msgstr "실행/일시 중지된 도메인만 종료할 수 있습니다"
@@ -32644,6 +32601,9 @@ msgstr "나가는 RDMA 이전은 이 QEMU 바이너리에서는 지원되지 않
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "사용 가능한 경우 하이퍼바이저 sysinfo에 대한 XML 문자열을 출력합니다"
 
+msgid "output help for each command"
+msgstr ""
+
 msgid "output the list of options which are missing completers"
 msgstr "완성자가 누락된 옵션(선택)의 목록을 출력합니다"
 
@@ -32736,27 +32696,6 @@ msgstr "매개변수 '%1$s'가 지원되지 않습니다"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "매개변수 '%1$s'가 여러 번 발생합니다"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr "명령 '%1$s'의 매개변수 '%2$s'에 잘못된 별칭 옵션이 있습니다"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
-msgstr "명령 '%1$s'의 매개변수 '%2$s'가 VSH_OFLAG_REQ를 잘못 사용했습니다"
-
-#, c-format
-msgid ""
-"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
-msgstr "명령 '%1$s'의 매개변수 '%2$s'는 선택적 매개변수 앞에 나열되어야 합니다"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr "명령 '%1$s'의 매개변수 '%2$s'는 마지막에 나열되어야 합니다"
-
-#, c-format
-msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
-msgstr "명령 '%1$s'의 매개변수 '%2$s'는 VSH_OFLAG_REQ 플래그를 사용해야 합니다"
 
 msgid "parameter=value"
 msgstr "매개변수=값"
@@ -33145,8 +33084,9 @@ msgstr "prctl이 KEEPCAPS를 설정하지 못했습니다"
 msgid ""
 "pre-creation of storage target for incremental storage migration of disk "
 "'%1$s' is not supported"
-msgstr "디스크 '%1$s'의 증분 저장소 이동을 위한 저장소 대상의 사전-생성은 지원되지 "
-"않습니다"
+msgstr ""
+"디스크 '%1$s'의 증분 저장소 이동을 위한 저장소 대상의 사전-생성은 지원되지 않"
+"습니다"
 
 msgid "preallocate is not supported on this platform"
 msgstr "이 기술환경에서는 사전 할당이 지원되지 않습니다"
@@ -34180,6 +34120,9 @@ msgstr "저장이 취소됨"
 
 msgid "save image is incomplete"
 msgstr "이미지 저장이 불완전합니다"
+
+msgid "save image magic is incorrect"
+msgstr ""
 
 msgid "saved"
 msgstr "저장됨"
@@ -36082,6 +36025,10 @@ msgstr "유형 %1$s는 지원되지 않습니다"
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "이벤트의 유형 불일치(실제 0x%1$x, 예상 0x%2$x)"
 
+#, c-format
+msgid "type must be less than %1$d"
+msgstr ""
+
 msgid "type of source (block|file|network)"
 msgstr "원천 유형(블록|파일|네트워크)"
 
@@ -37109,10 +37056,6 @@ msgid "unknown arch %1$s in QEMU capabilities cache"
 msgstr "QEMU 기능 캐쉬의 알 수 없는 아치 %1$s"
 
 #, c-format
-msgid "unknown architecture '%1$s'"
-msgstr "알 수 없는 구조 '%1$s'"
-
-#, c-format
 msgid "unknown architecture: %1$s"
 msgstr "알 수 없는 구조: %1$s"
 
@@ -37199,10 +37142,6 @@ msgid "unknown device type '%1$s'"
 msgstr "알 수 없는 장치 유형 '%1$s'"
 
 #, c-format
-msgid "unknown device type in '%1$s'"
-msgstr "'%1$s'에 알 수 없는 장치 유형"
-
-#, c-format
 msgid "unknown disk snapshot driver '%1$s'"
 msgstr "알 수 없는 디스크 순간찍기 드라이버 '%1$s'"
 
@@ -37285,10 +37224,6 @@ msgstr "알 수 없는 인터페이스 링크 상태 '%1$s'"
 #, c-format
 msgid "unknown interface startmode %1$s"
 msgstr "알려지지 않은 인터페이스 startmode %1$s"
-
-#, c-format
-msgid "unknown interface type: '%1$s'"
-msgstr "알려지지 않은 연결장치 유형: '%1$s'"
 
 #, c-format
 msgid "unknown ip address type '%1$s'"
@@ -38451,6 +38386,10 @@ msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext에 parseFileName 함수 세트가 없습니다"
 
 #, c-format
+msgid "virt type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr "virtio(비)전환 모델은 주소 유형=%1$s에 대해 지원되지 않습니다"
@@ -38956,8 +38895,255 @@ msgstr ""
 "다"
 
 #, c-format
-msgid "{[--%1$s] <string>}..."
-msgstr "{[--%1$s] <string>}..."
+#~ msgid "<%1$s>"
+#~ msgstr "<%1$s>"
+
+#, c-format
+#~ msgid "<%1$s>..."
+#~ msgstr "<%1$s>..."
+
+#, c-format
+#~ msgid "Cannot find suitable emulator for %1$s"
+#~ msgstr "%1$s에 적합한 모의장치를 찾을 수 없음"
+
+#~ msgid "Console can only be enabled for a PTY"
+#~ msgstr "콘솔은 PTY에서만 활성화됩니다"
+
+#, c-format
+#~ msgid "Firmware flash mode value '%1$s' unexpected"
+#~ msgstr "펌웨어 플래쉬 방식 값 '%1$s'가 예상되지 않음"
+
+#~ msgid "Firmware flash mode value was malformed"
+#~ msgstr "펌웨어 플래쉬 방식 값이 잘못되었습니다"
+
+#~ msgid ""
+#~ "Get or set node memory parameters\n"
+#~ "    To get the memory parameters, use following command: \n"
+#~ "\n"
+#~ "    virsh # node-memory-tune"
+#~ msgstr ""
+#~ "노드 메모리 매개변수 가져오기 또는 설정\n"
+#~ "    메모리 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
+#~ "\n"
+#~ "    virsh # 노드 메모리 조정"
+
+#~ msgid ""
+#~ "Get or set the current blkio parameters for a guest domain.\n"
+#~ "    To get the blkio parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+#~ msgstr ""
+#~ "게스트 도메인에 대한 현재 blkio 매개변수를 가져오거나 설정합니다.\n"
+#~ "    blkio 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
+#~ "\n"
+#~ "    virsh # blkiotune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current memory parameters for a guest domain.\n"
+#~ "    To get the memory parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+#~ msgstr ""
+#~ "게스트 도메인에 대한 현재 메모리 매개변수를 가져오거나 설정합니다.\n"
+#~ "    메모리 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
+#~ "\n"
+#~ "    virsh # memtune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current numa parameters for a guest domain.\n"
+#~ "    To get the numa parameters use following command: \n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+#~ msgstr ""
+#~ "게스트 도메인에 대한 현재 numa 매개변수를 가져오거나 설정합니다.\n"
+#~ "    numa 매개변수를 가져오려면 다음 명령을 사용하십시오.\n"
+#~ "\n"
+#~ "    virsh # numatune <domain>"
+
+#~ msgid ""
+#~ "Get or set the current perf events for a guest domain.\n"
+#~ "    To get the perf events list use following command: \n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+#~ msgstr ""
+#~ "게스트 도메인에 대한 현재 성능 이벤트를 가져오거나 설정합니다.\n"
+#~ "    성능 이벤트 목록을 얻으려면 다음 명령을 사용하십시오:\n"
+#~ "\n"
+#~ "    virsh # perf <domain>"
+
+#~ msgid "Multiple legacy USB controllers are not supported"
+#~ msgstr "여러 레거시 USB 컨트롤러는 지원되지 않습니다"
+
+#~ msgid ""
+#~ "NUMA mode, one of strict, preferred and interleave \n"
+#~ "or a number from the virDomainNumatuneMemMode enum"
+#~ msgstr ""
+#~ "NUMA 모드는 엄격, 선호 및 인터리브 중 하나\n"
+#~ "또는 virDomainNumatuneMemMode 열거형의 숫자로 구성되어 있습니다"
+
+#~ msgid "Retrieve server's client-related configuration limits "
+#~ msgstr "서버의 클라이언트 관련 구성 제한 검색 "
+
+#~ msgid "Retrieve threadpool attributes from a server. "
+#~ msgstr "서버에서 쓰레드 풀 속성을 검색합니다. "
+
+#~ msgid "Serial can only be enabled for a PTY"
+#~ msgstr "시리얼은 PTY를 위해서만 활성화 될 수 있습니다"
+
+#, c-format
+#~ msgid "[--%1$s <number>]"
+#~ msgstr "[--%1$s <number>]"
+
+#, c-format
+#~ msgid "[--%1$s <string>]"
+#~ msgstr "[--%1$s <string>]"
+
+#, c-format
+#~ msgid "[<%1$s>]..."
+#~ msgstr "[<%1$s>]..."
+
+#, c-format
+#~ msgid "[[--%1$s] <string>]..."
+#~ msgstr "[[--%1$s] <string>]..."
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+#~ msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 유형이 일치하지 않습니다"
+
+#, c-format
+#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
+#~ msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 옵션이 없습니다"
+
+#, c-format
+#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+#~ msgstr ""
+#~ "명령 '%1$s'의 불(bool) 매개변수 '%2$s'는 완성자 묶음(set)을 가지고 있습니"
+#~ "다"
+
+#, c-format
+#~ msgid "command '%1$s' has handler set"
+#~ msgstr "명령 '%1$s'는 handler set를 가지고 있습니다"
+
+#, c-format
+#~ msgid "command '%1$s' has inconsistent alias"
+#~ msgstr "명령 '%1$s'에 일치하지 않는 별칭이 있습니다"
+
+#, c-format
+#~ msgid "command '%1$s' has info set"
+#~ msgstr "명령 '%1$s'는 정보 설정(set)을 가지고 있습니다"
+
+#, c-format
+#~ msgid "command '%1$s' has multiple flags set"
+#~ msgstr "명령 '%1$s'는 다중 플래그 구성(set)을 가지고 있습니다"
+
+#, c-format
+#~ msgid "command '%1$s' has options set"
+#~ msgstr "명령 '%1$s'는 선택(옵션) 설정(set)을 가지고 있습니다"
+
+#, c-format
+#~ msgid "command '%1$s' has too many options"
+#~ msgstr "명령 '%1$s'에 옵션이 너무 많습니다"
+
+#, c-format
+#~ msgid "command '%1$s' lacks help"
+#~ msgstr "명령 '%1$s'에 도움이 부족합니다"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+#~ msgstr "명령 별칭 '%1$s'는 존재하지 않는 명령 '%2$s'로 지시합니다"
+
+#, c-format
+#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+#~ msgstr "명령 별칭 '%1$s'는 다른 명령 별칭 '%2$s'를 지시하고 있습니다"
+
+#~ msgid ""
+#~ "command groups and command are both NULL run vshInit before reloading"
+#~ msgstr ""
+#~ "명령 그룹과 명령이 모두 NULL입니다. 다시 로드하기 전에 vshInit를 실행합니"
+#~ "다"
+
+#~ msgid "command groups and command set cannot both be NULL"
+#~ msgstr "명령 그룹과 명령 집합은 둘 다 NULL일 수 없습니다"
+
+#, c-format
+#~ msgid "failed to get interface-types from '%1$s'"
+#~ msgstr "'%1$s'에서 인터페이스 유형을 가져오지 못했습니다"
+
+#, c-format
+#~ msgid "failed to get targets from '%1$s'"
+#~ msgstr "'%1$s'에서 대상을 가져오지 못했습니다"
+
+#, c-format
+#~ msgid "missing 'architecture' in '%1$s'"
+#~ msgstr "'%1$s'에서 '구조'가 누락되었습니다"
+
+#, c-format
+#~ msgid "missing 'executable' in '%1$s'"
+#~ msgstr "'%1$s'에 '실행 파일'이 없습니다"
+
+#, c-format
+#~ msgid "missing 'filename' in '%1$s'"
+#~ msgstr "'%1$s'에 '파일 이름'이 없습니다"
+
+#, c-format
+#~ msgid "missing 'format' in '%1$s'"
+#~ msgstr "'%1$s'에 '형식'이 없습니다"
+
+#, c-format
+#~ msgid "missing 'machines' in '%1$s'"
+#~ msgstr "'%1$s'에 '머신'이 없습니다"
+
+#, c-format
+#~ msgid "missing 'nvram-template' in '%1$s'"
+#~ msgstr "'%1$s'에 'nvram-template'이 없습니다"
+
+#, c-format
+#~ msgid "missing device type in '%1$s'"
+#~ msgstr "'%1$s'에 누락된 장치 유형"
+
+#, c-format
+#~ msgid "missing mapping in '%1$s'"
+#~ msgstr "'%1$s'에 누락된 매핑"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+#~ msgstr "명령 '%1$s'의 매개변수 '%2$s'에 잘못된 별칭 옵션이 있습니다"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
+#~ msgstr "명령 '%1$s'의 매개변수 '%2$s'가 VSH_OFLAG_REQ를 잘못 사용했습니다"
+
+#, c-format
+#~ msgid ""
+#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
+#~ "parameters"
+#~ msgstr ""
+#~ "명령 '%1$s'의 매개변수 '%2$s'는 선택적 매개변수 앞에 나열되어야 합니다"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
+#~ msgstr "명령 '%1$s'의 매개변수 '%2$s'는 마지막에 나열되어야 합니다"
+
+#, c-format
+#~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"
+#~ msgstr ""
+#~ "명령 '%1$s'의 매개변수 '%2$s'는 VSH_OFLAG_REQ 플래그를 사용해야 합니다"
+
+#, c-format
+#~ msgid "unknown architecture '%1$s'"
+#~ msgstr "알 수 없는 구조 '%1$s'"
+
+#, c-format
+#~ msgid "unknown device type in '%1$s'"
+#~ msgstr "'%1$s'에 알 수 없는 장치 유형"
+
+#, c-format
+#~ msgid "unknown interface type: '%1$s'"
+#~ msgstr "알려지지 않은 연결장치 유형: '%1$s'"
+
+#, c-format
+#~ msgid "{[--%1$s] <string>}..."
+#~ msgstr "{[--%1$s] <string>}..."
 
 #~ msgid "<system_field> evaluation has failed"
 #~ msgstr "<system_field> 평가가 실패했습니다"
