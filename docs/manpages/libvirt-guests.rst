@@ -113,6 +113,28 @@ The following variables are supported:
   this requires guest agent with support for time synchronization
   running in the guest. By default, this functionality is turned off.
 
+- PERSISTENT_ONLY=default
+
+  Defines what type of guest virtual machine ON_SHUTDOWN action is applied to
+
+  * default
+
+    This implements the already existing default behavior.
+    If ON_SHUTDOWN action is shutdown, transient and persistent guest virtual
+    machines are asked to shutdown.
+    If ON_SHUTDOWN action is suspend, only persistent guest virtual machines
+    are asked to suspend.
+
+  * true
+
+    ON_SHUTDOWN action is executed only on persistent guest virtual machines.
+    Transient guest virtual machines are not affected.
+
+  * false
+
+    ON_SHUTDOWN action is executed on persistent and transient guest virtual
+    machines.
+
 
 BUGS
 ====

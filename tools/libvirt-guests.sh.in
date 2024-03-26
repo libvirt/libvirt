@@ -38,6 +38,7 @@ PARALLEL_SHUTDOWN=0
 START_DELAY=0
 BYPASS_CACHE=0
 SYNC_TIME=0
+PERSISTENT_ONLY="default"
 
 test -f "$initconfdir"/libvirt-guests &&
     . "$initconfdir"/libvirt-guests
@@ -438,14 +439,16 @@ shutdown_guests_parallel()
 # stop
 # Shutdown or save guests on the configured uris
 stop() {
-    local suspending="true"
     local uri=
+    local action="suspend"
+    local persistent_only="default"
+
 
     # last stop was not followed by start
     [ -f "$LISTFILE" ] && return 0
 
     if [ "x$ON_SHUTDOWN" = xshutdown ]; then
-        suspending="false"
+        action="shutdown"
         if [ $SHUTDOWN_TIMEOUT -lt 0 ]; then
             gettext "SHUTDOWN_TIMEOUT must be equal or greater than 0"
             echo
@@ -453,6 +456,22 @@ stop() {
             return
         fi
     fi
+
+    case "x$PERSISTENT_ONLY" in
+        xtrue)
+            persistent_only="true"
+            ;;
+        xfalse)
+            persistent_only="false"
+            ;;
+        *)
+            if [ "x$action" = xshutdown ]; then
+                persistent_only="false"
+            elif [ "x$action" = xsuspend ]; then
+                persistent_only="true"
+            fi
+            ;;
+    esac
 
     : >"$LISTFILE"
     set -f
@@ -478,7 +497,7 @@ stop() {
             echo
         fi
 
-        if "$suspending"; then
+        if "$persistent_only"; then
             local transient="$(list_guests "$uri" "--transient")"
             if [ $? -eq 0 ]; then
                 local empty="true"
@@ -486,7 +505,11 @@ stop() {
 
                 for uuid in $transient; do
                     if "$empty"; then
-                        eval_gettext "Not suspending transient guests on URI: \$uri: "
+                        if [ "x$action" = xsuspend ]; then
+                            eval_gettext "Not suspending transient guests on URI: \$uri: "
+                        else
+                            eval_gettext "Not shutting down transient guests on URI: \$uri: "
+                        fi
                         empty="false"
                     else
                         printf ", "
@@ -520,19 +543,19 @@ stop() {
 
     if [ -s "$LISTFILE" ]; then
         while read uri list; do
-            if "$suspending"; then
+            if [ "x$action" = xsuspend ]; then
                 eval_gettext "Suspending guests on \$uri URI..."; echo
             else
                 eval_gettext "Shutting down guests on \$uri URI..."; echo
             fi
 
             if [ "$PARALLEL_SHUTDOWN" -gt 1 ] &&
-               ! "$suspending"; then
+                [ "x$action" = xshutdown ]; then
                 shutdown_guests_parallel "$uri" "$list"
             else
                 local guest=
                 for guest in $list; do
-                    if "$suspending"; then
+                    if [ "x$action" = xsuspend ]; then
                         suspend_guest "$uri" "$guest"
                     else
                         shutdown_guest "$uri" "$guest"
