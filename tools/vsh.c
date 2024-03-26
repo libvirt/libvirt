@@ -3405,11 +3405,25 @@ const vshCmdInfo info_complete = {
 
 
 #ifdef WITH_READLINE
+
+static virOnceControl vshCmdCompleteCloseStdinOnce = VIR_ONCE_CONTROL_INITIALIZER;
+
+static void
+vshCmdCompleteCloseStdin(void)
+{
+    /* In non-interactive mode which is how the 'complete' command is intended
+     * to be used we need to ensure that any authentication callback will not
+     * attempt to read any input which would break the completion */
+    int stdin_fileno = STDIN_FILENO;
+
+    VIR_FORCE_CLOSE(stdin_fileno);
+}
+
+
 bool
 cmdComplete(vshControl *ctl, const vshCmd *cmd)
 {
     const vshClientHooks *hooks = ctl->hooks;
-    int stdin_fileno = STDIN_FILENO;
     const char *arg = "";
     const vshCmdOpt *opt = NULL;
     g_auto(GStrv) matches = NULL;
@@ -3422,7 +3436,10 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     /* This command is flagged VSH_CMD_FLAG_NOCONNECT because we
      * need to prevent auth hooks reading any input. Therefore, we
      * have to close stdin and then connect ourselves. */
-    VIR_FORCE_CLOSE(stdin_fileno);
+    if (!ctl->imode) {
+        if (virOnce(&vshCmdCompleteCloseStdinOnce, vshCmdCompleteCloseStdin) < 0)
+            return false;
+    }
 
     if (!(hooks && hooks->connHandler && hooks->connHandler(ctl)))
         return false;
