@@ -270,7 +270,6 @@ int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                                  char **pfname,
                                  int *vf_index);
 
-bool virPCIDeviceHasVPD(virPCIDevice *dev);
 virPCIVPDResource * virPCIDeviceGetVPD(virPCIDevice *dev);
 
 int virPCIDeviceUnbind(virPCIDevice *dev);

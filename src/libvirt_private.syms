@@ -3107,7 +3107,6 @@ virPCIDeviceGetUnbindFromStub;
 virPCIDeviceGetUsedBy;
 virPCIDeviceGetVPD;
 virPCIDeviceHasPCIExpressLink;
-virPCIDeviceHasVPD;
 virPCIDeviceIsAssignable;
 virPCIDeviceIsPCIExpress;
 virPCIDeviceListAdd;

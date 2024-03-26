@@ -3066,15 +3066,12 @@ virNodeDeviceGetPCIVPDDynamicCap(virNodeDevCapPCIDev *devCapPCIDev)
     if (!(pciDev = virPCIDeviceNew(&devAddr)))
         return -1;
 
-    if (virPCIDeviceHasVPD(pciDev)) {
-        /* VPD is optional in PCI(e) specs. If it is there, attempt to add it. */
-        if ((res = virPCIDeviceGetVPD(pciDev))) {
-            devCapPCIDev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
-            devCapPCIDev->vpd = g_steal_pointer(&res);
-        } else {
-            virResetLastError();
-        }
+    /* VPD is optional in PCI(e) specs. If it is there, attempt to add it. */
+    if ((res = virPCIDeviceGetVPD(pciDev))) {
+        devCapPCIDev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
+        devCapPCIDev->vpd = g_steal_pointer(&res);
     }
+
     return 0;
 }
 
