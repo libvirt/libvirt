@@ -52,6 +52,17 @@ v10.2.0 (unreleased)
     releases to 10.2.0 works as well, but the other direction remains broken
     unless the fix is backported.
 
+  * node_device: Don't report spurious errors from PCI VPD parsing
+
+    In last release the PCI Vital Product Data parser was enhanced to report
+    errors but that effort failed as some kernels have the file but don't allow
+    reading it causing logs to be spammed with::
+
+      libvirtd[21055]: operation failed: failed to read the PCI VPD data
+
+    Since the data is used only in the node device XML and errors are ignored if
+    the parsing failed, this release removes all the error reporting.
+
 
 v10.1.0 (2024-03-01)
 ====================
