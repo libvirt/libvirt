@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-02-29 14:36+0000\n"
+"PO-Revision-Date: 2024-03-27 17:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -482,7 +482,7 @@ msgstr " 저장소:"
 
 #, c-format
 msgid " [[--%1$s] <string>]..."
-msgstr ""
+msgstr " [[--%1$s] <문자열>]..."
 
 #, c-format
 msgid ""
@@ -498,7 +498,7 @@ msgstr ""
 
 #, c-format
 msgid " {[--%1$s] <string>}..."
-msgstr ""
+msgstr " {[--%1$s] <문자열>}..."
 
 #, c-format
 msgid ""
@@ -2850,7 +2850,7 @@ msgstr "resctrl 디렉토리 '%1$s'를 생성 할 수 없음"
 
 #, c-format
 msgid "Cannot create save directory '%1$s'"
-msgstr ""
+msgstr "저장 디렉토리 '%1$s'를 생성 할 수 없습니다"
 
 #, c-format
 msgid "Cannot create socket '%1$s'"
@@ -3888,7 +3888,7 @@ msgid "Connections from inside daemon must be direct"
 msgstr "내부 데몬에서 직접 연결해야 합니다"
 
 msgid "Console only works in PTY mode"
-msgstr ""
+msgstr "PTY 방식에서 콘솔만 동작합니다"
 
 msgid "Constant pages:"
 msgstr "고정 페이지:"
@@ -6638,19 +6638,19 @@ msgstr "%1$s 삭제 실패"
 
 #, c-format
 msgid "Failed to cleanup stale managed save dir '%1$s'"
-msgstr ""
+msgstr "오래된 관리 저장 디렉토리 '%1$s' 정리에 실패했습니다"
 
 #, c-format
 msgid "Failed to clear security context for agent for %1$s"
-msgstr "%1$s를 위한 에이젠트의 보안 문맥을 삭제하는데 실패하였습니다"
+msgstr "%1$s용 관리를 위한 보안 문맥을 정리하는 데 실패하였습니다"
 
 #, c-format
 msgid "Failed to clear security context for monitor for %1$s"
-msgstr "%1$s의 모니터에 대한 보안 문맥을 삭제하는데 실패"
+msgstr "%1$s용 모니터를 위한 보안 문맥 정리에 실패했습니다"
 
 #, c-format
 msgid "Failed to clone vol from %1$s"
-msgstr "%1$s에서 볼륨 복제하기 실패"
+msgstr "%1$s에서 볼륨 복제에 실패했습니다"
 
 #, c-format
 msgid "Failed to close bind target %1$s"
@@ -6720,13 +6720,13 @@ msgstr "연결장치 개요 %1$d를 이름으로 변환하는데 실패"
 
 #, c-format
 msgid "Failed to convert loadparm '%1$s' to upper case"
-msgstr "loadparm '%1$s'을(를) 대문자로 변환하지 못했습니다"
+msgstr "loadparm '%1$s'를 대문자로 변환하는 데 실패했습니다"
 
 msgid "Failed to convert the command string to argv-lists"
-msgstr "명령 문자열을 argv-lists로 변환하지 못했습니다"
+msgstr "명령 문자열을 argv-lists로 변환하는 데 실패했습니다"
 
 msgid "Failed to copy XML node"
-msgstr "XML 노드를 복사하지 못했습니다"
+msgstr "XML 노드 복사에 실패했습니다"
 
 #, c-format
 msgid "Failed to core dump domain '%1$s' to %2$s"
@@ -6755,10 +6755,10 @@ msgstr "SASL 클라이언트 문맥을 생성하는 데 실패: %1$d (%2$s)"
 
 #, c-format
 msgid "Failed to create SAVE dir %1$s"
-msgstr ""
+msgstr "저장 디렉토리 %1$s 생성에 실패했습니다"
 
 msgid "Failed to create XML"
-msgstr "XML 생성하기 실패"
+msgstr "XML 생성에 실패했습니다"
 
 msgid "Failed to create XML config object"
 msgstr "XML 구성 개체를 생성하지 못했습니다"
@@ -6795,42 +6795,42 @@ msgid "Failed to create directory for device %1$s"
 msgstr "장치 %1$s의 디렉토리를 생성하는데 실패했습니다"
 
 msgid "Failed to create disk pool geometry"
-msgstr "디스크 풀 지오메트리 생성 실패"
+msgstr "디스크 풀 지오메트리 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create domain from %1$s"
-msgstr "%1$s에서 도메인 생성하기 실패"
+msgstr "%1$s에서 도메인 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create domain save file '%1$s'"
-msgstr "도메인 저장 파일 '%1$s'를 만드는 데 실패"
+msgstr "도메인 저장 파일 '%1$s' 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create dump dir %1$s"
-msgstr "덤프 디렉토리 %1$s을(를) 생성하지 못했습니다"
+msgstr "덤프 디렉토리 %1$s 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create file '%1$s'"
-msgstr "파일 '%1$s' 생성하기 실패"
+msgstr "파일 '%1$s' 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create file '%1$s': couldn't determine fs type"
-msgstr "파일 '%1$s' 만들기 실패: fs 유형 확인 실패"
+msgstr "파일 '%1$s' 생성에 실패: fs 유형 확인 할 수 없습니다"
 
 #, c-format
 msgid "Failed to create filesystem probe for device %1$s"
-msgstr "장치 %1$s의 파일시스템 조사를 생성하는데 실패했습니다"
+msgstr "장치 %1$s의 파일시스템 조사 생성에 실패했습니다"
 
 msgid "Failed to create interface node under bridge node in xml document"
-msgstr "xml 문서에서 브리지 노드 아래에 인터페이스 노드를 생성하는데 실패"
+msgstr "xml 문서에서 브리지 노드 하에서 연결장치 노드를 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create iscsi context for %1$s"
-msgstr "%1$s를 위한 iscsi 문맥을 생성하는데 실패"
+msgstr "%1$s를 위한 iscsi 문맥 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create lib dir %1$s"
-msgstr "라이브러리 디렉토리 %1$s을(를) 작성하지 못했습니다"
+msgstr "라이브러리 디렉토리 %1$s 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create memory backing dir %1$s"
@@ -6861,47 +6861,47 @@ msgstr "passt 상태 디렉토리 %1$s 생성에 실패함"
 
 #, c-format
 msgid "Failed to create pool %1$s"
-msgstr "풀 %1$s를 생성하는 데 실패"
+msgstr "풀 %1$s를 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create pool from %1$s"
-msgstr "%1$s에서 풀 생성하기 실패"
+msgstr "%1$s에서 풀 생성에 실패했습니다"
 
 msgid "Failed to create reboot thread, killing domain"
 msgstr "재부팅 스레드 생성 실패, 도메인 종료"
 
 #, c-format
 msgid "Failed to create save dir %1$s"
-msgstr "저장 디렉토리 %1$s를 작성하지 못했습니다"
+msgstr "저장 디렉토리 %1$s 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create slirp state dir %1$s"
-msgstr "slirp 상태 디렉토리 %1$s을 생성하는데 실패했습니다"
+msgstr "slirp 상태 디렉토리 %1$s 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create snapshot dir %1$s"
-msgstr "순간찍기 디렉토리 %1$s 생성에 실패함"
+msgstr "순간찍기 디렉토리 %1$s 생성에 실패했습니다"
 
 msgid "Failed to create socket"
-msgstr "소켓 생성하기 실패"
+msgstr "소켓 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create state dir %1$s"
-msgstr "상태 디렉토리 %1$s를 작성하지 못했습니다"
+msgstr "상태 디렉토리 %1$s 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create state dir '%1$s'"
-msgstr "상태 디렉토리 '%1$s'를 작성하지 못했습니다"
+msgstr "상태 디렉토리 '%1$s' 생성에 실패했습니다"
 
 #, c-format
 msgid "Failed to create symlink '%1$s' to '%2$s'"
-msgstr "심볼릭 링크 '%1$s'를 '%2$s'에 대해 만들 수 없음"
+msgstr "심볼릭 링크 '%1$s'를 '%2$s'로 생성하는 데 실패했습니다"
 
 msgid "Failed to create thread"
-msgstr "스레드 생성 실패"
+msgstr "쓰레드 생성에 실패했습니다"
 
 msgid "Failed to create thread for receiving migration data"
-msgstr "이전 자료를 수신하기 위하여 쓰레드 생성하는데 실패했습니다"
+msgstr "이전 자료를 수신하기 위하여 쓰레드 생성에 실패했습니다"
 
 msgid "Failed to create thread to handle daemon restart"
 msgstr "데몬 재시작을 처리할 스레드를 생성하지 못했습니다"
@@ -6948,43 +6948,43 @@ msgstr "%1$s에서 볼륨 생성하기 실패"
 
 #, c-format
 msgid "Failed to create/open domain save xml file '%1$s'"
-msgstr ""
+msgstr "도메인 저장 xml 파일 '%1$s' 생성/열기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define domain from %1$s"
-msgstr "%1$s에서 도메인 정의하기 실패"
+msgstr "%1$s에서 도메인 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define interface from %1$s"
-msgstr "%1$s에서 인터페이스 정의하기 실패"
+msgstr "%1$s에서 인터페이스 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define network filter from %1$s"
-msgstr "%1$s에서 네트워크 필터 정의에 실패"
+msgstr "%1$s에서 네트워크 필터 정의에 실패했습니다"
 
 #, c-format
 msgid "Failed to define network from %1$s"
-msgstr "%1$s에서 네트워크 정의하기 실패"
+msgstr "%1$s에서 네트워크 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define new bridge interface %1$s"
-msgstr "새로운 브리지 인터페이스 %1$s 정의 실패"
+msgstr "새로운 브리지 연결장치 %1$s 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define new interface %1$s"
-msgstr "새로운 인터페이스 %1$s를 정의하는데 실패"
+msgstr "새로운 연결장치 %1$s 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define node device from '%1$s'"
-msgstr "'%1$s'에서 노드 장치를 정의하지 못했습니다"
+msgstr "'%1$s'에서 노드 장치를 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define pool %1$s"
-msgstr "풀 %1$s를 정의하는 데 실패"
+msgstr "풀 %1$s를 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to define pool from %1$s"
-msgstr "%1$s에서 풀 정의하기 실패"
+msgstr "%1$s에서 풀 정의하기에 실패했습니다"
 
 #, c-format
 msgid "Failed to delete DiskDescriptor.xml of volume '%1$s'"
