@@ -313,7 +313,6 @@ src/util/virnuma.c
 src/util/virnvme.c
 src/util/virobject.c
 src/util/virpci.c
-src/util/virpcivpd.c
 src/util/virperf.c
 src/util/virpidfile.c
 src/util/virpolkit.c

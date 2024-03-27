@@ -3104,6 +3104,7 @@ virPCIVPDResource *
 virPCIDeviceGetVPD(virPCIDevice *dev)
 {
     g_autofree char *vpdPath = virPCIFile(dev->name, "vpd");
+    virPCIVPDResource *ret = NULL;
     VIR_AUTOCLOSE fd = -1;
 
     if (!virPCIDeviceHasVPD(dev)) {
@@ -3117,7 +3118,12 @@ virPCIDeviceGetVPD(virPCIDevice *dev)
         return NULL;
     }
 
-    return virPCIVPDParse(fd);
+    if (!(ret = virPCIVPDParse(fd))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Failed to parse device VPD data"));
+        return NULL;
+    }
+
+    return ret;
 }
 
 #else
