@@ -2894,9 +2894,9 @@ int
 virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
                                virNodeDevCapSCSITarget *scsi_target)
 {
-    int ret = -1;
     g_autofree char *dir = NULL;
     g_autofree char *rport = NULL;
+    g_autofree char *wwpn = NULL;
 
     VIR_DEBUG("Checking if '%s' is an FC remote port", scsi_target->name);
 
@@ -2906,28 +2906,21 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
     rport = g_path_get_basename(dir);
 
     if (!virFCIsCapableRport(rport))
-        goto cleanup;
+        return -1;
+
+    if (virFCReadRportValue(rport, "port_name",
+                            &wwpn) < 0) {
+        VIR_WARN("Failed to read port_name for '%s'", rport);
+        return -1;
+    }
 
     VIR_FREE(scsi_target->rport);
     scsi_target->rport = g_steal_pointer(&rport);
 
-    if (virFCReadRportValue(scsi_target->rport, "port_name",
-                            &scsi_target->wwpn) < 0) {
-        VIR_WARN("Failed to read port_name for '%s'", scsi_target->rport);
-        goto cleanup;
-    }
-
+    VIR_FREE(scsi_target->wwpn);
+    scsi_target->wwpn = g_steal_pointer(&wwpn);
     scsi_target->flags |= VIR_NODE_DEV_CAP_FLAG_FC_RPORT;
-    ret = 0;
-
- cleanup:
-    if (ret < 0) {
-        VIR_FREE(scsi_target->rport);
-        VIR_FREE(scsi_target->wwpn);
-        scsi_target->flags &= ~VIR_NODE_DEV_CAP_FLAG_FC_RPORT;
-    }
-
-    return ret;
+    return 0;
 }
 
 
