@@ -36,6 +36,13 @@ v10.2.0 (unreleased)
     use the upcoming QEMU 9.0.0 release together with the development version
     of edk2.
 
+  * qemu: Introduce virDomainGraphicsReload API
+
+    Reloading the graphics display is now supported for QEMU guests using
+    VNC. This is useful to make QEMU reload the TLS certificates without
+    restarting the guest. Available via the ``virDomainGraphicsReload`` API
+    and the ``domdisplay-reload`` virsh command.
+
 * **Improvements**
 
 * **Bug fixes**
@@ -62,6 +69,20 @@ v10.2.0 (unreleased)
 
     Since the data is used only in the node device XML and errors are ignored if
     the parsing failed, this release removes all the error reporting.
+
+  * qemu: set correct SELinux label for unprivileged virtiofsd
+
+    It is now possible to use virtiofsd-based ``<filesystem>`` shares even
+    if the guest is confined using SELinux.
+
+  * qemu: fix a crash on unprivileged virtiofsd hotplug
+
+    Hotplugging virtiofsd-based filesystems works now.
+
+  * virt-admin: Fix segfault when libvirtd dies
+
+    ``virt-admin`` no longer crashes when ``libvirtd`` unexpectedly closes
+    the connection.
 
 
 v10.1.0 (2024-03-01)
