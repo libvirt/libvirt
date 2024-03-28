@@ -418,12 +418,6 @@ virshRunConsole(vshControl *ctl,
 
     sigemptyset(&sighandler.sa_mask);
 
-    /* Put STDIN into raw mode so that stuff typed does not echo to the screen
-     * (the TTY reads will result in it being echoed back already), and also
-     * ensure Ctrl-C, etc is blocked, and misc other bits */
-    if (vshTTYMakeRaw(ctl, true) < 0)
-        goto resettty;
-
     if (!(con = virConsoleNew()))
         goto resettty;
 
@@ -445,6 +439,19 @@ virshRunConsole(vshControl *ctl,
         goto cleanup;
 
     if (virDomainOpenConsole(dom, dev_name, con->st, flags) < 0)
+        goto cleanup;
+
+    vshPrintExtra(ctl, _("Connected to domain '%1$s'\n"), virDomainGetName(dom));
+    vshPrintExtra(ctl, _("Escape character is %1$s"), priv->escapeChar);
+    if (priv->escapeChar[0] == '^')
+        vshPrintExtra(ctl, " (Ctrl + %c)", priv->escapeChar[1]);
+    vshPrintExtra(ctl, "\n");
+    fflush(stdout);
+
+    /* Put STDIN into raw mode so that stuff typed does not echo to the screen
+     * (the TTY reads will result in it being echoed back already), and also
+     * ensure Ctrl-C, etc is blocked, and misc other bits */
+    if (vshTTYMakeRaw(ctl, true) < 0)
         goto cleanup;
 
     virObjectRef(con);

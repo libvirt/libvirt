@@ -3017,7 +3017,6 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
               unsigned int flags)
 {
     int state;
-    virshControl *priv = ctl->privData;
 
     if ((state = virshDomainState(ctl, dom, NULL)) < 0) {
         vshError(ctl, "%s", _("Unable to get domain status"));
@@ -3034,12 +3033,6 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
         return false;
     }
 
-    vshPrintExtra(ctl, _("Connected to domain '%1$s'\n"), virDomainGetName(dom));
-    vshPrintExtra(ctl, _("Escape character is %1$s"), priv->escapeChar);
-    if (priv->escapeChar[0] == '^')
-        vshPrintExtra(ctl, " (Ctrl + %c)", priv->escapeChar[1]);
-    vshPrintExtra(ctl, "\n");
-    fflush(stdout);
     if (virshRunConsole(ctl, dom, name, resume_domain, flags) == 0)
         return true;
 
