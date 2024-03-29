@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-03-27 17:36+0000\n"
+"PO-Revision-Date: 2024-03-29 14:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -5758,6 +5758,9 @@ msgid ""
 "virtualization is enabled in the host BIOS, and host configuration is setup "
 "to load the mshv modules."
 msgstr ""
+"도메인은 MSHV 장치가 필요하지만, 사용 할 수 없습니다. 가상화가 호스트 "
+"바이오스에서 활성화 되어 있는지 점검하고, 호스트 구성이 mshv 모듈을 "
+"적재하도록 설정(setup)되었습니다."
 
 msgid "Domain requires at least 1 vCPU"
 msgstr "도메인에는 최소 1개의 vCPU가 필요합니다"
@@ -7703,7 +7706,7 @@ msgstr "도메인 이미지 파일 '%1$s'을(를) 열지 못했습니다"
 
 #, c-format
 msgid "Failed to open domain save file '%1$s'"
-msgstr ""
+msgstr "도메인 저장 파일 '%1$s'를 여는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to open file '%1$s'"
@@ -8051,7 +8054,7 @@ msgstr "도메인 '%1$s'에 대한 관리되는 저장 이미지를 제거하지
 
 #, c-format
 msgid "Failed to remove managed save path '%1$s'"
-msgstr ""
+msgstr "관리된 저장 경로 '%1$s'룰 제거하는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
@@ -8195,7 +8198,7 @@ msgid "Failed to save VM settings"
 msgstr "VM 설정을 저장하는데 실패함"
 
 msgid "Failed to save domain"
-msgstr ""
+msgstr "도메인 저장에 실패했습니다"
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8389,7 +8392,7 @@ msgid "Failed to shutdown domain '%1$s'"
 msgstr "도메인 '%1$s'를 종료하지 못했습니다"
 
 msgid "Failed to shutoff after domain save"
-msgstr ""
+msgstr "도메인 저장 후 종료하는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8613,7 +8616,7 @@ msgid "Failed to write '%1$s'"
 msgstr "'%1$s' 쓰기에 실패"
 
 msgid "Failed to write file header"
-msgstr ""
+msgstr "파일 헤더를 쓰는 데 실패했습니다"
 
 msgid "Failed to write pixel data"
 msgstr "픽셀 데이터 쓰기 실패했습니다"
@@ -8634,7 +8637,7 @@ msgid "Failed to write vmx file '%1$s'"
 msgstr "vmx 파일 '%1$s' 쓰기에 실패"
 
 msgid "Failed to write xml definition"
-msgstr ""
+msgstr "xml 정의를 작성하는 데 실패했습니다"
 
 msgid "Failed to write xml description"
 msgstr "xml 설명을 쓰지 못했습니다"
@@ -8948,16 +8951,16 @@ msgid "Get or set perf event"
 msgstr "perf 이벤트 가져오기 또는 설정"
 
 msgid "Get or set the current blkio parameters for a guest domain."
-msgstr ""
+msgstr "게스트 도메인을 위한 현재 blkio 매개변수를 가져오거나 설정합니다."
 
 msgid "Get or set the current memory parameters for a guest domain."
-msgstr ""
+msgstr "게스트 도메인을 위한 현재 메모리 매개변수를 가져오거나 설정합니다."
 
 msgid "Get or set the current numa parameters for a guest domain."
-msgstr ""
+msgstr "게스트 도메인을 위한 현재 numa 매개변수를 가져오거나 설정합니다."
 
 msgid "Get or set the current perf events for a guest domain."
-msgstr ""
+msgstr "게스트 도메인을 위한 현재 perf 사건을 가져오거나 설정합니다."
 
 msgid "Get or set the current snapshot"
 msgstr "현재 순간찍기를 가져오거나 설정합니다"
@@ -11790,6 +11793,8 @@ msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
 msgstr ""
+"NUMA 모드는 엄격, 선호 및 인터리브 중 하나 또는 virDomainNumatuneMemMode "
+"열거형의 숫자로 구성되어 있습니다"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -13620,7 +13625,7 @@ msgid "Relative backing during copy not supported yet"
 msgstr "복사 중에 상대적인 백업은 아직 지원하지 않습니다"
 
 msgid "Reload domain's graphics display certificates"
-msgstr ""
+msgstr "도메인의 그래픽 표시 인증서를 재적재합니다"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
@@ -13804,10 +13809,10 @@ msgid "Retrieve identity details about <client> from <server>"
 msgstr "<server>에서 <client>에 대한 ID 세부 정보 검색"
 
 msgid "Retrieve server's client-related configuration limits"
-msgstr ""
+msgstr "서버의 클라이언트-관련 구성 제한 검색"
 
 msgid "Retrieve threadpool attributes from a server."
-msgstr ""
+msgstr "서버에서 쓰레드 풀 속성을 검색합니다."
 
 msgid "Return pool info in bytes"
 msgstr "바이트 단위로 풀 정보 반환"
@@ -14279,7 +14284,7 @@ msgstr ""
 "머신 유형과 호환되지 않습니다"
 
 msgid "Serial only works in UNIX/PTY modes"
-msgstr ""
+msgstr "시리얼은 UNIX/PTY 방식에서 동작합니다"
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -18840,7 +18845,7 @@ msgid "Unexpectedly got a network port without a plug"
 msgstr "예기치 않게 플러그가 없는 네트워크 포트가 있음"
 
 msgid "Unix Socket backend is not supported by this version of ch."
-msgstr ""
+msgstr "유닉스 소켓 백엔드는 이 채널의 버전에서 지원되지 않습니다."
 
 msgid "Unix file descriptors not supported on this platform"
 msgstr "이 기술환경에서 지원되지 않는 유닉스 파일 설명자"
@@ -22307,10 +22312,10 @@ msgid "cannot revert snapshot of running domain"
 msgstr "동작 중인 도메인의 순간찍기를 되돌릴 수 없습니다"
 
 msgid "cannot save domain with host devices"
-msgstr ""
+msgstr "호스트 장치에 도메인을 저장 할 수 없습니다"
 
 msgid "cannot save domain with network interfaces"
-msgstr ""
+msgstr "네트워크 연결장치에 도메인을 저장 할 수 없습니다"
 
 #, c-format
 msgid "cannot save file '%1$s'"
@@ -22861,10 +22866,10 @@ msgid "command '%1$s' requires <%2$s> option"
 msgstr "'%1$s' 명령은 <%2$s> 옵션이 필요함"
 
 msgid "command groups is NULL run vshInit before reloading"
-msgstr ""
+msgstr "명령 그룹은 NULL이고 다시 적재하기 전에 vshInit를 실행하세요"
 
 msgid "command groups must be non-NULL"
-msgstr ""
+msgstr "명령 그룹은 비-NULL이어야 합니다"
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -26318,7 +26323,7 @@ msgid "failed to read AppArmor template"
 msgstr "AppArmor 템플릿을 읽는데 실패"
 
 msgid "failed to read CHSaveXMLHeader header"
-msgstr ""
+msgstr "CHSaveXMLHeader 헤더를 읽는 데 실패했습니다"
 
 msgid "failed to read XML"
 msgstr "XML을 읽는 것을 실패"
@@ -26441,19 +26446,19 @@ msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "심볼릭 링크 %1$s을(를) 확인하지 못했습니다: %2$s"
 
 msgid "failed to restore domain"
-msgstr ""
+msgstr "도메인을 복구하는 데 실패했습니다"
 
 msgid "failed to restore domain from managed save"
-msgstr ""
+msgstr "관리된 저장에서 도메인을 복구하는 데 실패했습니다"
 
 msgid "failed to resume domain"
 msgstr "도메인을 재개하는 것에 실패"
 
 msgid "failed to resume domain after restore"
-msgstr ""
+msgstr "복구 후 도메인을 재개하는 데 실패했습니다"
 
 msgid "failed to resume domain after restore from managed save"
-msgstr ""
+msgstr "관리된 저장에서 복구 후 도메인을 재개하는 데 실패했습니다"
 
 msgid "failed to retrieve XML"
 msgstr "XML을 검색하지 못했습니다"
@@ -26572,7 +26577,7 @@ msgid "failed to suspend domain"
 msgstr "도메인을 일시 중단하지 못했습니다"
 
 msgid "failed to suspend domain before saving"
-msgstr ""
+msgstr "저장하기 전에 도메인을 중지하는 데 실패했습니다"
 
 msgid "failed to take screenshot"
 msgstr "스크린샷을 찍지 못했습니다"
@@ -27259,7 +27264,7 @@ msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr "<hostdev>의 속성 값 'display=on'에 그래픽 장치가 필요합니다"
 
 msgid "graphics display type"
-msgstr ""
+msgstr "그래픽 표시 유형"
 
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
@@ -27489,7 +27494,7 @@ msgid "hostdev does not have an alias"
 msgstr "hostdev에는 단축명령어(alias)가 없습니다"
 
 msgid "hostdev interface missing hostdev data"
-msgstr "hostdev 인터페이스에 hostdev 데이터가 없습니다"
+msgstr "hostdev 연결장치에 hostdev 자료가 없습니다"
 
 #, c-format
 msgid "hostdev invalid secret type '%1$s'"
@@ -27605,7 +27610,8 @@ msgstr "하이퍼바이저 기능 자동 감지 재정의"
 msgid ""
 "hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
 "disabled at the same time"
-msgstr ""
+msgstr "하이퍼바이저는 충돌하는 CPU 자료를 제공합니다: 특성 '%1$s'가 동시에 활성화 "
+"및 비활성화 되었습니다"
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - 유효성 검사를 끄고 다시 재정의하십시오"
@@ -29610,7 +29616,7 @@ msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr "지정된 사용자에 대한 승인된 SSH 키 파일 조작(에이전트를 통해)"
 
 msgid "maplen must be non-negative"
-msgstr ""
+msgstr "maplen는 비-음수이어야 합니다"
 
 msgid "mark inactive domains with managed save state"
 msgstr "관리되는 저장 상태로 비활성 도메인 표시"
@@ -29648,7 +29654,7 @@ msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
 msgid "maxcells must be non-negative"
-msgstr ""
+msgstr "maxcells은 비-음수이어야 합니다"
 
 msgid "maxerrors too large"
 msgstr "maxerrors가 너무 큽니다"
@@ -29657,7 +29663,7 @@ msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "최대 ID > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maxids must be non-negative"
-msgstr ""
+msgstr "maxids는 비-음수이어야 합니다"
 
 msgid "maximum"
 msgstr "최대"
@@ -29698,7 +29704,7 @@ msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
 msgid "maxinfo must be non-negative"
-msgstr ""
+msgstr "maxinfo는 비-음수이어야 합니다"
 
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "최대 이름 > REMOTE_DOMAIN_LIST_MAX"
@@ -29728,13 +29734,13 @@ msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "최대 이름 > REMOTE_STORAGE_VOL_LIST_MAX"
 
 msgid "maxnames must be non-negative"
-msgstr ""
+msgstr "maxnames는 비-음수이어야 합니다"
 
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "최대 ID > REMOTE_SECRET_LIST_MAX"
 
 msgid "maxuuids must be non-negative"
-msgstr ""
+msgstr "maxuuids는 비-음수이어야 합니다"
 
 msgid "mdev attribute missing name or value"
 msgstr "mdev 속성에 이름 또는 값이 없습니다"
@@ -31013,10 +31019,10 @@ msgid "msi option is only supported with a server"
 msgstr "msi 옵션은 서버에서만 지원됩니다"
 
 msgid "mtp is not supported with this QEMU binary"
-msgstr ""
+msgstr "mtp는 이 QEMU 바이너리를 지원하지 않습니다"
 
 msgid "mtp only supports passthrough accessmode"
-msgstr ""
+msgstr "mtp는 통과 접근방식(passthrough accessmode)만 지원합니다"
 
 #, c-format
 msgid ""
@@ -31150,7 +31156,7 @@ msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
 
 msgid "ncpumaps must be non-negative"
-msgstr ""
+msgstr "ncpumaps는 비-음수이어야 합니다"
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
@@ -32143,7 +32149,7 @@ msgid "nparams in %1$s must be equal to %2$d"
 msgstr "%1$s의 nparams는 %2$d와 같아야 합니다"
 
 msgid "nparams must be non-negative"
-msgstr ""
+msgstr "nparams는 비-음수이어야 합니다"
 
 msgid "nparams too large"
 msgstr "nparams가 너무 큽니다"
@@ -32364,7 +32370,7 @@ msgid "only can resume paused domain"
 msgstr "일시중지된 도메인만 재개할 수 있습니다"
 
 msgid "only can save running/paused domain"
-msgstr ""
+msgstr "동작하는/중지된 도메인만 저장 할 수 있습니다"
 
 msgid "only can shutdown running/paused domain"
 msgstr "실행/일시 중지된 도메인만 종료할 수 있습니다"
@@ -32602,7 +32608,7 @@ msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "사용 가능한 경우 하이퍼바이저 sysinfo에 대한 XML 문자열을 출력합니다"
 
 msgid "output help for each command"
-msgstr ""
+msgstr "개별 명령을 위한 도움말 출력"
 
 msgid "output the list of options which are missing completers"
 msgstr "완성자가 누락된 옵션(선택)의 목록을 출력합니다"
@@ -34122,7 +34128,7 @@ msgid "save image is incomplete"
 msgstr "이미지 저장이 불완전합니다"
 
 msgid "save image magic is incorrect"
-msgstr ""
+msgstr "저장 이미지 마법이 올바르지 않습니다"
 
 msgid "saved"
 msgstr "저장됨"
@@ -36027,7 +36033,7 @@ msgstr "이벤트의 유형 불일치(실제 0x%1$x, 예상 0x%2$x)"
 
 #, c-format
 msgid "type must be less than %1$d"
-msgstr ""
+msgstr "유형은 %1$d 보다 작아야만 합니다"
 
 msgid "type of source (block|file|network)"
 msgstr "원천 유형(블록|파일|네트워크)"
@@ -38387,7 +38393,7 @@ msgstr "virVMXContext에 parseFileName 함수 세트가 없습니다"
 
 #, c-format
 msgid "virt type '%1$s' is not supported"
-msgstr ""
+msgstr "가상 유형 '%1$s' 이 지원되지 않습니다"
 
 #, c-format
 msgid ""
