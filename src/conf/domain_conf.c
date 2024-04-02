@@ -28695,7 +28695,14 @@ virDomainUSBDeviceDefForeach(virDomainDef *def,
         }
     }
 
-    /* TODO: add def->nets here when libvirt starts supporting usb-net */
+    /* usb-net */
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDef *net = def->nets[i];
+        if (net->model == VIR_DOMAIN_NET_MODEL_USB_NET) {
+            if (iter(&net->info, opaque) < 0)
+                return -1;
+        }
+    }
 
     /* usb-ccid */
     for (i = 0; i < def->ncontrollers; i++) {

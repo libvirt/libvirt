@@ -2087,6 +2087,10 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
 
+        if (net->model == VIR_DOMAIN_NET_MODEL_USB_NET) {
+            continue;
+        }
+
         /* type='hostdev' network devices might be USB, and are also
          * in hostdevs list anyway, so handle them with other hostdevs
          * instead of here.

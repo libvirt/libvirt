@@ -5608,6 +5608,7 @@ ne2k_pci pcnet rtl8139 e1000 virtio. :since:`Since 5.2.0`,
 ``virtio-transitional`` and ``virtio-non-transitional`` values are supported.
 See `Virtio transitional devices`_ for more details.
 :since:`Since 9.3.0` igb is also supported.
+:since:`Since 10.3.0` usb-net is supported.
 
 Setting NIC driver-specific options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
