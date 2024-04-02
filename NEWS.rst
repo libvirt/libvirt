@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v10.2.0 (unreleased)
+v10.2.0 (2024-04-02)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -42,8 +38,6 @@ v10.2.0 (unreleased)
     VNC. This is useful to make QEMU reload the TLS certificates without
     restarting the guest. Available via the ``virDomainGraphicsReload`` API
     and the ``domdisplay-reload`` virsh command.
-
-* **Improvements**
 
 * **Bug fixes**
 
