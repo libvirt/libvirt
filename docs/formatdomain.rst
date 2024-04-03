@@ -5598,23 +5598,26 @@ Setting the NIC model
    ...
 
 For hypervisors which support this, you can set the model of emulated network
-interface card.
+interface card via the ``model`` element.
 
-The values for ``type`` aren't defined specifically by libvirt, but by what the
-underlying hypervisor supports (if any). For QEMU and KVM you can get a list of
-supported models with these commands:
+While libvirt accepts any value as the ``type`` and passes it to the
+hypervisor to preserve compatibility, most devices nowadays have additional
+handling and address allocation which may not work properly unless the model
+is known by libvirt.
+
+Libvirt supports natively the following network device models:
+``virtio``, ``virtio-transitional`` (:since:`Since 5.2.0`),
+``virtio-non-transitional`` (:since:`Since 5.2.0`),  ``e1000``, ``e1000e``,
+``igb`` (:since:`Since 9.3.0`), ``rtl8139``, ``netfront``,
+``usb-net`` (:since:`Since 10.3.0`), ``spapr-vlan``, ``lan9118``, ``scm91c111``,
+``vlance``, ``vmxnet``, ``vmxnet2``, ``vmxnet3``, ``Am79C970A``, ``Am79C973``,
+``82540EM``, ``82545EM``, ``82543GC``.
+
+For QEMU you can get a list of supported models with this command:
 
 ::
 
-   qemu -net nic,model=? /dev/null
-   qemu-kvm -net nic,model=? /dev/null
-
-Typical values for QEMU and KVM include: ne2k_isa i82551 i82557b i82559er
-ne2k_pci pcnet rtl8139 e1000 virtio. :since:`Since 5.2.0`,
-``virtio-transitional`` and ``virtio-non-transitional`` values are supported.
-See `Virtio transitional devices`_ for more details.
-:since:`Since 9.3.0` igb is also supported.
-:since:`Since 10.3.0` usb-net is supported.
+   qemu-system-x86_64 -net nic,model=?
 
 Setting NIC driver-specific options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
