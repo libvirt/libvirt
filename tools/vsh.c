@@ -3250,6 +3250,10 @@ const vshCmdOptDef opts_echo[] = {
      .type = VSH_OT_ALIAS,
      .help = "string=hello"
     },
+    {.name = "prefix",
+     .type = VSH_OT_STRING,
+     .help = N_("prefix the message")
+    },
     {.name = "string",
      .type = VSH_OT_ARGV,
      .positional = true,
@@ -3273,6 +3277,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     bool xml = vshCommandOptBool(cmd, "xml");
     bool err = vshCommandOptBool(cmd, "err");
     bool split = vshCommandOptBool(cmd, "split");
+    const char *prefix;
     const vshCmdOpt *opt = NULL;
     g_autofree char *arg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -3280,6 +3285,11 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(shell, xml);
     VSH_EXCLUSIVE_OPTIONS_VAR(shell, split);
     VSH_EXCLUSIVE_OPTIONS_VAR(xml, split);
+
+    ignore_value(vshCommandOptString(ctl, cmd, "prefix", &prefix));
+
+    if (prefix)
+        virBufferAsprintf(&buf, "%s ", prefix);
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         const char *curr = opt->data;
