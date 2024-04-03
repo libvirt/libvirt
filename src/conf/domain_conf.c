@@ -28271,26 +28271,115 @@ virDomainObjFormat(virDomainObj *obj,
     return virBufferContentAndReset(&buf);
 }
 
+
 static bool
-virDomainDeviceIsUSB(virDomainDeviceDef *dev)
+virDomainDeviceIsUSB(virDomainDeviceDef *dev,
+                     bool skipHubs)
 {
-    int t = dev->type;
-    if ((t == VIR_DOMAIN_DEVICE_DISK &&
-         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) ||
-        (t == VIR_DOMAIN_DEVICE_INPUT &&
-         dev->data.input->bus == VIR_DOMAIN_INPUT_BUS_USB) ||
-        (t == VIR_DOMAIN_DEVICE_HOSTDEV &&
-         dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-         dev->data.hostdev->source.subsys.type ==
-         VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) ||
-        (t == VIR_DOMAIN_DEVICE_HUB &&
-         dev->data.hub->type == VIR_DOMAIN_HUB_TYPE_USB) ||
-        (t == VIR_DOMAIN_DEVICE_REDIRDEV &&
-         dev->data.redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB))
-        return true;
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_HUB:
+        if (skipHubs)
+            return false;
+
+        return dev->data.hub->type == VIR_DOMAIN_HUB_TYPE_USB;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        return dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
+
+    case VIR_DOMAIN_DEVICE_DISK:
+        return dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB;
+
+    case VIR_DOMAIN_DEVICE_NET:
+        return dev->data.net->model == VIR_DOMAIN_NET_MODEL_USB_NET;
+
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        return dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_CCID;
+
+    case VIR_DOMAIN_DEVICE_INPUT:
+        return dev->data.input->bus == VIR_DOMAIN_INPUT_BUS_USB;
+
+    case VIR_DOMAIN_DEVICE_CHR:
+        if (dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL)
+            return dev->data.chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB;
+
+        return false;
+
+    case VIR_DOMAIN_DEVICE_SOUND:
+        return dev->data.sound->model == VIR_DOMAIN_SOUND_MODEL_USB;
+
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        return dev->data.redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB;
+
+    case VIR_DOMAIN_DEVICE_FS:
+        return dev->data.fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_MTP;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    break;
+    }
 
     return false;
 }
+
+
+struct virDomainUSBDeviceDefForeachIteratorData {
+    virDomainUSBDeviceDefIterator iter;
+    void *iterdata;
+    bool skipHubs;
+};
+
+
+static int
+virDomainUSBDeviceDefForeachIterator(virDomainDef *def G_GNUC_UNUSED,
+                                     virDomainDeviceDef *device,
+                                     virDomainDeviceInfo *info,
+                                     void *opaque)
+{
+    struct virDomainUSBDeviceDefForeachIteratorData *data = opaque;
+
+    if (!virDomainDeviceIsUSB(device, data->skipHubs))
+        return 0;
+
+    if (data->iter(info, data->iterdata) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virDomainUSBDeviceDefForeach(virDomainDef *def,
+                             virDomainUSBDeviceDefIterator iter,
+                             void *opaque,
+                             bool skipHubs)
+{
+    struct virDomainUSBDeviceDefForeachIteratorData data = {
+        .iter = iter,
+        .iterdata = opaque,
+        .skipHubs = skipHubs,
+    };
+
+    return virDomainDeviceInfoIterate(def,
+                                      virDomainUSBDeviceDefForeachIterator,
+                                      &data);
+}
+
 
 
 typedef struct _virDomainCompatibleDeviceData virDomainCompatibleDeviceData;
@@ -28354,7 +28443,7 @@ virDomainDefCompatibleDevice(virDomainDef *def,
 
     if (!virDomainDefHasUSB(def) &&
         def->os.type != VIR_DOMAIN_OSTYPE_EXE &&
-        virDomainDeviceIsUSB(dev)) {
+        virDomainDeviceIsUSB(dev, false)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Device configuration is not compatible: Domain has no USB bus support"));
         return -1;
@@ -28664,111 +28753,6 @@ virDomainSmartcardDefForeach(virDomainDef *def,
     }
 
     return rc;
-}
-
-
-int
-virDomainUSBDeviceDefForeach(virDomainDef *def,
-                             virDomainUSBDeviceDefIterator iter,
-                             void *opaque,
-                             bool skipHubs)
-{
-    size_t i;
-
-    /* usb-hub */
-    if (!skipHubs) {
-        for (i = 0; i < def->nhubs; i++) {
-            virDomainHubDef *hub = def->hubs[i];
-            if (hub->type == VIR_DOMAIN_HUB_TYPE_USB) {
-                if (iter(&hub->info, opaque) < 0)
-                    return -1;
-            }
-        }
-    }
-
-    /* usb-host */
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = def->hostdevs[i];
-        if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            if (iter(hostdev->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-storage */
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDef *disk = def->disks[i];
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
-            if (iter(&disk->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-net */
-    for (i = 0; i < def->nnets; i++) {
-        virDomainNetDef *net = def->nets[i];
-        if (net->model == VIR_DOMAIN_NET_MODEL_USB_NET) {
-            if (iter(&net->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-ccid */
-    for (i = 0; i < def->ncontrollers; i++) {
-        virDomainControllerDef *cont = def->controllers[i];
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_CCID) {
-            if (iter(&cont->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-kbd, usb-mouse, usb-tablet */
-    for (i = 0; i < def->ninputs; i++) {
-        virDomainInputDef *input = def->inputs[i];
-
-        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-            if (iter(&input->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-serial */
-    for (i = 0; i < def->nserials; i++) {
-        virDomainChrDef *serial = def->serials[i];
-        if (serial->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
-            if (iter(&serial->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-audio model=usb */
-    for (i = 0; i < def->nsounds; i++) {
-        virDomainSoundDef *sound = def->sounds[i];
-        if (sound->model == VIR_DOMAIN_SOUND_MODEL_USB) {
-            if (iter(&sound->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-redir */
-    for (i = 0; i < def->nredirdevs; i++) {
-        virDomainRedirdevDef *redirdev = def->redirdevs[i];
-        if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB) {
-            if (iter(&redirdev->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    /* usb-mtp */
-    for (i = 0; i < def->nfss; i++) {
-        virDomainFSDef *fsdev = def->fss[i];
-        if (fsdev->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_MTP) {
-            if (iter(&fsdev->info, opaque) < 0)
-                return -1;
-        }
-    }
-
-    return 0;
 }
 
 
