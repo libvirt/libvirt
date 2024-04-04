@@ -106,6 +106,7 @@ VIR_ENUM_IMPL(qemuMigrationCapability,
               "zero-copy-send",
               "postcopy-preempt",
               "switchover-ack",
+              "mapped-ram",
 );
 
 
