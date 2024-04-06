@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-02-19 15:01+0000\n"
+"PO-Revision-Date: 2024-04-06 20:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -485,7 +485,7 @@ msgstr " Lagring:"
 
 #, c-format
 msgid " [[--%1$s] <string>]..."
-msgstr ""
+msgstr " [[--%1$s] <sträng>]…"
 
 #, c-format
 msgid ""
@@ -501,7 +501,7 @@ msgstr ""
 
 #, c-format
 msgid " {[--%1$s] <string>}..."
-msgstr ""
+msgstr " {[--%1$s] <sträng>}…"
 
 #, c-format
 msgid ""
@@ -1165,7 +1165,7 @@ msgstr "”%1$s”"
 
 #, c-format
 msgid "'%1$s' 'index' value '%2$s' malformed"
-msgstr ""
+msgstr "”%1$s” ”indexvärde” ”%2$s” felformat"
 
 #, c-format
 msgid "'%1$s' D-Bus address is not handled"
@@ -2076,7 +2076,7 @@ msgid "Attempted double use of PCI Address %1$s"
 msgstr "Försök att dubbelanvända PCI-adressen %1$s"
 
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "Försök att starta nbdkit två gånger"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2880,7 +2880,7 @@ msgstr "Kan inte skapa resctrl-katalogen ”%1$s”"
 
 #, c-format
 msgid "Cannot create save directory '%1$s'"
-msgstr ""
+msgstr "Kan inte skapa en sparkatalog ”%1$s”"
 
 #, c-format
 msgid "Cannot create socket '%1$s'"
