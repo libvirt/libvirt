@@ -888,6 +888,7 @@ virNodeDeviceGetPCIDynamicCaps;
 virNodeDeviceGetSCSIHostCaps;
 virNodeDeviceGetSCSITargetCaps;
 virNodeDeviceGetWWNs;
+virNodeDeviceSyncMdevActiveConfig;
 virNodeDeviceUpdateCaps;
 
 

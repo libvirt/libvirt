@@ -470,3 +470,6 @@ virNodeDeviceUpdateCaps(virNodeDeviceDef *def);
 int
 virNodeDeviceCapsListExport(virNodeDeviceDef *def,
                             virNodeDevCapType **list);
+
+void
+virNodeDeviceSyncMdevActiveConfig(virNodeDeviceDef *def);

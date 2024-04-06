@@ -24,7 +24,6 @@ testCompareXMLToXMLFiles(const char *xml, const char *outfile, unsigned int flag
     int ret = -1;
     virNodeDeviceDef *dev = NULL;
     virNodeDevCapsDef *caps;
-    size_t i;
 
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
@@ -52,21 +51,10 @@ testCompareXMLToXMLFiles(const char *xml, const char *outfile, unsigned int flag
                                            data->storage.logical_block_size;
             }
         }
-
-        if (caps->data.type == VIR_NODE_DEV_CAP_MDEV &&
-            !(flags & VIR_NODE_DEVICE_XML_INACTIVE)) {
-            data->mdev.active_config.type = g_strdup(data->mdev.defined_config.type);
-            for (i = 0; i < data->mdev.defined_config.nattributes; i++) {
-                g_autoptr(virMediatedDeviceAttr) attr = g_new0(virMediatedDeviceAttr, 1);
-
-                attr->name = g_strdup(data->mdev.defined_config.attributes[i]->name);
-                attr->value = g_strdup(data->mdev.defined_config.attributes[i]->value);
-                VIR_APPEND_ELEMENT(data->mdev.active_config.attributes,
-                                   data->mdev.active_config.nattributes,
-                                   attr);
-            }
-        }
     }
+
+    if (!(flags & VIR_NODE_DEVICE_XML_INACTIVE))
+        virNodeDeviceSyncMdevActiveConfig(dev);
 
     if (!(actual = virNodeDeviceDefFormat(dev, flags)))
         goto fail;

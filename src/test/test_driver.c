@@ -1272,6 +1272,7 @@ testParseNodedevs(testDriver *privconn,
         virNodeDeviceObjSetPersistent(obj, true);
         virNodeDeviceObjSetActive(obj, true);
         virNodeDeviceObjSetSkipUpdateCaps(obj, true);
+        virNodeDeviceSyncMdevActiveConfig(def);
         virNodeDeviceObjEndAPI(&obj);
     }
 

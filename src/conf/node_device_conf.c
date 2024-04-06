@@ -2804,6 +2804,30 @@ virNodeDeviceCapsListExport(virNodeDeviceDef *def,
     return ncaps;
 }
 
+void
+virNodeDeviceSyncMdevActiveConfig(virNodeDeviceDef *def)
+{
+    size_t i;
+    virNodeDevCapsDef *caps;
+
+    for (caps = def->caps; caps; caps = caps->next) {
+        virNodeDevCapData *data = &caps->data;
+
+        if (caps->data.type != VIR_NODE_DEV_CAP_MDEV)
+            continue;
+
+        data->mdev.active_config.type = g_strdup(data->mdev.defined_config.type);
+        for (i = 0; i < data->mdev.defined_config.nattributes; i++) {
+            g_autoptr(virMediatedDeviceAttr) attr = g_new0(virMediatedDeviceAttr, 1);
+
+            attr->name = g_strdup(data->mdev.defined_config.attributes[i]->name);
+            attr->value = g_strdup(data->mdev.defined_config.attributes[i]->value);
+            VIR_APPEND_ELEMENT(data->mdev.active_config.attributes,
+                               data->mdev.active_config.nattributes,
+                               attr);
+        }
+    }
+}
 
 #ifdef __linux__
 
