@@ -2,6 +2,7 @@
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __APPLE__
 # define xdr_uint64_t xdr_u_int64_t
