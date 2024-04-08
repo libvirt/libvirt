@@ -298,7 +298,7 @@ tests += [
   { 'name': 'virportallocatortest' },
   { 'name': 'virrotatingfiletest' },
   { 'name': 'virschematest' },
-  { 'name': 'virshtest' },
+  { 'name': 'virshtest', 'depends': [ virsh_prog ] },
   { 'name': 'virstringtest' },
   { 'name': 'virsystemdtest' },
   { 'name': 'virtimetest' },
@@ -602,7 +602,7 @@ foreach data : tests
     test_bin,
     env: tests_env,
     timeout: data.get('timeout', 30),
-    depends: tests_deps,
+    depends: tests_deps + data.get('depends', []),
     suite: 'bin'
   )
 endforeach
