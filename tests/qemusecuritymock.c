@@ -66,6 +66,7 @@ static int (*real_close)(int fd);
 static int (*real_setfilecon_raw)(const char *path, const char *context);
 static int (*real_getfilecon_raw)(const char *path, char **context);
 #endif
+static bool (*real_virFileExists)(const char *file);
 
 
 /* Global mutex to avoid races */
@@ -123,6 +124,7 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(setfilecon_raw);
     VIR_MOCK_REAL_INIT(getfilecon_raw);
 #endif
+    VIR_MOCK_REAL_INIT(virFileExists);
 
     /* Intentionally not calling init_hash() here */
 }
@@ -386,8 +388,11 @@ bool virFileExists(const char *path)
 {
     VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    if (getenv(ENVVAR) == NULL)
-        return access(path, F_OK) == 0;
+    if (getenv(ENVVAR) == NULL) {
+        init_syms();
+
+        return real_virFileExists(path);
+    }
 
     init_hash();
     if (virHashHasEntry(chown_paths, path))
