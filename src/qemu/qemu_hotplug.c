@@ -1091,24 +1091,6 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
 }
 
 
-static void
-qemuDomainNetDeviceVportRemove(virDomainNetDef *net)
-{
-    const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
-    const char *brname;
-
-    if (!vport)
-        return;
-
-    if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
-        ignore_value(virNetDevMidonetUnbindPort(vport));
-    } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-        brname = virDomainNetGetActualBridgeName(net);
-        ignore_value(virNetDevOpenvswitchRemovePort(brname, net->ifname));
-    }
-}
-
-
 static int
 qemuDomainAttachNetDevice(virQEMUDriver *driver,
                           virDomainObj *vm,
@@ -1414,7 +1396,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                                        cfg->stateDir);
             }
 
-            qemuDomainNetDeviceVportRemove(net);
+            virDomainInterfaceVportRemove(net);
         }
 
         if (teardownlabel &&
@@ -4895,7 +4877,7 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
             VIR_WARN("Unable to restore security label on vhostuser char device");
     }
 
-    qemuDomainNetDeviceVportRemove(net);
+    virDomainInterfaceVportRemove(net);
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         g_autoptr(virConnect) conn = virGetConnectNetwork();

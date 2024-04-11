@@ -70,6 +70,7 @@
 #include "virhostdev.h"
 #include "netdev_bandwidth_conf.h"
 #include "virutil.h"
+#include "domain_interface.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -4042,7 +4043,6 @@ lxcDomainDetachDeviceNetLive(virDomainObj *vm,
     int detachidx, ret = -1;
     virDomainNetType actualType;
     virDomainNetDef *detach = NULL;
-    const virNetDevVPortProfile *vport = NULL;
     virErrorPtr save_err = NULL;
 
     if ((detachidx = virDomainNetFindIdx(vm->def, dev->data.net)) < 0)
@@ -4098,11 +4098,8 @@ lxcDomainDetachDeviceNetLive(virDomainObj *vm,
 
     virDomainConfNWFilterTeardown(detach);
 
-    vport = virDomainNetGetActualVirtPortProfile(detach);
-    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-        ignore_value(virNetDevOpenvswitchRemovePort(
-                        virDomainNetGetActualBridgeName(detach),
-                        detach->ifname));
+    virDomainInterfaceVportRemove(detach);
+
     ret = 0;
  cleanup:
     if (!ret) {

@@ -374,6 +374,32 @@ virDomainInterfaceStopDevices(virDomainDef *def)
     return 0;
 }
 
+
+/**
+ * virDomainInterfaceVportRemove:
+ * @net: a net definition in the VM
+ *
+ * Removes vport profile from corresponding bridge.
+ * NOP if no vport profile is present in @net.
+ */
+void
+virDomainInterfaceVportRemove(virDomainNetDef *net)
+{
+    const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
+    const char *brname;
+
+    if (!vport)
+        return;
+
+    if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
+        ignore_value(virNetDevMidonetUnbindPort(vport));
+    } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+        brname = virDomainNetGetActualBridgeName(net);
+        ignore_value(virNetDevOpenvswitchRemovePort(brname, net->ifname));
+    }
+}
+
+
 /**
  * virDomainInterfaceDeleteDevice:
  * @def: domain definition
@@ -390,10 +416,8 @@ virDomainInterfaceDeleteDevice(virDomainDef *def,
                                bool priv_net_created,
                                char *stateDir)
 {
-    const virNetDevVPortProfile *vport = NULL;
     g_autoptr(virConnect) conn = NULL;
 
-    vport = virDomainNetGetActualVirtPortProfile(net);
     switch (virDomainNetGetActualType(net)) {
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         if (priv_net_created) {
@@ -435,15 +459,7 @@ virDomainInterfaceDeleteDevice(virDomainDef *def,
     /* release the physical device (or any other resources used by
         * this interface in the network driver
         */
-    if (vport) {
-        if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
-            ignore_value(virNetDevMidonetUnbindPort(vport));
-        } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-            ignore_value(virNetDevOpenvswitchRemovePort(
-                                virDomainNetGetActualBridgeName(net),
-                                net->ifname));
-        }
-    }
+    virDomainInterfaceVportRemove(net);
 
     /* kick the device out of the hostdev list too */
     virDomainNetRemoveHostdev(def, net);

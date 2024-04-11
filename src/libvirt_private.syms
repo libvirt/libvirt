@@ -1642,6 +1642,7 @@ virDomainInterfaceStartDevice;
 virDomainInterfaceStartDevices;
 virDomainInterfaceStopDevice;
 virDomainInterfaceStopDevices;
+virDomainInterfaceVportRemove;
 
 
 # hypervisor/virclosecallbacks.h

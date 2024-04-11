@@ -49,6 +49,7 @@
 #include "virprocess.h"
 #include "netdev_bandwidth_conf.h"
 #include "virutil.h"
+#include "domain_interface.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -149,7 +150,6 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
 {
     size_t i;
     virLXCDomainObjPrivate *priv = vm->privateData;
-    const virNetDevVPortProfile *vport = NULL;
     g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     g_autoptr(virConnect) conn = NULL;
 
@@ -210,13 +210,9 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
 
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDef *iface = vm->def->nets[i];
-        vport = virDomainNetGetActualVirtPortProfile(iface);
+
         if (iface->ifname) {
-            if (vport &&
-                vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-                ignore_value(virNetDevOpenvswitchRemovePort(
-                                virDomainNetGetActualBridgeName(iface),
-                                iface->ifname));
+            virDomainInterfaceVportRemove(iface);
             ignore_value(virNetDevVethDelete(iface->ifname));
         }
         if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -637,11 +633,9 @@ virLXCProcessSetupInterfaces(virLXCDriver *driver,
         virErrorPreserveLast(&save_err);
         for (i = 0; i < def->nnets; i++) {
             virDomainNetDef *iface = def->nets[i];
-            const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(iface);
-            if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-                ignore_value(virNetDevOpenvswitchRemovePort(
-                                virDomainNetGetActualBridgeName(iface),
-                                iface->ifname));
+
+            virDomainInterfaceVportRemove(iface);
+
             if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK && netconn)
                 virDomainNetReleaseActualDevice(netconn, iface);
         }
