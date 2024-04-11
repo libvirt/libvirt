@@ -202,6 +202,7 @@
   <flag name='virtio-mem-pci.dynamic-memslots'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='virtio-sound'/>
   <version>8002000</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v8.2.0</package>

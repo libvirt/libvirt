@@ -707,6 +707,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "display-reload", /* QEMU_CAPS_DISPLAY_RELOAD */
               "usb-mtp", /* QEMU_CAPS_DEVICE_USB_MTP */
               "machine.virt.ras", /* QEMU_CAPS_MACHINE_VIRT_RAS */
+              "virtio-sound", /* QEMU_CAPS_DEVICE_VIRTIO_SOUND */
     );
 
 
@@ -1396,6 +1397,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "cryptodev-backend-lkcf", QEMU_CAPS_OBJECT_CRYPTO_LKCF },
     { "pvpanic-pci", QEMU_CAPS_DEVICE_PANIC_PCI },
     { "usb-mtp", QEMU_CAPS_DEVICE_USB_MTP },
+    { "virtio-sound-pci", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
+    { "virtio-sound-device", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
 };
 
 

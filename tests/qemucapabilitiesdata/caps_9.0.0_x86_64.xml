@@ -204,6 +204,7 @@
   <flag name='blockjob.backing-mask-protocol'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='virtio-sound'/>
   <version>9000000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v9.0.0</package>
