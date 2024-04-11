@@ -324,6 +324,12 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDef *def,
         if (def->cryptos[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             def->cryptos[i]->info.type = type;
     }
+
+    for (i = 0; i < def->nsounds; i++) {
+        if (def->sounds[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_VIRTIO)
+            def->sounds[i]->info.type = type;
+    }
 }
 
 
@@ -693,6 +699,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         case VIR_DOMAIN_SOUND_MODEL_ICH6:
         case VIR_DOMAIN_SOUND_MODEL_ICH9:
             return pciFlags;
+
+        case VIR_DOMAIN_SOUND_MODEL_VIRTIO:
+            return virtioFlags;
 
         case VIR_DOMAIN_SOUND_MODEL_SB16:
         case VIR_DOMAIN_SOUND_MODEL_PCSPK:

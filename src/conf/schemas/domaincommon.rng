@@ -5062,11 +5062,17 @@
           <value>ich7</value>
           <value>ich9</value>
           <value>usb</value>
+          <value>virtio</value>
         </choice>
       </attribute>
       <optional>
         <attribute name="multichannel">
           <ref name="virYesNo"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="streams">
+          <ref name="uint32"/>
         </attribute>
       </optional>
       <interleave>
@@ -5089,6 +5095,11 @@
         <zeroOrMore>
           <ref name="codec"/>
         </zeroOrMore>
+        <optional>
+          <element name="driver">
+            <ref name="virtioOptions"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

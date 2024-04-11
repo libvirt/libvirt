@@ -344,6 +344,7 @@ libxlDomainDefValidate(const virDomainDef *def,
             case VIR_DOMAIN_SOUND_MODEL_ICH7:
             case VIR_DOMAIN_SOUND_MODEL_USB:
             case VIR_DOMAIN_SOUND_MODEL_ICH9:
+            case VIR_DOMAIN_SOUND_MODEL_VIRTIO:
             case VIR_DOMAIN_SOUND_MODEL_LAST:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("unsupported audio model %1$s"),

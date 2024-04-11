@@ -1568,6 +1568,7 @@ typedef enum {
     VIR_DOMAIN_SOUND_MODEL_ICH9,
     VIR_DOMAIN_SOUND_MODEL_USB,
     VIR_DOMAIN_SOUND_MODEL_ICH7,
+    VIR_DOMAIN_SOUND_MODEL_VIRTIO,
 
     VIR_DOMAIN_SOUND_MODEL_LAST
 } virDomainSoundModel;
@@ -1589,6 +1590,9 @@ struct _virDomainSoundDef {
     virTristateBool multichannel;
 
     unsigned int audioId;
+
+    unsigned int streams;
+    virDomainVirtioOptions *virtio;
 };
 
 typedef enum {

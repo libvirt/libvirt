@@ -4675,6 +4675,14 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDef *sound,
         }
         break;
 
+    case VIR_DOMAIN_SOUND_MODEL_VIRTIO:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_SOUND)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-sound controller is not supported in this QEMU binary"));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_SOUND_MODEL_ES1370:
     case VIR_DOMAIN_SOUND_MODEL_AC97:
     case VIR_DOMAIN_SOUND_MODEL_ICH6:

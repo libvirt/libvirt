@@ -677,6 +677,13 @@ virDomainInputDefPostParse(virDomainInputDef *input,
     }
 }
 
+static void
+virDomainSoundDefPostParse(virDomainSoundDef *sound)
+{
+    if (sound->model == VIR_DOMAIN_SOUND_MODEL_VIRTIO && sound->streams == 0)
+        sound->streams = 2;
+}
+
 static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
                                   const virDomainDef *def,
@@ -730,9 +737,13 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
         ret = 0;
         break;
 
+    case VIR_DOMAIN_DEVICE_SOUND:
+        virDomainSoundDefPostParse(dev->data.sound);
+        ret = 0;
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_NET:
-    case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:

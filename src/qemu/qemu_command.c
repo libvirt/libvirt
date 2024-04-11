@@ -4482,6 +4482,7 @@ qemuBuildSoundDevCmd(virCommand *cmd,
     case VIR_DOMAIN_SOUND_MODEL_SB16:
         model = "sb16";
         break;
+    case VIR_DOMAIN_SOUND_MODEL_VIRTIO:
     case VIR_DOMAIN_SOUND_MODEL_PCSPK: /* pc-speaker is handled separately */
     case VIR_DOMAIN_SOUND_MODEL_ICH7:
     case VIR_DOMAIN_SOUND_MODEL_LAST:

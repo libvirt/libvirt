@@ -779,6 +779,7 @@ VIR_ENUM_IMPL(virDomainSoundModel,
               "ich9",
               "usb",
               "ich7",
+              "virtio",
 );
 
 VIR_ENUM_IMPL(virDomainAudioType,
@@ -3212,6 +3213,7 @@ void virDomainSoundDefFree(virDomainSoundDef *def)
         virDomainSoundCodecDefFree(def->codecs[i]);
     g_free(def->codecs);
 
+    g_free(def->virtio);
     g_free(def);
 }
 
@@ -11887,6 +11889,13 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
     }
 
+    if (def->model == VIR_DOMAIN_SOUND_MODEL_VIRTIO) {
+        if (virXMLPropUInt(node, "streams", 10,
+                           VIR_XML_PROP_NONZERO,
+                           &def->streams) < 0)
+            return NULL;
+    }
+
     audioNode = virXPathNode("./audio", ctxt);
     if (audioNode) {
         if (virXMLPropUInt(audioNode, "id", 10,
@@ -11896,6 +11905,10 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
+        return NULL;
+
+    if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
+                                       &def->virtio) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
@@ -11920,6 +11933,9 @@ virDomainSoundDefEquals(const virDomainSoundDef *a,
     }
 
     if (a->multichannel != b->multichannel)
+        return false;
+
+    if (a->streams != b->streams)
         return false;
 
     if (a->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -24848,6 +24864,7 @@ virDomainSoundDefFormat(virBuffer *buf,
     const char *model = virDomainSoundModelTypeToString(def->model);
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     if (!model) {
@@ -24870,6 +24887,14 @@ virDomainSoundDefFormat(virBuffer *buf,
         def->multichannel != VIR_TRISTATE_BOOL_ABSENT) {
         virBufferAsprintf(&attrBuf, " multichannel='%s'",
                           virTristateBoolTypeToString(def->multichannel));
+    }
+
+    if (def->model == VIR_DOMAIN_SOUND_MODEL_VIRTIO) {
+        virBufferAsprintf(&attrBuf, " streams='%d'", def->streams);
+
+        virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
+
+        virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
     }
 
     virXMLFormatElement(buf,  "sound", &attrBuf, &childBuf);
