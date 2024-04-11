@@ -386,7 +386,6 @@ void
 virDomainInterfaceVportRemove(virDomainNetDef *net)
 {
     const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
-    const char *brname;
 
     if (!vport)
         return;
@@ -394,8 +393,7 @@ virDomainInterfaceVportRemove(virDomainNetDef *net)
     if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
         ignore_value(virNetDevMidonetUnbindPort(vport));
     } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-        brname = virDomainNetGetActualBridgeName(net);
-        ignore_value(virNetDevOpenvswitchRemovePort(brname, net->ifname));
+        ignore_value(virNetDevOpenvswitchRemovePort(net->ifname));
     }
 }
 

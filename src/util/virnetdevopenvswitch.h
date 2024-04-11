@@ -38,8 +38,8 @@ int virNetDevOpenvswitchAddPort(const char *brname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
-int virNetDevOpenvswitchRemovePort(const char *brname, const char *ifname)
-    ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
+int virNetDevOpenvswitchRemovePort(const char *ifname)
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
