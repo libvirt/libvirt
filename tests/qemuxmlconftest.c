@@ -2985,6 +2985,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("mtp-usb-device")
     DO_TEST_CAPS_LATEST("net-usb")
+    DO_TEST_CAPS_LATEST("sound-device-virtio")
 
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)

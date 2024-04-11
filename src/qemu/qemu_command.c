@@ -952,8 +952,13 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
             break;
         }
 
+        case VIR_DOMAIN_DEVICE_SOUND: {
+            *baseName = "virtio-sound";
+            *virtioOptions = device->data.sound->virtio;
+            break;
+        }
+
         case VIR_DOMAIN_DEVICE_LEASE:
-        case VIR_DOMAIN_DEVICE_SOUND:
         case VIR_DOMAIN_DEVICE_WATCHDOG:
         case VIR_DOMAIN_DEVICE_GRAPHICS:
         case VIR_DOMAIN_DEVICE_HUB:
@@ -4461,6 +4466,8 @@ qemuBuildSoundDevCmd(virCommand *cmd,
     const char *model = NULL;
     g_autofree char *audioid = NULL;
     virTristateBool multichannel = VIR_TRISTATE_BOOL_ABSENT;
+    unsigned int streams = 0;
+    bool virtio = false;
 
     switch (sound->model) {
     case VIR_DOMAIN_SOUND_MODEL_ES1370:
@@ -4483,6 +4490,9 @@ qemuBuildSoundDevCmd(virCommand *cmd,
         model = "sb16";
         break;
     case VIR_DOMAIN_SOUND_MODEL_VIRTIO:
+        virtio = true;
+        streams = sound->streams;
+        break;
     case VIR_DOMAIN_SOUND_MODEL_PCSPK: /* pc-speaker is handled separately */
     case VIR_DOMAIN_SOUND_MODEL_ICH7:
     case VIR_DOMAIN_SOUND_MODEL_LAST:
@@ -4494,11 +4504,21 @@ qemuBuildSoundDevCmd(virCommand *cmd,
             return -1;
     }
 
+    if (!virtio) {
+        if (virJSONValueObjectAdd(&props,
+                                  "s:driver", model,
+                                  NULL) < 0)
+            return -1;
+    } else {
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_SOUND, sound, qemuCaps)))
+            return -1;
+    }
+
     if (virJSONValueObjectAdd(&props,
-                              "s:driver", model,
                               "s:id", sound->info.alias,
                               "S:audiodev", audioid,
                               "T:multi", multichannel,
+                              "p:streams", streams,
                               NULL) < 0)
         return -1;
 

@@ -32,9 +32,10 @@
     <memballoon model='virtio'/>
     <!--
       This actually doesn't work in practice because vexpress only has
-      4 virtio slots available, rng makes 5 -->
+      4 virtio slots available, rng and sound makes 6 -->
     <rng model='virtio'>
       <backend model='random'>/dev/random</backend>
     </rng>
+    <sound model='virtio'/>
   </devices>
 </domain>

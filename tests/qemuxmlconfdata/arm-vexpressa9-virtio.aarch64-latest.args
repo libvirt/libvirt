@@ -41,6 +41,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -chardev pty,id=charconsole1 \
 -device '{"driver":"virtconsole","chardev":"charconsole1","id":"console1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-sound-device","id":"sound0","audiodev":"audio1","streams":2}' \
 -device '{"driver":"virtio-balloon-device","id":"balloon0"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/random"}' \
 -device '{"driver":"virtio-rng-device","rng":"objrng0","id":"rng0"}' \
