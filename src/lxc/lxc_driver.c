@@ -4052,10 +4052,7 @@ lxcDomainDetachDeviceNetLive(virDomainObj *vm,
     actualType = virDomainNetGetActualType(detach);
 
     /* clear network bandwidth */
-    if (virDomainNetGetActualBandwidth(detach) &&
-        virNetDevSupportsBandwidth(actualType) &&
-        virNetDevBandwidthClear(detach->ifname))
-        goto cleanup;
+    virDomainInterfaceClearQoS(vm->def, detach);
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

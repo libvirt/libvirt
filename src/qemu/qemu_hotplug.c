@@ -4059,11 +4059,8 @@ qemuDomainChangeNet(virQEMUDriver *driver,
                 goto cleanup;
             }
         } else {
-            /*
-             * virNetDevBandwidthSet() doesn't clear any existing
-             * setting unless something new is being set.
-             */
-            virNetDevBandwidthClear(newdev->ifname);
+            if (virDomainInterfaceClearQoS(vm->def, newdev) < 0)
+                goto cleanup;
         }
 
         /* If the old bandwidth was cleared out, restore qdisc. */
@@ -4800,16 +4797,7 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
     if (!(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
         return -1;
 
-    if (virNetDevSupportsBandwidth(virDomainNetGetActualType(net))) {
-        if (virDomainNetDefIsOvsport(net)) {
-            if (virNetDevOpenvswitchInterfaceClearQos(net->ifname, vm->def->uuid) < 0)
-                VIR_WARN("cannot clear bandwidth setting for ovs device : %s",
-                         net->ifname);
-        } else if (virNetDevBandwidthClear(net->ifname) < 0) {
-            VIR_WARN("cannot clear bandwidth setting for device : %s",
-                     net->ifname);
-        }
-    }
+    virDomainInterfaceClearQoS(vm->def, net);
 
     /* deactivate the tap/macvtap device on the host, which could also
      * affect the parent device (e.g. macvtap passthrough mode sets

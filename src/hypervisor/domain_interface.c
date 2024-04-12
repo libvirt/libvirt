@@ -472,16 +472,42 @@ virDomainInterfaceDeleteDevice(virDomainDef *def,
 }
 
 
+/**
+ * virDomainInterfaceClearQoS
+ * @def: domain definition
+ * @net: a net definition in the VM
+ *
+ * For given interface @net clear its QoS settings in the
+ * host. NOP if @net has no QoS or is of a type that doesn't
+ * support QoS.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with appropriate error reported)
+ */
+int
+virDomainInterfaceClearQoS(virDomainDef *def,
+                           virDomainNetDef *net)
+{
+    if (!virDomainNetGetActualBandwidth(net))
+        return 0;
+
+    if (!virNetDevSupportsBandwidth(virDomainNetGetActualType(net)))
+        return 0;
+
+    if (virDomainNetDefIsOvsport(net)) {
+        return virNetDevOpenvswitchInterfaceClearQos(net->ifname, def->uuid);
+    }
+
+    return virNetDevBandwidthClear(net->ifname);
+}
+
+
 void
 virDomainClearNetBandwidth(virDomainDef *def)
 {
     size_t i;
-    virDomainNetType type;
 
     for (i = 0; i < def->nnets; i++) {
-        type = virDomainNetGetActualType(def->nets[i]);
-        if (virDomainNetGetActualBandwidth(def->nets[i]) &&
-            virNetDevSupportsBandwidth(type))
-            virNetDevBandwidthClear(def->nets[i]->ifname);
+        virDomainInterfaceClearQoS(def, def->nets[i]);
     }
 }
