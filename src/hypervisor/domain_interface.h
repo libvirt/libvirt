@@ -44,3 +44,5 @@ void virDomainInterfaceDeleteDevice(virDomainDef *def,
                                 virDomainNetDef *net,
                                 bool priv_net_created,
                                 char *stateDir);
+void virDomainClearNetBandwidth(virDomainDef *def)
+    ATTRIBUTE_NONNULL(1);

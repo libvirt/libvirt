@@ -813,7 +813,6 @@ virDomainMomentDefPostParse;
 
 
 # conf/netdev_bandwidth_conf.h
-virDomainClearNetBandwidth;
 virNetDevBandwidthFormat;
 virNetDevBandwidthHasFloor;
 virNetDevBandwidthParse;
@@ -1635,6 +1634,7 @@ virDomainDriverParseBlkioDeviceStr;
 virDomainDriverSetupPersistentDefBlkioParams;
 
 # hypervisor/domain_interface.h
+virDomainClearNetBandwidth;
 virDomainInterfaceDeleteDevice;
 virDomainInterfaceEthernetConnect;
 virDomainInterfaceIsVnetCompatModel;

@@ -27,6 +27,7 @@
 #include "domain_driver.h"
 #include "domain_interface.h"
 #include "domain_nwfilter.h"
+#include "netdev_bandwidth_conf.h"
 #include "network_conf.h"
 #include "viralloc.h"
 #include "virconftypes.h"
@@ -468,4 +469,19 @@ virDomainInterfaceDeleteDevice(virDomainDef *def,
             VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
     }
 
+}
+
+
+void
+virDomainClearNetBandwidth(virDomainDef *def)
+{
+    size_t i;
+    virDomainNetType type;
+
+    for (i = 0; i < def->nnets; i++) {
+        type = virDomainNetGetActualType(def->nets[i]);
+        if (virDomainNetGetActualBandwidth(def->nets[i]) &&
+            virNetDevSupportsBandwidth(type))
+            virNetDevBandwidthClear(def->nets[i]->ifname);
+    }
 }

@@ -34,9 +34,6 @@ int virNetDevBandwidthFormat(const virNetDevBandwidth *def,
                              unsigned int class_id,
                              virBuffer *buf);
 
-void virDomainClearNetBandwidth(virDomainDef *def)
-    ATTRIBUTE_NONNULL(1);
-
 bool virNetDevSupportsBandwidth(virDomainNetType type);
 bool virNetDevBandwidthHasFloor(const virNetDevBandwidth *b);
 bool virNetDevBandwidthSupportsFloor(virNetworkForwardType type);
