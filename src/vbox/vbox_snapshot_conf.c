@@ -460,8 +460,6 @@ virVBoxSnapshotConfAllChildren(virVBoxSnapshotConfHardDisk *disk,
     size_t i = 0;
     size_t j = 0;
 
-    ret = g_new0(virVBoxSnapshotConfHardDisk *, 0);
-
     for (i = 0; i < disk->nchildren; i++) {
         size_t tempSize = virVBoxSnapshotConfAllChildren(disk->children[i], &tempList);
         VIR_EXPAND_N(ret, returnSize, tempSize);
@@ -1314,8 +1312,6 @@ virVBoxSnapshotConfRemoveFakeDisks(virVBoxSnapshotConfMachine *machine)
     virVBoxSnapshotConfHardDisk **tempList = NULL;
     virVBoxSnapshotConfHardDisk **diskList = NULL;
 
-    diskList = g_new0(virVBoxSnapshotConfHardDisk *, 0);
-
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(machine->mediaRegistry->disks[i], &tempList);
         VIR_EXPAND_N(diskList, diskSize, tempSize);
@@ -1363,8 +1359,6 @@ virVBoxSnapshotConfDiskIsInMediaRegistry(virVBoxSnapshotConfMachine *machine,
     size_t diskSize = 0;
     virVBoxSnapshotConfHardDisk **tempList = NULL;
     virVBoxSnapshotConfHardDisk **diskList = NULL;
-
-    diskList = g_new0(virVBoxSnapshotConfHardDisk *, 0);
 
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(machine->mediaRegistry->disks[i], &tempList);
