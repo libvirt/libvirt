@@ -314,9 +314,6 @@ void vshDebug(vshControl *ctl, int level, const char *format, ...)
 #define vshStrcasecmp(S1, S2) strcasecmp(S1, S2)
 int vshNameSorter(const void *a, const void *b);
 
-virTypedParameterPtr vshFindTypedParamByName(const char *name,
-                                             virTypedParameterPtr list,
-                                             int count);
 char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
