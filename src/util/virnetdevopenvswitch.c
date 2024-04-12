@@ -427,7 +427,7 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
 
 
 /**
- * virNetDeOpenvswitchGetMaster:
+ * virNetDevOpenvswitchInterfaceGetMaster:
  * @ifname: name of interface we're interested in
  * @master: used to return a string containing the name of @ifname's "master"
  *          (this is the bridge or bond device that this device is attached to)
