@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-06 20:36+0000\n"
+"PO-Revision-Date: 2024-04-13 12:17+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -3464,14 +3464,18 @@ msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
 msgstr ""
+"Kan inte uppdatera enheten ”%1$s”, föräldraadressen stämmer inte (aktuell "
+"föräldraadress ”%2$s”)"
 
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
 msgstr ""
+"Kan inte uppdatera enheten ”%1$s”, typen stämmer inte (aktuell typ ”%2$s”)"
 
 #, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
 msgstr ""
+"Kan inte uppdatera enheten ”%1$s”, uuid stämmer inte (aktuellt uuid ”%2$s”)"
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -3942,7 +3946,7 @@ msgid "Connections from inside daemon must be direct"
 msgstr "Anslutningar från insidan av demonen måste vara direkt"
 
 msgid "Console only works in PTY mode"
-msgstr ""
+msgstr "Konsolen fungerar endast i PTY-läge"
 
 msgid "Constant pages:"
 msgstr "Konstanta sidor:"
@@ -5209,7 +5213,7 @@ msgid "Define a pool."
 msgstr "Definiera en pool."
 
 msgid "Define or modify a device by an xml file on a node"
-msgstr ""
+msgstr "Definiera eller ändra en enhet genom en xml-fil på en nod"
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "Definiera eller modifiera ett beständigt fysiskt värdgränssnitt."
@@ -5230,6 +5234,8 @@ msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
+"Definierar eller ändrar en varaktig enhet på noden som kan tilldelas till en "
+"domän. Enheten måste startas före den kan tilldelas till en domän."
 
 msgid "Delete a domain checkpoint"
 msgstr "Radera en domänkontrollpunkt"
@@ -5834,6 +5840,9 @@ msgid ""
 "virtualization is enabled in the host BIOS, and host configuration is setup "
 "to load the mshv modules."
 msgstr ""
+"Domänen kräver en MSHV-enhet, men den är inte tillgänglig. Kontrollera att "
+"virtualisering är aktiverat i värdens BIOS, och att värdkonfigurationen är "
+"uppsatt till att ladda mshv-modulerna."
 
 msgid "Domain requires at least 1 vCPU"
 msgstr "Domänen kräver åtminstone 1 vCPU"
@@ -6662,7 +6671,7 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "Misslyckades att binda uttag till ”%1$s”"
 
 msgid "Failed to build net json"
-msgstr ""
+msgstr "Misslyckades att bygga nät-json"
 
 msgid "Failed to build pidfile path"
 msgstr "Misslyckades att bygga pid-filsökvägen"
@@ -6721,7 +6730,7 @@ msgstr "Misslyckades att rensa upp %1$s"
 
 #, c-format
 msgid "Failed to cleanup stale managed save dir '%1$s'"
-msgstr ""
+msgstr "Misslyckades att rensa upp en förlegad hanterad sparkatalog ”%1$s”"
 
 #, c-format
 msgid "Failed to clear security context for agent for %1$s"
@@ -6771,7 +6780,7 @@ msgid "Failed to connect socket to '%1$s'"
 msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
 
 msgid "Failed to connect to mon socket"
-msgstr ""
+msgstr "Misslyckades att ansluta till mon-uttaget"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
