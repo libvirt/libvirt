@@ -9,13 +9,14 @@
 # Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007, 2008
 # Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021, 2022, 2023, 2024.
 # Jan Tomko <jtomko@redhat.com>, 2022.
+# Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
 "PO-Revision-Date: 2024-04-13 12:17+0000\n"
-"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -6849,7 +6850,7 @@ msgstr "Misslyckades att SASL-klientkontext: %1$d (%2$s)"
 
 #, c-format
 msgid "Failed to create SAVE dir %1$s"
-msgstr ""
+msgstr "Misslyckades att skapa katalog att spara i %1$s"
 
 msgid "Failed to create XML"
 msgstr "Misslyckades att skapa XML"
