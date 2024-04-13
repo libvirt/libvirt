@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-13 12:17+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-04-13 21:08+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -6850,7 +6850,7 @@ msgstr "Misslyckades att SASL-klientkontext: %1$d (%2$s)"
 
 #, c-format
 msgid "Failed to create SAVE dir %1$s"
-msgstr "Misslyckades att skapa katalog att spara i %1$s"
+msgstr "Misslyckades att skapa SAVE-katalogen %1$s"
 
 msgid "Failed to create XML"
 msgstr "Misslyckades att skapa XML"
@@ -7045,7 +7045,7 @@ msgstr "Misslyckades att skapa volymen från %1$s"
 
 #, c-format
 msgid "Failed to create/open domain save xml file '%1$s'"
-msgstr ""
+msgstr "Misslyckades att skapa/öppna domänens spar-xml-fil ”%1$s”"
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7787,7 +7787,7 @@ msgid "Failed to open '%1$s'"
 msgstr "Misslyckades att öppna ”%1$s”"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
+msgstr "Misslyckades att öppna ett UNIX-uttag"
 
 #, c-format
 msgid "Failed to open a VPD file '%1$s'"
@@ -7807,7 +7807,7 @@ msgstr "Misslyckades att öppna domänavbildsfilen ”%1$s”"
 
 #, c-format
 msgid "Failed to open domain save file '%1$s'"
-msgstr ""
+msgstr "Misslyckades att öppna domänens sparfil ”%1$s”"
 
 #, c-format
 msgid "Failed to open file '%1$s'"
@@ -7849,7 +7849,7 @@ msgid "Failed to parse CCW address '%1$s'"
 msgstr "Misslyckades med att tolka CCW-adressen ”%1$s”"
 
 msgid "Failed to parse HTTP response code"
-msgstr ""
+msgstr "Misslyckades att tolka HTTP-svarskoden"
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
