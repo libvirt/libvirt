@@ -770,7 +770,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         ctl->imode = false;
         if (argc - optind == 1) {
             vshDebug(ctl, VSH_ERR_INFO, "commands: \"%s\"\n", argv[optind]);
-            return vshCommandStringParse(ctl, argv[optind], NULL, 0);
+            return vshCommandStringParse(ctl, argv[optind], NULL);
         } else {
             return vshCommandArgvParse(ctl, argc - optind, argv + optind);
         }
@@ -908,7 +908,7 @@ main(int argc, char **argv)
             if (*ctl->cmdstr) {
                 vshReadlineHistoryAdd(ctl->cmdstr);
 
-                if (vshCommandStringParse(ctl, ctl->cmdstr, NULL, 0))
+                if (vshCommandStringParse(ctl, ctl->cmdstr, NULL))
                     vshCommandRun(ctl, ctl->cmd);
             }
             VIR_FREE(ctl->cmdstr);

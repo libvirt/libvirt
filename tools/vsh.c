@@ -1430,7 +1430,6 @@ struct _vshCommandParser {
                                  char **, bool);
     /* vshCommandStringGetArg() */
     char *pos;
-    const char *originalLine;
     size_t point;
     /* vshCommandArgvGetArg() */
     char **arg_pos;
@@ -1543,9 +1542,6 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                             arg->data = g_steal_pointer(&tkdata);
                             arg->next = NULL;
 
-                            if (parser->pos - parser->originalLine == parser->point - 1)
-                                arg->completeThis = true;
-
                             if (!first)
                                 first = arg;
                             if (last)
@@ -1595,9 +1591,6 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 arg->def = opt;
                 arg->data = g_steal_pointer(&tkdata);
                 arg->next = NULL;
-
-                if (parser->pos - parser->originalLine == parser->point)
-                    arg->completeThis = true;
 
                 if (!first)
                     first = arg;
@@ -1812,23 +1805,18 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
  * @ctl virsh control structure
  * @cmdstr: string to parse
  * @partial: store partially parsed command here
- * @point: position of cursor (rl_point)
  *
  * Parse given string @cmdstr as a command and store it under
  * @ctl->cmd. For readline completion, if @partial is not NULL on
  * the input then errors in parsing are ignored (because user is
  * still in progress of writing the command string) and partially
  * parsed command is stored at *@partial (caller has to free it
- * afterwards). Among with @partial, caller must set @point which
- * is the position of cursor in @cmdstr (offset, numbered from 1).
- * Parser will then set @completeThis attribute to true for the
- * vshCmdOpt that appeared under the cursor.
+ * afterwards).
  */
 bool
 vshCommandStringParse(vshControl *ctl,
                       char *cmdstr,
-                      vshCmd **partial,
-                      size_t point)
+                      vshCmd **partial)
 {
     vshCommandParser parser = { 0 };
 
@@ -1836,8 +1824,6 @@ vshCommandStringParse(vshControl *ctl,
         return false;
 
     parser.pos = cmdstr;
-    parser.originalLine = cmdstr;
-    parser.point = point;
     parser.getNextArg = vshCommandStringGetArg;
     return vshCommandParse(ctl, &parser, partial);
 }
@@ -2844,7 +2830,7 @@ vshReadlineParse(const char *text, int state)
 
         *(line + rl_point) = '\0';
 
-        vshCommandStringParse(NULL, line, &partial, rl_point);
+        vshCommandStringParse(NULL, line, &partial);
 
         if (partial) {
             cmd = partial->def;

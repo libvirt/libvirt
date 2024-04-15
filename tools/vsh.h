@@ -149,8 +149,6 @@ struct _vshCmdOpt {
     char *data;                 /* allocated data, or NULL for bool option */
     const char **argv;          /* for VSH_OT_ARGV, the list of options */
     char *argvstr;              /* space-joined @argv */
-    bool completeThis;          /* true if this is the option user's wishing to
-                                   autocomplete */
     vshCmdOpt *next;
 };
 
@@ -292,7 +290,7 @@ int vshBlockJobOptionBandwidth(vshControl *ctl,
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 bool vshCommandRun(vshControl *ctl, const vshCmd *cmd);
 bool vshCommandStringParse(vshControl *ctl, char *cmdstr,
-                           vshCmd **partial, size_t point);
+                           vshCmd **partial);
 
 const char **
 vshCommandOptArgv(const vshCmd *cmd,
