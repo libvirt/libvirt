@@ -244,10 +244,6 @@ void vshOutputLogFile(vshControl *ctl, int log_level, const char *format,
     G_GNUC_PRINTF(3, 0);
 void vshCloseLogFile(vshControl *ctl);
 
-const vshCmdDef *vshCmddefSearch(const char *cmdname);
-const vshCmdGrp *vshCmdGrpSearch(const char *grpname);
-bool vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp);
-
 int vshCommandOptInt(vshControl *ctl, const vshCmd *cmd,
                      const char *name, int *value)
     ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;

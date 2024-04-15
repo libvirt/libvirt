@@ -239,6 +239,30 @@ vshReportError(vshControl *ctl)
  */
 static int disconnected; /* we may have been disconnected */
 
+
+/* vshCmddefSearch:
+ * @cmdname: name of command to find
+ *
+ * Looks for @cmdname in the global list of command definitions @cmdGroups and
+ * returns pointer to the definition struct if the command exists.
+ */
+static const vshCmdDef *
+vshCmddefSearch(const char *cmdname)
+{
+    const vshCmdGrp *g;
+    const vshCmdDef *c;
+
+    for (g = cmdGroups; g->name; g++) {
+        for (c = g->commands; c->name; c++) {
+            if (STREQ(c->name, cmdname))
+                return c;
+        }
+    }
+
+    return NULL;
+}
+
+
 /* Check if the internal command definitions are correct.
  * None of the errors are to be marked as translatable. */
 static int
@@ -600,23 +624,7 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint64_t opts_required,
     return -1;
 }
 
-const vshCmdDef *
-vshCmddefSearch(const char *cmdname)
-{
-    const vshCmdGrp *g;
-    const vshCmdDef *c;
-
-    for (g = cmdGroups; g->name; g++) {
-        for (c = g->commands; c->name; c++) {
-            if (STREQ(c->name, cmdname))
-                return c;
-        }
-    }
-
-    return NULL;
-}
-
-const vshCmdGrp *
+static const vshCmdGrp *
 vshCmdGrpSearch(const char *grpname)
 {
     const vshCmdGrp *g;
@@ -629,7 +637,7 @@ vshCmdGrpSearch(const char *grpname)
     return NULL;
 }
 
-bool
+static bool
 vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
 {
     const vshCmdDef *cmd = NULL;
