@@ -146,10 +146,11 @@ struct _vshCmdOptDef {
  */
 struct _vshCmdOpt {
     const vshCmdOptDef *def;    /* non-NULL pointer to option definition */
+    bool present;               /* true if option was present on command line */
     char *data;                 /* allocated data, or NULL for bool option */
-    const char **argv;          /* for VSH_OT_ARGV, the list of options */
+    char **argv;                /* for VSH_OT_ARGV, the list of options */
+    size_t nargv;
     char *argvstr;              /* space-joined @argv */
-    vshCmdOpt *next;
 };
 
 /*
@@ -181,6 +182,7 @@ struct _vshCmd {
     vshCmdOpt *lastopt;         /* last option of the commandline */
     vshCmd *next;               /* next command */
     bool skipChecks;            /* skip validity checks when retrieving opts */
+    bool helpOptionSeen;        /* The '--help' option was seen when persing the command */
 };
 
 /*
