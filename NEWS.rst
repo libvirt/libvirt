@@ -21,6 +21,14 @@ v10.3.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix migration with custom XML
+
+    Libvirt 10.2.0 would sometimes complain about incompatible CPU definition
+    when trying to migrate or save a domain and passing a custom XML even
+    though such XML was properly generated as migratable. Hitting this bug
+    depends on the guest CPU definition and the host on which a particular
+    domain was running.
+
 
 v10.2.0 (2024-04-02)
 ====================
