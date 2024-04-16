@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-13 21:08+0000\n"
+"PO-Revision-Date: 2024-04-16 13:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8156,7 +8156,7 @@ msgstr "Misslyckades med att ta bort hanterad sparad avbild för domänen ”%1$
 
 #, c-format
 msgid "Failed to remove managed save path '%1$s'"
-msgstr ""
+msgstr "Misslyckades att ta bort hanterad sparsökväg ”%1$s”"
 
 #, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
@@ -8303,7 +8303,7 @@ msgid "Failed to save VM settings"
 msgstr "Misslyckades att spara VM-inställningarna"
 
 msgid "Failed to save domain"
-msgstr ""
+msgstr "Misslyckades att spara domänen"
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
