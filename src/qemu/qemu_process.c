@@ -5657,8 +5657,7 @@ qemuProcessInit(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int stopFlags;
-    virCPUDef *origCPU = NULL;
-    int ret = -1;
+    g_autoptr(virCPUDef) origCPU = NULL;
 
     VIR_DEBUG("vm=%p name=%s id=%d migration=%d",
               vm, vm->def->name, vm->def->id, migration);
@@ -5668,7 +5667,7 @@ qemuProcessInit(virQEMUDriver *driver,
     if (virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("VM is already active"));
-        goto cleanup;
+        return -1;
     }
 
     /* in case when the post parse callback failed we need to re-run it on the
@@ -5678,18 +5677,18 @@ qemuProcessInit(virQEMUDriver *driver,
 
         /* we don't have the private copy of qemuCaps at this point */
         if (virDomainDefPostParse(vm->def, 0, driver->xmlopt, NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
     VIR_DEBUG("Determining emulator version");
     if (qemuProcessPrepareQEMUCaps(vm, driver->qemuCapsCache) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuDomainUpdateCPU(vm, updatedCPU, &origCPU) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, flags) < 0)
-        goto cleanup;
+        return -1;
 
     /* Do this upfront, so any part of the startup process can add
      * runtime state to vm->def that won't be persisted. This let's us
@@ -5697,12 +5696,12 @@ qemuProcessInit(virQEMUDriver *driver,
      */
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, priv->qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
     if (flags & VIR_QEMU_PROCESS_START_PRETEND) {
         if (qemuDomainSetPrivatePaths(driver, vm) < 0) {
             virDomainObjRemoveTransientDef(vm);
-            goto cleanup;
+            return -1;
         }
     } else {
         vm->def->id = qemuDriverAllocateID(driver);
@@ -5724,18 +5723,14 @@ qemuProcessInit(virQEMUDriver *driver,
         priv->origCPU = g_steal_pointer(&origCPU);
     }
 
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(origCPU);
-    return ret;
+    return 0;
 
  stop:
     stopFlags = VIR_QEMU_PROCESS_STOP_NO_RELABEL;
     if (migration)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
-    goto cleanup;
+    return -1;
 }
 
 
