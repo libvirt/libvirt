@@ -91,6 +91,7 @@
 # Other optional features
 %define with_numactl          0%{!?_without_numactl:1}
 %define with_userfaultfd_sysctl 0%{!?_without_userfaultfd_sysctl:1}
+%define with_ssh_proxy        0%{!?_without_ssh_proxy:1}
 
 # A few optional bits off by default, we enable later
 %define with_fuse             0
@@ -903,6 +904,9 @@ Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
+        %if %{with_ssh_proxy}
+Requires: libvirt-ssh-proxy = %{version}-%{release}
+        %endif
 Requires: qemu
 
 %description daemon-qemu
@@ -931,6 +935,9 @@ Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
+        %if %{with_ssh_proxy}
+Requires: libvirt-ssh-proxy = %{version}-%{release}
+        %endif
 Requires: qemu-kvm
 
 %description daemon-kvm
@@ -1018,6 +1025,9 @@ Summary: Client side utilities of the libvirt library
 Requires: libvirt-libs = %{version}-%{release}
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
+    %if %{with_ssh_proxy}
+Recommends: libvirt-ssh-proxy = %{version}-%{release}
+    %endif
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-bash-completion < 7.3.0
@@ -1098,6 +1108,15 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 
 %description nss
 Libvirt plugin for NSS for translating domain names into IP addresses.
+%endif
+
+%if %{with_ssh_proxy}
+%package ssh-proxy
+Summary: Libvirt SSH proxy
+Requires: libvirt-libs = %{version}-%{release}
+
+%description ssh-proxy
+Allows SSH into domains via VSOCK without need for network.
 %endif
 
 %if %{with_mingw32}
@@ -1291,6 +1310,12 @@ exit 1
     %define arg_userfaultfd_sysctl -Duserfaultfd_sysctl=disabled
 %endif
 
+%if %{with_ssh_proxy}
+    %define arg_ssh_proxy -Dssh_proxy=enabled
+%else
+    %define arg_ssh_proxy -Dssh_proxy=disabled
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1372,6 +1397,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dtls_priority=%{tls_priority} \
            -Dsysctl_config=enabled \
            %{?arg_userfaultfd_sysctl} \
+           %{?arg_ssh_proxy} \
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
@@ -1456,6 +1482,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dstorage_zfs=disabled \
   -Dsysctl_config=disabled \
   -Duserfaultfd_sysctl=disabled \
+  -Dssh_proxy=disabled \
   -Dtests=disabled \
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
@@ -2425,6 +2452,12 @@ exit 0
 %files nss
 %{_libdir}/libnss_libvirt.so.2
 %{_libdir}/libnss_libvirt_guest.so.2
+
+    %if %{with_ssh_proxy}
+%files ssh-proxy
+%config(noreplace) %{_sysconfdir}/ssh/ssh_config.d/30-libvirt-ssh-proxy.conf
+%{_libexecdir}/libvirt-ssh-proxy
+    %endif
 
     %if %{with_lxc}
 %files login-shell

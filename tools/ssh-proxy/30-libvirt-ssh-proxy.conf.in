@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+Host qemu/* qemu:system/* qemu:session/*
+    ProxyCommand @libexecdir@/libvirt-ssh-proxy %h %p
+    ProxyUseFdpass yes
+    CheckHostIP no

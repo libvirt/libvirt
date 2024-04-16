@@ -343,3 +343,5 @@ endif
 if wireshark_dep.found()
   subdir('wireshark')
 endif
+
+subdir('ssh-proxy')

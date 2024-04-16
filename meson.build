@@ -113,6 +113,11 @@ endif
 confdir = sysconfdir / meson.project_name()
 pkgdatadir = datadir / meson.project_name()
 
+sshconfdir = get_option('sshconfdir')
+if sshconfdir == ''
+  sshconfdir = sysconfdir / 'ssh' / 'ssh_config.d'
+endif
+
 
 # generate configmake.h header
 
@@ -690,12 +695,14 @@ if host_machine.system() == 'linux'
   symbols += [
     # process management
     [ 'sys/syscall.h', 'SYS_pidfd_open' ],
+    # vsock
+    [ 'linux/vm_sockets.h', 'struct sockaddr_vm', '#include <sys/socket.h>' ],
   ]
 endif
 
 foreach symbol : symbols
   if cc.has_header_symbol(symbol[0], symbol[1], args: '-D_GNU_SOURCE', prefix: symbol.get(2, ''))
-    conf.set('WITH_DECL_@0@'.format(symbol[1].to_upper()), 1)
+    conf.set('WITH_DECL_@0@'.format(symbol[1].underscorify().to_upper()), 1)
   endif
 endforeach
 
@@ -2033,6 +2040,12 @@ if not get_option('pm_utils').disabled()
   endif
 endif
 
+if not get_option('ssh_proxy').disabled() and conf.has('WITH_DECL_STRUCT_SOCKADDR_VM')
+  conf.set('WITH_SSH_PROXY', 1)
+elif get_option('ssh_proxy').enabled()
+  error('ssh proxy requires vm_sockets.h which wasn\'t found')
+endif
+
 if not get_option('sysctl_config').disabled() and host_machine.system() == 'linux'
   conf.set('WITH_SYSCTL', 1)
 elif get_option('sysctl_config').enabled()
@@ -2344,6 +2357,7 @@ misc_summary = {
   'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
   'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
   'TLS priority': conf.get_unquoted('TLS_PRIORITY'),
+  'SSH proxy': conf.has('WITH_SSH_PROXY'),
   'sysctl config': conf.has('WITH_SYSCTL'),
   'userfaultfd sysctl': conf.has('WITH_USERFAULTFD_SYSCTL'),
 }

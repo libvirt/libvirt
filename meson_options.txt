@@ -42,6 +42,7 @@ option('sanlock', type: 'feature', value: 'auto', description: 'sanlock support'
 option('sasl', type: 'feature', value: 'auto', description: 'sasl support')
 option('selinux', type: 'feature', value: 'auto', description: 'selinux support')
 option('selinux_mount', type: 'string', value: '', description: 'set SELinux mount point')
+option('sshconfdir', type: 'string', value: '', description: 'directory for SSH client configuration')
 # dep:pciaccess
 option('udev', type: 'feature', value: 'auto', description: 'udev support')
 # dep:driver_remote
@@ -126,6 +127,7 @@ option('nbdkit', type: 'feature', value: 'auto', description: 'Build nbdkit stor
 # dep:nbdkit
 option('nbdkit_config_default', type: 'feature', value: 'auto', description: 'Whether to use nbdkit storage backend for network disks by default (configurable)')
 option('pm_utils', type: 'feature', value: 'auto', description: 'use pm-utils for power management')
+option('ssh_proxy', type: 'feature', value: 'auto', description: 'Build ssh-proxy for ssh over vsock')
 option('sysctl_config', type: 'feature', value: 'auto', description: 'Whether to install sysctl configs')
 # dep:sysctl_config
 option('userfaultfd_sysctl', type: 'feature', value: 'auto', description: 'Whether to install sysctl config for enabling unprivileged userfaultfd')

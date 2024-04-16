@@ -359,6 +359,7 @@ src/vz/vz_utils.c
 src/vz/vz_utils.h
 tests/virpolkittest.c
 tools/libvirt-guests.sh.in
+tools/ssh-proxy/ssh-proxy.c
 tools/virsh-backup.c
 tools/virsh-checkpoint.c
 tools/virsh-completer-host.c
