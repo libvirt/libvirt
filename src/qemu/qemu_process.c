@@ -4437,8 +4437,6 @@ qemuProcessUpdateLiveGuestCPU(virDomainObj *vm,
                               virCPUData *disabled)
 {
     virDomainDef *def = vm->def;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virCPUDef) orig = NULL;
     int rc;
 
     if (!enabled)
@@ -4449,19 +4447,11 @@ qemuProcessUpdateLiveGuestCPU(virDomainObj *vm,
          !def->cpu->model))
         return 0;
 
-    orig = virCPUDefCopy(def->cpu);
-
-    if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, enabled, disabled)) < 0) {
+    if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, enabled, disabled)) < 0)
         return -1;
-    } else if (rc == 0) {
-        /* Store the original CPU in priv if QEMU changed it and we didn't
-         * get the original CPU via migration, restore, or snapshot revert.
-         */
-        if (!priv->origCPU && !virCPUDefIsEqual(def->cpu, orig, false))
-            priv->origCPU = g_steal_pointer(&orig);
 
+    if (rc == 0)
         def->cpu->check = VIR_CPU_CHECK_FULL;
-    }
 
     return 0;
 }
@@ -9146,6 +9136,11 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     qemuDomainVcpuPersistOrder(obj->def);
+
+    /* Make sure the original CPU is always preserved in priv->origCPU. */
+    if (!priv->origCPU &&
+        qemuDomainUpdateCPU(obj, NULL, &priv->origCPU) < 0)
+        goto error;
 
     if (qemuProcessRefreshCPU(driver, obj) < 0)
         goto error;

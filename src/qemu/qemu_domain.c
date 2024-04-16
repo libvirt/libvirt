@@ -10995,12 +10995,13 @@ virSaveCookieCallbacks virQEMUDriverDomainSaveCookie = {
  * @vm: domain which is being started
  * @cpu: CPU updated when the domain was running previously (before migration,
  *       snapshot, or save)
- * @origCPU: where to store the original CPU from vm->def in case @cpu was
- *           used instead
+ * @origCPU: where to store the original CPU from vm->def
  *
- * Replace the CPU definition with the updated one when QEMU is new enough to
- * allow us to check extra features it is about to enable or disable when
- * starting a domain. The original CPU is stored in @origCPU.
+ * Save the original CPU definition from inactive XML in @origCPU so that we
+ * can safely update it and still be able to check what exactly a user asked
+ * for. The domain definition will either contain a copy of the original CPU
+ * definition or a copy of @cpu in case the domain was already running and
+ * we're just restoring a saved state or preparing for incoming migration.
  *
  * Returns 0 on success, -1 on error.
  */
@@ -11013,18 +11014,24 @@ qemuDomainUpdateCPU(virDomainObj *vm,
 
     *origCPU = NULL;
 
-    if (!cpu || !vm->def->cpu ||
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION) ||
-        virCPUDefIsEqual(vm->def->cpu, cpu, false))
+    if (!vm->def->cpu)
         return 0;
 
-    if (!(cpu = virCPUDefCopy(cpu)))
-        return -1;
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+        return 0;
 
-    VIR_DEBUG("Replacing CPU def with the updated one");
+    /* nothing to do if only topology part of CPU def is used */
+    if (vm->def->cpu->mode == VIR_CPU_MODE_CUSTOM && !vm->def->cpu->model)
+        return 0;
 
-    *origCPU = vm->def->cpu;
-    vm->def->cpu = cpu;
+    VIR_DEBUG("Replacing CPU definition");
+
+    *origCPU = g_steal_pointer(&vm->def->cpu);
+
+    if (cpu)
+        vm->def->cpu = virCPUDefCopy(cpu);
+    else
+        vm->def->cpu = virCPUDefCopy(*origCPU);
 
     return 0;
 }
