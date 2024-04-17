@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-16 13:35+0000\n"
+"PO-Revision-Date: 2024-04-17 19:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8342,7 +8342,7 @@ msgid "Failed to send migration data to destination host"
 msgstr "Misslyckades med att skicka migreringsdata till destinationsvärden"
 
 msgid "Failed to send net-add request to CH"
-msgstr ""
+msgstr "Misslyckades att skicka en net-add-begäran till CH"
 
 #, c-format
 msgid "Failed to send request to init control %1$s"
@@ -8514,7 +8514,7 @@ msgid "Failed to shutdown domain '%1$s'"
 msgstr "Misslyckades att stänga av domänen ”%1$s”"
 
 msgid "Failed to shutoff after domain save"
-msgstr ""
+msgstr "Misslyckades att stänga av efter att domänen sparats"
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8722,7 +8722,7 @@ msgstr "Misslyckades att uppdatera nätverket %1$s"
 
 #, c-format
 msgid "Failed to update node device %1$s from '%2$s'"
-msgstr ""
+msgstr "Misslyckades att updatera nodenheten %1$s från ”%2$s”"
 
 msgid "Failed to verify peer's certificate"
 msgstr "Misslyckades med att verifiera motpartens certifikat"
@@ -8742,7 +8742,7 @@ msgid "Failed to write '%1$s'"
 msgstr "Misslyckades att skriva ”%1$s”"
 
 msgid "Failed to write file header"
-msgstr ""
+msgstr "Misslyckades att skriva filhuvudet"
 
 msgid "Failed to write pixel data"
 msgstr "Misslyckades med att skriva pixeldata"
@@ -8763,13 +8763,13 @@ msgid "Failed to write vmx file '%1$s'"
 msgstr "Misslyckades med att skriva till vmx-filen ”%1$s”"
 
 msgid "Failed to write xml definition"
-msgstr ""
+msgstr "Misslyckades att skriva xml-definitionen"
 
 msgid "Failed to write xml description"
 msgstr "Misslyckades med att skriva xml-beskrivningen"
 
 msgid "Failed while adding guest interfaces"
-msgstr ""
+msgstr "Misslyckades när gästgränssnitt lades till"
 
 msgid "Failed! Volume not removed."
 msgstr "Misslyckat! Volymen inte borttagen."
@@ -9085,16 +9085,16 @@ msgid "Get or set perf event"
 msgstr "Hämta eller sätt perf-händelse"
 
 msgid "Get or set the current blkio parameters for a guest domain."
-msgstr ""
+msgstr "Hämta eller sätt aktuella blkio-parametrar för en gästdomän."
 
 msgid "Get or set the current memory parameters for a guest domain."
-msgstr ""
+msgstr "Hämta eller sätt de aktuella minnesparametrarna för en gästdomän."
 
 msgid "Get or set the current numa parameters for a guest domain."
-msgstr ""
+msgstr "Hämta eller sätt de aktuella numa-parametrarna för en gästdomän."
 
 msgid "Get or set the current perf events for a guest domain."
-msgstr ""
+msgstr "Hämta eller sätt de aktuella perf-händelserna för en gästdomän."
 
 msgid "Get or set the current snapshot"
 msgstr "Hämta eller sätt den aktuella ögonblicksbilden"
@@ -9188,7 +9188,7 @@ msgid "Guest agent not available for now"
 msgstr "Gästagenten är inte tillgänglig för tillfället"
 
 msgid "Guest networking is not supported by this version of ch"
-msgstr ""
+msgstr "Gästnätver stödjs inte av denna version av ch"
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "HMAT stödjs inte med denna QEMU"
@@ -11917,6 +11917,8 @@ msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
 msgstr ""
+"OBS: ansluter till standarddemonen. Ange demon med ”-c” (t.ex. "
+"virtqemud:///system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON-typen kan inte konverteras till en kommandorad"
@@ -11965,6 +11967,8 @@ msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
 msgstr ""
+"NUMA-läge, någon av strict, preferred eller interleave eller ett tal från "
+"uppräkningstypen virDomainNumatuneMemMode"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -12790,7 +12794,7 @@ msgid "Only 1 IDE controller is supported"
 msgstr "Endast 1 IDE-styrenhet stödjs"
 
 msgid "Only 1 cluster per die is supported"
-msgstr ""
+msgstr "Endast 1 kluster per skiva stödjs"
 
 msgid "Only 1 die per socket is supported"
 msgstr "Endast 1 chipp per sockel stödjs"
@@ -13023,12 +13027,14 @@ msgid "Option --file is required"
 msgstr "Flaggan --file krävs"
 
 msgid "Option --transient is incompatible with --persistent and --inactive"
-msgstr ""
+msgstr "Flaggan --transient är inte kompatibel med --persistent och --inactive"
 
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
 msgstr ""
+"Flaggan --tree är inte kompatibel med --cap, --inactive, --persistent och "
+"--transient"
 
 msgid "Option argument is empty"
 msgstr "Flaggargumentet är tomt"
@@ -13398,11 +13404,11 @@ msgstr "Polkit-autentisering försökt, trots att polkit inte är tillgängligt"
 
 #, c-format
 msgid "Poll on sock %1$d failed"
-msgstr ""
+msgstr "Pollande av uttag %1$d misslyckades"
 
 #, c-format
 msgid "Poll on sock %1$d timed out"
-msgstr ""
+msgstr "Pollande av uttag %1$d överskred tidsgränsen"
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13810,7 +13816,7 @@ msgid "Relative backing during copy not supported yet"
 msgstr "Relativ backning under kopiering stödjs inte ännu"
 
 msgid "Reload domain's graphics display certificates"
-msgstr ""
+msgstr "Ladda om domänens grafiskdisplaycertifikat"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
@@ -13893,7 +13899,7 @@ msgstr "Den begärda åtgärden är inte giltig: %1$s"
 
 #, c-format
 msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
-msgstr ""
+msgstr "Begärd storleksändring till ”%1$llu” men enhetsstorleken är ”%2$llu”"
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
