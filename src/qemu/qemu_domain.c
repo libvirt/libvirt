@@ -11050,29 +11050,27 @@ qemuDomainUpdateCPU(virDomainObj *vm,
  *
  * This function can only be used on an active domain or when restoring a
  * domain which was running.
- *
- * Returns 0 on success, -1 on error.
  */
-int
+void
 qemuDomainFixupCPUs(virDomainObj *vm,
                     virCPUDef **origCPU)
 {
     virArch arch = vm->def->os.arch;
 
     if (!ARCH_IS_X86(arch))
-        return 0;
+        return;
 
     if (!vm->def->cpu ||
         vm->def->cpu->mode != VIR_CPU_MODE_CUSTOM ||
         !vm->def->cpu->model)
-        return 0;
+        return;
 
     /* Missing origCPU means QEMU created exactly the same virtual CPU which
      * we asked for or libvirt was too old to mess up the translation from
      * host-model.
      */
     if (!*origCPU)
-        return 0;
+        return;
 
     if (virCPUDefFindFeature(vm->def->cpu, "cmt")) {
         g_autoptr(virCPUDef) fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu);
@@ -11093,8 +11091,6 @@ qemuDomainFixupCPUs(virDomainObj *vm,
         virCPUDefFree(*origCPU);
         *origCPU = g_steal_pointer(&fixedOrig);
     }
-
-    return 0;
 }
 
 

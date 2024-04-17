@@ -8278,9 +8278,8 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     /* No cookie means libvirt which saved the domain was too old to mess up
      * the CPU definitions.
      */
-    if (cookie &&
-        qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
-        return -1;
+    if (cookie)
+        qemuDomainFixupCPUs(vm, &cookie->cpu);
 
     if (cookie && !cookie->slirpHelper)
         priv->disableSlirp = true;
@@ -8926,8 +8925,7 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
          * case the host-model is known to not contain features which QEMU
          * doesn't know about.
          */
-        if (qemuDomainFixupCPUs(vm, &priv->origCPU) < 0)
-            return -1;
+        qemuDomainFixupCPUs(vm, &priv->origCPU);
     }
 
     return 0;

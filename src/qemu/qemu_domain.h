@@ -985,7 +985,7 @@ qemuDomainUpdateCPU(virDomainObj *vm,
                     virCPUDef *cpu,
                     virCPUDef **origCPU);
 
-int
+void
 qemuDomainFixupCPUs(virDomainObj *vm,
                     virCPUDef **origCPU);
 
