@@ -11002,10 +11002,8 @@ virSaveCookieCallbacks virQEMUDriverDomainSaveCookie = {
  * for. The domain definition will either contain a copy of the original CPU
  * definition or a copy of @cpu in case the domain was already running and
  * we're just restoring a saved state or preparing for incoming migration.
- *
- * Returns 0 on success, -1 on error.
  */
-int
+void
 qemuDomainUpdateCPU(virDomainObj *vm,
                     virCPUDef *cpu,
                     virCPUDef **origCPU)
@@ -11015,14 +11013,14 @@ qemuDomainUpdateCPU(virDomainObj *vm,
     *origCPU = NULL;
 
     if (!vm->def->cpu)
-        return 0;
+        return;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
-        return 0;
+        return;
 
     /* nothing to do if only topology part of CPU def is used */
     if (vm->def->cpu->mode == VIR_CPU_MODE_CUSTOM && !vm->def->cpu->model)
-        return 0;
+        return;
 
     VIR_DEBUG("Replacing CPU definition");
 
@@ -11032,8 +11030,6 @@ qemuDomainUpdateCPU(virDomainObj *vm,
         vm->def->cpu = virCPUDefCopy(cpu);
     else
         vm->def->cpu = virCPUDefCopy(*origCPU);
-
-    return 0;
 }
 
 
