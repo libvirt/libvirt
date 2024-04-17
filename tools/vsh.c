@@ -528,9 +528,11 @@ vshCmdGetOption(vshControl *ctl,
 
 
 static void
-vshCmdOptAssign(vshCmd *cmd,
+vshCmdOptAssign(vshControl *ctl,
+                vshCmd *cmd,
                 vshCmdOpt *opt,
-                const char *val)
+                const char *val,
+                bool report)
 {
     cmd->lastopt = opt;
 
@@ -539,14 +541,28 @@ vshCmdOptAssign(vshCmd *cmd,
     switch (opt->def->type) {
     case VSH_OT_BOOL:
         /* nothing to do */
+        if (report) {
+            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(bool)\n",
+                     cmd->def->name, opt->def->name);
+        }
         break;
 
     case VSH_OT_STRING:
     case VSH_OT_INT:
+        if (report) {
+            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(optdata): %s\n",
+                     cmd->def->name, opt->def->name, NULLSTR(val));
+        }
+
         opt->data = g_strdup(val);
         break;
 
     case VSH_OT_ARGV:
+        if (report) {
+            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(argv: %zu): %s\n",
+                     cmd->def->name, opt->def->name, opt->nargv, NULLSTR(val));
+        }
+
         VIR_EXPAND_N(opt->argv, opt->nargv, 2);
         /* VIR_EXPAND_N updates count */
         opt->nargv--;
@@ -1538,7 +1554,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                         goto syntaxError;
                     if (tk != VSH_TK_ARG) {
                         if (partial) {
-                            vshCmdOptAssign(cmd, opt, tkdata);
+                            vshCmdOptAssign(ctl, cmd, opt, tkdata, !partial);
                             VIR_FREE(tkdata);
                         } else {
                             vshError(ctl,
@@ -1576,15 +1592,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
             }
 
             if (opt) {
-                vshCmdOptAssign(cmd, opt, tkdata);
+                vshCmdOptAssign(ctl, cmd, opt, tkdata, !partial);
                 VIR_FREE(tkdata);
-
-                if (!partial)
-                    vshDebug(ctl, VSH_ERR_INFO, "%s: %s(%s): %s\n",
-                             cmd->def->name,
-                             opt->def->name,
-                             opt->def->type != VSH_OT_BOOL ? _("optdata") : _("bool"),
-                             opt->def->type != VSH_OT_BOOL ? opt->data : _("(none)"));
             }
         }
 
