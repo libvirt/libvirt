@@ -327,11 +327,6 @@ vshCmddefCheckInternals(vshControl *ctl,
     for (i = 0; cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
 
-        if (i > 63) {
-            vshError(ctl, "command '%s' has too many options", cmd->name);
-            return -1; /* too many options */
-        }
-
         if (missingCompleters && !opt->completer) {
             switch (opt->type) {
             case VSH_OT_STRING:
