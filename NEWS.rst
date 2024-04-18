@@ -22,6 +22,11 @@ v10.4.0 (unreleased)
     It is now possible to set on/off ``ras`` feature in the domain XML for virt
     (Arm) machine type as ``<ras state='on'/>``.
 
+  * SSH proxy for VM
+
+    Libvirt now installs a binary helper that allows connecting to QEMU domains
+    via SSH using the following scheme: ``ssh user@qemu/virtualMachine``.
+
 * **Improvements**
 
 * **Bug fixes**
