@@ -152,3 +152,10 @@ If there's no record for either of the aforementioned commands, it's very likely
 that NSS module won't find anything and vice versa. As of ``v3.0.0`` libvirt
 provides ``libvirt_guest`` NSS module that doesn't have this limitation.
 However, the statement is still true for the ``libvirt`` NSS module.
+
+Alternatives
+------------
+
+As of ``v10.3.0`` libvirt implements an `SSH proxy <ssh-proxy.html>`__ which
+doesn't require any network interface to SSH into the guest as SSH flows
+through a VSOCK device.

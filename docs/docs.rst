@@ -47,6 +47,9 @@ Deployment / operation
 `Hooks <hooks.html>`__
    Hooks for system specific management
 
+`SSH Proxy <ssh-proxy.html>`__
+   Enable SSH into guests over a VSOCK
+
 `NSS module <nss.html>`__
    Enable domain host name translation to IP addresses
 
