@@ -37,11 +37,11 @@
 # define NULLSTR(s) ((s) ? (s) : "<null>")
 # define ERROR(...) \
 do { \
-    char ebuf[1024]; \
-    strerror_r(errno, ebuf, sizeof(ebuf)); \
+    char ebuf[512]; \
+    const char *errmsg = strerror_r(errno, ebuf, sizeof(ebuf)); \
     fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
     fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, " : %s\n", ebuf); \
+    fprintf(stderr, " : %s\n", errmsg); \
     fprintf(stderr, "\n"); \
 } while (0)
 
