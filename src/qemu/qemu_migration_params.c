@@ -1158,6 +1158,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
                                      *tlsAlias) < 0)
         return -1;
 
+    /* QEMU interprets an empty string for hostname as if it is not populated */
     if (!migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].set &&
         qemuMigrationParamsSetString(migParams,
                                      QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
@@ -1659,13 +1660,23 @@ qemuMigrationCapsGet(virDomainObj *vm,
  * @migParams: Migration params object
  *
  * Fetches the value of the QEMU_MIGRATION_PARAM_TLS_HOSTNAME parameter which is
- * passed from the user as VIR_MIGRATE_PARAM_TLS_DESTINATION
+ * passed from the user as VIR_MIGRATE_PARAM_TLS_DESTINATION.
+ *
+ * In contrast with the migration parameter semantics, where an empty string
+ * is considered as if the hostname was not provided, this function will return
+ * NULL instead of an empty string as other parts of QEMU expect that the
+ * hostname is not provided at all.
  */
 const char *
 qemuMigrationParamsGetTLSHostname(qemuMigrationParams *migParams)
 {
+    const char *hostname = migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].value.s;
+
     if (!migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].set)
         return NULL;
 
-    return migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].value.s;
+    if (STREQ(hostname, ""))
+        return NULL;
+
+    return hostname;
 }
