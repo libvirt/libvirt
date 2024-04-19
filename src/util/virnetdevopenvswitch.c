@@ -164,7 +164,9 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     cmd = virNetDevOpenvswitchCreateCmd(&errbuf);
     virCommandAddArgList(cmd, "--", "--may-exist",
-                         "add-port", brname, ifname, NULL);
+                         "add-port", brname, ifname,
+                         "--", "set", "Port", ifname, "other_config:transient=true",
+                         NULL);
 
     virNetDevOpenvswitchConstructVlans(cmd, virtVlan);
 
