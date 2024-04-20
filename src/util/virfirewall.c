@@ -470,7 +470,7 @@ void virFirewallStartTransaction(virFirewall *firewall,
  * Returns the virFirewallTransactionFlags for the currently active
  * group (transaction) in @firewall.
  */
-static virFirewallTransactionFlags G_GNUC_UNUSED
+static virFirewallTransactionFlags
 virFirewallTransactionGetFlags(virFirewall *firewall)
 {
     return firewall->groups[firewall->currentGroup]->actionFlags;
@@ -525,16 +525,25 @@ virFirewallCmdToString(const char *cmd,
 }
 
 
+#define VIR_IPTABLES_ARG_IS_CREATE(arg) \
+    (STREQ(arg, "--insert") || STREQ(arg, "-I") || \
+     STREQ(arg, "--append") || STREQ(arg, "-A"))
+
+
 static int
-virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
-                           char **output)
+virFirewallCmdIptablesApply(virFirewall *firewall,
+                            virFirewallCmd *fwCmd,
+                            char **output)
 {
-    size_t i;
     const char *bin = virFirewallLayerCommandTypeToString(fwCmd->layer);
+    bool checkRollback = (virFirewallTransactionGetFlags(firewall) &
+                          VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK);
+    bool needRollback = false;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *cmdStr = NULL;
-    int status;
     g_autofree char *error = NULL;
+    size_t i;
+    int status;
 
     if (!bin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -558,8 +567,13 @@ virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
         break;
     }
 
-    for (i = 0; i < fwCmd->argsLen; i++)
+    for (i = 0; i < fwCmd->argsLen; i++) {
+        /* the -I/-A arg could be at any position in the list */
+        if (checkRollback && VIR_IPTABLES_ARG_IS_CREATE(fwCmd->args[i]))
+            needRollback = true;
+
         virCommandAddArg(cmd, fwCmd->args[i]);
+    }
 
     cmdStr = virCommandToString(cmd, false);
     VIR_INFO("Running firewall command '%s'", NULLSTR(cmdStr));
@@ -571,8 +585,10 @@ virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
         return -1;
 
     if (status != 0) {
+        /* the command failed, decide whether or not to report it */
         if (fwCmd->ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
+            return 0;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to run firewall command %1$s: %2$s"),
@@ -580,6 +596,31 @@ virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
             VIR_FREE(*output);
             return -1;
         }
+    }
+
+    /* the command was successful, see if we need to add a
+     * rollback command
+     */
+
+    if (needRollback) {
+        virFirewallCmd *rollback
+            = virFirewallAddRollbackCmd(firewall, fwCmd->layer, NULL);
+        g_autofree char *rollbackStr = NULL;
+
+        for (i = 0; i < fwCmd->argsLen; i++) {
+            /* iptables --delete wants the entire commandline that
+             * was used for --insert but with s/insert/delete/
+             */
+            if (VIR_IPTABLES_ARG_IS_CREATE(fwCmd->args[i])) {
+                virFirewallCmdAddArg(firewall, rollback, "--delete");
+            } else {
+                virFirewallCmdAddArg(firewall, rollback, fwCmd->args[i]);
+            }
+        }
+
+        rollbackStr = virFirewallCmdToString(virFirewallLayerCommandTypeToString(fwCmd->layer),
+                                             rollback);
+        VIR_DEBUG("Recording Rollback command '%s'", NULLSTR(rollbackStr));
     }
 
     return 0;
@@ -599,7 +640,7 @@ virFirewallApplyCmd(virFirewall *firewall,
         return -1;
     }
 
-    if (virFirewallApplyCmdDirect(fwCmd, &output) < 0)
+    if (virFirewallCmdIptablesApply(firewall, fwCmd, &output) < 0)
         return -1;
 
     if (fwCmd->queryCB && output) {
