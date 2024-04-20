@@ -211,14 +211,19 @@ virFirewallAddCmdFullV(virFirewall *firewall,
     fwCmd->layer = layer;
     fwCmd->queryCB = cb;
     fwCmd->queryOpaque = opaque;
-    fwCmd->ignoreErrors = ignoreErrors;
 
     while ((str = va_arg(args, char *)) != NULL)
         ADD_ARG(fwCmd, str);
 
     if (group->addingRollback) {
+        fwCmd->ignoreErrors = true; /* always ignore errors when rolling back */
         VIR_APPEND_ELEMENT_COPY(group->rollback, group->nrollback, fwCmd);
     } else {
+        /* when not rolling back, ignore errors if this group (transaction)
+         * was started with VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS *or*
+         * if this specific rule was created with ignoreErrors == true
+         */
+        fwCmd->ignoreErrors = ignoreErrors || (group->actionFlags & VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
         VIR_APPEND_ELEMENT_COPY(group->action, group->naction, fwCmd);
     }
 
@@ -466,8 +471,7 @@ virFirewallCmdToString(const char *cmd,
 
 static int
 virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
-                          bool ignoreErrors,
-                          char **output)
+                           char **output)
 {
     size_t i;
     const char *bin = virFirewallLayerCommandTypeToString(fwCmd->layer);
@@ -511,7 +515,7 @@ virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
         return -1;
 
     if (status != 0) {
-        if (ignoreErrors) {
+        if (fwCmd->ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -528,14 +532,10 @@ virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
 
 static int
 virFirewallApplyCmd(virFirewall *firewall,
-                    virFirewallCmd *fwCmd,
-                    bool ignoreErrors)
+                    virFirewallCmd *fwCmd)
 {
     g_autofree char *output = NULL;
     g_auto(GStrv) lines = NULL;
-
-    if (fwCmd->ignoreErrors)
-        ignoreErrors = fwCmd->ignoreErrors;
 
     if (fwCmd->argsLen == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -543,7 +543,7 @@ virFirewallApplyCmd(virFirewall *firewall,
         return -1;
     }
 
-    if (virFirewallApplyCmdDirect(fwCmd, ignoreErrors, &output) < 0)
+    if (virFirewallApplyCmdDirect(fwCmd, &output) < 0)
         return -1;
 
     if (fwCmd->queryCB && output) {
@@ -570,7 +570,7 @@ virFirewallApplyGroup(virFirewall *firewall,
                       size_t idx)
 {
     virFirewallGroup *group = firewall->groups[idx];
-    bool ignoreErrors = (group->actionFlags & VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+
     size_t i;
 
     VIR_INFO("Starting transaction for firewall=%p group=%p flags=0x%x",
@@ -578,9 +578,7 @@ virFirewallApplyGroup(virFirewall *firewall,
     firewall->currentGroup = idx;
     group->addingRollback = false;
     for (i = 0; i < group->naction; i++) {
-        if (virFirewallApplyCmd(firewall,
-                                group->action[i],
-                                ignoreErrors) < 0)
+        if (virFirewallApplyCmd(firewall, group->action[i]) < 0)
             return -1;
     }
     return 0;
@@ -598,7 +596,7 @@ virFirewallRollbackGroup(virFirewall *firewall,
     firewall->currentGroup = idx;
     group->addingRollback = true;
     for (i = 0; i < group->nrollback; i++)
-        ignore_value(virFirewallApplyCmd(firewall, group->rollback[i], true));
+        ignore_value(virFirewallApplyCmd(firewall, group->rollback[i]));
 }
 
 
