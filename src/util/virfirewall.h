@@ -22,6 +22,8 @@
 
 #include "internal.h"
 #include "virenum.h"
+#include "virbuffer.h"
+#include "virxml.h"
 
 typedef struct _virFirewall virFirewall;
 
@@ -130,5 +132,12 @@ void virFirewallStartRollback(virFirewall *firewall,
                               unsigned int flags);
 
 int virFirewallApply(virFirewall *firewall);
+
+int virFirewallParseXML(virFirewall **firewall,
+                        xmlNodePtr node,
+                        xmlXPathContextPtr ctxt);
+
+int virFirewallFormat(virBuffer *buf,
+                      virFirewall *firewall);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFirewall, virFirewallFree);

@@ -39,6 +39,14 @@ VIR_ENUM_IMPL(virFirewallBackend,
               VIR_FIREWALL_BACKEND_LAST,
               "iptables");
 
+VIR_ENUM_DECL(virFirewallLayer);
+VIR_ENUM_IMPL(virFirewallLayer,
+              VIR_FIREWALL_LAYER_LAST,
+              "ethernet",
+              "ipv4",
+              "ipv6",
+);
+
 typedef struct _virFirewallGroup virFirewallGroup;
 
 VIR_ENUM_DECL(virFirewallLayerCommand);
@@ -825,5 +833,216 @@ virFirewallNewFromRollback(virFirewall *original,
     else
         *fwRemoval = g_steal_pointer(&firewall);
 
+    return 0;
+}
+
+
+/* virFirewallGetFlagsFromNode:
+ * @node: the xmlNode to check for an ignoreErrors attribute
+ *
+ * A short helper to get the setting of the ignorErrors attribute from
+ * an xmlNode.  Returns -1 on error (with error reported), or the
+ * VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS bit set/reset according to
+ * the value of the attribute.
+ */
+static int
+virFirewallGetFlagsFromNode(xmlNodePtr node)
+{
+    virTristateBool ignoreErrors;
+
+    if (virXMLPropTristateBool(node, "ignoreErrors", VIR_XML_PROP_NONE, &ignoreErrors) < 0)
+        return -1;
+
+    if (ignoreErrors == VIR_TRISTATE_BOOL_YES)
+        return VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS;
+    return 0;
+}
+
+
+/**
+ * virFirewallParseXML:
+ * @firewall: pointer to virFirewall* to fill in with new virFirewall object
+ *
+ * Construct a new virFirewall object according to the XML in
+ * xmlNodePtr.  Return 0 (and new object) on success, or -1 (with
+ * error reported) on error.
+ *
+ * Example of <firewall> element XML:
+ *
+ * <firewall backend='iptables|nftables'>
+ *   <group ignoreErrors='yes|no'>
+ *     <action layer='ethernet|ipv4|ipv6' ignoreErrors='yes|no'>
+ *       <args>
+ *         <item>arg1</item>
+ *         <item>arg2</item>
+ *         ...
+ *       </args>
+ *     </action>
+ *     <action ...>
+ *       ...
+       </action>
+ *     ...
+ *   </group>
+ *   ...
+ * </firewall>
+ */
+int
+virFirewallParseXML(virFirewall **firewall,
+                    xmlNodePtr node,
+                    xmlXPathContextPtr ctxt)
+{
+    g_autoptr(virFirewall) newfw = NULL;
+    virFirewallBackend backend;
+    g_autofree xmlNodePtr *groupNodes = NULL;
+    ssize_t ngroups;
+    size_t g;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+    ctxt->node = node;
+
+    if (virXMLPropEnum(node, "backend", virFirewallBackendTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &backend) < 0) {
+        return -1;
+    }
+
+    newfw = virFirewallNew(backend);
+
+    newfw->name = virXMLPropString(node, "name");
+
+    ngroups = virXPathNodeSet("./group", ctxt, &groupNodes);
+    if (ngroups < 0)
+        return -1;
+
+    for (g = 0; g < ngroups; g++) {
+        int flags = 0;
+        g_autofree xmlNodePtr *actionNodes = NULL;
+        ssize_t nactions;
+        size_t a;
+
+        ctxt->node = groupNodes[g];
+        nactions = virXPathNodeSet("./action", ctxt, &actionNodes);
+        if (nactions < 0)
+            return -1;
+        if (nactions == 0)
+            continue;
+
+        if ((flags = virFirewallGetFlagsFromNode(groupNodes[g])) < 0)
+            return -1;
+
+        virFirewallStartTransaction(newfw, flags);
+
+        for (a = 0; a < nactions; a++) {
+            g_autofree xmlNodePtr *argsNodes = NULL;
+            ssize_t nargs;
+            size_t i;
+            virFirewallLayer layer;
+            virFirewallCmd *action;
+            bool ignoreErrors;
+
+            ctxt->node = actionNodes[a];
+
+            if (!(ctxt->node = virXPathNode("./args", ctxt)))
+                continue;
+
+            if ((flags = virFirewallGetFlagsFromNode(actionNodes[a])) < 0)
+                return -1;
+
+            ignoreErrors = flags & VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS;
+
+            if (virXMLPropEnum(actionNodes[a], "layer",
+                               virFirewallLayerTypeFromString,
+                               VIR_XML_PROP_REQUIRED, &layer) < 0) {
+                return -1;
+            }
+
+            nargs = virXPathNodeSet("./item", ctxt, &argsNodes);
+            if (nargs < 0)
+                return -1;
+            if (nargs == 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Invalid firewall command has 0 arguments"));
+                return -1;
+            }
+
+            action = virFirewallAddCmdFull(newfw, layer, ignoreErrors,
+                                           NULL, NULL, NULL);
+            for (i = 0; i < nargs; i++) {
+
+                char *arg = virXMLNodeContentString(argsNodes[i]);
+                if (!arg)
+                    return -1;
+
+                virFirewallCmdAddArg(newfw, action, arg);
+            }
+        }
+    }
+
+    *firewall = g_steal_pointer(&newfw);
+    return 0;
+}
+
+
+/**
+ * virFirewallFormat:
+ * @buf: output buffer
+ * @firewall: the virFirewall object to format as XML
+ *
+ * Format virFirewall object @firewall into @buf as XML.
+ * Returns 0 on success, -1 on failure.
+ *
+ */
+int
+virFirewallFormat(virBuffer *buf,
+                  virFirewall *firewall)
+{
+    size_t g;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virBufferEscapeString(&attrBuf, " name='%s'", firewall->name);
+    virBufferAsprintf(&attrBuf, " backend='%s'",
+                      virFirewallBackendTypeToString(virFirewallGetBackend(firewall)));
+
+    for (g = 0; g <  firewall->ngroups; g++) {
+        virFirewallGroup *group = firewall->groups[g];
+        bool groupIgnoreErrors  = (group->actionFlags &
+                                   VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+        size_t a;
+
+        virBufferAddLit(&childBuf, "<group");
+        if (groupIgnoreErrors)
+            virBufferAddLit(&childBuf, " ignoreErrors='yes'");
+        virBufferAddLit(&childBuf, ">\n");
+        virBufferAdjustIndent(&childBuf, 2);
+
+        for (a = 0; a < group->naction; a++) {
+            virFirewallCmd *action = group->action[a];
+            size_t i;
+
+            virBufferAsprintf(&childBuf, "<action layer='%s'",
+                              virFirewallLayerTypeToString(action->layer));
+            /* if the entire group has ignoreErrors='yes', then it's
+             * redundant to have it for an action of the group
+            */
+            if (action->ignoreErrors && !groupIgnoreErrors)
+                virBufferAddLit(&childBuf, " ignoreErrors='yes'");
+            virBufferAddLit(&childBuf, ">\n");
+
+            virBufferAdjustIndent(&childBuf, 2);
+            virBufferAddLit(&childBuf, "<args>\n");
+            virBufferAdjustIndent(&childBuf, 2);
+            for (i = 0; i < virFirewallCmdGetArgCount(action); i++)
+                virBufferEscapeString(&childBuf, "<item>%s</item>\n", action->args[i]);
+            virBufferAdjustIndent(&childBuf, -2);
+            virBufferAddLit(&childBuf, "</args>\n");
+            virBufferAdjustIndent(&childBuf, -2);
+            virBufferAddLit(&childBuf, "</action>\n");
+        }
+
+        virBufferAdjustIndent(&childBuf, -2);
+        virBufferAddLit(&childBuf, "</group>\n");
+    }
+
+    virXMLFormatElement(buf, "firewall", &attrBuf, &childBuf);
     return 0;
 }
