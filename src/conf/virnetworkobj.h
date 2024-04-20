@@ -23,6 +23,7 @@
 
 #include "network_conf.h"
 #include "virnetworkportdef.h"
+#include "virfirewall.h"
 
 typedef struct _virNetworkObj virNetworkObj;
 
@@ -75,6 +76,13 @@ virNetworkObjGetFloorSum(virNetworkObj *obj);
 void
 virNetworkObjSetFloorSum(virNetworkObj *obj,
                          unsigned long long floor_sum);
+
+virFirewall *
+virNetworkObjGetFwRemoval(virNetworkObj *obj);
+
+void
+virNetworkObjSetFwRemoval(virNetworkObj *obj,
+                          virFirewall *fwRemoval);
 
 void
 virNetworkObjSetMacMap(virNetworkObj *obj,
