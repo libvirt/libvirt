@@ -37,12 +37,12 @@ int networkCheckRouteCollision(virNetworkDef *def G_GNUC_UNUSED)
 }
 
 int networkAddFirewallRules(virNetworkDef *def G_GNUC_UNUSED,
-                            virFirewallBackend firewallBackend G_GNUC_UNUSED)
+                            virFirewallBackend firewallBackend G_GNUC_UNUSED,
+                            virFirewall **fwRemoval G_GNUC_UNUSED)
 {
     return 0;
 }
 
-void networkRemoveFirewallRules(virNetworkDef *def G_GNUC_UNUSED,
-                               virFirewallBackend firewallBackend G_GNUC_UNUSED)
+void networkRemoveFirewallRules(virNetworkObj *obj G_GNUC_UNUSED)
 {
 }

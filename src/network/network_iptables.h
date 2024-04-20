@@ -23,7 +23,7 @@
 #include "virfirewall.h"
 #include "network_conf.h"
 
-int iptablesAddFirewallRules(virNetworkDef *def);
+int iptablesAddFirewallRules(virNetworkDef *def, virFirewall **fwRemoval);
 
 void iptablesRemoveFirewallRules(virNetworkDef *def);
 

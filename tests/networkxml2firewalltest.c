@@ -98,7 +98,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(def = virNetworkDefParse(NULL, xml, NULL, false)))
         return -1;
 
-    if (networkAddFirewallRules(def, VIR_FIREWALL_BACKEND_IPTABLES) < 0)
+    if (networkAddFirewallRules(def, VIR_FIREWALL_BACKEND_IPTABLES, NULL) < 0)
         return -1;
 
     actual = actualargv = virBufferContentAndReset(&buf);

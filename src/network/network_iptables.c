@@ -1591,9 +1591,19 @@ iptablesRemoveIPSpecificFirewallRules(virFirewall *fw,
 }
 
 
-/* Add all rules for all ip addresses (and general rules) on a network */
+/* iptablesAddFirewallrules:
+ *
+ * @def - the network that needs an iptables firewall added
+ * @fwRemoval - if this is not NULL, it points to a pointer
+ *    that should be filled in with a virFirewall object containing
+ *    all the commands needed to remove this firewall at a later time.
+ *
+ * Add all rules for all ip addresses (and general rules) on a
+ * network, and optionally return a virFirewall object containing all
+ * the rules needed to later remove the firewall that has been added.
+*/
 int
-iptablesAddFirewallRules(virNetworkDef *def)
+iptablesAddFirewallRules(virNetworkDef *def, virFirewall **fwRemoval)
 {
     size_t i;
     virNetworkIPDef *ipdef;
@@ -1614,10 +1624,35 @@ iptablesAddFirewallRules(virNetworkDef *def)
                                      VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK));
     iptablesAddChecksumFirewallRules(fw, def);
 
-    return virFirewallApply(fw);
+    if (virFirewallApply(fw) < 0)
+        return -1;
+
+    if (fwRemoval) {
+        /* caller wants us to create a virFirewall object that can be
+         * applied to undo everything that was just done by * virFirewallApply()
+         */
+
+        if (virFirewallNewFromRollback(fw, fwRemoval) < 0)
+            return -1;
+    }
+
+    return 0;
 }
 
-/* Remove all rules for all ip addresses (and general rules) on a network */
+/* iptablesRemoveFirewallRules:
+ *
+ * @def - the network that needs its iptables firewall rules removed
+ *
+ * Remove all rules for all ip addresses (and general rules) on a
+ * network that is being shut down.
+ *
+ * This function assumes the set of iptables rules that were added by
+ * all versions of libvirt prior to 10.4.0; any libvirt of that
+ * release or newer may or may not have this same set of rules, and
+ * should be using the list of commands saved in NetworkObj::fwRemoval
+ * (<fwRemoval> element in the network status XML) to remove the
+ * network's firewall rules.
+ */
 void
 iptablesRemoveFirewallRules(virNetworkDef *def)
 {

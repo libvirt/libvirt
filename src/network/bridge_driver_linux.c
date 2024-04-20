@@ -325,7 +325,8 @@ int networkCheckRouteCollision(virNetworkDef *def)
 
 int
 networkAddFirewallRules(virNetworkDef *def,
-                        virFirewallBackend firewallBackend)
+                        virFirewallBackend firewallBackend,
+                        virFirewall **fwRemoval)
 {
 
     networkSetupPrivateChains(firewallBackend, false);
@@ -411,13 +412,28 @@ networkAddFirewallRules(virNetworkDef *def,
         }
     }
 
-    return iptablesAddFirewallRules(def);
+    return iptablesAddFirewallRules(def, fwRemoval);
 }
 
 
 void
-networkRemoveFirewallRules(virNetworkDef *def,
-                           virFirewallBackend firewallBackend G_GNUC_UNUSED)
+networkRemoveFirewallRules(virNetworkObj *obj)
 {
-    iptablesRemoveFirewallRules(def);
+    virFirewall *fw;
+
+    if ((fw = virNetworkObjGetFwRemoval(obj)) == NULL) {
+        /* No information about firewall rules in the network status,
+         * so we assume the old iptables-based rules from 10.2.0 and
+         * earlier.
+         */
+        VIR_DEBUG("No firewall info in network status, assuming old-style iptables");
+        iptablesRemoveFirewallRules(virNetworkObjGetDef(obj));
+        return;
+    }
+
+    /* fwRemoval info was stored in the network status, so use that to
+     * remove the firewall
+     */
+    VIR_DEBUG("Removing firewall rules with commands saved in network status");
+    virFirewallApply(fw);
 }
