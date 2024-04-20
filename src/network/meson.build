@@ -49,16 +49,34 @@ if conf.has('WITH_NETWORK')
     ],
   }
 
+  network_options_conf = configuration_data({
+    'FIREWALL_BACKEND': firewall_backend_default_conf,
+  })
+
   network_conf = configure_file(
     input: 'network.conf.in',
     output: 'network.conf',
-    configuration: configmake_conf,
+    configuration: network_options_conf,
   )
+
+  network_options_hack_conf = configuration_data({
+    'FIREWALL_BACKEND': firewall_backend_default_conf,
+    # This hack is necessary because the output file is going to be
+    # used as input for another configure_file() call later, which
+    # will take care of substituting @CONFIG@ with useful data
+    'CONFIG': '@CONFIG@',
+  })
+  test_libvirtd_network_aug_tmp = configure_file(
+    input: 'test_libvirtd_network.aug.in',
+    output: 'test_libvirtd_network.aug.tmp',
+    configuration: network_options_hack_conf,
+  )
+
   virt_conf_files += network_conf
   virt_aug_files += files('libvirtd_network.aug')
   virt_test_aug_files += {
     'name': 'test_libvirtd_network.aug',
-    'aug': files('test_libvirtd_network.aug.in'),
+    'aug': test_libvirtd_network_aug_tmp,
     'conf': network_conf,
     'test_name': 'libvirtd_network',
     'test_srcdir': meson.current_source_dir(),

@@ -1682,6 +1682,7 @@ static int
 networkReloadFirewallRulesHelper(virNetworkObj *obj,
                                  void *opaque G_GNUC_UNUSED)
 {
+    g_autoptr(virNetworkDriverConfig) cfg = virNetworkDriverGetConfig(networkGetDriver());
     VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
     virNetworkDef *def = virNetworkObjGetDef(obj);
 
@@ -1695,8 +1696,8 @@ networkReloadFirewallRulesHelper(virNetworkObj *obj,
              * network type, forward='open', doesn't need this because it
              * has no iptables rules.
              */
-            networkRemoveFirewallRules(def);
-            ignore_value(networkAddFirewallRules(def));
+            networkRemoveFirewallRules(def, cfg->firewallBackend);
+            ignore_value(networkAddFirewallRules(def, cfg->firewallBackend));
             break;
 
         case VIR_NETWORK_FORWARD_OPEN:
@@ -1948,7 +1949,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
     /* Add "once per network" rules */
     if (def->forward.type != VIR_NETWORK_FORWARD_OPEN &&
-        networkAddFirewallRules(def) < 0)
+        networkAddFirewallRules(def, cfg->firewallBackend) < 0)
         goto error;
 
     firewalRulesAdded = true;
@@ -2066,7 +2067,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
     if (firewalRulesAdded &&
         def->forward.type != VIR_NETWORK_FORWARD_OPEN)
-        networkRemoveFirewallRules(def);
+        networkRemoveFirewallRules(def, cfg->firewallBackend);
 
     virNetworkObjUnrefMacMap(obj);
 
@@ -2078,7 +2079,8 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
 
 static int
-networkShutdownNetworkVirtual(virNetworkObj *obj)
+networkShutdownNetworkVirtual(virNetworkObj *obj,
+                              virNetworkDriverConfig *cfg)
 {
     virNetworkDef *def = virNetworkObjGetDef(obj);
     pid_t dnsmasqPid;
@@ -2104,7 +2106,7 @@ networkShutdownNetworkVirtual(virNetworkObj *obj)
     ignore_value(virNetDevSetOnline(def->bridge, false));
 
     if (def->forward.type != VIR_NETWORK_FORWARD_OPEN)
-        networkRemoveFirewallRules(def);
+        networkRemoveFirewallRules(def, cfg->firewallBackend);
 
     ignore_value(virNetDevBridgeDelete(def->bridge));
 
@@ -2408,7 +2410,7 @@ networkShutdownNetwork(virNetworkDriverState *driver,
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
     case VIR_NETWORK_FORWARD_OPEN:
-        ret = networkShutdownNetworkVirtual(obj);
+        ret = networkShutdownNetworkVirtual(obj, cfg);
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
@@ -3259,7 +3261,7 @@ networkUpdate(virNetworkPtr net,
                  * old rules (and remember to load new ones after the
                  * update).
                  */
-                networkRemoveFirewallRules(def);
+                networkRemoveFirewallRules(def, cfg->firewallBackend);
                 needFirewallRefresh = true;
                 break;
             default:
@@ -3287,14 +3289,14 @@ networkUpdate(virNetworkPtr net,
                             parentIndex, xml,
                             network_driver->xmlopt, flags) < 0) {
         if (needFirewallRefresh)
-            ignore_value(networkAddFirewallRules(def));
+            ignore_value(networkAddFirewallRules(def, cfg->firewallBackend));
         goto cleanup;
     }
 
     /* @def is replaced */
     def = virNetworkObjGetDef(obj);
 
-    if (needFirewallRefresh && networkAddFirewallRules(def) < 0)
+    if (needFirewallRefresh && networkAddFirewallRules(def, cfg->firewallBackend) < 0)
         goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {

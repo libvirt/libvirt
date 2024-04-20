@@ -1,3 +1,11 @@
 # Master configuration file for the network driver.
 # All settings described here are optional - if omitted, sensible
 # defaults are used.
+
+# firewall_backend:
+#
+#   determines which subsystem to use to setup firewall packet
+#   filtering rules for virtual networks. Currently the only supported
+#   selection is "iptables".
+#
+#firewall_backend = "@FIREWALL_BACKEND@"

@@ -1,2 +1,5 @@
 module Test_libvirtd_network =
   @CONFIG@
+
+  test Libvirtd_network.lns get conf =
+{ "firewall_backend" = "@FIREWALL_BACKEND@" }

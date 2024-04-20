@@ -26,6 +26,7 @@
 #include "virdnsmasq.h"
 #include "virnetworkobj.h"
 #include "object_event.h"
+#include "virfirewall.h"
 
 typedef struct _virNetworkDriverConfig virNetworkDriverConfig;
 struct _virNetworkDriverConfig {
@@ -37,6 +38,8 @@ struct _virNetworkDriverConfig {
     char *stateDir;
     char *pidDir;
     char *dnsmasqStateDir;
+
+    virFirewallBackend firewallBackend;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkDriverConfig, virObjectUnref);

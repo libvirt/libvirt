@@ -22,11 +22,14 @@ module Libvirtd_network =
    let int_entry       (kw:string) = [ key kw . value_sep . int_val ]
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
+   let firewall_backend_entry = str_entry "firewall_backend"
+
    (* Each entry in the config is one of the following *)
+   let entry = firewall_backend_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 
-   let record = indent . eol
+   let record = indent . entry . eol
 
    let lns = ( record | comment | empty ) *
 

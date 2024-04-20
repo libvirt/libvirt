@@ -303,7 +303,8 @@ int networkCheckRouteCollision(virNetworkDef *def)
 
 
 int
-networkAddFirewallRules(virNetworkDef *def)
+networkAddFirewallRules(virNetworkDef *def,
+                        virFirewallBackend firewallBackend G_GNUC_UNUSED)
 {
     if (virOnce(&createdOnce, networkSetupPrivateChains) < 0)
         return -1;
@@ -394,7 +395,8 @@ networkAddFirewallRules(virNetworkDef *def)
 
 
 void
-networkRemoveFirewallRules(virNetworkDef *def)
+networkRemoveFirewallRules(virNetworkDef *def,
+                           virFirewallBackend firewallBackend G_GNUC_UNUSED)
 {
     iptablesRemoveFirewallRules(def);
 }

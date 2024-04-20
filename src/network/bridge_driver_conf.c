@@ -25,13 +25,13 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virutil.h"
 #include "bridge_driver_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
 VIR_LOG_INIT("network.bridge_driver");
-
 
 static virClass *virNetworkDriverConfigClass;
 static void virNetworkDriverConfigDispose(void *obj);
@@ -62,18 +62,76 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
                            const char *filename)
 {
     g_autoptr(virConf) conf = NULL;
+    g_autofree char *fwBackendStr = NULL;
+    bool fwBackendSelected = false;
+    size_t i;
+    int fwBackends[] = { FIREWALL_BACKEND_DEFAULT_1 };
+    G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) == VIR_FIREWALL_BACKEND_LAST);
+    int nFwBackends = G_N_ELEMENTS(fwBackends);
 
-    /* if file doesn't exist or is unreadable, ignore the "error" */
-    if (access(filename, R_OK) == -1)
+    if (access(filename, R_OK) == 0) {
+
+        conf = virConfReadFile(filename, 0);
+        if (!conf)
+            return -1;
+
+        /* use virConfGetValue*(conf, ...) functions to read any settings into cfg */
+
+        if (virConfGetValueString(conf, "firewall_backend", &fwBackendStr) < 0)
+            return -1;
+
+        if (fwBackendStr) {
+            fwBackends[0] = virFirewallBackendTypeFromString(fwBackendStr);
+            nFwBackends = 1;
+
+            if (fwBackends[0] < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unrecognized 'firewall_backend = '%1$s' set in network driver config file %2$s"),
+                               fwBackendStr, filename);
+                return -1;
+            }
+            VIR_INFO("firewall_backend setting requested from config file %s: '%s'",
+                     virFirewallBackendTypeToString(fwBackends[0]), filename);
+        }
+    }
+
+    for (i = 0; i < nFwBackends && !fwBackendSelected; i++) {
+
+        switch ((virFirewallBackend)fwBackends[i]) {
+        case VIR_FIREWALL_BACKEND_IPTABLES: {
+            g_autofree char *iptablesInPath = virFindFileInPath(IPTABLES);
+
+            if (iptablesInPath)
+                fwBackendSelected = true;
+            break;
+        }
+        case VIR_FIREWALL_BACKEND_LAST:
+            virReportEnumRangeError(virFirewallBackend, fwBackends[i]);
+            return -1;
+        }
+
+        if (fwBackendSelected)
+            cfg->firewallBackend = fwBackends[i];
+    }
+
+    if (fwBackendSelected) {
+        VIR_INFO("using firewall_backend: '%s'",
+                 virFirewallBackendTypeToString(cfg->firewallBackend));
         return 0;
 
-    conf = virConfReadFile(filename, 0);
-    if (!conf)
+    } else if (fwBackendStr) {
+
+        /* the explicitly requested backend wasn't found - this is a failure */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("requested firewall_backend '%1$s' is not available"),
+                       fwBackendStr);
         return -1;
 
-    /* use virConfGetValue*(conf, ...) functions to read any settings into cfg */
-
-    return 0;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not find a usable firewall backend"));
+        return -1;
+    }
 }
 
 
