@@ -2820,7 +2820,7 @@ static int
 ebtablesApplyBasicRules(const char *ifname,
                         const virMacAddr *macaddr)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = CHAINPREFIX_HOST_IN_TEMP;
     char macaddr_str[VIR_MAC_STRING_BUFLEN];
@@ -2893,7 +2893,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
     char macaddr_str[VIR_MAC_STRING_BUFLEN];
     unsigned int idx = 0;
     unsigned int num_dhcpsrvrs;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virMacAddrFormat(macaddr, macaddr_str);
 
@@ -2995,7 +2995,7 @@ ebtablesApplyDropAllRules(const char *ifname)
 {
     char chain_in [MAX_CHAINNAME_LENGTH],
          chain_out[MAX_CHAINNAME_LENGTH];
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     if (ebiptablesAllTeardown(ifname) < 0)
         return -1;
@@ -3042,7 +3042,7 @@ ebtablesRemoveBasicRules(const char *ifname)
 static int
 ebtablesCleanAll(const char *ifname)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
@@ -3302,7 +3302,7 @@ ebiptablesApplyNewRules(const char *ifname,
                         size_t nrules)
 {
     size_t i, j;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     g_autoptr(GHashTable) chains_in_set  = virHashNew(NULL);
     g_autoptr(GHashTable) chains_out_set = virHashNew(NULL);
     bool haveEbtables = false;
@@ -3527,7 +3527,7 @@ ebiptablesTearNewRulesFW(virFirewall *fw, const char *ifname)
 static int
 ebiptablesTearNewRules(const char *ifname)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
@@ -3539,7 +3539,7 @@ ebiptablesTearNewRules(const char *ifname)
 static int
 ebiptablesTearOldRules(const char *ifname)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
@@ -3574,7 +3574,7 @@ ebiptablesTearOldRules(const char *ifname)
 static int
 ebiptablesAllTeardown(const char *ifname)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 

@@ -35,6 +35,10 @@
 
 VIR_LOG_INIT("util.firewall");
 
+VIR_ENUM_IMPL(virFirewallBackend,
+              VIR_FIREWALL_BACKEND_LAST,
+              "iptables");
+
 typedef struct _virFirewallGroup virFirewallGroup;
 
 VIR_ENUM_DECL(virFirewallLayerCommand);
@@ -77,6 +81,7 @@ struct _virFirewall {
     size_t ngroups;
     virFirewallGroup **groups;
     size_t currentGroup;
+    virFirewallBackend backend;
 };
 
 static virMutex fwCmdLock = VIR_MUTEX_INITIALIZER;
@@ -98,11 +103,19 @@ virFirewallGroupNew(void)
  *
  * Returns the new firewall ruleset
  */
-virFirewall *virFirewallNew(void)
+virFirewall *virFirewallNew(virFirewallBackend backend)
 {
     virFirewall *firewall = g_new0(virFirewall, 1);
 
+    firewall->backend = backend;
     return firewall;
+}
+
+
+virFirewallBackend
+virFirewallGetBackend(virFirewall *firewall)
+{
+    return firewall->backend;
 }
 
 

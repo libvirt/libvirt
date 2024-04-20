@@ -78,7 +78,7 @@ ebtablesContextFree(ebtablesContext *ctx)
 int
 ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_ETHERNET,
@@ -106,7 +106,7 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
                        const char *macaddr,
                        int action)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, 0);
     virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_ETHERNET,

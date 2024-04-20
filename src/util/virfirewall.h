@@ -21,6 +21,7 @@
 #pragma once
 
 #include "internal.h"
+#include "virenum.h"
 
 typedef struct _virFirewall virFirewall;
 
@@ -34,9 +35,17 @@ typedef enum {
     VIR_FIREWALL_LAYER_LAST,
 } virFirewallLayer;
 
-virFirewall *virFirewallNew(void);
+typedef enum {
+    VIR_FIREWALL_BACKEND_IPTABLES,
 
+    VIR_FIREWALL_BACKEND_LAST,
+} virFirewallBackend;
+
+VIR_ENUM_DECL(virFirewallBackend);
+
+virFirewall *virFirewallNew(virFirewallBackend backend);
 void virFirewallFree(virFirewall *firewall);
+virFirewallBackend virFirewallGetBackend(virFirewall *firewall);
 
 /**
  * virFirewallAddCmd:

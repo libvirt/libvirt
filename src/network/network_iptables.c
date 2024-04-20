@@ -131,7 +131,7 @@ iptablesPrivateChainCreate(virFirewall *fw,
 int
 iptablesSetupPrivateChains(virFirewallLayer layer)
 {
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     iptablesGlobalChain filter_chains[] = {
         {"INPUT", VIR_IPTABLES_INPUT_CHAIN},
         {"OUTPUT", VIR_IPTABLES_OUTPUT_CHAIN},
@@ -1597,7 +1597,7 @@ iptablesAddFirewallRules(virNetworkDef *def)
 {
     size_t i;
     virNetworkIPDef *ipdef;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, 0);
 
@@ -1632,7 +1632,7 @@ iptablesRemoveFirewallRules(virNetworkDef *def)
 {
     size_t i;
     virNetworkIPDef *ipdef;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     iptablesRemoveChecksumFirewallRules(fw, def);

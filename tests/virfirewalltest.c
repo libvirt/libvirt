@@ -62,7 +62,7 @@ static int
 testFirewallSingleGroup(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -102,7 +102,7 @@ static int
 testFirewallRemoveRule(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -148,7 +148,7 @@ static int
 testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -222,7 +222,7 @@ static int
 testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -275,7 +275,7 @@ static int
 testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -327,7 +327,7 @@ static int
 testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -372,7 +372,7 @@ static int
 testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -437,7 +437,7 @@ static int
 testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -505,7 +505,7 @@ static int
 testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -682,7 +682,7 @@ static int
 testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virFirewall) fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
