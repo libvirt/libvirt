@@ -834,6 +834,7 @@ virNetworkObjSaveStatus(const char *statusDir,
     int flags = 0;
     g_autofree char *xml = NULL;
 
+    VIR_DEBUG("Writing network status to disk");
     if (!(xml = virNetworkObjFormat(obj, xmlopt, flags)))
         return -1;
 
