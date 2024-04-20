@@ -74,15 +74,15 @@ testFirewallSingleGroup(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) < 0)
         return -1;
@@ -107,28 +107,28 @@ testFirewallRemoveRule(const void *opaque G_GNUC_UNUSED)
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
         IPTABLES " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
-    virFirewallRule *fwrule;
+    virFirewallCmd *fwrule;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, NULL, NULL);
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    fwrule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                                "-A", "INPUT", NULL);
-    virFirewallRuleAddArg(fw, fwrule, "--source");
-    virFirewallRemoveRule(fw, fwrule);
+    fwrule = virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                               "-A", "INPUT", NULL);
+    virFirewallCmdAddArg(fw, fwrule, "--source");
+    virFirewallRemoveCmd(fw, fwrule);
 
-    fwrule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                                "-A", "INPUT", NULL);
-    virFirewallRuleAddArg(fw, fwrule, "--source");
-    virFirewallRuleAddArgFormat(fw, fwrule, "%s", "!192.168.122.1");
-    virFirewallRuleAddArgList(fw, fwrule, "--jump", "REJECT", NULL);
+    fwrule = virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                               "-A", "INPUT", NULL);
+    virFirewallCmdAddArg(fw, fwrule, "--source");
+    virFirewallCmdAddArgFormat(fw, fwrule, "%s", "!192.168.122.1");
+    virFirewallCmdAddArgList(fw, fwrule, "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) < 0)
         return -1;
@@ -161,26 +161,26 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "OUTPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "OUTPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "OUTPUT",
-                       "--jump", "DROP", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "OUTPUT",
+                      "--jump", "DROP", NULL);
 
 
     if (virFirewallApply(fw) < 0)
@@ -235,26 +235,26 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "OUTPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "OUTPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "OUTPUT",
-                       "--jump", "DROP", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "OUTPUT",
+                      "--jump", "DROP", NULL);
 
 
     if (virFirewallApply(fw) < 0)
@@ -288,25 +288,25 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_IPV4,
-                           true, NULL, NULL,
-                           "-A", "INPUT",
-                           "--source", "192.168.122.255",
-                           "--jump", "REJECT", NULL);
+    virFirewallAddCmdFull(fw, VIR_FIREWALL_LAYER_IPV4,
+                          true, NULL, NULL,
+                          "-A", "INPUT",
+                          "--source", "192.168.122.255",
+                          "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "OUTPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "OUTPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "OUTPUT",
-                       "--jump", "DROP", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "OUTPUT",
+                      "--jump", "DROP", NULL);
 
 
     if (virFirewallApply(fw) < 0)
@@ -338,20 +338,20 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
@@ -386,37 +386,37 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     virFirewallStartRollback(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
@@ -450,41 +450,41 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
     virFirewallStartRollback(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     virFirewallStartRollback(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
@@ -522,67 +522,67 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
     virFirewallStartRollback(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.127",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.127",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     virFirewallStartRollback(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.127",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.127",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     virFirewallStartRollback(fw, VIR_FIREWALL_ROLLBACK_INHERIT_PREVIOUS);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "192.168.122.255",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "192.168.122.255",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-D", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-D", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
@@ -656,10 +656,10 @@ testFirewallQueryCallback(virFirewall *fw,
                           void *opaque G_GNUC_UNUSED)
 {
     size_t i;
-    virFirewallAddRule(fw, layer,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.129",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, layer,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.129",
+                      "--jump", "REJECT", NULL);
 
     for (i = 0; lines[i] != NULL; i++) {
         if (expectedLineNum >= G_N_ELEMENTS(expectedLines)) {
@@ -703,46 +703,46 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.1",
-                       "--jump", "ACCEPT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.1",
+                      "--jump", "ACCEPT", NULL);
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.127",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.127",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_IPV4,
-                           false,
-                           testFirewallQueryCallback,
-                           NULL,
-                           "-L", NULL);
-    virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_IPV4,
-                           false,
-                           testFirewallQueryCallback,
-                           NULL,
+    virFirewallAddCmdFull(fw, VIR_FIREWALL_LAYER_IPV4,
+                          false,
+                          testFirewallQueryCallback,
+                          NULL,
+                          "-L", NULL);
+    virFirewallAddCmdFull(fw, VIR_FIREWALL_LAYER_IPV4,
+                          false,
+                          testFirewallQueryCallback,
+                          NULL,
                            "-t", "nat", "-L", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.130",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.130",
+                      "--jump", "REJECT", NULL);
 
 
     virFirewallStartTransaction(fw, 0);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "192.168.122.128",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "192.168.122.128",
+                      "--jump", "REJECT", NULL);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "-A", "INPUT",
-                       "--source", "!192.168.122.1",
-                       "--jump", "REJECT", NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "-A", "INPUT",
+                      "--source", "!192.168.122.1",
+                      "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) < 0)
         return -1;

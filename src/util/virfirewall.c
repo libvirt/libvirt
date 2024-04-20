@@ -45,7 +45,7 @@ VIR_ENUM_IMPL(virFirewallLayerCommand,
               IP6TABLES,
 );
 
-struct _virFirewallRule {
+struct _virFirewallCmd {
     virFirewallLayer layer;
 
     virFirewallQueryCallback queryCB;
@@ -62,10 +62,10 @@ struct _virFirewallGroup {
     unsigned int rollbackFlags;
 
     size_t naction;
-    virFirewallRule **action;
+    virFirewallCmd **action;
 
     size_t nrollback;
-    virFirewallRule **rollback;
+    virFirewallCmd **rollback;
 
     bool addingRollback;
 };
@@ -79,7 +79,7 @@ struct _virFirewall {
     size_t currentGroup;
 };
 
-static virMutex ruleLock = VIR_MUTEX_INITIALIZER;
+static virMutex fwCmdLock = VIR_MUTEX_INITIALIZER;
 
 static virFirewallGroup *
 virFirewallGroupNew(void)
@@ -107,17 +107,17 @@ virFirewall *virFirewallNew(void)
 
 
 static void
-virFirewallRuleFree(virFirewallRule *rule)
+virFirewallCmdFree(virFirewallCmd *fwCmd)
 {
     size_t i;
 
-    if (!rule)
+    if (!fwCmd)
         return;
 
-    for (i = 0; i < rule->argsLen; i++)
-        g_free(rule->args[i]);
-    g_free(rule->args);
-    g_free(rule);
+    for (i = 0; i < fwCmd->argsLen; i++)
+        g_free(fwCmd->args[i]);
+    g_free(fwCmd->args);
+    g_free(fwCmd);
 }
 
 
@@ -130,11 +130,11 @@ virFirewallGroupFree(virFirewallGroup *group)
         return;
 
     for (i = 0; i < group->naction; i++)
-        virFirewallRuleFree(group->action[i]);
+        virFirewallCmdFree(group->action[i]);
     g_free(group->action);
 
     for (i = 0; i < group->nrollback; i++)
-        virFirewallRuleFree(group->rollback[i]);
+        virFirewallCmdFree(group->rollback[i]);
     g_free(group->rollback);
 
     g_free(group);
@@ -167,9 +167,9 @@ void virFirewallFree(virFirewall *firewall)
             return; \
     } while (0)
 
-#define VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule)\
+#define VIR_FIREWALL_CMD_RETURN_IF_ERROR(firewall, fwCmd)\
     do { \
-        if (!firewall || firewall->err || !rule) \
+        if (!firewall || firewall->err || !fwCmd) \
             return; \
     } while (0)
 
@@ -179,22 +179,22 @@ void virFirewallFree(virFirewall *firewall)
             return NULL; \
     } while (0)
 
-#define ADD_ARG(rule, str) \
+#define ADD_ARG(fwCmd, str) \
     do { \
-        VIR_RESIZE_N(rule->args, rule->argsAlloc, rule->argsLen, 1); \
-        rule->args[rule->argsLen++] = g_strdup(str); \
+        VIR_RESIZE_N(fwCmd->args, fwCmd->argsAlloc, fwCmd->argsLen, 1); \
+        fwCmd->args[fwCmd->argsLen++] = g_strdup(str); \
     } while (0)
 
-static virFirewallRule *
-virFirewallAddRuleFullV(virFirewall *firewall,
-                        virFirewallLayer layer,
-                        bool ignoreErrors,
-                        virFirewallQueryCallback cb,
-                        void *opaque,
-                        va_list args)
+static virFirewallCmd *
+virFirewallAddCmdFullV(virFirewall *firewall,
+                       virFirewallLayer layer,
+                       bool ignoreErrors,
+                       virFirewallQueryCallback cb,
+                       void *opaque,
+                       va_list args)
 {
     virFirewallGroup *group;
-    virFirewallRule *rule;
+    virFirewallCmd *fwCmd;
     char *str;
 
     VIR_FIREWALL_RETURN_NULL_IF_ERROR(firewall);
@@ -206,43 +206,43 @@ virFirewallAddRuleFullV(virFirewall *firewall,
     group = firewall->groups[firewall->currentGroup];
 
 
-    rule = g_new0(virFirewallRule, 1);
+    fwCmd = g_new0(virFirewallCmd, 1);
 
-    rule->layer = layer;
-    rule->queryCB = cb;
-    rule->queryOpaque = opaque;
-    rule->ignoreErrors = ignoreErrors;
+    fwCmd->layer = layer;
+    fwCmd->queryCB = cb;
+    fwCmd->queryOpaque = opaque;
+    fwCmd->ignoreErrors = ignoreErrors;
 
-    switch (rule->layer) {
+    switch (fwCmd->layer) {
     case VIR_FIREWALL_LAYER_ETHERNET:
-        ADD_ARG(rule, "--concurrent");
+        ADD_ARG(fwCmd, "--concurrent");
         break;
     case VIR_FIREWALL_LAYER_IPV4:
-        ADD_ARG(rule, "-w");
+        ADD_ARG(fwCmd, "-w");
         break;
     case VIR_FIREWALL_LAYER_IPV6:
-        ADD_ARG(rule, "-w");
+        ADD_ARG(fwCmd, "-w");
         break;
     case VIR_FIREWALL_LAYER_LAST:
         break;
     }
 
     while ((str = va_arg(args, char *)) != NULL)
-        ADD_ARG(rule, str);
+        ADD_ARG(fwCmd, str);
 
     if (group->addingRollback) {
-        VIR_APPEND_ELEMENT_COPY(group->rollback, group->nrollback, rule);
+        VIR_APPEND_ELEMENT_COPY(group->rollback, group->nrollback, fwCmd);
     } else {
-        VIR_APPEND_ELEMENT_COPY(group->action, group->naction, rule);
+        VIR_APPEND_ELEMENT_COPY(group->action, group->naction, fwCmd);
     }
 
 
-    return rule;
+    return fwCmd;
 }
 
 
 /**
- * virFirewallAddRuleFull:
+ * virFirewallAddCmdFull:
  * @firewall: firewall ruleset to add to
  * @layer: the firewall layer to change
  * @ignoreErrors: true to ignore failure of the command
@@ -253,7 +253,7 @@ virFirewallAddRuleFullV(virFirewall *firewall,
  * Add any type of rule to the firewall ruleset. Any output
  * generated by the addition will be fed into the query
  * callback @cb. This callback is permitted to create new
- * rules by invoking the virFirewallAddRule method, but
+ * rules by invoking the virFirewallAddCmd method, but
  * is not permitted to start new transactions.
  *
  * If @ignoreErrors is set to TRUE, then any failure of
@@ -263,31 +263,31 @@ virFirewallAddRuleFullV(virFirewall *firewall,
  *
  * Returns the new rule
  */
-virFirewallRule *virFirewallAddRuleFull(virFirewall *firewall,
-                                          virFirewallLayer layer,
-                                          bool ignoreErrors,
-                                          virFirewallQueryCallback cb,
-                                          void *opaque,
-                                          ...)
+virFirewallCmd *virFirewallAddCmdFull(virFirewall *firewall,
+                                      virFirewallLayer layer,
+                                      bool ignoreErrors,
+                                      virFirewallQueryCallback cb,
+                                      void *opaque,
+                                      ...)
 {
-    virFirewallRule *rule;
+    virFirewallCmd *fwCmd;
     va_list args;
     va_start(args, opaque);
-    rule = virFirewallAddRuleFullV(firewall, layer, ignoreErrors, cb, opaque, args);
+    fwCmd = virFirewallAddCmdFullV(firewall, layer, ignoreErrors, cb, opaque, args);
     va_end(args);
-    return rule;
+    return fwCmd;
 }
 
 
 /**
- * virFirewallRemoveRule:
+ * virFirewallRemoveCmd:
  * @firewall: firewall ruleset to remove from
  * @rule: the rule to remove
  *
  * Remove a rule from the current transaction
  */
-void virFirewallRemoveRule(virFirewall *firewall,
-                           virFirewallRule *rule)
+void virFirewallRemoveCmd(virFirewall *firewall,
+                          virFirewallCmd *fwCmd)
 {
     size_t i;
     virFirewallGroup *group;
@@ -306,21 +306,21 @@ void virFirewallRemoveRule(virFirewall *firewall,
 
     if (group->addingRollback) {
         for (i = 0; i < group->nrollback; i++) {
-            if (group->rollback[i] == rule) {
+            if (group->rollback[i] == fwCmd) {
                 VIR_DELETE_ELEMENT(group->rollback,
                                    i,
                                    group->nrollback);
-                virFirewallRuleFree(rule);
+                virFirewallCmdFree(fwCmd);
                 break;
             }
         }
     } else {
         for (i = 0; i < group->naction; i++) {
-            if (group->action[i] == rule) {
+            if (group->action[i] == fwCmd) {
                 VIR_DELETE_ELEMENT(group->action,
                                    i,
                                    group->naction);
-                virFirewallRuleFree(rule);
+                virFirewallCmdFree(fwCmd);
                 return;
             }
         }
@@ -328,45 +328,45 @@ void virFirewallRemoveRule(virFirewall *firewall,
 }
 
 
-void virFirewallRuleAddArg(virFirewall *firewall,
-                           virFirewallRule *rule,
-                           const char *arg)
+void virFirewallCmdAddArg(virFirewall *firewall,
+                          virFirewallCmd *fwCmd,
+                          const char *arg)
 {
-    VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
+    VIR_FIREWALL_CMD_RETURN_IF_ERROR(firewall, fwCmd);
 
-    ADD_ARG(rule, arg);
+    ADD_ARG(fwCmd, arg);
 
     return;
 }
 
 
-void virFirewallRuleAddArgFormat(virFirewall *firewall,
-                                 virFirewallRule *rule,
-                                 const char *fmt, ...)
+void virFirewallCmdAddArgFormat(virFirewall *firewall,
+                                virFirewallCmd *fwCmd,
+                                const char *fmt, ...)
 {
     g_autofree char *arg = NULL;
     va_list list;
 
-    VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
+    VIR_FIREWALL_CMD_RETURN_IF_ERROR(firewall, fwCmd);
 
     va_start(list, fmt);
     arg = g_strdup_vprintf(fmt, list);
     va_end(list);
 
-    ADD_ARG(rule, arg);
+    ADD_ARG(fwCmd, arg);
 
     return;
 }
 
 
-void virFirewallRuleAddArgSet(virFirewall *firewall,
-                              virFirewallRule *rule,
-                              const char *const *args)
+void virFirewallCmdAddArgSet(virFirewall *firewall,
+                             virFirewallCmd *fwCmd,
+                             const char *const *args)
 {
-    VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
+    VIR_FIREWALL_CMD_RETURN_IF_ERROR(firewall, fwCmd);
 
     while (*args) {
-        ADD_ARG(rule, *args);
+        ADD_ARG(fwCmd, *args);
         args++;
     }
 
@@ -374,19 +374,19 @@ void virFirewallRuleAddArgSet(virFirewall *firewall,
 }
 
 
-void virFirewallRuleAddArgList(virFirewall *firewall,
-                               virFirewallRule *rule,
-                               ...)
+void virFirewallCmdAddArgList(virFirewall *firewall,
+                              virFirewallCmd *fwCmd,
+                              ...)
 {
     va_list list;
     const char *str;
 
-    VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
+    VIR_FIREWALL_CMD_RETURN_IF_ERROR(firewall, fwCmd);
 
-    va_start(list, rule);
+    va_start(list, fwCmd);
 
     while ((str = va_arg(list, char *)) != NULL)
-        ADD_ARG(rule, str);
+        ADD_ARG(fwCmd, str);
 
     va_end(list);
 
@@ -394,11 +394,11 @@ void virFirewallRuleAddArgList(virFirewall *firewall,
 }
 
 
-size_t virFirewallRuleGetArgCount(virFirewallRule *rule)
+size_t virFirewallCmdGetArgCount(virFirewallCmd *fwCmd)
 {
-    if (!rule)
+    if (!fwCmd)
         return 0;
-    return rule->argsLen;
+    return fwCmd->argsLen;
 }
 
 
@@ -462,16 +462,16 @@ void virFirewallStartRollback(virFirewall *firewall,
 
 
 char *
-virFirewallRuleToString(const char *cmd,
-                        virFirewallRule *rule)
+virFirewallCmdToString(const char *cmd,
+                       virFirewallCmd *fwCmd)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     virBufferAdd(&buf, cmd, -1);
-    for (i = 0; i < rule->argsLen; i++) {
+    for (i = 0; i < fwCmd->argsLen; i++) {
         virBufferAddLit(&buf, " ");
-        virBufferAdd(&buf, rule->args[i], -1);
+        virBufferAdd(&buf, fwCmd->args[i], -1);
     }
 
     return virBufferContentAndReset(&buf);
@@ -479,12 +479,12 @@ virFirewallRuleToString(const char *cmd,
 
 
 static int
-virFirewallApplyRuleDirect(virFirewallRule *rule,
-                           bool ignoreErrors,
-                           char **output)
+virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
+                          bool ignoreErrors,
+                          char **output)
 {
     size_t i;
-    const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
+    const char *bin = virFirewallLayerCommandTypeToString(fwCmd->layer);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *cmdStr = NULL;
     int status;
@@ -493,17 +493,17 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
     if (!bin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown firewall layer %1$d"),
-                       rule->layer);
+                       fwCmd->layer);
         return -1;
     }
 
     cmd = virCommandNewArgList(bin, NULL);
 
-    for (i = 0; i < rule->argsLen; i++)
-        virCommandAddArg(cmd, rule->args[i]);
+    for (i = 0; i < fwCmd->argsLen; i++)
+        virCommandAddArg(cmd, fwCmd->args[i]);
 
     cmdStr = virCommandToString(cmd, false);
-    VIR_INFO("Applying rule '%s'", NULLSTR(cmdStr));
+    VIR_INFO("Running firewall command '%s'", NULLSTR(cmdStr));
 
     virCommandSetOutputBuffer(cmd, output);
     virCommandSetErrorBuffer(cmd, &error);
@@ -516,7 +516,7 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
             VIR_DEBUG("Ignoring error running command");
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to apply firewall rules %1$s: %2$s"),
+                           _("Failed to run firewall command %1$s: %2$s"),
                            NULLSTR(cmdStr), NULLSTR(error));
             VIR_FREE(*output);
             return -1;
@@ -528,30 +528,30 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
 
 
 static int
-virFirewallApplyRule(virFirewall *firewall,
-                     virFirewallRule *rule,
-                     bool ignoreErrors)
+virFirewallApplyCmd(virFirewall *firewall,
+                    virFirewallCmd *fwCmd,
+                    bool ignoreErrors)
 {
     g_autofree char *output = NULL;
     g_auto(GStrv) lines = NULL;
 
-    if (rule->ignoreErrors)
-        ignoreErrors = rule->ignoreErrors;
+    if (fwCmd->ignoreErrors)
+        ignoreErrors = fwCmd->ignoreErrors;
 
-    if (virFirewallApplyRuleDirect(rule, ignoreErrors, &output) < 0)
+    if (virFirewallApplyCmdDirect(fwCmd, ignoreErrors, &output) < 0)
         return -1;
 
-    if (rule->queryCB && output) {
+    if (fwCmd->queryCB && output) {
         if (!(lines = g_strsplit(output, "\n", -1)))
             return -1;
 
-        VIR_DEBUG("Invoking query %p with '%s'", rule->queryCB, output);
-        if (rule->queryCB(firewall, rule->layer, (const char *const *)lines, rule->queryOpaque) < 0)
+        VIR_DEBUG("Invoking query %p with '%s'", fwCmd->queryCB, output);
+        if (fwCmd->queryCB(firewall, fwCmd->layer, (const char *const *)lines, fwCmd->queryOpaque) < 0)
             return -1;
 
         if (firewall->err) {
             virReportSystemError(firewall->err, "%s",
-                                 _("Unable to create rule"));
+                                 _("Unable to create firewall command"));
             return -1;
         }
 
@@ -573,9 +573,9 @@ virFirewallApplyGroup(virFirewall *firewall,
     firewall->currentGroup = idx;
     group->addingRollback = false;
     for (i = 0; i < group->naction; i++) {
-        if (virFirewallApplyRule(firewall,
-                                 group->action[i],
-                                 ignoreErrors) < 0)
+        if (virFirewallApplyCmd(firewall,
+                                group->action[i],
+                                ignoreErrors) < 0)
             return -1;
     }
     return 0;
@@ -592,11 +592,8 @@ virFirewallRollbackGroup(virFirewall *firewall,
     VIR_INFO("Starting rollback for group %p", group);
     firewall->currentGroup = idx;
     group->addingRollback = true;
-    for (i = 0; i < group->nrollback; i++) {
-        ignore_value(virFirewallApplyRule(firewall,
-                                          group->rollback[i],
-                                          true));
-    }
+    for (i = 0; i < group->nrollback; i++)
+        ignore_value(virFirewallApplyCmd(firewall, group->rollback[i], true));
 }
 
 
@@ -604,7 +601,7 @@ int
 virFirewallApply(virFirewall *firewall)
 {
     size_t i, j;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&ruleLock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&fwCmdLock);
 
     if (!firewall || firewall->err) {
         int err = EINVAL;
@@ -612,7 +609,7 @@ virFirewallApply(virFirewall *firewall)
         if (firewall)
             err = firewall->err;
 
-        virReportSystemError(err, "%s", _("Unable to create rule"));
+        virReportSystemError(err, "%s", _("Unable to create firewall command"));
         return -1;
     }
 

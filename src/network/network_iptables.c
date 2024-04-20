@@ -98,18 +98,18 @@ iptablesPrivateChainCreate(virFirewall *fw,
     for (i = 0; i < data->nchains; i++) {
         const char *from;
         if (!virHashLookup(chains, data->chains[i].child)) {
-            virFirewallAddRule(fw, layer,
-                               "--table", data->table,
-                               "--new-chain", data->chains[i].child, NULL);
+            virFirewallAddCmd(fw, layer,
+                              "--table", data->table,
+                              "--new-chain", data->chains[i].child, NULL);
             *data->changed = true;
         }
 
         from = virHashLookup(links, data->chains[i].child);
         if (!from || STRNEQ(from, data->chains[i].parent))
-            virFirewallAddRule(fw, layer,
-                               "--table", data->table,
-                               "--insert", data->chains[i].parent,
-                               "--jump", data->chains[i].child, NULL);
+            virFirewallAddCmd(fw, layer,
+                              "--table", data->table,
+                              "--insert", data->chains[i].parent,
+                              "--jump", data->chains[i].child, NULL);
     }
 
     return 0;
@@ -151,10 +151,10 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
     virFirewallStartTransaction(fw, 0);
 
     for (i = 0; i < G_N_ELEMENTS(data); i++)
-        virFirewallAddRuleFull(fw, data[i].layer,
-                               false, iptablesPrivateChainCreate,
-                               &(data[i]), "--table", data[i].table,
-                               "--list-rules", NULL);
+        virFirewallAddCmdFull(fw, data[i].layer,
+                              false, iptablesPrivateChainCreate,
+                              &(data[i]), "--table", data[i].table,
+                              "--list-rules", NULL);
 
     if (virFirewallApply(fw) < 0)
         return -1;
@@ -173,15 +173,15 @@ iptablesInput(virFirewall *fw,
 {
     g_autofree char *portstr = g_strdup_printf("%d", port);
 
-    virFirewallAddRule(fw, layer,
-                       "--table", "filter",
-                       action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                       VIR_IPTABLES_INPUT_CHAIN,
-                       "--in-interface", iface,
-                       "--protocol", tcp ? "tcp" : "udp",
-                       "--destination-port", portstr,
-                       "--jump", "ACCEPT",
-                       NULL);
+    virFirewallAddCmd(fw, layer,
+                      "--table", "filter",
+                      action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                      VIR_IPTABLES_INPUT_CHAIN,
+                      "--in-interface", iface,
+                      "--protocol", tcp ? "tcp" : "udp",
+                      "--destination-port", portstr,
+                      "--jump", "ACCEPT",
+                      NULL);
 }
 
 static void
@@ -194,15 +194,15 @@ iptablesOutput(virFirewall *fw,
 {
     g_autofree char *portstr = g_strdup_printf("%d", port);
 
-    virFirewallAddRule(fw, layer,
-                       "--table", "filter",
-                       action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                       VIR_IPTABLES_OUTPUT_CHAIN,
-                       "--out-interface", iface,
-                       "--protocol", tcp ? "tcp" : "udp",
-                       "--destination-port", portstr,
-                       "--jump", "ACCEPT",
-                       NULL);
+    virFirewallAddCmd(fw, layer,
+                      "--table", "filter",
+                      action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                      VIR_IPTABLES_OUTPUT_CHAIN,
+                      "--out-interface", iface,
+                      "--protocol", tcp ? "tcp" : "udp",
+                      "--destination-port", portstr,
+                      "--jump", "ACCEPT",
+                      NULL);
 }
 
 /**
@@ -369,24 +369,24 @@ iptablesForwardAllowOut(virFirewall *fw,
         return -1;
 
     if (physdev && physdev[0])
-        virFirewallAddRule(fw, layer,
-                           "--table", "filter",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_FWD_OUT_CHAIN,
-                           "--source", networkstr,
-                           "--in-interface", iface,
-                           "--out-interface", physdev,
-                           "--jump", "ACCEPT",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "filter",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_FWD_OUT_CHAIN,
+                          "--source", networkstr,
+                          "--in-interface", iface,
+                          "--out-interface", physdev,
+                          "--jump", "ACCEPT",
+                          NULL);
     else
-        virFirewallAddRule(fw, layer,
-                           "--table", "filter",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_FWD_OUT_CHAIN,
-                           "--source", networkstr,
-                           "--in-interface", iface,
-                           "--jump", "ACCEPT",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "filter",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_FWD_OUT_CHAIN,
+                          "--source", networkstr,
+                          "--in-interface", iface,
+                          "--jump", "ACCEPT",
+                          NULL);
 
     return 0;
 }
@@ -459,28 +459,28 @@ iptablesForwardAllowRelatedIn(virFirewall *fw,
         return -1;
 
     if (physdev && physdev[0])
-        virFirewallAddRule(fw, layer,
-                           "--table", "filter",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_FWD_IN_CHAIN,
-                           "--destination", networkstr,
-                           "--in-interface", physdev,
-                           "--out-interface", iface,
-                           "--match", "conntrack",
-                           "--ctstate", "ESTABLISHED,RELATED",
-                           "--jump", "ACCEPT",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "filter",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_FWD_IN_CHAIN,
+                          "--destination", networkstr,
+                          "--in-interface", physdev,
+                          "--out-interface", iface,
+                          "--match", "conntrack",
+                          "--ctstate", "ESTABLISHED,RELATED",
+                          "--jump", "ACCEPT",
+                          NULL);
     else
-        virFirewallAddRule(fw, layer,
-                           "--table", "filter",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_FWD_IN_CHAIN,
-                           "--destination", networkstr,
-                           "--out-interface", iface,
-                           "--match", "conntrack",
-                           "--ctstate", "ESTABLISHED,RELATED",
-                           "--jump", "ACCEPT",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "filter",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_FWD_IN_CHAIN,
+                          "--destination", networkstr,
+                          "--out-interface", iface,
+                          "--match", "conntrack",
+                          "--ctstate", "ESTABLISHED,RELATED",
+                          "--jump", "ACCEPT",
+                          NULL);
 
     return 0;
 }
@@ -551,24 +551,24 @@ iptablesForwardAllowIn(virFirewall *fw,
         return -1;
 
     if (physdev && physdev[0])
-        virFirewallAddRule(fw, layer,
-                           "--table", "filter",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_FWD_IN_CHAIN,
-                           "--destination", networkstr,
-                           "--in-interface", physdev,
-                           "--out-interface", iface,
-                           "--jump", "ACCEPT",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "filter",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_FWD_IN_CHAIN,
+                          "--destination", networkstr,
+                          "--in-interface", physdev,
+                          "--out-interface", iface,
+                          "--jump", "ACCEPT",
+                          NULL);
     else
-        virFirewallAddRule(fw, layer,
-                           "--table", "filter",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_FWD_IN_CHAIN,
-                           "--destination", networkstr,
-                           "--out-interface", iface,
-                           "--jump", "ACCEPT",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "filter",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_FWD_IN_CHAIN,
+                          "--destination", networkstr,
+                          "--out-interface", iface,
+                          "--jump", "ACCEPT",
+                          NULL);
     return 0;
 }
 
@@ -626,14 +626,14 @@ iptablesForwardAllowCross(virFirewall *fw,
                           const char *iface,
                           int action)
 {
-    virFirewallAddRule(fw, layer,
-                       "--table", "filter",
-                       action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                       VIR_IPTABLES_FWD_X_CHAIN,
-                       "--in-interface", iface,
-                       "--out-interface", iface,
-                       "--jump", "ACCEPT",
-                       NULL);
+    virFirewallAddCmd(fw, layer,
+                      "--table", "filter",
+                      action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                      VIR_IPTABLES_FWD_X_CHAIN,
+                      "--in-interface", iface,
+                      "--out-interface", iface,
+                      "--jump", "ACCEPT",
+                      NULL);
 }
 
 /**
@@ -680,13 +680,13 @@ iptablesForwardRejectOut(virFirewall *fw,
                          const char *iface,
                          int action)
 {
-    virFirewallAddRule(fw, layer,
-                       "--table", "filter",
-                       action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                       VIR_IPTABLES_FWD_OUT_CHAIN,
-                       "--in-interface", iface,
-                       "--jump", "REJECT",
-                       NULL);
+    virFirewallAddCmd(fw, layer,
+                      "--table", "filter",
+                      action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                      VIR_IPTABLES_FWD_OUT_CHAIN,
+                      "--in-interface", iface,
+                      "--jump", "REJECT",
+                      NULL);
 }
 
 /**
@@ -732,13 +732,13 @@ iptablesForwardRejectIn(virFirewall *fw,
                         const char *iface,
                         int action)
 {
-    virFirewallAddRule(fw, layer,
-                       "--table", "filter",
-                       action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                       VIR_IPTABLES_FWD_IN_CHAIN,
-                       "--out-interface", iface,
-                       "--jump", "REJECT",
-                       NULL);
+    virFirewallAddCmd(fw, layer,
+                      "--table", "filter",
+                      action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                      VIR_IPTABLES_FWD_IN_CHAIN,
+                      "--out-interface", iface,
+                      "--jump", "REJECT",
+                      NULL);
 }
 
 /**
@@ -796,7 +796,7 @@ iptablesForwardMasquerade(virFirewall *fw,
     g_autofree char *addrEndStr = NULL;
     g_autofree char *portRangeStr = NULL;
     g_autofree char *natRangeStr = NULL;
-    virFirewallRule *rule;
+    virFirewallCmd *fwCmd;
     int af = VIR_SOCKET_ADDR_FAMILY(netaddr);
     virFirewallLayer layer = af == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
@@ -814,7 +814,7 @@ iptablesForwardMasquerade(virFirewall *fw,
     }
 
     if (protocol && protocol[0]) {
-        rule = virFirewallAddRule(fw, layer,
+        fwCmd = virFirewallAddCmd(fw, layer,
                                   "--table", "nat",
                                   action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
                                   VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
@@ -823,7 +823,7 @@ iptablesForwardMasquerade(virFirewall *fw,
                                   "!", "--destination", networkstr,
                                   NULL);
     } else {
-        rule = virFirewallAddRule(fw, layer,
+        fwCmd = virFirewallAddCmd(fw, layer,
                                   "--table", "nat",
                                   action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
                                   VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
@@ -833,7 +833,7 @@ iptablesForwardMasquerade(virFirewall *fw,
     }
 
     if (physdev && physdev[0])
-        virFirewallRuleAddArgList(fw, rule, "--out-interface", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "--out-interface", physdev, NULL);
 
     if (protocol && protocol[0]) {
         if (port->start == 0 && port->end == 0) {
@@ -861,16 +861,16 @@ iptablesForwardMasquerade(virFirewall *fw,
                                           portRangeStr ? portRangeStr : "");
         }
 
-        virFirewallRuleAddArgList(fw, rule,
-                                  "--jump", "SNAT",
-                                  "--to-source", natRangeStr, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd,
+                                 "--jump", "SNAT",
+                                 "--to-source", natRangeStr, NULL);
     } else {
-        virFirewallRuleAddArgList(fw, rule,
-                                  "--jump", "MASQUERADE", NULL);
+        virFirewallCmdAddArgList(fw, fwCmd,
+                                 "--jump", "MASQUERADE", NULL);
 
         if (portRangeStr && portRangeStr[0])
-            virFirewallRuleAddArgList(fw, rule,
-                                      "--to-ports", &portRangeStr[1], NULL);
+            virFirewallCmdAddArgList(fw, fwCmd,
+                                     "--to-ports", &portRangeStr[1], NULL);
     }
 
     return 0;
@@ -950,24 +950,24 @@ iptablesForwardDontMasquerade(virFirewall *fw,
         return -1;
 
     if (physdev && physdev[0])
-        virFirewallAddRule(fw, layer,
-                           "--table", "nat",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
-                           "--out-interface", physdev,
-                           "--source", networkstr,
-                           "--destination", destaddr,
-                           "--jump", "RETURN",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "nat",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
+                          "--out-interface", physdev,
+                          "--source", networkstr,
+                          "--destination", destaddr,
+                          "--jump", "RETURN",
+                          NULL);
     else
-        virFirewallAddRule(fw, layer,
-                           "--table", "nat",
-                           action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                           VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
-                           "--source", networkstr,
-                           "--destination", destaddr,
-                           "--jump", "RETURN",
-                           NULL);
+        virFirewallAddCmd(fw, layer,
+                          "--table", "nat",
+                          action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                          VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
+                          "--source", networkstr,
+                          "--destination", destaddr,
+                          "--jump", "RETURN",
+                          NULL);
 
     return 0;
 }
@@ -1032,15 +1032,15 @@ iptablesOutputFixUdpChecksum(virFirewall *fw,
 {
     g_autofree char *portstr = g_strdup_printf("%d", port);
 
-    virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
-                       "--table", "mangle",
-                       action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
-                       VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
-                       "--out-interface", iface,
-                       "--protocol", "udp",
-                       "--destination-port", portstr,
-                       "--jump", "CHECKSUM", "--checksum-fill",
-                       NULL);
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
+                      "--table", "mangle",
+                      action == VIR_NETFILTER_INSERT ? "--insert" : "--delete",
+                      VIR_IPTABLES_NAT_POSTROUTE_CHAIN,
+                      "--out-interface", iface,
+                      "--protocol", "udp",
+                      "--destination-port", portstr,
+                      "--jump", "CHECKSUM", "--checksum-fill",
+                      NULL);
 }
 
 /**

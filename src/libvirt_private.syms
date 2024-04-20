@@ -2404,17 +2404,17 @@ virFileCacheSetPriv;
 
 
 # util/virfirewall.h
-virFirewallAddRuleFull;
+virFirewallAddCmdFull;
 virFirewallApply;
+virFirewallCmdAddArg;
+virFirewallCmdAddArgFormat;
+virFirewallCmdAddArgList;
+virFirewallCmdAddArgSet;
+virFirewallCmdGetArgCount;
+virFirewallCmdToString;
 virFirewallFree;
 virFirewallNew;
-virFirewallRemoveRule;
-virFirewallRuleAddArg;
-virFirewallRuleAddArgFormat;
-virFirewallRuleAddArgList;
-virFirewallRuleAddArgSet;
-virFirewallRuleGetArgCount;
-virFirewallRuleToString;
+virFirewallRemoveCmd;
 virFirewallStartRollback;
 virFirewallStartTransaction;
 
