@@ -213,20 +213,6 @@ virFirewallAddCmdFullV(virFirewall *firewall,
     fwCmd->queryOpaque = opaque;
     fwCmd->ignoreErrors = ignoreErrors;
 
-    switch (fwCmd->layer) {
-    case VIR_FIREWALL_LAYER_ETHERNET:
-        ADD_ARG(fwCmd, "--concurrent");
-        break;
-    case VIR_FIREWALL_LAYER_IPV4:
-        ADD_ARG(fwCmd, "-w");
-        break;
-    case VIR_FIREWALL_LAYER_IPV6:
-        ADD_ARG(fwCmd, "-w");
-        break;
-    case VIR_FIREWALL_LAYER_LAST:
-        break;
-    }
-
     while ((str = va_arg(args, char *)) != NULL)
         ADD_ARG(fwCmd, str);
 
@@ -498,6 +484,19 @@ virFirewallApplyCmdDirect(virFirewallCmd *fwCmd,
     }
 
     cmd = virCommandNewArgList(bin, NULL);
+
+    /* lock to assure nobody else is messing with the tables while we are */
+    switch (fwCmd->layer) {
+    case VIR_FIREWALL_LAYER_ETHERNET:
+        virCommandAddArg(cmd, "--concurrent");
+        break;
+    case VIR_FIREWALL_LAYER_IPV4:
+    case VIR_FIREWALL_LAYER_IPV6:
+        virCommandAddArg(cmd, "-w");
+        break;
+    case VIR_FIREWALL_LAYER_LAST:
+        break;
+    }
 
     for (i = 0; i < fwCmd->argsLen; i++)
         virCommandAddArg(cmd, fwCmd->args[i]);
