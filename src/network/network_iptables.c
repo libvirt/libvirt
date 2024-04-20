@@ -1599,7 +1599,7 @@ iptablesAddFirewallRules(virNetworkDef *def)
     virNetworkIPDef *ipdef;
     g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_IPTABLES);
 
-    virFirewallStartTransaction(fw, 0);
+    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK);
 
     iptablesAddGeneralFirewallRules(fw, def);
 
@@ -1610,17 +1610,8 @@ iptablesAddFirewallRules(virNetworkDef *def)
             return -1;
     }
 
-    virFirewallStartRollback(fw, 0);
-
-    for (i = 0;
-         (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
-         i++) {
-        if (iptablesRemoveIPSpecificFirewallRules(fw, def, ipdef) < 0)
-            return -1;
-    }
-    iptablesRemoveGeneralFirewallRules(fw, def);
-
-    virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+    virFirewallStartTransaction(fw, (VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS |
+                                     VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK));
     iptablesAddChecksumFirewallRules(fw, def);
 
     return virFirewallApply(fw);
