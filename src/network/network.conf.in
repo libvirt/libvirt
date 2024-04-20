@@ -1,0 +1,3 @@
+# Master configuration file for the network driver.
+# All settings described here are optional - if omitted, sensible
+# defaults are used.

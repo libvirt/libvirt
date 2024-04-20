@@ -49,6 +49,22 @@ if conf.has('WITH_NETWORK')
     ],
   }
 
+  network_conf = configure_file(
+    input: 'network.conf.in',
+    output: 'network.conf',
+    configuration: configmake_conf,
+  )
+  virt_conf_files += network_conf
+  virt_aug_files += files('libvirtd_network.aug')
+  virt_test_aug_files += {
+    'name': 'test_libvirtd_network.aug',
+    'aug': files('test_libvirtd_network.aug.in'),
+    'conf': network_conf,
+    'test_name': 'libvirtd_network',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
+  }
+
   virt_daemon_confs += {
     'name': 'virtnetworkd',
   }
