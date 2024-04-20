@@ -22,8 +22,13 @@
 
 #include "virsocketaddr.h"
 #include "virfirewall.h"
+#include "network_conf.h"
 
-int              iptablesSetupPrivateChains      (virFirewallLayer layer);
+int iptablesAddFirewallRules(virNetworkDef *def);
+
+void iptablesRemoveFirewallRules(virNetworkDef *def);
+
+int iptablesSetupPrivateChains(virFirewallLayer layer);
 
 void             iptablesAddTcpInput             (virFirewall *fw,
                                                   virFirewallLayer layer,
