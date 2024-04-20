@@ -34,25 +34,45 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 #define PROC_NET_ROUTE "/proc/net/route"
 
-static virOnceControl createdOnce;
+static virMutex chainInitLock = VIR_MUTEX_INITIALIZER;
 static bool chainInitDone; /* true iff networkSetupPrivateChains was ever called */
 
 static virErrorPtr errInitV4;
 static virErrorPtr errInitV6;
 
-/* Usually only called via virOnce, but can also be called directly in
- * response to firewalld reload (if chainInitDone == true)
- */
-static void networkSetupPrivateChains(void)
+
+static int
+networkFirewallSetupPrivateChains(virFirewallBackend backend,
+                                  virFirewallLayer layer)
 {
+    switch (backend) {
+    case VIR_FIREWALL_BACKEND_IPTABLES:
+        return iptablesSetupPrivateChains(layer);
+
+    case VIR_FIREWALL_BACKEND_LAST:
+        virReportEnumRangeError(virFirewallBackend, backend);
+        return -1;
+    }
+    return 0;
+}
+
+
+static void
+networkSetupPrivateChains(virFirewallBackend backend,
+                          bool force)
+{
+    VIR_LOCK_GUARD lock = virLockGuardLock(&chainInitLock);
     int rc;
+
+    if (chainInitDone && !force)
+        return;
 
     VIR_DEBUG("Setting up global firewall chains");
 
     g_clear_pointer(&errInitV4, virFreeError);
     g_clear_pointer(&errInitV6, virFreeError);
 
-    rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4);
+    rc = networkFirewallSetupPrivateChains(backend, VIR_FIREWALL_LAYER_IPV4);
     if (rc < 0) {
         VIR_DEBUG("Failed to create global IPv4 chains: %s",
                   virGetLastErrorMessage());
@@ -65,7 +85,7 @@ static void networkSetupPrivateChains(void)
             VIR_DEBUG("Global IPv4 chains already exist");
     }
 
-    rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV6);
+    rc = networkFirewallSetupPrivateChains(backend, VIR_FIREWALL_LAYER_IPV6);
     if (rc < 0) {
         VIR_DEBUG("Failed to create global IPv6 chains: %s",
                   virGetLastErrorMessage());
@@ -138,6 +158,7 @@ networkPreReloadFirewallRules(virNetworkDriverState *driver,
                               bool startup G_GNUC_UNUSED,
                               bool force)
 {
+    g_autoptr(virNetworkDriverConfig) cfg = virNetworkDriverGetConfig(driver);
     /*
      * If there are any running networks, we need to
      * create the global rules upfront. This allows us
@@ -157,14 +178,14 @@ networkPreReloadFirewallRules(virNetworkDriverState *driver,
      */
     if (chainInitDone && force) {
         /* The Private chains have already been initialized once
-         * during this run of libvirtd, so 1) we can't do it again via
-         * virOnce(), and 2) we need to re-add the private chains even
-         * if there are currently no running networks, because the
-         * next time a network is started, libvirt will expect that
-         * the chains have already been added. So we call directly
-         * instead of via virOnce().
+         * during this run of libvirtd/virtnetworkd (known because
+         * chainInitDone == true) so we need to re-add the private
+         * chains even if there are currently no running networks,
+         * because the next time a network is started, libvirt will
+         * expect that the chains have already been added. So we force
+         * the init.
          */
-        networkSetupPrivateChains();
+        networkSetupPrivateChains(cfg->firewallBackend, true);
 
     } else {
         if (!networkHasRunningNetworksWithFW(driver)) {
@@ -172,7 +193,7 @@ networkPreReloadFirewallRules(virNetworkDriverState *driver,
             return;
         }
 
-        ignore_value(virOnce(&createdOnce, networkSetupPrivateChains));
+        networkSetupPrivateChains(cfg->firewallBackend, false);
     }
 }
 
@@ -304,10 +325,10 @@ int networkCheckRouteCollision(virNetworkDef *def)
 
 int
 networkAddFirewallRules(virNetworkDef *def,
-                        virFirewallBackend firewallBackend G_GNUC_UNUSED)
+                        virFirewallBackend firewallBackend)
 {
-    if (virOnce(&createdOnce, networkSetupPrivateChains) < 0)
-        return -1;
+
+    networkSetupPrivateChains(firewallBackend, false);
 
     if (errInitV4 &&
         (virNetworkDefGetIPByIndex(def, AF_INET, 0) ||
