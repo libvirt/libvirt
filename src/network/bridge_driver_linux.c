@@ -27,6 +27,7 @@
 #include "virfirewall.h"
 #include "virfirewalld.h"
 #include "network_iptables.h"
+#include "network_nftables.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -48,6 +49,9 @@ networkFirewallSetupPrivateChains(virFirewallBackend backend,
     switch (backend) {
     case VIR_FIREWALL_BACKEND_IPTABLES:
         return iptablesSetupPrivateChains(layer);
+
+    case VIR_FIREWALL_BACKEND_NFTABLES:
+        return nftablesSetupPrivateChains(layer);
 
     case VIR_FIREWALL_BACKEND_LAST:
         virReportEnumRangeError(virFirewallBackend, backend);
@@ -412,7 +416,18 @@ networkAddFirewallRules(virNetworkDef *def,
         }
     }
 
-    return iptablesAddFirewallRules(def, fwRemoval);
+    switch (firewallBackend) {
+    case VIR_FIREWALL_BACKEND_IPTABLES:
+        return iptablesAddFirewallRules(def, fwRemoval);
+
+    case VIR_FIREWALL_BACKEND_NFTABLES:
+        return nftablesAddFirewallRules(def, fwRemoval);
+
+    case VIR_FIREWALL_BACKEND_LAST:
+        virReportEnumRangeError(virFirewallBackend, firewallBackend);
+        return -1;
+    }
+    return 0;
 }
 
 

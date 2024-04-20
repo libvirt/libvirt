@@ -5,7 +5,24 @@
 # firewall_backend:
 #
 #   determines which subsystem to use to setup firewall packet
-#   filtering rules for virtual networks. Currently the only supported
-#   selection is "iptables".
+#   filtering rules for virtual networks.
+#
+#   Supported settings:
+#
+#     iptables - use iptables commands to construct the firewall
+#     nftables - use nft commands to construct the firewall
+#
+#   If firewall_backend isn't set in this file, libvirt will
+#   prefer the @FIREWALL_BACKEND@ backend *if the necessary package.
+#   binary is installed*, otherwise it will look for the package/binary
+#   needed for the other backend and use that if available. If neither
+#   is available on the host, then the network driver will fail to
+#   start, and an error will be logged.
+#
+#   (NB: switching from one backend to another while there are active
+#   virtual networks *is* supported. The change will take place the
+#   next time that libvirtd/virtnetworkd is restarted - all existing
+#   virtual networks will have their old firewalls removed, and then
+#   reloaded using the new backend.)
 #
 #firewall_backend = "@FIREWALL_BACKEND@"

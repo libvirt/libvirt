@@ -67,7 +67,7 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
     g_autofree char *fwBackendStr = NULL;
     bool fwBackendSelected = false;
     size_t i;
-    int fwBackends[] = { FIREWALL_BACKEND_DEFAULT_1 };
+    int fwBackends[] = { FIREWALL_BACKEND_DEFAULT_1, FIREWALL_BACKEND_DEFAULT_2 };
     G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) == VIR_FIREWALL_BACKEND_LAST);
     int nFwBackends = G_N_ELEMENTS(fwBackends);
 
@@ -107,6 +107,15 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
                 fwBackendSelected = true;
             break;
         }
+
+        case VIR_FIREWALL_BACKEND_NFTABLES: {
+            g_autofree char *nftablesInPath = virFindFileInPath(NFT);
+
+            if (nftablesInPath)
+                fwBackendSelected = true;
+            break;
+        }
+
         case VIR_FIREWALL_BACKEND_LAST:
             virReportEnumRangeError(virFirewallBackend, fwBackends[i]);
             return -1;

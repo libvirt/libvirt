@@ -37,7 +37,8 @@ VIR_LOG_INIT("util.firewall");
 
 VIR_ENUM_IMPL(virFirewallBackend,
               VIR_FIREWALL_BACKEND_LAST,
-              "iptables");
+              "iptables",
+              "nftables");
 
 VIR_ENUM_DECL(virFirewallLayer);
 VIR_ENUM_IMPL(virFirewallLayer,
@@ -653,6 +654,153 @@ virFirewallCmdIptablesApply(virFirewall *firewall,
 }
 
 
+#define VIR_NFTABLES_ARG_IS_CREATE(arg) \
+    (STREQ(arg, "insert") || STREQ(arg, "add") || STREQ(arg, "create"))
+
+static int
+virFirewallCmdNftablesApply(virFirewall *firewall G_GNUC_UNUSED,
+                            virFirewallCmd *fwCmd,
+                             char **output)
+{
+    bool needRollback = false;
+    size_t cmdIdx = 0;
+    const char *objectType = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *cmdStr = NULL;
+    g_autofree char *error = NULL;
+    size_t i;
+    int status;
+
+    cmd = virCommandNew(NFT);
+
+    if ((virFirewallTransactionGetFlags(firewall) & VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK) &&
+        fwCmd->argsLen > 1) {
+        /* skip any leading options to get to command verb */
+        for (i = 0; i < fwCmd->argsLen - 1; i++) {
+            if (fwCmd->args[i][0] != '-')
+                break;
+        }
+
+        if (i + 1 < fwCmd->argsLen &&
+            VIR_NFTABLES_ARG_IS_CREATE(fwCmd->args[i])) {
+
+            cmdIdx = i;
+            objectType = fwCmd->args[i + 1];
+
+            /* we currently only handle auto-rollback for rules,
+             * chains, and tables, and those all can be "rolled
+             * back" by a delete command using the handle that is
+             * returned when "-ae" is added to the add/insert
+             * command.
+             */
+            if (STREQ_NULLABLE(objectType, "rule") ||
+                STREQ_NULLABLE(objectType, "chain") ||
+                STREQ_NULLABLE(objectType, "table")) {
+
+                needRollback = true;
+                /* this option to nft instructs it to add the
+                 * "handle" of the created object to stdout
+                 */
+                virCommandAddArg(cmd, "-ae");
+            }
+        }
+    }
+
+    for (i = 0; i < fwCmd->argsLen; i++)
+        virCommandAddArg(cmd, fwCmd->args[i]);
+
+    cmdStr = virCommandToString(cmd, false);
+    VIR_INFO("Applying '%s'", NULLSTR(cmdStr));
+
+    virCommandSetOutputBuffer(cmd, output);
+    virCommandSetErrorBuffer(cmd, &error);
+
+    if (virCommandRun(cmd, &status) < 0)
+        return -1;
+
+    if (status != 0) {
+        if (STREQ_NULLABLE(fwCmd->args[0], "list")) {
+            /* nft returns error status when the target of a "list"
+             * command doesn't exist, but we always want to just have
+             * an empty result, so this is not actually an error.
+             */
+        } else if (fwCmd->ignoreErrors) {
+            VIR_DEBUG("Ignoring error running command");
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to apply firewall command '%1$s': %2$s"),
+                           NULLSTR(cmdStr), NULLSTR(error));
+            VIR_FREE(*output);
+            return -1;
+        }
+
+        /* there was an error, so we won't be building any rollback command,
+         * but the error should be ignored, so we return success
+         */
+        return 0;
+    }
+
+    if (needRollback) {
+        virFirewallCmd *rollback = virFirewallAddRollbackCmd(firewall, fwCmd->layer, NULL);
+        const char *handleStart = NULL;
+        size_t handleLen = 0;
+        g_autofree char *handleStr = NULL;
+        g_autofree char *rollbackStr = NULL;
+
+        /* Search for "# handle n" in stdout of the nft add command -
+         * that is the handle of the table/rule/chain that will later
+         * need to be deleted.
+         */
+
+        if ((handleStart = strstr(*output, "# handle "))) {
+            handleStart += 9; /* move past "# handle " */
+            handleLen = strspn(handleStart, "0123456789");
+        }
+
+        if (!handleLen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("couldn't register rollback command - command '%1$s' had no valid handle in output ('%2$s')"),
+                           NULLSTR(cmdStr), NULLSTR(*output));
+            return -1;
+        }
+
+        handleStr = g_strdup_printf("%.*s", (int)handleLen, handleStart);
+
+        /* The rollback command is created from the original command like this:
+         *
+         * 1) skip any leading options
+         * 2) replace add/insert with delete
+         * 3) keep the type of item being added (rule/chain/table)
+         * 4) keep the class (ip/ip6/inet)
+         * 5) for chain/rule, keep the table name
+         * 6) for rule, keep the chain name
+         * 7) add "handle n" where "n" is parsed from the
+         *    stdout of the original nft command
+         */
+        virFirewallCmdAddArgList(firewall, rollback, "delete", objectType,
+                                 fwCmd->args[cmdIdx + 2], /* ip/ip6/inet */
+                                 NULL);
+
+        if (STREQ_NULLABLE(objectType, "rule") ||
+            STREQ_NULLABLE(objectType, "chain")) {
+            /* include table name in command */
+            virFirewallCmdAddArg(firewall, rollback, fwCmd->args[cmdIdx + 3]);
+        }
+
+        if (STREQ_NULLABLE(objectType, "rule")) {
+            /* include chain name in command */
+            virFirewallCmdAddArg(firewall, rollback, fwCmd->args[cmdIdx + 4]);
+        }
+
+        virFirewallCmdAddArgList(firewall, rollback, "handle", handleStr, NULL);
+
+        rollbackStr = virFirewallCmdToString(NFT, rollback);
+        VIR_DEBUG("Recording Rollback command '%s'", NULLSTR(rollbackStr));
+    }
+    return 0;
+}
+
+
 static int
 virFirewallApplyCmd(virFirewall *firewall,
                     virFirewallCmd *fwCmd)
@@ -666,8 +814,23 @@ virFirewallApplyCmd(virFirewall *firewall,
         return -1;
     }
 
-    if (virFirewallCmdIptablesApply(firewall, fwCmd, &output) < 0)
+    switch (virFirewallGetBackend(firewall)) {
+    case VIR_FIREWALL_BACKEND_IPTABLES:
+        if (virFirewallCmdIptablesApply(firewall, fwCmd, &output) < 0)
+            return -1;
+        break;
+
+    case VIR_FIREWALL_BACKEND_NFTABLES:
+        if (virFirewallCmdNftablesApply(firewall, fwCmd, &output) < 0)
+            return -1;
+        break;
+
+    case VIR_FIREWALL_BACKEND_LAST:
+    default:
+        virReportEnumRangeError(virFirewallBackend,
+                                virFirewallGetBackend(firewall));
         return -1;
+    }
 
     if (fwCmd->queryCB && output) {
         if (!(lines = g_strsplit(output, "\n", -1)))

@@ -1639,6 +1639,11 @@ if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD')
   firewall_backend_default_conf = firewall_backend_default_1
   firewall_backend_default_1 = 'VIR_FIREWALL_BACKEND_' + firewall_backend_default_1.to_upper()
   conf.set('FIREWALL_BACKEND_DEFAULT_1', firewall_backend_default_1)
+
+  firewall_backend_default_2 = get_option('firewall_backend_default_2')
+  firewall_backend_default_2 = 'VIR_FIREWALL_BACKEND_' + firewall_backend_default_2.to_upper()
+  conf.set('FIREWALL_BACKEND_DEFAULT_2', firewall_backend_default_2)
+
 elif get_option('driver_network').enabled()
   error('libvirtd must be enabled to build the network driver')
 endif
