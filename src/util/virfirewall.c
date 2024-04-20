@@ -538,6 +538,12 @@ virFirewallApplyCmd(virFirewall *firewall,
     if (fwCmd->ignoreErrors)
         ignoreErrors = fwCmd->ignoreErrors;
 
+    if (fwCmd->argsLen == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Can't apply empty firewall command"));
+        return -1;
+    }
+
     if (virFirewallApplyCmdDirect(fwCmd, ignoreErrors, &output) < 0)
         return -1;
 
