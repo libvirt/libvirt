@@ -768,3 +768,62 @@ virFirewallApply(virFirewall *firewall)
 
     return 0;
 }
+
+
+/**
+ * virFirewallNewFromRollback:
+
+ * @original: the original virFirewall object containing the rollback
+ *            of interest
+ * @fwRemoval: a firewall object that, when applied, will remove @original
+ *
+ * Copy the rollback rules from the current virFirewall object as a
+ * new virFirewall. This virFirewall can then be saved to apply later
+ * and counteract everything done by the original.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int
+virFirewallNewFromRollback(virFirewall *original,
+                           virFirewall **fwRemoval)
+{
+    size_t g;
+    g_autoptr(virFirewall) firewall = NULL;
+
+    if (original->err) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("error in original firewall object"));
+        return -1;
+    }
+
+    firewall = virFirewallNew(original->backend);
+
+    /* add the rollback commands in reverse order of actions/groups of
+     * what was applied in the original firewall.
+     */
+    for (g = original->ngroups; g > 0; g--) {
+        size_t r;
+        virFirewallGroup *group = original->groups[g - 1];
+
+        if (group->nrollback == 0)
+            continue;
+
+        virFirewallStartTransaction(firewall, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+
+        for (r = group->nrollback; r > 0; r--) {
+            size_t i;
+            virFirewallCmd *origCmd = group->rollback[r - 1];
+            virFirewallCmd *rbCmd = virFirewallAddCmd(firewall, origCmd->layer, NULL);
+
+            for (i = 0; i < origCmd->argsLen; i++)
+                ADD_ARG(rbCmd, origCmd->args[i]);
+        }
+    }
+
+    if (firewall->ngroups == 0)
+        VIR_DEBUG("original firewall object is empty");
+    else
+        *fwRemoval = g_steal_pointer(&firewall);
+
+    return 0;
+}

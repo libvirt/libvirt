@@ -44,6 +44,7 @@ typedef enum {
 VIR_ENUM_DECL(virFirewallBackend);
 
 virFirewall *virFirewallNew(virFirewallBackend backend);
+int virFirewallNewFromRollback(virFirewall *original, virFirewall **fwRemoval);
 void virFirewallFree(virFirewall *firewall);
 virFirewallBackend virFirewallGetBackend(virFirewall *firewall);
 const char *virFirewallGetName(virFirewall *firewall);

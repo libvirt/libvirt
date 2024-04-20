@@ -2419,6 +2419,7 @@ virFirewallFree;
 virFirewallGetBackend;
 virFirewallGetName;
 virFirewallNew;
+virFirewallNewFromRollback;
 virFirewallRemoveCmd;
 virFirewallSetName;
 virFirewallStartRollback;
