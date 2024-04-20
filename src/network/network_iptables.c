@@ -207,7 +207,7 @@ iptablesOutput(virFirewall *fw,
  * Add an input to the IP table allowing access to the given @port on
  * the given @iface interface for TCP packets
  */
-void
+static void
 iptablesAddTcpInput(virFirewall *fw,
                     virFirewallLayer layer,
                     const char *iface,
@@ -225,7 +225,7 @@ iptablesAddTcpInput(virFirewall *fw,
  * Removes an input from the IP table, hence forbidding access to the given
  * @port on the given @iface interface for TCP packets
  */
-void
+static void
 iptablesRemoveTcpInput(virFirewall *fw,
                        virFirewallLayer layer,
                        const char *iface,
@@ -243,7 +243,7 @@ iptablesRemoveTcpInput(virFirewall *fw,
  * Add an input to the IP table allowing access to the given @port on
  * the given @iface interface for UDP packets
  */
-void
+static void
 iptablesAddUdpInput(virFirewall *fw,
                     virFirewallLayer layer,
                     const char *iface,
@@ -261,7 +261,7 @@ iptablesAddUdpInput(virFirewall *fw,
  * Removes an input from the IP table, hence forbidding access to the given
  * @port on the given @iface interface for UDP packets
  */
-void
+static void
 iptablesRemoveUdpInput(virFirewall *fw,
                        virFirewallLayer layer,
                        const char *iface,
@@ -279,7 +279,7 @@ iptablesRemoveUdpInput(virFirewall *fw,
  * Add an output to the IP table allowing access to the given @port from
  * the given @iface interface for TCP packets
  */
-void
+static void
 iptablesAddTcpOutput(virFirewall *fw,
                      virFirewallLayer layer,
                      const char *iface,
@@ -297,7 +297,7 @@ iptablesAddTcpOutput(virFirewall *fw,
  * Removes an output from the IP table, hence forbidding access to the given
  * @port from the given @iface interface for TCP packets
  */
-void
+static void
 iptablesRemoveTcpOutput(virFirewall *fw,
                         virFirewallLayer layer,
                         const char *iface,
@@ -315,7 +315,7 @@ iptablesRemoveTcpOutput(virFirewall *fw,
  * Add an output to the IP table allowing access to the given @port from
  * the given @iface interface for UDP packets
  */
-void
+static void
 iptablesAddUdpOutput(virFirewall *fw,
                      virFirewallLayer layer,
                      const char *iface,
@@ -333,7 +333,7 @@ iptablesAddUdpOutput(virFirewall *fw,
  * Removes an output from the IP table, hence forbidding access to the given
  * @port from the given @iface interface for UDP packets
  */
-void
+static void
 iptablesRemoveUdpOutput(virFirewall *fw,
                         virFirewallLayer layer,
                         const char *iface,
@@ -397,7 +397,7 @@ iptablesForwardAllowOut(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesAddForwardAllowOut(virFirewall *fw,
                            virSocketAddr *netaddr,
                            unsigned int prefix,
@@ -421,7 +421,7 @@ iptablesAddForwardAllowOut(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesRemoveForwardAllowOut(virFirewall *fw,
                               virSocketAddr *netaddr,
                               unsigned int prefix,
@@ -491,7 +491,7 @@ iptablesForwardAllowRelatedIn(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesAddForwardAllowRelatedIn(virFirewall *fw,
                                  virSocketAddr *netaddr,
                                  unsigned int prefix,
@@ -515,7 +515,7 @@ iptablesAddForwardAllowRelatedIn(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesRemoveForwardAllowRelatedIn(virFirewall *fw,
                                     virSocketAddr *netaddr,
                                     unsigned int prefix,
@@ -578,7 +578,7 @@ iptablesForwardAllowIn(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesAddForwardAllowIn(virFirewall *fw,
                           virSocketAddr *netaddr,
                           unsigned int prefix,
@@ -602,7 +602,7 @@ iptablesAddForwardAllowIn(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesRemoveForwardAllowIn(virFirewall *fw,
                              virSocketAddr *netaddr,
                              unsigned int prefix,
@@ -640,7 +640,7 @@ iptablesForwardAllowCross(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-void
+static void
 iptablesAddForwardAllowCross(virFirewall *fw,
                              virFirewallLayer layer,
                              const char *iface)
@@ -659,7 +659,7 @@ iptablesAddForwardAllowCross(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-void
+static void
 iptablesRemoveForwardAllowCross(virFirewall *fw,
                                 virFirewallLayer layer,
                                 const char *iface)
@@ -692,7 +692,7 @@ iptablesForwardRejectOut(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-void
+static void
 iptablesAddForwardRejectOut(virFirewall *fw,
                             virFirewallLayer layer,
                             const char *iface)
@@ -710,7 +710,7 @@ iptablesAddForwardRejectOut(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-void
+static void
 iptablesRemoveForwardRejectOut(virFirewall *fw,
                                virFirewallLayer layer,
                                const char *iface)
@@ -744,7 +744,7 @@ iptablesForwardRejectIn(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-void
+static void
 iptablesAddForwardRejectIn(virFirewall *fw,
                            virFirewallLayer layer,
                            const char *iface)
@@ -762,7 +762,7 @@ iptablesAddForwardRejectIn(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-void
+static void
 iptablesRemoveForwardRejectIn(virFirewall *fw,
                               virFirewallLayer layer,
                               const char *iface)
@@ -882,7 +882,7 @@ iptablesForwardMasquerade(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesAddForwardMasquerade(virFirewall *fw,
                              virSocketAddr *netaddr,
                              unsigned int prefix,
@@ -909,7 +909,7 @@ iptablesAddForwardMasquerade(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise
  */
-int
+static int
 iptablesRemoveForwardMasquerade(virFirewall *fw,
                                 virSocketAddr *netaddr,
                                 unsigned int prefix,
@@ -979,7 +979,7 @@ iptablesForwardDontMasquerade(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise.
  */
-int
+static int
 iptablesAddDontMasquerade(virFirewall *fw,
                           virSocketAddr *netaddr,
                           unsigned int prefix,
@@ -1004,7 +1004,7 @@ iptablesAddDontMasquerade(virFirewall *fw,
  *
  * Returns 0 in case of success or an error code otherwise.
  */
-int
+static int
 iptablesRemoveDontMasquerade(virFirewall *fw,
                              virSocketAddr *netaddr,
                              unsigned int prefix,
@@ -1047,7 +1047,7 @@ iptablesOutputFixUdpChecksum(virFirewall *fw,
  * the given @iface interface for TCP packets.
  *
  */
-void
+static void
 iptablesAddOutputFixUdpChecksum(virFirewall *fw,
                                 const char *iface,
                                 int port)
@@ -1064,7 +1064,7 @@ iptablesAddOutputFixUdpChecksum(virFirewall *fw,
  * Removes the checksum fixup rule that was previous added with
  * iptablesAddOutputFixUdpChecksum.
  */
-void
+static void
 iptablesRemoveOutputFixUdpChecksum(virFirewall *fw,
                                    const char *iface,
                                    int port)
