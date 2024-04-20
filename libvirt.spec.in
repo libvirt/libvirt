@@ -592,7 +592,11 @@ Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
+    %if 0%{?rhel} >= 10 || 0%{?fedora} >= 41
+Requires: nftables
+    %else
 Requires: iptables
+    %endif
 
 %description daemon-driver-network
 The network driver plugin for the libvirtd daemon, providing
