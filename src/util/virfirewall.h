@@ -73,6 +73,11 @@ virFirewallCmd *virFirewallAddCmdFull(virFirewall *firewall,
                                       ...)
     G_GNUC_NULL_TERMINATED;
 
+virFirewallCmd *virFirewallAddRollbackCmd(virFirewall *firewall,
+                                          virFirewallLayer layer,
+                                          ...)
+    G_GNUC_NULL_TERMINATED;
+
 void virFirewallRemoveCmd(virFirewall *firewall,
                           virFirewallCmd *rule);
 
@@ -105,6 +110,8 @@ typedef enum {
     /* Ignore all errors when applying rules, so no
      * rollback block will be required */
     VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS = (1 << 0),
+    /* Set to auto-add a rollback rule for each rule that is applied */
+    VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK = (1 << 1),
 } virFirewallTransactionFlags;
 
 void virFirewallStartTransaction(virFirewall *firewall,

@@ -2405,6 +2405,7 @@ virFileCacheSetPriv;
 
 # util/virfirewall.h
 virFirewallAddCmdFull;
+virFirewallAddRollbackCmd;
 virFirewallApply;
 virFirewallBackendTypeFromString;
 virFirewallBackendTypeToString;

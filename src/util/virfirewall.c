@@ -198,10 +198,12 @@ void virFirewallFree(virFirewall *firewall)
         fwCmd->args[fwCmd->argsLen++] = g_strdup(str); \
     } while (0)
 
+
 static virFirewallCmd *
 virFirewallAddCmdFullV(virFirewall *firewall,
                        virFirewallLayer layer,
                        bool ignoreErrors,
+                       bool isRollback,
                        virFirewallQueryCallback cb,
                        void *opaque,
                        va_list args)
@@ -218,18 +220,16 @@ virFirewallAddCmdFullV(virFirewall *firewall,
     }
     group = firewall->groups[firewall->currentGroup];
 
-
     fwCmd = g_new0(virFirewallCmd, 1);
-
     fwCmd->layer = layer;
-    fwCmd->queryCB = cb;
-    fwCmd->queryOpaque = opaque;
 
     while ((str = va_arg(args, char *)) != NULL)
         ADD_ARG(fwCmd, str);
 
-    if (group->addingRollback) {
+    if (isRollback || group->addingRollback) {
         fwCmd->ignoreErrors = true; /* always ignore errors when rolling back */
+        fwCmd->queryCB = NULL; /* rollback commands can't have a callback */
+        fwCmd->queryOpaque = NULL;
         VIR_APPEND_ELEMENT_COPY(group->rollback, group->nrollback, fwCmd);
     } else {
         /* when not rolling back, ignore errors if this group (transaction)
@@ -237,6 +237,8 @@ virFirewallAddCmdFullV(virFirewall *firewall,
          * if this specific rule was created with ignoreErrors == true
          */
         fwCmd->ignoreErrors = ignoreErrors || (group->actionFlags & VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
+        fwCmd->queryCB = cb;
+        fwCmd->queryOpaque = opaque;
         VIR_APPEND_ELEMENT_COPY(group->action, group->naction, fwCmd);
     }
 
@@ -277,7 +279,33 @@ virFirewallCmd *virFirewallAddCmdFull(virFirewall *firewall,
     virFirewallCmd *fwCmd;
     va_list args;
     va_start(args, opaque);
-    fwCmd = virFirewallAddCmdFullV(firewall, layer, ignoreErrors, cb, opaque, args);
+    fwCmd = virFirewallAddCmdFullV(firewall, layer, ignoreErrors, false, cb, opaque, args);
+    va_end(args);
+    return fwCmd;
+}
+
+
+/**
+ * virFirewallAddRollbackCmd:
+ * @firewall: firewall commands to add to
+ * @layer: the firewall layer to change
+ * @...: NULL terminated list of strings for the command
+ *
+ * Add a command to the current firewall command group "rollback".
+ * Rollback commands always ignore errors and don't support any
+ * callbacks.
+ *
+ * Returns the new Command
+ */
+virFirewallCmd *
+virFirewallAddRollbackCmd(virFirewall *firewall,
+                          virFirewallLayer layer,
+                          ...)
+{
+    virFirewallCmd *fwCmd;
+    va_list args;
+    va_start(args, layer);
+    fwCmd = virFirewallAddCmdFullV(firewall, layer, true, true, NULL, NULL, args);
     va_end(args);
     return fwCmd;
 }
@@ -433,6 +461,21 @@ void virFirewallStartTransaction(virFirewall *firewall,
     firewall->groups[firewall->ngroups - 1] = group;
     firewall->currentGroup = firewall->ngroups - 1;
 }
+
+
+/**
+ * virFirewallTransactionGetFlags:
+ * @firewall: the firewall to look at
+ *
+ * Returns the virFirewallTransactionFlags for the currently active
+ * group (transaction) in @firewall.
+ */
+static virFirewallTransactionFlags G_GNUC_UNUSED
+virFirewallTransactionGetFlags(virFirewall *firewall)
+{
+    return firewall->groups[firewall->currentGroup]->actionFlags;
+}
+
 
 /**
  * virFirewallBeginRollback:
