@@ -838,10 +838,7 @@ optional_test_programs = [
 
 optional_programs = [
   'dmidecode',
-  'ebtables',
   'ip',
-  'ip6tables',
-  'iptables',
   'iscsiadm',
   'mdevctl',
   'mm-ctl',

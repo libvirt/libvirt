@@ -27,7 +27,9 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virutil.h"
+#include "virfirewall.h" /* for binary names */
 #include "bridge_driver_conf.h"
+
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 

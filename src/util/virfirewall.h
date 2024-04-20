@@ -25,6 +25,11 @@
 #include "virbuffer.h"
 #include "virxml.h"
 
+/* various external programs executed when applying firewalls */
+#define EBTABLES "ebtables"
+#define IPTABLES "iptables"
+#define IP6TABLES "ip6tables"
+
 typedef struct _virFirewall virFirewall;
 
 typedef struct _virFirewallCmd virFirewallCmd;
