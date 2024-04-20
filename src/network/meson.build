@@ -2,6 +2,7 @@ network_driver_sources = [
   'bridge_driver.c',
   'bridge_driver_conf.c',
   'bridge_driver_platform.c',
+  'network_iptables.c',
 ]
 
 driver_source_files += files(network_driver_sources)

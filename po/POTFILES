@@ -144,6 +144,7 @@ src/network/bridge_driver.c
 src/network/bridge_driver_conf.c
 src/network/bridge_driver_linux.c
 src/network/leaseshelper.c
+src/network/network_iptables.c
 src/node_device/node_device_driver.c
 src/node_device/node_device_udev.c
 src/nwfilter/nwfilter_dhcpsnoop.c
@@ -288,7 +289,6 @@ src/util/virhostmem.c
 src/util/virhostuptime.c
 src/util/viridentity.c
 src/util/virinitctl.c
-src/util/viriptables.c
 src/util/viriscsi.c
 src/util/virjson.c
 src/util/virlease.c

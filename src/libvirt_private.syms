@@ -2576,37 +2576,6 @@ virIdentitySetX509DName;
 virInitctlFifos;
 virInitctlSetRunLevel;
 
-
-# util/viriptables.h
-iptablesAddDontMasquerade;
-iptablesAddForwardAllowCross;
-iptablesAddForwardAllowIn;
-iptablesAddForwardAllowOut;
-iptablesAddForwardAllowRelatedIn;
-iptablesAddForwardMasquerade;
-iptablesAddForwardRejectIn;
-iptablesAddForwardRejectOut;
-iptablesAddOutputFixUdpChecksum;
-iptablesAddTcpInput;
-iptablesAddTcpOutput;
-iptablesAddUdpInput;
-iptablesAddUdpOutput;
-iptablesRemoveDontMasquerade;
-iptablesRemoveForwardAllowCross;
-iptablesRemoveForwardAllowIn;
-iptablesRemoveForwardAllowOut;
-iptablesRemoveForwardAllowRelatedIn;
-iptablesRemoveForwardMasquerade;
-iptablesRemoveForwardRejectIn;
-iptablesRemoveForwardRejectOut;
-iptablesRemoveOutputFixUdpChecksum;
-iptablesRemoveTcpInput;
-iptablesRemoveTcpOutput;
-iptablesRemoveUdpInput;
-iptablesRemoveUdpOutput;
-iptablesSetupPrivateChains;
-
-
 # util/viriscsi.h
 virISCSIConnectionLogin;
 virISCSIConnectionLogout;

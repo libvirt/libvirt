@@ -1,5 +1,5 @@
 /*
- * viriptables.h: helper APIs for managing iptables
+ * network_iptables.h: helper APIs for managing iptables in network driver
  *
  * Copyright (C) 2007, 2008 Red Hat, Inc.
  *

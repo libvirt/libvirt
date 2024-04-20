@@ -1,5 +1,5 @@
 /*
- * viriptables.c: helper APIs for managing iptables
+ * network_iptables.c: helper APIs for managing iptables in network driver
  *
  * Copyright (C) 2007-2014 Red Hat, Inc.
  *
@@ -27,13 +27,13 @@
 #include <sys/stat.h>
 
 #include "internal.h"
-#include "viriptables.h"
 #include "virfirewalld.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virhash.h"
+#include "network_iptables.h"
 
-VIR_LOG_INIT("util.iptables");
+VIR_LOG_INIT("network.iptables");
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

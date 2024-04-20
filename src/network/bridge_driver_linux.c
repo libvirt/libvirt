@@ -22,11 +22,11 @@
 #include <config.h>
 
 #include "virfile.h"
-#include "viriptables.h"
 #include "virstring.h"
 #include "virlog.h"
 #include "virfirewall.h"
 #include "virfirewalld.h"
+#include "network_iptables.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
