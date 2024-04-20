@@ -79,13 +79,21 @@ testCommandDryRun(const char *const*args G_GNUC_UNUSED,
                   void *opaque G_GNUC_UNUSED)
 {
     *status = 0;
-    *output = g_strdup("");
+    /* if arg[1] is -ae then this is an nft command,
+     * and the caller requested to get the handle
+     * of the newly added object in stdout
+     */
+    if (STREQ_NULLABLE(args[1], "-ae"))
+        *output = g_strdup("# handle 5309");
+    else
+        *output = g_strdup("");
     *error = g_strdup("");
 }
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
-                                     const char *baseargs)
+                                     const char *baseargs,
+                                     virFirewallBackend backend)
 {
     g_autofree char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -98,7 +106,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(def = virNetworkDefParse(NULL, xml, NULL, false)))
         return -1;
 
-    if (networkAddFirewallRules(def, VIR_FIREWALL_BACKEND_IPTABLES, NULL) < 0)
+    if (networkAddFirewallRules(def, backend, NULL) < 0)
         return -1;
 
     actual = actualargv = virBufferContentAndReset(&buf);
@@ -119,6 +127,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 struct testInfo {
     const char *name;
     const char *baseargs;
+    virFirewallBackend backend;
 };
 
 
@@ -132,10 +141,11 @@ testCompareXMLToIPTablesHelper(const void *data)
 
     xml = g_strdup_printf("%s/networkxml2firewalldata/%s.xml",
                           abs_srcdir, info->name);
-    args = g_strdup_printf("%s/networkxml2firewalldata/%s-%s.args",
-                           abs_srcdir, info->name, RULESTYPE);
+    args = g_strdup_printf("%s/networkxml2firewalldata/%s-%s.%s",
+                           abs_srcdir, info->name, RULESTYPE,
+                           virFirewallBackendTypeToString(info->backend));
 
-    result = testCompareXMLToArgvFiles(xml, args, info->baseargs);
+    result = testCompareXMLToArgvFiles(xml, args, info->baseargs, info->backend);
 
     return result;
 }
@@ -145,23 +155,41 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autofree char *basefile = NULL;
-    g_autofree char *baseargs = NULL;
+    g_autofree char *basefileIptables = NULL;
+    g_autofree char *basefileNftables = NULL;
+    g_autofree char *baseargsIptables = NULL;
+    g_autofree char *baseargsNftables = NULL;
+    const char *baseargs[VIR_FIREWALL_BACKEND_LAST];
 
-# define DO_TEST(name) \
+# define DO_TEST_FOR_BACKEND(name, backend) \
     do { \
         struct testInfo info = { \
-            name, baseargs, \
+            name, baseargs[backend], backend \
         }; \
-        if (virTestRun("Network XML-2-iptables " name, \
-                       testCompareXMLToIPTablesHelper, &info) < 0) \
+        g_autofree char *label = g_strdup_printf("Network XML-2-%s %s", \
+                                                 virFirewallBackendTypeToString(backend), \
+                                                 name); \
+        if (virTestRun(label, testCompareXMLToIPTablesHelper, &info) < 0) \
             ret = -1; \
     } while (0)
 
-    basefile = g_strdup_printf("%s/networkxml2firewalldata/base.args", abs_srcdir);
+# define DO_TEST(name) \
+    DO_TEST_FOR_BACKEND(name, VIR_FIREWALL_BACKEND_IPTABLES); \
+    DO_TEST_FOR_BACKEND(name, VIR_FIREWALL_BACKEND_NFTABLES);
 
-    if (virFileReadAll(basefile, INT_MAX, &baseargs) < 0)
+
+    basefileIptables = g_strdup_printf("%s/networkxml2firewalldata/base.iptables", abs_srcdir);
+    if (virFileReadAll(basefileIptables, INT_MAX, &baseargsIptables) < 0)
         return EXIT_FAILURE;
+
+    baseargs[VIR_FIREWALL_BACKEND_IPTABLES] = baseargsIptables;
+
+    basefileNftables = g_strdup_printf("%s/networkxml2firewalldata/base.nftables", abs_srcdir);
+    if (virFileReadAll(basefileNftables, INT_MAX, &baseargsNftables) < 0)
+        return EXIT_FAILURE;
+
+    baseargs[VIR_FIREWALL_BACKEND_NFTABLES] = baseargsNftables;
+
 
     DO_TEST("nat-default");
     DO_TEST("nat-tftp");

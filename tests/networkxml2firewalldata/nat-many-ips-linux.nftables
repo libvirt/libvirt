@@ -1,0 +1,472 @@
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+tcp \
+dport \
+67 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+udp \
+dport \
+67 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+tcp \
+dport \
+68 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+udp \
+dport \
+68 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+tcp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+udp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+tcp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+udp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWO \
+iifname \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWI \
+oifname \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWX \
+iifname \
+virbr0 \
+oifname \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWO \
+ip \
+saddr \
+192.168.122.0/24 \
+iifname \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWI \
+oifname \
+virbr0 \
+ip \
+daddr \
+192.168.122.0/24 \
+ct \
+state \
+related,established \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.122.0/24 \
+counter \
+masquerade
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+meta \
+l4proto \
+udp \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.122.0/24 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+meta \
+l4proto \
+tcp \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.122.0/24 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+255.255.255.255/32 \
+counter \
+return
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+224.0.0.0/24 \
+counter \
+return
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWO \
+ip \
+saddr \
+192.168.128.0/24 \
+iifname \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWI \
+oifname \
+virbr0 \
+ip \
+daddr \
+192.168.128.0/24 \
+ct \
+state \
+related,established \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.128.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.128.0/24 \
+counter \
+masquerade
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+meta \
+l4proto \
+udp \
+ip \
+saddr \
+192.168.128.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.128.0/24 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+meta \
+l4proto \
+tcp \
+ip \
+saddr \
+192.168.128.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.128.0/24 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.128.0/24 \
+ip \
+daddr \
+255.255.255.255/32 \
+counter \
+return
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.128.0/24 \
+ip \
+daddr \
+224.0.0.0/24 \
+counter \
+return
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWO \
+ip \
+saddr \
+192.168.150.0/24 \
+iifname \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWI \
+oifname \
+virbr0 \
+ip \
+daddr \
+192.168.150.0/24 \
+ct \
+state \
+related,established \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.150.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.150.0/24 \
+counter \
+masquerade
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+meta \
+l4proto \
+udp \
+ip \
+saddr \
+192.168.150.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.150.0/24 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+meta \
+l4proto \
+tcp \
+ip \
+saddr \
+192.168.150.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.150.0/24 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.150.0/24 \
+ip \
+daddr \
+255.255.255.255/32 \
+counter \
+return
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_PRT \
+ip \
+saddr \
+192.168.150.0/24 \
+ip \
+daddr \
+224.0.0.0/24 \
+counter \
+return

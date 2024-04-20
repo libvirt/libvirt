@@ -1,0 +1,162 @@
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+tcp \
+dport \
+67 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+udp \
+dport \
+67 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+tcp \
+dport \
+68 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+udp \
+dport \
+68 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+tcp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_INP \
+iifname \
+virbr0 \
+udp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+tcp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_OUT \
+oifname \
+virbr0 \
+udp \
+dport \
+53 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWO \
+iifname \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWI \
+oifname \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWX \
+iifname \
+virbr0 \
+oifname \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWO \
+ip \
+saddr \
+192.168.122.0/24 \
+iifname \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt \
+LIBVIRT_FWI \
+ip \
+daddr \
+192.168.122.0/24 \
+oifname \
+virbr0 \
+counter \
+accept

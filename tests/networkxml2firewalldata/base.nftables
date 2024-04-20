@@ -1,0 +1,256 @@
+nft \
+list \
+table \
+ip \
+libvirt
+nft \
+add \
+table \
+ip \
+libvirt
+nft \
+add \
+chain \
+ip \
+libvirt \
+INPUT \
+'{ type filter hook input priority 0; policy accept; }'
+nft \
+add \
+chain \
+ip \
+libvirt \
+FORWARD \
+'{ type filter hook forward priority 0; policy accept; }'
+nft \
+add \
+chain \
+ip \
+libvirt \
+OUTPUT \
+'{ type filter hook output priority 0; policy accept; }'
+nft \
+add \
+chain \
+ip \
+libvirt \
+LIBVIRT_INP
+nft \
+insert \
+rule \
+ip \
+libvirt \
+INPUT \
+counter \
+jump \
+LIBVIRT_INP
+nft \
+add \
+chain \
+ip \
+libvirt \
+LIBVIRT_OUT
+nft \
+insert \
+rule \
+ip \
+libvirt \
+OUTPUT \
+counter \
+jump \
+LIBVIRT_OUT
+nft \
+add \
+chain \
+ip \
+libvirt \
+LIBVIRT_FWO
+nft \
+insert \
+rule \
+ip \
+libvirt \
+FORWARD \
+counter \
+jump \
+LIBVIRT_FWO
+nft \
+add \
+chain \
+ip \
+libvirt \
+LIBVIRT_FWI
+nft \
+insert \
+rule \
+ip \
+libvirt \
+FORWARD \
+counter \
+jump \
+LIBVIRT_FWI
+nft \
+add \
+chain \
+ip \
+libvirt \
+LIBVIRT_FWX
+nft \
+insert \
+rule \
+ip \
+libvirt \
+FORWARD \
+counter \
+jump \
+LIBVIRT_FWX
+nft \
+add \
+chain \
+ip \
+libvirt \
+POSTROUTING \
+'{ type nat hook postrouting priority 100; policy accept; }'
+nft \
+add \
+chain \
+ip \
+libvirt \
+LIBVIRT_PRT
+nft \
+insert \
+rule \
+ip \
+libvirt \
+POSTROUTING \
+counter \
+jump \
+LIBVIRT_PRT
+nft \
+list \
+table \
+ip6 \
+libvirt
+nft \
+add \
+table \
+ip6 \
+libvirt
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+INPUT \
+'{ type filter hook input priority 0; policy accept; }'
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+FORWARD \
+'{ type filter hook forward priority 0; policy accept; }'
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+OUTPUT \
+'{ type filter hook output priority 0; policy accept; }'
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+LIBVIRT_INP
+nft \
+insert \
+rule \
+ip6 \
+libvirt \
+INPUT \
+counter \
+jump \
+LIBVIRT_INP
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+LIBVIRT_OUT
+nft \
+insert \
+rule \
+ip6 \
+libvirt \
+OUTPUT \
+counter \
+jump \
+LIBVIRT_OUT
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+LIBVIRT_FWO
+nft \
+insert \
+rule \
+ip6 \
+libvirt \
+FORWARD \
+counter \
+jump \
+LIBVIRT_FWO
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+LIBVIRT_FWI
+nft \
+insert \
+rule \
+ip6 \
+libvirt \
+FORWARD \
+counter \
+jump \
+LIBVIRT_FWI
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+LIBVIRT_FWX
+nft \
+insert \
+rule \
+ip6 \
+libvirt \
+FORWARD \
+counter \
+jump \
+LIBVIRT_FWX
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+POSTROUTING \
+'{ type nat hook postrouting priority 100; policy accept; }'
+nft \
+add \
+chain \
+ip6 \
+libvirt \
+LIBVIRT_PRT
+nft \
+insert \
+rule \
+ip6 \
+libvirt \
+POSTROUTING \
+counter \
+jump \
+LIBVIRT_PRT
