@@ -1152,6 +1152,37 @@ virHostCPUGetAvailableCPUsBitmap(void)
 }
 
 
+/**
+ * virHostCPUGetIsolated:
+ * @isolated: returned bitmap of isolated CPUs
+ *
+ * Sets @isolated to point to a bitmap of isolated CPUs (e.g. those passed to
+ * isolcpus= kernel cmdline). If the file doesn't exist, @isolated is set to
+ * NULL and success is returned. If the file does exist but it's empty,
+ * @isolated is set to an empty bitmap and success is returned.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with error reported).
+ */
+int
+virHostCPUGetIsolated(virBitmap **isolated)
+{
+    g_autoptr(virBitmap) bitmap = NULL;
+    int rc;
+
+    rc = virFileReadValueBitmapAllowEmpty(&bitmap, "%s/cpu/isolated", SYSFS_SYSTEM_PATH);
+    if (rc == -2) {
+        *isolated = NULL;
+        return 0;
+    } else if (rc < 0) {
+        return -1;
+    }
+
+    *isolated = g_steal_pointer(&bitmap);
+    return 0;
+}
+
+
 #if WITH_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
 
 /* Get the number of threads per subcore.

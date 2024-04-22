@@ -43,6 +43,7 @@ bool virHostCPUHasBitmap(void);
 virBitmap *virHostCPUGetPresentBitmap(void);
 virBitmap *virHostCPUGetOnlineBitmap(void);
 virBitmap *virHostCPUGetAvailableCPUsBitmap(void);
+int virHostCPUGetIsolated(virBitmap **isolated);
 
 int virHostCPUGetCount(void);
 int virHostCPUGetThreadsPerSubcore(virArch arch) G_NO_INLINE;
