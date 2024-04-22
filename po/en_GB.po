@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-16 13:35+0000\n"
+"PO-Revision-Date: 2024-04-18 20:36+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -340,6 +340,16 @@ msgid ""
 "\n"
 "libvirt login shell\n"
 msgstr ""
+"\n"
+"Usage:\n"
+"  %1$s [option]\n"
+"\n"
+"Options:\n"
+"  -h | --help            Display program help\n"
+"  -V | --version         Display program version\n"
+"  -c CMD                 Run CMD via shell\n"
+"\n"
+"libvirt login shell\n"
 
 #, c-format
 msgid ""
@@ -358,6 +368,20 @@ msgid ""
 "\n"
 "libvirt lock management daemon:\n"
 msgstr ""
+"\n"
+"Usage:\n"
+"  %1$s [options]\n"
+"\n"
+"Options:\n"
+"  -h | --help            Display program help:\n"
+"  -v | --verbose         Verbose messages.\n"
+"  -d | --daemon          Run as a daemon & write PID file.\n"
+"  -t | --timeout <secs>  Exit after timeout period.\n"
+"  -f | --config <file>   Configuration file.\n"
+"  -V | --version         Display version information.\n"
+"  -p | --pid-file <file> Change name of PID file.\n"
+"\n"
+"libvirt lock management daemon:\n"
 
 #, c-format
 msgid ""
@@ -376,6 +400,20 @@ msgid ""
 "\n"
 "libvirt log management daemon:\n"
 msgstr ""
+"\n"
+"Usage:\n"
+"  %1$s [options]\n"
+"\n"
+"Options:\n"
+"  -h | --help            Display program help:\n"
+"  -v | --verbose         Verbose messages.\n"
+"  -d | --daemon          Run as a daemon & write PID file.\n"
+"  -t | --timeout <secs>  Exit after timeout period.\n"
+"  -f | --config <file>   Configuration file.\n"
+"  -V | --version         Display version information.\n"
+"  -p | --pid-file <file> Change name of PID file.\n"
+"\n"
+"libvirt log management daemon:\n"
 
 #, c-format
 msgid ""
@@ -395,10 +433,25 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"syntax: %1$s [OPTIONS] [HVTYPE]\n"
+"\n"
+" Hypervisor types:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"   - ch\n"
+"\n"
+" Options:\n"
+"   -h, --help     Display command line help\n"
+"   -v, --version  Display command version\n"
+"   -q, --quiet    Don't display progress information\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %1$llu bytes/s (%2$-.3lf %3$s/s)"
-msgstr ""
+msgstr "    Bandwidth limit: %1$llu bytes/s (%2$-.3lf %3$s/s)"
 
 msgid "  NAME\n"
 msgstr "  NAME\n"
@@ -425,7 +478,7 @@ msgstr " Storage:"
 
 #, c-format
 msgid " [[--%1$s] <string>]..."
-msgstr ""
+msgstr " [[--%1$s] <string>]..."
 
 #, c-format
 msgid ""
@@ -434,10 +487,14 @@ msgid ""
 " cur=%3$llu\n"
 " end=%4$llu\n"
 msgstr ""
+" type=%1$s\n"
+" bandwidth=%2$lu\n"
+" cur=%3$llu\n"
+" end=%4$llu\n"
 
 #, c-format
 msgid " {[--%1$s] <string>}..."
-msgstr ""
+msgstr " {[--%1$s] <string>}..."
 
 #, c-format
 msgid ""
@@ -451,7 +508,7 @@ msgstr ""
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
-msgstr ""
+msgstr "$%1$s value should be between 0 and %2$d"
 
 #, c-format
 msgid "%1$6s: Checking %2$-60s: "
@@ -463,7 +520,7 @@ msgstr "%1$s\n"
 
 #, c-format
 msgid "%1$s %2$s"
-msgstr ""
+msgstr "%1$s %2$s"
 
 #, c-format
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
@@ -480,10 +537,12 @@ msgid ""
 "%1$s (on destination side) does not support the --migration option needed "
 "for migration with shared storage"
 msgstr ""
+"%1$s (on destination side) does not support the --migration option needed "
+"for migration with shared storage"
 
 #, c-format
 msgid "%1$s (out of %2$d)"
-msgstr ""
+msgstr "%1$s (out of %2$d)"
 
 #, c-format
 msgid "%1$s can't be empty"
@@ -491,35 +550,35 @@ msgstr "%1$s can't be empty"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s cannot be set higher than %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s cannot parse GID '%2$s'"
-msgstr "cannot parse bus '%s'"
+msgstr "%1$s cannot parse GID '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s cannot parse UID '%2$s'"
-msgstr "cannot parse bus '%s'"
+msgstr "%1$s cannot parse UID '%2$s'"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "%1$s disk is not supported with this QEMU binary"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
-msgstr ""
+msgstr "%1$s does not support passing a passphrase using a file descriptor"
 
 #, c-format
 msgid "%1$s does not support passing passphrase via file descriptor"
-msgstr ""
+msgstr "%1$s does not support passing passphrase via file descriptor"
 
 #, c-format
 msgid "%1$s expects UID and GID parameters"
-msgstr ""
+msgstr "%1$s expects UID and GID parameters"
 
 #, c-format
 msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr ""
+msgstr "%1$s failed new mode for target '%2$s' with status '%3$d'"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -533,7 +592,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "%1$s graphics are not supported with this QEMU"
 
 #, c-format
 msgid "%1$s harddisk '%2$s' has unsupported cache mode '%3$s'"
@@ -551,9 +610,9 @@ msgstr "%1$s has unexpected '*' before last line"
 msgid "%1$s in %2$s must be NULL"
 msgstr "%1$s in %2$s must be NULL"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be greater than zero"
-msgstr "%1$s in %2$s must be zero or greater"
+msgstr "%1$s in %2$s must be greater than zero"
 
 #, fuzzy, c-format
 msgid "%1$s in %2$s must be zero"
