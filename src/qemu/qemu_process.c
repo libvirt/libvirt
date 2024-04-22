@@ -2334,6 +2334,8 @@ qemuProcessDetectIOThreadPIDs(virDomainObj *vm,
 static int
 qemuProcessGetAllCpuAffinity(virBitmap **cpumapRet)
 {
+    g_autoptr(virBitmap) isolCpus = NULL;
+
     *cpumapRet = NULL;
 
     if (!virHostCPUHasBitmap())
@@ -2341,6 +2343,13 @@ qemuProcessGetAllCpuAffinity(virBitmap **cpumapRet)
 
     if (!(*cpumapRet = virHostCPUGetOnlineBitmap()))
         return -1;
+
+    if (virHostCPUGetIsolated(&isolCpus) < 0)
+        return -1;
+
+    if (isolCpus) {
+        virBitmapSubtract(*cpumapRet, isolCpus);
+    }
 
     return 0;
 }
