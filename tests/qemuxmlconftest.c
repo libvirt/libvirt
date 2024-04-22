@@ -2855,6 +2855,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("vhost-user-fs-readonly");
 
     DO_TEST_CAPS_ARCH_LATEST("vhost-user-fs-ccw", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("vhost-user-fs-ccw-bootindex", "s390x");
 
     DO_TEST_CAPS_LATEST("virtio-transitional");
     DO_TEST_CAPS_LATEST("virtio-non-transitional");

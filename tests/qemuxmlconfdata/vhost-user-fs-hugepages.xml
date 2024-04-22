@@ -69,6 +69,14 @@
       <boot order='2'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </filesystem>
+    <!-- following virtiofs is deliberately without address to prove bootindex validation -->
+    <filesystem type='mount' accessmode='passthrough'>
+      <driver type='virtiofs'/>
+      <binary path='/usr/libexec/virtiofsd'/>
+      <source dir='/path'/>
+      <target dir='mount_tag2'/>
+      <boot order='3'/>
+    </filesystem>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
