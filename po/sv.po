@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-17 19:36+0000\n"
+"PO-Revision-Date: 2024-04-22 17:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -14002,10 +14002,10 @@ msgid "Retrieve identity details about <client> from <server>"
 msgstr "Hämta identetetsdetaljer om <klient> från <server>"
 
 msgid "Retrieve server's client-related configuration limits"
-msgstr ""
+msgstr "Hämta serverns klientrelaterade konfigurationsgränser"
 
 msgid "Retrieve threadpool attributes from a server."
-msgstr ""
+msgstr "Hämta trådpoolsattribut från en server."
 
 msgid "Return pool info in bytes"
 msgstr "Returnera poolinformation i byte"
@@ -14473,7 +14473,7 @@ msgstr ""
 "med gästarkitekturen eller maskintypen"
 
 msgid "Serial only works in UNIX/PTY modes"
-msgstr ""
+msgstr "Seriellt fungerar endast i UNIX/PTY-lägen"
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -15264,7 +15264,7 @@ msgstr "Mål-CPU-kontrollen %1$s stämmer inte med källan %2$s"
 
 #, c-format
 msgid "Target CPU clusters %1$d does not match source %2$d"
-msgstr ""
+msgstr "Mål-CPU-kluster %1$d stämmer inte med källan %2$d"
 
 #, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
@@ -15831,6 +15831,8 @@ msgid ""
 "Target memory device 'dynamicMemslots' property doesn't match source memory "
 "device"
 msgstr ""
+"Målminnesenhetens egenskap ”dynamicMemslots” stämmer inte med "
+"källminnesenheten"
 
 #, c-format
 msgid ""
@@ -17922,10 +17924,10 @@ msgstr "Kan inte ändra aktiva enheter"
 
 #, c-format
 msgid "Unable to modify mediated device: %1$s"
-msgstr ""
+msgstr "Kan inte ändra den medierade enheten: %1$s"
 
 msgid "Unable to modify mediated device: modify unsupported"
-msgstr ""
+msgstr "Kan inte ändra den medierade enheten: ändringar stödjs ej"
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -19033,7 +19035,7 @@ msgstr "Oväntat protokoll %1$d"
 
 #, c-format
 msgid "Unexpected response from CH: %1$d"
-msgstr ""
+msgstr "Oväntat svar från CH: %1$d"
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "Oväntat rotfilsystem utan slingenhet"
@@ -19068,7 +19070,7 @@ msgid "Unexpectedly got a network port without a plug"
 msgstr "Fick oväntat en nätverksport utan en plugg"
 
 msgid "Unix Socket backend is not supported by this version of ch."
-msgstr ""
+msgstr "Unixuttagsbakänden stödjs inte av denna version av ch."
 
 msgid "Unix file descriptors not supported on this platform"
 msgstr "Unix-filbeskrivare stödjs inte på denna plattform"
@@ -19484,7 +19486,7 @@ msgstr "Ej stött läge för NUMA-minnestrimning ”%1$s”"
 
 #, c-format
 msgid "Unsupported Network type %1$d"
-msgstr ""
+msgstr "Ej stödd nätverkstyp %1$d"
 
 #, c-format
 msgid "Unsupported OS type: %1$s"
@@ -19519,7 +19521,7 @@ msgstr "Ej stött URI-schema ”%1$s”"
 
 #, c-format
 msgid "Unsupported VPD field access type '%1$s'"
-msgstr ""
+msgstr "Ej stödd VPD-fältåtkomsttyp ”%1$s”"
 
 #, c-format
 msgid "Unsupported action: %1$s\n"
@@ -19774,7 +19776,7 @@ msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
 msgstr "Ovanligt värde i %1$s/devices/%2$s/class: %3$s"
 
 msgid "Update a active and/or inactive node device"
-msgstr ""
+msgstr "Uppdatera en aktiv och/eller inaktiv nodenhet"
 
 msgid "Update device from an XML <file>."
 msgstr "Uppdatera enhet från en XML <fil>."
@@ -19803,21 +19805,22 @@ msgstr ""
 
 #, c-format
 msgid "Updated node device %1$s live state"
-msgstr ""
+msgstr "Uppdaterade nodenheten %1$s live-tillstånd"
 
 #, c-format
 msgid "Updated node device %1$s persistent config"
-msgstr ""
+msgstr "Uppdaterade nodenheten %1$s varaktighetskonfiguration"
 
 #, c-format
 msgid "Updated node device %1$s persistent config and live state"
 msgstr ""
+"Uppdaterade nodenheten %1$s varaktighetskonfiguration och live-tillstånd"
 
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr "Uppdatering av en körande domän kräver flaggan VIR_DOMAIN_AFFECT_LIVE"
 
 msgid "Updates the configuration of a node device"
-msgstr ""
+msgstr "Uppdaterade konfigurationen för en nodenhet"
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "Uppgradera till en kärna som stödjer namnrymder"
@@ -20457,7 +20460,7 @@ msgid "affect current state of network"
 msgstr "påverka det aktuella tillståndet för nätverket"
 
 msgid "affect current state of node device"
-msgstr ""
+msgstr "påverka det aktuella tillstånden hos en nodenhet"
 
 msgid "affect next boot"
 msgstr "påverka nästa uppstart"
@@ -20466,7 +20469,7 @@ msgid "affect next network startup"
 msgstr "påverka nästa nätverksuppstart"
 
 msgid "affect next node device startup"
-msgstr ""
+msgstr "påverka nästa uppstart av nodenheten"
 
 msgid "affect running domain"
 msgstr "påverka den körande domänen"
@@ -20475,7 +20478,7 @@ msgid "affect running network"
 msgstr "påverka det körande nätverket"
 
 msgid "affect running node device"
-msgstr ""
+msgstr "påverka en körande nodenhet"
 
 msgid "after reverting, change state to paused"
 msgstr "efter återställning, byt tillstånd till pausad"
@@ -20737,6 +20740,8 @@ msgid ""
 "attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
 "network %1$s"
 msgstr ""
+"attributet ”register=yes” i elementet <domain> kräver ”localOnly=yes” i "
+"nätverket %1$s"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -22602,10 +22607,10 @@ msgid "cannot revert snapshot of running domain"
 msgstr "kan inte återställa en ögonblicksbild av en körande domän"
 
 msgid "cannot save domain with host devices"
-msgstr ""
+msgstr "kan inte spara en domän med värdenheter"
 
 msgid "cannot save domain with network interfaces"
-msgstr ""
+msgstr "kan inte spara en domän med nätverksgränssnitt"
 
 #, c-format
 msgid "cannot save file '%1$s'"
@@ -23165,10 +23170,10 @@ msgid "command '%1$s' requires <%2$s> option"
 msgstr "kommando '%1$s' kräver flaggan <%2$s>"
 
 msgid "command groups is NULL run vshInit before reloading"
-msgstr ""
+msgstr "kommandogrupperna är NULL kör vshInit före omladdning"
 
 msgid "command groups must be non-NULL"
-msgstr ""
+msgstr "kommandogrupperna får inte vara NULL"
 
 #, c-format
 msgid "command is already running as pid %1$lld"
@@ -26523,7 +26528,7 @@ msgid "failed to parse %1$sversion"
 msgstr "misslyckades att tolka versionen av %1$s"
 
 msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
+msgstr "misslyckades att tolka PCI VPD-strängvärdet med ogiltiga tecken"
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -26609,64 +26614,61 @@ msgstr "misslyckades att tolka CCW-adressen från sysfs-sökvägen: ”%1$s”"
 msgid "failed to parse the PCI address from sysfs path: '%1$s'"
 msgstr "misslyckades att tolka PCI-adressen från sysfs-sökvägen: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the SCSI address from filename: '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "misslyckades att tolka en SCSI-adress från filnamn: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the index of the VMX key '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades med att tolka indexet för VMX-nyckeln ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse write_bps_device: '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades med att tolka write_bps_device: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse write_iops_device: '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades med att tolka write_iops_device: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse xml document '%1$s'"
-msgstr "Misslyckades med att tolka läget ”%1$s”"
+msgstr "misslyckades med att tolka xml-dokumentet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to pivot job for disk %1$s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "misslyckades att byta jobb för disken %1$s"
 
-#, fuzzy
 msgid "failed to populate iothreadids"
-msgstr "misslyckades att öppna fil"
+msgstr "misslyckades att populera iothreadids"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to preserve fd %1$d"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "misslyckades med att bevara fb %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to protect RBD snapshot %1$s@%2$s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att skydda ögonblicksbilden %1$s@%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to query job for disk %1$s"
-msgstr "Misslyckades att förstöra nätverk %1$s"
+msgstr "misslyckades att fråga jobb för disken %1$s"
 
 #, c-format
 msgid "failed to query mdevs from mdevctl: %1$s"
-msgstr ""
+msgstr "misslyckades att fråga om mdevs från mdevctl: %1$s"
 
-#, fuzzy
 msgid "failed to re-init netcf"
-msgstr "misslyckades att få värdnamn"
+msgstr "misslyckades att ominitiera netcf"
 
 #, c-format
 msgid "failed to read '%1$s'"
 msgstr "misslyckades att läsa ”%1$s”"
 
-#, fuzzy
 msgid "failed to read AppArmor template"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats med att läsa AppArmor-mallen"
 
 msgid "failed to read CHSaveXMLHeader header"
-msgstr ""
+msgstr "misslyckades att läsa huvudet CHSaveXMLHeader"
 
 msgid "failed to read XML"
 msgstr "misslyckades att läsa XML"
@@ -26678,82 +26680,82 @@ msgstr "kunde inte läsa konfigurationsfilen"
 msgid "failed to read configuration file %1$s"
 msgstr "kunde inte läsa konfigurationsfilen %1$s"
 
-#, fuzzy
 msgid "failed to read cookie"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats med att läsa kakan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to read directory '%1$s' in '%2$s'"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "misslyckades att läsa katalogen ”%1$s” i ”%2$s”"
 
-#, fuzzy
 msgid "failed to read domain XML"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "misslyckades att läsa domän-XML"
 
-#, fuzzy
 msgid "failed to read from wakeup fd"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "misslyckades att läsa från uppvaknings-fb"
 
-#, fuzzy
 msgid "failed to read libxl header"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "misslyckades att läsa libxl-huvudet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to read metadata length in '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att läsa metadatalängden i ”%1$s”"
 
-#, fuzzy
 msgid "failed to read qemu header"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats med att läsa qemu-huvudet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to read temporary file created with template %1$s"
-msgstr "kunde inte läsa konfigurationsfilen %1$s"
+msgstr "misslyckades att läsa temporärfilen skapad med mallen %1$s"
 
 msgid "failed to read the PCI VPD data"
-msgstr ""
+msgstr "misslyckades att läsa PCI VPD-datan"
 
 msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
+msgstr "misslyckades att läsa PCI VPD-datan: datafältslängden är felaktig"
 
 msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
+msgstr "misslyckades att läsa PCI VPD-datan: felaktig kontrollsumma"
 
 msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
+msgstr "misslyckades att läsa PCI VPD-datan: felformad data"
 
 msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
+msgstr "misslyckades att läsa PCI vpd-datan: obligatorisk kontrollsumma saknas"
 
 msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
+msgstr "misslyckades att läsa PCI VPD-datan: endast läsbar sektion saknas"
 
 msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
+msgstr "misslyckades att läsa PCI VPD-datan: tolkningen tog slut för tidigt"
 
 msgid ""
 "failed to read the PCI VPD data: unexpected RV keyword in read-write section"
 msgstr ""
+"misslyckades att läsa PCI VPD-datan: oväntat RV-nyckelord i den läs- och "
+"skrivbara sektionen"
 
 msgid ""
 "failed to read the PCI VPD data: unexpected RW keyword in read-only section"
 msgstr ""
+"misslyckades att läsa PCI VPD-datan: oväntat RW-nyckelord i den endast "
+"läsbara sektionen"
 
 msgid "failed to reboot domain"
-msgstr ""
+msgstr "misslyckades att starta om domänen"
 
-#, fuzzy
 msgid "failed to receive device from udev monitor"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "misslyckades att ta emot en enhet från udev-övervakaren"
 
 msgid "failed to regenerate genid"
 msgstr "misslyckades med att generera genid"
 
 msgid "failed to register name server"
-msgstr ""
+msgstr "misslyckades att registrera namnservern"
 
 msgid "failed to register name server: systemd-resolved is not available"
 msgstr ""
+"misslyckades att registrera namnservern: systemd-resolved är inte "
+"tillgängligt"
 
 #, fuzzy
 msgid "failed to register udev interface driver"
