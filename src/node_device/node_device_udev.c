@@ -86,11 +86,15 @@ udevEventDataDispose(void *obj)
     struct udev *udev = NULL;
     udevEventData *priv = obj;
 
+    g_clear_pointer(&priv->initThread, g_free);
+
     if (priv->watch != -1)
         virEventRemoveHandle(priv->watch);
 
     if (priv->mdevctlTimeout != -1)
         virEventRemoveTimeout(priv->mdevctlTimeout);
+
+    g_clear_pointer(&priv->udevThread, g_free);
 
     if (!priv->udev_monitor)
         return;
@@ -1730,14 +1734,10 @@ nodeStateCleanup(void)
             priv->udevThreadQuit = true;
             virCondSignal(&priv->udevThreadCond);
         }
-        if (priv->initThread) {
+        if (priv->initThread)
             virThreadJoin(priv->initThread);
-            g_clear_pointer(&priv->initThread, g_free);
-        }
-        if (priv->udevThread) {
+        if (priv->udevThread)
             virThreadJoin(priv->udevThread);
-            g_clear_pointer(&priv->udevThread, g_free);
-        }
     }
 
     virObjectUnref(priv);
@@ -2328,7 +2328,6 @@ nodeStateInitialize(bool privileged,
                             "udev-event", false, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev handler thread"));
-        g_clear_pointer(&priv->udevThread, g_free);
         goto unlock;
     }
 
@@ -2360,7 +2359,6 @@ nodeStateInitialize(bool privileged,
                             "nodedev-init", false, udev) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev enumerate thread"));
-        g_clear_pointer(&priv->initThread, g_free);
         goto cleanup;
     }
 
