@@ -705,6 +705,43 @@ test16(const void *opaque G_GNUC_UNUSED)
 }
 
 
+/* virBitmapParseUnlimitedAllowEmpty */
+static int
+test17(const void *opaque G_GNUC_UNUSED)
+{
+    g_autoptr(virBitmap) map1 = NULL;
+    g_autoptr(virBitmap) map2 = NULL;
+    g_autofree char *map1_str = NULL;
+    g_autofree char *map2_str = NULL;
+
+    if (!(map1 = virBitmapParseUnlimitedAllowEmpty(NULL))) {
+        fprintf(stderr, "Expected success, got failure\n");
+        return -1;
+    }
+
+    if (!(map2 = virBitmapParseUnlimitedAllowEmpty("    "))) {
+        fprintf(stderr, "Expected success, got failure\n");
+        return -1;
+    }
+
+    if (!virBitmapIsAllClear(map1) ||
+        !virBitmapIsAllClear(map2) ||
+        !virBitmapEqual(map1, map2)) {
+        fprintf(stderr, "empty maps should equal\n");
+        return -1;
+    }
+
+    if (!(map1_str = virBitmapFormat(map1)) ||
+        !(map2_str = virBitmapFormat(map2)) ||
+        STRNEQ(map1_str, map2_str)) {
+        fprintf(stderr, "maps don't equal after format to string\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+
 #define TESTBINARYOP(A, B, RES, FUNC) \
     testBinaryOpData.a = A; \
     testBinaryOpData.b = B; \
@@ -779,6 +816,9 @@ mymain(void)
     TESTBINARYOP("0,^0", "0,^0", "0,^0", test15);
 
     if (virTestRun("test16", test16, NULL) < 0)
+        ret = -1;
+
+    if (virTestRun("test17", test17, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

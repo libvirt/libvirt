@@ -84,6 +84,9 @@ int virBitmapParse(const char *str,
 virBitmap *
 virBitmapParseUnlimited(const char *str);
 
+virBitmap *
+virBitmapParseUnlimitedAllowEmpty(const char *str);
+
 virBitmap *virBitmapNewCopy(virBitmap *src) ATTRIBUTE_NONNULL(1);
 
 virBitmap *virBitmapNewData(const void *data, int len) ATTRIBUTE_NONNULL(1);

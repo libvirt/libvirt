@@ -1936,6 +1936,7 @@ virBitmapNextSetBit;
 virBitmapOverlaps;
 virBitmapParse;
 virBitmapParseUnlimited;
+virBitmapParseUnlimitedAllowEmpty;
 virBitmapSetAll;
 virBitmapSetBit;
 virBitmapSetBitExpand;

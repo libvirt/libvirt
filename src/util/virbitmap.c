@@ -368,6 +368,7 @@ virBitmapFormat(virBitmap *bitmap)
  * @str: points to a string representing a human-readable bitmap
  * @bitmap: a bitmap populated from @str
  * @limited: Don't use self-expanding APIs, report error if bit exceeds bitmap size
+ * @allowEmpty: Allow @str to be empty string or contain nothing but spaces
  *
  * This function is the counterpart of virBitmapFormat. This function creates
  * a bitmap, in which bits are set according to the content of @str.
@@ -381,7 +382,8 @@ virBitmapFormat(virBitmap *bitmap)
 static int
 virBitmapParseInternal(const char *str,
                        virBitmap *bitmap,
-                       bool limited)
+                       bool limited,
+                       bool allowEmpty)
 {
     bool neg = false;
     const char *cur = str;
@@ -389,13 +391,19 @@ virBitmapParseInternal(const char *str,
     size_t i;
     int start, last;
 
-    if (!str)
+    if (!str) {
+        if (allowEmpty)
+            return 0;
         goto error;
+    }
 
     virSkipSpaces(&cur);
 
-    if (*cur == '\0')
+    if (*cur == '\0') {
+        if (allowEmpty)
+            return 0;
         goto error;
+    }
 
     while (*cur != 0) {
         /*
@@ -505,7 +513,7 @@ virBitmapParse(const char *str,
 {
     g_autoptr(virBitmap) tmp = virBitmapNew(bitmapSize);
 
-    if (virBitmapParseInternal(str, tmp, true) < 0)
+    if (virBitmapParseInternal(str, tmp, true, false) < 0)
         return -1;
 
     *bitmap = g_steal_pointer(&tmp);
@@ -534,7 +542,29 @@ virBitmapParseUnlimited(const char *str)
 {
     g_autoptr(virBitmap) tmp = virBitmapNew(0);
 
-    if (virBitmapParseInternal(str, tmp, false) < 0)
+    if (virBitmapParseInternal(str, tmp, false, false) < 0)
+        return NULL;
+
+    return g_steal_pointer(&tmp);
+}
+
+
+/**
+ * virBitmapParseUnlimitedAllowEmpty:
+ * @str: points to a string representing a human-readable bitmap
+ *
+ * Just like virBitmapParseUnlimited() except when the input string @str is
+ * empty (or contains just spaces) an empty bitmap is returned instead of an
+ * error.
+ *
+ * Returns @bitmap on success, or NULL in cas of error
+ */
+virBitmap *
+virBitmapParseUnlimitedAllowEmpty(const char *str)
+{
+    g_autoptr(virBitmap) tmp = virBitmapNew(0);
+
+    if (virBitmapParseInternal(str, tmp, false, true) < 0)
         return NULL;
 
     return g_steal_pointer(&tmp);
