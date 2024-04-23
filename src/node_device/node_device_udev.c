@@ -72,8 +72,9 @@ struct _udevEventData {
     /* init thread */
     virThread *initThread;
 
-    GList *mdevctlMonitors;
+    /* Protects @mdevctlMonitors */
     virMutex mdevctlLock;
+    GList *mdevctlMonitors;
     int mdevctlTimeout;
 };
 
@@ -2069,9 +2070,6 @@ udevPCITranslateInit(bool privileged G_GNUC_UNUSED)
 static void
 mdevctlUpdateThreadFunc(void *opaque G_GNUC_UNUSED)
 {
-    udevEventData *priv = driver->privateData;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->mdevctlLock);
-
     if (nodeDeviceUpdateMediatedDevices() < 0)
         VIR_WARN("mdevctl failed to update mediated devices");
 }
