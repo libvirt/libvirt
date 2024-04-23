@@ -1572,7 +1572,7 @@ udevAddOneDevice(struct udev_device *device)
         objdef = virNodeDeviceObjGetDef(obj);
 
         if (is_mdev)
-            nodeDeviceDefCopyFromMdevctl(def, objdef, false);
+            nodeDeviceDefCopyFromMdevctl(def, objdef, true);
 
         persistent = virNodeDeviceObjIsPersistent(obj);
         autostart = virNodeDeviceObjIsAutostart(obj);
