@@ -2226,6 +2226,12 @@ nodeStateShutdownPrepare(void)
     if (!priv)
         return 0;
 
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->mdevctlLock) {
+        GList *tmp;
+        for (tmp = priv->mdevctlMonitors; tmp; tmp = tmp->next)
+            g_signal_handlers_disconnect_by_data(tmp->data, priv);
+    }
+
     VIR_WITH_OBJECT_LOCK_GUARD(priv) {
         if (priv->mdevctlTimeout != -1) {
             virEventRemoveTimeout(priv->mdevctlTimeout);
