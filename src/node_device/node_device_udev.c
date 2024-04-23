@@ -1440,9 +1440,6 @@ udevGetDeviceDetails(struct udev_device *device,
 }
 
 
-static void scheduleMdevctlUpdate(udevEventData *data, bool force);
-
-
 static int
 udevRemoveOneDeviceSysPath(const char *path)
 {
@@ -1475,7 +1472,8 @@ udevRemoveOneDeviceSysPath(const char *path)
     virNodeDeviceObjEndAPI(&obj);
 
     /* cannot check for mdev_types since they have already been removed */
-    scheduleMdevctlUpdate(driver->privateData, false);
+    if (nodeDeviceUpdateMediatedDevices() < 0)
+        VIR_WARN("mdevctl failed to update mediated devices");
 
     virObjectEventStateQueue(driver->nodeDeviceEventState, event);
     return 0;
@@ -1535,6 +1533,7 @@ udevSetParent(struct udev_device *device,
 static int
 udevAddOneDevice(struct udev_device *device)
 {
+    g_autofree char *sysfs_path = NULL;
     virNodeDeviceDef *def = NULL;
     virNodeDeviceObj *obj = NULL;
     virNodeDeviceDef *objdef;
@@ -1549,6 +1548,9 @@ udevAddOneDevice(struct udev_device *device)
     def = g_new0(virNodeDeviceDef, 1);
 
     def->sysfs_path = g_strdup(udev_device_get_syspath(device));
+    /* Create a copy of sysfs_path so it can be safely accessed, even without
+     * holding the @obj lock during the VIR_WARN(...) call at the end. */
+    sysfs_path = g_strdup(def->sysfs_path);
 
     udevGetStringProperty(device, "DRIVER", &def->driver);
 
@@ -1605,8 +1607,13 @@ udevAddOneDevice(struct udev_device *device)
     has_mdev_types = virNodeDeviceObjHasCap(obj, VIR_NODE_DEV_CAP_MDEV_TYPES);
     virNodeDeviceObjEndAPI(&obj);
 
-    if (has_mdev_types)
-        scheduleMdevctlUpdate(driver->privateData, false);
+    /* The added mdev needs an immediate active config update before the event
+     * is issued so that full device information is available at the time that
+     * the 'created' event is emitted. */
+    if ((has_mdev_types || is_mdev) && (nodeDeviceUpdateMediatedDevices() < 0)) {
+        VIR_WARN("Update of mediated device %s failed",
+                 NULLSTR_EMPTY(sysfs_path));
+    }
 
     ret = 0;
 
@@ -1758,19 +1765,12 @@ nodeStateCleanup(void)
 static int
 udevHandleOneDevice(struct udev_device *device)
 {
-    virNodeDevCapType dev_cap_type;
     const char *action = udev_device_get_action(device);
 
     VIR_DEBUG("udev action: '%s': %s", action, udev_device_get_syspath(device));
 
-    if (STREQ(action, "add") || STREQ(action, "change")) {
-        int ret = udevAddOneDevice(device);
-        if (ret == 0 &&
-            udevGetDeviceType(device, &dev_cap_type) == 0 &&
-            dev_cap_type == VIR_NODE_DEV_CAP_MDEV)
-            scheduleMdevctlUpdate(driver->privateData, false);
-        return ret;
-    }
+    if (STREQ(action, "add") || STREQ(action, "change"))
+        return udevAddOneDevice(device);
 
     if (STREQ(action, "remove"))
         return udevRemoveOneDevice(device);
