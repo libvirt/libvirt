@@ -63,11 +63,11 @@ struct _udevEventData {
     struct udev_monitor *udev_monitor;
     int watch;
 
-    /* Thread data */
-    virThread *th;
-    virCond threadCond;
-    bool threadQuit;
-    bool dataReady;
+    /* Udev thread data */
+    virThread *udevThread;
+    virCond udevThreadCond;
+    bool udevThreadQuit;
+    bool udevDataReady;
 
     /* init thread */
     virThread *initThread;
@@ -104,7 +104,7 @@ udevEventDataDispose(void *obj)
     }
     virMutexDestroy(&priv->mdevctlLock);
 
-    virCondDestroy(&priv->threadCond);
+    virCondDestroy(&priv->udevThreadCond);
 }
 
 
@@ -130,7 +130,7 @@ udevEventDataNew(void)
     if (!(ret = virObjectLockableNew(udevEventDataClass)))
         return NULL;
 
-    if (virCondInit(&ret->threadCond) < 0) {
+    if (virCondInit(&ret->udevThreadCond) < 0) {
         virObjectUnref(ret);
         return NULL;
     }
@@ -1737,16 +1737,16 @@ nodeStateCleanup(void)
     priv = driver->privateData;
     if (priv) {
         VIR_WITH_OBJECT_LOCK_GUARD(priv) {
-            priv->threadQuit = true;
-            virCondSignal(&priv->threadCond);
+            priv->udevThreadQuit = true;
+            virCondSignal(&priv->udevThreadCond);
         }
         if (priv->initThread) {
             virThreadJoin(priv->initThread);
             g_clear_pointer(&priv->initThread, g_free);
         }
-        if (priv->th) {
-            virThreadJoin(priv->th);
-            g_clear_pointer(&priv->th, g_free);
+        if (priv->udevThread) {
+            virThreadJoin(priv->udevThread);
+            g_clear_pointer(&priv->udevThread, g_free);
         }
     }
 
@@ -1855,15 +1855,15 @@ udevEventHandleThread(void *opaque G_GNUC_UNUSED)
     /* continue rather than break from the loop on non-fatal errors */
     while (1) {
         VIR_WITH_OBJECT_LOCK_GUARD(priv) {
-            while (!priv->dataReady && !priv->threadQuit) {
-                if (virCondWait(&priv->threadCond, &priv->parent.lock)) {
+            while (!priv->udevDataReady && !priv->udevThreadQuit) {
+                if (virCondWait(&priv->udevThreadCond, &priv->parent.lock)) {
                     virReportSystemError(errno, "%s",
                                          _("handler failed to wait on condition"));
                     return;
                 }
             }
 
-            if (priv->threadQuit)
+            if (priv->udevThreadQuit)
                 return;
 
             errno = 0;
@@ -1894,7 +1894,7 @@ udevEventHandleThread(void *opaque G_GNUC_UNUSED)
              * after the udev_monitor_receive_device wouldn't help much
              * due to event mgmt and scheduler timing. */
             VIR_WITH_OBJECT_LOCK_GUARD(priv) {
-                priv->dataReady = false;
+                priv->udevDataReady = false;
             }
 
             continue;
@@ -1921,11 +1921,11 @@ udevEventHandleCallback(int watch G_GNUC_UNUSED,
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     if (!udevEventMonitorSanityCheck(priv, fd))
-        priv->threadQuit = true;
+        priv->udevThreadQuit = true;
     else
-        priv->dataReady = true;
+        priv->udevDataReady = true;
 
-    virCondSignal(&priv->threadCond);
+    virCondSignal(&priv->udevThreadCond);
 }
 
 
@@ -2035,8 +2035,8 @@ nodeStateInitializeEnumerate(void *opaque)
     VIR_WITH_OBJECT_LOCK_GUARD(priv) {
         ignore_value(virEventRemoveHandle(priv->watch));
         priv->watch = -1;
-        priv->threadQuit = true;
-        virCondSignal(&priv->threadCond);
+        priv->udevThreadQuit = true;
+        virCondSignal(&priv->udevThreadCond);
     }
 
     goto cleanup;
@@ -2330,12 +2330,12 @@ nodeStateInitialize(bool privileged,
         udev_monitor_set_receive_buffer_size(priv->udev_monitor,
                                              128 * 1024 * 1024);
 
-    priv->th = g_new0(virThread, 1);
-    if (virThreadCreateFull(priv->th, true, udevEventHandleThread,
+    priv->udevThread = g_new0(virThread, 1);
+    if (virThreadCreateFull(priv->udevThread, true, udevEventHandleThread,
                             "udev-event", false, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev handler thread"));
-        g_clear_pointer(&priv->th, g_free);
+        g_clear_pointer(&priv->udevThread, g_free);
         goto unlock;
     }
 
