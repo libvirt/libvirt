@@ -92,12 +92,6 @@ udevEventDataDispose(void *obj)
         g_list_free_full(g_steal_pointer(&priv->mdevctlMonitors), g_object_unref);
     }
 
-    if (priv->watch != -1)
-        virEventRemoveHandle(priv->watch);
-
-    if (priv->mdevctlTimeout != -1)
-        virEventRemoveTimeout(priv->mdevctlTimeout);
-
     g_clear_pointer(&priv->udevThread, g_free);
 
     if (priv->udev_monitor) {
@@ -1723,24 +1717,10 @@ udevPCITranslateDeinit(void)
 static int
 nodeStateCleanup(void)
 {
-    udevEventData *priv = NULL;
-
     if (!driver)
         return -1;
 
-    priv = driver->privateData;
-    if (priv) {
-        VIR_WITH_OBJECT_LOCK_GUARD(priv) {
-            priv->udevThreadQuit = true;
-            virCondSignal(&priv->udevThreadCond);
-        }
-        if (priv->initThread)
-            virThreadJoin(priv->initThread);
-        if (priv->udevThread)
-            virThreadJoin(priv->udevThread);
-    }
-
-    virObjectUnref(priv);
+    virObjectUnref(driver->privateData);
     virObjectUnref(driver->nodeDeviceEventState);
 
     virNodeDeviceObjListFree(driver->devs);
@@ -2231,6 +2211,64 @@ mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
 }
 
 
+/* Note: It must be safe to call this function even if the driver was not
+ *       successfully initialized. This must be considered when changing this
+ *       function. */
+static int
+nodeStateShutdownPrepare(void)
+{
+    udevEventData *priv = NULL;
+
+    if (!driver)
+        return 0;
+
+    priv = driver->privateData;
+    if (!priv)
+        return 0;
+
+    VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+        if (priv->mdevctlTimeout != -1) {
+            virEventRemoveTimeout(priv->mdevctlTimeout);
+            priv->mdevctlTimeout = -1;
+        }
+
+        if (priv->watch) {
+            virEventRemoveHandle(priv->watch);
+            priv->watch = -1;
+        }
+
+        priv->udevThreadQuit = true;
+        virCondSignal(&priv->udevThreadCond);
+    }
+    return 0;
+}
+
+
+/* Note: It must be safe to call this function even if the driver was not
+ *       successfully initialized. This must be considered when changing this
+ *       function. */
+static int
+nodeStateShutdownWait(void)
+{
+    udevEventData *priv = NULL;
+
+    if (!driver)
+        return 0;
+
+    priv = driver->privateData;
+    if (!priv)
+        return 0;
+
+    VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+        if (priv->initThread)
+            virThreadJoin(priv->initThread);
+        if (priv->udevThread)
+            virThreadJoin(priv->udevThread);
+    }
+    return 0;
+}
+
+
 static virDrvStateInitResult
 nodeStateInitialize(bool privileged,
                     const char *root,
@@ -2365,6 +2403,8 @@ nodeStateInitialize(bool privileged,
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
+    nodeStateShutdownPrepare();
+    nodeStateShutdownWait();
     nodeStateCleanup();
     return VIR_DRV_STATE_INIT_ERROR;
 
@@ -2430,6 +2470,8 @@ static virStateDriver udevStateDriver = {
     .stateInitialize = nodeStateInitialize, /* 0.7.3 */
     .stateCleanup = nodeStateCleanup, /* 0.7.3 */
     .stateReload = nodeStateReload, /* 0.7.3 */
+    .stateShutdownPrepare = nodeStateShutdownPrepare, /* 10.3.0 */
+    .stateShutdownWait = nodeStateShutdownWait, /* 10.3.0 */
 };
 
 
