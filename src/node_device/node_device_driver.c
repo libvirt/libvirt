@@ -1419,10 +1419,11 @@ nodeDeviceDestroy(virNodeDevicePtr device)
             goto cleanup;
 
         /* Because we're about to release the lock and thus run into a race
-         * possibility (however improbable) with a udevAddOneDevice change
-         * event which would essentially free the existing @def (obj->def) and
-         * replace it with something new, we need to grab the parent field
-         * and then find the parent obj in order to manage the vport */
+         * possibility (however improbable) with a
+         * processNodeDeviceAddAndChangeEvent change event which would
+         * essentially free the existing @def (obj->def) and replace it with
+         * something new, we need to grab the parent field and then find the
+         * parent obj in order to manage the vport */
         parent = g_strdup(def->parent);
 
         virNodeDeviceObjEndAPI(&obj);
