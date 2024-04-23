@@ -7674,8 +7674,9 @@ testNodeDeviceMockCreateVport(testDriver *driver,
 
     if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
-    virNodeDeviceObjSetSkipUpdateCaps(obj, true);
+    /* @def is now owned by @obj */
     def = NULL;
+    virNodeDeviceObjSetSkipUpdateCaps(obj, true);
     objdef = virNodeDeviceObjGetDef(obj);
 
     event = virNodeDeviceEventLifecycleNew(objdef->name,

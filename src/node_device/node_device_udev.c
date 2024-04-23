@@ -1588,6 +1588,8 @@ udevAddOneDevice(struct udev_device *device)
      * and the current definition will take its place. */
     if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
+    /* @def is now owned by @obj */
+    def = NULL;
     virNodeDeviceObjSetPersistent(obj, persistent);
     virNodeDeviceObjSetAutostart(obj, autostart);
     objdef = virNodeDeviceObjGetDef(obj);
@@ -1983,6 +1985,8 @@ udevSetupSystemDev(void)
     if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
 
+    /* @def is now owned by @obj */
+    def = NULL;
     virNodeDeviceObjSetActive(obj, true);
     virNodeDeviceObjSetAutostart(obj, true);
     virNodeDeviceObjSetPersistent(obj, true);
