@@ -88,6 +88,10 @@ udevEventDataDispose(void *obj)
 
     g_clear_pointer(&priv->initThread, g_free);
 
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->mdevctlLock) {
+        g_list_free_full(g_steal_pointer(&priv->mdevctlMonitors), g_object_unref);
+    }
+
     if (priv->watch != -1)
         virEventRemoveHandle(priv->watch);
 
@@ -96,16 +100,12 @@ udevEventDataDispose(void *obj)
 
     g_clear_pointer(&priv->udevThread, g_free);
 
-    if (!priv->udev_monitor)
-        return;
-
-    udev = udev_monitor_get_udev(priv->udev_monitor);
-    udev_monitor_unref(priv->udev_monitor);
-    udev_unref(udev);
-
-    VIR_WITH_MUTEX_LOCK_GUARD(&priv->mdevctlLock) {
-        g_list_free_full(priv->mdevctlMonitors, g_object_unref);
+    if (priv->udev_monitor) {
+        udev = udev_monitor_get_udev(priv->udev_monitor);
+        udev_monitor_unref(priv->udev_monitor);
+        udev_unref(udev);
     }
+
     virMutexDestroy(&priv->mdevctlLock);
 
     virCondDestroy(&priv->udevThreadCond);
