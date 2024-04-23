@@ -4365,26 +4365,12 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
  * used for small, interface-like files, so it should not be huge (subjective) */
 #define VIR_FILE_READ_VALUE_STRING_MAX 4096
 
-/**
- * virFileReadValueBitmap:
- * @value: pointer to virBitmap * to be allocated and filled in with the value
- * @format, ...: file to read from
- *
- * Read int from @format and put it into @value.
- *
- * Return -2 for non-existing file, -1 on other errors and 0 if everything went
- * fine.
- */
-int
-virFileReadValueBitmap(virBitmap **value, const char *format, ...)
+static int
+virFileReadValueBitmapImpl(virBitmap **value,
+                           const char *path,
+                           bool allowEmpty)
 {
     g_autofree char *str = NULL;
-    g_autofree char *path = NULL;
-    va_list ap;
-
-    va_start(ap, format);
-    path = g_strdup_vprintf(format, ap);
-    va_end(ap);
 
     if (!virFileExists(path))
         return -2;
@@ -4394,12 +4380,69 @@ virFileReadValueBitmap(virBitmap **value, const char *format, ...)
 
     virStringTrimOptionalNewline(str);
 
-    *value = virBitmapParseUnlimited(str);
+    if (allowEmpty) {
+        *value = virBitmapParseUnlimitedAllowEmpty(str);
+    } else {
+        *value = virBitmapParseUnlimited(str);
+    }
+
     if (!*value)
         return -1;
 
     return 0;
 }
+
+
+/**
+ * virFileReadValueBitmap:
+ * @value: pointer to virBitmap * to be allocated and filled in with the value
+ * @format, ...: file to read from
+ *
+ * Read int from @format and put it into @value.
+ *
+ * Returns: -2 for non-existing file,
+ *          -1 on other errors (with error reported),
+ *           0 otherwise.
+ */
+int
+virFileReadValueBitmap(virBitmap **value, const char *format, ...)
+{
+    g_autofree char *path = NULL;
+    va_list ap;
+
+    va_start(ap, format);
+    path = g_strdup_vprintf(format, ap);
+    va_end(ap);
+
+    return virFileReadValueBitmapImpl(value, path, false);
+}
+
+
+/**
+ * virFileReadValueBitmapAllowEmpty:
+ * @value: pointer to virBitmap * to be allocated and filled in with the value
+ * @format, ...: file to read from
+ *
+ * Just like virFileReadValueBitmap(), except if the file is empty or contains
+ * nothing but spaces an empty bitmap is returned instead of an error.
+ *
+ * Returns: -2 for non-existing file,
+ *          -1 on other errors (with error reported),
+ *           0 otherwise.
+ */
+int
+virFileReadValueBitmapAllowEmpty(virBitmap **value, const char *format, ...)
+{
+    g_autofree char *path = NULL;
+    va_list ap;
+
+    va_start(ap, format);
+    path = g_strdup_vprintf(format, ap);
+    va_end(ap);
+
+    return virFileReadValueBitmapImpl(value, path, true);
+}
+
 
 /**
  * virFileReadValueString:

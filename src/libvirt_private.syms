@@ -2361,6 +2361,7 @@ virFileReadHeaderFD;
 virFileReadHeaderQuiet;
 virFileReadLimFD;
 virFileReadValueBitmap;
+virFileReadValueBitmapAllowEmpty;
 virFileReadValueInt;
 virFileReadValueScaledInt;
 virFileReadValueString;
