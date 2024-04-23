@@ -791,7 +791,7 @@ udevGetSCSIType(virNodeDeviceDef *def G_GNUC_UNUSED,
 
 
 static int
-udevProcessSCSIDevice(struct udev_device *device G_GNUC_UNUSED,
+udevProcessSCSIDevice(struct udev_device *device,
                       virNodeDeviceDef *def)
 {
     int ret = -1;
