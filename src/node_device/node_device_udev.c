@@ -2232,7 +2232,9 @@ mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
      * configuration change, try to coalesce these changes by waiting for the
      * CHANGES_DONE_HINT event. As a fallback,  add a timeout to trigger the
      * signal if that event never comes */
-    scheduleMdevctlUpdate(priv, (event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT));
+    VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+        scheduleMdevctlUpdate(priv, (event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT));
+    }
 }
 
 
