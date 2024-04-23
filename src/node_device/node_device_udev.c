@@ -1485,16 +1485,6 @@ udevRemoveOneDeviceSysPath(const char *path)
     return 0;
 }
 
-
-static int
-udevRemoveOneDevice(struct udev_device *device)
-{
-    const char *path = udev_device_get_syspath(device);
-
-    return udevRemoveOneDeviceSysPath(path);
-}
-
-
 static int
 udevSetParent(struct udev_device *device,
               virNodeDeviceDef *def)
@@ -1778,8 +1768,11 @@ udevHandleOneDevice(struct udev_device *device)
     if (STREQ(action, "add") || STREQ(action, "change"))
         return udevAddOneDevice(device);
 
-    if (STREQ(action, "remove"))
-        return udevRemoveOneDevice(device);
+    if (STREQ(action, "remove")) {
+        const char *path = udev_device_get_syspath(device);
+
+        return udevRemoveOneDeviceSysPath(path);
+    }
 
     if (STREQ(action, "move")) {
         const char *devpath_old = udevGetDeviceProperty(device, "DEVPATH_OLD");
