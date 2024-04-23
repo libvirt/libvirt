@@ -78,6 +78,7 @@ struct _udevEventData {
     /* Immutable pointer, self-locking APIs */
     virThreadPool *workerPool;
 };
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(udevEventData, virObjectUnref);
 
 static virClass *udevEventDataClass;
 
@@ -121,7 +122,7 @@ VIR_ONCE_GLOBAL_INIT(udevEventData);
 static udevEventData *
 udevEventDataNew(void)
 {
-    udevEventData *ret = NULL;
+    g_autoptr(udevEventData) ret = NULL;
 
     if (udevEventDataInitialize() < 0)
         return NULL;
@@ -129,19 +130,15 @@ udevEventDataNew(void)
     if (!(ret = virObjectLockableNew(udevEventDataClass)))
         return NULL;
 
-    if (virCondInit(&ret->udevThreadCond) < 0) {
-        virObjectUnref(ret);
+    if (virCondInit(&ret->udevThreadCond) < 0)
         return NULL;
-    }
 
-    if (virMutexInit(&ret->mdevctlLock) < 0) {
-        virObjectUnref(ret);
+    if (virMutexInit(&ret->mdevctlLock) < 0)
         return NULL;
-    }
 
     ret->mdevctlTimeout = -1;
     ret->watch = -1;
-    return ret;
+    return g_steal_pointer(&ret);
 }
 
 typedef enum {
