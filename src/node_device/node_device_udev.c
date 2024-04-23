@@ -1863,7 +1863,7 @@ udevEventMonitorSanityCheck(udevEventData *priv,
 
 /**
  * udevEventHandleThread
- * @opaque: unused
+ * @opaque: udevEventData
  *
  * Thread to handle the udevEventHandleCallback processing when udev
  * tells us there's a device change for us (add, modify, delete, etc).
@@ -1882,9 +1882,9 @@ udevEventMonitorSanityCheck(udevEventData *priv,
  * would still come into play.
  */
 static void
-udevEventHandleThread(void *opaque G_GNUC_UNUSED)
+udevEventHandleThread(void *opaque)
 {
-    udevEventData *priv = driver->privateData;
+    g_autoptr(udevEventData) priv = opaque;
     struct udev_device *device = NULL;
 
     /* continue rather than break from the loop on non-fatal errors */
@@ -1950,9 +1950,9 @@ static void
 udevEventHandleCallback(int watch G_GNUC_UNUSED,
                         int fd,
                         int events G_GNUC_UNUSED,
-                        void *data G_GNUC_UNUSED)
+                        void *data)
 {
-    udevEventData *priv = driver->privateData;
+    udevEventData *priv = data;
     VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     if (!udevEventMonitorSanityCheck(priv, fd))
@@ -2489,7 +2489,7 @@ nodeStateInitialize(bool privileged,
 
     priv->udevThread = g_new0(virThread, 1);
     if (virThreadCreateFull(priv->udevThread, true, udevEventHandleThread,
-                            "udev-event", false, NULL) < 0) {
+                            "udev-event", false, virObjectRef(priv)) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev handler thread"));
         goto unlock;
@@ -2505,7 +2505,7 @@ nodeStateInitialize(bool privileged,
      * that appear while the enumeration is taking place.  */
     priv->watch = virEventAddHandle(udev_monitor_get_fd(priv->udev_monitor),
                                     VIR_EVENT_HANDLE_READABLE,
-                                    udevEventHandleCallback, NULL, NULL);
+                                    udevEventHandleCallback, virObjectRef(priv), virObjectUnref);
     if (priv->watch == -1)
         goto unlock;
 
