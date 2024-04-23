@@ -88,6 +88,9 @@ udevEventDataDispose(void *obj)
     if (priv->watch != -1)
         virEventRemoveHandle(priv->watch);
 
+    if (priv->mdevctlTimeout > 0)
+        virEventRemoveTimeout(priv->mdevctlTimeout);
+
     if (!priv->udev_monitor)
         return;
 
