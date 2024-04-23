@@ -88,7 +88,7 @@ udevEventDataDispose(void *obj)
     if (priv->watch != -1)
         virEventRemoveHandle(priv->watch);
 
-    if (priv->mdevctlTimeout > 0)
+    if (priv->mdevctlTimeout != -1)
         virEventRemoveTimeout(priv->mdevctlTimeout);
 
     if (!priv->udev_monitor)
@@ -139,6 +139,7 @@ udevEventDataNew(void)
         return NULL;
     }
 
+    ret->mdevctlTimeout = -1;
     ret->watch = -1;
     return ret;
 }
@@ -2082,7 +2083,7 @@ launchMdevctlUpdateThread(int timer G_GNUC_UNUSED, void *opaque)
     udevEventData *priv = opaque;
     virThread thread;
 
-    if (priv->mdevctlTimeout > 0) {
+    if (priv->mdevctlTimeout != -1) {
         virEventRemoveTimeout(priv->mdevctlTimeout);
         priv->mdevctlTimeout = -1;
     }
@@ -2192,7 +2193,7 @@ scheduleMdevctlUpdate(udevEventData *data,
                       bool force)
 {
     if (!force) {
-        if (data->mdevctlTimeout > 0)
+        if (data->mdevctlTimeout != -1)
             virEventRemoveTimeout(data->mdevctlTimeout);
         data->mdevctlTimeout = virEventAddTimeout(100, launchMdevctlUpdateThread,
                                                   data, NULL);
