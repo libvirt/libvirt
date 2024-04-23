@@ -54,6 +54,10 @@ struct _virMediatedDeviceConfig {
     size_t nattributes;
 };
 
+void virMediatedDeviceConfigClear(virMediatedDeviceConfig *config);
+void virMediatedDeviceConfigFree(virMediatedDeviceConfig *config);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMediatedDeviceConfig, virMediatedDeviceConfigFree);
+
 typedef struct _virMediatedDeviceType virMediatedDeviceType;
 struct _virMediatedDeviceType {
     char *id;

@@ -1464,6 +1464,7 @@ udevRemoveOneDeviceSysPath(const char *path)
     if (virNodeDeviceObjIsPersistent(obj)) {
         VIR_FREE(def->sysfs_path);
         virNodeDeviceObjSetActive(obj, false);
+        nodeDeviceDefResetMdevActiveConfig(def);
     } else {
         VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
                   def->name, path);

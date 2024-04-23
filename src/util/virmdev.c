@@ -516,6 +516,26 @@ void virMediatedDeviceAttrFree(virMediatedDeviceAttr *attr)
     g_free(attr);
 }
 
+void virMediatedDeviceConfigFree(virMediatedDeviceConfig *config)
+{
+    if (!config)
+        return;
+
+    virMediatedDeviceConfigClear(config);
+    g_free(config);
+}
+
+void virMediatedDeviceConfigClear(virMediatedDeviceConfig *config)
+{
+    size_t i = 0;
+
+    g_clear_pointer(&config->type, g_free);
+    for (i = 0; i < config->nattributes; i++)
+        virMediatedDeviceAttrFree(config->attributes[i]);
+    config->nattributes = 0;
+    g_clear_pointer(&config->attributes, g_free);
+}
+
 
 #define MDEV_BUS_DIR "/sys/class/mdev_bus"
 

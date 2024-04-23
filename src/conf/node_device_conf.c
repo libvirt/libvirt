@@ -2581,15 +2581,9 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->sg.path);
         break;
     case VIR_NODE_DEV_CAP_MDEV:
-        g_free(data->mdev.defined_config.type);
-        g_free(data->mdev.active_config.type);
         g_free(data->mdev.uuid);
-        for (i = 0; i < data->mdev.defined_config.nattributes; i++)
-            virMediatedDeviceAttrFree(data->mdev.defined_config.attributes[i]);
-        g_free(data->mdev.defined_config.attributes);
-        for (i = 0; i < data->mdev.active_config.nattributes; i++)
-            virMediatedDeviceAttrFree(data->mdev.active_config.attributes[i]);
-        g_free(data->mdev.active_config.attributes);
+        virMediatedDeviceConfigClear(&data->mdev.defined_config);
+        virMediatedDeviceConfigClear(&data->mdev.active_config);
         g_free(data->mdev.parent_addr);
         break;
     case VIR_NODE_DEV_CAP_CSS_DEV:

@@ -197,3 +197,6 @@ int
 nodeDeviceUpdate(virNodeDevice *dev,
                  const char *xmlDesc,
                  unsigned int flags);
+
+void
+nodeDeviceDefResetMdevActiveConfig(virNodeDeviceDef *def);

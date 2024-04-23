@@ -2016,6 +2016,19 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
 }
 
 
+/* A mediated device definition contains data from mdevctl about the active
+ * device. When the device is deactivated the active configuration data needs
+ * to be removed. */
+void
+nodeDeviceDefResetMdevActiveConfig(virNodeDeviceDef *def)
+{
+    if (def->caps->data.type != VIR_NODE_DEV_CAP_MDEV)
+        return;
+
+    virMediatedDeviceConfigClear(&def->caps->data.mdev.active_config);
+}
+
+
 int
 nodeDeviceSetAutostart(virNodeDevice *device,
                        int autostart)
