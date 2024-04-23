@@ -2210,21 +2210,14 @@ mdevctlEnableMonitor(udevEventData *priv)
 
 /* Schedules an mdevctl update for 100ms in the future, canceling any existing
  * timeout that may have been set. In this way, multiple update requests in
- * quick succession can be collapsed into a single update. if @force is true,
- * the worker job is submitted immediately. */
+ * quick succession can be collapsed into a single update. */
 static void
-scheduleMdevctlUpdate(udevEventData *data,
-                      bool force)
+scheduleMdevctlUpdate(udevEventData *data)
 {
-    if (!force) {
-        if (data->mdevctlTimeout != -1)
-            virEventRemoveTimeout(data->mdevctlTimeout);
-        data->mdevctlTimeout = virEventAddTimeout(100, submitMdevctlUpdate,
-                                                  data, NULL);
-        return;
-    }
-
-    submitMdevctlUpdate(-1, data);
+    if (data->mdevctlTimeout != -1)
+        virEventRemoveTimeout(data->mdevctlTimeout);
+    data->mdevctlTimeout = virEventAddTimeout(100, submitMdevctlUpdate,
+                                              data, NULL);
 }
 
 
@@ -2259,7 +2252,11 @@ mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
      * CHANGES_DONE_HINT event. As a fallback,  add a timeout to trigger the
      * signal if that event never comes */
     VIR_WITH_OBJECT_LOCK_GUARD(priv) {
-        scheduleMdevctlUpdate(priv, (event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT));
+        if (event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT) {
+            submitMdevctlUpdate(-1, priv);
+        } else {
+            scheduleMdevctlUpdate(priv);
+        }
     }
 }
 
