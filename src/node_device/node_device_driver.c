@@ -1885,7 +1885,7 @@ removeMissingPersistentMdev(virNodeDeviceObj *obj,
 
 
 int
-nodeDeviceUpdateMediatedDevices(void)
+nodeDeviceUpdateMediatedDevices(virNodeDeviceDriverState *node_driver)
 {
     g_autofree virNodeDeviceDef **defs = NULL;
     g_autofree virNodeDeviceDef **act_defs = NULL;
@@ -1909,7 +1909,7 @@ nodeDeviceUpdateMediatedDevices(void)
     /* Any mdevs that were previously defined but were not returned in the
      * latest mdevctl query should be removed from the device list */
     data.defs = defs;
-    virNodeDeviceObjListForEachRemove(driver->devs,
+    virNodeDeviceObjListForEachRemove(node_driver->devs,
                                       removeMissingPersistentMdev, &data);
 
     for (i = 0; i < data.ndefs; i++)
@@ -2372,7 +2372,7 @@ nodeDeviceUpdate(virNodeDevice *device,
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
     if (updated)
-        nodeDeviceUpdateMediatedDevices();
+        nodeDeviceUpdateMediatedDevices(driver);
 
     return ret;
 }

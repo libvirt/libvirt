@@ -147,7 +147,7 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
                            bool defined);
 
 int
-nodeDeviceUpdateMediatedDevices(void);
+nodeDeviceUpdateMediatedDevices(virNodeDeviceDriverState *driver);
 
 void
 nodeDeviceGenerateName(virNodeDeviceDef *def,

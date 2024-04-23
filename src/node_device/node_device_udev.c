@@ -361,7 +361,8 @@ udevTranslatePCIIds(unsigned int vendor,
 
 
 static int
-udevProcessPCI(struct udev_device *device,
+udevProcessPCI(virNodeDeviceDriverState *driver_state,
+               struct udev_device *device,
                virNodeDeviceDef *def)
 {
     virNodeDevCapPCIDev *pci_dev = &def->caps->data.pci_dev;
@@ -372,8 +373,8 @@ udevProcessPCI(struct udev_device *device,
     char *p;
     bool privileged = false;
 
-    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
-        privileged = driver->privileged;
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver_state->lock) {
+        privileged = driver_state->privileged;
     }
 
     pci_dev->klass = -1;
@@ -1391,12 +1392,13 @@ udevGetDeviceType(struct udev_device *device,
 
 
 static int
-udevGetDeviceDetails(struct udev_device *device,
+udevGetDeviceDetails(virNodeDeviceDriverState *driver_state,
+                     struct udev_device *device,
                      virNodeDeviceDef *def)
 {
     switch (def->caps->data.type) {
     case VIR_NODE_DEV_CAP_PCI_DEV:
-        return udevProcessPCI(device, def);
+        return udevProcessPCI(driver_state, device, def);
     case VIR_NODE_DEV_CAP_USB_DEV:
         return udevProcessUSBDevice(device, def);
     case VIR_NODE_DEV_CAP_USB_INTERFACE:
@@ -1444,13 +1446,14 @@ udevGetDeviceDetails(struct udev_device *device,
 
 
 static int
-udevRemoveOneDeviceSysPath(const char *path)
+udevRemoveOneDeviceSysPath(virNodeDeviceDriverState *driver_state,
+                           const char *path)
 {
     virNodeDeviceObj *obj = NULL;
     virNodeDeviceDef *def;
     virObjectEvent *event = NULL;
 
-    if (!(obj = virNodeDeviceObjListFindBySysfsPath(driver->devs, path))) {
+    if (!(obj = virNodeDeviceObjListFindBySysfsPath(driver_state->devs, path))) {
         VIR_DEBUG("Failed to find device to remove that has udev path '%s'",
                   path);
         return -1;
@@ -1471,20 +1474,21 @@ udevRemoveOneDeviceSysPath(const char *path)
     } else {
         VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
                   def->name, path);
-        virNodeDeviceObjListRemove(driver->devs, obj);
+        virNodeDeviceObjListRemove(driver_state->devs, obj);
     }
     virNodeDeviceObjEndAPI(&obj);
 
     /* cannot check for mdev_types since they have already been removed */
-    if (nodeDeviceUpdateMediatedDevices() < 0)
+    if (nodeDeviceUpdateMediatedDevices(driver_state) < 0)
         VIR_WARN("mdevctl failed to update mediated devices");
 
-    virObjectEventStateQueue(driver->nodeDeviceEventState, event);
+    virObjectEventStateQueue(driver_state->nodeDeviceEventState, event);
     return 0;
 }
 
 static int
-udevSetParent(struct udev_device *device,
+udevSetParent(virNodeDeviceDriverState *driver_state,
+              struct udev_device *device,
               virNodeDeviceDef *def)
 {
     struct udev_device *parent_device = NULL;
@@ -1507,7 +1511,7 @@ udevSetParent(struct udev_device *device,
             return -1;
         }
 
-        if ((obj = virNodeDeviceObjListFindBySysfsPath(driver->devs,
+        if ((obj = virNodeDeviceObjListFindBySysfsPath(driver_state->devs,
                                                        parent_sysfs_path))) {
             objdef = virNodeDeviceObjGetDef(obj);
             def->parent = g_strdup(objdef->name);
@@ -1525,7 +1529,8 @@ udevSetParent(struct udev_device *device,
 }
 
 static int
-udevAddOneDevice(struct udev_device *device)
+udevAddOneDevice(virNodeDeviceDriverState *driver_state,
+                 struct udev_device *device)
 {
     g_autofree char *sysfs_path = NULL;
     virNodeDeviceDef *def = NULL;
@@ -1556,15 +1561,15 @@ udevAddOneDevice(struct udev_device *device)
     if (udevGetDeviceNodes(device, def) != 0)
         goto cleanup;
 
-    if (udevGetDeviceDetails(device, def) != 0)
+    if (udevGetDeviceDetails(driver_state, device, def) != 0)
         goto cleanup;
 
-    if (udevSetParent(device, def) != 0)
+    if (udevSetParent(driver_state, device, def) != 0)
         goto cleanup;
 
     is_mdev = def->caps->data.type == VIR_NODE_DEV_CAP_MDEV;
 
-    if ((obj = virNodeDeviceObjListFindByName(driver->devs, def->name))) {
+    if ((obj = virNodeDeviceObjListFindByName(driver_state->devs, def->name))) {
         objdef = virNodeDeviceObjGetDef(obj);
 
         if (is_mdev)
@@ -1582,7 +1587,7 @@ udevAddOneDevice(struct udev_device *device)
 
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
-    if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
+    if (!(obj = virNodeDeviceObjListAssignDef(driver_state->devs, def)))
         goto cleanup;
     /* @def is now owned by @obj */
     def = NULL;
@@ -1604,7 +1609,7 @@ udevAddOneDevice(struct udev_device *device)
     /* The added mdev needs an immediate active config update before the event
      * is issued so that full device information is available at the time that
      * the 'created' event is emitted. */
-    if ((has_mdev_types || is_mdev) && (nodeDeviceUpdateMediatedDevices() < 0)) {
+    if ((has_mdev_types || is_mdev) && (nodeDeviceUpdateMediatedDevices(driver_state) < 0)) {
         VIR_WARN("Update of mediated device %s failed",
                  NULLSTR_EMPTY(sysfs_path));
     }
@@ -1612,7 +1617,7 @@ udevAddOneDevice(struct udev_device *device)
     ret = 0;
 
  cleanup:
-    virObjectEventStateQueue(driver->nodeDeviceEventState, event);
+    virObjectEventStateQueue(driver_state->nodeDeviceEventState, event);
 
     if (ret != 0) {
         VIR_DEBUG("Discarding device %d %p %s", ret, def,
@@ -1625,7 +1630,8 @@ udevAddOneDevice(struct udev_device *device)
 
 
 static int
-udevProcessDeviceListEntry(struct udev *udev,
+udevProcessDeviceListEntry(virNodeDeviceDriverState *driver_state,
+                           struct udev *udev,
                            struct udev_list_entry *list_entry)
 {
     struct udev_device *device;
@@ -1637,7 +1643,7 @@ udevProcessDeviceListEntry(struct udev *udev,
     device = udev_device_new_from_syspath(udev, name);
 
     if (device != NULL) {
-        if (udevAddOneDevice(device) != 0) {
+        if (udevAddOneDevice(driver_state, device) != 0) {
             VIR_DEBUG("Failed to create node device for udev device '%s'",
                       name);
         }
@@ -1675,7 +1681,8 @@ udevEnumerateAddMatches(struct udev_enumerate *udev_enumerate)
 
 
 static int
-udevEnumerateDevices(struct udev *udev)
+udevEnumerateDevices(virNodeDeviceDriverState *driver_state,
+                     struct udev *udev)
 {
     struct udev_enumerate *udev_enumerate = NULL;
     struct udev_list_entry *list_entry = NULL;
@@ -1691,7 +1698,7 @@ udevEnumerateDevices(struct udev *udev)
     udev_list_entry_foreach(list_entry,
                             udev_enumerate_get_list_entry(udev_enumerate)) {
 
-        udevProcessDeviceListEntry(udev, list_entry);
+        udevProcessDeviceListEntry(driver_state, udev, list_entry);
     }
 
     ret = 0;
@@ -1746,12 +1753,12 @@ udevHandleOneDevice(struct udev_device *device)
     VIR_DEBUG("udev action: '%s': %s", action, udev_device_get_syspath(device));
 
     if (STREQ(action, "add") || STREQ(action, "change"))
-        return udevAddOneDevice(device);
+        return udevAddOneDevice(driver, device);
 
     if (STREQ(action, "remove")) {
         const char *path = udev_device_get_syspath(device);
 
-        return udevRemoveOneDeviceSysPath(path);
+        return udevRemoveOneDeviceSysPath(driver, path);
     }
 
     if (STREQ(action, "move")) {
@@ -1760,10 +1767,10 @@ udevHandleOneDevice(struct udev_device *device)
         if (devpath_old) {
             g_autofree char *devpath_old_fixed = g_strdup_printf("/sys%s", devpath_old);
 
-            udevRemoveOneDeviceSysPath(devpath_old_fixed);
+            udevRemoveOneDeviceSysPath(driver, devpath_old_fixed);
         }
 
-        return udevAddOneDevice(device);
+        return udevAddOneDevice(driver, device);
     }
 
     return 0;
@@ -1989,11 +1996,11 @@ nodeStateInitializeEnumerate(void *opaque)
     udevEventData *priv = driver->privateData;
 
     /* Populate with known devices */
-    if (udevEnumerateDevices(udev) != 0)
+    if (udevEnumerateDevices(driver, udev) != 0)
         goto error;
     /* Load persistent mdevs (which might not be activated yet) and additional
      * information about active mediated devices from mdevctl */
-    if (nodeDeviceUpdateMediatedDevices() != 0)
+    if (nodeDeviceUpdateMediatedDevices(driver) != 0)
         goto error;
 
  cleanup:
@@ -2041,9 +2048,11 @@ udevPCITranslateInit(bool privileged G_GNUC_UNUSED)
 
 
 static void
-mdevctlUpdateThreadFunc(void *opaque G_GNUC_UNUSED)
+mdevctlUpdateThreadFunc(void *opaque)
 {
-    if (nodeDeviceUpdateMediatedDevices() < 0)
+    virNodeDeviceDriverState *driver_state = opaque;
+
+    if (nodeDeviceUpdateMediatedDevices(driver_state) < 0)
         VIR_WARN("mdevctl failed to update mediated devices");
 }
 
@@ -2060,7 +2069,7 @@ launchMdevctlUpdateThread(int timer G_GNUC_UNUSED, void *opaque)
     }
 
     if (virThreadCreateFull(&thread, false, mdevctlUpdateThreadFunc,
-                            "mdevctl-thread", false, NULL) < 0) {
+                            "mdevctl-thread", false, driver) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create mdevctl thread"));
     }
