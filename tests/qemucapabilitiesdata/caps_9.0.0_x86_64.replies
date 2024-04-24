@@ -16,11 +16,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 2,
-      "major": 8
+      "micro": 0,
+      "minor": 0,
+      "major": 9
     },
-    "package": "v9.0.0-rc1-55-g7fcf7575f3"
+    "package": "v9.0.0"
   },
   "id": "libvirt-2"
 }
@@ -26451,12 +26451,6 @@
       "type": "bool"
     },
     {
-      "default-value": false,
-      "name": "vdpa",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
       "default-value": true,
       "name": "migrate-extra",
       "description": "on/off",
@@ -26876,12 +26870,6 @@
     {
       "default-value": false,
       "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": false,
-      "name": "vdpa",
       "description": "on/off",
       "type": "bool"
     },
@@ -27349,12 +27337,6 @@
     {
       "default-value": false,
       "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": false,
-      "name": "vdpa",
       "description": "on/off",
       "type": "bool"
     },
@@ -28962,12 +28944,6 @@
       "type": "bool"
     },
     {
-      "default-value": false,
-      "name": "vdpa",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
       "default-value": true,
       "name": "migrate-extra",
       "description": "on/off",
@@ -29608,12 +29584,6 @@
     {
       "default-value": false,
       "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": false,
-      "name": "vdpa",
       "description": "on/off",
       "type": "bool"
     },
@@ -30582,12 +30552,6 @@
       "type": "bool"
     },
     {
-      "default-value": false,
-      "name": "vdpa",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
       "default-value": true,
       "name": "migrate-extra",
       "description": "on/off",
@@ -30853,12 +30817,6 @@
     {
       "default-value": false,
       "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": false,
-      "name": "vdpa",
       "description": "on/off",
       "type": "bool"
     },

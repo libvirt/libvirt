@@ -204,9 +204,9 @@
   <flag name='blockjob.backing-mask-protocol'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
-  <version>8002091</version>
+  <version>9000000</version>
   <microcodeVersion>43100245</microcodeVersion>
-  <package>v9.0.0-rc1-55-g7fcf7575f3</package>
+  <package>v9.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
