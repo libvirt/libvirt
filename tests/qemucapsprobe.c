@@ -48,7 +48,7 @@ main(int argc, char **argv)
     virQEMUCaps *caps;
     virArch host;
     virArch guest;
-    const char *mock = VIR_TEST_MOCK("qemucapsprobe");
+    g_autofree char *mock = g_strdup_printf("%s/%s", abs_builddir, VIR_TEST_MOCK("qemucapsprobe"));
 
     if (!virFileIsExecutable(mock)) {
         perror(mock);
