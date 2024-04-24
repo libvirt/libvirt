@@ -46,6 +46,7 @@ virNetDevBandwidthCmdAddOptimalQuantum(virCommand *cmd,
                                        const virNetDevBandwidthRate *rate)
 {
     const unsigned long long mtu = 1500;
+    const unsigned long long r2q_limit = UINT32_MAX;
     unsigned long long r2q;
 
     /* When two or more classes compete for unused bandwidth they are each
@@ -59,6 +60,11 @@ virNetDevBandwidthCmdAddOptimalQuantum(virCommand *cmd,
     r2q = rate->average * 1024 / 8 / mtu;
     if (!r2q)
         r2q = 1;
+
+    /* But there's an internal limit in TC (well, kernel's implementation of
+     * HTB) for quantum: it has to fit into u32. Put a cap there. */
+    if (r2q > r2q_limit)
+        r2q = r2q_limit;
 
     virCommandAddArg(cmd, "quantum");
     virCommandAddArgFormat(cmd, "%llu", r2q);
