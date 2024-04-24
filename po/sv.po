@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-22 17:36+0000\n"
+"PO-Revision-Date: 2024-04-24 07:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -26757,33 +26757,31 @@ msgstr ""
 "misslyckades att registrera namnservern: systemd-resolved är inte "
 "tillgängligt"
 
-#, fuzzy
 msgid "failed to register udev interface driver"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "misslyckades med att registrera udev-gränssnittsdrivrutinen"
 
-#, fuzzy
 msgid "failed to remove device from BPF cgroup map"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "misslyckades att ta bort enheten från BPF-styrgruppsavbildningen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove nvram: %1$s"
-msgstr "Misslyckades att fortsätta domän %1$s"
+msgstr "misslyckades att ta bort nvram: %1$s"
 
 #, c-format
 msgid "failed to remove pool '%1$s'"
 msgstr "misslyckades att ta bort poolen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove snapshot '%1$s/%2$s@%3$s'"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att ta bort ögonblicksbilden: ”%1$s/%2$s@%3$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove volume '%1$s/%2$s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "misslyckades att ta bort volymen ”%1$s/%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to resize the RBD image '%1$s'"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att ändra storlek på RBD-avbilden ”%1$s”"
 
 #, c-format
 msgid "failed to resolve '%1$s'"
@@ -26792,63 +26790,65 @@ msgstr "misslyckades att slå upp ”%1$s”"
 msgid ""
 "failed to resolve relative backing name: base image is not in backing chain"
 msgstr ""
+"misslyckades att slå upp ett relativt bakomliggande namn: basavbilden finns "
+"inte i den bakomliggande kedjan"
 
 #, c-format
 msgid "failed to resolve symlink %1$s: %2$s"
 msgstr "misslyckades med att lösa upp symlänken %1$s: %2$s"
 
 msgid "failed to restore domain"
-msgstr ""
+msgstr "misslyckades att återställa domänen"
 
 msgid "failed to restore domain from managed save"
-msgstr ""
+msgstr "misslyckades att återställa domänen från en hanterad sparad"
 
 msgid "failed to resume domain"
 msgstr "misslyckades att återuppta domänen"
 
 msgid "failed to resume domain after restore"
-msgstr ""
+msgstr "misslyckades att återuppta domänen efter återställning"
 
 msgid "failed to resume domain after restore from managed save"
 msgstr ""
+"misslyckades att återuppta domänen efter återställning från hanterad sparad"
 
-#, fuzzy
 msgid "failed to retrieve XML"
-msgstr "Misslyckades att skapa XML"
+msgstr "misslyckades att hämta XML"
 
 #, c-format
 msgid ""
 "failed to retrieve client identity information for client '%1$llu' connected "
 "to server '%2$s'"
 msgstr ""
+"misslyckades att hämta klientidentitetsinformation för klient ”%1$llu” "
+"ansluten till servern ”%2$s”"
 
-#, fuzzy
 msgid "failed to retrieve credentials"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckades med att hämta kreditiv"
 
 msgid "failed to retrieve decision to accept host key"
-msgstr ""
+msgstr "misslyckades att hämta beslut att acceptera värdnyckeln"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
-msgstr ""
+msgstr "misslyckades att hämta privat nyckelfras: återanropet har misslyckats"
 
 msgid "failed to retrieve user response for authentication callback"
-msgstr ""
+msgstr "misslyckades att hämta användarsvar för autentiseringsåteranrop"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to rollback transaction: %1$s%2$s%3$s"
-msgstr "Det gick inte grena av som demon: %s"
+msgstr "misslyckades att rulla tillbaka transaktionen: %1$s%2$s%3$s"
 
-#, fuzzy
 msgid "failed to run apparmor_parser"
-msgstr "misslyckats med att skapa profil"
+msgstr "misslyckats med att köra apparmor_parser"
 
 msgid "failed to save content"
 msgstr "misslyckades att spara innehåll"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to seek in log file %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att söka i loggfilen %1$s"
 
 #, fuzzy, c-format
 msgid "failed to seek to end of %1$s"
