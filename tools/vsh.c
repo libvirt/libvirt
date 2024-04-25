@@ -2908,6 +2908,10 @@ vshReadlineInit(vshControl *ctl)
     const char *break_characters = " \t\n`@$><=;|&{(";
     const char *quote_characters = "\"'";
 
+    /* initialize readline stuff only once */
+    if (ctl->historydir)
+        return 0;
+
     /* Opaque data for autocomplete callbacks. */
     autoCompleteOpaque = ctl;
 
