@@ -3439,7 +3439,10 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
      * In our case it's at the end of the whole line. */
     rl_point = strlen(rl_line_buffer);
 
-    if (!(matches = vshReadlineCompletion(arg, 0, 0)))
+    matches = vshReadlineCompletion(arg, 0, 0);
+    g_clear_pointer(&rl_line_buffer, g_free);
+
+    if (!matches)
         return false;
 
     for (iter = matches; *iter; iter++) {
