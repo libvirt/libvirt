@@ -43,6 +43,7 @@ function install_buildenv() {
         libblkid-devel \
         libcap-ng-devel \
         libcurl-devel \
+        libiscsi-devel \
         libnbd-devel \
         libnl3-devel \
         libpcap-devel \
