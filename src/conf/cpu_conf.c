@@ -938,13 +938,13 @@ virCPUDefAddFeatureInternal(virCPUDef *def,
     return 0;
 }
 
-int
+void
 virCPUDefUpdateFeature(virCPUDef *def,
                        const char *name,
                        int policy)
 {
-    return virCPUDefAddFeatureInternal(def, name, policy,
-                                       VIR_CPU_ADD_FEATURE_MODE_UPDATE);
+    virCPUDefAddFeatureInternal(def, name, policy,
+                                VIR_CPU_ADD_FEATURE_MODE_UPDATE);
 }
 
 int
@@ -957,13 +957,13 @@ virCPUDefAddFeature(virCPUDef *def,
 }
 
 
-int
+void
 virCPUDefAddFeatureIfMissing(virCPUDef *def,
                              const char *name,
                              int policy)
 {
-    return virCPUDefAddFeatureInternal(def, name, policy,
-                                       VIR_CPU_ADD_FEATURE_MODE_NEW);
+    virCPUDefAddFeatureInternal(def, name, policy,
+                                VIR_CPU_ADD_FEATURE_MODE_NEW);
 }
 
 

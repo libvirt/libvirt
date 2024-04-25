@@ -245,12 +245,12 @@ virCPUDefAddFeature(virCPUDef *cpu,
                     const char *name,
                     int policy);
 
-int
+void
 virCPUDefUpdateFeature(virCPUDef *cpu,
                        const char *name,
                        int policy);
 
-int
+void
 virCPUDefAddFeatureIfMissing(virCPUDef *def,
                              const char *name,
                              int policy);

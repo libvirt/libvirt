@@ -3851,10 +3851,9 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
             goto error;
 
         for (i = 0; i < cpuExpanded->nfeatures; i++) {
-            if (cpuExpanded->features[i].policy == VIR_CPU_FEATURE_REQUIRE &&
+            if (cpuExpanded->features[i].policy == VIR_CPU_FEATURE_REQUIRE)
                 virCPUDefUpdateFeature(fullCPU, cpuExpanded->features[i].name,
-                                       VIR_CPU_FEATURE_REQUIRE) < 0)
-                goto error;
+                                       VIR_CPU_FEATURE_REQUIRE);
         }
     }
 

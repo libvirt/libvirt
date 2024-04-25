@@ -72,10 +72,9 @@ virCPUs390Update(virCPUDef *guest,
     virCPUDefCopyModel(updated, host, true);
 
     for (i = 0; i < guest->nfeatures; i++) {
-       if (virCPUDefUpdateFeature(updated,
-                                  guest->features[i].name,
-                                  guest->features[i].policy) < 0)
-           return -1;
+       virCPUDefUpdateFeature(updated,
+                              guest->features[i].name,
+                              guest->features[i].policy);
     }
 
     virCPUDefStealModel(guest, updated, false);
