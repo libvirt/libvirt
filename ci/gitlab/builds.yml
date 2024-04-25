@@ -55,21 +55,6 @@ x86_64-alpine-edge:
     TARGET_BASE_IMAGE: docker.io/library/alpine:edge
 
 
-x86_64-centos-stream-8:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-centos-stream-8-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: centos-stream-8
-    TARGET_BASE_IMAGE: quay.io/centos/centos:stream8
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-
 x86_64-centos-stream-9:
   extends: .native_build_job
   needs:

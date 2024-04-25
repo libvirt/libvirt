@@ -28,13 +28,6 @@ x86_64-alpine-edge-container:
     NAME: alpine-edge
 
 
-x86_64-centos-stream-8-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: centos-stream-8
-
-
 x86_64-centos-stream-9-container:
   extends: .container_job
   allow_failure: false

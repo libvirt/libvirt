@@ -5,30 +5,6 @@ include:
 # and libvirt-python CI jobs, so the new target needs to be introduced
 # there before it can be used here. The VM template for the target
 # also needs to be created on the runner host.
-centos-stream-8-tests:
-  extends: .integration_tests
-  variables:
-    # needed by libvirt-gitlab-executor
-    DISTRO: centos-stream-8
-    # can be overridden in forks to set a different runner tag
-    LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
-  tags:
-    - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
-  needs:
-    - x86_64-centos-stream-8
-    - project: libvirt/libvirt-perl
-      job: x86_64-centos-stream-8
-      ref: master
-      artifacts: true
-    - project: libvirt/libvirt-python
-      job: x86_64-centos-stream-8
-      ref: master
-      artifacts: true
-
-# NOTE The integration tests use artifacts produced by the libvirt-perl
-# and libvirt-python CI jobs, so the new target needs to be introduced
-# there before it can be used here. The VM template for the target
-# also needs to be created on the runner host.
 centos-stream-9-tests:
   extends: .integration_tests
   variables:

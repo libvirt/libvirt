@@ -26,14 +26,6 @@ targets:
       - arch: x86_64
         allow-failure: true
 
-  centos-stream-8:
-    jobs:
-      - arch: x86_64
-        artifacts:
-          expire_in: 1 day
-          paths:
-            - libvirt-rpms
-
   centos-stream-9:
     jobs:
       - arch: x86_64
