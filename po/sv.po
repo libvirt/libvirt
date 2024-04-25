@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-03-22 09:54+0000\n"
-"PO-Revision-Date: 2024-04-24 07:36+0000\n"
+"PO-Revision-Date: 2024-04-25 19:47+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -26850,9 +26850,9 @@ msgstr "misslyckades att spara innehåll"
 msgid "failed to seek in log file %1$s"
 msgstr "misslyckades att söka i loggfilen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to seek to end of %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att söka till slutet av %1$s"
 
 msgid "failed to serialize S-Expr"
 msgstr "misslyckades att serialisera S-Expr"
@@ -26865,77 +26865,72 @@ msgstr "misslyckades att serialisera S-Expr: %1$s"
 msgid "failed to set %1$s"
 msgstr "misslyckades att sätta %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set RADOS option: %1$s"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades sätta RADOS-alternativet: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set checkpoint '%1$s' as current"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att sätta kontrollpunkten ”%1$s” som nuvarande"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set close-on-exec flag on %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades med att sätta flaggan close-on-exec på %1$s"
 
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
-msgstr ""
+msgstr "misslyckades att sätta cpuset.cpus i styrgruppen för emulatortrådar"
 
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for iothread %1$d"
-msgstr ""
+msgstr "misslyckades att sätta cpuset.cpus i styrgruppen för iothread %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set gluster volfile server '%1$s'"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att sätta gluster volfile-server ”%1$s”"
 
-#, fuzzy
 msgid "failed to set guest cid"
-msgstr "misslyckades att hämta URI"
+msgstr "misslyckades att sätta gäst-cid"
 
-#, fuzzy
 msgid "failed to setup stderr file handle"
-msgstr "misslyckades att öppna fil"
+msgstr "misslyckades att sätta upp standard fel-handtag"
 
-#, fuzzy
 msgid "failed to setup stdin file handle"
-msgstr "misslyckades att få värdnamn"
+msgstr "misslyckades att sätta upp standard in-filhandtag"
 
-#, fuzzy
 msgid "failed to setup stdout file handle"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "misslyckades att sätta upp standard ut-filhandtag"
 
 msgid "failed to shutdown guest VM"
-msgstr ""
+msgstr "misslyckades att stänga av gäst-VM"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat remote file '%1$s'"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att ta status på fjärrfilen ”%1$s”"
 
-#, fuzzy
 msgid "failed to stat the RADOS cluster"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att ta status på RADOS-klustret"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RADOS pool '%1$s'"
-msgstr "Misslyckades att starta nätverk %1$s"
+msgstr "misslyckades att ta status på RADOS-poolen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RBD image %1$s"
-msgstr "Misslyckades med att starta gränssnittet %1$s"
+msgstr "misslyckades med att ta status på RBD-avbilden %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RBD image '%1$s'"
-msgstr "Misslyckades med att starta gränssnittet %1$s"
+msgstr "misslyckades med att ta status på RBD-avbilden ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to store %1$lld to %2$s"
-msgstr "Misslyckades att återställa domän från %s"
+msgstr "misslyckades att lagra %1$lld till %2$s"
 
 msgid "failed to suspend domain"
-msgstr ""
+msgstr "misslyckades att söva domänen"
 
 msgid "failed to suspend domain before saving"
-msgstr ""
+msgstr "misslyckades att söva domänen före sparande"
 
 #, fuzzy
 msgid "failed to take screenshot"
