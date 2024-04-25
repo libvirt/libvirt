@@ -78,6 +78,7 @@ struct _virFirewallGroup {
 struct _virFirewall {
     int err;
 
+    char *name;
     size_t ngroups;
     virFirewallGroup **groups;
     size_t currentGroup;
@@ -116,6 +117,22 @@ virFirewallBackend
 virFirewallGetBackend(virFirewall *firewall)
 {
     return firewall->backend;
+}
+
+
+const char *
+virFirewallGetName(virFirewall *firewall)
+{
+    return firewall->name;
+}
+
+
+void
+virFirewallSetName(virFirewall *firewall,
+                   const char *name)
+{
+    g_free(firewall->name);
+    firewall->name = g_strdup(name);
 }
 
 
@@ -169,8 +186,9 @@ void virFirewallFree(virFirewall *firewall)
 
     for (i = 0; i < firewall->ngroups; i++)
         virFirewallGroupFree(firewall->groups[i]);
-    g_free(firewall->groups);
 
+    g_free(firewall->groups);
+    g_free(firewall->name);
     g_free(firewall);
 }
 

@@ -46,6 +46,8 @@ VIR_ENUM_DECL(virFirewallBackend);
 virFirewall *virFirewallNew(virFirewallBackend backend);
 void virFirewallFree(virFirewall *firewall);
 virFirewallBackend virFirewallGetBackend(virFirewall *firewall);
+const char *virFirewallGetName(virFirewall *firewall);
+void virFirewallSetName(virFirewall *firewall, const char *name);
 
 /**
  * virFirewallAddCmd:

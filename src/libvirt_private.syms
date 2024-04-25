@@ -2417,8 +2417,10 @@ virFirewallCmdGetArgCount;
 virFirewallCmdToString;
 virFirewallFree;
 virFirewallGetBackend;
+virFirewallGetName;
 virFirewallNew;
 virFirewallRemoveCmd;
+virFirewallSetName;
 virFirewallStartRollback;
 virFirewallStartTransaction;
 
