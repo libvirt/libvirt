@@ -2975,6 +2975,9 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
     char fileName_name[48] = "";
     g_autofree char *fileName = NULL;
 
+    char vspc_name[48] = "";
+    g_autofree char *vspc = NULL;
+
     char network_endPoint_name[48] = "";
     g_autofree char *network_endPoint = NULL;
 
@@ -2997,6 +3000,7 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
     VMX_BUILD_NAME(startConnected);
     VMX_BUILD_NAME(fileType);
     VMX_BUILD_NAME(fileName);
+    VMX_BUILD_NAME(vspc);
     VMX_BUILD_NAME_EXTRA(network_endPoint, "network.endPoint");
 
     /* vmx:present */
@@ -3024,6 +3028,10 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
 
     /* vmx:fileName -> def:data.file.path */
     if (virVMXGetConfigString(conf, fileName_name, &fileName, true) < 0)
+        goto cleanup;
+
+    /* vmx:fileName -> def:data.file.path */
+    if (virVMXGetConfigString(conf, vspc_name, &vspc, true) < 0)
         goto cleanup;
 
     /* vmx:network.endPoint -> def:data.tcp.listen */
@@ -3057,6 +3065,9 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
         (*def)->source->data.file.path = g_steal_pointer(&fileName);
+    } else if (STRCASEEQ(fileType, "network") && vspc) {
+        (*def)->target.port = port;
+        (*def)->source->type = VIR_DOMAIN_CHR_TYPE_NULL;
     } else if (STRCASEEQ(fileType, "network")) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_TCP;

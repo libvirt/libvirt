@@ -1,0 +1,53 @@
+<domain type='vmware'>
+  <name>Test-Mig-VM-1 (01ce57d0-4e20-41a5-8b6c-bcbf49a032ec)</name>
+  <uuid>421eb458-5448-fc12-2074-83d5e419e138</uuid>
+  <description>name:Test-Mig-VM-1
+userid:962314ba515c48388a0e95c0961709ff
+username:admin
+projectid:b06b5f77b6bb442f85b1c67cff980ef9
+projectname:MIS
+flavor:name:mig-test-flavor
+flavor:memory_mb:1024
+flavor:vcpus:1
+flavor:ephemeral_gb:0
+flavor:root_gb:10
+flavor:swap:0
+imageid:8b90d6fa-20ab-4adf-8015-aad3dddb246c
+package:20.6.2
+</description>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <cputune>
+    <shares>1000</shares>
+  </cputune>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/Test-Mig-VM-1 (01ce57d0-4e20-41a5-8b6c-bcbf49a032ec)_2.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='lsilogic'/>
+    <interface type='bridge'>
+      <mac address='fa:16:3e:bb:2c:4a' type='static'/>
+      <source bridge='Test'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <serial type='null'>
+      <target port='0'/>
+    </serial>
+    <console type='null'>
+      <target type='serial' port='0'/>
+    </console>
+    <video>
+      <model type='vmvga' vram='4096' primary='yes'/>
+    </video>
+  </devices>
+</domain>
