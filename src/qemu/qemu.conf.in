@@ -582,10 +582,9 @@
 # memory from the domain is dumped out directly to a file.  If you have
 # guests with a large amount of memory, however, this can take up quite
 # a bit of space.  If you would like to compress the images while they
-# are being saved to disk, you can also set "lzop", "gzip", "bzip2", or "xz"
-# for save_image_format.  Note that this means you slow down the process of
-# saving a domain in order to save disk space; the list above is in descending
-# order by performance and ascending order by compression ratio.
+# are being saved to disk, you can also set "zstd", "lzop", "gzip", "bzip2",
+# or "xz" for save_image_format. Note that this means you slow down the process
+# of saving a domain in order to save disk space.
 #
 # save_image_format is used when you use 'virsh save' or 'virsh managedsave'
 # at scheduled saving, and it is an error if the specified save_image_format

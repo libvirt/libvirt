@@ -47,6 +47,7 @@ typedef enum {
      */
     QEMU_SAVE_FORMAT_XZ = 3,
     QEMU_SAVE_FORMAT_LZOP = 4,
+    QEMU_SAVE_FORMAT_ZSTD = 5,
     /* Note: add new members only at the end.
        These values are used in the on-disk format.
        Do not change or re-use numbers. */
@@ -62,6 +63,7 @@ VIR_ENUM_IMPL(qemuSaveCompression,
               "bzip2",
               "xz",
               "lzop",
+              "zstd",
 );
 
 static inline void

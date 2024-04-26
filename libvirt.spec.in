@@ -815,6 +815,7 @@ Requires: gzip
 Requires: bzip2
 Requires: lzop
 Requires: xz
+Requires: zstd
 Requires: systemd-container
 Requires: swtpm-tools
         %if %{with_numad}
