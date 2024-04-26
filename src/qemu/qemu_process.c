@@ -6281,7 +6281,8 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
 
         if (virCPUUpdate(def->os.arch, def->cpu,
                          virQEMUCapsGetHostModel(qemuCaps, def->virtType,
-                                                 VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
+                                                 VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE),
+                         VIR_CPU_FEATURE_DISABLE) < 0)
             return -1;
 
         cpuModels = virQEMUCapsGetCPUModels(qemuCaps, def->virtType, NULL, NULL);
@@ -8914,7 +8915,8 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
         virCPUDefCopyModelFilter(cpu, hostmig, false, virQEMUCapsCPUFilterFeatures,
                                  &host->arch);
 
-        if (virCPUUpdate(vm->def->os.arch, vm->def->cpu, cpu) < 0)
+        if (virCPUUpdate(vm->def->os.arch, vm->def->cpu, cpu,
+                         VIR_CPU_FEATURE_DISABLE) < 0)
             return -1;
 
         if (qemuProcessUpdateCPU(vm, VIR_ASYNC_JOB_NONE) < 0)

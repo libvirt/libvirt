@@ -830,6 +830,22 @@ x86DataAddSignature(virCPUx86Data *data,
 
 
 /*
+ * Adds features removed from the CPU @model to @cpu with a specified @policy
+ * unless the features were already explicitly mentioned in @cpu.
+ */
+static void
+virCPUx86AddRemovedFeatures(virCPUDef *cpu,
+                            virCPUx86Model *model,
+                            virCPUFeaturePolicy policy)
+{
+    char **feat;
+
+    for (feat = model->removedFeatures; feat && *feat; feat++)
+        virCPUDefAddFeatureIfMissing(cpu, *feat, policy);
+}
+
+
+/*
  * Disables features removed from the CPU @model unless they are already
  * mentioned in @cpu to make sure these features will always be explicitly
  * listed in the CPU definition.
@@ -838,15 +854,7 @@ static void
 virCPUx86DisableRemovedFeatures(virCPUDef *cpu,
                                 virCPUx86Model *model)
 {
-    char **feat = model->removedFeatures;
-
-    if (!feat)
-        return;
-
-    while (*feat) {
-        virCPUDefAddFeatureIfMissing(cpu, *feat, VIR_CPU_FEATURE_DISABLE);
-        feat++;
-    }
+    virCPUx86AddRemovedFeatures(cpu, model, VIR_CPU_FEATURE_DISABLE);
 }
 
 
@@ -2940,7 +2948,8 @@ x86UpdateHostModel(virCPUDef *guest,
 static int
 virCPUx86Update(virCPUDef *guest,
                 const virCPUDef *host,
-                bool relative)
+                bool relative,
+                virCPUFeaturePolicy removedPolicy)
 {
     g_autoptr(virCPUx86Model) model = NULL;
     virCPUx86Model *guestModel;
@@ -2985,7 +2994,7 @@ virCPUx86Update(virCPUDef *guest,
         return -1;
     }
 
-    virCPUx86DisableRemovedFeatures(guest, guestModel);
+    virCPUx86AddRemovedFeatures(guest, guestModel, removedPolicy);
 
     return 0;
 }

@@ -49,7 +49,8 @@ virCPURiscv64ValidateFeatures(virCPUDef *cpu G_GNUC_UNUSED)
 static int
 virCPURiscv64Update(virCPUDef *guest,
                     const virCPUDef *host,
-                    bool relative)
+                    bool relative,
+                    virCPUFeaturePolicy removedPolicy G_GNUC_UNUSED)
 {
     g_autoptr(virCPUDef) updated = virCPUDefCopyWithoutModel(guest);
 

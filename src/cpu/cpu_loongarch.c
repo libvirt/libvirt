@@ -39,7 +39,8 @@ virCPULoongArchCompare(virCPUDef *host G_GNUC_UNUSED,
 static int
 virCPULoongArchUpdate(virCPUDef *guest G_GNUC_UNUSED,
                       const virCPUDef *host G_GNUC_UNUSED,
-                      bool relative G_GNUC_UNUSED)
+                      bool relative G_GNUC_UNUSED,
+                      virCPUFeaturePolicy removedPolicy G_GNUC_UNUSED)
 {
     return 0;
 }

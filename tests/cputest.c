@@ -236,7 +236,7 @@ cpuTestGuestCPU(const void *arg)
         goto cleanup;
     }
 
-    if (virCPUUpdate(host->arch, cpu, host) < 0 ||
+    if (virCPUUpdate(host->arch, cpu, host, VIR_CPU_FEATURE_DISABLE) < 0 ||
         virCPUTranslate(host->arch, cpu, data->models) < 0) {
         ret = -1;
         goto cleanup;
@@ -363,7 +363,7 @@ cpuTestUpdate(const void *arg)
     if (!(migHost = virCPUCopyMigratable(data->arch, host)))
         return -1;
 
-    if (virCPUUpdate(host->arch, cpu, migHost) < 0)
+    if (virCPUUpdate(host->arch, cpu, migHost, VIR_CPU_FEATURE_DISABLE) < 0)
         return -1;
 
     result = g_strdup_printf("%s+%s", data->host, data->name);
