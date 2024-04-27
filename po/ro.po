@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 08:15+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-04-27 09:40+0000\n"
+"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -15369,7 +15369,7 @@ msgid "Timed out while reading log output: %1$s"
 msgstr ""
 
 msgid "Timeout"
-msgstr "Timpul de așteptare:"
+msgstr "Timpul de așteptare"
 
 #, sh-format
 msgid "Timeout expired while shutting down domains"
@@ -15599,14 +15599,14 @@ msgid "Turn zstd compression on to tune it"
 msgstr ""
 
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #, c-format
 msgid "Type mismatch for '%1$s' migration parameter"
 msgstr ""
 
 msgid "Type:"
-msgstr ""
+msgstr "Tip:"
 
 msgid ""
 "Type:  'help' for help with commands\n"
@@ -15709,7 +15709,7 @@ msgid "UTS namespace support is required"
 msgstr ""
 
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 msgid "UUID in config file malformed"
 msgstr ""
@@ -15721,7 +15721,7 @@ msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr ""
 
 msgid "UUID:"
-msgstr ""
+msgstr "UUID:"
 
 msgid "Unable to accept client"
 msgstr ""
@@ -16376,7 +16376,7 @@ msgid "Unable to get ACLs on %1$s"
 msgstr ""
 
 msgid "Unable to get Capabilities"
-msgstr ""
+msgstr "Nu s-au putut obține capacitățile"
 
 #, c-format
 msgid "Unable to get Console object for domain %1$s"
@@ -16823,7 +16823,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open %1$s"
-msgstr ""
+msgstr "Nu se poate deschide %1$s"
 
 #, c-format
 msgid "Unable to open %1$s (%2$d)"
@@ -16835,7 +16835,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open '%1$s'"
-msgstr ""
+msgstr "Nu se poate deschide „%1$s”"
 
 #, c-format
 msgid "Unable to open '%1$s' for vdpa device"
@@ -17929,7 +17929,7 @@ msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
-msgstr ""
+msgstr "Necunoscut"
 
 #, c-format
 msgid "Unknown CPU feature %1$s"
@@ -17956,7 +17956,7 @@ msgid "Unknown Command '%1$i'"
 msgstr ""
 
 msgid "Unknown Error"
-msgstr ""
+msgstr "Eroare necunoscută"
 
 #, c-format
 msgid "Unknown IP address data source %1$d"
@@ -18086,7 +18086,7 @@ msgid "Unknown enable type %1$d in network"
 msgstr ""
 
 msgid "Unknown error"
-msgstr ""
+msgstr "Eroare necunoscută"
 
 msgid "Unknown error value"
 msgstr ""
@@ -18667,7 +18667,7 @@ msgid "Upload file contents to a volume"
 msgstr ""
 
 msgid "Usage"
-msgstr ""
+msgstr "Utilizare"
 
 msgid ""
 "Usage of listen-address is forbidden when migration URI uses UNIX transport "
