@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2024-03-27 17:36+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -475,6 +475,10 @@ msgstr " %1$s (довідкове ключове слово — «%2$s»)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (довідкове ключове слово — «%2$s»):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " Гіпервізори:"
 
@@ -488,8 +492,8 @@ msgid " Storage:"
 msgstr " Сховище:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
-msgstr " [[--%1$s] <рядок>]..."
+msgid " [--%1$s <string>]..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -502,10 +506,6 @@ msgstr ""
 " проп. здатність=%2$lu\n"
 " поточ.=%3$llu\n"
 " кінц.=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr " {[--%1$s] <рядок>}..."
 
 #, c-format
 msgid ""
@@ -1592,9 +1592,6 @@ msgstr "(визначення_порту_мережі)"
 msgid "(node_device_definition)"
 msgstr "(визначення_вузлового_пристрою)"
 
-msgid "(none)"
-msgstr "(нічого)"
-
 msgid "(nwfilter_definition)"
 msgstr "(визначення_nwfilter)"
 
@@ -1643,16 +1640,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <рядок>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "Не можна використовувати параметри --%1$s і --current одночасно"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "Не можна використовувати параметри --%1$s і --tree одночасно"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "потрібен параметр --%1$s"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5496,10 +5493,6 @@ msgid "Device %1$s detached\n"
 msgstr "Пристрій %1$s від'єднано\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr "Пристрій %1$s не має VPD"
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Пристрій %1$s вже використовується"
 
@@ -7999,10 +7992,6 @@ msgstr "Не вдалося відкрити «%1$s»"
 
 msgid "Failed to open a UNIX socket"
 msgstr "Не вдалося відкрити сокет UNIX"
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
-msgstr "Не вдалося відкрити файл VPD «%1$s»"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -13057,6 +13046,10 @@ msgstr "Активний пристрій %1$s не буде повторно п
 msgid "Not resetting active device %1$s"
 msgstr "Активний пристрій %1$s не буде повторно ініціалізовано"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "Не підтримується"
 
@@ -13519,9 +13512,6 @@ msgstr "Файл накладки «%1$s» для проміжного диск�
 
 msgid "PASS"
 msgstr "ПРОЙДЕНО"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr "Звітування VPD PCI є недоступним на цій платформі"
 
 #, c-format
 msgid ""
@@ -21118,6 +21108,10 @@ msgstr "[--%1$s] <число>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <рядок>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr "тип відео «none» має бути єдиним визначеним відеопристроєм для домену"
@@ -22005,9 +21999,6 @@ msgstr "неправильне значення updelay у інтерфейсі 
 
 msgid "bond interface misses the bond element"
 msgstr "немає елемента bond для інтерфейсу зв'язку"
-
-msgid "bool"
-msgstr "bool"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23811,9 +23802,6 @@ msgstr "визначити стан диска, а не стан ВМ"
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: командою можна скористатися лише у інтерактивному режимі"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "підтримки пристроїв cdrom з каналом virtio не передбачено"
@@ -26690,8 +26678,12 @@ msgstr ""
 "«%2$s»"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "очікуваний формат: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -27537,9 +27529,6 @@ msgstr "не вдалося обробити %1$s"
 msgid "failed to parse %1$sversion"
 msgstr "не вдалося обробити версію %1$s"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr "не вдалося обробити рядок VPD PCI із некоректними символами"
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "не вдалося обробити запис вузла SCSI «%1$s»"
@@ -27718,42 +27707,6 @@ msgid "failed to read temporary file created with template %1$s"
 msgstr ""
 "не вдалося прочитати файл тимчасових даних, створений за допомогою шаблона "
 "%1$s"
-
-msgid "failed to read the PCI VPD data"
-msgstr "не вдалося прочитати дані VPD PCI"
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr "не вдалося прочитати дані VPD PCI: некоректна довжина поля даних"
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr "не вдалося прочитати дані VPD PCI: некоректна контрольна сума"
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr "не вдалося прочитати дані VPD PCI: помилкове форматування даних"
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-"не вдалося прочитати дані VPD PCI: пропущено обов'язкову контрольну суму"
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-"не вдалося прочитати дані VPD PCI: пропущено призначений лише для читання "
-"розділ"
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr "не вдалося прочитати дані VPD PCI: передчасне завершення обробки"
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-"не вдалося прочитати дані VPD PCI: неочікуване ключове слово RV у розділі, "
-"який призначено для читання і запису"
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
-"не вдалося прочитати дані VPD PCI: неочікуване ключове слово RW у розділі, "
-"який призначено лише для читання"
 
 msgid "failed to reboot domain"
 msgstr "не вдалося перезавантажити домен"
@@ -33879,9 +33832,6 @@ msgstr "у драйвері vz не передбачено підтримки п
 msgid "numad is not available on this host"
 msgstr "numad є недоступним для цього вузла"
 
-msgid "number"
-msgstr "число"
-
 msgid "number of bytes read:"
 msgstr "кількість прочитаних байтів:"
 
@@ -34284,9 +34234,6 @@ msgstr "заборонена дія: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "тип дії %1$d не підтримується"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -34915,6 +34862,9 @@ msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 "у цьому QEMU не передбачено підтримки потоків попереднього розподілу пам'яті"
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "префікс є надто довгим"
 
@@ -34969,9 +34919,6 @@ msgstr "вивести час домену у зручному для читан
 
 msgid "print help"
 msgstr "довідка з друку"
-
-msgid "print help for this function"
-msgstr "вивести довідкові дані щодо цієї функції"
 
 msgid "print lease info for a given network"
 msgstr "вивести дані щодо надання для вказаної мережі"
@@ -36355,6 +36302,9 @@ msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки встановлення "
 "порядку завантаження virtiofs"
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "помилка setuid або setgid"
 
@@ -36959,9 +36909,6 @@ msgstr "потік даних не відкрито"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "потік має відповідати з'єднанню домену «%1$s»"
-
-msgid "string"
-msgstr "рядок"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -40978,6 +40925,95 @@ msgstr "нуль-копіюванням можна скористатися ли
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "надійшов запит щодо зони %1$s для мережі %2$s, але firewalld не задіяно"
+
+#, c-format
+#~ msgid " [[--%1$s] <string>]..."
+#~ msgstr " [[--%1$s] <рядок>]..."
+
+#, c-format
+#~ msgid " {[--%1$s] <string>}..."
+#~ msgstr " {[--%1$s] <рядок>}..."
+
+#~ msgid "(none)"
+#~ msgstr "(нічого)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "потрібен параметр --%1$s"
+
+#, c-format
+#~ msgid "Device %1$s does not have a VPD"
+#~ msgstr "Пристрій %1$s не має VPD"
+
+#, c-format
+#~ msgid "Failed to open a VPD file '%1$s'"
+#~ msgstr "Не вдалося відкрити файл VPD «%1$s»"
+
+#~ msgid "PCI VPD reporting not available on this platform"
+#~ msgstr "Звітування VPD PCI є недоступним на цій платформі"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: командою можна скористатися лише у інтерактивному режимі"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "очікуваний формат: --%1$s <%2$s>"
+
+#~ msgid "failed to parse PCI VPD string value with invalid characters"
+#~ msgstr "не вдалося обробити рядок VPD PCI із некоректними символами"
+
+#~ msgid "failed to read the PCI VPD data"
+#~ msgstr "не вдалося прочитати дані VPD PCI"
+
+#~ msgid "failed to read the PCI VPD data: data field length invalid"
+#~ msgstr "не вдалося прочитати дані VPD PCI: некоректна довжина поля даних"
+
+#~ msgid "failed to read the PCI VPD data: invalid checksum"
+#~ msgstr "не вдалося прочитати дані VPD PCI: некоректна контрольна сума"
+
+#~ msgid "failed to read the PCI VPD data: malformed data"
+#~ msgstr "не вдалося прочитати дані VPD PCI: помилкове форматування даних"
+
+#~ msgid "failed to read the PCI VPD data: missing mandatory checksum"
+#~ msgstr ""
+#~ "не вдалося прочитати дані VPD PCI: пропущено обов'язкову контрольну суму"
+
+#~ msgid "failed to read the PCI VPD data: missing read-only section"
+#~ msgstr ""
+#~ "не вдалося прочитати дані VPD PCI: пропущено призначений лише для читання "
+#~ "розділ"
+
+#~ msgid "failed to read the PCI VPD data: parsing ended prematurely"
+#~ msgstr "не вдалося прочитати дані VPD PCI: передчасне завершення обробки"
+
+#~ msgid ""
+#~ "failed to read the PCI VPD data: unexpected RV keyword in read-write "
+#~ "section"
+#~ msgstr ""
+#~ "не вдалося прочитати дані VPD PCI: неочікуване ключове слово RV у "
+#~ "розділі, який призначено для читання і запису"
+
+#~ msgid ""
+#~ "failed to read the PCI VPD data: unexpected RW keyword in read-only "
+#~ "section"
+#~ msgstr ""
+#~ "не вдалося прочитати дані VPD PCI: неочікуване ключове слово RW у "
+#~ "розділі, який призначено лише для читання"
+
+#~ msgid "number"
+#~ msgstr "число"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "вивести довідкові дані щодо цієї функції"
+
+#~ msgid "string"
+#~ msgstr "рядок"
 
 #, c-format
 #~ msgid "<%1$s>"

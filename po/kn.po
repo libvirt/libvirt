@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -351,6 +351,10 @@ msgstr " %1$s (ನೆರವಿನ ಕೀಲಿಪದ '%2$s')\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (ನೆರವಿನ ಕೀಲಿಪದ '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " ಹೈಪರ್ವೈಸರುಗಳು:"
 
@@ -364,7 +368,7 @@ msgid " Storage:"
 msgstr " ಶೇಖರಣೆ:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -373,10 +377,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1434,9 +1434,6 @@ msgstr "(network_definition)"
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
 
-msgid "(none)"
-msgstr "(ಯಾವುದೂ ಇಲ್ಲ)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1488,16 +1485,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s ಮತ್ತು --current ಎರಡೂ ಪರಸ್ಪರ ಪ್ರತ್ಯೇಕವಾಗಿರುತ್ತವೆ"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s ಮತ್ತು --tree ಎರಡೂ ಪರಸ್ಪರ ಪ್ರತ್ಯೇಕವಾಗಿರುತ್ತವೆ"
-
-#, fuzzy, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s ಅಥವ --current ನ ಅಗತ್ಯವಿದೆ"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5223,10 +5220,6 @@ msgid "Device %1$s detached\n"
 msgstr "ಸಾಧನ %1$s ಅನ್ನು ಕಳಚಿ ಹಾಕಲಾಗಿದೆ\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "ಸಾಧನ %1$s ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ"
 
@@ -7730,10 +7723,6 @@ msgid "Failed to open '%1$s'"
 msgstr "'%1$s' ಅನ್ನು ತೆರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12686,6 +12675,10 @@ msgstr "ಸಕ್ರಿಯ ಸಾಧನ %1$s ಅನ್ನು ಮರಳಿ ಲಗ
 msgid "Not resetting active device %1$s"
 msgstr "ಸಕ್ರಿಯ ಸಾಧನ %1$s ಅನ್ನು ಮರಳಿ ಹೊಂದಿಸಲಾಗುತ್ತಿಲ್ಲ"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "ಬೆಂಬಲವಿಲ್ಲ"
 
@@ -13125,9 +13118,6 @@ msgstr ""
 
 msgid "PASS"
 msgstr "PASS"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -20431,6 +20421,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21279,9 +21273,6 @@ msgstr "ಬಾಂಡ್ ಸಂಪರ್ಕಸಾಧನ miimon updelay ಅಮಾ�
 
 msgid "bond interface misses the bond element"
 msgstr "ಬಾಂಡ್‌ ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ ಬಾಂಡ್ ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "bool"
-msgstr "bool"
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23020,9 +23011,6 @@ msgstr "ಡಿಸ್ಕಿನ ಸ್ಥಿತಿಯನ್ನು ಸೆರಹಿ�
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: ಆದೇಶಯು ಕೇವಲ ಸಂವಾದಾತ್ಮಕ ಕ್ರಮದಲ್ಲಿ ಮಾತ್ರ ಮಾನ್ಯವಾಗಿರುತ್ತದೆ"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25853,8 +25841,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "ನಿರೀಕ್ಷಿತ ಸಿಂಟ್ಯಾಕ್ಸ್‍: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26729,9 +26721,6 @@ msgstr "%1$s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವ�
 msgid "failed to parse %1$sversion"
 msgstr "%1$s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "'%1$s' ಕ್ರಮವನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -26916,35 +26905,6 @@ msgstr "qemu ಹೆಡರ್ ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫ�
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "ನಮೂನೆ %1$s ಯೊಂದಿಗೆ ರಚಿಸಲಾದ ತಾತ್ಕಾಲಿಕ ಕಡತವನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32936,9 +32896,6 @@ msgstr "'%s' ನಿಯತಾಂಕಕ್ಕೆ ಈ ಕರ್ನಲ್‌ನಿ�
 msgid "numad is not available on this host"
 msgstr "numad ಈ ಆತಿಥೇಯದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ"
 
-msgid "number"
-msgstr "ಸಂಖ್ಯೆ"
-
 msgid "number of bytes read:"
 msgstr "ಓದಲಾದ ಬೈಟುಗಳ ಸಂಖ್ಯೆ:"
 
@@ -33327,9 +33284,6 @@ msgstr "ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲಗೊಂಡಿದೆ: 
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "ಕಾರ್ಯಾಚರಣೆಯ ಬಗೆ %1$d ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, fuzzy, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33932,6 +33886,9 @@ msgstr "ಮೆಟಾಡೇಟಾದ ಪೂರ್ವನಿಯೋಜನೆ (ಸಂ
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset ಬಹಳ ಉದ್ದವಾಗಿದೆ"
@@ -33991,9 +33948,6 @@ msgstr "ಮನುಷ್ಯ ಓದಬಹುದಾದ ಉತ್ತಮ ಔಟ್‌
 
 msgid "print help"
 msgstr "ಮುದ್ರಣ ಸಹಾಯ"
-
-msgid "print help for this function"
-msgstr "ಈ ಕ್ರಿಯೆಗಾಗಿನ ಸಹಾಯವನ್ನು ಮುದ್ರಿಸು"
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35322,6 +35276,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid ಅಥವ setgid ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -35925,9 +35882,6 @@ msgstr "ಸ್ಟ್ರೀಮ್‌ ತೆರೆದಿಲ್ಲ"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "ವಾಕ್ಯ"
 
 #, fuzzy, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39817,6 +39771,35 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(ಯಾವುದೂ ಇಲ್ಲ)"
+
+#, fuzzy, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s ಅಥವ --current ನ ಅಗತ್ಯವಿದೆ"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: ಆದೇಶಯು ಕೇವಲ ಸಂವಾದಾತ್ಮಕ ಕ್ರಮದಲ್ಲಿ ಮಾತ್ರ ಮಾನ್ಯವಾಗಿರುತ್ತದೆ"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "ನಿರೀಕ್ಷಿತ ಸಿಂಟ್ಯಾಕ್ಸ್‍: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "ಸಂಖ್ಯೆ"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "ಈ ಕ್ರಿಯೆಗಾಗಿನ ಸಹಾಯವನ್ನು ಮುದ್ರಿಸು"
+
+#~ msgid "string"
+#~ msgstr "ವಾಕ್ಯ"
 
 #, c-format
 #~ msgid "<%1$s>"

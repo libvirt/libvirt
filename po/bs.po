@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -293,6 +293,10 @@ msgstr ""
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr ""
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr ""
 
@@ -306,7 +310,7 @@ msgid " Storage:"
 msgstr ""
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -315,10 +319,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1297,9 +1297,6 @@ msgstr ""
 msgid "(node_device_definition)"
 msgstr ""
 
-msgid "(none)"
-msgstr ""
-
 msgid "(nwfilter_definition)"
 msgstr ""
 
@@ -1348,15 +1345,15 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <niz>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr ""
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
-msgstr ""
-
-#, c-format
-msgid "--%1$s is required"
 msgstr ""
 
 #, c-format
@@ -4896,10 +4893,6 @@ msgstr ""
 msgid "Device %1$s detached\n"
 msgstr "Domena %1$s je uništena\n"
 
-#, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Device %1$s is already in use"
 msgstr "Domena je aktivna"
@@ -7356,10 +7349,6 @@ msgid "Failed to open '%1$s'"
 msgstr "otvaranje datoteke nije uspjelo"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12108,6 +12097,10 @@ msgstr ""
 msgid "Not resetting active device %1$s"
 msgstr ""
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr ""
 
@@ -12517,9 +12510,6 @@ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
-msgstr ""
-
-msgid "PCI VPD reporting not available on this platform"
 msgstr ""
 
 #, c-format
@@ -19475,6 +19465,10 @@ msgstr "--%1$s <broj>"
 msgid "[--%1$s] <string>"
 msgstr "--%1$s <niz>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -20272,9 +20266,6 @@ msgid "bond interface miimon updelay invalid"
 msgstr ""
 
 msgid "bond interface misses the bond element"
-msgstr ""
-
-msgid "bool"
 msgstr ""
 
 #, c-format
@@ -21955,9 +21946,6 @@ msgstr ""
 
 #, c-format
 msgid "cd: %1$s: %2$s"
-msgstr ""
-
-msgid "cd: command valid only in interactive mode"
 msgstr ""
 
 msgid "cdrom device with virtio bus isn't supported"
@@ -24719,8 +24707,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "očekivana sintaksa: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -25590,9 +25582,6 @@ msgstr "otvaranje datoteke nije uspjelo"
 msgid "failed to parse %1$sversion"
 msgstr "dohvaćanje verzije biblioteke nije uspjelo"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "dohvaćanje domene '%1$s' nije uspjelo"
@@ -25783,35 +25772,6 @@ msgstr "čitanje konfiguracijske datoteke nije uspjelo"
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "čitanje konfiguracijske datoteke %1$s nije uspjelo"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -31568,9 +31528,6 @@ msgstr ""
 msgid "numad is not available on this host"
 msgstr ""
 
-msgid "number"
-msgstr "broj"
-
 msgid "number of bytes read:"
 msgstr ""
 
@@ -31932,9 +31889,6 @@ msgstr "operacija nije uspjela: %1$s"
 
 #, c-format
 msgid "operation type %1$d not supported"
-msgstr ""
-
-msgid "optdata"
 msgstr ""
 
 #, c-format
@@ -32516,6 +32470,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr ""
 
@@ -32569,9 +32526,6 @@ msgstr ""
 
 msgid "print help"
 msgstr "ispiši pomoć"
-
-msgid "print help for this function"
-msgstr ""
 
 msgid "print lease info for a given network"
 msgstr ""
@@ -33837,6 +33791,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr ""
 
@@ -34412,9 +34369,6 @@ msgstr ""
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "niz"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -38174,6 +38128,16 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "očekivana sintaksa: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "broj"
+
+#~ msgid "string"
+#~ msgstr "niz"
 
 #, fuzzy, c-format
 #~ msgid "[--%1$s <number>]"

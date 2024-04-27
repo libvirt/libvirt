@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2024-04-25 19:47+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -472,6 +472,10 @@ msgstr " %1$s (hjälpnyckelord ”%2$s”)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (hjälpnyckelord ”%2$s”):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " Hypervisorer:"
 
@@ -485,8 +489,8 @@ msgid " Storage:"
 msgstr " Lagring:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
-msgstr " [[--%1$s] <sträng>]…"
+msgid " [--%1$s <string>]..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -499,10 +503,6 @@ msgstr ""
 " bandbredd=%2$lu\n"
 " akt=%3$llu\n"
 " slut=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr " {[--%1$s] <sträng>}…"
 
 #, c-format
 msgid ""
@@ -1553,9 +1553,6 @@ msgstr "(nätverksportsdefinition)"
 msgid "(node_device_definition)"
 msgstr "(nodenhetsdefinition)"
 
-msgid "(none)"
-msgstr "(ingen)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1604,16 +1601,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <sträng>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s och --current är ömsesidigt uteslutande"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s och --tree är ömsesidigt uteslutande"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s krävs"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5331,10 +5328,6 @@ msgid "Device %1$s detached\n"
 msgstr "Enheten %1$s frånkopplad\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr "Enheten %1$s har inte någon VPD"
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Enheten %1$s används redan"
 
@@ -7788,10 +7781,6 @@ msgstr "Misslyckades att öppna ”%1$s”"
 
 msgid "Failed to open a UNIX socket"
 msgstr "Misslyckades att öppna ett UNIX-uttag"
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
-msgstr "Misslyckades att öppna VPD-filen ”%1$s”"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -11917,8 +11906,8 @@ msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
 msgstr ""
-"OBS: ansluter till standarddemonen. Ange demon med ”-c” (t.ex. "
-"virtqemud:///system)\n"
+"OBS: ansluter till standarddemonen. Ange demon med ”-c” (t.ex. virtqemud:///"
+"system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON-typen kan inte konverteras till en kommandorad"
@@ -12690,6 +12679,10 @@ msgstr "Kopplar inte om den aktiva enheten %1$s"
 msgid "Not resetting active device %1$s"
 msgstr "Återställer inte den aktiva enheten %1$s"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "Stödjs inte"
 
@@ -13033,8 +13026,8 @@ msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
 msgstr ""
-"Flaggan --tree är inte kompatibel med --cap, --inactive, --persistent och "
-"--transient"
+"Flaggan --tree är inte kompatibel med --cap, --inactive, --persistent och --"
+"transient"
 
 msgid "Option argument is empty"
 msgstr "Flaggargumentet är tomt"
@@ -13120,9 +13113,6 @@ msgstr "Överläggsfilen ”%1$s” för den transienta disken ”%2$s” finns 
 
 msgid "PASS"
 msgstr "GODKÄND"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr "PCI VDP-rapportering är inte tillgänglig på denna plattform"
 
 #, c-format
 msgid ""
@@ -20294,6 +20284,10 @@ msgstr "[--%1$s <nummer>]"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s <sträng>]"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21147,9 +21141,6 @@ msgstr "miimon-yoofördröjning för bindningsgränssnittet är felaktigt"
 
 msgid "bond interface misses the bond element"
 msgstr "bindningsgränssnittet saknar bindningselementet"
-
-msgid "bool"
-msgstr "bool"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22886,9 +22877,6 @@ msgstr "fångstdisktillstånd men inte vm-tillstånd"
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: kommandot är endast giltigt i interaktivt läge"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "cdrom-enhet med virtio-buss stödjs inte"
@@ -25688,8 +25676,12 @@ msgstr ""
 "protokollet ”%1$s” förväntades men fick ”%2$s” i URI JSON-volymdefinitionen"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "förväntad syntax: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26527,9 +26519,6 @@ msgstr "misslyckades att tolka %1$s"
 msgid "failed to parse %1$sversion"
 msgstr "misslyckades att tolka versionen av %1$s"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr "misslyckades att tolka PCI VPD-strängvärdet med ogiltiga tecken"
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "misslyckades att tolka SCSI-värden ”%1$s”"
@@ -26706,39 +26695,6 @@ msgstr "misslyckats med att läsa qemu-huvudet"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "misslyckades att läsa temporärfilen skapad med mallen %1$s"
-
-msgid "failed to read the PCI VPD data"
-msgstr "misslyckades att läsa PCI VPD-datan"
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr "misslyckades att läsa PCI VPD-datan: datafältslängden är felaktig"
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr "misslyckades att läsa PCI VPD-datan: felaktig kontrollsumma"
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr "misslyckades att läsa PCI VPD-datan: felformad data"
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr "misslyckades att läsa PCI vpd-datan: obligatorisk kontrollsumma saknas"
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr "misslyckades att läsa PCI VPD-datan: endast läsbar sektion saknas"
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr "misslyckades att läsa PCI VPD-datan: tolkningen tog slut för tidigt"
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-"misslyckades att läsa PCI VPD-datan: oväntat RV-nyckelord i den läs- och "
-"skrivbara sektionen"
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
-"misslyckades att läsa PCI VPD-datan: oväntat RW-nyckelord i den endast "
-"läsbara sektionen"
 
 msgid "failed to reboot domain"
 msgstr "misslyckades att starta om domänen"
@@ -32614,9 +32570,6 @@ msgstr ""
 msgid "numad is not available on this host"
 msgstr ""
 
-msgid "number"
-msgstr "nummer"
-
 msgid "number of bytes read:"
 msgstr ""
 
@@ -32989,9 +32942,6 @@ msgstr "operation misslyckades: %1$s"
 
 #, c-format
 msgid "operation type %1$d not supported"
-msgstr ""
-
-msgid "optdata"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33577,6 +33527,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "parametern profileid är för lång"
@@ -33631,9 +33584,6 @@ msgstr ""
 
 msgid "print help"
 msgstr "skriv ut hjälp"
-
-msgid "print help for this function"
-msgstr ""
 
 msgid "print lease info for a given network"
 msgstr ""
@@ -34919,6 +34869,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr ""
 
@@ -35503,9 +35456,6 @@ msgstr ""
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "sträng"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39310,6 +39260,87 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid " [[--%1$s] <string>]..."
+#~ msgstr " [[--%1$s] <sträng>]…"
+
+#, c-format
+#~ msgid " {[--%1$s] <string>}..."
+#~ msgstr " {[--%1$s] <sträng>}…"
+
+#~ msgid "(none)"
+#~ msgstr "(ingen)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s krävs"
+
+#, c-format
+#~ msgid "Device %1$s does not have a VPD"
+#~ msgstr "Enheten %1$s har inte någon VPD"
+
+#, c-format
+#~ msgid "Failed to open a VPD file '%1$s'"
+#~ msgstr "Misslyckades att öppna VPD-filen ”%1$s”"
+
+#~ msgid "PCI VPD reporting not available on this platform"
+#~ msgstr "PCI VDP-rapportering är inte tillgänglig på denna plattform"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: kommandot är endast giltigt i interaktivt läge"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "förväntad syntax: --%1$s <%2$s>"
+
+#~ msgid "failed to parse PCI VPD string value with invalid characters"
+#~ msgstr "misslyckades att tolka PCI VPD-strängvärdet med ogiltiga tecken"
+
+#~ msgid "failed to read the PCI VPD data"
+#~ msgstr "misslyckades att läsa PCI VPD-datan"
+
+#~ msgid "failed to read the PCI VPD data: data field length invalid"
+#~ msgstr "misslyckades att läsa PCI VPD-datan: datafältslängden är felaktig"
+
+#~ msgid "failed to read the PCI VPD data: invalid checksum"
+#~ msgstr "misslyckades att läsa PCI VPD-datan: felaktig kontrollsumma"
+
+#~ msgid "failed to read the PCI VPD data: malformed data"
+#~ msgstr "misslyckades att läsa PCI VPD-datan: felformad data"
+
+#~ msgid "failed to read the PCI VPD data: missing mandatory checksum"
+#~ msgstr ""
+#~ "misslyckades att läsa PCI vpd-datan: obligatorisk kontrollsumma saknas"
+
+#~ msgid "failed to read the PCI VPD data: missing read-only section"
+#~ msgstr "misslyckades att läsa PCI VPD-datan: endast läsbar sektion saknas"
+
+#~ msgid "failed to read the PCI VPD data: parsing ended prematurely"
+#~ msgstr "misslyckades att läsa PCI VPD-datan: tolkningen tog slut för tidigt"
+
+#~ msgid ""
+#~ "failed to read the PCI VPD data: unexpected RV keyword in read-write "
+#~ "section"
+#~ msgstr ""
+#~ "misslyckades att läsa PCI VPD-datan: oväntat RV-nyckelord i den läs- och "
+#~ "skrivbara sektionen"
+
+#~ msgid ""
+#~ "failed to read the PCI VPD data: unexpected RW keyword in read-only "
+#~ "section"
+#~ msgstr ""
+#~ "misslyckades att läsa PCI VPD-datan: oväntat RW-nyckelord i den endast "
+#~ "läsbara sektionen"
+
+#~ msgid "number"
+#~ msgstr "nummer"
+
+#~ msgid "string"
+#~ msgstr "sträng"
 
 #, c-format
 #~ msgid "<%1$s>"

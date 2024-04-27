@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -300,6 +300,10 @@ msgstr ""
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr ""
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr ""
 
@@ -313,7 +317,7 @@ msgid " Storage:"
 msgstr ""
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -322,10 +326,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1321,9 +1321,6 @@ msgstr ""
 msgid "(node_device_definition)"
 msgstr "các chi tiết thiết bị nút theo XML"
 
-msgid "(none)"
-msgstr "(không)"
-
 msgid "(nwfilter_definition)"
 msgstr ""
 
@@ -1376,15 +1373,15 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <chuỗi>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr ""
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
-msgstr ""
-
-#, c-format
-msgid "--%1$s is required"
 msgstr ""
 
 #, c-format
@@ -5074,10 +5071,6 @@ msgid "Device %1$s detached\n"
 msgstr "Thiết bị %1$s đã gắn lại\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Thiết bị %1$s đã đang dùng"
 
@@ -7596,10 +7589,6 @@ msgid "Failed to open '%1$s'"
 msgstr "Thất bại khi mở '%1$s'"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12498,6 +12487,10 @@ msgstr "Không gắn lại thiết bị hoạt động %1$s"
 msgid "Not resetting active device %1$s"
 msgstr "Không thiết lập lại thiết bị hoạt động %1$s"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr ""
 
@@ -12922,9 +12915,6 @@ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
-msgstr ""
-
-msgid "PCI VPD reporting not available on this platform"
 msgstr ""
 
 #, c-format
@@ -20203,6 +20193,10 @@ msgstr "[--%1$s] <số>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <chuỗi>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21028,9 +21022,6 @@ msgstr "updelay miimon của giao diện gắn kết không hợp lệ"
 
 msgid "bond interface misses the bond element"
 msgstr "giao diện gắn kết thiếu thành phần gắn kết"
-
-msgid "bool"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22781,9 +22772,6 @@ msgstr ""
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: lệnh chỉ hợp lệ trong chế độ tương tác"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25617,8 +25605,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "cú pháp mong đợi: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26487,9 +26479,6 @@ msgstr "Thất bại khi phân tích chế độ '%1$s'"
 msgid "failed to parse %1$sversion"
 msgstr "lấy phiên bản thư viện thất bại"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "Thất bại khi phân tích chế độ '%1$s'"
@@ -26678,35 +26667,6 @@ msgstr "thất bại khi đọc header qemu"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "thất bại khi đọc tập tin tạm được tạo với mẫu %1$s"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32700,9 +32660,6 @@ msgstr "Kỹ thuật SASL %s không được hỗ trợ bởi máy chủ"
 msgid "numad is not available on this host"
 msgstr "đánh số các thiết bị trên máy chủ này"
 
-msgid "number"
-msgstr "số"
-
 msgid "number of bytes read:"
 msgstr ""
 
@@ -33097,9 +33054,6 @@ msgstr "thao tác thất bại: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "kiểu thao tác %1$d không hỗ trợ"
-
-msgid "optdata"
-msgstr ""
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33697,6 +33651,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "thông số profileid quá dài"
@@ -33755,9 +33712,6 @@ msgstr ""
 
 msgid "print help"
 msgstr "trợ giúp in"
-
-msgid "print help for this function"
-msgstr ""
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35073,6 +35027,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 #, fuzzy
 msgid "setuid or setgid failed"
 msgstr "Ngưng thao tác thất bại"
@@ -35663,9 +35620,6 @@ msgstr "luồng chưa mở"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "chuỗi"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39524,6 +39478,22 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(không)"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: lệnh chỉ hợp lệ trong chế độ tương tác"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "cú pháp mong đợi: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "số"
+
+#~ msgid "string"
+#~ msgstr "chuỗi"
 
 #, c-format
 #~ msgid "Cannot find suitable emulator for %1$s"

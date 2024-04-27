@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -313,6 +313,10 @@ msgstr ""
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr ""
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr ""
 
@@ -326,7 +330,7 @@ msgid " Storage:"
 msgstr ""
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -335,10 +339,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1347,9 +1347,6 @@ msgstr "(network_definition)"
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
 
-msgid "(none)"
-msgstr "(শূণ্য)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1402,15 +1399,15 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr ""
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
-msgstr ""
-
-#, c-format
-msgid "--%1$s is required"
 msgstr ""
 
 #, c-format
@@ -5104,10 +5101,6 @@ msgid "Device %1$s detached\n"
 msgstr "%1$s ডিভাইস পুনরায় সংযুক্ত করা হয়েছে\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "%1$s ডিভাইস বর্তমানে ব্যবহৃত হচ্ছে"
 
@@ -7590,10 +7583,6 @@ msgid "Failed to open '%1$s'"
 msgstr "'%1$s' খুলতে ব্যর্থ"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12504,6 +12493,10 @@ msgstr "সক্রিয় ডিভাইস %1$s-কে পুনরায় ন
 msgid "Not resetting active device %1$s"
 msgstr "সক্রিয় ডিভাইস %1$s-কে পুনরায় নির্ধারণ করা হচ্ছে না"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "সমর্থিত নয়"
 
@@ -12933,9 +12926,6 @@ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
-msgstr ""
-
-msgid "PCI VPD reporting not available on this platform"
 msgstr ""
 
 #, c-format
@@ -20204,6 +20194,10 @@ msgstr "[--%1$s <number>]"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s <string>]"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21037,9 +21031,6 @@ msgstr "bond ইন্টারফেস miimon updelay অবৈধ"
 
 msgid "bond interface misses the bond element"
 msgstr "bond ইন্টারফেসের মধ্যে bond স্বত্বা অনুপস্থিত"
-
-msgid "bool"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22791,9 +22782,6 @@ msgstr ""
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: শুধুমাত্র ইন্টারেক্টিভ মোডে ব্যবহারযোগ্য কমান্ড"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25640,8 +25628,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "প্রত্যাশিত সিন্টেক্স: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26513,9 +26505,6 @@ msgstr "মোড '%1$s' পার্স করতে ব্যর্থ"
 msgid "failed to parse %1$sversion"
 msgstr "লাইব্রেরির সংস্করণ প্রাপ্ত করতে ব্যর্থ"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "মোড '%1$s' পার্স করতে ব্যর্থ"
@@ -26704,35 +26693,6 @@ msgstr "qemu হেডার পড়তে ব্যর্থ"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "%1$s টেমপ্লেট সহ নির্মিত অস্থায়ী ফাইল পড়তে ব্যর্থ"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32726,9 +32686,6 @@ msgstr "SASL প্রণালী %s, সার্ভার দ্বারা 
 msgid "numad is not available on this host"
 msgstr "এই হোস্টের মধ্যে উপস্থিত ডিভাইসের সংখ্যা নির্ধারণ করুন"
 
-msgid "number"
-msgstr "সংখ্যা"
-
 msgid "number of bytes read:"
 msgstr ""
 
@@ -33124,9 +33081,6 @@ msgstr "কর্ম বিফল: %1$s"
 #, fuzzy, c-format
 msgid "operation type %1$d not supported"
 msgstr "কর্ম সমর্থিত হয় না"
-
-msgid "optdata"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33726,6 +33680,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset নাম অত্যন্ত দীর্ঘ"
@@ -33784,9 +33741,6 @@ msgstr ""
 
 msgid "print help"
 msgstr "সহায়িকা প্রদর্শন"
-
-msgid "print help for this function"
-msgstr ""
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35109,6 +35063,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 #, fuzzy
 msgid "setuid or setgid failed"
 msgstr "স্থগিত করার কর্ম বিফল"
@@ -35703,9 +35660,6 @@ msgstr "স্ট্রিম উন্মুক্ত নয়"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "পংক্তি"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39587,6 +39541,22 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(শূণ্য)"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: শুধুমাত্র ইন্টারেক্টিভ মোডে ব্যবহারযোগ্য কমান্ড"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "প্রত্যাশিত সিন্টেক্স: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "সংখ্যা"
+
+#~ msgid "string"
+#~ msgstr "পংক্তি"
 
 #, fuzzy, c-format
 #~ msgid "Cannot find suitable emulator for %1$s"

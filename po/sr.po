@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-03-03 07:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -302,6 +302,10 @@ msgstr ""
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr ""
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr ""
 
@@ -315,7 +319,7 @@ msgid " Storage:"
 msgstr ""
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -324,10 +328,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1314,9 +1314,6 @@ msgstr ""
 msgid "(node_device_definition)"
 msgstr ""
 
-msgid "(none)"
-msgstr ""
-
 msgid "(nwfilter_definition)"
 msgstr ""
 
@@ -1367,15 +1364,15 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <ниска>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr ""
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
-msgstr ""
-
-#, c-format
-msgid "--%1$s is required"
 msgstr ""
 
 #, c-format
@@ -4949,10 +4946,6 @@ msgstr "диск складиштења већ постоји"
 msgid "Device %1$s detached\n"
 msgstr "Домен %1$s је уништен\n"
 
-#, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Device %1$s is already in use"
 msgstr "Домен је већ активан"
@@ -7434,10 +7427,6 @@ msgid "Failed to open '%1$s'"
 msgstr "Неуспело рашчлањивање режима „%1$s“"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12268,6 +12257,10 @@ msgstr "прикачи уређај диска"
 msgid "Not resetting active device %1$s"
 msgstr ""
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr ""
 
@@ -12683,9 +12676,6 @@ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
-msgstr ""
-
-msgid "PCI VPD reporting not available on this platform"
 msgstr ""
 
 #, c-format
@@ -19820,6 +19810,10 @@ msgstr "--%1$s <број>"
 msgid "[--%1$s] <string>"
 msgstr "--%1$s <ниска>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -20633,9 +20627,6 @@ msgid "bond interface miimon updelay invalid"
 msgstr ""
 
 msgid "bond interface misses the bond element"
-msgstr ""
-
-msgid "bool"
 msgstr ""
 
 #, c-format
@@ -22339,9 +22330,6 @@ msgstr ""
 
 #, c-format
 msgid "cd: %1$s: %2$s"
-msgstr ""
-
-msgid "cd: command valid only in interactive mode"
 msgstr ""
 
 msgid "cdrom device with virtio bus isn't supported"
@@ -25139,8 +25127,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "очекивана синтакса: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26014,9 +26006,6 @@ msgstr "Неуспело рашчлањивање режима „%1$s“"
 msgid "failed to parse %1$sversion"
 msgstr "неуспело добављање верзије библиотеке"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "Неуспело рашчлањивање режима „%1$s“"
@@ -26205,35 +26194,6 @@ msgstr "неуспело читање qemu заглавља"
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "неуспело читање %1$s датотеке подешавања"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32139,9 +32099,6 @@ msgstr "SASL механизам %s није подржан од стране с�
 msgid "numad is not available on this host"
 msgstr ""
 
-msgid "number"
-msgstr "број"
-
 msgid "number of bytes read:"
 msgstr ""
 
@@ -32507,9 +32464,6 @@ msgstr "неуспела радња: %1$s"
 #, fuzzy, c-format
 msgid "operation type %1$d not supported"
 msgstr "Врста мреже %1$d није подржана"
-
-msgid "optdata"
-msgstr ""
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33096,6 +33050,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr ""
 
@@ -33149,9 +33106,6 @@ msgstr ""
 
 msgid "print help"
 msgstr "штампај помоћ"
-
-msgid "print help for this function"
-msgstr ""
 
 msgid "print lease info for a given network"
 msgstr ""
@@ -34447,6 +34401,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 #, fuzzy
 msgid "setuid or setgid failed"
 msgstr "неуспео наставак операције"
@@ -35038,9 +34995,6 @@ msgstr ""
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "ниска"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -38865,6 +38819,16 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "очекивана синтакса: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "број"
+
+#~ msgid "string"
+#~ msgstr "ниска"
 
 #, fuzzy, c-format
 #~ msgid "[--%1$s <number>]"

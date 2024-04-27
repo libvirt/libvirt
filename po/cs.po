@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -475,6 +475,10 @@ msgstr " %1$s (klíčové slovo nápovědy „%2$s“)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (klíčové slovo nápovědy „%2$s“):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " Hypervizory:"
 
@@ -488,7 +492,7 @@ msgid " Storage:"
 msgstr " Úložiště:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -502,10 +506,6 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr ""
 
 #, c-format
 msgid ""
@@ -1559,9 +1559,6 @@ msgstr "(definice_sitoveho_portu)"
 msgid "(node_device_definition)"
 msgstr "(definice_zarizeni_uzlu)"
 
-msgid "(none)"
-msgstr "(žádný)"
-
 msgid "(nwfilter_definition)"
 msgstr "(definice_nwfiltru)"
 
@@ -1610,16 +1607,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <řetězec>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s a --current nelze použít dohromady"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s a --tree nelze použít dohromady"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s je vyžadováno"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5347,10 +5344,6 @@ msgid "Device %1$s detached\n"
 msgstr "Zařízení %1$s odpojeno\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr "Zařízení %1$s nemá VPD"
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Zařízení %1$s už je používáno"
 
@@ -7825,10 +7818,6 @@ msgstr "Nepodařilo se otevřít „%1$s“"
 
 msgid "Failed to open a UNIX socket"
 msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
-msgstr "Nepodařilo se otevřít VPD soubor „%1$s“"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -12748,6 +12737,10 @@ msgstr "Nepřipojuje se znovu aktivní zařízení %1$s"
 msgid "Not resetting active device %1$s"
 msgstr "Neresetují se aktivní zařízení %1$s"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "Nepodporováno"
 
@@ -13177,9 +13170,6 @@ msgstr "Překryvný soubor '%1$s' pro přechodný disk '%2$s' už existuje"
 
 msgid "PASS"
 msgstr "V POŘÁDKU"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr "Hlášení PCI VPD není na této platformě podporováno"
 
 #, c-format
 msgid ""
@@ -20418,6 +20408,10 @@ msgstr "[--%1$s] <číslo>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <řetězec>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21283,9 +21277,6 @@ msgstr ""
 
 msgid "bond interface misses the bond element"
 msgstr "rozhraní typu most postrádá prvek bond"
-
-msgid "bool"
-msgstr "bool"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23033,9 +23024,6 @@ msgstr "zachytit stav disku, ale ne stav virt. stroje"
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: příkaz je platný pouze v interaktivním režimu"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "zařízení mechaniky optického disku není podporováno na sběrnici virtio"
@@ -25849,8 +25837,12 @@ msgstr ""
 "v URI JSON definici svazku očekáván protokol „%1$s“, ale obdržen „%2$s“"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "očekávaná syntaxe: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26692,9 +26684,6 @@ msgstr "nepodařilo se zpracovat %1$s"
 msgid "failed to parse %1$sversion"
 msgstr "nepodařilo se zpracovat %1$sversion"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "nepodařilo se zpracovat SCSI host „%1$s“"
@@ -26872,35 +26861,6 @@ msgstr "nepodařilo se číst qemu záhlaví"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "nepodařilo se číst dočasný soubor vytvořený s šablonou %1$s"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr "nepodařilo se restartovat doménu"
@@ -32847,9 +32807,6 @@ msgstr "numa parametry nejsou ovladačem vz podporovány"
 msgid "numad is not available on this host"
 msgstr "numad není na tomto stroji k dispozici"
 
-msgid "number"
-msgstr "číslo"
-
 msgid "number of bytes read:"
 msgstr "počet přečtených bajtů:"
 
@@ -33230,9 +33187,6 @@ msgstr "operace zakázána: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "operace typu %1$d nepodporována"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33835,6 +33789,9 @@ msgstr "předpřidělit metadata (pro qcow2 namísto plného přidělení)"
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr "předpřidělení vláken není s tímto QEMU podporováno"
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "předpona (prefix) je příliš dlouhá"
 
@@ -33888,9 +33845,6 @@ msgstr "vypsat čas domény v člověku srozumitelné podobě"
 
 msgid "print help"
 msgstr "vypsat nápovědu"
-
-msgid "print help for this function"
-msgstr "vypsat nápovědu k této funkci"
 
 msgid "print lease info for a given network"
 msgstr "vypsat informace o zápůjčkách dané sítě"
@@ -35221,6 +35175,9 @@ msgstr ""
 "nastavování pořadí virtiofs pro zavádění systému není s tímto sestavením "
 "QEMU podporováno"
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid nebo setgid se nezdařilo"
 
@@ -35820,9 +35777,6 @@ msgstr "proud není otevřen"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "je třeba, aby proud odpovídal spojení domény „%1$s“"
-
-msgid "string"
-msgstr "řetězec"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39741,6 +39695,46 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#~ msgid "(none)"
+#~ msgstr "(žádný)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s je vyžadováno"
+
+#, c-format
+#~ msgid "Device %1$s does not have a VPD"
+#~ msgstr "Zařízení %1$s nemá VPD"
+
+#, c-format
+#~ msgid "Failed to open a VPD file '%1$s'"
+#~ msgstr "Nepodařilo se otevřít VPD soubor „%1$s“"
+
+#~ msgid "PCI VPD reporting not available on this platform"
+#~ msgstr "Hlášení PCI VPD není na této platformě podporováno"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: příkaz je platný pouze v interaktivním režimu"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "očekávaná syntaxe: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "číslo"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "vypsat nápovědu k této funkci"
+
+#~ msgid "string"
+#~ msgstr "řetězec"
 
 #, c-format
 #~ msgid "<%1$s>"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -302,6 +302,10 @@ msgstr " %1$s (hulp sleutelwoord '%2$s')\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (hulp sleutelwoord '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " Hypervisors:"
 
@@ -315,7 +319,7 @@ msgid " Storage:"
 msgstr " Opslag:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -324,10 +328,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1334,9 +1334,6 @@ msgstr "netwerk informatie"
 msgid "(node_device_definition)"
 msgstr "node apparaat details in XML"
 
-msgid "(none)"
-msgstr "(geen)"
-
 msgid "(nwfilter_definition)"
 msgstr ""
 
@@ -1390,15 +1387,15 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <tekenreeks>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr ""
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
-msgstr ""
-
-#, c-format
-msgid "--%1$s is required"
 msgstr ""
 
 #, c-format
@@ -5104,10 +5101,6 @@ msgid "Device %1$s detached\n"
 msgstr "Apparaat %1$s is vastgekoppeld\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Apparaat %1$s is al in gebruik"
 
@@ -7630,10 +7623,6 @@ msgid "Failed to open '%1$s'"
 msgstr "Openen van '%1$s' mislukte"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12561,6 +12550,10 @@ msgstr "Actief apparaat %1$s niet opnieuw aansluiten"
 msgid "Not resetting active device %1$s"
 msgstr "Actief apparaat %1$s wordt niet gereset"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr ""
 
@@ -12989,9 +12982,6 @@ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
-msgstr ""
-
-msgid "PCI VPD reporting not available on this platform"
 msgstr ""
 
 #, c-format
@@ -20354,6 +20344,10 @@ msgstr "[--%1$s] <nummer>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <tekenreeks>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21180,9 +21174,6 @@ msgstr "binding interface miimon updelay ongeldig"
 
 msgid "bond interface misses the bond element"
 msgstr "binding interface mist het bond element"
-
-msgid "bool"
-msgstr "bool"
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22931,9 +22922,6 @@ msgstr ""
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: commando alleen geldig in interactieve mode"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25770,8 +25758,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "verwachte syntax: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26637,9 +26629,6 @@ msgstr "Ontleden mode '%1$s' mislukte"
 msgid "failed to parse %1$sversion"
 msgstr "Kan sysinfo niet ophalen"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "Ontleden mode '%1$s' mislukte"
@@ -26827,35 +26816,6 @@ msgstr "kan qemu koptekst net lezen"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "lezen van tijdelijk bestand aangemaakt met sjabloon %1$s mislukte"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32867,9 +32827,6 @@ msgstr "SASL mechanisme %s wordt door server niet ondersteund"
 msgid "numad is not available on this host"
 msgstr "Block I/O tuning is op deze host niet beschikbaar"
 
-msgid "number"
-msgstr "nummer"
-
 msgid "number of bytes read:"
 msgstr ""
 
@@ -33269,9 +33226,6 @@ msgstr "operatie mislukte: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "operatie type %1$d wordt niet ondersteund"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, fuzzy, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33870,6 +33824,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "profileid parameter is te lang"
@@ -33928,9 +33885,6 @@ msgstr ""
 
 msgid "print help"
 msgstr "hulp afdrukken"
-
-msgid "print help for this function"
-msgstr ""
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35250,6 +35204,9 @@ msgstr ""
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 #, fuzzy
 msgid "setuid or setgid failed"
 msgstr "Opschort operatie mislukte"
@@ -35841,9 +35798,6 @@ msgstr "stream is niet open"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "tekenreeks"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39705,6 +39659,28 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(geen)"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: commando alleen geldig in interactieve mode"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "verwachte syntax: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "nummer"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "string"
+#~ msgstr "tekenreeks"
 
 #, c-format
 #~ msgid "Cannot find suitable emulator for %1$s"

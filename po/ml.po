@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -356,6 +356,10 @@ msgstr " %1$s (സഹായത്തിനുള്ള കീവേര്‍ഡ�
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (സഹായത്തിനുള്ള കീബേര്‍ഡ് '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " ഹൈപ്പര്‍വൈസറുകള്‍:"
 
@@ -369,7 +373,7 @@ msgid " Storage:"
 msgstr "ശേഖരണം:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -378,10 +382,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1407,9 +1407,6 @@ msgstr "(network_definition)"
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
 
-msgid "(none)"
-msgstr "(ഒന്നുമില്ല)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1461,16 +1458,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s, --current പരസ്പരവിരുദ്ധമാണ്"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s, --tree എന്നിവ പരസ്പര വിരുദ്ധമാകുന്നു"
-
-#, fuzzy, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s, --current ആവശ്യമാകുന്നു"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5154,10 +5151,6 @@ msgid "Device %1$s detached\n"
 msgstr "ഡിവൈസ് %1$s വേര്‍പ്പെടുത്തി\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "ഡിവൈസ് %1$s നിലവില്‍ ഉപയോഗത്തിലാണു്"
 
@@ -7637,10 +7630,6 @@ msgid "Failed to open '%1$s'"
 msgstr "'%1$s' തുറക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12552,6 +12541,10 @@ msgstr "'%1$s' എന്ന സജീവോപകരണം വീണ്ടും
 msgid "Not resetting active device %1$s"
 msgstr "സജീവമായ ‍ഡിവൈസ് %1$s വീണ്ടും സജ്ജമാക്കുന്നില്ല"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "പിന്തുണ ലഭ്യമല്ല"
 
@@ -12995,9 +12988,6 @@ msgstr ""
 
 msgid "PASS"
 msgstr "PASS"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -20268,6 +20258,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21107,9 +21101,6 @@ msgstr "ബോണ്ട ഇന്റര്‍ഫെയിസ് miimon updelay �
 
 msgid "bond interface misses the bond element"
 msgstr "ബോണ്ട് ഇഡ്ജ് ഇന്റര്‍ല്‍ ബോണ്ട് എലമെന്റ് ലഭ്യമല്ലഫെയിസി"
-
-msgid "bool"
-msgstr "ബൂള്‍"
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22849,9 +22840,6 @@ msgstr "vm ന്റെ സ്ഥിതി എടുക്കാതെ ഡിസ
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: ഇന്ററാക്ടീവ് മോഡില്‍ മാത്രം കമാന്‍ഡ് പ്രവര്‍ത്തിക്കുന്നു"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25677,8 +25665,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "ശരിയായ സിന്‍റ്റാക്സ്: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26542,9 +26534,6 @@ msgstr "%1$s പാഴ്സ് ചെയ്യുന്നതില്‍ പ�
 msgid "failed to parse %1$sversion"
 msgstr "%1$s പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "മോഡ് '%1$s' പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
@@ -26729,35 +26718,6 @@ msgstr "qemu ഹെഡര്‍ ലഭ്യമാക്കുന്നതില
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "ടെംപ്ലേറ്റ് %1$s-നൊപ്പം ഉണ്ടാക്കിയ താല്‍ക്കാലിക ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32700,9 +32660,6 @@ msgstr "ഈ കേര്‍ണല്‍ പരാമീറ്റര്‍ '%s' �
 msgid "numad is not available on this host"
 msgstr "ഈ ഹോസ്റ്റില്‍ numad ലഭ്യമല്ല"
 
-msgid "number"
-msgstr "നംബര്‍"
-
 msgid "number of bytes read:"
 msgstr "ലഭ്യമാക്കിയ ബൈറ്റുകളുടെ എണ്ണം:"
 
@@ -33090,9 +33047,6 @@ msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "%1$d എന്ന ഓപ്പറേഷന്‍ തരം പിന്തുണയില്ലാത്തതാണു്"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, fuzzy, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33695,6 +33649,9 @@ msgstr "പ്രിഅലോക്കേറ്റ് മെറ്റാഡേ�
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset നാമം വളരെ വലുതു്"
@@ -33754,9 +33711,6 @@ msgstr "കൂടുതല്‍ വ്യക്തതയുള്ള ഔട്�
 
 msgid "print help"
 msgstr "സഹായം പ്രിന്‍റ് ചെയ്യുക"
-
-msgid "print help for this function"
-msgstr "ഈ ഫംഗ്ഷനുള്ള സഹായം പ്രിന്റ് ചെയ്യുക"
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35075,6 +35029,9 @@ msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ വ്യാപ്
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid അല്ലെങ്കില്‍ setgid പരാജയപ്പെട്ടു"
 
@@ -35674,9 +35631,6 @@ msgstr "സ്ട്രീം തുറന്നിട്ടില്ല"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "സ്ട്രിങ്"
 
 #, fuzzy, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39535,6 +39489,35 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(ഒന്നുമില്ല)"
+
+#, fuzzy, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s, --current ആവശ്യമാകുന്നു"
+
+#~ msgid "bool"
+#~ msgstr "ബൂള്‍"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: ഇന്ററാക്ടീവ് മോഡില്‍ മാത്രം കമാന്‍ഡ് പ്രവര്‍ത്തിക്കുന്നു"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "ശരിയായ സിന്‍റ്റാക്സ്: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "നംബര്‍"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "ഈ ഫംഗ്ഷനുള്ള സഹായം പ്രിന്റ് ചെയ്യുക"
+
+#~ msgid "string"
+#~ msgstr "സ്ട്രിങ്"
 
 #, c-format
 #~ msgid "<%1$s>"

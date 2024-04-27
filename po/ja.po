@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -477,6 +477,10 @@ msgstr " %1$s (ヘルプのキーワード '%2$s')\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (ヘルプのキーワード '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " ハイパーバイザー:"
 
@@ -490,7 +494,7 @@ msgid " Storage:"
 msgstr " ストレージ:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -504,10 +508,6 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr ""
 
 #, c-format
 msgid ""
@@ -1573,9 +1573,6 @@ msgstr "(ネットワークポート定義)"
 msgid "(node_device_definition)"
 msgstr "(ノードデバイス定義)"
 
-msgid "(none)"
-msgstr "(なし)"
-
 msgid "(nwfilter_definition)"
 msgstr "(ネットワークフィルター定義)"
 
@@ -1624,16 +1621,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s と --current は相互排他です"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s と --tree は相互排他です"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s は必要です"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5325,10 +5322,6 @@ msgid "Device %1$s detached\n"
 msgstr "デバイス %1$s が切断されました\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr "デバイス %1$s に VPD がありません"
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "デバイス %1$s がすでに使用中です"
 
@@ -7804,10 +7797,6 @@ msgstr "'%1$s' を開けませんでした"
 
 msgid "Failed to open a UNIX socket"
 msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
-msgstr "VPD ファイル '%1$s'を開くことができませんでした"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -12732,6 +12721,10 @@ msgstr "動作中のデバイス %1$s を再接続しません"
 msgid "Not resetting active device %1$s"
 msgstr "動作中のデバイス %1$s をリセットしません"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "未サポート"
 
@@ -13164,9 +13157,6 @@ msgstr "一時ディスク '%1$s' のオーバーレイファイル '%2$s' は�
 
 msgid "PASS"
 msgstr "成功"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr "このプラットフォームでは、PCI VPD レポートは利用できません"
 
 #, c-format
 msgid ""
@@ -20479,6 +20469,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21319,9 +21313,6 @@ msgstr "bond インターフェイスの miimon updelay が無効です"
 
 msgid "bond interface misses the bond element"
 msgstr "bond インターフェイスに bond 要素がありません"
-
-msgid "bool"
-msgstr "真偽"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23052,9 +23043,6 @@ msgstr "仮想マシンの状態以外のディスク状態のキャプチャー
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: コマンドは対話モードにおいてのみ有効です"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "virtio バス搭載の cdrom デバイスはサポートされていません"
@@ -25870,8 +25858,12 @@ msgstr ""
 "を取得しました"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "期待される構文: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26716,9 +26708,6 @@ msgstr "%1$s の解析に失敗しました"
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion の解析に失敗しました"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "SCSI ホスト '%1$s' の解析に失敗しました"
@@ -26895,35 +26884,6 @@ msgstr "qemu ヘッダーの読み込みに失敗しました"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "テンプレート %1$s で作成された一時ファイルの読み込みに失敗しました"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr "ドメインの再起動に失敗しました"
@@ -32830,9 +32790,6 @@ msgstr "numa パラメーターは vz ドライバーではサポートされま
 msgid "numad is not available on this host"
 msgstr "numad はこのホストにおいて利用可能ではありません"
 
-msgid "number"
-msgstr "数"
-
 msgid "number of bytes read:"
 msgstr "読み込みバイト数:"
 
@@ -33209,9 +33166,6 @@ msgstr "操作が許可されませんでした: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "操作タイプ %1$d はサポートされません"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33812,6 +33766,9 @@ msgstr "事前割り当てメタデータ (完全割り当ての代わりに qco
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr "この QEMU では、事前割り当てスレッドはサポートされません"
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "接頭辞が長すぎます"
 
@@ -33867,9 +33824,6 @@ msgstr "ドメインの時刻を人間が判読可能な形式で出力します
 
 msgid "print help"
 msgstr "ヘルプを出力します"
-
-msgid "print help for this function"
-msgstr "この関数のヘルプを出力します"
 
 msgid "print lease info for a given network"
 msgstr "特定のネットワークのリース情報を出力します"
@@ -35181,6 +35135,9 @@ msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 "この QEMU バイナリーでは、virtiofs の起動順序の設定はサポートされません"
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid または setgid に失敗しました"
 
@@ -35788,9 +35745,6 @@ msgstr "ストリームが開いていません"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "ストリームはドメイン '%1$s' の接続と一致する必要があります"
-
-msgid "string"
-msgstr "文字列"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39729,6 +39683,46 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#~ msgid "(none)"
+#~ msgstr "(なし)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s は必要です"
+
+#, c-format
+#~ msgid "Device %1$s does not have a VPD"
+#~ msgstr "デバイス %1$s に VPD がありません"
+
+#, c-format
+#~ msgid "Failed to open a VPD file '%1$s'"
+#~ msgstr "VPD ファイル '%1$s'を開くことができませんでした"
+
+#~ msgid "PCI VPD reporting not available on this platform"
+#~ msgstr "このプラットフォームでは、PCI VPD レポートは利用できません"
+
+#~ msgid "bool"
+#~ msgstr "真偽"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: コマンドは対話モードにおいてのみ有効です"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "期待される構文: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "数"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "この関数のヘルプを出力します"
+
+#~ msgid "string"
+#~ msgstr "文字列"
 
 #, c-format
 #~ msgid "<%1$s>"

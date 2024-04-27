@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2024-03-29 14:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -468,6 +468,10 @@ msgstr " %1$s (도움말 핵심용어 '%2$s')\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (도움말 핵심용어 '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " 하이퍼바이저:"
 
@@ -481,8 +485,8 @@ msgid " Storage:"
 msgstr " 저장소:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
-msgstr " [[--%1$s] <문자열>]..."
+msgid " [--%1$s <string>]..."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -495,10 +499,6 @@ msgstr ""
 " 대역폭=%2$lu\n"
 " 현재=%3$llu\n"
 " 끝=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr " {[--%1$s] <문자열>}..."
 
 #, c-format
 msgid ""
@@ -1529,9 +1529,6 @@ msgstr "(네트워크포트_ 정의)"
 msgid "(node_device_definition)"
 msgstr "(노드_장치_정의)"
 
-msgid "(none)"
-msgstr "(없음)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_정의)"
 
@@ -1580,16 +1577,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s 와 --current는 상호 배타적입니다"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s 와--tree 는 상호 배타적입니다"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s가 필요합니다"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5251,10 +5248,6 @@ msgid "Device %1$s detached\n"
 msgstr "장치 %1$s가 분리됨\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr "장치 %1$s는 VPD를 가지고 있지 않습니다"
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "장치 %1$s가 이미 사용중입니다"
 
@@ -5758,9 +5751,9 @@ msgid ""
 "virtualization is enabled in the host BIOS, and host configuration is setup "
 "to load the mshv modules."
 msgstr ""
-"도메인은 MSHV 장치가 필요하지만, 사용 할 수 없습니다. 가상화가 호스트 "
-"바이오스에서 활성화 되어 있는지 점검하고, 호스트 구성이 mshv 모듈을 "
-"적재하도록 설정(setup)되었습니다."
+"도메인은 MSHV 장치가 필요하지만, 사용 할 수 없습니다. 가상화가 호스트 바이오"
+"스에서 활성화 되어 있는지 점검하고, 호스트 구성이 mshv 모듈을 적재하도록 설정"
+"(setup)되었습니다."
 
 msgid "Domain requires at least 1 vCPU"
 msgstr "도메인에는 최소 1개의 vCPU가 필요합니다"
@@ -7687,10 +7680,6 @@ msgstr "'%1$s' 열기 실패"
 
 msgid "Failed to open a UNIX socket"
 msgstr "유닉스 소켓을 여는데 실패"
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
-msgstr "VPD 파일 '%1$s'를 열 수 없습니다"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -11793,8 +11782,8 @@ msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
 msgstr ""
-"NUMA 모드는 엄격, 선호 및 인터리브 중 하나 또는 virDomainNumatuneMemMode "
-"열거형의 숫자로 구성되어 있습니다"
+"NUMA 모드는 엄격, 선호 및 인터리브 중 하나 또는 virDomainNumatuneMemMode 열거"
+"형의 숫자로 구성되어 있습니다"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -12512,6 +12501,10 @@ msgstr "활성 장치 %1$s을(를) 다시 연결하지 않습니다"
 msgid "Not resetting active device %1$s"
 msgstr "작동중인 장치 %1$s를 리셋하지 않음"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "지원되지 않음"
 
@@ -12934,9 +12927,6 @@ msgstr "임시 디스크 '%1$s'에 대한 오버레이 파일 '%2$s'가 이미 �
 
 msgid "PASS"
 msgstr "통과"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr "이와 같은 기술환경에서 PCI VPD 보고를 사용 할 수 없습니다"
 
 #, c-format
 msgid ""
@@ -20052,6 +20042,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -20862,9 +20856,6 @@ msgstr "본드 인터페이스 miimon updelay가 잘못됨"
 
 msgid "bond interface misses the bond element"
 msgstr "본드 인터페이스에 bond 요소가 빠졌습니다"
-
-msgid "bool"
-msgstr "bool"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22583,9 +22574,6 @@ msgstr "vm 상태가 아니라 디스크 상태를 캡처합니다"
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: 명령어가 양방향 모드에서만 유효합니다"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "virtro 버스와 같은 cdrom 장치가 지원되지 않습니다"
@@ -25349,8 +25337,12 @@ msgstr ""
 "프로토콜 '%1$s'이(가) 필요하지만 URI JSON 볼륨 정의에 '%2$s'이(가) 있습니다"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "예상된 구문: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26182,9 +26174,6 @@ msgstr "%1$s 구문 분석 실패"
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion을(를) 구문 분석하지 못했습니다"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr "잘못된 문자와 함께 PCI VPD 문자열 값을 구문 분석하는데 실패함"
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "SCSI 호스트 '%1$s'을(를) 구문 분석하지 못했습니다"
@@ -26361,35 +26350,6 @@ msgstr "qemu 헤더를 읽는 것을 실패"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "템플릿 %1$s로 생성된 임시 파일을 읽는 데 실패"
-
-msgid "failed to read the PCI VPD data"
-msgstr "PCI VPD 자료를 읽는데 실패함"
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr "PCI VPD 자료를 읽는데 실패함: 자료 부분 길이가 잘못됨"
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr "PCI VPD 자료를 읽는데 실패함: 잘못된 체크썸"
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr "PCI VPD 자료를 읽는데 실패함: 잘못된 자료"
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr "PCI VPD 자료를 읽는데 실패함: 누락된 필수 체크썸"
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr "PCI VPD 자료를 읽는데 실패함: 누락된 읽기-전용 부분"
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr "PCI VPD 자료를 읽는데 실패함: 구문 분석이 조기에 종료됨"
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr "PCI VPD 자료를 읽는데 실패함: 일기-쓰기 부분에서 예상치 못한 RV 키워드"
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr "PCI VPD 자료를 읽는데 실패함: 읽기-전용 부분에서 예상치 못한 RW 키워드"
 
 msgid "failed to reboot domain"
 msgstr "도메인 재부팅 실패"
@@ -27610,7 +27570,8 @@ msgstr "하이퍼바이저 기능 자동 감지 재정의"
 msgid ""
 "hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
 "disabled at the same time"
-msgstr "하이퍼바이저는 충돌하는 CPU 자료를 제공합니다: 특성 '%1$s'가 동시에 활성화 "
+msgstr ""
+"하이퍼바이저는 충돌하는 CPU 자료를 제공합니다: 특성 '%1$s'가 동시에 활성화 "
 "및 비활성화 되었습니다"
 
 msgid "i - turn off validation and try to redefine again"
@@ -32160,9 +32121,6 @@ msgstr "numa 매개변수는 vz 드라이버에서 지원되지 않습니다"
 msgid "numad is not available on this host"
 msgstr "이 호스트에서 numad를 사용할 수 없습니다"
 
-msgid "number"
-msgstr "숫자"
-
 msgid "number of bytes read:"
 msgstr "읽은 바이트 수:"
 
@@ -32528,9 +32486,6 @@ msgstr "금지된 작업: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "작업 유형 %1$d가 지원되지 않습니다"
-
-msgid "optdata"
-msgstr "옵트 데이터"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33109,6 +33064,9 @@ msgstr "메타 데이터를 사전 할당 (전체 할당 대신 qcow2에 대해)
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr "사전 할당된 쓰레드는 이와 같은 QEMU와 함께 지원되지 않습니다"
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "접두사가 너무 깁니다"
 
@@ -33162,9 +33120,6 @@ msgstr "사람이 읽을 수 있는 형식으로 도메인 시간 인쇄"
 
 msgid "print help"
 msgstr "도움말 프린트하기"
-
-msgid "print help for this function"
-msgstr "이 기능의 도움말 인쇄"
 
 msgid "print lease info for a given network"
 msgstr "주어진 네트워크를 위한 임대 정보를 출력합니다"
@@ -34442,6 +34397,9 @@ msgstr "패닉 장치 주소 설정은 모델 '390'에 대해 지원되지 않�
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 virtiofs 부팅 순서 설정이 지원되지 않습니다"
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid 또는 setgid 실패함"
 
@@ -35027,9 +34985,6 @@ msgstr "스트림이 열려있지 않습니다"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "스트림은 도메인 '%1$s'의 연결과 일치해야 합니다"
-
-msgid "string"
-msgstr "문자열"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -38899,6 +38854,90 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#, c-format
+#~ msgid " [[--%1$s] <string>]..."
+#~ msgstr " [[--%1$s] <문자열>]..."
+
+#, c-format
+#~ msgid " {[--%1$s] <string>}..."
+#~ msgstr " {[--%1$s] <문자열>}..."
+
+#~ msgid "(none)"
+#~ msgstr "(없음)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s가 필요합니다"
+
+#, c-format
+#~ msgid "Device %1$s does not have a VPD"
+#~ msgstr "장치 %1$s는 VPD를 가지고 있지 않습니다"
+
+#, c-format
+#~ msgid "Failed to open a VPD file '%1$s'"
+#~ msgstr "VPD 파일 '%1$s'를 열 수 없습니다"
+
+#~ msgid "PCI VPD reporting not available on this platform"
+#~ msgstr "이와 같은 기술환경에서 PCI VPD 보고를 사용 할 수 없습니다"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: 명령어가 양방향 모드에서만 유효합니다"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "예상된 구문: --%1$s <%2$s>"
+
+#~ msgid "failed to parse PCI VPD string value with invalid characters"
+#~ msgstr "잘못된 문자와 함께 PCI VPD 문자열 값을 구문 분석하는데 실패함"
+
+#~ msgid "failed to read the PCI VPD data"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함"
+
+#~ msgid "failed to read the PCI VPD data: data field length invalid"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함: 자료 부분 길이가 잘못됨"
+
+#~ msgid "failed to read the PCI VPD data: invalid checksum"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함: 잘못된 체크썸"
+
+#~ msgid "failed to read the PCI VPD data: malformed data"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함: 잘못된 자료"
+
+#~ msgid "failed to read the PCI VPD data: missing mandatory checksum"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함: 누락된 필수 체크썸"
+
+#~ msgid "failed to read the PCI VPD data: missing read-only section"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함: 누락된 읽기-전용 부분"
+
+#~ msgid "failed to read the PCI VPD data: parsing ended prematurely"
+#~ msgstr "PCI VPD 자료를 읽는데 실패함: 구문 분석이 조기에 종료됨"
+
+#~ msgid ""
+#~ "failed to read the PCI VPD data: unexpected RV keyword in read-write "
+#~ "section"
+#~ msgstr ""
+#~ "PCI VPD 자료를 읽는데 실패함: 일기-쓰기 부분에서 예상치 못한 RV 키워드"
+
+#~ msgid ""
+#~ "failed to read the PCI VPD data: unexpected RW keyword in read-only "
+#~ "section"
+#~ msgstr ""
+#~ "PCI VPD 자료를 읽는데 실패함: 읽기-전용 부분에서 예상치 못한 RW 키워드"
+
+#~ msgid "number"
+#~ msgstr "숫자"
+
+#~ msgid "optdata"
+#~ msgstr "옵트 데이터"
+
+#~ msgid "print help for this function"
+#~ msgstr "이 기능의 도움말 인쇄"
+
+#~ msgid "string"
+#~ msgstr "문자열"
 
 #, c-format
 #~ msgid "<%1$s>"

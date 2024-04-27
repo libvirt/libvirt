@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2023-11-08 14:23+0000\n"
 "Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -463,6 +463,10 @@ msgstr " %1$s (ключевое слово «%2$s»)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (ключевое слово «%2$s»):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " Гипервизоры:"
 
@@ -476,7 +480,7 @@ msgid " Storage:"
 msgstr " Хранилище данных:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -490,10 +494,6 @@ msgstr ""
 " пропускная способность=%2$lu\n"
 " текущий=%3$llu\n"
 " конец=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr ""
 
 #, c-format
 msgid ""
@@ -1555,9 +1555,6 @@ msgstr "(определение_сетевого_порта)"
 msgid "(node_device_definition)"
 msgstr "(определение_узла_устройства)"
 
-msgid "(none)"
-msgstr "(нет)"
-
 msgid "(nwfilter_definition)"
 msgstr "(определение_фильтра)"
 
@@ -1606,16 +1603,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <строка>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s и --current являются взаимоисключающими"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s и --tree являются взаимоисключающими"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "необходимо указать --%1$s"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5323,10 +5320,6 @@ msgid "Device %1$s detached\n"
 msgstr "Устройство %1$s отсоединено\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Устройство %1$s уже используется"
 
@@ -7776,10 +7769,6 @@ msgid "Failed to open '%1$s'"
 msgstr "Не удалось открыть «%1$s»"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12715,6 +12704,10 @@ msgstr "Активное устройство %1$s не будет повтор�
 msgid "Not resetting active device %1$s"
 msgstr "Активное устройство %1$s не будет повторно инициализировано"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "Не поддерживается"
 
@@ -13163,9 +13156,6 @@ msgstr ""
 
 msgid "PASS"
 msgstr "OK"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -20462,6 +20452,10 @@ msgstr "[--%1$s] <число>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <строка>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21323,9 +21317,6 @@ msgstr "Недопустимое значение updelay для MIIMON"
 
 msgid "bond interface misses the bond element"
 msgstr "отсутствует элемент bond для интерфейса связи"
-
-msgid "bool"
-msgstr "логическое значение"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23108,9 +23099,6 @@ msgstr "зафиксировать состояние диска, но не со
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "команда cd доступна только в интерактивном режиме"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25886,8 +25874,12 @@ msgstr ""
 "в адресе JSON определения тома ожидается протокол «%1$s», но обнаружен «%2$s»"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "ожидаемый формат: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26718,9 +26710,6 @@ msgstr "не удалось разобрать %1$s"
 msgid "failed to parse %1$sversion"
 msgstr "не удалось обработать версию %1$s"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "не удалось разобрать узел SCSI «%1$s»"
@@ -26897,35 +26886,6 @@ msgstr "не удалось прочитать заголовок qemu"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "не удалось прочитать временный файл, созданный из шаблона %1$s"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32877,9 +32837,6 @@ msgstr "драйвер vz не поддерживает параметры numa"
 msgid "numad is not available on this host"
 msgstr "numad недоступно на этом хосте"
 
-msgid "number"
-msgstr "число"
-
 msgid "number of bytes read:"
 msgstr "Прочитано (байт):"
 
@@ -33269,9 +33226,6 @@ msgstr "операция запрещена: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "тип операции %1$d не поддерживается"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33884,6 +33838,9 @@ msgstr ""
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "слишком длинный префикс"
 
@@ -33938,9 +33895,6 @@ msgstr "вывести время домена в удобном для восп
 
 msgid "print help"
 msgstr "печать справки"
-
-msgid "print help for this function"
-msgstr "показать справку для этой функции"
 
 msgid "print lease info for a given network"
 msgstr "вывести данные аренды для указанной сети"
@@ -35256,6 +35210,9 @@ msgstr "указание адреса устройства паники не п�
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "ошибка setuid или setgid"
 
@@ -35847,9 +35804,6 @@ msgstr "поток не открыт"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "поток должен соответствовать соединению домена «%1$s»"
-
-msgid "string"
-msgstr "строка"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39808,6 +39762,35 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#~ msgid "(none)"
+#~ msgstr "(нет)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "необходимо указать --%1$s"
+
+#~ msgid "bool"
+#~ msgstr "логическое значение"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "команда cd доступна только в интерактивном режиме"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "ожидаемый формат: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "число"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "показать справку для этой функции"
+
+#~ msgid "string"
+#~ msgstr "строка"
 
 #, c-format
 #~ msgid "<%1$s>"

@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -480,6 +480,10 @@ msgstr " %1$s (指定关键字'%2$s'时可以显示此部分帮助信息)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (使用关键字 '%2$s' 来显示帮助信息):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " 管理程序（即虚拟化层）方面:"
 
@@ -493,7 +497,7 @@ msgid " Storage:"
 msgstr " 存储："
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -507,10 +511,6 @@ msgstr ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
-msgstr ""
 
 #, c-format
 msgid ""
@@ -1507,9 +1507,6 @@ msgstr "(networkport_definition)"
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
 
-msgid "(none)"
-msgstr "(空)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1558,16 +1555,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s 和 --current 互斥"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s 和 --tree 互斥"
-
-#, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s 是必需的"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5085,10 +5082,6 @@ msgid "Device %1$s detached\n"
 msgstr "已分离设备 %1$s\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr "设备 %1$s 没有 VPD"
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "失败 %1$s 已在使用中"
 
@@ -7456,10 +7449,6 @@ msgstr "打开 '%1$s' 失败"
 
 msgid "Failed to open a UNIX socket"
 msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
-msgstr "打开 VPD 文件 '%1$s' 失败"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -12146,6 +12135,10 @@ msgstr "不要创新附加活跃的设备 %1$s"
 msgid "Not resetting active device %1$s"
 msgstr "不要重置活跃设备 %1$s"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "尚不支持"
 
@@ -12556,9 +12549,6 @@ msgstr "临时磁盘 '%1$s' 的覆盖文件 '%2$s' 已存在"
 
 msgid "PASS"
 msgstr "通过"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr "此平台上不提供 PCI VPD 报告"
 
 #, c-format
 msgid ""
@@ -19498,6 +19488,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr "'none' 视频类型必须是为域定义的唯一视频设备"
@@ -20291,9 +20285,6 @@ msgstr "绑定接口 miimon updelay 无效"
 
 msgid "bond interface misses the bond element"
 msgstr "绑定接口缺少绑定元素"
-
-msgid "bool"
-msgstr "布尔值"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -21963,9 +21954,6 @@ msgstr "捕获磁盘状态而不是 vm 状态"
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd：只在交互模式中可用"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "不支持带有 virtio 总线的 cdrom 设备"
@@ -24677,8 +24665,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr "预期协议 '%1$s'，但在 URI JSON 卷定义中得到了 '%2$s'"
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "期望的使用方法：--%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -25494,9 +25486,6 @@ msgstr "解析 %1$s 失败"
 msgid "failed to parse %1$sversion"
 msgstr "无法解析 %1$sversion"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "无法解析 SCSI 主机 '%1$s'"
@@ -25673,35 +25662,6 @@ msgstr "无法读取 qemu 头"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "无法读取用模板 %1$s 创建的临时文件"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr "无法重启域"
@@ -31348,9 +31308,6 @@ msgstr "vz 驱动程序不支持 numa 参数"
 msgid "numad is not available on this host"
 msgstr "这个主机中的 numad 不可用"
 
-msgid "number"
-msgstr "数字"
-
 msgid "number of bytes read:"
 msgstr "读取字节数："
 
@@ -31711,9 +31668,6 @@ msgstr "禁止操作：%1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "不支持操作类型 %1$d"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -32288,6 +32242,9 @@ msgstr "预先分配的元数据（用于 qcow2 而不是整个分配）"
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr "这个 QEMU 不支持预分配线程"
 
+msgid "prefix the message"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "前缀太长"
 
@@ -32341,9 +32298,6 @@ msgstr "以人类可读的形式打印域的时间"
 
 msgid "print help"
 msgstr "显示帮助信息"
-
-msgid "print help for this function"
-msgstr "显示这个功能的帮助信息"
 
 msgid "print lease info for a given network"
 msgstr "打印给定网络的租期信息"
@@ -33596,6 +33550,9 @@ msgstr "不支持对型号 's390' 设置 panic 设备地址"
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持设置 virtiofs 引导顺序"
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid 或者 setgid 失败"
 
@@ -34160,9 +34117,6 @@ msgstr "流没有打开"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "流必须与域 '%1$s' 的连接匹配"
-
-msgid "string"
-msgstr "字符串"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -37948,6 +37902,46 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "(none)"
+#~ msgstr "(空)"
+
+#, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s 是必需的"
+
+#, c-format
+#~ msgid "Device %1$s does not have a VPD"
+#~ msgstr "设备 %1$s 没有 VPD"
+
+#, c-format
+#~ msgid "Failed to open a VPD file '%1$s'"
+#~ msgstr "打开 VPD 文件 '%1$s' 失败"
+
+#~ msgid "PCI VPD reporting not available on this platform"
+#~ msgstr "此平台上不提供 PCI VPD 报告"
+
+#~ msgid "bool"
+#~ msgstr "布尔值"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd：只在交互模式中可用"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "期望的使用方法：--%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "数字"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "显示这个功能的帮助信息"
+
+#~ msgid "string"
+#~ msgstr "字符串"
 
 #, c-format
 #~ msgid "<%1$s>"

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2020-10-14 16:08+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
@@ -359,6 +359,10 @@ msgstr " %1$s (tecla help '%2$s')\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (help keyword '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " Hypervisors:"
 
@@ -372,7 +376,7 @@ msgid " Storage:"
 msgstr "Armazenamento:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -381,10 +385,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1427,9 +1427,6 @@ msgstr "(network_definition)"
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
 
-msgid "(none)"
-msgstr "(nenhum)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1481,16 +1478,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s e --current são exclusivos"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s e --tree são exclusivos"
-
-#, fuzzy, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s ou --current é necessário"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5253,10 +5250,6 @@ msgid "Device %1$s detached\n"
 msgstr "Dispositivo %1$s desconectado\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "Dispositivo %1$s já está em uso"
 
@@ -7765,10 +7758,6 @@ msgid "Failed to open '%1$s'"
 msgstr "falha ao abrir \"%1$s\""
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12733,6 +12722,10 @@ msgstr "Falha ao reconectar o dispositivo %1$s"
 msgid "Not resetting active device %1$s"
 msgstr "Dipositivo ativo de não redefinição %1$s"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "Não suportado"
 
@@ -13188,9 +13181,6 @@ msgstr ""
 
 msgid "PASS"
 msgstr "PASSAR"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -20555,6 +20545,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21404,9 +21398,6 @@ msgstr "miimon updelay de interface de vínculo é inválido"
 
 msgid "bond interface misses the bond element"
 msgstr "Interface de vínculo não possui elemento de vínculo"
-
-msgid "bool"
-msgstr "bool"
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23202,9 +23193,6 @@ msgstr "captura o estado do disco mas não o estado da mv"
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: comando válido somente em modo interativo"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -26067,8 +26055,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "sintaxe esperada: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26935,9 +26927,6 @@ msgstr "falha ao analisar %1$s"
 msgid "failed to parse %1$sversion"
 msgstr "Falha ao analisar a versão de %1$s"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "Falha ao analisar o modo '%1$s'"
@@ -27121,35 +27110,6 @@ msgstr "falha ao ler o cabeçalho do qemu"
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "falha ao ler o arquivo temporário criado com o modelo %1$s"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -33145,9 +33105,6 @@ msgstr "parâmetro '%s' não suportado por este kernel"
 msgid "numad is not available on this host"
 msgstr "numad não está disponível neste host"
 
-msgid "number"
-msgstr "número"
-
 msgid "number of bytes read:"
 msgstr "números de leituras de bytes:"
 
@@ -33545,9 +33502,6 @@ msgstr "falha na operação: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "tipo de operação %1$d não é suportado"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, fuzzy, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -34158,6 +34112,9 @@ msgstr "pré-aloca metadados (para qcow2 ao invés de alocação completa)"
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "nome do ipset é muito grande"
@@ -34220,9 +34177,6 @@ msgstr "imprime um resultado mais legível"
 
 msgid "print help"
 msgstr "exibe a ajuda"
-
-msgid "print help for this function"
-msgstr "exibe ajuda para esta função"
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35554,6 +35508,9 @@ msgstr "Configurações de slot PCI de 64-bit não é suportada para máquinas '
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid ou setgid falhou"
 
@@ -36162,9 +36119,6 @@ msgstr "faixa não está aberta"
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr ""
-
-msgid "string"
-msgstr "string"
 
 #, fuzzy, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -40057,6 +40011,35 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(nenhum)"
+
+#, fuzzy, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s ou --current é necessário"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: comando válido somente em modo interativo"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "sintaxe esperada: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "número"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "exibe ajuda para esta função"
+
+#~ msgid "string"
+#~ msgstr "string"
 
 #, c-format
 #~ msgid "<%1$s>"

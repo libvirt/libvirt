@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-03-22 09:54+0000\n"
+"POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -380,6 +380,10 @@ msgstr " %1$s (உதவி திறவுச்சொல் '%2$s')\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (உதவி திறவுச்சொல் '%2$s'):\n"
 
+#, c-format
+msgid " --%1$s <string>..."
+msgstr ""
+
 msgid " Hypervisors:"
 msgstr " ஹைப்பர்வைசர்கள்:"
 
@@ -393,7 +397,7 @@ msgid " Storage:"
 msgstr " சேமிப்பகம்:"
 
 #, c-format
-msgid " [[--%1$s] <string>]..."
+msgid " [--%1$s <string>]..."
 msgstr ""
 
 #, c-format
@@ -402,10 +406,6 @@ msgid ""
 " bandwidth=%2$lu\n"
 " cur=%3$llu\n"
 " end=%4$llu\n"
-msgstr ""
-
-#, c-format
-msgid " {[--%1$s] <string>}..."
 msgstr ""
 
 #, c-format
@@ -1454,9 +1454,6 @@ msgstr "(network_definition)"
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
 
-msgid "(none)"
-msgstr "(எதுவுமில்லை)"
-
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
@@ -1508,16 +1505,16 @@ msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
 #, c-format
+msgid "--%1$s <string>..."
+msgstr ""
+
+#, c-format
 msgid "--%1$s and --current are mutually exclusive"
 msgstr "--%1$s மற்றும் --current ஆகியவை ஒன்றுக்கொன்று பிரத்யேகமானவை"
 
 #, c-format
 msgid "--%1$s and --tree are mutually exclusive"
 msgstr "--%1$s மற்றும் --tree ஆகியவை ஒன்றுக்கொன்று பிரத்யேகமானவை"
-
-#, fuzzy, c-format
-msgid "--%1$s is required"
-msgstr "--%1$s அல்லது --current தேவை"
 
 #, c-format
 msgid "--%1$s or --current is required"
@@ -5243,10 +5240,6 @@ msgid "Device %1$s detached\n"
 msgstr "சாதனம் %1$s பிரிக்கப்பட்டது\n"
 
 #, c-format
-msgid "Device %1$s does not have a VPD"
-msgstr ""
-
-#, c-format
 msgid "Device %1$s is already in use"
 msgstr "சாதனம் '%1$s' ஏற்கனவே பயனில் உள்ளது"
 
@@ -7726,10 +7719,6 @@ msgid "Failed to open '%1$s'"
 msgstr "'%1$s'ஐ திறக்க முடியவில்லை"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
-
-#, c-format
-msgid "Failed to open a VPD file '%1$s'"
 msgstr ""
 
 #, c-format
@@ -12649,6 +12638,10 @@ msgstr "செயலிலுள்ள சாதனம் %1$s ஐ மறு இ
 msgid "Not resetting active device %1$s"
 msgstr "செயலிலுள்ள சாதனம் %1$sஐ மறு அமைக்க முடியவில்லை"
 
+#, sh-format
+msgid "Not shutting down transient guests on URI: $uri: "
+msgstr ""
+
 msgid "Not supported"
 msgstr "ஆதரவு இல்லை"
 
@@ -13101,9 +13094,6 @@ msgstr ""
 
 msgid "PASS"
 msgstr "வெற்றி"
-
-msgid "PCI VPD reporting not available on this platform"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -20371,6 +20361,10 @@ msgstr "[--%1$s] <number>"
 msgid "[--%1$s] <string>"
 msgstr "[--%1$s] <string>"
 
+#, c-format
+msgid "[--%1$s] <string>..."
+msgstr ""
+
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
@@ -21207,9 +21201,6 @@ msgstr "bond முகப்பு miimon updelay தவறானது"
 
 msgid "bond interface misses the bond element"
 msgstr "bond முகப்பு bond உருப்படியை இழந்துள்ளது"
-
-msgid "bool"
-msgstr "bool"
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -22951,9 +22942,6 @@ msgstr "வட்டு நிலையைப் பிடிக்கவும�
 #, c-format
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
-
-msgid "cd: command valid only in interactive mode"
-msgstr "cd: கட்டளை ஊடாடல் முறைமையில் மட்டுமே செல்லுபடியாகும்"
 
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
@@ -25780,8 +25768,12 @@ msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
 
 #, c-format
-msgid "expected syntax: --%1$s <%2$s>"
-msgstr "எதிர்பார்த்த இலக்கணம்: --%1$s <%2$s>"
+msgid "expected syntax: --%1$s <number>"
+msgstr ""
+
+#, c-format
+msgid "expected syntax: --%1$s <string>"
+msgstr ""
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26648,9 +26640,6 @@ msgstr "%1$s ஐப் பாகுபடுத்துவது தோல்�
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion ஐ பாகுபடுத்துவது தோல்வியடைந்தது"
 
-msgid "failed to parse PCI VPD string value with invalid characters"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
 msgstr "int ஐப் பாகுபடுத்துவது தோல்வி: '%1$s'"
@@ -26833,35 +26822,6 @@ msgstr "qemu தலைப்பை வாசிக்க முடியவி�
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "template %1$sஆல் உருவாக்கப்பட்ட தற்காலிக கோப்பினை உருவாக்க முடியவில்லை"
-
-msgid "failed to read the PCI VPD data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: data field length invalid"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: invalid checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: malformed data"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing mandatory checksum"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: missing read-only section"
-msgstr ""
-
-msgid "failed to read the PCI VPD data: parsing ended prematurely"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RV keyword in read-write section"
-msgstr ""
-
-msgid ""
-"failed to read the PCI VPD data: unexpected RW keyword in read-only section"
-msgstr ""
 
 msgid "failed to reboot domain"
 msgstr ""
@@ -32808,9 +32768,6 @@ msgstr "அளவுரு '%s' ஆனது இந்த கெர்னலி�
 msgid "numad is not available on this host"
 msgstr "இந்த வழங்கியில் நியுமாட் வசதி இல்லை"
 
-msgid "number"
-msgstr "எண்"
-
 msgid "number of bytes read:"
 msgstr "படித்த பைட்டுகளின் எண்ணிக்கை:"
 
@@ -33199,9 +33156,6 @@ msgstr "செயல் தடைசெய்யப்பட்டது: %1$s"
 #, c-format
 msgid "operation type %1$d not supported"
 msgstr "செயல்பாட்டின் வகை %1$d க்கு ஆதரவு கிடையாது"
-
-msgid "optdata"
-msgstr "optdata"
 
 #, fuzzy, c-format
 msgid "option %1$s requires a positive integer argument"
@@ -33804,6 +33758,9 @@ msgstr "மீத்தரவை முன்னொதுக்கம் செ�
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
 
+msgid "prefix the message"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset பெயர் மிக நீளமாக உள்ளது"
@@ -33864,9 +33821,6 @@ msgstr "மனிதரால் வாசிக்க  இன்னும் �
 
 msgid "print help"
 msgstr "அச்சு உதவி"
-
-msgid "print help for this function"
-msgstr "இந்த செயலம்சத்திற்கான உதவியை அச்சிடு"
 
 #, fuzzy
 msgid "print lease info for a given network"
@@ -35196,6 +35150,9 @@ msgstr "கணினி '%s' க்கு 64-பிட் PCI துளை அ�
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
+msgid "setting virtiofs boot order is supported only with PCI bus"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "setuid அல்லது setgid தோல்வியடைந்தது"
 
@@ -35800,9 +35757,6 @@ msgstr "ஸ்ட்ரீம் திறக்கப்படவில்ல�
 #, fuzzy, c-format
 msgid "stream must match connection of domain '%1$s'"
 msgstr "%s இல் உள்ள ஸ்ட்ரீமானது தொகுதி '%s' இன் இணைப்புடன் பொருந்த வேண்டும்"
-
-msgid "string"
-msgstr "சரம்"
 
 #, fuzzy, c-format
 msgid "string %1$s in %2$s must not be empty"
@@ -39679,6 +39633,35 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "(none)"
+#~ msgstr "(எதுவுமில்லை)"
+
+#, fuzzy, c-format
+#~ msgid "--%1$s is required"
+#~ msgstr "--%1$s அல்லது --current தேவை"
+
+#~ msgid "bool"
+#~ msgstr "bool"
+
+#~ msgid "cd: command valid only in interactive mode"
+#~ msgstr "cd: கட்டளை ஊடாடல் முறைமையில் மட்டுமே செல்லுபடியாகும்"
+
+#, c-format
+#~ msgid "expected syntax: --%1$s <%2$s>"
+#~ msgstr "எதிர்பார்த்த இலக்கணம்: --%1$s <%2$s>"
+
+#~ msgid "number"
+#~ msgstr "எண்"
+
+#~ msgid "optdata"
+#~ msgstr "optdata"
+
+#~ msgid "print help for this function"
+#~ msgstr "இந்த செயலம்சத்திற்கான உதவியை அச்சிடு"
+
+#~ msgid "string"
+#~ msgstr "சரம்"
 
 #, c-format
 #~ msgid "<%1$s>"
