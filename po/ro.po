@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 23:24+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-04-28 05:54+0000\n"
+"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5.2\n"
 
 msgid ""
 "\n"
@@ -20139,7 +20139,7 @@ msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
 
 msgid "canceled"
-msgstr ""
+msgstr "anulat"
 
 msgid "canceled by client"
 msgstr ""
@@ -26448,7 +26448,7 @@ msgid "ifkey \"%1$s\" has no req"
 msgstr ""
 
 msgid "ignore"
-msgstr "Ignoră"
+msgstr "ignoră"
 
 #, c-format
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
@@ -26746,7 +26746,7 @@ msgid "internal command for testing virt shells"
 msgstr ""
 
 msgid "internal error"
-msgstr ""
+msgstr "eroare internă"
 
 #, c-format
 msgid "internal error: %1$s"
@@ -28617,7 +28617,7 @@ msgid "memory-only dump failed: %1$s"
 msgstr ""
 
 msgid "message"
-msgstr ""
+msgstr "mesaj"
 
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr ""
@@ -29007,7 +29007,7 @@ msgid "missing arch in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing argument"
-msgstr ""
+msgstr "argument lipsă"
 
 msgid "missing array element"
 msgstr ""
@@ -29937,7 +29937,7 @@ msgid "netmask not allowed for IPv6 address '%1$s' in network '%2$s'"
 msgstr ""
 
 msgid "network"
-msgstr ""
+msgstr "rețea"
 
 #, c-format
 msgid "network %1$s exists already"
@@ -30104,7 +30104,7 @@ msgid "network is not running"
 msgstr ""
 
 msgid "network name"
-msgstr ""
+msgstr "nume de rețea"
 
 msgid "network name or uuid"
 msgstr ""
@@ -30806,7 +30806,7 @@ msgid "not a hugetlbfs mount: '%1$s'"
 msgstr ""
 
 msgid "not specified"
-msgstr ""
+msgstr "nespecificat"
 
 msgid "not supported on non-linux platforms"
 msgstr ""
@@ -31260,7 +31260,7 @@ msgid "out of bounds index - count %1$zu at %2$zu"
 msgstr ""
 
 msgid "out of memory"
-msgstr ""
+msgstr "memorie epuizată"
 
 #, c-format
 msgid "out of memory: %1$s"
@@ -31465,7 +31465,7 @@ msgid "path to secret data file is required"
 msgstr ""
 
 msgid "paused"
-msgstr ""
+msgstr "în pauză"
 
 #, c-format
 msgid "pcap_compile: %1$s"
@@ -32568,7 +32568,7 @@ msgid "reservations not supported with this QEMU binary"
 msgstr ""
 
 msgid "reset"
-msgstr ""
+msgstr "reinițializare"
 
 msgid "reset a domain"
 msgstr ""
@@ -32737,7 +32737,7 @@ msgid ""
 msgstr ""
 
 msgid "running"
-msgstr ""
+msgstr "rulând"
 
 msgid "running with undesirable elevated privileges"
 msgstr ""
@@ -33215,7 +33215,7 @@ msgid "show timestamp for each printed event"
 msgstr ""
 
 msgid "show version"
-msgstr ""
+msgstr "afișează versiunea"
 
 msgid "show/set scheduler parameters"
 msgstr ""
@@ -34803,7 +34803,7 @@ msgid "unable to get monitor count"
 msgstr ""
 
 msgid "unable to get node capabilities"
-msgstr ""
+msgstr "Nu s-au putut obține capacitățile nodului"
 
 msgid "unable to get numa affinity"
 msgstr ""
@@ -34853,11 +34853,11 @@ msgstr ""
 
 #, c-format
 msgid "unable to open %1$s"
-msgstr ""
+msgstr "nu se poate deschide %1$s"
 
 #, c-format
 msgid "unable to open '%1$s'"
-msgstr ""
+msgstr "nu se poate deschide „%1$s”"
 
 #, c-format
 msgid "unable to open host cpu perf event for %1$s"
