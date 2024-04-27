@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 07:57+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-04-27 08:04+0000\n"
+"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -1556,7 +1556,7 @@ msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr ""
 
 msgid "Access denied"
-msgstr "acces refuzat"
+msgstr "Acces refuzat"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -1903,7 +1903,7 @@ msgid "Bridge interface %1$s started\n"
 msgstr ""
 
 msgid "Bridge:"
-msgstr ""
+msgstr "Punte acces:"
 
 msgid "Buffer to small for ipset name"
 msgstr ""
@@ -1934,7 +1934,7 @@ msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
 
 msgid "Busy"
-msgstr ""
+msgstr "Ocupat"
 
 msgid "CA certificate:"
 msgstr ""
@@ -2363,7 +2363,7 @@ msgid ""
 msgstr ""
 
 msgid "Cancelled"
-msgstr ""
+msgstr "Anulat"
 
 #, c-format
 msgid "Cannot access '%1$s'"
@@ -3118,10 +3118,10 @@ msgid "Cannot write pid in tasks file '%1$s'"
 msgstr ""
 
 msgid "Capacity"
-msgstr ""
+msgstr "Capacitate"
 
 msgid "Capacity:"
-msgstr ""
+msgstr "Capacitate:"
 
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
@@ -4811,7 +4811,7 @@ msgid "Detach node device from its device driver before assigning to a domain."
 msgstr ""
 
 msgid "Device"
-msgstr ""
+msgstr "Dispozitiv"
 
 #, c-format
 msgid "Device %1$s already exists"
