@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 07:57+0000\n"
+"PO-Revision-Date: 2024-04-27 08:04+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -27033,31 +27033,32 @@ msgstr "fcntl misslyckades att sätta O_NONBLOCK"
 
 #, c-format
 msgid "fd %1$d must be a socket"
-msgstr ""
+msgstr "fb %1$d måste vara ett uttag (socket)"
 
 msgid "fd must be valid"
-msgstr ""
+msgstr "fb måste vara giltig"
 
 msgid "fd passed image source not initialized"
-msgstr ""
+msgstr "fb-levererade avbildskällan inte initierad"
 
-#, fuzzy
 msgid "fd passing is not supported by this connection"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "fb-leverans stödjs inte av denna förbindelse"
 
 #, c-format
 msgid "fdset '%1$u' is already in use by qemu"
-msgstr ""
+msgstr "fdset ”%1$u” används redan av qemu"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
+"hämta eller sätt den nu definierade uppsättningen loggningsfilter på demonen"
 
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
+"hämta eller sätt den nu definierade uppsättningen loggningsutdata på demonen"
 
 #, c-format
 msgid "field '%1$s' is malformed"
-msgstr ""
+msgstr "fältet ”%1$s” är felformaterat"
 
 msgid "file"
 msgstr "fil"
@@ -27069,6 +27070,8 @@ msgstr "filen %1$s finns inte"
 #, c-format
 msgid "file '%1$s' for disk '%2$s' requires use of external snapshot mode"
 msgstr ""
+"filen ”%1$s” för disken ”%2$s” kräver användning av externt "
+"ögonblicksbildsläge"
 
 msgid "file containing XML CPU descriptions"
 msgstr "fil som innehåller XML-CPU-beskrivningen"
@@ -27076,9 +27079,8 @@ msgstr "fil som innehåller XML-CPU-beskrivningen"
 msgid "file containing an XML CPU description"
 msgstr "fil som innehåller XML-CPU-beskrivningen"
 
-#, fuzzy
 msgid "file containing an XML description of the device"
-msgstr "fil som innehåller XML-domänbeskrivningen"
+msgstr "filen som innehåller en XML-domänbeskrivning av enheten"
 
 msgid "file containing an XML domain description"
 msgstr "fil som innehåller XML-domänbeskrivningen"
@@ -27105,20 +27107,20 @@ msgid "file containing an XML vol description"
 msgstr "fil som innehåller XML-volymbeskrivningen"
 
 msgid "file containing secret attributes in XML"
-msgstr ""
+msgstr "filen som innehåller hemliga attribut i XML"
 
 #, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
-msgstr ""
+msgstr "filbeskrivargruppen ”%1$s” associerades inte med domänen"
 
 msgid "file descriptors N,M,... to associate"
-msgstr ""
+msgstr "filbeskrivare N,M,… att associera"
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
-msgstr ""
+msgstr "filformattyp raw,bochs,qcow,qcow2,qed,vmdk"
 
 msgid "filePath is null"
-msgstr ""
+msgstr "Filsökvägen är null"
 
 #, fuzzy
 msgid "filename containing XML description of the copy destination"
