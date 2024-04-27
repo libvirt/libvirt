@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-03-27 17:36+0000\n"
+"PO-Revision-Date: 2024-04-27 07:57+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -477,7 +477,7 @@ msgstr " %1$s (довідкове ключове слово — «%2$s»):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <рядок>..."
 
 msgid " Hypervisors:"
 msgstr " Гіпервізори:"
@@ -493,7 +493,7 @@ msgstr " Сховище:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <рядок>]..."
 
 #, c-format
 msgid ""
@@ -1641,7 +1641,7 @@ msgstr "--%1$s <рядок>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <рядок>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -13048,7 +13048,7 @@ msgstr "Активний пристрій %1$s не буде повторно і
 
 #, sh-format
 msgid "Not shutting down transient guests on URI: $uri: "
-msgstr ""
+msgstr "Не припиняємо роботу тимчасових гостьових систем для адреси: $uri: "
 
 msgid "Not supported"
 msgstr "Не підтримується"
@@ -21110,7 +21110,7 @@ msgstr "[--%1$s] <рядок>"
 
 #, c-format
 msgid "[--%1$s] <string>..."
-msgstr ""
+msgstr "[--%1$s] <рядок>..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -26679,11 +26679,11 @@ msgstr ""
 
 #, c-format
 msgid "expected syntax: --%1$s <number>"
-msgstr ""
+msgstr "очікувана синтаксична конструкція: --%1$s <число>"
 
 #, c-format
 msgid "expected syntax: --%1$s <string>"
-msgstr ""
+msgstr "очікувана синтаксична конструкція: --%1$s <рядок>"
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -34863,7 +34863,7 @@ msgstr ""
 "у цьому QEMU не передбачено підтримки потоків попереднього розподілу пам'яті"
 
 msgid "prefix the message"
-msgstr ""
+msgstr "додати префікс до повідомлення"
 
 msgid "prefix too long"
 msgstr "префікс є надто довгим"
@@ -36304,6 +36304,8 @@ msgstr ""
 
 msgid "setting virtiofs boot order is supported only with PCI bus"
 msgstr ""
+"підтримку встановлення порядку завантаження virtiofs передбачено лише із "
+"каналом PCI"
 
 msgid "setuid or setgid failed"
 msgstr "помилка setuid або setgid"
