@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-25 19:47+0000\n"
+"PO-Revision-Date: 2024-04-27 07:57+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -474,7 +474,7 @@ msgstr " %1$s (hjälpnyckelord ”%2$s”):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <sträng>…"
 
 msgid " Hypervisors:"
 msgstr " Hypervisorer:"
@@ -490,7 +490,7 @@ msgstr " Lagring:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <sträng>]…"
 
 #, c-format
 msgid ""
@@ -1602,7 +1602,7 @@ msgstr "--%1$s <sträng>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <sträng>.."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -12681,7 +12681,7 @@ msgstr "Återställer inte den aktiva enheten %1$s"
 
 #, sh-format
 msgid "Not shutting down transient guests on URI: $uri: "
-msgstr ""
+msgstr "Stänger inte av transienta gäster på URI: $uri: "
 
 msgid "Not supported"
 msgstr "Stödjs inte"
@@ -20286,7 +20286,7 @@ msgstr "[--%1$s <sträng>]"
 
 #, c-format
 msgid "[--%1$s] <string>..."
-msgstr ""
+msgstr "[--%1$s] <sträng>…"
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -25677,11 +25677,11 @@ msgstr ""
 
 #, c-format
 msgid "expected syntax: --%1$s <number>"
-msgstr ""
+msgstr "förväntad syntax: --%1$s <antal>"
 
 #, c-format
 msgid "expected syntax: --%1$s <string>"
-msgstr ""
+msgstr "förväntad syntax: --%1$s <sträng>"
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -26888,24 +26888,23 @@ msgstr "misslyckades att söva domänen"
 msgid "failed to suspend domain before saving"
 msgstr "misslyckades att söva domänen före sparande"
 
-#, fuzzy
 msgid "failed to take screenshot"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att ta en ögonblicksbild"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to truncate %1$s"
-msgstr "det gick inte att skapa loggfilen %1$s"
+msgstr "misslyckades att hugga av %1$s"
 
 msgid "failed to umount devfs on /dev"
-msgstr ""
+msgstr "misslyckades att avmontera devfs på /dev"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to undefine interface %1$s: %2$s%3$s%4$s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "misslyckades avdefiniera gränssnittet %1$s: %2$s%3$s%4$s"
 
 #, c-format
 msgid "failed to unmark device %1$s as autostarted"
-msgstr ""
+msgstr "misslyckades att avmarkera enheten %1$s som autostartad"
 
 #, c-format
 msgid "failed to unmark network %1$s as autostarted"
@@ -26915,60 +26914,57 @@ msgstr "Misslyckades att avmarkera nätverk %1$s som autostartat"
 msgid "failed to unmark pool %1$s as autostarted"
 msgstr "misslyckades att avmarkera poolen %1$s som autostartad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to unprotect snapshot '%1$s/%2$s@%3$s'"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "misslyckades att ta bort skydd av ögonblicksbilden ”%1$s/%2$s@%3$s”"
 
 #, c-format
 msgid "failed to update capacity data for block node '%1$s'"
-msgstr ""
+msgstr "misslyckades att uppdatera kapacitetsdata för blocknoden ”%1$s”"
 
 #, c-format
 msgid "failed to update capacity of '%1$s'"
-msgstr ""
+msgstr "misslyckades att uppdatera kapaciteten hos ”%1$s”"
 
-#, fuzzy
 msgid "failed to update device in BPF cgroup map"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "misslyckades att uppdatera enheten i BPF-styrgruppsavbildningen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to validate SSH host key: %1$s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "misslyckades att validera SSH-värdnycken: %1$s"
 
 msgid "failed to validate prefix for a new XML namespace"
-msgstr ""
+msgstr "misslyckades att validera prefixet för en ny XML-namnrymd"
 
 #, c-format
 msgid "failed to verify if RBD snapshot %1$s@%2$s is protected"
-msgstr ""
+msgstr "misslyckades att verifiera om RBD-ögonblicksbilden %1$s@%2$s är skyddad"
 
 #, c-format
 msgid "failed to verify if snapshot '%1$s/%2$s@%3$s' is protected"
 msgstr ""
+"misslyckades att verifiera om ögonblicksbilden ”%1$s/%2$s@%3$s” är skyddad"
 
-#, fuzzy
 msgid "failed to wait for domain condition"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att vänta på ett domänvillkor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wait for file '%1$s' to appear"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "misslyckades att vänta på att filen ”%1$s” skulle dyka upp"
 
-#, fuzzy
 msgid "failed to wait on condition"
-msgstr "misslyckades att skriva konfigurationsfilen"
+msgstr "misslyckades att vänta på villkoret"
 
-#, fuzzy
 msgid "failed to wakeup migration tunnel"
-msgstr "misslyckades att skriva konfigurationsfilen"
+msgstr "misslyckades att väcka upp migreringstunneln"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wipe RBD image %1$s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "misslyckades att rensa RBD-avbilden %1$s"
 
 #, c-format
 msgid "failed to wrap arguments '%1$s' into a QMP command wrapper"
-msgstr ""
+msgstr "misslyckades att slå in argumenten ”%1$s” i ett QMP-kommandoomslag"
 
 msgid "failed to write configuration file"
 msgstr "misslyckades att skriva konfigurationsfilen"
@@ -26977,65 +26973,63 @@ msgstr "misslyckades att skriva konfigurationsfilen"
 msgid "failed to write configuration file: %1$s"
 msgstr "misslyckades att skriva konfigurationsfilen: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write cookie to '%1$s'"
-msgstr "Misslyckades att binda uttag till ”%1$s”"
+msgstr "misslyckades att skriva en kaka till ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write data to config '%1$s'"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att skriva data till konfigurationen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write domain xml to '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att skriva domän-xml till ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write header data to '%1$s'"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att skriva huvuddata till ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write header to domain save file '%1$s'"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att ett huvud till domänsparfilen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write known_host file '%1$s': %2$s"
-msgstr "%1$s: misslyckades att skriva loggfilen: %2$s"
+msgstr "misslyckades att skriva known_host-filen ”%1$s”: %2$s"
 
-#, fuzzy
 msgid "failed to write master key file for domain"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att skriva huvudnyckelfilen för domänen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write padding to '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "misslyckades att skriva utfyllnad till ”%1$s”"
 
-#, fuzzy
 msgid "failed to write secret file"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "misslyckades att skriva hemlighetsfilen"
 
 msgid "failed to write the log file"
 msgstr "misslyckades att skriva loggfilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write to LUN %1$d: %2$s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "misslyckades att skriva till LUN %1$d: %2$s"
 
 msgid "failed to write to profile"
 msgstr "misslyckats med att skriva till profilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed writing to file '%1$s'"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "misslyckades att skriva till filen ”%1$s”"
 
 msgid "fatal"
-msgstr ""
+msgstr "ödesdigert"
 
 #, c-format
 msgid "fatal signal %1$d"
-msgstr ""
+msgstr "ödesdiger signal %1$d"
 
 msgid "fcntl failed to set O_NONBLOCK"
-msgstr ""
+msgstr "fcntl misslyckades att sätta O_NONBLOCK"
 
 #, c-format
 msgid "fd %1$d must be a socket"
