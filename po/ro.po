@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 23:21+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-04-27 23:24+0000\n"
+"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -23744,7 +23744,7 @@ msgid "either secret uuid or usage expected"
 msgstr ""
 
 msgid "element"
-msgstr "Element"
+msgstr "element"
 
 #, c-format
 msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
@@ -23781,7 +23781,7 @@ msgid "emulator:"
 msgstr ""
 
 msgid "enable"
-msgstr ""
+msgstr "activează"
 
 msgid "enable cpus specified by cpulist"
 msgstr ""
@@ -23796,7 +23796,7 @@ msgid "enable post-copy migration; switch to it using migrate-postcopy command"
 msgstr ""
 
 msgid "enabled"
-msgstr ""
+msgstr "activat"
 
 #, c-format
 msgid "encountered an error on interface %1$s index %2$d"
@@ -23844,7 +23844,7 @@ msgid "enumerate devices on this host"
 msgstr ""
 
 msgid "error"
-msgstr ""
+msgstr "eroare"
 
 #, c-format
 msgid "error %1$d during port-profile setlink on interface %2$s (%3$d)"
@@ -26399,7 +26399,7 @@ msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
 msgstr ""
 
 msgid "hypervisor"
-msgstr ""
+msgstr "hipervizor"
 
 msgid "hypervisor connection URI"
 msgstr ""
