@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-03-29 14:36+0000\n"
+"PO-Revision-Date: 2024-04-27 07:57+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -470,7 +470,7 @@ msgstr " %1$s (도움말 핵심용어 '%2$s'):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <문자열>..."
 
 msgid " Hypervisors:"
 msgstr " 하이퍼바이저:"
@@ -486,7 +486,7 @@ msgstr " 저장소:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <문자열>]..."
 
 #, c-format
 msgid ""
@@ -1578,7 +1578,7 @@ msgstr "--%1$s <string>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <문자열>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -12503,7 +12503,7 @@ msgstr "작동중인 장치 %1$s를 리셋하지 않음"
 
 #, sh-format
 msgid "Not shutting down transient guests on URI: $uri: "
-msgstr ""
+msgstr "URI의 임시 게스트를 종료하지 않습니다: $uri: "
 
 msgid "Not supported"
 msgstr "지원되지 않음"
@@ -20044,7 +20044,7 @@ msgstr "[--%1$s] <string>"
 
 #, c-format
 msgid "[--%1$s] <string>..."
-msgstr ""
+msgstr "[--%1$s] <문자열>..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -25338,11 +25338,11 @@ msgstr ""
 
 #, c-format
 msgid "expected syntax: --%1$s <number>"
-msgstr ""
+msgstr "예상된 구문: --%1$s <번호>"
 
 #, c-format
 msgid "expected syntax: --%1$s <string>"
-msgstr ""
+msgstr "예상된 구문: --%1$s <문자열>"
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%1$s'"
@@ -33065,7 +33065,7 @@ msgid "preallocation threads are unsupported with this QEMU"
 msgstr "사전 할당된 쓰레드는 이와 같은 QEMU와 함께 지원되지 않습니다"
 
 msgid "prefix the message"
-msgstr ""
+msgstr "메세지에 접두사를 붙이다"
 
 msgid "prefix too long"
 msgstr "접두사가 너무 깁니다"
@@ -34398,7 +34398,7 @@ msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 virtiofs 부팅 순서 설정이 지원되지 않습니다"
 
 msgid "setting virtiofs boot order is supported only with PCI bus"
-msgstr ""
+msgstr "virtiofs 부트 순서 설정은 PCI 버스만 지원됩니다"
 
 msgid "setuid or setgid failed"
 msgstr "setuid 또는 setgid 실패함"
