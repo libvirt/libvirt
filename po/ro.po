@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2024-04-27 08:15+0000\n"
-"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -8208,7 +8208,7 @@ msgid "Filesystems in VMs are not supported by vz driver"
 msgstr ""
 
 msgid "Filter"
-msgstr ""
+msgstr "Filtru"
 
 #, c-format
 msgid "Filter '%1$s' is in use."
@@ -13843,7 +13843,7 @@ msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
 
 msgid "Source"
-msgstr ""
+msgstr "Sursa"
 
 #, c-format
 msgid "Source device does not exist when formatting pool '%1$s'"
@@ -15369,7 +15369,7 @@ msgid "Timed out while reading log output: %1$s"
 msgstr ""
 
 msgid "Timeout"
-msgstr ""
+msgstr "Timpul de așteptare:"
 
 #, sh-format
 msgid "Timeout expired while shutting down domains"
