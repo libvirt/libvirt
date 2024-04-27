@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2024-04-27 23:21+0000\n"
-"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -19150,7 +19150,7 @@ msgid "absolute path must be used as block copy target"
 msgstr ""
 
 msgid "access denied"
-msgstr ""
+msgstr "acces refuzat"
 
 msgid "access denied by policy"
 msgstr ""
@@ -22998,7 +22998,7 @@ msgid "disable cpus specified by cpumap"
 msgstr ""
 
 msgid "disabled"
-msgstr ""
+msgstr "dezactivat"
 
 #, c-format
 msgid "discard is not supported for model '%1$s'"
@@ -23744,7 +23744,7 @@ msgid "either secret uuid or usage expected"
 msgstr ""
 
 msgid "element"
-msgstr ""
+msgstr "Element"
 
 #, c-format
 msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
@@ -37221,7 +37221,7 @@ msgid "wakeup a domain from pmsuspended state"
 msgstr ""
 
 msgid "warning"
-msgstr ""
+msgstr "avertisment"
 
 msgid "watchdog"
 msgstr ""
@@ -37361,7 +37361,7 @@ msgid "y - yes, start editor again"
 msgstr ""
 
 msgid "yes"
-msgstr ""
+msgstr "da"
 
 #, c-format
 msgid "zPCI %1$s %2$o is already reserved"
