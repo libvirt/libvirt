@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
 "PO-Revision-Date: 2024-04-27 08:04+0000\n"
-"Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
 "Language: ro\n"
@@ -1595,7 +1595,7 @@ msgid "Added"
 msgstr ""
 
 msgid "Address"
-msgstr ""
+msgstr "Adresă"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
@@ -4945,7 +4945,7 @@ msgid "Dirty rate:"
 msgstr ""
 
 msgid "Disabled"
-msgstr ""
+msgstr "dezactivat"
 
 #, c-format
 msgid "Disallowing client %1$lld with uid %2$lld"
