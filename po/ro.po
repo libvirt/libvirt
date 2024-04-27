@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 09:40+0000\n"
+"PO-Revision-Date: 2024-04-27 23:21+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
@@ -13924,7 +13924,7 @@ msgid "Starts an inactive node device that was previously defined"
 msgstr ""
 
 msgid "State"
-msgstr ""
+msgstr "Stare"
 
 #, c-format
 msgid "State file %1$s edited.\n"
@@ -13984,7 +13984,7 @@ msgid ""
 msgstr ""
 
 msgid "State:"
-msgstr ""
+msgstr "Stare:"
 
 #, c-format
 msgid ""
@@ -14009,7 +14009,7 @@ msgid "Stats types bits 0x%1$x are not supported by this daemon or QEMU"
 msgstr ""
 
 msgid "Status is unknown"
-msgstr ""
+msgstr "Stare necunoscută"
 
 msgid "Stopped"
 msgstr "Oprit"
@@ -18675,7 +18675,7 @@ msgid ""
 msgstr ""
 
 msgid "Usage:"
-msgstr ""
+msgstr "Utilizare:"
 
 #, c-format
 msgid ""
@@ -18832,7 +18832,7 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %1$d, this value is too large"
 msgstr ""
 
 msgid "VNC"
-msgstr ""
+msgstr "VNC"
 
 msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
@@ -19359,7 +19359,7 @@ msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
 
 msgid "architecture"
-msgstr ""
+msgstr "arhitectură"
 
 #, c-format
 msgid ""
@@ -19533,7 +19533,7 @@ msgid "authentication cancelled: %1$s"
 msgstr ""
 
 msgid "authentication failed"
-msgstr ""
+msgstr "autentificare eșuată"
 
 msgid "authentication failed, see test XML for the correct username/password"
 msgstr ""
@@ -19550,7 +19550,7 @@ msgid "authentication is supported only for network backed disks"
 msgstr ""
 
 msgid "authentication required"
-msgstr ""
+msgstr "este necesară autentificarea"
 
 msgid "authentication unavailable"
 msgstr ""
@@ -21944,7 +21944,7 @@ msgid "connect to the guest console"
 msgstr ""
 
 msgid "connected"
-msgstr ""
+msgstr "conectat"
 
 msgid ""
 "connection URI of the destination host as seen from the client(normal "
@@ -21958,7 +21958,7 @@ msgid "connection closed due to keepalive timeout"
 msgstr ""
 
 msgid "connection not open"
-msgstr ""
+msgstr "conexiunea nu este deschisă"
 
 msgid "connection vcpu maximum"
 msgstr ""
@@ -22518,7 +22518,7 @@ msgid "creating checkpoint for incremental backup is not supported yet"
 msgstr ""
 
 msgid "creating snapshot"
-msgstr ""
+msgstr "se creează instantanea"
 
 msgid "creation of images with slice type='storage' is not supported"
 msgstr ""
@@ -22647,7 +22647,7 @@ msgid "dbus-daemon died and reported: %1$s"
 msgstr ""
 
 msgid "default"
-msgstr ""
+msgstr "implicit"
 
 #, c-format
 msgid "default_tls_x509_cert_dir directory '%1$s' does not exist"
@@ -22775,7 +22775,7 @@ msgid "deprecated configuration: %1$s"
 msgstr ""
 
 msgid "description"
-msgstr ""
+msgstr "descriere"
 
 msgid "description of checkpoint"
 msgstr ""
@@ -22986,7 +22986,7 @@ msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
 msgstr ""
 
 msgid "disable"
-msgstr ""
+msgstr "dezactivează"
 
 msgid "disable autostarting"
 msgstr ""
@@ -23018,7 +23018,7 @@ msgid "disconnect"
 msgstr ""
 
 msgid "disconnected"
-msgstr ""
+msgstr "deconectat"
 
 msgid "discover potential storage pool sources"
 msgstr ""
@@ -35526,7 +35526,7 @@ msgid "unix"
 msgstr ""
 
 msgid "unknown"
-msgstr ""
+msgstr "necunoscut"
 
 #, c-format
 msgid "unknown %1$s action: %2$s"
@@ -35686,7 +35686,7 @@ msgid "unknown dumpformat '%1$d'"
 msgstr ""
 
 msgid "unknown error"
-msgstr ""
+msgstr "eroare necunoscută"
 
 #, c-format
 msgid "unknown event type %1$s"
@@ -35797,7 +35797,7 @@ msgid "unknown network device feature '%1$s'"
 msgstr ""
 
 msgid "unknown option"
-msgstr ""
+msgstr "opțiune necunoscută"
 
 #, c-format
 msgid "unknown panic info type '%1$s'"
@@ -36381,7 +36381,7 @@ msgid "uptime file has unexpected format '%1$s'"
 msgstr ""
 
 msgid "usage:"
-msgstr ""
+msgstr "utilizare:"
 
 #, c-format
 msgid ""
@@ -36448,7 +36448,7 @@ msgid "use zero-copy mechanism for migrating memory pages"
 msgstr ""
 
 msgid "user"
-msgstr ""
+msgstr "utilizator"
 
 msgid "user cancelled authentication process"
 msgstr ""
@@ -36460,7 +36460,7 @@ msgid "user to set authorized keys for"
 msgstr ""
 
 msgid "user:"
-msgstr ""
+msgstr "utilizator:"
 
 #, c-format
 msgid "using '%1$s' pools for backing 'volume' disks isn't yet supported"
