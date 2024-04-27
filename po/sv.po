@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 08:04+0000\n"
+"PO-Revision-Date: 2024-04-27 08:15+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -27120,25 +27120,23 @@ msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "filformattyp raw,bochs,qcow,qcow2,qed,vmdk"
 
 msgid "filePath is null"
-msgstr "Filsökvägen är null"
+msgstr "filePath är null"
 
-#, fuzzy
 msgid "filename containing XML description of the copy destination"
-msgstr "fil som innehåller XML-domänbeskrivningen"
+msgstr "filnamn som innehåller en XML-beskrivning av kopiemålet"
 
-#, fuzzy
 msgid "filename containing updated XML for the target"
-msgstr "fil som innehåller XML-nätverksbeskrivningen"
+msgstr "filnamn som innehåller uppdaterad XML för målet"
 
 msgid "filename containing updated persistent XML for the target"
-msgstr ""
+msgstr "filnamn som innehåller beständig XML för målet"
 
 msgid "filesystem is not of type 'template' or 'mount'"
-msgstr ""
+msgstr "filsystemet är inte av typen ”template” eller ”mount”"
 
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
-msgstr ""
+msgstr "filsystemmålet ”%1$s” är angivet två gånger"
 
 msgid "filesystem usage limits are not supported with QEMU"
 msgstr ""
