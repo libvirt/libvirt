@@ -2,7 +2,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_INP \
 iifname \
 virbr0 \
@@ -15,7 +15,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_INP \
 iifname \
 virbr0 \
@@ -28,7 +28,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_OUT \
 oifname \
 virbr0 \
@@ -41,7 +41,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_OUT \
 oifname \
 virbr0 \
@@ -54,7 +54,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_INP \
 iifname \
 virbr0 \
@@ -67,7 +67,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_INP \
 iifname \
 virbr0 \
@@ -80,7 +80,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_OUT \
 oifname \
 virbr0 \
@@ -93,7 +93,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_OUT \
 oifname \
 virbr0 \
@@ -106,7 +106,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_INP \
 iifname \
 virbr0 \
@@ -119,7 +119,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_OUT \
 oifname \
 virbr0 \
@@ -132,7 +132,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_FWO \
 iifname \
 virbr0 \
@@ -142,7 +142,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_FWI \
 oifname \
 virbr0 \
@@ -152,7 +152,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_FWX \
 iifname \
 virbr0 \
@@ -164,7 +164,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_FWO \
 ip \
 saddr \
@@ -177,7 +177,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_FWI \
 oifname \
 virbr0 \
@@ -193,7 +193,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_PRT \
 ip \
 saddr \
@@ -208,7 +208,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_PRT \
 meta \
 l4proto \
@@ -228,7 +228,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_PRT \
 meta \
 l4proto \
@@ -248,7 +248,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_PRT \
 ip \
 saddr \
@@ -262,7 +262,7 @@ nft \
 -ae insert \
 rule \
 ip \
-libvirt \
+libvirt_network \
 LIBVIRT_PRT \
 ip \
 saddr \

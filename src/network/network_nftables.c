@@ -53,7 +53,7 @@ VIR_LOG_INIT("network.nftables");
  * the iptables-compat
  */
 
-#define VIR_NFTABLES_PRIVATE_TABLE "libvirt"
+#define VIR_NFTABLES_PRIVATE_TABLE "libvirt_network"
 
 /* nftables backend uses the same binary (nft) for all layers, but
  * IPv4 and IPv6 have their rules in separate classes of tables,
