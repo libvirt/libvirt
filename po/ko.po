@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 07:57+0000\n"
+"PO-Revision-Date: 2024-04-30 04:35+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5.2\n"
 
 msgid ""
 "\n"
@@ -3417,7 +3417,7 @@ msgid "Cannot unshare CURL handle that is not shared"
 msgstr "공유되지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 
 msgid "Cannot unshare mount namespace"
-msgstr "마운트 이름공간을 공유 해제 할 수 없음"
+msgstr "적재 이름공간을 공유 해제 할 수 없음"
 
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
@@ -4168,7 +4168,7 @@ msgid "Could not find any 'pool' element in state file"
 msgstr "상태 파일에서 'pool' 요소를 찾을 수 없음"
 
 msgid "Could not find any mounted v1 controllers"
-msgstr "마운트된 v1 컨트롤러를 찾을 수 없습니다"
+msgstr "적재된 v1 제어기를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find any network device under PCI device at %1$s"
@@ -6431,7 +6431,7 @@ msgid "Failed"
 msgstr "실패함"
 
 msgid "Failed disable mount propagation out of the root filesystem"
-msgstr "루트 파일 시스템에서 마운트 전파를 비활성화하지 못했습니다"
+msgstr "root 파일 시스템에서 적재 전파를 비활성화 할 수 없습니다"
 
 #, c-format
 msgid "Failed new node mode for target '%1$s'"
@@ -7656,7 +7656,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to mount devpts on %1$s"
-msgstr "devpts를 %1$s에 마운트하는 데 실패"
+msgstr "%1$s에서 devpts를 적재하는 데 실패함"
 
 #, c-format
 msgid "Failed to mount directory %1$s as tmpfs"
@@ -7664,7 +7664,7 @@ msgstr "tmpfs로 디렉토리 %1$s를 적재하는데 실패"
 
 #, c-format
 msgid "Failed to mount empty tmpfs at %1$s"
-msgstr "%1$s에 tmpfs를 마운트하는 데 실패"
+msgstr "%1$s에서 빈 tmpfs를 적재하는 데 실패함"
 
 #, c-format
 msgid "Failed to move '%1$s' element in xml document"
@@ -8550,14 +8550,11 @@ msgstr "보고서 LUN을 정렬 해제하지 못했습니다. %1$s"
 
 #, c-format
 msgid "Failed to unmount '%1$s' and could not detach subtree '%2$s'"
-msgstr ""
-"'%1$s'을(를) 마운트 해제하지 못하고 하위 트리 '%2$s'을(를) 분리할 수 없습니다"
+msgstr "'%1$s'를 적재 실패 및 서브트리 '%2$s'를 분리 할 수 없습니다"
 
 #, c-format
 msgid "Failed to unmount '%1$s' and could not unmount old root '%2$s'"
-msgstr ""
-"'%1$s'을를 마운트 해제하지 못했으며 이전 루트 '%2$s'를 마운트 해제할 수 없습"
-"니다"
+msgstr "'%1$s'를 적재 해제 실패 및 이전 root '%2$s'를 적재 해제 할 수 없습니다"
 
 msgid "Failed to unpause domain"
 msgstr "도메인 일시중지 해제 실패"
@@ -8869,7 +8866,7 @@ msgid "Found unexpected controller model '%1$s' for disk '%2$s'"
 msgstr "디스크 '%1$s'의 예상치 않은 컨트롤러 모델 '%2$s' 발견"
 
 msgid "Freeze domain's mounted filesystems."
-msgstr "도메인의 마운트된 파일 시스템을 고정합니다."
+msgstr "도메인 적재된 파일 시스템을 동결합니다."
 
 #, c-format
 msgid "Froze %1$d filesystem(s)\n"
@@ -8905,7 +8902,7 @@ msgid "Get domain launch security info"
 msgstr "도메인 시작 보안 정보 가져오기"
 
 msgid "Get information of domain's mounted filesystems."
-msgstr "도메인의 마운트된 파일 시스템 정보를 가져옵니다."
+msgstr "도메인의 적재된 파일 시스템 정보를 가져옵니다."
 
 msgid "Get link state of a domain's virtual interface."
 msgstr "도메인의 가상 인터페이스의 링크 상태를 가져옵니다."
@@ -10476,7 +10473,7 @@ msgid "Invocation of %1$s returned an error: %2$s (%3$d)"
 msgstr "%1$s의 호출이 오류를 반환하였습니다: %2$s (%3$d)"
 
 msgid "Invoke fstrim on domain's mounted filesystems."
-msgstr "도메인의 마운트된 파일 시스템에서 fstrim을 호출합니다."
+msgstr "도메인의 적재된 파일 시스템에서 fstrim을 호출합니다."
 
 msgid "Iteration:"
 msgstr "반복:"
@@ -11629,7 +11626,7 @@ msgid "Monitor vcpus conflicts with allocation"
 msgstr "vcpus과 할당 충돌 모니터링"
 
 msgid "Mount namespace support is required"
-msgstr "마운트 네임스페이스 지원이 필요합니다"
+msgstr "적재 이름공간 지원이 필요합니다"
 
 msgid "Mountpoint"
 msgstr "적재지점"
@@ -12210,7 +12207,7 @@ msgid "No event expected with procedure 0x%1$x"
 msgstr "프로시저 0x%1$x에서 예상되는 이벤트가 없습니다"
 
 msgid "No filesystems are mounted in the domain"
-msgstr "도메인에 마운트된 파일 시스템이 없습니다"
+msgstr "도메인에서 적재된 파일 시스템이 없습니다"
 
 msgid "No free NBD devices"
 msgstr "무료 NBD 기기 없음"
@@ -14651,7 +14648,7 @@ msgid "Specifies if pages from different numa nodes can be merged"
 msgstr "다른 numa 노드의 페이지를 병합할 수 있는지 여부를 지정합니다"
 
 msgid "Specifying mount point is not supported for now"
-msgstr "마운트 지점 지정은 현재 지원되지 않습니다"
+msgstr "적재 지점 지정하기는 현재 지원되지 않습니다"
 
 msgid "Spice audio is not supported without spice graphics"
 msgstr "Spice 오디오는 spice 그래픽이 없으면 지원되지 않습니다"
@@ -16352,7 +16349,7 @@ msgstr "제한 '%1$d'에 대한 모델 이름 '%2$d'가 너무 많습니다"
 
 #, c-format
 msgid "Too many mountpoints in fsinfo: %1$d for limit %2$d"
-msgstr "fsinfo에 마운트 지점이 너무 많습니다: %1$d 제한에 대한 %2$d"
+msgstr "fsinfo에서 적재 지점이 너무 많습니다: %1$d 제한에 대한 %2$d"
 
 #, c-format
 msgid "Too many network_ports '%1$d' for limit '%2$d'"
@@ -17141,7 +17138,7 @@ msgid "Unable to encode number of FDs"
 msgstr "FD 수를 인코딩할 수 없습니다"
 
 msgid "Unable to enter mount namespace"
-msgstr "마운트 네임스페이스에 들어갈 수 없습니다"
+msgstr "적재 이름공간에 진입 할 수 없습니다"
 
 #, c-format
 msgid "Unable to exec shell %1$s"
@@ -17162,7 +17159,7 @@ msgid "Unable to find '%1$s' limit for block device '%2$s'"
 msgstr "블록 장치 '%1$s'에 '제한 %2$s'를 찾는데 실패했습니다"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
-msgstr "'cpuacct' cgroups 컨트롤러 마운트를 찾을 수 없습니다"
+msgstr "'cpuacct' cgroups 제어기 적재를 찾을 수 없습니다"
 
 msgid "Unable to find 'devices' cgroups controller mount"
 msgstr "'devices' cgroups 제어기 적재를 찾을 수 없습니다"
@@ -17171,7 +17168,7 @@ msgid "Unable to find 'dnsmasq' binary in $PATH"
 msgstr "$PATH에서 'dnsmasq' 바이너리를 찾을 수 없습니다"
 
 msgid "Unable to find 'memory' cgroups controller mount"
-msgstr "'메모리' cgroups 컨트롤러 마운트를 찾을 수 없습니다"
+msgstr "'메모리' cgroups 제어기 적재를 찾을 수 없습니다"
 
 msgid "Unable to find 'qemu-nbd' binary in $PATH"
 msgstr "$PATH에서 'qemu-nbd' 바이너리를 찾을 수 없습니다"
@@ -17220,7 +17217,7 @@ msgstr "/dev 적재를 찾을 수 없습니다"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
-msgstr "%1$llu KiB에 사용할 수 있는 hugetlbfs 마운트를 찾을 수 없습니다"
+msgstr "%1$llu KiB를 위해 사용할 수 있는 hugetlbfs 적재를 찾을 수 없습니다"
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/arp_validate' for '%1$s'"
@@ -18490,7 +18487,7 @@ msgstr "%1$s을 자를 수 없습니다"
 
 #, c-format
 msgid "Unable to umount %1$s"
-msgstr "%1$s을(를) 마운트 해제할 수 없습니다"
+msgstr "%1$s를 적재 해제 할 수 없습니다"
 
 #, c-format
 msgid "Unable to unbind the virtual port %1$s from Midonet"
@@ -19705,7 +19702,7 @@ msgstr "Uuid가 비어있습니다"
 
 #, c-format
 msgid "V1 controller '%1$s' is not wanted, but '%2$s' is co-mounted"
-msgstr "V1 컨트롤러 '%1$s'는 필요하지 않지만 '%2$s'는 함께 마운트됩니다"
+msgstr "V1 제어기 '%1$s'가 필요하지 않지만, '%2$s'는 함께-적재됩니다"
 
 msgid "VCPU"
 msgstr "VCPU"
@@ -20696,7 +20693,7 @@ msgid "bitmap for disk '%1$s' must match checkpoint name '%2$s'"
 msgstr "디스크 '%1$s'의 비트맵은 검사점 이름 '%2$s'과(와) 일치해야 합니다"
 
 msgid "blkio cgroup isn't mounted"
-msgstr "blkio cgroup이 마운트되지 않았습니다"
+msgstr "blkio cgroup이 적재되지 않았습니다"
 
 msgid "blkio device weight is valid only for bfq or cfq scheduler"
 msgstr "blkio 장치 무게는 bfq 또는 cfq 스케줄러에만 유효합니다"
@@ -22198,7 +22195,7 @@ msgstr "헤더 '%1$s'를 읽을 수 없음"
 
 #, c-format
 msgid "cannot read mount list '%1$s'"
-msgstr "'%1$s' 마운트 목록을 읽을 수 없음"
+msgstr "적재 목록 '%1$s'를 읽을 수 없습니다"
 
 #, c-format
 msgid "cannot read node header '%1$s'"
@@ -22604,16 +22601,16 @@ msgid "cgroup CPU controller is not mounted"
 msgstr "cgoup CPU 제어기를 적재 할 수 없습니다"
 
 msgid "cgroup CPUACCT controller is not mounted"
-msgstr "cgroup CPUACCT 컨트롤러가 마운트되지 않았습니다"
+msgstr "cgroup CPUACCT 제어기가 적재되지 않았습니다"
 
 msgid "cgroup cpu is required for scheduler tuning"
 msgstr "cgroup cpu는 스케줄러 조정에 필요합니다"
 
 msgid "cgroup cpuset controller is not mounted"
-msgstr "cgroup cpuset 컨트롤러가 마운트되지 않았습니다"
+msgstr "cgroup cpuset 제어기가 적재되지 않았습니다"
 
 msgid "cgroup memory controller is not mounted"
-msgstr "cgroup 메모리 컨트롤러가 마운트되지 않았습니다"
+msgstr "cgroup 메모리 제어기가 적재되지 않았습니다"
 
 msgid "cgroups v2 BPF devices not supported with this kernel"
 msgstr "이 커널에서 지원되지 않는 cgroups v2 BPF 장치"
@@ -23994,7 +23991,7 @@ msgid "device type '%1$s' cannot hot unplugged"
 msgstr "장치 유형 '%1$s'은(는) 핫 언플러그할 수 없습니다"
 
 msgid "devices cgroup isn't mounted"
-msgstr "장치 cgroup이 마운트되지 않았습니다"
+msgstr "장치 cgroup이 적재되지 않았습니다"
 
 #, c-format
 msgid "dhcp is supported only for a single %1$s address on each network"
@@ -27550,9 +27547,8 @@ msgid "hugepages: node %1$zd not found"
 msgstr "hugepages: 노드 %1$zd를 찾을 수 없습니다"
 
 msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
-msgstr ""
-"hugetlbfs 파일 시스템이 관리자 구성에 의해 마운트되거나 비활성화되지 않았습니"
-"다"
+msgstr "hugetlbfs 파일 시스템은 관리자 구성에 의해 적재되거나 비활성화 되지 "
+"않았습니다"
 
 msgid "hypervisor"
 msgstr "하이퍼바이저"
@@ -30968,13 +30964,13 @@ msgstr "적재 이동은 이 기술환경에서 지원되지 않습니다."
 
 #, c-format
 msgid "mount point not found: %1$s"
-msgstr "마운트 지점을 찾을 수 없음: %1$s"
+msgstr "적재 지점을 찾을 수 없음: %1$s"
 
 msgid "mountpoint path to be frozen"
-msgstr "고정할 마운트 지점 경로"
+msgstr "동결되어야 할 적재지점 경로"
 
 msgid "mountpoint path to be thawed"
-msgstr "해동할 마운트 지점 경로"
+msgstr "해제 해야 할 적재지점 경로"
 
 msgid "msi option is only supported with a server"
 msgstr "msi 옵션은 서버에서만 지원됩니다"
@@ -31441,7 +31437,7 @@ msgid "new xml too large to fit in file"
 msgstr "새 xml이 너무 커서 파일에 맞지 않습니다"
 
 msgid "nfsvers value for NFS pool mount option"
-msgstr "NFS 풀 마운트 옵션의 nfsvers 값"
+msgstr "NFS 풀 적재 옵션을 위한 nfsvers 값"
 
 #, c-format
 msgid "nkeycodes must be <= %1$d"
@@ -31700,7 +31696,7 @@ msgid "no free memory device slot available"
 msgstr "사용 가능한 여유 메모리 장치 슬롯이 없습니다"
 
 msgid "no fs mount option name specified"
-msgstr "fs 마운트 옵션 이름이 지정되지 않았습니다"
+msgstr "fs 적재 옵션 이름이 지정되지 않았습니다"
 
 msgid "no guest CPU model specified"
 msgstr "게스트 CPU 모델이 지정되지 않았습니다"
@@ -32076,7 +32072,7 @@ msgstr "0이 아닌 ncpus는 NULL xmlCPUs 정의와 합치하지 않습니다"
 
 #, c-format
 msgid "not a hugetlbfs mount: '%1$s'"
-msgstr "hugetlbfs 마운트가 아닙니다: '%1$s'"
+msgstr "hugetlbfs 적재가 아닙니다: '%1$s'"
 
 msgid "not specified"
 msgstr "지정되지 않음"
@@ -34716,7 +34712,7 @@ msgid ""
 msgstr "스크립트 지정은 브리지 및 이더넷 인터페이스 유형에서만 지원됩니다"
 
 msgid "specifying mountpoints is not supported"
-msgstr "마운트 지점 지정은 지원되지 않습니다"
+msgstr "적재 지점 지정은 지원되지 않습니다"
 
 msgid ""
 "spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"
@@ -37932,7 +37928,7 @@ msgstr "v1 컨트롤러 '%1$s'가 그룹에 대해 활성화되지 않았습니�
 
 #, c-format
 msgid "v1 controller '%1$s' is not mounted"
-msgstr "v1 컨트롤러 '%1$s'가 마운트되지 않았습니다"
+msgstr "v1 제어기 '%1$s' 가 적재되지 않았습니다"
 
 #, c-format
 msgid "v2 controller '%1$s' is not available"
@@ -38746,7 +38742,7 @@ msgid "which event type to wait for"
 msgstr "어떤 이벤트 유형을 기다릴지"
 
 msgid "which mount point to trim"
-msgstr "트림할 마운트 포인트"
+msgstr "다듬어야 할 적재 지점"
 
 msgid "which parent object to search through"
 msgstr "검색할 상위 개체"
