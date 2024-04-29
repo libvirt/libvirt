@@ -29,6 +29,6 @@ virDomainDef *xenParseXL(virConf *conn,
                            virCaps *caps,
                            virDomainXMLOption *xmlopt);
 
-virConf *xenFormatXL(virDomainDef *def, virConnectPtr);
+virConf *xenFormatXL(virDomainDef *def);
 
 const char *xenTranslateCPUFeature(const char *feature_name, bool from_libxl);

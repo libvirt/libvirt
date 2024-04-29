@@ -39,15 +39,10 @@ testCompareParseXML(const char *xmcfg, const char *xml)
 {
     g_autofree char *gotxmcfgData = NULL;
     g_autoptr(virConf) conf = NULL;
-    g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
     g_autoptr(virDomainDef) def = NULL;
 
     gotxmcfgData = g_new0(char, wrote);
-
-    conn = virGetConnect();
-    if (!conn)
-        return -1;
 
     if (!(def = virDomainDefParseFile(xml, driver->xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)))
@@ -58,7 +53,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
         return -1;
     }
 
-    if (!(conf = xenFormatXM(conn, def)))
+    if (!(conf = xenFormatXM(def)))
         return -1;
 
     if (virConfWriteMem(gotxmcfgData, &wrote, conf) < 0)

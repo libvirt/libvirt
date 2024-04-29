@@ -65,16 +65,11 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
     g_autofree char *gotxlcfgData = NULL;
     g_autoptr(virConf) conf = NULL;
-    g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *replacedXML = NULL;
 
     gotxlcfgData = g_new0(char, wrote);
-
-    conn = virGetConnect();
-    if (!conn)
-        return -1;
 
     if (replaceVars) {
         if (!(replacedXML = testReplaceVarsXML(xml)))
@@ -93,7 +88,7 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
         return -1;
     }
 
-    if (!(conf = xenFormatXL(def, conn)))
+    if (!(conf = xenFormatXL(def)))
         return -1;
 
     if (virConfWriteMem(gotxlcfgData, &wrote, conf) < 0)

@@ -61,7 +61,6 @@ int xenParseConfigCommon(virConf *conf,
 
 int xenFormatConfigCommon(virConf *conf,
                           virDomainDef *def,
-                          virConnectPtr conn,
                           const char *nativeFormat);
 
 char *xenMakeIPList(virNetDevIPInfo *guestIP);

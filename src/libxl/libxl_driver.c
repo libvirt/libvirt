@@ -2709,10 +2709,10 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
 
     if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XL)) {
-        if (!(conf = xenFormatXL(def, conn)))
+        if (!(conf = xenFormatXL(def)))
             goto cleanup;
     } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
-        if (!(conf = xenFormatXM(conn, def)))
+        if (!(conf = xenFormatXM(def)))
             goto cleanup;
     } else {
 

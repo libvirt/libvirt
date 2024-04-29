@@ -2041,14 +2041,14 @@ xenFormatXLDomainNamespaceData(virConf *conf, virDomainDef *def)
 }
 
 virConf *
-xenFormatXL(virDomainDef *def, virConnectPtr conn)
+xenFormatXL(virDomainDef *def)
 {
     g_autoptr(virConf) conf = NULL;
 
     if (!(conf = virConfNew()))
         return NULL;
 
-    if (xenFormatConfigCommon(conf, def, conn, XEN_CONFIG_FORMAT_XL) < 0)
+    if (xenFormatConfigCommon(conf, def, XEN_CONFIG_FORMAT_XL) < 0)
         return NULL;
 
     if (xenFormatXLOS(conf, def) < 0)
