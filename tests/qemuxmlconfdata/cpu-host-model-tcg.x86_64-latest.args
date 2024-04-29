@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine q35,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel tcg \
--cpu EPYC,monitor=on,x2apic=on,hypervisor=on,acpi=on,ss=on,erms=on,mpx=on,pcommit=on,clwb=on,umip=on,pku=on,vaes=on,la57=on,rdpid=on,pks=on,fsrm=on,cmpccxadd=on,fzrm=on,fsrs=on,fsrc=on,3dnowext=on,3dnow=on,xsaveerptr=on,wbnoinvd=on,npt=on,vgif=on,svme-addr-chk=on,vme=off,xsavec=off,misalignsse=off,osvw=off,topoext=off,fxsr-opt=off,nrip-save=off \
+-cpu EPYC,monitor=on,x2apic=on,hypervisor=on,acpi=on,ss=on,erms=on,mpx=on,clwb=on,umip=on,pku=on,vaes=on,la57=on,rdpid=on,pks=on,fsrm=on,cmpccxadd=on,fzrm=on,fsrs=on,fsrc=on,3dnowext=on,3dnow=on,xsaveerptr=on,wbnoinvd=on,npt=on,vgif=on,svme-addr-chk=on,vme=off,xsavec=off,misalignsse=off,osvw=off,topoext=off,fxsr-opt=off,nrip-save=off \
 -m size=219136k \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \

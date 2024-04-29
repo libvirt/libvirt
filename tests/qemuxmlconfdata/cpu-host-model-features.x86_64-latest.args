@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel kvm \
--cpu EPYC-Rome,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,stibp=on,arch-capabilities=on,ssbd=on,cmp-legacy=on,amd-ssbd=on,virt-ssbd=on,lbrv=on,tsc-scale=on,vmcb-clean=on,pause-filter=on,pfthreshold=on,v-vmsave-vmload=on,vgif=on,svme-addr-chk=on,lfence-always-serializing=on,null-sel-clr-base=on,rdctl-no=on,skip-l1dfl-vmentry=on,mds-no=on,pschange-mc-no=on,gds-no=on,xsaves=off,abm=on,ds=on,invtsc=off \
+-cpu EPYC-Rome,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,stibp=on,arch-capabilities=on,ssbd=on,cmp-legacy=on,amd-ssbd=on,virt-ssbd=on,lbrv=on,tsc-scale=on,vmcb-clean=on,flushbyasid=on,pause-filter=on,pfthreshold=on,v-vmsave-vmload=on,vgif=on,svme-addr-chk=on,lfence-always-serializing=on,null-sel-clr-base=on,rdctl-no=on,skip-l1dfl-vmentry=on,mds-no=on,pschange-mc-no=on,gds-no=on,xsaves=off,abm=on,ds=on,invtsc=off \
 -m size=219136k \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \
