@@ -2195,8 +2195,8 @@ if git
 
   foreach file : dist_files
     meson.add_dist_script(
-      meson_python_prog.full_path(), python3_prog.full_path(), meson_dist_prog.full_path(),
-      meson.project_build_root(), file
+      meson_python_prog.full_path(), python3_prog.full_path(),
+      meson_dist_prog.full_path(), file
     )
   endforeach
 endif
