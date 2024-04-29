@@ -3,7 +3,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 tcp \
@@ -16,7 +16,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 udp \
@@ -29,7 +29,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 tcp \
@@ -42,7 +42,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 udp \
@@ -55,7 +55,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 tcp \
@@ -68,7 +68,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 udp \
@@ -81,7 +81,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 tcp \
@@ -94,7 +94,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 udp \
@@ -107,7 +107,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_FWO \
+guest_output \
 iifname \
 virbr0 \
 counter \
@@ -117,7 +117,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_FWI \
+guest_input \
 oifname \
 virbr0 \
 counter \
@@ -127,7 +127,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_FWX \
+guest_cross \
 iifname \
 virbr0 \
 oifname \
@@ -139,7 +139,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_FWO \
+guest_output \
 iifname \
 virbr0 \
 counter \
@@ -149,7 +149,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_FWI \
+guest_input \
 oifname \
 virbr0 \
 counter \
@@ -159,7 +159,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_FWX \
+guest_cross \
 iifname \
 virbr0 \
 oifname \
@@ -171,7 +171,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 tcp \
@@ -184,7 +184,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 udp \
@@ -197,7 +197,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 tcp \
@@ -210,7 +210,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 udp \
@@ -223,7 +223,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_INP \
+guest_to_host \
 iifname \
 virbr0 \
 udp \
@@ -236,7 +236,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_OUT \
+host_to_guest \
 oifname \
 virbr0 \
 udp \
@@ -249,7 +249,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_FWO \
+guest_output \
 ip \
 saddr \
 192.168.122.0/24 \
@@ -262,7 +262,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_FWI \
+guest_input \
 oifname \
 virbr0 \
 ip \
@@ -278,7 +278,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 ip \
 saddr \
 192.168.122.0/24 \
@@ -293,7 +293,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 meta \
 l4proto \
 udp \
@@ -313,7 +313,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 meta \
 l4proto \
 tcp \
@@ -333,7 +333,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 ip \
 saddr \
 192.168.122.0/24 \
@@ -347,7 +347,7 @@ nft \
 rule \
 ip \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 ip \
 saddr \
 192.168.122.0/24 \
@@ -361,7 +361,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_FWO \
+guest_output \
 ip6 \
 saddr \
 2001:db8:ca2:2::/64 \
@@ -374,7 +374,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_FWI \
+guest_input \
 oifname \
 virbr0 \
 ip6 \
@@ -390,7 +390,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 ip6 \
 saddr \
 2001:db8:ca2:2::/64 \
@@ -405,7 +405,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 meta \
 l4proto \
 udp \
@@ -425,7 +425,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 meta \
 l4proto \
 tcp \
@@ -445,7 +445,7 @@ nft \
 rule \
 ip6 \
 libvirt_network \
-LIBVIRT_PRT \
+guest_nat \
 ip6 \
 saddr \
 2001:db8:ca2:2::/64 \

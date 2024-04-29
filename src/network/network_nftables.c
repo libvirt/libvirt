@@ -40,12 +40,13 @@ VIR_LOG_INIT("network.nftables");
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define VIR_NFTABLES_INPUT_CHAIN "LIBVIRT_INP"
-#define VIR_NFTABLES_OUTPUT_CHAIN "LIBVIRT_OUT"
-#define VIR_NFTABLES_FWD_IN_CHAIN "LIBVIRT_FWI"
-#define VIR_NFTABLES_FWD_OUT_CHAIN "LIBVIRT_FWO"
-#define VIR_NFTABLES_FWD_X_CHAIN "LIBVIRT_FWX"
-#define VIR_NFTABLES_NAT_POSTROUTE_CHAIN "LIBVIRT_PRT"
+#define VIR_NFTABLES_INPUT_CHAIN "guest_to_host"
+#define VIR_NFTABLES_OUTPUT_CHAIN "host_to_guest"
+#define VIR_NFTABLES_FORWARD_CHAIN "forward"
+#define VIR_NFTABLES_FWD_IN_CHAIN "guest_input"
+#define VIR_NFTABLES_FWD_OUT_CHAIN "guest_output"
+#define VIR_NFTABLES_FWD_X_CHAIN "guest_cross"
+#define VIR_NFTABLES_NAT_POSTROUTE_CHAIN "guest_nat"
 
 /* we must avoid using the standard "filter" table as used by
  * iptables, as any subsequent attempts to use iptables commands will
@@ -87,18 +88,15 @@ typedef struct {
 
 nftablesGlobalChain nftablesChains[] = {
     /* chains for filter rules */
-    {NULL, "INPUT", "{ type filter hook input priority 0; policy accept; }"},
-    {NULL, "FORWARD", "{ type filter hook forward priority 0; policy accept; }"},
-    {NULL, "OUTPUT", "{ type filter hook output priority 0; policy accept; }"},
-    {"INPUT", VIR_NFTABLES_INPUT_CHAIN, NULL},
-    {"OUTPUT", VIR_NFTABLES_OUTPUT_CHAIN, NULL},
-    {"FORWARD", VIR_NFTABLES_FWD_OUT_CHAIN, NULL},
-    {"FORWARD", VIR_NFTABLES_FWD_IN_CHAIN, NULL},
-    {"FORWARD", VIR_NFTABLES_FWD_X_CHAIN, NULL},
+    {NULL, VIR_NFTABLES_INPUT_CHAIN, "{ type filter hook input priority 0; policy accept; }"},
+    {NULL, VIR_NFTABLES_FORWARD_CHAIN, "{ type filter hook forward priority 0; policy accept; }"},
+    {NULL, VIR_NFTABLES_OUTPUT_CHAIN, "{ type filter hook output priority 0; policy accept; }"},
+    {VIR_NFTABLES_FORWARD_CHAIN, VIR_NFTABLES_FWD_OUT_CHAIN, NULL},
+    {VIR_NFTABLES_FORWARD_CHAIN, VIR_NFTABLES_FWD_IN_CHAIN, NULL},
+    {VIR_NFTABLES_FORWARD_CHAIN, VIR_NFTABLES_FWD_X_CHAIN, NULL},
 
     /* chains for NAT rules */
-    {NULL, "POSTROUTING", "{ type nat hook postrouting priority 100; policy accept; }"},
-    {"POSTROUTING",  VIR_NFTABLES_NAT_POSTROUTE_CHAIN, NULL},
+    {NULL, VIR_NFTABLES_NAT_POSTROUTE_CHAIN, "{ type nat hook postrouting priority 100; policy accept; }"},
 };
 
 
