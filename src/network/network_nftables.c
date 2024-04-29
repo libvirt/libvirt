@@ -40,8 +40,12 @@ VIR_LOG_INIT("network.nftables");
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define VIR_NFTABLES_INPUT_CHAIN "guest_to_host"
-#define VIR_NFTABLES_OUTPUT_CHAIN "host_to_guest"
+#ifdef VIR_NFTABLES_INCLUDE_HOST_RULES
+/* The input and output tables aren't currently used */
+# define VIR_NFTABLES_INPUT_CHAIN "guest_to_host"
+# define VIR_NFTABLES_OUTPUT_CHAIN "host_to_guest"
+#endif
+
 #define VIR_NFTABLES_FORWARD_CHAIN "forward"
 #define VIR_NFTABLES_FWD_IN_CHAIN "guest_input"
 #define VIR_NFTABLES_FWD_OUT_CHAIN "guest_output"
@@ -88,9 +92,14 @@ typedef struct {
 
 nftablesGlobalChain nftablesChains[] = {
     /* chains for filter rules */
+
+#ifdef VIR_NFTABLES_INCLUDE_HOST_RULES
+    /* nothing is being added to these chains now, so they are effective NOPs */
     {NULL, VIR_NFTABLES_INPUT_CHAIN, "{ type filter hook input priority 0; policy accept; }"},
-    {NULL, VIR_NFTABLES_FORWARD_CHAIN, "{ type filter hook forward priority 0; policy accept; }"},
     {NULL, VIR_NFTABLES_OUTPUT_CHAIN, "{ type filter hook output priority 0; policy accept; }"},
+#endif
+
+    {NULL, VIR_NFTABLES_FORWARD_CHAIN, "{ type filter hook forward priority 0; policy accept; }"},
     {VIR_NFTABLES_FORWARD_CHAIN, VIR_NFTABLES_FWD_OUT_CHAIN, NULL},
     {VIR_NFTABLES_FORWARD_CHAIN, VIR_NFTABLES_FWD_IN_CHAIN, NULL},
     {VIR_NFTABLES_FORWARD_CHAIN, VIR_NFTABLES_FWD_X_CHAIN, NULL},
@@ -209,6 +218,11 @@ nftablesSetupPrivateChains(virFirewallLayer layer)
 }
 
 
+#ifdef VIR_NFTABLES_INCLUDE_HOST_RULES
+/* currently these functions aren't used, but they remain in the
+ * source (uncompiled) as examples of adding specific rules to permit
+ * input/output of packets. in case the need arises in the future
+ */
 static void
 nftablesAddInput(virFirewall *fw,
                  virFirewallLayer layer,
@@ -313,6 +327,9 @@ nftablesAddUdpOutput(virFirewall *fw,
 {
     nftablesAddOutput(fw, layer, iface, port, 0);
 }
+
+
+#endif
 
 
 /**
@@ -801,6 +818,14 @@ nftablesAddGeneralIPv4FirewallRules(virFirewall *fw,
             break;
     }
 
+#ifdef VIR_NFTABLES_INCLUDE_HOST_RULES
+    /* These rules copied from the iptables backend, have been removed
+     * from the nftab because they are redundant since we are using our own
+     * table that is default accept; there are no other users that
+     * could add a reject rule that we would need to / be able to
+     * override with these rules
+     */
+
     /* allow DHCP requests through to dnsmasq & back out */
     nftablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
     nftablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
@@ -818,6 +843,7 @@ nftablesAddGeneralIPv4FirewallRules(virFirewall *fw,
         nftablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
         nftablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
     }
+#endif
 
     /* Catch all rules to block forwarding to/from bridges */
     nftablesAddForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
@@ -849,6 +875,9 @@ nftablesAddGeneralIPv6FirewallRules(virFirewall *fw,
     /* Allow traffic between guests on the same bridge */
     nftablesAddForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
 
+#ifdef VIR_NFTABLES_INCLUDE_HOST_RULES
+    /* see the note above in nftablesAddGeneralIPv4FirewallRules */
+
     if (virNetworkDefGetIPByIndex(def, AF_INET6, 0)) {
         /* allow DNS over IPv6 & back out */
         nftablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
@@ -859,6 +888,7 @@ nftablesAddGeneralIPv6FirewallRules(virFirewall *fw,
         nftablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 547);
         nftablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 546);
     }
+#endif
 }
 
 
