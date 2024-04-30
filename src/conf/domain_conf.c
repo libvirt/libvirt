@@ -184,6 +184,7 @@ VIR_ENUM_IMPL(virDomainFeature,
               "ibs",
               "tcg",
               "async-teardown",
+              "ras",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -16842,7 +16843,8 @@ virDomainFeaturesDefParse(virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_HTM:
         case VIR_DOMAIN_FEATURE_NESTED_HV:
-        case VIR_DOMAIN_FEATURE_CCF_ASSIST: {
+        case VIR_DOMAIN_FEATURE_CCF_ASSIST:
+        case VIR_DOMAIN_FEATURE_RAS: {
             virTristateSwitch state;
 
             if (virXMLPropTristateSwitch(nodes[i], "state",
@@ -20689,6 +20691,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
         case VIR_DOMAIN_FEATURE_HTM:
         case VIR_DOMAIN_FEATURE_NESTED_HV:
         case VIR_DOMAIN_FEATURE_CCF_ASSIST:
+        case VIR_DOMAIN_FEATURE_RAS:
             if (src->features[i] != dst->features[i]) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("State of feature '%1$s' differs: source: '%2$s', destination: '%3$s'"),
@@ -27392,6 +27395,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
         case VIR_DOMAIN_FEATURE_HTM:
         case VIR_DOMAIN_FEATURE_NESTED_HV:
         case VIR_DOMAIN_FEATURE_CCF_ASSIST:
+        case VIR_DOMAIN_FEATURE_RAS:
             switch ((virTristateSwitch) def->features[i]) {
             case VIR_TRISTATE_SWITCH_LAST:
             case VIR_TRISTATE_SWITCH_ABSENT:

@@ -2021,6 +2021,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
        <tb-cache unit='MiB'>128</tb-cache>
      </tcg>
      <async-teardown enabled='yes'/>
+     <ras state='on'/>
    </features>
    ...
 
@@ -2256,6 +2257,11 @@ are:
    Depending on the ``enabled`` attribute (values ``yes``, ``no``) enable or
    disable QEMU asynchronous teardown to improve memory reclaiming on a guest.
    :since:`Since 9.6.0` (QEMU only)
+``ras``
+   Report host memory errors to a guest using ACPI and guest external abort
+   exceptions when enabled (``on``). If the attribute is not defined, the
+   hypervisor default will be used.
+   :since:`Since 10.4.0` (QEMU/KVM and ARM virt guests only)
 
 Time keeping
 ------------

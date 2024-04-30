@@ -6795,6 +6795,11 @@
               </optional>
             </element>
           </optional>
+          <optional>
+            <element name="ras">
+              <ref name="featurestate"/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>
