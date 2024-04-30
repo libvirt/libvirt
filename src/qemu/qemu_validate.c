@@ -69,6 +69,7 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
     case VIR_DOMAIN_FEATURE_HTM:
     case VIR_DOMAIN_FEATURE_NESTED_HV:
     case VIR_DOMAIN_FEATURE_CCF_ASSIST:
+    case VIR_DOMAIN_FEATURE_RAS:
         if (!virTristateSwitchTypeToString(def->features[feature])) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid setting for pseries feature '%1$s'"),
@@ -227,6 +228,20 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_RAS:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+                !qemuDomainIsARMVirt(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("ras feature is only supported with ARM Virt machines"));
+                return -1;
+            }
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_VIRT_RAS)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                              _("ras feature is not available with this QEMU binary"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_SMM:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:
