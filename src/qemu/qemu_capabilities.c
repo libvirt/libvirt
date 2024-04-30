@@ -706,6 +706,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockjob.backing-mask-protocol", /* QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL */
               "display-reload", /* QEMU_CAPS_DISPLAY_RELOAD */
               "usb-mtp", /* QEMU_CAPS_DEVICE_USB_MTP */
+              "machine.virt.ras", /* QEMU_CAPS_MACHINE_VIRT_RAS */
     );
 
 
@@ -1733,6 +1734,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
     { "iommu", QEMU_CAPS_MACHINE_VIRT_IOMMU },
+    { "ras", QEMU_CAPS_MACHINE_VIRT_RAS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsGeneric[] = {

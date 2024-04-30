@@ -172,6 +172,7 @@
   <flag name='virtio-mem-pci.dynamic-memslots'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='machine.virt.ras'/>
   <version>8002000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-8.2.0-7.fc39</package>

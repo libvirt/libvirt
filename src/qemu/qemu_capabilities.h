@@ -685,6 +685,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL, /* backing-mask-protocol of block-commit/block-stream */
     QEMU_CAPS_DISPLAY_RELOAD, /* 'display-reload' qmp command is supported */
     QEMU_CAPS_DEVICE_USB_MTP, /* -device usb-mtp */
+    QEMU_CAPS_MACHINE_VIRT_RAS, /* -machine virt,ras= */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

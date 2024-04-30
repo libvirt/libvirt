@@ -136,6 +136,7 @@
   <flag name='pvpanic-pci'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='machine.virt.ras'/>
   <version>6000000</version>
   <microcodeVersion>61700242</microcodeVersion>
   <package>v6.0.0</package>
