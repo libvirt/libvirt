@@ -39,7 +39,7 @@ v10.2.0 (2024-04-02)
 
     The ch driver now supports basic save and restore operations. This is
     functional on domains without any network, host device config defined.
-    The `path` parameter for save and restore should be a directory.
+    The ``path`` parameter for save and restore should be a directory.
 
   * qemu: Support for driver type ``mtp`` in ``<filesystem/>`` devices
 
