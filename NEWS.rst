@@ -22,6 +22,13 @@ v10.3.0 (unreleased)
     USB address is now automatically assigned to USB network devices thus they
     can be used without manual configuration.
 
+  * conf: Introduce memReserve attribute to <controller/>
+
+    Some PCI devices have large non-prefetchable memory. This can be a problem
+    in case when such device needs to be hotplugged as the firmware can't
+    foresee such situation. The user thus can override the value calculated at
+    start to accomodate for such devices.
+
 * **Improvements**
 
   * Improve validation of USB devices
@@ -34,6 +41,11 @@ v10.3.0 (unreleased)
 
     The ``checkpoint-list`` and ``snapshot-list`` commands would ignore the
     ``--name`` option to print only the name when used with ``--parent``.
+
+  * Extend libvirt-guests to shutdown only persistent VMs
+
+    Users can now choose to shutdown only persistent VMs when the host is being
+    shut down.
 
 * **Bug fixes**
 
@@ -53,6 +65,16 @@ v10.3.0 (unreleased)
     non-shared storage migration step::
 
      error: internal error: unable to execute QEMU command 'blockdev-add': Certificate does not match the hostname
+
+  * Create OVS ports as transient
+
+    Libvirt now creates OVS ports as transient which prevents them from
+    reappearing or going stale on sudden reboots.
+
+  * Clear OVS QoS settings when domain shuts down
+
+    Libvirt now clears QoS settings on domain shutdown, so they no longer pile
+    up in OVS database.
 
 
 v10.2.0 (2024-04-02)
