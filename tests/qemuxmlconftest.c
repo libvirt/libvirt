@@ -2643,6 +2643,8 @@ mymain(void)
     /* SVE aarch64 CPU features work on modern QEMU */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-features-ras", "aarch64");
+
     DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
 
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);

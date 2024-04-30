@@ -1,0 +1,31 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-aarch64test \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-aarch64test/.config \
+/usr/bin/qemu-system-aarch64 \
+-name guest=aarch64test,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-aarch64test/master-key.aes"}' \
+-machine virt,usb=off,gic-version=3,ras=on,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=off \
+-accel kvm \
+-cpu host \
+-m size=1048576k \
+-object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
