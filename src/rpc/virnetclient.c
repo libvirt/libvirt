@@ -1657,7 +1657,7 @@ static int virNetClientIOEventLoop(virNetClient *client,
 #endif /* !WIN32 */
         int timeout = -1;
         virNetMessage *msg = NULL;
-        g_autoptr(GSource) G_GNUC_UNUSED source = NULL;
+        g_autoptr(GSource) source = NULL;
         GIOCondition ev = 0;
         struct virNetClientIOEventData data = {
             .client = client,
@@ -1720,6 +1720,18 @@ static int virNetClientIOEventLoop(virNetClient *client,
 #endif /* !WIN32 */
 
         g_main_loop_run(client->eventLoop);
+
+        /*
+         * If virNetClientIOEventFD ran, this GSource will already be
+         * destroyed due to G_SOURCE_REMOVE. It is harmless to re-destroy
+         * it, since we still own a reference.
+         *
+         * If virNetClientIOWakeup ran, it will have interrupted the
+         * g_main_loop_run call, before virNetClientIOEventFD could
+         * run, and thus the GSource is still registered, and we need
+         * to destroy it since it is referencing stack memory for 'data'
+         */
+        g_source_destroy(source);
 
 #ifndef WIN32
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
