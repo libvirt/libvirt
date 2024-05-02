@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-27 08:15+0000\n"
+"PO-Revision-Date: 2024-05-02 05:56+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5.2\n"
 
 msgid ""
 "\n"
@@ -27139,7 +27139,7 @@ msgid "filesystem target '%1$s' specified twice"
 msgstr "filsystemmålet ”%1$s” är angivet två gånger"
 
 msgid "filesystem usage limits are not supported with QEMU"
-msgstr ""
+msgstr "gränser för filsystemsanvändning stödjs inte med QEMU"
 
 #, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
@@ -27147,68 +27147,62 @@ msgstr "filtret ”%1$s” finns redan med uuid %2$s"
 
 #, c-format
 msgid "filter '%1$s' learning value '%2$s' invalid."
-msgstr ""
+msgstr "filter ”%1$s” lärovärdet ”%2$s” är ogiltigt."
 
 msgid "filter binding has no MAC address"
-msgstr ""
+msgstr "filterbindningen har ingen MAC-adress"
 
 msgid "filter binding has no filter reference"
-msgstr ""
+msgstr "filterbindningen har ingen filterreferens"
 
 msgid "filter binding has no link dev name"
-msgstr ""
+msgstr "filterbindningen har inget länkenhetsnamn"
 
 msgid "filter binding has no owner UUID"
-msgstr ""
+msgstr "filterbindningen har ingen ägar-UUID"
 
 msgid "filter binding has no owner name"
-msgstr ""
+msgstr "filterbindningen har inget ägarnamn"
 
 msgid "filter binding has no port dev name"
-msgstr ""
+msgstr "filterbindningern har inget portenhetsnamn"
 
 msgid "filter binding status missing content"
-msgstr ""
+msgstr "filterbindningens status saknar innehåll"
 
 msgid "filter by disk-only snapshots"
-msgstr ""
+msgstr "filtrera via endast-disk-ögonblicksbilder"
 
-#, fuzzy
 msgid "filter by domain name, id or uuid"
-msgstr "domännman, id eller uuid"
+msgstr "filtrera efter domännman, id eller uuid"
 
-#, fuzzy
 msgid "filter by event name"
-msgstr "misslyckades att få värdnamn"
+msgstr "filtrera efter händelsenamn"
 
-#, fuzzy
 msgid "filter by external snapshots"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "filtrera efter extern ögonblicksbild"
 
-#, fuzzy
 msgid "filter by internal snapshots"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "filtrera efter interna ögonblicksbilder"
 
-#, fuzzy
 msgid "filter by network name or uuid"
-msgstr "nätverksnamn eller uuid"
+msgstr "filtrera efter nätverksnamn eller -uuid"
 
 msgid "filter by node device name"
-msgstr ""
+msgstr "filtrera efter nodenhetsnamn"
 
-#, fuzzy
 msgid "filter by secret name or uuid"
-msgstr "nätverksnamn eller uuid"
+msgstr "filtrera efter hemlighetsnamn eller -uuid"
 
 msgid "filter by snapshots taken while active (full system snapshots)"
 msgstr ""
+"filtrera efter ögonblicksbilder tagna aktivt (fulla systemögonblicksbilder)"
 
 msgid "filter by snapshots taken while inactive"
-msgstr ""
+msgstr "filtrera efter ögonblicksbilder tagna inaktivt"
 
-#, fuzzy
 msgid "filter by storage pool name or uuid"
-msgstr "nätverksnamn eller uuid"
+msgstr "filtrera efter lagringspoolsnamn eller -uuid"
 
 msgid "filter creation API error"
 msgstr ""
