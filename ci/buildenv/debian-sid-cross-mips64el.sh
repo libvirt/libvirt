@@ -27,6 +27,7 @@ function install_buildenv() {
             iproute2 \
             iptables \
             kmod \
+            libclang-rt-dev \
             libnbd-dev \
             libxml2-utils \
             locales \

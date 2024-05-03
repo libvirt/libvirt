@@ -38,6 +38,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libblkid-dev \
                       libc6-dev \
                       libcap-ng-dev \
+                      libclang-rt-dev \
                       libcurl4-gnutls-dev \
                       libdevmapper-dev \
                       libfuse-dev \

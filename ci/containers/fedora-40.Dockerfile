@@ -25,6 +25,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                ccache \
                clang \
                codespell \
+               compiler-rt \
                cpp \
                cppi \
                cyrus-sasl-devel \

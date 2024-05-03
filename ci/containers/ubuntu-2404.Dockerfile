@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:sid-slim
+FROM docker.io/library/ubuntu:24.04
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -50,6 +50,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libnl-3-dev \
                       libnl-route-3-dev \
                       libnuma-dev \
+                      libopenwsman-dev \
                       libparted-dev \
                       libpcap0.8-dev \
                       libpciaccess-dev \
@@ -58,7 +59,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libsanlock-dev \
                       libsasl2-dev \
                       libselinux1-dev \
-                      libssh-gcrypt-dev \
+                      libssh-dev \
                       libssh2-1-dev \
                       libtirpc-dev \
                       libudev-dev \

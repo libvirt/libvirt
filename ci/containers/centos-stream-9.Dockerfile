@@ -18,6 +18,7 @@ RUN dnf distro-sync -y && \
         ca-certificates \
         ccache \
         clang \
+        compiler-rt \
         cpp \
         cyrus-sasl-devel \
         device-mapper-devel \

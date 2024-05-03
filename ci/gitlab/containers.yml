@@ -99,6 +99,13 @@ x86_64-ubuntu-2204-container:
     NAME: ubuntu-2204
 
 
+x86_64-ubuntu-2404-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2404
+
+
 
 # Cross container jobs
 

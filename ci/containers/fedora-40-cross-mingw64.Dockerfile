@@ -23,6 +23,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                ca-certificates \
                ccache \
                codespell \
+               compiler-rt \
                cpp \
                cppi \
                diffutils \

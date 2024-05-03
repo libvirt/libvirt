@@ -220,6 +220,10 @@ targets:
   ubuntu-2204:
     jobs:
       - arch: x86_64
+
+  ubuntu-2404:
+    jobs:
+      - arch: x86_64
         builds: false
 
       - arch: x86_64

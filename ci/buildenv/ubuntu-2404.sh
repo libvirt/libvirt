@@ -48,6 +48,7 @@ function install_buildenv() {
             libnl-3-dev \
             libnl-route-3-dev \
             libnuma-dev \
+            libopenwsman-dev \
             libparted-dev \
             libpcap0.8-dev \
             libpciaccess-dev \
@@ -56,7 +57,7 @@ function install_buildenv() {
             libsanlock-dev \
             libsasl2-dev \
             libselinux1-dev \
-            libssh-gcrypt-dev \
+            libssh-dev \
             libssh2-1-dev \
             libtirpc-dev \
             libudev-dev \

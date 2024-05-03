@@ -36,6 +36,7 @@ packages:
   - libblkid
   - libc
   - libcap-ng
+  - libclang-rt-dev
   - libcurl
   - libiscsi
   - libnbd

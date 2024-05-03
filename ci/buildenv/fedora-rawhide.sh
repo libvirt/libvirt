@@ -15,6 +15,7 @@ function install_buildenv() {
         ccache \
         clang \
         codespell \
+        compiler-rt \
         cpp \
         cppi \
         cyrus-sasl-devel \

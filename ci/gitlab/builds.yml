@@ -213,22 +213,33 @@ x86_64-ubuntu-2204:
       optional: true
   allow_failure: false
   variables:
-    JOB_OPTIONAL: 1
     NAME: ubuntu-2204
     TARGET_BASE_IMAGE: docker.io/library/ubuntu:22.04
 
 
-x86_64-ubuntu-2204-clang:
+x86_64-ubuntu-2404:
   extends: .native_build_job
   needs:
-    - job: x86_64-ubuntu-2204-container
+    - job: x86_64-ubuntu-2404-container
+      optional: true
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: ubuntu-2404
+    TARGET_BASE_IMAGE: docker.io/library/ubuntu:24.04
+
+
+x86_64-ubuntu-2404-clang:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-ubuntu-2404-container
       optional: true
   allow_failure: false
   variables:
     CC: clang
     MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
-    NAME: ubuntu-2204
-    TARGET_BASE_IMAGE: docker.io/library/ubuntu:22.04
+    NAME: ubuntu-2404
+    TARGET_BASE_IMAGE: docker.io/library/ubuntu:24.04
     UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
 
