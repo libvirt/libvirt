@@ -337,7 +337,7 @@ BuildRequires: gcc
     %if %{with_libxl}
 BuildRequires: xen-devel
     %endif
-BuildRequires: glib2-devel >= 2.56
+BuildRequires: glib2-devel >= 2.58
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 BuildRequires: pkgconfig(bash-completion) >= 2.0
