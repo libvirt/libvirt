@@ -315,7 +315,7 @@ AppArmorSetSecurityHostLabel(virSCSIVHostDevice *dev G_GNUC_UNUSED,
 }
 
 /* Called on libvirtd startup to see if AppArmor is available */
-static int
+static virSecurityDriverStatus
 AppArmorSecurityManagerProbe(const char *virtDriver G_GNUC_UNUSED)
 {
     g_autofree char *template_qemu = NULL;

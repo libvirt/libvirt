@@ -1039,7 +1039,7 @@ virSecuritySELinuxReserveLabel(virSecurityManager *mgr,
 }
 
 
-static int
+static virSecurityDriverStatus
 virSecuritySELinuxDriverProbe(const char *virtDriver)
 {
     if (is_selinux_enabled() <= 0)
