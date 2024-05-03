@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM registry.fedoraproject.org/fedora:38
+FROM registry.fedoraproject.org/fedora:40
 
 RUN dnf install -y nosync && \
     printf '#!/bin/sh\n\
@@ -18,36 +18,65 @@ exec "$@"\n' > /usr/bin/nosync && \
     chmod +x /usr/bin/nosync && \
     nosync dnf update -y && \
     nosync dnf install -y \
+               audit-libs-devel \
                augeas \
                bash-completion \
                ca-certificates \
                ccache \
+               clang \
                codespell \
                cpp \
                cppi \
+               cyrus-sasl-devel \
+               device-mapper-devel \
                diffutils \
                dwarves \
                ebtables \
                firewalld-filesystem \
+               fuse-devel \
+               gcc \
                gettext \
                git \
+               glib2-devel \
+               glibc-devel \
                glibc-langpack-en \
+               glusterfs-api-devel \
+               gnutls-devel \
                grep \
                iproute \
                iproute-tc \
                iptables \
                iscsi-initiator-utils \
                kmod \
+               libacl-devel \
+               libattr-devel \
+               libblkid-devel \
+               libcap-ng-devel \
+               libcurl-devel \
+               libiscsi-devel \
                libnbd-devel \
+               libnl3-devel \
+               libpcap-devel \
+               libpciaccess-devel \
+               librbd-devel \
+               libselinux-devel \
+               libssh-devel \
+               libssh2-devel \
+               libtirpc-devel \
+               libwsman-devel \
                libxml2 \
+               libxml2-devel \
                libxslt \
                lvm2 \
                make \
                meson \
                nfs-utils \
                ninja-build \
+               numactl-devel \
                numad \
+               parted-devel \
                perl-base \
+               pkgconfig \
                polkit \
                python3 \
                python3-black \
@@ -55,37 +84,27 @@ exec "$@"\n' > /usr/bin/nosync && \
                python3-flake8 \
                python3-pytest \
                qemu-img \
+               readline-devel \
                rpm-build \
+               sanlock-devel \
                sed \
-               systemd-rpm-macros && \
+               systemd-devel \
+               systemd-rpm-macros \
+               systemtap-sdt-devel \
+               wireshark-devel \
+               xen-devel \
+               yajl-devel && \
     nosync dnf autoremove -y && \
     nosync dnf clean all -y && \
-    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
+    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED && \
+    rpm -qa | sort > /packages.txt && \
+    mkdir -p /usr/libexec/ccache-wrappers && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
 
 ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-
-RUN nosync dnf install -y \
-               mingw32-curl \
-               mingw32-dlfcn \
-               mingw32-gcc \
-               mingw32-gettext \
-               mingw32-glib2 \
-               mingw32-gnutls \
-               mingw32-headers \
-               mingw32-libssh2 \
-               mingw32-libxml2 \
-               mingw32-pkg-config \
-               mingw32-portablexdr \
-               mingw32-readline && \
-    nosync dnf clean all -y && \
-    rpm -qa | sort > /packages.txt && \
-    mkdir -p /usr/libexec/ccache-wrappers && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-gcc
-
-ENV ABI "i686-w64-mingw32"
-ENV MESON_OPTS "--cross-file=/usr/share/mingw/toolchain-mingw32.meson"

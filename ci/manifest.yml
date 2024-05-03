@@ -144,7 +144,15 @@ targets:
         containers: false
         builds: false
 
-  fedora-38:
+  fedora-39:
+    jobs:
+      - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
+
+  fedora-40:
     jobs:
       - arch: x86_64
         artifacts:
@@ -156,14 +164,6 @@ targets:
         builds: false
 
       - arch: mingw64
-
-  fedora-39:
-    jobs:
-      - arch: x86_64
-        artifacts:
-          expire_in: 1 day
-          paths:
-            - libvirt-rpms
 
   fedora-rawhide:
     jobs:
