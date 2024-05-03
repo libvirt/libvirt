@@ -17,6 +17,11 @@ v10.4.0 (unreleased)
 
 * **New features**
 
+  * qemu: Support for ras feature for virt machine type
+
+    It is now possible to set on/off ``ras`` feature in the domain XML for virt
+    (Arm) machine type as ``<ras state='on'/>``.
+
 * **Improvements**
 
 * **Bug fixes**
