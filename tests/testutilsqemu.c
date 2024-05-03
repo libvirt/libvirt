@@ -966,6 +966,7 @@ testQemuInfoFree(testQemuInfo *info)
     g_clear_pointer(&info->args.fakeCapsAdd, virBitmapFree);
     g_clear_pointer(&info->args.fakeCapsDel, virBitmapFree);
     g_clear_pointer(&info->args.fds, g_hash_table_unref);
+    g_clear_pointer(&info->args.vdpafds, g_hash_table_unref);
     g_clear_object(&info->nbdkitCaps);
     g_clear_pointer(&info->args.fakeNbdkitCaps, virBitmapFree);
     g_free(info);
