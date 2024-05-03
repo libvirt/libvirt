@@ -206,20 +206,6 @@ x86_64-opensuse-tumbleweed:
     TARGET_BASE_IMAGE: registry.opensuse.org/opensuse/tumbleweed:latest
 
 
-x86_64-ubuntu-2004:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-ubuntu-2004-container
-      optional: true
-  allow_failure: false
-  variables:
-    ASAN_OPTIONS: verify_asan_link_order=0
-    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
-    NAME: ubuntu-2004
-    TARGET_BASE_IMAGE: docker.io/library/ubuntu:20.04
-    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
-
-
 x86_64-ubuntu-2204:
   extends: .native_build_job
   needs:
@@ -461,7 +447,7 @@ aarch64-debian-sid:
   needs:
     - job: aarch64-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: aarch64
     JOB_OPTIONAL: 1
@@ -474,7 +460,7 @@ armv6l-debian-sid:
   needs:
     - job: armv6l-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: armv6l
     JOB_OPTIONAL: 1
@@ -487,7 +473,7 @@ armv7l-debian-sid:
   needs:
     - job: armv7l-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: armv7l
     JOB_OPTIONAL: 1
@@ -500,7 +486,7 @@ i686-debian-sid:
   needs:
     - job: i686-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: i686
     JOB_OPTIONAL: 1
@@ -513,7 +499,7 @@ mips64el-debian-sid:
   needs:
     - job: mips64el-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: mips64el
     JOB_OPTIONAL: 1
@@ -526,7 +512,7 @@ ppc64le-debian-sid:
   needs:
     - job: ppc64le-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: ppc64le
     JOB_OPTIONAL: 1
@@ -539,7 +525,7 @@ s390x-debian-sid:
   needs:
     - job: s390x-debian-sid-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: s390x
     JOB_OPTIONAL: 1

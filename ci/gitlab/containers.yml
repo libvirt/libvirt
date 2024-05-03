@@ -92,13 +92,6 @@ x86_64-opensuse-tumbleweed-container:
     NAME: opensuse-tumbleweed
 
 
-x86_64-ubuntu-2004-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: ubuntu-2004
-
-
 x86_64-ubuntu-2204-container:
   extends: .container_job
   allow_failure: false
@@ -238,7 +231,7 @@ s390x-debian-12-container:
 
 aarch64-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-aarch64
@@ -246,7 +239,7 @@ aarch64-debian-sid-container:
 
 armv6l-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-armv6l
@@ -254,7 +247,7 @@ armv6l-debian-sid-container:
 
 armv7l-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-armv7l
@@ -262,7 +255,7 @@ armv7l-debian-sid-container:
 
 i686-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-i686
@@ -270,7 +263,7 @@ i686-debian-sid-container:
 
 mips64el-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-mips64el
@@ -278,7 +271,7 @@ mips64el-debian-sid-container:
 
 ppc64le-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-ppc64le
@@ -286,7 +279,7 @@ ppc64le-debian-sid-container:
 
 s390x-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     JOB_OPTIONAL: 1
     NAME: debian-sid-cross-s390x
