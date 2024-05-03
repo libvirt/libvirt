@@ -4,13 +4,11 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/almalinux:8
-
-RUN dnf update -y && \
-    dnf install 'dnf-command(config-manager)' -y && \
-    dnf config-manager --set-enabled -y powertools && \
-    dnf install -y centos-release-advanced-virtualization && \
-    dnf install -y epel-release && \
+function install_buildenv() {
+    dnf update -y
+    dnf install 'dnf-command(config-manager)' -y
+    dnf config-manager --set-enabled -y crb
+    dnf install -y epel-release
     dnf install -y \
         audit-libs-devel \
         augeas \
@@ -18,6 +16,7 @@ RUN dnf update -y && \
         ca-certificates \
         ccache \
         clang \
+        clang-devel \
         cpp \
         cyrus-sasl-devel \
         device-mapper-devel \
@@ -32,7 +31,6 @@ RUN dnf update -y && \
         glib2-devel \
         glibc-devel \
         glibc-langpack-en \
-        glusterfs-api-devel \
         gnutls-devel \
         grep \
         iproute \
@@ -62,13 +60,12 @@ RUN dnf update -y && \
         lvm2 \
         make \
         meson \
-        netcf-devel \
         nfs-utils \
         ninja-build \
         numactl-devel \
         numad \
         parted-devel \
-        perl \
+        perl-base \
         pkgconfig \
         polkit \
         python3 \
@@ -87,20 +84,18 @@ RUN dnf update -y && \
         systemd-rpm-macros \
         systemtap-sdt-devel \
         wireshark-devel \
-        yajl-devel && \
-    dnf autoremove -y && \
-    dnf clean all -y && \
-    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED && \
-    rpm -qa | sort > /packages.txt && \
-    mkdir -p /usr/libexec/ccache-wrappers && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
+        yajl-devel
+    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
+    rpm -qa | sort > /packages.txt
+    mkdir -p /usr/libexec/ccache-wrappers
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
+    /usr/bin/pip3 install black
+}
 
-RUN /usr/bin/pip3 install black
-
-ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
-ENV LANG "en_US.UTF-8"
-ENV MAKE "/usr/bin/make"
-ENV NINJA "/usr/bin/ninja"
-ENV PYTHON "/usr/bin/python3"
+export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
+export LANG="en_US.UTF-8"
+export MAKE="/usr/bin/make"
+export NINJA="/usr/bin/ninja"
+export PYTHON="/usr/bin/python3"

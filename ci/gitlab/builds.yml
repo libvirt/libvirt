@@ -7,30 +7,30 @@
 
 # Native build jobs
 
-x86_64-almalinux-8:
+x86_64-almalinux-9:
   extends: .native_build_job
   needs:
-    - job: x86_64-almalinux-8-container
+    - job: x86_64-almalinux-9-container
       optional: true
   allow_failure: false
   variables:
     JOB_OPTIONAL: 1
-    NAME: almalinux-8
+    NAME: almalinux-9
     RPM: skip
-    TARGET_BASE_IMAGE: docker.io/library/almalinux:8
+    TARGET_BASE_IMAGE: docker.io/library/almalinux:9
 
 
-x86_64-almalinux-8-clang:
+x86_64-almalinux-9-clang:
   extends: .native_build_job
   needs:
-    - job: x86_64-almalinux-8-container
+    - job: x86_64-almalinux-9-container
       optional: true
   allow_failure: false
   variables:
     CC: clang
-    NAME: almalinux-8
+    NAME: almalinux-9
     RPM: skip
-    TARGET_BASE_IMAGE: docker.io/library/almalinux:8
+    TARGET_BASE_IMAGE: docker.io/library/almalinux:9
 
 
 x86_64-alpine-319:

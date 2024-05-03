@@ -67,7 +67,7 @@ include:
 website_job:
   extends: .gitlab_native_build_job
   needs:
-    - job: x86_64-almalinux-8-container
+    - job: x86_64-almalinux-9-container
       optional: true
   script:
     - source ci/jobs.sh
@@ -83,8 +83,8 @@ website_job:
     paths:
       - website
   variables:
-    NAME: almalinux-8
-    TARGET_BASE_IMAGE: docker.io/library/almalinux:8
+    NAME: almalinux-9
+    TARGET_BASE_IMAGE: docker.io/library/almalinux:9
 
 # On push to master publish the website from 'website_job' via gitlab pages
 pages:
