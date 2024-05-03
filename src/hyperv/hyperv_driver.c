@@ -1534,7 +1534,8 @@ hypervDomainDefParseSerial(virDomainDef *def, Msvm_ResourceAllocationSettingData
             continue;
         }
 
-        serial = virDomainChrDefNew(NULL);
+        if (!(serial = virDomainChrDefNew(NULL)))
+            return -1;
 
         serial->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
         serial->source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
