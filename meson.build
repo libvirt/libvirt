@@ -443,6 +443,19 @@ if cc.get_id() == 'clang'
     cc_flags += [ '-fsemantic-interposition' ]
 endif
 
+if get_option('b_sanitize') != 'none'
+  # This is needed because of xdrproc_t. It's declared as a pointer to a
+  # function with variable arguments. But for catching type related problems at
+  # compile time, our rpcgen generates functions with proper types, say:
+  #
+  #    bool_t xdr_TestEnum(XDR *, TestEnum *);
+  #
+  # But passing xdr_TestEnum as a callback where xdrproc_t type is expected is
+  # undefined behavior. Yet, we want the comfort of compile time checks, so
+  # just disable the sanitizer warning for now. It's a big hammer though.
+  cc_flags += [ '-fno-sanitize=function' ]
+endif
+
 supported_cc_flags = []
 if get_option('warning_level') == '2'
   supported_cc_flags = cc.get_supported_arguments(cc_flags)
