@@ -2973,7 +2973,7 @@ vshReadlineInit(vshControl *ctl)
     const char *quote_characters = "\"'";
 
     /* initialize readline stuff only once */
-    if (ctl->historydir)
+    if (autoCompleteOpaque)
         return 0;
 
     /* Opaque data for autocomplete callbacks. */
@@ -2988,6 +2988,11 @@ vshReadlineInit(vshControl *ctl)
 
     rl_completer_quote_characters = quote_characters;
     rl_char_is_quoted_p = vshReadlineCharIsQuoted;
+
+    /* Stuff below is needed only for interactive mode. */
+    if (!ctl->imode) {
+        return 0;
+    }
 
     histsize_env = g_strdup_printf("%s_HISTSIZE", ctl->env_prefix);
 
@@ -3149,7 +3154,7 @@ vshInit(vshControl *ctl, const vshCmdGrp *groups)
     cmdGroups = groups;
 
     if (vshInitDebug(ctl) < 0 ||
-        (ctl->imode && vshReadlineInit(ctl) < 0))
+        vshReadlineInit(ctl) < 0)
         return false;
 
     return true;
@@ -3168,7 +3173,7 @@ vshInitReload(vshControl *ctl)
 
     if (ctl->imode)
         vshReadlineDeinit(ctl);
-    if (ctl->imode && vshReadlineInit(ctl) < 0)
+    if (vshReadlineInit(ctl) < 0)
         return false;
 
     return true;
