@@ -185,6 +185,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
     udev_list_entry_foreach(dev_entry, devices) {
         struct udev_device *dev;
         const char *path;
+        const char *name;
         g_autoptr(virInterfaceDef) def = NULL;
 
         /* Ensure we won't exceed the size of our array */
@@ -194,10 +195,17 @@ udevListInterfacesByStatus(virConnectPtr conn,
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
 
+        if (!(name = udev_device_get_sysname(dev))) {
+            /* Name can be NULL in case when the interface is being unbound
+             * from the driver. The list API requires names to be present */
+            VIR_DEBUG("Skipping interface '%s', name == NULL", path);
+            continue;
+        }
+
         def = udevGetMinimalDefForDevice(dev);
         if (filter(conn, def)) {
             if (names)
-                names[count] = g_strdup(udev_device_get_sysname(dev));
+                names[count] = g_strdup(name);
             count++;
         }
         udev_device_unref(dev);
