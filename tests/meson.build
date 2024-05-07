@@ -720,17 +720,23 @@ if conf.has('WITH_LIBVIRTD')
   )
 
   test_scripts += [
-    'virsh-auth',
+      { 'name': 'virsh-auth', 'depends': [ virsh_prog ] }
   ]
 
   if conf.has('WITH_SECDRIVER_APPARMOR')
-    test_scripts += 'virt-aa-helper-test'
+    test_scripts += { 'name': 'virt-aa-helper-test' }
   endif
 endif
 
-foreach name : test_scripts
-  script = find_program(name)
-  test(name, script, env: tests_env, suite: 'script')
+foreach data : test_scripts
+  script = find_program(data['name'])
+  test(data['name'],
+       script,
+       env: tests_env,
+       depends: [
+           data.get('depends', []),
+       ],
+       suite: 'script')
 endforeach
 
 testenv = runutf8
