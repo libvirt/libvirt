@@ -508,7 +508,9 @@ if conf.has('WITH_SECDRIVER_SELINUX')
       ]
     endif
   endif
+endif
 
+if conf.has('WITH_SELINUX')
   mock_libs += [
     { 'name': 'securityselinuxhelper' },
   ]
