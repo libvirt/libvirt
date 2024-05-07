@@ -74,7 +74,6 @@ endif
 
 mock_libs = [
   { 'name': 'domaincapsmock' },
-  { 'name': 'shunload', 'sources': [ 'shunloadhelper.c' ] },
   { 'name': 'vircgroupmock' },
   { 'name': 'virdnsmasqmock' },
   { 'name': 'virfilecachemock' },
@@ -106,6 +105,11 @@ if host_machine.system() != 'windows'
   ]
 endif
 
+if conf.has('WITH_TEST')
+  mock_libs += [
+    { 'name': 'shunload', 'sources': [ 'shunloadhelper.c' ] },
+  ]
+endif
 
 # build libraries used by tests
 
@@ -258,15 +262,11 @@ tests += [
   { 'name': 'domainconftest' },
   { 'name': 'genericxml2xmltest' },
   { 'name': 'interfacexml2xmltest' },
-  { 'name': 'metadatatest' },
-  { 'name': 'networkmetadatatest' },
   { 'name': 'networkxml2xmlupdatetest' },
   { 'name': 'nodedevxml2xmltest' },
   { 'name': 'nwfilterxml2xmltest' },
-  { 'name': 'objecteventtest' },
   { 'name': 'seclabeltest' },
   { 'name': 'secretxml2xmltest' },
-  { 'name': 'shunloadtest', 'deps': [ thread_dep ] },
   { 'name': 'sockettest' },
   { 'name': 'storagevolxml2xmltest' },
   { 'name': 'sysinfotest' },
@@ -298,7 +298,6 @@ tests += [
   { 'name': 'virportallocatortest' },
   { 'name': 'virrotatingfiletest' },
   { 'name': 'virschematest' },
-  { 'name': 'virshtest', 'depends': [ virsh_prog ] },
   { 'name': 'virstringtest' },
   { 'name': 'virsystemdtest' },
   { 'name': 'virtimetest' },
@@ -333,6 +332,17 @@ if host_machine.system() == 'linux'
   endif
 endif
 
+if conf.has('WITH_TEST')
+  tests += [
+    { 'name': 'fdstreamtest' },
+    { 'name': 'metadatatest' },
+    { 'name': 'networkmetadatatest' },
+    { 'name': 'objecteventtest' },
+    { 'name': 'shunloadtest', 'deps': [ thread_dep ] },
+    { 'name': 'virshtest', 'depends': [ virsh_prog ] },
+  ]
+endif
+
 if conf.has('WITH_BHYVE')
   tests += [
     { 'name': 'bhyveargv2xmltest', 'link_with': [ bhyve_driver_impl ] },
@@ -364,7 +374,6 @@ endif
 if conf.has('WITH_LIBVIRTD')
   tests += [
     { 'name': 'eventtest', 'deps': [ thread_dep ] },
-    { 'name': 'fdstreamtest' },
     { 'name': 'virdriverconnvalidatetest' },
     { 'name': 'virdrivermoduletest' },
   ]
@@ -619,12 +628,14 @@ test(
   suite: 'script',
 )
 
-# vsh based client self-test, which can be run directly from meson
-test('virsh self-test',
-  virsh_prog,
-  args: [ '-q', '-c', 'test:///default', 'self-test' ],
-  suite: 'bin',
-)
+if conf.has('WITH_TEST')
+  # vsh based client self-test, which can be run directly from meson
+  test('virsh self-test',
+    virsh_prog,
+    args: [ '-q', '-c', 'test:///default', 'self-test' ],
+    suite: 'bin',
+  )
+endif
 
 if conf.has('WITH_REMOTE')
   test('virt-admin self-test',
