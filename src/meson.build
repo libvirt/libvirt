@@ -1048,7 +1048,8 @@ if tests_enabled[0]
           '-I', data['builddir'],
           data['file'].full_path(),
         ],
-        suite: 'script'
+        suite: 'script',
+        depends: [data['file']]
       )
     endforeach
   endif
