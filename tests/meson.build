@@ -711,6 +711,12 @@ endforeach
 #   list of test scripts to run
 test_scripts = []
 
+if conf.has('WITH_TEST')
+  test_scripts += [
+      { 'name': 'virsh-auth', 'depends': [ virsh_prog ] }
+  ]
+endif
+
 if conf.has('WITH_LIBVIRTD')
   test('libvirtd fail with missing config',
     libvirtd_prog,
@@ -718,10 +724,6 @@ if conf.has('WITH_LIBVIRTD')
     should_fail: true,
     suite: 'bin',
   )
-
-  test_scripts += [
-      { 'name': 'virsh-auth', 'depends': [ virsh_prog ] }
-  ]
 
   if conf.has('WITH_SECDRIVER_APPARMOR')
     test_scripts += { 'name': 'virt-aa-helper-test' }
