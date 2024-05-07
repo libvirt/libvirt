@@ -774,8 +774,6 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
         }
 
         if (nodeDeviceDefToMdevctlConfig(def, &inbuf, true) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("couldn't convert node device def to mdevctl JSON"));
             return NULL;
         }
 
