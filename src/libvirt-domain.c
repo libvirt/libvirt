@@ -12331,7 +12331,7 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "vcpu.<num>.delay" - time the vCPU <num> thread was enqueued by the
  *                          host scheduler, but was waiting in the queue
  *                          instead of running. Exposed to the VM as a steal
- *                          time.
+ *                          time. (in nanoseconds)
  *
  *    This group of statistics also reports additional hypervisor-originating
  *    per-vCPU stats. The hypervisor-specific statistics in this group have the

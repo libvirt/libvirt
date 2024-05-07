@@ -2441,7 +2441,7 @@ When selecting the *--state* group the following fields are returned:
   no (may indicate the processor is idle or even disabled,
   depending on the architecture)
 * ``vcpu.<num>.delay`` - time the vCPU <num> thread was enqueued by the
-  host scheduler, but was waiting in the queue instead of running.
+  host scheduler, but was waiting in the queue instead of running (in nanoseconds).
   Exposed to the VM as a steal time.
 
 This group of statistics also reports additional hypervisor-originating per-vCPU
