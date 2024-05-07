@@ -402,7 +402,7 @@ if conf.has('WITH_NETWORK')
   ]
 endif
 
-if conf.has('WITH_NODE_DEVICES')
+if conf.has('WITH_NODE_DEVICES') and conf.has('WITH_YAJL')
   tests += [
     { 'name': 'nodedevmdevctltest', 'link_with': [ node_device_driver_impl ] },
   ]
