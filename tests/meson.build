@@ -375,7 +375,7 @@ if conf.has('WITH_LIBVIRTD')
   tests += [
     { 'name': 'eventtest', 'deps': [ thread_dep ] },
     { 'name': 'virdriverconnvalidatetest' },
-    { 'name': 'virdrivermoduletest' },
+    { 'name': 'virdrivermoduletest', 'depends': virt_module_deps },
   ]
 endif
 

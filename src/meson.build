@@ -578,6 +578,8 @@ endif
 
 # build libvirt shared modules
 
+virt_module_deps = []
+
 foreach module : virt_modules
   mod = shared_module(
     module['name'],
@@ -607,6 +609,7 @@ foreach module : virt_modules
     install_rpath: libvirt_rpath,
   )
   set_variable('@0@_module'.format(module['name'].underscorify()), mod)
+  virt_module_deps += mod
 endforeach
 
 
