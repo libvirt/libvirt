@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-04-18 20:36+0000\n"
+"PO-Revision-Date: 2024-05-08 15:56+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5.2\n"
 
 msgid ""
 "\n"
@@ -466,7 +466,7 @@ msgstr " %1$s (help keyword '%2$s'):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <string>..."
 
 msgid " Hypervisors:"
 msgstr " Hypervisors:"
@@ -482,7 +482,7 @@ msgstr " Storage:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <string>]..."
 
 #, c-format
 msgid ""
@@ -614,9 +614,9 @@ msgstr "%1$s in %2$s must be NULL"
 msgid "%1$s in %2$s must be greater than zero"
 msgstr "%1$s in %2$s must be greater than zero"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be zero"
-msgstr "%1$s in %2$s must not be zero"
+msgstr "%1$s in %2$s must be zero"
 
 #, c-format
 msgid "%1$s in %2$s must be zero or greater"
@@ -634,13 +634,13 @@ msgstr "%1$s in %2$s must not be zero"
 msgid "%1$s is missing 'type' property"
 msgstr "%1$s is missing 'type' property"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s is not an executable"
-msgstr "QEMU binary %1$s is not executable"
+msgstr "%1$s is not an executable"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s is not supported by this QEMU binary"
-msgstr "discard is not supported by this QEMU binary"
+msgstr "%1$s is not supported by this QEMU binary"
 
 #, c-format
 msgid "%1$s length greater than maximum: %2$d > %3$d"
@@ -648,45 +648,47 @@ msgstr "%1$s length greater than maximum: %2$d > %3$d"
 
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
-msgstr ""
+msgstr "%1$s model of watchdog can go only on PCI bus"
 
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr ""
+msgstr "%1$s model of watchdog cannot be used with this machine type"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
-msgstr ""
+msgstr "%1$s model of watchdog does not support configuring the address"
 
 #, c-format
 msgid "%1$s model of watchdog is allowed for s390 and s390x only"
-msgstr ""
+msgstr "%1$s model of watchdog is allowed for s390 and s390x only"
 
 #, c-format
 msgid "%1$s model of watchdog is only part of q35 machine"
-msgstr ""
+msgstr "%1$s model of watchdog is only part of q35 machine"
 
 #, c-format
 msgid ""
 "%1$s model of watchdog is part of the machine and cannot have any address "
 "set."
 msgstr ""
+"%1$s model of watchdog is part of the machine and cannot have any address "
+"set."
 
 #, c-format
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
-msgstr ""
+msgstr "%1$s model of watchdog is virtual and cannot go on any bus."
 
 #, c-format
 msgid "%1$s module is not loaded, "
-msgstr ""
+msgstr "%1$s module is not loaded, "
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s namespace is not available"
-msgstr "System is not available"
+msgstr "%1$s namespace is not available"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s not found in %2$s"
-msgstr "disk %s not found"
+msgstr "%1$s not found in %2$s"
 
 #, c-format
 msgid "%1$s not implemented on Win32"
@@ -712,23 +714,25 @@ msgstr "%1$s object has invalid dynamic type"
 msgid "%1$s object is missing the required '%2$s' property"
 msgstr "%1$s object is missing the required '%2$s' property"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s reply data was missing 'model'"
-msgstr "qom-list reply data was missing 'name'"
+msgstr "%1$s reply data was missing 'model'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s reply data was missing 'name'"
-msgstr "qom-list reply data was missing 'name'"
+msgstr "%1$s reply data was missing 'name'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s reply data was missing 'props'"
-msgstr "qom-list reply data was missing 'name'"
+msgstr "%1$s reply data was missing 'props'"
 
 #, c-format
 msgid ""
 "%1$s rule with port specification requires protocol specification with "
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 msgstr ""
+"%1$s rule with port specification requires protocol specification with "
+"protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 
 #, c-format
 msgid "%1$s uri uuid action\n"
@@ -739,6 +743,8 @@ msgid ""
 "%1$s with index %2$d is configured for a NUMA node (%3$d) not present in the "
 "domain's <cpu><numa> array (%4$zu)"
 msgstr ""
+"%1$s with index %2$d is configured for a NUMA node (%3$d) not present in the "
+"domain's <cpu><numa> array (%4$zu)"
 
 #, c-format
 msgid ""
@@ -752,123 +758,133 @@ msgstr ""
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: %2$s: unsupported auth %3$s"
-msgstr "unsupported feature %s"
+msgstr "%1$s: %2$s: unsupported auth %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: '%2$s' does not exist"
-msgstr "'%s' does not exist"
+msgstr "%1$s: '%2$s' does not exist"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Address '%2$s' in route definition is not a network address"
-msgstr "Missing IP address in static host definition for network '%s'"
+msgstr "%1$s: Address '%2$s' in route definition is not a network address"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Bad gateway address '%2$s' in route definition"
-msgstr "network '%s' has an invalid netmask or IP address in route definition"
+msgstr "%1$s: Bad gateway address '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Bad netmask address '%2$s' in route definition"
-msgstr "network '%s' has an invalid netmask or IP address in route definition"
+msgstr "%1$s: Bad netmask address '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Bad network address '%2$s' in route definition"
-msgstr "network '%s' has an invalid netmask or IP address in route definition"
+msgstr "%1$s: Bad network address '%2$s' in route definition"
 
 #, c-format
 msgid "%1$s: Cannot request read and write flags together"
 msgstr "%1$s: Cannot request read and write flags together"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
 "in route definition"
-msgstr "network '%s' has an invalid netmask or IP address in route definition"
+msgstr ""
+"%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
+"in route definition"
 
 #, c-format
 msgid ""
 "%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
 "route definition"
 msgstr ""
+"%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
+"route definition"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
-msgstr ""
+msgstr "%1$s: File '%2$s' is too large\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
-msgstr "%s family specified for non-IPv4 address '%s' in network '%s'"
+msgstr ""
+"%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
-msgstr "%s family specified for non-IPv4 address '%s' in network '%s'"
-
-#, fuzzy, c-format
-msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 msgstr ""
-"Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
-"IPv4)"
+"%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
+
+#, c-format
+msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
+msgstr "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 
 #, c-format
 msgid ""
 "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
+"%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 
 #, c-format
 msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 32"
-msgstr ""
+msgstr "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 32"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Missing required address attribute in route definition"
-msgstr "Missing required address attribute in network '%1$s'"
+msgstr "%1$s: Missing required address attribute in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Missing required gateway attribute in route definition"
-msgstr "Missing required name attribute in portgroup"
+msgstr "%1$s: Missing required gateway attribute in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
-msgstr "%s family specified for non-IPv4 address '%s' in network '%s'"
+msgstr ""
+"%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
-msgstr "%s family specified for non-IPv4 address '%s' in network '%s'"
+msgstr ""
+"%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Route definition cannot have both a prefix and a netmask"
-msgstr "Network '%1$s' IP address cannot have both a prefix and a netmask"
+msgstr "%1$s: Route definition cannot have both a prefix and a netmask"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: Specifying netmask invalid for IPv6 address '%2$s' in route definition"
-msgstr "network '%s' has an invalid netmask or IP address in route definition"
+msgstr ""
+"%1$s: Specifying netmask invalid for IPv6 address '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: Starting external device: %2$s\n"
 "%3$s\n"
-msgstr "no target device %s"
+msgstr ""
+"%1$s: Starting external device: %2$s\n"
+"%3$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Unrecognized family '%2$s' in route definition"
-msgstr "Unrecognised family '%1$s' in network '%2$s'"
+msgstr "%1$s: Unrecognised family '%2$s' in route definition"
 
 #, c-format
 msgid "%1$s: cannot connect to '%2$s': %3$s\n"
-msgstr ""
+msgstr "%1$s: cannot connect to '%2$s': %3$s\n"
 
 #, c-format
 msgid "%1$s: cannot parse URI transport '%2$s': %3$s\n"
-msgstr ""
+msgstr "%1$s: cannot parse URI transport '%2$s': %3$s\n"
 
 #, c-format
 msgid "%1$s: could not proxy traffic: %2$s\n"
-msgstr ""
+msgstr "%1$s: could not proxy traffic: %2$s\n"
 
 #, c-format
 msgid "%1$s: error: %2$s%3$c"
