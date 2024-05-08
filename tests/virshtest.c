@@ -151,9 +151,9 @@ testPipeFeeder(void *opaque)
     }
 
     memset(doc, ' ', emptyspace);
-    virStrcpy(doc + emptyspace, xml, xmlsize);
+    g_assert(virStrcpy(doc + emptyspace, xml, xmlsize + 1) == 0);
 
-    if (safewrite(fd, doc, emptyspace + xmlsize + 1) < 0) {
+    if (safewrite(fd, doc, emptyspace + xmlsize) < 0) {
         fprintf(stderr, "\nfailed to write to pipe '%s': %s\n", pipepath, g_strerror(errno));
         return;
     }
