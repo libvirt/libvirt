@@ -145,7 +145,7 @@ testPipeFeeder(void *opaque)
     g_autofree char *doc = g_new0(char, emptyspace + xmlsize + 1);
     VIR_AUTOCLOSE fd = -1;
 
-    if ((fd = open(pipepath, O_RDWR)) < 0) {
+    if ((fd = open(pipepath, O_WRONLY)) < 0) {
         fprintf(stderr, "\nfailed to open pipe '%s': %s\n", pipepath, g_strerror(errno));
         return;
     }
