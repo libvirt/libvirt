@@ -2016,7 +2016,9 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
         dnsmasqStarted = true;
 
-        if (def->domain && def->domainRegister && dnsServer) {
+        if (def->domain &&
+            def->domainRegister == VIR_TRISTATE_BOOL_YES &&
+            dnsServer) {
             unsigned int link;
             int rc;
 
