@@ -27,7 +27,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
     <disk type='vhostuser' device='disk' snapshot='no'>
-      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on'/>
+      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <source type='unix' path='/tmp/vhost1.sock'>
         <reconnect enabled='yes' timeout='10'/>
       </source>

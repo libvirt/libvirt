@@ -22,7 +22,7 @@
       <boot order='1'/>
     </disk>
     <disk type='vhostuser' device='disk'>
-      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on'/>
+      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <source type='unix' path='/tmp/vhost1.sock'>
         <reconnect enabled='yes' timeout='10'/>
       </source>
