@@ -27,6 +27,12 @@ v10.4.0 (unreleased)
     Libvirt now installs a binary helper that allows connecting to QEMU domains
     via SSH using the following scheme: ``ssh user@qemu/virtualMachine``.
 
+  * qemu: Support for ``virtio`` sound model
+
+    Sound devices can now be configured to use the virtio model with
+    ``<sound model='virtio'/>``. This model is available from QEMU 8.2.0
+    onwards.
+
 * **Improvements**
 
 * **Bug fixes**
