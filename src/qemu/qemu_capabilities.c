@@ -801,12 +801,6 @@ struct _virQEMUCaps {
     virQEMUCapsAccel tcg;
 };
 
-struct virQEMUCapsSearchData {
-    virArch arch;
-    const char *binaryFilter;
-};
-
-
 static virClass *virQEMUCapsClass;
 static void virQEMUCapsDispose(void *obj);
 
