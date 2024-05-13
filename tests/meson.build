@@ -73,7 +73,6 @@ endif
 #   * deps - additional dependencies (optional, default [])
 
 mock_libs = [
-  { 'name': 'domaincapsmock' },
   { 'name': 'vircgroupmock' },
   { 'name': 'virdnsmasqmock' },
   { 'name': 'virfilecachemock' },
@@ -175,7 +174,7 @@ if conf.has('WITH_QEMU')
     { 'name': 'qemucaps2xmlmock' },
     { 'name': 'qemucapsprobemock', 'link_with': [ test_qemu_driver_lib ] },
     { 'name': 'qemucpumock' },
-    { 'name': 'qemuhotplugmock', 'link_with': [ test_utils_qemu_lib, test_utils_lib ] },
+    { 'name': 'qemuhotplugmock', 'link_with': [ test_qemu_driver_lib, test_utils_qemu_lib, test_utils_lib ] },
     { 'name': 'qemuxml2argvmock' },
     { 'name': 'virhostidmock' },
   ]
@@ -184,6 +183,11 @@ else
   test_utils_qemu_lib = []
   test_utils_qemu_monitor_lib = []
 endif
+
+mock_libs += [
+  # domaincapsmock has some code guarded with WITH_QEMU
+  { 'name': 'domaincapsmock', 'link_with': [ test_qemu_driver_lib ] },
+]
 
 test_file_wrapper_lib = static_library(
   'test_file_wrapper',
