@@ -2901,7 +2901,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
                                 portId_name,
                                 &(*def)->data.vds.port_id,
                                 0,
-                                false) < 0 ||
+                                true) < 0 ||
             virVMXGetConfigLong(conf,
                                 connectionId_name,
                                 &(*def)->data.vds.connection_id,
