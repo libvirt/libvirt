@@ -1159,8 +1159,11 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (qemuDomainIsS390CCW(vm->def) &&
-        net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+    if (net->model == VIR_DOMAIN_NET_MODEL_USB_NET) {
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, &net->info) < 0)
+            goto cleanup;
+    } else if (qemuDomainIsS390CCW(vm->def) &&
+               net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
         if (!(ccwaddrs = virDomainCCWAddressSetCreateFromDomain(vm->def)))
             goto cleanup;
