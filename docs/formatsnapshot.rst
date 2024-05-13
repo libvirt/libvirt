@@ -170,6 +170,18 @@ The top-level ``domainsnapshot`` element may contain the following elements:
          sub-element can be used with same semantics as the identically named
          subelement of the domain definition disk's driver.
 
+      ``snapshotDeleteInProgress``
+
+         This element is valid only in existing snapshot metadata XMLs and makes
+         no sense when creating a snapshot.
+
+         Presence of this element signifies that a deletion of a snapshot was
+         not completed yet and the disk images are in inconsistent state. User
+         needs to re-start any previous snapshot deletion to finish this process.
+
+         Users should not add or remove it as it can result in image corruption
+         on subsequent operations. :since:`Since 9.0`
+
 ``creationTime``
 
    A readonly representation of the time this snapshot was created. The time is
