@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-05-08 15:56+0000\n"
+"PO-Revision-Date: 2024-05-14 20:36+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.2\n"
+"X-Generator: Weblate 5.5.5\n"
 
 msgid ""
 "\n"
@@ -902,69 +902,69 @@ msgstr ""
 msgid "%1$s: error: unable to determine if daemon is running: %2$s\n"
 msgstr "%1$s: error: unable to determine if daemon is running: %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: event '%2$s' for node device %3$s\n"
-msgstr "Destroyed node device '%s'\n"
+msgstr "%1$s: event '%2$s' for node device %3$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for secret %3$s\n"
-msgstr ""
+msgstr "%1$s: event '%2$s' for secret %3$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for storage pool %3$s\n"
-msgstr ""
+msgstr "%1$s: event '%2$s' for storage pool %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for network %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: event 'lifecycle' for network %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for node device %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: event 'lifecycle' for node device %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for secret %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: event 'lifecycle' for secret %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
-msgstr ""
+msgstr "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
-msgstr "unexpected storage mode for '%s'"
+msgstr "%1$s: expected a bool for '%2$s' parameter"
 
 #, c-format
 msgid "%1$s: expected a signed integer for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: expected a signed integer for '%2$s' parameter"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: expected a string for '%2$s' parameter"
-msgstr "unexpected storage mode for '%s'"
+msgstr "%1$s: expected a string for '%2$s' parameter"
 
 #, c-format
 msgid "%1$s: expected a string list for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: expected a string list for '%2$s' parameter"
 
 #, c-format
 msgid "%1$s: expected a string or string list for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: expected a string or string list for '%2$s' parameter"
 
 #, c-format
 msgid "%1$s: expected an unsigned integer for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: expected an unsigned integer for '%2$s' parameter"
 
 #, c-format
 msgid "%1$s: failed to communicate with bridge helper: %2$s"
-msgstr ""
+msgstr "%1$s: failed to communicate with bridge helper: %2$s"
 
 #, c-format
 msgid "%1$s: failed to generate UNIX socket path"
-msgstr ""
+msgstr "%1$s: failed to generate UNIX socket path"
 
 #, c-format
 msgid "%1$s: failed to read temporary file: %2$s"
@@ -974,54 +974,57 @@ msgstr "%1$s: failed to read temporary file: %2$s"
 msgid "%1$s: failed to write log file: %2$s"
 msgstr "%1$s: failed to write log file: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: failure with %2$s: %3$s"
-msgstr "%s: failed to write log file: %s"
+msgstr "%1$s: failure with %2$s: %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: initialization failed"
-msgstr "%1$s: initialisation failed\n"
+msgstr "%1$s: initialisation failed"
 
 #, c-format
 msgid "%1$s: initialization failed\n"
 msgstr "%1$s: initialisation failed\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
-msgstr "%s family specified for non-IPv4 address '%s' in network '%s'"
+msgstr ""
+"%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: ipv6 specified for non-IPv6 gateway address '%2$s' in route definition"
-msgstr "Family 'ipv6' specified for non-IPv6 address '%1$s' in network '%2$s'"
+msgstr ""
+"%1$s: ipv6 specified for non-IPv6 gateway address '%2$s' in route definition"
 
 #, c-format
 msgid "%1$s: malformed fd %2$s"
 msgstr "%1$s: malformed fd %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: migration_port_max: port must be between the minimal port %2$d and "
 "65535"
 msgstr ""
-"%1$s: remote_display_port_max: port must be between the minimal port and %2$d"
+"%1$s: migration_port_max: port must be between the minimal port %2$d and "
+"65535"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: migration_port_min: port must be greater than 0"
-msgstr "%s: remote_display_port_min: port must be greater than or equal to %d"
+msgstr "%1$s: migration_port_min: port must be greater than 0"
 
 #, c-format
 msgid "%1$s: must be run as root\n"
-msgstr ""
+msgstr "%1$s: must be run as root\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: must not be run setuid root\n"
-msgstr "%s in %s must not be zero"
+msgstr "%1$s: must not be run setuid root\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: passthrough input device has no source"
-msgstr "Target input device bus %s does not match source %s"
+msgstr "%1$s: passthrough input device has no source"
 
 #, c-format
 msgid ""
@@ -1077,45 +1080,45 @@ msgstr "%1$s: too many command line arguments\n"
 msgid "%1$s: try --help for more details"
 msgstr "%1$s: try --help for more details"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: try --help for more details\n"
-msgstr "%1$s: try --help for more details"
+msgstr "%1$s: try --help for more details\n"
 
 #, c-format
 msgid "%1$s: unexpected URI transport '%2$s'\n"
-msgstr ""
+msgstr "%1$s: unexpected URI transport '%2$s'\n"
 
 #, c-format
 msgid "%1$s: unknown remote mode '%2$s'"
-msgstr ""
+msgstr "%1$s: unknown remote mode '%2$s'"
 
 #, c-format
 msgid "%1$s: unsupported hypervisor name %2$s\n"
 msgstr "%1$s: unsupported hypervisor name %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be 0 or 1"
-msgstr "value for 'ram' must be less than '%u'"
+msgstr "%1$s: value for '%2$s' parameter must be 0 or 1"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range %3$d:%4$d"
-msgstr "value for 'ram' must be less than '%u'"
+msgstr "%1$s: value for '%2$s' parameter must be in range %3$d:%4$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range %3$lld:%4$lld"
-msgstr "value of '%s' is out of range [%lld, %lld]"
+msgstr "%1$s: value for '%2$s' parameter must be in range %3$lld:%4$lld"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range %3$zd:%4$zd"
-msgstr "value for 'ram' must be less than '%u'"
+msgstr "%1$s: value for '%2$s' parameter must be in range %3$zd:%4$zd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range 0:%3$u"
-msgstr "value for 'ram' must be less than '%u'"
+msgstr "%1$s: value for '%2$s' parameter must be in range 0:%3$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range 0:%3$zu"
-msgstr "value for 'ram' must be less than '%u'"
+msgstr "%1$s: value for '%2$s' parameter must be in range 0:%3$zu"
 
 #, c-format
 msgid "%1$s: warning: %2$s%3$c"
@@ -1135,27 +1138,27 @@ msgstr ""
 
 #, c-format
 msgid "%1$s_DEBUG not set with a valid numeric value"
-msgstr ""
+msgstr "%1$s_DEBUG not set with a valid numeric value"
 
 #, c-format
 msgid "'%1$s'"
-msgstr ""
+msgstr "'%1$s'"
 
 #, c-format
 msgid "'%1$s' 'index' value '%2$s' malformed"
-msgstr ""
+msgstr "'%1$s' 'index' value '%2$s' malformed"
 
 #, c-format
 msgid "'%1$s' D-Bus address is not handled"
-msgstr ""
+msgstr "'%1$s' D-Bus address is not handled"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' architecture is not supported by CPU driver"
-msgstr "Filtering is not supported by this libvirt"
+msgstr "'%1$s' architecture is not supported by CPU driver"
 
 #, c-format
 msgid "'%1$s' attributes '%2$s' must not overlap"
-msgstr ""
+msgstr "'%1$s' attributes '%2$s' must not overlap"
 
 #, c-format
 msgid "'%1$s' controller cannot be hot plugged."
@@ -1165,13 +1168,13 @@ msgstr "'%1$s' controller cannot be hot plugged."
 msgid "'%1$s' controller cannot be hot unplugged."
 msgstr "'%1$s' controller cannot be hot unplugged."
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' controller only supports up to '%2$u' ports"
-msgstr "SCSI controller only supports 1 bus"
+msgstr "'%1$s' controller only supports up to '%2$u' ports"
 
 #, c-format
 msgid "'%1$s' denied access"
-msgstr ""
+msgstr "'%1$s' denied access"
 
 #, c-format
 msgid "'%1$s' does not exist"
@@ -1183,47 +1186,47 @@ msgstr "'%1$s' file does not fit in memory"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "'%1$s' is currently not supported by the QEMU encryption engine"
 
 #, c-format
 msgid "'%1$s' is not a VF device"
-msgstr ""
+msgstr "'%1$s' is not a VF device"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' is not a known interface"
-msgstr "invalid path, '%1$s' is not a known interface"
+msgstr "'%1$s' is not a known interface"
 
 #, c-format
 msgid "'%1$s' is not a suitable bridge helper"
-msgstr ""
+msgstr "'%1$s' is not a suitable bridge helper"
 
 #, c-format
 msgid "'%1$s' is not a suitable dbus-daemon"
-msgstr ""
+msgstr "'%1$s' is not a suitable dbus-daemon"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' is not a suitable pr helper"
-msgstr "Path '%1$s' is not accessible"
+msgstr "'%1$s' is not a suitable pr helper"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
-msgstr "%1$s not supported in this QEMU binary"
+msgstr "'%1$s' is not supported in this QEMU binary"
 
 #, c-format
 msgid "'%1$s' missing"
-msgstr ""
+msgstr "'%1$s' missing"
 
 #, c-format
 msgid "'%1$s' requires shared memory"
-msgstr ""
+msgstr "'%1$s' requires shared memory"
 
 #, c-format
 msgid "'%1$s' scheduler bitmap '%2$s' is empty"
-msgstr ""
+msgstr "'%1$s' scheduler bitmap '%2$s' is empty"
 
 #, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
-msgstr ""
+msgstr "'%1$s' starting from %2$llu has only %3$zd bytes available"
 
 #, fuzzy
 msgid ""
@@ -1235,29 +1238,30 @@ msgid "':' not allowed in RBD source volume name '%1$s'"
 msgstr "':' not allowed in RBD source volume name '%1$s'"
 
 msgid "'<local>' element missing for 'udp' socket interface"
-msgstr ""
+msgstr "'<local>' element missing for 'udp' socket interface"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
-msgstr ""
+msgstr "'adapter' name must be specified for SCSI hostdev source"
 
 msgid "'address' is not supported for 'ramfb' video devices"
-msgstr ""
+msgstr "'address' is not supported for 'ramfb' video devices"
 
 msgid "'address' must be specified for scsi hostdev source"
-msgstr ""
+msgstr "'address' must be specified for SCSI hostdev source"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
-msgstr ""
+msgstr "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
+"'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
-msgstr ""
+msgstr "'blob' support for virtio-gpu devices requires a memfd memory backend"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
+msgstr "'cache' refers to a non-existent NUMA node cache"
 
 #, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -1271,22 +1275,24 @@ msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
 "type instead"
 msgstr ""
+"'directory' storage format is not directly supported by QEMU, use 'dir' disk "
+"type instead"
 
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "'discard_no_unref' is not compatible with read-only disk"
 
 msgid "'discard_no_unref' is not supported by this QEMU binary"
-msgstr ""
+msgstr "'discard_no_unref' is not supported by this QEMU binary"
 
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "'discard_no_unref' only works with qcow2 disk format"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "'disk' missing or not an array in reply of guest-get-fsinfo"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
-msgstr ""
+msgstr "'extended_l2' not supported with compat level %1$s"
 
 #, fuzzy
 msgid "'gluster' command line tool not found"
@@ -1301,6 +1307,8 @@ msgid ""
 "'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
 "field for disk or backup"
 msgstr ""
+"'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
+"field for disk or backup"
 
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
