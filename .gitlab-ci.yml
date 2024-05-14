@@ -154,7 +154,7 @@ coverity:
   image: $CI_REGISTRY/$RUN_UPSTREAM_NAMESPACE/libvirt/ci-$NAME:latest
   stage: builds
   needs:
-    - job: x86_64-almalinux-8-container
+    - job: x86_64-almalinux-9-container
       optional: true
   before_script:
     - cat /packages.txt
@@ -166,7 +166,7 @@ coverity:
     - tar cfz cov-int.tar.gz cov-int
     - curl https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN --form email=$GITLAB_USER_EMAIL --form file=@cov-int.tar.gz --form version="$(git describe --tags)" --form description="$(git describe --tags) / $CI_COMMIT_TITLE / $CI_COMMIT_REF_NAME:$CI_PIPELINE_ID"
   variables:
-    NAME: almalinux-8
+    NAME: almalinux-9
   rules:
     - if: '$COVERITY_SCAN_PROJECT_NAME == null || $COVERITY_SCAN_TOKEN == null'
       when: never
