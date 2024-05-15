@@ -37,6 +37,21 @@ v10.4.0 (unreleased)
 
 * **Bug fixes**
 
+  * virsh/virt-admin: Fix ``--help`` option for all commands
+
+    A bug introduced in `v10.3.0 (2024-05-02)`_ caused that the attempt to print
+    help for any command by using the ``--help`` option in ``virsh`` and
+    ``virt-admin`` would print::
+
+      $ virsh list --help
+      error: command 'list' doesn't support option --help
+
+    instead of the help output. A workaround for the affected version is to use
+    the help command::
+
+      $ virsh help list
+
+
 
 v10.3.0 (2024-05-02)
 ====================
