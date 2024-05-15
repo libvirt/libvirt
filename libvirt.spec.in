@@ -1025,9 +1025,6 @@ Summary: Client side utilities of the libvirt library
 Requires: libvirt-libs = %{version}-%{release}
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
-    %if %{with_ssh_proxy}
-Recommends: libvirt-ssh-proxy = %{version}-%{release}
-    %endif
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-bash-completion < 7.3.0
