@@ -1,0 +1,3 @@
+<input type='evdev'>
+  <source dev='/dev/input/event1234' grab='all' repeat='on' grabToggle='ctrl-ctrl'/>
+</input>

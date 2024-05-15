@@ -774,6 +774,11 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-4") QMP_OK,
                    "blockdev-del", QMP_OK);
 
+    DO_TEST_ATTACH("x86_64", "base-live", "input-evdev", false, true,
+                   "object-add", QMP_OK);
+    DO_TEST_DETACH("x86_64", "base-live", "input-evdev", false, false,
+                   "object-del", QMP_OK);
+
 #define DO_TEST_CPU_GROUP(archname, prefix, vcpus, expectfail) \
     do { \
         cpudata.test = prefix; \
