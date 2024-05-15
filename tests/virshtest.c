@@ -309,6 +309,9 @@ mymain(void)
     DO_TEST("#unbalanced; 'quotes\"\necho a # b");
     DO_TEST("\\# ignored;echo a\n'#also' ignored");
 
+    /* test of the --help option handling */
+    DO_TEST_SCRIPT("help-option", NULL, VIRSH_DEFAULT, "-q");
+
     /* test of splitting in vshStringToArray */
     DO_TEST_SCRIPT("echo-split", NULL, VIRSH_DEFAULT, "-q");
 

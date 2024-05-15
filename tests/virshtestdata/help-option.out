@@ -1,0 +1,64 @@
+  NAME
+    echo - echo arguments. Used for internal testing.
+
+  SYNOPSIS
+    echo [--shell] [--xml] [--split] [--err] [--prefix <string>] [<string>]...
+
+  DESCRIPTION
+    Echo back arguments, possibly with quoting. Used for internal testing.
+
+  OPTIONS
+    --shell          escape for shell use
+    --xml            escape for XML use
+    --split          split each argument on ','; ',,' is an escape sequence
+    --err            output to stderr
+    --prefix <string>  prefix the message
+    [--string] <string>...  arguments to echo
+  NAME
+    echo - echo arguments. Used for internal testing.
+
+  SYNOPSIS
+    echo [--shell] [--xml] [--split] [--err] [--prefix <string>] [<string>]...
+
+  DESCRIPTION
+    Echo back arguments, possibly with quoting. Used for internal testing.
+
+  OPTIONS
+    --shell          escape for shell use
+    --xml            escape for XML use
+    --split          split each argument on ','; ',,' is an escape sequence
+    --err            output to stderr
+    --prefix <string>  prefix the message
+    [--string] <string>...  arguments to echo
+  NAME
+    echo - echo arguments. Used for internal testing.
+
+  SYNOPSIS
+    echo [--shell] [--xml] [--split] [--err] [--prefix <string>] [<string>]...
+
+  DESCRIPTION
+    Echo back arguments, possibly with quoting. Used for internal testing.
+
+  OPTIONS
+    --shell          escape for shell use
+    --xml            escape for XML use
+    --split          split each argument on ','; ',,' is an escape sequence
+    --err            output to stderr
+    --prefix <string>  prefix the message
+    [--string] <string>...  arguments to echo
+  NAME
+    echo - echo arguments. Used for internal testing.
+
+  SYNOPSIS
+    echo [--shell] [--xml] [--split] [--err] [--prefix <string>] [<string>]...
+
+  DESCRIPTION
+    Echo back arguments, possibly with quoting. Used for internal testing.
+
+  OPTIONS
+    --shell          escape for shell use
+    --xml            escape for XML use
+    --split          split each argument on ','; ',,' is an escape sequence
+    --err            output to stderr
+    --prefix <string>  prefix the message
+    [--string] <string>...  arguments to echo

@@ -1,0 +1,4 @@
+help echo
+echo --help
+echo --help=data
+echo --help data
