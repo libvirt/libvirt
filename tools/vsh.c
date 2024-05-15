@@ -1655,7 +1655,10 @@ vshCommandParse(vshControl *ctl,
 
             /* lookup the option. Note that vshCmdGetOption also resolves aliases
              * and thus the value possibly contained in the alias */
-            if (!(opt = vshCmdGetOption(ctl, cmd, optionname, &optionvalue, report))) {
+            if (STREQ(optionname, "help")) {
+                cmd->helpOptionSeen = true;
+                g_clear_pointer(&optionvalue, g_free);
+            } else if (!(opt = vshCmdGetOption(ctl, cmd, optionname, &optionvalue, report))) {
                 if (STRNEQ(cmd->def->name, "help"))
                     goto out;
 
