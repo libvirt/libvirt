@@ -4367,7 +4367,7 @@ qemuBuildInputUSBDevProps(const virDomainDef *def,
 }
 
 
-static virJSONValue *
+virJSONValue *
 qemuBuildInputEvdevProps(virDomainInputDef *dev)
 {
     g_autoptr(virJSONValue) props = NULL;

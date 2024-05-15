@@ -234,6 +234,9 @@ qemuBuildInputUSBDevProps(const virDomainDef *def,
                           virDomainInputDef *dev);
 
 virJSONValue *
+qemuBuildInputEvdevProps(virDomainInputDef *dev);
+
+virJSONValue *
 qemuBuildVsockDevProps(virDomainDef *def,
                        virDomainVsockDef *vsock,
                        virQEMUCaps *qemuCaps,

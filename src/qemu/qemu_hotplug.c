@@ -3016,36 +3016,40 @@ qemuDomainAttachInputDevice(virDomainObj *vm,
     bool teardowncgroup = false;
 
     qemuAssignDeviceInputAlias(vm->def, input, -1);
+    if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+        if (!(devprops = qemuBuildInputEvdevProps(input)))
+            goto cleanup;
+    } else {
+        switch ((virDomainInputBus) input->bus) {
+        case VIR_DOMAIN_INPUT_BUS_USB:
+            if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
+                return -1;
 
-    switch ((virDomainInputBus) input->bus) {
-    case VIR_DOMAIN_INPUT_BUS_USB:
-        if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
+            releaseaddr = true;
+
+            if (!(devprops = qemuBuildInputUSBDevProps(vm->def, input)))
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+            if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
+                goto cleanup;
+
+            if (!(devprops = qemuBuildInputVirtioDevProps(vm->def, input, priv->qemuCaps)))
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_INPUT_BUS_DEFAULT:
+        case VIR_DOMAIN_INPUT_BUS_PS2:
+        case VIR_DOMAIN_INPUT_BUS_XEN:
+        case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+        case VIR_DOMAIN_INPUT_BUS_NONE:
+        case VIR_DOMAIN_INPUT_BUS_LAST:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                        _("input device on bus '%1$s' cannot be hot plugged."),
+                        virDomainInputBusTypeToString(input->bus));
             return -1;
-
-        releaseaddr = true;
-
-        if (!(devprops = qemuBuildInputUSBDevProps(vm->def, input)))
-            goto cleanup;
-        break;
-
-    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
-        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
-            goto cleanup;
-
-        if (!(devprops = qemuBuildInputVirtioDevProps(vm->def, input, priv->qemuCaps)))
-            goto cleanup;
-        break;
-
-    case VIR_DOMAIN_INPUT_BUS_DEFAULT:
-    case VIR_DOMAIN_INPUT_BUS_PS2:
-    case VIR_DOMAIN_INPUT_BUS_XEN:
-    case VIR_DOMAIN_INPUT_BUS_PARALLELS:
-    case VIR_DOMAIN_INPUT_BUS_NONE:
-    case VIR_DOMAIN_INPUT_BUS_LAST:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("input device on bus '%1$s' cannot be hot plugged."),
-                       virDomainInputBusTypeToString(input->bus));
-        return -1;
+        }
     }
 
     if (qemuDomainNamespaceSetupInput(vm, input, &teardowndevice) < 0)
@@ -3066,9 +3070,14 @@ qemuDomainAttachInputDevice(virDomainObj *vm,
     if (qemuDomainAttachExtensionDevice(priv->mon, &input->info) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0) {
-        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &input->info));
-        goto exit_monitor;
+    if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+        if (qemuMonitorAddObject(priv->mon, &devprops, NULL) < 0)
+            goto exit_monitor;
+    } else {
+        if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0) {
+            ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &input->info));
+            goto exit_monitor;
+        }
     }
 
     qemuDomainObjExitMonitor(vm);
@@ -6093,6 +6102,29 @@ qemuDomainDetachDeviceLease(virQEMUDriver *driver,
 }
 
 
+static int
+qemuDomainDetachDeviceInputEvdev(virQEMUDriver *driver,
+                                 virDomainObj *vm,
+                                 virDomainDeviceDef *detach)
+{
+    int rc;
+    virDomainInputDef *input = detach->data.input;
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    qemuDomainObjEnterMonitor(vm);
+    rc = qemuMonitorDelObject(priv->mon, input->info.alias, true);
+    qemuDomainObjExitMonitor(vm);
+
+    if (rc < 0)
+        return -1;
+
+    if (qemuDomainRemoveDevice(driver, vm, detach) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuDomainDetachDeviceLive(virDomainObj *vm,
                            virDomainDeviceDef *match,
@@ -6176,6 +6208,13 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
                                       &detach.data.input) < 0) {
             return -1;
         }
+
+        /*
+         * Input devices of type 'evdev' are regular QOM objects
+         * (-object instead of -device), so it must be handled differently.
+         */
+        if (detach.data.input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)
+            return qemuDomainDetachDeviceInputEvdev(driver, vm, &detach);
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         if (qemuDomainDetachPrepRedirdev(vm, match->data.redirdev,
