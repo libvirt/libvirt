@@ -4798,7 +4798,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
                               "p:bootindex", dev->info->effectiveBootIndex,
                               "S:failover_pair_id", failover_pair_id,
                               "S:display", qemuOnOffAuto(pcisrc->display),
-                              "B:ramfb", pcisrc->ramfb,
+                              "T:ramfb", pcisrc->ramfb,
                               NULL) < 0)
         return NULL;
 

@@ -39,6 +39,12 @@
       </source>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='no' display='off' ramfb='off'>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x13' function='0x6'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </hostdev>
     <memballoon model='none'/>
   </devices>
 </domain>

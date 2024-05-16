@@ -29,5 +29,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.config \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -vnc 127.0.0.1:0,audiodev=audio1 \
 -device '{"driver":"vfio-pci-nohotplug","host":"0000:06:12.5","id":"hostdev0","display":"on","ramfb":true,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"vfio-pci","host":"0000:06:13.6","id":"hostdev1","display":"off","ramfb":false,"bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
