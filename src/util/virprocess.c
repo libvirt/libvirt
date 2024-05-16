@@ -452,8 +452,9 @@ int virProcessSetAffinity(pid_t pid,
 {
     size_t i;
     cpuset_t mask;
+    g_autofree char *mapStr = virBitmapFormat(map);
 
-    VIR_DEBUG("Set process affinity on %lld", (long long)pid);
+    VIR_DEBUG("Set process affinity on %1$lld to %2$s", (long long)pid, mapStr);
 
     CPU_ZERO(&mask);
     for (i = 0; i < virBitmapSize(map); i++) {
@@ -509,8 +510,9 @@ int virProcessSetAffinity(pid_t pid, virBitmap *map, bool quiet)
     size_t masklen;
     cpu_set_t *mask;
     int rv = -1;
+    g_autofree char *mapStr = virBitmapFormat(map);
 
-    VIR_DEBUG("Set process affinity on %lld", (long long)pid);
+    VIR_DEBUG("Set process affinity on %1$lld to %2$s", (long long)pid, mapStr);
 
     /* Not only may the statically allocated cpu_set_t be too small,
      * but there is no way to ask the kernel what size is large enough.
