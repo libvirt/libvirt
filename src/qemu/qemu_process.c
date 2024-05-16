@@ -2348,6 +2348,12 @@ qemuProcessGetAllCpuAffinity(virBitmap **cpumapRet)
         return -1;
 
     if (isolCpus) {
+        g_autofree char *isolCpusStr = virBitmapFormat(isolCpus);
+        g_autofree char *cpumapRetStr = virBitmapFormat(*cpumapRet);
+
+        VIR_INFO("Subtracting isolated CPUs %1$s from online CPUs %2$s",
+                 isolCpusStr, cpumapRetStr);
+
         virBitmapSubtract(*cpumapRet, isolCpus);
     }
 
