@@ -1946,7 +1946,7 @@ static int virNetClientIO(virNetClient *client,
     /* Check to see if another thread is dispatching */
     if (client->haveTheBuck) {
         /* Force other thread to wakeup from poll */
-        GSource *wakeup = g_idle_source_new();
+        g_autoptr(GSource) wakeup = g_idle_source_new();
         g_source_set_callback(wakeup, virNetClientIOWakeup, client->eventLoop, NULL);
         g_source_attach(wakeup, client->eventCtx);
 
@@ -1968,6 +1968,7 @@ static int virNetClientIO(virNetClient *client,
             return -1;
         }
 
+        g_source_destroy(wakeup);
         VIR_DEBUG("Woken up from sleep head=%p call=%p",
                   client->waitDispatch, thiscall);
         /* Three reasons we can be woken up
