@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-05-02 05:56+0000\n"
+"PO-Revision-Date: 2024-05-19 20:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.2\n"
+"X-Generator: Weblate 5.5.5\n"
 
 msgid ""
 "\n"
@@ -27205,11 +27205,10 @@ msgid "filter by storage pool name or uuid"
 msgstr "filtrera efter lagringspoolsnamn eller -uuid"
 
 msgid "filter creation API error"
-msgstr ""
+msgstr "fel i filterskapande API"
 
-#, fuzzy
 msgid "filter has no name"
-msgstr "misslyckades att få värdnamn"
+msgstr "filtret har inget namn"
 
 #, c-format
 msgid "filter with same UUID but different name ('%1$s') already exists"
@@ -27218,28 +27217,30 @@ msgstr "filter med samma UUID men annat namn (”%1$s”) finns redan"
 msgid "filter would introduce a loop"
 msgstr "filtret skulle införa en slinga"
 
-#, fuzzy, c-format
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "filter stödjs inte på gränssnitt av typen %1$s"
 
 msgid "find parent of checkpoint name"
-msgstr ""
+msgstr "hitta föräldern till ett kontrollpunktsnamn"
 
 msgid "find parent of current snapshot"
-msgstr ""
+msgstr "hitta föräldern till den aktuella ögonblicksbilden"
 
 msgid "find parent of snapshot name"
-msgstr ""
+msgstr "hitta föräldern till ögonblicksbildsnamnet"
 
 msgid "find potential storage pool sources"
-msgstr ""
+msgstr "hitta potentiella källor till lagringspoolen"
 
 msgid "finish step ignored that migration was cancelled"
-msgstr ""
+msgstr "avslutningssteget ignorerade att migreringen avbröts"
 
 #, c-format
 msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
+"avslutningsblockjobbet misslyckades när disken ”%1$s” raderades "
+"ögonblicksbild: ”%2$s”"
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -27248,27 +27249,37 @@ msgid ""
 "version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
 "with-firewalld-zone"
 msgstr ""
+"firewalld är satt till att använda bakänden nftables, men den nödvändiga "
+"firewalld-zonen ”libvirt” saknas. Sätt antingen bakänden för firewalld till "
+"”iptables”, eller se till att firewalld har en zon ”libvirt” genom att "
+"uppgradera firewalld till en version som stödjer regelprioriteter (0.7.0+) "
+"och/eller genom att bygga om libvirt med --with-firewalld-zone"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr ""
+"automatval av fast programvara är inte implementerat för denna drivrutin"
 
 msgid ""
 "firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
 "'secure-boot' is disabled"
 msgstr ""
+"funktionen ”enrolled-keys” i den fasta programvaran kan inte aktiveras när "
+"funktionen ”secure-boot” i den fasta programvaran är avaktiverad"
 
 #, c-format
 msgid "firmware type '%1$s' does not support nvram"
-msgstr ""
+msgstr "fast programavara av typen ”%1$s” stödjer inte nvram"
 
 msgid "fixed audio settings requires mixing engine"
-msgstr ""
+msgstr "fasta audioinställningar kräver en mixermotor"
 
 msgid "flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only with non-null base"
 msgstr ""
+"flaggan VIR_DOMAIN_BLOCK_REBASE_RELATIVE är endast giltig med en annan bas "
+"än null"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
-msgstr ""
+msgstr "flaggparametrar måste vara VIR_MEMORY_VIRTUAL eller VIR_MEMORY_PHYSICAL"
 
 #, c-format
 msgid ""
@@ -27276,23 +27287,26 @@ msgid ""
 "\taction required: %1$d\n"
 "\trecursive: %2$d\n"
 msgstr ""
+"flaggor:\n"
+"\tåtgärd krävs: %1$d\n"
+"\trekursiv: %2$d\n"
 
 msgid "floor attribute is not supported for this config"
-msgstr ""
+msgstr "golvattributet stödjs inte för denna konfiguration"
 
 msgid "floppy device hotplug isn't supported"
-msgstr ""
+msgstr "inkoppling i drift av floppyenheter stödjs inte"
 
 msgid "fmode and dmode must be used with accessmode=mapped"
-msgstr ""
+msgstr "fmode och dmode måste användas med accessmode=mapped"
 
-#, c-format
+#, c-format, fuzzy
 msgid "for %1$s module"
-msgstr ""
+msgstr "för modulen %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr ""
+msgstr "för Linux ≥ %1$d.%2$d.%3$d"
 
 msgid "for PowerPC KVM module loaded"
 msgstr ""
