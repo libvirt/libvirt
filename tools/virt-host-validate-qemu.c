@@ -64,7 +64,7 @@ int virHostValidateQEMU(void)
     }
 
     if (hasVirtFlag) {
-        virHostMsgCheck("QEMU", "%s", _("for hardware virtualization"));
+        virHostMsgCheck("QEMU", "%s", _("Checking for hardware virtualization"));
         if (hasHwVirt) {
             virHostMsgPass();
         } else {
@@ -86,7 +86,7 @@ int virHostValidateQEMU(void)
     }
 
     if (arch == VIR_ARCH_PPC64 || arch == VIR_ARCH_PPC64LE) {
-        virHostMsgCheck("QEMU", "%s", _("for PowerPC KVM module loaded"));
+        virHostMsgCheck("QEMU", "%s", _("Checking for PowerPC KVM module loaded"));
 
         if (!virHostKernelModuleIsLoaded("kvm_hv"))
             virHostMsgFail(VIR_HOST_VALIDATE_WARN,

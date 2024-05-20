@@ -66,7 +66,7 @@ void virHostMsgCheck(const char *prefix,
     msg = g_strdup_vprintf(format, args);
     va_end(args);
 
-    fprintf(stdout, _("%1$6s: Checking %2$-60s: "), prefix, msg);
+    fprintf(stdout, "%1$6s: %2$-69s: ", prefix, msg);
 }
 
 static bool virHostMsgWantEscape(void)
@@ -137,7 +137,7 @@ int virHostValidateDeviceExists(const char *hvname,
                                 virHostValidateLevel level,
                                 const char *hint)
 {
-    virHostMsgCheck(hvname, "if device %s exists", dev_name);
+    virHostMsgCheck(hvname, _("Checking if device '%1$s' exists"), dev_name);
 
     if (access(dev_name, F_OK) < 0) {
         virHostMsgFail(level, "%s", hint);
@@ -154,7 +154,7 @@ int virHostValidateDeviceAccessible(const char *hvname,
                                     virHostValidateLevel level,
                                     const char *hint)
 {
-    virHostMsgCheck(hvname, "if device %s is accessible", dev_name);
+    virHostMsgCheck(hvname, _("Checking if device '%1$s' is accessible"), dev_name);
 
     if (access(dev_name, R_OK|W_OK) < 0) {
         virHostMsgFail(level, "%s", hint);
@@ -173,7 +173,7 @@ int virHostValidateNamespace(const char *hvname,
 {
     char nspath[100];
 
-    virHostMsgCheck(hvname, "for namespace %s", ns_name);
+    virHostMsgCheck(hvname, _("Checking for namespace '%1$s'"), ns_name);
 
     g_snprintf(nspath, sizeof(nspath), "/proc/self/ns/%s", ns_name);
 
@@ -256,7 +256,7 @@ int virHostValidateLinuxKernel(const char *hvname,
 
     uname(&uts);
 
-    virHostMsgCheck(hvname, _("for Linux >= %1$d.%2$d.%3$d"),
+    virHostMsgCheck(hvname, _("Checking for Linux >= %1$d.%2$d.%3$d"),
                     ((version >> 16) & 0xff),
                     ((version >> 8) & 0xff),
                     (version & 0xff));
@@ -302,7 +302,7 @@ int virHostValidateCGroupControllers(const char *hvname,
         if (!(controllers & flag))
             continue;
 
-        virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
+        virHostMsgCheck(hvname, _("Checking for cgroup '%1$s' controller support"), cg_name);
 
         if (!virCgroupHasController(group, i)) {
             ret = VIR_HOST_VALIDATE_FAILURE(level);
@@ -337,7 +337,7 @@ int virHostValidateIOMMU(const char *hvname,
     struct dirent *dent;
     int rc;
 
-    virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
+    virHostMsgCheck(hvname, "%s", _("Checking for device assignment IOMMU support"));
 
     flags = virHostValidateGetCPUFlags();
 
@@ -423,7 +423,7 @@ int virHostValidateIOMMU(const char *hvname,
     if (!S_ISDIR(sb.st_mode))
         return 0;
 
-    virHostMsgCheck(hvname, "%s", _("if IOMMU is enabled by kernel"));
+    virHostMsgCheck(hvname, "%s", _("Checking if IOMMU is enabled by kernel"));
     if (sb.st_nlink <= 2) {
         if (bootarg)
             virHostMsgFail(level,
@@ -483,7 +483,7 @@ int virHostValidateSecureGuests(const char *hvname,
     else if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SEV))
         hasAMDSev = true;
 
-    virHostMsgCheck(hvname, "%s", _("for secure guest support"));
+    virHostMsgCheck(hvname, "%s", _("Checking for secure guest support"));
     if (ARCH_IS_S390(arch)) {
         if (hasFac158) {
             if (!virFileIsDir("/sys/firmware/uv")) {

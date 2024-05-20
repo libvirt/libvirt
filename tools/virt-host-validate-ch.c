@@ -57,7 +57,7 @@ int virHostValidateCh(void)
     }
 
     if (hasVirtFlag) {
-        virHostMsgCheck("CH", "%s", _("for hardware virtualization"));
+        virHostMsgCheck("CH", "%s", _("Checking for hardware virtualization"));
         if (hasHwVirt) {
             virHostMsgPass();
         } else {

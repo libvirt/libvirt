@@ -28,7 +28,7 @@
 #include "virt-host-validate-common.h"
 
 #define MODULE_STATUS(mod, err_msg, err_code) \
-    virHostMsgCheck("BHYVE", _("for %1$s module"), #mod); \
+    virHostMsgCheck("BHYVE", _("Checking for %1$s module"), #mod); \
     if (mod ## _loaded) { \
         virHostMsgPass(); \
     } else { \
