@@ -211,4 +211,3 @@ SEE ALSO
 
 virsh(1), libvirtd(8),
 `https://libvirt.org/daemons.html <https://libvirt.org/daemons.html>`_,
-`https://libvirt.org/drvnetwork.html <https://libvirt.org/drvnetwork.html>`_

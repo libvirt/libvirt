@@ -35,7 +35,7 @@ virsh
    machine to be cloned to form a new virtual machine. It automates
    copying of data across to new disk images, and updates the UUID, MAC
    address, and name in the configuration.
-`virt-df <https://people.redhat.com/rjones/virt-df/>`__
+`virt-df <https://libguestfs.org/virt-df.1.html>`__
    Examine the utilization of each filesystem in a virtual machine from
    the comfort of the host machine. This tool peeks into the guest disks
    and determines how much space is used. It can cope with common Linux
@@ -235,13 +235,7 @@ Monitoring
    The plugins provided by Guido Günther allow to monitor various things
    like network and block I/O with
    `Munin <https://munin-monitoring.org/>`__.
-`Nagios-virt <https://people.redhat.com/rjones/nagios-virt/>`__
-   Nagios-virt is a configuration tool to add monitoring of your
-   virtualised domains to `Nagios <https://www.nagios.org/>`__. You can
-   use this tool to either set up a new Nagios installation for your Xen
-   or QEMU/KVM guests, or to integrate with your existing Nagios
-   installation.
-`PCP <https://pcp.io/man/man1/pmdalibvirt.1.html>`__
+`PCP <https://man7.org/linux/man-pages/man1/pmdalibvirt.1.html>`__
    The PCP libvirt PMDA (plugin) is part of the
    `PCP <https://pcp.io/>`__ toolkit and provides hypervisor and guest
    information and complete set of guest performance metrics. It

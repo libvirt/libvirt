@@ -75,5 +75,5 @@ PURPOSE
 SEE ALSO
 ========
 
-virsh(1), `online instructions <https://libvirt.org/locking.html>`_,
+virsh(1), `online instructions <https://libvirt.org/kbase/locking.html>`_,
 `https://libvirt.org/ <https://libvirt.org/>`_

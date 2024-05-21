@@ -211,4 +211,4 @@ SEE ALSO
 
 virsh(1), libvirtd(8),
 `https://libvirt.org/daemons.html <https://libvirt.org/daemons.html>`_,
-`https://libvirt.org/drvstorage.html <https://libvirt.org/drvstorage.html>`_
+`https://libvirt.org/storage.html <https://libvirt.org/storage.html>`_

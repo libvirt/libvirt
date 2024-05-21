@@ -12,7 +12,7 @@ space requirements.  The following outlines an efficient method to do
 that using libvirt's APIs.  This method involves concepts: the notion of
 `backing chains <https://libvirt.org/kbase/backing_chains.html>`_,
 `QCOW2 overlays
-<https://qemu.readthedocs.io/en/latest/interop/live-block-operations.html#disk-image-backing-chain-notation>`_,
+<https://www.qemu.org/docs/master/interop/live-block-operations.html#disk-image-backing-chain-notation>`_,
 and a special operation called "active block-commit", which allows
 live-merging an overlay disk image into its backing file.
 

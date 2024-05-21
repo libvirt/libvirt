@@ -13,7 +13,7 @@ Installation packages
 
 Users who need pre-built Windows DLLs of libvirt are advised to use the `Virt
 Viewer <https://virt-manager.org>`__ pre-compiled `Windows MSI
-packages <https://virt-manager.org/download/>`__
+packages <https://virt-manager.org/download.html>`__
 
 These installers include the libvirt, gtk-vnc and spice-gtk DLLs along with any
 of their pre-requisite supporting DLLs, the virsh command line tool and the

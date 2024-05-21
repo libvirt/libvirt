@@ -211,4 +211,4 @@ SEE ALSO
 
 virsh(1), libvirtd(8),
 `https://libvirt.org/daemons.html <https://libvirt.org/daemons.html>`_,
-`https://libvirt.org/drvvz.html <https://libvirt.org/drvvz.html>`_
+`https://libvirt.org/drvopenvz.html <https://libvirt.org/drvopenvz.html>`_
