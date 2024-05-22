@@ -2285,8 +2285,6 @@ virFileAccessibleAs(const char *path, int mode,
         return access(path, mode);
 
     ngroups = virGetGroupList(uid, gid, &groups);
-    if (ngroups < 0)
-        return -1;
 
     pid = virFork();
 
@@ -2408,8 +2406,6 @@ virFileOpenForked(const char *path,
      * NFS servers. */
 
     ngroups = virGetGroupList(uid, gid, &groups);
-    if (ngroups < 0)
-        return -errno;
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
         ret = -errno;
@@ -2709,8 +2705,6 @@ virFileRemove(const char *path,
         gid = getegid();
 
     ngroups = virGetGroupList(uid, gid, &groups);
-    if (ngroups < 0)
-        return -errno;
 
     pid = virFork();
 
@@ -2883,8 +2877,6 @@ virDirCreate(const char *path,
         gid = getegid();
 
     ngroups = virGetGroupList(uid, gid, &groups);
-    if (ngroups < 0)
-        return -errno;
 
     pid = virFork();
 

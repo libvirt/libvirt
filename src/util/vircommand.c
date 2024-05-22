@@ -735,8 +735,7 @@ virExec(virCommand *cmd)
         childerr = null;
     }
 
-    if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
-        goto cleanup;
+    ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups);
 
     pid = virFork();
 

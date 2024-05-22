@@ -908,9 +908,8 @@ static int test25(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    if ((ngroups = virGetGroupList(virCommandGetUID(cmd), virCommandGetGID(cmd),
-                                   &groups)) < 0)
-        goto cleanup;
+    ngroups = virGetGroupList(virCommandGetUID(cmd), virCommandGetGID(cmd),
+                              &groups);
 
     /* Now, fork and try to exec a nonexistent binary. */
     pid = virFork();

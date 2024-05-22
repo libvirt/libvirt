@@ -524,14 +524,9 @@ static int
 virSecurityDACPreFork(virSecurityManager *mgr)
 {
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);
-    int ngroups;
 
     g_clear_pointer(&priv->groups, g_free);
-    priv->ngroups = 0;
-    if ((ngroups = virGetGroupList(priv->user, priv->group,
-                                   &priv->groups)) < 0)
-        return -1;
-    priv->ngroups = ngroups;
+    priv->ngroups = virGetGroupList(priv->user, priv->group, &priv->groups);
     return 0;
 }
 

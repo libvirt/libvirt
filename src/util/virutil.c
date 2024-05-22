@@ -880,14 +880,16 @@ VIR_WARNINGS_NO_POINTER_SIGN
  * storing a malloc'd result into @list. If uid is -1 or doesn't exist in the
  * system database querying of the supplementary groups is skipped.
  *
- * Returns the size of the list on success, or -1 on failure with error
- * reported and errno set. May not be called between fork and exec.
+ * Returns the size of the list. Doesn't have an error path.
+ * May not be called between fork and exec.
  * */
 int
-virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
+virGetGroupList(uid_t uid,
+                gid_t gid,
+                gid_t **list)
 {
     int ret = 0;
-    char *user = NULL;
+    g_autofree char *user = NULL;
     gid_t primary;
 
     *list = NULL;
@@ -925,14 +927,12 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
 
         for (i = 0; i < ret; i++) {
             if ((*list)[i] == gid)
-                goto cleanup;
+                return ret;
         }
         VIR_APPEND_ELEMENT(*list, i, gid);
-        ret = i;
+        return i;
     }
 
- cleanup:
-    VIR_FREE(user);
     return ret;
 }
 

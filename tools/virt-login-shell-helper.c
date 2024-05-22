@@ -260,8 +260,7 @@ main(int argc, char **argv)
     if (!(conf = virConfReadFile(login_shell_path, 0)))
         goto cleanup;
 
-    if ((ngroups = virGetGroupList(uid, gid, &groups)) < 0)
-        goto cleanup;
+    ngroups = virGetGroupList(uid, gid, &groups);
 
     if (virLoginShellAllowedUser(conf, name, groups, ngroups) < 0)
         goto cleanup;
