@@ -138,7 +138,7 @@ def change_unit(name, action):
 
 
 def chcon(path, user, role, type):
-    print("Setting file context of {} to u={}, r={}, t={}...".format(progpath,
+    print("Setting file context of {} to u={}, r={}, t={}...".format(path,
                                                                      user,
                                                                      role,
                                                                      type))
@@ -187,6 +187,10 @@ else:
     try:
         dorestorecon = False
         progpath = shutil.which(prog)
+        if not progpath:
+            raise Exception("Can't find executable {}"
+                            .format(prog))
+        progpath = os.path.abspath(progpath)
         if len(try_stop_units):
             print("Temporarily stopping systemd units...")
 
@@ -206,10 +210,6 @@ else:
                                 "Selinux process context can only be set when "
                                 "executing a daemon directly without wrapper "
                                 "commands".format(prog))
-
-            if not progpath:
-                raise Exception("Can't find executable {} for selinux labeling"
-                                .format(prog))
 
             if not progpath.startswith(os.path.abspath(here)):
                 raise Exception("Refusing to change selinux context of file "
