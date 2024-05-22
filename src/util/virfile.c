@@ -2330,8 +2330,12 @@ virFileAccessibleAs(const char *path, int mode,
  * opened as "fd" if it's not correct AND the flags say it should be
  * forced. */
 static int
-virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
-                          uid_t uid, gid_t gid, unsigned int flags)
+virFileOpenForceOwnerMode(const char *path,
+                          int fd,
+                          mode_t mode,
+                          uid_t uid,
+                          gid_t gid,
+                          unsigned int flags)
 {
     int ret = 0;
     struct stat st;
@@ -2381,11 +2385,16 @@ virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
  * buildVol backend function expects the file to be deleted on error.
  */
 static int
-virFileOpenForked(const char *path, int openflags, mode_t mode,
-                  uid_t uid, gid_t gid, unsigned int flags)
+virFileOpenForked(const char *path,
+                  int openflags,
+                  mode_t mode,
+                  uid_t uid,
+                  gid_t gid,
+                  unsigned int flags)
 {
     pid_t pid;
-    int status = 0, ret = 0;
+    int status = 0;
+    int ret = 0;
     int recvfd_errno = 0;
     int fd = -1;
     int pair[2] = { -1, -1 };
@@ -2546,10 +2555,15 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
  * expects the file to be deleted on error.
  */
 int
-virFileOpenAs(const char *path, int openflags, mode_t mode,
-              uid_t uid, gid_t gid, unsigned int flags)
+virFileOpenAs(const char *path,
+              int openflags,
+              mode_t mode,
+              uid_t uid,
+              gid_t gid,
+              unsigned int flags)
 {
-    int ret = 0, fd = -1;
+    int ret = 0;
+    int fd = -1;
     bool created = false;
 
     /* allow using -1 to mean "current value" */
@@ -2563,9 +2577,9 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     if (!(flags & (VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK)))
         flags |= VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK;
 
-    if ((flags & VIR_FILE_OPEN_NOFORK)
-        || (geteuid() != 0)
-        || ((uid == 0) && (gid == 0))) {
+    if ((flags & VIR_FILE_OPEN_NOFORK) ||
+        (geteuid() != 0) ||
+        ((uid == 0) && (gid == 0))) {
 
         if ((fd = open(path, openflags, mode)) < 0) {
             ret = -errno;
