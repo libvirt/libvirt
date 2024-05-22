@@ -1429,11 +1429,12 @@ lxcSecurityInit(virLXCDriverConfig *cfg)
 }
 
 
-static int lxcStateInitialize(bool privileged,
-                              const char *root,
-                              bool monolithic G_GNUC_UNUSED,
-                              virStateInhibitCallback callback G_GNUC_UNUSED,
-                              void *opaque G_GNUC_UNUSED)
+static virDrvStateInitResult
+lxcStateInitialize(bool privileged,
+                   const char *root,
+                   bool monolithic G_GNUC_UNUSED,
+                   virStateInhibitCallback callback G_GNUC_UNUSED,
+                   void *opaque G_GNUC_UNUSED)
 {
     virLXCDriverConfig *cfg = NULL;
     bool autostart = true;

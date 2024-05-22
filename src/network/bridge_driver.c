@@ -576,7 +576,7 @@ firewalld_dbus_signal_callback(GDBusConnection *connection G_GNUC_UNUSED,
  *
  * Initialization function for the QEMU daemon
  */
-static int
+static virDrvStateInitResult
 networkStateInitialize(bool privileged,
                        const char *root,
                        bool monolithic G_GNUC_UNUSED,

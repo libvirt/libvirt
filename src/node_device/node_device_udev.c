@@ -2229,7 +2229,7 @@ mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
 }
 
 
-static int
+static virDrvStateInitResult
 nodeStateInitialize(bool privileged,
                     const char *root,
                     bool monolithic G_GNUC_UNUSED,

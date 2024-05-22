@@ -1365,11 +1365,12 @@ static int chStateCleanup(void)
     return 0;
 }
 
-static int chStateInitialize(bool privileged,
-                             const char *root,
-                             bool monolithic G_GNUC_UNUSED,
-                             virStateInhibitCallback callback G_GNUC_UNUSED,
-                             void *opaque G_GNUC_UNUSED)
+static virDrvStateInitResult
+chStateInitialize(bool privileged,
+                  const char *root,
+                  bool monolithic G_GNUC_UNUSED,
+                  virStateInhibitCallback callback G_GNUC_UNUSED,
+                  void *opaque G_GNUC_UNUSED)
 {
     int ret = VIR_DRV_STATE_INIT_ERROR;
     int rv;

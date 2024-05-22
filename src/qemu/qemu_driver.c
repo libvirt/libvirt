@@ -546,7 +546,7 @@ qemuDomainFindMaxID(virDomainObj *vm,
  *
  * Initialization function for the QEMU daemon
  */
-static int
+static virDrvStateInitResult
 qemuStateInitialize(bool privileged,
                     const char *root,
                     bool monolithic G_GNUC_UNUSED,

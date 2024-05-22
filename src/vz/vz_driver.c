@@ -4068,7 +4068,7 @@ vzStateCleanup(void)
     return 0;
 }
 
-static int
+static virDrvStateInitResult
 vzStateInitialize(bool privileged,
                   const char *root,
                   bool monolithic G_GNUC_UNUSED,

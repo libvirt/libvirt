@@ -174,7 +174,7 @@ static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapsho
 /* Helper functions for remoteOpen. */
 
 
-static int
+static virDrvStateInitResult
 remoteStateInitialize(bool privileged G_GNUC_UNUSED,
                       const char *root G_GNUC_UNUSED,
                       bool monolithic,

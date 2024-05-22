@@ -645,7 +645,7 @@ libxlAddDom0(libxlDriverPrivate *driver)
     return ret;
 }
 
-static int
+static virDrvStateInitResult
 libxlStateInitialize(bool privileged,
                      const char *root,
                      bool monolithic G_GNUC_UNUSED,

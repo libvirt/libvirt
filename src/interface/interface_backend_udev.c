@@ -1091,7 +1091,7 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
 static int
 udevStateCleanup(void);
 
-static int
+static virDrvStateInitResult
 udevStateInitialize(bool privileged,
                     const char *root,
                     bool monolithic G_GNUC_UNUSED,
