@@ -51,6 +51,14 @@ v10.4.0 (unreleased)
 
       $ virsh help list
 
+  * qemu: Fix ``virsh save`` and migration when storage in question is root_squashed NFS
+
+    Attempting to save a VM to a root_squash NFS mount or migrating with disks
+    hosted on such mount could, in some scenarios, result in error stating::
+
+      'Unknown error 255'
+
+    The bug was introduced in `v10.1.0 (2024-03-01)`_.
 
 
 v10.3.0 (2024-05-02)
