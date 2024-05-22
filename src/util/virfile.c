@@ -2441,8 +2441,7 @@ virFileOpenForked(const char *path,
             created = true;
 
         /* File is successfully open. Set permissions if requested. */
-        ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
-        if (ret < 0) {
+        if (virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags) < 0) {
             ret = -errno;
             virReportSystemError(errno,
                                  _("child process failed to force owner mode file '%1$s'"),
@@ -2450,9 +2449,7 @@ virFileOpenForked(const char *path,
             goto childerror;
         }
 
-        ret = virSocketSendFD(pair[1], fd);
-
-        if (ret < 0) {
+        if (virSocketSendFD(pair[1], fd) < 0) {
             ret = -errno;
             virReportSystemError(errno, "%s",
                                  _("child process failed to send fd to parent"));
