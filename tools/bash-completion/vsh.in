@@ -30,7 +30,7 @@ _@command@_complete()
         c=$((++c))
     done
 
-    CMDLINE=( )
+    CMDLINE=( "-q" )
     if [ -n "${RO}" ]; then
         CMDLINE+=("-r")
     fi
