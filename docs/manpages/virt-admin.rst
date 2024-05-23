@@ -320,7 +320,7 @@ daemon-timeout
 
 ::
 
-   daemon-timeout --timeout NUM
+   daemon-timeout [--timeout] NUM
 
 Sets the daemon timeout to the value of '--timeout' argument. Use ``--timeout 0``
 to disable auto-shutdown of the daemon.

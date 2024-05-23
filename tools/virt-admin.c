@@ -1009,6 +1009,7 @@ static const vshCmdOptDef opts_daemon_timeout[] = {
     {.name = "timeout",
      .type = VSH_OT_INT,
      .required = true,
+     .positional = true,
      .help = N_("number of seconds the daemon will run without any active connection"),
     },
     {.name = NULL}
