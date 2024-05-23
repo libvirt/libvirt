@@ -236,7 +236,7 @@ nftablesAddInput(virFirewall *fw,
     virFirewallAddCmd(fw, layer, "insert", "rule",
                       layerStr, VIR_NFTABLES_PRIVATE_TABLE,
                       VIR_NFTABLES_INPUT_CHAIN,
-                      "iifname", iface,
+                      "iif", iface,
                       tcp ? "tcp" : "udp",
                       "dport", portstr,
                       "counter", "accept",
@@ -257,7 +257,7 @@ nftablesAddOutput(virFirewall *fw,
     virFirewallAddCmd(fw, layer, "insert", "rule",
                       layerStr, VIR_NFTABLES_PRIVATE_TABLE,
                       VIR_NFTABLES_OUTPUT_CHAIN,
-                      "oifname", iface,
+                      "oif", iface,
                       tcp ? "tcp" : "udp",
                       "dport", portstr,
                       "counter", "accept",
@@ -359,10 +359,10 @@ nftablesAddForwardAllowOut(virFirewall *fw,
                               layerStr, VIR_NFTABLES_PRIVATE_TABLE,
                               VIR_NFTABLES_FWD_OUT_CHAIN,
                               layerStr, "saddr", networkstr,
-                              "iifname", iface, NULL);
+                              "iif", iface, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "oifname", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "oif", physdev, NULL);
 
     virFirewallCmdAddArgList(fw, fwCmd, "counter", "accept", NULL);
 
@@ -398,9 +398,9 @@ nftablesAddForwardAllowRelatedIn(virFirewall *fw,
                               VIR_NFTABLES_FWD_IN_CHAIN, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "iifname", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "iif", physdev, NULL);
 
-    virFirewallCmdAddArgList(fw, fwCmd, "oifname", iface,
+    virFirewallCmdAddArgList(fw, fwCmd, "oif", iface,
                              layerStr, "daddr", networkstr,
                              "ct", "state", "related,established",
                              "counter", "accept", NULL);
@@ -437,9 +437,9 @@ nftablesAddForwardAllowIn(virFirewall *fw,
                              layerStr, "daddr", networkstr, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "iifname", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "iif", physdev, NULL);
 
-    virFirewallCmdAddArgList(fw, fwCmd, "oifname", iface,
+    virFirewallCmdAddArgList(fw, fwCmd, "oif", iface,
                               "counter", "accept", NULL);
     return 0;
 }
@@ -461,8 +461,8 @@ nftablesAddForwardAllowCross(virFirewall *fw,
                       nftablesLayerTypeToString(layer),
                       VIR_NFTABLES_PRIVATE_TABLE,
                       VIR_NFTABLES_FWD_X_CHAIN,
-                      "iifname", iface,
-                      "oifname", iface,
+                      "iif", iface,
+                      "oif", iface,
                       "counter", "accept",
                       NULL);
 }
@@ -485,7 +485,7 @@ nftablesAddForwardRejectOut(virFirewall *fw,
                       nftablesLayerTypeToString(layer),
                       VIR_NFTABLES_PRIVATE_TABLE,
                       VIR_NFTABLES_FWD_OUT_CHAIN,
-                      "iifname", iface,
+                      "iif", iface,
                       "counter", "reject",
                       NULL);
 }
@@ -508,7 +508,7 @@ nftablesAddForwardRejectIn(virFirewall *fw,
                       nftablesLayerTypeToString(layer),
                       VIR_NFTABLES_PRIVATE_TABLE,
                       VIR_NFTABLES_FWD_IN_CHAIN,
-                      "oifname", iface,
+                      "oif", iface,
                       "counter", "reject",
                       NULL);
 }
@@ -566,7 +566,7 @@ nftablesAddForwardMasquerade(virFirewall *fw,
                              layerStr, "daddr", "!=", networkstr, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "oifname", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "oif", physdev, NULL);
 
     if (protocol && protocol[0]) {
         if (port->start == 0 && port->end == 0) {
@@ -634,7 +634,7 @@ nftablesAddDontMasquerade(virFirewall *fw,
                               VIR_NFTABLES_NAT_POSTROUTE_CHAIN, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "oifname", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "oif", physdev, NULL);
 
     virFirewallCmdAddArgList(fw, fwCmd,
                              layerStr, "saddr", networkstr,

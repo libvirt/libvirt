@@ -4,7 +4,7 @@ rule \
 ip \
 libvirt_network \
 guest_output \
-iifname \
+iif \
 virbr0 \
 counter \
 reject
@@ -14,7 +14,7 @@ rule \
 ip \
 libvirt_network \
 guest_input \
-oifname \
+oif \
 virbr0 \
 counter \
 reject
@@ -24,9 +24,9 @@ rule \
 ip \
 libvirt_network \
 guest_cross \
-iifname \
+iif \
 virbr0 \
-oifname \
+oif \
 virbr0 \
 counter \
 accept
@@ -39,7 +39,7 @@ guest_output \
 ip \
 saddr \
 192.168.122.0/24 \
-iifname \
+iif \
 virbr0 \
 counter \
 accept
@@ -52,7 +52,7 @@ guest_input \
 ip \
 daddr \
 192.168.122.0/24 \
-oifname \
+oif \
 virbr0 \
 counter \
 accept

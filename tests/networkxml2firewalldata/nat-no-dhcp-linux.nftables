@@ -4,7 +4,7 @@ rule \
 ip \
 libvirt_network \
 guest_output \
-iifname \
+iif \
 virbr0 \
 counter \
 reject
@@ -14,7 +14,7 @@ rule \
 ip \
 libvirt_network \
 guest_input \
-oifname \
+oif \
 virbr0 \
 counter \
 reject
@@ -24,9 +24,9 @@ rule \
 ip \
 libvirt_network \
 guest_cross \
-iifname \
+iif \
 virbr0 \
-oifname \
+oif \
 virbr0 \
 counter \
 accept
@@ -36,7 +36,7 @@ rule \
 ip6 \
 libvirt_network \
 guest_output \
-iifname \
+iif \
 virbr0 \
 counter \
 reject
@@ -46,7 +46,7 @@ rule \
 ip6 \
 libvirt_network \
 guest_input \
-oifname \
+oif \
 virbr0 \
 counter \
 reject
@@ -56,9 +56,9 @@ rule \
 ip6 \
 libvirt_network \
 guest_cross \
-iifname \
+iif \
 virbr0 \
-oifname \
+oif \
 virbr0 \
 counter \
 accept
@@ -71,7 +71,7 @@ guest_output \
 ip \
 saddr \
 192.168.122.0/24 \
-iifname \
+iif \
 virbr0 \
 counter \
 accept
@@ -81,7 +81,7 @@ rule \
 ip \
 libvirt_network \
 guest_input \
-oifname \
+oif \
 virbr0 \
 ip \
 daddr \
@@ -183,7 +183,7 @@ guest_output \
 ip6 \
 saddr \
 2001:db8:ca2:2::/64 \
-iifname \
+iif \
 virbr0 \
 counter \
 accept
@@ -196,7 +196,7 @@ guest_input \
 ip6 \
 daddr \
 2001:db8:ca2:2::/64 \
-oifname \
+oif \
 virbr0 \
 counter \
 accept
