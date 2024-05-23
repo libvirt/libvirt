@@ -3488,17 +3488,20 @@ const vshCmdInfo info_complete = {
 
 #ifdef WITH_READLINE
 
-static virOnceControl vshCmdCompleteCloseStdinOnce = VIR_ONCE_CONTROL_INITIALIZER;
+static virOnceControl vshCmdCompleteCloseStdinStderrOnce = VIR_ONCE_CONTROL_INITIALIZER;
 
 static void
-vshCmdCompleteCloseStdin(void)
+vshCmdCompleteCloseStdinStderr(void)
 {
     /* In non-interactive mode which is how the 'complete' command is intended
      * to be used we need to ensure that any authentication callback will not
-     * attempt to read any input which would break the completion */
+     * attempt to read any input which would break the completion. Similarly,
+     * printing anything onto stderr should be avoided. */
     int stdin_fileno = STDIN_FILENO;
+    int stderr_fileno = STDERR_FILENO;
 
     VIR_FORCE_CLOSE(stdin_fileno);
+    VIR_FORCE_CLOSE(stderr_fileno);
 }
 
 
@@ -3519,7 +3522,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
      * need to prevent auth hooks reading any input. Therefore, we
      * have to close stdin and then connect ourselves. */
     if (!ctl->imode) {
-        if (virOnce(&vshCmdCompleteCloseStdinOnce, vshCmdCompleteCloseStdin) < 0)
+        if (virOnce(&vshCmdCompleteCloseStdinStderrOnce, vshCmdCompleteCloseStdinStderr) < 0)
             return false;
     }
 
