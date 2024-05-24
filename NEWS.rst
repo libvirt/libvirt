@@ -33,6 +33,16 @@ v10.4.0 (unreleased)
     ``<sound model='virtio'/>``. This model is available from QEMU 8.2.0
     onwards.
 
+  * network: use nftables to setup virtual network firewall rules
+
+    The network driver can now use nftables rules for the virtual
+    network firewalls, rather than iptables. With the standard build
+    options, nftables is preferred over iptables (with fallback to
+    iptables if nftables isn't installed), but this can be modified at
+    build time, or at runtime via the firewall_backend setting in
+    network.conf. (NB: the nwfilter driver still uses
+    ebtables/iptables).
+
 * **Improvements**
 
 * **Bug fixes**
