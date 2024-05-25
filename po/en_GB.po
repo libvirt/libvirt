@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-05-14 20:36+0000\n"
+"PO-Revision-Date: 2024-05-23 04:51+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1228,10 +1228,10 @@ msgstr "'%1$s' scheduler bitmap '%2$s' is empty"
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "'%1$s' starting from %2$llu has only %3$zd bytes available"
 
-#, fuzzy
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
-msgstr "Specified both --storage and --remove-all-storage"
+msgstr ""
+"'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 
 #, c-format
 msgid "':' not allowed in RBD source volume name '%1$s'"
@@ -1263,9 +1263,8 @@ msgstr "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' refers to a non-existent NUMA node cache"
 
-#, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr "'queues' is only supported by virtio-scsi controller"
+msgstr "'cmd_per_lun' is only supported by virtio-scsi controller"
 
 #, fuzzy
 msgid "'cow' storage format is not supported"
@@ -1311,7 +1310,7 @@ msgstr ""
 "field for disk or backup"
 
 msgid "'initiator' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "'initiator' refers to a non-existent NUMA node"
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1326,7 +1325,7 @@ msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'queues' is only supported by virtio-scsi controller"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
-msgstr ""
+msgstr "'legacy KVM' device assignment is no longer supported on this system"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "'logical-id' missing in reply of guest-get-vcpus"
@@ -1336,17 +1335,17 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr "'logical-id' missing in reply of guest-get-vcpus"
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr ""
+msgstr "'manual' memory snapshot mode not supported"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
-msgstr ""
+msgstr "'manual' snapshot mode is not supported by the test driver"
 
 #, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'queues' is only supported by virtio-scsi controller"
 
 msgid "'max_workers' must be greater than 0"
-msgstr ""
+msgstr "'max_workers' must be greater than 0"
 
 #, fuzzy, c-format
 msgid ""
@@ -1358,24 +1357,24 @@ msgstr ""
 
 #, c-format
 msgid "'model' attribute in <hostdev> is only supported when type='%1$s'"
-msgstr ""
+msgstr "'model' attribute in <hostdev> is only supported when type='%1$s'"
 
 #, fuzzy
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
 msgstr "'online' missing in reply of guest-get-vcpus"
 
 msgid "'name' missing in reply of guest-get-disks"
-msgstr ""
+msgstr "'name' missing in reply of guest-get-disks"
 
 #, fuzzy
 msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr "'online' missing in reply of guest-get-vcpus"
 
 msgid "'netns' namespace source can only be used with sharenet"
-msgstr ""
+msgstr "'netns' namespace source can only be used with sharenet"
 
 msgid "'network' attribute is required for listen type 'network'"
-msgstr ""
+msgstr "'network' attribute is required for listen type 'network'"
 
 #, fuzzy
 msgid "'network' attribute is valid only for listen type 'network'"
@@ -1383,7 +1382,7 @@ msgstr ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 
 msgid "'nfs' host must use TCP protocol"
-msgstr ""
+msgstr "'nfs' host must use TCP protocol"
 
 msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr ""
