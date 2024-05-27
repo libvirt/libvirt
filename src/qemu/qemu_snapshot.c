@@ -2260,6 +2260,8 @@ qemuSnapshotRevertExternalFinish(virDomainObj *vm,
                          snapdisk->src->path);
             }
 
+            virStorageSourceDeinit(snapdisk->src);
+
             virDomainSnapshotDiskDefClear(snapdisk);
         }
 
@@ -2277,6 +2279,8 @@ qemuSnapshotRevertExternalFinish(virDomainObj *vm,
                 VIR_WARN("Failed to remove snapshot image '%s'",
                          snapdisk->src->path);
             }
+
+            virStorageSourceDeinit(snapdisk->src);
         }
     }
 
