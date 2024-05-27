@@ -14,6 +14,9 @@
       <mac address='52:54:00:09:a4:37'/>
     </interface>
     <serial type='pty'/>
+    <!-- loongarch64 could probably use TPM but the necessary devices
+    are currently disabled in the default QEMU configuration for the
+    architecture. If that ever changes, add coverage here -->
     <video/>
     <memballoon model='none'/>
     <!-- No default model for <panic/> on loongarch64 -->

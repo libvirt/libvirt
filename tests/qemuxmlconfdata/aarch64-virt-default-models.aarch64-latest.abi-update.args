@@ -38,6 +38,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.2","addr":"0x0"}' \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
+-chardev socket,id=chrtpm,path=/dev/test \
+-tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
+-device '{"driver":"tpm-tis-device","tpmdev":"tpm-tpm0","id":"tpm0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-gpu-pci","id":"video0","max_outputs":1,"bus":"pci.5","addr":"0x0"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

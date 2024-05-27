@@ -14,6 +14,9 @@
       <mac address='52:54:00:09:a4:37'/>
     </interface>
     <serial type='pty'/>
+    <tpm>
+      <backend type='emulator'/>
+    </tpm>
     <video/>
     <memballoon model='none'/>
     <panic/>

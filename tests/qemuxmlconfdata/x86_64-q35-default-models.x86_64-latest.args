@@ -35,6 +35,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -device '{"driver":"rtl8139","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.2","addr":"0x1"}' \
 -chardev pty,id=charserial0 \
 -device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-chardev socket,id=chrtpm,path=/dev/test \
+-tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
+-device '{"driver":"tpm-tis","tpmdev":"tpm-tpm0","id":"tpm0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"cirrus-vga","id":"video0","bus":"pcie.0","addr":"0x1"}' \
 -global ICH9-LPC.noreboot=off \

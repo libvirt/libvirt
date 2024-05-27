@@ -58,6 +58,9 @@
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
+    <tpm model='tpm-tis'>
+      <backend type='emulator' version='1.2'/>
+    </tpm>
     <audio id='1' type='none'/>
     <video>
       <model type='virtio' heads='1' primary='yes'/>

@@ -56,6 +56,9 @@
     </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <tpm model='tpm-tis'>
+      <backend type='emulator' version='1.2'/>
+    </tpm>
     <audio id='1' type='none'/>
     <video>
       <model type='cirrus' vram='16384' heads='1' primary='yes'/>
