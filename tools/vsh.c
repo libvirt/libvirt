@@ -2820,7 +2820,7 @@ vshCompleterFilter(char ***list,
     newList = g_new0(char *, list_len + 1);
 
     for (i = 0; i < list_len; i++) {
-        if (!STRPREFIX((*list)[i], text)) {
+        if (text && !STRPREFIX((*list)[i], text)) {
             g_clear_pointer(&(*list)[i], g_free);
             continue;
         }
