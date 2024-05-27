@@ -4755,23 +4755,19 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
 
         switch (version) {
         case VIR_DOMAIN_TPM_VERSION_1_2:
-            /* TPM 1.2 + CRB do not work */
-            if (tpm->model == VIR_DOMAIN_TPM_MODEL_CRB) {
+            /* Only tpm-tis supports TPM 1.2, and even that is only
+             * on x86: for all other models and architectures, we
+             * want TPM 2.0 */
+            if (tpm->model != VIR_DOMAIN_TPM_MODEL_TIS) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unsupported interface '%1$s' for TPM 1.2"),
+                               _("TPM 1.2 is not supported for model '%1$s'"),
                                virDomainTPMModelTypeToString(tpm->model));
                 return -1;
             }
-            /* TPM 1.2 + SPAPR do not work with any 'type' (backend) */
-            if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("TPM 1.2 is not supported with the SPAPR device model"));
-                return -1;
-            }
-            /* TPM 1.2 + ARM does not work */
-            if (qemuDomainIsARMVirt(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("TPM 1.2 is not supported on ARM"));
+            if (!ARCH_IS_X86(def->os.arch)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("TPM 1.2 is not supported on architecture '%1$s'"),
+                               virArchToString(def->os.arch));
                 return -1;
             }
             break;
