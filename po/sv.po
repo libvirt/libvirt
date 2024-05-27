@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-05-25 20:36+0000\n"
+"PO-Revision-Date: 2024-05-27 14:28+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -27755,155 +27755,158 @@ msgid "host doesn't support passthrough of host PCI devices"
 msgstr "värden stödjer inte genomgång av värd-PCI-enheter"
 
 msgid "host isn't capable of IPv6"
-msgstr ""
+msgstr "värden är inte kababel till IPv6"
 
 msgid "host migration TLS directory not configured"
-msgstr ""
+msgstr "värdmigrering av TLS-kataloger är inte konfigurerat"
 
 msgid "host name for source of disk device"
-msgstr ""
+msgstr "värdnamnet för källan till diskenheten"
 
 #, c-format
 msgid "host pci device %1$04x:%2$02x:%3$02x.%4$d not found"
-msgstr ""
+msgstr "värd-pci-enhet %1$04x:%2$02x:%3$02x:%4$d finns inte"
 
 #, c-format
 msgid "host pci device %1$s not found"
-msgstr ""
+msgstr "värd-pci-enheten %1$s finns inte"
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %1$d > %2$d"
 msgstr ""
+"värden rapporterar att avbildningsbuffertlängden överskrider maximum: %1$d > "
+"%2$d"
 
 #, c-format
 msgid "host reports too many vCPUs: %1$d > %2$d"
-msgstr ""
+msgstr "värden rapporterar för många vCPU:er %1$d > %2$d"
 
 #, c-format
 msgid "host scsi device %1$s:%2$u:%3$u.%4$llu not found"
-msgstr ""
+msgstr "värd-scsi-enheten %1$s:%2$u:%3$u:%4$llu finns inte"
 
 #, c-format
 msgid "host scsi iSCSI path %1$s not found"
-msgstr ""
+msgstr "värd-scsi-iSCSI-sökvägen %1$s finns inte"
 
 msgid "host socket for source of disk device"
-msgstr ""
+msgstr "värduttaget för källan för diskenheten"
 
 msgid "host transport for source of disk device"
-msgstr ""
+msgstr "värdtransporten för källan för diskenheten"
 
 #, c-format
 msgid "host usb device %1$03d.%2$03d not found"
-msgstr ""
+msgstr "värd-usb-enheten %1$03d.%2$03d finns inte"
 
 #, c-format
 msgid "host usb device vendor=0x%1$.4x product=0x%2$.4x not found"
-msgstr ""
+msgstr "värd-usb-enheten leverantör=0x%1$.4x produkt=0x%2$.4x finns inte"
 
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "läget host-certificates behöver exakt tre certifikat"
 
 msgid "hostName field not available (missing VMware Tools?)"
-msgstr ""
+msgstr "fältet hostName är inte tillgängligt (saknas VMware Tools?)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "hostdev %1$s not found"
-msgstr "Domän hittades inte"
+msgstr "hostdev %1$s finns inte"
 
 msgid "hostdev does not have an alias"
-msgstr ""
+msgstr "hostdev har inte något alias"
 
 msgid "hostdev interface missing hostdev data"
-msgstr ""
+msgstr "hostdev-gränssnittet saknar hostdev-data"
 
 #, c-format
 msgid "hostdev invalid secret type '%1$s'"
-msgstr ""
+msgstr "hostdev har ogiltig hemlighetstyp ”%1$s”"
 
 #, c-format
 msgid "hostdev mode '%1$s' not supported"
-msgstr ""
+msgstr "hostdev-läget ”%1$s” stödjs inte"
 
 #, c-format
 msgid "hostdev mode 'capabilities' is not supported in %1$s"
-msgstr ""
+msgstr "hostdev-läget ”capabilities” stödjs inte i %1$s"
 
 #, c-format
 msgid ""
 "hostdev network '%1$s' lists '%2$s' in the device pool, but hostdev networks "
 "require all devices to be listed by PCI address, not network device name"
 msgstr ""
+"hostdev-nätverket ”%1$s” listar ”%2$s” i enhetspoolen, men hostdev-nätverk "
+"kräver att alla enheter listas med PCI-adress, inte nätverksenhetsnamn"
 
 #, c-format
 msgid "hostdev subsys type '%1$s' not supported"
-msgstr ""
+msgstr "hostdev-undersystemtypen ”%1$s” stödjs inte"
 
-#, fuzzy
 msgid "hostname must be specified for gluster sources"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "värdnamnet måste anges för gluster-källor"
 
-#, fuzzy
 msgid "hostname must be specified for iscsi sources"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "värdnamnet måste anges för iscsi-källor"
 
-#, fuzzy
 msgid "hostname must be specified for netfs sources"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "värdnamnet måste anges för netfs-källor"
 
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr ""
+"värdnamnet på destinationen slogs upp till localhost, men migrering kräver "
+"ett FQDN"
 
 #, c-format
 msgid "hot unplug is not supported for hostdev mode '%1$s'"
-msgstr ""
+msgstr "urkoppling i drift stödjs inte för hostdev-läget ”%1$s”"
 
 #, c-format
 msgid "hot unplug of watchdog of model %1$s is not supported"
-msgstr ""
+msgstr "urkoppling i drift av vakthunden av modell %1$s stödjs inte"
 
 #, c-format
 msgid "hotplug is not supported for hostdev mode '%1$s'"
-msgstr ""
+msgstr "inkoppling i drift stödjs inte för hostdev-läget ”%1$s”"
 
 #, c-format
 msgid "hotplug is not supported for hostdev subsys type '%1$s'"
-msgstr ""
+msgstr "inkoppling i drift stödjs inte för hostdev-undersystemtypen ”%1$s”"
 
 #, c-format
 msgid "hotplug is not supported for the %1$s device"
-msgstr ""
+msgstr "inkoppling i drift stödjs inte för enheten %1$s"
 
 #, c-format
 msgid "hotplug of interface type of %1$s is not implemented yet"
-msgstr ""
+msgstr "inkoppling av gränssnitt av typen %1$s är inte implementerat ännu"
 
 #, c-format
 msgid "hotplug of watchdog model '%1$s' is not supported"
-msgstr ""
+msgstr "inkoppling av vakthund av modell ”%1$s” stödjs inte"
 
 msgid "hpet timer is not supported by this architecture"
-msgstr ""
+msgstr "hpet-timer stödjs inte av denna arkitektur"
 
 msgid "http cookies are supported only with HTTP(S) protocol"
-msgstr ""
+msgstr "http-kakor stödjs endast med protokollet HTTP(S)"
 
 #, c-format
 msgid "hub type %1$s not supported"
-msgstr ""
+msgstr "nav av typen %1$s stödjs inte"
 
 msgid "hugepage size can't be zero"
-msgstr ""
+msgstr "hugepage-storleken kan inte vara noll"
 
 msgid "hugepages are not allowed with anonymous memory source"
-msgstr ""
+msgstr "hugepage är inte tillåtet med anonyma minneskällor"
 
 msgid "hugepages are not allowed with memory allocation ondemand"
-msgstr ""
+msgstr "hugepage är inte tillåtet med minnesallokering på begäran"
 
 msgid "hugepages is not supported with memfd memory source"
-msgstr ""
+msgstr "hugepage stödjs inte med minneskällan memfd"
 
 #, c-format
 msgid "hugepages: node %1$zd not found"
