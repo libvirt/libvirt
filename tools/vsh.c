@@ -3511,6 +3511,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     const vshClientHooks *hooks = ctl->hooks;
     const char *lastArg = NULL;
     const char **args = NULL;
+    char *old_rl_line_buffer = NULL;
     g_auto(GStrv) matches = NULL;
     char **iter;
 
@@ -3531,6 +3532,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
     vshReadlineInit(ctl);
 
+    old_rl_line_buffer = g_steal_pointer(&rl_line_buffer);
     if (!(rl_line_buffer = g_strdup(vshCommandOptArgvString(cmd, "string"))))
         rl_line_buffer = g_strdup("");
 
@@ -3540,6 +3542,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
     matches = vshReadlineCompletion(lastArg, 0, 0);
     g_clear_pointer(&rl_line_buffer, g_free);
+    rl_line_buffer = g_steal_pointer(&old_rl_line_buffer);
 
     if (!matches)
         return false;
