@@ -2382,6 +2382,11 @@ misc_summary = {
   'sysctl config': conf.has('WITH_SYSCTL'),
   'userfaultfd sysctl': conf.has('WITH_USERFAULTFD_SYSCTL'),
 }
+if conf.has('WITH_NETWORK')
+  misc_summary += {
+    'firewall backends': firewall_backend_priority,
+  }
+endif
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
 
 devtools_summary = {
