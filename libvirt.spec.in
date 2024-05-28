@@ -1387,6 +1387,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
+           -Dfirewall_backend_priority=nftables,iptables \
            -Ddocs=enabled \
            -Dtests=enabled \
            -Drpath=disabled \
