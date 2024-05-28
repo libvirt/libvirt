@@ -67,8 +67,12 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
     g_autofree char *fwBackendStr = NULL;
     bool fwBackendSelected = false;
     size_t i;
-    int fwBackends[] = { FIREWALL_BACKEND_DEFAULT_1, FIREWALL_BACKEND_DEFAULT_2 };
+    int fwBackends[] = {
+        FIREWALL_BACKEND_PRIORITY_0,
+        FIREWALL_BACKEND_PRIORITY_1,
+    };
     G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) == VIR_FIREWALL_BACKEND_LAST);
+    G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) == FIREWALL_BACKEND_PRIORITY_NUM);
     int nFwBackends = G_N_ELEMENTS(fwBackends);
 
     if (access(filename, R_OK) == 0) {

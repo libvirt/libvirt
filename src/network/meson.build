@@ -51,7 +51,8 @@ if conf.has('WITH_NETWORK')
   }
 
   network_options_conf = configuration_data({
-    'FIREWALL_BACKEND': firewall_backend_default_conf,
+    'FIREWALL_BACKEND_PRIORITY': ', '.join(firewall_backend_priority),
+    'FIREWALL_BACKEND': firewall_backend_priority[0],
   })
 
   network_conf = configure_file(
@@ -61,7 +62,8 @@ if conf.has('WITH_NETWORK')
   )
 
   network_options_hack_conf = configuration_data({
-    'FIREWALL_BACKEND': firewall_backend_default_conf,
+    'FIREWALL_BACKEND_PRIORITY': ', '.join(firewall_backend_priority),
+    'FIREWALL_BACKEND': firewall_backend_priority[0],
     # This hack is necessary because the output file is going to be
     # used as input for another configure_file() call later, which
     # will take care of substituting @CONFIG@ with useful data

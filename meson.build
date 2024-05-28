@@ -1635,15 +1635,17 @@ endif
 
 if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD')
   conf.set('WITH_NETWORK', 1)
-  firewall_backend_default_1 = get_option('firewall_backend_default_1')
-  firewall_backend_default_conf = firewall_backend_default_1
-  firewall_backend_default_1 = 'VIR_FIREWALL_BACKEND_' + firewall_backend_default_1.to_upper()
-  conf.set('FIREWALL_BACKEND_DEFAULT_1', firewall_backend_default_1)
 
-  firewall_backend_default_2 = get_option('firewall_backend_default_2')
-  firewall_backend_default_2 = 'VIR_FIREWALL_BACKEND_' + firewall_backend_default_2.to_upper()
-  conf.set('FIREWALL_BACKEND_DEFAULT_2', firewall_backend_default_2)
+  firewall_backend_priority = get_option('firewall_backend_priority')
+  if (not firewall_backend_priority.contains('nftables') or
+      not firewall_backend_priority.contains('iptables') or
+      firewall_backend_priority.length() != 2)
+    error('invalid value for firewall_backend_priority option')
+  endif
 
+  conf.set('FIREWALL_BACKEND_PRIORITY_0', 'VIR_FIREWALL_BACKEND_' + firewall_backend_priority[0].to_upper())
+  conf.set('FIREWALL_BACKEND_PRIORITY_1', 'VIR_FIREWALL_BACKEND_' + firewall_backend_priority[1].to_upper())
+  conf.set('FIREWALL_BACKEND_PRIORITY_NUM', firewall_backend_priority.length())
 elif get_option('driver_network').enabled()
   error('libvirtd must be enabled to build the network driver')
 endif
