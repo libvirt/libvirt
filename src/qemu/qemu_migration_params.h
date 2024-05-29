@@ -87,6 +87,9 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              unsigned int flags,
                              qemuMigrationParty party);
 
+qemuMigrationParams *
+qemuMigrationParamsForSave(bool sparse);
+
 int
 qemuMigrationParamsDump(qemuMigrationParams *migParams,
                         virTypedParameterPtr *params,

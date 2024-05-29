@@ -792,6 +792,27 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 }
 
 
+qemuMigrationParams *
+qemuMigrationParamsForSave(bool sparse)
+{
+    g_autoptr(qemuMigrationParams) saveParams = NULL;
+
+    if (!(saveParams = qemuMigrationParamsNew()))
+        return NULL;
+
+    if (sparse) {
+        if (virBitmapSetBit(saveParams->caps, QEMU_MIGRATION_CAP_MAPPED_RAM) < 0)
+            return NULL;
+        if (virBitmapSetBit(saveParams->caps, QEMU_MIGRATION_CAP_MULTIFD) < 0)
+            return NULL;
+        saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].value.i = 1;
+        saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].set = true;
+    }
+
+    return g_steal_pointer(&saveParams);
+}
+
+
 int
 qemuMigrationParamsDump(qemuMigrationParams *migParams,
                         virTypedParameterPtr *params,

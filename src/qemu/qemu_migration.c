@@ -7134,7 +7134,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 
     /* Increase migration bandwidth to unlimited since target is a file.
      * Failure to change migration speed is not fatal. */
-    if (!(migParams = qemuMigrationParamsNew()))
+    if (!(migParams = qemuMigrationParamsForSave(false)))
         return -1;
 
     if (qemuMigrationParamsSetULL(migParams,
