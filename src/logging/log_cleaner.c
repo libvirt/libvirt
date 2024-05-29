@@ -82,10 +82,8 @@ virLogCleanerParseFilename(const char *path,
     *rotated_index = 0;
     rotated_index_str = g_match_info_fetch(matchInfo, 3);
 
-    if (!rotated_index_str)
-        return chain_prefix;
-
-    if (virStrToLong_i(rotated_index_str, NULL, 10, rotated_index) < 0) {
+    if (rotated_index_str && STRNEQ(rotated_index_str, "") &&
+        virStrToLong_i(rotated_index_str, NULL, 10, rotated_index) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse rotated index from '%1$s'"),
                        rotated_index_str);
