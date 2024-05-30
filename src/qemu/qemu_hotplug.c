@@ -40,6 +40,7 @@
 #include "domain_audit.h"
 #include "domain_cgroup.h"
 #include "domain_interface.h"
+#include "domain_validate.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
 #include "virlog.h"
@@ -3215,6 +3216,9 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
         return -1;
 
     qemuAssignDeviceFSAlias(vm->def, fs);
+
+    if (virDomainDeviceDefValidate(&dev, vm->def, 0, driver->xmlopt, priv->qemuCaps) < 0)
+        goto cleanup;
 
     chardev = virDomainChrSourceDefNew(priv->driver->xmlopt);
     chardev->type = VIR_DOMAIN_CHR_TYPE_UNIX;
