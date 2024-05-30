@@ -796,6 +796,7 @@ virDomainDefPostParse;
 virDomainActualNetDefValidate;
 virDomainDefOSValidate;
 virDomainDefValidate;
+virDomainDeviceDefValidate;
 virDomainDeviceValidateAliasForHotplug;
 virDomainDiskDefSourceLUNValidate;
 virDomainDiskDefValidateStartupPolicy;
