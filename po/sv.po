@@ -26938,7 +26938,8 @@ msgstr "misslyckades att validera prefixet för en ny XML-namnrymd"
 
 #, c-format
 msgid "failed to verify if RBD snapshot %1$s@%2$s is protected"
-msgstr "misslyckades att verifiera om RBD-ögonblicksbilden %1$s@%2$s är skyddad"
+msgstr ""
+"misslyckades att verifiera om RBD-ögonblicksbilden %1$s@%2$s är skyddad"
 
 #, c-format
 msgid "failed to verify if snapshot '%1$s/%2$s@%3$s' is protected"
@@ -27279,7 +27280,8 @@ msgstr ""
 "än null"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
-msgstr "flaggparametrar måste vara VIR_MEMORY_VIRTUAL eller VIR_MEMORY_PHYSICAL"
+msgstr ""
+"flaggparametrar måste vara VIR_MEMORY_VIRTUAL eller VIR_MEMORY_PHYSICAL"
 
 #, c-format
 msgid ""
@@ -27910,10 +27912,12 @@ msgstr "hugepage stödjs inte med minneskällan memfd"
 
 #, c-format
 msgid "hugepages: node %1$zd not found"
-msgstr ""
+msgstr "hugepages: nod %1$zd finns inte"
 
 msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
 msgstr ""
+"filsystemet hugetlbfs är inte monterat eller avaktiverat via "
+"admininstratörskonfiguration"
 
 msgid "hypervisor"
 msgstr "hypervisor"
@@ -27921,21 +27925,22 @@ msgstr "hypervisor"
 msgid "hypervisor connection URI"
 msgstr "anslutnings-URI för hypervisor"
 
-#, fuzzy
 msgid "hypervisor connection not open"
-msgstr "anslutnings-URI för hypervisor"
+msgstr "anslutningen till hypervisorn är inte öppen"
 
 msgid "hypervisor feature autodetection override"
-msgstr ""
+msgstr "åsidosättande av autodetekteringsfunktionen på hypervisorn"
 
 #, c-format
 msgid ""
 "hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
 "disabled at the same time"
 msgstr ""
+"hypervisorn gav motstridiga CPU-data: funktionen ”%1$s” är både aktiverad "
+"och avaktiverad på samma gång"
 
 msgid "i - turn off validation and try to redefine again"
-msgstr ""
+msgstr "i – slå av validering och försök att omdefiniera igen"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI-lagringspool stödjer inte skapande av volymer"
@@ -27947,7 +27952,7 @@ msgid "iSCSI storage pool does not support volume wiping"
 msgstr "iSCSI-lagringspool stödjer inte rensande av volymer"
 
 msgid "iSCSI usage specified, but target is missing"
-msgstr ""
+msgstr "iSCSI-användning angiven, men målet saknas"
 
 msgid "idle"
 msgstr "overksam"
@@ -27956,49 +27961,55 @@ msgid "idle:"
 msgstr "overksam:"
 
 msgid "ids of vcpus to manipulate"
-msgstr ""
+msgstr "id:n på vcpu:er att hantera"
 
 msgid "if IOMMU is enabled by kernel"
-msgstr ""
+msgstr "om IOMMU är aktiverat i kärnan"
 
 #, c-format
 msgid "ifkey \"%1$s\" has no req"
-msgstr ""
+msgstr "ifkey ”%1$s” har ingen req"
 
 msgid "ignore"
 msgstr "ignorera"
 
 #, c-format
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
-msgstr ""
+msgstr "ignorerar felsökningsnivån %1$d utanför intervallet [%2$d–%3$d]"
 
 msgid "image magic is incorrect"
-msgstr ""
+msgstr "avbildens magi är felaktig"
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
-msgstr ""
+msgstr "avbildens version stödjs inte (%1$d > %2$d)"
 
 msgid "implies --abort; conclude and pivot a copy or commit job"
 msgstr ""
+"implicerar --abort; avsluta och pivotera en kopia eller fastställ jobbet"
 
 msgid "implies --abort; request but don't wait for job end"
-msgstr ""
+msgstr "implicerar --abort; begär men vänta inte på att jobbet avslutas"
 
 msgid "implies --active --wait, pivot when commit is synced"
 msgstr ""
+"implicerar --active --wait, pivotera när fastställandet är synkroniserat"
 
 msgid "implies --active --wait, quit when commit is synced"
 msgstr ""
+"implicerar --active --wait, avsluta när fastställandet är synkroniserat"
 
 msgid "implies --info; output details rather than human summary"
 msgstr ""
+"implicerar --info; skriv ut detaljer istället för en sammanfattning för "
+"människa"
 
 msgid "implies --wait, abort if copy exceeds timeout (in seconds)"
 msgstr ""
+"implicerar --wait, avbryt om kopieringen översrkider tidsgränsen (i sekunder)"
 
 msgid "implies --wait, pivot when mirroring starts"
-msgstr ""
+msgstr "implicerar --wait, pivotera när speglingen börjar"
 
 msgid "implies --wait, quit when mirroring starts"
 msgstr ""
@@ -39272,6 +39283,138 @@ msgstr ""
 
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+"\n"
+"Användning:\n"
+"%1$s värdnamn port\n"
+"\n"
+"Värdnamnet skall vara på en av följande former:\n"
+"\n"
+"  qemu:system/$domnamn\t\tför domäner under qemu:///system\n"
+"  qemu:session/$domnamn\t\tfor domäner under qemu:///session\n"
+"  qemu/$domnamn\t\t\tförsöker slå upp $domnamn under system- följst av "
+"session-URI:n\n"
+
+msgid "Bad usage"
+msgstr "Felaktig användning"
+
+msgid "Can't apply empty firewall command"
+msgstr "Kan inte tillämpa ett tomt brandväggskommando"
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr "Kontrollerar att modulen %1$s finns"
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr "Kontrollerar att Linux ≥ %1$d.%2$d.%3$d"
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr "Kontrollerar att PowerPC KVM-modulen är laddad"
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr "Kontrollerar stöd för hanterare av cgroup:en ”%1$s”"
+
+msgid "Checking for device assignment IOMMU support"
+msgstr "Kontrollerar att det finns stöd för enhetstilldelnings-IOMMU"
+
+msgid "Checking for hardware virtualization"
+msgstr "Kontrollerar hårdvaruvirtualisering"
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr "Kontrollerar namnrymden ”%1$s”"
+
+msgid "Checking for secure guest support"
+msgstr "Kontrollerar säkert gäststöd"
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr "Kontrollerar om IOMMU är aktiverat av kärnan"
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr "Kontrollerar om enheten ”%1$s” finns"
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
+msgstr "Kontrollerar om enheten ”%1$s” är åtkomlig"
+
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr "Misslyckades att allokera ett AF_VSOCK-uttag"
+
+#, c-format
+msgid "Failed to apply firewall command '%1$s': %2$s"
+msgstr "Misslyckades att tillämpa brandväggskommandot ”%1$s”: %2$s"
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
+msgstr "Misslyckades att ansluta till vsock (cid=%1$llu port=%2$u)"
+
+#, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
+msgstr "Misslyckades att köra brandväggskommandot %1$s:%2$s"
+
+msgid "Invalid firewall command has 0 arguments"
+msgstr "Felaktigt brandväggskommando har 0 argument"
+
+msgid "No usable vsock found"
+msgstr "Ingen användbar vsock funnen"
+
+msgid "Unable to create firewall command"
+msgstr ""
+
+#, c-format
+msgid "Unable to parse port: %1$s"
+msgstr ""
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
+msgstr ""
+
+msgid "could not find a usable firewall backend"
+msgstr ""
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
+msgstr ""
+
+msgid "error in original firewall object"
+msgstr ""
+
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
+msgstr ""
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
+msgstr ""
+
+#, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
+msgstr ""
+
+msgid "virtio-sound controller is not supported in this QEMU binary"
 msgstr ""
 
 #, c-format
