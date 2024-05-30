@@ -4071,7 +4071,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
                 goto cleanup;
             }
         } else {
-            if (virDomainInterfaceClearQoS(vm->def, newdev) < 0)
+            if (virDomainInterfaceClearQoS(vm->def, olddev) < 0)
                 goto cleanup;
         }
 
