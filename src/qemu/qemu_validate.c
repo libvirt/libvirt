@@ -4519,7 +4519,10 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                 return -1;
             }
 
-            if (fs->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            /* Address type may be _NONE when validating and will be assigned
+             * later during hotplug */
+            if (fs->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                fs->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("setting virtiofs boot order is supported only with PCI bus"));
                 return -1;
