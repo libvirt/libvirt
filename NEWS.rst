@@ -93,6 +93,12 @@ v10.4.0 (unreleased)
     or PCI addresses. With recent support for the usb-net model, USB addresses
     for usb-net network devices are assigned automatically.
 
+ * qemu: Fix hotplug of ``virtiofs`` filesystem device with ``<boot order=`` set
+
+    The bug was introduced in `v10.3.0 (2024-05-02)`_ when attempting to reject
+    unsupported configurations. During hotplug the addresses are
+    assigned after validation and thus errorneously reject valid configs.
+
 
 v10.3.0 (2024-05-02)
 ====================
