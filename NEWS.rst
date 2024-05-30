@@ -45,6 +45,16 @@ v10.4.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: add zstd to supported compression formats
+
+    Extend the list of supported formats of QEMU save image by adding zstd
+    compression.
+
+  * qemu: Implement support for hotplugging evdev input devices
+
+    As of this release, hotplug and hotunplug of evdev ``<input/>`` devices is
+    supported.
+
 * **Bug fixes**
 
   * virsh/virt-admin: Fix ``--help`` option for all commands
@@ -69,6 +79,19 @@ v10.4.0 (unreleased)
       'Unknown error 255'
 
     The bug was introduced in `v10.1.0 (2024-03-01)`_.
+
+  * qemu: Don't set affinity for isolcpus unless explicitly requested
+
+    When starting a domain, by default libvirt sets affinity of QEMU process to
+    all online CPUs. This also included isolated CPUs (``isolcpus=``) which is
+    wrong. As of this release, isolated CPUs are left untouched, unless
+    explicitly configured in domain XML.
+
+  * qemu_hotplug: Properly assign USB address to hotplugged usb-net device
+
+    Previously, the network device hotplug logic would try to ensure only CCW
+    or PCI addresses. With recent support for the usb-net model, USB addresses
+    for usb-net network devices are assigned automatically.
 
 
 v10.3.0 (2024-05-02)
