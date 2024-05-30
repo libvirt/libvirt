@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-04-26 08:00+0000\n"
+"POT-Creation-Date: 2024-05-28 08:41+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -390,6 +390,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
 " Hypervisor types:\n"
@@ -466,10 +480,6 @@ msgstr ""
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
 msgstr ""
-
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
-msgstr "%1$6s: %2$-60s तपासत आहे: "
 
 #, c-format
 msgid "%1$s\n"
@@ -2047,6 +2057,9 @@ msgstr ""
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr ""
 
+msgid "Bad usage"
+msgstr ""
+
 msgid "Bad value for nativeMode"
 msgstr "nativeModeकरिता अयोग्य मूल्य"
 
@@ -2475,6 +2488,9 @@ msgstr "इतर USB कंट्रोलर समाविष्ट कर�
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "यजमान USB साधन समाविष्ट करणे अशक्य: ह्या यजमानात USB बंद आहे"
+
+msgid "Can't apply empty firewall command"
+msgstr ""
 
 #, fuzzy
 msgid "Can't change domain configuration in managed save state"
@@ -3518,6 +3534,45 @@ msgid ""
 "Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
+msgstr ""
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr ""
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr ""
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr ""
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr ""
+
+msgid "Checking for device assignment IOMMU support"
+msgstr ""
+
+msgid "Checking for hardware virtualization"
+msgstr ""
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr ""
+
+msgid "Checking for secure guest support"
+msgstr ""
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6425,6 +6480,9 @@ msgstr "सिग्नल हँडल वॉच् समाविष्ट �
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
 
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
 msgstr "PCI साधन सूची: %1$sचे वाटप अपयशी"
@@ -6444,8 +6502,8 @@ msgid "Failed to apply capabilities: %1$d"
 msgstr "क्षमता लागू करण्यास अपयशी: %1$d"
 
 #, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
-msgstr "firewall नियम %1$s: %2$s लागू करण्यास अपयशी"
+msgid "Failed to apply firewall command '%1$s': %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to attach device from %1$s"
@@ -6620,6 +6678,10 @@ msgstr "ssh एजंटसह जोडणी अपयशी"
 #, fuzzy
 msgid "Failed to connect to the admin server"
 msgstr "हायपरवाइजरशी पुनः जोडणी करण्यास अपयशी"
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to connect: %1$s"
@@ -8115,6 +8177,10 @@ msgstr "नवीन iscsi संवाद निर्माण करण्य
 #, c-format
 msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr "IQN '%2$s' सह iscsi संवाद सुधारीत करण्यासाठी आदेश '%1$s' चालवण्यास अपयशी"
+
+#, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -9875,6 +9941,9 @@ msgstr "मॉनिटरकरिता प्रतिक्षा करत�
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
+msgstr ""
+
+msgid "Invalid firewall command has 0 arguments"
 msgstr ""
 
 msgid "Invalid firmware name"
@@ -12349,6 +12418,9 @@ msgstr "SRIOV PF %1$s वरील वापरण्याजोगी Vf's अ
 #, fuzzy, c-format
 msgid "No usable target index found for %1$d"
 msgstr "'%s' करिता सॉकेट पत्ता आढळले नाही"
+
+msgid "No usable vsock found"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -16916,6 +16988,9 @@ msgstr "डिरेक्ट्री '%1$s' निर्माण करणे
 msgid "Unable to create epoll fd"
 msgstr "epoll fd निर्माण करणे अशक्य"
 
+msgid "Unable to create firewall command"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to create kqueue"
 msgstr "नियम निर्माण अशक्य"
@@ -16949,9 +17024,6 @@ msgstr "माइग्रेशन थ्रेड निर्माण कर
 #, fuzzy
 msgid "Unable to create pipes"
 msgstr "%s निर्माण करणे अशक्य"
-
-msgid "Unable to create rule"
-msgstr "नियम निर्माण अशक्य"
 
 msgid "Unable to create socket"
 msgstr "सॉकेट निर्माण अशक्य"
@@ -17861,6 +17933,10 @@ msgstr "लॉक स्तर %s वाचणे अशक्य"
 #, fuzzy
 msgid "Unable to parse ovs-vsctl output"
 msgstr "vzlist आऊटपुट वाचण्यास अपयशी"
+
+#, c-format
+msgid "Unable to parse port: %1$s"
+msgstr ""
 
 msgid "Unable to parse quota"
 msgstr "कोट वाचणे अशक्य"
@@ -18958,6 +19034,10 @@ msgstr "अपरिचीत अक्षर साधन प्रकार '%
 #, fuzzy, c-format
 msgid "Unknown compatibility mode %1$s"
 msgstr "अपरिचीत क्षमता प्रकार '%1$s'"
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown controller type %1$d"
@@ -23203,6 +23283,9 @@ msgstr ""
 msgid "could not determine max vcpus for the domain"
 msgstr "क्षेत्रकरिता कमाल vcpus ओळखणे अशक्य आहे"
 
+msgid "could not find a usable firewall backend"
+msgstr ""
+
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
@@ -23423,9 +23506,6 @@ msgstr "Xen हायपरवाइजर प्रविष्ट वापर
 msgid "could not use Xen hypervisor entry %1$s"
 msgstr "Xen हायपरवाइजर प्रविष्ट %1$s वापरू शकलो नाही"
 
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr ""
-
 msgid "couldn't fetch array of leases"
 msgstr "लिजेसचे अर्रे प्राप्त करणे अशक्य"
 
@@ -23490,6 +23570,12 @@ msgid ""
 msgstr ""
 "\"mac='%1$s'\" \"name='%2$s'\" \"ip='%3$s'\" सह अस्तित्वातील dhcp यजमान नोंदणी "
 "अशक्य, नेटवर्क '%4$s' अंतर्गत"
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
+msgstr ""
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -25061,6 +25147,9 @@ msgstr "सर्व्हिस पासून त्रुटी: %1$s"
 msgid "error getting profile status"
 msgstr "%s करिता प्रोफाइल बदलवतेवेळी त्रुटी"
 
+msgid "error in original firewall object"
+msgstr ""
+
 msgid "error in poll call"
 msgstr "पोल कॉलमध्ये त्रुटी"
 
@@ -26011,10 +26100,6 @@ msgstr "नेटवर्क '%1$s' मिळवण्यास अपयशी
 
 msgid "failed to get node information"
 msgstr "नोड माहिती मिळवण्यात अपयशी"
-
-#, c-format
-msgid "failed to get number of %1$s interfaces on host"
-msgstr "यजमानवरील %1$s इंटरफेसेस्ची संख्या प्राप्त करण्यास अपयशी"
 
 #, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
@@ -27048,26 +27133,6 @@ msgstr ""
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
 
-#, c-format
-msgid "for %1$s module"
-msgstr ""
-
-#, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr "Linux >= %1$d.%2$d.%3$d करिता"
-
-msgid "for PowerPC KVM module loaded"
-msgstr ""
-
-msgid "for device assignment IOMMU support"
-msgstr ""
-
-msgid "for hardware virtualization"
-msgstr ""
-
-msgid "for secure guest support"
-msgstr ""
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' गुणधर्ममधील वर्जित अक्षरे"
 
@@ -27693,9 +27758,6 @@ msgid "idle:"
 msgstr "रिकामे:"
 
 msgid "ids of vcpus to manipulate"
-msgstr ""
-
-msgid "if IOMMU is enabled by kernel"
 msgstr ""
 
 #, c-format
@@ -33765,6 +33827,12 @@ msgstr ""
 msgid "range %1$s - %2$s start larger than end"
 msgstr ""
 
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
+msgstr ""
+
 msgid "rawio can be used only with device='lun'"
 msgstr ""
 
@@ -34075,6 +34143,10 @@ msgstr "विनंतीकृत cpu प्रमाण कमालपेक
 #, fuzzy, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
 msgstr "विनंतीकृत cpu प्रमाण कमालपेक्षा (%1$d > %2$d) जास्त आहे"
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
+msgstr ""
 
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
@@ -37660,6 +37732,12 @@ msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr "विनापोचण्याजोगी स्टॅटिक राउट गेटवे '%1$s' नेटवर्क '%2$s'करिता निर्देशीत केले"
 
 #, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
+msgstr ""
+
+#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "अनोळखी आदेश नाव '%1$s'"
 
@@ -38674,6 +38752,9 @@ msgstr ""
 msgid "virtio-serial controller %1$u not available"
 msgstr "virGetUserDirectory अनुपलब्ध"
 
+msgid "virtio-sound controller is not supported in this QEMU binary"
+msgstr ""
+
 msgid "virtiofs does not support fmode and dmode"
 msgstr ""
 
@@ -39098,6 +39179,25 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "डिस्क %1$s करिता blockdev फ्लॅगसाठी विनंती केली, परंतु फाइल '%2$s' ब्लॉक साधन नाही"
+
+#, c-format
+#~ msgid "%1$6s: Checking %2$-60s: "
+#~ msgstr "%1$6s: %2$-60s तपासत आहे: "
+
+#, c-format
+#~ msgid "Failed to apply firewall rules %1$s: %2$s"
+#~ msgstr "firewall नियम %1$s: %2$s लागू करण्यास अपयशी"
+
+#~ msgid "Unable to create rule"
+#~ msgstr "नियम निर्माण अशक्य"
+
+#, c-format
+#~ msgid "failed to get number of %1$s interfaces on host"
+#~ msgstr "यजमानवरील %1$s इंटरफेसेस्ची संख्या प्राप्त करण्यास अपयशी"
+
+#, c-format
+#~ msgid "for Linux >= %1$d.%2$d.%3$d"
+#~ msgstr "Linux >= %1$d.%2$d.%3$d करिता"
 
 #~ msgid "(none)"
 #~ msgstr "(काहिच नाही)"

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-04-26 08:00+0000\n"
+"POT-Creation-Date: 2024-05-28 08:41+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -431,6 +431,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
 " Hypervisor types:\n"
@@ -522,10 +536,6 @@ msgstr ""
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
 msgstr "$%1$s値は 0 から %2$d の間である必要があります"
-
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
-msgstr "%1$6s: 確認中 %2$-60s: "
 
 #, c-format
 msgid "%1$s\n"
@@ -2167,6 +2177,9 @@ msgstr ""
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr "resctrl モニターの接頭辞名 '%1$s' が正しくありません"
 
+msgid "Bad usage"
+msgstr ""
+
 msgid "Bad value for nativeMode"
 msgstr "nativeMode に対する不正な値"
 
@@ -2626,6 +2639,9 @@ msgstr ""
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "ホスト USB デバイスを追加できません: このホストの USB が無効化されています"
+
+msgid "Can't apply empty firewall command"
+msgstr ""
 
 msgid "Can't change domain configuration in managed save state"
 msgstr "管理保存状態でドメイン設定を変更できません"
@@ -3670,6 +3686,45 @@ msgid ""
 "Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
+msgstr ""
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr ""
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr ""
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr ""
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr ""
+
+msgid "Checking for device assignment IOMMU support"
+msgstr ""
+
+msgid "Checking for hardware virtualization"
+msgstr ""
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr ""
+
+msgid "Checking for secure guest support"
+msgstr ""
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
 msgstr ""
 
 #, c-format
@@ -6603,6 +6658,9 @@ msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
 "ストレージコントローラーの追加に失敗しました (名前: %1$s、busType: %2$d)"
 
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
 msgstr "PCI デバイス一覧の割り当てに失敗しました: %1$s"
@@ -6622,8 +6680,8 @@ msgid "Failed to apply capabilities: %1$d"
 msgstr "ケイパビリティーの適用に失敗しました: %1$d"
 
 #, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
-msgstr "ファイアウォールルール %1$s の適用に失敗しました: %2$s"
+msgid "Failed to apply firewall command '%1$s': %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to attach device from %1$s"
@@ -6796,6 +6854,10 @@ msgstr "SSH エージェントへの接続に失敗しました"
 
 msgid "Failed to connect to the admin server"
 msgstr "管理サーバーへの接続に失敗しました"
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect: %1$s"
@@ -8297,6 +8359,10 @@ msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr ""
 "コマンド '%1$s' を IQN '%2$s' を持つ IQN iSCSI インターフェイスを更新するため"
 "に実行できませんでした"
+
+#, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -10136,6 +10202,9 @@ msgstr "エージェントの待機中のファイル記述子が無効です"
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
 msgstr "モニターの待機中のファイル記述子が無効です (vm='%1$s')"
+
+msgid "Invalid firewall command has 0 arguments"
+msgstr ""
 
 msgid "Invalid firmware name"
 msgstr "無効なファームウェア名"
@@ -12591,6 +12660,9 @@ msgstr "SRIOV PF %1$s に使用可能な Vf がありません"
 #, c-format
 msgid "No usable target index found for %1$d"
 msgstr "%1$d 向けの使用可能なターゲットインデックスが見つかりません"
+
+msgid "No usable vsock found"
+msgstr ""
 
 msgid ""
 "No user interaction callback provided: Can't get input from keyboard "
@@ -17343,6 +17415,9 @@ msgstr "ディレクトリー '%1$s' を作成できません"
 msgid "Unable to create epoll fd"
 msgstr "epoll ファイルディスクリプターを作成できません"
 
+msgid "Unable to create firewall command"
+msgstr ""
+
 msgid "Unable to create kqueue"
 msgstr "kqueue を作成できません"
 
@@ -17374,9 +17449,6 @@ msgstr "マイグレーションのスレッドを作成できません"
 
 msgid "Unable to create pipes"
 msgstr "パイプを作成できません"
-
-msgid "Unable to create rule"
-msgstr "ルールを作成できません"
 
 msgid "Unable to create socket"
 msgstr "ソケットを作成できません"
@@ -18262,6 +18334,10 @@ msgstr "ロック状態 %1$s を解析できません: %2$s"
 
 msgid "Unable to parse ovs-vsctl output"
 msgstr "ovs-vsctl 出力を解析できません"
+
+#, c-format
+msgid "Unable to parse port: %1$s"
+msgstr ""
 
 msgid "Unable to parse quota"
 msgstr "クォータを解析できません"
@@ -19336,6 +19412,10 @@ msgstr "不明なキャラクターデバイスタイプ: %1$d"
 #, c-format
 msgid "Unknown compatibility mode %1$s"
 msgstr "不明な互換性モード %1$s"
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Unknown controller type %1$d"
@@ -23629,6 +23709,9 @@ msgstr "共有フォルダー '%1$s' をデタッチできませんでした"
 msgid "could not determine max vcpus for the domain"
 msgstr "ドメインの最大仮想 CPU 数を決定できません"
 
+msgid "could not find a usable firewall backend"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
@@ -23851,9 +23934,6 @@ msgstr "Xen ハイパーバイザーエントリーを使用できませんで�
 msgid "could not use Xen hypervisor entry %1$s"
 msgstr "Xen ハイパーバイザーエントリー %1$s を使用できませんでした"
 
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr "ノードデバイス定義を mdevctl JSON に変換できませんでした"
-
 msgid "couldn't fetch array of leases"
 msgstr "リースの配列を取得できませんでした"
 
@@ -23930,6 +24010,12 @@ msgid ""
 msgstr ""
 "ネットワーク '%1$s' で、\"mac='%2$s'\" \"name='%3$s'\" \"ip='%4$s'\" を持つ既"
 "存の dhcp ホストエントリーを見つけることができませんでした"
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
+msgstr ""
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -25512,6 +25598,9 @@ msgstr "サービスからのエラー: %1$s"
 msgid "error getting profile status"
 msgstr "プロファイルステータスの取得中にエラーが発生しました"
 
+msgid "error in original firewall object"
+msgstr ""
+
 msgid "error in poll call"
 msgstr "poll 呼び出しにおいてエラーが発生しました"
 
@@ -26465,10 +26554,6 @@ msgstr "ネットワークポート '%1$s' の取得に失敗しました"
 
 msgid "failed to get node information"
 msgstr "ノード情報の取得に失敗しました"
-
-#, c-format
-msgid "failed to get number of %1$s interfaces on host"
-msgstr "ホストにある %1$s インターフェイスの数の取得に失敗しました"
 
 #, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
@@ -27489,26 +27574,6 @@ msgstr "フロッピーデバイスのホットプラグがサポートされて
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr "fmode および dmode は、accessmode=mapped で使用する必要があります"
 
-#, c-format
-msgid "for %1$s module"
-msgstr "%1$s モジュール用"
-
-#, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr "Linux >= %1$d.%2$d.%3$d 向けです"
-
-msgid "for PowerPC KVM module loaded"
-msgstr "ロードされた PowerPC KVM モジュール用"
-
-msgid "for device assignment IOMMU support"
-msgstr "デバイス割り当て IOMMU サポート用"
-
-msgid "for hardware virtualization"
-msgstr "ハードウェア仮想化用"
-
-msgid "for secure guest support"
-msgstr "安全なゲストサポートのため"
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' 属性において禁止された文字"
 
@@ -28147,9 +28212,6 @@ msgstr "idle:"
 
 msgid "ids of vcpus to manipulate"
 msgstr "操作する vcpus の ID"
-
-msgid "if IOMMU is enabled by kernel"
-msgstr "IOMMU がカーネルによって有効になっている場合"
 
 #, c-format
 msgid "ifkey \"%1$s\" has no req"
@@ -34238,6 +34300,12 @@ msgstr "範囲 %1$s - %2$s は大きすぎます (> 65535)"
 msgid "range %1$s - %2$s start larger than end"
 msgstr "範囲 %1$s - %2$s の開始は終了より大きいです"
 
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
+msgstr ""
+
 msgid "rawio can be used only with device='lun'"
 msgstr "rawio は device='lun' とのみ使用できます"
 
@@ -34537,6 +34605,10 @@ msgstr "要求された CPU の合計が最大値を超えています (%1$d > %
 #, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
 msgstr "要求された CPU の量が最大サポート量を超えています (%1$d > %2$d)"
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
+msgstr ""
 
 msgid "requested size must be an integer multiple of block size"
 msgstr "要求サイズは、ブロックサイズの整数倍である必要があります"
@@ -38206,6 +38278,12 @@ msgstr ""
 "対して指定されています"
 
 #, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
+msgstr ""
+
+#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "認識できないコマンド名 '%1$s'"
 
@@ -39246,6 +39324,9 @@ msgstr ""
 msgid "virtio-serial controller %1$u not available"
 msgstr "virtio-serial コントローラー %1$u を利用できません"
 
+msgid "virtio-sound controller is not supported in this QEMU binary"
+msgstr ""
+
 msgid "virtiofs does not support fmode and dmode"
 msgstr "virtiofs は fmode と dmode をサポートしません"
 
@@ -39683,6 +39764,47 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#, c-format
+#~ msgid "%1$6s: Checking %2$-60s: "
+#~ msgstr "%1$6s: 確認中 %2$-60s: "
+
+#, c-format
+#~ msgid "Failed to apply firewall rules %1$s: %2$s"
+#~ msgstr "ファイアウォールルール %1$s の適用に失敗しました: %2$s"
+
+#~ msgid "Unable to create rule"
+#~ msgstr "ルールを作成できません"
+
+#~ msgid "couldn't convert node device def to mdevctl JSON"
+#~ msgstr "ノードデバイス定義を mdevctl JSON に変換できませんでした"
+
+#, c-format
+#~ msgid "failed to get number of %1$s interfaces on host"
+#~ msgstr "ホストにある %1$s インターフェイスの数の取得に失敗しました"
+
+#, c-format
+#~ msgid "for %1$s module"
+#~ msgstr "%1$s モジュール用"
+
+#, c-format
+#~ msgid "for Linux >= %1$d.%2$d.%3$d"
+#~ msgstr "Linux >= %1$d.%2$d.%3$d 向けです"
+
+#~ msgid "for PowerPC KVM module loaded"
+#~ msgstr "ロードされた PowerPC KVM モジュール用"
+
+#~ msgid "for device assignment IOMMU support"
+#~ msgstr "デバイス割り当て IOMMU サポート用"
+
+#~ msgid "for hardware virtualization"
+#~ msgstr "ハードウェア仮想化用"
+
+#~ msgid "for secure guest support"
+#~ msgstr "安全なゲストサポートのため"
+
+#~ msgid "if IOMMU is enabled by kernel"
+#~ msgstr "IOMMU がカーネルによって有効になっている場合"
 
 #~ msgid "(none)"
 #~ msgstr "(なし)"

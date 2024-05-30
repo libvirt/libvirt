@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-04-26 08:00+0000\n"
+"POT-Creation-Date: 2024-05-28 08:41+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -320,6 +320,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
 " Hypervisor types:\n"
@@ -393,10 +407,6 @@ msgstr ""
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
 msgstr ""
-
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
-msgstr "%1$6s: %2$-60s ಅನ್ನು ಪರಿಶೀಲಿಸಿಲಾಗುತ್ತಿದೆ: "
 
 #, c-format
 msgid "%1$s\n"
@@ -2028,6 +2038,9 @@ msgstr ""
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr ""
 
+msgid "Bad usage"
+msgstr ""
+
 msgid "Bad value for nativeMode"
 msgstr "nativeMode ಗಾಗಿ ತಪ್ಪು ಮೌಲ್ಯ"
 
@@ -2473,6 +2486,9 @@ msgstr ""
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "ಆತಿಥೇಯ USB ಸಾಧನವನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. USB ಬಸ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
+
+msgid "Can't apply empty firewall command"
+msgstr ""
 
 #, fuzzy
 msgid "Can't change domain configuration in managed save state"
@@ -3550,6 +3566,45 @@ msgid ""
 "Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
+msgstr ""
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr ""
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr ""
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr ""
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr ""
+
+msgid "Checking for device assignment IOMMU support"
+msgstr ""
+
+msgid "Checking for hardware virtualization"
+msgstr ""
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr ""
+
+msgid "Checking for secure guest support"
+msgstr ""
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6512,6 +6567,9 @@ msgstr "ಸಿಗ್ನಲ್ ಹಿಡಿಕೆ ನೋಡುವಿಕೆಯನ�
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
 
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
 msgstr "PCI ಸಾಧನ ಪಟ್ಟಿಯನ್ನು ನಿಯೋಜಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %1$s"
@@ -6530,9 +6588,9 @@ msgstr "tty ನಿಯೋಜಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿ�
 msgid "Failed to apply capabilities: %1$d"
 msgstr "ಸಾಮರ್ಥ್ಯಗಳನ್ನು ಅನ್ವಯಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %1$d"
 
-#, fuzzy, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
-msgstr "'%1$s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %2$s"
+#, c-format
+msgid "Failed to apply firewall command '%1$s': %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to attach device from %1$s"
@@ -6710,6 +6768,10 @@ msgstr "ssh ಮಧ್ಯವರ್ತಿಯನ್ನು ಸಂಪರ್ಕಿಸ�
 #, fuzzy
 msgid "Failed to connect to the admin server"
 msgstr "ಹೈಪರ್ವೈಸರಿಗೆ ಮರಳಿ ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to connect: %1$s"
@@ -8227,6 +8289,10 @@ msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr ""
 "iscsi ಸಂಪರ್ಕಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು '%1$s' ಆದೇಶಯನ್ನು IQN '%2$s' ದೊಂದಿಗೆ "
 "ಚಲಾಯಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -10035,6 +10101,9 @@ msgstr "ಮಾನಟರಿಗಾಗಿ ಕಾಯುವಾಗ ಅಮಾನ್ಯ�
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
+msgstr ""
+
+msgid "Invalid firewall command has 0 arguments"
 msgstr ""
 
 msgid "Invalid firmware name"
@@ -12540,6 +12609,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No usable target index found for %1$d"
 msgstr "'%s' ಗಾಗಿ ಯಾವುದೆ ಸಾಕೆಟ್ ವಿಳಾಸಗಳು ಕಂಡುಬಂದಿಲ್ಲ"
+
+msgid "No usable vsock found"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -17250,6 +17322,9 @@ msgstr "%1$s ಕೋಶವನ್ನು ನಿರ್ಮಿಸಲು ಸಾಧ್�
 msgid "Unable to create epoll fd"
 msgstr "epoll fd ಅನ್ನು ನಿರ್ಮಿಸಲಾಗಿಲ್ಲ"
 
+msgid "Unable to create firewall command"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to create kqueue"
 msgstr "ಸಾಕೆಟನ್ನು ನಿರ್ಮಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -17283,10 +17358,6 @@ msgstr "ವರ್ಗಾವಣೆ ತ್ರೆಡ್ ಅನ್ನು ರಚಿಸ
 
 #, fuzzy
 msgid "Unable to create pipes"
-msgstr "%s ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
-#, fuzzy
-msgid "Unable to create rule"
 msgstr "%s ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid "Unable to create socket"
@@ -18220,6 +18291,10 @@ msgstr "ಲಾಕ್ ಸ್ಥಿತಿ %s ಅನ್ನು ಪಾರ್ಸ್ �
 #, fuzzy
 msgid "Unable to parse ovs-vsctl output"
 msgstr "vzlist ಔಟ್‌ಪುಟ್ ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+msgid "Unable to parse port: %1$s"
+msgstr ""
 
 msgid "Unable to parse quota"
 msgstr "ಕೋಟಾವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
@@ -19334,6 +19409,10 @@ msgstr "ಅಜ್ಞಾತ chr ಸಾಧನದ ಬಗೆ '%s'"
 #, fuzzy, c-format
 msgid "Unknown compatibility mode %1$s"
 msgstr "ಅಜ್ಞಾತ ಸಾಮರ್ಥ್ಯದ ಬಗೆ '%1$s'"
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown controller type %1$d"
@@ -23624,6 +23703,9 @@ msgstr ""
 msgid "could not determine max vcpus for the domain"
 msgstr "ಡೊಮೇನ್‌ಗಾಗಿನ ಗರಿಷ್ಟ vcpus ಅನ್ನು ನಿಗದಿಸಲಾಗಿಲ್ಲ"
 
+msgid "could not find a usable firewall backend"
+msgstr ""
+
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
@@ -23847,9 +23929,6 @@ msgstr "Xen ಹೈಪರ್ವೈಸರ್ ನಮೂದನ್ನು ಬಳಸಲ
 msgid "could not use Xen hypervisor entry %1$s"
 msgstr "Xen ಹೈಪರ್ವೈಸರ್ ನಮೂದು %1$s ಅನ್ನು ಬಳಸಲಾಗಿಲ್ಲ"
 
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr ""
-
 #, fuzzy
 msgid "couldn't fetch array of leases"
 msgstr "%s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ನ ಪೋಷಕವನ್ನು ಪಡೆಯಲಾಗಿಲ್ಲ"
@@ -23917,6 +23996,12 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
 "\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr "ಹೊಂದಿಕೆಯಾಗುವ dhcp ಆತಿಥೇಯ ನಮೂದನ್ನು '%s' ಜಾಲಬಂಧದಲ್ಲಿ ಪತ್ತೆಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
+msgstr ""
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -25507,6 +25592,9 @@ msgstr "ಸೇವೆಯಿಂದ ದೋಷ: %1$s"
 msgid "error getting profile status"
 msgstr "ಪ್ರೊಫೈಲ್‌ ಹೆಸರನ್ನು ಕಾಪಿ ಮಾಡಲಾಗುತ್ತಿದೆ"
 
+msgid "error in original firewall object"
+msgstr ""
+
 msgid "error in poll call"
 msgstr "ಪೋಲ್‌ ಕರೆಯಲ್ಲಿ ದೋಷ"
 
@@ -26465,10 +26553,6 @@ msgstr "ಜಾಲಬಂಧ '%1$s' ಅನ್ನು ಪಡೆದುಕೊಳ್ಳ
 
 msgid "failed to get node information"
 msgstr "ಜಾಲಘಟಕದ ಬಗ್ಗೆ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
-#, c-format
-msgid "failed to get number of %1$s interfaces on host"
-msgstr "ಆತಿಥೇಯದಲ್ಲಿನ %1$s ಸಂಪರ್ಕಸಾಧನಗಳ ಸಂಖ್ಯೆಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
@@ -27518,26 +27602,6 @@ msgstr ""
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
 
-#, c-format
-msgid "for %1$s module"
-msgstr ""
-
-#, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr "Linux ಗಾಗಿ >= %1$d.%2$d.%3$d"
-
-msgid "for PowerPC KVM module loaded"
-msgstr ""
-
-msgid "for device assignment IOMMU support"
-msgstr ""
-
-msgid "for hardware virtualization"
-msgstr ""
-
-msgid "for secure guest support"
-msgstr ""
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' ಗುಣವಿಶೇಷದಲ್ಲಿ ನಿಷೇಧಿತ ಅಕ್ಷರಗಳು"
 
@@ -28181,9 +28245,6 @@ msgid "idle:"
 msgstr "ಜಡ:"
 
 msgid "ids of vcpus to manipulate"
-msgstr ""
-
-msgid "if IOMMU is enabled by kernel"
 msgstr ""
 
 #, c-format
@@ -34359,6 +34420,12 @@ msgstr ""
 msgid "range %1$s - %2$s start larger than end"
 msgstr ""
 
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
+msgstr ""
+
 msgid "rawio can be used only with device='lun'"
 msgstr ""
 
@@ -34679,6 +34746,10 @@ msgstr "ಮನವಿ ಮಾಡಲಾದ cpu ಮೊತ್ತವು ಗರಿಷ�
 #, fuzzy, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
 msgstr "ಮನವಿ ಮಾಡಲಾದ cpu ಮೊತ್ತವು ಗರಿಷ್ಟ ಮಿತಿ (%1$d > %2$d) ಅನ್ನು ನ್ನು ಮೀರಿದೆ"
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
+msgstr ""
 
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
@@ -38318,6 +38389,12 @@ msgstr ""
 "ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
+msgstr ""
+
+#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "ಗುರುತಿಸದೆ ಇರುವ ಆದೇಶದ ಹೆಸರು '%1$s'"
 
@@ -39344,6 +39421,9 @@ msgstr ""
 msgid "virtio-serial controller %1$u not available"
 msgstr "virGetUserDirectory ಲಭ್ಯವಿಲ್ಲ"
 
+msgid "virtio-sound controller is not supported in this QEMU binary"
+msgstr ""
+
 msgid "virtiofs does not support fmode and dmode"
 msgstr ""
 
@@ -39771,6 +39851,26 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "%1$6s: Checking %2$-60s: "
+#~ msgstr "%1$6s: %2$-60s ಅನ್ನು ಪರಿಶೀಲಿಸಿಲಾಗುತ್ತಿದೆ: "
+
+#, fuzzy, c-format
+#~ msgid "Failed to apply firewall rules %1$s: %2$s"
+#~ msgstr "'%1$s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %2$s"
+
+#, fuzzy
+#~ msgid "Unable to create rule"
+#~ msgstr "%s ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+#~ msgid "failed to get number of %1$s interfaces on host"
+#~ msgstr "ಆತಿಥೇಯದಲ್ಲಿನ %1$s ಸಂಪರ್ಕಸಾಧನಗಳ ಸಂಖ್ಯೆಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+#~ msgid "for Linux >= %1$d.%2$d.%3$d"
+#~ msgstr "Linux ಗಾಗಿ >= %1$d.%2$d.%3$d"
 
 #~ msgid "(none)"
 #~ msgstr "(ಯಾವುದೂ ಇಲ್ಲ)"

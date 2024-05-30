@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 7.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-04-26 08:00+0000\n"
+"POT-Creation-Date: 2024-05-28 08:41+0000\n"
 "PO-Revision-Date: 2021-01-19 12:15+0000\n"
 "Last-Translator: Muha Aliss <muhaaliss@gmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -287,6 +287,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
 " Hypervisor types:\n"
@@ -355,10 +369,6 @@ msgstr ""
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
-msgstr ""
-
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
 msgstr ""
 
 #, c-format
@@ -1857,6 +1867,9 @@ msgstr ""
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr ""
 
+msgid "Bad usage"
+msgstr ""
+
 msgid "Bad value for nativeMode"
 msgstr ""
 
@@ -2274,6 +2287,9 @@ msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
 
 msgid "Can't add host USB device: USB is disabled in this host"
+msgstr ""
+
+msgid "Can't apply empty firewall command"
 msgstr ""
 
 msgid "Can't change domain configuration in managed save state"
@@ -3278,6 +3294,45 @@ msgid ""
 "Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
+msgstr ""
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr ""
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr ""
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr ""
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr ""
+
+msgid "Checking for device assignment IOMMU support"
+msgstr ""
+
+msgid "Checking for hardware virtualization"
+msgstr ""
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr ""
+
+msgid "Checking for secure guest support"
+msgstr ""
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
 msgstr ""
 
 #, c-format
@@ -6028,6 +6083,9 @@ msgstr ""
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
 
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
 msgstr ""
@@ -6047,7 +6105,7 @@ msgid "Failed to apply capabilities: %1$d"
 msgstr ""
 
 #, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
+msgid "Failed to apply firewall command '%1$s': %2$s"
 msgstr ""
 
 #, c-format
@@ -6220,6 +6278,10 @@ msgid "Failed to connect to ssh agent"
 msgstr ""
 
 msgid "Failed to connect to the admin server"
+msgstr ""
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
 msgstr ""
 
 #, c-format
@@ -7688,6 +7750,10 @@ msgstr ""
 
 #, c-format
 msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
 msgstr ""
 
 #, c-format
@@ -9393,6 +9459,9 @@ msgstr ""
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
+msgstr ""
+
+msgid "Invalid firewall command has 0 arguments"
 msgstr ""
 
 msgid "Invalid firmware name"
@@ -11738,6 +11807,9 @@ msgstr ""
 
 #, c-format
 msgid "No usable target index found for %1$d"
+msgstr ""
+
+msgid "No usable vsock found"
 msgstr ""
 
 msgid ""
@@ -16095,6 +16167,9 @@ msgstr ""
 msgid "Unable to create epoll fd"
 msgstr ""
 
+msgid "Unable to create firewall command"
+msgstr ""
+
 msgid "Unable to create kqueue"
 msgstr ""
 
@@ -16123,9 +16198,6 @@ msgid "Unable to create migration thread"
 msgstr ""
 
 msgid "Unable to create pipes"
-msgstr ""
-
-msgid "Unable to create rule"
 msgstr ""
 
 msgid "Unable to create socket"
@@ -17004,6 +17076,10 @@ msgid "Unable to parse lock state %1$s: %2$s"
 msgstr ""
 
 msgid "Unable to parse ovs-vsctl output"
+msgstr ""
+
+#, c-format
+msgid "Unable to parse port: %1$s"
 msgstr ""
 
 msgid "Unable to parse quota"
@@ -18069,6 +18145,10 @@ msgstr ""
 
 #, c-format
 msgid "Unknown compatibility mode %1$s"
+msgstr ""
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
 msgstr ""
 
 #, c-format
@@ -22158,6 +22238,9 @@ msgstr ""
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 
+msgid "could not find a usable firewall backend"
+msgstr ""
+
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
@@ -22377,9 +22460,6 @@ msgstr ""
 msgid "could not use Xen hypervisor entry %1$s"
 msgstr ""
 
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr ""
-
 msgid "couldn't fetch array of leases"
 msgstr ""
 
@@ -22439,6 +22519,12 @@ msgstr ""
 msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
 "\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
 msgstr ""
 
 #, c-format
@@ -23943,6 +24029,9 @@ msgstr ""
 msgid "error getting profile status"
 msgstr ""
 
+msgid "error in original firewall object"
+msgstr ""
+
 msgid "error in poll call"
 msgstr ""
 
@@ -24855,10 +24944,6 @@ msgid "failed to get network port '%1$s'"
 msgstr ""
 
 msgid "failed to get node information"
-msgstr ""
-
-#, c-format
-msgid "failed to get number of %1$s interfaces on host"
 msgstr ""
 
 #, c-format
@@ -25847,26 +25932,6 @@ msgstr ""
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
 
-#, c-format
-msgid "for %1$s module"
-msgstr ""
-
-#, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr ""
-
-msgid "for PowerPC KVM module loaded"
-msgstr ""
-
-msgid "for device assignment IOMMU support"
-msgstr ""
-
-msgid "for hardware virtualization"
-msgstr ""
-
-msgid "for secure guest support"
-msgstr ""
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr ""
 
@@ -26472,9 +26537,6 @@ msgid "idle:"
 msgstr ""
 
 msgid "ids of vcpus to manipulate"
-msgstr ""
-
-msgid "if IOMMU is enabled by kernel"
 msgstr ""
 
 #, c-format
@@ -32261,6 +32323,12 @@ msgstr ""
 msgid "range %1$s - %2$s start larger than end"
 msgstr ""
 
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
+msgstr ""
+
 msgid "rawio can be used only with device='lun'"
 msgstr ""
 
@@ -32548,6 +32616,10 @@ msgstr ""
 
 #, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
+msgstr ""
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
 msgstr ""
 
 msgid "requested size must be an integer multiple of block size"
@@ -36014,6 +36086,12 @@ msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr ""
 
 #, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
+msgstr ""
+
+#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr ""
 
@@ -37002,6 +37080,9 @@ msgstr ""
 
 #, c-format
 msgid "virtio-serial controller %1$u not available"
+msgstr ""
+
+msgid "virtio-sound controller is not supported in this QEMU binary"
 msgstr ""
 
 msgid "virtiofs does not support fmode and dmode"

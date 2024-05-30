@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-04-26 08:00+0000\n"
+"POT-Creation-Date: 2024-05-28 08:41+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -325,6 +325,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
 " Hypervisor types:\n"
@@ -397,10 +411,6 @@ msgstr ""
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
 msgstr ""
-
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
-msgstr "%1$6s: പരിശോധിക്കുന്നു %2$-60s: "
 
 #, c-format
 msgid "%1$s\n"
@@ -1992,6 +2002,9 @@ msgstr ""
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr ""
 
+msgid "Bad usage"
+msgstr ""
+
 msgid "Bad value for nativeMode"
 msgstr "nativeMode-നു് തെറ്റായ മൂല്ല്യം"
 
@@ -2427,6 +2440,9 @@ msgstr "മറ്റൊരു യുഎസ്ബി കണ്ട്രോളര�
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "ഹോസ്റ്റ് യുഎസ്ബി ഡിവൈസ് ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല: ഈ ഹോസ്റ്റില്‍ യുഎസ്ബി പ്രവര്‍ത്തന രഹിതം"
+
+msgid "Can't apply empty firewall command"
+msgstr ""
 
 #, fuzzy
 msgid "Can't change domain configuration in managed save state"
@@ -3490,6 +3506,45 @@ msgid ""
 "Check the host setup: interface %1$s has kernel autoconfigured IPv6 routes "
 "and enabling forwarding without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
+msgstr ""
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr ""
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr ""
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr ""
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr ""
+
+msgid "Checking for device assignment IOMMU support"
+msgstr ""
+
+msgid "Checking for hardware virtualization"
+msgstr ""
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr ""
+
+msgid "Checking for secure guest support"
+msgstr ""
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr ""
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6431,6 +6486,9 @@ msgstr "സിഗ്നല്‍ ഹാന്‍ഡില്‍ വാച്ച�
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
 
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr ""
+
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
 msgstr "പിസിഐ ഡിവൈസ് പട്ടിക അനുവദിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %1$s"
@@ -6449,9 +6507,9 @@ msgstr "tty ലഭ്യമാക്കുന്നതില്‍ പരാജ�
 msgid "Failed to apply capabilities: %1$d"
 msgstr "സവിശേഷതകള്‍ ഉപയോഗിക്കുന്നതില്‍ പരാജയം:%1$d"
 
-#, fuzzy, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
-msgstr "'%1$s' ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %2$s"
+#, c-format
+msgid "Failed to apply firewall command '%1$s': %2$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to attach device from %1$s"
@@ -6627,6 +6685,10 @@ msgstr "ssh ഏജന്റിലേക്കു് കണക്ട് ചെയ
 #, fuzzy
 msgid "Failed to connect to the admin server"
 msgstr "ഹൈപ്പര്‍വൈസറിലേക്കു് വീണ്ടും കണക്ട് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to connect: %1$s"
@@ -8135,6 +8197,10 @@ msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr ""
 "IQN '%1$s'-നൊപ്പം iscsi ഇന്റര്‍ഫെയിസ് പരീഷ്കരിയ്ക്കുവാന്‍ '%2$s' കമാന്‍ഡ് നടപ്പിലാക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
+
+#, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -9920,6 +9986,9 @@ msgstr "ര്‍മോണിറ്ററിനു വേണ്ടി കാത�
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
+msgstr ""
+
+msgid "Invalid firewall command has 0 arguments"
 msgstr ""
 
 msgid "Invalid firmware name"
@@ -12412,6 +12481,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No usable target index found for %1$d"
 msgstr "'%s'-നുള്ള സോക്കറ്റ് വിലാസങ്ങളൊന്നും ലഭ്യമല്ല"
+
+msgid "No usable vsock found"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -17090,6 +17162,9 @@ msgstr "%1$s ഡയറക്ടറി തയ്യാറാക്കുവാന
 msgid "Unable to create epoll fd"
 msgstr "epoll fd തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to create firewall command"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to create kqueue"
 msgstr "സോക്കറ്റ് നിര്‍മ്മിക്കുവാന്‍ സാധ്യമായില്ല"
@@ -17123,10 +17198,6 @@ msgstr "മൈഗ്രേഷന്‍ ത്രെഡ് തയ്യാറാ�
 
 #, fuzzy
 msgid "Unable to create pipes"
-msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy
-msgid "Unable to create rule"
 msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "Unable to create socket"
@@ -18060,6 +18131,10 @@ msgstr "%s-ന്റെ പൂട്ടിയ അവസ്ഥ പാഴ്സ്
 #, fuzzy
 msgid "Unable to parse ovs-vsctl output"
 msgstr "vzlist ഔട്ട്പുട്ട് പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#, c-format
+msgid "Unable to parse port: %1$s"
+msgstr ""
 
 msgid "Unable to parse quota"
 msgstr "കോട്ടാ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -19175,6 +19250,10 @@ msgstr "അപരിചിതമായ ക്യാര്‍ ഡിവൈസ് 
 #, fuzzy, c-format
 msgid "Unknown compatibility mode %1$s"
 msgstr "അപരിചിതമായ വിശേഷത രീതി '%1$s'"
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown controller type %1$d"
@@ -23452,6 +23531,9 @@ msgstr ""
 msgid "could not determine max vcpus for the domain"
 msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
+msgid "could not find a usable firewall backend"
+msgstr ""
+
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
@@ -23675,9 +23757,6 @@ msgstr "Xen ഹൈപ്പര്‍വൈസര്‍ എന്‍ട്രി 
 msgid "could not use Xen hypervisor entry %1$s"
 msgstr "Xen ഹൈപ്പര്‍വൈസര്‍ എന്‍ട്രി %1$s ഉപയോഗിക്കുവാന്‍ സാധ്യമായില്ല"
 
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr ""
-
 #, fuzzy
 msgid "couldn't fetch array of leases"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s-ന്റെ പേരന്റ് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
@@ -23743,6 +23822,12 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
 "\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr "നെറ്റ്‌‌വര്‍ക്ക് '%s'-ല്‍ ഒത്തുപോവുന്ന ഒരു dhcp ആതിഥേയ രേഖ കണ്ടെത്താന്‍ സാധിച്ചില്ല"
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
+msgstr ""
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -25331,6 +25416,9 @@ msgstr "സര്‍വീസില്‍ നിന്നും പിശക്:
 msgid "error getting profile status"
 msgstr "പ്രൊഫൈല്‍ നാമം പകര്‍ത്തുന്നതില്‍ പിശക്"
 
+msgid "error in original firewall object"
+msgstr ""
+
 msgid "error in poll call"
 msgstr "പോള്‍ കോളില്‍ പിശക്"
 
@@ -26283,10 +26371,6 @@ msgstr "നെറ്റ്‌വര്‍ക്ക് '%1$s' ലഭ്യമാ�
 
 msgid "failed to get node information"
 msgstr "നോഡിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
-
-#, c-format
-msgid "failed to get number of %1$s interfaces on host"
-msgstr "ഹോസ്റ്റിലുള്ള %1$s ഇന്റര്‍ഫെയിസുകളുടെ എണ്ണം ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
@@ -27330,26 +27414,6 @@ msgstr ""
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
 
-#, c-format
-msgid "for %1$s module"
-msgstr ""
-
-#, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr "ലിനക്സിനു >= %1$d.%2$d.%3$d ന് വേണ്ടിയുള്ള "
-
-msgid "for PowerPC KVM module loaded"
-msgstr ""
-
-msgid "for device assignment IOMMU support"
-msgstr ""
-
-msgid "for hardware virtualization"
-msgstr ""
-
-msgid "for secure guest support"
-msgstr ""
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' വിശേഷതയില്‍ പാടില്ലാത്ത അക്ഷരങ്ങള്‍"
 
@@ -27988,9 +28052,6 @@ msgid "idle:"
 msgstr "പ്രവര്‍ത്തനത്തിലല്ല:"
 
 msgid "ids of vcpus to manipulate"
-msgstr ""
-
-msgid "if IOMMU is enabled by kernel"
 msgstr ""
 
 #, c-format
@@ -34118,6 +34179,12 @@ msgstr ""
 msgid "range %1$s - %2$s start larger than end"
 msgstr ""
 
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
+msgstr ""
+
 msgid "rawio can be used only with device='lun'"
 msgstr ""
 
@@ -34435,6 +34502,10 @@ msgstr "ആവശ്യപ്പെട്ട സിപിയു ഏറ്റവ�
 #, fuzzy, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
 msgstr "ആവശ്യപ്പെട്ട സിപിയു ഏറ്റവും കൂടിയതില്‍ നിന്നും കൂടുതലാകുന്നു (%1$d > %2$d)"
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
+msgstr ""
 
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
@@ -38046,6 +38117,12 @@ msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr "ലഭ്യമാകാത്ത സ്റ്റാറ്റിക് റൌട്ട് ഗേറ്റ്‌വേ '%1$s', '%2$s' നെറ്റ്‌വര്‍ക്കിനു് നല്‍കിയിരിയ്ക്കുന്നു"
 
 #, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
+msgstr ""
+
+#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "തെറ്റായ കമാന്‍ഡ് '%1$s'"
 
@@ -39067,6 +39144,9 @@ msgstr ""
 msgid "virtio-serial controller %1$u not available"
 msgstr "virGetUserDirectory ലഭ്യമല്ല"
 
+msgid "virtio-sound controller is not supported in this QEMU binary"
+msgstr ""
+
 msgid "virtiofs does not support fmode and dmode"
 msgstr ""
 
@@ -39489,6 +39569,26 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "%1$6s: Checking %2$-60s: "
+#~ msgstr "%1$6s: പരിശോധിക്കുന്നു %2$-60s: "
+
+#, fuzzy, c-format
+#~ msgid "Failed to apply firewall rules %1$s: %2$s"
+#~ msgstr "'%1$s' ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %2$s"
+
+#, fuzzy
+#~ msgid "Unable to create rule"
+#~ msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "failed to get number of %1$s interfaces on host"
+#~ msgstr "ഹോസ്റ്റിലുള്ള %1$s ഇന്റര്‍ഫെയിസുകളുടെ എണ്ണം ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#, c-format
+#~ msgid "for Linux >= %1$d.%2$d.%3$d"
+#~ msgstr "ലിനക്സിനു >= %1$d.%2$d.%3$d ന് വേണ്ടിയുള്ള "
 
 #~ msgid "(none)"
 #~ msgstr "(ഒന്നുമില്ല)"
