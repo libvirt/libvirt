@@ -96,7 +96,7 @@ pages:
     - website_job
   rules:
     - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: on_success
+      when: always
     - when: never
   artifacts:
     expose_as: 'pages'
