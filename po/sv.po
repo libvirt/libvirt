@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-05-27 14:28+0000\n"
+"PO-Revision-Date: 2024-06-02 15:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -28012,322 +28012,338 @@ msgid "implies --wait, pivot when mirroring starts"
 msgstr "implicerar --wait, pivotera när speglingen börjar"
 
 msgid "implies --wait, quit when mirroring starts"
-msgstr ""
+msgstr "implicerar --wait, avsluta när spegleingen börjar"
 
 msgid "in shutdown"
 msgstr "stänger ner"
 
-#, fuzzy
 msgid "inaccessible"
-msgstr "inaktiv"
+msgstr "oåtkomlig"
 
 #, c-format
 msgid "inaccessible backing store volume %1$s"
-msgstr ""
+msgstr "oåtkomlig bakomliggande lagringsvolym %1$s"
 
 msgid "inactive"
 msgstr "inaktiv"
 
 #, c-format
 msgid "inbound rate larger than maximum %1$u"
-msgstr ""
+msgstr "ingående hastighet större än maximum %1$u"
 
 msgid "include backup size estimate in XML dump"
-msgstr ""
+msgstr "inkludera uppskattningen av säkerhetskopiestorleken i XML-dumpen"
 
 msgid "include security sensitive information in XML dump"
-msgstr ""
+msgstr "inkludera säkerhetskänslig information i XML-dumpen"
 
 msgid "includes the password into the connection URI if available"
-msgstr ""
+msgstr "inkluderar lösenordet i anslutnings-URI:n om tillgängligt"
 
 msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr ""
+msgstr "inkommande RDMA-migrering stödjs inte med denna QEMU-binär"
 
-#, fuzzy, c-format
+#, c-format
 msgid "incomplete metadata in '%1$s'"
-msgstr "oväntad data '%1$s'"
+msgstr "ofullständig metadata i ”%1$s”"
 
 msgid "incomplete result, failed to get completed"
-msgstr ""
+msgstr "ofullständigt resultat, misslyckades att få avslutat"
 
 msgid "incomplete result, failed to get status"
-msgstr ""
+msgstr "ofullständigt resultat, misslyckades att få status"
 
 msgid "incomplete result, failed to get total"
-msgstr ""
+msgstr "ofullständigt resultat, misslyckades att få totalen"
 
 #, c-format
 msgid "incomplete result, unknown status string '%1$s'"
-msgstr ""
+msgstr "ofullständigt resultat, okänd statussträng ”%1$s”"
 
 #, c-format
 msgid "incomplete save header in '%1$s'"
-msgstr ""
+msgstr "ofullständig sparhuvud i ”%1$s”"
 
 msgid "incremental backup is not supported yet"
-msgstr ""
+msgstr "inkrementell säkerhetskopia stödjs inte ännu"
 
 msgid "individual CPU state configuration is not supported"
-msgstr ""
+msgstr "individuell CPU-tillståndskonfiguration stödjs inte"
 
 msgid "info balloon reply was missing balloon data"
-msgstr ""
+msgstr "infoballongsvar saknade ballongdata"
 
 msgid "info migration reply was missing return status"
-msgstr ""
+msgstr "infomigreringssvar saknade returstatus"
 
 msgid "info on current snapshot"
-msgstr ""
+msgstr "information om aktuell ögonblicksbild"
 
-#, fuzzy
 msgid "init binary must be specified"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "init-binären måste anges"
 
 msgid "initial CPU throttling rate for auto-convergence"
-msgstr ""
+msgstr "initial CPU-strypningshastighet för autokonvergens"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
-msgstr ""
+msgstr "initial allokeringsstorlek, som ett skalat heltal (standard byte)"
 
 msgid ""
 "initial memory size of a domain with NUMA nodes cannot be modified with this "
 "API"
 msgstr ""
+"initial minnesstorlek på en domän med NUMA-noder kan inte ändras med detta "
+"API"
 
 msgid "initial memory size overflowed after alignment"
-msgstr ""
+msgstr "initial minnesstorlek spillde över efter justering"
 
 msgid "initialize"
 msgstr "initiera"
 
 msgid "initiator iqn for underlying storage"
-msgstr ""
+msgstr "initierar-iqn för underliggande lagring"
 
 msgid "inject"
-msgstr ""
+msgstr "injicera"
 
 #, c-format
 msgid "input device on bus '%1$s' cannot be detached"
-msgstr ""
+msgstr "inmatningsenheten på bussen ”%1$s” kan inte kopplas loss"
 
-#, fuzzy, c-format
+#, c-format
 msgid "input device on bus '%1$s' cannot be hot plugged."
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "inmatningsenheten på bussen ”%1$s” kan inte tas bort under drift"
 
 msgid "input devices without vnc are not supported"
-msgstr ""
+msgstr "inmatningsenheter utan vnc stödjs inte"
 
 msgid "input evdev doesn't support bus element"
-msgstr ""
+msgstr "inmatnings-evdev stödjer inte busselementet"
 
 #, c-format
 msgid "input too large: %1$d * %2$d"
-msgstr ""
+msgstr "indata är för stor: %1$d · %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "input too large: %1$lu"
-msgstr "nparams är för stor"
+msgstr "indata är för stor: %1$lu"
 
 #, c-format
 msgid "input too large: %1$u * %2$u"
-msgstr ""
+msgstr "indata är för stor: %1$u · %2$u"
 
 msgid "instead of setting given time, synchronize from domain's RTC"
 msgstr ""
+"istället för att ställa in en angiven tid, synkronisera från domänens RTC"
 
 msgid "instead of setting new pool size add pages to it"
-msgstr ""
+msgstr "istället för att ställa in en ny poolstorlek, lägg till sidor till den"
 
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "devel@lists.libvirt.org"
 msgstr ""
+"heltalsspill på %1$s. Kontakta utvecklingsgruppen för libvirt på devel@lists."
+"libvirt.org"
 
 #, c-format
 msgid ""
 "interface %1$s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%2$s'"
 msgstr ""
+"gränssnittet %1$s – <port isolated='yes'/> stödjs inte för "
+"nätverksgränssnitt med typ=”%2$s”"
 
 #, c-format
 msgid ""
 "interface %1$s - <port isolated='yes'/> is not supported for network "
 "interfaces with virtualport type='%2$s'"
 msgstr ""
+"gränssnittet %1$s – <port isolated='yes'/> stödjs inte för "
+"nätverksgränssnitt med virtualport typ=”%2$s”"
 
 #, c-format
 msgid ""
 "interface %1$s - bandwidth settings are not supported for hostdev interfaces"
 msgstr ""
+"gränssnittet %1$s – bandbreddinställningar stödjs inte för hostdev-gränssnitt"
 
 #, c-format
 msgid ""
 "interface %1$s - custom tap device path is not supported for network "
 "interfaces of type %2$s"
 msgstr ""
+"gränssnittet %1$s – en anpassad sökväg till en tap-enhet stödjs inte för "
+"nätverk av typen %2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - filterref is not supported for network interfaces of type "
 "%2$s"
 msgstr ""
+"gränssnittet %1$s – filterref stödjs inte för nätverksgränssnitt av typen "
+"%2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - filterref is not supported for network interfaces with "
 "virtualport type %2$s"
 msgstr ""
+"gränssnittet %1$s – filterref stödjs inte för nätverksgränssnitt med "
+"virtualport av typen %2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - multiqueue is not supported for network interfaces of type "
 "%2$s"
 msgstr ""
+"gränssnittet %1$s – multiqueue stödjs inte för nätverksgränssnitt av typen "
+"%2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - teaming transient device must be type='hostdev', not '%2$s'"
 msgstr ""
+"gränssnittet %1$s – gruppbildning av en transient enhet måste ha "
+"typ=”hostdev”, inte ”%2$s”"
 
 #, c-format
 msgid "interface %1$s - vlan tag not supported for this connection type"
-msgstr ""
+msgstr "gränssnittet %1$s – vlan-taggen stödjs inte för denna anslutningstyp"
 
 #, c-format
 msgid "interface '%1$s' can only be listed once in network %2$s"
-msgstr ""
+msgstr "gränssnittet ”%1$s” kan endast listas en gång i nätverket %2$s"
 
 #, c-format
 msgid "interface '%1$s' failing; reopening"
-msgstr ""
+msgstr "gränssnittet ”%1$s” fungerar inte; öppnar om"
 
 #, c-format
 msgid "interface '%1$s' not found"
-msgstr ""
+msgstr "gränssnittet ”%1$s” finns inte"
 
 msgid "interface device (MAC Address)"
-msgstr ""
+msgstr "gränssnittsenhet (MAC-adress)"
 
 msgid "interface device specified by name or MAC Address"
-msgstr ""
+msgstr "gränssnittsenhet angiven med namn eller MAC-adress"
 
-#, fuzzy
 msgid "interface has no name"
-msgstr "Gränssnitt %s startat\n"
+msgstr "gränssnittet har inget namn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "interface has unsupported type '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "gränssnittet har en typ som inte stödjs ”%1$s”"
 
 msgid "interface host IP"
-msgstr ""
+msgstr "gränssnittets värd-IP"
 
-#, fuzzy
 msgid "interface information in XML"
-msgstr "nätverksinformation i XML"
+msgstr "gränssnittsinformation i XML"
 
-#, fuzzy
 msgid "interface is already running"
-msgstr "Domänen kör redan"
+msgstr "gränssnittet kör redan"
 
-#, fuzzy
 msgid "interface is not running"
-msgstr "oterminerad sträng"
+msgstr "gränssnittet kör inte"
 
 msgid "interface mac"
-msgstr ""
+msgstr "gränssnitts-mac"
 
-#, fuzzy
 msgid "interface name"
-msgstr "Gränssnitt %s startat\n"
+msgstr "gränssnittsnamn"
 
 #, c-format
 msgid "interface name %1$s does not fit into buffer"
-msgstr ""
+msgstr "gränssnittsnamnet %1$s får inte plats i bufferten"
 
 msgid "interface name or MAC address"
-msgstr ""
+msgstr "gränssnittsnamn eller MAC-adress"
 
 #, c-format
 msgid "interface not set\n"
-msgstr ""
+msgstr "gränssnittet är inte satt\n"
 
-#, fuzzy
 msgid "interface state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "gränssnittets tillståndsdrivrutin är inte aktiv"
 
-#, fuzzy
 msgid "interface stats not implemented on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "gränssnittsstatistik är inte implementerat på denna plattform"
 
 #, c-format
 msgid "interface type='%1$s' requires a 'source' element"
-msgstr ""
+msgstr "gränssnitt av typ=”%1$s” kräver ett element ”source”"
 
-#, fuzzy
 msgid "internal"
-msgstr "internt fel"
+msgstr "internt"
 
-#, fuzzy
 msgid "internal (locking) error"
-msgstr "internt fel"
+msgstr "internt (låsnings)fel"
 
 msgid ""
 "internal and full system snapshots require all disks to be selected for "
 "snapshot"
 msgstr ""
+"interna och fulla systemögonblicksbilder kräver att alla diskar väljs för "
+"ögonblicksbilden"
 
 msgid "internal command for autocompletion"
-msgstr ""
+msgstr "internt kommando för autokomplettering"
 
 msgid "internal command for testing virt shells"
-msgstr ""
+msgstr "internt kommando för att testa virt-skal"
 
 msgid "internal error"
 msgstr "internt fel"
 
-#, fuzzy, c-format
+#, c-format
 msgid "internal error: %1$s"
-msgstr "internt fel"
+msgstr "internt fel: %1$s"
 
 #, c-format
 msgid "internal inactive snapshots are not supported on '%1$s' disks"
-msgstr ""
+msgstr "interna inaktiva ögonblicksbilder stödjs inte på ”%1$s”-diskar"
 
 #, c-format
 msgid ""
 "internal inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
 msgstr ""
+"interna inaktiva ögonblicksbilder stödjs inte på ”nätverks”-diskar som "
+"använder protokollet ”%1$s”"
 
 msgid "internal parse requested with NULL current"
-msgstr ""
+msgstr "intern tolkning begärd med NULL aktuell"
 
 #, c-format
 msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr ""
+"en intern ögonblicksbild för disken %1$s stödjs inte för lagringstypen %2$s"
 
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
+"intern ögonblicksbild av en körande VM måste inkludera minnestillståndet"
 
 msgid "internal snapshots of a VM with pflash based firmware are not supported"
 msgstr ""
+"interna ögonblicksbilder av en VM med pflash-baserad fast programvara stödjs "
+"inte"
 
-#, fuzzy
 msgid "internal use only"
-msgstr "internt fel"
+msgstr "endast för intern användning"
 
 msgid "interrupt post-copy migration"
-msgstr ""
+msgstr "avbryt efterkopieringsmigreringen"
 
 msgid "intr:"
-msgstr ""
+msgstr "avbr:"
 
 #, c-format
 msgid "invalid \"trunk='%1$s'\" in <vlan> - must be yes or no"
-msgstr ""
+msgstr "felaktig ”trunk='%1$s'” i <vlan> – måste vara yes eller no"
 
 #, c-format
 msgid ""
