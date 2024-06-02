@@ -13,14 +13,14 @@
 # Olesya Gerasimenko <gammaray@basealt.ru>, 2020.
 # Sergey A. <sw@atrus.ru>, 2022, 2023.
 # Jan Tomko <jtomko@redhat.com>, 2023.
-# "Sergey A." <sw@atrus.ru>, 2023.
+# "Sergey A." <sw@atrus.ru>, 2023, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-05-28 08:41+0000\n"
-"PO-Revision-Date: 2023-11-08 14:23+0000\n"
-"Last-Translator: Jan Tomko <jtomko@redhat.com>\n"
+"PO-Revision-Date: 2024-06-02 15:35+0000\n"
+"Last-Translator: \"Sergey A.\" <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
 "Language: ru\n"
@@ -29,7 +29,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.1.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 msgid ""
 "\n"
@@ -325,18 +325,24 @@ msgid ""
 "\n"
 "Domain '%1$s' dumped to %2$s\n"
 msgstr ""
+"\n"
+"Дамп домена «%1$s» сохранён в %2$s\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%1$s' saved to %2$s\n"
 msgstr ""
+"\n"
+"Домен «%1$s» сохранён в %2$s\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%1$s' state saved by libvirt\n"
 msgstr ""
+"\n"
+"Состояние домена «%1$s» сохранено с помощью libvirt\n"
 
 #, c-format
 msgid ""
@@ -441,6 +447,16 @@ msgid ""
 "  qemu/$domname\t\t\ttries looking up $domname under system followed by "
 "session URI\n"
 msgstr ""
+"\n"
+"Использование:\n"
+"%1$s имя_узла порт\n"
+"\n"
+"Имя узла должно быть записано в одной из следующих форм:\n"
+"\n"
+"  qemu:system/$domname\t\tдля доменов в qemu:///system\n"
+"  qemu:session/$domname\t\tдля доменов в qemu:///session\n"
+"  qemu/$domname\t\t\tпопробовать поиск $domname в системе, а затем в URI "
+"сеанса\n"
 
 #, c-format
 msgid ""
@@ -460,6 +476,21 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"синтаксис: %1$s [ПАРАМЕТРЫ] [ТИП_ГИПЕРВИЗОРА]\n"
+"\n"
+" Типы гипервизоров:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"   - ch\n"
+"\n"
+" Параметры:\n"
+"   -h, --help     Показать справку по командной строке\n"
+"   -v, --version  Показать версию приложения\n"
+"   -q, --quiet    Не показывать информацию о прогрессе\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %1$llu bytes/s (%2$-.3lf %3$s/s)"
@@ -479,7 +510,7 @@ msgstr " %1$s (ключевое слово «%2$s»):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <строка>..."
 
 msgid " Hypervisors:"
 msgstr " Гипервизоры:"
@@ -495,7 +526,7 @@ msgstr " Хранилище данных:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <строка>]..."
 
 #, c-format
 msgid ""
@@ -547,6 +578,8 @@ msgid ""
 "%1$s (on destination side) does not support the --migration option needed "
 "for migration with shared storage"
 msgstr ""
+"%1$s (на целевом сайте) не поддерживает параметр --migration, необходимый "
+"для миграции с использованием общего хранилища"
 
 #, c-format
 msgid "%1$s (out of %2$d)"
@@ -570,7 +603,7 @@ msgstr "%1$s не удалось разобрать UID «%2$s»"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "Поддержка диска %1$s в этом исполняемом файле QEMU не предусмотрена"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -603,7 +636,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "Поддержка графики %1$s этим QEMU не предусмотрена"
 
 #, c-format
 msgid "%1$s harddisk '%2$s' has unsupported cache mode '%3$s'"
@@ -815,7 +848,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
-msgstr ""
+msgstr "%1$s: Файл «%2$s» слишком большой\n"
 
 #, c-format
 msgid ""
@@ -955,7 +988,7 @@ msgstr "%1$s: событие «lifecycle» для пула носителей %2
 
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
-msgstr ""
+msgstr "%1$s: событие «metadata-change» для сети %2$s: тип %3$s, uri %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -10634,7 +10667,7 @@ msgstr "Недопустимое значение времени ожидани�
 
 #, c-format
 msgid "Invalid value of %1$d for I/O weight"
-msgstr "Недопустимое значение веса: %1$d "
+msgstr "Недопустимое значение %1$d для веса ввода/вывода"
 
 #, c-format
 msgid "Invalid value of 'cpuset': %1$s"
@@ -12788,7 +12821,8 @@ msgstr "Не поддерживается на этой платформе"
 
 #, sh-format
 msgid "Not suspending transient guests on URI: $uri: "
-msgstr "Работа временных систем на $uri не приостанавливается"
+msgstr ""
+"Не выполняется прекращение работы временных гостевых систем с URI: $uri: "
 
 msgid "Now in mirroring phase"
 msgstr "Находится в режиме создания зеркальной копии"
@@ -13430,7 +13464,7 @@ msgstr "Путь  «%1$s» не определяет физическую сис
 
 #, c-format
 msgid "Path '%1$s' ends with an excess item"
-msgstr "Лишний элемент в конце пути  «%1$s» "
+msgstr "Путь «%1$s» заканчивается лишним элементом"
 
 #, c-format
 msgid "Path '%1$s' is not accessible"
@@ -13460,7 +13494,7 @@ msgid ""
 "possible answers are %2$s"
 msgstr ""
 "Ожидающий запрос блокирует выполнение виртуальной машины. Возможные ответы "
-"на вопрос  «%1$s»: %2$s. "
+"на запрос «%1$s»: %2$s"
 
 #, c-format
 msgid ""
@@ -33190,7 +33224,7 @@ msgid "only one resource element is supported"
 msgstr "поддерживается только один элемент ресурса"
 
 msgid "only one set of redirection filter rule is supported"
-msgstr "поддерживается только одно правило перенаправления "
+msgstr "поддерживается только один набор правил фильтрации для перенаправления"
 
 msgid "only one source element is allowed for character device"
 msgstr "для символьного устройства допускается только один элемент «source»"
@@ -34241,7 +34275,7 @@ msgid "query-machines reply has malformed 'alias' data"
 msgstr "неверно сформированные данные «alias» в ответе query-machines"
 
 msgid "query-machines reply has malformed 'cpu-max' data"
-msgstr "Неверный формат данных «cpu-max» в ответе query-machines."
+msgstr "неверный формат данных «cpu-max» в ответе query-machines"
 
 msgid "query-machines reply has malformed 'default-cpu-type' data"
 msgstr ""
@@ -34351,7 +34385,7 @@ msgstr "диапазон %1$s — %2$s не полностью внутри се
 
 #, c-format
 msgid "range %1$s - %2$s is reversed "
-msgstr "диапазон %1$s — %2$s реверсирован"
+msgstr "диапазон %1$s — %2$s реверсирован "
 
 #, c-format
 msgid "range %1$s - %2$s is too large (> 65535)"
@@ -34476,7 +34510,7 @@ msgstr "переопределить существующий набор выв�
 
 #, c-format
 msgid "referenced filter '%1$s' is missing"
-msgstr "Нет фильтра «%1$s»."
+msgstr "указанный фильтр «%1$s» отсутствует"
 
 msgid "refresh a pool"
 msgstr "обновить пул"
@@ -34595,7 +34629,7 @@ msgid "reply data was missing 'option' name or parameters"
 msgstr ""
 
 msgid "reply was missing return data"
-msgstr "Ответ не содержит данных."
+msgstr "ответ не содержит данных"
 
 msgid "report active users"
 msgstr "сообщить активных пользователей"
@@ -34858,13 +34892,13 @@ msgid "returned number of disk errors exceeds limit"
 msgstr "возвращённое количество ошибок диска превышает ограничение"
 
 msgid "returns the storage pool for a given volume key or path"
-msgstr "возвращает пул носителей для заданного ключа тома или пути."
+msgstr "возвращает пул носителей для заданного ключа тома или пути"
 
 msgid "returns the volume key for a given volume name or path"
 msgstr "возвращает ключ тома для заданного имени или пути"
 
 msgid "returns the volume name for a given volume key or path"
-msgstr "возвращает том для заданного ключа или пути."
+msgstr "возвращает название тома для заданного ключа или пути"
 
 msgid "returns the volume path for a given volume name or key"
 msgstr "возвращает путь к тому для заданного имени или ключа"
@@ -35086,7 +35120,7 @@ msgstr "метка безопасности превышает максимал�
 
 #, c-format
 msgid "security label exceeds maximum: %1$zd"
-msgstr "метка безопасности превышает максимально допустимую: %1$zd "
+msgstr "размер метки безопасности превышает максимально допустимую длину: %1$zd"
 
 #, c-format
 msgid "security label exceeds maximum: %1$zu"
@@ -35488,7 +35522,7 @@ msgstr "снимок %1$s исчез из списка"
 
 #, c-format
 msgid "snapshot '%1$s' does not have a parent"
-msgstr "у снимка «%1$s»  нет родителя"
+msgstr "снимок «%1$s» не имеет родительской записи"
 
 #, c-format
 msgid "snapshot '%1$s' has no parent"
@@ -37961,7 +37995,7 @@ msgstr ""
 
 #, c-format
 msgid "unknown backend type '%1$s' for egd"
-msgstr "неизвестный тип в строке  <backend model='egd'>: «%1$s»"
+msgstr "неизвестный тип модуля «%1$s» для egd"
 
 #, c-format
 msgid "unknown backup mode '%1$s'"
@@ -37995,7 +38029,7 @@ msgstr "неизвестный тип символьного устройств�
 
 #, c-format
 msgid "unknown clock adjustment '%1$s'"
-msgstr "неизвестное значение атрибута  «adjustment»: «%1$s»"
+msgstr "неизвестная корректировка часов «%1$s»"
 
 #, c-format
 msgid "unknown clock basis '%1$s'"
