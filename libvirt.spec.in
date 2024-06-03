@@ -205,6 +205,18 @@
     %define with_modular_daemons 1
 %endif
 
+# Prefer nftables for future OS releases but keep using iptables
+# for existing ones
+%if 0%{?rhel} >= 10 || 0%{?fedora} >= 41
+    %define prefer_nftables 1
+    %define firewall_backend_priority nftables,iptables
+%else
+    %define prefer_nftables 0
+    %define firewall_backend_priority iptables,nftables
+%endif
+
+
+
 # Force QEMU to run as non-root
 %define qemu_user  qemu
 %define qemu_group  qemu
@@ -592,7 +604,7 @@ Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
-    %if 0%{?rhel} >= 10 || 0%{?fedora} >= 41
+    %if %{prefer_nftables}
 Requires: nftables
     %else
 Requires: iptables
@@ -1387,7 +1399,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
-           -Dfirewall_backend_priority=nftables,iptables \
+           -Dfirewall_backend_priority=%{firewall_backend_priority} \
            -Ddocs=enabled \
            -Dtests=enabled \
            -Drpath=disabled \
