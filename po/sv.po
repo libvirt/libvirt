@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-06-02 15:36+0000\n"
+"PO-Revision-Date: 2024-06-04 14:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -28350,160 +28350,158 @@ msgid ""
 "invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
 "one vlan tag"
 msgstr ""
+"ogiltig ”trunk='%1$s'” i <vlan> – trunk='yes' krävs för mer än en vlan-tagg"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid %1$s value: '%2$s'"
-msgstr "felaktig UUID-källa: %s"
+msgstr "felaktigt %1$s-värde: ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid %1$s: '%2$s'"
-msgstr "Ogiltiga portar: %s"
+msgstr "felaktig %1$s: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid '=' after option --%1$s"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt ”=” efter flaggan --%1$s"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
-msgstr ""
+msgstr "felaktigt attribut ”type” på vhostuser-diskkällan"
 
 msgid "invalid CPU cache level, must be in range [1,3]"
-msgstr ""
+msgstr "felaktig CPU-cachenivå, måste ligga i intervallet [1,3]"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid CPU definition at index %1$zu"
-msgstr "ogiltig domänpekare i %s"
+msgstr "felaktig CPU-definition vid index %1$zu"
 
-#, fuzzy
 msgid "invalid CPU definition stub"
-msgstr "ogiltig domänpekare i %s"
+msgstr "felaktig CPU-definitionsstubbe"
 
 #, c-format
 msgid "invalid DNS SRV port attribute for service '%1$s' in network '%2$s'"
-msgstr ""
+msgstr "felaktigt DNS SRV-portattribut för tjänsten ”%1$s” i nätverket ”%2$s”"
 
 #, c-format
 msgid "invalid DNS SRV weight attribute for service '%1$s' in network '%2$s'"
-msgstr ""
+msgstr "felaktigt DNS SRV-viktattribut för tjänsten ”%1$s” i nätverket ”%2$s”"
 
 msgid "invalid MAC address"
-msgstr ""
+msgstr "felaktig MAC-adress"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC address: %1$s"
-msgstr "felaktig UUID-källa: %1$s"
+msgstr "felaktig MAC-adress: %1$s"
 
 #, c-format
 msgid "invalid NUMA node ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt NUMA-nod-ID givet för ”%1$s”"
 
 msgid "invalid NUMA node in target"
-msgstr ""
+msgstr "felaktig NUMA-nod i målet"
 
 #, c-format
 msgid "invalid PCI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt PCI-buss-ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid PCI class supplied for '%1$s'"
-msgstr ""
+msgstr "felaktig PCI-klass given för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI domain ID supplied for '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt PCI-domän-ID givet för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI function ID supplied for '%1$s'"
-msgstr "ogiltig anslutningspekare i %1$s"
+msgstr "felaktigt PCI-funktions-ID givet för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI passthrough type '%1$s'"
-msgstr "felaktig UUID-källa: %1$s"
+msgstr "felaktig PCI-genomgångstyp ”%1$s”"
 
 #, c-format
 msgid "invalid PCI product ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktig PCI-produkt-ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid PCI slot ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt PCI-fack-ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid PCI vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt PCI-leverantörs-ID givet för ”%1$s”"
 
 msgid "invalid RNG rate bytes value"
-msgstr ""
+msgstr "felaktigt värde på RNG-hastighetsbyte"
 
 msgid "invalid RNG rate period value"
-msgstr ""
+msgstr "felaktigt värde på RNG-hastighetsperiod"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid SCSI LUN ID supplied for '%1$s'"
-msgstr "felaktig UUID-källa: %1$s"
+msgstr "felaktigt SCSI LUN ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid SCSI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt SCSI-buss-ID givet för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid SCSI host ID supplied for '%1$s'"
-msgstr "ogiltiga värd-UUID: %1$s"
+msgstr "felaktigt SCSI-värd-ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid SCSI target ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt SCSI-mål-ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid URI %1$s (maybe you want %2$s:///%3$s)"
-msgstr ""
+msgstr "felaktig URI %1$s (kanske du vill ha %2$s:///%3$s)"
 
 #, c-format
 msgid "invalid USB bus number supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt USB-bussnummer givet för ”%1$s”"
 
 #, c-format
 msgid "invalid USB device number supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt USB-enhetsnummer givet för ”%1$s”"
 
 #, c-format
 msgid "invalid USB interface class supplied for '%1$s'"
-msgstr ""
+msgstr "felaktig USB-gränssnittsklass given för ”%1$s”"
 
 #, c-format
 msgid "invalid USB interface number supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt USB-gränssnittsnummer givet för ”%1$s”"
 
 #, c-format
 msgid "invalid USB interface protocol supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt USB-gränssnittsprotokoll givet för ”%1$s”"
 
 #, c-format
 msgid "invalid USB interface subclass supplied for '%1$s'"
-msgstr ""
+msgstr "felaktig USB-gränssnittsunderklass given för ”%1$s”"
 
 #, c-format
 msgid "invalid USB product ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt USB-produkt-ID givet för ”%1$s”"
 
 #, c-format
 msgid "invalid USB vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt USB-leverantörs-ID givet för ”%1$s”"
 
-#, fuzzy
 msgid "invalid UUID"
-msgstr "ogiltiga värd-UUID: %s"
+msgstr "felaktig UUID"
 
 #, c-format
 msgid "invalid UUID source: %1$s"
 msgstr "felaktig UUID-källa: %1$s"
 
-#, fuzzy
 msgid "invalid VM definition"
-msgstr "ogiltig domänpekare i"
+msgstr "felaktig VM-definition"
 
 #, c-format
 msgid "invalid XML length: %1$d"
-msgstr ""
+msgstr "felaktig XML-längd: %1$d"
 
 #, c-format
 msgid "invalid ap-adapter value '%1$s' for '%2$s'"
