@@ -1564,7 +1564,12 @@ main(int argc, char **argv)
         /* create the profile from TEMPLATE */
         if (ctl->cmd == 'c' || purged) {
             char *tmp = NULL;
-            tmp = g_strdup_printf("  #include <libvirt/%s.files>\n", ctl->uuid);
+#if defined(WITH_APPARMOR_3)
+            const char *ifexists = "if exists ";
+#else
+            const char *ifexists = "";
+#endif
+            tmp = g_strdup_printf("  #include %s<libvirt/%s.files>\n", ifexists, ctl->uuid);
 
             if (ctl->dryrun) {
                 vah_info(profile);
