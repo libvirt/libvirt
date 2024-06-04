@@ -470,6 +470,7 @@ qemuDomainDeviceSupportZPCI(virDomainDeviceDef *device)
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
         break;
 
     case VIR_DOMAIN_DEVICE_NONE:
@@ -1001,6 +1002,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             return 0;
         }
         break;
+
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        return pciFlags;
 
         /* These devices don't ever connect with PCI */
     case VIR_DOMAIN_DEVICE_NVRAM:
@@ -2422,6 +2426,13 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
         case VIR_DOMAIN_PANIC_MODEL_LAST:
             break;
         }
+    }
+
+    if (def->pstore &&
+        virDeviceInfoPCIAddressIsWanted(&def->pstore->info)) {
+        if (qemuDomainPCIAddressReserveNextAddr(addrs,
+                                                &def->pstore->info) < 0)
+            return -1;
     }
 
     return 0;

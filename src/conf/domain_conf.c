@@ -337,6 +337,7 @@ VIR_ENUM_IMPL(virDomainDevice,
               "vsock",
               "audio",
               "crypto",
+              "pstore",
 );
 
 VIR_ENUM_IMPL(virDomainDiskDevice,
@@ -1511,6 +1512,11 @@ VIR_ENUM_IMPL(virDomainLaunchSecurity,
               "sev",
               "sev-snp",
               "s390-pv",
+);
+
+VIR_ENUM_IMPL(virDomainPstoreBackend,
+              VIR_DOMAIN_PSTORE_BACKEND_LAST,
+              "acpi-erst",
 );
 
 typedef enum {
@@ -3548,6 +3554,16 @@ void virDomainMemoryDefFree(virDomainMemoryDef *def)
     g_free(def);
 }
 
+void virDomainPstoreDefFree(virDomainPstoreDef *def)
+{
+    if (!def)
+        return;
+
+    g_free(def->path);
+    virDomainDeviceInfoClear(&def->info);
+    g_free(def);
+}
+
 void virDomainDeviceDefFree(virDomainDeviceDef *def)
 {
     if (!def)
@@ -3631,6 +3647,9 @@ void virDomainDeviceDefFree(virDomainDeviceDef *def)
         break;
     case VIR_DOMAIN_DEVICE_CRYPTO:
         virDomainCryptoDefFree(def->data.crypto);
+        break;
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        virDomainPstoreDefFree(def->data.pstore);
         break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
@@ -3996,6 +4015,8 @@ void virDomainDefFree(virDomainDef *def)
     g_free(def->cryptos);
 
     virDomainIOMMUDefFree(def->iommu);
+
+    virDomainPstoreDefFree(def->pstore);
 
     g_free(def->idmap.uidmap);
     g_free(def->idmap.gidmap);
@@ -4554,6 +4575,8 @@ virDomainDeviceGetInfo(const virDomainDeviceDef *device)
         return &device->data.vsock->info;
     case VIR_DOMAIN_DEVICE_CRYPTO:
         return &device->data.crypto->info;
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        return &device->data.pstore->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -4658,6 +4681,9 @@ virDomainDeviceSetData(virDomainDeviceDef *device,
         break;
     case VIR_DOMAIN_DEVICE_CRYPTO:
         device->data.crypto = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        device->data.pstore = devicedata;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -4877,6 +4903,13 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
             return rc;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_PSTORE;
+    if (def->pstore) {
+        device.data.pstore = def->pstore;
+        if ((rc = cb(def, &device, &def->pstore->info, opaque)) != 0)
+            return rc;
+    }
+
     /* If the flag below is set, make sure @cb can handle @info being NULL */
     if (iteratorFlags & DOMAIN_DEVICE_ITERATE_MISSING_INFO) {
         device.type = VIR_DOMAIN_DEVICE_GRAPHICS;
@@ -4936,6 +4969,7 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
         break;
     }
 #endif
@@ -14006,6 +14040,40 @@ virDomainCryptoDefParseXML(virDomainXMLOption *xmlopt,
 }
 
 
+static virDomainPstoreDef *
+virDomainPstoreDefParseXML(virDomainXMLOption *xmlopt,
+                           xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           unsigned int flags)
+{
+    g_autoptr(virDomainPstoreDef) def = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+        def = g_new0(virDomainPstoreDef, 1);
+
+    ctxt->node = node;
+
+    if (virXMLPropEnum(node, "backend",
+                       virDomainPstoreBackendTypeFromString,
+                       VIR_XML_PROP_REQUIRED,
+                       &def->backend) < 0) {
+        return NULL;
+    }
+
+    def->path = virXPathString("string(./path)", ctxt);
+
+    if (virDomainParseMemory("./size", "./size/@unit", ctxt,
+                             &def->size, true, false) < 0) {
+        return NULL;
+    }
+
+    if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
+        return NULL;
+
+    return g_steal_pointer(&def);
+}
+
+
 static int
 virDomainDeviceDefParseType(const char *typestr,
                             virDomainDeviceType *type)
@@ -14184,6 +14252,12 @@ virDomainDeviceDefParse(const char *xmlStr,
         if (!(dev->data.crypto = virDomainCryptoDefParseXML(xmlopt, node, ctxt,
                                                             flags)))
             return NULL;
+        break;
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        if (!(dev->data.pstore = virDomainPstoreDefParseXML(xmlopt, node,
+                                                            ctxt, flags))) {
+            return NULL;
+        }
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -19532,6 +19606,22 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
+    if ((n = virXPathNodeSet("./devices/pstore", ctxt, &nodes)) < 0)
+        return NULL;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only a single pstore device is supported"));
+        return NULL;
+    }
+
+    if (n > 0) {
+        if (!(def->pstore = virDomainPstoreDefParseXML(xmlopt, nodes[0],
+                                                       ctxt, flags)))
+            return NULL;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
         return NULL;
@@ -21405,6 +21495,33 @@ virDomainVsockDefCheckABIStability(virDomainVsockDef *src,
 
 
 static bool
+virDomainPstoreDefCheckABIStability(virDomainPstoreDef *src,
+                                    virDomainPstoreDef *dst)
+{
+    if (src->backend != dst->backend) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target pstore device backend '%1$s' does not match source '%2$s'"),
+                       virDomainPstoreBackendTypeToString(dst->backend),
+                       virDomainPstoreBackendTypeToString(src->backend));
+        return false;
+    }
+
+    if (src->size != dst->size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target pstore size '%1$llu' does not match source '%2$llu'"),
+                       dst->size,
+                       src->size);
+        return false;
+    }
+
+    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        return false;
+
+    return true;
+}
+
+
+static bool
 virDomainDefVcpuCheckAbiStability(virDomainDef *src,
                                   virDomainDef *dst)
 {
@@ -21863,6 +21980,17 @@ virDomainDefCheckABIStabilityFlags(virDomainDef *src,
         !virDomainVsockDefCheckABIStability(src->vsock, dst->vsock))
         goto error;
 
+    if (!!src->pstore != !!dst->pstore) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target domain pstore device count does not match source"));
+        goto error;
+    }
+
+    if (src->pstore &&
+        !virDomainPstoreDefCheckABIStability(src->pstore, dst->pstore)) {
+        goto error;
+    }
+
     if (xmlopt && xmlopt->abi.domain &&
         !xmlopt->abi.domain(src, dst))
         goto error;
@@ -21903,6 +22031,7 @@ virDomainDefCheckABIStabilityFlags(virDomainDef *src,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
         break;
     }
 #endif
@@ -27849,6 +27978,26 @@ virDomainDefFormatFeatures(virBuffer *buf,
     return 0;
 }
 
+static int
+virDomainPstoreDefFormat(virBuffer *buf,
+                         virDomainPstoreDef *pstore,
+                         unsigned int flags)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virBufferAsprintf(&attrBuf, " backend='%s'",
+                      virDomainPstoreBackendTypeToString(pstore->backend));
+
+    virBufferAsprintf(&childBuf, "<path>%s</path>\n", pstore->path);
+    virBufferAsprintf(&childBuf, "<size unit='KiB'>%llu</size>\n", pstore->size);
+    virDomainDeviceInfoFormat(&childBuf, &pstore->info, flags);
+
+    virXMLFormatElement(buf, "pstore", &attrBuf, &childBuf);
+    return 0;
+}
+
+
 int
 virDomainDefFormatInternal(virDomainDef *def,
                            virDomainXMLOption *xmlopt,
@@ -28320,6 +28469,9 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (def->vsock)
         virDomainVsockDefFormat(buf, def->vsock);
 
+    if (def->pstore)
+        virDomainPstoreDefFormat(buf, def->pstore, flags);
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
 
@@ -28479,6 +28631,7 @@ virDomainDeviceIsUSB(virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
     break;
     }
 

@@ -8659,6 +8659,38 @@ The optional attribute ``backend`` is required if the ``type`` is ``qemu``, the
    ...
 
 
+Pstore
+~~~~~~~~~
+
+Pstore is an oops/panic logger that writes its logs to a block device and
+non-block device before the system crashes. Currently only ACPI Error Record
+Serialization Table, ERST, is supported. This feature is designed for storing
+error records in persistent storage for future reference and/or debugging.
+:since:`Since v10.6.0`
+
+::
+
+  ...
+  <pstore backend='acpi-erst'>
+    <path>/tmp/guest_acpi_esrt</path>
+    <size unit='KiB'>8</size>
+    <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x0'/>
+  </pstore>
+  ...
+
+The ``pstore`` element has one mandatory attribute ``backend`` which selects
+desired backend (only ``acpi-erst`` is accepted for now). Then it has the
+following child elements:
+
+``path``
+  Represents a path in the host that backs the pstore device in the guest. It
+  is mandatory.
+
+``size``
+  Configures the size of the persistent storage available to the guest. It is
+  mandatory.
+
+
 Security label
 --------------
 

@@ -2949,6 +2949,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("mtp-usb-device")
     DO_TEST_CAPS_LATEST("net-usb")
     DO_TEST_CAPS_LATEST("sound-device-virtio")
+    DO_TEST_CAPS_LATEST("pstore-acpi-erst")
 
     DO_TEST_CAPS_LATEST_FAILURE("disk-network-iscsi-zero-hosts-invalid")
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-vhost-rawio-invalid")

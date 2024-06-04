@@ -616,6 +616,8 @@ virDomainPausedReasonTypeToString;
 virDomainPMSuspendedReasonTypeFromString;
 virDomainPMSuspendedReasonTypeToString;
 virDomainProcessCapsFeatureTypeToString;
+virDomainPstoreBackendTypeFromString;
+virDomainPstoreBackendTypeToString;
 virDomainRedirdevBusTypeFromString;
 virDomainRedirdevBusTypeToString;
 virDomainRedirdevDefFind;

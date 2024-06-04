@@ -6255,6 +6255,28 @@
     </element>
   </define>
 
+  <define name="pstore">
+    <element name="pstore">
+      <attribute name="backend">
+        <value>acpi-erst</value>
+      </attribute>
+      <interleave>
+        <element name="path">
+          <ref name="absFilePath"/>
+        </element>
+        <element name="size">
+          <ref name="scaledInteger"/>
+        </element>
+        <optional>
+          <ref name="address"/>
+        </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
   <define name="hostdev">
     <element name="hostdev">
       <interleave>
@@ -6723,6 +6745,9 @@
         </optional>
         <optional>
           <ref name="vsock"/>
+        </optional>
+        <optional>
+          <ref name="pstore"/>
         </optional>
       </interleave>
     </element>

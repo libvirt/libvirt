@@ -3023,6 +3023,33 @@ virDomainTPMDevValidate(const virDomainTPMDef *tpm)
 
 
 static int
+virDomainPstoreDefValidate(const virDomainPstoreDef *pstore)
+{
+    if (pstore->backend != VIR_DOMAIN_PSTORE_BACKEND_ACPI_ERST) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported backend for pstore device: %1$s"),
+                       virDomainPstoreBackendTypeToString(pstore->backend));
+        return -1;
+    }
+
+    if (pstore->path == NULL || pstore->path[0] == '\0') {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing path for ACPI ERST pstore device"));
+        return -1;
+    }
+
+    if (pstore->size < 4 ||
+        !VIR_IS_POW2(pstore->size)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid size of ACPI ERST pstore device"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceInfoValidate(const virDomainDeviceDef *dev)
 {
     virDomainDeviceInfo *info;
@@ -3131,6 +3158,9 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_TPM:
         return virDomainTPMDevValidate(dev->data.tpm);
+
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        return virDomainPstoreDefValidate(dev->data.pstore);
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_WATCHDOG:

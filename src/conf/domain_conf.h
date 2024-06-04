@@ -87,6 +87,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_VSOCK,
     VIR_DOMAIN_DEVICE_AUDIO,
     VIR_DOMAIN_DEVICE_CRYPTO,
+    VIR_DOMAIN_DEVICE_PSTORE,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -120,6 +121,7 @@ struct _virDomainDeviceDef {
         virDomainVsockDef *vsock;
         virDomainAudioDef *audio;
         virDomainCryptoDef *crypto;
+        virDomainPstoreDef *pstore;
     } data;
 };
 
@@ -2983,6 +2985,19 @@ struct _virDomainVirtioOptions {
     virTristateSwitch page_per_vq;
 };
 
+typedef enum {
+    VIR_DOMAIN_PSTORE_BACKEND_ACPI_ERST,
+
+    VIR_DOMAIN_PSTORE_BACKEND_LAST
+} virDomainPstoreBackend;
+
+struct _virDomainPstoreDef {
+    virDomainPstoreBackend backend;
+    unsigned long long size;
+    char *path;
+    virDomainDeviceInfo info;
+};
+
 
 #define SCSI_SUPER_WIDE_BUS_MAX_CONT_UNIT 64
 #define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
@@ -3159,6 +3174,7 @@ struct _virDomainDef {
     virDomainRedirFilterDef *redirfilter;
     virDomainIOMMUDef *iommu;
     virDomainVsockDef *vsock;
+    virDomainPstoreDef *pstore;
 
     void *namespaceData;
     virXMLNamespace ns;
@@ -3598,6 +3614,8 @@ void virDomainVsockDefFree(virDomainVsockDef *vsock);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVsockDef, virDomainVsockDefFree);
 void virDomainCryptoDefFree(virDomainCryptoDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCryptoDef, virDomainCryptoDefFree);
+void virDomainPstoreDefFree(virDomainPstoreDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainPstoreDef, virDomainPstoreDefFree);
 void virDomainNetTeamingInfoFree(virDomainNetTeamingInfo *teaming);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetTeamingInfo, virDomainNetTeamingInfoFree);
 void virDomainNetPortForwardFree(virDomainNetPortForward *pf);
@@ -4268,6 +4286,7 @@ VIR_ENUM_DECL(virDomainCryptoBackend);
 VIR_ENUM_DECL(virDomainShmemModel);
 VIR_ENUM_DECL(virDomainShmemRole);
 VIR_ENUM_DECL(virDomainLaunchSecurity);
+VIR_ENUM_DECL(virDomainPstoreBackend);
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState);
 VIR_ENUM_DECL(virDomainNostateReason);

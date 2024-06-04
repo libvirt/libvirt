@@ -3133,6 +3133,7 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attaching devices of type %1$d is not implemented"), dev->type);
         return -1;

@@ -180,6 +180,7 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Cloud-Hypervisor doesn't support '%1$s' device"),
                        virDomainDeviceTypeToString(dev->type));
