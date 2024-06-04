@@ -201,6 +201,7 @@
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
   <flag name='netdev.user'/>
+  <flag name='acpi-erst'/>
   <version>8001000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v8.1.0</package>

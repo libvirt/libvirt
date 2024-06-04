@@ -175,6 +175,7 @@
   <flag name='machine.virt.ras'/>
   <flag name='virtio-sound'/>
   <flag name='netdev.user'/>
+  <flag name='acpi-erst'/>
   <version>8002000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-8.2.0-7.fc39</package>

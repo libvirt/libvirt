@@ -206,6 +206,7 @@
   <flag name='usb-mtp'/>
   <flag name='virtio-sound'/>
   <flag name='netdev.user'/>
+  <flag name='acpi-erst'/>
   <version>9000000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v9.0.0</package>

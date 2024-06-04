@@ -712,6 +712,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 460 */
               "sev-snp-guest", /* QEMU_CAPS_SEV_SNP_GUEST */
               "netdev.user", /* QEMU_CAPS_NETDEV_USER */
+              "acpi-erst", /* QEMU_CAPS_DEVICE_ACPI_ERST */
     );
 
 
@@ -1398,6 +1399,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-sound-pci", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
     { "virtio-sound-device", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
     { "sev-snp-guest", QEMU_CAPS_SEV_SNP_GUEST },
+    { "acpi-erst", QEMU_CAPS_DEVICE_ACPI_ERST },
 };
 
 
