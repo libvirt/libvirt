@@ -1002,9 +1002,14 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->os.slic_table, "r") != 0)
             goto cleanup;
 
-    if (ctl->def->os.loader && ctl->def->os.loader->path)
-        if (vah_add_file(&buf, ctl->def->os.loader->path, "rk") != 0)
+    if (ctl->def->os.loader && ctl->def->os.loader->path) {
+        bool readonly = false;
+        virTristateBoolToBool(ctl->def->os.loader->readonly, &readonly);
+        if (vah_add_file(&buf,
+                         ctl->def->os.loader->path,
+                         readonly ? "rk" : "rwk") != 0)
             goto cleanup;
+    }
 
     if (ctl->def->os.loader && ctl->def->os.loader->nvram) {
         if (storage_source_add_files(ctl->def->os.loader->nvram, &buf, 0) < 0)
