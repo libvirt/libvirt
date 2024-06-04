@@ -59,7 +59,7 @@
       <target type='serial' port='0'/>
     </console>
     <tpm model='tpm-tis'>
-      <backend type='emulator' version='1.2'/>
+      <backend type='emulator' version='2.0'/>
     </tpm>
     <audio id='1' type='none'/>
     <video>

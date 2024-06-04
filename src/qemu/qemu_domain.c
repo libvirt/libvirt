@@ -6180,12 +6180,15 @@ qemuDomainTPMDefPostParse(virDomainTPMDef *tpm,
     /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
     if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
         tpm->data.emulator.version == VIR_DOMAIN_TPM_VERSION_DEFAULT) {
-        if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR ||
-            tpm->model == VIR_DOMAIN_TPM_MODEL_CRB ||
-            qemuDomainIsARMVirt(def))
-            tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
-        else
+        /* tpm-tis on x86 defaults to TPM 1.2 to preserve the
+         * historical behavior, but in all other scenarios we want
+         * TPM 2.0 instead */
+        if (tpm->model == VIR_DOMAIN_TPM_MODEL_TIS &&
+            ARCH_IS_X86(def->os.arch)) {
             tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_1_2;
+        } else {
+            tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
+        }
     }
 
     return 0;
