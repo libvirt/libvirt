@@ -52,7 +52,8 @@ qemuMonitorTestItemGetPrivateData(qemuMonitorTestItem *item);
 int
 qemuMonitorTestAddErrorResponse(qemuMonitorTest *test,
                                 const char *errmsg,
-                                ...);
+                                ...)
+    G_GNUC_PRINTF(2, 3);
 
 void
 qemuMonitorTestAllowUnusedCommands(qemuMonitorTest *test);

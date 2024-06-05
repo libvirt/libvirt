@@ -172,7 +172,7 @@ qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTest *test,
 }
 
 
-int G_GNUC_PRINTF(2, 3)
+int
 qemuMonitorTestAddErrorResponse(qemuMonitorTest *test, const char *errmsg, ...)
 {
     va_list msgargs;
