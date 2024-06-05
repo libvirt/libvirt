@@ -658,6 +658,14 @@ qemuAssignDeviceCryptoAlias(virDomainDef *def,
 }
 
 
+static void
+qemuAssignDevicePstoreAlias(virDomainPstoreDef *pstore)
+{
+    if (!pstore->info.alias)
+        pstore->info.alias = g_strdup("pstore0");
+}
+
+
 int
 qemuAssignDeviceAliases(virDomainDef *def)
 {
@@ -747,6 +755,8 @@ qemuAssignDeviceAliases(virDomainDef *def)
     for (i = 0; i < def->ncryptos; i++) {
         qemuAssignDeviceCryptoAlias(def, def->cryptos[i]);
     }
+    if (def->pstore)
+        qemuAssignDevicePstoreAlias(def->pstore);
 
     return 0;
 }

@@ -10342,6 +10342,53 @@ qemuBuildCryptoCommandLine(virCommand *cmd,
 
 
 static int
+qemuBuildPstoreCommandLine(virCommand *cmd,
+                           const virDomainDef *def,
+                           virDomainPstoreDef *pstore,
+                           virQEMUCaps *qemuCaps)
+{
+    g_autoptr(virJSONValue) devProps = NULL;
+    g_autoptr(virJSONValue) memProps = NULL;
+    g_autofree char *memAlias = NULL;
+
+    if (!pstore->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("pstore device is missing alias"));
+        return -1;
+    }
+
+    memAlias = g_strdup_printf("mem%s", pstore->info.alias);
+
+    if (qemuMonitorCreateObjectProps(&memProps,
+                                     "memory-backend-file",
+                                     memAlias,
+                                     "s:mem-path", pstore->path,
+                                     "U:size", pstore->size * 1024,
+                                     "b:share", true,
+                                     NULL) < 0) {
+        return -1;
+    }
+
+    if (virJSONValueObjectAdd(&devProps,
+                              "s:driver", "acpi-erst",
+                              "s:id", pstore->info.alias,
+                              "s:memdev", memAlias,
+                              NULL) < 0) {
+        return -1;
+    }
+
+    if (qemuBuildDeviceAddressProps(devProps, def, &pstore->info) < 0)
+        return -1;
+
+    if (qemuBuildObjectCommandlineFromJSON(cmd, memProps, qemuCaps) < 0 ||
+        qemuBuildDeviceCommandlineFromJSON(cmd, devProps, def, qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuBuildAsyncTeardownCommandLine(virCommand *cmd,
                                   const virDomainDef *def,
                                   virQEMUCaps *qemuCaps)
@@ -10697,6 +10744,10 @@ qemuBuildCommandLine(virDomainObj *vm,
         return NULL;
 
     if (qemuBuildCryptoCommandLine(cmd, def, qemuCaps) < 0)
+        return NULL;
+
+    if (def->pstore &&
+        qemuBuildPstoreCommandLine(cmd, def, def->pstore, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildAsyncTeardownCommandLine(cmd, def, qemuCaps) < 0)
