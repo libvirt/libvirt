@@ -1485,8 +1485,9 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dtests=disabled \
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
-  -Dyajl=disabled
-    %mingw_ninja
+  -Dyajl=disabled \
+  %{?enable_werror}
+%mingw_ninja
 %endif
 
 %install
