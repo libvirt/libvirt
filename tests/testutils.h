@@ -113,7 +113,8 @@ void virTestFakeRootDirCleanup(char *fakerootdir);
 int virTestMain(int argc,
                 char **argv,
                 int (*func)(void),
-                ...);
+                ...)
+    G_GNUC_NULL_TERMINATED;
 
 /* Setup, then call func() */
 #define VIR_TEST_MAIN(func) \

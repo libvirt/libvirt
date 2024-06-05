@@ -39,7 +39,7 @@ static virQEMUDriver driver;
 
 static virBuffer testnamebuf = VIR_BUFFER_INITIALIZER;
 
-static const char *
+static const char * G_GNUC_NULL_TERMINATED
 tn(const char *str, ...)
 {
     va_list ap;

@@ -2418,7 +2418,7 @@ vshCloseLogFile(vshControl *ctl)
 }
 
 #ifndef WIN32
-static void
+static void G_GNUC_NULL_TERMINATED
 vshPrintRaw(vshControl *ctl, ...)
 {
     va_list ap;

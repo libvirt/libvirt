@@ -468,7 +468,7 @@ qemuMonitorJSONHasError(virJSONValue *reply,
  *
  * Returns 0 on success and -1 on error.
  */
-static int
+static int G_GNUC_NULL_TERMINATED
 qemuMonitorJSONTransactionAdd(virJSONValue *actions,
                               const char *cmdname,
                               ...)

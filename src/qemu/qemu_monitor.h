@@ -947,7 +947,8 @@ int qemuMonitorDelDevice(qemuMonitor *mon,
 int qemuMonitorCreateObjectProps(virJSONValue **propsret,
                                  const char *type,
                                  const char *alias,
-                                 ...);
+                                 ...)
+    G_GNUC_NULL_TERMINATED;
 
 int qemuMonitorAddObject(qemuMonitor *mon,
                          virJSONValue **props,

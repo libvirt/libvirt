@@ -40,7 +40,8 @@ testQEMUSchemaValidateCommand(const char *command,
 
 int
 testQEMUSchemaEntryMatchTemplate(virJSONValue *schemaentry,
-                                 ...);
+                                 ...)
+    G_GNUC_NULL_TERMINATED;
 
 
 virJSONValue *
