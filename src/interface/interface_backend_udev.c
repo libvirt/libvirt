@@ -1027,11 +1027,13 @@ static char *
 udevInterfaceGetXMLDesc(virInterfacePtr ifinfo,
                         unsigned int flags)
 {
-    struct udev *udev = udev_ref(driver->udev);
+    struct udev *udev = NULL;
     g_autoptr(virInterfaceDef) ifacedef = NULL;
     char *xmlstr = NULL;
 
     virCheckFlags(VIR_INTERFACE_XML_INACTIVE, NULL);
+
+    udev = udev_ref(driver->udev);
 
     /* Recursively build up the interface XML based on the requested
      * interface name
