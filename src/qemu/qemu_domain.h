@@ -1113,6 +1113,8 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
 
 int
 qemuDomainObjWait(virDomainObj *vm);
+bool
+qemuDomainObjIsActive(virDomainObj *vm);
 
 int
 qemuDomainRefreshStatsSchema(virDomainObj *dom);

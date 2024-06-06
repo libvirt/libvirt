@@ -12398,6 +12398,24 @@ qemuDomainObjWait(virDomainObj *vm)
 
 
 /**
+ * qemuDomainObjIsActive:
+ * @vm: domain object
+ *
+ * Return whether @vm is active. Take qemu-driver specifics into account.
+ */
+bool
+qemuDomainObjIsActive(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    if (priv->beingDestroyed)
+        return false;
+
+    return virDomainObjIsActive(vm);
+}
+
+
+/**
  * virDomainRefreshStatsSchema:
  * @driver: qemu driver data
  * @vm: Pointer to the vm object
