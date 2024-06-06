@@ -163,7 +163,7 @@ if conf.has('WITH_QEMU')
   # Install the sysuser config for the qemu driver
   install_data(
     'libvirt-qemu.sysusers.conf',
-    install_dir: prefix / 'lib' / 'sysusers.d',
+    install_dir: sysusersdir,
     rename: [ 'libvirt-qemu.conf' ],
   )
 

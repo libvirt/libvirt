@@ -100,6 +100,11 @@ if unitdir == ''
   unitdir = prefix / 'lib' / 'systemd' / 'system'
 endif
 
+sysusersdir = getoption('sysusersdir')
+if sysusersdir == ''
+  sysusersdir = prefix / 'lib' / 'sysusers.d'
+endif
+
 bindir = prefix / get_option('bindir')
 datadir = prefix / get_option('datadir')
 includedir = prefix / get_option('includedir')
