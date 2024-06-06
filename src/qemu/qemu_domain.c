@@ -12302,7 +12302,7 @@ qemuDomainDeviceBackendChardevIter(virDomainDef *def G_GNUC_UNUSED,
 
 
 /**
- * qemuDomainDeviceBackendChardevForeach:a
+ * qemuDomainDeviceBackendChardevForeach:
  * @def: domain definition
  * @cb: callback
  * @opqaue: data for @cb
