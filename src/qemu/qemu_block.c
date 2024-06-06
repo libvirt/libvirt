@@ -602,6 +602,12 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSource *src,
      * }
      */
 
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("iSCSI protocol accepts only one host"));
+        return NULL;
+    }
+
     target = g_strdup(src->path);
 
     /* Separate the target and lun */

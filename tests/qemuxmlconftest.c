@@ -2988,6 +2988,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-usb")
     DO_TEST_CAPS_LATEST("sound-device-virtio")
 
+    DO_TEST_CAPS_LATEST_FAILURE("disk-network-iscsi-zero-hosts-invalid")
+
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)
         ret = -1;
