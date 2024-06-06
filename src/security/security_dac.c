@@ -1995,6 +1995,10 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
         virSecurityDACRestoreFileLabel(mgr, def->os.slic_table) < 0)
         rc = -1;
 
+    if (def->pstore &&
+        virSecurityDACRestoreFileLabel(mgr, def->pstore->path) < 0)
+        rc = -1;
+
     return rc;
 }
 
@@ -2237,6 +2241,12 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
     if (def->os.slic_table &&
         virSecurityDACSetOwnership(mgr, NULL,
                                    def->os.slic_table,
+                                   user, group, true) < 0)
+        return -1;
+
+    if (def->pstore &&
+        virSecurityDACSetOwnership(mgr, NULL,
+                                   def->pstore->path,
                                    user, group, true) < 0)
         return -1;
 

@@ -2911,6 +2911,10 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
         virSecuritySELinuxRestoreFileLabel(mgr, def->os.slic_table, true) < 0)
         rc = -1;
 
+    if (def->pstore &&
+        virSecuritySELinuxRestoreFileLabel(mgr, def->pstore->path, true) < 0)
+        rc = -1;
+
     return rc;
 }
 
@@ -3332,6 +3336,11 @@ virSecuritySELinuxSetAllLabel(virSecurityManager *mgr,
 
     if (def->os.slic_table &&
         virSecuritySELinuxSetFilecon(mgr, def->os.slic_table,
+                                     data->content_context, true) < 0)
+        return -1;
+
+    if (def->pstore &&
+        virSecuritySELinuxSetFilecon(mgr, def->pstore->path,
                                      data->content_context, true) < 0)
         return -1;
 

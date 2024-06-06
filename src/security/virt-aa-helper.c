@@ -1002,6 +1002,10 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->os.slic_table, "r") != 0)
             goto cleanup;
 
+    if (ctl->def->pstore)
+        if (vah_add_file(&buf, ctl->def->pstore->path, "rw") != 0)
+            goto cleanup;
+
     if (ctl->def->os.loader && ctl->def->os.loader->path) {
         bool readonly = false;
         virTristateBoolToBool(ctl->def->os.loader->readonly, &readonly);
