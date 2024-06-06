@@ -12368,6 +12368,18 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
 }
 
 
+/**
+ * qemuDomainObjWait:
+ * @vm: domain object
+ *
+ * Wait for a signal on the main domain condition. Take into account internal
+ * qemu state in addition to what virDomainObjWait checks. Code in the qemu
+ * driver must use this function exclusively instead of virDomainObjWait.
+ *
+ * Returns:
+ *  0 on successful wait AND VM is guaranteed to be running
+ *  -1 on failure to wait or VM was terminated while waiting
+ */
 int
 qemuDomainObjWait(virDomainObj *vm)
 {
