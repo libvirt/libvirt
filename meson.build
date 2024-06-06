@@ -95,6 +95,11 @@ if initconfdir == ''
   endif
 endif
 
+unitdir = get_option('unitdir')
+if unitdir == ''
+  unitdir = prefix / 'lib' / 'systemd' / 'system'
+endif
+
 bindir = prefix / get_option('bindir')
 datadir = prefix / get_option('datadir')
 includedir = prefix / get_option('includedir')

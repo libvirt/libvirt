@@ -812,11 +812,9 @@ endforeach
 if conf.has('WITH_LIBVIRTD')
   # Generate systemd service and socket unit files
   if init_script == 'systemd'
-    systemd_unit_dir = prefix / 'lib' / 'systemd' / 'system'
-
     install_data(
       guest_unit_files,
-      install_dir: systemd_unit_dir,
+      install_dir: unitdir,
     )
 
     if conf.has('WITH_POLKIT')
@@ -855,7 +853,7 @@ if conf.has('WITH_LIBVIRTD')
         output: service_out,
         configuration: unit_conf,
         install: true,
-        install_dir: systemd_unit_dir,
+        install_dir: unitdir,
       )
 
       foreach socket : unit.get('sockets', [ 'main', 'ro', 'admin' ])
@@ -881,7 +879,7 @@ if conf.has('WITH_LIBVIRTD')
           output: socket_out,
           configuration: unit_conf,
           install: true,
-          install_dir: systemd_unit_dir,
+          install_dir: unitdir,
         )
       endforeach
     endforeach
