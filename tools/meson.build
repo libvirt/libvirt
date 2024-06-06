@@ -40,6 +40,7 @@ libvirt_shell_lib = static_library(
 
 if conf.has('WITH_HOST_VALIDATE')
   virt_host_validate_sources = [
+    'virt-validate-common.c',
     'virt-host-validate.c',
     'virt-host-validate-common.c',
   ]

@@ -57,21 +57,21 @@ int virHostValidateCh(void)
     }
 
     if (hasVirtFlag) {
-        virHostMsgCheck("CH", "%s", _("Checking for hardware virtualization"));
+        virValidateCheck("CH", "%s", _("Checking for hardware virtualization"));
         if (hasHwVirt) {
-            virHostMsgPass();
+            virValidatePass();
         } else {
-            virHostMsgFail(VIR_HOST_VALIDATE_FAIL,
-                           _("Only emulated CPUs are available, performance will be significantly limited"));
+            virValidateFail(VIR_VALIDATE_FAIL,
+                            _("Only emulated CPUs are available, performance will be significantly limited"));
             ret = -1;
         }
     }
 
     if (hasHwVirt || !hasVirtFlag) {
-        if (virHostValidateDeviceExists("CH", "/dev/kvm", VIR_HOST_VALIDATE_FAIL,
+        if (virHostValidateDeviceExists("CH", "/dev/kvm", VIR_VALIDATE_FAIL,
                                         kvmhint) < 0)
             ret = -1;
-        else if (virHostValidateDeviceAccessible("CH", "/dev/kvm", VIR_HOST_VALIDATE_FAIL,
+        else if (virHostValidateDeviceAccessible("CH", "/dev/kvm", VIR_VALIDATE_FAIL,
                                                  _("Check /dev/kvm is world writable or you are in a group that is allowed to access it")) < 0)
             ret = -1;
     }

@@ -391,6 +391,7 @@ tools/virt-host-validate-qemu.c
 tools/virt-host-validate.c
 tools/virt-login-shell-helper.c
 tools/virt-pki-query-dn.c
+tools/virt-validate-common.c
 tools/vsh-table.c
 tools/vsh.c
 tools/vsh.h

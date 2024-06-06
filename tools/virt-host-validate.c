@@ -124,7 +124,7 @@ main(int argc, char **argv)
     if (argc > 1)
         hvname = argv[optind];
 
-    virHostMsgSetQuiet(quiet);
+    virValidateSetQuiet(quiet);
 
 #if WITH_QEMU
     if (!hvname || STREQ(hvname, "qemu")) {
