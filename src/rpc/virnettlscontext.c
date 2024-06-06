@@ -27,6 +27,7 @@
 #include <gnutls/x509.h>
 
 #include "virnettlscontext.h"
+#include "virnettlsconfig.h"
 #include "virstring.h"
 
 #include "viralloc.h"
@@ -36,15 +37,6 @@
 #include "virlog.h"
 #include "virprobe.h"
 #include "virthread.h"
-#include "configmake.h"
-
-#define LIBVIRT_PKI_DIR SYSCONFDIR "/pki"
-#define LIBVIRT_CACERT LIBVIRT_PKI_DIR "/CA/cacert.pem"
-#define LIBVIRT_CACRL LIBVIRT_PKI_DIR "/CA/cacrl.pem"
-#define LIBVIRT_CLIENTKEY LIBVIRT_PKI_DIR "/libvirt/private/clientkey.pem"
-#define LIBVIRT_CLIENTCERT LIBVIRT_PKI_DIR "/libvirt/clientcert.pem"
-#define LIBVIRT_SERVERKEY LIBVIRT_PKI_DIR "/libvirt/private/serverkey.pem"
-#define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -721,9 +713,6 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
                                              char **cert,
                                              char **key)
 {
-    char *userdir = NULL;
-    char *user_pki_path = NULL;
-
     *cacert = NULL;
     *cacrl = NULL;
     *key = NULL;
@@ -736,33 +725,13 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
      * files actually exist there
      */
     if (pkipath) {
-        VIR_DEBUG("Told to use TLS credentials in %s", pkipath);
-        *cacert = g_strdup_printf("%s/%s", pkipath, "cacert.pem");
-        *cacrl = g_strdup_printf("%s/%s", pkipath, "cacrl.pem");
-        *key = g_strdup_printf("%s/%s", pkipath,
-                               isServer ? "serverkey.pem" : "clientkey.pem");
-
-        *cert = g_strdup_printf("%s/%s", pkipath,
-                                isServer ? "servercert.pem" : "clientcert.pem");
+        virNetTLSConfigCustomCreds(pkipath, isServer,
+                                   cacert, cacrl,
+                                   cert, key);
     } else if (tryUserPkiPath) {
-        /* Check to see if $HOME/.pki contains at least one of the
-         * files and if so, use that
-         */
-        userdir = virGetUserDirectory();
-
-        user_pki_path = g_strdup_printf("%s/.pki/libvirt", userdir);
-
-        VIR_DEBUG("Trying to find TLS user credentials in %s", user_pki_path);
-
-        *cacert = g_strdup_printf("%s/%s", user_pki_path, "cacert.pem");
-
-        *cacrl = g_strdup_printf("%s/%s", user_pki_path, "cacrl.pem");
-
-        *key = g_strdup_printf("%s/%s", user_pki_path,
-                               isServer ? "serverkey.pem" : "clientkey.pem");
-
-        *cert = g_strdup_printf("%s/%s", user_pki_path,
-                                isServer ? "servercert.pem" : "clientcert.pem");
+        virNetTLSConfigUserCreds(isServer,
+                                 cacert, cacrl,
+                                 cert, key);
 
         /*
          * If some of the files can't be found, fallback
@@ -782,28 +751,9 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
         }
     }
 
-    /* No explicit path, or user path didn't exist, so
-     * fallback to global defaults
-     */
-    if (!*cacert) {
-        VIR_DEBUG("Using default TLS CA certificate path");
-        *cacert = g_strdup(LIBVIRT_CACERT);
-    }
-
-    if (!*cacrl) {
-        VIR_DEBUG("Using default TLS CA revocation list path");
-        *cacrl = g_strdup(LIBVIRT_CACRL);
-    }
-
-    if (!*key && !*cert) {
-        VIR_DEBUG("Using default TLS key/certificate path");
-        *key = g_strdup(isServer ? LIBVIRT_SERVERKEY : LIBVIRT_CLIENTKEY);
-
-        *cert = g_strdup(isServer ? LIBVIRT_SERVERCERT : LIBVIRT_CLIENTCERT);
-    }
-
-    VIR_FREE(user_pki_path);
-    VIR_FREE(userdir);
+    virNetTLSConfigSystemCreds(isServer,
+                               cacert, cacrl,
+                               cert, key);
 
     return 0;
 }
