@@ -28505,11 +28505,11 @@ msgstr "felaktig XML-längd: %1$d"
 
 #, c-format
 msgid "invalid ap-adapter value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "felaktigt ap-adaptervärde ”%1$s” på ”%2$s”"
 
 #, c-format
 msgid "invalid ap-domain value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "felaktigt ap-domänvärde ”%1$s” på ”%2$s”"
 
 msgid "invalid argument"
 msgstr "ogiltigt argument"
@@ -28518,41 +28518,47 @@ msgstr "ogiltigt argument"
 msgid "invalid argument: %1$s"
 msgstr "ogiltigt argument: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid backing protocol '%1$s'"
-msgstr "Okänt protokoll ”%1$s”"
+msgstr "felaktigt bakomliggande protokoll ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid backing protocol string '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktig bakomliggande-protokollsträng ”%1$s”"
 
 #, c-format
 msgid "invalid capability_filters capability '%1$s'"
-msgstr ""
+msgstr "felaktig capability_filters-förmåga ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid char in %1$s: %2$c"
-msgstr "ogiltig domänpekare i %s"
+msgstr "felaktigt tecken i %1$s: %2$c"
 
 #, c-format
 msgid ""
 "invalid character in protocol attribute '%1$s' in DNS SRV record of network "
 "'%2$s'"
 msgstr ""
+"felaktigt tecken i protokollattributet ”%1$s” i DNS SRV-posten för nätverket "
+"”%2$s”"
 
 #, c-format
 msgid ""
 "invalid character in service attribute '%1$s' in DNS SRV record of network "
 "'%2$s'"
 msgstr ""
+"felaktigt tecken i tjänsteattributet ”%1$s” i DNS SRV-posten för nätverket "
+"”%2$s”"
 
 msgid "invalid cipher size for TLS session"
-msgstr ""
+msgstr "felaktig chifferstorlek för TLS-sessionen"
 
 msgid ""
 "invalid configuration in <vlan> - \"trunk='no'\" is not allowed with a "
 "native vlan id"
 msgstr ""
+"felaktig konfiguration i <vlan> – ”trunk='no'” är inte tillåtet med ett "
+"nativt vlan-id"
 
 msgid "invalid connection pointer in"
 msgstr "ogiltig anslutningspekare i"
@@ -28561,33 +28567,34 @@ msgstr "ogiltig anslutningspekare i"
 msgid "invalid connection pointer in %1$s"
 msgstr "ogiltig anslutningspekare i %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid cssid value '%1$s' for '%2$s'"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "felaktigt cssid-värde ”%1$s” på ”%2$s”"
 
 #, c-format
 msgid "invalid device API '%1$s' for device %2$s: device only supports '%3$s'"
 msgstr ""
+"felaktigt enhets-API ”%1$s” för enheten %2$s: enheten stödjer endast ”%3$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid devno value '%1$s' for '%2$s'"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "felaktigt devno-värde ”%1$s” på ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid disk index '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt diskindex ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid disk target '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt diskmål ”%1$s”"
 
 #, c-format
 msgid "invalid disk target '%1$s', partitions can't appear in disk targets"
-msgstr ""
+msgstr "felaktigt diskmål ”%1$s”, partitioner kan inte förekomma i diskmål"
 
 #, c-format
 msgid "invalid dmode: '0%1$o'"
-msgstr ""
+msgstr "felaktigt dmode: ”0%1$o”"
 
 msgid "invalid domain pointer in"
 msgstr "ogiltig domänpekare i"
@@ -28596,91 +28603,89 @@ msgstr "ogiltig domänpekare i"
 msgid "invalid domain pointer in %1$s"
 msgstr "ogiltig domänpekare i %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid domain state reason '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktig orsak till domäntillstånd ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid domain state: %1$d"
-msgstr "ogiltig domänpekare i"
+msgstr "felaktigt domäntillstånd: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid domain type %1$s"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktig domäntyp %1$s"
 
 msgid "invalid driver type for version detection"
-msgstr ""
+msgstr "felaktig drivrutinstyp för versionen upptäckt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
-msgstr "Ogiltiga vektorer: %1$s"
+msgstr "feaktig åtgärd vid misslyckande: ”%1$s”\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid fd %1$d for %2$s"
-msgstr "felaktig UUID-källa: %s"
+msgstr "felaktig fb %1$d för %2$s"
 
 msgid "invalid flag"
-msgstr ""
+msgstr "felaktig flagga"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid flag combination: (0x%1$x)"
-msgstr "ogiltig domänpekare i %s"
+msgstr "felaktig flaggkombination: (0x%1$x)"
 
 #, c-format
 msgid "invalid fmode: '0%1$o'"
-msgstr ""
+msgstr "felaktig fmode: ”%1$o”"
 
 msgid "invalid hasmanagedsave"
-msgstr ""
+msgstr "felaktig hasmanagedsave"
 
 #, c-format
 msgid "invalid header data length: %1$d"
-msgstr ""
+msgstr "felaktig huvuddatalängd: %1$d"
 
 #, c-format
 msgid "invalid host UUID: %1$s"
 msgstr "ogiltiga värd-UUID: %1$s"
 
-#, fuzzy
 msgid "invalid hostdev mode"
-msgstr "ogiltiga värd-UUID: %s"
+msgstr "felaktigt hostdev-läge"
 
 msgid "invalid hostdev subsystem type"
-msgstr ""
+msgstr "felaktigt hostdev-undersystemtyp"
 
 msgid "invalid idmap start/target/count settings"
-msgstr ""
+msgstr "felaktig start-/mål-/antal-inställningar av idmap"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid interface name %1$s"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt gränssnittsnamn %1$s"
 
-#, fuzzy
 msgid "invalid interface pointer in"
-msgstr "ogiltig nätverkspekare i"
+msgstr "felaktig gränssnittspekare i"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid interface pointer in %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig gränssnittspekare i %1$s"
 
 #, c-format
 msgid "invalid iommuGroup number attribute for '%1$s'"
-msgstr ""
+msgstr "felaktigt iommuGroup-nummerattribut på ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid iothreads count '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt iothreadsantal ”%1$s”"
 
 msgid "invalid job statistics type"
-msgstr ""
+msgstr "felaktig jobbstatistiktyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid job type '%1$d'"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "felaktig jobbtyp ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid json in file: %1$s"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktig json i filen: %1$s"
 
 #, c-format
 msgid "invalid json in file: %1$s, rewriting it"
