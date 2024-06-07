@@ -180,7 +180,7 @@ main(int argc, char **argv)
 
     struct option opt[] = {
         { "help", no_argument, NULL, 'h' },
-        { "version", optional_argument, NULL, 'V' },
+        { "version", no_argument, NULL, 'V' },
         { NULL, 0, NULL, 0 },
     };
     if (virInitialize() < 0) {

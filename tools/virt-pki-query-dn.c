@@ -62,7 +62,7 @@ main(int argc,
 
     struct option opt[] = {
         { "help", no_argument, NULL, 'h' },
-        { "version", optional_argument, NULL, 'v' },
+        { "version", no_argument, NULL, 'v' },
         { NULL, 0, NULL, 0 },
     };
 
