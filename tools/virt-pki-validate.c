@@ -60,40 +60,77 @@ virPKIValidateFile(const char *file,
     } while (0)
 
 static bool
-virPKIValidateTrust(void)
+virPKIValidateTrust(bool system, const char *path)
 {
     g_autofree char *cacert = NULL, *cacrl = NULL;
     bool ok = true;
 
-    virNetTLSConfigSystemTrust(&cacert,
-                               &cacrl);
+    if (system) {
+        virNetTLSConfigSystemTrust(&cacert,
+                                   &cacrl);
 
-    FILE_REQUIRE_EXISTS("TRUST",
-                        LIBVIRT_PKI_DIR,
-                        _("Checking if system PKI dir exists"),
-                        _("The system PKI dir %1$s is usually installed as part of the base filesystem or openssl packages"),
-                        LIBVIRT_PKI_DIR);
+        FILE_REQUIRE_EXISTS("TRUST",
+                            LIBVIRT_PKI_DIR,
+                            _("Checking if system PKI dir exists"),
+                            _("The system PKI dir %1$s is usually installed as part of the base filesystem or openssl packages"),
+                            LIBVIRT_PKI_DIR);
 
-    FILE_REQUIRE_ACCESS("TRUST",
-                        LIBVIRT_PKI_DIR,
-                        _("Checking system PKI dir access"),
-                        0, 0, 0755,
-                        _("The system PKI dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
-                        LIBVIRT_PKI_DIR, LIBVIRT_PKI_DIR);
+        FILE_REQUIRE_ACCESS("TRUST",
+                            LIBVIRT_PKI_DIR,
+                            _("Checking system PKI dir access"),
+                            0, 0, 0755,
+                            _("The system PKI dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            LIBVIRT_PKI_DIR, LIBVIRT_PKI_DIR);
 
 
-    FILE_REQUIRE_EXISTS("TRUST",
-                        LIBVIRT_CACERT_DIR,
-                        _("Checking if system CA dir exists"),
-                        _("The system CA dir %1$s is usually installed as part of the base filesystem or openssl packages"),
-                        LIBVIRT_CACERT_DIR);
+        FILE_REQUIRE_EXISTS("TRUST",
+                            LIBVIRT_CACERT_DIR,
+                            _("Checking if system CA dir exists"),
+                            _("The system CA dir %1$s is usually installed as part of the base filesystem or openssl packages"),
+                            LIBVIRT_CACERT_DIR);
 
-    FILE_REQUIRE_ACCESS("TRUST",
-                        LIBVIRT_CACERT_DIR,
-                        _("Checking system CA dir access"),
-                        0, 0, 0755,
-                        _("The system CA dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
-                        LIBVIRT_CACERT_DIR, LIBVIRT_CACERT_DIR);
+        FILE_REQUIRE_ACCESS("TRUST",
+                            LIBVIRT_CACERT_DIR,
+                            _("Checking system CA dir access"),
+                            0, 0, 0755,
+                            _("The system CA dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            LIBVIRT_CACERT_DIR, LIBVIRT_CACERT_DIR);
+    } else if (path) {
+        virNetTLSConfigCustomTrust(path,
+                                   &cacert,
+                                   &cacrl);
+
+        FILE_REQUIRE_EXISTS("TRUST",
+                            path,
+                            _("Checking if custom PKI base dir exists"),
+                            _("Create the dir %1$s"),
+                            path);
+
+        FILE_REQUIRE_ACCESS("TRUST",
+                            path,
+                            _("Checking custom PKI base dir access"),
+                            getuid(), getgid(), 0700,
+                            _("The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d.%3$d %4$s; chmod 0700 %5$s"),
+                            path, getuid(), getgid(), path, path);
+    } else {
+        g_autofree char *pkipath = virNetTLSConfigUserPKIBaseDir();
+
+        virNetTLSConfigUserTrust(&cacert,
+                                 &cacrl);
+
+        FILE_REQUIRE_EXISTS("TRUST",
+                            pkipath,
+                            _("Checking if user PKI base dir exists"),
+                            _("Create the dir %1$s"),
+                            pkipath);
+
+        FILE_REQUIRE_ACCESS("TRUST",
+                            pkipath,
+                            _("Checking user PKI base dir access"),
+                            getuid(), getgid(), 0700,
+                            _("The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d.%3$d %4$s; chmod 0700 %5$s"),
+                            pkipath, getuid(), getgid(), pkipath, pkipath);
+    }
 
     FILE_REQUIRE_EXISTS("TRUST",
                         cacert,
@@ -101,56 +138,81 @@ virPKIValidateTrust(void)
                         _("The machine cannot act as a client or server. See https://libvirt.org/kbase/tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"),
                         cacert);
 
-    FILE_REQUIRE_ACCESS("TRUST",
-                        cacert,
-                        _("Checking CA cert access"),
-                        0, 0, 0644,
-                        _("The CA certificate %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
-                        cacert, cacert, cacert);
+    if (system) {
+        FILE_REQUIRE_ACCESS("TRUST",
+                            cacert,
+                            _("Checking CA cert access"),
+                            0, 0, 0644,
+                            _("The CA certificate %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
+                            cacert, cacert, cacert);
+    } else {
+        FILE_REQUIRE_ACCESS("TRUST",
+                            cacert,
+                            _("Checking CA cert access"),
+                            getuid(), getgid(), 0600,
+                            _("The CA certificate %1$s must not be accessible to other users. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"),
+                            cacert, getuid(), getgid(), cacert, cacert);
+    }
 
  done:
     return ok;
 }
 
 static bool
-virPKIValidateIdentity(bool isServer)
+virPKIValidateIdentity(bool isServer, bool system, const char *path)
 {
     g_autofree char *cacert = NULL, *cacrl = NULL;
     g_autofree char *cert = NULL, *key = NULL;
     bool ok = true;
     const char *scope = isServer ? "SERVER" : "CLIENT";
 
-    virNetTLSConfigSystemTrust(&cacert,
-                               &cacrl);
-    virNetTLSConfigSystemIdentity(isServer,
-                                  &cert,
-                                  &key);
+    if (system) {
+        virNetTLSConfigSystemTrust(&cacert,
+                                   &cacrl);
+        virNetTLSConfigSystemIdentity(isServer,
+                                      &cert,
+                                      &key);
 
-    FILE_REQUIRE_EXISTS(scope,
-                        LIBVIRT_CERT_DIR,
-                        _("Checking if system cert dir exists"),
-                        _("The system cert dir %1$s is usually installed as part of the libvirt package"),
-                        LIBVIRT_CERT_DIR);
+        FILE_REQUIRE_EXISTS(scope,
+                            LIBVIRT_CERT_DIR,
+                            _("Checking if system cert dir exists"),
+                            _("The system cert dir %1$s is usually installed as part of the libvirt package"),
+                            LIBVIRT_CERT_DIR);
 
-    FILE_REQUIRE_ACCESS(scope,
-                        LIBVIRT_CERT_DIR,
-                        _("Checking system cert dir access"),
-                        0, 0, 0755,
-                        _("The system cert dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
-                        LIBVIRT_PKI_DIR, LIBVIRT_PKI_DIR);
+        FILE_REQUIRE_ACCESS(scope,
+                            LIBVIRT_CERT_DIR,
+                            _("Checking system cert dir access"),
+                            0, 0, 0755,
+                            _("The system cert dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            LIBVIRT_PKI_DIR, LIBVIRT_PKI_DIR);
 
-    FILE_REQUIRE_EXISTS(scope,
-                        LIBVIRT_KEY_DIR,
-                        _("Checking if system key dir exists"),
-                        _("The system key dir %1$s is usually installed as part of the libvirt package"),
-                        LIBVIRT_KEY_DIR);
+        FILE_REQUIRE_EXISTS(scope,
+                            LIBVIRT_KEY_DIR,
+                            _("Checking if system key dir exists"),
+                            _("The system key dir %1$s is usually installed as part of the libvirt package"),
+                            LIBVIRT_KEY_DIR);
 
-    FILE_REQUIRE_ACCESS(scope,
-                        LIBVIRT_KEY_DIR,
-                        _("Checking system key dir access"),
-                        0, 0, 0755,
-                        _("The system key dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
-                        LIBVIRT_KEY_DIR, LIBVIRT_PKI_DIR);
+        FILE_REQUIRE_ACCESS(scope,
+                            LIBVIRT_KEY_DIR,
+                            _("Checking system key dir access"),
+                            0, 0, 0755,
+                            _("The system key dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            LIBVIRT_KEY_DIR, LIBVIRT_PKI_DIR);
+    } else if (path) {
+        virNetTLSConfigCustomTrust(path,
+                                   &cacert,
+                                   &cacrl);
+        virNetTLSConfigCustomIdentity(path,
+                                      isServer,
+                                      &cert,
+                                      &key);
+    } else {
+        virNetTLSConfigUserTrust(&cacert,
+                                 &cacrl);
+        virNetTLSConfigUserIdentity(isServer,
+                                    &cert,
+                                    &key);
+    }
 
     FILE_REQUIRE_EXISTS(scope,
                         key,
@@ -160,14 +222,25 @@ virPKIValidateIdentity(bool isServer)
                         _("The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts.html#issuing-client-certificates on how to regenerate %1$s"),
                         key);
 
-    FILE_REQUIRE_ACCESS(scope,
-                        key,
-                        _("Checking key access"),
-                        0, 0, isServer ? 0600 : 0644,
-                        isServer ?
-                        _("The server key %1$s must not be accessible to unprivileged users. As root run: chown root.root %2$s; chmod 0600 %3$s") :
-                        _("The client key %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
-                        key, key, key);
+    if (system) {
+        FILE_REQUIRE_ACCESS(scope,
+                            key,
+                            _("Checking key access"),
+                            0, 0, isServer ? 0600 : 0644,
+                            isServer ?
+                            _("The server key %1$s must not be accessible to unprivileged users. As root run: chown root.root %2$s; chmod 0600 %3$s") :
+                            _("The client key %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
+                            key, key, key);
+    } else {
+        FILE_REQUIRE_ACCESS(scope,
+                            key,
+                            _("Checking key access"),
+                            getuid(), getgid(), 0600,
+                            isServer ?
+                            _("The server key %1$s must be not be accessible to other users. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s") :
+                            _("The client key %1$s must be not be accessible to other users. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"),
+                            key, getuid(), getgid(), key, key);
+    }
 
     FILE_REQUIRE_EXISTS(scope,
                         cert,
@@ -177,14 +250,25 @@ virPKIValidateIdentity(bool isServer)
                         _("The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts.html#issuing-client-certificates on how to regenerate %1$s"),
                         cert);
 
-    FILE_REQUIRE_ACCESS(scope,
-                        cert,
-                        _("Checking cert access"),
-                        0, 0, 0644,
-                        isServer ?
-                        _("The server cert %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s") :
-                        _("The client cert %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
-                        cert, cert, cert);
+    if (system) {
+        FILE_REQUIRE_ACCESS(scope,
+                            cert,
+                            _("Checking cert access"),
+                            0, 0, 0644,
+                            isServer ?
+                            _("The server cert %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s") :
+                            _("The client cert %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
+                            cert, cert, cert);
+    } else {
+        FILE_REQUIRE_ACCESS(scope,
+                            cert,
+                            _("Checking cert access"),
+                            getuid(), getgid(), 0600,
+                            isServer ?
+                            _("The server cert %1$s must be restricted to this user. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s") :
+                            _("The client cert %1$s must be restricted to this user. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"),
+                            cert, getuid(), getgid(), cert, cert);
+    }
 
     virValidateCheck(scope, "%s", _("Checking cert properties"));
 
@@ -239,6 +323,9 @@ print_usage(const char *progname,
             "Validate TLS certificate configuration\n"
             "\n"
             "options:\n"
+            "  -s     | --system   validate system certificates (default)\n"
+            "  -u     | --user     validate user certificates\n"
+            "  -p DIR | --path DIR validate custom certificate path\n"
             "  -h     | --help     display this help and exit\n"
             "  -v     | --version  output version information and exit\n"),
           progname);
@@ -247,6 +334,9 @@ print_usage(const char *progname,
 int main(int argc, char **argv)
 {
     const char *scope = NULL;
+    bool system = false;
+    bool user = false;
+    const char *path = NULL;
     bool quiet = false;
     int arg = 0;
     bool ok = true;
@@ -254,6 +344,9 @@ int main(int argc, char **argv)
     struct option opt[] = {
         { "help", no_argument, NULL, 'h' },
         { "version", no_argument, NULL, 'v' },
+        { "system", no_argument, NULL, 's' },
+        { "user", no_argument, NULL, 'u' },
+        { "path", required_argument, NULL, 'p' },
         { NULL, 0, NULL, 0 },
     };
 
@@ -262,6 +355,18 @@ int main(int argc, char **argv)
 
     while ((arg = getopt_long(argc, argv, "hvsup:", opt, NULL)) != -1) {
         switch (arg) {
+        case 's':
+            system = true;
+            break;
+
+        case 'u':
+            user = true;
+            break;
+
+        case 'p':
+            path = optarg;
+            break;
+
         case 'v':
             printf("%s\n", PACKAGE_VERSION);
             return EXIT_SUCCESS;
@@ -292,14 +397,24 @@ int main(int argc, char **argv)
 
     virValidateSetQuiet(quiet);
 
+    if ((system && user) ||
+        (system && path) ||
+        (user && path)) {
+        g_printerr("--system, --user & --path are mutually exclusive\n");
+        return EXIT_FAILURE;
+    }
+
+    if (!system && !user && !path)
+        system = true;
+
     if ((!scope || g_str_equal(scope, "trust")) &&
-        !virPKIValidateTrust())
+        !virPKIValidateTrust(system, path))
         ok = false;
     if ((!scope || g_str_equal(scope, "server")) &&
-        !virPKIValidateIdentity(true))
+        !virPKIValidateIdentity(true, system, path))
         ok = false;
     if ((!scope || g_str_equal(scope, "client")) &&
-        !virPKIValidateIdentity(false))
+        !virPKIValidateIdentity(false, system, path))
         ok = false;
 
     if (!ok)
