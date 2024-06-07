@@ -362,7 +362,7 @@ nftablesAddForwardAllowOut(virFirewall *fw,
                               "iif", iface, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "oif", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "oifname", physdev, NULL);
 
     virFirewallCmdAddArgList(fw, fwCmd, "counter", "accept", NULL);
 
@@ -398,7 +398,7 @@ nftablesAddForwardAllowRelatedIn(virFirewall *fw,
                               VIR_NFTABLES_FWD_IN_CHAIN, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "iif", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "iifname", physdev, NULL);
 
     virFirewallCmdAddArgList(fw, fwCmd, "oif", iface,
                              layerStr, "daddr", networkstr,
@@ -437,7 +437,7 @@ nftablesAddForwardAllowIn(virFirewall *fw,
                              layerStr, "daddr", networkstr, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "iif", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "iifname", physdev, NULL);
 
     virFirewallCmdAddArgList(fw, fwCmd, "oif", iface,
                               "counter", "accept", NULL);
@@ -566,7 +566,7 @@ nftablesAddForwardMasquerade(virFirewall *fw,
                              layerStr, "daddr", "!=", networkstr, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "oif", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "oifname", physdev, NULL);
 
     if (protocol && protocol[0]) {
         if (port->start == 0 && port->end == 0) {
@@ -634,7 +634,7 @@ nftablesAddDontMasquerade(virFirewall *fw,
                               VIR_NFTABLES_NAT_POSTROUTE_CHAIN, NULL);
 
     if (physdev && physdev[0])
-        virFirewallCmdAddArgList(fw, fwCmd, "oif", physdev, NULL);
+        virFirewallCmdAddArgList(fw, fwCmd, "oifname", physdev, NULL);
 
     virFirewallCmdAddArgList(fw, fwCmd,
                              layerStr, "saddr", networkstr,
