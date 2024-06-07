@@ -48,7 +48,7 @@ failure a non-zero status will be set.
 AUTHOR
 ======
 
-Richard Jones
+Daniel Veillard
 
 
 BUGS
