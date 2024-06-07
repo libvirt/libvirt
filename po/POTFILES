@@ -219,6 +219,7 @@ src/rpc/virnetserverprogram.c
 src/rpc/virnetserverservice.c
 src/rpc/virnetsocket.c
 src/rpc/virnetsshsession.c
+src/rpc/virnettlscert.c
 src/rpc/virnettlscontext.c
 src/secret/secret_driver.c
 src/security/security_apparmor.c

@@ -2,6 +2,7 @@ gendispatch_prog = find_program('gendispatch.pl')
 
 tlsconfig_sources = files(
   'virnettlsconfig.c',
+  'virnettlscert.c',
 )
 
 socket_sources = tlsconfig_sources + [
