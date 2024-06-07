@@ -343,7 +343,7 @@ if conf.has('WITH_LIBVIRTD')
       output: '@BASENAME@',
       configuration: tools_conf,
       install: true,
-      install_dir: prefix / 'lib' / 'systemd' / 'system',
+      install_dir: unitdir,
     )
   endif
 endif
