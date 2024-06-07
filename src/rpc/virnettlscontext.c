@@ -876,6 +876,65 @@ virNetTLSContext *virNetTLSContextNewClient(const char *cacert,
                                sanityCheckCert, requireValidCert, false);
 }
 
+static int virNetTLSContextCertValidateCA(gnutls_x509_crt_t cert,
+                                          bool isServer)
+{
+    if (virNetTLSContextCheckCertTimes(cert, "[session]", isServer, true) < 0)
+        return -1;
+
+    return 0;
+}
+
+static char *virNetTLSContextCertValidate(gnutls_x509_crt_t cert,
+                                          bool isServer,
+                                          const char *hostname,
+                                          const char *const *x509dnACL)
+{
+    size_t dnamesize = 256;
+    g_autofree char *dname = g_new0(char, dnamesize);
+    int ret;
+
+    if (virNetTLSContextCheckCertTimes(cert, "[session]",
+                                       isServer, false) < 0)
+        return NULL;
+
+    ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
+    if (ret == GNUTLS_E_SHORT_MEMORY_BUFFER) {
+        VIR_DEBUG("Reallocating dname to fit %zu bytes", dnamesize);
+        dname = g_realloc(dname, dnamesize);
+        ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
+    }
+    if (ret != 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Failed to get certificate %1$s distinguished name: %2$s"),
+                       "[session]", gnutls_strerror(ret));
+        return NULL;
+    }
+
+    VIR_DEBUG("Peer DN is %s", dname);
+
+    if (virNetTLSContextCheckCertDN(cert, "[session]", hostname,
+                                    dname, x509dnACL) < 0)
+        return NULL;
+
+    /* !isServer, since on the client, we're validating the
+     * server's cert, and on the server, the client's cert
+     */
+    if (virNetTLSContextCheckCertBasicConstraints(cert, "[session]",
+                                                  !isServer, false) < 0)
+        return NULL;
+
+    if (virNetTLSContextCheckCertKeyUsage(cert, "[session]",
+                                          false) < 0)
+        return NULL;
+
+    /* !isServer - as above */
+    if (virNetTLSContextCheckCertKeyPurpose(cert, "[session]",
+                                            !isServer) < 0)
+        return NULL;
+
+    return g_steal_pointer(&dname);
+}
 
 static int virNetTLSContextValidCertificate(virNetTLSContext *ctxt,
                                             virNetTLSSession *sess)
@@ -945,57 +1004,21 @@ static int virNetTLSContextValidCertificate(virNetTLSContext *ctxt,
             goto authfail;
         }
 
-        if (virNetTLSContextCheckCertTimes(cert, "[session]",
-                                           sess->isServer, i > 0) < 0) {
-            gnutls_x509_crt_deinit(cert);
-            goto authdeny;
-        }
-
         if (i == 0) {
-            ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
-            if (ret == GNUTLS_E_SHORT_MEMORY_BUFFER) {
-                VIR_DEBUG("Reallocating dname to fit %zu bytes", dnamesize);
-                dname = g_realloc(dname, dnamesize);
-                dnameptr = dname;
-                ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
-            }
-            if (ret != 0) {
-                virReportError(VIR_ERR_SYSTEM_ERROR,
-                               _("Failed to get certificate %1$s distinguished name: %2$s"),
-                               "[session]", gnutls_strerror(ret));
-                goto authfail;
-            }
-            sess->x509dname = g_steal_pointer(&dname);
-            VIR_DEBUG("Peer DN is %s", dnameptr);
-
-            if (virNetTLSContextCheckCertDN(cert, "[session]", sess->hostname,
-                                            dnameptr, ctxt->x509dnACL) < 0) {
+            if (!(sess->x509dname = virNetTLSContextCertValidate(cert,
+                                                                 sess->isServer,
+                                                                 sess->hostname,
+                                                                 ctxt->x509dnACL))) {
                 gnutls_x509_crt_deinit(cert);
                 goto authdeny;
             }
-
-            /* !sess->isServer, since on the client, we're validating the
-             * server's cert, and on the server, the client's cert
-             */
-            if (virNetTLSContextCheckCertBasicConstraints(cert, "[session]",
-                                                          !sess->isServer, false) < 0) {
-                gnutls_x509_crt_deinit(cert);
-                goto authdeny;
-            }
-
-            if (virNetTLSContextCheckCertKeyUsage(cert, "[session]",
-                                                  false) < 0) {
-                gnutls_x509_crt_deinit(cert);
-                goto authdeny;
-            }
-
-            /* !sess->isServer - as above */
-            if (virNetTLSContextCheckCertKeyPurpose(cert, "[session]",
-                                                    !sess->isServer) < 0) {
+        } else {
+            if (virNetTLSContextCertValidateCA(cert, sess->isServer) < 0) {
                 gnutls_x509_crt_deinit(cert);
                 goto authdeny;
             }
         }
+
         gnutls_x509_crt_deinit(cert);
     }
 
