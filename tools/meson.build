@@ -255,13 +255,33 @@ configure_file(
   install_mode: 'rwxr-xr-x',
 )
 
-configure_file(
-  input: 'virt-pki-validate.in',
-  output: '@BASENAME@',
-  configuration: tools_conf,
+executable(
+  'virt-pki-validate',
+  tlsconfig_sources + [
+    'virt-validate-common.c',
+    'virt-pki-validate.c',
+  ],
+  dependencies: [
+    glib_dep,
+    gnutls_dep,
+  ],
+  include_directories: [
+    libvirt_inc,
+    src_inc_dir,
+    top_inc_dir,
+    util_inc_dir,
+    rpc_inc_dir,
+  ],
+  link_args: (
+    libvirt_relro
+    + libvirt_no_indirect
+    + libvirt_no_undefined
+  ),
+  link_with: [
+    libvirt_lib
+  ],
   install: true,
   install_dir: bindir,
-  install_mode: 'rwxr-xr-x',
 )
 
 executable(

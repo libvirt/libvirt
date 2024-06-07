@@ -48,7 +48,7 @@ failure a non-zero status will be set.
 AUTHOR
 ======
 
-Daniel Veillard
+Daniel Veillard, Daniel P. Berrangé
 
 
 BUGS
@@ -70,7 +70,7 @@ Alternatively, you may report bugs to your software distributor / vendor.
 COPYRIGHT
 =========
 
-Copyright (C) 2006-2012 by Red Hat, Inc.
+Copyright (C) 2006-2024 by Red Hat, Inc.
 
 
 LICENSE
