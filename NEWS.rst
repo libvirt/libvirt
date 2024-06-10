@@ -19,6 +19,13 @@ v10.6.0 (unreleased)
 
   * qemu: Add support for the 'pauth' Arm CPU feature
 
+  * Introduce pstore device
+
+    The aim of pstore device is to provide a bit of NVRAM storage for guest
+    kernel to record oops/panic logs just before it crashes. Typical usage
+    includes usage in combination with a watchdog so that the logs can be
+    inspected after the watchdog rebooted the machine.
+
 * **Improvements**
 
 * **Bug fixes**
