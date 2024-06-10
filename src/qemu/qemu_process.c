@@ -8533,8 +8533,6 @@ void qemuProcessStop(virQEMUDriver *driver,
         g_clear_pointer(&priv->monConfig, virObjectUnref);
     }
 
-    qemuDomainObjStopWorker(vm);
-
     /* Remove the master key */
     qemuDomainMasterKeyRemove(priv);
 
@@ -8567,6 +8565,11 @@ void qemuProcessStop(virQEMUDriver *driver,
 
     /* Wake up anything waiting on domain condition */
     virDomainObjBroadcast(vm);
+
+    /* IMPORTANT: qemuDomainObjStopWorker() unlocks @vm in order to prevent
+     * deadlocks with the per-VM event loop thread. This MUST be done after
+     * marking the VM as dead */
+    qemuDomainObjStopWorker(vm);
 
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
