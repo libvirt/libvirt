@@ -19036,10 +19036,7 @@ qemuDomainGetSEVInfo(virDomainObj *vm,
     int ret = -1;
     int rv;
     g_autofree char *tmp = NULL;
-    unsigned int apiMajor = 0;
-    unsigned int apiMinor = 0;
-    unsigned int buildID = 0;
-    unsigned int policy = 0;
+    qemuMonitorSEVInfo info = { };
     int maxpar = 0;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -19054,14 +19051,12 @@ qemuDomainGetSEVInfo(virDomainObj *vm,
     qemuDomainObjEnterMonitor(vm);
     tmp = qemuMonitorGetSEVMeasurement(QEMU_DOMAIN_PRIVATE(vm)->mon);
 
-
     if (!tmp) {
         qemuDomainObjExitMonitor(vm);
         goto endjob;
     }
 
-    rv = qemuMonitorGetSEVInfo(QEMU_DOMAIN_PRIVATE(vm)->mon,
-                               &apiMajor, &apiMinor, &buildID, &policy);
+    rv = qemuMonitorGetSEVInfo(QEMU_DOMAIN_PRIVATE(vm)->mon, &info);
     qemuDomainObjExitMonitor(vm);
 
     if (rv < 0)
@@ -19073,20 +19068,29 @@ qemuDomainGetSEVInfo(virDomainObj *vm,
         goto endjob;
     if (virTypedParamsAddUInt(params, nparams, &maxpar,
                               VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR,
-                              apiMajor) < 0)
+                              info.apiMajor) < 0)
         goto endjob;
     if (virTypedParamsAddUInt(params, nparams, &maxpar,
                               VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR,
-                              apiMinor) < 0)
+                              info.apiMinor) < 0)
         goto endjob;
     if (virTypedParamsAddUInt(params, nparams, &maxpar,
                               VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID,
-                              buildID) < 0)
+                              info.buildID) < 0)
         goto endjob;
-    if (virTypedParamsAddUInt(params, nparams, &maxpar,
-                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY,
-                              policy) < 0)
-        goto endjob;
+
+    switch (info.type) {
+    case QEMU_MONITOR_SEV_GUEST_TYPE_SEV:
+        if (virTypedParamsAddUInt(params, nparams, &maxpar,
+                                  VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY,
+                                  info.data.sev.policy) < 0)
+            goto endjob;
+        break;
+
+    case QEMU_MONITOR_SEV_GUEST_TYPE_SEV_SNP:
+    case QEMU_MONITOR_SEV_GUEST_TYPE_LAST:
+        break;
+    }
 
     ret = 0;
 

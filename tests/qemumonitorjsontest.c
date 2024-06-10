@@ -2730,10 +2730,7 @@ testQemuMonitorJSONGetSEVInfo(const void *opaque)
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
     g_autoptr(qemuMonitorTest) test = NULL;
-    unsigned int apiMajor = 0;
-    unsigned int apiMinor = 0;
-    unsigned int buildID = 0;
-    unsigned int policy = 0;
+    qemuMonitorSEVInfo info = { };
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
@@ -2753,13 +2750,67 @@ testQemuMonitorJSONGetSEVInfo(const void *opaque)
                                "}") < 0)
         return -1;
 
-    if (qemuMonitorGetSEVInfo(qemuMonitorTestGetMonitor(test),
-                              &apiMajor, &apiMinor, &buildID, &policy) < 0)
+    if (qemuMonitorGetSEVInfo(qemuMonitorTestGetMonitor(test), &info) < 0)
         return -1;
 
-    if (apiMajor != 1 || apiMinor != 8 || buildID != 834 || policy != 3) {
+    if (info.apiMajor != 1 || info.apiMinor != 8 || info.buildID != 834 ||
+        info.type != QEMU_MONITOR_SEV_GUEST_TYPE_SEV ||
+        info.data.sev.policy != 3 || info.data.sev.handle != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unexpected SEV info values");
+        return -1;
+    }
+
+    if (qemuMonitorTestAddItem(test, "query-sev",
+                               "{"
+                               "    \"return\": {"
+                               "        \"enabled\": true,"
+                               "        \"api-minor\": 55,"
+                               "        \"handle\": 1,"
+                               "        \"state\": \"running\","
+                               "        \"api-major\": 1,"
+                               "        \"sev-type\": \"sev\","
+                               "        \"build-id\": 21,"
+                               "        \"policy\": 1"
+                               "    },"
+                               "    \"id\": \"libvirt-16\""
+                               "}") < 0)
+        return -1;
+
+    if (qemuMonitorGetSEVInfo(qemuMonitorTestGetMonitor(test), &info) < 0)
+        return -1;
+
+    if (info.apiMajor != 1 || info.apiMinor != 55 || info.buildID != 21 ||
+        info.type != QEMU_MONITOR_SEV_GUEST_TYPE_SEV ||
+        info.data.sev.policy != 1 || info.data.sev.handle != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unexpected SEV info values");
+        return -1;
+    }
+
+    if (qemuMonitorTestAddItem(test, "query-sev",
+                               "{"
+                               "    \"return\": {"
+                               "        \"enabled\": true,"
+                               "        \"api-minor\": 55,"
+                               "        \"state\": \"running\","
+                               "        \"api-major\": 1,"
+                               "        \"sev-type\": \"sev-snp\","
+                               "        \"build-id\": 21,"
+                               "        \"snp-policy\": 196608"
+                               "    },"
+                               "    \"id\": \"libvirt-16\""
+                               "}") < 0)
+        return -1;
+
+    if (qemuMonitorGetSEVInfo(qemuMonitorTestGetMonitor(test), &info) < 0)
+        return -1;
+
+    if (info.apiMajor != 1 || info.apiMinor != 55 || info.buildID != 21 ||
+        info.type != QEMU_MONITOR_SEV_GUEST_TYPE_SEV_SNP ||
+        info.data.sev_snp.snp_policy != 0x30000) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unexpected SEV SNP info values");
         return -1;
     }
 

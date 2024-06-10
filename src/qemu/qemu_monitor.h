@@ -1334,14 +1334,43 @@ int qemuMonitorBlockdevMediumInsert(qemuMonitor *mon,
 char *
 qemuMonitorGetSEVMeasurement(qemuMonitor *mon);
 
+typedef struct _qemuMonitorSEVGuestInfo qemuMonitorSEVGuestInfo;
+struct _qemuMonitorSEVGuestInfo {
+    unsigned int policy;
+    unsigned int handle;
+};
+
+typedef struct _qemuMonitorSEVSNPGuestInfo qemuMonitorSEVSNPGuestInfo;
+struct _qemuMonitorSEVSNPGuestInfo {
+    unsigned long long snp_policy;
+};
+
+
+typedef enum {
+    QEMU_MONITOR_SEV_GUEST_TYPE_SEV,
+    QEMU_MONITOR_SEV_GUEST_TYPE_SEV_SNP,
+
+    QEMU_MONITOR_SEV_GUEST_TYPE_LAST
+} qemuMonitorSEVGuestType;
+
+VIR_ENUM_DECL(qemuMonitorSEVGuest);
+
+typedef struct _qemuMonitorSEVInfo qemuMonitorSEVInfo;
+struct _qemuMonitorSEVInfo {
+    unsigned int apiMajor;
+    unsigned int apiMinor;
+    unsigned int buildID;
+    qemuMonitorSEVGuestType type;
+    union {
+        qemuMonitorSEVGuestInfo sev;
+        qemuMonitorSEVSNPGuestInfo sev_snp;
+    } data;
+};
+
 int
 qemuMonitorGetSEVInfo(qemuMonitor *mon,
-                      unsigned int *apiMajor,
-                      unsigned int *apiMinor,
-                      unsigned int *buildID,
-                      unsigned int *policy)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+                      qemuMonitorSEVInfo *info)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
 qemuMonitorSetLaunchSecurityState(qemuMonitor *mon,
