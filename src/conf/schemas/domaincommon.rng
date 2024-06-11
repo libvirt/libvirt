@@ -524,6 +524,19 @@
     </element>
   </define>
 
+  <define name="launchSecuritySEVCommon">
+    <optional>
+      <element name="cbitpos">
+        <data type="unsignedInt"/>
+      </element>
+    </optional>
+    <optional>
+      <element name="reducedPhysBits">
+        <data type="unsignedInt"/>
+      </element>
+    </optional>
+  </define>
+
   <define name="launchSecuritySEV">
     <attribute name="type">
       <value>sev</value>
@@ -534,16 +547,7 @@
       </attribute>
     </optional>
     <interleave>
-      <optional>
-        <element name="cbitpos">
-          <data type="unsignedInt"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="reducedPhysBits">
-          <data type="unsignedInt"/>
-        </element>
-      </optional>
+      <ref name="launchSecuritySEVCommon"/>
       <element name="policy">
         <ref name="hexuint"/>
       </element>

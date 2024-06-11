@@ -6569,14 +6569,14 @@ qemuProcessUpdateSEVInfo(virDomainObj *vm)
      * mandatory on QEMU cmdline
      */
     sevCaps = virQEMUCapsGetSEVCapabilities(qemuCaps);
-    if (!sev->haveCbitpos) {
-        sev->cbitpos = sevCaps->cbitpos;
-        sev->haveCbitpos = true;
+    if (!sev->common.haveCbitpos) {
+        sev->common.cbitpos = sevCaps->cbitpos;
+        sev->common.haveCbitpos = true;
     }
 
-    if (!sev->haveReducedPhysBits) {
-        sev->reduced_phys_bits = sevCaps->reduced_phys_bits;
-        sev->haveReducedPhysBits = true;
+    if (!sev->common.haveReducedPhysBits) {
+        sev->common.reduced_phys_bits = sevCaps->reduced_phys_bits;
+        sev->common.haveReducedPhysBits = true;
     }
 
     return 0;

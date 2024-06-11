@@ -9728,7 +9728,7 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
     g_autofree char *sessionpath = NULL;
 
     VIR_DEBUG("policy=0x%x cbitpos=%d reduced_phys_bits=%d",
-              sev->policy, sev->cbitpos, sev->reduced_phys_bits);
+              sev->policy, sev->common.cbitpos, sev->common.reduced_phys_bits);
 
     if (sev->dh_cert)
         dhpath = g_strdup_printf("%s/dh_cert.base64", priv->libDir);
@@ -9737,12 +9737,12 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
         sessionpath = g_strdup_printf("%s/session.base64", priv->libDir);
 
     if (qemuMonitorCreateObjectProps(&props, "sev-guest", "lsec0",
-                                     "u:cbitpos", sev->cbitpos,
-                                     "u:reduced-phys-bits", sev->reduced_phys_bits,
+                                     "u:cbitpos", sev->common.cbitpos,
+                                     "u:reduced-phys-bits", sev->common.reduced_phys_bits,
                                      "u:policy", sev->policy,
                                      "S:dh-cert-file", dhpath,
                                      "S:session-file", sessionpath,
-                                     "T:kernel-hashes", sev->kernel_hashes,
+                                     "T:kernel-hashes", sev->common.kernel_hashes,
                                      NULL) < 0)
         return -1;
 

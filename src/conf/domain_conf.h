@@ -2866,15 +2866,20 @@ typedef enum {
 } virDomainLaunchSecurity;
 
 
-struct _virDomainSEVDef {
-    char *dh_cert;
-    char *session;
-    unsigned int policy;
+struct _virDomainSEVCommonDef {
     bool haveCbitpos;
     unsigned int cbitpos;
     bool haveReducedPhysBits;
     unsigned int reduced_phys_bits;
     virTristateBool kernel_hashes;
+};
+
+
+struct _virDomainSEVDef {
+    virDomainSEVCommonDef common;
+    char *dh_cert;
+    char *session;
+    unsigned int policy;
 };
 
 struct _virDomainSecDef {

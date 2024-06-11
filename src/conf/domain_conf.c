@@ -13621,20 +13621,14 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
 
 
 static int
-virDomainSEVDefParseXML(virDomainSEVDef *def,
-                        xmlXPathContextPtr ctxt)
+virDomainSEVCommonDefParseXML(virDomainSEVCommonDef *def,
+                              xmlXPathContextPtr ctxt)
 {
     int rc;
 
     if (virXMLPropTristateBool(ctxt->node, "kernelHashes", VIR_XML_PROP_NONE,
                                &def->kernel_hashes) < 0)
         return -1;
-
-    if (virXPathUIntBase("string(./policy)", ctxt, 16, &def->policy) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch security policy"));
-        return -1;
-    }
 
     /* the following attributes are platform dependent and if missing, we can
      * autofill them from domain capabilities later
@@ -13655,6 +13649,23 @@ virDomainSEVDefParseXML(virDomainSEVDef *def,
     } else if (rc == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Invalid format for launch security reduced-phys-bits"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainSEVDefParseXML(virDomainSEVDef *def,
+                        xmlXPathContextPtr ctxt)
+{
+    if (virDomainSEVCommonDefParseXML(&def->common, ctxt) < 0)
+        return -1;
+
+    if (virXPathUIntBase("string(./policy)", ctxt, 16, &def->policy) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("failed to get launch security policy"));
         return -1;
     }
 
@@ -26642,6 +26653,24 @@ virDomainKeyWrapDefFormat(virBuffer *buf, virDomainKeyWrapDef *keywrap)
 
 
 static void
+virDomainSEVCommonDefFormat(virBuffer *attrBuf,
+                            virBuffer *childBuf,
+                            virDomainSEVCommonDef *def)
+{
+    if (def->kernel_hashes != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(attrBuf, " kernelHashes='%s'",
+                          virTristateBoolTypeToString(def->kernel_hashes));
+
+    if (def->haveCbitpos)
+        virBufferAsprintf(childBuf, "<cbitpos>%d</cbitpos>\n", def->cbitpos);
+
+    if (def->haveReducedPhysBits)
+        virBufferAsprintf(childBuf, "<reducedPhysBits>%d</reducedPhysBits>\n",
+                          def->reduced_phys_bits);
+}
+
+
+static void
 virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -26657,16 +26686,8 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV: {
         virDomainSEVDef *sev = &sec->data.sev;
 
-        if (sev->kernel_hashes != VIR_TRISTATE_BOOL_ABSENT)
-            virBufferAsprintf(&attrBuf, " kernelHashes='%s'",
-                              virTristateBoolTypeToString(sev->kernel_hashes));
+        virDomainSEVCommonDefFormat(&attrBuf, &childBuf, &sev->common);
 
-        if (sev->haveCbitpos)
-            virBufferAsprintf(&childBuf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
-
-        if (sev->haveReducedPhysBits)
-            virBufferAsprintf(&childBuf, "<reducedPhysBits>%d</reducedPhysBits>\n",
-                              sev->reduced_phys_bits);
         virBufferAsprintf(&childBuf, "<policy>0x%04x</policy>\n", sev->policy);
         virBufferEscapeString(&childBuf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
 
