@@ -2912,6 +2912,11 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             break;
 
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support SCSI emulation with 'virtio-blk' device"));
+                return -1;
+            }
             break;
 
         case VIR_DOMAIN_DISK_BUS_NONE:
