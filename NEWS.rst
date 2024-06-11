@@ -19,6 +19,13 @@ v10.5.0 (unreleased)
 
 * **Improvements**
 
+  * tools: virt-pki-validate has been rewritten in C
+
+    The ``virt-pki-validate`` shell script has been rewritten as a C program,
+    providing an output format that matches ``virt-host-validate``, removing
+    the dependency on ``certtool`` and providing more comprehensive checks
+    of the certificate properties.
+
 * **Bug fixes**
 
 
