@@ -26671,6 +26671,19 @@ virDomainSEVCommonDefFormat(virBuffer *attrBuf,
 
 
 static void
+virDomainSEVDefFormat(virBuffer *attrBuf,
+                      virBuffer *childBuf,
+                      virDomainSEVDef *def)
+{
+    virDomainSEVCommonDefFormat(attrBuf, childBuf, &def->common);
+
+    virBufferAsprintf(childBuf, "<policy>0x%04x</policy>\n", def->policy);
+    virBufferEscapeString(childBuf, "<dhCert>%s</dhCert>\n", def->dh_cert);
+    virBufferEscapeString(childBuf, "<session>%s</session>\n", def->session);
+}
+
+
+static void
 virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -26683,18 +26696,9 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
                       virDomainLaunchSecurityTypeToString(sec->sectype));
 
     switch ((virDomainLaunchSecurity) sec->sectype) {
-    case VIR_DOMAIN_LAUNCH_SECURITY_SEV: {
-        virDomainSEVDef *sev = &sec->data.sev;
-
-        virDomainSEVCommonDefFormat(&attrBuf, &childBuf, &sev->common);
-
-        virBufferAsprintf(&childBuf, "<policy>0x%04x</policy>\n", sev->policy);
-        virBufferEscapeString(&childBuf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
-
-        virBufferEscapeString(&childBuf, "<session>%s</session>\n", sev->session);
-
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        virDomainSEVDefFormat(&attrBuf, &childBuf, &sec->data.sev);
         break;
-    }
 
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
         break;
