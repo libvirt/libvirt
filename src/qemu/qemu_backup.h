@@ -36,7 +36,7 @@ qemuBackupJobCancelBlockjobs(virDomainObj *vm,
 
 void
 qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
-                            virDomainDiskDef *disk,
+                            const char *diskdst,
                             qemuBlockjobState state,
                             const char *errmsg,
                             unsigned long long cur,

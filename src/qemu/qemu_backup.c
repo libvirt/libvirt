@@ -966,7 +966,7 @@ qemuBackupGetXMLDesc(virDomainObj *vm,
 
 void
 qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
-                            virDomainDiskDef *disk,
+                            const char *diskdst,
                             qemuBlockjobState state,
                             const char *errmsg,
                             unsigned long long cur,
@@ -983,7 +983,7 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
     size_t i;
 
     VIR_DEBUG("vm: '%s', disk:'%s', state:'%d' errmsg:'%s'",
-              vm->def->name, disk->dst, state, NULLSTR(errmsg));
+              vm->def->name, NULLSTR(diskdst), state, NULLSTR(errmsg));
 
     if (!backup)
         return;
@@ -1016,7 +1016,7 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
         if (!backupdisk->store)
             continue;
 
-        if (STREQ(disk->dst, backupdisk->name)) {
+        if (STREQ_NULLABLE(diskdst, backupdisk->name)) {
             switch (state) {
             case QEMU_BLOCKJOB_STATE_COMPLETED:
                 backupdisk->state = VIR_DOMAIN_BACKUP_DISK_STATE_COMPLETE;
