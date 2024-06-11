@@ -17,7 +17,6 @@
   <flag name='usb-redir'/>
   <flag name='usb-hub'/>
   <flag name='ich9-ahci'/>
-  <flag name='virtio-blk-pci.scsi'/>
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='hda-micro'/>
@@ -132,7 +131,6 @@
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>
   <flag name='tcg'/>
-  <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <flag name='pvscsi'/>
   <flag name='cpu.migratable'/>
   <flag name='intel-iommu.aw-bits'/>
@@ -207,7 +205,7 @@
   <flag name='virtio-sound'/>
   <version>9000050</version>
   <microcodeVersion>43100246</microcodeVersion>
-  <package>v9.0.0-995-g60b54b67c6</package>
+  <package>v9.0.0-1388-g80e8f06021-dirty</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -237,6 +235,7 @@
     <property name='vmx-cr8-store-exit' type='boolean' value='false'/>
     <property name='vmx-rdseed-exit' type='boolean' value='false'/>
     <property name='amx-fp16' type='boolean' value='false'/>
+    <property name='fred' type='boolean' value='false'/>
     <property name='vmx-eptp-switching' type='boolean' value='false'/>
     <property name='kvm-asyncpf' type='boolean' value='true' migratable='yes'/>
     <property name='perfctr-core' type='boolean' value='true' migratable='yes'/>
@@ -247,6 +246,7 @@
     <property name='decodeassists' type='boolean' value='false'/>
     <property name='vmx-exit-load-efer' type='boolean' value='false'/>
     <property name='vmx-exit-clear-bndcfgs' type='boolean' value='false'/>
+    <property name='vmx-nested-exception' type='boolean' value='false'/>
     <property name='sse4.1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='23'/>
     <property name='intel-pt-lip' type='boolean' value='false'/>
@@ -391,6 +391,7 @@
     <property name='vmx-ept' type='boolean' value='false'/>
     <property name='pbrsb-no' type='boolean' value='false'/>
     <property name='xfd' type='boolean' value='false'/>
+    <property name='lkgs' type='boolean' value='false'/>
     <property name='kvm-mmu' type='boolean' value='false'/>
     <property name='sse4.2' type='boolean' value='true' migratable='yes'/>
     <property name='pge' type='boolean' value='true' migratable='yes'/>
@@ -437,6 +438,7 @@
     <property name='vmx-invept' type='boolean' value='false'/>
     <property name='osvw' type='boolean' value='true' migratable='yes'/>
     <property name='rfds-clear' type='boolean' value='false'/>
+    <property name='succor' type='boolean' value='true' migratable='yes'/>
     <property name='apic' type='boolean' value='true' migratable='yes'/>
     <property name='pmm' type='boolean' value='false'/>
     <property name='vmx-entry-noload-debugctl' type='boolean' value='false'/>
@@ -532,6 +534,7 @@
     <property name='erms' type='boolean' value='false'/>
     <property name='vmx-entry-ia32e-mode' type='boolean' value='false'/>
     <property name='lahf-lm' type='boolean' value='true' migratable='yes'/>
+    <property name='overflow-recov' type='boolean' value='true' migratable='yes'/>
     <property name='vpclmulqdq' type='boolean' value='false'/>
     <property name='vmx-ins-outs' type='boolean' value='false'/>
     <property name='fxsr-opt' type='boolean' value='true' migratable='yes'/>
@@ -560,6 +563,7 @@
     <property name='vmx-rdpmc-exit' type='boolean' value='false'/>
     <property name='vmx-mtf' type='boolean' value='false'/>
     <property name='vmx-entry-load-efer' type='boolean' value='false'/>
+    <property name='wrmsrns' type='boolean' value='false'/>
     <property name='model-id' type='string' value='AMD Ryzen 9 3900X 12-Core Processor            '/>
     <property name='sha-ni' type='boolean' value='true' migratable='yes'/>
     <property name='fb-clear' type='boolean' value='false'/>
@@ -2120,6 +2124,7 @@
     <property name='vmx-cr8-store-exit' type='boolean' value='false'/>
     <property name='vmx-rdseed-exit' type='boolean' value='false'/>
     <property name='amx-fp16' type='boolean' value='false'/>
+    <property name='fred' type='boolean' value='false'/>
     <property name='vmx-eptp-switching' type='boolean' value='false'/>
     <property name='kvm-asyncpf' type='boolean' value='false'/>
     <property name='perfctr-core' type='boolean' value='false'/>
@@ -2130,6 +2135,7 @@
     <property name='decodeassists' type='boolean' value='false'/>
     <property name='vmx-exit-load-efer' type='boolean' value='false'/>
     <property name='vmx-exit-clear-bndcfgs' type='boolean' value='false'/>
+    <property name='vmx-nested-exception' type='boolean' value='false'/>
     <property name='sse4.1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='0'/>
     <property name='intel-pt-lip' type='boolean' value='false'/>
@@ -2274,6 +2280,7 @@
     <property name='vmx-ept' type='boolean' value='false'/>
     <property name='pbrsb-no' type='boolean' value='false'/>
     <property name='xfd' type='boolean' value='false'/>
+    <property name='lkgs' type='boolean' value='false'/>
     <property name='kvm-mmu' type='boolean' value='false'/>
     <property name='sse4.2' type='boolean' value='true' migratable='yes'/>
     <property name='pge' type='boolean' value='true' migratable='yes'/>
@@ -2320,6 +2327,7 @@
     <property name='vmx-invept' type='boolean' value='false'/>
     <property name='osvw' type='boolean' value='false'/>
     <property name='rfds-clear' type='boolean' value='false'/>
+    <property name='succor' type='boolean' value='false'/>
     <property name='apic' type='boolean' value='true' migratable='yes'/>
     <property name='pmm' type='boolean' value='false'/>
     <property name='vmx-entry-noload-debugctl' type='boolean' value='false'/>
@@ -2415,6 +2423,7 @@
     <property name='erms' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-entry-ia32e-mode' type='boolean' value='false'/>
     <property name='lahf-lm' type='boolean' value='true' migratable='yes'/>
+    <property name='overflow-recov' type='boolean' value='false'/>
     <property name='vpclmulqdq' type='boolean' value='false'/>
     <property name='vmx-ins-outs' type='boolean' value='false'/>
     <property name='fxsr-opt' type='boolean' value='false'/>
@@ -2443,6 +2452,7 @@
     <property name='vmx-rdpmc-exit' type='boolean' value='false'/>
     <property name='vmx-mtf' type='boolean' value='false'/>
     <property name='vmx-entry-load-efer' type='boolean' value='false'/>
+    <property name='wrmsrns' type='boolean' value='false'/>
     <property name='model-id' type='string' value='QEMU TCG CPU version 2.5+'/>
     <property name='sha-ni' type='boolean' value='true' migratable='yes'/>
     <property name='fb-clear' type='boolean' value='false'/>

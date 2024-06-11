@@ -1627,7 +1627,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdevs-drive-address-conflict");
     DO_TEST_CAPS_LATEST("event_idx");
-    DO_TEST_CAPS_LATEST("virtio-lun");
+    DO_TEST_CAPS_VER("virtio-lun", "9.0.0");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-lun");
     DO_TEST_CAPS_LATEST("disk-scsi-lun-passthrough");
     DO_TEST_CAPS_LATEST("disk-serial");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fdc-incompatible-address");
