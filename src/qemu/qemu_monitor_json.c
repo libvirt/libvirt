@@ -7961,8 +7961,11 @@ qemuMonitorJSONGetSEVMeasurement(qemuMonitor *mon)
     if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
         return NULL;
 
-    if (!(tmp = virJSONValueObjectGetString(data, "data")))
+    if (!(tmp = virJSONValueObjectGetString(data, "data"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sev-launch-measure reply was missing 'data'"));
         return NULL;
+    }
 
     return g_strdup(tmp);
 }
@@ -8005,8 +8008,11 @@ qemuMonitorJSONGetSEVInfo(qemuMonitor *mon,
     if (virJSONValueObjectGetNumberUint(data, "api-major", apiMajor) < 0 ||
         virJSONValueObjectGetNumberUint(data, "api-minor", apiMinor) < 0 ||
         virJSONValueObjectGetNumberUint(data, "build-id", buildID) < 0 ||
-        virJSONValueObjectGetNumberUint(data, "policy", policy) < 0)
+        virJSONValueObjectGetNumberUint(data, "policy", policy) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-sev reply was missing some data"));
         return -1;
+    }
 
     return 0;
 }
