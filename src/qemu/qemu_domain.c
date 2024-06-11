@@ -798,7 +798,13 @@ qemuDomainDiskPrivateDispose(void *obj)
     virObjectUnref(priv->migrSource);
     g_free(priv->qomName);
     g_free(priv->nodeCopyOnRead);
-    virObjectUnref(priv->blockjob);
+    if (priv->blockjob) {
+        /* Prevent dangling 'disk' pointer, as the disk object will be freed
+         * right after this function returns if any of the blockjob instance
+         * outlives this for any reason. */
+        priv->blockjob->disk = NULL;
+        virObjectUnref(priv->blockjob);
+    }
 }
 
 static virClass *qemuDomainStorageSourcePrivateClass;
