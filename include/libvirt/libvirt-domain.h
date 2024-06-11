@@ -6313,6 +6313,16 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY "sev-policy"
 
 /**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP_POLICY:
+ *
+ * Macro represents the policy of the SEV-SNP guest,
+ * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: 10.5.0
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP_POLICY "sev-snp-policy"
+
+/**
  * VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER:
  *
  * A macro used to represent the SEV launch secret header. The secret header

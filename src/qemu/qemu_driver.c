@@ -19088,6 +19088,12 @@ qemuDomainGetSEVInfo(virDomainObj *vm,
         break;
 
     case QEMU_MONITOR_SEV_GUEST_TYPE_SEV_SNP:
+        if (virTypedParamsAddULLong(params, nparams, &maxpar,
+                                    VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP_POLICY,
+                                    info.data.sev_snp.snp_policy) < 0)
+            goto endjob;
+        break;
+
     case QEMU_MONITOR_SEV_GUEST_TYPE_LAST:
         break;
     }
