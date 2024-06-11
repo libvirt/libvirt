@@ -8867,6 +8867,114 @@ spec <https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf>`__
    session blob defined in the SEV API spec. See SEV spec LAUNCH_START section
    for the session blob format.
 
+
+Some modern AMD processors support Secure Encrypted Virtualization with Secure
+Nested Paging enhancement, also known as SEV-SNP. :since:`Since 10.5.0` To
+enable it ``<launchSecurity type='sev-snp'>`` should be used. It shares some
+attributes and elements with ``type='sev'`` but differs in others. Example configuration:
+
+::
+
+  <domain>
+    ...
+    <launchSecurity type='sev-snp' authorKey='yes' vcek='no'>
+      <cbitpos>47</cbitpos>
+      <reducedPhysBits>1</reducedPhysBits>
+      <policy>0x00030000</policy>
+      <guestVisibleWorkarounds>...</guestVisibleWorkarounds>
+      <idBlock>...</idBlock>
+      <idAuth>...</idAuth>
+      <hostData>.../hostData>
+    </launchSecurity>
+    ...
+  </domain>
+
+The ``<launchSecurity/>`` element accepts the following attributes:
+
+``kernelHashes``
+   The optional ``kernelHashes`` attribute indicates whether the
+   hashes of the kernel, ramdisk and command line should be included
+   in the measurement done by the firmware. This is only valid if
+   using direct kernel boot.
+
+``authorKey``
+   The optional ``authorKey`` attribute indicates whether ``<idAuth/>`` element
+   contains the 'AUTHOR_KEY' field defined SEV-SNP firmware ABI.
+
+``vcek``
+   The optional ``vcek`` attribute indicates whether the guest is allowed to
+   chose between VLEK (Versioned Loaded Endorsement Key) or VCEK (Versioned
+   Chip Endorsement Key)  when requesting attestation reports from firmware.
+   Set this to ``no`` to disable the use of VCEK.
+
+Aforementioned SEV-SNP firmware ABI can be found here:
+`<https://www.amd.com/system/files/TechDocs/56860.pdf>`__
+
+The ``<launchSecurity/>`` element then accepts the following child elements:
+
+``cbitpos``
+   The required ``cbitpos`` element provides the C-bit (aka encryption bit)
+   location in guest page table entry. The value of ``cbitpos`` is hypervisor
+   dependent and can be obtained through the ``sev`` element from the domain
+   capabilities.
+``reducedPhysBits``
+   The required ``reducedPhysBits`` element provides the physical address bit
+   reduction. Similar to ``cbitpos`` the value of ``reduced-phys-bit`` is
+   hypervisor dependent and can be obtained through the ``sev`` element from the
+   domain capabilities.
+``policy``
+   The required ``policy`` element provides the guest policy which must be
+   maintained by the SEV-SNP firmware. This policy is enforced by the firmware
+   and restricts what configuration and operational commands can be performed
+   on this guest by the hypervisor. The guest policy provided during guest
+   launch is bound to the guest and cannot be changed throughout the lifetime
+   of the guest. The policy is also transmitted during snapshot and migration
+   flows and enforced on the destination platform. The guest policy is a 64bit
+   unsigned number with the fields shown in table (See section `4.3 Guest
+   Policy` in aforementioned firmware ABI specification):
+
+   ====== =========================================================================================
+   Bit(s) Description
+   ====== =========================================================================================
+   63:25  Reserved. Must be zero.
+   24     Ciphertext hiding must be enabled when set, otherwise may be enabled or disabled.
+   23     Running Average Power Limit (RAPL) must be disabled when set.
+   22     Require AES 256 XTS for memory encryption when set, otherwise AES 128 XEX may be allowed.
+   21     CXL can be populated with devices or memory when set.
+   20     Guest can be activated only on one socket when set.
+   19     Debugging is allowed when set.
+   18     Association with a migration agent is allowed when set.
+   17     Reserved. Must be set.
+   16     SMT is allowed.
+   15:8   The minimum ABI major version required for this guest to run.
+   7:0    The minimum ABI minor version required for this guest to run.
+   ====== =========================================================================================
+
+   The default value is hypervisor dependant and QEMU defaults to value 0x30000
+   meaning no minimum ABI major/minor version is required and SMT is allowed.
+
+``guestVisibleWorkarounds``
+   The optional ``guestVisibleWorkarounds`` element is a 16-byte,
+   base64-encoded blob to report hypervisor-defined workarounds, corresponding
+   to the 'GOSVW' parameter of the SNP_LAUNCH_START command defined in the
+   SEV-SNP firmware ABI.
+
+``idBlock``
+   The optional ``idBlock`` element is a 96-byte, base64-encoded blob to
+   provide the 'ID Block' structure for the SNP_LAUNCH_FINISH command defined
+   in the SEV-SNP firmware ABI.
+
+``idAuth``
+   The optional ``idAuth`` element is a 4096-byte, base64-encoded blob to
+   provide the 'ID Authentication Information Structure' for the
+   SNP_LAUNCH_FINISH command defined in the SEV-SNP firmware ABI.
+
+``hostData``
+   The optional ``hostData`` element is a 32-byte, base64-encoded, user-defined
+   blob to provide to the guest, as documented for the 'HOST_DATA' parameter of
+   the SNP_LAUNCH_FINISH command in the SEV-SNP firmware ABI.
+
+
 Example configs
 ===============
 

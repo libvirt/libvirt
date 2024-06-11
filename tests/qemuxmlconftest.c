@@ -2849,6 +2849,8 @@ mymain(void)
                                   QEMU_CAPS_SEV_GUEST,
                                   QEMU_CAPS_LAST);
 
+    DO_TEST_CAPS_ARCH_LATEST("launch-security-sev-snp", "x86_64");
+
     DO_TEST_CAPS_ARCH_LATEST("launch-security-s390-pv", "s390x");
 
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");

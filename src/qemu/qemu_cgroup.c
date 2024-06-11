@@ -848,6 +848,7 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
     if (vm->def->sec) {
         switch (vm->def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
             if (qemuSetupSEVCgroup(vm) < 0)
                 return -1;
             break;

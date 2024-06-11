@@ -6744,6 +6744,7 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     if (vm->def->sec) {
         switch (vm->def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
             VIR_DEBUG("Updating SEV platform info");
             if (qemuProcessUpdateSEVInfo(vm) < 0)
                 return -1;
@@ -6818,6 +6819,8 @@ qemuProcessPrepareLaunchSecurityGuestInput(virDomainObj *vm)
     switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         return qemuProcessPrepareSEVGuestInput(vm);
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+        break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
         return 0;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:

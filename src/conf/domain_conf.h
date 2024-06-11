@@ -2860,6 +2860,7 @@ struct _virDomainKeyWrapDef {
 typedef enum {
     VIR_DOMAIN_LAUNCH_SECURITY_NONE,
     VIR_DOMAIN_LAUNCH_SECURITY_SEV,
+    VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP,
     VIR_DOMAIN_LAUNCH_SECURITY_PV,
 
     VIR_DOMAIN_LAUNCH_SECURITY_LAST,
@@ -2882,10 +2883,24 @@ struct _virDomainSEVDef {
     unsigned int policy;
 };
 
+
+struct _virDomainSEVSNPDef {
+    virDomainSEVCommonDef common;
+    unsigned long long policy;
+    char *guest_visible_workarounds;
+    char *id_block;
+    char *id_auth;
+    char *host_data;
+    virTristateBool author_key;
+    virTristateBool vcek;
+};
+
+
 struct _virDomainSecDef {
     virDomainLaunchSecurity sectype;
     union {
         virDomainSEVDef sev;
+        virDomainSEVSNPDef sev_snp;
     } data;
 };
 

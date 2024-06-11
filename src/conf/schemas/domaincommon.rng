@@ -516,6 +516,9 @@
           <ref name="launchSecuritySEV"/>
         </group>
         <group>
+          <ref name="launchSecuritySEVSNP"/>
+        </group>
+        <group>
           <attribute name="type">
             <value>s390-pv</value>
           </attribute>
@@ -569,6 +572,52 @@
     </interleave>
   </define>
 
+  <define name="launchSecuritySEVSNP">
+    <attribute name="type">
+      <value>sev-snp</value>
+    </attribute>
+    <optional>
+      <attribute name="kernelHashes">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="authorKey">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="vcek">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <interleave>
+      <ref name="launchSecuritySEVCommon"/>
+      <element name="policy">
+        <ref name="hexuint"/>
+      </element>
+      <optional>
+        <element name="guestVisibleWorkarounds">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="idBlock">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="idAuth">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="hostData">
+          <data type="string"/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
   <!--
       Enable or disable perf events for the domain. For each
       of the events the following rules apply:

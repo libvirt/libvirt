@@ -1509,6 +1509,7 @@ VIR_ENUM_IMPL(virDomainLaunchSecurity,
               VIR_DOMAIN_LAUNCH_SECURITY_LAST,
               "",
               "sev",
+              "sev-snp",
               "s390-pv",
 );
 
@@ -3834,6 +3835,12 @@ virDomainSecDefFree(virDomainSecDef *def)
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         g_free(def->data.sev.dh_cert);
         g_free(def->data.sev.session);
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+        g_free(def->data.sev_snp.guest_visible_workarounds);
+        g_free(def->data.sev_snp.id_block);
+        g_free(def->data.sev_snp.id_auth);
+        g_free(def->data.sev_snp.host_data);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
@@ -13676,6 +13683,36 @@ virDomainSEVDefParseXML(virDomainSEVDef *def,
 }
 
 
+static int
+virDomainSEVSNPDefParseXML(virDomainSEVSNPDef *def,
+                           xmlXPathContextPtr ctxt)
+{
+    if (virDomainSEVCommonDefParseXML(&def->common, ctxt) < 0)
+        return -1;
+
+    if (virXMLPropTristateBool(ctxt->node, "authorKey", VIR_XML_PROP_NONE,
+                               &def->author_key) < 0)
+        return -1;
+
+    if (virXMLPropTristateBool(ctxt->node, "vcek", VIR_XML_PROP_NONE,
+                               &def->vcek) < 0)
+        return -1;
+
+    if (virXPathULongLongBase("string(./policy)", ctxt, 16, &def->policy) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("failed to get launch security policy"));
+        return -1;
+    }
+
+    def->guest_visible_workarounds = virXPathString("string(./guestVisibleWorkarounds)", ctxt);
+    def->id_block = virXPathString("string(./idBlock)", ctxt);
+    def->id_auth = virXPathString("string(./idAuth)", ctxt);
+    def->host_data = virXPathString("string(./hostData)", ctxt);
+
+    return 0;
+}
+
+
 static virDomainSecDef *
 virDomainSecDefParseXML(xmlNodePtr lsecNode,
                         xmlXPathContextPtr ctxt)
@@ -13693,6 +13730,10 @@ virDomainSecDefParseXML(xmlNodePtr lsecNode,
     switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         if (virDomainSEVDefParseXML(&sec->data.sev, ctxt) < 0)
+            return NULL;
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+        if (virDomainSEVSNPDefParseXML(&sec->data.sev_snp, ctxt) < 0)
             return NULL;
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
@@ -26684,6 +26725,34 @@ virDomainSEVDefFormat(virBuffer *attrBuf,
 
 
 static void
+virDomainSEVSNPDefFormat(virBuffer *attrBuf,
+                         virBuffer *childBuf,
+                         virDomainSEVSNPDef *def)
+{
+    virDomainSEVCommonDefFormat(attrBuf, childBuf, &def->common);
+
+    if (def->author_key != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(attrBuf, " authorKey='%s'",
+                          virTristateBoolTypeToString(def->author_key));
+    }
+
+    if (def->vcek != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(attrBuf, " vcek='%s'",
+                          virTristateBoolTypeToString(def->vcek));
+    }
+
+    virBufferAsprintf(childBuf, "<policy>0x%08llx</policy>\n", def->policy);
+
+    virBufferEscapeString(childBuf,
+                          "<guestVisibleWorkarounds>%s</guestVisibleWorkarounds>\n",
+                          def->guest_visible_workarounds);
+    virBufferEscapeString(childBuf, "<idBlock>%s</idBlock>\n", def->id_block);
+    virBufferEscapeString(childBuf, "<idAuth>%s</idAuth>\n", def->id_auth);
+    virBufferEscapeString(childBuf, "<hostData>%s</hostData>\n", def->host_data);
+}
+
+
+static void
 virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -26698,6 +26767,10 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
     switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         virDomainSEVDefFormat(&attrBuf, &childBuf, &sec->data.sev);
+        break;
+
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+        virDomainSEVSNPDefFormat(&attrBuf, &childBuf, &sec->data.sev_snp);
         break;
 
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:

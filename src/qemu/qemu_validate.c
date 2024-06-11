@@ -1325,6 +1325,15 @@ qemuValidateDomainDef(const virDomainDef *def,
                 return -1;
             }
             break;
+
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_SNP_GUEST)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SEV SNP launch security is not supported with this QEMU binary"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_LAUNCH_SECURITY_PV:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) ||
                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST)) {
