@@ -2901,22 +2901,36 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
     }
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-        /* make sure that both the bus supports type='lun' (SG_IO). */
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
-            disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+
+        switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_BLOCK)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support scsi-block for lun passthrough"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_NONE:
+        case VIR_DOMAIN_DISK_BUS_IDE:
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_USB:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_SD:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk device='lun' is not supported for bus='%1$s'"),
                            virDomainDiskBusTypeToString(disk->bus));
             return -1;
-        }
 
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_BLOCK)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support scsi-block for lun passthrough"));
+        case VIR_DOMAIN_DISK_BUS_LAST:
+            virReportEnumRangeError(virDomainDiskBus, disk->bus);
             return -1;
         }
-
 
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
