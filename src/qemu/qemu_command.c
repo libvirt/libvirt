@@ -7056,13 +7056,12 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     if (def->sec) {
         switch (def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT)) {
                 virBufferAddLit(&buf, ",confidential-guest-support=lsec0");
             } else {
                 virBufferAddLit(&buf, ",memory-encryption=lsec0");
             }
-            break;
-        case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_PV:
             virBufferAddLit(&buf, ",confidential-guest-support=lsec0");
@@ -9756,6 +9755,46 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
 
 
 static int
+qemuBuildSEVSNPCommandLine(virDomainObj *vm,
+                           virCommand *cmd,
+                           virDomainSEVSNPDef *def)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virTristateBool vcek_disabled = VIR_TRISTATE_BOOL_ABSENT;
+
+    VIR_DEBUG("policy=0x%llx cbitpos=%d reduced_phys_bits=%d",
+              def->policy, def->common.cbitpos, def->common.reduced_phys_bits);
+
+    /* On QEMU cmd line, there's vcek-disabled which is an inverted boolean. */
+    if (def->vcek == VIR_TRISTATE_BOOL_YES) {
+        vcek_disabled = VIR_TRISTATE_BOOL_NO;
+    } else if (def->vcek == VIR_TRISTATE_BOOL_NO) {
+        vcek_disabled = VIR_TRISTATE_BOOL_YES;
+    }
+
+    if (qemuMonitorCreateObjectProps(&props, "sev-snp-guest", "lsec0",
+                                     "u:cbitpos", def->common.cbitpos,
+                                     "u:reduced-phys-bits", def->common.reduced_phys_bits,
+                                     "T:kernel-hashes", def->common.kernel_hashes,
+                                     "U:policy", def->policy,
+                                     "S:guest-visible-workarounds", def->guest_visible_workarounds,
+                                     "S:id-block", def->id_block,
+                                     "S:id-auth", def->id_auth,
+                                     "S:host-data", def->host_data,
+                                     "T:author-key-enabled", def->author_key,
+                                     "T:vcek-disabled", vcek_disabled,
+                                     NULL) < 0)
+        return -1;
+
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuBuildPVCommandLine(virDomainObj *vm, virCommand *cmd)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -9784,6 +9823,7 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
         return qemuBuildSEVCommandLine(vm, cmd, &sec->data.sev);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+        return qemuBuildSEVSNPCommandLine(vm, cmd, &sec->data.sev_snp);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
         return qemuBuildPVCommandLine(vm, cmd);
