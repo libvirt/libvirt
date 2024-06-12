@@ -184,7 +184,7 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             _("Checking system cert dir access"),
                             0, 0, 0755,
                             _("The system cert dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
-                            LIBVIRT_PKI_DIR, LIBVIRT_PKI_DIR);
+                            LIBVIRT_CERT_DIR, LIBVIRT_CERT_DIR);
 
         FILE_REQUIRE_EXISTS(scope,
                             LIBVIRT_KEY_DIR,
@@ -197,7 +197,7 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             _("Checking system key dir access"),
                             0, 0, 0755,
                             _("The system key dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
-                            LIBVIRT_KEY_DIR, LIBVIRT_PKI_DIR);
+                            LIBVIRT_KEY_DIR, LIBVIRT_KEY_DIR);
     } else if (path) {
         virNetTLSConfigCustomTrust(path,
                                    &cacert,
