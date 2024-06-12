@@ -708,6 +708,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "usb-mtp", /* QEMU_CAPS_DEVICE_USB_MTP */
               "machine.virt.ras", /* QEMU_CAPS_MACHINE_VIRT_RAS */
               "virtio-sound", /* QEMU_CAPS_DEVICE_VIRTIO_SOUND */
+
+              /* 460 */
+              "sev-snp-guest", /* QEMU_CAPS_SEV_SNP_GUEST */
     );
 
 
@@ -1393,6 +1396,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-mtp", QEMU_CAPS_DEVICE_USB_MTP },
     { "virtio-sound-pci", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
     { "virtio-sound-device", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
+    { "sev-snp-guest", QEMU_CAPS_SEV_SNP_GUEST },
 };
 
 
