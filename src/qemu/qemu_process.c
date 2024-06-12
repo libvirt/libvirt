@@ -8488,16 +8488,58 @@ void qemuProcessStop(virQEMUDriver *driver,
         goto endjob;
     }
 
-    qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, false);
-
-    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
-        driver->inhibitCallback(false, driver->inhibitOpaque);
+    /* BEWARE: At this point 'vm->def->id' is not cleared yet. Any code that
+     * requires the id (e.g. to call virDomainDefGetShortName()) must be placed
+     * between here (after the VM is killed) and the statement clearing the id.
+     * The code *MUST NOT* unlock vm, otherwise other code might be confused
+     * about the state of the VM. */
 
     if ((timestamp = virTimeStringNow()) != NULL) {
         qemuDomainLogAppendMessage(driver, vm, "%s: shutting down, reason=%s\n",
                                    timestamp,
                                    virDomainShutoffReasonTypeToString(reason));
     }
+
+    /* shut it off for sure */
+    ignore_value(qemuProcessKill(vm,
+                                 VIR_QEMU_PROCESS_KILL_FORCE|
+                                 VIR_QEMU_PROCESS_KILL_NOCHECK));
+
+    if (priv->agent) {
+        g_clear_pointer(&priv->agent, qemuAgentClose);
+    }
+    priv->agentError = false;
+
+    if (priv->mon) {
+        g_clear_pointer(&priv->mon, qemuMonitorClose);
+    }
+
+    qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, false);
+
+    /* Do this before we delete the tree and remove pidfile. */
+    qemuProcessKillManagedPRDaemon(vm);
+
+    qemuDomainCleanupRun(driver, vm);
+
+    outgoingMigration = (flags & VIR_QEMU_PROCESS_STOP_MIGRATED) &&
+        (asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT);
+
+    qemuExtDevicesStop(driver, vm, outgoingMigration);
+
+    qemuDBusStop(driver, vm);
+
+    vm->def->id = -1;
+
+    /* Wake up anything waiting on domain condition */
+    virDomainObjBroadcast(vm);
+
+    /* IMPORTANT: qemuDomainObjStopWorker() unlocks @vm in order to prevent
+     * deadlocks with the per-VM event loop thread. This MUST be done after
+     * marking the VM as dead */
+    qemuDomainObjStopWorker(vm);
+
+    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
 
     /* Clear network bandwidth */
     virDomainClearNetBandwidth(vm->def);
@@ -8518,15 +8560,6 @@ void qemuProcessStop(virQEMUDriver *driver,
     virPortAllocatorRelease(priv->nbdPort);
     priv->nbdPort = 0;
 
-    if (priv->agent) {
-        g_clear_pointer(&priv->agent, qemuAgentClose);
-    }
-    priv->agentError = false;
-
-    if (priv->mon) {
-        g_clear_pointer(&priv->mon, qemuMonitorClose);
-    }
-
     if (priv->monConfig) {
         if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
             unlink(priv->monConfig->data.nix.path);
@@ -8536,40 +8569,14 @@ void qemuProcessStop(virQEMUDriver *driver,
     /* Remove the master key */
     qemuDomainMasterKeyRemove(priv);
 
-    /* Do this before we delete the tree and remove pidfile. */
-    qemuProcessKillManagedPRDaemon(vm);
-
     ignore_value(virDomainChrDefForeach(vm->def,
                                         false,
                                         qemuProcessCleanupChardevDevice,
                                         NULL));
 
 
-    /* shut it off for sure */
-    ignore_value(qemuProcessKill(vm,
-                                 VIR_QEMU_PROCESS_KILL_FORCE|
-                                 VIR_QEMU_PROCESS_KILL_NOCHECK));
-
     /* Its namespace is also gone then. */
     qemuDomainDestroyNamespace(driver, vm);
-
-    qemuDomainCleanupRun(driver, vm);
-
-    outgoingMigration = (flags & VIR_QEMU_PROCESS_STOP_MIGRATED) &&
-        (asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT);
-    qemuExtDevicesStop(driver, vm, outgoingMigration);
-
-    qemuDBusStop(driver, vm);
-
-    vm->def->id = -1;
-
-    /* Wake up anything waiting on domain condition */
-    virDomainObjBroadcast(vm);
-
-    /* IMPORTANT: qemuDomainObjStopWorker() unlocks @vm in order to prevent
-     * deadlocks with the per-VM event loop thread. This MUST be done after
-     * marking the VM as dead */
-    qemuDomainObjStopWorker(vm);
 
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
