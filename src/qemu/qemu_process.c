@@ -6741,11 +6741,20 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     for (i = 0; i < vm->def->nshmems; i++)
         qemuDomainPrepareShmemChardev(vm->def->shmems[i]);
 
-    if (vm->def->sec &&
-        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
-        VIR_DEBUG("Updating SEV platform info");
-        if (qemuProcessUpdateSEVInfo(vm) < 0)
+    if (vm->def->sec) {
+        switch (vm->def->sec->sectype) {
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+            VIR_DEBUG("Updating SEV platform info");
+            if (qemuProcessUpdateSEVInfo(vm) < 0)
+                return -1;
+            break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+            break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+        case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+            virReportEnumRangeError(virDomainLaunchSecurity, vm->def->sec->sectype);
             return -1;
+        }
     }
 
     return 0;

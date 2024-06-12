@@ -19111,10 +19111,22 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     if (virDomainGetLaunchSecurityInfoEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (vm->def->sec &&
-        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
+    if (!vm->def->sec) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    switch (vm->def->sec->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         if (qemuDomainGetSEVInfo(vm, params, nparams, flags) < 0)
             goto cleanup;
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+        virReportEnumRangeError(virDomainLaunchSecurity, vm->def->sec->sectype);
+        return -1;
     }
 
     ret = 0;
