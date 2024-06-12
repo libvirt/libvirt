@@ -6806,7 +6806,7 @@ qemuProcessPrepareLaunchSecurityGuestInput(virDomainObj *vm)
     if (!sec)
         return 0;
 
-    switch ((virDomainLaunchSecurity) sec->sectype) {
+    switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         return qemuProcessPrepareSEVGuestInput(vm);
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:

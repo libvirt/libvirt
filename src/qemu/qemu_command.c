@@ -7054,7 +7054,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     qemuAppendLoadparmMachineParm(&buf, def);
 
     if (def->sec) {
-        switch ((virDomainLaunchSecurity) def->sec->sectype) {
+        switch (def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT)) {
                 virBufferAddLit(&buf, ",confidential-guest-support=lsec0");
@@ -9777,7 +9777,7 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
     if (!sec)
         return 0;
 
-    switch ((virDomainLaunchSecurity) sec->sectype) {
+    switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         return qemuBuildSEVCommandLine(vm, cmd, &sec->data.sev);
         break;

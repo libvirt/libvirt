@@ -1310,7 +1310,7 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
 
     if (def->sec) {
-        switch ((virDomainLaunchSecurity) def->sec->sectype) {
+        switch (def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

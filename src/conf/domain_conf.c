@@ -3830,7 +3830,7 @@ virDomainSecDefFree(virDomainSecDef *def)
     if (!def)
         return;
 
-    switch ((virDomainLaunchSecurity) def->sectype) {
+    switch (def->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         g_free(def->data.sev.dh_cert);
         g_free(def->data.sev.session);
@@ -13690,7 +13690,7 @@ virDomainSecDefParseXML(xmlNodePtr lsecNode,
                        &sec->sectype) < 0)
         return NULL;
 
-    switch ((virDomainLaunchSecurity) sec->sectype) {
+    switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         if (virDomainSEVDefParseXML(&sec->data.sev, ctxt) < 0)
             return NULL;
@@ -26695,7 +26695,7 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
     virBufferAsprintf(&attrBuf, " type='%s'",
                       virDomainLaunchSecurityTypeToString(sec->sectype));
 
-    switch ((virDomainLaunchSecurity) sec->sectype) {
+    switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         virDomainSEVDefFormat(&attrBuf, &childBuf, &sec->data.sev);
         break;

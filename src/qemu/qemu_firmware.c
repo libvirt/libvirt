@@ -1323,7 +1323,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     }
 
     if (def->sec) {
-        switch ((virDomainLaunchSecurity) def->sec->sectype) {
+        switch (def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
             if (!supportsSEV) {
                 VIR_DEBUG("Domain requires SEV, firmware '%s' doesn't support it",

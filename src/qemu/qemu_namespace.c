@@ -651,7 +651,7 @@ qemuDomainSetupLaunchSecurity(virDomainObj *vm,
     if (!sec)
         return 0;
 
-    switch ((virDomainLaunchSecurity) sec->sectype) {
+    switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         VIR_DEBUG("Setting up launch security for SEV");
 
