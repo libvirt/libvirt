@@ -2,255 +2,137 @@ nft \
 list \
 table \
 ip \
-libvirt
+libvirt_network
 nft \
 add \
 table \
 ip \
-libvirt
+libvirt_network
 nft \
 add \
 chain \
 ip \
-libvirt \
-INPUT \
-'{ type filter hook input priority 0; policy accept; }'
-nft \
-add \
-chain \
-ip \
-libvirt \
-FORWARD \
+libvirt_network \
+forward \
 '{ type filter hook forward priority 0; policy accept; }'
 nft \
 add \
 chain \
 ip \
-libvirt \
-OUTPUT \
-'{ type filter hook output priority 0; policy accept; }'
-nft \
-add \
-chain \
-ip \
-libvirt \
-LIBVIRT_INP
+libvirt_network \
+guest_output
 nft \
 insert \
 rule \
 ip \
-libvirt \
-INPUT \
+libvirt_network \
+forward \
 counter \
 jump \
-LIBVIRT_INP
+guest_output
 nft \
 add \
 chain \
 ip \
-libvirt \
-LIBVIRT_OUT
+libvirt_network \
+guest_input
 nft \
 insert \
 rule \
 ip \
-libvirt \
-OUTPUT \
+libvirt_network \
+forward \
 counter \
 jump \
-LIBVIRT_OUT
+guest_input
 nft \
 add \
 chain \
 ip \
-libvirt \
-LIBVIRT_FWO
+libvirt_network \
+guest_cross
 nft \
 insert \
 rule \
 ip \
-libvirt \
-FORWARD \
+libvirt_network \
+forward \
 counter \
 jump \
-LIBVIRT_FWO
+guest_cross
 nft \
 add \
 chain \
 ip \
-libvirt \
-LIBVIRT_FWI
-nft \
-insert \
-rule \
-ip \
-libvirt \
-FORWARD \
-counter \
-jump \
-LIBVIRT_FWI
-nft \
-add \
-chain \
-ip \
-libvirt \
-LIBVIRT_FWX
-nft \
-insert \
-rule \
-ip \
-libvirt \
-FORWARD \
-counter \
-jump \
-LIBVIRT_FWX
-nft \
-add \
-chain \
-ip \
-libvirt \
-POSTROUTING \
+libvirt_network \
+guest_nat \
 '{ type nat hook postrouting priority 100; policy accept; }'
-nft \
-add \
-chain \
-ip \
-libvirt \
-LIBVIRT_PRT
-nft \
-insert \
-rule \
-ip \
-libvirt \
-POSTROUTING \
-counter \
-jump \
-LIBVIRT_PRT
 nft \
 list \
 table \
 ip6 \
-libvirt
+libvirt_network
 nft \
 add \
 table \
 ip6 \
-libvirt
+libvirt_network
 nft \
 add \
 chain \
 ip6 \
-libvirt \
-INPUT \
-'{ type filter hook input priority 0; policy accept; }'
-nft \
-add \
-chain \
-ip6 \
-libvirt \
-FORWARD \
+libvirt_network \
+forward \
 '{ type filter hook forward priority 0; policy accept; }'
 nft \
 add \
 chain \
 ip6 \
-libvirt \
-OUTPUT \
-'{ type filter hook output priority 0; policy accept; }'
-nft \
-add \
-chain \
-ip6 \
-libvirt \
-LIBVIRT_INP
+libvirt_network \
+guest_output
 nft \
 insert \
 rule \
 ip6 \
-libvirt \
-INPUT \
+libvirt_network \
+forward \
 counter \
 jump \
-LIBVIRT_INP
+guest_output
 nft \
 add \
 chain \
 ip6 \
-libvirt \
-LIBVIRT_OUT
+libvirt_network \
+guest_input
 nft \
 insert \
 rule \
 ip6 \
-libvirt \
-OUTPUT \
+libvirt_network \
+forward \
 counter \
 jump \
-LIBVIRT_OUT
+guest_input
 nft \
 add \
 chain \
 ip6 \
-libvirt \
-LIBVIRT_FWO
+libvirt_network \
+guest_cross
 nft \
 insert \
 rule \
 ip6 \
-libvirt \
-FORWARD \
+libvirt_network \
+forward \
 counter \
 jump \
-LIBVIRT_FWO
+guest_cross
 nft \
 add \
 chain \
 ip6 \
-libvirt \
-LIBVIRT_FWI
-nft \
-insert \
-rule \
-ip6 \
-libvirt \
-FORWARD \
-counter \
-jump \
-LIBVIRT_FWI
-nft \
-add \
-chain \
-ip6 \
-libvirt \
-LIBVIRT_FWX
-nft \
-insert \
-rule \
-ip6 \
-libvirt \
-FORWARD \
-counter \
-jump \
-LIBVIRT_FWX
-nft \
-add \
-chain \
-ip6 \
-libvirt \
-POSTROUTING \
+libvirt_network \
+guest_nat \
 '{ type nat hook postrouting priority 100; policy accept; }'
-nft \
-add \
-chain \
-ip6 \
-libvirt \
-LIBVIRT_PRT
-nft \
-insert \
-rule \
-ip6 \
-libvirt \
-POSTROUTING \
-counter \
-jump \
-LIBVIRT_PRT
