@@ -4760,12 +4760,14 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     g_autofree char *host = virPCIDeviceAddressAsString(&pcisrc->addr);
     const char *failover_pair_id = NULL;
     const char *driver = NULL;
+    /* 'ramfb' property must be omitted unless it's to be enabled */
+    bool ramfb = pcisrc->ramfb == VIR_TRISTATE_SWITCH_ON;
 
     /* caller has to assign proper passthrough driver name */
     switch (pcisrc->driver.name) {
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
         /* ramfb support requires the nohotplug variant */
-        if (pcisrc->ramfb == VIR_TRISTATE_SWITCH_ON)
+        if (ramfb)
             driver = "vfio-pci-nohotplug";
         else
             driver = "vfio-pci";
@@ -4798,7 +4800,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
                               "p:bootindex", dev->info->effectiveBootIndex,
                               "S:failover_pair_id", failover_pair_id,
                               "S:display", qemuOnOffAuto(pcisrc->display),
-                              "T:ramfb", pcisrc->ramfb,
+                              "B:ramfb", ramfb,
                               NULL) < 0)
         return NULL;
 
