@@ -100,7 +100,7 @@ if unitdir == ''
   unitdir = prefix / 'lib' / 'systemd' / 'system'
 endif
 
-sysusersdir = getoption('sysusersdir')
+sysusersdir = get_option('sysusersdir')
 if sysusersdir == ''
   sysusersdir = prefix / 'lib' / 'sysusers.d'
 endif
