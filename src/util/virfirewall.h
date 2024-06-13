@@ -44,6 +44,7 @@ typedef enum {
 } virFirewallLayer;
 
 typedef enum {
+    VIR_FIREWALL_BACKEND_NONE, /* Always fails */
     VIR_FIREWALL_BACKEND_IPTABLES,
     VIR_FIREWALL_BACKEND_NFTABLES,
 

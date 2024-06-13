@@ -47,6 +47,11 @@ networkFirewallSetupPrivateChains(virFirewallBackend backend,
                                   virFirewallLayer layer)
 {
     switch (backend) {
+    case VIR_FIREWALL_BACKEND_NONE:
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("No firewall backend is available"));
+        return -1;
+
     case VIR_FIREWALL_BACKEND_IPTABLES:
         return iptablesSetupPrivateChains(layer);
 
@@ -417,6 +422,11 @@ networkAddFirewallRules(virNetworkDef *def,
     }
 
     switch (firewallBackend) {
+    case VIR_FIREWALL_BACKEND_NONE:
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("No firewall backend is available"));
+        return -1;
+
     case VIR_FIREWALL_BACKEND_IPTABLES:
         return iptablesAddFirewallRules(def, fwRemoval);
 

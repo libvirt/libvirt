@@ -61,6 +61,7 @@ networkGetDnsmasqCaps(virNetworkDriverState *driver)
 
 static int
 virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
+                           bool privileged,
                            const char *filename)
 {
     g_autoptr(virConf) conf = NULL;
@@ -68,12 +69,16 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
     bool fwBackendSelected = false;
     size_t i;
     int fwBackends[] = {
-        FIREWALL_BACKEND_PRIORITY_0,
-        FIREWALL_BACKEND_PRIORITY_1,
+        FIREWALL_BACKENDS
     };
-    G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) == VIR_FIREWALL_BACKEND_LAST);
-    G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) == FIREWALL_BACKEND_PRIORITY_NUM);
+    G_STATIC_ASSERT(G_N_ELEMENTS(fwBackends) > 0 &&
+                    G_N_ELEMENTS(fwBackends) <= VIR_FIREWALL_BACKEND_LAST);
     int nFwBackends = G_N_ELEMENTS(fwBackends);
+
+    if (!privileged) {
+        fwBackends[0] = VIR_FIREWALL_BACKEND_NONE;
+        nFwBackends = 1;
+    }
 
     if (access(filename, R_OK) == 0) {
 
@@ -104,6 +109,10 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
     for (i = 0; i < nFwBackends && !fwBackendSelected; i++) {
 
         switch ((virFirewallBackend)fwBackends[i]) {
+        case VIR_FIREWALL_BACKEND_NONE:
+            fwBackendSelected = true;
+            break;
+
         case VIR_FIREWALL_BACKEND_IPTABLES: {
             g_autofree char *iptablesInPath = virFindFileInPath(IPTABLES);
 
@@ -187,7 +196,7 @@ virNetworkDriverConfigNew(bool privileged)
 
     configfile = g_strconcat(configdir, "/network.conf", NULL);
 
-    if (virNetworkLoadDriverConfig(cfg, configfile) < 0)
+    if (virNetworkLoadDriverConfig(cfg, privileged, configfile) < 0)
         return NULL;
 
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
