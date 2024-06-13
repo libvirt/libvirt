@@ -2058,7 +2058,6 @@ qemuMigrationSrcWaitForCompletion(virDomainObj *vm,
                                   virConnectPtr dconn,
                                   unsigned int flags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     virDomainJobData *jobData = vm->job->current;
     int rv;
 
@@ -2069,7 +2068,7 @@ qemuMigrationSrcWaitForCompletion(virDomainObj *vm,
             return rv;
 
         if (qemuDomainObjWait(vm) < 0) {
-            if (virDomainObjIsActive(vm) && !priv->beingDestroyed)
+            if (qemuDomainObjIsActive(vm))
                 jobData->status = VIR_DOMAIN_JOB_STATUS_FAILED;
             return -2;
         }
@@ -5055,7 +5054,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
  error:
     virErrorPreserveLast(&orig_err);
 
-    if (virDomainObjIsActive(vm)) {
+    if (qemuDomainObjIsActive(vm)) {
         int reason;
         virDomainState state = virDomainObjGetState(vm, &reason);
 
@@ -6781,7 +6780,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
      * overwrites it. */
     virErrorPreserveLast(&orig_err);
 
-    if (virDomainObjIsActive(vm)) {
+    if (qemuDomainObjIsActive(vm)) {
         if (doKill) {
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                             VIR_ASYNC_JOB_MIGRATION_IN,
@@ -6805,7 +6804,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
                                  jobPriv->migParams, vm->job->apiFlags);
     }
 
-    if (!virDomainObjIsActive(vm))
+    if (!qemuDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm, VIR_DOMAIN_UNDEFINE_TPM, false);
 
     virErrorRestore(&orig_err);
@@ -7050,7 +7049,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         virErrorPreserveLast(&orig_err);
 
     /* Restore max migration bandwidth */
-    if (virDomainObjIsActive(vm)) {
+    if (qemuDomainObjIsActive(vm)) {
         if (qemuMigrationParamsSetULL(migParams,
                                       QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
                                       saveMigBandwidth * 1024 * 1024) == 0)
