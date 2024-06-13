@@ -21,6 +21,7 @@
     "features": [
         "amd-sev",
         "amd-sev-es",
+        "amd-sev-snp",
         "verbose-dynamic"
     ]
 }
