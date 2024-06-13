@@ -5074,7 +5074,13 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                                           dconn);
 
         qemuMigrationSrcCancelRemoveTempBitmaps(vm, VIR_ASYNC_JOB_MIGRATION_OUT);
+    }
 
+    /* We need to re-check that the VM is active as functions like
+     * qemuMigrationSrcCancel/qemuMigrationSrcNBDCopyCancel wait on the VM
+     * condition unlocking the VM object which can lead to a cleanup of the
+     * 'current' job via qemuProcessStop */
+    if (qemuDomainObjIsActive(vm)) {
         if (vm->job->current->status != VIR_DOMAIN_JOB_STATUS_CANCELED)
             vm->job->current->status = VIR_DOMAIN_JOB_STATUS_FAILED;
     }
