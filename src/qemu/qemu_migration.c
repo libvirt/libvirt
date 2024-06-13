@@ -4015,8 +4015,6 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
         qemuMigrationSrcNBDCopyCancel(vm, false,
                                       VIR_ASYNC_JOB_MIGRATION_OUT, NULL);
 
-        virErrorRestore(&orig_err);
-
         if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
             reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
             qemuMigrationSrcPostcopyFailed(vm);
@@ -4029,6 +4027,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
         }
 
         qemuDomainSaveStatus(vm);
+        virErrorRestore(&orig_err);
     }
 
     return 0;
@@ -6230,11 +6229,15 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
 
  cleanup:
     if (ret < 0 && !virDomainObjIsFailedPostcopy(vm, vm->job)) {
+        virErrorPtr orig_err;
+        virErrorPreserveLast(&orig_err);
+
         qemuMigrationSrcRestoreDomainState(driver, vm);
         qemuMigrationParamsReset(vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                  jobPriv->migParams, vm->job->apiFlags);
         qemuDomainSetMaxMemLock(vm, 0, &priv->preMigrationMemlock);
         qemuMigrationJobFinish(vm);
+        virErrorRestore(&orig_err);
     } else {
         if (ret < 0)
             ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
