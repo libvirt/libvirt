@@ -2098,7 +2098,7 @@ qemuMigrationDstWaitForCompletion(virDomainObj *vm,
     unsigned int flags = 0;
     int rv;
 
-    VIR_DEBUG("Waiting for incoming migration to complete");
+    VIR_DEBUG("Waiting for incoming migration to complete (vm='%p')", vm);
 
     if (postcopy)
         flags = QEMU_MIGRATION_COMPLETED_POSTCOPY;
@@ -6689,21 +6689,6 @@ qemuMigrationDstFinishFresh(virQEMUDriver *driver,
 }
 
 
-static int
-qemuMigrationDstFinishResume(virDomainObj *vm)
-{
-    VIR_DEBUG("vm=%p", vm);
-
-    if (qemuMigrationDstWaitForCompletion(vm,
-                                          VIR_ASYNC_JOB_MIGRATION_IN,
-                                          false) < 0) {
-        return -1;
-    }
-
-    return 0;
-}
-
-
 static virDomainPtr
 qemuMigrationDstFinishActive(virQEMUDriver *driver,
                              virConnectPtr dconn,
@@ -6753,7 +6738,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     }
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
-        rc = qemuMigrationDstFinishResume(vm);
+        rc = qemuMigrationDstWaitForCompletion(vm, VIR_ASYNC_JOB_MIGRATION_IN, false);
         inPostCopy = true;
     } else {
         rc = qemuMigrationDstFinishFresh(driver, vm, mig, flags, v3proto,
