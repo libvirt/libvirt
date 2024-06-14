@@ -1137,7 +1137,7 @@ virFirewallParseXML(virFirewall **firewall,
                                            NULL, NULL, NULL);
             for (i = 0; i < nargs; i++) {
 
-                char *arg = virXMLNodeContentString(argsNodes[i]);
+                g_autofree char *arg = virXMLNodeContentString(argsNodes[i]);
                 if (!arg)
                     return -1;
 
