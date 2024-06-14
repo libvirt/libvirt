@@ -255,6 +255,7 @@ void
 virNetworkObjSetFwRemoval(virNetworkObj *obj,
                           virFirewall *fwRemoval)
 {
+    virFirewallFree(obj->fwRemoval);
     obj->fwRemoval = fwRemoval;
     /* give it a name so it's identifiable in the XML */
     if (fwRemoval)
