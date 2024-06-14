@@ -1776,6 +1776,10 @@ static void remoteClientCloseFunc(virNetServerClient *client)
     daemonRemoveAllClientStreams(priv->streams);
 
     remoteClientFreePrivateCallbacks(priv);
+
+#if WITH_SASL
+    g_clear_pointer(&priv->sasl, virObjectUnref);
+#endif
 }
 
 
