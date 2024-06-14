@@ -43,6 +43,9 @@ package:20.6.2
     <serial type='null'>
       <target port='0'/>
     </serial>
+    <serial type='null'>
+      <target port='1'/>
+    </serial>
     <console type='null'>
       <target type='serial' port='0'/>
     </console>

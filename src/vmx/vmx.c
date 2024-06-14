@@ -3065,7 +3065,7 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
         (*def)->source->data.file.path = g_steal_pointer(&fileName);
-    } else if (STRCASEEQ(fileType, "network") && vspc) {
+    } else if (STRCASEEQ(fileType, "network") && (vspc || !fileName || STREQ(fileName, ""))) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_NULL;
     } else if (STRCASEEQ(fileType, "network")) {
