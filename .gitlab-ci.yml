@@ -104,7 +104,7 @@ pages:
     paths:
       - public
 
-.codestyle_job:
+codestyle_job:
   stage: sanity_checks
   needs:
     - job: x86_64-opensuse-leap-15-container
