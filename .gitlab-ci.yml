@@ -106,6 +106,7 @@ pages:
 
 codestyle_job:
   stage: sanity_checks
+  extends: .gitlab_native_build_job
   needs:
     - job: x86_64-opensuse-leap-15-container
       optional: true
