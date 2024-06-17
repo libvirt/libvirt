@@ -145,7 +145,7 @@ Documentation / websites
           :alt: virttools-planet pipeline status
 
    * - virttools-web
-     - .. image:: https://gitlab.com/libvirt/virttools-web/badges/master/pipeline.svg
+     - .. image:: https://gitlab.com/libvirt/virttools-web/badges/main/pipeline.svg
           :target: https://gitlab.com/libvirt/virttools-web/pipelines
           :alt: virttools-web pipeline status
 
