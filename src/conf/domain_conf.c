@@ -5394,8 +5394,7 @@ virDomainDeviceInfoFormat(virBuffer *buf,
             if (rombar)
                 virBufferAsprintf(buf, " bar='%s'", rombar);
         }
-        if (info->romfile)
-            virBufferEscapeString(buf, " file='%s'", info->romfile);
+        virBufferEscapeString(buf, " file='%s'", info->romfile);
         virBufferAddLit(buf, "/>\n");
     }
 
@@ -22175,8 +22174,7 @@ virSecurityDeviceLabelDefFormat(virBuffer *buf,
 
     virBufferAddLit(buf, "<seclabel");
 
-    if (def->model)
-        virBufferEscapeString(buf, " model='%s'", def->model);
+    virBufferEscapeString(buf, " model='%s'", def->model);
 
     if (def->labelskip)
         virBufferAddLit(buf, " labelskip='yes'");
@@ -22371,8 +22369,7 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
         virBufferAsprintf(childBuf, "<timeout seconds='%llu'/>\n", src->timeout);
 
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_SSH) {
-        if (src->ssh_known_hosts_file)
-            virBufferEscapeString(childBuf, "<knownHosts path='%s'/>\n", src->ssh_known_hosts_file);
+        virBufferEscapeString(childBuf, "<knownHosts path='%s'/>\n", src->ssh_known_hosts_file);
         if (src->ssh_keyfile || src->ssh_agent) {
             virBufferAddLit(childBuf, "<identity");
 
@@ -23162,8 +23159,7 @@ virDomainControllerDefFormat(virBuffer *buf,
                       " type='%s' index='%d'",
                       type, def->idx);
 
-    if (model)
-        virBufferEscapeString(&attrBuf, " model='%s'", model);
+    virBufferEscapeString(&attrBuf, " model='%s'", model);
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
@@ -24581,8 +24577,7 @@ virDomainChrTargetDefFormat(virBuffer *buf,
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            if (def->target.name)
-                virBufferEscapeString(buf, " name='%s'", def->target.name);
+            virBufferEscapeString(buf, " name='%s'", def->target.name);
 
             if (def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
                 def->state != VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT &&
@@ -26004,9 +25999,8 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             break;
         }
 
-        if (def->data.vnc.keymap)
-            virBufferEscapeString(buf, " keymap='%s'",
-                                  def->data.vnc.keymap);
+        virBufferEscapeString(buf, " keymap='%s'",
+                              def->data.vnc.keymap);
 
         if (def->data.vnc.sharePolicy)
             virBufferAsprintf(buf, " sharePolicy='%s'",
@@ -26021,13 +26015,11 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        if (def->data.sdl.display)
-            virBufferEscapeString(buf, " display='%s'",
-                                  def->data.sdl.display);
+        virBufferEscapeString(buf, " display='%s'",
+                              def->data.sdl.display);
 
-        if (def->data.sdl.xauth)
-            virBufferEscapeString(buf, " xauth='%s'",
-                                  def->data.sdl.xauth);
+        virBufferEscapeString(buf, " xauth='%s'",
+                              def->data.sdl.xauth);
         if (def->data.sdl.fullscreen)
             virBufferAddLit(buf, " fullscreen='yes'");
 
@@ -26066,9 +26058,8 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        if (def->data.desktop.display)
-            virBufferEscapeString(buf, " display='%s'",
-                                  def->data.desktop.display);
+        virBufferEscapeString(buf, " display='%s'",
+                              def->data.desktop.display);
 
         if (def->data.desktop.fullscreen)
             virBufferAddLit(buf, " fullscreen='yes'");
@@ -26121,9 +26112,8 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             break;
         }
 
-        if (def->data.spice.keymap)
-            virBufferEscapeString(buf, " keymap='%s'",
-                                  def->data.spice.keymap);
+        virBufferEscapeString(buf, " keymap='%s'",
+                              def->data.spice.keymap);
 
         if (def->data.spice.defaultMode != VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
             virBufferAsprintf(buf, " defaultMode='%s'",
@@ -26503,11 +26493,9 @@ virDomainResourceDefFormat(virBuffer *buf,
     if (!def)
         return;
 
-    if (def->partition)
-        virBufferEscapeString(&childBuf, "<partition>%s</partition>\n", def->partition);
+    virBufferEscapeString(&childBuf, "<partition>%s</partition>\n", def->partition);
 
-    if (def->appid)
-        virBufferEscapeString(&childBuf, "<fibrechannel appid='%s'/>\n", def->appid);
+    virBufferEscapeString(&childBuf, "<fibrechannel appid='%s'/>\n", def->appid);
 
     virXMLFormatElement(buf, "resource", NULL, &childBuf);
 }
@@ -26680,11 +26668,9 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
             virBufferAsprintf(&childBuf, "<reducedPhysBits>%d</reducedPhysBits>\n",
                               sev->reduced_phys_bits);
         virBufferAsprintf(&childBuf, "<policy>0x%04x</policy>\n", sev->policy);
-        if (sev->dh_cert)
-            virBufferEscapeString(&childBuf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
+        virBufferEscapeString(&childBuf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
 
-        if (sev->session)
-            virBufferEscapeString(&childBuf, "<session>%s</session>\n", sev->session);
+        virBufferEscapeString(&childBuf, "<session>%s</session>\n", sev->session);
 
         break;
     }
@@ -27910,9 +27896,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
         virBufferAsprintf(buf, "<initenv name='%s'>%s</initenv>\n",
                           def->os.initenv[i]->name, def->os.initenv[i]->value);
-    if (def->os.initdir)
-        virBufferEscapeString(buf, "<initdir>%s</initdir>\n",
-                              def->os.initdir);
+    virBufferEscapeString(buf, "<initdir>%s</initdir>\n",
+                          def->os.initdir);
     if (def->os.inituser)
         virBufferAsprintf(buf, "<inituser>%s</inituser>\n", def->os.inituser);
     if (def->os.initgroup)

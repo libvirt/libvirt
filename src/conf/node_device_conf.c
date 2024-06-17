@@ -176,20 +176,16 @@ virNodeDeviceCapSystemDefFormat(virBuffer *buf,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (data->system.product_name)
-        virBufferEscapeString(buf, "<product>%s</product>\n",
-                              data->system.product_name);
+    virBufferEscapeString(buf, "<product>%s</product>\n",
+                          data->system.product_name);
     virBufferAddLit(buf, "<hardware>\n");
     virBufferAdjustIndent(buf, 2);
-    if (data->system.hardware.vendor_name)
-        virBufferEscapeString(buf, "<vendor>%s</vendor>\n",
-                              data->system.hardware.vendor_name);
-    if (data->system.hardware.version)
-        virBufferEscapeString(buf, "<version>%s</version>\n",
-                              data->system.hardware.version);
-    if (data->system.hardware.serial)
-        virBufferEscapeString(buf, "<serial>%s</serial>\n",
-                              data->system.hardware.serial);
+    virBufferEscapeString(buf, "<vendor>%s</vendor>\n",
+                          data->system.hardware.vendor_name);
+    virBufferEscapeString(buf, "<version>%s</version>\n",
+                          data->system.hardware.version);
+    virBufferEscapeString(buf, "<serial>%s</serial>\n",
+                          data->system.hardware.serial);
     virUUIDFormat(data->system.hardware.uuid, uuidstr);
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
     virBufferAdjustIndent(buf, -2);
@@ -197,15 +193,12 @@ virNodeDeviceCapSystemDefFormat(virBuffer *buf,
 
     virBufferAddLit(buf, "<firmware>\n");
     virBufferAdjustIndent(buf, 2);
-    if (data->system.firmware.vendor_name)
-        virBufferEscapeString(buf, "<vendor>%s</vendor>\n",
-                              data->system.firmware.vendor_name);
-    if (data->system.firmware.version)
-        virBufferEscapeString(buf, "<version>%s</version>\n",
-                              data->system.firmware.version);
-    if (data->system.firmware.release_date)
-        virBufferEscapeString(buf, "<release_date>%s</release_date>\n",
-                              data->system.firmware.release_date);
+    virBufferEscapeString(buf, "<vendor>%s</vendor>\n",
+                          data->system.firmware.vendor_name);
+    virBufferEscapeString(buf, "<version>%s</version>\n",
+                          data->system.firmware.version);
+    virBufferEscapeString(buf, "<release_date>%s</release_date>\n",
+                          data->system.firmware.release_date);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</firmware>\n");
 }
@@ -225,9 +218,8 @@ virNodeDeviceCapMdevTypesFormat(virBuffer *buf,
             virMediatedDeviceType *type = mdev_types[i];
             virBufferEscapeString(buf, "<type id='%s'>\n", type->id);
             virBufferAdjustIndent(buf, 2);
-            if (type->name)
-                virBufferEscapeString(buf, "<name>%s</name>\n",
-                                      type->name);
+            virBufferEscapeString(buf, "<name>%s</name>\n",
+                                  type->name);
             virBufferEscapeString(buf, "<deviceAPI>%s</deviceAPI>\n",
                                   type->device_api);
             virBufferAsprintf(buf,
@@ -454,10 +446,9 @@ virNodeDeviceCapUSBInterfaceDefFormat(virBuffer *buf,
                       data->usb_if.subclass);
     virBufferAsprintf(buf, "<protocol>%d</protocol>\n",
                       data->usb_if.protocol);
-    if (data->usb_if.description)
-        virBufferEscapeString(buf,
-                              "<description>%s</description>\n",
-                              data->usb_if.description);
+    virBufferEscapeString(buf,
+                          "<description>%s</description>\n",
+                          data->usb_if.description);
 }
 
 
@@ -469,9 +460,8 @@ virNodeDeviceCapNetDefFormat(virBuffer *buf,
 
     virBufferEscapeString(buf, "<interface>%s</interface>\n",
                           data->net.ifname);
-    if (data->net.address)
-        virBufferEscapeString(buf, "<address>%s</address>\n",
-                              data->net.address);
+    virBufferEscapeString(buf, "<address>%s</address>\n",
+                          data->net.address);
     virInterfaceLinkFormat(buf, &data->net.lnk);
     if (data->net.features) {
         for (i = 0; i < VIR_NET_DEV_FEAT_LAST; i++) {
@@ -533,9 +523,8 @@ virNodeDeviceCapSCSIDefFormat(virBuffer *buf,
     virBufferAsprintf(buf, "<target>%d</target>\n",
                       data->scsi.target);
     virBufferAsprintf(buf, "<lun>%d</lun>\n", data->scsi.lun);
-    if (data->scsi.type)
-        virBufferEscapeString(buf, "<type>%s</type>\n",
-                              data->scsi.type);
+    virBufferEscapeString(buf, "<type>%s</type>\n",
+                          data->scsi.type);
 }
 
 

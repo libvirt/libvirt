@@ -1347,8 +1347,7 @@ int
 virStorageSourcePrivateDataFormatRelPath(virStorageSource *src,
                                          virBuffer *buf)
 {
-    if (src->relPath)
-        virBufferEscapeString(buf, "<relPath>%s</relPath>\n", src->relPath);
+    virBufferEscapeString(buf, "<relPath>%s</relPath>\n", src->relPath);
 
     return 0;
 }

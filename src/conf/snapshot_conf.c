@@ -819,9 +819,8 @@ virDomainSnapshotDefFormatInternal(virBuffer *buf,
     virBufferAdjustIndent(buf, 2);
 
     virBufferEscapeString(buf, "<name>%s</name>\n", def->parent.name);
-    if (def->parent.description)
-        virBufferEscapeString(buf, "<description>%s</description>\n",
-                              def->parent.description);
+    virBufferEscapeString(buf, "<description>%s</description>\n",
+                          def->parent.description);
     if (def->state)
         virBufferAsprintf(buf, "<state>%s</state>\n",
                           virDomainSnapshotStateTypeToString(def->state));

@@ -203,8 +203,7 @@ virNWFilterBindingDefFormatBuf(virBuffer *buf,
     virBufferAddLit(buf, "</owner>\n");
 
     virBufferEscapeString(buf, "<portdev name='%s'/>\n", def->portdevname);
-    if (def->linkdevname)
-        virBufferEscapeString(buf, "<linkdev name='%s'/>\n", def->linkdevname);
+    virBufferEscapeString(buf, "<linkdev name='%s'/>\n", def->linkdevname);
 
     virMacAddrFormat(&def->mac, mac);
     virBufferAsprintf(buf, "<mac address='%s'/>\n", mac);

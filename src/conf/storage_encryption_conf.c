@@ -317,16 +317,13 @@ virStorageEncryptionInfoDefFormat(virBuffer *buf,
 {
     virBufferEscapeString(buf, "<cipher name='%s'", enc->cipher_name);
     virBufferAsprintf(buf, " size='%u'", enc->cipher_size);
-    if (enc->cipher_mode)
-        virBufferEscapeString(buf, " mode='%s'", enc->cipher_mode);
-    if (enc->cipher_hash)
-        virBufferEscapeString(buf, " hash='%s'", enc->cipher_hash);
+    virBufferEscapeString(buf, " mode='%s'", enc->cipher_mode);
+    virBufferEscapeString(buf, " hash='%s'", enc->cipher_hash);
     virBufferAddLit(buf, "/>\n");
 
     if (enc->ivgen_name) {
         virBufferEscapeString(buf, "<ivgen name='%s'", enc->ivgen_name);
-        if (enc->ivgen_hash)
-            virBufferEscapeString(buf, " hash='%s'", enc->ivgen_hash);
+        virBufferEscapeString(buf, " hash='%s'", enc->ivgen_hash);
         virBufferAddLit(buf, "/>\n");
     }
 }

@@ -693,10 +693,8 @@ virCapabilitiesDomainDataLookupInternal(virCaps *caps,
         if (domaintype > VIR_DOMAIN_VIRT_NONE)
             virBufferAsprintf(&buf, "domaintype=%s ",
                               virDomainVirtTypeToString(domaintype));
-        if (emulator)
-            virBufferEscapeString(&buf, "emulator=%s ", emulator);
-        if (machinetype)
-            virBufferEscapeString(&buf, "machine=%s ", machinetype);
+        virBufferEscapeString(&buf, "emulator=%s ", emulator);
+        virBufferEscapeString(&buf, "machine=%s ", machinetype);
         if (virBufferCurrentContent(&buf) &&
             !virBufferCurrentContent(&buf)[0])
             virBufferAsprintf(&buf, "%s", _("any configuration"));

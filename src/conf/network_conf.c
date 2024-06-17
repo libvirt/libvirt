@@ -2004,10 +2004,8 @@ virNetworkDNSDefFormat(virBuffer *buf,
                                   def->srvs[i].service);
             virBufferEscapeString(buf, "protocol='%s'", def->srvs[i].protocol);
 
-            if (def->srvs[i].domain)
-                virBufferEscapeString(buf, " domain='%s'", def->srvs[i].domain);
-            if (def->srvs[i].target)
-                virBufferEscapeString(buf, " target='%s'", def->srvs[i].target);
+            virBufferEscapeString(buf, " domain='%s'", def->srvs[i].domain);
+            virBufferEscapeString(buf, " target='%s'", def->srvs[i].target);
             if (def->srvs[i].port)
                 virBufferAsprintf(buf, " port='%d'", def->srvs[i].port);
             if (def->srvs[i].priority)
