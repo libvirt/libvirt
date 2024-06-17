@@ -169,3 +169,34 @@ Miscellaneous
      - .. image:: https://gitlab.com/libvirt/libvirt-security-notice/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-security-notice/pipelines
           :alt: libvirt-security-notice pipeline status
+
+
+Related projects
+----------------
+
+.. list-table::
+   :widths: 80 20
+   :header-rows: 1
+
+   * - Project
+     - Pipeline
+
+   * - osinfo-db-tools
+     - .. image:: https://gitlab.com/libosinfo/osinfo-db-tools/badges/main/pipeline.svg
+          :target: https://gitlab.com/libosinfo/osinfo-db-tools/pipelines
+          :alt: osinfo-db-tools pipeline status
+
+   * - osinfo-db
+     - .. image:: https://gitlab.com/libosinfo/osinfo-db/badges/main/pipeline.svg
+          :target: https://gitlab.com/libosinfo/osinfo-db/pipelines
+          :alt: osinfo-db pipeline status
+
+   * - libosinfo
+     - .. image:: https://gitlab.com/libosinfo/libosinfo/badges/main/pipeline.svg
+          :target: https://gitlab.com/libosinfo/libosinfo/pipelines
+          :alt: libosinfo pipeline status
+
+   * - virt-viewer
+     - .. image:: https://gitlab.com/virt-viewer/virt-viewer/badges/master/pipeline.svg
+          :target: https://gitlab.com/virt-viewer/virt-viewer/pipelines
+          :alt: virt-viewer pipeline status
