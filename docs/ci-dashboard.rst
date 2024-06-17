@@ -87,11 +87,6 @@ Object mappings
    * - Project
      - Pipeline
 
-   * - libvirt-cim
-     - .. image:: https://gitlab.com/libvirt/libvirt-cim/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-cim/pipelines
-          :alt: libvirt-cim pipeline status
-
    * - libvirt-dbus
      - .. image:: https://gitlab.com/libvirt/libvirt-dbus/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-dbus/pipelines
@@ -106,11 +101,6 @@ Object mappings
      - .. image:: https://gitlab.com/libvirt/libvirt-go-xml-module/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-go-xml-module/pipelines
           :alt: libvirt-go-xml-module pipeline status
-
-   * - libvirt-snmp
-     - .. image:: https://gitlab.com/libvirt/libvirt-snmp/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-snmp/pipelines
-          :alt: libvirt-snmp pipeline status
 
 
 Testing
@@ -128,11 +118,6 @@ Testing
           :target: https://gitlab.com/libvirt/libvirt-ci/pipelines
           :alt: libvirt-ci pipeline status
 
-   * - libvirt-test-API
-     - .. image:: https://gitlab.com/libvirt/libvirt-test-API/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-test-API/pipelines
-          :alt: libvirt-test-API pipeline status
-
    * - libvirt-tck
      - .. image:: https://gitlab.com/libvirt/libvirt-tck/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-tck/pipelines
@@ -148,16 +133,6 @@ Documentation / websites
 
    * - Project
      - Pipeline
-
-   * - libvirt-publican
-     - .. image:: https://gitlab.com/libvirt/libvirt-publican/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-publican/pipelines
-          :alt: libvirt-publican pipeline status
-
-   * - libvirt-appdev-guide-python
-     - .. image:: https://gitlab.com/libvirt/libvirt-appdev-guide-python/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-appdev-guide-python/pipelines
-          :alt: libvirt-appdev-guide-python pipeline status
 
    * - libvirt-wiki
      - .. image:: https://gitlab.com/libvirt/libvirt-wiki/badges/master/pipeline.svg
@@ -189,26 +164,6 @@ Miscellaneous
      - .. image:: https://gitlab.com/libvirt/libvirt-console-proxy/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-console-proxy/pipelines
           :alt: libvirt-console-proxy pipeline status
-
-   * - libvirt-designer
-     - .. image:: https://gitlab.com/libvirt/libvirt-designer/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-designer/pipelines
-          :alt: libvirt-designer pipeline status
-
-   * - libvirt-devaddr
-     - .. image:: https://gitlab.com/libvirt/libvirt-devaddr/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-devaddr/pipelines
-          :alt: libvirt-devaddr pipeline status
-
-   * - libvirt-sandbox
-     - .. image:: https://gitlab.com/libvirt/libvirt-sandbox/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-sandbox/pipelines
-          :alt: libvirt-sandbox pipeline status
-
-   * - libvirt-sandbox-image
-     - .. image:: https://gitlab.com/libvirt/libvirt-sandbox-image/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-sandbox-image/pipelines
-          :alt: libvirt-sandbox-image pipeline status
 
    * - libvirt-security-notice
      - .. image:: https://gitlab.com/libvirt/libvirt-security-notice/badges/master/pipeline.svg
