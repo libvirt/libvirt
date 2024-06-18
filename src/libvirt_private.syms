@@ -488,6 +488,7 @@ virDomainInputSourceGrabToggleTypeToString;
 virDomainInputSourceGrabTypeFromString;
 virDomainInputSourceGrabTypeToString;
 virDomainInputTypeToString;
+virDomainIOMMUDefFree;
 virDomainIOMMUModelTypeFromString;
 virDomainIOMMUModelTypeToString;
 virDomainIOThreadIDAdd;
