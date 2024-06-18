@@ -6847,6 +6847,15 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         vmdef->vsock = g_steal_pointer(&dev->data.vsock);
         break;
 
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        if (vmdef->iommu) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain already has an iommu device"));
+            return -1;
+        }
+        vmdef->iommu = g_steal_pointer(&dev->data.iommu);
+        break;
+
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
@@ -6856,7 +6865,6 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -7057,6 +7065,15 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
         g_clear_pointer(&vmdef->vsock, virDomainVsockDefFree);
         break;
 
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        if (!vmdef->iommu) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("matching iommu device not found"));
+            return -1;
+        }
+        g_clear_pointer(&vmdef->iommu, virDomainIOMMUDefFree);
+        break;
+
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
@@ -7066,7 +7083,6 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_LAST:
