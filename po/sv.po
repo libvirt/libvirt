@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-06-04 14:35+0000\n"
+"PO-Revision-Date: 2024-06-18 10:10+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -28689,88 +28689,90 @@ msgstr "felaktig json i filen: %1$s"
 
 #, c-format
 msgid "invalid json in file: %1$s, rewriting it"
-msgstr ""
+msgstr "felaktig json i filen: %1$s, skriver om den"
 
 #, c-format
 msgid "invalid json in net device saved config file '%1$s': '%2$.60s'"
-msgstr ""
+msgstr "felaktig json i nätenhetens sparade konfigurationsfil ”%1$s”: ”%2$.60s”"
 
 #, c-format
 msgid "invalid keycode %1$u of %2$s codeset"
-msgstr ""
+msgstr "felaktig tangentkod %1$u från koduppsättningen %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid keycode: '%1$s'"
-msgstr "Ogiltiga vektorer: %1$s"
+msgstr "felaktig tangentkod: ”%1$s”"
 
-#, fuzzy
 msgid "invalid length for new profile"
-msgstr "ogiltig nätverkspekare i"
+msgstr "felaktig längd för en ny profil"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid lifecycle action '%1$u'"
-msgstr "ogiltig vakthundsåtgärd"
+msgstr "felaktig livscykelsåtgärd ”%1$u”"
 
 #, c-format
 msgid "invalid lifecycle type '%1$u'"
-msgstr ""
+msgstr "felaktig livscykelstyp ”%1$u”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid link state '%1$s'"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktigt länktillstånd ”%1$s”"
 
 #, c-format
 msgid ""
 "invalid loadparm value '%1$s', expecting chars in set of [a-zA-Z0-9.] and "
 "blank spaces"
 msgstr ""
+"felaktigt loadparam-värde ”%1$s”, tecken från mängden [a-zA-Z0-9.] och "
+"blanka mellanrum föräntades"
 
 #, c-format
 msgid ""
 "invalid mac address '%1$s' in 'multicast-table' array in query-rx-filter "
 "response"
 msgstr ""
+"felaktig mac-adress ”%1$s” i vektorn ”multicast-table” i query-rx-filter-"
+"svaret"
 
 #, c-format
 msgid ""
 "invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
 "response"
 msgstr ""
+"felaktig mac-adress ”%1$s” i vektorn ”unicast-table” i query-rx-filter-svaret"
 
 #, c-format
 msgid "invalid master key read, size=%1$zd"
-msgstr ""
+msgstr "felaktig huvudnyckelläsning, storlek=%1$zd"
 
-#, fuzzy
 msgid "invalid microcode version"
-msgstr "ogiltig anslutningspekare i"
+msgstr "felaktig mikrokodversion"
 
-#, fuzzy
 msgid "invalid mode"
-msgstr "Ogiltig kontext"
+msgstr "felaktigt läge"
 
 #, c-format
 msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr ""
+msgstr "felaktig model på gränssnittet av typen ”%1$s”: ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid model for video type '%1$s'"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "felaktig modell på videotypen ”%1$s”"
 
 msgid "invalid model for virtio-balloon-pci"
-msgstr ""
+msgstr "felaktig modell på virtio-balloon-pci"
 
 #, c-format
 msgid "invalid nested value key '%1$s'"
-msgstr ""
+msgstr "felaktig nästad värdenyckel ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid netfs path (ends in /): %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig netfs-sökväg (slutar med /): %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid netfs path (no /): %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig netfs-sökväg (inget /): %1$s"
 
 msgid "invalid network pointer in"
 msgstr "ogiltig nätverkspekare i"
@@ -28779,562 +28781,561 @@ msgstr "ogiltig nätverkspekare i"
 msgid "invalid network pointer in %1$s"
 msgstr "ogiltig nätverkspekare i %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid network type supplied for '%1$s'"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig nätverkstuå govem för ”%1$s”"
 
 msgid "invalid node cpu active value"
-msgstr ""
+msgstr "felaktigt aktivitetsvärde på nod-cpu"
 
 msgid "invalid node cpu cores value"
-msgstr ""
+msgstr "felaktigt kärnvärde på nod-cpu"
 
 msgid "invalid node cpu mhz value"
-msgstr ""
+msgstr "felaktigt mHz-värde på nod-cpu"
 
 msgid "invalid node cpu nodes value"
-msgstr ""
+msgstr "felaktigt nodvärde på nod-cpu"
 
 msgid "invalid node cpu sockets value"
-msgstr ""
+msgstr "felaktigt sockelvärde på nod-cpu"
 
 msgid "invalid node cpu threads value"
-msgstr ""
+msgstr "felaktigt trådvärde på nod-cpu"
 
-#, fuzzy
 msgid "invalid node device pointer"
-msgstr "ogiltig domänpekare i"
+msgstr "felaktig nodenhetspekare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid node device pointer in %1$s"
-msgstr "ogiltig domänpekare i %1$s"
+msgstr "felaktig nodenhetspekare i %1$s"
 
 msgid "invalid node memory value"
-msgstr ""
+msgstr "felaktigt nodminnesvärde"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid number '%1$s' in '%2$s'"
-msgstr "ogiltig nätverkspekare i %s"
+msgstr "felaktigt antal ”%1$s” i ”%2$s”"
 
 #, c-format
 msgid ""
 "invalid number value for '%1$s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
+"felaktigt antalsvärde för ”%1$s” värd-CPU-modellegenskap i QEMU-förmågecachen"
 
 #, c-format
 msgid "invalid parent device '%1$s'"
-msgstr ""
+msgstr "felaktig föräldraenhet ”%1$s”"
 
 #, c-format
 msgid "invalid partition name '%1$s', expected '%2$s'"
-msgstr ""
+msgstr "felaktigt partitionsnamn ”%1$s”, ”%2$s” förväntades"
 
 #, c-format
 msgid "invalid path %1$s not assigned to domain"
-msgstr ""
+msgstr "felaktig sökväg %1$s inte tilldelad till domänen"
 
 msgid "invalid path for master key file"
-msgstr ""
+msgstr "felaktig sökväg för huvudnyckelfilen"
 
 #, c-format
 msgid "invalid path, '%1$s' is not a known interface"
-msgstr ""
+msgstr "felaktig sökväg, ”%1$s” är inte ett känt gränssnitt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid path: %1$s"
-msgstr "Ogiltiga portar: %1$s"
+msgstr "felaktig sökväg: %1$s"
 
 msgid "invalid prefix, must be in range of 4-27"
-msgstr ""
+msgstr "felaktigt prefix, måste vara i intervallet 4-27"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid protocol argument: %1$d"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "felaktigt protokollargument: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid protocol transport type '%1$s'"
-msgstr "okänd protokolltyp ”%1$s”"
+msgstr "felaktig protokolltransporttyp ”%1$s”"
 
 #, c-format
 msgid "invalid qemu namespace capability '%1$s'"
-msgstr ""
+msgstr "felaktig qemu-namnrymdsförmåga ”%1$s”"
 
-#, fuzzy
 msgid "invalid readahead size or timeout"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "felaktig storlek eller tidsgräns för förhandsläsning"
 
 #, c-format
 msgid "invalid removable media size supplied for '%1$s'"
-msgstr ""
+msgstr "felaktig storlek på löstagbart medium givet för ”%1$s”"
 
-#, fuzzy
 msgid "invalid runstate"
-msgstr "Ogiltig kontext"
+msgstr "felaktigt körtillstånd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid scale %1$llu"
-msgstr "felaktig UUID-källa: %s"
+msgstr "felaktig skala %1$llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid scheduler option: %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig schemaflagga: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid secret type %1$s"
-msgstr "ogiltiga värd-UUID: %1$s"
+msgstr "felaktig hemlighetstyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid secret type '%1$s'"
-msgstr "Ogiltig busstyp ”%1$s” för hårddisk"
+msgstr "felaktig hemlighetstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid secret uuid '%1$s'"
-msgstr "ogiltiga värd-UUID: %1$s"
+msgstr "felaktigt hemlighets-uuid ”%1$s”"
 
 msgid "invalid server address"
-msgstr ""
+msgstr "felaktig serveradress"
 
 #, c-format
 msgid "invalid size supplied for '%1$s'"
-msgstr ""
+msgstr "felaktig storlek given för ”%1$s”"
 
 #, c-format
 msgid "invalid snapshot name '%1$s': name can't contain '/'"
 msgstr ""
+"felaktigt namn på ögonblicksbilden ”%1$s”: namnet får inte innehålla ”/”"
 
 #, c-format
 msgid "invalid snapshot name '%1$s': name can't start with '.'"
 msgstr ""
+"felaktigt namn på ögonblicksbilden ”%1$s”: namnet får inte börja med ”.”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid ssid value '%1$s' for '%2$s'"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "felaktigt ssid-värde ”%1$s” för ”%2$s”"
 
-#, fuzzy
 msgid "invalid storage pool pointer in"
-msgstr "ogiltig nätverkspekare i"
+msgstr "felaktig lagringspoolspekare i"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage pool pointer in %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig lagringspoolspekare i %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage source index '%1$s'"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktigt lagringskälleindex ”%1$s”"
 
-#, fuzzy
 msgid "invalid storage volume pointer in"
-msgstr "ogiltig nätverkspekare i"
+msgstr "felaktig lagringsvolymspekare i"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage volume pointer in %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig lagringsvolymspekare i %1$s"
 
-#, fuzzy
 msgid "invalid stream pointer"
-msgstr "ogiltig nätverkspekare i"
+msgstr "felaktig strömpekare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid stream pointer in %1$s"
-msgstr "ogiltig nätverkspekare i %1$s"
+msgstr "felaktig strömpekare i %1$s"
 
 #, c-format
 msgid ""
 "invalid string value for '%1$s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
+"felaktig strängvärde på egenskapen ”%1$s” för värd-CPU-modell i QEMU-"
+"förmågecachen"
 
 #, c-format
 msgid "invalid tlsPort number: %1$s"
 msgstr "ogiltigt tlsPort-nummer: %1$s"
 
-#, fuzzy
 msgid "invalid transient"
-msgstr "Ogiltig kontext"
+msgstr "felaktig transient"
 
 #, c-format
 msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
-msgstr ""
+msgstr "felaktig t yp ”%1$s” på parametern ”%2$s”, ”%3$s” förväntades"
 
 #, c-format
 msgid "invalid unique_id supplied for '%1$s'"
-msgstr ""
+msgstr "felaktigt unique_id givet för ”%1$s”"
 
 msgid "invalid use of command API"
-msgstr ""
+msgstr "felaktig användning av kommando-API:et"
 
 msgid "invalid use of conf API"
-msgstr ""
+msgstr "felaktig användning av konfigurations-API:et"
 
 msgid "invalid use with no flags"
-msgstr ""
+msgstr "felaktig användning utan flaggor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid uuid %1$s"
-msgstr "felaktig UUID-källa: %1$s"
+msgstr "felaktigt uuid %1$s"
 
 #, c-format
 msgid "invalid value %1$d"
 msgstr "ogiltigt värde %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid value '%1$s' for migration parameter '%2$s'"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "felaktigt värde ”%1$s” på migreringsparametern ”%2$s”"
 
 #, c-format
 msgid "invalid value '%1$s' for parameter '%2$s' of device '%3$s'"
-msgstr ""
+msgstr "felaktigt värde ”%1$s” på paramentern ”%2$s” för enheten ”%3$s”"
 
 #, c-format
 msgid "invalid value '%1$s' of 'value' attribute of 'qemu:property'"
-msgstr ""
+msgstr "felaktigt värde ”%1$s” på attributet ”value” på ”qemu:property”"
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
+"felaktig värde på tidsgränsen för startmenyn, måste vara i intervallet "
+"[0,56635]"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
-msgstr ""
+msgstr "felaktigt värde på rebootTimeout, måste vara i intervallet [-1,65535]"
 
-#, fuzzy
 msgid "invalid value of 'ephemeral'"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "felaktigt värde på ”ephemeral”"
 
-#, fuzzy
 msgid "invalid value of 'private'"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "felaktigt värde på ”private”"
 
-#, fuzzy
 msgid "invalid value of 0 for iothread_id"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "felaktigt värde 0 på iothread_id"
 
-#, fuzzy
 msgid "invalid value of memory device node"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "felaktigt värde på minnesenhetsnoden"
 
 #, c-format
 msgid "invalid vcpu index '%1$u'"
-msgstr ""
+msgstr "felaktigt vcpu-index ”%1$u”"
 
 #, c-format
 msgid "invalid vncdisplay value '%1$s'"
-msgstr ""
+msgstr "felaktigt vncdisplay-värde ”%1$s”"
 
 msgid "invalid watchdog action"
 msgstr "ogiltig vakthundsåtgärd"
 
 msgid "io is not supported with vhostuser disk"
-msgstr ""
+msgstr "io stödjs inte med vhostuser-diskar"
 
-#, fuzzy
 msgid "io policy of disk device"
-msgstr "källa för skivenhet"
+msgstr "io-policyn för diskenheten"
 
 msgid "io uring is not supported by this QEMU binary"
 msgstr "io uring stödjs inte av denna QEMU-binär"
 
 msgid "io='native' needs either no disk cache or directsync cache mode"
 msgstr ""
+"io='native' behöver antingen ingen diskcache eller cacheläget directsync"
 
 msgid "ioeventfd is not supported with vhostuser disk"
-msgstr ""
+msgstr "ioeventfd stödjs inte med vhostuser-diskar"
 
 msgid "iommu driver option is only supported for virtio devices"
-msgstr ""
+msgstr "drivrutinsflaggan iommu stödjs endast för virtio-enheter"
 
 #, c-format
 msgid "iommu model '%1$s' can't have address"
-msgstr ""
+msgstr "iommu-modellen ”%1$s” kan inte ha en adress"
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
-msgstr ""
+msgstr "iommu-modellen ”%1$s” stödjer inte ytterligare attribut"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: aw_bits stödjs inte med denna QEMU-binär"
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: cachingläget stödjs inte med denna QEMU-binär"
 
 msgid "iommu: device IOTLB is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: enheten IOTLB stödjs inte med denna QEMU-binär"
 
 msgid "iommu: eim is not supported with this QEMU binary"
 msgstr "iommu: eim stödjs inte med denna QEMU-binär"
 
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: avbrottsomkoppling stödjs inte med denna QEMU-binär"
 
-#, fuzzy, c-format
+#, c-format
 msgid "iothread %1$d not found"
-msgstr "Domän hittades inte"
+msgstr "iothread %1$d finns inte"
 
 msgid "iothread for the new IOThread"
-msgstr ""
+msgstr "iothread för den nya IOThread"
 
 msgid "iothread id of existing IOThread"
-msgstr ""
+msgstr "iothread-id för befintlig IOThread"
 
 msgid "iothread is not supported with vhostuser disk"
-msgstr ""
+msgstr "iothread stödjs inte med vhostuser-diskar"
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
-msgstr ""
+msgstr "iothread till köavbildning moste ges för alla iothread:ar eller ingen"
 
 msgid "iothread_id for the IOThread to delete"
-msgstr ""
+msgstr "iothread_id för IOThread att radera"
 
-#, fuzzy, c-format
+#, c-format
 msgid "iothreadid %1$d not found"
-msgstr "Domän hittades inte"
+msgstr "iothreadid %1$d finns inte"
 
 msgid "iotune is not supported with vhostuser disk"
-msgstr ""
+msgstr "iotune stödjs inte med vhostuser-diskar"
 
 msgid "iowait:"
-msgstr ""
+msgstr "iowait:"
 
 msgid "ipset name contains invalid characters"
 msgstr "ipset-namnet innehåller ogiltiga tecken"
 
-#, fuzzy
 msgid "ipset name is too long"
-msgstr "parametern profileid är för lång"
+msgstr "ipset-namnet är för långt"
 
 msgid "isa-debug serial type only valid on x86 architecture"
-msgstr ""
+msgstr "isa-debug-serietypen är endast giltig på x86-arkitekturen"
 
 msgid "iscsi pool only supports 'chap' auth type"
-msgstr ""
+msgstr "iscsi-poolen stödjer endast atuentiseringstypen ”chap”"
 
 msgid "iscsi-direct pool only supports 'chap' auth type"
-msgstr ""
+msgstr "iscsi-direct-poolen stödjer endast autentiseringstypen ”chap”"
 
 msgid "ivgen element found, but cipher is missing"
-msgstr ""
+msgstr "ett ivgen-element hittat, men chiffret saknas"
 
 msgid "ivshmem device is no longer supported"
-msgstr ""
+msgstr "ivshmem-enheter stödjs inte längre"
 
 #, c-format
 msgid "job '%1$s' canceled by client"
-msgstr ""
+msgstr "jobbet ”%1$s” avbrutet av klienten"
 
 #, c-format
 msgid "job '%1$s' failed due to I/O error"
-msgstr ""
+msgstr "jobbet ”%1$s” misslyckades på grund av I/O-fel"
 
 #, c-format
 msgid "job '%1$s' failed in post-copy phase"
-msgstr ""
+msgstr "jobbet ”%1$s” misslyckades i fasen post-copy"
 
 #, c-format
 msgid "job '%1$s' failed: %2$s"
-msgstr ""
+msgstr "jobbet ”%1$s” misslyckades: %2$s"
 
 #, c-format
 msgid "job '%1$s' is not active"
-msgstr ""
+msgstr "jobbet ”%1$s” är inte aktivt"
 
 #, c-format
 msgid "job '%1$s' unexpectedly failed"
-msgstr ""
+msgstr "jobbet ”%1$s” misslyckades oväntat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "job type '%1$s' does not support pivot"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "jobbtypen ”%1$s” stödjer inte pivotering"
 
 msgid "kdump-compressed format is not supported here"
-msgstr ""
+msgstr "formatet kdump-compressed stödjs inte här"
 
-#, fuzzy
 msgid "kdump-compressed format is only supported with memory-only dump"
-msgstr "--format fungerar endast med --memory-only"
+msgstr "formateet kdump-compressed stödjs endast med endast-minnes-dump"
 
 msgid "keep TPM state"
-msgstr ""
+msgstr "behåll TPM-tillståndet"
 
 msgid "keep nvram file"
-msgstr ""
+msgstr "behåll nvram-filen"
 
 msgid "keep the backing chain relatively referenced"
-msgstr ""
+msgstr "behåll den bakomliggande kedjan relativt den refererade"
 
 #, c-format
 msgid "keepalive interval %1$d too large"
-msgstr ""
+msgstr "livsuppehållsintervallet %1$d är för stort"
 
 msgid "keepalive interval already set"
-msgstr ""
+msgstr "livsuppehållsintervallet är redan satt"
 
 msgid "kernel cpu time field is too long for the destination"
-msgstr ""
+msgstr "fältet för cpu-tid i kärnan är för långt för målet"
 
 msgid "key to be used as a namespace identifier"
-msgstr ""
+msgstr "nyckel att använda som namnrymdsidentifierare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "keyboard interactive authentication failed: %1$s"
-msgstr "autentisering misslyckades: %1$s"
+msgstr "interaktiv autentisering via tangentbordet misslyckades: %1$s"
 
 #, c-format
 msgid "keycode %1$zu is invalid: 0x%2$X"
-msgstr ""
+msgstr "tangentkod %1$zu är felaktig: 0x%2$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "known hosts file '%1$s' does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "filen med kända värdar ”%1$s” finns inte"
 
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
+"åsidosättande av etiketter kräver ometikettering för att aktiveras på "
+"domännivå"
 
 msgid "label size is required for NVDIMM device"
-msgstr ""
+msgstr "etikettstorleken krävs för NVDIMM-enheten"
 
 msgid "label size must be smaller than NVDIMM size"
-msgstr ""
+msgstr "etikettstorleken måste vara mindre än NVDIMM-storleken"
 
 #, c-format
 msgid "lazy_refcounts not supported with compat level %1$s"
-msgstr ""
+msgstr "lazy_refcounts stödjs inte med kompatibilitetsnivå %1$s"
 
-#, fuzzy
 msgid "lease file write failed"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "misslyckades att skriva hyrfilen"
 
 msgid "leave the guest paused after creation"
-msgstr ""
+msgstr "låt gästen vara pausad efter att den skapats"
 
-#, fuzzy
 msgid "length of metadata out of range"
-msgstr "värdet på managerid är utanför intervallet"
+msgstr "längden på metadata är utanför intervallet"
 
 #, c-format
 msgid "level %1$u cache size %2$llu does not match expected size %3$llu"
 msgstr ""
+"nivå %1$u-cachestorleken %2$llu matchar inte den förväntade storleken %3$llu"
 
 msgid "libnl was not available at build time"
-msgstr ""
+msgstr "libnl var inte tillgängligt vid byggtillfället"
 
 msgid "library call failed"
-msgstr ""
+msgstr "biblioteksanropet misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "library call failed: %1$s"
-msgstr "operation misslyckades: %1$s"
+msgstr "biblioteksanropet misslyckades: %1$s"
 
 msgid "librbd encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "librbd-kryptering stödjs inte av denna QEMU-binär"
 
 msgid "librbd encryption is supported only with RBD backed disks"
-msgstr ""
+msgstr "librbd-kryptering stödjs endast med RBD-backade diskar"
 
 msgid "librbd encryption layering is not supported by this QEMU binary"
-msgstr ""
+msgstr "librbd-kryptonivåer stödjs inte av denna QEMU-binär"
 
 msgid "libssh transport error"
-msgstr ""
+msgstr "libssh transportfel"
 
 #, c-format
 msgid "libssh transport error: %1$s"
-msgstr ""
+msgstr "libssh transportfel: %1$s"
 
 msgid "libssh transport support was not enabled"
-msgstr ""
+msgstr "libssh transportstöd aktiverades inte"
 
 msgid "libssh2 transport support was not enabled"
-msgstr ""
+msgstr "libssh2 transportstöd aktiverades inte"
 
 msgid "libvirt management daemon:"
-msgstr ""
+msgstr "libvirt-hanteringsdemonen:"
 
 #, c-format
 msgid "libvirt was built without the '%1$s' driver"
-msgstr ""
+msgstr "libvirt byggdes utan drivrutinen “%1$s“"
 
 #, c-format
 msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
-msgstr ""
+msgstr "libvirt kompilerades inte med libpcap och “%1$s“ kräver det"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
-msgstr ""
+msgstr "libvirt kommer automatiskt koppla loss/in enheten från/till värden"
 
 msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr ""
+"libvirt-guests är konfigurerat att inte starta några gäster vid uppstart"
 
 msgid "libvirt.so is not safe to use from setuid/setgid programs"
-msgstr ""
+msgstr "libvirt.so är inte säkert att använda från setuid-/setgid-program"
 
 msgid "libvirtd quit during handshake"
 msgstr "libvirtd avslutade under handskakningen"
 
 #, c-format
 msgid "libxenlight does not support disk driver %1$s"
-msgstr ""
+msgstr "libxenlight stödjer inte diskdrivrutinen %1$s"
 
 #, c-format
 msgid "libxenlight does not support disk format %1$s with disk driver %2$s"
-msgstr ""
+msgstr "libxenlight stödjer inte diskformatet %1$s med diskdrivrutinen %2$s"
 
 msgid "libxenlight does not support transient disks"
-msgstr ""
+msgstr "libxenlight stödjer inte transienta diskar"
 
-#, fuzzy
 msgid "libxenlight failed to attach USB controller"
-msgstr "libxenlight misslyckades med att lagra användardata"
+msgstr "libxenlight misslyckades koppla in USB-styrenheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to attach disk '%1$s'"
-msgstr "libxenlight misslyckades att återställa domänen ”%1$s”"
+msgstr "libxenlight misslyckades att koppla in disken ”%1$s”"
 
-#, fuzzy
 msgid "libxenlight failed to attach network device"
-msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+msgstr "libxenlight misslyckades att koppla in en nätverksenhet"
 
 #, c-format
 msgid "libxenlight failed to attach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"libxenlight misslyckades att koppla in pci-enheten %1$04x:%2$02x:%3$02x:%4$d"
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%1$3x, Devnum:%2$3x"
 msgstr ""
+"libxenlight misslyckades att koppla in usb-enheten bussnummer:%1$3x, "
+"enhetsnummer:%2$3x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to change media for disk '%1$s'"
-msgstr "libxenlight misslyckades att återställa domänen ”%1$s”"
+msgstr "libxenlight misslyckades ändra media för disken ”%1$s”"
 
 #, c-format
 msgid "libxenlight failed to create new domain '%1$s'"
 msgstr "libxenlight misslyckades att skapa en ny domän ”%1$s”"
 
-#, fuzzy
 msgid "libxenlight failed to detach USB controller"
-msgstr "libxenlight misslyckades med att lagra användardata"
+msgstr "libxenlight misslyckades med att koppla ifrån USB-styrenheten"
 
 #, c-format
 msgid "libxenlight failed to detach USB device Busnum: %1$3x, Devnum: %2$3x"
 msgstr ""
+"libxenlight misslyckades att koppla ifrån USB-enheten bussnummer:%1$3x, "
+"enhetsnummer:%2$3x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to detach disk '%1$s'"
-msgstr "libxenlight misslyckades att återställa domänen ”%1$s”"
+msgstr "libxenlight misslyckades att koppla ifrån disken ”%1$s”"
 
-#, fuzzy
 msgid "libxenlight failed to detach network device"
-msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+msgstr "libxenlight misslyckades att koppla ifrån nätverksenheten"
 
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
+"libxenlight misslyckades att koppla ifrån pci-enheten "
+"%1$04x:%2$02x:%3$02x:%4$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
-msgstr "libxenlight misslyckades att återställa domänen ”%1$s”"
+msgstr "libxenlight misslyckades att tolka UUID:t ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to resolve security label '%1$s'"
-msgstr "libxenlight misslyckades att återställa domänen ”%1$s”"
+msgstr "libxenlight misslyckades att slå upp säkerhetsetiketten ”%1$s”"
 
 #, c-format
 msgid "libxenlight failed to restore domain '%1$s'"
@@ -29344,122 +29345,112 @@ msgid "libxenlight failed to store userdata"
 msgstr "libxenlight misslyckades med att lagra användardata"
 
 msgid "libxenlight state driver is not active"
-msgstr ""
+msgstr "libxenlight tillståndsdrivrutinen är inte aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxl_domain_info failed for domain '%1$d'"
-msgstr "libxenlight misslyckades att återställa domänen ”%s”"
+msgstr "libxl_domain_info misslyckades för domän ”%1$d”"
 
 msgid "libxl_get_cpu_topology failed"
-msgstr ""
+msgstr "libxl_get_cpu_topology misslyckades"
 
-#, fuzzy
 msgid "libxl_get_numainfo failed"
-msgstr "libhal_get_all_devices misslyckades"
+msgstr "libxl_get_numainfo misslyckades"
 
-#, fuzzy
 msgid "libxl_get_physinfo_info failed"
-msgstr "libhal_get_all_devices misslyckades"
+msgstr "libxl_get_physinfo_info misslyckades"
 
 #, c-format
 msgid "libxml2 doesn't handle %1$s encoding"
-msgstr ""
+msgstr "libxml2 hanterar inte kodningen %1$s"
 
 msgid "lifecycle action to set"
-msgstr ""
+msgstr "lifecycle-åtgärd att sätta"
 
 msgid "lifecycle type to modify"
-msgstr ""
+msgstr "lifecycle-typ att ändra"
 
 msgid "limit list to children of current snapshot"
-msgstr ""
+msgstr "begränsningslista till barn av aktuell ögonblicksbild"
 
 msgid "limit list to children of given checkpoint"
-msgstr ""
+msgstr "begränsningslista till barn till en given kontrollpunkt"
 
 msgid "limit list to children of given snapshot"
-msgstr ""
+msgstr "begränsningslista till barn till en given ögonblicksbild"
 
 #, c-format
 msgid "line %1$d corrupt ipaddr \"%2$s\""
-msgstr ""
+msgstr "rad %1$d har trasig ipaddr “%2$s“"
 
 msgid "list UUID of active pools only"
-msgstr ""
+msgstr "lista UUID:n endast för aktiva pooler"
 
-#, fuzzy
 msgid "list all domain blocks"
-msgstr "lista domäner"
+msgstr "lista alla domänblock"
 
 msgid "list all domain virtual interfaces"
-msgstr ""
+msgstr "lista alla domäners virtuella gränssnitt"
 
 msgid "list authorized SSH keys for given user (via agent)"
-msgstr ""
+msgstr "lista auktoriserade SSH-nycklar för en given användare (via en agent)"
 
 msgid "list available servers on a daemon"
-msgstr ""
+msgstr "lista tillgängliga servrar på en demon"
 
 msgid "list checkpoint names only"
-msgstr ""
+msgstr "lista endast kontrollpunktsnamn"
 
 msgid "list checkpoints in a tree"
-msgstr ""
+msgstr "lista kontrollpunkter i ett träd"
 
 msgid "list clients connected to <server>"
-msgstr ""
+msgstr "lista klienter anslutna till <server>"
 
-#, fuzzy
 msgid "list devices in a tree"
-msgstr "saknar enhetsinformation"
+msgstr "lista enheter i ett träd"
 
 msgid "list domain IDs only"
-msgstr ""
+msgstr "lista endast domän-ID:n"
 
-#, fuzzy
 msgid "list domain names only"
-msgstr "lista domäner"
+msgstr "lista endast domännamn"
 
 msgid "list domains"
 msgstr "lista domäner"
 
-#, fuzzy
 msgid "list domains in other states"
-msgstr "migrera domän till en annan värd"
+msgstr "lista domäner i andra tillstånd"
 
-#, fuzzy
 msgid "list domains in paused state"
-msgstr "lista domäner"
+msgstr "lista domäner i pausat tillstånd"
 
 msgid "list domains in running state"
-msgstr ""
+msgstr "lista domäner i körande tillstånd"
 
 msgid "list domains in shutoff state"
-msgstr ""
+msgstr "lista domäner i avstängt tillstånd"
 
-#, fuzzy
 msgid "list domains with autostart disabled"
-msgstr "Misslyckades att markera domän %s som autostartad"
+msgstr "lista domäner med autostart avaktiverat"
 
-#, fuzzy
 msgid "list domains with autostart enabled"
-msgstr "Misslyckades att markera domän %s som autostartad"
+msgstr "lista domäner med autostart aktiverat"
 
 msgid "list domains with existing checkpoint"
-msgstr ""
+msgstr "lista domäner med befintliga kontrollpunkter"
 
 msgid "list domains with existing snapshot"
-msgstr ""
+msgstr "lista domäner med befintliga ögonblicksbilder"
 
 msgid "list domains with managed save state"
-msgstr ""
+msgstr "lista domäner med hanterat spartillstånd"
 
 msgid "list domains without a checkpoint"
-msgstr ""
+msgstr "lista domäner utan någon kontrollpunkt"
 
-#, fuzzy
 msgid "list domains without a snapshot"
-msgstr "den här domänen har inte en enhet för att ta ögonblicksbilder"
+msgstr "lista domäner utan någon ögonblicksbild"
 
 msgid "list domains without managed save"
 msgstr ""
