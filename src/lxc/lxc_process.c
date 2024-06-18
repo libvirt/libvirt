@@ -244,7 +244,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
                     VIR_HOOK_LXC_OP_RELEASE, VIR_HOOK_SUBOP_END,
-                    NULL, xml, NULL);
+                    virDomainShutoffReasonTypeToString(reason), xml, NULL);
     }
 
     if (flags & VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT)

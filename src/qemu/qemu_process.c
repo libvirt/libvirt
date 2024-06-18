@@ -8722,7 +8722,7 @@ void qemuProcessStop(virQEMUDriver *driver,
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
                     VIR_HOOK_QEMU_OP_RELEASE, VIR_HOOK_SUBOP_END,
-                    NULL, xml, NULL);
+                    virDomainShutoffReasonTypeToString(reason), xml, NULL);
     }
 
     virDomainObjRemoveTransientDef(vm);

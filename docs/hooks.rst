@@ -215,7 +215,30 @@ operation. There is no specific operation to indicate a "restart" is occurring.
 
    ::
 
-      /etc/libvirt/hooks/qemu guest_name release end -
+      /etc/libvirt/hooks/qemu guest_name release end <shutoff-reason>
+
+   +-------------------+-------------------------------------------------------------------+
+   | Shutoff reason    | Description                                                       |
+   +===================+===================================================================+
+   | unknown           | the reason is unknown                                             |
+   +-------------------+-------------------------------------------------------------------+
+   | shutdown          | normal shutdown                                                   |
+   +-------------------+-------------------------------------------------------------------+
+   | destroyed         | forced poweroff                                                   |
+   +-------------------+-------------------------------------------------------------------+
+   | crashed           | domain crashed                                                    |
+   +-------------------+-------------------------------------------------------------------+
+   | migrated          | migrated to another host                                          |
+   +-------------------+-------------------------------------------------------------------+
+   | saved             | saved to a file                                                   |
+   +-------------------+-------------------------------------------------------------------+
+   | failed            | domain failed to start                                            |
+   +-------------------+-------------------------------------------------------------------+
+   | from snapshot     | restored from a snapshot which was taken while domain was shutoff |
+   +-------------------+-------------------------------------------------------------------+
+   | daemon            | daemon decides to kill domain during reconnection processing      |
+   +-------------------+-------------------------------------------------------------------+
+
 
 -  :since:`Since 0.9.11`, the qemu hook script is also called at the beginning
    of incoming migration. It is called as:
@@ -312,7 +335,29 @@ operation. There is no specific operation to indicate a "restart" is occurring.
 
    ::
 
-      /etc/libvirt/hooks/lxc guest_name release end -
+      /etc/libvirt/hooks/lxc guest_name release end <shutoff-reason>
+
+   +-------------------+-------------------------------------------------------------------+
+   | Shutoff reason    | Description                                                       |
+   +===================+===================================================================+
+   | unknown           | the reason is unknown                                             |
+   +-------------------+-------------------------------------------------------------------+
+   | shutdown          | normal shutdown                                                   |
+   +-------------------+-------------------------------------------------------------------+
+   | destroyed         | forced poweroff                                                   |
+   +-------------------+-------------------------------------------------------------------+
+   | crashed           | domain crashed                                                    |
+   +-------------------+-------------------------------------------------------------------+
+   | migrated          | migrated to another host                                          |
+   +-------------------+-------------------------------------------------------------------+
+   | saved             | saved to a file                                                   |
+   +-------------------+-------------------------------------------------------------------+
+   | failed            | domain failed to start                                            |
+   +-------------------+-------------------------------------------------------------------+
+   | from snapshot     | restored from a snapshot which was taken while domain was shutoff |
+   +-------------------+-------------------------------------------------------------------+
+   | daemon            | daemon decides to kill domain during reconnection processing      |
+   +-------------------+-------------------------------------------------------------------+
 
 -  :since:`Since 0.9.13`, the lxc hook script is also called when the libvirtd
    daemon restarts and reconnects to previously running LXC processes. If the
