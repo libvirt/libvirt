@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the libvirt package.
 # Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023.
 # Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>, 2023, 2024.
-# Weblate <noreply-mt-weblate@weblate.org>, 2023.
+# Weblate <noreply-mt-weblate@weblate.org>, 2023, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-05-28 08:41+0000\n"
-"PO-Revision-Date: 2024-01-17 17:07+0000\n"
-"Last-Translator: Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>\n"
+"PO-Revision-Date: 2024-06-18 06:53+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
 "Language: ka\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3.1\n"
+"X-Generator: Weblate 5.5.5\n"
 
 msgid ""
 "\n"
@@ -32121,7 +32121,7 @@ msgid "print domain's time in human readable form"
 msgstr ""
 
 msgid "print help"
-msgstr ""
+msgstr "დახმარების გამოტანა"
 
 msgid "print lease info for a given network"
 msgstr ""
