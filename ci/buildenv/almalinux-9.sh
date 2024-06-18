@@ -16,7 +16,7 @@ function install_buildenv() {
         ca-certificates \
         ccache \
         clang \
-        clang-devel \
+        compiler-rt \
         cpp \
         cyrus-sasl-devel \
         device-mapper-devel \

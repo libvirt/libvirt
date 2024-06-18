@@ -17,7 +17,7 @@ RUN dnf update -y && \
         ca-certificates \
         ccache \
         clang \
-        clang-devel \
+        compiler-rt \
         cpp \
         cyrus-sasl-devel \
         device-mapper-devel \

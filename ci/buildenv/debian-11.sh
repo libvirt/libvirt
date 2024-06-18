@@ -36,6 +36,7 @@ function install_buildenv() {
             libblkid-dev \
             libc6-dev \
             libcap-ng-dev \
+            libclang-dev \
             libcurl4-gnutls-dev \
             libdevmapper-dev \
             libfuse-dev \

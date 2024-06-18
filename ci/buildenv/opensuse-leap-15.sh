@@ -14,6 +14,7 @@ function install_buildenv() {
            ca-certificates \
            ccache \
            clang \
+           clang-devel \
            codespell \
            cpp \
            cppi \

@@ -15,6 +15,7 @@ RUN zypper update -y && \
            ca-certificates \
            ccache \
            clang \
+           clang-devel \
            codespell \
            cpp \
            cppi \

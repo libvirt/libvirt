@@ -15,6 +15,7 @@ RUN zypper dist-upgrade -y && \
            ca-certificates \
            ccache \
            clang \
+           clang-devel \
            codespell \
            cpp \
            cppi \
