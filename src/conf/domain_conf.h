@@ -3558,10 +3558,6 @@ void virDomainDiskSetFormat(virDomainDiskDef *def, int format);
 virDomainControllerDef *
 virDomainDeviceFindSCSIController(const virDomainDef *def,
                                   const virDomainDeviceDriveAddress *addr);
-virDomainDiskDef *virDomainDiskFindByBusAndDst(virDomainDef *def,
-                                               int bus,
-                                               char *dst);
-
 virDomainControllerDef *virDomainControllerDefNew(virDomainControllerType type);
 void virDomainControllerDefFree(virDomainControllerDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainControllerDef, virDomainControllerDefFree);
