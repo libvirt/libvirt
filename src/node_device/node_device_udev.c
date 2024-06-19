@@ -1067,6 +1067,10 @@ udevProcessStorage(struct udev_device *device,
             storage->drive_type = g_strdup("sd");
         else if (udevKludgeStorageType(def) != 0)
             goto cleanup;
+    } else {
+        /* A detected disk might be a DASD */
+        if (STREQ(def->caps->data.storage.drive_type, "disk"))
+            udevFixupStorageType(def, "/dev/dasd", "dasd");
     }
 
     if (STREQ(def->caps->data.storage.drive_type, "cd") ||
