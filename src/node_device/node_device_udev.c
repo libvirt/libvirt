@@ -962,6 +962,23 @@ udevProcessDASD(struct udev_device *device,
 }
 
 
+static int
+udevFixupStorageType(virNodeDeviceDef *def,
+                     const char *prefix,
+                     const char *subst)
+{
+    if (STRPREFIX(def->caps->data.storage.block, prefix)) {
+        def->caps->data.storage.drive_type = g_strdup(subst);
+        VIR_DEBUG("Found storage type '%s' for device with sysfs path '%s'",
+                  def->caps->data.storage.drive_type,
+                  def->sysfs_path);
+        return 1;
+    }
+
+    return 0;
+}
+
+
 /* This function exists to deal with the case in which a driver does
  * not provide a device type in the usual place, but udev told us it's
  * a storage device, and we can make a good guess at what kind of
@@ -994,13 +1011,8 @@ udevKludgeStorageType(virNodeDeviceDef *def)
               def->sysfs_path);
 
     for (i = 0; i < G_N_ELEMENTS(fixups); i++) {
-        if (STRPREFIX(def->caps->data.storage.block, fixups[i].prefix)) {
-            def->caps->data.storage.drive_type = g_strdup(fixups[i].subst);
-            VIR_DEBUG("Found storage type '%s' for device with sysfs path '%s'",
-                      def->caps->data.storage.drive_type,
-                      def->sysfs_path);
+        if (udevFixupStorageType(def, fixups[i].prefix, fixups[i].subst))
             return 0;
-        }
     }
 
     VIR_DEBUG("Could not determine storage type "
