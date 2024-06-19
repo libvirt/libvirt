@@ -1201,13 +1201,34 @@ udevGetCCWAddress(const char *sysfs_path,
 
 
 static int
-udevProcessCCW(struct udev_device *device,
-               virNodeDeviceDef *def)
+udevCCWGetState(struct udev_device *device,
+                virNodeDevCapData *data)
 {
     int online = 0;
 
+    if (udevGetIntSysfsAttr(device, "online", &online, 0) < 0 || online < 0)
+        return -1;
+
+    switch (online) {
+    case VIR_NODE_DEV_CCW_STATE_OFFLINE:
+    case VIR_NODE_DEV_CCW_STATE_ONLINE:
+        data->ccw_dev.state = online;
+        break;
+    default:
+        data->ccw_dev.state = VIR_NODE_DEV_CCW_STATE_LAST;
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+udevProcessCCW(struct udev_device *device,
+               virNodeDeviceDef *def)
+{
     /* process only online devices to keep the list sane */
-    if (udevGetIntSysfsAttr(device, "online", &online, 0) < 0 || online != 1)
+    if (udevCCWGetState(device, &def->caps->data) < 0)
         return -1;
 
     if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)

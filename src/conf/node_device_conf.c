@@ -86,6 +86,12 @@ VIR_ENUM_IMPL(virNodeDevDRM,
               "render",
 );
 
+VIR_ENUM_IMPL(virNodeDevCCWState,
+              VIR_NODE_DEV_CCW_STATE_LAST,
+              "offline",
+              "online",
+);
+
 static int
 virNodeDevCapsDefParseString(const char *xpath,
                              xmlXPathContextPtr ctxt,
@@ -743,6 +749,10 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
             virNodeDeviceCapMdevDefFormat(&buf, data, inactive_state);
             break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
+            if (data->ccw_dev.state != VIR_NODE_DEV_CCW_STATE_LAST) {
+                const char *state = virNodeDevCCWStateTypeToString(data->ccw_dev.state);
+                virBufferEscapeString(&buf, "<state>%s</state>\n", state);
+            }
             virNodeDeviceCapCCWDefFormat(&buf, data);
             break;
         case VIR_NODE_DEV_CAP_CSS_DEV:
@@ -1189,8 +1199,22 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree virCCWDeviceAddress *ccw_addr = NULL;
+    g_autofree char *state = NULL;
+    int val;
 
     ctxt->node = node;
+
+    /* state is optional */
+    ccw_dev->state = VIR_NODE_DEV_CCW_STATE_LAST;
+
+    if ((state = virXPathString("string(./state[1])", ctxt))) {
+        if ((val = virNodeDevCCWStateTypeFromString(state)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown state '%1$s' for '%2$s'"), state, def->name);
+            return -1;
+        }
+        ccw_dev->state = val;
+    }
 
     ccw_addr = g_new0(virCCWDeviceAddress, 1);
 

@@ -673,6 +673,14 @@
     <attribute name="type">
       <value>ccw</value>
     </attribute>
+    <optional>
+      <element name="state">
+        <choice>
+          <value>online</value>
+          <value>offline</value>
+        </choice>
+      </element>
+    </optional>
     <ref name="capccwaddress"/>
   </define>
 
