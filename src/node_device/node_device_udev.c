@@ -958,6 +958,9 @@ udevProcessDASD(struct udev_device *device,
 
     udevGetStringSysfsAttr(device, "device/uid", &storage->serial);
 
+    if (!storage->serial)
+        return -1;
+
     return udevProcessDisk(device, def);
 }
 
