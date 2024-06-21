@@ -1,0 +1,64 @@
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_output \
+iif \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_input \
+oif \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_cross \
+iif \
+virbr0 \
+oif \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip6 \
+libvirt_network \
+guest_output \
+iif \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip6 \
+libvirt_network \
+guest_input \
+oif \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip6 \
+libvirt_network \
+guest_cross \
+iif \
+virbr0 \
+oif \
+virbr0 \
+counter \
+accept

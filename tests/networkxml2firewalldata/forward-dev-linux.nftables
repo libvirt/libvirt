@@ -1,0 +1,158 @@
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_output \
+iif \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_input \
+oif \
+virbr0 \
+counter \
+reject
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_cross \
+iif \
+virbr0 \
+oif \
+virbr0 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_output \
+ip \
+saddr \
+192.168.122.0/24 \
+iif \
+virbr0 \
+oifname \
+enp0s7 \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_input \
+iifname \
+enp0s7 \
+oif \
+virbr0 \
+ip \
+daddr \
+192.168.122.0/24 \
+ct \
+state \
+related,established \
+counter \
+accept
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_nat \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.122.0/24 \
+oifname \
+enp0s7 \
+counter \
+masquerade
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_nat \
+meta \
+l4proto \
+udp \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.122.0/24 \
+oifname \
+enp0s7 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_nat \
+meta \
+l4proto \
+tcp \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+'!=' \
+192.168.122.0/24 \
+oifname \
+enp0s7 \
+counter \
+masquerade \
+to \
+:1024-65535
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_nat \
+oifname \
+enp0s7 \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+255.255.255.255/32 \
+counter \
+return
+nft \
+-ae insert \
+rule \
+ip \
+libvirt_network \
+guest_nat \
+oifname \
+enp0s7 \
+ip \
+saddr \
+192.168.122.0/24 \
+ip \
+daddr \
+224.0.0.0/24 \
+counter \
+return
