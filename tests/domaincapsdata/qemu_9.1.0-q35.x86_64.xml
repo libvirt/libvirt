@@ -73,6 +73,7 @@
       <feature policy='require' name='mds-no'/>
       <feature policy='require' name='pschange-mc-no'/>
       <feature policy='require' name='gds-no'/>
+      <feature policy='require' name='rfds-no'/>
       <feature policy='disable' name='xsaves'/>
     </mode>
     <mode name='custom' supported='yes'>
