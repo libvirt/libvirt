@@ -434,6 +434,9 @@
   <feature name='fsrc'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00001000'/>
   </feature>
+  <feature name='fred'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00020000'/>
+  </feature>
   <feature name='amx-fp16'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00200000'/>
   </feature>
