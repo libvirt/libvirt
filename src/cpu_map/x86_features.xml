@@ -651,6 +651,9 @@
   <feature name='overflow-recov'>
     <cpuid eax_in='0x80000007' ebx='0x00000001'/>
   </feature>
+  <feature name='succor'>
+    <cpuid eax_in='0x80000007' ebx='0x00000002'/>
+  </feature>
 
   <!-- cpuid level 0x80000007 (edx) -->
   <feature name='invtsc' migratable='no'>

@@ -14,6 +14,7 @@
   <feature policy='require' name='perfctr_core'/>
   <feature policy='require' name='perfctr_nb'/>
   <feature policy='require' name='overflow-recov'/>
+  <feature policy='require' name='succor'/>
   <feature policy='require' name='invtsc'/>
   <feature policy='require' name='clzero'/>
   <feature policy='require' name='xsaveerptr'/>

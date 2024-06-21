@@ -19,6 +19,7 @@
   <feature name='topoext'/>
   <feature name='perfctr_nb'/>
   <feature name='overflow-recov'/>
+  <feature name='succor'/>
   <feature name='invtsc'/>
   <feature name='amd-ssbd'/>
   <feature name='lbrv'/>
