@@ -815,6 +815,9 @@
   <feature name='rfds-no'>
     <msr index='0x0000010a' edx='0x00000000' eax='0x08000000'/>
   </feature>
+  <feature name='rfds-clear'>
+    <msr index='0x0000010a' edx='0x00000000' eax='0x10000000'/>
+  </feature>
 
   <!-- msr 0x00000480 -->
   <feature name='vmx-ins-outs'>
