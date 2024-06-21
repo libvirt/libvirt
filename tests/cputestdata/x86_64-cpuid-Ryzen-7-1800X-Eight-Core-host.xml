@@ -15,6 +15,7 @@
   <feature name='topoext'/>
   <feature name='perfctr_core'/>
   <feature name='perfctr_nb'/>
+  <feature name='overflow-recov'/>
   <feature name='invtsc'/>
   <feature name='clzero'/>
   <feature name='xsaveerptr'/>

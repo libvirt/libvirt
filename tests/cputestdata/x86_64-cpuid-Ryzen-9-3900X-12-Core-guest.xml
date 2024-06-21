@@ -16,6 +16,7 @@
   <feature policy='require' name='tce'/>
   <feature policy='require' name='topoext'/>
   <feature policy='require' name='perfctr_nb'/>
+  <feature policy='require' name='overflow-recov'/>
   <feature policy='require' name='invtsc'/>
   <feature policy='require' name='amd-ssbd'/>
   <feature policy='require' name='lbrv'/>
