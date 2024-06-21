@@ -440,6 +440,9 @@
   <feature name='lkgs'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00040000'/>
   </feature>
+  <feature name='wrmsrns'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00080000'/>
+  </feature>
   <feature name='amx-fp16'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00200000'/>
   </feature>
