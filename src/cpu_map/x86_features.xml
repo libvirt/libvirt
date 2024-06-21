@@ -829,6 +829,9 @@
   <feature name='vmx-any-errcode'>
     <msr index='0x00000480' edx='0x01000000' eax='0x00000000'/>
   </feature>
+  <feature name='vmx-nested-exception'>
+    <msr index='0x00000480' edx='0x04000000' eax='0x00000000'/>
+  </feature>
 
   <!-- msr 0x00000485 -->
   <feature name='vmx-store-lma'>
