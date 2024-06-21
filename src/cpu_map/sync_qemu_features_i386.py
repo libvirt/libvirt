@@ -9,6 +9,7 @@ import re
 FEATURES_IGNORE = (
     "kvm-asyncpf",
     "kvm-asyncpf-int",
+    "kvm-asyncpf-vmexit",
     "kvm-hint-dedicated",
     "kvm-mmu",
     "kvm-msi-ext-dest-id",
