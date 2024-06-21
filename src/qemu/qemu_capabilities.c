@@ -3465,7 +3465,8 @@ virQEMUCapsProbeQMPSEVCapabilities(virQEMUCaps *qemuCaps,
     int rc = -1;
     virSEVCapability *caps = NULL;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST))
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_SNP_GUEST))
         return 0;
 
     if ((rc = qemuMonitorGetSEVCapabilities(mon, &caps)) < 0)
@@ -3474,6 +3475,7 @@ virQEMUCapsProbeQMPSEVCapabilities(virQEMUCaps *qemuCaps,
     /* SEV isn't actually supported */
     if (rc == 0) {
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_SEV_GUEST);
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_SEV_SNP_GUEST);
         return 0;
     }
 
