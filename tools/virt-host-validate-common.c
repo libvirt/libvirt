@@ -379,6 +379,36 @@ bool virHostKernelModuleIsLoaded(const char *module)
 }
 
 
+static int
+virHostValidateAMDSev(virValidateLevel level)
+{
+    g_autofree char *mod_value = NULL;
+
+    if (virFileReadValueString(&mod_value, "/sys/module/kvm_amd/parameters/sev") < 0) {
+        virValidateFail(level, "AMD Secure Encrypted Virtualization not "
+                        "supported by the currently used kernel");
+        return VIR_VALIDATE_FAILURE(level);
+    }
+
+    if (mod_value[0] != '1' && mod_value[0] != 'Y' && mod_value[0] != 'y') {
+        virValidateFail(level,
+                        "AMD Secure Encrypted Virtualization appears to be "
+                        "disabled in kernel. Add kvm_amd.sev=1 "
+                        "to the kernel cmdline arguments");
+        return VIR_VALIDATE_FAILURE(level);
+    }
+
+    if (!virFileExists("/dev/sev")) {
+        virValidateFail(level,
+                        "AMD Secure Encrypted Virtualization appears to be "
+                        "disabled in firmware.");
+        return VIR_VALIDATE_FAILURE(level);
+    }
+
+    return 1;
+}
+
+
 int virHostValidateSecureGuests(const char *hvname,
                                 virValidateLevel level)
 {
@@ -388,7 +418,6 @@ int virHostValidateSecureGuests(const char *hvname,
     virArch arch = virArchFromHost();
     g_autofree char *cmdline = NULL;
     static const char *kIBMValues[] = {"y", "Y", "on", "ON", "oN", "On", "1"};
-    g_autofree char *mod_value = NULL;
 
     flags = virHostValidateGetCPUFlags();
 
@@ -430,29 +459,11 @@ int virHostValidateSecureGuests(const char *hvname,
             return VIR_VALIDATE_FAILURE(level);
         }
     } else if (hasAMDSev) {
-        if (virFileReadValueString(&mod_value, "/sys/module/kvm_amd/parameters/sev") < 0) {
-            virValidateFail(level, "AMD Secure Encrypted Virtualization not "
-                            "supported by the currently used kernel");
-            return VIR_VALIDATE_FAILURE(level);
-        }
+        int rc = virHostValidateAMDSev(level);
 
-        if (mod_value[0] != '1' && mod_value[0] != 'Y' && mod_value[0] != 'y') {
-            virValidateFail(level,
-                            "AMD Secure Encrypted Virtualization appears to be "
-                            "disabled in kernel. Add kvm_amd.sev=1 "
-                            "to the kernel cmdline arguments");
-            return VIR_VALIDATE_FAILURE(level);
-        }
-
-        if (virFileExists("/dev/sev")) {
+        if (rc > 0)
             virValidatePass();
-            return 1;
-        } else {
-            virValidateFail(level,
-                            "AMD Secure Encrypted Virtualization appears to be "
-                            "disabled in firmware.");
-            return VIR_VALIDATE_FAILURE(level);
-        }
+        return rc;
     }
 
     virValidateFail(level,
