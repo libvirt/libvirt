@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-06-18 10:10+0000\n"
+"PO-Revision-Date: 2024-06-24 12:47+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -29453,20 +29453,19 @@ msgid "list domains without a snapshot"
 msgstr "lista domäner utan någon ögonblicksbild"
 
 msgid "list domains without managed save"
-msgstr ""
+msgstr "lista domäner utan hanterat sparande"
 
 msgid "list ephemeral secrets"
-msgstr ""
+msgstr "lista efemära hemligheter"
 
 msgid "list inactive & active devices"
-msgstr ""
+msgstr "lista inaktiva & aktiva enheter"
 
 msgid "list inactive & active domains"
 msgstr "lista inaktiva & aktiva domäner<"
 
-#, fuzzy
 msgid "list inactive & active interfaces"
-msgstr "lista inaktiva & aktiva nätverk"
+msgstr "lista inaktiva & aktiva gränssnitt"
 
 msgid "list inactive & active networks"
 msgstr "lista inaktiva & aktiva nätverk"
@@ -29475,271 +29474,253 @@ msgid "list inactive & active pools"
 msgstr "lista inaktiva & aktiva pooler<"
 
 msgid "list inactive devices"
-msgstr ""
+msgstr "lista inaktiva enheter"
 
 msgid "list inactive domains"
 msgstr "lista inaktiva domäner"
 
-#, fuzzy
 msgid "list inactive interfaces"
-msgstr "lista inaktiva nätverk"
+msgstr "lista inaktiva gränssnitt"
 
 msgid "list inactive networks"
 msgstr "lista inaktiva nätverk"
 
-#, fuzzy
 msgid "list inactive pools"
-msgstr "lista inaktiva domäner"
+msgstr "lista inaktiva pooler"
 
 msgid "list is not closed with ]"
-msgstr ""
+msgstr "listan är inte avslutad med ]"
 
-#, fuzzy
 msgid "list name of active pools only"
-msgstr "lista inaktiva & aktiva domäner<"
+msgstr "lista endast namn på aktiva pooler"
 
-#, fuzzy
 msgid "list network filter bindings"
-msgstr "ogiltig nätverkspekare i"
+msgstr "lista nätverksfilterbindningar"
 
-#, fuzzy
 msgid "list network filters"
-msgstr "lista nätverk"
+msgstr "lista nätverksfilter"
 
-#, fuzzy
 msgid "list network names only"
-msgstr "lista nätverk"
+msgstr "lista endast nätverksnamn"
 
-#, fuzzy
 msgid "list network ports"
-msgstr "lista nätverk"
+msgstr "lista nätverksportar"
 
 msgid "list networks"
 msgstr "lista nätverk"
 
-#, fuzzy
 msgid "list networks with autostart disabled"
-msgstr "Misslyckades att markera nätverk %s som autostartat"
+msgstr "lista nätverk med autostart avaktiverat"
 
-#, fuzzy
 msgid "list networks with autostart enabled"
-msgstr "Misslyckades att markera nätverk %s som autostartat"
+msgstr "lista nätverk med autostart aktiverat"
 
 msgid "list non-ephemeral secrets"
-msgstr ""
+msgstr "lista icke-efemära hemligheter"
 
 msgid "list non-private secrets"
-msgstr ""
+msgstr "lista ickeprivata hemligheter"
 
 msgid "list of cpus to enable or disable"
-msgstr ""
+msgstr "lista på cpu:er att aktivera eller avaktivera"
 
 msgid "list of domains to get stats for"
-msgstr ""
+msgstr "lista på domäner att få statistik för"
 
 msgid "list only active domains"
 msgstr "lista endast aktiva domäner"
 
 msgid "list only checkpoints that are not leaves (with children)"
-msgstr ""
+msgstr "lista endast kontrollpunkter som inte är löv (med barn)"
 
 msgid "list only checkpoints without children"
-msgstr ""
+msgstr "lista endast kontrollpunkter utan barn"
 
 msgid "list only checkpoints without parents"
-msgstr ""
+msgstr "lista endast kontrollpunkter utan föräldrar"
 
-#, fuzzy
 msgid "list only domains in other states"
-msgstr "migrera domän till en annan värd"
+msgstr "lista endast domäner i andra tillstånd"
 
 msgid "list only inactive domains"
 msgstr "lista endast inaktiva domäner"
 
-#, fuzzy
 msgid "list only paused domains"
-msgstr "lista inaktiva domäner"
+msgstr "lista endast pausade domäner"
 
-#, fuzzy
 msgid "list only persistent domains"
-msgstr "lista inaktiva domäner"
+msgstr "lista endast beständiga domäner"
 
-#, fuzzy
 msgid "list only running domains"
-msgstr "Suspendera en körande domän."
+msgstr "lista endast körande domäner"
 
-#, fuzzy
 msgid "list only shutoff domains"
-msgstr "lista inaktiva domäner"
+msgstr "lista endast avstängda domäner"
 
 msgid "list only snapshots that are not leaves (with children)"
-msgstr ""
+msgstr "lista endast ögonblicksbilder som inte är löv (med barn)"
 
 msgid "list only snapshots that have metadata that would prevent undefine"
 msgstr ""
+"lista endast ögonblicksbilder som har metadata som skulle förhindra "
+"avdefinition"
 
 msgid "list only snapshots that have no metadata managed by libvirt"
 msgstr ""
+"lista endast ögonblicksbilder som inte har någon metadata som hanteras av "
+"libvirt"
 
 msgid "list only snapshots without children"
-msgstr ""
+msgstr "lista endast ögonblicksbilder utan barn"
 
 msgid "list only snapshots without parents"
-msgstr ""
+msgstr "lista endast ögonblicksbilder utan föräldrar"
 
-#, fuzzy
 msgid "list only transient domains"
-msgstr "lista inaktiva domäner"
+msgstr "lista endast transienta domäner"
 
 msgid "list persistent devices"
-msgstr ""
+msgstr "lista beständiga enheter"
 
-#, fuzzy
 msgid "list persistent domains"
-msgstr "lista inaktiva domäner"
+msgstr "lista beständiga domäner"
 
-#, fuzzy
 msgid "list persistent networks"
-msgstr "lista inaktiva nätverk"
+msgstr "lista beständiga nätverk"
 
 msgid "list persistent pools"
-msgstr ""
+msgstr "lista beständiga pooler"
 
-#, fuzzy
 msgid "list physical host interfaces"
-msgstr "starta ett fysiskt värdgränssnitt."
+msgstr "lista fysiska värdgränssnitt"
 
-#, fuzzy
 msgid "list pools"
-msgstr "lista domäner"
+msgstr "lista pooler"
 
 msgid "list pools with autostart disabled"
-msgstr ""
+msgstr "lista pooler med autostart avaktiverat"
 
 msgid "list pools with autostart enabled"
-msgstr ""
+msgstr "lista pooler med autostart aktiverat"
 
-#, fuzzy
 msgid "list private secrets"
-msgstr "lista inaktiva nätverk"
+msgstr "lista privata hemligheter"
 
-#, fuzzy
 msgid "list secrets"
-msgstr "lista nätverk"
+msgstr "lista hemligheter"
 
 msgid "list snapshot names only"
-msgstr ""
+msgstr "lista endast ögonblicksbildsnamn"
 
 msgid "list snapshots in a tree"
-msgstr ""
+msgstr "lista ögonblicksbilder i ett träd"
 
 msgid "list table (default)"
-msgstr ""
+msgstr "lista i tabell (standard)"
 
 msgid "list the name, rather than the full xml"
-msgstr ""
+msgstr "lista namnet, snarare än den fullständiga xml:en"
 
 msgid "list transient devices"
-msgstr ""
+msgstr "lista transienta enheter"
 
-#, fuzzy
 msgid "list transient domains"
-msgstr "lista inaktiva domäner"
+msgstr "lista transienta domäner"
 
-#, fuzzy
 msgid "list transient networks"
-msgstr "lista inaktiva nätverk"
+msgstr "lista transienta nätverk"
 
-#, fuzzy
 msgid "list transient pools"
-msgstr "lista nätverk"
+msgstr "lista transienta pooler"
 
 msgid "list uuid's only"
-msgstr ""
+msgstr "lista endast uuid:n"
 
 msgid "list valid event types"
-msgstr ""
+msgstr "lista giltiga händelsetyper"
 
-#, fuzzy
 msgid "list vols"
-msgstr "lista domäner"
+msgstr "lista volymer"
 
 msgid "listen address is not supported by tunnelled migration"
-msgstr ""
+msgstr "lyssningsadress stödjs inte av tunnlad migrering"
 
 msgid "listen address that destination should bind to for incoming migration"
-msgstr ""
+msgstr "lyssningsadress som målet skall binda till för inkommande migrering"
 
 #, c-format
 msgid "listen type 'none' is not available for graphics type '%1$s'"
-msgstr ""
+msgstr "lyssningstypen “none“ är inte tillgänglig för grafiktypen “%1$s“"
 
 #, c-format
 msgid "listen type 'socket' is not available for graphics type '%1$s'"
-msgstr ""
+msgstr "lyssningstypen “socket“ är inte tillgänglig för grafiktypen “%1$s“"
 
 msgid "lists not allowed in VMX format"
-msgstr ""
+msgstr "listor är inte tillåtna i VMX-formatet"
 
 msgid "live"
-msgstr ""
+msgstr "körande"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr ""
+msgstr "inkoppling under drift av enheten “%1$s“ stödjs inte"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
-msgstr ""
+msgstr "frånkoppling under drift av enheten “%1$s“ stödjs inte"
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
-msgstr ""
+msgstr "frånkoppling under drift av shmem-modellen “%1$s“ stödjs inte"
 
 msgid "live migration"
 msgstr "live-migrering"
 
 msgid "live snapshot creation is supported only during full system snapshots"
 msgstr ""
+"att skapa en ögonblicksbild under drift stödjs endast under fullständiga "
+"systemögonblicksbilder"
 
 #, c-format
 msgid "live update of device '%1$s' is not supported"
-msgstr ""
+msgstr "uppdatering under drift av enheten ”%1$s” stödjs inte"
 
 #, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
-msgstr ""
+msgstr "loadparm-värdet ”%1$s” måste vara mellan 1 och 8 tecken"
 
 msgid "lock manager connection has been restricted"
-msgstr ""
+msgstr "låshanterarförbindelsen har begränsats"
 
 msgid "lock owner details have not been registered"
-msgstr ""
+msgstr "låsägardetaljer har inte registrerats"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
-msgstr ""
+msgstr "den logiska volymen ”%1$s” är gles, volymrensning stödjs inte"
 
 msgid "loop until timeout or interrupt, rather than one-shot"
-msgstr ""
+msgstr "gör om tills tidsgränsen eller avbrott, istället för engångs"
 
 msgid "lower boundary for worker thread pool"
-msgstr ""
+msgstr "lägre gräns för arbetartrådpoolen"
 
 msgid "luks-any encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "luks-any-kryptering stödjs inte av denna QEMU-binär"
 
 msgid "lxc state driver is not active"
-msgstr ""
+msgstr "lxc-tillståndsdrivrutinen är inte aktiv"
 
 msgid "lxc.mount.fstab or lxc.mount found, use lxc.mount.entry lines instead"
 msgstr ""
+"lxc.mount.fstab eller lxc.mount finns, använd lxc.mount.entry-rader istället"
 
 msgid "lxcChild() passed invalid vm definition"
-msgstr ""
+msgstr "lxcChild() skickade en felaktig vm-definition"
 
 msgid "machine already powered down"
-msgstr ""
+msgstr "maskinen är redan avstängd"
 
 msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
 msgstr ""
@@ -29747,16 +29728,16 @@ msgstr ""
 "starta den"
 
 msgid "machine is null"
-msgstr ""
+msgstr "maskinen är null"
 
 msgid "machine not in running state to suspend it"
-msgstr ""
+msgstr "maskinen är inte i körande tillstånd för att söva den"
 
 msgid "machine not paused, so can't resume it"
-msgstr ""
+msgstr "maskinen är inte pausad, så kan inte återuppta den"
 
 msgid "machine not running, so can't reboot it"
-msgstr ""
+msgstr "maskinen kör inte, så kan inte starta om den"
 
 msgid "machine paused, so can't power it down"
 msgstr ""
