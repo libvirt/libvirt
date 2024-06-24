@@ -34,6 +34,7 @@
 #include "virstring.h"
 #include "virarch.h"
 #include "virutil.h"
+#include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -380,9 +381,11 @@ bool virHostKernelModuleIsLoaded(const char *module)
 
 
 static int
-virHostValidateAMDSev(virValidateLevel level)
+virHostValidateAMDSev(const char *hvname,
+                      virValidateLevel level)
 {
     g_autofree char *mod_value = NULL;
+    uint32_t eax, ebx;
 
     if (virFileReadValueString(&mod_value, "/sys/module/kvm_amd/parameters/sev") < 0) {
         virValidateFail(level, "AMD Secure Encrypted Virtualization not "
@@ -402,6 +405,32 @@ virHostValidateAMDSev(virValidateLevel level)
         virValidateFail(level,
                         "AMD Secure Encrypted Virtualization appears to be "
                         "disabled in firmware.");
+        return VIR_VALIDATE_FAILURE(level);
+    }
+
+    virValidatePass();
+
+    virValidateCheck(hvname, "%s",
+                     _("Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"));
+
+    virHostCPUX86GetCPUID(0x8000001F, 0, &eax, &ebx, NULL, NULL);
+
+    if (eax & (1U << 3)) {
+        virValidatePass();
+    } else {
+        virValidateFail(level,
+                        "AMD SEV-ES is not supported");
+        return VIR_VALIDATE_FAILURE(level);
+    }
+
+    virValidateCheck(hvname, "%s",
+                     _("Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-SNP)"));
+
+    if (eax & (1U << 4)) {
+        virValidatePass();
+    } else {
+        virValidateFail(level,
+                        "AMD SEV-SNP is not supported");
         return VIR_VALIDATE_FAILURE(level);
     }
 
@@ -459,7 +488,7 @@ int virHostValidateSecureGuests(const char *hvname,
             return VIR_VALIDATE_FAILURE(level);
         }
     } else if (hasAMDSev) {
-        int rc = virHostValidateAMDSev(level);
+        int rc = virHostValidateAMDSev(hvname, level);
 
         if (rc > 0)
             virValidatePass();
