@@ -2849,7 +2849,11 @@ mymain(void)
                                   QEMU_CAPS_SEV_GUEST,
                                   QEMU_CAPS_LAST);
 
-    DO_TEST_CAPS_ARCH_LATEST("launch-security-sev-snp", "x86_64");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-snp",
+                                  "x86_64",
+                                  ARG_QEMU_CAPS,
+                                  QEMU_CAPS_SEV_SNP_GUEST,
+                                  QEMU_CAPS_LAST);
 
     DO_TEST_CAPS_ARCH_LATEST("launch-security-s390-pv", "s390x");
 
