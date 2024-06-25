@@ -165,6 +165,14 @@ struct _virDomainCapsFeatureHyperv {
     virDomainCapsEnum features; /* Info about supported virDomainHyperv features */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_LAUNCH_SECURITY_LAST);
+typedef struct _virDomainCapsLaunchSecurity virDomainCapsLaunchSecurity;
+struct _virDomainCapsLaunchSecurity {
+    virTristateBool supported;
+    virDomainCapsEnum sectype; /* Info about supported virDomainLaunchSecurity */
+};
+
+
 typedef enum {
     VIR_DOMCAPS_CPU_USABLE_UNKNOWN,
     VIR_DOMCAPS_CPU_USABLE_YES,
@@ -284,6 +292,7 @@ struct _virDomainCaps {
     virSEVCapability *sev;
     virSGXCapability *sgx;
     virDomainCapsFeatureHyperv *hyperv;
+    virDomainCapsLaunchSecurity launchSecurity;
     /* add new domain features here */
 
     virTristateBool features[VIR_DOMAIN_CAPS_FEATURE_LAST];

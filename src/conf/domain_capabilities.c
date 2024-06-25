@@ -707,6 +707,19 @@ virDomainCapsFeatureHypervFormat(virBuffer *buf,
     FORMAT_EPILOGUE(hyperv);
 }
 
+
+static void
+virDomainCapsLaunchSecurityFormat(virBuffer *buf,
+                                  const virDomainCapsLaunchSecurity *launchSecurity)
+{
+    FORMAT_PROLOGUE(launchSecurity);
+
+    ENUM_PROCESS(launchSecurity, sectype, virDomainLaunchSecurityTypeToString);
+
+    FORMAT_EPILOGUE(launchSecurity);
+}
+
+
 static void
 virDomainCapsFormatFeatures(const virDomainCaps *caps,
                             virBuffer *buf)
@@ -728,6 +741,7 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
     virDomainCapsFeatureSGXFormat(&childBuf, caps->sgx);
     virDomainCapsFeatureHypervFormat(&childBuf, caps->hyperv);
+    virDomainCapsLaunchSecurityFormat(&childBuf, &caps->launchSecurity);
 
     virXMLFormatElement(buf, "features", NULL, &childBuf);
 }

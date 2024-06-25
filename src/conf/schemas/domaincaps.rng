@@ -285,6 +285,13 @@
     </element>
   </define>
 
+  <define name="launchSecurity">
+    <element name="launchSecurity">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
   <define name="features">
     <element name="features">
       <optional>
@@ -316,6 +323,9 @@
       </optional>
       <optional>
         <ref name="hyperv"/>
+      </optional>
+      <optional>
+        <ref name='launchSecurity'/>
       </optional>
     </element>
   </define>

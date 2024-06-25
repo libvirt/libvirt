@@ -798,3 +798,13 @@ are supported. The ``features`` enum corresponds to the ``<hyperv/>`` element
 Please note that depending on the QEMU version some capabilities might be
 missing even though QEMU does support them. This is because prior to QEMU-6.1.0
 not all features were reported by QEMU.
+
+Launch security
+^^^^^^^^^^^^^^^
+
+The ``launchSecurity`` element exposes supported aspects of encrypted guests.
+The ``sectype`` enum corresponds to ``type`` attribute of ``<launchSecurity/>``
+element as documented in `Launch Security
+<formatdomain.html#launch-security>`__.  :since:`(Since 10.5.0)` For additional
+information on individual types, see sections above: `s390-pv capability`_ for
+S390 PV, `SEV capabilities`_ for AMD SEV and/or AMD SEV-SNP.
