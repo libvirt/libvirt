@@ -497,6 +497,8 @@ virDomainIOThreadIDDel;
 virDomainIOThreadIDFind;
 virDomainKeyWrapCipherNameTypeFromString;
 virDomainKeyWrapCipherNameTypeToString;
+virDomainLaunchSecurityTypeFromString;
+virDomainLaunchSecurityTypeToString;
 virDomainLeaseDefFree;
 virDomainLeaseIndex;
 virDomainLeaseInsert;
