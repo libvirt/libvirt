@@ -284,5 +284,6 @@
         <value>avic</value>
       </enum>
     </hyperv>
+    <launchSecurity supported='no'/>
   </features>
 </domainCapabilities>

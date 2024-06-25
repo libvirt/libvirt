@@ -272,5 +272,6 @@
     <s390-pv supported='no'/>
     <sev supported='no'/>
     <sgx supported='no'/>
+    <launchSecurity supported='no'/>
   </features>
 </domainCapabilities>

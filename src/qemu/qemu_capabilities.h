@@ -867,6 +867,9 @@ void virQEMUCapsFillDomainDeviceChannelCaps(virQEMUCaps *qemuCaps,
 void virQEMUCapsFillDomainDeviceCryptoCaps(virQEMUCaps *qemuCaps,
                                            virDomainCapsDeviceCrypto *crypto);
 
+void virQEMUCapsFillDomainLaunchSecurity(virQEMUCaps *qemuCaps,
+                                         virDomainCapsLaunchSecurity *launchSecurity);
+
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 

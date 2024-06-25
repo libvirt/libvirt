@@ -260,5 +260,10 @@
       <maxESGuests>450</maxESGuests>
     </sev>
     <sgx supported='no'/>
+    <launchSecurity supported='yes'>
+      <enum name='sectype'>
+        <value>sev</value>
+      </enum>
+    </launchSecurity>
   </features>
 </domainCapabilities>

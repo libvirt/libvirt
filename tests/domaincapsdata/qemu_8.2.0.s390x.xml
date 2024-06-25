@@ -268,5 +268,10 @@
     <s390-pv supported='yes'/>
     <sev supported='no'/>
     <sgx supported='no'/>
+    <launchSecurity supported='yes'>
+      <enum name='sectype'>
+        <value>s390-pv</value>
+      </enum>
+    </launchSecurity>
   </features>
 </domainCapabilities>

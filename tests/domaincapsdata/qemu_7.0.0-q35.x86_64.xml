@@ -266,5 +266,6 @@
         <section node='1' size='262144' unit='KiB'/>
       </sections>
     </sgx>
+    <launchSecurity supported='no'/>
   </features>
 </domainCapabilities>
