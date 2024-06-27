@@ -690,6 +690,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 460 */
     QEMU_CAPS_SEV_SNP_GUEST, /* -object sev-snp-guest */
+    QEMU_CAPS_NETDEV_USER, /* -netdev user */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

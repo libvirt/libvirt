@@ -711,6 +711,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 460 */
               "sev-snp-guest", /* QEMU_CAPS_SEV_SNP_GUEST */
+              "netdev.user", /* QEMU_CAPS_NETDEV_USER */
     );
 
 
@@ -1575,6 +1576,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "object-add/arg-type/+iothread/thread-pool-max", QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX },
     { "query-migrate/ret-type/blocked-reasons", QEMU_CAPS_MIGRATION_BLOCKED_REASONS },
     { "screendump/arg-type/format/^png", QEMU_CAPS_SCREENSHOT_FORMAT_PNG },
+    { "netdev_add/arg-type/+user", QEMU_CAPS_NETDEV_USER },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
@@ -5404,6 +5406,11 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
      */
     if (qemuCaps->version < 5002000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_FIPS);
+
+    /* We are not able to detect this for old QEMU. Assume the capability is
+     * there. */
+    if (qemuCaps->version < 5000000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_USER);
 }
 
 

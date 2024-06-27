@@ -72,6 +72,7 @@
   <flag name='virtio-blk.queue-size'/>
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
+  <flag name='netdev.user'/>
   <version>4002000</version>
   <microcodeVersion>39100242</microcodeVersion>
   <package>qemu-4.2.0-20200115.0.1e4aa2da.fc31</package>

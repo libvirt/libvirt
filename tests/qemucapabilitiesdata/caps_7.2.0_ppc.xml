@@ -152,6 +152,7 @@
   <flag name='smp-clusters'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='netdev.user'/>
   <version>7002000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-7.2.0-6.fc37</package>

@@ -180,6 +180,7 @@
   <flag name='virtio-gpu.blob'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='netdev.user'/>
   <version>6002000</version>
   <microcodeVersion>43100244</microcodeVersion>
   <package>v6.2.0</package>

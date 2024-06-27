@@ -140,6 +140,7 @@
   <flag name='smp-clusters'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='netdev.user'/>
   <version>7002050</version>
   <microcodeVersion>0</microcodeVersion>
   <package>v7.2.0-333-g222059a0fc</package>

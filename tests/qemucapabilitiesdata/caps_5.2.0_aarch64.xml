@@ -126,6 +126,7 @@
   <flag name='virtio-crypto'/>
   <flag name='usb-mtp'/>
   <flag name='machine.virt.ras'/>
+  <flag name='netdev.user'/>
   <version>5002000</version>
   <microcodeVersion>61700243</microcodeVersion>
   <package>v5.2.0</package>

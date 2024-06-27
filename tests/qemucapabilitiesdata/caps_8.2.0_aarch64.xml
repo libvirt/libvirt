@@ -167,6 +167,7 @@
   <flag name='usb-mtp'/>
   <flag name='machine.virt.ras'/>
   <flag name='virtio-sound'/>
+  <flag name='netdev.user'/>
   <version>8002000</version>
   <microcodeVersion>61700246</microcodeVersion>
   <package>v8.2.0</package>

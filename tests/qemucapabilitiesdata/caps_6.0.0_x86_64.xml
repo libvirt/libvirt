@@ -172,6 +172,7 @@
   <flag name='pvpanic-pci'/>
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
+  <flag name='netdev.user'/>
   <version>6000000</version>
   <microcodeVersion>43100242</microcodeVersion>
   <package>v6.0.0</package>

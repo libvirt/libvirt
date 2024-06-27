@@ -157,6 +157,7 @@
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
   <flag name='virtio-sound'/>
+  <flag name='netdev.user'/>
   <version>8002000</version>
   <microcodeVersion>106300246</microcodeVersion>
   <package>v8.2.0</package>

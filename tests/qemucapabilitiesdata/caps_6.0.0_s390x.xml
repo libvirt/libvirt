@@ -93,6 +93,7 @@
   <flag name='migration.blocked-reasons'/>
   <flag name='virtio-crypto'/>
   <flag name='display-reload'/>
+  <flag name='netdev.user'/>
   <version>6000000</version>
   <microcodeVersion>39100242</microcodeVersion>
   <package>qemu-6.0.0-20210517.1.4ff77070.fc33</package>

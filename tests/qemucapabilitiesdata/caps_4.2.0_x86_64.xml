@@ -144,6 +144,7 @@
   <flag name='usb-host.guest-resets-all'/>
   <flag name='virtio-crypto'/>
   <flag name='usb-mtp'/>
+  <flag name='netdev.user'/>
   <version>4002000</version>
   <microcodeVersion>43100242</microcodeVersion>
   <package>v4.2.0</package>

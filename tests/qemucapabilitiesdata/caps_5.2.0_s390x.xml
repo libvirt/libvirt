@@ -83,6 +83,7 @@
   <flag name='virtio-iommu-pci'/>
   <flag name='virtio-net.rss'/>
   <flag name='virtio-crypto'/>
+  <flag name='netdev.user'/>
   <version>5002000</version>
   <microcodeVersion>39100243</microcodeVersion>
   <package>qemu-5.2.0-20201215.0.ba93e22c.fc32</package>

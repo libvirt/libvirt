@@ -158,6 +158,7 @@
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
   <flag name='machine.virt.ras'/>
+  <flag name='netdev.user'/>
   <version>6002092</version>
   <microcodeVersion>61700243</microcodeVersion>
   <package>v7.0.0-rc2</package>
