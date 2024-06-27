@@ -533,6 +533,8 @@ virDomainNetAllocateActualDevice;
 virDomainNetAppendIPAddress;
 virDomainNetARPInterfaces;
 virDomainNetBackendIsEqual;
+virDomainNetBackendTypeFromString;
+virDomainNetBackendTypeToString;
 virDomainNetBandwidthUpdate;
 virDomainNetDefActualFromNetworkPort;
 virDomainNetDefActualToNetworkPort;
