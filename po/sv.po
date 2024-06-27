@@ -39627,67 +39627,67 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
 #, c-format
-#~ msgid "%1$6s: Checking %2$-60s: "
-#~ msgstr "%1$6s: Kontrollerar %2$-60s: "
+msgid "%1$6s: Checking %2$-60s: "
+msgstr "%1$6s: Kontrollerar %2$-60s: "
 
 #, c-format
-#~ msgid "Failed to apply firewall rules %1$s: %2$s"
-#~ msgstr "Misslyckades att ta brandväggsregler i drift %1$s: %2$s"
+msgid "Failed to apply firewall rules %1$s: %2$s"
+msgstr "Misslyckades att ta brandväggsregler i drift %1$s: %2$s"
 
-#~ msgid "S390 PV launch security is not supported with this QEMU binary"
-#~ msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
+msgid "S390 PV launch security is not supported with this QEMU binary"
+msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
 
-#~ msgid "SEV launch security is not supported with this QEMU binary"
-#~ msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
+msgid "SEV launch security is not supported with this QEMU binary"
+msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
 
-#~ msgid "TPM 1.2 is not supported on ARM"
-#~ msgstr "TPM 1.2 stödjs inte på ARM"
+msgid "TPM 1.2 is not supported on ARM"
+msgstr "TPM 1.2 stödjs inte på ARM"
 
-#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
-#~ msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
 
-#~ msgid "Unable to create rule"
-#~ msgstr "Kan inte skapa en regel"
-
-#, c-format
-#~ msgid "Unsupported interface '%1$s' for TPM 1.2"
-#~ msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
-
-#~ msgid "couldn't convert node device def to mdevctl JSON"
-#~ msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
-
-#~ msgid "failed to create mdevctl thread"
-#~ msgstr "misslyckades att skapa en mdevctl-tråd"
-
-#~ msgid "failed to create udev enumerate thread"
-#~ msgstr "misslyckades att skapa udev-uppräkningstråden"
+msgid "Unable to create rule"
+msgstr "Kan inte skapa en regel"
 
 #, c-format
-#~ msgid "failed to get number of %1$s interfaces on host"
-#~ msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
+msgid "Unsupported interface '%1$s' for TPM 1.2"
+msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
+
+msgid "failed to create mdevctl thread"
+msgstr "misslyckades att skapa en mdevctl-tråd"
+
+msgid "failed to create udev enumerate thread"
+msgstr "misslyckades att skapa udev-uppräkningstråden"
 
 #, c-format
-#~ msgid "for %1$s module"
-#~ msgstr "modulen %1$s"
+msgid "failed to get number of %1$s interfaces on host"
+msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
 
 #, c-format
-#~ msgid "for Linux >= %1$d.%2$d.%3$d"
-#~ msgstr "att Linux ≥ %1$d.%2$d.%3$d"
+msgid "for %1$s module"
+msgstr "modulen %1$s"
 
-#~ msgid "for PowerPC KVM module loaded"
-#~ msgstr "att PowerPC KVM-modulen är laddad"
+#, c-format
+msgid "for Linux >= %1$d.%2$d.%3$d"
+msgstr "att Linux ≥ %1$d.%2$d.%3$d"
 
-#~ msgid "for device assignment IOMMU support"
-#~ msgstr "IOMMU-stödet för enhetstilldelning"
+msgid "for PowerPC KVM module loaded"
+msgstr "att PowerPC KVM-modulen är laddad"
 
-#~ msgid "for hardware virtualization"
-#~ msgstr "hårdvaruvirtualisering"
+msgid "for device assignment IOMMU support"
+msgstr "IOMMU-stödet för enhetstilldelning"
 
-#~ msgid "for secure guest support"
-#~ msgstr "stöd för säkra gäster"
+msgid "for hardware virtualization"
+msgstr "hårdvaruvirtualisering"
 
-#~ msgid "if IOMMU is enabled by kernel"
-#~ msgstr "om IOMMU är aktiverat i kärnan"
+msgid "for secure guest support"
+msgstr "stöd för säkra gäster"
+
+msgid "if IOMMU is enabled by kernel"
+msgstr "om IOMMU är aktiverat i kärnan"
 
 #, c-format
 #~ msgid " [[--%1$s] <string>]..."
