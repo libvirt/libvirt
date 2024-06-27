@@ -210,17 +210,13 @@ static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
     {.match = QEMU_MIGRATION_FLAG_FORBIDDEN,
      .flag = VIR_MIGRATE_TUNNELLED,
      .cap = QEMU_MIGRATION_CAP_RETURN_PATH,
+     .optional = QEMU_MIGRATION_CAP_SWITCHOVER_ACK,
      .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 
     {.match = QEMU_MIGRATION_FLAG_REQUIRED,
      .flag = VIR_MIGRATE_ZEROCOPY,
      .cap = QEMU_MIGRATION_CAP_ZERO_COPY_SEND,
      .party = QEMU_MIGRATION_SOURCE},
-
-    {.match = QEMU_MIGRATION_FLAG_FORBIDDEN,
-     .flag = VIR_MIGRATE_TUNNELLED,
-     .cap = QEMU_MIGRATION_CAP_SWITCHOVER_ACK,
-     .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
 /* Translation from VIR_MIGRATE_PARAM_* typed parameters to
