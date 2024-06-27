@@ -1705,11 +1705,27 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     size_t i;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
-        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the passt network backend is not supported with this QEMU binary"));
-            return -1;
+        switch (net->backend.type) {
+        case VIR_DOMAIN_NET_BACKEND_DEFAULT:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_USER)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("the '%1$s' network backend is not supported with this QEMU binary"),
+                               virDomainNetBackendTypeToString(net->backend.type));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_NET_BACKEND_PASST:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("the '%1$s' network backend is not supported with this QEMU binary"),
+                               virDomainNetBackendTypeToString(net->backend.type));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_NET_BACKEND_LAST:
+            break;
         }
         if (net->guestIP.nroutes) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
