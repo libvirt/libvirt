@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-05-29 13:22+0000\n"
+"PO-Revision-Date: 2024-06-27 09:36+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -1287,6 +1287,8 @@ msgstr "у цьому виконуваному файлі QEMU не передб
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
 msgstr ""
+"Підтримки захисту запуску «%1$s» у цьому виконуваному файлі QEMU не "
+"передбачено"
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3836,19 +3838,19 @@ msgstr ""
 "що призведе до непрацездатності мережі."
 
 msgid "Checking CA cert access"
-msgstr ""
+msgstr "Перевірка доступу до сертифікатів служби сертифікації"
 
 msgid "Checking cert access"
-msgstr ""
+msgstr "Перевірка доступу до сертифікатів"
 
 msgid "Checking cert hostname match"
-msgstr ""
+msgstr "Перевірка відповідності назви вузла сертифіката"
 
 msgid "Checking cert properties"
-msgstr ""
+msgstr "Перевірка властивостей сертифіката"
 
 msgid "Checking custom PKI base dir access"
-msgstr ""
+msgstr "Перевірка доступу до нетипового базового каталогу PKI"
 
 #, c-format
 msgid "Checking for %1$s module"
@@ -3857,11 +3859,14 @@ msgstr "Перевіряємо модуль %1$s"
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
 msgstr ""
+"Перевіряємо Secure Encrypted Virtualization-Encrypted State (SEV-ES) AMD"
 
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
 "SNP)"
 msgstr ""
+"Перевіряємо Secure Encrypted Virtualization-Secure Nested Paging (SEV-SNP) "
+"AMD"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -3888,16 +3893,16 @@ msgid "Checking for secure guest support"
 msgstr "Перевіряємо наявність захисту гостьової системи"
 
 msgid "Checking if CA cert exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує сертифікат CA"
 
 msgid "Checking if IOMMU is enabled by kernel"
 msgstr "Перевіряємо, чи увімкнено IOMMU у ядрі"
 
 msgid "Checking if cert exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує сертифікат"
 
 msgid "Checking if custom PKI base dir exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує нетиповий базовий каталог PKI"
 
 #, c-format
 msgid "Checking if device '%1$s' exists"
@@ -3908,40 +3913,40 @@ msgid "Checking if device '%1$s' is accessible"
 msgstr "Перевіряємо, чи доступним є пристрій «%1$s»"
 
 msgid "Checking if key exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує ключ"
 
 msgid "Checking if system CA dir exists"
-msgstr ""
+msgstr "Перевіряємо чи існує каталог CA"
 
 msgid "Checking if system PKI dir exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує загальносистемний каталог PKI"
 
 msgid "Checking if system cert dir exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує каталог сертифікатів"
 
 msgid "Checking if system key dir exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує загальносистемний каталог ключів"
 
 msgid "Checking if user PKI base dir exists"
-msgstr ""
+msgstr "Перевіряємо, чи існує базовий каталог PKI користувача"
 
 msgid "Checking key access"
-msgstr ""
+msgstr "Перевіряємо доступ до ключів"
 
 msgid "Checking system CA dir access"
-msgstr ""
+msgstr "Перевіряємо доступ до загальносистемного каталогу CA"
 
 msgid "Checking system PKI dir access"
-msgstr ""
+msgstr "Перевіряємо доступ до загальносистемного каталогу PKI"
 
 msgid "Checking system cert dir access"
-msgstr ""
+msgstr "Перевіряємо доступ до загальносистемного каталогу сертифікатів"
 
 msgid "Checking system key dir access"
-msgstr ""
+msgstr "Перевіряємо доступ до загальносистемного каталогу ключів"
 
 msgid "Checking user PKI base dir access"
-msgstr ""
+msgstr "Перевіряємо доступ до базового каталогу PKI користувача"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -5396,7 +5401,7 @@ msgstr "Створити том."
 
 #, c-format
 msgid "Create the dir %1$s"
-msgstr ""
+msgstr "Створити каталог %1$s"
 
 msgid "Created"
 msgstr "Створено"
@@ -9273,10 +9278,10 @@ msgstr "Завершено після запиту основної систем
 
 #, c-format
 msgid "Firewall backend '%1$s' not available on this platform"
-msgstr ""
+msgstr "На цій платформі модуль брандмауера «%1$s» є недоступним"
 
 msgid "Firewall backend is not implemented"
-msgstr ""
+msgstr "Модуль брандмауера не реалізовано"
 
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "У записі мікропрограми пропущено атрибут «name»"
@@ -12912,7 +12917,7 @@ msgid "No filesystems are mounted in the domain"
 msgstr "У цьому домені не змонтовано жодних файлових систем"
 
 msgid "No firewall backend is available"
-msgstr ""
+msgstr "Немає доступних модулів брандмауера"
 
 msgid "No free NBD devices"
 msgstr "Немає вільних пристроїв NBD"
@@ -15908,11 +15913,11 @@ msgstr "TLS:"
 
 #, c-format
 msgid "TPM 1.2 is not supported for model '%1$s'"
-msgstr ""
+msgstr "Підтримки TPM 1.2 для моделі «%1$s» не передбачено"
 
 #, c-format
 msgid "TPM 1.2 is not supported on architecture '%1$s'"
-msgstr ""
+msgstr "Підтримки TPM 1.2 на архітектурі «%1$s» не передбачено"
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -17003,12 +17008,16 @@ msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Сертифікат CA %1$s має бути доступним для усіх користувачів. Від імені "
+"користувача root віддайте команди: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Сертифікат CA %1$s має бути недоступним для інших користувачів. Віддайте від "
+"імені цього користувача таку команду: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
@@ -17058,6 +17067,8 @@ msgid ""
 "The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
 "%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
+"Базовий каталог PKI %1$s має бути недоступним для інших користувачів. "
+"Віддайте таку команду: chown %2$d.%3$d %4$s; chmod 0700 %5$s"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -17121,12 +17132,16 @@ msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Сертифікат клієнта %1$s має бути доступним для усіх користувачів. Від імені "
+"root віддайте таку команду: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Сертифікат клієнта %1$s має бути обмежено цим користувачем. Від імені цього "
+"користувача віддайте таку команду: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
@@ -17141,12 +17156,17 @@ msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown root."
 "root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Клієнтський ключ %1$s має бути доступним для усіх користувачів. Від імені "
+"root віддайте таку команду: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Клієнтський ключ %1$s має бути недоступним для інших користувачів. Від імені "
+"цього користувача віддайте таку команду: chown %2$d.%3$d %4$s; chmod 0600 "
+"%5$s"
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -17217,18 +17237,25 @@ msgid ""
 "The machine cannot act as a client or server. See https://libvirt.org/kbase/"
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
+"Машина не може працювати як клієнт або сервер. Див. https://libvirt.org/"
+"kbase/tlscerts.html#setting-up-a-certificate-authority-ca щодо встановлення "
+"%1$s"
 
 #, c-format
 msgid ""
 "The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
+"Машина не може працювати як клієнт. Див. https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates щодо повторного створення %1$s"
 
 #, c-format
 msgid ""
 "The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
+"Машина не може працювати як сервер. Див. https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates щодо повторного створення %1$s"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Машина не має знімків, хоча повинна була б мати"
@@ -17269,12 +17296,16 @@ msgid ""
 "The server cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Сертифікат сервера %1$s має бути доступним для усіх користувачів. Від імені "
+"користувача root віддайте таку команду: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The server cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Сертифікат сервера %1$s має бути обмежено цим користувачем. Від імені цього "
+"користувача віддайте таку команду: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The server certificate %1$s has expired"
@@ -17289,12 +17320,18 @@ msgid ""
 "The server key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Ключ сервера %1$s має бути недоступним для інших користувачів. Від імені "
+"цього користувача віддайте таку команду: chown %2$d.%3$d %4$s; chmod 0600 "
+"%5$s"
 
 #, c-format
 msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
+"Ключ сервера %1$s має бути недоступним для непривілейованих користувачів. "
+"Від імені користувача root віддайте таку команду: chown root.root %2$s; "
+"chmod 0600 %3$s"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
@@ -17309,46 +17346,65 @@ msgid ""
 "The system CA dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
 msgstr ""
+"Загальносистемний каталог CA %1$s зазвичай встановлюється як частина базової "
+"файлової системи або пакунків openssl"
 
 #, c-format
 msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Загальносистемний каталог CA %1$s має бути доступним для усіх користувачів. "
+"Віддайте від імені root таку команду: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
 msgstr ""
+"Загальносистемний каталог PKI %1$s зазвичай встановлюється як частина "
+"базової файлової системи або пакунків openssl"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Загальносистемний каталог PKI %1$s має бути доступним для усіх користувачів. "
+"Від імені користувача root віддайте таку команду: chown root.root; chmod "
+"0755 %2$s"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
+"Загальносистемний каталог сертифікатів %1$s зазвичай встановлюється як "
+"частина пакунка libvirt"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
+"Загальносистемний каталог сертифікатів %1$s має бути доступним для усіх "
+"користувачів. Від імені користувача root віддайте таку команду: chown root."
+"root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system key dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
+"Загальносистемний каталог ключів %1$s зазвичай встановлюється як частина "
+"пакунка libvirt"
 
 #, c-format
 msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Загальносистемний каталог ключів %1$s має бути доступним для усіх "
+"користувачів. Від імені користувача root віддайте таку команду: chown root."
+"root; chmod 0755 %2$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -17387,6 +17443,8 @@ msgstr ""
 
 msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
 msgstr ""
+"У цьому QEMU не передбачено підтримки емуляції SCSI за допомогою пристрою "
+"«virtio-blk»"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr ""
@@ -18941,7 +18999,7 @@ msgstr "Не вдалося почати очікування даних на ш
 
 #, c-format
 msgid "Unable to load %1$s: %2$s"
-msgstr ""
+msgstr "Не вдалося завантажити %1$s: %2$s"
 
 msgid "Unable to load certificate"
 msgstr "Не вдалося завантажити сертифікат"
@@ -20067,7 +20125,7 @@ msgstr "Неочікуваний режим роботи пристрою осн
 
 #, c-format
 msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
-msgstr ""
+msgstr "Неочікувана довжина «%1$s», мало бути %2$u, маємо %3$zu"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Неочікувані параметри блокування для дискового ресурсу"
@@ -20986,6 +21044,18 @@ msgid ""
 "  -h     | --help     display this help and exit\n"
 "  -v     | --version  output version information and exit\n"
 msgstr ""
+"Користування:\n"
+"  %1$s { -v | -h } [ДОВІРА|СЕРВЕР|КЛІЄНТ]\n"
+"\n"
+"Перевірити налаштування сертифікатів TLS\n"
+"\n"
+"параметри:\n"
+"  -s     | --system   перевірити загальносистемні сертифікати (типовий "
+"варіант)\n"
+"  -u     | --user     перевірити сертифікати користувача\n"
+"  -p КАТ | --path КАТ перевірити нетиповий шлях до сертифікатів\n"
+"  -h     | --help     показати цю довідку і вийти\n"
+"  -v     | --version  вивести дані щодо версії і вийти\n"
 
 #, sh-format
 msgid ""
@@ -26107,7 +26177,7 @@ msgid "domain already has a vsock device"
 msgstr "у домені вже існує пристрій vsock"
 
 msgid "domain already has an iommu device"
-msgstr ""
+msgstr "домен вже містить пристрій iommu"
 
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "архітектура домену (/домен/система/тип/@архітектура)"
@@ -29331,7 +29401,7 @@ msgid "i - turn off validation and try to redefine again"
 msgstr "i - вимкнути перевірку і спробувати визначити все знову"
 
 msgid "iSCSI protocol accepts only one host"
-msgstr ""
+msgstr "протокол iSCSI приймає лише один вузол"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr ""
@@ -31462,7 +31532,7 @@ msgid "matching input device not found"
 msgstr "відповідного пристрою введення не знайдено"
 
 msgid "matching iommu device not found"
-msgstr ""
+msgstr "відповідного пристрою iommu не знайдено"
 
 msgid "matching memory device was not found"
 msgstr "відповідного пристрою пам'яті не знайдено"
@@ -35561,7 +35631,7 @@ msgid "query-rx-filter return data missing array element"
 msgstr "у повернутих query-rx-filter даних немає елемента масиву"
 
 msgid "query-sev reply was missing some data"
-msgstr ""
+msgstr "у відповіді query-sev reply пропущено деякі дані"
 
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "у відповіді query-sev-capabilities не виявлено поля «cbitpos»"
@@ -35577,7 +35647,7 @@ msgstr ""
 "у відповіді query-sev-capabilities не виявлено поля «reduced-phys-bits»"
 
 msgid "query-sev-launch-measure reply was missing 'data'"
-msgstr ""
+msgstr "у відповіді query-sev-launch-measure немає «data»"
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr "у відповіді query-sgx-capabilities пропущено поле «flc»"
@@ -39320,7 +39390,7 @@ msgstr "невідомий параметр SDL_AUDIODRIVER, %1$s"
 
 #, c-format
 msgid "unknown SEV type '%1$s'"
-msgstr ""
+msgstr "невідомий тип SEV «%1$s»"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -39598,7 +39668,7 @@ msgstr "невідомий режим smbios «%1$s»"
 
 #, c-format
 msgid "unknown state '%1$s' for '%2$s'"
-msgstr ""
+msgstr "невідомий стан «%1$s» для «%2$s»"
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
