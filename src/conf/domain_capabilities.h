@@ -250,6 +250,13 @@ struct _virDomainCapsDeviceCrypto {
     virDomainCapsEnum backendModel;   /* virDomainCryptoBackend */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_NET_BACKEND_LAST);
+typedef struct _virDomainCapsDeviceNet virDomainCapsDeviceNet;
+struct _virDomainCapsDeviceNet {
+    virTristateBool supported;
+    virDomainCapsEnum backendType; /* virDomainNetBackendType */
+};
+
 typedef enum {
     VIR_DOMAIN_CAPS_FEATURE_IOTHREADS = 0,
     VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO,
@@ -286,6 +293,7 @@ struct _virDomainCaps {
     virDomainCapsDeviceRedirdev redirdev;
     virDomainCapsDeviceChannel channel;
     virDomainCapsDeviceCrypto crypto;
+    virDomainCapsDeviceNet net;
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;

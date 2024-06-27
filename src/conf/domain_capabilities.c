@@ -607,6 +607,18 @@ virDomainCapsDeviceCryptoFormat(virBuffer *buf,
 }
 
 
+static void
+virDomainCapsDeviceNetFormat(virBuffer *buf,
+                             const virDomainCapsDeviceNet *interface)
+{
+    FORMAT_PROLOGUE(interface);
+
+    ENUM_PROCESS(interface, backendType, virDomainNetBackendTypeToString);
+
+    FORMAT_EPILOGUE(interface);
+}
+
+
 /**
  * virDomainCapsFeatureGICFormat:
  * @buf: target buffer
@@ -787,6 +799,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceRedirdevFormat(&buf, &caps->redirdev);
     virDomainCapsDeviceChannelFormat(&buf, &caps->channel);
     virDomainCapsDeviceCryptoFormat(&buf, &caps->crypto);
+    virDomainCapsDeviceNetFormat(&buf, &caps->net);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");

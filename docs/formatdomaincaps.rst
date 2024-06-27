@@ -629,6 +629,31 @@ Crypto device capabilities are exposed under the ``crypto`` element. For instanc
 ``backendModel``
    Options for the ``backendModel`` attribute of the ``<crypto><backend/>`` element.
 
+Interface device
+^^^^^^^^^^^^^^^^
+
+Interface device corresponds to `network interface
+<formatdomain.html#network-interfaces>`__ (``<interface/>``) in domain XML.
+
+::
+
+  <domainCapabilities>
+    ...
+    <devices>
+      <interface supported='yes'>
+        <enum name='backendType'>
+          <value>default</value>
+          <value>passt</value>
+        </enum>
+      </interface>
+      ...
+    </devices>
+  </domainCapabilities>
+
+``backendType``
+   Options for the ``type`` attribute of the ``<backend/>`` element
+
+
 Features
 ~~~~~~~~
 
