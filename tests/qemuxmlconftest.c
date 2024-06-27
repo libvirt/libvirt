@@ -1354,19 +1354,16 @@ mymain(void)
     /* Validate auto-creation of <audio> for legacy compat */
     g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);
     g_setenv("SDL_AUDIODRIVER", "esd", TRUE);
-    DO_TEST_CAPS_VER("audio-default-sdl", "4.2.0");
     DO_TEST_CAPS_LATEST("audio-default-sdl");
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
     driver.config->vncAllowHostAudio = true;
-    DO_TEST_CAPS_VER("audio-default-vnc", "4.2.0");
     DO_TEST_CAPS_LATEST("audio-default-vnc");
     driver.config->vncAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
 
-    DO_TEST_CAPS_VER("audio-default-spice", "4.2.0");
     DO_TEST_CAPS_LATEST("audio-default-spice");
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
@@ -1520,7 +1517,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hugepages-memaccess-invalid");
     DO_TEST_CAPS_LATEST("hugepages-memaccess");
     DO_TEST_CAPS_LATEST("hugepages-memaccess2");
-    DO_TEST_CAPS_VER_PARSE_ERROR("hugepages-memaccess3", "5.1.0");
     DO_TEST_CAPS_LATEST("hugepages-memaccess3");
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
     DO_TEST_CAPS_LATEST("nosharepages");
@@ -1584,7 +1580,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-tlsx509-nbd-hostname", "6.2.0");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
-    DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-http");
     VIR_FREE(driver.config->nbdTLSx509secretUUID);
     VIR_FREE(driver.config->vxhsTLSx509secretUUID);
@@ -1592,7 +1587,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-ssh");
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
-    DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");
     DO_TEST_CAPS_LATEST("disk-vhostuser-numa");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-vhostvdpa", "x86_64",
@@ -2065,7 +2059,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("balloon-device-auto");
     DO_TEST_CAPS_LATEST("balloon-device-period");
 
-    DO_TEST_CAPS_VER("sound-device", "4.2.0");
     DO_TEST_CAPS_LATEST("sound-device");
     DO_TEST_CAPS_LATEST("fs9p");
     DO_TEST_CAPS_ARCH_LATEST("fs9p-ccw", "s390x");
@@ -2140,7 +2133,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-ids-partial");
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
     DO_TEST_CAPS_LATEST("iothreads-disk");
-    DO_TEST_CAPS_ARCH_VER("iothreads-disk-virtio-ccw", "s390x", "4.2.0");
     DO_TEST_CAPS_VER("iothreads-virtio-scsi-pci", "5.2.0");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
@@ -2174,9 +2166,6 @@ mymain(void)
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "4.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "5.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "5.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "6.1.0");
@@ -2187,9 +2176,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "4.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "5.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "5.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "6.1.0");
@@ -2200,9 +2186,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "4.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "5.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "5.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "6.1.0");
@@ -2213,9 +2196,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "4.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "5.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "5.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "6.1.0");
@@ -2226,9 +2206,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "4.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "5.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "5.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "6.1.0");
@@ -2239,9 +2216,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "4.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "5.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "5.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "5.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "6.1.0");
@@ -2389,7 +2363,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-2");
     DO_TEST_CAPS_LATEST_PPC64("pseries-hostdevs-3");
 
-    DO_TEST_CAPS_ARCH_VER("pseries-features", "ppc64", "4.2.0");
     DO_TEST_CAPS_LATEST_PPC64("pseries-features");
 
     DO_TEST_CAPS_LATEST_PARSE_ERROR("pseries-features-invalid-machine");
@@ -2509,26 +2482,15 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("q35-dmi-bad-address2");
     DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-disable");
     DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-enable");
-    DO_TEST_CAPS_VER_PARSE_ERROR("pc-i440fx-acpi-root-hotplug-disable", "5.1.0");
-    DO_TEST_CAPS_VER_PARSE_ERROR("pc-i440fx-acpi-root-hotplug-enable", "5.1.0");
     DO_TEST_CAPS_LATEST("q35-usb2");
     DO_TEST_CAPS_LATEST("q35-usb2-multi");
     DO_TEST_CAPS_LATEST("q35-usb2-reorder");
 
-    /* Note: The real caps versions of the following tests based on qemu-4.2.0
-     * were added as a comparison point between fake caps testing and real caps
-     * testing and don't have any other specific purpose */
-    /* verify that devices with pcie capability are assigned to a pcie slot */
-    DO_TEST_CAPS_VER("q35-pcie", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-pcie");
     /* same as q35-pcie, but all PCI controllers are added automatically */
-    DO_TEST_CAPS_VER("q35-pcie-autoadd", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-pcie-autoadd");
-    DO_TEST_CAPS_VER("q35-default-devices-only", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-default-devices-only");
-    DO_TEST_CAPS_VER("q35-multifunction", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-multifunction");
-    DO_TEST_CAPS_VER("q35-virt-manager-basic", "4.2.0");
     DO_TEST_CAPS_LATEST("q35-virt-manager-basic");
 
     /* Test automatic and manual setting of pcie-root-port attributes */
@@ -2571,7 +2533,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("hostdev-scsi-vhost-scsi-ccw", "s390x");
     DO_TEST_CAPS_LATEST("hostdev-scsi-vhost-scsi-pci");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-vhost-scsi-pci-boot-fail");
-    DO_TEST_CAPS_VER("hostdev-scsi-vhost-scsi-pcie", "4.2.0");
     DO_TEST_CAPS_LATEST("hostdev-scsi-vhost-scsi-pcie");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-duplicate");
 
@@ -2592,7 +2553,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-basic", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-virtio", "aarch64");
 
-    DO_TEST_CAPS_ARCH_VER("aarch64-virt-virtio", "aarch64", "4.2.0");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-virtio", "aarch64");
 
     /* Example of using virtio-pci with no explicit PCI controller
@@ -2602,7 +2562,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-video-default", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-default-nic", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-cpu-passthrough", "aarch64");
-    DO_TEST_GIC("aarch64-gic-none", "4.2.0", GIC_NONE);
     DO_TEST_GIC("aarch64-gic-none", "latest", GIC_NONE);
     DO_TEST_GIC("aarch64-gic-none-v2", "latest", GIC_V2);
     DO_TEST_GIC("aarch64-gic-none-v3", "latest", GIC_V3);
@@ -2611,7 +2570,6 @@ mymain(void)
                                ARG_GIC, GIC_BOTH,
                                ARG_QEMU_CAPS_DEL, QEMU_CAPS_KVM, QEMU_CAPS_LAST,
                                ARG_END);
-    DO_TEST_GIC("aarch64-gic-default", "4.2.0", GIC_NONE);
     DO_TEST_GIC("aarch64-gic-default", "latest", GIC_NONE);
     DO_TEST_GIC("aarch64-gic-default-v2", "latest", GIC_V2);
     DO_TEST_GIC("aarch64-gic-default-v3", "latest", GIC_V3);
@@ -2661,7 +2619,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pvpanic-pci-invalid-address-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("pvpanic-pci-no-address-aarch64", "aarch64");
 
-    DO_TEST_CAPS_ARCH_VER_FULL("fips-enabled", "x86_64", "5.1.0", ARG_FLAGS, FLAG_FIPS_HOST);
     DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
 
     DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
@@ -2790,7 +2747,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-options-input-packed");
     DO_TEST_CAPS_LATEST("virtio-options-memballoon-packed");
     DO_TEST_CAPS_LATEST("virtio-options-memballoon-freepage-reporting");
-    DO_TEST_CAPS_VER_PARSE_ERROR("virtio-options-memballoon-freepage-reporting", "5.0.0");
     DO_TEST_CAPS_LATEST("virtio-options-net-packed");
     DO_TEST_CAPS_LATEST("virtio-options-rng-packed");
     DO_TEST_CAPS_LATEST("virtio-options-video-packed");
@@ -2950,7 +2906,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-active-commit");
     DO_TEST_CAPS_LATEST("disk-mirror-old");
     DO_TEST_CAPS_LATEST("disk-mirror");
-    DO_TEST_CAPS_VER("disk-network-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("downscript");
     DO_TEST_CAPS_LATEST("hostdev-mdev-display");
     DO_TEST_CAPS_LATEST("hostdev-scsi-autogen-address");
