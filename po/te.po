@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1073,6 +1073,10 @@ msgstr "పాత్ '%1$s' ఏక్సెస్ చేయదగ్గది �
 #, fuzzy, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత %1$s తోడ్పాటునీయబడదు"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3483,8 +3487,32 @@ msgid ""
 "flush them, breaking networking."
 msgstr ""
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3511,7 +3539,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3520,6 +3557,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4943,6 +5016,10 @@ msgstr "ఉన్న వాల్యూమునుండి వొక వాల
 
 msgid "Create a vol."
 msgstr "వాల్యూమ్‌ను సృష్టించు"
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "Created"
@@ -8713,6 +8790,13 @@ msgstr ""
 msgid "Finished after host request"
 msgstr ""
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
@@ -12201,6 +12285,9 @@ msgstr ""
 msgid "No filesystems are mounted in the domain"
 msgstr "డొమైన్ నిలువరించుటలో దోషం"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "ఖాళీ NBD పరికరాలు లేవు"
 
@@ -13963,9 +14050,6 @@ msgstr "S3 స్థితి ఈ డొమైన్ కొరకు అచే�
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr ""
-
 msgid "S4 state is disabled for this domain"
 msgstr "S4 స్థితి ఈ డొమైన్ కొరకు అచేతనంచేయబడెను"
 
@@ -14058,9 +14142,6 @@ msgstr "SCSI యూనిట్ విషయసూచి %1$d అనునది
 #, fuzzy
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "నియంత్రికలు తప్పక 'ccid' చిరునామా రకం వుపయోగించాలి"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr ""
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15051,10 +15132,12 @@ msgstr "Ceph వాడుక తెలుపబడింది, అయితే 
 msgid "TLS:"
 msgstr ""
 
-msgid "TPM 1.2 is not supported on ARM"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
 msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
 msgstr ""
 
 #, c-format
@@ -15911,6 +15994,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "CA ధృవీకరణపత్రం %1$s ఇంకా క్రియాశీలమవలేదు"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr ""
 
@@ -15943,6 +16038,12 @@ msgstr "మరీ పొడవైన నెట్వర్కు పరికర
 msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
+msgstr ""
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
 
 #, c-format
@@ -15995,12 +16096,36 @@ msgid "The certificate uses an insecure algorithm"
 msgstr "దృవీకరణపత్రము సురక్షితముకాని అల్గార్దెమ్‌ను వుపయోగిస్తోంది"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "క్లైంట్ ధృవీకరణపత్రం %1$s గడువుతీరెను"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "క్లైంట్ ధృవీకరణపత్రం %1$s ఇంకా క్రియాశీలమవలేదు"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "The device at %1$s has no network device name"
@@ -16057,6 +16182,24 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్పాటునీయదు"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "డొమైన్ %s అనునది పేరు %s తో స్నాప్‌షాట్లను కలిగిలేదు"
@@ -16087,6 +16230,18 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "సేవిక ధృవీకరణపత్రం %1$s గడువుతీరెను"
 
@@ -16095,12 +16250,70 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "సేవిక ధృవీకరణపత్రం %1$s ఇంకా క్రియాశీలమవలేదు"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "'%1$s' నుం‍డి '%2$s' కు సేవిక రీడైరెక్ట్ అయ్యెను"
 
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "నిల్వ పూల్ వాల్యూమ్ సృష్టీకరణను మద్దతీయుట లేదు"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16137,6 +16350,9 @@ msgstr "QEMU అనునది virtio scsi నియంత్రికకు �
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr "7 కన్నా పెద్దదైన లక్ష్యం QEMU తోడ్పాటునీయదు"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "ఈ QEMU అనునది lun passthrough కొరకు scsi-block తోడ్పాటునీయదు"
@@ -17715,6 +17931,10 @@ msgstr "సాకెట్ పైన వినలేదు"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "సాకెట్ పైన వినలేదు"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "ధృవీకరణపత్రం లోడుచేయలేదు"
 
@@ -18842,6 +19062,10 @@ msgstr ""
 msgid "Unexpected hostdev mode %1$d"
 msgstr "అనుకోని hostdev రీతి %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "డిస్కు వనరు కొరకు అనుకోని లాక్ పారామితులు"
 
@@ -19544,10 +19768,6 @@ msgstr "తోడ్పాటులేని hostdev రీతి %1$s"
 msgid "Unsupported hostdev type %1$s"
 msgstr "తోడ్పాటులేని hostdev రకం %1$s"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr ""
-
 #, fuzzy
 msgid "Unsupported listen type"
 msgstr "తోడ్పాటులేని వర్ట్ రకం"
@@ -19723,6 +19943,21 @@ msgid ""
 "options:\n"
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
 msgstr ""
 
 #, sh-format
@@ -24621,6 +24856,9 @@ msgstr "డొమైన్ యిప్పటికే నడుచుచున�
 msgid "domain already has a vsock device"
 msgstr "క్షేత్రం ఇప్పటికే ‌క్రియాసహితంగా ఉంది"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -25871,9 +26109,6 @@ msgstr ""
 msgid "failed to create logfile %1$s"
 msgstr "లాగ్‌పైలు %1$sను సృష్టించుటకు విఫలమైంది"
 
-msgid "failed to create mdevctl thread"
-msgstr ""
-
 msgid "failed to create profile"
 msgstr "ప్రొఫైల్ సృష్టించుటకు విఫలమైంది"
 
@@ -25904,10 +26139,6 @@ msgid "failed to create the RBD IoCTX. Does the pool '%1$s' exist?"
 msgstr "RBD IoCTX సృష్టించుటకు విఫలమైంది. పూల్ '%1$s' వుందా?"
 
 msgid "failed to create udev context"
-msgstr "udev కాంటెక్స్ట్ సృష్టించుటకు విఫలమైంది"
-
-#, fuzzy
-msgid "failed to create udev enumerate thread"
 msgstr "udev కాంటెక్స్ట్ సృష్టించుటకు విఫలమైంది"
 
 #, fuzzy
@@ -27780,6 +28011,9 @@ msgstr ""
 #, fuzzy
 msgid "i - turn off validation and try to redefine again"
 msgstr "f - బలవంతంగా, మరలా తిరిగినిర్వచించుటకు ప్రయత్నించు"
+
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI నిల్వ పూల్ అనునది వాల్యూమ్ సృష్టీకరణను తోడ్పాటునీయలేదు"
@@ -29844,6 +30078,9 @@ msgstr ""
 #, fuzzy
 msgid "matching input device not found"
 msgstr "usb పరికరం కనబడలేదు"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 #, fuzzy
 msgid "matching memory device was not found"
@@ -33837,6 +34074,9 @@ msgstr "నిరోధకగణాంకాల పరికర ప్రవే�
 msgid "query-rx-filter return data missing array element"
 msgstr ""
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 #, fuzzy
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "query-version ప్రత్యుత్తరంకు 'micro' వర్షన్ దొరకలేదు"
@@ -33852,6 +34092,9 @@ msgstr "'qemu' దత్తాంశం క్వరీ-వర్షన్ ప�
 #, fuzzy
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "'qemu' దత్తాంశం క్వరీ-వర్షన్ ప్రత్యుత్తరంకు దొరకలేదు"
+
+msgid "query-sev-launch-measure reply was missing 'data'"
+msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr ""
@@ -37453,6 +37696,10 @@ msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
 
 #, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "తెలియని చిరునామా రకం '%1$s' నెట్వర్కు %2$s నందు"
 
@@ -37728,6 +37975,10 @@ msgstr "తెలియని పరికర రకం '%1$s'"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "తెలియని smbios రీతి '%1$s'"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -39310,6 +39561,10 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "udev కాంటెక్స్ట్ సృష్టించుటకు విఫలమైంది"
 
 #, c-format
 #~ msgid "%1$6s: Checking %2$-60s: "

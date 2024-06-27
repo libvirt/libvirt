@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1243,6 +1243,10 @@ msgstr "„%1$s“ není použitelné pomocné pro pr"
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "„%1$s“ není podporováno v této QEMU binárce"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3704,8 +3708,32 @@ msgstr ""
 "automaticky nastavené IPv6 trasy a zapnutí přeposílání bez accept_ra "
 "nastaveného na 2 způsobí že je jádro vyprázdní, čímž se rozbije síťování."
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3732,7 +3760,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3741,6 +3778,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, c-format
@@ -5171,6 +5244,10 @@ msgstr "Vytvořit svazek z už existujícího svazku."
 
 msgid "Create a vol."
 msgstr "Vytvořit svazek."
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 msgid "Created"
 msgstr "Vytvořeno"
@@ -8982,6 +9059,13 @@ msgstr "Dokončeno po požadavku hosta"
 msgid "Finished after host request"
 msgstr "Dokončeno po požadavku hostitele"
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "Položka pro firmware postrádá atribut 'name'"
 
@@ -12509,6 +12593,9 @@ msgstr "Neočekávána žádná událost s procedurou 0x%1$x"
 msgid "No filesystems are mounted in the domain"
 msgstr "V doméně nejsou připojené žádné souborové systémy"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "Žádná volná NBD zařízení"
 
@@ -14281,9 +14368,6 @@ msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 "Zabezpečení S390 PV spuštění není podporováno tímto hostitelem nebo jádrem"
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr "Zabezpečení S390 PV spuštění není podporováno s touto QEMU binárkou"
-
 msgid "S4 state is disabled for this domain"
 msgstr "Stav S4 je pro tuto doménu vypnutý"
 
@@ -14381,9 +14465,6 @@ msgstr "Pořadové číslo SCSI jednotky %1$d mimo rozsah [0..6,8..15]"
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr ""
 "je třeba, aby SCSI_host host zařízení používalo typ adresy 'pci' nebo 'ccw'"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr "SEV zabezpečení spuštění není podporováno touto binárkou QEMU"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15361,11 +15442,13 @@ msgstr "Zadáno využití TLS, ale chybí název"
 msgid "TLS:"
 msgstr "TLS:"
 
-msgid "TPM 1.2 is not supported on ARM"
-msgstr "TPM 1.2 není na ARM podporováno"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
+msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "TPM 1.2 není v případě modelu zařízení SPAPR podporováno"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16289,6 +16372,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "Certifikát cert. autority %1$s ještě nezačal platit"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr "CCW devno '%1$s' je už v používání"
 
@@ -16330,6 +16425,12 @@ msgid ""
 msgstr ""
 "PF zařízení pro VF %1$s nemá název síťového zařízení, není možné získat "
 "informace o virtuální funkci"
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -16385,12 +16486,36 @@ msgid "The certificate uses an insecure algorithm"
 msgstr "Certifikát používá algoritmus, který už není bezpečný"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "Platnost certifikátu klienta %1$s skončila"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "Certifikát klienta %1$s ještě nezačal platit"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16454,6 +16579,24 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "v tomto sestavení QEMU není řadič zvuku ich9-intel-hd_audio podporován"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 msgid "The machine has no snapshot and it should have it"
 msgstr "Stroj nemá žádné zachycené stavy a přitom by měl mít"
 
@@ -16489,6 +16632,18 @@ msgstr ""
 "pro čtení i zápis"
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "Platnost certifikátu serveru „%1$s“ skončila"
 
@@ -16497,11 +16652,69 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "Certifikát serveru %1$s ještě nezačal platit"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "Server přesměrovává z „%1$s“ na „%2$s“"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper nepodporuje stěhování"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16535,6 +16748,9 @@ msgstr "Toto QEMU nepodporuje '-device usb-storage'"
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr "Toto QEMU nepodporuje OpenGL rendernode s typem grafiky egl-headless"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Toto QEMU nepodporuje scsi-block pro lun passthrough"
@@ -18067,6 +18283,10 @@ msgstr "Nedaří se očekávat spojení na soketu"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "Nedaří se očekávat spojení na umístění unixového soketu „%1$s“"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "Nepodařilo se načíst certifikát"
 
@@ -19170,6 +19390,10 @@ msgstr "Neočekávaný formát odpovědi z omdevctl"
 msgid "Unexpected hostdev mode %1$d"
 msgstr "Neočekávaný režim hosdev %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Neočekávané parametry zámku pro diskový prostředek"
 
@@ -19870,10 +20094,6 @@ msgstr "Nepodporovaný režim zařízení hostitele %1$s"
 msgid "Unsupported hostdev type %1$s"
 msgstr "Nepodporovaný typ zařízení hostitele %1$s"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr "Nepodporované rozhraní „%1$s“ pro TPM 1.2"
-
 msgid "Unsupported listen type"
 msgstr "Nepodporovaný typ očekávání spojení (listen)"
 
@@ -20062,6 +20282,21 @@ msgstr ""
 "volby:\n"
 "  -h | --help     zobrazit tuto nápovědu a skončit\n"
 "  -v | --version  vypsat informaci o verzi a skončit\n"
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
+msgstr ""
 
 #, sh-format
 msgid ""
@@ -25035,6 +25270,9 @@ msgstr "doména už má VNC grafiku"
 msgid "domain already has a vsock device"
 msgstr "doména už má vsock zařízení"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "architektura domény (/domain/os/type/@arch)"
 
@@ -26280,9 +26518,6 @@ msgstr "nepodařilo se vytvořit složku pro záznamy událostí '%1$s'"
 msgid "failed to create logfile %1$s"
 msgstr "nezdařilo se vytvoření souboru pro záznam událostí (log) %1$s"
 
-msgid "failed to create mdevctl thread"
-msgstr "nepodařilo se vytvořit vlákno pro mdevctl"
-
 msgid "failed to create profile"
 msgstr "nepodařilo se vytvořit profil"
 
@@ -26313,9 +26548,6 @@ msgstr "nepodařilo se vytvořit RBD IoCTX. Existuje fond „%1$s“?"
 
 msgid "failed to create udev context"
 msgstr "nepodařilo se vytvořit udev kontext"
-
-msgid "failed to create udev enumerate thread"
-msgstr "nepodařilo se vytvořit vlákno pro vyčíslení udev"
 
 msgid "failed to create udev handler thread"
 msgstr "nepodařilo se vytvořit obslužné vlákno udev"
@@ -28184,6 +28416,9 @@ msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i – vypnout ověřování správnosti a zkusit znovu definovat"
+
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI fond úložiště nepodporuje vytváření svazků"
@@ -30267,6 +30502,9 @@ msgstr "odpovídající souborový systém nenalezen"
 
 msgid "matching input device not found"
 msgstr "odpovídající vstupní zařízení nenalezeno"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 msgid "matching memory device was not found"
 msgstr "odpovídající paměťové zařízení nebylo nalezeno"
@@ -34229,6 +34467,9 @@ msgstr "položka query-named-block-nodes nebyla v očekávaném formátu"
 msgid "query-rx-filter return data missing array element"
 msgstr "filtr query-rx-filter vrátí prvek pole chybějících dat"
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "v odpovědi query-sev-capabilities chybělo pole 'cbitpos'"
 
@@ -34241,6 +34482,9 @@ msgstr "v odpovědi na query-sev-capabilities chyběla kolonka 'pdh'"
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 "v odpovědi na query-sev-capabilities chyběla kolonka 'reduced-phys-bits'"
+
+msgid "query-sev-launch-measure reply was missing 'data'"
+msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr "v odpovědi na query-sgx-capabilities chybí kolonka 'flc'"
@@ -37896,6 +38140,10 @@ msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "neznámé nastavení SDL_AUDIODRIVER %1$s"
 
 #, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "neznámý typ adresy „%1$s“ v síti %2$s"
 
@@ -38168,6 +38416,10 @@ msgstr "neznámý typ tajemství „%1$s“"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "neznámý režim smbios „%1$s“"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -39776,6 +40028,28 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#~ msgid "S390 PV launch security is not supported with this QEMU binary"
+#~ msgstr "Zabezpečení S390 PV spuštění není podporováno s touto QEMU binárkou"
+
+#~ msgid "SEV launch security is not supported with this QEMU binary"
+#~ msgstr "SEV zabezpečení spuštění není podporováno touto binárkou QEMU"
+
+#~ msgid "TPM 1.2 is not supported on ARM"
+#~ msgstr "TPM 1.2 není na ARM podporováno"
+
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr "TPM 1.2 není v případě modelu zařízení SPAPR podporováno"
+
+#, c-format
+#~ msgid "Unsupported interface '%1$s' for TPM 1.2"
+#~ msgstr "Nepodporované rozhraní „%1$s“ pro TPM 1.2"
+
+#~ msgid "failed to create mdevctl thread"
+#~ msgstr "nepodařilo se vytvořit vlákno pro mdevctl"
+
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "nepodařilo se vytvořit vlákno pro vyčíslení udev"
 
 #, c-format
 #~ msgid "%1$6s: Checking %2$-60s: "

@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2024-06-02 15:35+0000\n"
 "Last-Translator: \"Sergey A.\" <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1275,6 +1275,10 @@ msgstr "«%1$s» не является подходящим вспомогате
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает «%1$s»"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3732,8 +3736,32 @@ msgid ""
 "flush them, breaking networking."
 msgstr ""
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3760,7 +3788,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3769,6 +3806,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, c-format
@@ -5176,6 +5249,10 @@ msgstr "Создать том на основе существующего то�
 
 msgid "Create a vol."
 msgstr "Создать том."
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 msgid "Created"
 msgstr "Создан"
@@ -8966,6 +9043,13 @@ msgstr "Завершён после запроса гостевой систем
 msgid "Finished after host request"
 msgstr "Завершён после запроса основной системы"
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "В записи микропрограммы отсутствует атрибут «name»"
 
@@ -12511,6 +12595,9 @@ msgstr "Для процедуры 0x%1$x не ожидаются сообщен�
 msgid "No filesystems are mounted in the domain"
 msgstr "В домене нет смонтированных файловых систем"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "Нет свободных устройств NBD"
 
@@ -14303,9 +14390,6 @@ msgstr "Состояние S3 для этого домена отключено.
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr ""
-
 msgid "S4 state is disabled for this domain"
 msgstr "Состояние S4 для этого домена отключено."
 
@@ -14407,9 +14491,6 @@ msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr ""
 "устройство SCSI_host основной системы должно использовать тип адреса «pci» "
 "или «ccw»"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr ""
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15416,11 +15497,13 @@ msgstr "Указано использование TLS, но отсутствуе
 msgid "TLS:"
 msgstr "TLS:"
 
-msgid "TPM 1.2 is not supported on ARM"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
 msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "TPM 1.2 нельзя использовать, если используется модель устройства SPAPR"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16351,6 +16434,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "Сертификат ЦС %1$s не активен"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr "Номер устройства CCW «%1$s» уже используется"
 
@@ -16389,6 +16484,12 @@ msgstr "Устройство PF для VF %1$s не имеет имени сет
 msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
+msgstr ""
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
 
 #, c-format
@@ -16447,12 +16548,36 @@ msgid "The certificate uses an insecure algorithm"
 msgstr "сертификат использует небезопасный алгоритм"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "Срок действия сертификата клиента %1$s истек."
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "Сертификат клиента %1$s не активен"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16518,6 +16643,24 @@ msgid ""
 msgstr ""
 "Этот исполняемый файл QEMU не поддерживает аудиоконтроллер ich9-intel-hda"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 msgid "The machine has no snapshot and it should have it"
 msgstr "Нет снимков — у этой машины должен быть снимок"
 
@@ -16548,6 +16691,18 @@ msgstr ""
 "дисков, доступных для чтения и записи"
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "Срок действия сертификата сервера %1$s истек."
 
@@ -16556,11 +16711,69 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "Сертификат сервера %1$s не активен"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "Сервер выполняет перенаправление с «%1$s» на «%2$s»"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper не поддерживает миграцию"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16595,6 +16808,9 @@ msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr ""
 "Этот QEMU не поддерживает rendernode OpenGL с типом графики egl-headless"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "QEMU не поддерживает scsi-block для сквозного подключения LUN"
@@ -18137,6 +18353,10 @@ msgstr "Не удалось установить ожидание на соке�
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "Не удалось начать ожидание данных по пути сокета UNIX «%1$s»"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "Не удалось загрузить сертификат"
 
@@ -19243,6 +19463,10 @@ msgstr ""
 msgid "Unexpected hostdev mode %1$d"
 msgstr "Непредвиденный режим hostdev %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Непредвиденные параметры блокирования дискового ресурса"
 
@@ -19956,10 +20180,6 @@ msgstr "Режим %1$s для hostdev не поддерживается"
 msgid "Unsupported hostdev type %1$s"
 msgstr "Тип %1$s для hostdev не поддерживается"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr ""
-
 msgid "Unsupported listen type"
 msgstr "Неподдерживаемый тип ожидания"
 
@@ -20137,6 +20357,21 @@ msgid ""
 "options:\n"
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
 msgstr ""
 
 #, sh-format
@@ -25124,6 +25359,9 @@ msgstr "домен уже имеет графическую систему VNC"
 msgid "domain already has a vsock device"
 msgstr "домен уже имеет устройство vsock"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "архитектура домена (/домен/операционная_система/тип/@архитектура)"
 
@@ -26346,9 +26584,6 @@ msgstr ""
 msgid "failed to create logfile %1$s"
 msgstr "не удалось создать журнал %1$s"
 
-msgid "failed to create mdevctl thread"
-msgstr ""
-
 msgid "failed to create profile"
 msgstr "не удалось создать профиль"
 
@@ -26379,9 +26614,6 @@ msgstr "не удалось создать IoCTX RBD. Существует ли 
 
 msgid "failed to create udev context"
 msgstr "не удалось создать контекст udev"
-
-msgid "failed to create udev enumerate thread"
-msgstr "не удалось создать поток перечисления udev"
 
 msgid "failed to create udev handler thread"
 msgstr "не удалось создать поток обработчика udev"
@@ -28258,6 +28490,9 @@ msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i — отключить проверку и попытаться создать определение снова"
+
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "Пул носителей iSCSI не поддерживает операции создания томов"
@@ -30343,6 +30578,9 @@ msgstr ""
 
 msgid "matching input device not found"
 msgstr "соответствующее устройство ввода не найдено"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 msgid "matching memory device was not found"
 msgstr "соответствующее устройство памяти не найдено"
@@ -34303,6 +34541,9 @@ msgstr "неверный формат записи query-named-block-nodes"
 msgid "query-rx-filter return data missing array element"
 msgstr ""
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "в ответе query-sev-capabilities отсутствует поле «cbitpos»"
 
@@ -34314,6 +34555,9 @@ msgstr "в ответе query-sev-capabilities отсутствует поле �
 
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "в ответе query-sev-capabilities отсутствует поле «reduced-phys-bits»"
+
+msgid "query-sev-launch-measure reply was missing 'data'"
+msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr ""
@@ -35120,7 +35364,8 @@ msgstr "метка безопасности превышает максимал�
 
 #, c-format
 msgid "security label exceeds maximum: %1$zd"
-msgstr "размер метки безопасности превышает максимально допустимую длину: %1$zd"
+msgstr ""
+"размер метки безопасности превышает максимально допустимую длину: %1$zd"
 
 #, c-format
 msgid "security label exceeds maximum: %1$zu"
@@ -37966,6 +38211,10 @@ msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
 
 #, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "неизвестный тип адреса «%1$s» в сети %2$s"
 
@@ -38238,6 +38487,10 @@ msgstr "неизвестный тип секрета «%1$s»"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "неизвестный режим smbios: «%1$s»"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -39876,6 +40129,13 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr ""
+#~ "TPM 1.2 нельзя использовать, если используется модель устройства SPAPR"
+
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "не удалось создать поток перечисления udev"
 
 #, c-format
 #~ msgid "%1$6s: Checking %2$-60s: "

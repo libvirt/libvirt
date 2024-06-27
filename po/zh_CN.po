@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1211,6 +1211,10 @@ msgstr "'%1$s' 不是一个合适的 pr 帮助程序"
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件中不支持 '%1$s'"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3503,8 +3507,32 @@ msgstr ""
 "检查主机设置：接口 %1$s 具有内核自动配置的 IPv6 路由，在不将 accept_ra 设置"
 "为 2 的情况下启用转发将导致内核刷新它们，从而破坏网络。"
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3531,7 +3559,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3540,6 +3577,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, c-format
@@ -4916,6 +4989,10 @@ msgstr "为现有卷生成卷"
 
 msgid "Create a vol."
 msgstr "创建一个卷。"
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 msgid "Created"
 msgstr "创建"
@@ -8580,6 +8657,13 @@ msgstr "客户端请求后完成"
 msgid "Finished after host request"
 msgstr "主机请求后完成"
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "固件条目缺少 'name' 属性"
 
@@ -11921,6 +12005,9 @@ msgstr "流程 0x%1$x 预期没有事件发生"
 msgid "No filesystems are mounted in the domain"
 msgstr "域中没有挂载文件系统"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "没有可用的 NBD 设备"
 
@@ -13595,9 +13682,6 @@ msgstr "这个域禁用了 S3 状态"
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr "此主机或内核不支持 S390 PV 启动安全性"
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 S390 PV 启动安全性"
-
 msgid "S4 state is disabled for this domain"
 msgstr "这个域禁用了 S4 状态"
 
@@ -13694,9 +13778,6 @@ msgstr "SCSI 单位索引 %1$d 超出 [0..6,8..15] 范围"
 
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "SCSI_host 主机设备必须使用 'pci' 或 'ccw' 地址类型"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 SEV 启动安全性"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 SEV 测量的直接内核引导"
@@ -14627,11 +14708,13 @@ msgstr "指定了 TLS 用法，但缺少名称"
 msgid "TLS:"
 msgstr "TLS："
 
-msgid "TPM 1.2 is not supported on ARM"
-msgstr "ARM 上不支持 TPM 1.2"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
+msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "SPAPR 设备型号不支持 TPM 1.2"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -15472,6 +15555,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "CA 证书 %1$s 还为激活"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr "CCW devno '%1$s' 已在使用"
 
@@ -15509,6 +15604,12 @@ msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
 msgstr "VF %1$s 的 PF 设备没有网络设备名称，无法获取虚拟功能信息"
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -15560,12 +15661,36 @@ msgid "The certificate uses an insecure algorithm"
 msgstr "该证书使用不安全的算法"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "客户端证书 %1$s 已过期"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "客户端证书 %1$s 尚未激活"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -15627,6 +15752,24 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 ich9-intel-hda 音频控制器"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 msgid "The machine has no snapshot and it should have it"
 msgstr "机器没有快照，但应该有"
 
@@ -15655,6 +15798,18 @@ msgid ""
 msgstr "只读磁盘号必须大于或等于读写磁盘号"
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "服务器证书 %1$s 已过期"
 
@@ -15663,11 +15818,69 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "服务器证书 %1$s 尚未激活"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "从 '%1$s' 重新指向 '%2$s' 的服务器"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper 不支持迁移"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -15701,6 +15914,9 @@ msgstr "此 QEMU 不支持 '-device usb-storage'"
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr "这个 QEMU 不支持具有 egl-headless 图形类型的 OpenGL rendernode"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "这个 QEMU 不支持 lun passthrough 的 scsi-block"
@@ -17198,6 +17414,10 @@ msgstr "无法在插槽中侦听"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "无法侦听 UNIX 套接字路径 '%1$s'"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "无法载入证书"
 
@@ -18280,6 +18500,10 @@ msgstr "mdevctl 响应的意外格式"
 msgid "Unexpected hostdev mode %1$d"
 msgstr "意外的 hostdev 模式 %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "无法为磁盘资源锁定参数"
 
@@ -18976,10 +19200,6 @@ msgstr "未知 hostdev 模式 %1$s"
 msgid "Unsupported hostdev type %1$s"
 msgstr "不支持的 hostdev 类型 %1$s"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr "TPM 1.2 不支持的接口 '%1$s'"
-
 msgid "Unsupported listen type"
 msgstr "不支持的侦听类型"
 
@@ -19160,6 +19380,21 @@ msgstr ""
 "选项：\n"
 " -h | --help 显示此帮助并退出\n"
 " -v | --version 输出版本信息并退出\n"
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
+msgstr ""
 
 #, sh-format
 msgid ""
@@ -23888,6 +24123,9 @@ msgstr "域已经有 VNC 图形"
 msgid "domain already has a vsock device"
 msgstr "域已有一个 vsock 设备"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "域架构(/domain/os/type/@arch)"
 
@@ -25094,9 +25332,6 @@ msgstr "无法创建日志目录 '%1$s'"
 msgid "failed to create logfile %1$s"
 msgstr "无法生成日志文件 %1$s"
 
-msgid "failed to create mdevctl thread"
-msgstr "无法创建 mdevctl 线程"
-
 msgid "failed to create profile"
 msgstr "无法生成配置文件"
 
@@ -25127,9 +25362,6 @@ msgstr "生成 RBD IoCTX 失败。这个池 '%1$s' 是否存在？"
 
 msgid "failed to create udev context"
 msgstr "创建 udev 上下文失败"
-
-msgid "failed to create udev enumerate thread"
-msgstr "无法创建 udev 枚举线程"
 
 msgid "failed to create udev handler thread"
 msgstr "无法创建 udev 处理程序线程"
@@ -26926,6 +27158,9 @@ msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - 关闭有效性检查并再次重新生成配置"
+
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI 存储池不支持卷创建"
@@ -28899,6 +29134,9 @@ msgstr "匹配的文件系统未找到"
 
 msgid "matching input device not found"
 msgstr "匹配的输入设备未找到"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 msgid "matching memory device was not found"
 msgstr "匹配的内存设备未找到"
@@ -32664,6 +32902,9 @@ msgstr "query-named-block-nodes 条目不是期望的格式"
 msgid "query-rx-filter return data missing array element"
 msgstr "query-rx-filter 返回数据缺少数组元素"
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "query-sev-capabilities 回复缺少 'cbitpos' 字段"
 
@@ -32675,6 +32916,9 @@ msgstr "query-sev-capabilities 回复缺少 'pdh' 字段"
 
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "query-sev-capabilities 回复缺少 'reduced-phys-bits' 字段"
+
+msgid "query-sev-launch-measure reply was missing 'data'"
+msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr "query-sgx-capabilities 回复缺少 'flc' 字段"
@@ -36171,6 +36415,10 @@ msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "未知的 SDL_AUDIODRIVER 设置 %1$s"
 
 #, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "网络 %1$s 中未知的地址类型 '%2$s'"
 
@@ -36443,6 +36691,10 @@ msgstr "未知的 secret 类型 '%1$s'"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "未知的 smbios 模式 ‘%1$s’"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -37983,6 +38235,28 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "S390 PV launch security is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 S390 PV 启动安全性"
+
+#~ msgid "SEV launch security is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 SEV 启动安全性"
+
+#~ msgid "TPM 1.2 is not supported on ARM"
+#~ msgstr "ARM 上不支持 TPM 1.2"
+
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr "SPAPR 设备型号不支持 TPM 1.2"
+
+#, c-format
+#~ msgid "Unsupported interface '%1$s' for TPM 1.2"
+#~ msgstr "TPM 1.2 不支持的接口 '%1$s'"
+
+#~ msgid "failed to create mdevctl thread"
+#~ msgstr "无法创建 mdevctl 线程"
+
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "无法创建 udev 枚举线程"
 
 #, c-format
 #~ msgid "%1$6s: Checking %2$-60s: "

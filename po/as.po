@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -1079,6 +1079,10 @@ msgstr "পথ '%1$s' অভিগম্য"
 #, fuzzy, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "এই QEMU লাইব্ৰেৰীত %1$s সমৰ্থিত নহয়"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3502,8 +3506,32 @@ msgid ""
 "flush them, breaking networking."
 msgstr ""
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3530,7 +3558,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3539,6 +3576,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4970,6 +5043,10 @@ msgstr "বৰ্ত্তমানৰ এটা আয়তৰ পৰা এট�
 
 msgid "Create a vol."
 msgstr "এটা সমষ্টি নিৰ্মাণ কৰক।"
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "Created"
@@ -8772,6 +8849,13 @@ msgstr ""
 msgid "Finished after host request"
 msgstr ""
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
@@ -12266,6 +12350,9 @@ msgstr ""
 msgid "No filesystems are mounted in the domain"
 msgstr "ডমেইন স্থগিত কৰোতে ত্ৰুটি"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "কোনো মুক্ত NBD ডিভাইচ নাই"
 
@@ -14043,9 +14130,6 @@ msgstr "এই ডমেইনৰ বাবে S3 অৱস্থা অসা�
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr ""
-
 msgid "S4 state is disabled for this domain"
 msgstr "এই ডমেইনৰ বাবে S4 অৱস্থা অসামৰ্থবান কৰা আছে"
 
@@ -14138,9 +14222,6 @@ msgstr "SCSI একক সূচী %1$d [0..6,8..15] বিস্তাৰৰ �
 #, fuzzy
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "নিয়ন্ত্ৰকসমূহে 'ccid' ঠিকনা ধৰণ ব্যৱহাৰ কৰিব লাগিব"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr ""
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15145,10 +15226,12 @@ msgstr "Ceph ব্যৱহাৰ ধাৰ্য্য কৰা হৈছে,
 msgid "TLS:"
 msgstr ""
 
-msgid "TPM 1.2 is not supported on ARM"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
 msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
 msgstr ""
 
 #, c-format
@@ -16011,6 +16094,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "CA প্ৰমাণপত্ৰ %1$s এতিয়াও সক্ৰিয় নহয়"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr ""
 
@@ -16043,6 +16138,12 @@ msgstr "নে'টৱৰ্ক ফাইলৰ নাম বিশ্লেষ�
 msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
+msgstr ""
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
 
 #, c-format
@@ -16099,12 +16200,36 @@ msgstr ""
 "remoteCheckCertificate: গ্ৰাহক প্ৰমাণপত্ৰ দ্বাৰা ব্যৱহৃত এল্গোৰিথম্‌ নিৰাপদ নহয়।"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "ক্লাএণ্ট প্ৰমাণপত্ৰ %1$s ৰ অৱসান ঘটিছে"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "ক্লাএণ্ট প্ৰমাণপত্ৰ %1$s এতিয়াও সক্ৰিয় নহয়"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "The device at %1$s has no network device name"
@@ -16162,6 +16287,24 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "এই QEMU বাইনাৰিত ich9-intel-hda অডিঅ' নিয়ন্ত্ৰক সমৰ্থিত নহয়"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "The machine has no snapshot and it should have it"
 msgstr "ডমেইন %s ৰ নাম %s ৰ সৈতে কোনো স্নেপশ্বট নাই"
@@ -16192,6 +16335,18 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "চাৰ্ভাৰ প্ৰমাণপত্ৰ %1$s ৰ অৱসান ঘটিছে"
 
@@ -16200,12 +16355,70 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "চাৰ্ভাৰ প্ৰমাণপত্ৰ %1$s এতিয়াও সক্ৰিয় নহয়"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "চাৰ্ভাৰ '%1$s' ৰ পৰা '%2$s' লে পুনৰনিৰ্দেশ কৰে"
 
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "ভঁৰালৰ পুলে সমষ্টি সৃষ্টি কৰাৰ সমৰ্থন নকৰে"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16241,6 +16454,9 @@ msgstr "এই QEMU এ '-device usb-storage' নিয়ন্ত্ৰক সম
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr "এই QEMU এ 7 কে ডাঙৰ লক্ষ্য সমৰ্থন নকৰে"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "এই QEMU এ lun পাছথ্ৰুৰ বাবে scsi-block সমৰ্থন নকৰে"
@@ -17823,6 +18039,10 @@ msgstr "চকেটত শুনিবলে অক্ষম"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "চকেটত শুনিবলে অক্ষম"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "প্ৰমাণপত্ৰ ল'ড কৰিবলে অক্ষম"
 
@@ -18951,6 +19171,10 @@ msgstr ""
 msgid "Unexpected hostdev mode %1$d"
 msgstr "অপ্ৰত্যাশিত hostdev অৱস্থা %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "ডিস্ক সম্পদৰ বাবে অপ্ৰত্যাশিত লক প্ৰাচলসমূহ"
 
@@ -19653,10 +19877,6 @@ msgstr "অসমৰ্থিত hostdev অৱস্থা %1$s"
 msgid "Unsupported hostdev type %1$s"
 msgstr "অসমৰ্থিত hostdev ধৰণ %1$s"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr ""
-
 #, fuzzy
 msgid "Unsupported listen type"
 msgstr "অসমৰ্থিত virt ধৰণ"
@@ -19832,6 +20052,21 @@ msgid ""
 "options:\n"
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
 msgstr ""
 
 #, sh-format
@@ -24765,6 +25000,9 @@ msgstr "ডোমেইন বৰ্তমানে সক্ৰিয়ন"
 msgid "domain already has a vsock device"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয়"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -26017,9 +26255,6 @@ msgstr ""
 msgid "failed to create logfile %1$s"
 msgstr "%1$s লগ ফাইল নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-msgid "failed to create mdevctl thread"
-msgstr ""
-
 msgid "failed to create profile"
 msgstr "আলেখ্য সৃষ্টি কৰিবলে ব্যৰ্থ"
 
@@ -26050,10 +26285,6 @@ msgid "failed to create the RBD IoCTX. Does the pool '%1$s' exist?"
 msgstr "RBD IoCTX সৃষ্টি কৰিবলে ব্যৰ্থ। পুল '%1$s' অস্তিত্ববান হয় নে?"
 
 msgid "failed to create udev context"
-msgstr "udev পৰিপ্ৰেক্ষতিত সৃষ্টি কৰিবলে ব্যৰ্থ"
-
-#, fuzzy
-msgid "failed to create udev enumerate thread"
 msgstr "udev পৰিপ্ৰেক্ষতিত সৃষ্টি কৰিবলে ব্যৰ্থ"
 
 #, fuzzy
@@ -27928,6 +28159,9 @@ msgstr ""
 #, fuzzy
 msgid "i - turn off validation and try to redefine again"
 msgstr "f - বলৱৎ, পুনৰ বিৱৰণ দিয়াৰ চেষ্টা কৰক"
+
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI সংৰক্ষণ পুলে ভলিউম সৃষ্টি সমৰ্থন নকৰে"
@@ -29988,6 +30222,9 @@ msgstr ""
 #, fuzzy
 msgid "matching input device not found"
 msgstr "usb ডিভাইচ পোৱা নগল"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 #, fuzzy
 msgid "matching memory device was not found"
@@ -33967,6 +34204,9 @@ msgstr "blockstats ডিভাইচৰ এনট্ৰি প্ৰত্য�
 msgid "query-rx-filter return data missing array element"
 msgstr ""
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 #, fuzzy
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "query-version উত্তৰত 'micro' সংস্কৰণ নাছিল"
@@ -33982,6 +34222,9 @@ msgstr "query-version ত 'qemu' তথ্য নাছিল"
 #, fuzzy
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr "query-version ত 'qemu' তথ্য নাছিল"
+
+msgid "query-sev-launch-measure reply was missing 'data'"
+msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr ""
@@ -37591,6 +37834,10 @@ msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
 
 #, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "নেটৱৰ্ক %1$s ত অজ্ঞাত ঠিকনা ধৰণ '%2$s'"
 
@@ -37865,6 +38112,10 @@ msgstr "অজ্ঞাত ডিভাইচ ধৰণ '%1$s'"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "অজ্ঞাত smbios অৱস্থা '%1$s'"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -39450,6 +39701,10 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "udev পৰিপ্ৰেক্ষতিত সৃষ্টি কৰিবলে ব্যৰ্থ"
 
 #, c-format
 #~ msgid "%1$6s: Checking %2$-60s: "

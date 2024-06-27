@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1086,6 +1086,10 @@ msgstr ""
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "'%1$s' non è supportato da questo binario di QEMU"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3475,8 +3479,32 @@ msgid ""
 "flush them, breaking networking."
 msgstr ""
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3503,7 +3531,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3512,6 +3549,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4960,6 +5033,10 @@ msgstr "Crea un volume da un volume esistente."
 
 msgid "Create a vol."
 msgstr "Crea un volume."
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 msgid "Created"
 msgstr "Creato"
@@ -8789,6 +8866,13 @@ msgstr ""
 msgid "Finished after host request"
 msgstr ""
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
@@ -12297,6 +12381,9 @@ msgstr ""
 msgid "No filesystems are mounted in the domain"
 msgstr "Nessun filesystem è montato nel dominio"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "Nessun dispositivo NBD disponibile"
 
@@ -14054,9 +14141,6 @@ msgstr "Ci sono altri task sospesi per questo dominio"
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr ""
-
 #, fuzzy
 msgid "S4 state is disabled for this domain"
 msgstr "Ci sono altri task sospesi per questo dominio"
@@ -14151,9 +14235,6 @@ msgstr ""
 #, fuzzy
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "I controller devono usare il tipo di indirizzo 'ccid'"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr ""
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15112,12 +15193,13 @@ msgstr "specificato l'uso del volume, ma il percorso del volume è mancante"
 msgid "TLS:"
 msgstr "TLS:"
 
-msgid "TPM 1.2 is not supported on ARM"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
 msgstr ""
 
-#, fuzzy
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "SATA non è supportato con questo binario di QEMU"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16018,6 +16100,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "Il certificato non è sicuro."
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr ""
 
@@ -16050,6 +16144,12 @@ msgstr "Nome del dispositivo di rete troppo lungo"
 msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
+msgstr ""
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
 
 #, c-format
@@ -16101,6 +16201,18 @@ msgstr "Il certificato non è sicuro."
 msgid "The certificate uses an insecure algorithm"
 msgstr "Il certificato usa un algoritmo non sicuro"
 
+#, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "Il certificato è stato revocato."
@@ -16108,6 +16220,18 @@ msgstr "Il certificato è stato revocato."
 #, fuzzy, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "Il certificato non è sicuro."
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "The device at %1$s has no network device name"
@@ -16169,6 +16293,24 @@ msgstr ""
 "Il controller audio 'ich9-intel-hda' non è supportato in questo binario di "
 "QEMU"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 msgid "The machine has no snapshot and it should have it"
 msgstr "La macchina non ha snapshot mentre dovrebbe averne"
 
@@ -16196,6 +16338,18 @@ msgid ""
 "number"
 msgstr ""
 
+#, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "Il certificato è stato revocato."
@@ -16205,12 +16359,70 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "Il certificato non è sicuro."
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr ""
 
 #, fuzzy
 msgid "The slirp-helper doesn't support migration"
 msgstr "lo storage pool non supporta la creazione del volume"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16243,6 +16455,9 @@ msgstr ""
 
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
+msgstr ""
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
 msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
@@ -17864,6 +18079,10 @@ msgstr "Impossibile aprire il socket UNIX"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "Impossibile aprire il socket UNIX"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "Impossibile caricare il certificato"
 
@@ -19022,6 +19241,10 @@ msgstr ""
 msgid "Unexpected hostdev mode %1$d"
 msgstr "modo hostdev %1$d inaspettato"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 #, fuzzy
 msgid "Unexpected lock parameters for disk resource"
 msgstr "tipo di indirizzo non previsto per il disco fdc"
@@ -19730,10 +19953,6 @@ msgstr "modo hostdev %d inaspettato"
 msgid "Unsupported hostdev type %1$s"
 msgstr "tipo di protocollo non supportato %1$s"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr ""
-
 msgid "Unsupported listen type"
 msgstr "Tipo di listen non supportato"
 
@@ -19909,6 +20128,21 @@ msgid ""
 "options:\n"
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
 msgstr ""
 
 #, sh-format
@@ -24894,6 +25128,9 @@ msgstr "il dominio è già in esecuzione"
 msgid "domain already has a vsock device"
 msgstr "Il dominio risulta essere già attivo"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
 
@@ -26157,9 +26394,6 @@ msgstr ""
 msgid "failed to create logfile %1$s"
 msgstr "errore nella creazione del file di log %1$s"
 
-msgid "failed to create mdevctl thread"
-msgstr ""
-
 #, fuzzy
 msgid "failed to create profile"
 msgstr "errore nella creazione del file di log %s"
@@ -26194,10 +26428,6 @@ msgstr ""
 #, fuzzy
 msgid "failed to create udev context"
 msgstr "impossibile creare il socket"
-
-#, fuzzy
-msgid "failed to create udev enumerate thread"
-msgstr "impossibile leggere l'intestazione qemu"
 
 #, fuzzy
 msgid "failed to create udev handler thread"
@@ -28083,6 +28313,9 @@ msgid ""
 msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
+msgstr ""
+
+msgid "iSCSI protocol accepts only one host"
 msgstr ""
 
 #, fuzzy
@@ -30196,6 +30429,9 @@ msgstr ""
 #, fuzzy
 msgid "matching input device not found"
 msgstr "tipo di dispositivo di input mancante"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 #, fuzzy
 msgid "matching memory device was not found"
@@ -34187,6 +34423,9 @@ msgstr ""
 msgid "query-rx-filter return data missing array element"
 msgstr ""
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr ""
 
@@ -34197,6 +34436,9 @@ msgid "query-sev-capabilities reply was missing 'pdh' field"
 msgstr ""
 
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
+msgstr ""
+
+msgid "query-sev-launch-measure reply was missing 'data'"
 msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
@@ -37804,6 +38046,10 @@ msgstr "tipo di host capability SCSI '%1$s' sconosciuto per '%2$s'"
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
 
+#, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "tipo indirizzo '%s' sconosciuto"
@@ -38081,6 +38327,10 @@ msgstr "tipo di utilizzo segreto sconosciuto %1$s"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "modo smbios '%1$s' sconosciuto"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -39666,6 +39916,14 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr "SATA non è supportato con questo binario di QEMU"
+
+#, fuzzy
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "impossibile leggere l'intestazione qemu"
 
 #, fuzzy, c-format
 #~ msgid "Failed to apply firewall rules %1$s: %2$s"

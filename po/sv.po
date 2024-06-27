@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-04-26 08:00+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2024-06-25 13:50+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -426,6 +426,30 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
+msgstr ""
+"\n"
+"Användning:\n"
+"%1$s värdnamn port\n"
+"\n"
+"Värdnamnet skall vara på en av följande former:\n"
+"\n"
+"  qemu:system/$domnamn\t\tför domäner under qemu:///system\n"
+"  qemu:session/$domnamn\t\tfor domäner under qemu:///session\n"
+"  qemu/$domnamn\t\t\tförsöker slå upp $domnamn under system- följst av "
+"session-URI:n\n"
+
+#, c-format
+msgid ""
+"\n"
 "syntax: %1$s [OPTIONS] [HVTYPE]\n"
 "\n"
 " Hypervisor types:\n"
@@ -518,10 +542,6 @@ msgstr ""
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
 msgstr "värdet $%1$s skall vara mellan 0 och %2$d"
-
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
-msgstr "%1$6s: Kontrollerar %2$-60s: "
 
 #, c-format
 msgid "%1$s\n"
@@ -1231,6 +1251,10 @@ msgstr "”%1$s” är inte en användbara pr-hjälpare"
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "”%1$s” stödjs inte av denna QEMU-binär"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr "”%1$s” startsäkerhet stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "'%1$s' missing"
@@ -2151,6 +2175,9 @@ msgstr ""
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr "Felaktigt prefixnamn ”%1$s” för resctrl-monitor"
 
+msgid "Bad usage"
+msgstr "Felaktig användning"
+
 msgid "Bad value for nativeMode"
 msgstr "Felaktigt värde för nativeMode"
 
@@ -2602,6 +2629,9 @@ msgstr ""
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "Kan inte lägga till en värd-USB-enhet: USB är avaktiverat på denna värd"
+
+msgid "Can't apply empty firewall command"
+msgstr "Kan inte tillämpa ett tomt brandväggskommando"
 
 msgid "Can't change domain configuration in managed save state"
 msgstr "Kan inte ändra domänkonfigurationen i hanterat sparat tillstånd"
@@ -3669,6 +3699,118 @@ msgstr ""
 "autokonfigurerade IPv6-rutter och att aktivera vidarebefordran utan "
 "accept_ra satt till 2 kommer orsaka att kärnan tömmer dem, vilket gör sönder "
 "nätverket."
+
+msgid "Checking CA cert access"
+msgstr "Kontrollerar CA-cert-åtkomst"
+
+msgid "Checking cert access"
+msgstr "Kontrollerar cert-åtkomst"
+
+msgid "Checking cert hostname match"
+msgstr "Kontrollerar att cert-värdnamn stämmer"
+
+msgid "Checking cert properties"
+msgstr "Kontrollerar cert-egenskaper"
+
+msgid "Checking custom PKI base dir access"
+msgstr "Kontrollerar åtkomst av anpassad PKI-baskatalog"
+
+#, c-format
+msgid "Checking for %1$s module"
+msgstr "Kontrollerar att modulen %1$s finns"
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+"Kontrollerar om AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES) "
+"finns"
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
+msgstr ""
+"Kontrollerar om AMD Secure Encrypted Virtualization-Secure Nested Paging "
+"(SEV-SNP) finns"
+
+#, c-format
+msgid "Checking for Linux >= %1$d.%2$d.%3$d"
+msgstr "Kontrollerar att Linux ≥ %1$d.%2$d.%3$d"
+
+msgid "Checking for PowerPC KVM module loaded"
+msgstr "Kontrollerar att PowerPC KVM-modulen är laddad"
+
+#, c-format
+msgid "Checking for cgroup '%1$s' controller support"
+msgstr "Kontrollerar stöd för hanterare av cgroup:en ”%1$s”"
+
+msgid "Checking for device assignment IOMMU support"
+msgstr "Kontrollerar att det finns stöd för enhetstilldelnings-IOMMU"
+
+msgid "Checking for hardware virtualization"
+msgstr "Kontrollerar hårdvaruvirtualisering"
+
+#, c-format
+msgid "Checking for namespace '%1$s'"
+msgstr "Kontrollerar namnrymden ”%1$s”"
+
+msgid "Checking for secure guest support"
+msgstr "Kontrollerar säkert gäststöd"
+
+msgid "Checking if CA cert exists"
+msgstr "Kontrollerar om CA-cert finns"
+
+msgid "Checking if IOMMU is enabled by kernel"
+msgstr "Kontrollerar om IOMMU är aktiverat av kärnan"
+
+msgid "Checking if cert exists"
+msgstr "Kontrollerar om cert finns"
+
+msgid "Checking if custom PKI base dir exists"
+msgstr "Kontrollerar om den anpassade PKI-baskatalogen finns"
+
+#, c-format
+msgid "Checking if device '%1$s' exists"
+msgstr "Kontrollerar om enheten ”%1$s” finns"
+
+#, c-format
+msgid "Checking if device '%1$s' is accessible"
+msgstr "Kontrollerar om enheten ”%1$s” är åtkomlig"
+
+msgid "Checking if key exists"
+msgstr "Kontrollerar om nyckeln finns"
+
+msgid "Checking if system CA dir exists"
+msgstr "Kontrollerar om systemets CA-katalog finns"
+
+msgid "Checking if system PKI dir exists"
+msgstr "Kontrollerar som systemets PKI-katalog finns"
+
+msgid "Checking if system cert dir exists"
+msgstr "Kontrollerar om systemets cert-katalog finns"
+
+msgid "Checking if system key dir exists"
+msgstr "Kontrollerar om systemets nyckelkatalog finns"
+
+msgid "Checking if user PKI base dir exists"
+msgstr "Kontrollerar om användarens PKI-baskatalog finns"
+
+msgid "Checking key access"
+msgstr "Kontrollerar åtkomst av nyckeln"
+
+msgid "Checking system CA dir access"
+msgstr "Kontrollerar åtkomst av systemets CA-katalog"
+
+msgid "Checking system PKI dir access"
+msgstr "Kontrollerar åtkomst av systemets PKI-katalog"
+
+msgid "Checking system cert dir access"
+msgstr "Kontrollerar åtkomst av systemets cert-katalog"
+
+msgid "Checking system key dir access"
+msgstr "Kontrollerar åtkomst av systemets nyckelkatalog"
+
+msgid "Checking user PKI base dir access"
+msgstr "Kontrollerar åtkomst av användarens PKI-baskatalog"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -5095,6 +5237,10 @@ msgstr "Skapa en volym från en befintlig volym."
 
 msgid "Create a vol."
 msgstr "Skapa en volym."
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 msgid "Created"
 msgstr "Skapad"
@@ -6589,6 +6735,9 @@ msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
 "Misslyckades att lägga till lagringsstyrenhet (namn: %1$s, busstyp: %2$d)"
 
+msgid "Failed to allocate AF_VSOCK socket"
+msgstr "Misslyckades att allokera ett AF_VSOCK-uttag"
+
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
 msgstr "Misslyckades att allokera PCI-enhetslistan: %1$s"
@@ -6608,8 +6757,8 @@ msgid "Failed to apply capabilities: %1$d"
 msgstr "Det gick inte att sätta förmågor: %1$d"
 
 #, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
-msgstr "Misslyckades att ta brandväggsregler i drift %1$s: %2$s"
+msgid "Failed to apply firewall command '%1$s': %2$s"
+msgstr "Misslyckades att tillämpa brandväggskommandot ”%1$s”: %2$s"
 
 #, c-format
 msgid "Failed to attach device from %1$s"
@@ -6785,6 +6934,10 @@ msgstr "Misslyckades att ansluta till ssh-agenten"
 
 msgid "Failed to connect to the admin server"
 msgstr "Misslyckades att ansluta administrationsservern"
+
+#, c-format
+msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
+msgstr "Misslyckades att ansluta till vsock (cid=%1$llu port=%2$u)"
 
 #, c-format
 msgid "Failed to connect: %1$s"
@@ -8285,6 +8438,10 @@ msgstr ""
 "med IQN ”%2$s”"
 
 #, c-format
+msgid "Failed to run firewall command %1$s: %2$s"
+msgstr "Misslyckades att köra brandväggskommandot %1$s:%2$s"
+
+#, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
 msgstr "Misslyckades med att spara ”%1$s” för ”%2$s”"
 
@@ -8893,6 +9050,13 @@ msgstr "Avslutade efter gästbegäran"
 
 msgid "Finished after host request"
 msgstr "Avslutade efter värdbegäran"
+
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
 
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "Posten för fast programvara saknar attributet ”name”"
@@ -10112,6 +10276,9 @@ msgstr "Ogiltig filidentifierare i väntan på agenten"
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
 msgstr "Ogiltig filidentifierare i väntan på övervakaren (vm=”%1$s”)"
+
+msgid "Invalid firewall command has 0 arguments"
+msgstr "Felaktigt brandväggskommando har 0 argument"
 
 msgid "Invalid firmware name"
 msgstr "Felaktigt namn på fast programvara"
@@ -12386,6 +12553,9 @@ msgstr "Ingen händelse förväntades med proceduren 0x%1$x"
 msgid "No filesystems are mounted in the domain"
 msgstr "Inga filsystem monterade i domänen"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "Inga fria NBD-enheter"
 
@@ -12549,6 +12719,9 @@ msgstr "Inga användbara Vf:er finns på SRIOV PF %1$s"
 #, c-format
 msgid "No usable target index found for %1$d"
 msgstr "Inget användbart målindex funnet för %1$d"
+
+msgid "No usable vsock found"
+msgstr "Ingen användbar vsock funnen"
 
 msgid ""
 "No user interaction callback provided: Can't get input from keyboard "
@@ -14134,9 +14307,6 @@ msgstr "S3-tillståndet är avaktiverat för denna domän"
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr "S390 PV startsäkerhet stödjs inte av denna värd eller kärna"
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
-
 msgid "S4 state is disabled for this domain"
 msgstr "S4-tillståndet är avaktiverat för denna domän"
 
@@ -14233,9 +14403,6 @@ msgstr "SCSI-enhetsindex %1$d är utanför intervallet [0..6,8..15]"
 
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "SCSI_host-värdenheten måste använda adresstypen ”pci” eller ”ccw”"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr "SEV-measured direkt kärnstart stödjs inte med denna QEMU-binär"
@@ -15213,11 +15380,13 @@ msgstr "TLS-användning angiven, men namn saknas"
 msgid "TLS:"
 msgstr "TLS:"
 
-msgid "TPM 1.2 is not supported on ARM"
-msgstr "TPM 1.2 stödjs inte på ARM"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
+msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16113,6 +16282,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "CA-certifikatet %1$s är inte aktivt ännu"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr "CCW-devno ”%1$s” används redan"
 
@@ -16154,6 +16335,12 @@ msgid ""
 msgstr ""
 "PF-enheten för VF %1$s har inget nätverksenhetsnamn, kan inte få virtuell-"
 "funktions-information"
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -16209,12 +16396,36 @@ msgid "The certificate uses an insecure algorithm"
 msgstr "Certifikatet har en osäker algoritm"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "Klientcertifikatet %1$s har gått ut"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "Klientcertifikatet %1$s är inte aktivt ännu"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16276,6 +16487,24 @@ msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "Audiostyrenheten ich9-intel-hda stödjs inte i denna QEMU-binär"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 msgid "The machine has no snapshot and it should have it"
 msgstr "Maskinen har ingen ögonblicksbild och borde ha det"
 
@@ -16311,6 +16540,18 @@ msgstr ""
 "på en läs-och-skrivbar disk"
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "Servercertifikatet %1$s har gått ut"
 
@@ -16319,11 +16560,69 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "Servercertifikatet %1$s är inte aktivt ännu"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "Servern omdirigerar från ”%1$s” till ”%2$s”"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "Slirp-hjälparen stödjer inte migration"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16358,6 +16657,9 @@ msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr ""
 "Denna QEMU stödjer inte OpenGLs rendernode med grafiktypen egl-headless"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Denna QEMU stödjer inte scsi-block för lun-genomgång"
@@ -17178,6 +17480,9 @@ msgstr "Kan inte skapa katalogen ”%1$s”"
 msgid "Unable to create epoll fd"
 msgstr "Kan inte skapa en epoll-fb"
 
+msgid "Unable to create firewall command"
+msgstr ""
+
 msgid "Unable to create kqueue"
 msgstr "Kan inte skapa en kqueue"
 
@@ -17209,9 +17514,6 @@ msgstr "Kan inte skapa en migrationstråd"
 
 msgid "Unable to create pipes"
 msgstr "Kan inte skapa rör"
-
-msgid "Unable to create rule"
-msgstr "Kan inte skapa en regel"
 
 msgid "Unable to create socket"
 msgstr "Kunde inte skapa uttag"
@@ -17877,6 +18179,10 @@ msgstr "Kan inte lyssna på uttaget"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "Kan inte lyssna på UNIX-uttaget med sökvägen ”%1$s”"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "Kan inte ladda certfikat"
 
@@ -18096,6 +18402,10 @@ msgstr "Kan inte tolka låstillståndet %1$s: %2$s"
 
 msgid "Unable to parse ovs-vsctl output"
 msgstr "Kan inte tolka utdata från ovs-vsctl"
+
+#, c-format
+msgid "Unable to parse port: %1$s"
+msgstr ""
 
 msgid "Unable to parse quota"
 msgstr "Kan inte tolka kvoten"
@@ -18967,6 +19277,10 @@ msgstr "Oväntat format på mdevctl-svaret"
 msgid "Unexpected hostdev mode %1$d"
 msgstr "Oväntat hostdev-läge %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Ovändade låsparametrar för diskresursen"
 
@@ -19173,6 +19487,10 @@ msgstr "Okänd teckenenhetstyp: %1$d"
 #, c-format
 msgid "Unknown compatibility mode %1$s"
 msgstr "Okänd kompatibilietsläge %1$s"
+
+#, c-format
+msgid "Unknown connection URI: '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Unknown controller type %1$d"
@@ -19666,10 +19984,6 @@ msgstr "Värdenhetsläget %1$s stödjs inte"
 msgid "Unsupported hostdev type %1$s"
 msgstr "Värdenhetstypen %1$s stödjs inte"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
-
 msgid "Unsupported listen type"
 msgstr "Ej stödd lyssningstyp"
 
@@ -19860,6 +20174,21 @@ msgstr ""
 "flaggor:\n"
 "  -h | --help     visa denna hjälp och avsluta\n"
 "  -v | --version  skriv ut versionsinformation och avsluta\n"
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
+msgstr ""
 
 #, sh-format
 msgid ""
@@ -23462,6 +23791,9 @@ msgstr "kunde inte koppla loss den delade mappen ”%1$s”"
 msgid "could not determine max vcpus for the domain"
 msgstr "kunde inte avgöra max vcpu:er för domänen"
 
+msgid "could not find a usable firewall backend"
+msgstr ""
+
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
 msgstr ""
@@ -23682,9 +24014,6 @@ msgstr "kunde inte använda akten för Xens hypervisor"
 msgid "could not use Xen hypervisor entry %1$s"
 msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
 
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
-
 msgid "couldn't fetch array of leases"
 msgstr "kunde inte hämta vektorn av hyror"
 
@@ -23751,6 +24080,12 @@ msgid ""
 msgstr ""
 "kunde inte hitta en befintlig dhcp host-post med ”mac=’%1$s’” ”name=’%2$s’” "
 "”ip=’%3$s’” i nätverket ”%4$s”"
+
+#, c-format
+msgid ""
+"couldn't register rollback command - command '%1$s' had no valid handle in "
+"output ('%2$s')"
+msgstr ""
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -24789,6 +25124,9 @@ msgstr "domänen har redan VNC-grafik"
 msgid "domain already has a vsock device"
 msgstr "domänen har redan en vsock-enhet"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "domänarkitektur (/domän/os/typ/@arkitektur)"
 
@@ -25325,6 +25663,9 @@ msgstr "fel från tjänsten: %1$s"
 
 msgid "error getting profile status"
 msgstr "fel när profilstatus hämtades"
+
+msgid "error in original firewall object"
+msgstr ""
 
 msgid "error in poll call"
 msgstr "fel i poll-anrop"
@@ -26029,9 +26370,6 @@ msgstr "misslyckades att skapa loggkatalogen ”%1$s”"
 msgid "failed to create logfile %1$s"
 msgstr "det gick inte att skapa loggfilen %1$s"
 
-msgid "failed to create mdevctl thread"
-msgstr "misslyckades att skapa en mdevctl-tråd"
-
 msgid "failed to create profile"
 msgstr "misslyckats med att skapa profil"
 
@@ -26062,9 +26400,6 @@ msgstr "misslyckades att skapa RBD IoCTX. Finns poolen ”%1$s”?"
 
 msgid "failed to create udev context"
 msgstr "misslyckades att skapa ett udev-kontext"
-
-msgid "failed to create udev enumerate thread"
-msgstr "misslyckades att skapa udev-uppräkningstråden"
 
 msgid "failed to create udev handler thread"
 msgstr "misslyckades att skapa en udev-hanterartråd"
@@ -26278,10 +26613,6 @@ msgstr "misslyckades att hämta nätverksporten '%1$s'"
 
 msgid "failed to get node information"
 msgstr "misslyckades att få nodinformation"
-
-#, c-format
-msgid "failed to get number of %1$s interfaces on host"
-msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
 
 #, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
@@ -27302,26 +27633,6 @@ msgstr "inkoppling i drift av floppyenheter stödjs inte"
 msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr "fmode och dmode måste användas med accessmode=mapped"
 
-#, c-format
-msgid "for %1$s module"
-msgstr "modulen %1$s"
-
-#, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr "att Linux ≥ %1$d.%2$d.%3$d"
-
-msgid "for PowerPC KVM module loaded"
-msgstr "att PowerPC KVM-modulen är laddad"
-
-msgid "for device assignment IOMMU support"
-msgstr "IOMMU-stödet för enhetstilldelning"
-
-msgid "for hardware virtualization"
-msgstr "hårdvaruvirtualisering"
-
-msgid "for secure guest support"
-msgstr "stöd för säkra gäster"
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr "förbjudna tecken i attributet ”compat”"
 
@@ -27942,6 +28253,9 @@ msgstr ""
 msgid "i - turn off validation and try to redefine again"
 msgstr "i – slå av validering och försök att omdefiniera igen"
 
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
+
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI-lagringspool stödjer inte skapande av volymer"
 
@@ -27962,9 +28276,6 @@ msgstr "overksam:"
 
 msgid "ids of vcpus to manipulate"
 msgstr "id:n på vcpu:er att hantera"
-
-msgid "if IOMMU is enabled by kernel"
-msgstr "om IOMMU är aktiverat i kärnan"
 
 #, c-format
 msgid "ifkey \"%1$s\" has no req"
@@ -29996,6 +30307,9 @@ msgstr ""
 #, fuzzy
 msgid "matching input device not found"
 msgstr "saknar rot-enhetsinformation"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 msgid "matching memory device was not found"
 msgstr ""
@@ -33909,6 +34223,9 @@ msgstr ""
 msgid "query-rx-filter return data missing array element"
 msgstr ""
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr ""
 
@@ -33919,6 +34236,9 @@ msgid "query-sev-capabilities reply was missing 'pdh' field"
 msgstr ""
 
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
+msgstr ""
+
+msgid "query-sev-launch-measure reply was missing 'data'"
 msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
@@ -33997,6 +34317,12 @@ msgstr ""
 
 #, c-format
 msgid "range %1$s - %2$s start larger than end"
+msgstr ""
+
+msgid "ras feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ras feature is only supported with ARM Virt machines"
 msgstr ""
 
 msgid "rawio can be used only with device='lun'"
@@ -34297,6 +34623,10 @@ msgstr ""
 
 #, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
+msgstr ""
+
+#, c-format
+msgid "requested firewall_backend '%1$s' is not available"
 msgstr ""
 
 msgid "requested size must be an integer multiple of block size"
@@ -37454,6 +37784,10 @@ msgstr ""
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr ""
 
+#, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "okänd adresstyp ”%s”"
@@ -37732,6 +38066,10 @@ msgstr "okänd hemlighetstyp ”%1$s”"
 msgid "unknown smbios mode '%1$s'"
 msgstr "okänt smbios-läge ”%1$s”"
 
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
 msgstr "okänd protokolltyp ”%s”"
@@ -37862,6 +38200,12 @@ msgstr ""
 
 #, c-format
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+"%2$s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -38869,6 +39213,9 @@ msgstr ""
 msgid "virtio-serial controller %1$u not available"
 msgstr ""
 
+msgid "virtio-sound controller is not supported in this QEMU binary"
+msgstr ""
+
 msgid "virtiofs does not support fmode and dmode"
 msgstr ""
 
@@ -39280,213 +39627,67 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
 #, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"%1$s hostname port\n"
-"\n"
-"Hostname should be in one of the following forms:\n"
-"\n"
-"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
-"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
-"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
-"session URI\n"
-msgstr ""
-"\n"
-"Användning:\n"
-"%1$s värdnamn port\n"
-"\n"
-"Värdnamnet skall vara på en av följande former:\n"
-"\n"
-"  qemu:system/$domnamn\t\tför domäner under qemu:///system\n"
-"  qemu:session/$domnamn\t\tfor domäner under qemu:///session\n"
-"  qemu/$domnamn\t\t\tförsöker slå upp $domnamn under system- följst av "
-"session-URI:n\n"
-
-msgid "Bad usage"
-msgstr "Felaktig användning"
-
-msgid "Can't apply empty firewall command"
-msgstr "Kan inte tillämpa ett tomt brandväggskommando"
+#~ msgid "%1$6s: Checking %2$-60s: "
+#~ msgstr "%1$6s: Kontrollerar %2$-60s: "
 
 #, c-format
-msgid "Checking for %1$s module"
-msgstr "Kontrollerar att modulen %1$s finns"
+#~ msgid "Failed to apply firewall rules %1$s: %2$s"
+#~ msgstr "Misslyckades att ta brandväggsregler i drift %1$s: %2$s"
+
+#~ msgid "S390 PV launch security is not supported with this QEMU binary"
+#~ msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
+
+#~ msgid "SEV launch security is not supported with this QEMU binary"
+#~ msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
+
+#~ msgid "TPM 1.2 is not supported on ARM"
+#~ msgstr "TPM 1.2 stödjs inte på ARM"
+
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
+
+#~ msgid "Unable to create rule"
+#~ msgstr "Kan inte skapa en regel"
 
 #, c-format
-msgid "Checking for Linux >= %1$d.%2$d.%3$d"
-msgstr "Kontrollerar att Linux ≥ %1$d.%2$d.%3$d"
+#~ msgid "Unsupported interface '%1$s' for TPM 1.2"
+#~ msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
 
-msgid "Checking for PowerPC KVM module loaded"
-msgstr "Kontrollerar att PowerPC KVM-modulen är laddad"
+#~ msgid "couldn't convert node device def to mdevctl JSON"
+#~ msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
 
-#, c-format
-msgid "Checking for cgroup '%1$s' controller support"
-msgstr "Kontrollerar stöd för hanterare av cgroup:en ”%1$s”"
+#~ msgid "failed to create mdevctl thread"
+#~ msgstr "misslyckades att skapa en mdevctl-tråd"
 
-msgid "Checking for device assignment IOMMU support"
-msgstr "Kontrollerar att det finns stöd för enhetstilldelnings-IOMMU"
-
-msgid "Checking for hardware virtualization"
-msgstr "Kontrollerar hårdvaruvirtualisering"
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "misslyckades att skapa udev-uppräkningstråden"
 
 #, c-format
-msgid "Checking for namespace '%1$s'"
-msgstr "Kontrollerar namnrymden ”%1$s”"
-
-msgid "Checking for secure guest support"
-msgstr "Kontrollerar säkert gäststöd"
-
-msgid "Checking if IOMMU is enabled by kernel"
-msgstr "Kontrollerar om IOMMU är aktiverat av kärnan"
+#~ msgid "failed to get number of %1$s interfaces on host"
+#~ msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
 
 #, c-format
-msgid "Checking if device '%1$s' exists"
-msgstr "Kontrollerar om enheten ”%1$s” finns"
+#~ msgid "for %1$s module"
+#~ msgstr "modulen %1$s"
 
 #, c-format
-msgid "Checking if device '%1$s' is accessible"
-msgstr "Kontrollerar om enheten ”%1$s” är åtkomlig"
+#~ msgid "for Linux >= %1$d.%2$d.%3$d"
+#~ msgstr "att Linux ≥ %1$d.%2$d.%3$d"
 
-msgid "Failed to allocate AF_VSOCK socket"
-msgstr "Misslyckades att allokera ett AF_VSOCK-uttag"
+#~ msgid "for PowerPC KVM module loaded"
+#~ msgstr "att PowerPC KVM-modulen är laddad"
 
-#, c-format
-msgid "Failed to apply firewall command '%1$s': %2$s"
-msgstr "Misslyckades att tillämpa brandväggskommandot ”%1$s”: %2$s"
+#~ msgid "for device assignment IOMMU support"
+#~ msgstr "IOMMU-stödet för enhetstilldelning"
 
-#, c-format
-msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
-msgstr "Misslyckades att ansluta till vsock (cid=%1$llu port=%2$u)"
+#~ msgid "for hardware virtualization"
+#~ msgstr "hårdvaruvirtualisering"
 
-#, c-format
-msgid "Failed to run firewall command %1$s: %2$s"
-msgstr "Misslyckades att köra brandväggskommandot %1$s:%2$s"
+#~ msgid "for secure guest support"
+#~ msgstr "stöd för säkra gäster"
 
-msgid "Invalid firewall command has 0 arguments"
-msgstr "Felaktigt brandväggskommando har 0 argument"
-
-msgid "No usable vsock found"
-msgstr "Ingen användbar vsock funnen"
-
-msgid "Unable to create firewall command"
-msgstr ""
-
-#, c-format
-msgid "Unable to parse port: %1$s"
-msgstr ""
-
-#, c-format
-msgid "Unknown connection URI: '%1$s'"
-msgstr ""
-
-msgid "could not find a usable firewall backend"
-msgstr ""
-
-#, c-format
-msgid ""
-"couldn't register rollback command - command '%1$s' had no valid handle in "
-"output ('%2$s')"
-msgstr ""
-
-msgid "error in original firewall object"
-msgstr ""
-
-msgid "ras feature is not available with this QEMU binary"
-msgstr ""
-
-msgid "ras feature is only supported with ARM Virt machines"
-msgstr ""
-
-#, c-format
-msgid "requested firewall_backend '%1$s' is not available"
-msgstr ""
-
-#, c-format
-msgid ""
-"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
-"%2$s"
-msgstr ""
-
-msgid "virtio-sound controller is not supported in this QEMU binary"
-msgstr ""
-
-#, c-format
-msgid "'%1$s' launch security is not supported with this QEMU binary"
-msgstr "”%1$s” startsäkerhet stödjs inte av denna QEMU-binär"
-
-msgid "Checking CA cert access"
-msgstr "Kontrollerar CA-cert-åtkomst"
-
-msgid "Checking cert access"
-msgstr "Kontrollerar cert-åtkomst"
-
-msgid "Checking cert hostname match"
-msgstr "Kontrollerar att cert-värdnamn stämmer"
-
-msgid "Checking cert properties"
-msgstr "Kontrollerar cert-egenskaper"
-
-msgid "Checking custom PKI base dir access"
-msgstr "Kontrollerar åtkomst av anpassad PKI-baskatalog"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-"Kontrollerar om AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES) "
-"finns"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
-msgstr ""
-"Kontrollerar om AMD Secure Encrypted Virtualization-Secure Nested Paging "
-"(SEV-SNP) finns"
-
-msgid "Checking if CA cert exists"
-msgstr "Kontrollerar om CA-cert finns"
-
-msgid "Checking if cert exists"
-msgstr "Kontrollerar om cert finns"
-
-msgid "Checking if custom PKI base dir exists"
-msgstr "Kontrollerar om den anpassade PKI-baskatalogen finns"
-
-msgid "Checking if key exists"
-msgstr "Kontrollerar om nyckeln finns"
-
-msgid "Checking if system CA dir exists"
-msgstr "Kontrollerar om systemets CA-katalog finns"
-
-msgid "Checking if system PKI dir exists"
-msgstr "Kontrollerar som systemets PKI-katalog finns"
-
-msgid "Checking if system cert dir exists"
-msgstr "Kontrollerar om systemets cert-katalog finns"
-
-msgid "Checking if system key dir exists"
-msgstr "Kontrollerar om systemets nyckelkatalog finns"
-
-msgid "Checking if user PKI base dir exists"
-msgstr "Kontrollerar om användarens PKI-baskatalog finns"
-
-msgid "Checking key access"
-msgstr "Kontrollerar åtkomst av nyckeln"
-
-msgid "Checking system CA dir access"
-msgstr "Kontrollerar åtkomst av systemets CA-katalog"
-
-msgid "Checking system PKI dir access"
-msgstr "Kontrollerar åtkomst av systemets PKI-katalog"
-
-msgid "Checking system cert dir access"
-msgstr "Kontrollerar åtkomst av systemets cert-katalog"
-
-msgid "Checking system key dir access"
-msgstr "Kontrollerar åtkomst av systemets nyckelkatalog"
-
-msgid "Checking user PKI base dir access"
-msgstr "Kontrollerar åtkomst av användarens PKI-baskatalog"
+#~ msgid "if IOMMU is enabled by kernel"
+#~ msgstr "om IOMMU är aktiverat i kärnan"
 
 #, c-format
 #~ msgid " [[--%1$s] <string>]..."

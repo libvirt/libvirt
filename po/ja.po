@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-05-28 08:41+0000\n"
+"POT-Creation-Date: 2024-06-25 13:01+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1259,6 +1259,10 @@ msgstr "'%1$s' は適切な pr ヘルパーではありません"
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "この QEMU バイナリーでは、'%1$s' はサポートされません"
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3688,8 +3692,32 @@ msgid ""
 "flush them, breaking networking."
 msgstr ""
 
+msgid "Checking CA cert access"
+msgstr ""
+
+msgid "Checking cert access"
+msgstr ""
+
+msgid "Checking cert hostname match"
+msgstr ""
+
+msgid "Checking cert properties"
+msgstr ""
+
+msgid "Checking custom PKI base dir access"
+msgstr ""
+
 #, c-format
 msgid "Checking for %1$s module"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 msgstr ""
 
 #, c-format
@@ -3716,7 +3744,16 @@ msgstr ""
 msgid "Checking for secure guest support"
 msgstr ""
 
+msgid "Checking if CA cert exists"
+msgstr ""
+
 msgid "Checking if IOMMU is enabled by kernel"
+msgstr ""
+
+msgid "Checking if cert exists"
+msgstr ""
+
+msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
@@ -3725,6 +3762,42 @@ msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
+msgstr ""
+
+msgid "Checking if key exists"
+msgstr ""
+
+msgid "Checking if system CA dir exists"
+msgstr ""
+
+msgid "Checking if system PKI dir exists"
+msgstr ""
+
+msgid "Checking if system cert dir exists"
+msgstr ""
+
+msgid "Checking if system key dir exists"
+msgstr ""
+
+msgid "Checking if user PKI base dir exists"
+msgstr ""
+
+msgid "Checking key access"
+msgstr ""
+
+msgid "Checking system CA dir access"
+msgstr ""
+
+msgid "Checking system PKI dir access"
+msgstr ""
+
+msgid "Checking system cert dir access"
+msgstr ""
+
+msgid "Checking system key dir access"
+msgstr ""
+
+msgid "Checking user PKI base dir access"
 msgstr ""
 
 #, c-format
@@ -5146,6 +5219,10 @@ msgstr "既存のボリュームからボリュームを作成します。"
 
 msgid "Create a vol."
 msgstr "ボリュームを作成します。"
+
+#, c-format
+msgid "Create the dir %1$s"
+msgstr ""
 
 msgid "Created"
 msgstr "作成日"
@@ -8966,6 +9043,13 @@ msgstr "ゲストリクエスト後に終了"
 msgid "Finished after host request"
 msgstr "ホストリクエスト後に終了"
 
+#, c-format
+msgid "Firewall backend '%1$s' not available on this platform"
+msgstr ""
+
+msgid "Firewall backend is not implemented"
+msgstr ""
+
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "ファームウェアエントリーに 'name' 属性がありません"
 
@@ -12497,6 +12581,9 @@ msgstr "手順 0x%1$x では、イベントは予想されていません"
 msgid "No filesystems are mounted in the domain"
 msgstr "ドメインにファイルシステムがマウントされていません"
 
+msgid "No firewall backend is available"
+msgstr ""
+
 msgid "No free NBD devices"
 msgstr "空き NBD デバイスがありません"
 
@@ -14273,10 +14360,6 @@ msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
 "このホストまたはカーネルでは、S390 PV 起動セキュリティーはサポートされません"
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr ""
-"この QEMU バイナリーでは、S390 PV 起動セキュリティーはサポートされません"
-
 msgid "S4 state is disabled for this domain"
 msgstr "このドメインに対して S4 状態が無効化されています"
 
@@ -14376,9 +14459,6 @@ msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr ""
 "SCSI_host ホストデバイスは、'pci' または 'ccw' アドレスタイプを使用する必要が"
 "あります"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、SEV 起動セキュリティーはサポートされません"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15379,11 +15459,13 @@ msgstr "TLS の使用法が指定されていますが、名前がありませ�
 msgid "TLS:"
 msgstr "TLS:"
 
-msgid "TPM 1.2 is not supported on ARM"
-msgstr "TPM 1.2 は ARM ではサポートされません"
+#, c-format
+msgid "TPM 1.2 is not supported for model '%1$s'"
+msgstr ""
 
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "SPAPR デバイスモデルでは、TPM 1.2 はサポートされません"
+#, c-format
+msgid "TPM 1.2 is not supported on architecture '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16330,6 +16412,18 @@ msgid "The CA certificate %1$s is not yet active"
 msgstr "CA 証明書 %1$s がまだアクティブではありません"
 
 #, c-format
+msgid ""
+"The CA certificate %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The CA certificate %1$s must not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The CCW devno '%1$s' is in use already"
 msgstr "CCW devno '%1$s' はすでに使用されています"
 
@@ -16372,6 +16466,12 @@ msgid ""
 msgstr ""
 "VF %1$s の PF デバイスにはネットワークデバイス名がありません、仮想機能情報を"
 "取得できません"
+
+#, c-format
+msgid ""
+"The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
+"%3$d %4$s; chmod 0700 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -16425,12 +16525,36 @@ msgid "The certificate uses an insecure algorithm"
 msgstr "証明書が安全ではないアルゴリズムを使用しています"
 
 #, c-format
+msgid ""
+"The client cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The client certificate %1$s has expired"
 msgstr "クライアント証明書 %1$s は期限切れです"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
 msgstr "クライアント証明書 %1$s がまだアクティブではありません"
+
+#, c-format
+msgid ""
+"The client key %1$s must be accessible to all users. As root run: chown root."
+"root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The client key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16497,6 +16621,24 @@ msgstr ""
 "この QEMU バイナリーでは、ich9-intel-hda オーディオコントローラーはサポートさ"
 "れません"
 
+#, c-format
+msgid ""
+"The machine cannot act as a client or server. See https://libvirt.org/kbase/"
+"tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates on how to regenerate %1$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates on how to regenerate %1$s"
+msgstr ""
+
 msgid "The machine has no snapshot and it should have it"
 msgstr "マシンにはスナップショットがありませんが、必要です"
 
@@ -16531,6 +16673,18 @@ msgstr ""
 "ます"
 
 #, c-format
+msgid ""
+"The server cert %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server cert %1$s must be restricted to this user. As this user, run: "
+"chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
 msgid "The server certificate %1$s has expired"
 msgstr "サーバー証明書 %1$s は期限切れです"
 
@@ -16539,11 +16693,69 @@ msgid "The server certificate %1$s is not yet active"
 msgstr "サーバー証明書 %1$s がまだアクティブではありません"
 
 #, c-format
+msgid ""
+"The server key %1$s must be not be accessible to other users. As this user, "
+"run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The server key %1$s must not be accessible to unprivileged users. As root "
+"run: chown root.root %2$s; chmod 0600 %3$s"
+msgstr ""
+
+#, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
 msgstr "サーバーが '%1$s' から '%2$s' にリダイレクトされました"
 
 msgid "The slirp-helper doesn't support migration"
 msgstr "slirp-helper はマイグレーションをサポートしません"
+
+#, c-format
+msgid ""
+"The system CA dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system CA dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s is usually installed as part of the base filesystem "
+"or openssl packages"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system PKI dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system cert dir %1$s must be accessible to all users. As root, run: "
+"chown root.root; chmod 0755 %2$s"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s is usually installed as part of the libvirt package"
+msgstr ""
+
+#, c-format
+msgid ""
+"The system key dir %1$s must be accessible to all users. As root, run: chown "
+"root.root; chmod 0755 %2$s"
+msgstr ""
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16579,6 +16791,9 @@ msgid ""
 msgstr ""
 "この QEMU は、egl-headless グラフィックタイプの OpenGL rendernode をサポート"
 "しません"
+
+msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
+msgstr ""
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "この QEMU は LUN パススルーに対する SCSI ブロックをサポートしません"
@@ -18115,6 +18330,10 @@ msgstr "ソケットにおいてリッスンできません"
 msgid "Unable to listen to UNIX socket path '%1$s'"
 msgstr "UNIX ソケットパス '%1$s' をリッスンできません"
 
+#, c-format
+msgid "Unable to load %1$s: %2$s"
+msgstr ""
+
 msgid "Unable to load certificate"
 msgstr "証明書が読み込めません"
 
@@ -19206,6 +19425,10 @@ msgstr "mdevctl 応答の予期しない形式"
 msgid "Unexpected hostdev mode %1$d"
 msgstr "予期しない hostdev モード %1$d"
 
+#, c-format
+msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
+msgstr ""
+
 msgid "Unexpected lock parameters for disk resource"
 msgstr "ディスクリソースに対する予期しないロックパラメーターです"
 
@@ -19918,10 +20141,6 @@ msgstr "サポートされない hostdev モード %1$s"
 msgid "Unsupported hostdev type %1$s"
 msgstr "サポートされない hostdev タイプ %1$s"
 
-#, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr "TPM 1.2 でサポートされないインターフェイス '%1$s'"
-
 msgid "Unsupported listen type"
 msgstr "サポートされないリッスンタイプ"
 
@@ -20111,6 +20330,21 @@ msgstr ""
 "オプション:\n"
 "  -h | --help     このヘルプを表示して終了します\n"
 "  -v | --version  バージョン情報を出力して終了します\n"
+
+#, c-format
+msgid ""
+"Usage:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validate TLS certificate configuration\n"
+"\n"
+"options:\n"
+"  -s     | --system   validate system certificates (default)\n"
+"  -u     | --user     validate user certificates\n"
+"  -p DIR | --path DIR validate custom certificate path\n"
+"  -h     | --help     display this help and exit\n"
+"  -v     | --version  output version information and exit\n"
+msgstr ""
 
 #, sh-format
 msgid ""
@@ -25057,6 +25291,9 @@ msgstr "ドメインにはすでに VNC グラフィックがあります"
 msgid "domain already has a vsock device"
 msgstr "ドメインにはすでに vsock デバイスがあります"
 
+msgid "domain already has an iommu device"
+msgstr ""
+
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "ドメインアーキテクチャー (/domain/os/type/@arch)"
 
@@ -26307,9 +26544,6 @@ msgstr "ログディレクトリー '%1$s' の作成に失敗しました"
 msgid "failed to create logfile %1$s"
 msgstr "ログファイル %1$s の作成に失敗"
 
-msgid "failed to create mdevctl thread"
-msgstr "mdevctl スレッドの作成に失敗しました"
-
 msgid "failed to create profile"
 msgstr "プロファイルの作成に失敗しました"
 
@@ -26340,9 +26574,6 @@ msgstr "RBD IoCTX の作成に失敗しました。プール '%1$s' はありま
 
 msgid "failed to create udev context"
 msgstr "udev コンテキストの作成に失敗しました"
-
-msgid "failed to create udev enumerate thread"
-msgstr "udev 列挙スレッドの作成に失敗しました"
 
 msgid "failed to create udev handler thread"
 msgstr "udev ハンドラースレッドの作成に失敗しました"
@@ -28191,6 +28422,9 @@ msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - 検証をオフにして、再定義を再試行します"
+
+msgid "iSCSI protocol accepts only one host"
+msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI ストレージプールはボリュームの作成をサポートしません"
@@ -30248,6 +30482,9 @@ msgstr "一致するファイルシステムが見つかりません"
 
 msgid "matching input device not found"
 msgstr "一致する入力デバイスが見つかりません"
+
+msgid "matching iommu device not found"
+msgstr ""
 
 msgid "matching memory device was not found"
 msgstr "一致するメモリーデバイスが見つかりませんでした"
@@ -34203,6 +34440,9 @@ msgstr "query-named-block-nodes エントリーが予期された形式ではあ
 msgid "query-rx-filter return data missing array element"
 msgstr "query-rx-filter は、配列要素がないデータを返します"
 
+msgid "query-sev reply was missing some data"
+msgstr ""
+
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "query-sev-capabilities 応答に 'cbitpos' フィールドがありませんでした"
 
@@ -34217,6 +34457,9 @@ msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
 msgstr ""
 "query-sev-capabilities の応答に 'reduced-phys-bits' フィールドがありませんで"
 "した"
+
+msgid "query-sev-launch-measure reply was missing 'data'"
+msgstr ""
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr "query-sev-capabilities の応答に 'flc' フィールドがありませんでした"
@@ -37869,6 +38112,10 @@ msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "不明な SDL_AUDIODRIVER 設定 %1$s"
 
 #, c-format
+msgid "unknown SEV type '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
 msgstr "不明なアドレスタイプ '%1$s' がネットワーク %2$s にあります"
 
@@ -38141,6 +38388,10 @@ msgstr "不明な秘密のタイプ '%1$s'"
 #, c-format
 msgid "unknown smbios mode '%1$s'"
 msgstr "不明な smbios モード '%1$s'"
+
+#, c-format
+msgid "unknown state '%1$s' for '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -39764,6 +40015,30 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#~ msgid "S390 PV launch security is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、S390 PV 起動セキュリティーはサポートされません"
+
+#~ msgid "SEV launch security is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、SEV 起動セキュリティーはサポートされません"
+
+#~ msgid "TPM 1.2 is not supported on ARM"
+#~ msgstr "TPM 1.2 は ARM ではサポートされません"
+
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr "SPAPR デバイスモデルでは、TPM 1.2 はサポートされません"
+
+#, c-format
+#~ msgid "Unsupported interface '%1$s' for TPM 1.2"
+#~ msgstr "TPM 1.2 でサポートされないインターフェイス '%1$s'"
+
+#~ msgid "failed to create mdevctl thread"
+#~ msgstr "mdevctl スレッドの作成に失敗しました"
+
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "udev 列挙スレッドの作成に失敗しました"
 
 #, c-format
 #~ msgid "%1$6s: Checking %2$-60s: "
