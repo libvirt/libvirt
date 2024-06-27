@@ -160,6 +160,11 @@
         <value>builtin</value>
       </enum>
     </crypto>
+    <interface supported='yes'>
+      <enum name='backendType'>
+        <value>default</value>
+      </enum>
+    </interface>
   </devices>
   <features>
     <gic supported='no'/>

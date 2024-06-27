@@ -6542,6 +6542,20 @@ virQEMUCapsFillDomainLaunchSecurity(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceNetCaps(virQEMUCaps *qemuCaps,
+                                   virDomainCapsDeviceNet *net)
+{
+    net->supported = VIR_TRISTATE_BOOL_YES;
+    net->backendType.report = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_USER))
+        VIR_DOMAIN_CAPS_ENUM_SET(net->backendType, VIR_DOMAIN_NET_BACKEND_DEFAULT);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM))
+        VIR_DOMAIN_CAPS_ENUM_SET(net->backendType, VIR_DOMAIN_NET_BACKEND_PASST);
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6707,6 +6721,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsMemoryBacking *memoryBacking = &domCaps->memoryBacking;
     virDomainCapsDeviceCrypto *crypto = &domCaps->crypto;
     virDomainCapsLaunchSecurity *launchSecurity = &domCaps->launchSecurity;
+    virDomainCapsDeviceNet *net = &domCaps->net;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
@@ -6747,6 +6762,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainFeatureHypervCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainDeviceCryptoCaps(qemuCaps, crypto);
     virQEMUCapsFillDomainLaunchSecurity(qemuCaps, launchSecurity);
+    virQEMUCapsFillDomainDeviceNetCaps(qemuCaps, net);
 
     return 0;
 }
