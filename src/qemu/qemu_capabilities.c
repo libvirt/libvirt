@@ -440,7 +440,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-net.tx_queue_size", /* X_QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
               "chardev-reconnect", /* QEMU_CAPS_CHARDEV_RECONNECT */
               "virtio-gpu.max_outputs", /* X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
-              "vxhs", /* QEMU_CAPS_VXHS */
+              "vxhs", /* X_QEMU_CAPS_VXHS */
               "virtio-blk.num-queues", /* X_QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
 
               /* 270 */
@@ -1539,7 +1539,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = 
 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
-    { "blockdev-add/arg-type/+vxhs", QEMU_CAPS_VXHS},
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
     { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },

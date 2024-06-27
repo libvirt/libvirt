@@ -5380,8 +5380,7 @@ qemuProcessStartValidateDisks(virDomainObj *vm,
          * option exists, but we cannot determine whether the running QEMU
          * was build with '--enable-vxhs'. */
         if (src->type == VIR_STORAGE_TYPE_NETWORK &&
-            src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VXHS)) {
+            src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("VxHS protocol is not supported with this QEMU binary"));
             return -1;
