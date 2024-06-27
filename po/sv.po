@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-04-26 08:00+0000\n"
-"PO-Revision-Date: 2024-06-24 12:47+0000\n"
+"PO-Revision-Date: 2024-06-25 13:50+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -28693,7 +28693,8 @@ msgstr "felaktig json i filen: %1$s, skriver om den"
 
 #, c-format
 msgid "invalid json in net device saved config file '%1$s': '%2$.60s'"
-msgstr "felaktig json i nätenhetens sparade konfigurationsfil ”%1$s”: ”%2$.60s”"
+msgstr ""
+"felaktig json i nätenhetens sparade konfigurationsfil ”%1$s”: ”%2$.60s”"
 
 #, c-format
 msgid "invalid keycode %1$u of %2$s codeset"
@@ -29326,8 +29327,8 @@ msgstr "libxenlight misslyckades att koppla ifrån nätverksenheten"
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
-"libxenlight misslyckades att koppla ifrån pci-enheten "
-"%1$04x:%2$02x:%3$02x:%4$d"
+"libxenlight misslyckades att koppla ifrån pci-enheten %1$04x:%2$02x:%3$02x:"
+"%4$d"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
@@ -29740,70 +29741,72 @@ msgid "machine not running, so can't reboot it"
 msgstr "maskinen kör inte, så kan inte starta om den"
 
 msgid "machine paused, so can't power it down"
-msgstr ""
+msgstr "maskinen är pausad, så den kan inte stängas av"
 
 #, c-format
 msgid "machine type '%1$s'"
-msgstr ""
+msgstr "maskintyp ”%1$s”"
 
 #, c-format
 msgid "machine type '%1$s' does not support ACPI"
-msgstr ""
+msgstr "maskintypen ”%1$s” stödjer inte ACPI"
 
 msgid "machine type (/domain/os/type/@machine)"
-msgstr ""
+msgstr "maskintyp (/domän/os/typ/@maskin)"
 
 msgid "make added vcpus hot(un)pluggable"
-msgstr ""
+msgstr "gör tillagda vcpu:er in-/urkopplingsbara under drift"
 
 msgid "make live change persistent"
-msgstr ""
+msgstr "gör ändringar i drift beständiga"
 
 msgid "make the copy share a backing chain"
-msgstr ""
+msgstr "låt kopian dela en bakomliggande kedja"
 
 msgid "malformed 'offset' property of 'raw' driver"
-msgstr ""
+msgstr "felformaterag egenskap ”offset” på drivrutinen ”raw”"
 
 msgid "malformed 'prefix' field"
-msgstr ""
+msgstr "felformaterat fält ”prefix”"
 
 #, c-format
 msgid "malformed 'readahead' field in backing store definition '%1$s'"
 msgstr ""
+"felformaterat fält ”readahead” i bakomliggande lagringsdefinition ”%1$s”"
 
 msgid "malformed 'size' property of 'raw' driver"
-msgstr ""
+msgstr "felformaterad egenskap ”size” på drivrutinen ”raw”"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%1$s'"
 msgstr ""
+"felformaterat fält ”sslverify” i bakomliggande lagringsdefinition ”%1$s”"
 
 #, c-format
 msgid "malformed 'timeout' field in backing store definition '%1$s'"
-msgstr ""
+msgstr "felformaterat fält ”timeout” i bakomliggande lagringsdefinition ”%1$s”"
 
 msgid "malformed 'wwpn' value"
-msgstr ""
+msgstr "felformaterat värde ”wwpn”"
 
 msgid "malformed <blockDirtyBitmaps> in migration cookie"
-msgstr ""
+msgstr "felformaterat <blockDirtyBitmaps> i migreringskakan"
 
 msgid "malformed <sysinfo> uuid element"
-msgstr ""
+msgstr "felformaterat uuid-element <sysinfo>"
 
 msgid "malformed <tempBlockDirtyBitmaps> in status XML"
-msgstr ""
+msgstr "felformaterat <tempBlockDirtyBitmaps> i status-XML"
 
 msgid "malformed GIC version in QEMU capabilities cache"
-msgstr ""
+msgstr "felformaterad GIC-version i QEMU:s förmågecache"
 
 #, c-format
 msgid "malformed QAPI schema when querying '%1$s' of '%2$s'"
-msgstr ""
+msgstr "felformaterat QAPI-schema vid fråga av ”%1$s” om ”%2$s”"
 
 msgid "malformed QMP schema"
-msgstr ""
+msgstr "felformaterat QMP-schema"
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -39407,6 +39410,83 @@ msgstr ""
 
 msgid "virtio-sound controller is not supported in this QEMU binary"
 msgstr ""
+
+#, c-format
+msgid "'%1$s' launch security is not supported with this QEMU binary"
+msgstr "”%1$s” startsäkerhet stödjs inte av denna QEMU-binär"
+
+msgid "Checking CA cert access"
+msgstr "Kontrollerar CA-cert-åtkomst"
+
+msgid "Checking cert access"
+msgstr "Kontrollerar cert-åtkomst"
+
+msgid "Checking cert hostname match"
+msgstr "Kontrollerar att cert-värdnamn stämmer"
+
+msgid "Checking cert properties"
+msgstr "Kontrollerar cert-egenskaper"
+
+msgid "Checking custom PKI base dir access"
+msgstr "Kontrollerar åtkomst av anpassad PKI-baskatalog"
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+msgstr ""
+"Kontrollerar om AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES) "
+"finns"
+
+msgid ""
+"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
+msgstr ""
+"Kontrollerar om AMD Secure Encrypted Virtualization-Secure Nested Paging "
+"(SEV-SNP) finns"
+
+msgid "Checking if CA cert exists"
+msgstr "Kontrollerar om CA-cert finns"
+
+msgid "Checking if cert exists"
+msgstr "Kontrollerar om cert finns"
+
+msgid "Checking if custom PKI base dir exists"
+msgstr "Kontrollerar om den anpassade PKI-baskatalogen finns"
+
+msgid "Checking if key exists"
+msgstr "Kontrollerar om nyckeln finns"
+
+msgid "Checking if system CA dir exists"
+msgstr "Kontrollerar om systemets CA-katalog finns"
+
+msgid "Checking if system PKI dir exists"
+msgstr "Kontrollerar som systemets PKI-katalog finns"
+
+msgid "Checking if system cert dir exists"
+msgstr "Kontrollerar om systemets cert-katalog finns"
+
+msgid "Checking if system key dir exists"
+msgstr "Kontrollerar om systemets nyckelkatalog finns"
+
+msgid "Checking if user PKI base dir exists"
+msgstr "Kontrollerar om användarens PKI-baskatalog finns"
+
+msgid "Checking key access"
+msgstr "Kontrollerar åtkomst av nyckeln"
+
+msgid "Checking system CA dir access"
+msgstr "Kontrollerar åtkomst av systemets CA-katalog"
+
+msgid "Checking system PKI dir access"
+msgstr "Kontrollerar åtkomst av systemets PKI-katalog"
+
+msgid "Checking system cert dir access"
+msgstr "Kontrollerar åtkomst av systemets cert-katalog"
+
+msgid "Checking system key dir access"
+msgstr "Kontrollerar åtkomst av systemets nyckelkatalog"
+
+msgid "Checking user PKI base dir access"
+msgstr "Kontrollerar åtkomst av användarens PKI-baskatalog"
 
 #, c-format
 #~ msgid " [[--%1$s] <string>]..."
