@@ -867,7 +867,7 @@ virCgroupV2SetBlkioDeviceWeight(virCgroup *group,
     if (group->unitName) {
         GVariant *value = NULL;
 
-        value = g_variant_new_parsed("[(%s, uint64 %u)]", path, weight);
+        value = g_variant_new_parsed("[(%s, %t)]", path, weight);
 
         return virCgroupSetValueDBus(group->unitName, "IODeviceWeight", value);
     } else {
