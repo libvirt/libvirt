@@ -10512,21 +10512,6 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildPflashBlockdevCommandLine(cmd, vm) < 0)
         return NULL;
 
-    /* QEMU 1.2 and later have a binary flag -enable-fips that must be
-     * used for VNC auth to obey FIPS settings; but the flag only
-     * exists on Linux, and with no way to probe for it via QMP.  Our
-     * solution: if FIPS mode is required, then unconditionally use the flag.
-     *
-     * In QEMU 5.2.0, use of -enable-fips was deprecated. In scenarios
-     * where FIPS is required, QEMU must be built against libgcrypt
-     * which automatically enforces FIPS compliance.
-     *
-     * Note this is the only use of driver->hostFips.
-     */
-    if (driver->hostFips &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
-        virCommandAddArg(cmd, "-enable-fips");
-
     if (qemuBuildMachineCommandLine(cmd, cfg, def, qemuCaps, priv) < 0)
         return NULL;
 

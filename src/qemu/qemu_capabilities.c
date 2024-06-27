@@ -290,7 +290,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "pvpanic", /* QEMU_CAPS_DEVICE_PANIC */
 
               /* 160 */
-              "enable-fips", /* QEMU_CAPS_ENABLE_FIPS */
+              "enable-fips", /* X_QEMU_CAPS_ENABLE_FIPS */
               "spice-file-xfer-disable", /* X_QEMU_CAPS_SPICE_FILE_XFER_DISABLE */
               "spiceport", /* X_QEMU_CAPS_CHARDEV_SPICEPORT */
               "usb-kbd", /* QEMU_CAPS_DEVICE_USB_KBD */

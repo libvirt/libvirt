@@ -268,7 +268,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_PANIC, /* -device pvpanic */
 
     /* 160 */
-    QEMU_CAPS_ENABLE_FIPS, /* -enable-fips */
+    X_QEMU_CAPS_ENABLE_FIPS, /* -enable-fips */
     X_QEMU_CAPS_SPICE_FILE_XFER_DISABLE, /* -spice disable-agent-file-xfer */
     X_QEMU_CAPS_CHARDEV_SPICEPORT, /* -chardev spiceport */
     QEMU_CAPS_DEVICE_USB_KBD, /* -device usb-kbd */
