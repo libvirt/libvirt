@@ -5398,19 +5398,8 @@ virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
  * Add all QEMU capabilities based on version of QEMU.
  */
 static void
-virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
+virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
-     * should be built with gcrypt to achieve FIPS compliance
-     * automatically / implicitly
-     */
-    if (qemuCaps->version < 5002000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_FIPS);
-
-    /* We are not able to detect this for old QEMU. Assume the capability is
-     * there. */
-    if (qemuCaps->version < 5000000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_USER);
 }
 
 
