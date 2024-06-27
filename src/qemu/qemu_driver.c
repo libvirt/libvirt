@@ -732,15 +732,6 @@ qemuStateInitialize(bool privileged,
     if (qemuMigrationDstErrorInit(qemu_driver) < 0)
         goto error;
 
-    /* qemu-5.1 and older requires use of '-enable-fips' flag when the host
-     * is in FIPS mode. We store whether FIPS is enabled */
-    if (virFileExists("/proc/sys/crypto/fips_enabled")) {
-        g_autofree char *buf = NULL;
-
-        if (virFileReadAll("/proc/sys/crypto/fips_enabled", 10, &buf) > 0)
-            qemu_driver->hostFips = STREQ(buf, "1\n");
-    }
-
     if (privileged) {
         g_autofree char *channeldir = NULL;
 

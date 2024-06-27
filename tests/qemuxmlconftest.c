@@ -369,7 +369,6 @@ testCheckExclusiveFlags(int flags)
 {
     virCheckFlags(FLAG_EXPECT_FAILURE |
                   FLAG_EXPECT_PARSE_ERROR |
-                  FLAG_FIPS_HOST |
                   FLAG_REAL_CAPS |
                   FLAG_SLIRP_HELPER |
                   FLAG_ALLOW_DUPLICATE_OUTPUT |
@@ -388,8 +387,6 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
-
-    drv->hostFips = flags & FLAG_FIPS_HOST;
 
     if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
@@ -2619,7 +2616,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("pvpanic-pci-invalid-address-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("pvpanic-pci-no-address-aarch64", "aarch64");
 
-    DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
+    DO_TEST_CAPS_LATEST("fips-enabled");
 
     DO_TEST_CAPS_LATEST("shmem-plain-doorbell");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("shmem-invalid-size");
