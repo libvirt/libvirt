@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-06-25 13:50+0000\n"
+"PO-Revision-Date: 2024-06-28 02:43+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -5240,7 +5240,7 @@ msgstr "Skapa en volym."
 
 #, c-format
 msgid "Create the dir %1$s"
-msgstr ""
+msgstr "Skapa katalogen %1$s"
 
 msgid "Created"
 msgstr "Skapad"
@@ -9053,10 +9053,10 @@ msgstr "Avslutade efter värdbegäran"
 
 #, c-format
 msgid "Firewall backend '%1$s' not available on this platform"
-msgstr ""
+msgstr "Brandväggsbakänden ”%1$s” är inte tillgänglig på denna plattform"
 
 msgid "Firewall backend is not implemented"
-msgstr ""
+msgstr "Brandväggsbakänden är inte implementerad"
 
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "Posten för fast programvara saknar attributet ”name”"
@@ -12554,7 +12554,7 @@ msgid "No filesystems are mounted in the domain"
 msgstr "Inga filsystem monterade i domänen"
 
 msgid "No firewall backend is available"
-msgstr ""
+msgstr "Ingen brandväggsbakände är tillgänglig"
 
 msgid "No free NBD devices"
 msgstr "Inga fria NBD-enheter"
@@ -15382,11 +15382,11 @@ msgstr "TLS:"
 
 #, c-format
 msgid "TPM 1.2 is not supported for model '%1$s'"
-msgstr ""
+msgstr "TPM 1.2 stödjs inte för modellen ”%1$s”"
 
 #, c-format
 msgid "TPM 1.2 is not supported on architecture '%1$s'"
-msgstr ""
+msgstr "TPM 1.2 stödjs inte på arkitekturen ”%1$s”"
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16286,12 +16286,16 @@ msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"CA-certifikatet %1$s måste vara tillgängligt för alla användare. Kör som "
+"root: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"CA-certifikatet %1$s får inte vara tillgängligt för andra användare. Som "
+"denna användare, kör: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
@@ -16341,6 +16345,8 @@ msgid ""
 "The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
 "%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
+"PKI-baskatalogen %1$s får inte vara tillgänglig för andra användare. Kör: "
+"chown %2$d.%3$d %4$s; chmod 0700 %5$s"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -16400,12 +16406,16 @@ msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Klientcertifikatet %1$s måste vara tillgängligt för alla användare. Kör som "
+"root: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Klientcertifikatet %1$s måste vara begränsat till denna användare. Som denna "
+"användare, kör: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
@@ -16420,12 +16430,16 @@ msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown root."
 "root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Klientnyckeln %1$s måste vara tillgänglig för alla användare. Kör som root: "
+"chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Klientnyckeln %1$s får inte vara tillgänglig för andra användare. Som denna "
+"användare, kör: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16492,18 +16506,25 @@ msgid ""
 "The machine cannot act as a client or server. See https://libvirt.org/kbase/"
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
+"Maskinen kan inte agera som klient eller server. Se https://libvirt.org/"
+"kbase/tlscerts.html#setting-up-a-certificate-authority-ca om hur man "
+"installerar %1$s"
 
 #, c-format
 msgid ""
 "The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
+"Maskinen kan inte agera som en klient. Se https://libvirt.org/kbase/tlscerts."
+"html#issuing-client-certificates om hur man regenererar %1$s"
 
 #, c-format
 msgid ""
 "The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
+"Maskinen kan inte agera som server. Se https://libvirt.org/kbase/tlscerts."
+"html#issuing-server-certificates om hur man regenerar %1$s"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Maskinen har ingen ögonblicksbild och borde ha det"
@@ -16544,12 +16565,16 @@ msgid ""
 "The server cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Servercertifikatet %1$s måste vara tillgängligt för alla användare. Kör som "
+"root: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The server cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Servercertifikatet %1$s måste vara begränsat till denna användare. Som denna "
+"användare, kör: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The server certificate %1$s has expired"
@@ -16564,12 +16589,16 @@ msgid ""
 "The server key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Servernyckeln %1$s får inte vara tillgänglig för andra användare. Som denna "
+"användare, kör: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
+"Servernyckeln %1$s får inte vara tillgänglig för opriviligierade användare. "
+"Kör som root: chown root.root %2$s; chmod 0600 %3$s"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
