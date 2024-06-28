@@ -5975,12 +5975,25 @@ qemuDomainDeviceNetDefPostParse(virDomainNetDef *net,
                                 virQEMUCaps *qemuCaps)
 {
     if (net->type == VIR_DOMAIN_NET_TYPE_VDPA &&
-        !virDomainNetGetModelString(net))
+        !virDomainNetGetModelString(net)) {
         net->model = VIR_DOMAIN_NET_MODEL_VIRTIO;
-    else if (net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+    } else if (net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         !virDomainNetGetModelString(net) &&
-        virDomainNetResolveActualType(net) != VIR_DOMAIN_NET_TYPE_HOSTDEV)
+        virDomainNetResolveActualType(net) != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         net->model = qemuDomainDefaultNetModel(def, qemuCaps);
+    }
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+        net->backend.type == VIR_DOMAIN_NET_BACKEND_DEFAULT) {
+        virDomainCapsDeviceNet netCaps = { };
+
+        virQEMUCapsFillDomainDeviceNetCaps(qemuCaps, &netCaps);
+
+        if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(netCaps.backendType, VIR_DOMAIN_NET_BACKEND_DEFAULT) &&
+            VIR_DOMAIN_CAPS_ENUM_IS_SET(netCaps.backendType, VIR_DOMAIN_NET_BACKEND_PASST)) {
+            net->backend.type = VIR_DOMAIN_NET_BACKEND_PASST;
+        }
+    }
 
     return 0;
 }
