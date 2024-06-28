@@ -59,6 +59,12 @@ v10.5.0 (unreleased)
     A memory leak was identified when a client started SASL but then suddenly
     closed connection. This is now fixed.
 
+  * qemu: Fix migration with disabled vmx-* CPU features
+
+    Migrating a domain with some vmx-* CPU features marked as disabled could
+    have failed as the destination would incorrectly expect those features to
+    be enabled after starting QEMU.
+
 
 v10.4.0 (2024-06-03)
 ====================
