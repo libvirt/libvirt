@@ -65,6 +65,11 @@ v10.5.0 (unreleased)
     have failed as the destination would incorrectly expect those features to
     be enabled after starting QEMU.
 
+  * qemu: Fix ``libvirtd``/``virtqemud`` crash when VM shuts down during migration
+
+    The libvirt daemon could crash when a VM was shut down while being migrated
+    to another host.
+
 
 v10.4.0 (2024-06-03)
 ====================
