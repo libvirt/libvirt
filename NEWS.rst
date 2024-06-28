@@ -17,6 +17,11 @@ v10.5.0 (unreleased)
 
 * **New features**
 
+  * Introduce SEV-SNP support
+
+    SEV-SNP is introduced as another type of ``<launchSecurity/>``. Its support
+    is reported in both domain capabilities and ``virt-host-validate``.
+
 * **Improvements**
 
   * tools: virt-pki-validate has been rewritten in C
@@ -26,7 +31,33 @@ v10.5.0 (unreleased)
     the dependency on ``certtool`` and providing more comprehensive checks
     of the certificate properties.
 
+  * qemu: implement iommu coldplug/unplug
+
+    The ``<iommu/>`` device can be now cold plugged and/or cold unplugged.
+
+  * Pass shutoff reason to release hook
+
+    Sometimes in release hook it is useful to know if the VM shutdown was
+    graceful or not. This is especially useful to do cleanup based on the VM
+    shutdown failure reason in release hook. Starting with this release the
+    last argument 'extra' is used to pass VM shutoff reason in the call to
+    release hook.
+
+  * nodedev: improve DASD detection
+
+    In newer DASD driver versions the ID_TYPE tag is supported. This tag is
+    missing after a system reboot but when the ccw device is set offline and
+    online the tag is included. To fix this version independently we need to
+    check if a device detected as type disk is actually a DASD to maintain the
+    node object consistency and not end up with multiple node objects for
+    DASDs.
+
 * **Bug fixes**
+
+  * remote_daemon_dispatch: Unref sasl session when closing client connection
+
+    A memory leak was identified when a client started SASL but then suddenly
+    closed connection. This is now fixed.
 
 
 v10.4.0 (2024-06-03)
