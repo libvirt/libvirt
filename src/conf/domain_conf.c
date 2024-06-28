@@ -9320,8 +9320,11 @@ virDomainNetBackendParseXML(xmlNodePtr node,
     g_autofree char *tap = virXMLPropString(node, "tap");
     g_autofree char *vhost = virXMLPropString(node, "vhost");
 
+    /* The VIR_DOMAIN_NET_BACKEND_DEFAULT really means 'use hypervisor's
+     * builtin SLIRP'. It's reported in domain caps and thus we need to accept
+     * it. Hence VIR_XML_PROP_NONE instead of VIR_XML_PROP_NONZERO. */
     if (virXMLPropEnum(node, "type", virDomainNetBackendTypeFromString,
-                       VIR_XML_PROP_NONZERO, &def->backend.type) < 0) {
+                       VIR_XML_PROP_NONE, &def->backend.type) < 0) {
         return -1;
     }
 

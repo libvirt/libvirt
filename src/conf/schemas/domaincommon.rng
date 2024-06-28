@@ -3826,6 +3826,7 @@
           <optional>
             <attribute name="type">
               <choice>
+                <value>default</value>
                 <value>passt</value>
               </choice>
             </attribute>
