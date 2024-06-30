@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-06-28 02:43+0000\n"
+"PO-Revision-Date: 2024-06-30 20:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -16612,46 +16612,60 @@ msgid ""
 "The system CA dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
 msgstr ""
+"Systemets CA-katalog %1$s installeras vanligen som del av basfilsystemet "
+"eller openssl-paket"
 
 #, c-format
 msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Systemets CA-katalog %1$s måste vara tillgängligt för alla användare. Som "
+"root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
 msgstr ""
+"Systemets PKI-katalog %1$s installeras vanligen som del av basfilsystemet "
+"eller openssl-paket"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Systemets PKI-katalog %1$s måste vara tillgängligt för alla användare. Som "
+"root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
+"Systemets cert-katalog %1$s installeras vanligen som del av paketet libvirt"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
+"Systemets cert-katalog %1$s måste vara tillgängligt för alla användare. Som "
+"root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system key dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
+"Systemets yckelkatalog %1$s installeras vanligen som del av paketet libvirt"
 
 #, c-format
 msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Systemets nyckelkatalog %1$s måste vara tillgängligt för alla användare. Som "
+"root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16688,7 +16702,7 @@ msgstr ""
 "Denna QEMU stödjer inte OpenGLs rendernode med grafiktypen egl-headless"
 
 msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
-msgstr ""
+msgstr "Denna QEMU stödjer inte SCSI-emulering med enheten ”virtio-blk”"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Denna QEMU stödjer inte scsi-block för lun-genomgång"
@@ -17510,7 +17524,7 @@ msgid "Unable to create epoll fd"
 msgstr "Kan inte skapa en epoll-fb"
 
 msgid "Unable to create firewall command"
-msgstr ""
+msgstr "Kan inte skapa firewall-kommandot"
 
 msgid "Unable to create kqueue"
 msgstr "Kan inte skapa en kqueue"
@@ -18210,7 +18224,7 @@ msgstr "Kan inte lyssna på UNIX-uttaget med sökvägen ”%1$s”"
 
 #, c-format
 msgid "Unable to load %1$s: %2$s"
-msgstr ""
+msgstr "Kan inte ladda %1$s:%2$s"
 
 msgid "Unable to load certificate"
 msgstr "Kan inte ladda certfikat"
@@ -18434,7 +18448,7 @@ msgstr "Kan inte tolka utdata från ovs-vsctl"
 
 #, c-format
 msgid "Unable to parse port: %1$s"
-msgstr ""
+msgstr "Kan inte tolka porten: %1$s"
 
 msgid "Unable to parse quota"
 msgstr "Kan inte tolka kvoten"
@@ -19308,7 +19322,7 @@ msgstr "Oväntat hostdev-läge %1$d"
 
 #, c-format
 msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
-msgstr ""
+msgstr "Oväntad längd på ”%1$s”, %2$u förväntades men fick %3$zu"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Ovändade låsparametrar för diskresursen"
@@ -19519,7 +19533,7 @@ msgstr "Okänd kompatibilietsläge %1$s"
 
 #, c-format
 msgid "Unknown connection URI: '%1$s'"
-msgstr ""
+msgstr "Okänd förbindelse-URI: ”%1$s”"
 
 #, c-format
 msgid "Unknown controller type %1$d"
@@ -20218,6 +20232,17 @@ msgid ""
 "  -h     | --help     display this help and exit\n"
 "  -v     | --version  output version information and exit\n"
 msgstr ""
+"Användning:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Validera TLS-certifikatkonfigurationen\n"
+"\n"
+"flaggor:\n"
+"  -s     | --system   validera systemcertifkat (standard)\n"
+"  -u     | --user     validera användarcertifikat\n"
+"  -p KAT | --path KAT validera anpassad certifikatsökväg\n"
+"  -h     | --help     visa denna hjälp och avsluta\n"
+"  -v     | --version  skriv ut versionsinformation och avsluta\n"
 
 #, sh-format
 msgid ""
@@ -23821,7 +23846,7 @@ msgid "could not determine max vcpus for the domain"
 msgstr "kunde inte avgöra max vcpu:er för domänen"
 
 msgid "could not find a usable firewall backend"
-msgstr ""
+msgstr "kunde inte hitta en användbar brandväggsbakände"
 
 #, c-format
 msgid "could not find backing store index '%1$u' in chain for '%2$s'"
@@ -24115,6 +24140,8 @@ msgid ""
 "couldn't register rollback command - command '%1$s' had no valid handle in "
 "output ('%2$s')"
 msgstr ""
+"kunde inte registrera kommando för att rulla tillbaka — komandot ”%1$s” hade "
+"inget giltigt handtag i utdaga (”%2$s”)"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -25154,7 +25181,7 @@ msgid "domain already has a vsock device"
 msgstr "domänen har redan en vsock-enhet"
 
 msgid "domain already has an iommu device"
-msgstr ""
+msgstr "domänen har redan en iommu-enhet"
 
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "domänarkitektur (/domän/os/typ/@arkitektur)"
@@ -25694,7 +25721,7 @@ msgid "error getting profile status"
 msgstr "fel när profilstatus hämtades"
 
 msgid "error in original firewall object"
-msgstr ""
+msgstr "fel i originalbrandväggsobjektet"
 
 msgid "error in poll call"
 msgstr "fel i poll-anrop"
@@ -28283,7 +28310,7 @@ msgid "i - turn off validation and try to redefine again"
 msgstr "i – slå av validering och försök att omdefiniera igen"
 
 msgid "iSCSI protocol accepts only one host"
-msgstr ""
+msgstr "protokollet iSCSI accepterar bara en värd"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI-lagringspool stödjer inte skapande av volymer"
@@ -30150,137 +30177,137 @@ msgstr "felformaterat QMP-schema"
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
-msgstr ""
+msgstr "felformaterad uuid för TLS-hemligheten ”%1$s” gavs"
 
 #, c-format
 msgid "malformed backing store path for protocol %1$s"
-msgstr ""
+msgstr "felformaterad sökväg för bakomliggande lagring för protokollet %1$s"
 
 msgid "malformed capacity element"
-msgstr ""
+msgstr "felformaterat kapacitetselement"
 
 msgid "malformed char device string"
-msgstr ""
+msgstr "felformaterad teckenenhetssträng"
 
 #, c-format
 msgid "malformed disk path: %1$s"
-msgstr ""
+msgstr "felformaterad disksökväg: %1$s"
 
 msgid "malformed emulated GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "felformaterad emulerad GIC-information i QEMU-förmågecachen"
 
 msgid "malformed genid element"
-msgstr ""
+msgstr "felformaterat genid-element"
 
 msgid "malformed group element"
-msgstr ""
+msgstr "felformaterat gruppelement"
 
 msgid "malformed hostuuid element in migration data"
-msgstr ""
+msgstr "felformaterat hostuuid-element i migreringsdata"
 
 #, c-format
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
+"felformaterad http-kaka ”%1$s” i definition av bakomliggande lagring ”%2$s”"
 
 msgid "malformed hyperv panic data"
-msgstr ""
+msgstr "felformaterade hyperv-panikdata"
 
 msgid "malformed in-kernel GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "felformaterad kärnintern GIC-information i QEMU-förmågecachen"
 
 msgid "malformed ipset flags"
-msgstr ""
+msgstr "felformaterade ipset-flaggor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed mac address '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "felformaterad mac-adress ”%1$s”"
 
 msgid "malformed mtu size"
-msgstr ""
+msgstr "felformaterad mtu-storlek"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed namespace name: %1$s"
-msgstr "Felaktig målförskjutning för hyra %1$s"
+msgstr "felformaterat namnrymdsnamn: %1$s"
 
 #, c-format
 msgid "malformed nbd string '%1$s'"
-msgstr ""
+msgstr "felformaterad nbd-sträng ”%1$s”"
 
 msgid "malformed netlink response message"
-msgstr ""
+msgstr "felformaterat netlink-svarsmeddelande"
 
 msgid "malformed octal mode"
-msgstr ""
+msgstr "felformaterat oktalt läge"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed output of %1$s: %2$s"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "felformaterad utdata från %1$s: %2$s"
 
 msgid "malformed owner element"
-msgstr ""
+msgstr "felformaterat ägarelement"
 
 msgid "malformed prManager reply"
-msgstr ""
+msgstr "felformaterat prManager-svar"
 
 msgid "malformed qemu-current-machine reply"
-msgstr ""
+msgstr "felformaterat qemu-current-machine-svar"
 
 msgid "malformed query string"
-msgstr ""
+msgstr "felformaterad frågesträng"
 
 #, c-format
 msgid "malformed refcount %1$s on %2$s"
-msgstr ""
+msgstr "felformaterad refcount %1$s på %2$s"
 
 msgid "malformed refreservation reported"
-msgstr ""
+msgstr "felformaterad refreservation rapporterad"
 
 msgid "malformed return value"
-msgstr ""
+msgstr "felformaterat returvärde"
 
 msgid "malformed s390 panic data"
-msgstr ""
+msgstr "felformaterad s390-panikdata"
 
 #, c-format
 msgid "malformed signal name: %1$s"
-msgstr ""
+msgstr "felformaterat signalnamn: %1$s"
 
 msgid "malformed uuid element"
-msgstr ""
+msgstr "felformaterat uuid-element"
 
 #, c-format
 msgid "malformed uuid element for '%1$s'"
-msgstr ""
+msgstr "felformaterat uuid-element för ”%1$s”"
 
 #, c-format
 msgid "malformed value '%1$s' of 'offset' attribute of slice"
-msgstr ""
+msgstr "felformaterat värde ”%1$s” på attributet ”offset” på skivan"
 
 #, c-format
 msgid "malformed value '%1$s' of 'size' attribute of slice"
-msgstr ""
+msgstr "felformaterat värde ”%1$s” på attributet ”size” på skivan"
 
 msgid "malformed volsize reported"
-msgstr ""
+msgstr "felformaterad volsize rapporterad"
 
 msgid "malformed volume allocation value"
-msgstr ""
+msgstr "felformaterat volymallokeringsvärde"
 
 msgid "malformed volume extent devices value"
-msgstr ""
+msgstr "felformaterat värde på volymutsträckningsenheter"
 
 msgid "malformed volume extent length value"
-msgstr ""
+msgstr "felformaterat värde på volymutsträckningslängd"
 
-#, fuzzy
 msgid "malformed volume extent offset value"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "felformaterat värde på volymutsträckningsavstånd"
 
 msgid "malformed volume extent size value"
-msgstr ""
+msgstr "felformaterat värde på volymutsträckningsstorlek"
 
 msgid "malformed volume extent stripes value"
-msgstr ""
+msgstr "felformaterat värde på volymutsträckningsremsor"
 
 msgid "malformed/missing addr in dimm memory info"
 msgstr ""
