@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-06-04 14:35+0000\n"
+"PO-Revision-Date: 2024-06-30 20:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1233,7 +1233,7 @@ msgstr "'%1$s'는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "'%1$s' 실행 보안은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "'%1$s' missing"
@@ -3656,19 +3656,19 @@ msgstr ""
 "트워킹이 끊어집니다."
 
 msgid "Checking CA cert access"
-msgstr ""
+msgstr "CA cert 접근 점검 중"
 
 msgid "Checking cert access"
-msgstr ""
+msgstr "cert 접근 점검 중"
 
 msgid "Checking cert hostname match"
-msgstr ""
+msgstr "cert 호스트이름 일치 확인 중"
 
 msgid "Checking cert properties"
-msgstr ""
+msgstr "cert 속성 확인 중"
 
 msgid "Checking custom PKI base dir access"
-msgstr ""
+msgstr "사용자정의 PKI base dir 접근 확인 중"
 
 #, c-format
 msgid "Checking for %1$s module"
@@ -3676,12 +3676,12 @@ msgstr "%1$s 모듈을 위해 확인 중"
 
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
+msgstr "AMD SEV-ES(보안 암호화된 가상화-암호화된 상태)를 위해 확인 중"
 
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
 "SNP)"
-msgstr ""
+msgstr "AMD SEV-SNP (보안 암호화된 가상화-보안 중첩 페이징)를 위해 확인 중"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -3708,16 +3708,16 @@ msgid "Checking for secure guest support"
 msgstr "보안 게스트 지원을 위해 확인 중"
 
 msgid "Checking if CA cert exists"
-msgstr ""
+msgstr "만약 CA cert가 존재하는 지 확인 중"
 
 msgid "Checking if IOMMU is enabled by kernel"
 msgstr "만약 IOMMU가 커널에 의해 활성화되었는지 확인 중"
 
 msgid "Checking if cert exists"
-msgstr ""
+msgstr "만약 cert가 존재하는지 확인 중"
 
 msgid "Checking if custom PKI base dir exists"
-msgstr ""
+msgstr "만약 사용자 정의 PIK base dir이 존재하는지 확인 중"
 
 #, c-format
 msgid "Checking if device '%1$s' exists"
@@ -3728,40 +3728,40 @@ msgid "Checking if device '%1$s' is accessible"
 msgstr "만약 장치 '%1$s' 가 접근 할 수 있는지 확인 중"
 
 msgid "Checking if key exists"
-msgstr ""
+msgstr "만약 키(key)가 존재하는지 확인 중"
 
 msgid "Checking if system CA dir exists"
-msgstr ""
+msgstr "만약 시스템 CA dir가 존재하는지 확인 중"
 
 msgid "Checking if system PKI dir exists"
-msgstr ""
+msgstr "만약 시스템 PKI dir가 존재하는지 확인 중"
 
 msgid "Checking if system cert dir exists"
-msgstr ""
+msgstr "만약 시스템 cert dir가 존재하는지 확인 중"
 
 msgid "Checking if system key dir exists"
-msgstr ""
+msgstr "만약 시스템 키(key) dir가 존재하는지 확인 중"
 
 msgid "Checking if user PKI base dir exists"
-msgstr ""
+msgstr "만약 사용자 PKI base dir가 존재하는지 확인 중"
 
 msgid "Checking key access"
-msgstr ""
+msgstr "키 접근 확인 중"
 
 msgid "Checking system CA dir access"
-msgstr ""
+msgstr "시스템 CA dir 접근 확인 중"
 
 msgid "Checking system PKI dir access"
-msgstr ""
+msgstr "시스템 PKI dir 접근 확인 중"
 
 msgid "Checking system cert dir access"
-msgstr ""
+msgstr "시스템 cert dir 접근 확인 중"
 
 msgid "Checking system key dir access"
-msgstr ""
+msgstr "시스템 키 dir 접근 확인 중"
 
 msgid "Checking user PKI base dir access"
-msgstr ""
+msgstr "사용자 PKI base 접근 확인 중"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -5161,7 +5161,7 @@ msgstr "볼륨을 생성합니다."
 
 #, c-format
 msgid "Create the dir %1$s"
-msgstr ""
+msgstr "dir %1$s를 생성합니다"
 
 msgid "Created"
 msgstr "생성일"
@@ -8919,10 +8919,10 @@ msgstr "호스트 요청 후 완료"
 
 #, c-format
 msgid "Firewall backend '%1$s' not available on this platform"
-msgstr ""
+msgstr "방화벽(Firewall) 백엔드 '%1$s' 는 이와 같은 기술환경에서 사용 할 수 없음"
 
 msgid "Firewall backend is not implemented"
-msgstr ""
+msgstr "방화벽 백엔드가 구현되지 않았습니다"
 
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "펌웨어 항목에 '이름' 속성이 없습니다"
@@ -12373,7 +12373,7 @@ msgid "No filesystems are mounted in the domain"
 msgstr "도메인에서 적재된 파일 시스템이 없습니다"
 
 msgid "No firewall backend is available"
-msgstr ""
+msgstr "사용 가능한 방화벽 백엔드가 없습니다"
 
 msgid "No free NBD devices"
 msgstr "무료 NBD 기기 없음"
@@ -15162,11 +15162,11 @@ msgstr "TLS:"
 
 #, c-format
 msgid "TPM 1.2 is not supported for model '%1$s'"
-msgstr ""
+msgstr "TPM 1.2는 모델 '%1$s' 에서 지원되지 않습니다"
 
 #, c-format
 msgid "TPM 1.2 is not supported on architecture '%1$s'"
-msgstr ""
+msgstr "TPM 1.2 는 구조 '%1$s' 에서 지원되지 않습니다"
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -16065,12 +16065,16 @@ msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"CA 인증서 %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root 실행으로: "
+"chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"CA 인증서 %1$s는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 "
+"사용자로, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
@@ -16120,6 +16124,8 @@ msgid ""
 "The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
 "%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
+"PKI base dir %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 실행: chown "
+"%2$d.%3$d %4$s; chmod 0700 %5$s"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -16179,12 +16185,16 @@ msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"클라이언트 cert %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로 "
+"실행: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"클라이언트 cert %1$s 는 이와 같은 사용자로 제한되어야 합니다. 이와 같은 "
+"사용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
@@ -16199,12 +16209,16 @@ msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown root."
 "root %2$s; chmod 0644 %3$s"
 msgstr ""
+"클라이언트 키 %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root으로 "
+"실행: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"클라이언트 키 %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 "
+"사용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16273,18 +16287,27 @@ msgid ""
 "The machine cannot act as a client or server. See https://libvirt.org/kbase/"
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
+"장비는 클라이언트 또는 서버로 동작 할 수 없습니다. %1$s 설치하는 방법에서 "
+"https://libvirt.org/kbase/tlscerts.html#setting-up-a-certificate-authority-"
+"ca를 참고하세요"
 
 #, c-format
 msgid ""
 "The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
+"장비는 클라이언트로 동작 할 수 없습니다. %1$s를 재-생산하는 방법에서 "
+"https://libvirt.org/kbase/tlscerts.html#issuing-client-certificates를 "
+"참고하세요"
 
 #, c-format
 msgid ""
 "The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
+"장비는 서버로서 동작 할 수 없습니다. %1$s 를 재-생산하는 방법에서 "
+"https://libvirt.org/kbase/tlscerts.html#issuing-server-certificates를 "
+"참고하세요"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "장비에는 현재 순간찍기가 없고 앞으로 필요합니다"
@@ -16321,12 +16344,16 @@ msgid ""
 "The server cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"서버 cert %1$s는 모든 사용자에게 접근 할 수 있어야 합니다. root로 실행: "
+"chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The server cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"서버 cert %1$s 는 이와 같은 사용자로 제한되어야 합니다. 이와 같은 사용자로, "
+"실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The server certificate %1$s has expired"
@@ -16341,12 +16368,16 @@ msgid ""
 "The server key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"서버 키 %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 "
+"사용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
+"서버 키 %1$s 는 권한이 없는 사용자에게 접근 할 수 없어야 합니다. root로 실행:"
+" chown root.root %2$s; chmod 0600 %3$s"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
@@ -16359,47 +16390,57 @@ msgstr "slirp-helper는 이전을 지원하지 않습니다"
 msgid ""
 "The system CA dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
-msgstr ""
+msgstr "시스템 CA dir %1$s 는 일반적으로 기본 파일시스템 또는 openssl 꾸러미의 "
+"일부로 설치됩니다"
 
 #, c-format
 msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"시스템 CA dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실행:"
+" chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
-msgstr ""
+msgstr "시스템 PKI dir %1$s 는 일반적으로 기본 파일시스템 또는 openssl 꾸러미의 "
+"일부로 설치됩니다"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"시스템 PKI dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, "
+"실행: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s is usually installed as part of the libvirt package"
-msgstr ""
+msgstr "시스템 cert dir %1$s 는 일반적으로 libvirt 꾸러미의 일부로 설치됩니다"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
+"시스템 cert dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root으로, "
+"실행: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system key dir %1$s is usually installed as part of the libvirt package"
-msgstr ""
+msgstr "시스템 키 dir %1$s 는 일반적으로 libvirt 꾸러미의 일부로 설치됩니다"
 
 #, c-format
 msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"시스템 키 dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실행:"
+" chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -16436,7 +16477,7 @@ msgstr ""
 "이 QEMU는 egl-headless 그래픽 유형이 있는 OpenGL 렌더노드를 지원하지 않습니다"
 
 msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
-msgstr ""
+msgstr "이 QEMU는 'virtio-blk' 장치와 함께 SCSI 모의를 지원하지 않습니다"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "이 QEMU는 lun 통과를 위한 scsi-block을 지원하지 않습니다"
@@ -17949,7 +17990,7 @@ msgstr "UNIX 소켓 경로 '%1$s'를 수신 할 수 없습니다"
 
 #, c-format
 msgid "Unable to load %1$s: %2$s"
-msgstr ""
+msgstr "적재 할 수 없음 %1$s: %2$s"
 
 msgid "Unable to load certificate"
 msgstr "인증서를 불러올 수 없음"
@@ -19047,7 +19088,7 @@ msgstr "예기치 못한 hostdev 모드 %1$d"
 
 #, c-format
 msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
-msgstr ""
+msgstr "예상치 못한 '%1$s' 의 길이, %2$u 가 %3$zu 를 얻을 것으로 예상됨"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "디스크 리소스의 예상치 않은 잠금 매개 변수"
@@ -19926,15 +19967,15 @@ msgstr ""
 "  %1$s FILE\n"
 "  %2$s { -v | -h }\n"
 "\n"
-"Extract Distinguished Name from a PEM certificate.\n"
-"The output is meant to be used in the tls_allowed_dn_list\n"
-"configuration option in the libvirtd.conf file.\n"
+"PEM 인증서에서 고유한 이름을 추출합니다.\n"
+"출력은 libvirtd.conf 파일의 tls_allowed_dn_list 구성에서\n"
+"사용되는 것을 의미합니다.\n"
 "\n"
-"  FILE            certificate file to extract the DN from\n"
+"  FILE            DN을 추출하려는 인증서 파일\n"
 "\n"
-"options:\n"
-"  -h | --help     display this help and exit\n"
-"  -v | --version  output version information and exit\n"
+"옵션:\n"
+"  -h | --help     이와 같은 도움말을 표시하고 종료합니다\n"
+"  -v | --version  버전 정보를 출력하고 종료합니다\n"
 
 #, c-format
 msgid ""
@@ -19950,6 +19991,17 @@ msgid ""
 "  -h     | --help     display this help and exit\n"
 "  -v     | --version  output version information and exit\n"
 msgstr ""
+"사용법:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"TLS 인증서 구성을 확인합니다\n"
+"\n"
+"옵션:\n"
+"  -s     | --system   시스템 인증서를 확인합니다 (기본값)\n"
+"  -u     | --user     사용자 인증서를 확인합니다\n"
+"  -p DIR | --path DIR는 사용자 정의 인증서 경로를 확인합니다\n"
+"  -h     | --help     이와 같은 도움말을 표시하고 종료합니다\n"
+"  -v     | --version  버전 정보를 출력하고 종료합니다\n"
 
 #, sh-format
 msgid ""
@@ -24793,7 +24845,7 @@ msgid "domain already has a vsock device"
 msgstr "도메인에 이미 vsock 장치가 있습니다"
 
 msgid "domain already has an iommu device"
-msgstr ""
+msgstr "도메인은 이미 iommu 장치를 갖고 있습니다"
 
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "도메인 아키텍처(/domain/os/type/@arch)"
@@ -27884,7 +27936,7 @@ msgid "i - turn off validation and try to redefine again"
 msgstr "i - 유효성 검사를 끄고 다시 재정의하십시오"
 
 msgid "iSCSI protocol accepts only one host"
-msgstr ""
+msgstr "iSCSI 통신규약은 하나의 호스트만 허용합니다"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI 저장소 풀은 볼륨 생성을 지원하지 않음"
@@ -29902,7 +29954,7 @@ msgid "matching input device not found"
 msgstr "일치하는 입력 장치를 찾을 수 없습니다"
 
 msgid "matching iommu device not found"
-msgstr ""
+msgstr "일치하는 iommu 장치를 찾을 수 없습니다"
 
 msgid "matching memory device was not found"
 msgstr "일치하는 메모리 장치를 찾을 수 없습니다"
@@ -33745,7 +33797,7 @@ msgid "query-rx-filter return data missing array element"
 msgstr "query-rx-filter는 자료 누락 배열 요소를 반환합니다"
 
 msgid "query-sev reply was missing some data"
-msgstr ""
+msgstr "query-sev 응답은 일부 자료가 누락되었습니다"
 
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "query-sev-capabilities 응답에 'cbitpos' 필드가 누락되었습니다"
@@ -33761,7 +33813,7 @@ msgstr ""
 "query-sev-capabilities 응답에 'reduced-phys-bits' 필드가 누락되었습니다"
 
 msgid "query-sev-launch-measure reply was missing 'data'"
-msgstr ""
+msgstr "query-sev-launch-measure 응답은 'data'가 누락되었습니다"
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
 msgstr "query-sgx-capabilities 응답은 누락된 'flc' 부분이었습니다"
@@ -37335,7 +37387,7 @@ msgstr "알 수 없는 SDL_AUDIODRIVER 설정 %1$s"
 
 #, c-format
 msgid "unknown SEV type '%1$s'"
-msgstr ""
+msgstr "알지 못하는 SEV 유형 '%1$s'"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
@@ -37613,7 +37665,7 @@ msgstr "알려지지 않은 smbios 모드 '%1$s'"
 
 #, c-format
 msgid "unknown state '%1$s' for '%2$s'"
-msgstr ""
+msgstr "알지 못하는 상태 '%1$s' ('%2$s' 에 대해)"
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
