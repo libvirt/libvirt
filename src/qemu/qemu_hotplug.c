@@ -3937,6 +3937,14 @@ qemuDomainChangeNet(virQEMUDriver *driver,
                 else
                     needBridgeChange = true;
             }
+
+            if (STRNEQ_NULLABLE(olddev->data.network.portgroup,
+                                newdev->data.network.portgroup)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("cannot modify network device portgroup attribute"));
+                goto cleanup;
+            }
+
             /* other things handled in common code directly below this switch */
             break;
 
