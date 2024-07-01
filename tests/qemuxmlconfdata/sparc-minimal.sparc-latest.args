@@ -9,10 +9,11 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.config \
 /usr/bin/qemu-system-sparc \
 -name guest=redhat62sparc,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain--1-redhat62sparc/master-key.aes \
--machine SS-5,usb=off,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-redhat62sparc/master-key.aes"}' \
+-machine SS-5,usb=off,dump-guest-core=off,memory-backend=sun4m.ram \
 -accel tcg \
 -m size=512000k \
+-object '{"qom-type":"memory-backend-ram","id":"sun4m.ram","size":524288000}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 00010203-0405-4607-8809-0a0b0c0d0e0f \
@@ -26,10 +27,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-redhat62sparc/.config \
 -boot strict=on \
 -blockdev '{"driver":"file","filename":"/home/berrange/VirtualMachines/redhat-6.2-sparc.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","file":"libvirt-2-storage"}' \
--device scsi-hd,bus=scsi.0,scsi-id=0,device_id=drive-scsi0-0-0-0,drive=libvirt-2-format,id=scsi0-0-0-0,bootindex=1 \
--blockdev '{"driver":"file","filename":"/home/berrange/VirtualMachines/redhat-6.2-sparc.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
--device scsi-cd,bus=scsi.0,scsi-id=1,device_id=drive-scsi0-0-0-1,drive=libvirt-1-format,id=scsi0-0-0-1 \
+-device '{"driver":"scsi-hd","bus":"scsi.0","scsi-id":0,"device_id":"drive-scsi0-0-0-0","drive":"libvirt-2-format","id":"scsi0-0-0-0","bootindex":1}' \
+-blockdev '{"driver":"file","filename":"/home/berrange/VirtualMachines/redhat-6.2-sparc.iso","node-name":"libvirt-1-storage","read-only":true}' \
+-device '{"driver":"scsi-cd","bus":"scsi.0","scsi-id":1,"device_id":"drive-scsi0-0-0-1","drive":"libvirt-1-storage","id":"scsi0-0-0-1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

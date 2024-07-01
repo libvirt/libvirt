@@ -1,0 +1,96 @@
+<qemuCaps>
+  <emulator>/usr/bin/qemu-system-sparc</emulator>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='sdl'/>
+  <flag name='spice'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='vnc'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='migrate-rdma'/>
+  <flag name='spice-gl'/>
+  <flag name='spice-rendernode'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='screendump_device'/>
+  <flag name='egl-headless'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='egl-headless.rendernode'/>
+  <flag name='memory-backend-file.pmem'/>
+  <flag name='nbd-bitmap'/>
+  <flag name='migration-file-drop-cache'/>
+  <flag name='dbus-vmstate'/>
+  <flag name='incremental-backup'/>
+  <flag name='drive-nvme'/>
+  <flag name='smp-dies'/>
+  <flag name='rng-builtin'/>
+  <flag name='query-named-block-nodes.flat'/>
+  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <flag name='blockdev-reopen'/>
+  <flag name='fsdev.multidevs'/>
+  <flag name='aio.io_uring'/>
+  <flag name='tcg'/>
+  <flag name='numa.hmat'/>
+  <flag name='block-export-add'/>
+  <flag name='netdev.vhost-vdpa'/>
+  <flag name='ncr53c90'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+  <flag name='migration-param.block-bitmap-mapping'/>
+  <flag name='vnc-power-control'/>
+  <flag name='object.qapified'/>
+  <flag name='rotation-rate'/>
+  <flag name='compat-deprecated'/>
+  <flag name='input-linux'/>
+  <flag name='confidential-guest-support'/>
+  <flag name='set-action'/>
+  <flag name='memory-backend-file.reserve'/>
+  <flag name='netdev.json'/>
+  <flag name='query-dirty-rate'/>
+  <flag name='rbd-encryption'/>
+  <flag name='sev-guest-kernel-hashes'/>
+  <flag name='device.json+hotplug'/>
+  <flag name='calc-dirty-rate'/>
+  <flag name='dirtyrate-param.mode'/>
+  <flag name='blockdev.nbd.tls-hostname'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='chardev.qemu-vdagent'/>
+  <flag name='display-dbus'/>
+  <flag name='iothread.thread-pool-max'/>
+  <flag name='migration.blocked-reasons'/>
+  <flag name='query-stats'/>
+  <flag name='query-stats-schemas'/>
+  <flag name='thread-context'/>
+  <flag name='screenshot-format-png'/>
+  <flag name='netdev.stream'/>
+  <flag name='cryptodev-backend-lkcf'/>
+  <flag name='netdev.stream.reconnect'/>
+  <flag name='rbd-encryption-layering'/>
+  <flag name='rbd-encryption-luks-any'/>
+  <flag name='qcow2-discard-no-unref'/>
+  <flag name='run-with.async-teardown'/>
+  <flag name='virtio-blk-vhost-vdpa'/>
+  <flag name='smp-clusters'/>
+  <flag name='blockjob.backing-mask-protocol'/>
+  <flag name='display-reload'/>
+  <flag name='netdev.user'/>
+  <version>9000000</version>
+  <microcodeVersion>0</microcodeVersion>
+  <package>qemu-9.0.0-1.fc40</package>
+  <arch>sparc</arch>
+  <machine type='tcg' name='SS-5' maxCpus='1' default='yes' defaultCPU='Fujitsu-MB86904-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='SS-20' maxCpus='4' defaultCPU='TI-SuperSparc-II-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='LX' maxCpus='1' defaultCPU='TI-MicroSparc-I-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='SPARCClassic' maxCpus='1' defaultCPU='TI-MicroSparc-I-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='leon3_generic' maxCpus='4' defaultCPU='LEON3-sparc-cpu' defaultRAMid='leon3.ram' acpi='no'/>
+  <machine type='tcg' name='SPARCbook' maxCpus='1' defaultCPU='TI-MicroSparc-I-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='SS-4' maxCpus='1' defaultCPU='Fujitsu-MB86904-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='SS-600MP' maxCpus='4' defaultCPU='TI-SuperSparc-II-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='SS-10' maxCpus='4' defaultCPU='TI-SuperSparc-II-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+  <machine type='tcg' name='Voyager' maxCpus='1' defaultCPU='Fujitsu-MB86904-sparc-cpu' defaultRAMid='sun4m.ram' acpi='no'/>
+</qemuCaps>
