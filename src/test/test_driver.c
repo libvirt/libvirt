@@ -41,6 +41,7 @@
 #include "domain_conf.h"
 #include "domain_driver.h"
 #include "domain_event.h"
+#include "domain_postparse.h"
 #include "domain_validate.h"
 #include "network_event.h"
 #include "snapshot_conf.h"
@@ -10237,6 +10238,154 @@ testDomainAttachDevice(virDomainPtr domain, const char *xml)
 }
 
 
+static int
+testDomainUpdateDeviceConfig(virDomainDef *vmdef,
+                             virDomainDeviceDef *dev,
+                             unsigned int parse_flags,
+                             virDomainXMLOption *xmlopt)
+{
+    virDomainDiskDef *newDisk;
+    virDomainDeviceDef oldDev = { .type = dev->type };
+    int pos;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        newDisk = dev->data.disk;
+        if ((pos = virDomainDiskIndexByName(vmdef, newDisk->dst, false)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("target %1$s doesn't exist."), newDisk->dst);
+            return -1;
+        }
+
+        oldDev.data.disk = vmdef->disks[pos];
+        if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                         false) < 0)
+            return -1;
+
+        virDomainDiskDefFree(vmdef->disks[pos]);
+        vmdef->disks[pos] = newDisk;
+        dev->data.disk = NULL;
+        break;
+
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_LAST:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("persistent update of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
+        return -1;
+    }
+
+    if (virDomainDefPostParse(vmdef, parse_flags, xmlopt, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+testDomainUpdateDeviceFlags(virDomainPtr dom,
+                            const char *xml,
+                            unsigned int flags)
+{
+    testDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    virObjectEvent *event = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
+    g_autoptr(virDomainDeviceDef) dev = NULL;
+    int ret = -1;
+    unsigned int parse_flags = 0;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
+
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
+        !(flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    }
+
+    if (!(dev = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
+                                        NULL, parse_flags))) {
+        goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        /* Make a copy for updated domain. */
+        vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt, NULL);
+        if (!vmdef)
+            goto endjob;
+
+        /* virDomainDefCompatibleDevice call is delayed until we know the
+         * device we're going to update. */
+        if ((ret = testDomainUpdateDeviceConfig(vmdef, dev,
+                                                parse_flags,
+                                                driver->xmlopt)) < 0)
+            goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        ret = -1;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("live update of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
+        goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!ret) {
+            virDomainObjAssignDef(vm, &vmdef, false, NULL);
+
+            /* Event sending if persistent config has changed */
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                      VIR_DOMAIN_EVENT_DEFINED,
+                                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+
+            virObjectEventStateQueue(driver->eventState, event);
+        }
+    }
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 /* search for a hostdev matching dev and detach it */
 static int
 testDomainDetachPrepHostdev(virDomainObj *vm,
@@ -10456,6 +10605,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainAttachDevice = testDomainAttachDevice, /* 10.0.0 */
     .domainAttachDeviceFlags = testDomainAttachDeviceFlags, /* 10.0.0 */
     .domainDetachDeviceAlias = testDomainDetachDeviceAlias, /* 10.0.0 */
+    .domainUpdateDeviceFlags = testDomainUpdateDeviceFlags, /* 10.6.0 */
     .domainCreateXML = testDomainCreateXML, /* 0.1.4 */
     .domainCreateXMLWithFiles = testDomainCreateXMLWithFiles, /* 5.7.0 */
     .domainLookupByID = testDomainLookupByID, /* 0.1.1 */
