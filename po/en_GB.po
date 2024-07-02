@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-05-23 04:51+0000\n"
+"PO-Revision-Date: 2024-07-02 19:36+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 msgid ""
 "\n"
@@ -39884,7 +39884,7 @@ msgstr ""
 
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
-msgstr ""
+msgstr "zone %1$s requested for network %2$s but firewalld is not active"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"
