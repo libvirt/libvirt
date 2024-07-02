@@ -6220,6 +6220,8 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     virDomainHostdevSubsysMediatedDev *mdevsrc = &def->source.subsys.u.mdev;
     virTristateBool managed;
     g_autofree char *model = NULL;
+    virDomainDeviceSGIO sgio;
+    virTristateBool rawio;
     int rv;
 
     /* @managed can be read from the xml document - it is always an
@@ -6259,7 +6261,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     if ((rv = virXMLPropEnum(node, "sgio",
                              virDomainDeviceSGIOTypeFromString,
                              VIR_XML_PROP_NONZERO,
-                             &scsisrc->sgio)) < 0) {
+                             &sgio)) < 0) {
         return -1;
     }
 
@@ -6269,18 +6271,30 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                            _("sgio is only supported for scsi host device"));
             return -1;
         }
+
+        /* Set sgio only after checking if hostdev type is 'scsi' to avoid
+         * clobbering other union structures.
+         */
+        scsisrc->sgio = sgio;
     }
 
     if ((rv = virXMLPropTristateBool(node, "rawio",
                                      VIR_XML_PROP_NONE,
-                                     &scsisrc->rawio)) < 0) {
+                                     &rawio)) < 0) {
         return -1;
     }
 
-    if (rv > 0 && def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("rawio is only supported for scsi host device"));
-        return -1;
+    if (rv > 0) {
+        if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                        _("rawio is only supported for scsi host device"));
+            return -1;
+        }
+
+        /* Set rawio only after checking if hostdev type is 'scsi' to avoid
+         * clobbering other union structures.
+         */
+        scsisrc->rawio = rawio;
     }
 
     if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
