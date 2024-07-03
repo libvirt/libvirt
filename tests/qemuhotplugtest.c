@@ -501,9 +501,6 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-    if (!(driver.domainEventState = virObjectEventStateNew()))
-        return EXIT_FAILURE;
-
     driver.lockManager = virLockManagerPluginNew("nop", "qemu",
                                                  driver.config->configBaseDir,
                                                  0);

@@ -2947,6 +2947,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_FAILURE("disk-network-iscsi-zero-hosts-invalid")
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-vhost-rawio-invalid")
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-vhost-sgio-invalid")
+    DO_TEST_CAPS_LATEST("disk-startuppolicy-optional-drop")
 
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)

@@ -236,6 +236,7 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virObjectUnref(driver->caps);
     virObjectUnref(driver->config);
     virObjectUnref(driver->securityManager);
+    virObjectUnref(driver->domainEventState);
     g_clear_object(&driver->nbdkitCapsCache);
 
     virCPUDefFree(cpuDefault);
@@ -367,6 +368,9 @@ int qemuTestDriverInit(virQEMUDriver *driver)
                                       VIR_SECURITY_MANAGER_PRIVILEGED)))
         goto error;
     if (!(driver->securityManager = virSecurityManagerNewStack(mgr)))
+        goto error;
+
+    if (!(driver->domainEventState = virObjectEventStateNew()))
         goto error;
 
     qemuTestSetHostCPU(driver, driver->hostarch, NULL);
