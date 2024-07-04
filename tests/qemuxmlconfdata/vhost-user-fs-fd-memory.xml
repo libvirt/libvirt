@@ -28,10 +28,9 @@
     <controller type='pci' index='0' model='pci-root'/>
     <filesystem type='mount' accessmode='passthrough'>
       <driver type='virtiofs' queue='1024'/>
-      <binary path='/usr/libexec/virtiofsd' xattr='on'>
+      <binary xattr='on'>
         <cache mode='always'/>
         <sandbox mode='chroot'/>
-        <lock posix='off' flock='off'/>
         <thread_pool size='16'/>
       </binary>
       <idmap>
