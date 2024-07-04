@@ -899,6 +899,7 @@ struct _virDomainFSDef {
     virDomainIdMapDef idmap;
     virDomainVirtioOptions *virtio;
     virObject *privateData;
+    virBitmap *caps;
 };
 
 

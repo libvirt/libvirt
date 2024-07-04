@@ -46,3 +46,14 @@ qemuVhostUserFillDomainGPU(virQEMUDriver *driver,
 int
 qemuVhostUserFillDomainFS(virQEMUDriver *driver,
                           virDomainFSDef *fs);
+
+int
+qemuVhostUserFillFSCapabilities(virBitmap **caps,
+                                const char *binary);
+typedef enum {
+    QEMU_VHOST_USER_FS_FEATURE_MIGRATE_PRECOPY = 0,
+    QEMU_VHOST_USER_FS_FEATURE_SEPARATE_OPTIONS,
+    QEMU_VHOST_USER_FS_FEATURE_LAST
+} qemuVhostUserFSFeature;
+
+VIR_ENUM_DECL(qemuVhostUserFSFeature);

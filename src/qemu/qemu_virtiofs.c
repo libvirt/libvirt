@@ -446,8 +446,13 @@ qemuVirtioFSPrepareDomain(virQEMUDriver *driver,
     if (fs->sock)
         return 0;
 
-    if (!fs->binary && qemuVhostUserFillDomainFS(driver, fs) < 0)
-        return -1;
+    if (fs->binary) {
+        if (qemuVhostUserFillFSCapabilities(&fs->caps, fs->binary) < 0)
+            return -1;
+    } else {
+        if (qemuVhostUserFillDomainFS(driver, fs) < 0)
+            return -1;
+    }
 
     if (!driver->privileged && !fs->idmap.uidmap) {
         if (qemuVirtioFSPrepareIdMap(fs) < 0)

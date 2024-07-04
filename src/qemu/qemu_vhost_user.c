@@ -22,6 +22,7 @@
 
 #include "qemu_vhost_user.h"
 #include "qemu_interop_config.h"
+#include "virbitmap.h"
 #include "virjson.h"
 #include "virlog.h"
 #include "viralloc.h"
@@ -88,6 +89,12 @@ VIR_ENUM_IMPL(qemuVhostUserGPUFeature,
               "",
               "virgl",
               "render-node",
+);
+
+VIR_ENUM_IMPL(qemuVhostUserFSFeature,
+              QEMU_VHOST_USER_FS_FEATURE_LAST,
+              "migrate-precopy",
+              "separate-options",
 );
 
 typedef struct _qemuVhostUserGPU qemuVhostUserGPU;
@@ -414,6 +421,52 @@ qemuVhostUserFillDomainGPU(virQEMUDriver *driver,
     return ret;
 }
 
+int
+qemuVhostUserFillFSCapabilities(virBitmap **caps,
+                                const char *binary)
+{
+    g_autoptr(virJSONValue) doc = NULL;
+    g_autofree char *output = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    virJSONValue *featuresJSON;
+    size_t nfeatures;
+    size_t i;
+    g_autoptr(virBitmap) features = NULL;
+
+    cmd = virCommandNewArgList(binary, "--print-capabilities", NULL);
+    virCommandSetOutputBuffer(cmd, &output);
+    if (virCommandRun(cmd, NULL) < 0)
+        return -2;
+
+    if (!(doc = virJSONValueFromString(output))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to parse json capabilities '%1$s'"),
+                       binary);
+        return -1;
+    }
+
+    /* Older virtiofsd did not print any features */
+    if (!(featuresJSON = virJSONValueObjectGetArray(doc, "features")))
+        return 0;
+
+    features = virBitmapNew(0);
+    nfeatures = virJSONValueArraySize(featuresJSON);
+
+    for (i = 0; i < nfeatures; i++) {
+        virJSONValue *item = virJSONValueArrayGet(featuresJSON, i);
+        const char *tmpStr = virJSONValueGetString(item);
+        int tmp;
+
+        if ((tmp = qemuVhostUserFSFeatureTypeFromString(tmpStr)) < 0) {
+            VIR_DEBUG("ignoring unknown virtiofs feature '%s'", tmpStr);
+            continue;
+        }
+        virBitmapSetBitExpand(features, tmp);
+    }
+
+    *caps = g_steal_pointer(&features);
+    return 0;
+}
 
 int
 qemuVhostUserFillDomainFS(virQEMUDriver *driver,
@@ -435,6 +488,11 @@ qemuVhostUserFillDomainFS(virQEMUDriver *driver,
             continue;
 
         fs->binary = g_strdup(vu->binary);
+
+        /* skip binaries that can't report their capabilities */
+        if (qemuVhostUserFillFSCapabilities(&fs->caps,
+                                            vu->binary) == -1)
+            continue;
         break;
     }
 

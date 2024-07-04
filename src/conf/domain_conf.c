@@ -2600,6 +2600,7 @@ void virDomainFSDefFree(virDomainFSDef *def)
     g_free(def->sock);
     g_free(def->idmap.uidmap);
     g_free(def->idmap.gidmap);
+    virBitmapFree(def->caps);
 
     g_free(def);
 }

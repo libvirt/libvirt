@@ -1076,6 +1076,8 @@ mymain(void)
 
     virFileWrapperAddPrefix("/usr/libexec/qemu/vhost-user",
                             abs_srcdir "/qemuvhostuserdata/usr/libexec/qemu/vhost-user");
+    virFileWrapperAddPrefix("/usr/libexec/virtiofsd",
+                            abs_srcdir "/qemuvhostuserdata/usr/libexec/qemu/vhost-user/test-virtiofsd");
 
     if (!(conn = virGetConnect()))
         return EXIT_FAILURE;
