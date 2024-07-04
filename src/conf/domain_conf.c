@@ -4449,7 +4449,7 @@ virDomainObjGetDefs(virDomainObj *vm,
  * @live: set to true if live config was returned (may be omitted)
  *
  * Helper function to resolve @flags and return the correct domain pointer
- * object. This function returns one of @vm->def or @vm->persistentDef
+ * object. This function returns one of @vm->def or @vm->newDef
  * according to @flags. @live is set to true if the live vm config will be
  * returned. This helper should be used only in APIs that guarantee
  * that @flags contains exactly one of VIR_DOMAIN_AFFECT_LIVE or
@@ -4489,7 +4489,7 @@ virDomainObjGetOneDefState(virDomainObj *vm,
  * @flags: for virDomainModificationImpact
  *
  * Helper function to resolve @flags and return the correct domain pointer
- * object. This function returns one of @vm->def or @vm->persistentDef
+ * object. This function returns one of @vm->def or @vm->newDef
  * according to @flags. This helper should be used only in APIs that guarantee
  * that @flags contains exactly one of VIR_DOMAIN_AFFECT_LIVE or
  * VIR_DOMAIN_AFFECT_CONFIG and not both.
