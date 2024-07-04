@@ -3681,6 +3681,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     bool needVlanUpdate = false;
     bool needIsolatedPortChange = false;
     bool needQueryRxFilter = false;
+    bool isVirtio = false;
     int ret = -1;
     int changeidx = -1;
     g_autoptr(virConnect) conn = NULL;
@@ -3742,7 +3743,9 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (virDomainNetIsVirtioModel(olddev) &&
+    isVirtio = virDomainNetIsVirtioModel(olddev);
+
+    if (isVirtio &&
         (olddev->driver.virtio.name != newdev->driver.virtio.name ||
          olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
          olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||
@@ -3769,12 +3772,18 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (!!olddev->virtio != !!newdev->virtio ||
-        (olddev->virtio && newdev->virtio &&
-         (olddev->virtio->iommu != newdev->virtio->iommu ||
-          olddev->virtio->ats != newdev->virtio->ats ||
-          olddev->virtio->packed != newdev->virtio->packed ||
-          olddev->virtio->page_per_vq != newdev->virtio->page_per_vq))) {
+    if ((isVirtio &&
+         (!!olddev->virtio != !!newdev->virtio ||
+          (olddev->virtio && newdev->virtio &&
+           (olddev->virtio->iommu != newdev->virtio->iommu ||
+            olddev->virtio->ats != newdev->virtio->ats ||
+            olddev->virtio->packed != newdev->virtio->packed ||
+            olddev->virtio->page_per_vq != newdev->virtio->page_per_vq)))) ||
+        (!isVirtio && newdev->virtio &&
+         (newdev->virtio->iommu != 0 ||
+          newdev->virtio->ats != 0 ||
+          newdev->virtio->packed != 0 ||
+          newdev->virtio->page_per_vq != 0))) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify virtio network device driver options"));
            goto cleanup;
