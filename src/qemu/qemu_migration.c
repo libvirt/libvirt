@@ -39,6 +39,7 @@
 #include "qemu_slirp.h"
 #include "qemu_block.h"
 #include "qemu_tpm.h"
+#include "qemu_vhost_user.h"
 
 #include "domain_audit.h"
 #include "virlog.h"
@@ -1576,8 +1577,12 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
             virDomainFSDef *fs = vm->def->fss[i];
 
             if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
-                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("migration with virtiofs device is not supported"));
+                if (fs->sock ||
+                    virBitmapIsBitSet(fs->caps, QEMU_VHOST_USER_FS_FEATURE_MIGRATE_PRECOPY))
+                    continue;
+
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("migration with this virtiofs device is not supported"));
                 return false;
             }
         }
