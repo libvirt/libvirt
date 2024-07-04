@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cat <<EOF
+{
+  "type": "fs",
+  "features": [
+    "migrate-precopy"
+  ]
+}
+EOF

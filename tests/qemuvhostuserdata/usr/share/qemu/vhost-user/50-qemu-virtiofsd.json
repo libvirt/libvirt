@@ -1,0 +1,5 @@
+{
+  "description": "virtiofsd vhost-user-fs",
+  "type": "fs",
+  "binary": "/usr/libexec/qemu/vhost-user/test-vhost-user-gpu"
+}

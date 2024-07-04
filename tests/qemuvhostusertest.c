@@ -60,6 +60,7 @@ testVUPrecedence(const void *opaque G_GNUC_UNUSED)
     const char *expected[] = {
         PREFIX "/share/qemu/vhost-user/30-gpu.json",
         SYSCONFDIR "/qemu/vhost-user/40-gpu.json",
+        PREFIX "/share/qemu/vhost-user/50-qemu-virtiofsd.json",
         PREFIX "/share/qemu/vhost-user/60-gpu.json",
         NULL
     };
