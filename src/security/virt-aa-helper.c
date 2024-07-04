@@ -475,6 +475,7 @@ valid_path(const char *path, const bool readonly)
         "/initrd",
         "/initrd.img",
         "/usr/share/edk2/",
+        "/usr/share/edk2-ovmf/",             /* for OVMF images */
         "/usr/share/OVMF/",                  /* for OVMF images */
         "/usr/share/ovmf/",                  /* for OVMF images */
         "/usr/share/AAVMF/",                 /* for AAVMF images */
