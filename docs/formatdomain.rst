@@ -8097,7 +8097,7 @@ Example: usage of the TPM Emulator
      ...
      <devices>
        <tpm model='tpm-tis'>
-         <backend type='emulator' version='2.0'>
+         <backend type='emulator' version='2.0' debug='5'>
            <encryption secret='6dd3e4a5-1d76-44ce-961f-f119f5aad935'/>
            <active_pcr_banks>
                <sha256/>
@@ -8141,7 +8141,9 @@ Example: usage of the TPM Emulator
    ``emulator``
       For this backend type the 'swtpm' TPM Emulator must be installed on the
       host. Libvirt will automatically start an independent TPM emulator for
-      each QEMU guest requesting access to it.
+      each QEMU guest requesting access to it. :since:`10.6.0`, the ``debug``
+      parameter can be used to enable logging in the emulator backend, and
+      accepts non-zero integer values. 
 
 ``version``
    The ``version`` attribute indicates the version of the TPM. This attribute

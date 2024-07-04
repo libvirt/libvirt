@@ -28,7 +28,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <tpm model='tpm-tis'>
-      <backend type='emulator' version='2.0'>
+      <backend type='emulator' version='2.0' debug='3'>
         <encryption secret='b4a117f1-8af2-44a4-91b8-7f0d2d4d68a3'/>
         <active_pcr_banks>
           <sha256/>

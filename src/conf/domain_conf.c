@@ -10800,6 +10800,10 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                            &def->data.emulator.version) < 0)
             goto error;
 
+        if (virXMLPropUInt(backends[0], "debug", 10, VIR_XML_PROP_NONE,
+                           &def->data.emulator.debug) < 0)
+            goto error;
+
         if (!(def->data.emulator.source = virDomainChrSourceDefNew(xmlopt)))
             goto error;
         secretuuid = virXPathString("string(./backend/encryption/@secret)", ctxt);
@@ -24882,6 +24886,9 @@ virDomainTPMDefFormat(virBuffer *buf,
         }
         if (def->data.emulator.persistent_state)
             virBufferAddLit(&backendAttrBuf, " persistent_state='yes'");
+        if (def->data.emulator.debug != 0)
+            virBufferAsprintf(&backendAttrBuf, " debug='%u'",
+                              def->data.emulator.debug);
         if (def->data.emulator.hassecretuuid) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
 

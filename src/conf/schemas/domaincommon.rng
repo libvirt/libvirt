@@ -5914,6 +5914,11 @@
               <ref name="virYesNo"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="debug">
+              <ref name="uint8"/>
+            </attribute>
+          </optional>
         </group>
         <group>
           <attribute name="type">

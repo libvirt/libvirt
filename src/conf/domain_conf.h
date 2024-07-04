@@ -1476,6 +1476,7 @@ struct _virDomainTPMDef {
             virDomainChrSourceDef *source;
             char *storagepath;
             char *logfile;
+            unsigned int debug;
             unsigned char secretuuid[VIR_UUID_BUFLEN];
             bool hassecretuuid;
             bool persistent_state;
