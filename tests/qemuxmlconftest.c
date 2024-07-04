@@ -2160,6 +2160,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("cpu-numa3");
     DO_TEST_CAPS_LATEST("cpu-numa-disjoint");
     DO_TEST_CAPS_LATEST("cpu-numa-memshared");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("cpu-numa-distance-nonexistent-sibling");
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
