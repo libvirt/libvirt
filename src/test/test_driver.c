@@ -10239,10 +10239,10 @@ testDomainAttachDevice(virDomainPtr domain, const char *xml)
 
 
 static int
-testDomainUpdateDeviceConfig(virDomainDef *vmdef,
-                             virDomainDeviceDef *dev,
-                             unsigned int parse_flags,
-                             virDomainXMLOption *xmlopt)
+testDomainUpdateDevice(virDomainDef *vmdef,
+                       virDomainDeviceDef *dev,
+                       unsigned int parse_flags,
+                       virDomainXMLOption *xmlopt)
 {
     virDomainDiskDef *newDisk;
     virDomainDeviceDef oldDev = { .type = dev->type };
@@ -10316,12 +10316,16 @@ testDomainUpdateDeviceFlags(virDomainPtr dom,
     testDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
+    virDomainDef *def = NULL;
+    virDomainDef *persistentDef = NULL;
     g_autoptr(virDomainDef) vmdef = NULL;
-    g_autoptr(virDomainDeviceDef) dev = NULL;
+    g_autoptr(virDomainDeviceDef) dev_live = NULL;
+    g_autoptr(virDomainDeviceDef) dev_config = NULL;
     int ret = -1;
     unsigned int parse_flags = 0;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_CONFIG, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (!(vm = testDomObjFromDomain(dom)))
         goto cleanup;
@@ -10337,9 +10341,20 @@ testDomainUpdateDeviceFlags(virDomainPtr dom,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
     }
 
-    if (!(dev = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
-                                        NULL, parse_flags))) {
-        goto endjob;
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto cleanup;
+
+    if (def) {
+        if (!(dev_live = virDomainDeviceDefParse(xml, def, driver->xmlopt,
+                                                 NULL, parse_flags)))
+            goto endjob;
+    }
+
+    if (persistentDef) {
+        if (!(dev_config = virDomainDeviceDefParse(xml, persistentDef,
+                                                   driver->xmlopt, NULL,
+                                                   parse_flags)))
+            goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -10350,18 +10365,19 @@ testDomainUpdateDeviceFlags(virDomainPtr dom,
 
         /* virDomainDefCompatibleDevice call is delayed until we know the
          * device we're going to update. */
-        if ((ret = testDomainUpdateDeviceConfig(vmdef, dev,
-                                                parse_flags,
-                                                driver->xmlopt)) < 0)
+        if ((ret = testDomainUpdateDevice(vmdef, dev_config,
+                                          parse_flags,
+                                          driver->xmlopt)) < 0)
             goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        ret = -1;
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("live update of device '%1$s' is not supported"),
-                       virDomainDeviceTypeToString(dev->type));
-        goto endjob;
+        /* virDomainDefCompatibleDevice call is delayed until we know the
+         * device we're going to update. */
+        if ((ret = testDomainUpdateDevice(def, dev_live,
+                                          parse_flags,
+                                          driver->xmlopt)) < 0)
+            goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
