@@ -2910,6 +2910,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
     virJSONValue *ram;
     virJSONValue *disk;
     virJSONValue *comp;
+    virJSONValue *vfio;
     const char *statusstr;
     int rc;
     double mbps;
@@ -3089,6 +3090,17 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
             if (rc < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("XBZRLE is active, but 'overflow' data was missing"));
+                return -1;
+            }
+        }
+
+        vfio = virJSONValueObjectGetObject(ret, "vfio");
+        if (vfio) {
+            rc = virJSONValueObjectGetNumberUlong(vfio, "transferred",
+                                                  &stats->vfio_data_transferred);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("vfio migration was active, but 'transferred' data was missing"));
                 return -1;
             }
         }

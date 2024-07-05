@@ -4613,6 +4613,15 @@ typedef enum {
 # define VIR_DOMAIN_JOB_DISK_TEMP_TOTAL "disk_temp_total"
 
 /**
+ * VIR_DOMAIN_JOB_VFIO_DATA_TRANSFERRED:
+ * virDomainGetJobStats field: number of bytes transferred by VFIO devices
+ * in that iteration, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: 10.6.0
+ */
+# define VIR_DOMAIN_JOB_VFIO_DATA_TRANSFERRED "vfio_data_transferred"
+
+/**
  * virConnectDomainEventGenericCallback:
  * @conn: the connection pointer
  * @dom: the domain pointer

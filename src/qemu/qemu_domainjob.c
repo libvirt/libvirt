@@ -414,6 +414,12 @@ qemuDomainMigrationJobDataToParams(virDomainJobData *jobData,
                              stats->cpu_throttle_percentage) < 0)
         goto error;
 
+    if (stats->vfio_data_transferred &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_VFIO_DATA_TRANSFERRED,
+                                stats->vfio_data_transferred) < 0)
+        goto error;
+
  done:
     *type = virDomainJobStatusToType(jobData->status);
     *params = par;

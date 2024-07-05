@@ -814,6 +814,7 @@ struct _qemuMonitorMigrationStats {
     unsigned long long xbzrle_overflow;
 
     int cpu_throttle_percentage;
+    unsigned long long vfio_data_transferred;
 };
 
 int qemuMonitorGetMigrationStats(qemuMonitor *mon,
