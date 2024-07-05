@@ -560,7 +560,6 @@ qemuStateInitialize(bool privileged,
     bool autostart = true;
     size_t i;
     const char *defsecmodel = NULL;
-    g_autofree virSecurityManager **sec_managers = NULL;
     g_autoptr(virIdentity) identity = virIdentityGetCurrent();
 
     qemu_driver = g_new0(virQEMUDriver, 1);
@@ -826,11 +825,8 @@ qemuStateInitialize(bool privileged,
     if (!qemu_driver->qemuCapsCache)
         goto error;
 
-    if (!(sec_managers = qemuSecurityGetNested(qemu_driver->securityManager)))
-        goto error;
-
-    if (sec_managers[0] != NULL)
-        defsecmodel = qemuSecurityGetModel(sec_managers[0]);
+    if (qemu_driver->securityManager != NULL)
+        defsecmodel = qemuSecurityGetModel(qemu_driver->securityManager);
 
     if (!(qemu_driver->xmlopt = virQEMUDriverCreateXMLConf(qemu_driver,
                                                            defsecmodel)))
