@@ -989,6 +989,28 @@ virSecurityManagerGetNested(virSecurityManager *mgr)
     return list;
 }
 
+/*
+ * Usually called before virSecurityManagerGetNested().
+ * We need to ensure locking the stack security manager before
+ * locking the nested security manager to maintain the correct
+ * synchronization state.
+ * It must be followed by a call virSecurityManagerStackUnlock().
+ */
+void
+virSecurityManagerStackLock(virSecurityManager *mgr)
+{
+    if (STREQ("stack", mgr->drv->name))
+        virObjectLock(mgr);
+}
+
+
+void
+virSecurityManagerStackUnlock(virSecurityManager *mgr)
+{
+    if (STREQ("stack", mgr->drv->name))
+        virObjectUnlock(mgr);
+}
+
 
 /**
  * virSecurityManagerDomainSetPathLabel:

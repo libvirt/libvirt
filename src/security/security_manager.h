@@ -158,6 +158,8 @@ int virSecurityManagerSetTapFDLabel(virSecurityManager *mgr,
 char *virSecurityManagerGetMountOptions(virSecurityManager *mgr,
                                         virDomainDef *vm);
 virSecurityManager ** virSecurityManagerGetNested(virSecurityManager *mgr);
+void virSecurityManagerStackLock(virSecurityManager *mgr);
+void virSecurityManagerStackUnlock(virSecurityManager *mgr);
 
 typedef enum {
     VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN = 1 << 0,

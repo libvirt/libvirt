@@ -1806,6 +1806,8 @@ virSecurityManagerSetSocketLabel;
 virSecurityManagerSetTapFDLabel;
 virSecurityManagerSetTPMLabels;
 virSecurityManagerStackAddNested;
+virSecurityManagerStackLock;
+virSecurityManagerStackUnlock;
 virSecurityManagerTransactionAbort;
 virSecurityManagerTransactionCommit;
 virSecurityManagerTransactionStart;

@@ -1380,9 +1380,14 @@ virCaps *virQEMUDriverCreateCapabilities(virQEMUDriver *driver)
         return NULL;
     }
 
+    /* Ensure top lock is acquired before nested locks */
+    qemuSecurityStackLock(driver->securityManager);
+
     /* access sec drivers and create a sec model for each one */
-    if (!(sec_managers = qemuSecurityGetNested(driver->securityManager)))
+    if (!(sec_managers = qemuSecurityGetNested(driver->securityManager))) {
+        qemuSecurityStackUnlock(driver->securityManager);
         return NULL;
+    }
 
     /* calculate length */
     for (i = 0; sec_managers[i]; i++)
@@ -1402,13 +1407,17 @@ virCaps *virQEMUDriverCreateCapabilities(virQEMUDriver *driver)
             lbl = qemuSecurityGetBaseLabel(sec_managers[i], virtTypes[j]);
             type = virDomainVirtTypeToString(virtTypes[j]);
             if (lbl &&
-                virCapabilitiesHostSecModelAddBaseLabel(sm, type, lbl) < 0)
+                virCapabilitiesHostSecModelAddBaseLabel(sm, type, lbl) < 0) {
+                qemuSecurityStackUnlock(driver->securityManager);
                 return NULL;
+            }
         }
 
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "
                   "DOI \"%s\"", model, doi);
     }
+
+    qemuSecurityStackUnlock(driver->securityManager);
 
     caps->host.numa = virCapabilitiesHostNUMANewHost();
     caps->host.cpu = virQEMUDriverGetHostCPU(driver);

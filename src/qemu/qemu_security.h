@@ -151,3 +151,5 @@ int qemuSecurityCommandRun(virQEMUDriver *driver,
 #define qemuSecuritySetTapFDLabel virSecurityManagerSetTapFDLabel
 #define qemuSecurityStackAddNested virSecurityManagerStackAddNested
 #define qemuSecurityVerify virSecurityManagerVerify
+#define qemuSecurityStackLock virSecurityManagerStackLock
+#define qemuSecurityStackUnlock virSecurityManagerStackUnlock

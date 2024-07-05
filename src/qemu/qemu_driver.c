@@ -5654,9 +5654,16 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
         ret = 0;
     } else {
         int len = 0;
-        virSecurityManager ** mgrs = qemuSecurityGetNested(driver->securityManager);
-        if (!mgrs)
+        virSecurityManager ** mgrs = NULL;
+
+        /* Ensure top lock is acquired before nested locks */
+        qemuSecurityStackLock(driver->securityManager);
+
+        mgrs = qemuSecurityGetNested(driver->securityManager);
+        if (!mgrs) {
+            qemuSecurityStackUnlock(driver->securityManager);
             goto cleanup;
+        }
 
         /* Allocate seclabels array */
         for (i = 0; mgrs[i]; i++)
@@ -5669,11 +5676,13 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
         for (i = 0; i < len; i++) {
             if (qemuSecurityGetProcessLabel(mgrs[i], vm->def, vm->pid,
                                             &(*seclabels)[i]) < 0) {
+                qemuSecurityStackUnlock(driver->securityManager);
                 VIR_FREE(mgrs);
                 VIR_FREE(*seclabels);
                 goto cleanup;
             }
         }
+        qemuSecurityStackUnlock(driver->securityManager);
         ret = len;
         VIR_FREE(mgrs);
     }
