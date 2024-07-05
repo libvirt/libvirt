@@ -1439,6 +1439,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-loongarch64", "loongarch64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-loongarch64", "loongarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-riscv64", "riscv64");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-path");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram-template");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-nvram-template-nonstandard");
