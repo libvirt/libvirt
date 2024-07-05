@@ -317,7 +317,7 @@ mymain(void)
                       "/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd:"
                       "/usr/share/edk2/ovmf/OVMF.secboot.fd:NULL:"
                       "/usr/share/edk2/ovmf/OVMF.amdsev.fd:NULL:"
-                      "/usr/share/edk2/ovmf/OVMF.inteltdx.fd:NULL",
+                      "/usr/share/edk2/ovmf/OVMF.inteltdx.secboot.fd:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
