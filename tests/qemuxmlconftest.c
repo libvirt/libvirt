@@ -1423,7 +1423,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-rw");
-    DO_TEST_CAPS_LATEST("firmware-auto-efi-rw-pflash");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-efi-rw-pflash");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi-loader-secure");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-insecure");

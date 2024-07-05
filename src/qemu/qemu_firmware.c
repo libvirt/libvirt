@@ -1280,6 +1280,12 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH) {
         const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
 
+        if (loader && loader->type &&
+            loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+            VIR_DEBUG("Discarding flash loader");
+            return false;
+        }
+
         if (loader && loader->stateless == VIR_TRISTATE_BOOL_YES) {
             if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
                 VIR_DEBUG("Discarding loader without stateless flash");
@@ -1326,6 +1332,12 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                           virStorageFileFormatTypeToString(loader->nvram->format));
                 return false;
             }
+        }
+    } else if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_MEMORY) {
+        if (loader && loader->type &&
+            loader->type != VIR_DOMAIN_LOADER_TYPE_ROM) {
+            VIR_DEBUG("Discarding rom loader");
+            return false;
         }
     }
 
