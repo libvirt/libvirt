@@ -6,7 +6,9 @@
   <vcpu max='512'/>
   <iothreads supported='yes'/>
   <os supported='yes'>
-    <enum name='firmware'/>
+    <enum name='firmware'>
+      <value>efi</value>
+    </enum>
     <loader supported='yes'>
       <value>/obviously/fake/firmware1.fd</value>
       <value>/obviously/fake/firmware2.fd</value>

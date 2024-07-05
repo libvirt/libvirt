@@ -93,6 +93,7 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/50-edk2-loongarch64.json",
         PREFIX "/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json",
         PREFIX "/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json",
+        PREFIX "/share/qemu/firmware/50-edk2-riscv-qcow2.json",
         PREFIX "/share/qemu/firmware/51-edk2-aarch64-raw.json",
         PREFIX "/share/qemu/firmware/51-edk2-ovmf-2m-raw-x64-nosb.json",
         PREFIX "/share/qemu/firmware/52-edk2-aarch64-verbose-qcow2.json",
@@ -272,6 +273,7 @@ mymain(void)
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-loongarch64.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-4m-qcow2-x64-nosb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-ovmf-x64-microvm.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/50-edk2-riscv-qcow2.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/51-edk2-aarch64-raw.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/51-edk2-ovmf-2m-raw-x64-nosb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/52-edk2-aarch64-verbose-qcow2.json");
@@ -331,6 +333,9 @@ mymain(void)
                       "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw:"
                       "/usr/share/edk2/aarch64/QEMU_EFI-pflash.qcow2:/usr/share/edk2/aarch64/vars-template-pflash.qcow2:"
                       "/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw",
+                      VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
+    DO_SUPPORTED_TEST("virt", VIR_ARCH_RISCV64, false,
+                      "/usr/share/edk2/riscv/RISCV_VIRT_CODE.qcow2:/usr/share/edk2/riscv/RISCV_VIRT_VARS.qcow2",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 
     virFileWrapperClearPrefixes();
