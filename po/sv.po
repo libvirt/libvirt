@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-06-30 20:36+0000\n"
+"PO-Revision-Date: 2024-07-06 11:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 msgid ""
 "\n"
@@ -30310,127 +30310,124 @@ msgid "malformed volume extent stripes value"
 msgstr "felformaterat värde på volymutsträckningsremsor"
 
 msgid "malformed/missing addr in dimm memory info"
-msgstr ""
+msgstr "felformaterat/saknat addr i dimm-minnesinformation"
 
 msgid "malformed/missing hotpluggable in dimm memory info"
-msgstr ""
+msgstr "felformaterat/saknat hotpluggable i dimm-minnesinformation"
 
 msgid "malformed/missing hotplugged in dimm memory info"
-msgstr ""
+msgstr "felformaterat/saknat hotplugged i dimm-minnesinformation"
 
 msgid "malformed/missing memaddr in sgx-epc memory info"
-msgstr ""
+msgstr "felformaterat/saknat mimaddr i sgx-epc-minnesinformation"
 
 msgid "malformed/missing memaddr in virtio memory info"
-msgstr ""
+msgstr "felformaterat/saknat memaddr i virtio-minnesinformation"
 
 msgid "malformed/missing size in sgx-epc memory info"
-msgstr ""
+msgstr "felformaterat/saknat size i sgx-epc-minnesinformation"
 
 msgid "malformed/missing size in virtio memory info"
-msgstr ""
+msgstr "felformaterat/saknat size i virtio-minnesinformation"
 
 msgid "malformed/missing slot in dimm memory info"
-msgstr ""
+msgstr "felformaterat/saknat slot i dimm-minnesinformation"
 
-#, fuzzy
 msgid "managed save of a domain state"
-msgstr "spara ett domäntillstånd till en fil"
+msgstr "haterat sparande av ett domäntillstånd"
 
 msgid "managing externally launched configuration"
-msgstr ""
+msgstr "hantering av externt startad konfiguration"
 
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
+"hantera auktoriserad SSH-nyckelfil för den angivna användaren (via en agent)"
 
 msgid "maplen must be non-negative"
-msgstr ""
+msgstr "maplen måste vara icke-negativt"
 
 msgid "mark inactive domains with managed save state"
-msgstr ""
+msgstr "markera inaktiva domäner med hanterat sparningstillstånd"
 
-#, fuzzy
 msgid "masterbus not found"
-msgstr "Domän hittades inte"
+msgstr "huvudbussen finns inte"
 
 #, c-format
 msgid "match mode %1$s not supported"
-msgstr ""
+msgstr "matchningsläget %1$s stödjs inte"
 
 msgid "matching filesystem not found"
-msgstr ""
+msgstr "något matchande filsystem finns inte"
 
-#, fuzzy
 msgid "matching input device not found"
-msgstr "saknar rot-enhetsinformation"
+msgstr "någon matchande inmatningsenhet finns inte"
 
 msgid "matching iommu device not found"
-msgstr ""
+msgstr "någon matchande iommu-enhet finns inte"
 
 msgid "matching memory device was not found"
-msgstr ""
+msgstr "någon matchande minnesenhet finns inte"
 
 msgid "matching shmem device was not found"
-msgstr ""
+msgstr "någon matchande shmem-enhet fanns inte"
 
-#, fuzzy
 msgid "matching vsock device not found"
-msgstr "saknar rot-enhetsinformation"
+msgstr "någon matchande vsock-enhet finns inte"
 
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
 msgid "maxWorkers must not be switched from zero to non-zero and vice versa"
-msgstr ""
+msgstr "maxWorkers får inte ändras från noll till nollskilt och vice versa"
 
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
 msgid "maxcells must be non-negative"
-msgstr ""
+msgstr "maxcells måste vara icke-negativt"
 
-#, fuzzy
 msgid "maxerrors too large"
-msgstr "nparams är för stor"
+msgstr "maxerrors är för stort"
 
-#, fuzzy
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
-msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maxids must be non-negative"
-msgstr ""
+msgstr "maxids måste vara icke-negativt"
 
 msgid "maximum"
-msgstr ""
+msgstr "maximum"
 
 msgid "maximum CPU is not supported by QEMU binary"
-msgstr ""
+msgstr "maximal CPU stödjs inte av QEMU-binären"
 
 msgid "maximum amount of in-flight data during the copy"
-msgstr ""
+msgstr "maximal mängd av data i rörelse under kopieringen"
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
 msgstr ""
+"maximal minnesstorlek måste vara lika med eller större än den faktiskt "
+"minnesstorleken"
 
 msgid ""
 "maximum memory size must be specified when specifying number of memory slots"
-msgstr ""
+msgstr "maximal minnesstorlek måste anges när antal minnesfack anges"
 
 msgid "maximum memory size overflowed after alignment"
-msgstr ""
+msgstr "maximal minnesstorlek flödade över efter justering"
 
 msgid "maximum tolerable downtime (in milliseconds) for migration"
-msgstr ""
+msgstr "maximal tolererbar nertid (i millisekunder) för migrering"
 
 msgid "maximum vCPU count must not be less than current vCPU count"
-msgstr ""
+msgstr "maximalt vCPU-antal får inte vara mindre än det aktuella vCPU-antalet"
 
 msgid "maximum vcpu count of a live domain can't be modified"
-msgstr ""
+msgstr "maximalt vcpu-antal för en aktiv tomän kan inte ändras"
 
 msgid "maximum vcpus count must be an integer"
-msgstr ""
+msgstr "maximalt antal vcpu:er måste vara ett heltal"
 
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgstr "maxinfo · maplen > REMOTE_CPUMAPS_MAX"
@@ -30439,23 +30436,19 @@ msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
 msgid "maxinfo must be non-negative"
-msgstr ""
+msgstr "maxinfo måste vara icke-negativt"
 
-#, fuzzy
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_INTERFACE_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_INTERFACE_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_NETWORK_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_NETWORK_LIST_MAX"
 
 msgid "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
@@ -30463,9 +30456,8 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_NWFILTER_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_NWFILTER_LIST_MAX"
 
 #, fuzzy
 msgid "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
