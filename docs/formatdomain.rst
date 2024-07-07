@@ -8143,7 +8143,7 @@ Example: usage of the TPM Emulator
       host. Libvirt will automatically start an independent TPM emulator for
       each QEMU guest requesting access to it. :since:`10.6.0`, the ``debug``
       parameter can be used to enable logging in the emulator backend, and
-      accepts non-zero integer values. 
+      accepts non-zero integer values.
 
 ``version``
    The ``version`` attribute indicates the version of the TPM. This attribute
