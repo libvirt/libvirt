@@ -30459,195 +30459,196 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
 msgid "maxnames > REMOTE_NWFILTER_LIST_MAX"
 msgstr "maxnames > REMOTE_NWFILTER_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
 msgid "maxnames must be non-negative"
-msgstr ""
+msgstr "maxnames måste vara icke-negativt"
 
-#, fuzzy
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
 msgid "maxuuids must be non-negative"
-msgstr ""
+msgstr "maxuuids måste vara icke-negativt"
 
 msgid "mdev attribute missing name or value"
-msgstr ""
+msgstr "attributet mdev saknar namn eller värde"
 
 msgid "mdevctl JSON response contains no devices"
-msgstr ""
+msgstr "mdevctl-JSON-svaret innehåller inga enheter"
 
 #, c-format
 msgid "mediated device %1$s is in use by driver %2$s, domain %3$s"
-msgstr ""
+msgstr "den förmedlade enheten %1$s används av drivrutinen %2$s, domänen %3$s"
 
 #, c-format
 msgid "mediated device '%1$s' not found"
-msgstr ""
+msgstr "den förmedlade enheten ”%1$s” finns inte"
 
-#, fuzzy
 msgid "mediated devices are not supported on non-linux platforms"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "förmedlade enheter stödjs inte på andra plattformar än linux"
 
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
-msgstr ""
+msgstr "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 
 #, c-format
 msgid "memory '%1$s' not found"
-msgstr ""
+msgstr "minnet ”%1$s” finns inte"
 
 #, c-format
 msgid "memory access mode '%1$s' not supported without guest numa node"
-msgstr ""
+msgstr "minnesåtkomstläget ”%1$s” stödjs inte utan en gäst-numa-nod"
 
 #, c-format
 msgid "memory address must be aligned to %1$ld bytes"
-msgstr ""
+msgstr "minnesadressen måste var justerad till %1$ld byte"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
-msgstr ""
+msgstr "minnesattribut: [file=]name[,snapshot=type]"
 
 #, c-format
 msgid ""
 "memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
 "(0x%3$llx)"
 msgstr ""
+"minnesenhetens adress [0x%1$llx:0x%2$llx] överlappar med en annan "
+"minnesenhet (0x%3$llx)"
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
-msgstr ""
+msgstr "minnesenhetens adress stödjs inte för modellen ”%1$s”"
 
 msgid "memory device address must be aligned to blocksize"
-msgstr ""
+msgstr "minnesenhetens adress måste vara justerad till blockstorleken"
 
 msgid "memory device alias"
-msgstr ""
+msgstr "minnesenhetens alias"
 
 msgid "memory device alias is not assigned"
-msgstr ""
+msgstr "minnesenhetens alias är inte tilldelat"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
-msgstr ""
+msgstr "minnesenhetens fack ”%1$u” överskrider antalet fack ”%2$u”"
 
 #, c-format
 msgid ""
 "memory device slot '%1$u' is already being used by another memory device"
-msgstr ""
+msgstr "minnesenhetens fack ”%1$u” används redan av en annan minnesenhet"
 
 msgid "memory device target node"
-msgstr ""
+msgstr "minnesenhetens målnod"
 
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
+"minnesenhetens totala storlek överskrider utrymmet för inkoppling under drift"
 
-#, fuzzy
 msgid "memory devices are not supported by this driver"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "minnesenheter stödjs inte av denna drivrutin"
 
 #, c-format
 msgid "memory filename '%1$s' requires external snapshot"
-msgstr ""
+msgstr "minnesfilnamnet ”%1$s” kräver en extern ögonblicksbild"
 
 msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
 "swap_hard_limit"
 msgstr ""
+"minnets justerbara värde hard_limit måste vara lägre än eller lika med "
+"swap_hard_limit"
 
 msgid "memory hotplug isn't supported by this QEMU binary"
-msgstr ""
+msgstr "inkoppling under drift stödjs inte av denna QEMU-binär"
 
 msgid ""
 "memory hotplug tunables <maxMemory> are not supported by this hypervisor "
 "driver"
 msgstr ""
+"minnets justerbara driftomkopplingsbara värde <maxMemory> stödjs inte av "
+"denna hypervisor-drivrutin"
 
 msgid "memory not found"
-msgstr ""
+msgstr "minnet finns inte"
 
 #, c-format
 msgid "memory peek request too large for remote protocol, %1$zi > %2$d"
-msgstr ""
+msgstr "minnets toppbegäran är för stor för fjärrptotokollet, %1$zi > %2$d"
 
 msgid "memory size can't be changed unless domain is powered down"
-msgstr ""
+msgstr "minnesstorleken kan inte ändras om inte domänen är avstängd"
 
 #, c-format
 msgid "memory size of NUMA node '%1$zu' overflowed after alignment"
-msgstr ""
+msgstr "minnesstorleken av NUMA-noden ”%1$zu” spillde över efter justering"
 
 #, c-format
 msgid "memory snapshot file path (%1$s) must be absolute"
-msgstr ""
+msgstr "minnesögonblicksbildens sökväg (%1$s) måste vara absolut"
 
 msgid "memory state cannot be saved with offline or disk-only snapshot"
 msgstr ""
+"minnets tillstånd kan inte sparas med en frånkopplad eller endast-disk-"
+"ögonblicksbild"
 
 msgid "memory-only dump failed for unknown reason"
-msgstr ""
+msgstr "dump av enbart minne misslyckades av okänd anledning"
 
-#, fuzzy, c-format
+#, c-format
 msgid "memory-only dump failed: %1$s"
-msgstr "operation misslyckades: %1$s"
+msgstr "dump av endast minnet misslyckades: %1$s"
 
 msgid "message"
 msgstr "meddelande"
 
 msgid "metadata cache max size control is supported only with qcow2 images"
-msgstr ""
+msgstr "metadatacachens maxstorlekstyrning stödjs endast med qcow2-avbilder"
 
-#, fuzzy
 msgid "metadata not found"
-msgstr "Domän hittades inte"
+msgstr "metadata finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "metadata not found: %1$s"
-msgstr "Domän hittades inte: %1$s"
+msgstr "metadata finns inte: %1$s"
 
 msgid "metadata preallocation conflicts with backing store"
-msgstr ""
+msgstr "förallokering av metadata står i konflikt med bakomliggande lagring"
 
 msgid "metadata preallocation is not supported for block volumes"
-msgstr ""
+msgstr "förallokering av metadata stödjs inte för blockvolymer"
 
 msgid "metadata preallocation is not supported for raw volumes"
-msgstr ""
+msgstr "förallokering av metadata stödjs inte för råa volymer"
 
 msgid "metadata preallocation only available with qcow2"
-msgstr ""
+msgstr "förallokering av metadata är endast tillgängligt med qcow2"
 
 msgid "metadata title can't contain newlines"
-msgstr ""
+msgstr "metadatatiteln får inte innehålla nyrader"
 
 msgid "metadata_cache is not supported with vhostuser disk"
-msgstr ""
+msgstr "metadata_cache stödjs inte med en vhostuser-disk"
 
 msgid "migrate domain to another host"
 msgstr "migrera domän till en annan värd"
 
-#, fuzzy
 msgid "migrate uri is not set"
-msgstr "migrera domän till en annan värd"
+msgstr "migrerings-uri:n är inte satt"
 
-#, fuzzy
 msgid "migrate: Invalid downtime"
-msgstr "Ogiltig kontext"
+msgstr "migrera: felaktig nertid"
 
 msgid "migrate: Unexpected --timeout-* option without --timeout"
-msgstr ""
+msgstr "migrering: oväntad flagga --timeout-* utan --timeout"
 
 msgid "migrate: Unexpected timeout for offline migration"
-msgstr ""
+msgstr "migrering: oväntat tidsgräns för frånkopplad migrering"
 
 #, c-format
 msgid "migrate_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "migrate_tls_x509_cert_dir katalogen ”%1$s” finns inte"
 
 msgid "migrated"
 msgstr "migrerad"
@@ -30655,296 +30656,309 @@ msgstr "migrerad"
 msgid "migrating"
 msgstr "migrerar"
 
-#, fuzzy
 msgid "migration"
-msgstr "live-migrering"
+msgstr "migrering"
 
 msgid "migration URI is not supported by tunnelled migration"
-msgstr ""
+msgstr "migrations-URI:n stödjs inte av tunnlad migrering"
 
 msgid "migration URI, usually can be omitted"
 msgstr "migrerings-URI, kan oftas uteslutas"
 
 msgid "migration bandwidth limit in MiB/s"
-msgstr ""
+msgstr "bandbreddsgräns för migrering i MiB/s"
 
 msgid "migration canceled"
 msgstr "migrationen avbruten"
 
 msgid "migration in"
-msgstr ""
+msgstr "migrering in"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration of disk %1$s failed"
-msgstr "operation misslyckades"
+msgstr "migrationen av disken %1$s misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration of disk %1$s failed: %2$s"
-msgstr "operation misslyckades: %s"
+msgstr "migrationen av disken %1$s misslyckades: %2$s"
 
 #, c-format
 msgid "migration of domain %1$s is being actively monitored by another thread"
-msgstr ""
+msgstr "migrationen av domänen %1$s övervakas aktivt av en annan tråd"
 
 #, c-format
 msgid "migration of domain %1$s is not in post-copy phase"
-msgstr ""
+msgstr "migrationen av domänen %1$s är inte i efterkopieringsfasen"
 
 msgid "migration of non-shared disks requested but NBD is not set up"
-msgstr ""
+msgstr "migrering av icke-delade diskar begärd men NBD är inte uppsatt"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
+"migrering av icke-delad lagring stödjs inte med tunnlad migrering och denna "
+"QEMU"
 
 msgid "migration out"
-msgstr ""
+msgstr "migrering ut"
 
 #, c-format
 msgid "migration parameter '%1$s' must be less than %2$llu"
-msgstr ""
+msgstr "migreringsparametern ”%1$s” måste vara mindre än %2$llu"
 
 #, c-format
 msgid "migration parameter '%1$s' must be less than %2$u"
-msgstr ""
+msgstr "migreringsparametern ”%1$s” måste vara mindre än %2$u"
 
 #, c-format
 msgid "migration protocol going backwards %1$s => %2$s"
-msgstr ""
+msgstr "migreringsprotokollet går baklänges %1$s ⇒ %2$s"
 
 msgid "migration statistics are available only on the source host"
-msgstr ""
+msgstr "migreringsstatistik är bara tillgänglig på källvärden"
 
-#, fuzzy
 msgid "migration successfully aborted"
-msgstr "migrerings-URI, kan oftas uteslutas"
+msgstr "migreringen avbröts framgångsrikt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration successfully aborted: %1$s"
-msgstr "migrerings-URI, kan oftas uteslutas"
+msgstr "migreringen avbröts framgångsrikt: %1$s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
-msgstr ""
+msgstr "migreringen var aktiv, men RAM ”remaining” data saknades"
 
 msgid "migration was active, but RAM 'total' data was missing"
-msgstr ""
+msgstr "migreringen var aktiv, men RAM ”total” data saknades"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
-msgstr ""
+msgstr "migreringen var aktiv, men RAM ”transferred” data saknades"
 
 msgid "migration with non-shared storage with full disk copy"
-msgstr ""
+msgstr "migrering med icke-delad lagring med fullständig diskkopiering"
 
 msgid ""
 "migration with non-shared storage with incremental copy (same base image "
 "shared between source and destination)"
 msgstr ""
+"migrering med icke-delad lagring med inkrementell kopiering (samma basavbild "
+"delad mellan källa och mål)"
 
 msgid "migration with transient disk is not supported"
-msgstr ""
+msgstr "migrering med en transient disk stödjs inte"
 
 msgid "migration with virtiofs device is not supported"
-msgstr ""
+msgstr "migrering med en virtiofs-enhet stödjs inte"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
 msgstr ""
+"migration_address får inte vara adressen till den lokala maskinen: %1$s"
 
 #, c-format
 msgid "migration_host must not be the address of the local machine: %1$s"
-msgstr ""
+msgstr "migration_host får inte vara adressen till den lokala maskinen: %1$s"
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
+msgstr "minWorkers kan inte vara större än maxWorkers"
 
 #, c-format
 msgid "minimum SSF levels lower than %1$d are not supported"
-msgstr ""
+msgstr "minsta SSF-nivåer lägre än %1$d stödjs inte"
 
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
+"minsta målstorlek för NVDIMM:en måste vara 256 MB plus etikettstorleken"
 
 msgid "mirror requires file name"
-msgstr ""
+msgstr "spegling kräver filnamn"
 
 msgid "mirror requires source element"
-msgstr ""
+msgstr "spegling kräver källelement"
 
 msgid "mirror without type only supported by copy job"
-msgstr ""
+msgstr "spegling utan typ stödjs endast av kopieringsjobb"
 
-#, fuzzy, c-format
+#, c-format
 msgid "mishandled storage format '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "felhanterat lagringsfomat ”%1$s”"
 
 #, c-format
 msgid ""
 "mismatch between configured type for snapshot disk '%1$s' and the type of "
 "existing file '%2$s'"
 msgstr ""
+"den konfigurerade typen för ögonblicksbilden ”%1$s” och typen på den "
+"befintliga filen ”%2$s” stämmer inte överens"
 
 #, c-format
 msgid "mismatch of address family in range %1$s - %2$s"
-msgstr ""
+msgstr "adressfamiljen in intervallet %1$s - %2$s stämmer inte överens"
 
 #, c-format
 msgid "mismatch of address family in range %1$s - %2$s for network %3$s"
 msgstr ""
+"adressfamiljen i intervallet %1$s - %2$s för nätverket %3$s stämmer inte "
+"överens"
 
 msgid "mismatched header magic"
-msgstr ""
+msgstr "huvudmagi stämmer inte överens"
 
 msgid "missing \""
 msgstr "saknar \""
 
 #, c-format
 msgid "missing %1$s in <virtualport type='%2$s'>"
-msgstr ""
+msgstr "%1$s saknas i <virtualport type='%2$s'>"
 
 #, c-format
 msgid "missing '%1$s' in 'config' from cloud-hypervisor"
-msgstr ""
+msgstr "”%1$s” saknas i ”config” från cloud-hypervisor"
 
-#, fuzzy
 msgid "missing 'DateTime' element"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "”DateTime”-element saknas"
 
 msgid "missing 'alias' attribute for qemu:device"
-msgstr ""
+msgstr "attributet ”alias” saknas till qemu:device"
 
 msgid "missing 'config' in info query result from cloud-hypervisor"
-msgstr ""
+msgstr "”config” saknas i svaret på informationsfrågan från cloud-hypervisor"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%1$s'"
-msgstr ""
+msgstr "”content” saknar värde e selinux lxc-contexts-filen ”%1$s”"
 
 #, c-format
 msgid ""
 "missing 'end' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
+"attributet ”end” saknas i elementet <address> i <nat> i <forward> i "
+"nätverket %1$s"
 
 #, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
-msgstr ""
+msgstr "”file” saknas i ”%1$s” från cloud-hypervisor"
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%1$s'"
-msgstr ""
+msgstr "”file” saknar värde e selinux lxc-contexts-filen ”%1$s”"
 
 msgid "missing 'filename' field in JSON backing volume definition"
-msgstr ""
+msgstr "fältet ”filename” saknas i JSON-definitionen av bakomliggande volym"
 
-#, fuzzy
 msgid "missing 'guid' attribute"
-msgstr "startordningsattribut saknas"
+msgstr "attributet ”guid” saknas"
 
 msgid "missing 'id' attribute for mediated device's <type> element"
-msgstr ""
+msgstr "attributet ”id” saknas i den förmedlade enhetens element <type>"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
+"attributet ”name” saknas för en värds CPU-modellegenskap i QEMU:s förmåge-"
+"cache"
 
 msgid "missing 'name' attribute for qemu:property"
-msgstr ""
+msgstr "attributet ”name” saknas i qemu:property"
 
 msgid "missing 'path' attribute for vhostuser disk source"
-msgstr ""
+msgstr "attributet ”path” saknas i vhostuser:s diskkälla"
 
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr ""
+"attributet ”path” saknas i JSON-definitionen av bakomliggande för NFS-volymen"
 
 msgid "missing 'portal' address in iSCSI backing definition"
-msgstr ""
+msgstr "en ”portal”-adress saknas i iSCSI:s bakomliggande definition"
 
 #, c-format
 msgid "missing 'process' value in selinux lxc contexts file '%1$s'"
-msgstr ""
+msgstr "”process” saknar värde i selinux lxc-contexts-filen ”%1$s”"
 
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
+"attributet ”server” saknas i JSON-definitionen av bakomliggande NFS-volym"
 
 msgid "missing 'start' attribute for clock with offset='absolute'"
-msgstr ""
+msgstr "attributet ”start” saknas för klockan med offset='absolute'"
 
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
+"attributet ”start” saknas i elementet <address> i <nat> i <forward> i "
+"nätverket %1$s"
 
-#, fuzzy
 msgid "missing 'state' attribute"
-msgstr "startordningsattribut saknas"
+msgstr "attributet ”state” saknas"
 
 msgid "missing 'target' in iSCSI backing definition"
-msgstr ""
+msgstr "”target” saknas i iSCSI:s bakomliggande definition"
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
-msgstr ""
+msgstr "attributet ”timezone” saknas för klockan med offset='timezone'"
 
 msgid "missing 'type' attribute for vhostuser disk source"
-msgstr ""
+msgstr "attributet ”type” saknas i vhostuser:s diskkälla"
 
-#, fuzzy
 msgid "missing 'type' attribute to disk source"
-msgstr "saknat namn för källskiva"
+msgstr "attributet ”type” saknas på diskkällan"
 
 msgid "missing 'url' in JSON backing volume definition"
-msgstr ""
+msgstr "attributet ”url” saknas i JSON-definitionen av bakomliggande volym"
 
-#, fuzzy
 msgid "missing 'usage' attribute for RAM filesystem"
-msgstr "Källtjänstattribut saknas för teckenenhet"
+msgstr "attributet ”usage” saknas på RAM-filsystemet"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
 msgstr ""
+"attributet ”user” eller ”group” saknas i JSON-definitionen av bakomliggande "
+"NFS-volym"
 
 msgid "missing 'value' attribute for 'qemu:property'"
-msgstr ""
+msgstr "ättributet ”value” saknas i ”qemu:property”"
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
-msgstr ""
+msgstr "attributet ”value” saknas i HyperV-funktionen ”vendor_id”"
 
 msgid ""
 "missing 'vdisk-id' or 'server' attribute in JSON backing definition for VxHS "
 "volume"
 msgstr ""
+"attributet ”vdisk-id” eller ”server” saknas i JSON-definitionen av "
+"bakomliggande VxHS-volym"
 
 msgid ""
 "missing 'volume', 'path' or 'server' attribute in JSON backing definition "
 "for gluster volume"
 msgstr ""
+"attributet ”volume”, ”path” eller ”server” saknas i JSON-definitionen av "
+"bakomliggande gluster-volym"
 
-#, fuzzy
 msgid "missing <target> element for <memory> device"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "elementet <target> saknas i enheten <memory>"
 
 msgid "missing <type> element in <capability> element"
-msgstr ""
+msgstr "elementet <type> saknas i elementet <capability>"
 
-#, fuzzy
 msgid "missing CPU data architecture"
-msgstr "Saknad CPU-arkitektur"
+msgstr "CPU-dataarkitektur saknas"
 
-#, fuzzy
 msgid "missing CPU definition"
-msgstr "saknar enhetsinformation"
+msgstr "CPU-definition saknas"
 
 msgid "missing EGD backend type"
-msgstr ""
+msgstr "EGD-bakändetypen saknas"
 
-#, fuzzy
 msgid "missing GIC version"
-msgstr "saknar enhetsinformation"
+msgstr "GIC-versionen saknas"
 
 msgid "missing GIC version in QEMU capabilities cache"
-msgstr ""
+msgstr "GIC-versionen saknas i QEMU-förmågecachen"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr ""
