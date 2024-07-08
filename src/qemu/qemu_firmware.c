@@ -1339,6 +1339,11 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             VIR_DEBUG("Discarding rom loader");
             return false;
         }
+
+        if (loader && loader->readonly == VIR_TRISTATE_BOOL_NO) {
+            VIR_DEBUG("Discarding readonly loader");
+            return false;
+        }
     }
 
     if (def->sec) {
