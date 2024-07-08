@@ -42,6 +42,7 @@ profile virtqemud @sbindir@/virtqemud flags=(attach_disconnected) {
   mount options=(rw, move) /dev/** -> /{,var/}run/libvirt/qemu/*{,/},
   mount options=(rw, move) /{,var/}run/libvirt/qemu/*.dev/ -> /dev/,
   mount options=(rw, move) /{,var/}run/libvirt/qemu/*{,/} -> /dev/**,
+  umount /{,var/}run/libvirt/qemu/*{,/},
 
   network inet stream,
   network inet dgram,
