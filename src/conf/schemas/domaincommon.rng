@@ -3684,15 +3684,21 @@
               <attribute name="switchid">
                 <ref name="UUID"/>
               </attribute>
-              <attribute name="portid">
-                <data type="long"/>
-              </attribute>
-              <attribute name="portgroupid">
-                <data type="string"/>
-              </attribute>
-              <attribute name="connectionid">
-                <data type="long"/>
-              </attribute>
+              <optional>
+                <attribute name="portid">
+                  <data type="long"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="portgroupid">
+                  <data type="string"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="connectionid">
+                  <data type="long"/>
+                </attribute>
+              </optional>
             </element>
             <ref name="interface-options"/>
           </interleave>

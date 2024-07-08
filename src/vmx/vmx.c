@@ -2896,7 +2896,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
         if (virVMXGetConfigString(conf,
                                   portgroupId_name,
                                   &(*def)->data.vds.portgroup_id,
-                                  false) < 0 ||
+                                  true) < 0 ||
             virVMXGetConfigLong(conf,
                                 portId_name,
                                 &(*def)->data.vds.port_id,
@@ -2906,7 +2906,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
                                 connectionId_name,
                                 &(*def)->data.vds.connection_id,
                                 0,
-                                false) < 0)
+                                true) < 0)
             goto cleanup;
     } else if (connectionType == NULL && networkName == NULL) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_NULL;
@@ -4038,14 +4038,22 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
                           uuid[5], uuid[6], uuid[7], uuid[8], uuid[9], uuid[10],
                           uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
 
-        virBufferAsprintf(buffer, "ethernet%d.dvs.portId = \"%lld\"\n",
-                          controller, def->data.vds.port_id);
+        if (def->data.vds.port_id) {
+            virBufferAsprintf(buffer, "ethernet%d.dvs.portId = \"%lld\"\n",
+                              controller, def->data.vds.port_id);
+        }
 
-        virBufferAsprintf(buffer, "ethernet%d.dvs.", controller);
-        virBufferEscapeString(buffer, "portgroupId = \"%s\"\n", def->data.vds.portgroup_id);
+        if (def->data.vds.portgroup_id) {
+            virBufferAsprintf(buffer, "ethernet%d.dvs.", controller);
+            virBufferEscapeString(buffer, "portgroupId = \"%s\"\n",
+                                  def->data.vds.portgroup_id);
+        }
 
-        virBufferAsprintf(buffer, "ethernet%d.dvs.connectionId = \"%lld\"\n",
-                          controller, def->data.vds.connection_id);
+        if (def->data.vds.connection_id) {
+            virBufferAsprintf(buffer, "ethernet%d.dvs.connectionId = \"%lld\"\n",
+                              controller, def->data.vds.connection_id);
+        }
+
         break;
     }
 

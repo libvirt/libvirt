@@ -14,7 +14,7 @@
   <devices>
     <interface type='vds'>
       <mac address='00:50:56:87:65:43' type='generated'/>
-      <source switchid='503426b2-94e9-3b16-1d68-87bfff4a5440' portid='0' portgroupid='dvportgroup-1285' connectionid='408217997'/>
+      <source switchid='503426b2-94e9-3b16-1d68-87bfff4a5440'/>
       <model type='e1000e'/>
     </interface>
     <video>

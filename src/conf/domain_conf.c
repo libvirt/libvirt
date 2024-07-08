@@ -9593,15 +9593,14 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                            def->data.vds.switch_id) < 0)
             return NULL;
 
-        if (virXMLPropLongLong(source_node, "portid", 0, VIR_XML_PROP_REQUIRED,
-                               &def->data.vds.port_id, def->data.vds.port_id) < 0)
+        if (virXMLPropLongLong(source_node, "portid", 0, VIR_XML_PROP_NONE,
+                               &def->data.vds.port_id, 0) < 0)
             return NULL;
 
-        if (!(def->data.vds.portgroup_id = virXMLPropStringRequired(source_node, "portgroupid")))
-            return NULL;
+        def->data.vds.portgroup_id = virXMLPropString(source_node, "portgroupid");
 
-        if (virXMLPropLongLong(source_node, "connectionid", 0, VIR_XML_PROP_REQUIRED,
-                               &def->data.vds.connection_id, def->data.vds.connection_id) < 0)
+        if (virXMLPropLongLong(source_node, "connectionid", 0, VIR_XML_PROP_NONE,
+                               &def->data.vds.connection_id, 0) < 0)
             return NULL;
 
         break;
