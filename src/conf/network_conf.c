@@ -3353,12 +3353,6 @@ virNetworkDefUpdateDNSTxt(virNetworkDef *def,
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
 
-    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("DNS TXT records cannot be modified, only added or deleted"));
-        goto cleanup;
-    }
-
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "txt") < 0)
         goto cleanup;
 
@@ -3396,6 +3390,18 @@ virNetworkDefUpdateDNSTxt(virNetworkDef *def,
         /* remove it */
         virNetworkDNSTxtDefClear(&dns->txts[foundIdx]);
         VIR_DELETE_ELEMENT(dns->txts, foundIdx, dns->ntxts);
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+
+        if (foundIdx == dns->ntxts) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't locate a matching DNS TXT record in network %1$s"),
+                           def->name);
+            goto cleanup;
+        }
+
+        VIR_FREE(dns->txts[foundIdx].value);
+        dns->txts[foundIdx].value = g_steal_pointer(&txt.value);
 
     } else {
         virNetworkDefUpdateUnknownCommand(command);

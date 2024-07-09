@@ -306,6 +306,15 @@ mymain(void)
                  "dns-txt-record-snowman",
                  "nat-network-dns-txt-record",
                  VIR_NETWORK_UPDATE_COMMAND_DELETE);
+    DO_TEST("modify-dns-txt-record",
+            "dns-txt-record-modify-success",
+            "nat-network-dns-txt-record",
+            "nat-network-dns-txt-modify-ok",
+            VIR_NETWORK_UPDATE_COMMAND_MODIFY);
+    DO_TEST_FAIL("modify-missing-dns-txt-record",
+            "dns-txt-record-modify-fail",
+            "nat-network-dns-txt-record",
+            VIR_NETWORK_UPDATE_COMMAND_MODIFY);
 
 
     section = VIR_NETWORK_SECTION_DNS_SRV;
