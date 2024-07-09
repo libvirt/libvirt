@@ -475,15 +475,15 @@ valid_path(const char *path, const bool readonly)
         "/initrd",
         "/initrd.img",
         "/usr/share/edk2/",
-        "/usr/share/edk2-ovmf/",             /* for OVMF images */
-        "/usr/share/OVMF/",                  /* for OVMF images */
-        "/usr/share/ovmf/",                  /* for OVMF images */
-        "/usr/share/AAVMF/",                 /* for AAVMF images */
+        "/usr/share/edk2-ovmf/",
+        "/usr/share/OVMF/",
+        "/usr/share/ovmf/",
+        "/usr/share/AAVMF/",
         "/usr/share/qemu-efi/",              /* for AAVMF images */
-        "/usr/share/qemu-efi-aarch64/",      /* for AAVMF images */
+        "/usr/share/qemu-efi-aarch64/",
         "/usr/share/qemu/",                  /* SUSE path for OVMF and AAVMF images */
-        "/usr/lib/u-boot/",                  /* u-boot loaders for qemu */
-        "/usr/lib/riscv64-linux-gnu/opensbi" /* RISC-V SBI implementation */
+        "/usr/lib/u-boot/",
+        "/usr/lib/riscv64-linux-gnu/opensbi",
     };
     /* override the above with these */
     const char * const override[] = {
