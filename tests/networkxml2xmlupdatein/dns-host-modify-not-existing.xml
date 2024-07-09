@@ -1,0 +1,4 @@
+<host ip='192.168.122.333'>
+  <hostname>shared</hostname>
+  <hostname>names</hostname>
+</host>

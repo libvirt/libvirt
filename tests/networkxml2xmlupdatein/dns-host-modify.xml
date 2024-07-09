@@ -1,0 +1,5 @@
+<host ip='192.168.122.2'>
+  <hostname>Another</hostname>
+  <hostname>decent</hostname>
+  <hostname>names</hostname>
+</host>

@@ -1,0 +1,28 @@
+<network>
+  <name>default</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9c</uuid>
+  <forward dev='eth0' mode='nat'>
+    <interface dev='eth0'/>
+  </forward>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <dns forwardPlainNames='no'>
+    <host ip='192.168.122.122'>
+      <hostname>pudding</hostname>
+    </host>
+    <host ip='192.168.122.1'>
+      <hostname>host</hostname>
+      <hostname>gateway</hostname>
+    </host>
+    <host ip='192.168.122.2'>
+      <hostname>Another</hostname>
+      <hostname>decent</hostname>
+      <hostname>names</hostname>
+    </host>
+    <host ip='fd8f:1391:3a82:150::c0a8:9603'>
+      <hostname>shared</hostname>
+      <hostname>names</hostname>
+    </host>
+  </dns>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+  </ip>
+</network>

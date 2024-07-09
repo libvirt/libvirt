@@ -276,6 +276,15 @@ mymain(void)
             "nat-network-dns-hosts",
             "nat-network-no-hosts",
             VIR_NETWORK_UPDATE_COMMAND_DELETE);
+    DO_TEST("modify-dns-host",
+            "dns-host-modify",
+            "nat-network-dns-hosts",
+            "nat-network-dns-hosts-modified",
+            VIR_NETWORK_UPDATE_COMMAND_MODIFY);
+    DO_TEST_FAIL("modify-dns-host-not-existing",
+                 "dns-host-modify-not-existing",
+                 "nat-network-dns-hosts",
+                 VIR_NETWORK_UPDATE_COMMAND_MODIFY);
 
 
     section = VIR_NETWORK_SECTION_DNS_TXT;
