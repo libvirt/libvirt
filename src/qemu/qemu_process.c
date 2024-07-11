@@ -8421,7 +8421,8 @@ qemuProcessKill(virDomainObj *vm, unsigned int flags)
  * qemuProcessBeginStopJob:
  *
  * Stop all current jobs by killing the domain and start a new one for
- * qemuProcessStop.
+ * qemuProcessStop. The caller has to make sure qemuProcessEndStopJob is
+ * called to properly cleanup the job.
  */
 int
 qemuProcessBeginStopJob(virDomainObj *vm,
@@ -8448,13 +8449,24 @@ qemuProcessBeginStopJob(virDomainObj *vm,
         goto error;
 
     /* priv->beingDestroyed is deliberately left set to 'true' here. Caller
-     * is supposed to call qemuProcessStop, which will reset it after
-     * 'vm->def->id' is set to -1 */
+     * is supposed to call qemuProcessStop (which will reset it after
+     * 'vm->def->id' is set to -1) and/or qemuProcessEndStopJob to do proper
+     * cleanup. */
     return 0;
 
  error:
     priv->beingDestroyed = false;
     return -1;
+}
+
+
+void
+qemuProcessEndStopJob(virDomainObj *vm)
+{
+    if (!virDomainObjIsActive(vm))
+        QEMU_DOMAIN_PRIVATE(vm)->beingDestroyed = false;
+
+    virDomainObjEndJob(vm);
 }
 
 
@@ -8800,7 +8812,7 @@ qemuProcessAutoDestroy(virDomainObj *dom,
 
     qemuDomainRemoveInactive(driver, dom, 0, false);
 
-    virDomainObjEndJob(dom);
+    qemuProcessEndStopJob(dom);
 
     virObjectEventStateQueue(driver->domainEventState, event);
 }

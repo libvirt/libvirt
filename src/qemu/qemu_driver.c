@@ -2102,7 +2102,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
  endjob:
     if (ret == 0)
         qemuDomainRemoveInactive(driver, vm, 0, false);
-    virDomainObjEndJob(vm);
+    qemuProcessEndStopJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -3888,7 +3888,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
 
  endjob:
     qemuDomainRemoveInactive(driver, vm, 0, false);
-    virDomainObjEndJob(vm);
+    qemuProcessEndStopJob(vm);
 }
 
 

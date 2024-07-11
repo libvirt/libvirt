@@ -169,6 +169,7 @@ typedef enum {
 int qemuProcessBeginStopJob(virDomainObj *vm,
                             virDomainJob job,
                             bool forceKill);
+void qemuProcessEndStopJob(virDomainObj *vm);
 void qemuProcessStop(virQEMUDriver *driver,
                      virDomainObj *vm,
                      virDomainShutoffReason reason,
