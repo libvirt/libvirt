@@ -488,11 +488,7 @@ int virHostValidateSecureGuests(const char *hvname,
             return VIR_VALIDATE_FAILURE(level);
         }
     } else if (hasAMDSev) {
-        int rc = virHostValidateAMDSev(hvname, level);
-
-        if (rc > 0)
-            virValidatePass();
-        return rc;
+        return virHostValidateAMDSev(hvname, level);
     }
 
     virValidateFail(level,
