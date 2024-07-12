@@ -595,8 +595,11 @@ Example:
        <emulator>/usr/bin/qemu-system-x86_64</emulator>
      </devices>
      <qemu:commandline>
-       <qemu:arg value='-newarg'/>
-       <qemu:env name='QEMU_ENV' value='VAL'/>
+       <qemu:arg value='-device'/>
+       <qemu:arg value='ipmi-bmc-sim,id=bmc0'/>
+       <qemu:arg value='-device'/>
+       <qemu:arg value='smbus-impi,bmc=bmc0'/>
+       <qemu:env name='QEMU_MODULE_DIR' value='/usr/lib64/qemu'/>
      </qemu:commandline>
    </domain>
 
