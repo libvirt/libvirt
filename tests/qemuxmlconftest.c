@@ -2601,6 +2601,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-ras", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-features-pauth", "aarch64");
 
     DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
 
