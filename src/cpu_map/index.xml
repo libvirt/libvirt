@@ -57,6 +57,7 @@
     <include filename='x86_Cooperlake.xml'/>
     <include filename='x86_Snowridge.xml'/>
     <include filename='x86_SapphireRapids.xml'/>
+    <include filename='x86_GraniteRapids.xml'/>
 
     <!-- AMD CPUs -->
     <include filename='x86_athlon.xml'/>

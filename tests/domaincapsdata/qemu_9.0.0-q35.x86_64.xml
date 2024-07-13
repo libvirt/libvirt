@@ -113,6 +113,7 @@
       <model usable='no' vendor='Intel'>Haswell-noTSX</model>
       <model usable='no' vendor='Intel'>Haswell-IBRS</model>
       <model usable='no' vendor='Intel'>Haswell</model>
+      <model usable='no' vendor='Intel'>GraniteRapids</model>
       <model usable='no' vendor='AMD'>EPYC-Rome</model>
       <model usable='no' vendor='AMD'>EPYC-Milan</model>
       <model usable='yes' vendor='AMD'>EPYC-IBPB</model>

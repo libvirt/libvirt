@@ -43,6 +43,7 @@ cpumap_data = [
   'x86_EPYC-Milan.xml',
   'x86_EPYC-Rome.xml',
   'x86_features.xml',
+  'x86_GraniteRapids.xml',
   'x86_Haswell-IBRS.xml',
   'x86_Haswell-noTSX-IBRS.xml',
   'x86_Haswell-noTSX.xml',
