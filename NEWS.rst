@@ -17,6 +17,8 @@ v10.6.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for the 'pauth' Arm CPU feature
+
 * **Improvements**
 
 * **Bug fixes**
