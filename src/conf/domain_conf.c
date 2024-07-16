@@ -8868,6 +8868,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
         g_autofree char *queue_size = virXPathString("string(./driver/@queue)", ctxt);
         g_autofree char *binary = virXPathString("string(./binary/@path)", ctxt);
         g_autofree char *thread_pool_size = virXPathString("string(./binary/thread_pool/@size)", ctxt);
+        g_autofree char *rlimit_nofile = virXPathString("string(./binary/rlimit_nofile/@size)", ctxt);
         xmlNodePtr binary_node = virXPathNode("./binary", ctxt);
         xmlNodePtr binary_lock_node = virXPathNode("./binary/lock", ctxt);
         xmlNodePtr binary_cache_node = virXPathNode("./binary/cache", ctxt);
@@ -8888,6 +8889,14 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse thread pool size '%1$s' for virtiofs"),
                            thread_pool_size);
+            goto error;
+        }
+
+        if (rlimit_nofile &&
+            virStrToLong_ull(rlimit_nofile, NULL, 10, &def->rlimit_nofile) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse rlimit_nofile '%1$s' for virtiofs"),
+                           rlimit_nofile);
             goto error;
         }
 
@@ -23414,6 +23423,9 @@ virDomainFSDefFormat(virBuffer *buf,
 
         if (def->thread_pool_size >= 0)
             virBufferAsprintf(&binaryBuf, "<thread_pool size='%d'/>\n", def->thread_pool_size);
+
+        if (def->rlimit_nofile > 0)
+            virBufferAsprintf(&binaryBuf, "<rlimit_nofile size='%lld'/>\n", def->rlimit_nofile);
 
     }
 

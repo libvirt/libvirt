@@ -3380,6 +3380,15 @@
             </optional>
           </element>
         </optional>
+        <optional>
+          <element name="rlimit_nofile">
+            <optional>
+              <attribute name="size">
+                <data type="positiveInteger"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>
