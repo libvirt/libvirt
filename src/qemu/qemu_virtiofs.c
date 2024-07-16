@@ -194,6 +194,9 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
     if (fs->thread_pool_size >= 0)
         virCommandAddArgFormat(cmd, "--thread-pool-size=%i", fs->thread_pool_size);
 
+    if (fs->rlimit_nofile > 0)
+        virCommandAddArgFormat(cmd, "--rlimit-nofile=%llu", fs->rlimit_nofile);
+
     if (cfg->virtiofsdDebug) {
         if (virBitmapIsBitSet(fs->caps, QEMU_VHOST_USER_FS_FEATURE_SEPARATE_OPTIONS))
             virCommandAddArgList(cmd, "--log-level", "debug", NULL);
