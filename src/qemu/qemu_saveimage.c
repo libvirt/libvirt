@@ -425,6 +425,50 @@ qemuSaveImageDecompressionStop(virCommand *cmd,
 }
 
 
+static int
+qemuSaveImageCreateFd(virQEMUDriver *driver,
+                      virDomainObj *vm,
+                      const char *path,
+                      virFileWrapperFd **wrapperFd,
+                      bool *needUnlink,
+                      unsigned int flags)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
+    VIR_AUTOCLOSE fd = -1;
+    int directFlag = 0;
+    unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
+
+    if (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) {
+        wrapperFlags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
+        directFlag = virFileDirectFdFlag();
+        if (directFlag < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("bypass cache unsupported by this system"));
+            return -1;
+        }
+    }
+
+    fd = virQEMUFileOpenAs(cfg->user, cfg->group, false, path,
+                           O_WRONLY | O_TRUNC | O_CREAT | directFlag,
+                           needUnlink);
+
+    if (fd < 0)
+        return -1;
+
+    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
+        return -1;
+
+    if (!(*wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
+        return -1;
+
+    ret = fd;
+    fd = -1;
+
+    return ret;
+}
+
+
 /* Helper function to execute a migration to file with a correct save header
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
@@ -441,31 +485,12 @@ qemuSaveImageCreate(virQEMUDriver *driver,
     bool needUnlink = false;
     int ret = -1;
     int fd = -1;
-    int directFlag = 0;
     virFileWrapperFd *wrapperFd = NULL;
-    unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
     /* Obtain the file handle.  */
-    if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
-        wrapperFlags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
-        directFlag = virFileDirectFdFlag();
-        if (directFlag < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("bypass cache unsupported by this system"));
-            goto cleanup;
-        }
-    }
+    fd = qemuSaveImageCreateFd(driver, vm, path, &wrapperFd, &needUnlink, flags);
 
-    fd = virQEMUFileOpenAs(cfg->user, cfg->group, false, path,
-                           O_WRONLY | O_TRUNC | O_CREAT | directFlag,
-                           &needUnlink);
     if (fd < 0)
-        goto cleanup;
-
-    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
-        goto cleanup;
-
-    if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
         goto cleanup;
 
     if (virQEMUSaveDataWrite(data, fd, path) < 0)
