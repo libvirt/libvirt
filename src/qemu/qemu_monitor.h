@@ -1618,3 +1618,17 @@ int
 qemuMonitorDisplayReload(qemuMonitor *mon,
                          const char *type,
                          bool tlsCerts);
+
+
+int
+qemuMonitorSnapshotSave(qemuMonitor *mon,
+                        const char *jobname,
+                        const char *snapshotname,
+                        const char *vmstate_disk,
+                        const char **disks);
+
+int
+qemuMonitorSnapshotDelete(qemuMonitor *mon,
+                          const char *jobname,
+                          const char *snapshotname,
+                          const char **disks);

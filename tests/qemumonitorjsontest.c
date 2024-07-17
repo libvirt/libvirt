@@ -1217,6 +1217,38 @@ testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)
     return 0;
 }
 
+
+static int
+testQemuMonitorJSONqemuMonitorJSONSnapshot(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    g_autoptr(qemuMonitorTest) test = NULL;
+    const char *disks[] = { "test", "disk", NULL };
+
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "snapshot-save",
+                               "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "snapshot-delete",
+                               "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorJSONSnapshotSave(qemuMonitorTestGetMonitor(test),
+                                    "jobname", "snapshotname", "vmstate", disks) < 0)
+        return -1;
+
+    if (qemuMonitorJSONSnapshotDelete(qemuMonitorTestGetMonitor(test),
+                                      "jobname", "snapshotname", disks) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static bool
 testQemuMonitorJSONqemuMonitorJSONQueryCPUsEqual(struct qemuMonitorQueryCpusEntry *a,
                                                  struct qemuMonitorQueryCpusEntry *b)
@@ -2956,6 +2988,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
     DO_TEST(qemuMonitorJSONSendKeyHoldtime);
     DO_TEST(qemuMonitorJSONNBDServerStart);
+    DO_TEST(qemuMonitorJSONSnapshot);
 
     DO_TEST_CPU_DATA("host");
     DO_TEST_CPU_DATA("full");

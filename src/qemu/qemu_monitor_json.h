@@ -825,3 +825,16 @@ qemuMonitorJSONQueryStats(qemuMonitor *mon,
 int qemuMonitorJSONDisplayReload(qemuMonitor *mon,
                                  const char *type,
                                  bool tlsCerts);
+
+int
+qemuMonitorJSONSnapshotSave(qemuMonitor *mon,
+                            const char *jobname,
+                            const char *snapshotname,
+                            const char *vmstate_disk,
+                            const char **disks);
+
+int
+qemuMonitorJSONSnapshotDelete(qemuMonitor *mon,
+                              const char *jobname,
+                              const char *snapshotname,
+                              const char **disks);
