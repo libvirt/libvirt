@@ -159,6 +159,7 @@
   <flag name='usb-mtp'/>
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>7001000</version>
   <microcodeVersion>42900244</microcodeVersion>
   <package>v7.1.0</package>

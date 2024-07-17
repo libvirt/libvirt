@@ -160,6 +160,7 @@
   <flag name='machine.virt.ras'/>
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>6002092</version>
   <microcodeVersion>61700243</microcodeVersion>
   <package>v7.0.0-rc2</package>

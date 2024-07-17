@@ -139,6 +139,7 @@
   <flag name='display-reload'/>
   <flag name='usb-mtp'/>
   <flag name='netdev.user'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>6002000</version>
   <microcodeVersion>42900244</microcodeVersion>
   <package>v6.2.0</package>

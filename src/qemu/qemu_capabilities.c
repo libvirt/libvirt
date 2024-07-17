@@ -715,6 +715,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "acpi-erst", /* QEMU_CAPS_DEVICE_ACPI_ERST */
               "intel-iommu.dma-translation", /* QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION */
               "machine-i8042-opt", /* QEMU_CAPS_MACHINE_I8042_OPT */
+
+              /* 465 */
+              "snapshot-internal-qmp", /* QEMU_CAPS_SNAPSHOT_INTERNAL_QMP */
     );
 
 
@@ -1235,6 +1238,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-stats", QEMU_CAPS_QUERY_STATS },
     { "query-stats-schemas", QEMU_CAPS_QUERY_STATS_SCHEMAS },
     { "display-reload", QEMU_CAPS_DISPLAY_RELOAD },
+    { "snapshot-save", QEMU_CAPS_SNAPSHOT_INTERNAL_QMP },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

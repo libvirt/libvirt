@@ -123,6 +123,7 @@
   <flag name='usb-mtp'/>
   <flag name='virtio-sound'/>
   <flag name='netdev.user'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>8002000</version>
   <microcodeVersion>39100246</microcodeVersion>
   <package>v8.2.0</package>

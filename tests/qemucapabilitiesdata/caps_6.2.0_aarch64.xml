@@ -151,6 +151,7 @@
   <flag name='usb-mtp'/>
   <flag name='machine.virt.ras'/>
   <flag name='netdev.user'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>6001050</version>
   <microcodeVersion>61700244</microcodeVersion>
   <package></package>

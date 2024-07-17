@@ -79,6 +79,7 @@
   <flag name='blockjob.backing-mask-protocol'/>
   <flag name='display-reload'/>
   <flag name='netdev.user'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>9000000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-9.0.0-1.fc40</package>

@@ -154,6 +154,7 @@
   <flag name='usb-mtp'/>
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>7002000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-7.2.0-6.fc37</package>

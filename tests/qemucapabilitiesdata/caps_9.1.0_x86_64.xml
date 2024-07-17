@@ -207,6 +207,7 @@
   <flag name='acpi-erst'/>
   <flag name='intel-iommu.dma-translation'/>
   <flag name='machine-i8042-opt'/>
+  <flag name='snapshot-internal-qmp'/>
   <version>9001000</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v9.1.0</package>
