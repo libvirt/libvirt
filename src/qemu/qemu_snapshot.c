@@ -309,6 +309,99 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
 }
 
 
+static char **
+qemuSnapshotActiveInternalCreateGetDevices(virDomainObj *vm,
+                                           virDomainSnapshotDef *snapdef)
+{
+    g_auto(GStrv) devices = g_new0(char *, vm->def->ndisks + 2);
+    size_t ndevs = 0;
+    size_t i = 0;
+
+    /* This relies on @snapdef being aligned and validated via
+     * virDomainSnapshotAlignDisks() and qemuSnapshotPrepare(), which also
+     * ensures that all disks are backed by qcow2. */
+    for (i = 0; i < snapdef->ndisks; i++) {
+        virDomainSnapshotDiskDef *snapdisk = snapdef->disks + i;
+        virDomainDiskDef *domdisk = vm->def->disks[i];
+
+        switch (snapdisk->snapshot) {
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
+            devices[ndevs++] = g_strdup(qemuBlockStorageSourceGetFormatNodename(domdisk->src));
+            break;
+
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_NO:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_LAST:
+            continue;
+        }
+    }
+
+    if (vm->def->os.loader &&
+        vm->def->os.loader->nvram &&
+        vm->def->os.loader->nvram->format == VIR_STORAGE_FILE_QCOW2) {
+        devices[ndevs++] = g_strdup(qemuBlockStorageSourceGetFormatNodename(vm->def->os.loader->nvram));
+    }
+
+    return g_steal_pointer(&devices);
+}
+
+
+static int
+qemuSnapshotCreateActiveInternalDone(virDomainObj *vm,
+                                     qemuBlockJobData *job)
+{
+    qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
+
+    if (job->state == VIR_DOMAIN_BLOCK_JOB_FAILED) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("snapshot-save job failed: %1$s"), NULLSTR(job->errmsg));
+        return -1;
+    }
+
+    return job->state == VIR_DOMAIN_BLOCK_JOB_COMPLETED ? 1 : 0;
+}
+
+
+static qemuBlockJobData *
+qemuSnapshotCreateActiveInternalStart(virDomainObj *vm,
+                                      virDomainSnapshotDef *snapdef)
+{
+    g_autofree char *jobname = g_strdup_printf("internal-snapshot-save-%s", snapdef->parent.name);
+    qemuBlockJobData *job = NULL;
+    g_auto(GStrv) devices = NULL;
+    int rc = 0;
+
+    if (!(devices = qemuSnapshotActiveInternalCreateGetDevices(vm, snapdef)))
+        return NULL;
+
+    if (!(job = qemuBlockJobDiskNew(vm, NULL, QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE,
+                                    jobname)))
+        return NULL;
+
+    qemuBlockJobSyncBegin(job);
+
+    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+        goto error;
+
+    rc = qemuMonitorSnapshotSave(qemuDomainGetMonitor(vm), jobname, snapdef->parent.name,
+                                 devices[0], (const char **) devices);
+    qemuDomainObjExitMonitor(vm);
+
+    if (rc < 0)
+        goto error;
+
+    qemuBlockJobStarted(job, vm);
+
+    return job;
+
+ error:
+    qemuBlockJobStartupFinalize(vm, job);
+    return NULL;
+}
+
+
 /* The domain is expected to be locked and active. */
 static int
 qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
@@ -321,6 +414,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     bool resume = false;
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     int ret = -1;
+    int rv = 0;
 
     if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
         goto cleanup;
@@ -342,15 +436,29 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
         }
     }
 
-    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0) {
-        resume = false;
-        goto cleanup;
-    }
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
+        g_autoptr(qemuBlockJobData) job = NULL;
 
-    ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
-    qemuDomainObjExitMonitor(vm);
-    if (ret < 0)
-        goto cleanup;
+        if (!(job = qemuSnapshotCreateActiveInternalStart(vm, snapdef)))
+            goto cleanup;
+
+        while ((rv = qemuSnapshotCreateActiveInternalDone(vm, job)) != 1) {
+            if (rv < 0 || qemuDomainObjWait(vm) < 0)
+                goto cleanup;
+        }
+
+        ret = 0;
+    } else {
+        if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0) {
+            resume = false;
+            goto cleanup;
+        }
+
+        ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
+        qemuDomainObjExitMonitor(vm);
+        if (ret < 0)
+            goto cleanup;
+    }
 
     if (!(snapdef->cookie = (virObject *) qemuDomainSaveCookieNew(vm)))
         goto cleanup;
