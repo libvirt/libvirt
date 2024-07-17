@@ -2478,6 +2478,11 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
             }
             break;
 
+        case QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE:
+        case QEMU_BLOCKJOB_TYPE_SNAPSHOT_DELETE:
+            /* No private data for internal snapshot jobs */
+            break;
+
         case QEMU_BLOCKJOB_TYPE_BROKEN:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
@@ -3028,6 +3033,11 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobData *job,
             if (!(tmp = virXPathNode("./store", ctxt)) ||
                 !(job->data.backup.store = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
                 goto broken;
+            break;
+
+        case QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE:
+        case QEMU_BLOCKJOB_TYPE_SNAPSHOT_DELETE:
+            /* No extra data for internal snapshot jobs. */
             break;
 
         case QEMU_BLOCKJOB_TYPE_BROKEN:

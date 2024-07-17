@@ -68,6 +68,8 @@ VIR_ENUM_IMPL(qemuBlockjob,
               "backup",
               "",
               "create",
+              "snapshot-save",
+              "snapshot-delete",
               "broken");
 
 static virClass *qemuBlockJobDataClass;
@@ -1453,6 +1455,11 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobData *job,
         qemuBlockJobProcessEventConcludedBackup(driver, vm, job, asyncJob,
                                                 job->newstate, progressCurrent,
                                                 progressTotal);
+        break;
+
+    case QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE:
+    case QEMU_BLOCKJOB_TYPE_SNAPSHOT_DELETE:
+        /* The internal snapshot jobs don't need any extra handling */
         break;
 
     case QEMU_BLOCKJOB_TYPE_BROKEN:
