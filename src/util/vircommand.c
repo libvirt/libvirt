@@ -2630,7 +2630,7 @@ virCommandRunAsync(virCommand *cmd, pid_t *pid)
 
     if (dryRunBuffer || dryRunCallback) {
         g_autofree char *cmdstr = NULL;
-        dryRunStatus = 0;
+        dryRunStatus = EXIT_SUCCESS;
 
         if (!(cmdstr = virCommandToStringFull(cmd, dryRunBufferArgLinebreaks,
                                               dryRunBufferCommandStripPath)))
