@@ -82,9 +82,7 @@
   <oemStrings>
     <entry>Default string</entry>
     <entry>ThunderX2 System</entry>
-    <entry>Ha ha ha try parsing\n
-      String 3: this correctly
-      String 4:then</entry>
+    <entry>Some valid OEM string</entry>
     <entry>Comanche</entry>
   </oemStrings>
 </sysinfo>

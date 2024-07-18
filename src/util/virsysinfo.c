@@ -895,13 +895,13 @@ virSysinfoParseX86Chassis(const char *base,
 
 
 static int
-virSysinfoDMIDecodeOEMString(size_t i,
+virSysinfoDMIDecodeOEMString(unsigned int idx,
                              char **str)
 {
     g_autofree char *err = NULL;
     g_autoptr(virCommand) cmd = virCommandNewArgList(DMIDECODE, "--dump",
                                                      "--oem-string", NULL);
-    virCommandAddArgFormat(cmd, "%zu", i);
+    virCommandAddArgFormat(cmd, "%u", idx);
     virCommandSetOutputBuffer(cmd, str);
     virCommandSetErrorBuffer(cmd, &err);
 
@@ -936,7 +936,6 @@ virSysinfoParseOEMStrings(const char *base,
                           virSysinfoOEMStringsDef **stringsRet)
 {
     virSysinfoOEMStringsDef *strings = NULL;
-    size_t i = 1;
     int ret = -1;
     const char *cur;
 
@@ -946,6 +945,8 @@ virSysinfoParseOEMStrings(const char *base,
     strings = g_new0(virSysinfoOEMStringsDef, 1);
 
     while ((cur = strstr(cur, "String "))) {
+        char *collon = NULL;
+        unsigned int idx = 0;
         char *eol;
 
         cur += 7;
@@ -956,8 +957,13 @@ virSysinfoParseOEMStrings(const char *base,
             goto cleanup;
         }
 
-        while (g_ascii_isdigit(*cur))
-            cur++;
+        if (virStrToLong_ui(cur, &collon, 10, &idx) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed output of dmidecode"));
+            goto cleanup;
+        }
+
+        cur = collon;
 
         if (*cur != ':') {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -980,7 +986,7 @@ virSysinfoParseOEMStrings(const char *base,
         if (memchr(cur, '.', eol - cur)) {
             char *str;
 
-            if (virSysinfoDMIDecodeOEMString(i, &str) < 0)
+            if (virSysinfoDMIDecodeOEMString(idx, &str) < 0)
                 goto cleanup;
 
             strings->values[strings->nvalues - 1] = g_steal_pointer(&str);
@@ -988,7 +994,6 @@ virSysinfoParseOEMStrings(const char *base,
             strings->values[strings->nvalues - 1] = g_strndup(cur, eol - cur);
         }
 
-        i++;
         cur = eol;
     }
 
