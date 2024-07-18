@@ -915,6 +915,8 @@ virSysinfoDMIDecodeOEMString(size_t i,
     if (err && *err != '\0')
         return -1;
 
+    virStringTrimOptionalNewline(*str);
+
     return 0;
 }
 

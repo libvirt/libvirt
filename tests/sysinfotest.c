@@ -66,7 +66,7 @@ testDMIDecodeDryRun(const char *const*args G_GNUC_UNUSED,
         if (STREQ(args[3], "3")) {
             *output = g_strdup("Ha ha ha try parsing\\n\n"
                                "      String 3: this correctly\n"
-                               "      String 4:then");
+                               "      String 4:then\n");
         } else {
             *error = g_strdup_printf("No OEM string number %s", args[3]);
             *status = EXIT_FAILURE;
