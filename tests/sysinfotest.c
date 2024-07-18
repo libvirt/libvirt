@@ -141,6 +141,7 @@ mymain(void)
     TEST("aarch64", virSysinfoReadARM);
     TEST("aarch64-moonshot", virSysinfoReadARM);
     TEST("aarch64-gigabyte", virSysinfoReadARM);
+    TEST("aarch64-hpe-apollo", virSysinfoReadARM);
 
     return ret;
 }

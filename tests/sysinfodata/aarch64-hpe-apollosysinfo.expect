@@ -1,0 +1,90 @@
+<sysinfo type='smbios'>
+  <bios>
+    <entry name='vendor'>EDK II</entry>
+    <entry name='version'>L50_5.13_1.11</entry>
+    <entry name='date'>06/18/2019</entry>
+    <entry name='release'>7.2</entry>
+  </bios>
+  <system>
+    <entry name='manufacturer'>HPE</entry>
+    <entry name='product'>Apollo 70</entry>
+    <entry name='version'>X1</entry>
+    <entry name='serial'>0000000000</entry>
+    <entry name='uuid'>69d9c240-bfde-1000-03ca-ea3db8730904</entry>
+    <entry name='sku'>P00367-B21</entry>
+    <entry name='family'>CN99XX</entry>
+  </system>
+  <baseBoard>
+    <entry name='manufacturer'>HPE</entry>
+    <entry name='product'>C01_APACHE_MB</entry>
+    <entry name='version'>876453-001</entry>
+    <entry name='serial'>PWJBD0AR9BI016</entry>
+    <entry name='asset'>PWJBD0AR9BI016</entry>
+    <entry name='location'>Default string</entry>
+  </baseBoard>
+  <chassis>
+    <entry name='manufacturer'>HPE</entry>
+    <entry name='version'>P00367-B21</entry>
+    <entry name='serial'>0000000000</entry>
+    <entry name='asset'>0000000000</entry>
+    <entry name='sku'>Default string</entry>
+  </chassis>
+  <processor>
+    <entry name='socket_destination'>Socket 0</entry>
+    <entry name='type'>Central Processor</entry>
+    <entry name='family'>ARM</entry>
+    <entry name='manufacturer'>Cavium Inc.</entry>
+    <entry name='signature'>Implementor 0x43, Variant 0x1, Architecture 15, Part 0x0af, Revision 1</entry>
+    <entry name='version'>Cavium ThunderX2(R) CPU CN9975 v2.1 @ 2.0GHz</entry>
+    <entry name='external_clock'>33 MHz</entry>
+    <entry name='max_speed'>2500 MHz</entry>
+    <entry name='status'>Populated, Enabled</entry>
+    <entry name='serial_number'>0000115D-1AEA3248</entry>
+    <entry name='part_number'>CN9975-2000LG4077-Y21-G</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>Socket 1</entry>
+    <entry name='type'>Central Processor</entry>
+    <entry name='family'>ARM</entry>
+    <entry name='manufacturer'>Cavium Inc.</entry>
+    <entry name='signature'>Implementor 0x43, Variant 0x1, Architecture 15, Part 0x0af, Revision 1</entry>
+    <entry name='version'>Cavium ThunderX2(R) CPU CN9975 v2.1 @ 2.0GHz</entry>
+    <entry name='external_clock'>33 MHz</entry>
+    <entry name='max_speed'>2500 MHz</entry>
+    <entry name='status'>Populated, Enabled</entry>
+    <entry name='serial_number'>0000115D-2AEA322B</entry>
+    <entry name='part_number'>CN9975-2000LG4077-Y21-G</entry>
+  </processor>
+  <memory_device>
+    <entry name='size'>16 GB</entry>
+    <entry name='form_factor'>DIMM</entry>
+    <entry name='locator'>DIMM_A0</entry>
+    <entry name='bank_locator'>N0</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Registered (Buffered)</entry>
+    <entry name='speed'>2666 MT/s</entry>
+    <entry name='manufacturer'>Hyundai Electronics</entry>
+    <entry name='serial_number'>1112731123</entry>
+    <entry name='part_number'>HMA82GR7CJR8N-VK</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>16 GB</entry>
+    <entry name='form_factor'>DIMM</entry>
+    <entry name='locator'>DIMM_I0</entry>
+    <entry name='bank_locator'>N1</entry>
+    <entry name='type'>DDR4</entry>
+    <entry name='type_detail'>Registered (Buffered)</entry>
+    <entry name='speed'>2666 MT/s</entry>
+    <entry name='manufacturer'>Hyundai Electronics</entry>
+    <entry name='serial_number'>1112731032</entry>
+    <entry name='part_number'>HMA82GR7CJR8N-VK</entry>
+  </memory_device>
+  <oemStrings>
+    <entry>Default string</entry>
+    <entry>ThunderX2 System</entry>
+    <entry>Ha ha ha try parsing\n
+      String 3: this correctly
+      String 4:then</entry>
+    <entry>Comanche</entry>
+  </oemStrings>
+</sysinfo>

@@ -1,0 +1,162 @@
+BIOS Information
+	Vendor: EDK II
+	Version: L50_5.13_1.11
+	Release Date: 06/18/2019
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 64 MB
+	Characteristics:
+		PCI is supported
+		BIOS is upgradeable
+		BIOS shadowing is allowed
+		Boot from CD is supported
+		Selectable boot is supported
+		BIOS ROM is socketed
+		ACPI is supported
+		BIOS boot specification is supported
+		Targeted content distribution is supported
+		UEFI is supported
+	BIOS Revision: 7.2
+
+System Information
+	Manufacturer: HPE
+	Product Name: Apollo 70             
+	Version: X1
+	Serial Number: 0000000000
+	UUID: 69d9c240-bfde-1000-03ca-ea3db8730904
+	Wake-up Type: Power Switch
+	SKU Number: P00367-B21
+	Family: CN99XX
+
+Base Board Information
+	Manufacturer: HPE
+	Product Name: C01_APACHE_MB         
+	Version: 876453-001
+	Serial Number: PWJBD0AR9BI016
+	Asset Tag: PWJBD0AR9BI016
+	Features:
+		Board is a hosting board
+		Board is replaceable
+	Location In Chassis: Default string
+	Type: Motherboard
+
+Chassis Information
+	Manufacturer: HPE
+	Type: Rack Mount Chassis
+	Lock: Not Present
+	Version: P00367-B21
+	Serial Number: 0000000000
+	Asset Tag: 0000000000
+	Boot-up State: Safe
+	Power Supply State: Safe
+	Thermal State: Safe
+	Security Status: None
+	OEM Information: 0x00000000
+	Height: Unspecified
+	Number Of Power Cords: 1
+	Contained Elements: 0
+	SKU Number: Default string
+
+OEM Strings
+	String 1: Default string
+
+OEM Strings
+	String 1: ThunderX2 System
+	String 2: cavium.com
+	String 3: Comanche
+
+Processor Information
+	Socket Designation: Socket 0
+	Type: Central Processor
+	Family: ARM
+	Manufacturer: Cavium Inc.
+	Signature: Implementor 0x43, Variant 0x1, Architecture 15, Part 0x0af, Revision 1
+	Version: Cavium ThunderX2(R) CPU CN9975 v2.1 @ 2.0GHz
+	Voltage: 0.8 V
+	External Clock: 33 MHz
+	Max Speed: 2500 MHz
+	Current Speed: 2000 MHz
+	Status: Populated, Enabled
+	Upgrade: Other
+	Serial Number: 0000115D-1AEA3248
+	Asset Tag: Not Specified
+	Part Number: CN9975-2000LG4077-Y21-G
+	Core Count: 28
+	Core Enabled: 28
+	Thread Count: 112
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+
+Memory Device
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 16 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_A0
+	Bank Locator: N0
+	Type: DDR4
+	Type Detail: Registered (Buffered)
+	Speed: 2666 MT/s
+	Manufacturer: Hyundai Electronics
+	Serial Number: 1112731123
+	Asset Tag: Not Specified
+	Part Number: HMA82GR7CJR8N-VK    
+	Rank: 2
+	Configured Memory Speed: 2666 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Processor Information
+	Socket Designation: Socket 1
+	Type: Central Processor
+	Family: ARM
+	Manufacturer: Cavium Inc.
+	Signature: Implementor 0x43, Variant 0x1, Architecture 15, Part 0x0af, Revision 1
+	Version: Cavium ThunderX2(R) CPU CN9975 v2.1 @ 2.0GHz
+	Voltage: 0.8 V
+	External Clock: 33 MHz
+	Max Speed: 2500 MHz
+	Current Speed: 2000 MHz
+	Status: Populated, Enabled
+	Upgrade: Other
+	Serial Number: 0000115D-2AEA322B
+	Asset Tag: Not Specified
+	Part Number: CN9975-2000LG4077-Y21-G
+	Core Count: 28
+	Core Enabled: 28
+	Thread Count: 112
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+
+Memory Device
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 16 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_I0
+	Bank Locator: N1
+	Type: DDR4
+	Type Detail: Registered (Buffered)
+	Speed: 2666 MT/s
+	Manufacturer: Hyundai Electronics
+	Serial Number: 1112731032
+	Asset Tag: Not Specified
+	Part Number: HMA82GR7CJR8N-VK    
+	Rank: 2
+	Configured Memory Speed: 2666 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
