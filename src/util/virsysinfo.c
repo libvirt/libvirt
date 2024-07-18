@@ -910,9 +910,19 @@ virSysinfoDMIDecodeOEMString(size_t i,
 
     /* Unfortunately, dmidecode returns 0 even if OEM String index is out
      * of bounds, but it prints an error message in that case. Check stderr
-     * and return success/failure accordingly. */
-
-    if (err && *err != '\0')
+     * and return success/failure accordingly.
+     * To make matters worse, if there are two or more 'OEM String'
+     * sections then:
+     *
+     * a) we have no way of distinguishing them as dmidecode prints
+     *    strings from all sections,
+     * b) if one section contains a valid string, but the other doesn't,
+     *    then stdout contains the valid string and stderr contains the
+     *    error "No OEM string number X*.
+     *
+     * Let's just hope there is not many systems like that.
+     */
+    if ((!*str || **str == '\0') && err && *err != '\0')
         return -1;
 
     virStringTrimOptionalNewline(*str);
