@@ -137,6 +137,10 @@ qemuMigrationParamsGetULL(qemuMigrationParams *migParams,
                           qemuMigrationParam param,
                           unsigned long long *value);
 
+bool
+qemuMigrationParamsCapEnabled(qemuMigrationParams *migParams,
+                              qemuMigrationCapability cap);
+
 void
 qemuMigrationParamsSetBlockDirtyBitmapMapping(qemuMigrationParams *migParams,
                                               virJSONValue **params);

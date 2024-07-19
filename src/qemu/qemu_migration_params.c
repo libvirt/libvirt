@@ -1313,6 +1313,22 @@ qemuMigrationParamsGetULL(qemuMigrationParams *migParams,
 
 
 /**
+ * Returns true if @cap is enabled in @migParams, false otherwise.
+ */
+bool
+qemuMigrationParamsCapEnabled(qemuMigrationParams *migParams,
+                              qemuMigrationCapability cap)
+{
+    bool enabled = false;
+
+    if (migParams)
+        ignore_value(virBitmapGetBit(migParams->caps, cap, &enabled));
+
+    return enabled;
+}
+
+
+/**
  * qemuMigrationParamsCheck:
  *
  * Check supported migration parameters and keep their original values in
