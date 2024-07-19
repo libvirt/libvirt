@@ -1889,6 +1889,11 @@ qemuDomainObjPrivateFree(void *data)
 
     virChrdevFree(priv->devs);
 
+    if (priv->pidMonitored >= 0) {
+        virEventRemoveHandle(priv->pidMonitored);
+        priv->pidMonitored = -1;
+    }
+
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->mon) {
         VIR_ERROR(_("Unexpected QEMU monitor still active during domain deletion"));
@@ -1933,6 +1938,8 @@ qemuDomainObjPrivateAlloc(void *opaque)
 
     priv->blockjobs = virHashNew(virObjectUnref);
     priv->fds = virHashNew(g_object_unref);
+
+    priv->pidMonitored = -1;
 
     /* agent commands block by default, user can choose different behavior */
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
@@ -11680,6 +11687,7 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_RESET:
     case QEMU_PROCESS_EVENT_NBDKIT_EXITED:
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
+    case QEMU_PROCESS_EVENT_SHUTDOWN_COMPLETED:
     case QEMU_PROCESS_EVENT_LAST:
         break;
     }

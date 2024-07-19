@@ -119,6 +119,7 @@ struct _qemuDomainObjPrivate {
 
     bool beingDestroyed;
     char *pidfile;
+    int pidMonitored;
 
     virDomainPCIAddressSet *pciaddrs;
     virDomainUSBAddressSet *usbaddrs;
@@ -469,6 +470,7 @@ typedef enum {
     QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION,
     QEMU_PROCESS_EVENT_RESET,
     QEMU_PROCESS_EVENT_NBDKIT_EXITED,
+    QEMU_PROCESS_EVENT_SHUTDOWN_COMPLETED,
 
     QEMU_PROCESS_EVENT_LAST
 } qemuProcessEventType;

@@ -4041,6 +4041,22 @@ processNbdkitExitedEvent(virDomainObj *vm,
 }
 
 
+static void
+processShutdownCompletedEvent(virQEMUDriver *driver,
+                              virDomainObj *vm)
+{
+    if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, true) < 0)
+        return;
+
+    if (virDomainObjIsActive(vm)) {
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN,
+                        VIR_ASYNC_JOB_NONE, 0);
+    }
+
+    qemuProcessEndStopJob(vm);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -4100,6 +4116,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_NBDKIT_EXITED:
         processNbdkitExitedEvent(vm, processEvent->data);
+        break;
+    case QEMU_PROCESS_EVENT_SHUTDOWN_COMPLETED:
+        processShutdownCompletedEvent(driver, vm);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;
