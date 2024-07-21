@@ -16,13 +16,14 @@
 # Frederico Henrique Gonçalves Lima <fred@fredericolima.com.br>, 2016
 # Filipe Rosset <rosset.filipe@gmail.com>, 2017
 # Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
+# Gildasio Junior <gildasiojunior@riseup.net>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2020-10-14 16:08+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2024-07-15 13:19+0000\n"
+"Last-Translator: Gildasio Junior <gildasiojunior@riseup.net>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -30,7 +31,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2.2\n"
+"X-Generator: Weblate 5.6.2\n"
 
 msgid ""
 "\n"
@@ -14044,7 +14045,7 @@ msgstr "Recusando-se a indefinir enquanto %1$d snapshots existirem"
 
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
-"Recusa-se a indefinir enaquanto a imagem de salvamento gerenciada do domínio "
+"Recusa-se a indefinir enquanto a imagem de salvamento gerenciada do domínio "
 "existir"
 
 #, fuzzy
