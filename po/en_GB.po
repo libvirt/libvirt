@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-07-02 19:36+0000\n"
+"PO-Revision-Date: 2024-07-21 17:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -428,6 +428,16 @@ msgid ""
 "  qemu/$domname\t\t\ttries looking up $domname under system followed by "
 "session URI\n"
 msgstr ""
+"\n"
+"Usage:\n"
+"%1$s hostname port\n"
+"\n"
+"Hostname should be in one of the following forms:\n"
+"\n"
+"  qemu:system/$domname\t\tfor domains under qemu:///system\n"
+"  qemu:session/$domname\t\tfor domains under qemu:///session\n"
+"  qemu/$domname\t\t\ttries looking up $domname under system followed by "
+"session URI\n"
 
 #, c-format
 msgid ""
@@ -1225,7 +1235,7 @@ msgstr "'%1$s' is not supported in this QEMU binary"
 
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "'%1$s' launch security is not supported with this QEMU binary"
 
 #, c-format
 msgid "'%1$s' missing"
@@ -1281,9 +1291,8 @@ msgstr "'cache' refers to a non-existent NUMA node cache"
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun' is only supported by virtio-scsi controller"
 
-#, fuzzy
 msgid "'cow' storage format is not supported"
-msgstr "fs format %s is not supported"
+msgstr "'cow' storage format is not supported"
 
 msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
@@ -1308,13 +1317,11 @@ msgstr "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' not supported with compat level %1$s"
 
-#, fuzzy
 msgid "'gluster' command line tool not found"
-msgstr "Virsh command line tool of libvirt %s\n"
+msgstr "'gluster' command line tool not found"
 
-#, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
-msgstr "'online' missing in reply of guest-get-vcpus"
+msgstr "'host-name' missing in guest-get-host-name reply"
 
 #, c-format
 msgid ""
@@ -1327,17 +1334,14 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' refers to a non-existent NUMA node"
 
-#, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "'queues' is only supported by virtio-scsi controller"
+msgstr "'ioeventfd' is only supported by virtio-scsi controller"
 
-#, fuzzy
 msgid "'iothread' attribute only supported for virtio scsi controllers"
-msgstr "'queues' is only supported by virtio-scsi controller"
+msgstr "'iothread' attribute only supported for virtio scsi controllers"
 
-#, fuzzy
 msgid "'iothread' is only supported for virtio-scsi controller"
-msgstr "'queues' is only supported by virtio-scsi controller"
+msgstr "'iothread' is only supported for virtio-scsi controller"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr "'legacy KVM' device assignment is no longer supported on this system"
@@ -1345,9 +1349,8 @@ msgstr "'legacy KVM' device assignment is no longer supported on this system"
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "'logical-id' missing in reply of guest-get-vcpus"
 
-#, fuzzy
 msgid "'login-time' missing in reply of guest-get-users"
-msgstr "'logical-id' missing in reply of guest-get-vcpus"
+msgstr "'login-time' missing in reply of guest-get-users"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "'manual' memory snapshot mode not supported"
@@ -1355,35 +1358,32 @@ msgstr "'manual' memory snapshot mode not supported"
 msgid "'manual' snapshot mode is not supported by the test driver"
 msgstr "'manual' snapshot mode is not supported by the test driver"
 
-#, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
-msgstr "'queues' is only supported by virtio-scsi controller"
+msgstr "'max_sectors' is only supported by virtio-scsi controller"
 
 msgid "'max_workers' must be greater than 0"
 msgstr "'max_workers' must be greater than 0"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
 "'%2$s'"
 msgstr ""
-"State of HyperV enlightenment feature '%s' differs: source: '%s', "
-"destination: '%s'"
+"'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
+"'%2$s'"
 
 #, c-format
 msgid "'model' attribute in <hostdev> is only supported when type='%1$s'"
 msgstr "'model' attribute in <hostdev> is only supported when type='%1$s'"
 
-#, fuzzy
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
-msgstr "'online' missing in reply of guest-get-vcpus"
+msgstr "'mountpoint' missing in reply of guest-get-fsinfo"
 
 msgid "'name' missing in reply of guest-get-disks"
 msgstr "'name' missing in reply of guest-get-disks"
 
-#, fuzzy
 msgid "'name' missing in reply of guest-get-fsinfo"
-msgstr "'online' missing in reply of guest-get-vcpus"
+msgstr "'name' missing in reply of guest-get-fsinfo"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr "'netns' namespace source can only be used with sharenet"
@@ -1391,10 +1391,8 @@ msgstr "'netns' namespace source can only be used with sharenet"
 msgid "'network' attribute is required for listen type 'network'"
 msgstr "'network' attribute is required for listen type 'network'"
 
-#, fuzzy
 msgid "'network' attribute is valid only for listen type 'network'"
-msgstr ""
-"No <source> 'network' attribute specified with <interface type='network'/>"
+msgstr "'network' attribute is valid only for listen type 'network'"
 
 msgid "'nfs' host must use TCP protocol"
 msgstr "'nfs' host must use TCP protocol"
