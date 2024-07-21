@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-07-06 11:36+0000\n"
+"PO-Revision-Date: 2024-07-21 17:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -30961,153 +30961,141 @@ msgid "missing GIC version in QEMU capabilities cache"
 msgstr "GIC-versionen saknas i QEMU-förmågecachen"
 
 msgid "missing IFLA_VF_INFO in netlink response"
-msgstr ""
+msgstr "IFLA_VF_INFO saknas i netlink-svaret"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
-msgstr ""
+msgstr "SCSI-värdförmågetyp saknas för ”%1$s”"
 
 msgid "missing SEV certChain information in QEMU capabilities cache"
-msgstr ""
+msgstr "SEV certChain-informations saknas i QEMU-förmågecachen"
 
 msgid "missing SEV pdh information in QEMU capabilities cache"
-msgstr ""
+msgstr "SEV pdh-information saknas i QEMU-förmågecachen"
 
 msgid "missing SEV platform data in QEMU capabilities cache"
-msgstr ""
+msgstr "SEV-plattformdata saknas i QEMU-förmågecachen"
 
 msgid "missing SGX platform data in QEMU capabilities cache"
-msgstr ""
+msgstr "SGX-plattformdata saknas i QEMU-förmågecachen"
 
-#, fuzzy
 msgid "missing TPM device backend"
-msgstr "saknar enhetsinformation"
+msgstr "TPM-enhetens bakände saknas"
 
-#, fuzzy
 msgid "missing Xen migration stream version"
-msgstr "saknar operativsysteminformation"
+msgstr "Xen-migreringens strömversion saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing address type in network %1$s"
-msgstr "saknar enhetsinformation för %1$s"
+msgstr "adresstypen saknas i nätverket %1$s"
 
-#, fuzzy
 msgid "missing alias for memory device"
-msgstr "saknar källinformation för enhet"
+msgstr "alias saknas för minnesenheten"
 
-#, fuzzy
 msgid "missing alias for network device"
-msgstr "saknar källinformation för enhet"
+msgstr "alias saknas för nätverksenheten"
 
 #, c-format
 msgid "missing alias on encryption secret #%1$zu"
-msgstr ""
+msgstr "alias saknas på krypteringshemligheten nr. %1$zu"
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%1$s'"
-msgstr ""
+msgstr "alias eller qom-typ saknas för qemu-objektet ”%1$s”"
 
 #, c-format
 msgid "missing ap-adapter value for '%1$s'"
-msgstr ""
+msgstr "ap-adaptervärdet saknas för ”%1$s”"
 
 #, c-format
 msgid "missing ap-domain value for '%1$s'"
-msgstr ""
+msgstr "ap-domänvärdet saknas för ”%1$s”"
 
 msgid "missing arch in QEMU capabilities cache"
-msgstr ""
+msgstr "arkitekturen saknas i QEMU-förmågecachen"
 
 msgid "missing argument"
 msgstr "argument saknas"
 
-#, fuzzy
 msgid "missing array element"
-msgstr "smartkortenhets läge saknas"
+msgstr "vektorelement saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing backend for pool type %1$d"
-msgstr "namn för värd saknas"
+msgstr "bakände saknas för pooltyp %1$d"
 
 #, c-format
 msgid "missing backend for pool type %1$d (%2$s)"
-msgstr ""
+msgstr "bakände saknas för pooltyp %1$d (%2$s)"
 
 #, c-format
 msgid "missing bitmap name for disk '%1$s' of checkpoint '%2$s'"
-msgstr ""
+msgstr "bitavbildningsnamn saknas för disken ”%1$s” i kontrollpunkt ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing block job data for disk '%1$s'"
-msgstr "saknar källinformation för enhet %1$s"
+msgstr "blockjobbdata saknas för disken ”%1$s”"
 
 msgid "missing blocker name in QEMU capabilities cache"
-msgstr ""
+msgstr "blockerarnamn saknas i QEMU-förmågecachen"
 
 msgid "missing capability name"
-msgstr ""
+msgstr "förmågenamn saknas"
 
 msgid "missing capacity element"
-msgstr ""
+msgstr "kapacitetselement saknas"
 
-#, fuzzy
 msgid "missing cellno argument"
-msgstr "saknar kärninformation"
+msgstr "cellnummerargument saknas"
 
-#, fuzzy
 msgid "missing connection mode for <reservations/>"
-msgstr "saknar operativsysteminformation"
+msgstr "anslutningsläge saknas i <reservations/>"
 
-#, fuzzy
 msgid "missing connection type for <reservations/>"
-msgstr "saknar operativsysteminformation"
+msgstr "anslutningstyp saknas i <reservations/>"
 
-#, fuzzy
 msgid "missing cookie name"
-msgstr "Saknat CPU-modellnamn"
+msgstr "kaknamnet saknas"
 
 msgid "missing cpu name in QEMU capabilities cache"
-msgstr ""
+msgstr "cpu-namnet saknas i QEMU-förmågecachen"
 
 msgid "missing cpuid-register in CPU data"
-msgstr ""
+msgstr "cpuid-register saknas i CPU-data"
 
-#, fuzzy
 msgid "missing cpuset for emulatorpin"
-msgstr "saknar enhetsinformation"
+msgstr "cpuset saknas till emulatorpin"
 
-#, fuzzy
 msgid "missing cpuset for iothreadpin"
-msgstr "namn för värd saknas"
+msgstr "cpuset saknas till iothreadpin"
 
-#, fuzzy
 msgid "missing cpuset for vcpupin"
-msgstr "saknar enhetsinformation"
+msgstr "cpuset saknas till vcpupin"
 
 msgid "missing creationTime from existing checkpoint"
-msgstr ""
+msgstr "creationTime saknas från en befintlig kontrollpunkt"
 
 msgid "missing creationTime from existing snapshot"
-msgstr ""
+msgstr "creationTime saknas från en befintlig ögonblicksbild"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing cssid value for '%1$s'"
-msgstr "namn för värd saknas"
+msgstr "cssid-värdet skanas för ”%1$s”"
 
 #, c-format
 msgid "missing decode element in CPU model %1$s"
-msgstr ""
+msgstr "elementet decode saknas i CPU-modellen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing destination file for disk %1$s: %2$s"
-msgstr "saknar enhetsinformation för %s"
+msgstr "målfil saknas för disken %1$s: %2$s"
 
 msgid "missing dev attribute in <interface> element"
-msgstr ""
+msgstr "attributet dev saknas i elementet <interface>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing device API for mediated device type '%1$s'"
-msgstr "saknar enhetsinformation för %1$s"
+msgstr "enhets-API saknas för den förmedlade enheten av typen ”%1$s”"
 
 msgid "missing devices information"
 msgstr "saknar enhetsinformation"
@@ -31116,156 +31104,145 @@ msgstr "saknar enhetsinformation"
 msgid "missing devices information for %1$s"
 msgstr "saknar enhetsinformation för %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing devno value for '%1$s'"
-msgstr "namn för värd saknas"
+msgstr "värdet devno saknas för ”%1$s”"
 
-#, fuzzy
 msgid "missing disk backing store format"
-msgstr "saknar enhetsinformation"
+msgstr "formatet saknas på bakomliggande disklagring"
 
-#, fuzzy
 msgid "missing disk backing store source"
-msgstr "saknat namn för källskiva"
+msgstr "källan saknas för bakomliggande lagring"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing disk device alias name for %1$s"
-msgstr "saknar enhetsinformation för %1$s"
+msgstr "aliasnamnet saknas på diskenheten för %1$s"
 
 msgid "missing domain in checkpoint"
-msgstr ""
+msgstr "domänen saknas i kontrollpunkten"
 
-#, fuzzy
 msgid "missing domain in snapshot"
-msgstr "saknar rotenhetsinformation i %s"
+msgstr "domänen saknas i ögonblicksbilden"
 
-#, fuzzy
 msgid "missing domain name"
-msgstr "Saknat CPU-modellnamn"
+msgstr "domännamnet saknas"
 
-#, fuzzy
 msgid "missing domain type attribute"
-msgstr "startordningsattribut saknas"
+msgstr "attributet domäntyp saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing element or attribute '%1$s'"
-msgstr "startordningsattribut saknas"
+msgstr "elementet eller attributet ”%1$s” saknas"
 
-#, fuzzy
 msgid "missing emulated GIC information"
-msgstr "saknar kärninformation"
+msgstr "emulerad GIC-information saknas"
 
 msgid "missing emulated GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "emulerad GIC-information saknas i QEMU-förmågecachen"
 
 msgid "missing emulator in QEMU capabilities cache"
-msgstr ""
+msgstr "emulator saknas i QEMU-förmågecachen"
 
-#, fuzzy
 msgid "missing encryption description"
-msgstr "saknar rot-enhetsinformation"
+msgstr "krypteringsbeskrivning saknas"
 
 msgid "missing entry in GIC capabilities list"
-msgstr ""
+msgstr "en post saknas i GIC-förmågelistan"
 
 msgid "missing entry in migration capabilities list"
-msgstr ""
+msgstr "en post saknas i migreringsförmågelistan"
 
-#, fuzzy
 msgid "missing entry in supported dump formats"
-msgstr "saknar operativsysteminformation"
+msgstr "en post saknas bland stödda dumpformat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing existing file for disk %1$s: %2$s"
-msgstr "saknat namn för källskiva"
+msgstr "en befintlig fil saknas för disken %1$s: %2$s"
 
 msgid "missing external TPM backend source type"
-msgstr ""
+msgstr "källtypen saknas för extern TPM-bakände"
 
-#, fuzzy
 msgid "missing feature name"
-msgstr "Saknat CPU-funktionsnamn"
+msgstr "funktionsnamn saknas"
 
 msgid "missing filter parameter table"
-msgstr ""
+msgstr "filterparametertabellen saknas"
 
 msgid "missing flag name in QEMU capabilities cache"
-msgstr ""
+msgstr "flaggnamn saknas i QEMU-förmågecachen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing gluster volume name for path '%1$s'"
-msgstr "namn för värd saknas"
+msgstr "glustervolymnamn saknas för sökvägen ”%1$s”"
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
-msgstr ""
+msgstr "modellinfo saknas för värd-CPU från QEMU-förmågor för binären %1$s"
 
 msgid "missing host CPU model name in QEMU capabilities cache"
-msgstr ""
+msgstr "modellnamn saknas för värd-CPU:n i QEMU-förmågecachen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing host in migration URI: %1$s"
-msgstr "saknar rotenhetsinformation i %1$s"
+msgstr "värden saknas i migrerings-URI:n: %1$s"
 
 msgid ""
 "missing host specification of NBD server in JSON backing volume definition"
 msgstr ""
+"värdspecifikation saknas av NBD-servern i JSON-definitionen av bokomliggande "
+"volym"
 
 msgid "missing host/server or path of SSH JSON backing volume definition"
 msgstr ""
+"värd/server eller sökväg till SSH saknas i JSON-definitionen av "
+"bakomliggande volym"
 
-#, fuzzy
 msgid "missing hostname element in migration data"
-msgstr "saknar rot-enhetsinformation"
+msgstr "elementet hostname saknas i migreringsdata"
 
 msgid ""
 "missing hostname for tcp backing server in JSON backing volume definition"
 msgstr ""
+"värdnamn saknas på bakomliggande tcp-server i JSON-definitionen av "
+"bakomliggande volym"
 
-#, fuzzy
 msgid "missing hostuuid element in migration data"
-msgstr "saknar rot-enhetsinformation"
+msgstr "elementet hostuuid saknas i migreringsdata"
 
-#, fuzzy
 msgid "missing hub device type"
-msgstr "smartkortenhets läge saknas"
+msgstr "navets enhetstyp saknas"
 
 msgid "missing iSCSI hostdev source path name"
-msgstr ""
+msgstr "källsökvägsnamnet saknas till iSCSI-värdenhet"
 
-#, fuzzy
 msgid "missing in-kernel GIC information"
-msgstr "saknar kärninformation"
+msgstr "GIC-information i kärnan saknas"
 
-#, fuzzy
 msgid "missing in-kernel GIC information in QEMU capabilities cache"
-msgstr "saknar kärninformation"
+msgstr "GIC-information i kärnan saknas i QEMU-förmågecachen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing info on pr-manager %1$s"
-msgstr "saknar enhetsinformation för %1$s"
+msgstr "information saknas om pr-hanteraren %1$s"
 
-#, fuzzy
 msgid "missing initiator IQN"
-msgstr "namn för värd saknas"
+msgstr "initierar-IQN saknas"
 
-#, fuzzy
 msgid "missing input device type"
-msgstr "smartkortenhets läge saknas"
+msgstr "inmatningsenhetens typ saknas"
 
 msgid "missing input volume target path"
-msgstr ""
+msgstr "målsökväg saknas för inmatningsvolymen"
 
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
-msgstr ""
+msgstr "iothread-avbildning saknas för kön ”%1$zd”"
 
-#, fuzzy
 msgid "missing ivgen info name string"
-msgstr "saknar kärninformation"
+msgstr "namnsträngen saknas för ivgen-informatonen"
 
 msgid "missing job chain data"
-msgstr ""
+msgstr "jobbkedjedata saknas"
 
 msgid "missing kernel information"
 msgstr "saknar kärninformation"
@@ -31276,35 +31253,31 @@ msgstr "saknar kärninformation: %1$s"
 
 #, c-format
 msgid "missing label for static security driver in domain %1$s"
-msgstr ""
+msgstr "etiketten saknas för den statiska säkerhetsdrivrutinen i domänen %1$s"
 
 msgid "missing listen attribute in migration data"
-msgstr ""
+msgstr "attributet listen saknas i migreringsdata"
 
-#, fuzzy
 msgid "missing listen element"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "elementet listen saknas"
 
-#, fuzzy
 msgid "missing listen element for graphics"
-msgstr "Saknat ”key”-element för hyra"
+msgstr "elementet listen saknas till grafiken"
 
-#, fuzzy
 msgid "missing listen element for spice graphics"
-msgstr "Saknat ”key”-element för hyra"
+msgstr "elementet listen saknas till spice-grafiken"
 
 msgid "missing microcode version in QEMU capabilities cache"
-msgstr ""
+msgstr "mikrokodsversionen saknas i QEMU-förmågecachen"
 
 msgid "missing migration capability name"
-msgstr ""
+msgstr "migreringsförmågenamnet saknas"
 
 msgid "missing migration parameter name"
-msgstr ""
+msgstr "migreringsparameternamnet saknas"
 
-#, fuzzy
 msgid "missing name element in migration data"
-msgstr "saknar kärninformation"
+msgstr "elementet name saknas i migreringsdata"
 
 msgid "missing name for disk source"
 msgstr "saknat namn för källskiva"
@@ -31312,13 +31285,11 @@ msgstr "saknat namn för källskiva"
 msgid "missing name for host"
 msgstr "namn för värd saknas"
 
-#, fuzzy
 msgid "missing name from disk backup element"
-msgstr "saknat namn för källskiva"
+msgstr "namnet saknas från elementet disksäkerhetskopiering"
 
-#, fuzzy
 msgid "missing name from disk snapshot element"
-msgstr "saknat namn för källskiva"
+msgstr "namnet saknas på elementet diskögonblicksbild"
 
 msgid "missing name information"
 msgstr "namninformation saknas"
@@ -31328,25 +31299,24 @@ msgid "missing name information in %1$s"
 msgstr "namninformation saknas i %1$s"
 
 msgid "missing nbdkit pidfile"
-msgstr ""
+msgstr "pidfilen saknas till nbdkit"
 
 msgid "missing nbdkit socketfile"
-msgstr ""
+msgstr "uttagsfilen saknas till nbdkit"
 
-#, fuzzy
 msgid "missing network device feature name"
-msgstr "Saknat CPU-funktionsnamn"
+msgstr "nätverksenhetens funktionsnamn saknas"
 
 msgid "missing node name in QEMU capabilities cache"
-msgstr ""
+msgstr "nodnamnet saknas i QEMU-förmågecachen"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%1$s'"
 msgstr ""
+"antalet tillgängliga instanser saknas för den förmedlade enhetstypen ”%1$s”"
 
-#, fuzzy
 msgid "missing offset or size attribute of slice"
-msgstr "startordningsattribut saknas"
+msgstr "attributet avstånd eller storlek saknas på skivan"
 
 msgid "missing operating system information"
 msgstr "saknar operativsysteminformation"
@@ -31357,123 +31327,133 @@ msgstr "saknar operativsysteminformation för %1$s"
 
 #, c-format
 msgid "missing or broken bitmap '%1$s' for disk '%2$s'"
-msgstr ""
+msgstr "bitavbildningen ”%1$s” är trasig eller saknas för disken ”%2$s”"
 
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr ""
+"CPU-modellens egenskapstyp saknas eller är felaktig i QEMU-förmågecachen"
 
 msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
-msgstr ""
+msgstr "SGX-plattforms-flc saknas eller är felaktigt i QEMU-förmågecachen"
 
 msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
-msgstr ""
+msgstr "SGX-plattforms-sgx1 saknas eller är felaktigt i QEMU-förmågecachen"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
-msgstr ""
+msgstr "SGX-plattforms-sgx2 saknas eller är felaktigt i QEMU-förmågecachen"
 
 msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr ""
+msgstr "cpuid-input-eax saknas eller är felaktigt i CPU-data"
 
 msgid "missing or invalid features in CPU data"
-msgstr ""
+msgstr "funktioner saknas eller är felaktiga i CPU-data"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
-msgstr ""
+msgstr "fältet ”device” i lagringen ”nvme” saknas eller är felformaterat"
 
 msgid "missing or malformed 'namespace' field of 'nvme' storage"
-msgstr ""
+msgstr "fältet ”namespace” i lagringen ”nvme” saknas eller är felformaterat"
 
 msgid "missing or malformed SEV cbitpos information in QEMU capabilities cache"
 msgstr ""
+"SEV-cbitpos-informationen saknas eller är felformaterad i QEMU-förmågecachen"
 
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
 msgstr ""
+"SEV-reducedPhysBits-informationen saknas eller är felformaterad i QEMU-"
+"förmågecachen"
 
 msgid ""
 "missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
+"SGX-plattformens section_size saknas eller är felformaterad i QEMU-"
+"förmågecachen"
 
 msgid "missing or malformed session-uuid element in migration data"
-msgstr ""
+msgstr "elementet session-uuid saknas eller är felformaterat i migreringsdata"
 
 msgid "missing or malformed uuid element in migration data"
-msgstr ""
+msgstr "elementet uuid saknas eller är felformaterat i migreringsdata"
 
 msgid "missing pagesize argument"
-msgstr ""
+msgstr "argumentet pagesize saknas"
 
 msgid "missing parent device"
-msgstr ""
+msgstr "föräldraenheten saknas"
 
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
+"parserimplementationen saknas för bakomliggande volyms JSON-drivrutin ”%1$s”"
 
-#, fuzzy
 msgid "missing path for <reservations/>"
-msgstr "namn för värd saknas"
+msgstr "sökvägen saknas i <reservations/>"
 
 msgid "missing path in nbdkit capabilities cache"
-msgstr ""
+msgstr "sökvägen saknas i nbdkit:s förmågecache"
 
 msgid "missing path to restore from"
-msgstr ""
+msgstr "sökväg att återställa ifrån saknas"
 
-#, fuzzy
 msgid "missing per-device path"
-msgstr "saknar enhetsinformation"
+msgstr "sökväg per enhet saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing persistent configuration for disk '%1$s'"
-msgstr "saknar målinformation för enhet %1$s"
+msgstr "beständig konfiguration saknas för disken ”%1$s”"
 
 msgid "missing pool or image name in ceph backing volume JSON specification"
 msgstr ""
+"pool- eller avbildsnamn saknas ceph:s bakomliggande volyms JSON-specifikation"
 
 msgid "missing pool source name element"
-msgstr ""
+msgstr "poolens källnamnselement saknas"
 
-#, fuzzy
 msgid "missing port attribute in migration data"
-msgstr "saknar operativsysteminformation"
+msgstr "attributet port saknas i migreringsdata"
 
-#, fuzzy
 msgid "missing product"
-msgstr "saknar \""
+msgstr "produkten saknas"
 
 msgid "missing qemuctime in QEMU capabilities XML"
-msgstr ""
+msgstr "qemuctime saknas i QEMU-förmåge-XML"
 
 msgid "missing remote server specification in JSON backing volume definition"
 msgstr ""
+"fjärrserverspecifikationen saknas i JSON-definitionen av bakomliggande volym"
 
 #, c-format
 msgid "missing required name attribute in DNS TXT record of network %1$s"
-msgstr ""
+msgstr "nödvändigt namnattribut saknas i DNS TXT-posten för nätverket %1$s"
 
 msgid "missing required persistent attribute in hostdev teaming element"
-msgstr ""
+msgstr "nödvändigt attribut persistent saknas i elementet hostdev teaming"
 
 #, c-format
 msgid ""
 "missing required protocol attribute in DNS SRV record '%1$s' of network "
 "'%2$s'"
 msgstr ""
+"nödvändigt protokollattribut saknas i DNS SRV-posten ”%1$s” till nätverket "
+"”%2$s”"
 
 #, c-format
 msgid "missing required service attribute in DNS SRV record of network '%1$s'"
 msgstr ""
+"nödvändigt attribut service saknas i DNS SRV-posten för nätverket ”%1$s”"
 
 #, c-format
 msgid ""
 "missing required value attribute in DNS TXT record named '%1$s' of network "
 "%2$s"
 msgstr ""
+"nödvändigt värdeattribut saknas i DNS TXT-posten med namnet ”%1$s” till "
+"nätverket %2$s"
 
 msgid "missing required virtualport type"
-msgstr ""
+msgstr "nödvändig typ virtualport saknas"
 
 msgid "missing root device information"
 msgstr "saknar rot-enhetsinformation"
@@ -31482,73 +31462,67 @@ msgstr "saknar rot-enhetsinformation"
 msgid "missing root device information in %1$s"
 msgstr "saknar rotenhetsinformation i %1$s"
 
-#, fuzzy
 msgid "missing root element"
-msgstr "saknar rot-enhetsinformation"
+msgstr "rotelementet saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing rport name for '%1$s'"
-msgstr "namn för värd saknas"
+msgstr "namnet rport saknas för ”%1$s”"
 
 msgid "missing scheme for URI"
-msgstr ""
+msgstr "schemat i URI:n saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing scheme in migration URI: %1$s"
-msgstr "saknar enhetsinformation för %1$s"
+msgstr "schemat i migrations-URI saknas: %1$s"
 
-#, fuzzy
 msgid "missing secret info for 'luks' driver"
-msgstr "saknar målinformation för enhet"
+msgstr "säkerhetsinformation saknas till drivrutinen ”luks”"
 
-#, fuzzy
 msgid "missing secret uuid or usage attribute"
-msgstr "startordningsattribut saknas"
+msgstr "hemlighetens attribut uuid eller usage saknas"
 
-#, fuzzy
 msgid "missing security model in domain seclabel"
-msgstr "saknar källinformation för enhet"
+msgstr "säkerhetsmodell saknas i domänens seclabel"
 
 msgid "missing security model when using multiple labels"
-msgstr ""
+msgstr "säkerhetsmodell saknas när flera etiketter används"
 
 msgid "missing selfctime in QEMU capabilities XML"
-msgstr ""
+msgstr "selfctime saknas i QEMU-förmåge-XML:en"
 
 msgid "missing sheepdog URI in JSON backing volume definition"
-msgstr ""
+msgstr "sheepdog-URI saknas i bakomliggande volyms JSON-definition"
 
 msgid "missing sheepdog vdi name"
-msgstr ""
+msgstr "sheepdog-vdi-namn saknas"
 
 msgid "missing size name in QEMU capabilities cache"
-msgstr ""
+msgstr "storleksnamn saknas i QEMU-förmågecachen"
 
 msgid "missing socket address type in JSON backing volume definition"
-msgstr ""
+msgstr "uttagets adresstyp saknas i bakomliggande volyms JSON-definition"
 
-#, fuzzy
 msgid "missing socket for unix transport"
-msgstr "saknat namn för källskiva"
+msgstr "uttaget saknas till unix-transport"
 
 msgid "missing socket path for external TPM device"
-msgstr ""
+msgstr "uttagssökväg saknas till extern TPM-enhet"
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr ""
+"uttagssäkväg saknas till bakomliggande udp-server i JSON-definitionen av "
+"bakomliggande volym"
 
-#, fuzzy
 msgid "missing source device"
-msgstr "saknar källinformation för enhet"
+msgstr "källenhet saknas"
 
-#, fuzzy
 msgid "missing source devices"
-msgstr "saknar källinformation för enhet"
+msgstr "källenheter saknas"
 
-#, fuzzy
 msgid "missing source host"
-msgstr "namn för värd saknas"
+msgstr "källvärd saknas"
 
 msgid "missing source information for device"
 msgstr "saknar källinformation för enhet"
@@ -31557,71 +31531,63 @@ msgstr "saknar källinformation för enhet"
 msgid "missing source information for device %1$s"
 msgstr "saknar källinformation för enhet %1$s"
 
-#, fuzzy
 msgid "missing source path"
-msgstr "saknar källinformation för enhet"
+msgstr "källsökväg saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing ssid value for '%1$s'"
-msgstr "namn för värd saknas"
+msgstr "ssid-värdet saknas för ”%1$s”"
 
 msgid "missing state from existing snapshot"
-msgstr ""
+msgstr "tillståndet saknas från befintlig ögonblicksbild"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing storage backend for '%1$s' storage"
-msgstr "saknat namn för källskiva"
+msgstr "lagringsbakände saknas för lagringen ”%1$s”"
 
 #, c-format
 msgid "missing storage backend for network files using %1$s protocol"
-msgstr ""
+msgstr "lagringsbakände saknas för nätverksfiler som använder protokollet %1$s"
 
 #, c-format
 msgid "missing storage capability type for '%1$s'"
-msgstr ""
+msgstr "typen på lagringsförmåga saknas för ”%1$s”"
 
-#, fuzzy
 msgid "missing storage pool host name"
-msgstr "namn för värd saknas"
+msgstr "lagringspoolens värdnamn saknas"
 
-#, fuzzy
 msgid "missing storage pool source adapter"
-msgstr "saknat namn för källskiva"
+msgstr "lagringspoolens källadapter saknas"
 
-#, fuzzy
 msgid "missing storage pool source device name"
-msgstr "saknar källinformation för enhet %s"
+msgstr "namnet på lagringspoolens källenhet saknas"
 
-#, fuzzy
 msgid "missing storage pool source device path"
-msgstr "saknar källinformation för enhet %s"
+msgstr "sökvägen till lagringspoolens källenhet saknas"
 
-#, fuzzy
 msgid "missing storage pool source host name"
-msgstr "namn för värd saknas"
+msgstr "namnet på lagringspoolens källvärd saknas"
 
-#, fuzzy
 msgid "missing storage pool source path"
-msgstr "saknat namn för källskiva"
+msgstr "sökvägen saknas till lagringspoolens källa"
 
 msgid "missing storage pool target path"
-msgstr ""
+msgstr "sökvägen saknas till lagringspoolens mål"
 
-#, fuzzy
 msgid "missing storage source format"
-msgstr "saknar operativsysteminformation"
+msgstr "källformatet saknas till lagringen"
 
-#, fuzzy
 msgid "missing storage source type"
-msgstr "namn för värd saknas"
+msgstr "källtypen saknas på lagringen"
 
-#, fuzzy
 msgid "missing supported dump formats"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "stödda dumpformat saknas"
 
 msgid ""
 "missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"
 msgstr ""
+"tag id saknas — varje <vlan> måste ha åtmistone ett underelement <tag "
+"id='n'/>"
 
 msgid "missing target information for device"
 msgstr "saknar målinformation för enhet"
@@ -31631,157 +31597,154 @@ msgid "missing target information for device %1$s"
 msgstr "saknar målinformation för enhet %1$s"
 
 msgid "missing the host address for the iSCSI hostdev"
-msgstr ""
+msgstr "värdadressen saknas på iSCSI-värdenheten"
 
-#, fuzzy
 msgid "missing tlsPort attribute in migration data"
-msgstr "saknar operativsysteminformation"
+msgstr "attributet tlsPort saknas i migreringsdata"
 
 msgid "missing tmpfs size, set the size option"
-msgstr ""
+msgstr "tmpfs storlek saknas, sätt alternativet size"
 
-#, fuzzy
 msgid "missing type attribute in migration data"
-msgstr "saknar operativsysteminformation"
+msgstr "typattributet saknas i migreringsdata"
 
 #, c-format
 msgid "missing type for SCSI target capability for '%1$s'"
-msgstr ""
+msgstr "typen saknas på SCSI-målförmågan för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing type id attribute for '%1$s'"
-msgstr "startordningsattribut saknas"
+msgstr "attributet typ-id saknas på ”%1$s”"
 
-#, fuzzy
 msgid "missing type in redirdev"
-msgstr "saknar målinformation för enhet"
+msgstr "typen saknas i redirdev"
 
-#, fuzzy
 msgid "missing username for auth"
-msgstr "namn för värd saknas"
+msgstr "användarnamn saknas i autenticering"
 
 msgid "missing username in /node/auth/user field"
-msgstr ""
+msgstr "användarnamn saknas i fältet /node/auth/user"
 
-#, fuzzy
 msgid "missing uuid element in migration data"
-msgstr "saknar enhetsinformation"
+msgstr "elementet uuid saknas i migreringsdata"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing value for cookie '%1$s'"
-msgstr "namn för värd saknas"
+msgstr "värdet saknas på kakan ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing value for migration parameter '%1$s'"
-msgstr "saknar källinformation för enhet %1$s"
+msgstr "värdet saknas på migreringsparametern ”%1$s”"
 
-#, fuzzy
 msgid "missing values for acceleration"
-msgstr "saknar enhetsinformation"
+msgstr "värdet på accelerationen saknas"
 
-#, fuzzy
 msgid "missing vendor"
-msgstr "saknar \""
+msgstr "leverantör saknas"
 
 msgid "missing version in QEMU capabilities cache"
-msgstr ""
+msgstr "versionen saknas i QEMU-förmågecachen"
 
 msgid "missing vhost-scsi hostdev source wwpn"
-msgstr ""
+msgstr "vhost-scsi hostdev käll-wwpn saknas"
 
 msgid "missing video model and cannot determine default"
-msgstr ""
+msgstr "videomodellen saknas och kan inte avgöras som standardvärde"
 
 msgid "missing vlan tag data"
-msgstr ""
+msgstr "vlan-taggdata saknas"
 
 msgid "missing volume name and path for gluster volume"
-msgstr ""
+msgstr "volymnamn och sökväg sknas till gluster-volymen"
 
 msgid "missing volume name element"
-msgstr ""
+msgstr "elementet volymnamn saknas"
 
 #, c-format
 msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
+msgstr "volymnamn eller filnamn saknas i gluster-källsökvägen ”%1$s”"
 
-#, fuzzy
 msgid "missing vporttype attribute in migration data"
-msgstr "saknar operativsysteminformation"
+msgstr "attributet vporttype saknas i migreringsdata"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing wwpn identifier for '%1$s'"
-msgstr "saknar enhetsinformation för %1$s"
+msgstr "wwpn-identifierare saknas för ”%1$s”"
 
 msgid ""
 "mixing internal and external targets for a snapshot is not yet supported"
 msgstr ""
+"att blanda interna och externa mål för en ögonblicksbild stödjs inte ännu"
 
 msgid "mixing nested objects and values is forbidden in JSON deflattening"
 msgstr ""
+"att blanda nästade objekt och värden är förbjudet i JSON-frånavplattning"
 
 #, c-format
 msgid "mkdir(\"%1$s\")"
-msgstr ""
+msgstr "mkdir(\"%1$s\")"
 
 #, c-format
 msgid ""
 "mkfs is not available on this platform: Failed to make filesystem of type "
 "'%1$s' on device '%2$s'"
 msgstr ""
+"mkfs är inte tillgängligt på denna plattform: misslyckades att skapa ett "
+"filsystem av typen ”%1$s” på enheten ”%2$s”"
 
 msgid "mode attribute of <source/> element"
-msgstr ""
+msgstr "attributet mode i elementet <source/>"
 
 msgid "mode of device reading and writing"
 msgstr "läge för enhetsläsning och skrivning"
 
 #, c-format
 msgid "model '%1$s' RNG device not present in domain configuration"
-msgstr ""
+msgstr "RNG-enheten av modellen ”%1$s” finns inte i domänkonfigurationen"
 
 #, c-format
 msgid "model '%1$s' memory device not present in the domain configuration"
-msgstr ""
+msgstr "minnesenheten av modell ”%1$s” finns inte i domänkonfigurationen"
 
 #, c-format
 msgid "model '%1$s' shmem device not present in domain configuration"
-msgstr ""
+msgstr "shmem-enheten av modell ”%1$s” finns inte i domänkonfigurationen"
 
 msgid "model resolution is not supported"
-msgstr ""
+msgstr "modelluppslagnings stödjs inte"
 
 msgid "model type"
 msgstr "modelltyp"
 
 msgid "modifies an existing IOThread of the guest domain"
-msgstr ""
+msgstr "ändrar en befintlig IOThread i gästdomänen"
 
 msgid "modify cpu state in the guest"
-msgstr ""
+msgstr "ändra cpu-tillstånd i gästen"
 
 msgid "modify/get current state configuration"
-msgstr ""
+msgstr "ändra/hämta aktuell tillståndskonfiguration"
 
-#, fuzzy
 msgid "modify/get persistent configuration"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "ändra/hämta beständig konfiguraton"
 
 msgid "modify/get running state"
-msgstr ""
+msgstr "ändra/hämta körtillstånd"
 
 msgid "modify/get the title instead of description"
-msgstr ""
+msgstr "ändra/hämta titeln istället för beskrivningen"
 
 #, c-format
 msgid ""
 "modprobe reported success loading module '%1$s', but module is missing from /"
 "sys/module"
 msgstr ""
+"modprobe rapporterade att den lyckades ladda modulen ”%1$s”, men modulen "
+"saknas i /sys/module"
 
 #, c-format
 msgid "module '%1$s' does not implement any pci driver"
-msgstr ""
+msgstr "modulen ”%1$s” implementerar inte någon pci-drivrutin"
 
 msgid "monitor failure"
 msgstr ""
