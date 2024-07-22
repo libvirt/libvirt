@@ -7183,17 +7183,36 @@ qemuMigrationSrcToLegacyFile(virQEMUDriver *driver,
 static int
 qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
                              virDomainObj *vm,
+                             const char *path,
                              int *fd,
                              unsigned int flags,
                              virDomainAsyncJob asyncJob)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOCLOSE directFd = -1;
+    int directFlag = 0;
+    bool needUnlink = false;
     int ret;
 
-    /* mapped-ram does not support directIO */
+    /* When using directio with mapped-ram, qemu needs two fds. One with
+     * O_DIRECT set writing the memory, and another without it set for
+     * writing small bits of unaligned state. */
     if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("bypass cache unsupported by this system"));
-        return -1;
+        directFlag = virFileDirectFdFlag();
+        if (directFlag < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("bypass cache unsupported by this system"));
+            return -1;
+        }
+        directFd = virQEMUFileOpenAs(cfg->user, cfg->group, false, path,
+                           O_WRONLY | directFlag, &needUnlink);
+
+        if (directFd < 0)
+            return -1;
+
+        if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, directFd) < 0)
+            return -1;
+
     }
 
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, *fd) < 0)
@@ -7202,7 +7221,7 @@ qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
-    ret = qemuMonitorMigrateToFdSet(vm, 0, fd);
+    ret = qemuMonitorMigrateToFdSet(vm, 0, fd, &directFd);
     qemuDomainObjExitMonitor(vm);
     return ret;
 }
@@ -7211,6 +7230,7 @@ qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
 /* Helper function called while vm is active.  */
 int
 qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
+                       const char *path,
                        int *fd,
                        virCommand *compressor,
                        qemuMigrationParams *migParams,
@@ -7248,7 +7268,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 
     if (migParams &&
         qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM))
-        rc = qemuMigrationSrcToSparseFile(driver, vm, fd, flags, asyncJob);
+        rc = qemuMigrationSrcToSparseFile(driver, vm, path, fd, flags, asyncJob);
     else
         rc = qemuMigrationSrcToLegacyFile(driver, vm, *fd, compressor, asyncJob);
 

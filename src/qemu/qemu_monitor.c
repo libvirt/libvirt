@@ -2233,7 +2233,8 @@ qemuMonitorMigrateToFd(qemuMonitor *mon,
 int
 qemuMonitorMigrateToFdSet(virDomainObj *vm,
                           unsigned int flags,
-                          int *fd)
+                          int *fd,
+                          int *directFd)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuMonitor *mon = priv->mon;
@@ -2242,7 +2243,7 @@ qemuMonitorMigrateToFdSet(virDomainObj *vm,
     g_autofree char *uri = NULL;
     int ret;
 
-    VIR_DEBUG("fd=%d flags=0x%x", *fd, flags);
+    VIR_DEBUG("fd=%d directFd=%d flags=0x%x", *fd, *directFd, flags);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -2254,6 +2255,8 @@ qemuMonitorMigrateToFdSet(virDomainObj *vm,
 
     fdPassMigrate = qemuFDPassNew("libvirt-outgoing-migrate", priv);
     qemuFDPassAddFD(fdPassMigrate, fd, "-fd");
+    if (*directFd != -1)
+        qemuFDPassAddFD(fdPassMigrate, directFd, "-directio-fd");
     qemuFDPassTransferMonitor(fdPassMigrate, mon);
 
     uri = g_strdup_printf("file:%s,offset=%#lx",

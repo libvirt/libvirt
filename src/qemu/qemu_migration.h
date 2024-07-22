@@ -238,6 +238,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
 int
 qemuMigrationSrcToFile(virQEMUDriver *driver,
                        virDomainObj *vm,
+                       const char *path,
                        int *fd,
                        virCommand *compressor,
                        qemuMigrationParams *migParams,

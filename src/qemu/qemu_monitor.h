@@ -861,7 +861,8 @@ int qemuMonitorMigrateToFd(qemuMonitor *mon,
 
 int qemuMonitorMigrateToFdSet(virDomainObj *vm,
                               unsigned int flags,
-                              int *fd);
+                              int *fd,
+                              int *directFd);
 
 int qemuMonitorMigrateToHost(qemuMonitor *mon,
                              unsigned int flags,

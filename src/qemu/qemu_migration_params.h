@@ -66,6 +66,7 @@ typedef enum {
     QEMU_MIGRATION_PARAM_MULTIFD_ZLIB_LEVEL,
     QEMU_MIGRATION_PARAM_MULTIFD_ZSTD_LEVEL,
     QEMU_MIGRATION_PARAM_AVAIL_SWITCHOVER_BANDWIDTH,
+    QEMU_MIGRATION_PARAM_DIRECT_IO,
 
     QEMU_MIGRATION_PARAM_LAST
 } qemuMigrationParam;
@@ -88,7 +89,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              qemuMigrationParty party);
 
 qemuMigrationParams *
-qemuMigrationParamsForSave(bool sparse);
+qemuMigrationParamsForSave(bool sparse, unsigned int flags);
 
 int
 qemuMigrationParamsDump(qemuMigrationParams *migParams,

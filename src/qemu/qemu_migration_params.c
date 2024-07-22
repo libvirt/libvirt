@@ -130,6 +130,7 @@ VIR_ENUM_IMPL(qemuMigrationParam,
               "multifd-zlib-level",
               "multifd-zstd-level",
               "avail-switchover-bandwidth",
+              "direct-io",
 );
 
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
@@ -327,6 +328,9 @@ static const qemuMigrationParamInfoItem qemuMigrationParamInfo[] = {
     },
     [QEMU_MIGRATION_PARAM_AVAIL_SWITCHOVER_BANDWIDTH] = {
         .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    },
+    [QEMU_MIGRATION_PARAM_DIRECT_IO] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_BOOL,
     },
 };
 G_STATIC_ASSERT(G_N_ELEMENTS(qemuMigrationParamInfo) == QEMU_MIGRATION_PARAM_LAST);
@@ -793,7 +797,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 
 
 qemuMigrationParams *
-qemuMigrationParamsForSave(bool sparse)
+qemuMigrationParamsForSave(bool sparse, unsigned int flags)
 {
     g_autoptr(qemuMigrationParams) saveParams = NULL;
 
@@ -807,6 +811,11 @@ qemuMigrationParamsForSave(bool sparse)
             return NULL;
         saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].value.i = 1;
         saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].set = true;
+
+        if (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) {
+            saveParams->params[QEMU_MIGRATION_PARAM_DIRECT_IO].value.b = true;
+            saveParams->params[QEMU_MIGRATION_PARAM_DIRECT_IO].set = true;
+        }
     }
 
     return g_steal_pointer(&saveParams);
