@@ -2318,6 +2318,9 @@ scheduleMdevctlUpdate(udevEventData *data)
         virEventRemoveTimeout(data->mdevctlTimeout);
     data->mdevctlTimeout = virEventAddTimeout(100, submitMdevctlUpdate,
                                               data, NULL);
+    if (data->mdevctlTimeout < 0) {
+        VIR_WARN("Unable to add mdev update timer");
+    }
 }
 
 
@@ -2609,8 +2612,12 @@ nodeStateInitialize(bool privileged,
     priv->watch = virEventAddHandle(udev_monitor_get_fd(priv->udev_monitor),
                                     VIR_EVENT_HANDLE_READABLE,
                                     udevEventHandleCallback, virObjectRef(priv), virObjectUnref);
-    if (priv->watch == -1)
+    if (priv->watch == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to add watch on udev FD %1$d"),
+                       udev_monitor_get_fd(priv->udev_monitor));
         goto unlock;
+    }
 
     if (mdevctlEnableMonitor(priv) < 0)
         goto unlock;

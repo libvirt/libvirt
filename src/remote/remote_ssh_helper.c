@@ -316,15 +316,21 @@ virRemoteSSHHelperRun(virNetSocket *sock)
                                               VIR_EVENT_HANDLE_READABLE,
                                               virRemoteSSHHelperEventOnStdin,
                                               &proxy,
-                                              NULL)) < 0)
+                                              NULL)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add watch on stdin"));
         goto cleanup;
+    }
 
     if ((proxy.stdoutWatch = virEventAddHandle(STDOUT_FILENO,
                                                0,
                                                virRemoteSSHHelperEventOnStdout,
                                                &proxy,
-                                               NULL)) < 0)
+                                               NULL)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add watch on stdout"));
         goto cleanup;
+    }
 
     if (virNetSocketAddIOCallback(proxy.sock,
                                   VIR_EVENT_HANDLE_READABLE,

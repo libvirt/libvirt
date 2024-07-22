@@ -276,8 +276,11 @@ virKeepAliveStart(virKeepAlive *ka,
     ka->intervalStart = now - (ka->interval - timeout);
     ka->timer = virEventAddTimeout(timeout * 1000, virKeepAliveTimer,
                                    ka, virObjectUnref);
-    if (ka->timer < 0)
+    if (ka->timer < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add keepalive timer"));
         goto cleanup;
+    }
 
     /* the timer now has another reference to this object */
     virObjectRef(ka);

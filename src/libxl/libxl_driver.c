@@ -170,6 +170,7 @@ libxlFDRegisterEventHook(void *priv,
     info->id = virEventAddHandle(fd, vir_events, libxlFDEventCallback,
                                  info, libxlOSEventHookInfoFree);
     if (info->id < 0) {
+        VIR_WARN("Failed to add event watch for FD %d", fd);
         VIR_FREE(info);
         return -1;
     }
@@ -255,6 +256,7 @@ libxlTimeoutRegisterEventHook(void *priv,
     info->id = virEventAddTimeout(timeout, libxlTimerCallback,
                                   info, libxlOSEventHookInfoFree);
     if (info->id < 0) {
+        VIR_WARN("Failed to add event timer callback");
         VIR_FREE(info);
         return -1;
     }

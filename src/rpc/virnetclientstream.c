@@ -725,6 +725,8 @@ int virNetClientStreamEventAddCallback(virNetClientStream *st,
                             virNetClientStreamEventTimer,
                             st,
                             virObjectUnref)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add timer to event loop"));
         virObjectUnref(st);
         goto cleanup;
     }

@@ -396,8 +396,11 @@ virNetServerClientNewInternal(unsigned long long id,
 
     client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
                                            client, NULL);
-    if (client->sockTimer < 0)
+    if (client->sockTimer < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add socket timer"));
         goto error;
+    }
 
     /* Prepare one for packet receive */
     if (!(client->rx = virNetMessageNew(true)))

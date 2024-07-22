@@ -154,6 +154,8 @@ virNetServerServiceNewSocket(virNetSocket **socks,
     svc->timer = virEventAddTimeout(-1, virNetServerServiceTimerFunc,
                                     svc, virObjectUnref);
     if (svc->timer < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add service timer"));
         virObjectUnref(svc);
         goto error;
     }

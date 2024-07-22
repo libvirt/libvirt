@@ -206,8 +206,11 @@ static virLXCController *virLXCControllerNew(const char *name)
 
     if ((ctrl->timerShutdown = virEventAddTimeout(-1,
                                                   virLXCControllerQuitTimer, ctrl,
-                                                  NULL)) < 0)
+                                                  NULL)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add shutdown timer"));
         goto error;
+    }
 
  cleanup:
     virLXCControllerDriverFree(driver);

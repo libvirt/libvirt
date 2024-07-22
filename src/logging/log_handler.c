@@ -302,6 +302,8 @@ virLogHandlerNewPostExecRestart(virJSONValue *object,
                                              virLogHandlerDomainLogFileEvent,
                                              handler,
                                              NULL)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to add watch on log FD %1$d"), file->pipefd);
             VIR_DELETE_ELEMENT(handler->files, handler->nfiles - 1, handler->nfiles);
             goto error;
         }
@@ -386,6 +388,8 @@ virLogHandlerDomainOpenLogFile(virLogHandler *handler,
                                          virLogHandlerDomainLogFileEvent,
                                          handler,
                                          NULL)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to add watch on log FD %1$d"), file->pipefd);
         VIR_DELETE_ELEMENT(handler->files, handler->nfiles - 1, handler->nfiles);
         goto error;
     }

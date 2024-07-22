@@ -251,6 +251,10 @@ virLogCleanerInit(virLogHandler *handler)
     handler->cleanup_log_timer = virEventAddTimeout(CLEANER_LOG_TIMEOUT_MS,
                                                     virLogCleanerTimer,
                                                     handler, NULL);
+    if (handler->cleanup_log_timer < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to add log cleanup timer"));
+    }
     return handler->cleanup_log_timer;
 }
 
