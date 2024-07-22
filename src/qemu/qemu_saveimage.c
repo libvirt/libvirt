@@ -348,7 +348,8 @@ qemuSaveImageDecompressionStart(virQEMUSaveData *data,
     if (header->version != 2)
         return 0;
 
-    if (header->format == QEMU_SAVE_FORMAT_RAW)
+    if (header->format == QEMU_SAVE_FORMAT_RAW ||
+        header->format == QEMU_SAVE_FORMAT_SPARSE)
         return 0;
 
     if (!(cmd = qemuSaveImageGetCompressionCommand(header->format)))
@@ -656,6 +657,7 @@ qemuSaveImageGetMetadata(virQEMUDriver *driver,
  * @driver: qemu driver data
  * @path: path of the save image
  * @bypass_cache: bypass cache when opening the file
+ * @sparse: Image contains mapped-ram save format
  * @wrapperFd: returns the file wrapper structure
  * @open_write: open the file for writing (for updates)
  *
@@ -665,6 +667,7 @@ int
 qemuSaveImageOpen(virQEMUDriver *driver,
                   const char *path,
                   bool bypass_cache,
+                  bool sparse,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
 {
@@ -686,15 +689,18 @@ qemuSaveImageOpen(virQEMUDriver *driver,
     if ((fd = qemuDomainOpenFile(cfg, NULL, path, oflags, NULL)) < 0)
         return -1;
 
-    if (bypass_cache &&
-        !(*wrapperFd = virFileWrapperFdNew(&fd, path,
-                                           VIR_FILE_WRAPPER_BYPASS_CACHE)))
-        return -1;
+    /* If sparse, no need for the iohelper or positioning the file pointer. */
+    if (!sparse) {
+        if (bypass_cache &&
+            !(*wrapperFd = virFileWrapperFdNew(&fd, path,
+                                               VIR_FILE_WRAPPER_BYPASS_CACHE)))
+            return -1;
 
-    /* Read the header to position the file pointer for QEMU. Unfortunately we
-     * can't use lseek with virFileWrapperFD. */
-    if (qemuSaveImageReadHeader(fd, NULL) < 0)
-        return -1;
+        /* Read the header to position the file pointer for QEMU. Unfortunately we
+         * can't use lseek with virFileWrapperFD. */
+        if (qemuSaveImageReadHeader(fd, NULL) < 0)
+            return -1;
+    }
 
     ret = fd;
     fd = -1;
@@ -710,6 +716,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
                      int *fd,
                      virQEMUSaveData *data,
                      const char *path,
+                     qemuMigrationParams *restoreParams,
                      bool start_paused,
                      bool reset_nvram,
                      virDomainAsyncJob asyncJob)
@@ -726,8 +733,8 @@ qemuSaveImageStartVM(virConnectPtr conn,
         start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
     if (qemuProcessStartWithMemoryState(conn, driver, vm, fd, path, NULL, data,
-                                        asyncJob, start_flags, "restored",
-                                        &started) < 0) {
+                                        restoreParams, asyncJob, start_flags,
+                                        "restored", &started) < 0) {
         goto cleanup;
     }
 

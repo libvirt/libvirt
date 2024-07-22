@@ -2430,7 +2430,7 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
             return -1;
 
         memdata->fd = qemuSaveImageOpen(driver, memdata->path,
-                                        false, NULL, false);
+                                        false, false, NULL, false);
         if (memdata->fd < 0)
             return -1;
 
@@ -2670,7 +2670,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     if (qemuProcessStartWithMemoryState(snapshot->domain->conn, driver, vm,
                                         &memdata.fd, memdata.path, loadSnap,
-                                        memdata.data, VIR_ASYNC_JOB_SNAPSHOT,
+                                        memdata.data, NULL, VIR_ASYNC_JOB_SNAPSHOT,
                                         start_flags, "from-snapshot",
                                         &started) < 0) {
         if (started) {
@@ -2824,7 +2824,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
 
         rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                               VIR_ASYNC_JOB_SNAPSHOT, NULL, -1, NULL, NULL,
-                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                              NULL, VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                               start_flags);
         virDomainAuditStart(vm, "from-snapshot", rc >= 0);
         if (rc < 0) {
@@ -3300,7 +3300,7 @@ qemuSnapshotDeleteExternalPrepare(virDomainObj *vm,
 
         if (!virDomainObjIsActive(vm)) {
             if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_SNAPSHOT,
-                                 NULL, -1, NULL, NULL,
+                                 NULL, -1, NULL, NULL, NULL,
                                  VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                                  VIR_QEMU_PROCESS_START_PAUSED) < 0) {
                 return -1;

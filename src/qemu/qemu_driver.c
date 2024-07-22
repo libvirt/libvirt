@@ -1582,7 +1582,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     }
 
     if (qemuProcessStart(conn, driver, vm, NULL, VIR_ASYNC_JOB_START,
-                         NULL, -1, NULL, NULL,
+                         NULL, -1, NULL, NULL, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                          start_flags) < 0) {
         virDomainAuditStart(vm, "booted", false);
@@ -5747,6 +5747,8 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     virFileWrapperFd *wrapperFd = NULL;
     bool hook_taint = false;
     bool reset_nvram = false;
+    bool sparse = false;
+    g_autoptr(qemuMigrationParams) restoreParams = NULL;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
@@ -5759,9 +5761,13 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     if (qemuSaveImageGetMetadata(driver, NULL, path, &def, &data) < 0)
         goto cleanup;
 
+    sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
+    if (!(restoreParams = qemuMigrationParamsForSave(sparse)))
+        goto cleanup;
+
     fd = qemuSaveImageOpen(driver, path,
                            (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                           &wrapperFd, false);
+                           sparse, &wrapperFd, false);
     if (fd < 0)
         goto cleanup;
 
@@ -5815,7 +5821,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_RESTORE, flags) < 0)
         goto cleanup;
 
-    ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path,
+    ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path, restoreParams,
                                false, reset_nvram, VIR_ASYNC_JOB_START);
 
     qemuProcessEndJob(vm);
@@ -5930,7 +5936,8 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     if (qemuSaveImageGetMetadata(driver, NULL, path, &def, &data) < 0)
         goto cleanup;
 
-    fd = qemuSaveImageOpen(driver, path, false, NULL, true);
+    fd = qemuSaveImageOpen(driver, path, false, false, NULL, false);
+
     if (fd < 0)
         goto cleanup;
 
@@ -6069,6 +6076,8 @@ qemuDomainObjRestore(virConnectPtr conn,
     g_autofree char *xmlout = NULL;
     virQEMUSaveData *data = NULL;
     virFileWrapperFd *wrapperFd = NULL;
+    bool sparse = false;
+    g_autoptr(qemuMigrationParams) restoreParams = NULL;
 
     ret = qemuSaveImageGetMetadata(driver, NULL, path, &def, &data);
     if (ret < 0) {
@@ -6086,7 +6095,11 @@ qemuDomainObjRestore(virConnectPtr conn,
         goto cleanup;
     }
 
-    fd = qemuSaveImageOpen(driver, path, bypass_cache, &wrapperFd, false);
+    sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
+    if (!(restoreParams = qemuMigrationParamsForSave(sparse)))
+        return -1;
+
+    fd = qemuSaveImageOpen(driver, path, bypass_cache, sparse, &wrapperFd, false);
     if (fd < 0)
         goto cleanup;
 
@@ -6128,7 +6141,7 @@ qemuDomainObjRestore(virConnectPtr conn,
 
     virDomainObjAssignDef(vm, &def, true, NULL);
 
-    ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path,
+    ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path, restoreParams,
                                start_paused, reset_nvram, asyncJob);
 
  cleanup:
@@ -6334,7 +6347,7 @@ qemuDomainObjStart(virConnectPtr conn,
     }
 
     ret = qemuProcessStart(conn, driver, vm, NULL, asyncJob,
-                           NULL, -1, NULL, NULL,
+                           NULL, -1, NULL, NULL, NULL,
                            VIR_NETDEV_VPORT_PROFILE_OP_CREATE, start_flags);
     virDomainAuditStart(vm, "booted", ret >= 0);
     if (ret >= 0) {

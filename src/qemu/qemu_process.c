@@ -4862,6 +4862,7 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc)
 
     g_free(inc->address);
     g_free(inc->uri);
+    qemuFDPassFree(inc->fdPassMigrate);
     g_free(inc);
 }
 
@@ -4875,26 +4876,38 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc)
  * qemuProcessIncomingDefFree will NOT close it.
  */
 qemuProcessIncomingDef *
-qemuProcessIncomingDefNew(virQEMUCaps *qemuCaps,
+qemuProcessIncomingDefNew(virDomainObj *vm,
                           const char *listenAddress,
                           const char *migrateFrom,
-                          int fd,
-                          const char *path)
+                          int *fd,
+                          const char *path,
+                          virQEMUSaveData *data)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     qemuProcessIncomingDef *inc = NULL;
 
-    if (qemuMigrationDstCheckProtocol(qemuCaps, migrateFrom) < 0)
+    if (qemuMigrationDstCheckProtocol(priv->qemuCaps, migrateFrom) < 0)
         return NULL;
 
     inc = g_new0(qemuProcessIncomingDef, 1);
 
     inc->address = g_strdup(listenAddress);
 
-    inc->uri = qemuMigrationDstGetURI(migrateFrom, fd);
+    if (data && data->header.format == QEMU_SAVE_FORMAT_SPARSE) {
+        size_t offset = sizeof(virQEMUSaveHeader) + data->header.data_len;
+
+        inc->fdPassMigrate = qemuFDPassNew("libvirt-incoming-migrate", priv);
+        qemuFDPassAddFD(inc->fdPassMigrate, fd, "-fd");
+        inc->uri = g_strdup_printf("file:%s,offset=%#lx",
+                                   qemuFDPassGetPath(inc->fdPassMigrate), offset);
+    } else {
+        inc->uri = qemuMigrationDstGetURI(migrateFrom, *fd);
+    }
+
     if (!inc->uri)
         goto error;
 
-    inc->fd = fd;
+    inc->fd = *fd;
     inc->path = path;
 
     return inc;
@@ -8005,8 +8018,11 @@ qemuProcessLaunch(virConnectPtr conn,
                                      &nnicindexes, &nicindexes)))
         goto cleanup;
 
-    if (incoming && incoming->fd != -1)
-        virCommandPassFD(cmd, incoming->fd, 0);
+    if (incoming) {
+        if (incoming->fd != -1)
+            virCommandPassFD(cmd, incoming->fd, 0);
+        qemuFDPassTransferCommand(incoming->fdPassMigrate, cmd);
+    }
 
     /* now that we know it is about to start call the hook if present */
     if (qemuProcessStartHook(driver, vm,
@@ -8425,6 +8441,7 @@ qemuProcessStart(virConnectPtr conn,
                  int migrateFd,
                  const char *migratePath,
                  virDomainMomentObj *snapshot,
+                 qemuMigrationParams *migParams,
                  virNetDevVPortProfileOp vmop,
                  unsigned int flags)
 {
@@ -8478,7 +8495,7 @@ qemuProcessStart(virConnectPtr conn,
     relabel = true;
 
     if (incoming) {
-        if (qemuMigrationDstRun(vm, incoming->uri, asyncJob, NULL, 0) < 0)
+        if (qemuMigrationDstRun(vm, incoming->uri, asyncJob, migParams, 0) < 0)
             goto stop;
     } else {
         /* Refresh state of devices from QEMU. During migration this happens
@@ -8532,6 +8549,7 @@ qemuProcessStart(virConnectPtr conn,
  * @path: path to memory state file
  * @snapshot: internal snapshot to load when starting QEMU process or NULL
  * @data: data from memory state file or NULL
+ * @migParams: Migration params to use on restore or NULL
  * @asyncJob: type of asynchronous job
  * @start_flags: flags to start QEMU process with
  * @reason: audit log reason
@@ -8558,6 +8576,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                                 const char *path,
                                 virDomainMomentObj *snapshot,
                                 virQEMUSaveData *data,
+                                qemuMigrationParams *migParams,
                                 virDomainAsyncJob asyncJob,
                                 unsigned int start_flags,
                                 const char *reason,
@@ -8586,7 +8605,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     /* The fd passed to qemuProcessIncomingDefNew is used to create the migration
      * URI, so it must be called after starting the decompression program.
      */
-    incoming = qemuProcessIncomingDefNew(priv->qemuCaps, NULL, "stdio", *fd, path);
+    incoming = qemuProcessIncomingDefNew(vm, NULL, "stdio", fd, path, data);
     if (!incoming)
         return -1;
 
@@ -8601,7 +8620,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
 
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
                          asyncJob, incoming, *fd, path, snapshot,
-                         VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
+                         migParams, VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          start_flags) == 0)
         *started = true;
 

@@ -83,6 +83,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
                      int *fd,
                      virQEMUSaveData *data,
                      const char *path,
+                     qemuMigrationParams *restoreParams,
                      bool start_paused,
                      bool reset_nvram,
                      virDomainAsyncJob asyncJob)
@@ -105,6 +106,7 @@ int
 qemuSaveImageOpen(virQEMUDriver *driver,
                   const char *path,
                   bool bypass_cache,
+                  bool sparse,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);

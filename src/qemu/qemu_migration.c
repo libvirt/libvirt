@@ -3115,9 +3115,8 @@ qemuMigrationDstPrepare(virDomainObj *vm,
                         const char *protocol,
                         const char *listenAddress,
                         unsigned short port,
-                        int fd)
+                        int *fd)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *migrateFrom = NULL;
 
     if (tunnel) {
@@ -3171,8 +3170,9 @@ qemuMigrationDstPrepare(virDomainObj *vm,
         migrateFrom = g_strdup_printf(incFormat, protocol, listenAddress, port);
     }
 
-    return qemuProcessIncomingDefNew(priv->qemuCaps, listenAddress,
-                                     migrateFrom, fd, NULL);
+    return qemuProcessIncomingDefNew(vm, listenAddress,
+                                     migrateFrom, fd,
+                                     NULL, NULL);
 }
 
 
@@ -3312,7 +3312,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
 
     if (!(incoming = qemuMigrationDstPrepare(vm, tunnel, protocol,
                                              listenAddress, port,
-                                             dataFD[0])))
+                                             &dataFD[0])))
         goto error;
 
     qemuMigrationDstPrepareDiskSeclabels(vm, migrate_disks, flags);
@@ -3683,7 +3683,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
     priv->origname = g_strdup(origname);
 
     if (!(incoming = qemuMigrationDstPrepare(vm, false, protocol,
-                                             listenAddress, port, -1)))
+                                             listenAddress, port, NULL)))
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0)
