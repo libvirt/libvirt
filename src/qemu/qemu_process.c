@@ -8421,7 +8421,7 @@ qemuProcessStart(virConnectPtr conn,
                  virDomainObj *vm,
                  virCPUDef *updatedCPU,
                  virDomainAsyncJob asyncJob,
-                 const char *migrateFrom,
+                 qemuProcessIncomingDef *incoming,
                  int migrateFd,
                  const char *migratePath,
                  virDomainMomentObj *snapshot,
@@ -8429,7 +8429,6 @@ qemuProcessStart(virConnectPtr conn,
                  unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuProcessIncomingDef *incoming = NULL;
     unsigned int stopFlags;
     bool relabel = false;
     bool relabelSavedState = false;
@@ -8437,11 +8436,11 @@ qemuProcessStart(virConnectPtr conn,
     int rv;
 
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s id=%d asyncJob=%s "
-              "migrateFrom=%s migrateFd=%d migratePath=%s "
+              "incoming=%p migrateFd=%d migratePath=%s "
               "snapshot=%p vmop=%d flags=0x%x",
               conn, driver, vm, vm->def->name, vm->def->id,
               virDomainAsyncJobTypeToString(asyncJob),
-              NULLSTR(migrateFrom), migrateFd, NULLSTR(migratePath),
+              incoming, migrateFd, NULLSTR(migratePath),
               snapshot, vmop, flags);
 
     virCheckFlagsGoto(VIR_QEMU_PROCESS_START_COLD |
@@ -8450,19 +8449,12 @@ qemuProcessStart(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_GEN_VMID |
                       VIR_QEMU_PROCESS_START_RESET_NVRAM, cleanup);
 
-    if (!migrateFrom && !snapshot)
+    if (!incoming && !snapshot)
         flags |= VIR_QEMU_PROCESS_START_NEW;
 
     if (qemuProcessInit(driver, vm, updatedCPU,
-                        asyncJob, !!migrateFrom, flags) < 0)
+                        asyncJob, !!incoming, flags) < 0)
         goto cleanup;
-
-    if (migrateFrom) {
-        incoming = qemuProcessIncomingDefNew(priv->qemuCaps, NULL, migrateFrom,
-                                             migrateFd, migratePath);
-        if (!incoming)
-            goto stop;
-    }
 
     if (qemuProcessPrepareDomain(driver, vm, flags) < 0)
         goto stop;
@@ -8516,14 +8508,13 @@ qemuProcessStart(virConnectPtr conn,
         qemuSecurityRestoreSavedStateLabel(driver->securityManager,
                                            vm->def, migratePath) < 0)
         VIR_WARN("failed to restore save state label on %s", migratePath);
-    qemuProcessIncomingDefFree(incoming);
     return ret;
 
  stop:
     stopFlags = 0;
     if (!relabel)
         stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
-    if (migrateFrom)
+    if (incoming)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
@@ -8577,8 +8568,9 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     VIR_AUTOCLOSE intermediatefd = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
-    const char *migrateFrom = NULL;
+    qemuProcessIncomingDef *incoming = NULL;
     int rc = 0;
+    int ret = -1;
 
     if (data) {
         if (virSaveCookieParseString(data->cookie, (virObject **)&cookie,
@@ -8589,9 +8581,14 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                                             &errbuf, &cmd) < 0) {
             return -1;
         }
-
-        migrateFrom = "stdio";
     }
+
+    /* The fd passed to qemuProcessIncomingDefNew is used to create the migration
+     * URI, so it must be called after starting the decompression program.
+     */
+    incoming = qemuProcessIncomingDefNew(priv->qemuCaps, NULL, "stdio", *fd, path);
+    if (!incoming)
+        return -1;
 
     /* No cookie means libvirt which saved the domain was too old to mess up
      * the CPU definitions.
@@ -8603,7 +8600,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
         priv->disableSlirp = true;
 
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
-                         asyncJob, migrateFrom, *fd, path, snapshot,
+                         asyncJob, incoming, *fd, path, snapshot,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          start_flags) == 0)
         *started = true;
@@ -8615,14 +8612,17 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
 
     virDomainAuditStart(vm, reason, *started);
     if (!*started || rc < 0)
-        return -1;
+        goto cleanup;
 
     /* qemuProcessStart doesn't unset the qemu error reporting infrastructure
      * in case of migration (which is used in this case) so we need to reset it
      * so that the handle to virtlogd is not held open unnecessarily */
     qemuMonitorSetDomainLog(qemuDomainGetMonitor(vm), NULL, NULL, NULL);
+    ret = 0;
 
-    return 0;
+ cleanup:
+    qemuProcessIncomingDefFree(incoming);
+    return ret;
 }
 
 
