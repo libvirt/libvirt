@@ -147,10 +147,20 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
         virCommandAddArg(cmd, "--shared-dir");
         virCommandAddArg(cmd, fs->src->path);
 
-        if (fs->cache) {
+        switch (fs->cache) {
+        case VIR_DOMAIN_FS_CACHE_MODE_DEFAULT:
+        case VIR_DOMAIN_FS_CACHE_MODE_LAST:
+            break;
+        case VIR_DOMAIN_FS_CACHE_MODE_NONE:
+            virCommandAddArg(cmd, "--cache");
+            virCommandAddArg(cmd, "never");
+            break;
+        case VIR_DOMAIN_FS_CACHE_MODE_ALWAYS:
             virCommandAddArg(cmd, "--cache");
             virCommandAddArg(cmd, virDomainFSCacheModeTypeToString(fs->cache));
+            break;
         }
+
         if (fs->sandbox) {
             virCommandAddArg(cmd, "--sandbox");
             virCommandAddArg(cmd, virDomainFSSandboxModeTypeToString(fs->sandbox));
