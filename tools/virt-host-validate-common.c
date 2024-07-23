@@ -106,20 +106,18 @@ virBitmap *virHostValidateGetCPUFlags(void)
 {
     FILE *fp;
     virBitmap *flags = NULL;
+    g_autofree char *line = NULL;
+    size_t linelen = 0;
 
     if (!(fp = fopen("/proc/cpuinfo", "r")))
         return NULL;
 
     flags = virBitmapNew(VIR_HOST_VALIDATE_CPU_FLAG_LAST);
 
-    do {
-        char line[1024];
+    while (getline(&line, &linelen, fp) > 0) {
         char *start;
         g_auto(GStrv) tokens = NULL;
         GStrv next;
-
-        if (!fgets(line, sizeof(line), fp))
-            break;
 
         /* The line we're interested in is marked differently depending
          * on the architecture, so check possible prefixes */
@@ -129,11 +127,9 @@ virBitmap *virHostValidateGetCPUFlags(void)
             !STRPREFIX(line, "facilities"))
             continue;
 
-        /* fgets() includes the trailing newline in the output buffer,
-         * so we need to clean that up ourselves. We can safely access
-         * line[strlen(line) - 1] because the checks above would cause
-         * us to skip empty strings */
-        line[strlen(line) - 1] = '\0';
+        /* getline() may include the trailing newline in the output
+         * buffer, so we need to clean that up ourselves. */
+        virStringTrimOptionalNewline(line);
 
         /* Skip to the separator */
         if (!(start = strchr(line, ':')))
@@ -153,7 +149,7 @@ virBitmap *virHostValidateGetCPUFlags(void)
             if ((value = virHostValidateCPUFlagTypeFromString(*next)) >= 0)
                 ignore_value(virBitmapSetBit(flags, value));
         }
-    } while (1);
+    }
 
     VIR_FORCE_FCLOSE(fp);
 
