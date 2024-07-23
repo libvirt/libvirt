@@ -890,7 +890,7 @@ struct _virDomainFSDef {
     bool symlinksResolved;
     char *binary;
     unsigned long long queue_size;
-    unsigned long long rlimit_nofile;
+    unsigned long long openfiles;
     virTristateSwitch xattr;
     virDomainFSCacheMode cache;
     virTristateSwitch posix_lock;

@@ -3381,9 +3381,9 @@
           </element>
         </optional>
         <optional>
-          <element name="rlimit_nofile">
+          <element name="openfiles">
             <optional>
-              <attribute name="size">
+              <attribute name="max">
                 <data type="positiveInteger"/>
               </attribute>
             </optional>

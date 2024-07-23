@@ -3734,10 +3734,10 @@ A directory on the host that can be accessed directly from the guest.
    The thread pool helps increase the number of requests in flight when used with
    storage that has a higher latency.  However, it has an overhead, and so for
    fast, low latency filesystems, it may be best to turn it off. ( :since:`Since 8.5.0` )
-   Element ``rlimit_profile`` accepts one attribute ``size`` which defines the
+   Element ``openfiles`` accepts one attribute ``max`` which defines the
    maximum number of file descriptors. Non-positive values are forbidden.
-   Although numbers greater than 1M are allowed, the virtiofsd documentation
-   states that in this case its set by virtiofsd to the 1M. ( :since:`Since 10.6.0` )
+   The upper bound on the number of open files is implementation defined.
+   ( :since:`Since 10.6.0` )
 ``source``
    The resource on the host that is being accessed in the guest. The ``name``
    attribute must be used with ``type='template'``, and the ``dir`` attribute
