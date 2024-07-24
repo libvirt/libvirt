@@ -57,12 +57,14 @@ struct _qemuProcessIncomingDef {
     const char *path; /* path associated with fd */
 };
 
-qemuProcessIncomingDef *qemuProcessIncomingDefNew(virDomainObj *vm,
+qemuProcessIncomingDef *qemuProcessIncomingDefNew(virQEMUDriver *driver,
+                                                  virDomainObj *vm,
                                                   const char *listenAddress,
                                                   const char *migrateFrom,
                                                   int *fd,
                                                   const char *path,
-                                                  virQEMUSaveData *data);
+                                                  virQEMUSaveData *data,
+                                                  qemuMigrationParams *migParams);
 
 void qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc);
 

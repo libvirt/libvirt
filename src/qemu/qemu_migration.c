@@ -3110,7 +3110,8 @@ qemuMigrationDstPrepareCleanup(virQEMUDriver *driver,
 }
 
 static qemuProcessIncomingDef *
-qemuMigrationDstPrepare(virDomainObj *vm,
+qemuMigrationDstPrepare(virQEMUDriver *driver,
+                        virDomainObj *vm,
                         bool tunnel,
                         const char *protocol,
                         const char *listenAddress,
@@ -3170,9 +3171,9 @@ qemuMigrationDstPrepare(virDomainObj *vm,
         migrateFrom = g_strdup_printf(incFormat, protocol, listenAddress, port);
     }
 
-    return qemuProcessIncomingDefNew(vm, listenAddress,
+    return qemuProcessIncomingDefNew(driver, vm, listenAddress,
                                      migrateFrom, fd,
-                                     NULL, NULL);
+                                     NULL, NULL, NULL);
 }
 
 
@@ -3310,7 +3311,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
         goto error;
     stopProcess = true;
 
-    if (!(incoming = qemuMigrationDstPrepare(vm, tunnel, protocol,
+    if (!(incoming = qemuMigrationDstPrepare(driver, vm, tunnel, protocol,
                                              listenAddress, port,
                                              &dataFD[0])))
         goto error;
@@ -3682,7 +3683,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
 
     priv->origname = g_strdup(origname);
 
-    if (!(incoming = qemuMigrationDstPrepare(vm, false, protocol,
+    if (!(incoming = qemuMigrationDstPrepare(driver, vm, false, protocol,
                                              listenAddress, port, NULL)))
         goto cleanup;
 

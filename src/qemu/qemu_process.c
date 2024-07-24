@@ -4876,13 +4876,16 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc)
  * qemuProcessIncomingDefFree will NOT close it.
  */
 qemuProcessIncomingDef *
-qemuProcessIncomingDefNew(virDomainObj *vm,
+qemuProcessIncomingDefNew(virQEMUDriver *driver,
+                          virDomainObj *vm,
                           const char *listenAddress,
                           const char *migrateFrom,
                           int *fd,
                           const char *path,
-                          virQEMUSaveData *data)
+                          virQEMUSaveData *data,
+                          qemuMigrationParams *migParams)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuProcessIncomingDef *inc = NULL;
 
@@ -4895,9 +4898,25 @@ qemuProcessIncomingDefNew(virDomainObj *vm,
 
     if (data && data->header.format == QEMU_SAVE_FORMAT_SPARSE) {
         size_t offset = sizeof(virQEMUSaveHeader) + data->header.data_len;
+        bool directio = false;
 
         inc->fdPassMigrate = qemuFDPassNew("libvirt-incoming-migrate", priv);
-        qemuFDPassAddFD(inc->fdPassMigrate, fd, "-fd");
+        /* When using directio with mapped-ram, qemu needs an fd without
+         * O_DIRECT set for reading small bits of unaligned state. */
+        if (qemuMigrationParamsGetBool(migParams, QEMU_MIGRATION_PARAM_DIRECT_IO, &directio) < 0)
+            goto error;
+
+        if (directio) {
+            VIR_AUTOCLOSE bufferedFd = -1;
+
+            if ((bufferedFd = qemuDomainOpenFile(cfg, NULL, path, O_RDONLY, NULL)) < 0)
+                goto error;
+
+            qemuFDPassAddFD(inc->fdPassMigrate, &bufferedFd, "-buffered-fd");
+            qemuFDPassAddFD(inc->fdPassMigrate, fd, "direct-io-fd");
+        } else {
+            qemuFDPassAddFD(inc->fdPassMigrate, fd, "-buffered-fd");
+        }
         inc->uri = g_strdup_printf("file:%s,offset=%#lx",
                                    qemuFDPassGetPath(inc->fdPassMigrate), offset);
     } else {
@@ -8605,7 +8624,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     /* The fd passed to qemuProcessIncomingDefNew is used to create the migration
      * URI, so it must be called after starting the decompression program.
      */
-    incoming = qemuProcessIncomingDefNew(vm, NULL, "stdio", fd, path, data);
+    incoming = qemuProcessIncomingDefNew(driver, vm, NULL, "stdio", fd, path, data, migParams);
     if (!incoming)
         return -1;
 
