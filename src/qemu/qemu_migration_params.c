@@ -797,9 +797,18 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 
 
 qemuMigrationParams *
-qemuMigrationParamsForSave(bool sparse, unsigned int flags)
+qemuMigrationParamsForSave(virTypedParameterPtr params,
+                           int nparams,
+                           bool sparse,
+                           unsigned int flags)
 {
     g_autoptr(qemuMigrationParams) saveParams = NULL;
+
+    if (flags & VIR_DOMAIN_SAVE_PARALLEL && !sparse) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Parallel save is only supported with the 'sparse' save image format"));
+        return NULL;
+    }
 
     if (!(saveParams = qemuMigrationParamsNew()))
         return NULL;
@@ -809,7 +818,25 @@ qemuMigrationParamsForSave(bool sparse, unsigned int flags)
             return NULL;
         if (virBitmapSetBit(saveParams->caps, QEMU_MIGRATION_CAP_MULTIFD) < 0)
             return NULL;
-        saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].value.i = 1;
+
+        if (flags & VIR_DOMAIN_SAVE_PARALLEL) {
+            int nchannels;
+
+            if (params && virTypedParamsGetInt(params, nparams,
+                                               VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS,
+                                               &nchannels) < 0)
+                return NULL;
+
+            if (nchannels < 1) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("number of parallel save channels cannot be less than 1"));
+                return NULL;
+            }
+
+            saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].value.i = nchannels;
+        } else {
+            saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].value.i = 1;
+        }
         saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].set = true;
 
         if (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) {

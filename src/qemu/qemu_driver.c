@@ -2579,6 +2579,8 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
                        int format,
                        virCommand *compressor,
                        const char *xmlin,
+                       virTypedParameterPtr params,
+                       int nparams,
                        unsigned int flags)
 {
     g_autofree char *xml = NULL;
@@ -2668,7 +2670,8 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto endjob;
     xml = NULL;
 
-    if (!(saveParams = qemuMigrationParamsForSave(format == QEMU_SAVE_FORMAT_SPARSE,
+    if (!(saveParams = qemuMigrationParamsForSave(params, nparams,
+                                                  format == QEMU_SAVE_FORMAT_SPARSE,
                                                   flags)))
         goto endjob;
 
@@ -2752,7 +2755,7 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, path);
 
     if (qemuDomainSaveInternal(driver, vm, path, cfg->saveImageFormat,
-                               compressor, dxml, flags) < 0)
+                               compressor, dxml, NULL, 0, flags) < 0)
         return -1;
 
     vm->hasManagedSave = true;
@@ -2788,7 +2791,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
         goto cleanup;
 
     ret = qemuDomainSaveInternal(driver, vm, path, cfg->saveImageFormat,
-                                 compressor, dxml, flags);
+                                 compressor, dxml, NULL, 0, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2819,7 +2822,8 @@ qemuDomainSaveParams(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
-                  VIR_DOMAIN_SAVE_PAUSED, -1);
+                  VIR_DOMAIN_SAVE_PAUSED |
+                  VIR_DOMAIN_SAVE_PARALLEL, -1);
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_SAVE_PARAM_FILE,
@@ -2828,6 +2832,8 @@ qemuDomainSaveParams(virDomainPtr dom,
                                VIR_TYPED_PARAM_STRING,
                                VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT,
                                VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS,
+                               VIR_TYPED_PARAM_INT,
                                NULL) < 0)
         return -1;
 
@@ -2865,7 +2871,7 @@ qemuDomainSaveParams(virDomainPtr dom,
         goto cleanup;
 
     ret = qemuDomainSaveInternal(driver, vm, to, format,
-                                 compressor, dxml, flags);
+                                 compressor, dxml, params, nparams, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -5733,6 +5739,8 @@ static int
 qemuDomainRestoreInternal(virConnectPtr conn,
                           const char *path,
                           const char *dxml,
+                          virTypedParameterPtr params,
+                          int nparams,
                           unsigned int flags,
                           int (*ensureACL)(virConnectPtr, virDomainDef *))
 {
@@ -5754,7 +5762,8 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
                   VIR_DOMAIN_SAVE_PAUSED |
-                  VIR_DOMAIN_SAVE_RESET_NVRAM, -1);
+                  VIR_DOMAIN_SAVE_RESET_NVRAM |
+                  VIR_DOMAIN_SAVE_PARALLEL, -1);
 
     if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
         reset_nvram = true;
@@ -5763,7 +5772,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
         goto cleanup;
 
     sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
-    if (!(restoreParams = qemuMigrationParamsForSave(sparse, flags)))
+    if (!(restoreParams = qemuMigrationParamsForSave(params, nparams, sparse, flags)))
         goto cleanup;
 
     fd = qemuSaveImageOpen(driver, path,
@@ -5845,7 +5854,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                        const char *dxml,
                        unsigned int flags)
 {
-    return qemuDomainRestoreInternal(conn, path, dxml, flags,
+    return qemuDomainRestoreInternal(conn, path, dxml, NULL, 0, flags,
                                      virDomainRestoreFlagsEnsureACL);
 }
 
@@ -5853,7 +5862,7 @@ static int
 qemuDomainRestore(virConnectPtr conn,
                   const char *path)
 {
-    return qemuDomainRestoreInternal(conn, path, NULL, 0,
+    return qemuDomainRestoreInternal(conn, path, NULL, NULL, 0, 0,
                                      virDomainRestoreEnsureACL);
 }
 
@@ -5869,6 +5878,7 @@ qemuDomainRestoreParams(virConnectPtr conn,
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
                                VIR_DOMAIN_SAVE_PARAM_DXML, VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, VIR_TYPED_PARAM_INT,
                                NULL) < 0)
         return -1;
 
@@ -5885,7 +5895,7 @@ qemuDomainRestoreParams(virConnectPtr conn,
         return -1;
     }
 
-    ret = qemuDomainRestoreInternal(conn, path, dxml, flags,
+    ret = qemuDomainRestoreInternal(conn, path, dxml, params, nparams, flags,
                                     virDomainRestoreParamsEnsureACL);
     return ret;
 }
@@ -6097,7 +6107,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     }
 
     sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
-    if (!(restoreParams = qemuMigrationParamsForSave(sparse,
+    if (!(restoreParams = qemuMigrationParamsForSave(NULL, 0, sparse,
                                                      bypass_cache ? VIR_DOMAIN_SAVE_BYPASS_CACHE : 0)))
         return -1;
 
