@@ -3838,16 +3838,12 @@ qemuDomainChangeNet(virQEMUDriver *driver,
 
     /* device alias is checked already in virDomainDefCompatibleDevice */
 
-    if (newdev->info.rombar == VIR_TRISTATE_SWITCH_ABSENT)
-        newdev->info.rombar = olddev->info.rombar;
     if (olddev->info.rombar != newdev->info.rombar) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device rom bar setting"));
         goto cleanup;
     }
 
-    if (!newdev->info.romfile)
-        newdev->info.romfile = g_strdup(olddev->info.romfile);
     if (STRNEQ_NULLABLE(olddev->info.romfile, newdev->info.romfile)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network rom file"));
@@ -3860,8 +3856,6 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (newdev->info.romenabled == VIR_TRISTATE_BOOL_ABSENT)
-        newdev->info.romenabled = olddev->info.romenabled;
     if (olddev->info.romenabled != newdev->info.romenabled) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device rom enabled setting"));
