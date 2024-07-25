@@ -2288,6 +2288,7 @@ virEventGLibRunOnce;
 # util/vireventthread.h
 virEventThreadGetContext;
 virEventThreadNew;
+virEventThreadStop;
 
 
 # util/virfcp.h

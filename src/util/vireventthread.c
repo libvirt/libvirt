@@ -188,6 +188,28 @@ virEventThreadNew(const char *name)
 }
 
 
+/**
+ * virEventThreadStop:
+ * @evt: event thread
+ *
+ * May block until all events are processed. Typical use case is:
+ *
+ * virEventThread *evt = virEventThreadNew("name");
+ * ...
+ * virEventThreadStop(evt);
+ * g_object_unref(evt);
+ */
+void
+virEventThreadStop(virEventThread *evt)
+{
+    if (evt->thread) {
+        g_main_loop_quit(evt->loop);
+        g_thread_join(evt->thread);
+        evt->thread = NULL;
+    }
+}
+
+
 GMainContext *
 virEventThreadGetContext(virEventThread *evt)
 {
