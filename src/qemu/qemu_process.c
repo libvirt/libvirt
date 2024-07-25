@@ -8696,6 +8696,20 @@ void qemuProcessStop(virQEMUDriver *driver,
                                  VIR_QEMU_PROCESS_KILL_FORCE|
                                  VIR_QEMU_PROCESS_KILL_NOCHECK));
 
+    /* By unlocking the domain object the events processing thread is allowed
+     * to finish its job. Unlocking must happen before resetting vm->def->id as
+     * the global domain object list code depends on it (and it can't actually
+     * check 'priv->beingDestroyed as that's private). */
+    if (priv->eventThread) {
+        /* Explicitly set priv->beingDestroyed. While it's done in
+         * qemuProcessBeginStopJob(), qemuProcessStop() is called from places
+         * where stop job is not acquired. */
+        priv->beingDestroyed = true;
+        virObjectUnlock(vm);
+        virEventThreadStop(priv->eventThread);
+        virObjectLock(vm);
+    }
+
     if (priv->agent) {
         g_clear_pointer(&priv->agent, qemuAgentClose);
     }
@@ -8727,13 +8741,13 @@ void qemuProcessStop(virQEMUDriver *driver,
     vm->def->id = -1;
     priv->beingDestroyed = false;
 
+    /* No unlocking of @vm after this point until whole cleanup is done. */
+
     /* Wake up anything waiting on domain condition */
     virDomainObjBroadcast(vm);
 
-    /* IMPORTANT: qemuDomainObjStopWorker() unlocks @vm in order to prevent
-     * deadlocks with the per-VM event loop thread. This MUST be done after
-     * marking the VM as dead */
-    qemuDomainObjStopWorker(vm);
+    if (priv->eventThread)
+        g_object_unref(g_steal_pointer(&priv->eventThread));
 
     if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
