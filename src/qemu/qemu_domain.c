@@ -6591,6 +6591,49 @@ qemuDomainStorageSourceAccessAllow(virQEMUDriver *driver,
 }
 
 
+static bool
+qemuDomainDiskChangeSupportedIothreads(virDomainDiskDef *disk,
+                                       virDomainDiskDef *orig_disk)
+{
+    GSList *old = orig_disk->iothreads;
+    GSList *new = disk->iothreads;
+
+    while (true) {
+        virDomainDiskIothreadDef *old_def;
+        virDomainDiskIothreadDef *new_def;
+        size_t i;
+
+        /* match - both empty or both at the end */
+        if (!old && !new)
+            return true;
+
+        /* mismatched length of lists */
+        if (!old || !new)
+            goto fail;
+
+        old_def = old->data;
+        new_def = new->data;
+
+        if (old_def->id != new_def->id ||
+            old_def->nqueues != new_def->nqueues)
+            goto fail;
+
+        for (i = 0; i < old_def->nqueues; i++) {
+            if (old_def->queues[i] != new_def->queues[i])
+                goto fail;
+        }
+
+        new = new->next;
+        old = old->next;
+    }
+
+ fail:
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                   _("cannot modify field '<iothreads>' (or it's parts) of the disk"));
+    return false;
+}
+
+
 /*
  * Makes sure the @disk differs from @orig_disk only by the source
  * path and nothing else.  Fields that are being checked and the
@@ -6734,6 +6777,9 @@ qemuDomainDiskChangeSupported(virDomainDiskDef *disk,
     CHECK_EQ(sgio, "sgio", true);
     CHECK_EQ(discard, "discard", true);
     CHECK_EQ(iothread, "iothread", true);
+
+    if (!qemuDomainDiskChangeSupportedIothreads(disk, orig_disk))
+        return false;
 
     CHECK_STREQ_NULLABLE(domain_name,
                          "backenddomain");
