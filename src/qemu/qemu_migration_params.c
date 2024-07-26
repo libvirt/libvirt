@@ -1312,6 +1312,24 @@ qemuMigrationParamsGetULL(qemuMigrationParams *migParams,
 }
 
 
+int
+qemuMigrationParamsGetBool(qemuMigrationParams *migParams,
+                           qemuMigrationParam param,
+                           bool *value)
+{
+    if (!migParams || !value)
+        return 0;
+
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_BOOL) < 0)
+        return -1;
+
+    *value = migParams->params[param].set ?
+        migParams->params[param].value.b : false;
+
+    return 0;
+}
+
+
 /**
  * Returns true if @cap is enabled in @migParams, false otherwise.
  */

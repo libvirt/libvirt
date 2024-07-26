@@ -137,6 +137,11 @@ qemuMigrationParamsGetULL(qemuMigrationParams *migParams,
                           qemuMigrationParam param,
                           unsigned long long *value);
 
+int
+qemuMigrationParamsGetBool(qemuMigrationParams *migParams,
+                           qemuMigrationParam param,
+                           bool *value);
+
 bool
 qemuMigrationParamsCapEnabled(qemuMigrationParams *migParams,
                               qemuMigrationCapability cap);
