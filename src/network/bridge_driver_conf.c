@@ -101,8 +101,8 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
                                fwBackendStr, filename);
                 return -1;
             }
-            VIR_INFO("firewall_backend setting requested from config file %s: '%s'",
-                     virFirewallBackendTypeToString(fwBackends[0]), filename);
+            VIR_DEBUG("firewall_backend setting requested from config file %s: '%s'",
+                      filename, virFirewallBackendTypeToString(fwBackends[0]));
         }
     }
 
