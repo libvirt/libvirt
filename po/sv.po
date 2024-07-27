@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-07-21 17:38+0000\n"
+"PO-Revision-Date: 2024-07-27 10:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -31747,56 +31747,58 @@ msgid "module '%1$s' does not implement any pci driver"
 msgstr "modulen ”%1$s” implementerar inte någon pci-drivrutin"
 
 msgid "monitor failure"
-msgstr ""
+msgstr "övervakningsfel"
 
 msgid "monitor must not be NULL"
-msgstr ""
+msgstr "övervakaren får inte vara NULL"
 
 #, c-format
 msgid "more than %1$d vCPUs are only supported on q35-based machine types"
-msgstr ""
+msgstr "mer än %1$d vCPU:er stödjs endast på q35-baserade maskintyper"
 
 #, c-format
 msgid ""
 "more than %1$d vCPUs require extended interrupt mode enabled on the iommu "
 "device"
 msgstr ""
+"mer än %1$d vCPU:er kräver att utökat avbrottsläge är aktiverat på iommu-"
+"enheten"
 
 msgid "more than one snapshot claims to be active"
-msgstr ""
+msgstr "mer än en ögonblicksbild påstår sig vara aktiv"
 
-#, fuzzy
 msgid "mount is not supported on this platform."
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "montering stödjs inte på denna plattform."
 
-#, fuzzy
 msgid "mount move is not supported on this platform."
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "flytt av montering stödjs inte på denna plattform."
 
-#, fuzzy, c-format
+#, c-format
 msgid "mount point not found: %1$s"
-msgstr "Domän hittades inte: %1$s"
+msgstr "monteringspunkten finns inte: %1$s"
 
 msgid "mountpoint path to be frozen"
-msgstr ""
+msgstr "sökvägen till monteringspunkten måste vara frusen"
 
 msgid "mountpoint path to be thawed"
-msgstr ""
+msgstr "sökväg till monteringspunkten att töa"
 
 msgid "msi option is only supported with a server"
-msgstr ""
+msgstr "msi-flaggan stödj endast med en server"
 
 msgid "mtp is not supported with this QEMU binary"
-msgstr ""
+msgstr "mtp stödjs inte med denna QEMU-binär"
 
 msgid "mtp only supports passthrough accessmode"
-msgstr ""
+msgstr "mtp stödjer endast åtkomstmetoden genomgång"
 
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %1$s "
 "(network '%2$s')"
 msgstr ""
+"mtu-storlek är endast tillåten i lägena open, route, nat och isolated, inte "
+"i %1$s (nätverket ”%2$s”)"
 
 msgid "multidevs is not supported with this QEMU binary"
 msgstr "multidevs stödjs inte med denna QEMU-binär"
@@ -31804,154 +31806,153 @@ msgstr "multidevs stödjs inte med denna QEMU-binär"
 #, c-format
 msgid ""
 "multiple <portgroup> elements with the same name (%1$s) in network '%2$s'"
-msgstr ""
+msgstr "flera element <portgroup> med samma namn (%1$s) i nätverket ”%2$s”"
 
 #, c-format
 msgid ""
 "multiple DNS SRV records matching all specified fields were found in network "
 "%1$s"
 msgstr ""
+"flera DNS SRV-poster som matchar alla angivna fält finns i nätverket %1$s"
 
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr ""
+msgstr "flera OpenGL-displayer stödjs inte med QEMU"
 
 #, c-format
 msgid "multiple devices matching MAC address %1$s found"
-msgstr ""
+msgstr "flera enheter som matchar MAC-adressen %1$s finns"
 
 #, c-format
 msgid ""
 "multiple forwarding interfaces specified for network '%1$s', only one is "
 "supported"
 msgstr ""
+"flera vidarebefordrande gränssnitt angivna för nätverket ”%1$s”, endast ett "
+"stödjs"
 
 msgid "multiple interfaces with matching MAC address"
-msgstr ""
+msgstr "flera gränssnitt med en MAC-adress som matchar"
 
 #, c-format
 msgid "multiple matching DNS HOST records were found in network %1$s"
-msgstr ""
+msgstr "flera matchande DNS HOST-poster finns i nätverket %1$s"
 
 msgid "multiple matching devices found"
-msgstr ""
+msgstr "flera matchande enheter finns"
 
 msgid "multiple matching domains found"
-msgstr ""
+msgstr "flera matchande domäner finns"
 
 #, c-format
 msgid "multiple matching domains found: %1$s"
-msgstr ""
+msgstr "flera matchande domäner finns: %1$s"
 
 msgid "multiple matching interfaces found"
-msgstr ""
+msgstr "flera matchande gränssnitt finns"
 
 #, c-format
 msgid "multiple matching interfaces found: %1$s"
-msgstr ""
+msgstr "flera matchande gränssnitt finns: %1$s"
 
 msgid "multiple memory devices found, use --alias or --node to select one"
-msgstr ""
+msgstr "flera minnesenheter finns, använd --alias eller --node för att välja en"
 
 msgid "multiple stream callbacks not supported"
-msgstr ""
+msgstr "multipla strömåteranrop stödjs inte"
 
 msgid "mutex initialization failed"
 msgstr "mutex-initiering misslyckades"
 
 msgid "n - no, throw away my changes"
-msgstr ""
+msgstr "n — nej, kasta bort mina ändringar"
 
 #, c-format
 msgid "name %1$s cannot contain '/'"
-msgstr ""
+msgstr "namnet %1$s får inte innehålla ”/”"
 
-#, fuzzy
 msgid "name of checkpoint"
-msgstr "namn för den inaktiva domänen"
+msgstr "namn på kontrollpunkten"
 
 msgid "name of existing snapshot to make current"
-msgstr ""
+msgstr "namn på en befintlig ögonblicksbild som skall göras aktuell"
 
 msgid ""
 "name of file containing xml (or, if it starts with '<', the complete xml "
 "element itself) to add/modify, or to be matched for search"
 msgstr ""
+"namn på filen som innehåller xml (eller, om den startar med ”<”, själva xml-"
+"elementet i sin helhet) att lägga till/ändra, eller att matcha i sökningen"
 
-#, fuzzy
 msgid "name of snapshot"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "namn på ögonblicksbilden"
 
 msgid "name of the FD group"
-msgstr ""
+msgstr "namn på FD-gruppen"
 
 msgid "name of the inactive domain"
 msgstr "namn för den inaktiva domänen"
 
-#, fuzzy
 msgid "name of the pool"
-msgstr "namn för den inaktiva domänen"
+msgstr "namn på poolen"
 
-#, fuzzy
 msgid "name of the volume"
-msgstr "namn för den inaktiva domänen"
+msgstr "namn på volymen"
 
 msgid "namespace key is required when modifying metadata"
-msgstr ""
+msgstr "namnrymdens nyckel krävs när metadata ändras"
 
 msgid "nbd port must be in range 0-65535"
-msgstr ""
+msgstr "nbd-porten måste vara i intervallet 0-65535"
 
 msgid "nbd protocol accepts only one host"
-msgstr ""
+msgstr "nbd-protokollet tar bara en värd"
 
 #, c-format
 msgid "nbd_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "katalogen för nbd_tls_x509_cert_dir ”%1$s” finns inte"
 
 msgid "nbdkit restart failed"
-msgstr ""
+msgstr "omstart av nbdkit misslyckades"
 
 msgid "nbdkit support is not enabled"
-msgstr ""
+msgstr "stöd för nbdkit är inte aktiverat"
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
 
 msgid "ncpumaps must be non-negative"
-msgstr ""
+msgstr "ncpumaps måste vara icke-negativt"
 
 #, c-format
 msgid "ncpus count exceeds maximum: %1$u > %2$u"
-msgstr ""
+msgstr "antalet ncpus överskrider maximum: %1$u > %2$u"
 
 msgid "ncpus must be 1 when start_cpu is -1"
-msgstr ""
+msgstr "ncpus måste vara 1 när start_cpu är -1"
 
-#, fuzzy
 msgid "ncpus too large"
-msgstr "nparams är för stor"
+msgstr "ncpus är för stort"
 
 msgid "ncr53c90 SCSI controller is not a built-in for this machine"
-msgstr ""
+msgstr "SCSI-styrenheten ncr53c90 är inte inbyggd i denna maskin"
 
 msgid "ncr53c90 can only be used as first SCSI controller"
-msgstr ""
+msgstr "ncr53c90 kan endast användas som första SCSI-styrenhet"
 
 msgid "need at least one serial port to use BIOS serial output"
-msgstr ""
+msgstr "det behövs åtminstone en serieport för att använda BIOS-serieutdata"
 
 msgid "need either --dest or --xml"
-msgstr ""
+msgstr "antingen --dest eller --xml behövs"
 
-#, fuzzy
 msgid "need either domain or domain XML"
-msgstr "skapa en domän från en XML-fil"
+msgstr "antingen domän eller domän-XML behövs"
 
 msgid "needs rawio capability"
-msgstr ""
+msgstr "rawio-förmågan behövs"
 
 msgid "negative size requires --shrink"
-msgstr ""
+msgstr "negativ storlek kräver --shrink"
 
 #, c-format
 msgid "negotiated SSF %1$d was not strong enough"
@@ -31962,26 +31963,26 @@ msgid "negotiation SSF %1$d was not strong enough"
 msgstr "förhandlad SSF %1$d var inte stark nog"
 
 msgid "nested JSON array to commandline conversion is not supported"
-msgstr ""
+msgstr "konvertering av nästade JSON-vetorer till kommandorad stödjs inte"
 
 msgid "net definition failed validation"
-msgstr ""
+msgstr "nätdefinitionen klarade inte valideringen"
 
 msgid "netcat path not valid with native proxy mode"
-msgstr ""
+msgstr "netcat-sökvägen är inte giltig i inbyggt proxy-läge"
 
 msgid "netdir"
-msgstr ""
+msgstr "netdir"
 
 msgid "netlink error"
-msgstr ""
+msgstr "netlink-fel"
 
 msgid "netlink event service not running"
-msgstr ""
+msgstr "händelsetjänsten för netlink kör inte"
 
 #, c-format
 msgid "netmask not allowed for IPv6 address '%1$s' in network '%2$s'"
-msgstr ""
+msgstr "netmask är inte tillåtet för IPv6-adressen ”%1$s” i nätverket ”%2$s”"
 
 msgid "network"
 msgstr "nätverk"
@@ -31994,51 +31995,58 @@ msgstr "nätverk %1$s finns redan"
 msgid "network %1$s is not active"
 msgstr "nätverket %1$s är inte aktivt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%1$s' already exists with uuid %2$s"
-msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
+msgstr "nätverket ”%1$s” finns redan med uuid %2$s"
 
 #, c-format
 msgid "network '%1$s' claims dev='%2$s' is already in use by a different port"
-msgstr ""
+msgstr "nätverket ”%1$s” begär dev='%2$s' som redan används av en annan port"
 
 #, c-format
 msgid ""
 "network '%1$s' claims the PCI device at domain=%2$d bus=%3$d slot=%4$d "
 "function=%5$d is already in use by a different network port"
 msgstr ""
+"nätverket ”%1$s” begär PCI-enheten vid domain=%2$d bus=%3$d slot=%4$d "
+"function=%5$d som redan används av en annan nätverksport"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%1$s' does not have a bridge name."
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "nätverket ”%1$s” har inte ett bryggnamn."
 
 #, c-format
 msgid ""
 "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
 "domain"
 msgstr ""
+"nätverket ”%1$s” har inte PCI-enheten %2$04x:%3$02x:%4$02x:%5$x använd av "
+"domänen"
 
 #, c-format
 msgid ""
 "network '%1$s' doesn't have PCI device %2$04x:%3$02x:%4$02x.%5$x in use by "
 "network port"
 msgstr ""
+"nätverket ”%1$s” har inte PCI-enheten %2$04x:%3$02x:%4$02x:%5$x använd av "
+"nätverksporten"
 
 #, c-format
 msgid "network '%1$s' doesn't have an IP address"
-msgstr ""
+msgstr "nätverket ”%1$s” har inte någon IP-adress"
 
 #, c-format
 msgid "network '%1$s' doesn't have dev='%2$s' in use by domain"
-msgstr ""
+msgstr "nätverket ”%1$s” har inte dev='%2$s' använd av domänen"
 
 #, c-format
 msgid "network '%1$s' doesn't have dev='%2$s' in use by network port '%3$s'"
-msgstr ""
+msgstr "nätverket ”%1$s” har inte dev='%2$s' använd av nätverksporten ”%3$s”"
 
 #, c-format
 msgid "network '%1$s' has an invalid netmask or IP address in route definition"
 msgstr ""
+"nätverket ”%1$s” har en felaktig nätmask eller IP-adress i ruttdefinitionen"
 
 #, c-format
 msgid ""
@@ -32046,24 +32054,29 @@ msgid ""
 "the device pool. This is only supported for networks with forward mode "
 "'hostdev'"
 msgstr ""
+"nätverket ”%1$s” har vidarebefordransläge ”%2$s” men listar en enhet med PCI-"
+"adress i enhetspoolen. Detta stödjs endast för nätverk med "
+"vidarebefordransläget ”hostdev”"
 
 #, c-format
 msgid ""
 "network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
 "but only one default is allowed"
 msgstr ""
+"nätverket ”%1$s” har flera standardelement <portgroup> (%2$s och %3$s), men "
+"endast ett standardvärde är tillåtet"
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
-msgstr ""
+msgstr "nätverket ”%1$s” har inget tillhörade gränssnitt eler brygga"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%1$s' has no bridge name defined"
-msgstr "Nätverk %1$s har avdefinierats\n"
+msgstr "nätverket ”%1$s” har inget bryggnamn definierat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%1$s' in %2$s must match connection"
-msgstr "nätverket %s är inte aktivt"
+msgstr "nätverket ”%1$s” i %2$s måste matcha anslutningen"
 
 #, c-format
 msgid "network '%1$s' is already defined with uuid %2$s"
@@ -32078,21 +32091,27 @@ msgid ""
 "network '%1$s' requires exclusive access to interfaces, but none are "
 "available"
 msgstr ""
+"nätverket ”%1$s” kräver exklusiv åtkomst till gränssnitt, men inget finns "
+"tillgängligt"
 
 #, c-format
 msgid ""
 "network '%1$s' uses a direct mode, but has no forward dev and no interface "
 "pool"
 msgstr ""
+"nätverket ”%1$s” använder direkt läge, men har ingen vidarebefordransenhet "
+"och ingen gränssnittspool"
 
 #, c-format
 msgid ""
 "network '%1$s' uses a hostdev mode, but has no forward dev and no interface "
 "pool"
 msgstr ""
+"nätverket ”%1$s” använder hostdev-läge, men har ingen vidarebefordransenhet "
+"och ingen gränssnittspool"
 
 msgid "network configuration using opaque shell scripts"
-msgstr ""
+msgstr "nätverkskonfigurationen använder ett ogenomskinligt skalskript"
 
 #, c-format
 msgid ""
