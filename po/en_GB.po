@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-07-21 17:38+0000\n"
+"PO-Revision-Date: 2024-07-23 15:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1398,11 +1398,10 @@ msgid "'nfs' host must use TCP protocol"
 msgstr "'nfs' host must use TCP protocol"
 
 msgid "'nfs' protocol requires the usage of exactly one host"
-msgstr ""
+msgstr "'nfs' protocol requires the usage of exactly one host"
 
-#, fuzzy
 msgid "'offset' missing in reply of guest-get-timezone"
-msgstr "'can-offline' missing in reply of guest-get-vcpus"
+msgstr "'offset' missing in reply of guest-get-timezone"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' missing in reply of guest-get-vcpus"
@@ -1411,7 +1410,7 @@ msgid "'parent' for vHBA not specified, and cannot find one on this host"
 msgstr "'parent' for vHBA not specified, and cannot find one on this host"
 
 msgid "'partition' missing in reply of guest-get-disks"
-msgstr ""
+msgstr "'partition' missing in reply of guest-get-disks"
 
 msgid "'pci-controller' missing"
 msgstr ""
