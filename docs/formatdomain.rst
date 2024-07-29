@@ -8683,8 +8683,7 @@ desired backend (only ``acpi-erst`` is accepted for now). Then it has the
 following child elements:
 
 ``path``
-  Represents a path in the host that backs the pstore device in the guest. It
-  is mandatory.
+  Represents a path in the host that backs the pstore device in the guest.
 
 ``size``
   Configures the size of the persistent storage available to the guest. It is

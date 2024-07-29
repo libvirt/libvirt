@@ -6290,6 +6290,28 @@ qemuDomainMemoryDefPostParse(virDomainMemoryDef *mem, virArch arch,
 
 
 static int
+qemuDomainPstoreDefPostParse(virDomainPstoreDef *pstore,
+                             const virDomainDef *def,
+                             virQEMUDriver *driver)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    switch (pstore->backend) {
+    case VIR_DOMAIN_PSTORE_BACKEND_ACPI_ERST:
+        if (!pstore->path)
+            pstore->path = g_strdup_printf("%s/%s_PSTORE.raw",
+                                           cfg->nvramDir, def->name);
+        break;
+
+    case VIR_DOMAIN_PSTORE_BACKEND_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
                              const virDomainDef *def,
                              unsigned int parseFlags,
@@ -6350,6 +6372,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
                                            parseFlags);
         break;
 
+    case VIR_DOMAIN_DEVICE_PSTORE:
+        ret = qemuDomainPstoreDefPostParse(dev->data.pstore, def, driver);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -6365,7 +6391,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
-    case VIR_DOMAIN_DEVICE_PSTORE:
         ret = 0;
         break;
 

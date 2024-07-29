@@ -6261,9 +6261,11 @@
         <value>acpi-erst</value>
       </attribute>
       <interleave>
-        <element name="path">
-          <ref name="absFilePath"/>
-        </element>
+        <optional>
+          <element name="path">
+            <ref name="absFilePath"/>
+          </element>
+        </optional>
         <element name="size">
           <ref name="scaledInteger"/>
         </element>
