@@ -1023,6 +1023,11 @@ virDomainSaveParams(virDomainPtr domain,
                     unsigned int flags)
 {
     virConnectPtr conn;
+    virTypedParameterPtr params_copy = NULL;
+    int nparams_copy = 0;
+    const char *to = NULL;
+    g_autofree char *absolute_to = NULL;
+    int ret = -1;
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=0x%x",
                      params, nparams, flags);
@@ -1033,23 +1038,46 @@ virDomainSaveParams(virDomainPtr domain,
     virCheckDomainReturn(domain, -1);
     conn = domain->conn;
 
-    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckReadOnlyGoto(conn->flags, done);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SAVE_RUNNING,
                              VIR_DOMAIN_SAVE_PAUSED,
-                             error);
+                             done);
 
-    if (conn->driver->domainSaveParams) {
-        if (conn->driver->domainSaveParams(domain, params, nparams, flags) < 0)
-            goto error;
-        return 0;
+    /* We must absolutize the file path as the save is done out of process */
+    virTypedParamsCopy(&params_copy, params, nparams);
+    nparams_copy = nparams;
+    if (virTypedParamsGetString(params_copy, nparams_copy,
+                                VIR_DOMAIN_SAVE_PARAM_FILE, &to) < 0)
+        goto done;
+
+    if (to) {
+        if (!(absolute_to = g_canonicalize_filename(to, NULL))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute output file path"));
+            goto done;
+        }
+
+        if (virTypedParamsReplaceString(&params_copy, &nparams_copy,
+                                        VIR_DOMAIN_SAVE_PARAM_FILE,
+                                        absolute_to) < 0)
+            goto done;
     }
 
-    virReportUnsupportedError();
+    if (conn->driver->domainSaveParams) {
+        if (conn->driver->domainSaveParams(domain, params_copy, nparams_copy, flags) < 0)
+            goto done;
+        ret = 0;
+    } else {
+        virReportUnsupportedError();
+    }
 
- error:
-    virDispatchError(domain->conn);
-    return -1;
+ done:
+    if (ret < 0)
+        virDispatchError(domain->conn);
+    virTypedParamsFree(params_copy, nparams_copy);
+
+    return ret;
 }
 
 
@@ -1209,6 +1237,12 @@ virDomainRestoreParams(virConnectPtr conn,
                        virTypedParameterPtr params, int nparams,
                        unsigned int flags)
 {
+    virTypedParameterPtr params_copy = NULL;
+    int nparams_copy = 0;
+    const char *from = NULL;
+    g_autofree char *absolute_from = NULL;
+    int ret = -1;
+
     VIR_DEBUG("conn=%p, params=%p, nparams=%d, flags=0x%x",
               conn, params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
@@ -1216,23 +1250,46 @@ virDomainRestoreParams(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckReadOnlyGoto(conn->flags, done);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SAVE_RUNNING,
                              VIR_DOMAIN_SAVE_PAUSED,
-                             error);
+                             done);
 
     if (conn->driver->domainRestoreParams) {
+        /* We must absolutize the file path as the save is done out of process */
+        virTypedParamsCopy(&params_copy, params, nparams);
+        nparams_copy = nparams;
+        if (virTypedParamsGetString(params_copy, nparams_copy,
+                                    VIR_DOMAIN_SAVE_PARAM_FILE, &from) < 0)
+            goto done;
+
+        if (from) {
+            if (!(absolute_from = g_canonicalize_filename(from, NULL))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("could not build absolute output file path"));
+                goto done;
+            }
+
+            if (virTypedParamsReplaceString(&params_copy, &nparams_copy,
+                                            VIR_DOMAIN_SAVE_PARAM_FILE,
+                                            absolute_from) < 0)
+                goto done;
+        }
+
         if (conn->driver->domainRestoreParams(conn, params, nparams, flags) < 0)
-            goto error;
-        return 0;
+            goto done;
+        ret = 0;
     }
 
     virReportUnsupportedError();
 
- error:
-    virDispatchError(conn);
-    return -1;
+ done:
+    if (ret < 0)
+        virDispatchError(conn);
+    virTypedParamsFree(params_copy, nparams_copy);
+
+    return ret;
 }
 
 
