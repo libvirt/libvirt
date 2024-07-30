@@ -1848,7 +1848,7 @@ msgid "A storage driver is already registered"
 msgstr "En lagringsdrivrutin är redan registrerad"
 
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "ACPI ERST-enheten måste finnas på en PCI-buss"
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "ACPI-index stödjs inte med denna QEMU"
@@ -15885,7 +15885,7 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "Måldomänens parallellportsantal %1$zu stämmer inte med källan %2$zu"
 
 msgid "Target domain pstore device count does not match source"
-msgstr ""
+msgstr "Måldomänens pstore-enhetantal matchar inte källan"
 
 #, c-format
 msgid ""
@@ -16074,11 +16074,11 @@ msgstr "Målparallellporten %1$d stämmer inte med källan %2$d"
 
 #, c-format
 msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Målets pstore-enhetsbakände ”%1$s” matchar inte källan ”%2$s”"
 
 #, c-format
 msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
-msgstr ""
+msgstr "Målets pstore-storlek ”%1$llu” matchar inte källan ”%2$llu”"
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20748,7 +20748,7 @@ msgid "access denied: %1$s"
 msgstr "åtkomst nekas: %1$s"
 
 msgid "acpi-erst backend of pstore device is not supported"
-msgstr ""
+msgstr "acpi-erst-bakänden till pstore-enheten stödjs inte"
 
 msgid "active"
 msgstr "aktiv"
@@ -22611,7 +22611,7 @@ msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "kan inte ändra nätverksenhetens modell från %1$s till %2$s"
 
 msgid "cannot modify network device portgroup attribute"
-msgstr ""
+msgstr "det går inte att ändra nätverksenhetens attribut portgroup"
 
 msgid "cannot modify network device rom bar setting"
 msgstr "kan inte ändra nätverksenhetens \"rom bar\"-inställning"
@@ -22730,7 +22730,7 @@ msgstr "kan inte tolka json %1$s: oavslutad sträng/avbildning/vektor"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
-msgstr ""
+msgstr "kan inte tolka openfiles ”%1$s” för virtiofs"
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26848,7 +26848,7 @@ msgstr "misslyckades att övervaka nbdkit-prcess %1$i"
 
 #, c-format
 msgid "failed to monitor qemu in-shutdown process %1$i"
-msgstr ""
+msgstr "misslyckades att övervaka qemu-processen %1$i under avstängning"
 
 #, c-format
 msgid "failed to move file to %1$s "
@@ -29279,7 +29279,7 @@ msgid "invalid server address"
 msgstr "felaktig serveradress"
 
 msgid "invalid size of ACPI ERST pstore device"
-msgstr ""
+msgstr "felaktig storlek på ACPI ERST-pstore-enheten"
 
 #, c-format
 msgid "invalid size supplied for '%1$s'"
@@ -30083,7 +30083,7 @@ msgid "lock owner details have not been registered"
 msgstr "låsägardetaljer har inte registrerats"
 
 msgid "locking options are not supported by this virtiofsd"
-msgstr ""
+msgstr "låstningsflaggor stödjs inte av denna virtiofsd"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
@@ -30766,7 +30766,7 @@ msgstr ""
 "delad mellan källa och mål)"
 
 msgid "migration with this virtiofs device is not supported"
-msgstr ""
+msgstr "migrering med denna virtiofs-enhet stödjs inte"
 
 msgid "migration with transient disk is not supported"
 msgstr "migrering med en transient disk stödjs inte"
@@ -31413,7 +31413,7 @@ msgid "missing path for <reservations/>"
 msgstr "sökvägen saknas i <reservations/>"
 
 msgid "missing path for ACPI ERST pstore device"
-msgstr ""
+msgstr "sökvägen saknas till ACPI ERST-pstore-enheten"
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr "sökvägen saknas i nbdkit:s förmågecache"
