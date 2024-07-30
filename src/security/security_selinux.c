@@ -3341,7 +3341,7 @@ virSecuritySELinuxSetAllLabel(virSecurityManager *mgr,
 
     if (def->pstore &&
         virSecuritySELinuxSetFilecon(mgr, def->pstore->path,
-                                     data->content_context, true) < 0)
+                                     secdef->imagelabel, true) < 0)
         return -1;
 
     return 0;
