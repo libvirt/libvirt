@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-06-30 20:36+0000\n"
+"PO-Revision-Date: 2024-07-30 10:38+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.6.2\n"
 
 msgid ""
 "\n"
@@ -1834,7 +1834,7 @@ msgid "A storage driver is already registered"
 msgstr "저장소 드라이버는 이미 등록되었습니다"
 
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "ACPI ERST 장치는 PCI 버스에 상주해야 합니다"
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -15321,13 +15321,13 @@ msgstr "대상 USB 제품 ID는 소스와 일치하지 않음"
 #, c-format
 msgid ""
 "Target USB redirection filter rule count %1$zu does not match source %2$zu"
-msgstr "대상 USB 리디렉션 필터 규칙 수 %1$zu는 소스 %2$zu와 일치하지 않음"
+msgstr "대상 USB 방향 지정 필터 규칙 수 %1$zu는 원천 %2$zu와 일치하지 않습니다"
 
 msgid "Target USB vendor ID does not match source"
-msgstr "대상 USB 제조사 ID는 소스와 일치하지 않음"
+msgstr "대상 USB 제조사 ID는 원천과 일치하지 않습니다"
 
 msgid "Target USB version does not match source"
-msgstr "대상 USB 버전이 소스과 일치하지 않음"
+msgstr "대상 USB 버전은 원천과 일치하지 않습니다"
 
 msgid "Target active PCR banks doesn't match source"
 msgstr "대상 활성화 PCR 뱅크는 원천과 일치하지 않습니다"
@@ -15440,15 +15440,15 @@ msgstr ""
 
 #, c-format
 msgid "Target device iommu option '%1$s' does not match source '%2$s'"
-msgstr "대상 장치 iommu 옵션 '%1$s'이(가) 소스 '%2$s'과(와) 일치하지 않습니다"
+msgstr "대상 장치 iommu 옵션 '%1$s' 은 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target device isa address %1$d:%2$d does not match source %3$d:%4$d"
-msgstr "대상 장치 isa 주소 %1$d:%2$d가 소스 %3$d:%4$d와 일치하지 않습니다"
+msgstr "대상 장치 isa 주소 %1$d:%2$d는 원천 %3$d:%4$d와 일치하지 않습니다"
 
 #, c-format
 msgid "Target device packed option '%1$s' does not match source '%2$s'"
-msgstr "대상 장치 포장 옵션 '%1$s'은 소스 '%2$s'와 일치하지 않습니다"
+msgstr "대상 장치 포장 옵션 '%1$s' 는 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target device page_per_vq option '%1$s' does not match source '%2$s'"
@@ -15542,16 +15542,12 @@ msgstr ""
 #, c-format
 msgid ""
 "Target domain IOMMU device intremap value '%1$s' does not match source '%2$s'"
-msgstr ""
-"대상 도메인 IOMMU 장치 내부 지도 값 '%1$s'이(가) 소스 '%2$s'과(와) 일치하지 "
-"않습니다"
+msgstr "대상 도메인 IOMMU 장치 intremap 값 '%1$s'은 원천 '%2$s'와 일치하지 않습니다"
 
 #, c-format
 msgid ""
 "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
-msgstr ""
-"대상 도메인 IOMMU 장치 iotlb 값 '%1$s'이(가) 소스 '%2$s'과(와) 일치하지 않습"
-"니다"
+msgstr "대상 도메인 IOMMU 장치 iotlb 값 '%1$s' 는 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
@@ -15601,71 +15597,70 @@ msgstr "sysinfo의 대상 도메인 수가 소스와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain current memory %1$lld does not match source %2$lld"
-msgstr "대상 도메인 현재 메모리 %1$lld가 소스 %2$lld와 일치하지 않음"
+msgstr "대상 도메인 현재 메모리 %1$lld가 원천 %2$lld와 일치하지 않음"
 
 #, c-format
 msgid "Target domain disk count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 디스크 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
+msgstr "대상 도메인 디스크 수 %1$zu가 원천 %2$zu와 일치하지 않음"
 
 #, c-format
 msgid "Target domain filesystem count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 파일 시스템 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
+msgstr "대상 도메인 파일 시스템 수 %1$zu가 원천 %2$zu와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain genid %1$s does not match source %2$s"
-msgstr "대상 도메인 genid %1$s가 소스 %2$s와 일치하지 않습니다"
+msgstr "대상 도메인 genid %1$s 가 원천 %2$s 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain host device count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 호스트 장치 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
+msgstr "대상 도메인 호스트 장치 수 %1$zu가 원천 %2$zu와 일치하지 않음"
 
 #, c-format
 msgid "Target domain hub device count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 hub 장치 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
+msgstr "대상 도메인 hub 장치 수 %1$zu가 원천 %2$zu와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain input device count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 입력 장치 카운트 %1$zu가 소스 %2$zu와 일치하지 않습니다"
+msgstr "대상 도메인 입력 장치 수 %1$zu가 원천 %2$zu와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain machine type %1$s does not match source %2$s"
-msgstr "대상 도메인 머신 유형 %1$s가 소스 %2$s와 일치하지 않습니다"
+msgstr "대상 도메인 장비 유형 %1$s가 원천 %2$s와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain max memory %1$lld does not match source %2$lld"
-msgstr "대상 도메인 최대 메모리 %1$lld가 소스 %2$lld와 일치하지 않음"
+msgstr "대상 도메인 최대 메모리 %1$lld가 원천 %2$lld와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain memory balloon count %1$d does not match source %2$d"
-msgstr "대상 도메인 메모리 부울 카운트 %1$d가 소스 %2$d와 일치하지 않음"
+msgstr "대상 도메인 메모리 부울 수 %1$d가 원천 %2$d와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain memory device count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 메모리 장치 카운트 %1$zu는 소스 %2$zu와 일치하지 않습니다"
+msgstr "대상 도메인 메모리 장치 수 %1$zu가 원천 %2$zu와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain memory slots count '%1$u' doesn't match source '%2$u'"
-msgstr ""
-"대상 도메인 메모리 슬롯 카운트 '%1$u'는 원천 '%2$u'와 일치하지 않습니다"
+msgstr "대상 도메인 메모리 슬롯 수 '%1$u' 는 원천 '%2$u' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain name '%1$s' does not match source '%2$s'"
-msgstr "대상 도메인 이름 '%1$s'이 소스 '%2$s'와 일치하지 않음"
+msgstr "대상 도메인 이름 '%1$s' 는 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain net card count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 넷 카드 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
+msgstr "대상 도메인 넷 카드 수 %1$zu는 원천 %2$zu와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain panic device count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 패닉 장치 카운트 %1$zu가 소스 %2$zu와 일치하지 않습니다"
+msgstr "대상 도메인 장애 장치 수 %1$zu는 원천 %2$zu와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
-msgstr "대상 도메인 병렬 포트 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
+msgstr "대상 도메인 병렬 포트 수 %1$zu는 원천 %2$zu와 일치하지 않습니다"
 
 msgid "Target domain pstore device count does not match source"
-msgstr ""
+msgstr "대상 도메인 pstore 장치 수가 원천과 일치하지 않습니다"
 
 #, c-format
 msgid ""
@@ -15718,8 +15713,7 @@ msgstr "대상 도메인 vsock 장치 카운트가 소스와 일치하지 않습
 
 #, c-format
 msgid "Target domain vsock device model '%1$s' does not match source '%2$s'"
-msgstr ""
-"대상 도메인 vsock 장치 모델 '%1$s'이(가) 소스 '%2$s'과(와) 일치하지 않습니다"
+msgstr "대상 도메인 vsock 장치 모델 '%1$s' 가 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain watchdog device count %1$zu does not match source %2$zu"
@@ -15855,11 +15849,11 @@ msgstr "대상 병렬 포트 %1$d가 소스 %2$d와 일치하지 않음"
 
 #, c-format
 msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "대상 pstore 장치 지원 '%1$s' 가 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
-msgstr ""
+msgstr "대상 pstore 크기 '%1$llu' 는 원천 '%2$llu' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20494,7 +20488,7 @@ msgid "access denied: %1$s"
 msgstr "접근 거부됨: %1$s"
 
 msgid "acpi-erst backend of pstore device is not supported"
-msgstr ""
+msgstr "pstore 장치의 acpi-erst 지원은 지원되지 않습니다"
 
 msgid "active"
 msgstr "활성화"
@@ -22308,7 +22302,7 @@ msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "네트워크 장치 모델을 %1$s에서 %2$s로 수정 할 수 없습니다"
 
 msgid "cannot modify network device portgroup attribute"
-msgstr ""
+msgstr "네트워크 장치 portgroup 속성을 수정 할 수 없습니다"
 
 msgid "cannot modify network device rom bar setting"
 msgstr "네트워크 장치 ROM 표시줄 설정을 수정할 수 없습니다"
@@ -22427,7 +22421,7 @@ msgstr "json %1$s를 구문 분석 할 수 없음: 종료되지 않은 문자열
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
-msgstr ""
+msgstr "virtiofs를 위한 openfiles '%1$s' 를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26496,7 +26490,7 @@ msgstr "nbdkit 프로세서 %1$i를 감시하는데 실패함"
 
 #, c-format
 msgid "failed to monitor qemu in-shutdown process %1$i"
-msgstr ""
+msgstr "qemu 종료-진입 %1$i 프로세서를 관리하는 데 실패했습니다"
 
 #, c-format
 msgid "failed to move file to %1$s "
@@ -28893,7 +28887,7 @@ msgid "invalid server address"
 msgstr "잘못된 서버 주소"
 
 msgid "invalid size of ACPI ERST pstore device"
-msgstr ""
+msgstr "ACPI ERST pstore 장치의 잘못된 크기"
 
 #, c-format
 msgid "invalid size supplied for '%1$s'"
@@ -29680,7 +29674,7 @@ msgid "lock owner details have not been registered"
 msgstr "잠금 소유자 상세정보는 등록되어 있지 않습니다"
 
 msgid "locking options are not supported by this virtiofsd"
-msgstr ""
+msgstr "이와 같은 virtiofsd에 의해 잠김 옵션은 지원되지 않습니다"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
@@ -30352,7 +30346,7 @@ msgstr ""
 "한 기본 이미지)"
 
 msgid "migration with this virtiofs device is not supported"
-msgstr ""
+msgstr "이와 같은 virtiofs 장치와 함께 이전은 지원되지 않습니다"
 
 msgid "migration with transient disk is not supported"
 msgstr "임시 디스크를 갖는 이전은 지원되지 않습니다"
@@ -30976,7 +30970,7 @@ msgid "missing path for <reservations/>"
 msgstr "<reservations/>를 위한 경로 누락"
 
 msgid "missing path for ACPI ERST pstore device"
-msgstr ""
+msgstr "ACPI ERST pstore 장치를 위한 경로가 누락됨"
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr "nbdkit 기능 캐쉬에 누락된 경로"
@@ -32698,7 +32692,7 @@ msgid "only a single nvram device is supported"
 msgstr "단일 nvram 장치만이 지원됨"
 
 msgid "only a single pstore device is supported"
-msgstr ""
+msgstr "단일 pstore 장치만 지원됩니다"
 
 msgid "only a single vsock device is supported"
 msgstr "단일 vsock 장치만이 지원됨"
@@ -33605,7 +33599,7 @@ msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 버스는 %1$s 입력 장치를 지원하지 않습니다"
 
 msgid "pstore device is missing alias"
-msgstr ""
+msgstr "pstore 장치는 별칭이 없습니다"
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -35603,7 +35597,7 @@ msgstr "testOpen: 경로를 지정하거나 test:///default 사용"
 
 #, c-format
 msgid "the '%1$s' network backend is not supported with this QEMU binary"
-msgstr ""
+msgstr "'%1$s' 네트워크 지원은 이와 같은 QEMU 바이너리에서는 지원되지 않습니다"
 
 #, c-format
 msgid ""
@@ -37934,7 +37928,7 @@ msgstr "지원되지 않는 인증 유형 %1$d"
 
 #, c-format
 msgid "unsupported backend for pstore device: %1$s"
-msgstr ""
+msgstr "pstore 장치를 위한 미지원 백엔드: %1$s"
 
 #, c-format
 msgid "unsupported balloon device model '%1$s'"
@@ -38616,7 +38610,7 @@ msgid "version parsing error"
 msgstr "버전 구문 분석 오류"
 
 msgid "vfio migration was active, but 'transferred' data was missing"
-msgstr ""
+msgstr "vfio 이전은 활성화 되었지만, '전송된' 자료는 누락되었습니다"
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "vgamem 속성은 비디오 유형 qxl에 대해서만 지원됨"
