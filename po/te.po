@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1672,6 +1672,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "ఒక క్లోజ్ కాల్‌బాక్ యిప్పటికే నమోదైంది"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5065,9 +5068,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "DNS HOST రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5080,17 +5080,11 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "DNS SRV రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "DNS TXT రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"
 
 msgid "Data processed:"
 msgstr "నిర్వర్తించబడిన డాటా:"
@@ -15627,6 +15621,9 @@ msgstr "లక్ష్యపు డొమైన్ ఇన్పుట్ పర
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "లక్ష్యపు డొమైన్ సమాంతర పోర్ట్ లెక్క %1$zu మూలం %2$zu తో సరిపోలడంలేదు"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15797,6 +15794,14 @@ msgstr "లక్ష్యపు RNG రీతి ''%1$s మూలం %2$s త�
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "లక్ష్యపు సమాంతర పోర్ట్ %1$d మూలం %2$d తో సరిపోలడంలేదు"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20083,10 +20088,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX ప్రవేశం '%1$s' తోడ్పాటులేని స్కీమ్ '%2$s' కలిగివుంది"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX ప్రవేశం '%1$s' పోర్ట్ పార్ట్ కలిగివుండదు"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX ప్రవేశం 'annotation' చెల్లని ఎస్కేప్ వరుసను కలిగివుంది"
 
@@ -20446,6 +20447,9 @@ msgstr "ఏక్సెస్ తిరస్కరించబడింది"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "ఏక్సెస్ తిరస్కరించబడెను: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "క్రియాశీలం"
@@ -22275,6 +22279,9 @@ msgstr "నెట్వర్కు పరికరం PCI చిరునామ
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "%1$s నుండి %2$s కు నెట్వర్కు పరికరం రకం సవరించలేదు"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "నెట్వర్కు పరికరం rom బార్ అమరిక సవరించలేదు"
 
@@ -22392,6 +22399,10 @@ msgstr "json %1$sను పార్శ్ చేయలేక పోయింద
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "json %sను పార్శ్ చేయలేక పోయింది: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26533,6 +26544,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "ఫైలు %1$s కు కదుల్చుటకు విఫలమైంది"
 
@@ -28950,6 +28965,9 @@ msgstr "చెల్లని సీక్రెట్ రకం '%1$s'"
 msgid "invalid server address"
 msgstr "సరికాని MAC చిరునామా"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "'%1$s' కొరకు యెటువంటి పరిమాణము అందివ్వబడలేదు"
@@ -29777,6 +29795,9 @@ msgstr "లాక్ నిర్వాహిక అనుసంధానం న
 msgid "lock owner details have not been registered"
 msgstr "లాక్ వోనర్ వివరాలు నమోదు కాలేదు"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "%1$s వాల్యూమ్ల సృష్టీకరణ తోడ్పాటులేదు"
@@ -30472,12 +30493,11 @@ msgid ""
 msgstr ""
 "ఇంక్రిమెంటల్ నకలుతో భాగస్వామ్యం-కాని నిల్వ మైగ్రేషన్ (అదే బేస్ చిత్రం మూలం మరియు గమ్యం మధ్య పంచుకొనెను)"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "స్థిరమైన పరికర అనుబందం తోడ్పాటులేదు"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31150,6 +31170,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "దొరకని పేరు సమాచారం"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -32906,6 +32929,9 @@ msgstr "ఒక వొంటరి మెమొరీ బెలూన్ పర�
 msgid "only a single nvram device is supported"
 msgstr "ఒక వొంటరి nvram పరికరం మాత్రమే తోడ్పాటునిచ్చును"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "ఒక వొంటరి nvram పరికరం మాత్రమే తోడ్పాటునిచ్చును"
@@ -33857,6 +33883,9 @@ msgstr "మైగ్రేషన్ల కొరకు సరిపోయే XML
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 బస్ అనునది %1$s ఇన్‌పుట్ పరికరమును మద్దతీయుటలేదు"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -35901,6 +35930,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: పాత్ ను సమకూర్చండి లేదా test:///default ఉపయోగించండి"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -35990,9 +36023,6 @@ msgid "the machine has no snapshot"
 msgstr "డొమైన్ ఏ స్నాప్‌షాట్లను కలిగిలేదు"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -38209,6 +38239,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "మద్దతీయని దృవీకరణ రకము %1$d"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "తోడ్పాటులేని అతిధేయ పరికరం రీతి %1$s"
@@ -38887,6 +38921,9 @@ msgstr "వర్షన్ తేడా (యధార్ధం %1$x, అను�
 msgid "version parsing error"
 msgstr "వర్షన్ పార్సింగ్ దోషం"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -39561,6 +39598,23 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "DNS HOST రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "DNS SRV రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "DNS TXT రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX ప్రవేశం '%1$s' పోర్ట్ పార్ట్ కలిగివుండదు"
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "స్థిరమైన పరికర అనుబందం తోడ్పాటులేదు"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

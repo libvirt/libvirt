@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2024-06-02 15:35+0000\n"
 "Last-Translator: \"Sergey A.\" <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1874,6 +1874,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "Драйвер управления доступом к данным уже зарегистрирован"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5298,9 +5301,6 @@ msgstr "Не удалось определить метку образа (imagel
 msgid "DAC seclabel couldn't be determined"
 msgstr "Не удалось определить метку безопасности (seclabel) DAC"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "записи DNS HOST можно добавить или удалить, но нельзя изменить"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5317,9 +5317,6 @@ msgstr ""
 "Атрибут приоритета SRV DNS нельзя указывать без назначения для службы «%1$s» "
 "в сети «%2$s»"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "записи DNS SRV можно добавить или удалить, но нельзя изменить"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5327,9 +5324,6 @@ msgid ""
 msgstr ""
 "Атрибут веса SRV DNS нельзя указывать без назначения для службы «%1$s» в "
 "сети «%2$s»"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "записи DNS TXT можно добавить или удалить, но нельзя изменить"
 
 msgid "Data processed:"
 msgstr "Обработано данных:"
@@ -16039,6 +16033,9 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
 "%1$zu не соответствует числу параллельных портов исходного домена,  %2$zu"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16221,6 +16218,14 @@ msgstr "Модель паники назначения «%1$s» не соотв�
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "%1$d не соответствует исходному параллельному порту %2$d"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20509,10 +20514,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "Запись VMX «%1$s» содержит неподдерживаемую схему  «%2$s»."
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "Запись VMX «%1$s» не содержит определение порта."
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr ""
 "Запись VMX «annotation» содержит недопустимую управляющую последовательность"
@@ -20879,6 +20880,9 @@ msgstr "доступ запрещен политикой"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "доступ запрещён: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "активен"
@@ -22784,6 +22788,9 @@ msgstr "не удалось изменить адрес PCI сетевого у�
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "не удалось изменить модель сетевого устройства с %1$s на %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "не удалось изменить параметр bar ROM сетевого устройства"
 
@@ -22900,6 +22907,10 @@ msgstr "не удалось разобрать JSON %1$s: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "не удалось разобрать JSON %1$s: незавершённая строка, карта или массив"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26991,6 +27002,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "не удалось переместить файл в %1$s"
 
@@ -29462,6 +29477,9 @@ msgstr "недопустимый UUID секрета «%1$s»"
 msgid "invalid server address"
 msgstr "недопустимый адрес сервера"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "недопустимый размер для «%1$s»"
@@ -30265,6 +30283,9 @@ msgstr "соединение с управлением блокировкой б
 msgid "lock owner details have not been registered"
 msgstr "данные владельца блокировки не зарегистрированы"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr ""
@@ -30981,11 +31002,11 @@ msgstr ""
 "инкрементного копирования (один базовый образ используетсяисточником и "
 "назначением)"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-msgid "migration with virtiofs device is not supported"
-msgstr "миграция с устройством virtiofs не поддерживается"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31632,6 +31653,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "отсутствует путь для <reservations/>"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -33372,6 +33396,9 @@ msgstr "поддерживается только одно устройство 
 msgid "only a single nvram device is supported"
 msgstr "поддерживается только одно устройство nvram"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "поддерживается только одно устройство vsock"
 
@@ -34324,6 +34351,9 @@ msgstr "предоставить XML, подходящий для миграци
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "шина ps2 не поддерживает устройство ввода %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36372,6 +36402,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: укажите путь или используйте test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36464,9 +36498,6 @@ msgstr "у этой машины нет снимков"
 
 msgid "the new password"
 msgstr "новый пароль"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr ""
 
 msgid "the password is already encrypted"
 msgstr "пароль уже зашифрован"
@@ -38728,6 +38759,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "тип аутентификации %1$d не поддерживается"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "неподдерживаемая модель устройства дополнительной памяти «%1$s»"
 
@@ -39437,6 +39472,9 @@ msgstr "несоответствие версий в событии (имеет�
 msgid "version parsing error"
 msgstr "ошибка разбора версии"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -40129,6 +40167,22 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "записи DNS HOST можно добавить или удалить, но нельзя изменить"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "записи DNS SRV можно добавить или удалить, но нельзя изменить"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "записи DNS TXT можно добавить или удалить, но нельзя изменить"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "Запись VMX «%1$s» не содержит определение порта."
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "миграция с устройством virtiofs не поддерживается"
 
 #~ msgid "TPM 1.2 is not supported with the SPAPR device model"
 #~ msgstr ""

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2024-06-27 09:36+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1902,6 +1902,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "Драйвер сховища даних вже зареєстровано"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "підтримки індексу ACPI у цьому QEMU не передбачено"
@@ -5445,9 +5448,6 @@ msgstr "Не вдалося визначити мітку образу (imagelab
 msgid "DAC seclabel couldn't be determined"
 msgstr "не вдалося визначити мітку захисту (seclabel) DAC"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "записи DNS HOST не можна змінювати, лише додавати і вилучати"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5464,11 +5464,6 @@ msgstr ""
 "не можна використовувати атрибут пріоритетності SRV DNS без призначення для "
 "служби «%1$s» у мережі «%2$s»"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-"до записів DNS SRV не можна вносити зміни, ці записи можна лише додавати або "
-"вилучати"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5476,11 +5471,6 @@ msgid ""
 msgstr ""
 "не можна вказувати атрибут ваги SRV DNS без призначення для служби «%1$s» у "
 "мережі «%2$s»"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr ""
-"до записів DNS TXT не можна вносити зміни, ці записи можна лише додавати або "
-"вилучати"
 
 msgid "Data processed:"
 msgstr "Оброблено даних:"
@@ -16534,6 +16524,9 @@ msgstr ""
 "Кількість паралельних портів домену призначення, %1$zu, не відповідає "
 "кількості джерела, %2$zu"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16763,6 +16756,14 @@ msgid "Target parallel port %1$d does not match source %2$d"
 msgstr ""
 "Номер паралельного порту призначення, %1$d, не відповідає номеру "
 "паралельного порту %2$d"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -21192,10 +21193,6 @@ msgstr "ВМ не визначено"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "Запис VMX «%1$s» містить непідтримувані дані схеми «%2$s»"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "Запис VMX «%1$s» не містить частини номера порту"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "Запис «annotation» VMX містить некоректну екрановану послідовність"
 
@@ -21575,6 +21572,9 @@ msgstr "доступ заборонено правилами"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "доступ заборонено: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "активна"
@@ -23520,6 +23520,9 @@ msgstr "неможливо змінити адресу PCI пристрою ме
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "не вдалося змінити модель пристрою мережі з %1$s на %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "неможливо змінити параметр запису ROM пристрою мережі"
 
@@ -23639,6 +23642,10 @@ msgstr "не вдалося обробити json %1$s: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "не вдалося обробити json %1$s: незавершений рядок, карта або масив"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -27854,6 +27861,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr "не вдалося виконати спостереження за процесом nbdkit %1$i"
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "не вдалося пересунути файл до %1$s "
 
@@ -30377,6 +30388,9 @@ msgstr "некоректне значення uuid ключа, «%1$s»"
 msgid "invalid server address"
 msgstr "некоректна адреса сервера"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "неприпустимий розмір для «%1$s»"
@@ -31208,6 +31222,9 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr "дані щодо власника блокування не було зареєстровано"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr ""
@@ -31957,11 +31974,11 @@ msgstr ""
 "допомогою нарощувального копіювання (один основний образ використовується "
 "джерелом і призначенням)"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "підтримки перенесення із проміжним диском не передбачено"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "підтримки перенесення з пристроєм virtiofs не передбачено"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -32629,6 +32646,9 @@ msgstr "немає реалізації обробника для драйвер
 
 msgid "missing path for <reservations/>"
 msgstr "не вказано шлях для <reservations/>"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr "не вистачає шляху у кеші можливостей nbdkit"
@@ -34419,6 +34439,9 @@ msgstr "передбачено підтримку лише одного прис
 msgid "only a single nvram device is supported"
 msgstr "передбачено підтримку лише одного пристрою nvram"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "передбачено підтримку лише одного пристрою vsock"
 
@@ -35392,6 +35415,9 @@ msgstr "надати XML, придатний до перенесень"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "шина ps2 не підтримує пристрій вводу %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -37526,6 +37552,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: вкажіть шлях або використовуйте test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -37623,10 +37653,6 @@ msgstr "машина немає знімків"
 
 msgid "the new password"
 msgstr "новий пароль"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr ""
-"у цьому виконуваному файлі QEMU не передбачено підтримки модуля мережі passt"
 
 msgid "the password is already encrypted"
 msgstr "пароль уже зашифровано"
@@ -39907,6 +39933,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "непідтримуваний тип розпізнавання %1$d"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "непідтримувана модель балонного пристрою , «%1$s»"
 
@@ -40626,6 +40656,9 @@ msgstr "невідповідність версій у події (маємо 0x
 msgid "version parsing error"
 msgstr "помилка визначення версії"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "підтримку атрибута vgamem передбачено лише для типу відео qxl"
 
@@ -41341,6 +41374,31 @@ msgstr "нуль-копіюванням можна скористатися ли
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "надійшов запит щодо зони %1$s для мережі %2$s, але firewalld не задіяно"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "записи DNS HOST не можна змінювати, лише додавати і вилучати"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "до записів DNS SRV не можна вносити зміни, ці записи можна лише додавати "
+#~ "або вилучати"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "до записів DNS TXT не можна вносити зміни, ці записи можна лише додавати "
+#~ "або вилучати"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "Запис VMX «%1$s» не містить частини номера порту"
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "підтримки перенесення з пристроєм virtiofs не передбачено"
+
+#~ msgid "the passt network backend is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "у цьому виконуваному файлі QEMU не передбачено підтримки модуля мережі "
+#~ "passt"
 
 #~ msgid "S390 PV launch security is not supported with this QEMU binary"
 #~ msgstr ""

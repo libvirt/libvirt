@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -1590,6 +1590,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "ổ lưu trữ đã tồn tại"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5016,9 +5019,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5031,16 +5031,10 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
-msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
 msgstr ""
 
 msgid "Data processed:"
@@ -15654,6 +15648,9 @@ msgstr ""
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15821,6 +15818,14 @@ msgstr "tên tập tin cấu hình pool lưu trữ '%1$s' không khớp
 
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -20213,10 +20218,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "Mục VMX '%1$s' chứa sơ đồ không hỗ trợ '%2$s'"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "Mục VMX '%1$s' không chứa một phần cổng"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "Mục VMX 'annotation' chứa "
 
@@ -20576,6 +20577,9 @@ msgstr ""
 
 #, c-format
 msgid "access denied: %1$s"
+msgstr ""
+
+msgid "acpi-erst backend of pstore device is not supported"
 msgstr ""
 
 msgid "active"
@@ -22421,6 +22425,9 @@ msgstr ""
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "không thể đặt chế độ của '%s' sang %04o"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr ""
 
@@ -22542,6 +22549,10 @@ msgstr "không thể phân tích json %1$s: %2$s"
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "không thể phân tích json %s: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26720,6 +26731,10 @@ msgstr "thất bại khi đánh dấu pool %1$s tự khởi động"
 msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
+#, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to move file to %1$s "
 msgstr "Thất bại khi mở tập tin '%1$s'"
@@ -29168,6 +29183,9 @@ msgstr "uuid %1$s không hợp lệ"
 msgid "invalid server address"
 msgstr "địa chỉ MAC không hợp lệ"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "kích thước không hợp lệ cung cấp cho '%1$s'"
@@ -30015,6 +30033,9 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "Tạo các ổ %1$s không được hỗ trợ"
@@ -30715,12 +30736,11 @@ msgstr ""
 "di trú với lưu trữ không-chia-sẻ với sao chép gia tăng (cùng chia sẻ ảnh gốc "
 "giữa nguồn và đích)"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "Tạo các ổ %s không được hỗ trợ"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31390,6 +31410,9 @@ msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
 
 msgid "missing path for <reservations/>"
+msgstr ""
+
+msgid "missing path for ACPI ERST pstore device"
 msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
@@ -33160,6 +33183,9 @@ msgstr "chỉ có một thiết bị balloon bộ nhớ đơn được hỗ tr�
 msgid "only a single nvram device is supported"
 msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
@@ -34108,6 +34134,9 @@ msgstr ""
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "tuyến ps2 không hỗ trợ thiết bị nhập %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36150,6 +36179,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: cung cấp một đường dẫn hoặc sử dụng test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36236,9 +36269,6 @@ msgid "the machine has no snapshot"
 msgstr "miền không có ảnh chụp"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -38453,6 +38483,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "kiểu xác thực %1$d không hỗ trợ"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "Kiểu thiết bị '%1$s' không được hỗ trợ"
@@ -39135,6 +39169,9 @@ msgstr "phiên bản không khớp (thực tế %1$x, mong đợi %2$x)"
 msgid "version parsing error"
 msgstr "lỗi phân tích"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -39809,6 +39846,14 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "Mục VMX '%1$s' không chứa một phần cổng"
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "Tạo các ổ %s không được hỗ trợ"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

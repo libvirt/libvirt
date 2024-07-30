@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -1578,6 +1578,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "disk skladištenja već postoji"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -4908,9 +4911,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -4923,16 +4923,10 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
-msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
 msgstr ""
 
 msgid "Data processed:"
@@ -15397,6 +15391,9 @@ msgstr ""
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15576,6 +15573,14 @@ msgstr ""
 
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -19849,10 +19854,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr ""
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr ""
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr ""
 
@@ -20206,6 +20207,9 @@ msgstr ""
 
 #, c-format
 msgid "access denied: %1$s"
+msgstr ""
+
+msgid "acpi-erst backend of pstore device is not supported"
 msgstr ""
 
 msgid "active"
@@ -22002,6 +22006,9 @@ msgstr ""
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr ""
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr ""
 
@@ -22117,6 +22124,10 @@ msgstr "ne mogu da uklonim podešavanje za %s"
 
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
+msgstr ""
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
 
 #, c-format
@@ -26260,6 +26271,10 @@ msgstr "Neuspešno označavanje skladišta %1$s kao samopokrenutog"
 msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
+#, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to move file to %1$s "
 msgstr "neuspelo otvaranje datoteke"
@@ -28669,6 +28684,9 @@ msgstr "neispravan pokazivač veze u %1$s"
 msgid "invalid server address"
 msgstr "neispravna MAC adresa"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "neispravna veličina šifre za TLS sesiju"
@@ -29493,6 +29511,9 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr ""
@@ -30194,10 +30215,10 @@ msgid ""
 "shared between source and destination)"
 msgstr ""
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-msgid "migration with virtiofs device is not supported"
+msgid "migration with transient disk is not supported"
 msgstr ""
 
 #, c-format
@@ -30858,6 +30879,9 @@ msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
 
 msgid "missing path for <reservations/>"
+msgstr ""
+
+msgid "missing path for ACPI ERST pstore device"
 msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
@@ -32598,6 +32622,9 @@ msgstr ""
 msgid "only a single nvram device is supported"
 msgstr ""
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr ""
 
@@ -33514,6 +33541,9 @@ msgstr ""
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 magistrala ne podržava %1$s uređaj za unos"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -35533,6 +35563,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: navedite putanju ili koristite test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -35617,9 +35651,6 @@ msgid "the machine has no snapshot"
 msgstr ""
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -37831,6 +37862,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "nepodržana vrsta autentifikacije %1$d"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "nepoznat „%1$s“ uređaj za pokretanje"
@@ -38508,6 +38543,9 @@ msgstr "neusaglašenost verzije (dobijeno %1$x, očekivano %2$x)"
 #, fuzzy
 msgid "version parsing error"
 msgstr "greška u raščlanjivanju"
+
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""

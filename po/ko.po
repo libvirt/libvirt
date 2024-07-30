@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2024-06-30 20:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1832,6 +1832,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "저장소 드라이버는 이미 등록되었습니다"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5205,9 +5208,6 @@ msgstr "DAC 이미지 레이블을 확인할 수 없습니다"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel을 결정할 수 없습니다"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "DNS 호스트 기록을 수정 할 수 없습니다. 추가 또는 삭제만 가능합니다"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5224,9 +5224,6 @@ msgstr ""
 "네트워크 '%1$s'의 서비스 '%2$s'에 대한 대상이 없으면 DNS SRV 우선 순위 특성"
 "이 허용되지 않습니다"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "DNS SRV 기록은 수정 할 수없으며, 추가 또는 삭제만 가능합니다"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5234,9 +5231,6 @@ msgid ""
 msgstr ""
 "네트워크 '%1$s'의 서비스 '%2$s'에 대한 대상 없이 DNS SRV 가중치 기능이 허용되"
 "지 않습니다"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "DNS TXT 기록은 수정 할 수 없으며, 추가 또는 삭제만 가능합니다"
 
 msgid "Data processed:"
 msgstr "처리된 데이터:"
@@ -8919,7 +8913,8 @@ msgstr "호스트 요청 후 완료"
 
 #, c-format
 msgid "Firewall backend '%1$s' not available on this platform"
-msgstr "방화벽(Firewall) 백엔드 '%1$s' 는 이와 같은 기술환경에서 사용 할 수 없음"
+msgstr ""
+"방화벽(Firewall) 백엔드 '%1$s' 는 이와 같은 기술환경에서 사용 할 수 없음"
 
 msgid "Firewall backend is not implemented"
 msgstr "방화벽 백엔드가 구현되지 않았습니다"
@@ -15669,6 +15664,9 @@ msgstr "대상 도메인 패닉 장치 카운트 %1$zu가 소스 %2$zu와 일치
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "대상 도메인 병렬 포트 카운트 %1$zu가 소스 %2$zu와 일치하지 않음"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15854,6 +15852,14 @@ msgstr "대상 패닉 모델 '%1$s'는 소스 '%2$s'와 일치하지 않습니�
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "대상 병렬 포트 %1$d가 소스 %2$d와 일치하지 않음"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -16073,8 +16079,8 @@ msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
-"CA 인증서 %1$s는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 "
-"사용자로, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+"CA 인증서 %1$s는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 사용자"
+"로, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
@@ -16185,16 +16191,16 @@ msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
-"클라이언트 cert %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로 "
-"실행: chown root.root %2$s; chmod 0644 %3$s"
+"클라이언트 cert %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로 실"
+"행: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
-"클라이언트 cert %1$s 는 이와 같은 사용자로 제한되어야 합니다. 이와 같은 "
-"사용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+"클라이언트 cert %1$s 는 이와 같은 사용자로 제한되어야 합니다. 이와 같은 사용"
+"자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
@@ -16209,16 +16215,16 @@ msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown root."
 "root %2$s; chmod 0644 %3$s"
 msgstr ""
-"클라이언트 키 %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root으로 "
-"실행: chown root.root %2$s; chmod 0644 %3$s"
+"클라이언트 키 %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root으로 실"
+"행: chown root.root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
-"클라이언트 키 %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 "
-"사용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+"클라이언트 키 %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 사"
+"용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The device at %1$s has no network device name"
@@ -16288,26 +16294,24 @@ msgid ""
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
 "장비는 클라이언트 또는 서버로 동작 할 수 없습니다. %1$s 설치하는 방법에서 "
-"https://libvirt.org/kbase/tlscerts.html#setting-up-a-certificate-authority-"
-"ca를 참고하세요"
+"https://libvirt.org/kbase/tlscerts.html#setting-up-a-certificate-authority-ca"
+"를 참고하세요"
 
 #, c-format
 msgid ""
 "The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
-"장비는 클라이언트로 동작 할 수 없습니다. %1$s를 재-생산하는 방법에서 "
-"https://libvirt.org/kbase/tlscerts.html#issuing-client-certificates를 "
-"참고하세요"
+"장비는 클라이언트로 동작 할 수 없습니다. %1$s를 재-생산하는 방법에서 https://"
+"libvirt.org/kbase/tlscerts.html#issuing-client-certificates를 참고하세요"
 
 #, c-format
 msgid ""
 "The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
-"장비는 서버로서 동작 할 수 없습니다. %1$s 를 재-생산하는 방법에서 "
-"https://libvirt.org/kbase/tlscerts.html#issuing-server-certificates를 "
-"참고하세요"
+"장비는 서버로서 동작 할 수 없습니다. %1$s 를 재-생산하는 방법에서 https://"
+"libvirt.org/kbase/tlscerts.html#issuing-server-certificates를 참고하세요"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "장비에는 현재 순간찍기가 없고 앞으로 필요합니다"
@@ -16368,16 +16372,16 @@ msgid ""
 "The server key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
-"서버 키 %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 "
-"사용자로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
+"서버 키 %1$s 는 다른 사용자에게 접근 할 수 없어야 합니다. 이와 같은 사용자"
+"로, 실행: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
-"서버 키 %1$s 는 권한이 없는 사용자에게 접근 할 수 없어야 합니다. root로 실행:"
-" chown root.root %2$s; chmod 0600 %3$s"
+"서버 키 %1$s 는 권한이 없는 사용자에게 접근 할 수 없어야 합니다. root로 실"
+"행: chown root.root %2$s; chmod 0600 %3$s"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
@@ -16390,31 +16394,33 @@ msgstr "slirp-helper는 이전을 지원하지 않습니다"
 msgid ""
 "The system CA dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
-msgstr "시스템 CA dir %1$s 는 일반적으로 기본 파일시스템 또는 openssl 꾸러미의 "
-"일부로 설치됩니다"
+msgstr ""
+"시스템 CA dir %1$s 는 일반적으로 기본 파일시스템 또는 openssl 꾸러미의 일부"
+"로 설치됩니다"
 
 #, c-format
 msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
-"시스템 CA dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실행:"
-" chown root.root; chmod 0755 %2$s"
+"시스템 CA dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실"
+"행: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
-msgstr "시스템 PKI dir %1$s 는 일반적으로 기본 파일시스템 또는 openssl 꾸러미의 "
-"일부로 설치됩니다"
+msgstr ""
+"시스템 PKI dir %1$s 는 일반적으로 기본 파일시스템 또는 openssl 꾸러미의 일부"
+"로 설치됩니다"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
-"시스템 PKI dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, "
-"실행: chown root.root; chmod 0755 %2$s"
+"시스템 PKI dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실"
+"행: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
@@ -16439,8 +16445,8 @@ msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
-"시스템 키 dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실행:"
-" chown root.root; chmod 0755 %2$s"
+"시스템 키 dir %1$s 는 모든 사용자에게 접근 할 수 있어야 합니다. root로, 실"
+"행: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -20130,10 +20136,6 @@ msgstr "VM이 정의되지 않았습니다"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX 항목 '%1$s'는 지원하지 않는 구조 '%2$s'를 포함합니다"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX 항목 '%1$s'는 포트 부분을 포함하지 않습니다"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX 항목 '주석'에 잘못된 이스케이프 시퀀스가 포함되어 있습니다"
 
@@ -20490,6 +20492,9 @@ msgstr "정책에 의해 거부된 접근"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "접근 거부됨: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "활성화"
@@ -22302,6 +22307,9 @@ msgstr "네트워크 장치 게스트 PCI 주소를 수정할 수 없습니다"
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "네트워크 장치 모델을 %1$s에서 %2$s로 수정 할 수 없습니다"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "네트워크 장치 ROM 표시줄 설정을 수정할 수 없습니다"
 
@@ -22416,6 +22424,10 @@ msgstr "json %1$s를 구문 분석할 수 없음: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "json %1$s를 구문 분석 할 수 없음: 종료되지 않은 문자열/맵/정렬"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26483,6 +26495,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr "nbdkit 프로세서 %1$i를 감시하는데 실패함"
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "파일을 %1$s로 이동하는데 실패 "
 
@@ -28876,6 +28892,9 @@ msgstr "잘못된 비밀 uuid '%1$s'"
 msgid "invalid server address"
 msgstr "잘못된 서버 주소"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "'%1$s'에 대해 잘못된 크기가 지정되었습니다"
@@ -29660,6 +29679,9 @@ msgstr "잠금 관리자 연결이 제한되어 있습니다"
 msgid "lock owner details have not been registered"
 msgstr "잠금 소유자 상세정보는 등록되어 있지 않습니다"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "논리 볼륨 '%1$s'가 희소합니다. 볼륨 지우기가 지원되지 않습니다"
@@ -30329,11 +30351,11 @@ msgstr ""
 "증분 복사본으로 비-공유된 저장소를 갖는 이전 (원천과 대상 간에 공유되는 동일"
 "한 기본 이미지)"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "임시 디스크를 갖는 이전은 지원되지 않습니다"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "virtiofs 장치를 사용한 이전은 지원되지 않습니다"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -30952,6 +30974,9 @@ msgstr "JSON 백업 볼륨 드라이버 '%1$s'에 대한 구문 분석기 구현
 
 msgid "missing path for <reservations/>"
 msgstr "<reservations/>를 위한 경로 누락"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr "nbdkit 기능 캐쉬에 누락된 경로"
@@ -32672,6 +32697,9 @@ msgstr "단일 메모리 부울 장치만이 지원됨"
 msgid "only a single nvram device is supported"
 msgstr "단일 nvram 장치만이 지원됨"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "단일 vsock 장치만이 지원됨"
 
@@ -33575,6 +33603,9 @@ msgstr "이전을 위한 적절한 XML을 제공합니다"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 버스는 %1$s 입력 장치를 지원하지 않습니다"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -35571,6 +35602,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: 경로를 지정하거나 test:///default 사용"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -35658,10 +35693,6 @@ msgstr "장비에 순간찍기가 없습니다"
 
 msgid "the new password"
 msgstr "새 비밀번호"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr ""
-"passt 네트워크 백엔드는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
 
 msgid "the password is already encrypted"
 msgstr "비밀번호는 이미 암호화되어 있습니다"
@@ -37902,6 +37933,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "지원되지 않는 인증 유형 %1$d"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "지원되지 않는 풍선 장치 모델 '%1$s'"
 
@@ -38580,6 +38615,9 @@ msgstr "사건에서 버전 불일치 (실제 %1$x, 기대값 %2$x)"
 msgid "version parsing error"
 msgstr "버전 구문 분석 오류"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "vgamem 속성은 비디오 유형 qxl에 대해서만 지원됨"
 
@@ -39250,6 +39288,26 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "DNS 호스트 기록을 수정 할 수 없습니다. 추가 또는 삭제만 가능합니다"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "DNS SRV 기록은 수정 할 수없으며, 추가 또는 삭제만 가능합니다"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "DNS TXT 기록은 수정 할 수 없으며, 추가 또는 삭제만 가능합니다"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX 항목 '%1$s'는 포트 부분을 포함하지 않습니다"
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "virtiofs 장치를 사용한 이전은 지원되지 않습니다"
+
+#~ msgid "the passt network backend is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "passt 네트워크 백엔드는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
 
 #~ msgid "S390 PV launch security is not supported with this QEMU binary"
 #~ msgstr "이 QEMU 바이너리에서는 S390 PV 실행 보안이 지원되지 않습니다"

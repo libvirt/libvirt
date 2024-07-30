@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1842,6 +1842,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "Ovladač úložiště už je zaregistrován"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "ACPI rejstřík není v tomto QEMU podporován"
@@ -5291,9 +5294,6 @@ msgstr "nepodařilo se zjistit DAC imagelabel"
 msgid "DAC seclabel couldn't be determined"
 msgstr "nepodařilo se zjistit DAC seclabel"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "DNS HOST záznamy není možné upravovat – pouze přidávat nebo mazat"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5309,9 +5309,6 @@ msgstr ""
 "DNS SRV atribut priority (priorita) není dovolen bez cíle pro službu „%1$s“ "
 "v síti „%2$s“"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "DNS SRV záznamy není možné měnit – pouze přidávat nebo mazat"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5319,9 +5316,6 @@ msgid ""
 msgstr ""
 "DNS SRV atribut váha (weight) není dovolen bez cíle pro službu „%1$s“ v síti "
 "„%2$s“"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "DNS TXT záznamy není možné upravovat, pouze přidávat nebo mazat"
 
 msgid "Data processed:"
 msgstr "Zpracovaných dat:"
@@ -15966,6 +15960,9 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
 "Počet paralelních portů cílové domény %1$zu neodpovídá zdrojovému %2$zu"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16160,6 +16157,14 @@ msgstr "Model cílové paniky „%1$s“ se neshoduje se zdrojovým „%2$s“"
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "Port cílového paralelního zařízení %1$d neodpovídá zdrojovému %2$d"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20431,10 +20436,6 @@ msgstr "Virt. stroj není definován"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX položka „%1$s“ obsahuje nepodporované schéma „%2$s“"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX položka „%1$s“ neobsahuje část s portem"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX položka 'annotation' obsahuje neplatnou únikovou posloupnost"
 
@@ -20804,6 +20805,9 @@ msgstr "přístup odepřen zásadou"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "přístup odepřen: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "aktivní"
@@ -22686,6 +22690,9 @@ msgstr "není možné upravit PCI adresu síťového zařízení hosta"
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "není možné změnit model síťového rozhraní z %1$s na %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "není možné změnit nastavení rom bar síťového zařízení"
 
@@ -22800,6 +22807,10 @@ msgstr "nedaří se zpracovat json %1$s: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "nedaří se zpracovat json %1$s: neukončený řetězec/mapa/pole"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26930,6 +26941,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "nezdařilo se přesunutí souboru na %1$s "
 
@@ -29375,6 +29390,9 @@ msgstr "neplatné uuid tajemství „%1$s“"
 msgid "invalid server address"
 msgstr "neplatná adresa serveru"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "zadána neplatná velikost pro „%1$s“"
@@ -30182,6 +30200,9 @@ msgstr "připojení správy zámků bylo omezeno"
 msgid "lock owner details have not been registered"
 msgstr "podrobnosti o vlastníkovi zámku nebyly zaregistrovány"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "logický svazek „%1$s“ je řídký, vymazání svazku není podporováno"
@@ -30896,11 +30917,11 @@ msgstr ""
 "migrace s nesdíleným úložištěm s přírůstkovou kopií (stejný základní obraz "
 "sdílený mezi zdrojem a cílem)"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "stěhování s přechodným diskem není podporováno"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "stěhování s virtiofs zařízením není podporováno"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31555,6 +31576,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "chybí popis umístění pro <reservations/>"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -33307,6 +33331,9 @@ msgstr "je podporováno pouze jediné výplňové zařízení v paměti"
 msgid "only a single nvram device is supported"
 msgstr "je podporováno pouze jediné nvram zařízení"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "je podporováno pouze jediné vsock zařízení"
 
@@ -34239,6 +34266,9 @@ msgstr "poskytnout XML použitelné pro migrace"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "sběrnice ps2 nepodporuje vstupní zařízení %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36309,6 +36339,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: zadejte cestu nebo test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36401,9 +36435,6 @@ msgstr "stroj nemá žádný zachycený stav"
 
 msgid "the new password"
 msgstr "nové heslo"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr "síťová podpůrná vrstva passt není tímto sestavením QEMU podporována"
 
 msgid "the password is already encrypted"
 msgstr "heslo už je šifrované"
@@ -38652,6 +38683,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "nepodporovaný typ ověření se %1$d"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "nepodporovaný model zařízení výplně v paměti „%1$s“"
 
@@ -39348,6 +39383,9 @@ msgstr "neshoda verze v události (skutečná 0x%1$x, očekáváno 0x%2$x)"
 msgid "version parsing error"
 msgstr "chyba při vyhodnocování verze"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "atribut vgamem je podporován pouze pro video typu qxl"
 
@@ -40028,6 +40066,25 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "DNS HOST záznamy není možné upravovat – pouze přidávat nebo mazat"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "DNS SRV záznamy není možné měnit – pouze přidávat nebo mazat"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "DNS TXT záznamy není možné upravovat, pouze přidávat nebo mazat"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX položka „%1$s“ neobsahuje část s portem"
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "stěhování s virtiofs zařízením není podporováno"
+
+#~ msgid "the passt network backend is not supported with this QEMU binary"
+#~ msgstr "síťová podpůrná vrstva passt není tímto sestavením QEMU podporována"
 
 #~ msgid "S390 PV launch security is not supported with this QEMU binary"
 #~ msgstr "Zabezpečení S390 PV spuštění není podporováno s touto QEMU binárkou"

@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1734,6 +1734,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "Un close callback ya está registrado"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5223,10 +5226,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-"Registros DNS HOST no pueden ser modificados, únicamente añadidos o borrados"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5239,21 +5238,11 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-"Registros DNS SRV no se pueden ser modificados, solamente se pueden añadir o "
-"borrar"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr ""
-"Los registros DNS TXT no pueden ser modificados, únicamente se pueden añadir "
-"o borrar"
 
 msgid "Data processed:"
 msgstr "Datos procesados:"
@@ -16190,6 +16179,9 @@ msgstr ""
 "Conteo de puerto paralelo de dominio de destino %1$zu no coincide con fuente "
 "%2$zu"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16393,6 +16385,14 @@ msgstr "Modelo RNG de destino '%1$s' no coincide con fuente '%2$s'"
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "Puerto paralelo %1$d no coincide con fuente %2$d"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20740,10 +20740,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "La entrada VMX '%1$s' contiene un esquema sin soporte '%2$s'"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "La entrada VMX '%1$s' no contiene una parte de puerto "
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr ""
 "La entrada 'annotation' de VMX contiene una secuencia de escape no válida"
@@ -21120,6 +21116,9 @@ msgstr "acceso denegado"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "acceso denegado: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "activo"
@@ -23010,6 +23009,9 @@ msgstr "No se puede modificar dirección PCI de huésped de dispositivo de red"
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "No se puede modificar modelo de dispositivo de red  %1$s a %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "No se puede modificar parámetro de barra ROM de dispositivo de red"
 
@@ -23127,6 +23129,10 @@ msgstr "no es posible analizar json %1$s: %2$s"
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "no es posible analizar json %s: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -27350,6 +27356,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "No se pudo  desplazar archivo a %1$s"
 
@@ -29800,6 +29810,9 @@ msgstr "Tipo de secreto '%1$s'es nulo"
 msgid "invalid server address"
 msgstr "dirección MAC no válida"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "el tamaño suministrado para '%1$s' no es válido"
@@ -30639,6 +30652,9 @@ msgstr "La conexión del gestor de cerrojo ha sido restringida"
 msgid "lock owner details have not been registered"
 msgstr "La información de propietario de cerrojo no ha sido registrada"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "No existe soporte para la creación del volumen %1$s"
@@ -31345,12 +31361,11 @@ msgstr ""
 "migración con almacenamiento no compartido y con una copia incremental (la "
 "misma imagen base compartida entre la fuente y el destino)"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "Conexión persistente al dispositivo no está soportada"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -32023,6 +32038,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "falta la ruta para <reservations/>"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -33831,6 +33849,9 @@ msgstr "solo existe soporte para un único dispositivo de globo de memoria"
 msgid "only a single nvram device is supported"
 msgstr "solo se admite un dispositivo nvram individual"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "solo se admite un dispositivo nvram individual"
@@ -34806,6 +34827,9 @@ msgstr "Proporcionar migraciones aptas para XML "
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "El bus ps2 no tiene soporte para el dispositivo de entrada %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36905,6 +36929,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: indique una ruta o utilice test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36995,9 +37023,6 @@ msgid "the machine has no snapshot"
 msgstr "el dominio no posee capturas instantáneas"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -39257,6 +39282,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "tipo de autenticación %1$d no soportado"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "Modo de hostdev %1$s  no tiene soporte"
@@ -39937,6 +39966,9 @@ msgstr "Versión no coincidente (actual %1$x, se esperaba %2$x)"
 
 msgid "version parsing error"
 msgstr "Error al analizar versión"
+
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
@@ -40620,6 +40652,29 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "Registros DNS HOST no pueden ser modificados, únicamente añadidos o "
+#~ "borrados"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "Registros DNS SRV no se pueden ser modificados, solamente se pueden "
+#~ "añadir o borrar"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "Los registros DNS TXT no pueden ser modificados, únicamente se pueden "
+#~ "añadir o borrar"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "La entrada VMX '%1$s' no contiene una parte de puerto "
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "Conexión persistente al dispositivo no está soportada"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

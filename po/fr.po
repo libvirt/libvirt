@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1915,6 +1915,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "Un pilote de stockage est déjà enregistré"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "L'index ACPI n'est pas pris en charge avec ce QEMU"
@@ -5464,11 +5467,6 @@ msgstr "DAC imagelabel n'a pas pu être déterminé"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel n'a pas pu être déterminé"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-"Les enregistrements DNS HOST ne peuvent pas être modifiés, mais seulement "
-"ajoutés ou supprimés"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5485,11 +5483,6 @@ msgstr ""
 "L'attribut de priorité SRV du DNS n'est pas autorisé sans cible pour le "
 "service '%1$s' dans le réseau '%2$s'"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-"Les enregistrements DNS SRV ne peuvent pas être modifiés, mais seulement "
-"ajoutés ou supprimés"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5497,11 +5490,6 @@ msgid ""
 msgstr ""
 "L'attribut de poids SRV du DNS n'est pas autorisé sans cible pour le service "
 "'%1$s' dans le réseau '%2$s'"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr ""
-"Les enregistrements DNS TXT ne peuvent pas être modifiés, mais seulement "
-"ajoutés ou supprimés"
 
 msgid "Data processed:"
 msgstr "Données traitées :"
@@ -16622,6 +16610,9 @@ msgstr ""
 "Le nombre de ports parallèles du domaine cible %1$zu ne correspond pas à la "
 "source %2$zu"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16832,6 +16823,14 @@ msgstr "Le modèle de panique cible '%1$s' ne correspond pas à la source '%2$s'
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "Le port parallèle cible %1$d ne correspond pas à la source %2$d"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -21229,10 +21228,6 @@ msgstr "VM n'est pas défini"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "L'entrée VMX '%1$s' contient un schéma non pris en charge '%2$s'"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "L'entrée VMX '%1$s' ne contient pas de partie de port"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr ""
 "L'entrée VMX 'annotation' contient une séquence d'échappement non valide"
@@ -21617,6 +21612,9 @@ msgstr "accès refusé par la politique"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "accès refusé : %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "actif"
@@ -23590,6 +23588,9 @@ msgstr "ne peut pas modifier l'adresse PCI invitée du périphérique réseau"
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "ne peut pas modifier le modèle de périphérique réseau de %1$s à %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr ""
 "Impossible de modifier le paramètre de la barre rom du périphérique réseau"
@@ -23709,6 +23710,10 @@ msgstr "Impossible d'analyser le json %1$s : %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "Impossible d’analyser json %1$s : string/map/array non terminé"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -27972,6 +27977,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "a échoué à déplacer le fichier vers %1$s "
 
@@ -30460,6 +30469,9 @@ msgstr "non valide secret uuid '%1$s'"
 msgid "invalid server address"
 msgstr "l'adresse du serveur n'est pas valide"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "taille non valide fournie pour '%1$s'"
@@ -31297,6 +31309,9 @@ msgid "lock owner details have not been registered"
 msgstr ""
 "les coordonnées du propriétaire de la serrure n'ont pas été enregistrées"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr ""
@@ -32015,11 +32030,11 @@ msgstr ""
 "migration avec stockage non partagé avec copie incrémentielle (même image de "
 "base partagée entre la source et la destination)"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "la migration avec un disque transitoire n'est pas prise en charge"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "la migration avec le périphérique virtiofs n'est pas prise en charge"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -32692,6 +32707,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "chemin manquant pour <reservations/>"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -34501,6 +34519,9 @@ msgstr "un seul périphérique de ballon de mémoire est pris en charge"
 msgid "only a single nvram device is supported"
 msgstr "un seul périphérique nvram est pris en charge"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "un seul périphérique vsock est pris en charge"
 
@@ -35482,6 +35503,9 @@ msgstr "fournir un XML adapté aux migrations"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "le bus ps2 ne prend pas en charge le périphérique d’entrée %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -37642,6 +37666,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen : donnez un chemin d’accès ou utilisez test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -37735,9 +37763,6 @@ msgstr "la machine n'a pas d’instantané"
 
 msgid "the new password"
 msgstr "le nouveau mot de passe"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr "Le backend réseau passt n'est pas pris en charge avec ce binaire QEMU"
 
 msgid "the password is already encrypted"
 msgstr "le mot de passe est déjà crypté"
@@ -40056,6 +40081,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "Type d'authentification non pris en charge %1$d"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "Modèle de périphérique de ballon non pris en charge '%1$s'"
 
@@ -40757,6 +40786,9 @@ msgstr "erreur de version dans l'événement (réel 0x%1$x, attendu 0x%2$x)"
 
 msgid "version parsing error"
 msgstr "erreur d'analyse de la version"
+
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "L'attribut vgamem n'est pris en charge que pour le type de vidéo qxl"
@@ -41476,6 +41508,33 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "Les enregistrements DNS HOST ne peuvent pas être modifiés, mais seulement "
+#~ "ajoutés ou supprimés"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "Les enregistrements DNS SRV ne peuvent pas être modifiés, mais seulement "
+#~ "ajoutés ou supprimés"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "Les enregistrements DNS TXT ne peuvent pas être modifiés, mais seulement "
+#~ "ajoutés ou supprimés"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "L'entrée VMX '%1$s' ne contient pas de partie de port"
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr ""
+#~ "la migration avec le périphérique virtiofs n'est pas prise en charge"
+
+#~ msgid "the passt network backend is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "Le backend réseau passt n'est pas pris en charge avec ce binaire QEMU"
 
 #~ msgid "S390 PV launch security is not supported with this QEMU binary"
 #~ msgstr ""

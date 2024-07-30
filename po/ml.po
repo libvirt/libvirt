@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1689,6 +1689,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "അടയ്ക്കുവാനുള്ള ഒരു പിന്‍വിളി മുന്‍പേ തന്നെ രേഖപ്പെടുത്തിയിട്ടുണ്ട്"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5101,10 +5104,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-"DNS HOST റിക്കോര്‍ഡുകളില്‍ മാറ്റങ്ങള്‍ വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടിനീക്കാം"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5117,19 +5116,11 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-"DNS SRV റിക്കോര്‍ഡുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടി നീക്കാം"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr ""
-"DNS TXT റിക്കോര്‍ഡുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടി നീക്കാം"
 
 msgid "Data processed:"
 msgstr "ചെയ്ത ഡാറ്റ:"
@@ -15798,6 +15789,9 @@ msgstr ""
 "ടാര്‍ഗറ്റ് ഡൊമെയിന്‍ പാരലല്‍ പോര്‍ട്ടിന്റെ എണ്ണം %1$zu-നു്,  %2$zu ശ്രോതസ്സൂമായി "
 "പൊരുത്തപ്പെടുന്നില്ല."
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15977,6 +15971,14 @@ msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള RNG മോഡല�
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "ലക്ഷ്യം പാരലല്‍ പോര്‍ട്ട് %1$d, ശ്രോതസ്സ് %2$d-മായി ചേരുന്നില്ല"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20283,10 +20285,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX എന്‍ട്രി '%1$s' പിന്തുണ്യില്ലാത്ത '%2$s' സമ്പ്രദായങ്ങള്‍ അടങ്ങിയിരിക്കുന്നു"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX എന്‍ട്രി '%1$s' യില്‍ ഒരു പോര്‍ട്ട് ഭാഗം അടങ്ങിയിട്ടില്ല"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX എന്‍ട്രി 'annotation' നില്‍ അസാധുവായ എസ്കേപ്പ് സീക്വന്‍സുകള്‍ അടങ്ങിയിരിക്കുന്നു"
 
@@ -20647,6 +20645,9 @@ msgstr "പ്രവേശനം നിഷേധിച്ചിരിയ്ക�
 #, c-format
 msgid "access denied: %1$s"
 msgstr "പ്രവേശനം നിഷേധിച്ചിരിയ്ക്കുന്നു: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "സജീവം"
@@ -22495,6 +22496,9 @@ msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ഗസ�
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "%1$s-ല്‍ നിന്നും %2$s-ലേക്കുള്ള നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് മോഡലില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് rom ബാര്‍ സജ്ജീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
@@ -22612,6 +22616,10 @@ msgstr " %1$s എന്ന ജേസണ്‍ മനസ്സിലാവുന�
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr " %s എന്ന ജേസണ്‍ മനസ്സിലാവുന്നില്ല: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26776,6 +26784,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "ഫയല്‍ %1$s -ലേക്കു് നീക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -29204,6 +29216,9 @@ msgstr "തെറ്റായ രഹസ്യ രീതി '%1$s'"
 msgid "invalid server address"
 msgstr "തെറ്റായ മാക് വിലാസം"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "'%1$s'-നു് തെറ്റായ വ്യാപ്തി നല്‍കിയിരിക്കുന്നു"
@@ -30031,6 +30046,9 @@ msgstr "ലോക്ക് മാനേജര്‍ കണക്ഷന്‍ ന
 msgid "lock owner details have not been registered"
 msgstr "ലോക്ക് ഉടമസ്ഥന്‍ വിവരങ്ങള്‍ രജിസ്ടര്‍ ചെയ്തിട്ടില്ല"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "%1$s വോള്യങ്ങള്‍ തയ്യാറാക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
@@ -30715,12 +30733,11 @@ msgid ""
 "shared between source and destination)"
 msgstr "ഇന്‍ക്രീമെന്റെല്‍ ഡിസ്ക്ക് കോപ്പി ഉപയോഗിച്ചുള്ള മൈഗ്രേഷന്‍"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31394,6 +31411,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "പേരു് വിവരം ലഭ്യമല്ല"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -33154,6 +33174,9 @@ msgstr "ഒരു മെമ്മറി ബലൂണ്‍ ഡിവൈസ് �
 msgid "only a single nvram device is supported"
 msgstr "ഒറ്റ nvram ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "ഒറ്റ nvram ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
@@ -34104,6 +34127,9 @@ msgstr "നീക്കം ചെയ്യുന്നതിനു് ഉചി�
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 ബസ്  %1$s ഇന്‍പുട്ട് ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36157,6 +36183,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ഒരു പാഥ് നല്‍കുക അല്ലെങ്കില്‍ test:///default ഉപയോഗിക്കുക"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36245,9 +36275,6 @@ msgid "the machine has no snapshot"
 msgstr "ഡൊമെയിനിന് സ്നാപ്ഷോട്ടുകളൊന്നും ലഭ്യമല്ല"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -38465,6 +38492,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "പിന്തുണയില്ലാത്ത ഓഥന്റിക്കേഷന്‍ തരം %1$d"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "പിന്തുണയ്ക്കാത്ത ഹോസ്റ്റ് ഡിവൈസ് മോഡ് %1$s"
@@ -39143,6 +39174,9 @@ msgstr "പതിപ്പു് ചേരുന്നില്ല (യഥാര
 msgid "version parsing error"
 msgstr "പതിപ്പു് പാഴ്സ് ചെയ്യുന്നതില്‍ പിശക്"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -39820,6 +39854,26 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "DNS HOST റിക്കോര്‍ഡുകളില്‍ മാറ്റങ്ങള്‍ വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടിനീക്കാം"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "DNS SRV റിക്കോര്‍ഡുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടി നീക്കാം"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "DNS TXT റിക്കോര്‍ഡുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടി നീക്കാം"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX എന്‍ട്രി '%1$s' യില്‍ ഒരു പോര്‍ട്ട് ഭാഗം അടങ്ങിയിട്ടില്ല"
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

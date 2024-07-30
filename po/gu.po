@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -1680,6 +1680,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "બંધ કોલબેક પહેલેથી રજીસ્ટર થયેલ છે"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5078,9 +5081,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "DNS HOST રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5093,17 +5093,11 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "DNS SRV રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "DNS TXT રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
 
 msgid "Data processed:"
 msgstr "પ્રક્રિયા થયેલ માહિતી:"
@@ -15673,6 +15667,9 @@ msgstr "લક્ષ્ય ડોમેઇન ઇનપુટ ઉપકરણ �
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "લક્ષ્ય ડોમેઇન સમાંતર પોર્ટ ગણતરી %1$zu એ સ્ત્રોત %2$zu સાથે બંધબેસતી નથી"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15843,6 +15840,14 @@ msgstr "લક્ષ્ય RNG મોડલ '%1$s' એ સ્ત્રોત '%2
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "લક્ષ્ય સમાંતર પોર્ટ %1$d એ સ્ત્રોત %2$d સાથે બંધબેસતુ નથી"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20128,10 +20133,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX નોંધણી '%1$s' બિનઆધારભૂત યોજના '%2$s' ને સમાવે છે"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX નોંધણી '%1$s' પોર્ટ ભાગને સમાવતુ નથી"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "Vmx નોંધણી 'ઍનોટેશન' અમાન્ય એસ્કેપ ક્રમ છે"
 
@@ -20491,6 +20492,9 @@ msgstr "પ્રવેશ નામંજૂર"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "પ્રવેશ નામંજૂર: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "સક્રિય"
@@ -22327,6 +22331,9 @@ msgstr "નેટવર્ક ઉપકરણ મહેમાન PCI સરન�
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "%1$s થી %2$s માં નેટવર્ક ઉપકરણ મોડલને બદલી શકાતુ નથી"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "નેટવર્ક ઉપકરણ rom bar સુયોજનને બદલી શકાતુ નથી"
 
@@ -22443,6 +22450,10 @@ msgstr "json %1$s નું પદચ્છેદન કરી શકાતુ �
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "json %s નું પદચ્છેદન કરી શકાતુ નથી: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26588,6 +26599,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "%1$s માં ફાઇલને ખસેડવામાં નિષ્ફળતા "
 
@@ -29002,6 +29017,9 @@ msgstr "અયોગ્ય ખાનગી પ્રકાર '%1$s'"
 msgid "invalid server address"
 msgstr "અયોગ્ય MAC સરનામું"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "'%1$s' માટે પૂરુ પાડેલ અયોગ્ય માપ"
@@ -29827,6 +29845,9 @@ msgstr "તાળુ સંચાલક જોડાણને મર્યાદ
 msgid "lock owner details have not been registered"
 msgstr "તાળુ માલિક વિગતોને રજીસ્ટર કરી દેવામાં આવી છે"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "%1$s વોલ્યુમોને બનાવવાનું આધારભૂત નથી"
@@ -30512,12 +30533,11 @@ msgstr ""
 "વધતી નકલ સાથે બિન ભાગીદારી થયેલ સંગ્રહ સાથે સ્થળાંતર (સ્ત્રોત અને લક્ષ્ય વચ્ચે વહેંચેલ એજ "
 "મૂળભૂત ઇમેજ)"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "ઉપકરણનું સ્થાયી જોડાણ આધારભૂત નથી"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31187,6 +31207,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "ગુમ થયેલ નામ જાણકારી"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -32937,6 +32960,9 @@ msgstr "ફક્ત એકજ મેમરી બલુન ઉપકરણ આ�
 msgid "only a single nvram device is supported"
 msgstr "ફક્ત એકજ nvram ઉપકરણ આધારભૂત છે"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "ફક્ત એકજ nvram ઉપકરણ આધારભૂત છે"
@@ -33886,6 +33912,9 @@ msgstr "સ્થળાંતર માટે અનૂરૂપ XML  પૂર�
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 bus એ %1$s ઇનપુટ ઉપકરણને આધાર આપતુ નથી"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -35933,6 +35962,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: પાથ પૂરો પાડો અથવા test:///default વાપરો"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36021,9 +36054,6 @@ msgid "the machine has no snapshot"
 msgstr "ડોમેઇન પાસે સ્નેપશોટ નથી"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -38244,6 +38274,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "બિનઆધારિત સત્તાધિકરણ પ્રકાર %1$d"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "બિનઆધારભૂત યજમાન ઉપકરણ સ્થિતિ %1$s"
@@ -38922,6 +38956,9 @@ msgstr "આવૃત્તિ અસંતુલન (વાસ્તવિક %1
 msgid "version parsing error"
 msgstr "આવૃત્તિ પદચ્છેદન ભૂલ"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -39596,6 +39633,23 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "DNS HOST રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "DNS SRV રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "DNS TXT રેકોર્ડને બદલી શકાતા નથી, ફક્ત ઉમેરાય અને કાઢી નંખાય છે"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX નોંધણી '%1$s' પોર્ટ ભાગને સમાવતુ નથી"
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "ઉપકરણનું સ્થાયી જોડાણ આધારભૂત નથી"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

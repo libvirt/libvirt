@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2024-07-29 08:52+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1846,6 +1846,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "En lagringsdrivrutin är redan registrerad"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "ACPI-index stödjs inte med denna QEMU"
@@ -5284,9 +5287,6 @@ msgstr "DAC-avbildsetiketten kunde inte avgöras"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC-säkerhetsetiketten kunde inte avgöras"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "DNS HOST-poster kan inte ändras, endast läggas till eller tas bort"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5303,9 +5303,6 @@ msgstr ""
 "DNS SRV prioritetsattribut är inte tillåtet utan mål för tjänsten ”%1$s” i "
 "nätverket ”%2$s”"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "DNS SRV-poster kan inte ändras, endast läggas till eller tas bort"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5313,9 +5310,6 @@ msgid ""
 msgstr ""
 "DNS SRV viktattribut är inte tillåtet utan mål för tjänsten ”%1$s” i "
 "nätverket ”%2$s”"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "DNS TXT-poster kan inte ändras, endast läggas till eller tas bort"
 
 msgid "Data processed:"
 msgstr "Bearbetade data:"
@@ -15890,6 +15884,9 @@ msgstr "Måldomänens panikenhetsantal %1$zu stämmer inte med källan %2$zu"
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "Måldomänens parallellportsantal %1$zu stämmer inte med källan %2$zu"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16074,6 +16071,14 @@ msgstr "Målpanikmodellen %1$s stämmer inte med källan %2$s"
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "Målparallellporten %1$d stämmer inte med källan %2$d"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20379,10 +20384,6 @@ msgstr "VM:en är inte definierad"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX-posten ”%1$s” innehåller ett schema ”%2$s” som inte stödjs"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX-posten ”%1$s” innehåller inte en portdel"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX-posten ”annotation” innehåller ogiltiga kontrollsekvenser"
 
@@ -20745,6 +20746,9 @@ msgstr "åtkomst nekas av policyn"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "åtkomst nekas: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "aktiv"
@@ -22606,6 +22610,9 @@ msgstr "kan inte ändra nätverksenhetens gäst-PCI-adress"
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "kan inte ändra nätverksenhetens modell från %1$s till %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "kan inte ändra nätverksenhetens \"rom bar\"-inställning"
 
@@ -22720,6 +22727,10 @@ msgstr "kan inte tolka json %1$s: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "kan inte tolka json %1$s: oavslutad sträng/avbildning/vektor"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26836,6 +26847,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr "misslyckades att övervaka nbdkit-prcess %1$i"
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "misslyckades att flytta filen till %1$s "
 
@@ -29263,6 +29278,9 @@ msgstr "felaktigt hemlighets-uuid ”%1$s”"
 msgid "invalid server address"
 msgstr "felaktig serveradress"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "felaktig storlek given för ”%1$s”"
@@ -30064,6 +30082,9 @@ msgstr "låshanterarförbindelsen har begränsats"
 msgid "lock owner details have not been registered"
 msgstr "låsägardetaljer har inte registrerats"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "den logiska volymen ”%1$s” är gles, volymrensning stödjs inte"
@@ -30744,11 +30765,11 @@ msgstr ""
 "migrering med icke-delad lagring med inkrementell kopiering (samma basavbild "
 "delad mellan källa och mål)"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "migrering med en transient disk stödjs inte"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "migrering med en virtiofs-enhet stödjs inte"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31390,6 +31411,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "sökvägen saknas i <reservations/>"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr "sökvägen saknas i nbdkit:s förmågecache"
@@ -33127,6 +33151,9 @@ msgstr ""
 msgid "only a single nvram device is supported"
 msgstr ""
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr ""
 
@@ -34047,6 +34074,9 @@ msgstr ""
 
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
+msgstr ""
+
+msgid "pstore device is missing alias"
 msgstr ""
 
 #, c-format
@@ -36050,6 +36080,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ange en sökväg eller använd test:///default"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36133,9 +36167,6 @@ msgid "the machine has no snapshot"
 msgstr ""
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 msgid "the password is already encrypted"
@@ -38336,6 +38367,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "autentiseringstyp %1$d stödjs inte"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "Diskenhettypen ”%1$s” stödjs inte"
@@ -39006,6 +39041,9 @@ msgstr "versioner matchar inte (aktuell %1$x, förväntad %2$x)"
 msgid "version parsing error"
 msgstr "avläsningsfel"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -39662,68 +39700,84 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
-#, c-format
-msgid "%1$6s: Checking %2$-60s: "
-msgstr "%1$6s: Kontrollerar %2$-60s: "
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "DNS HOST-poster kan inte ändras, endast läggas till eller tas bort"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "DNS SRV-poster kan inte ändras, endast läggas till eller tas bort"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "DNS TXT-poster kan inte ändras, endast läggas till eller tas bort"
 
 #, c-format
-msgid "Failed to apply firewall rules %1$s: %2$s"
-msgstr "Misslyckades att ta brandväggsregler i drift %1$s: %2$s"
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX-posten ”%1$s” innehåller inte en portdel"
 
-msgid "S390 PV launch security is not supported with this QEMU binary"
-msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
-
-msgid "SEV launch security is not supported with this QEMU binary"
-msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
-
-msgid "TPM 1.2 is not supported on ARM"
-msgstr "TPM 1.2 stödjs inte på ARM"
-
-msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
-
-msgid "Unable to create rule"
-msgstr "Kan inte skapa en regel"
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "migrering med en virtiofs-enhet stödjs inte"
 
 #, c-format
-msgid "Unsupported interface '%1$s' for TPM 1.2"
-msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
-
-msgid "couldn't convert node device def to mdevctl JSON"
-msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
-
-msgid "failed to create mdevctl thread"
-msgstr "misslyckades att skapa en mdevctl-tråd"
-
-msgid "failed to create udev enumerate thread"
-msgstr "misslyckades att skapa udev-uppräkningstråden"
+#~ msgid "%1$6s: Checking %2$-60s: "
+#~ msgstr "%1$6s: Kontrollerar %2$-60s: "
 
 #, c-format
-msgid "failed to get number of %1$s interfaces on host"
-msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
+#~ msgid "Failed to apply firewall rules %1$s: %2$s"
+#~ msgstr "Misslyckades att ta brandväggsregler i drift %1$s: %2$s"
+
+#~ msgid "S390 PV launch security is not supported with this QEMU binary"
+#~ msgstr "S390 PV-startsäkerhet stödjs inte med denna QEMU-binär"
+
+#~ msgid "SEV launch security is not supported with this QEMU binary"
+#~ msgstr "SEV-startsäkerhet stödjs inte med denna QEMU-binär"
+
+#~ msgid "TPM 1.2 is not supported on ARM"
+#~ msgstr "TPM 1.2 stödjs inte på ARM"
+
+#~ msgid "TPM 1.2 is not supported with the SPAPR device model"
+#~ msgstr "TPM 1.2 stödjs inte med enhetsmodellen SPAPR"
+
+#~ msgid "Unable to create rule"
+#~ msgstr "Kan inte skapa en regel"
 
 #, c-format
-msgid "for %1$s module"
-msgstr "modulen %1$s"
+#~ msgid "Unsupported interface '%1$s' for TPM 1.2"
+#~ msgstr "Ej stött gränssnitt ”%1$s” för TPM 1.2"
+
+#~ msgid "couldn't convert node device def to mdevctl JSON"
+#~ msgstr "kunde inte konvertera nodenhetsdefinitionen till mdevctl-JSON"
+
+#~ msgid "failed to create mdevctl thread"
+#~ msgstr "misslyckades att skapa en mdevctl-tråd"
+
+#~ msgid "failed to create udev enumerate thread"
+#~ msgstr "misslyckades att skapa udev-uppräkningstråden"
 
 #, c-format
-msgid "for Linux >= %1$d.%2$d.%3$d"
-msgstr "att Linux ≥ %1$d.%2$d.%3$d"
+#~ msgid "failed to get number of %1$s interfaces on host"
+#~ msgstr "misslyckades att få antalet %1$s gränssnitt på värden"
 
-msgid "for PowerPC KVM module loaded"
-msgstr "att PowerPC KVM-modulen är laddad"
+#, c-format
+#~ msgid "for %1$s module"
+#~ msgstr "modulen %1$s"
 
-msgid "for device assignment IOMMU support"
-msgstr "IOMMU-stödet för enhetstilldelning"
+#, c-format
+#~ msgid "for Linux >= %1$d.%2$d.%3$d"
+#~ msgstr "att Linux ≥ %1$d.%2$d.%3$d"
 
-msgid "for hardware virtualization"
-msgstr "hårdvaruvirtualisering"
+#~ msgid "for PowerPC KVM module loaded"
+#~ msgstr "att PowerPC KVM-modulen är laddad"
 
-msgid "for secure guest support"
-msgstr "stöd för säkra gäster"
+#~ msgid "for device assignment IOMMU support"
+#~ msgstr "IOMMU-stödet för enhetstilldelning"
 
-msgid "if IOMMU is enabled by kernel"
-msgstr "om IOMMU är aktiverat i kärnan"
+#~ msgid "for hardware virtualization"
+#~ msgstr "hårdvaruvirtualisering"
+
+#~ msgid "for secure guest support"
+#~ msgstr "stöd för säkra gäster"
+
+#~ msgid "if IOMMU is enabled by kernel"
+#~ msgstr "om IOMMU är aktiverat i kärnan"
 
 #, c-format
 #~ msgid " [[--%1$s] <string>]..."

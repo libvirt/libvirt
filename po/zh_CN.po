@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1771,6 +1771,9 @@ msgstr "加密描述中应包含一个 <secret type='passphrase'...> 元素"
 
 msgid "A storage driver is already registered"
 msgstr "存储驱动程序已注册"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "这个 QEMU 不支持 ACPI 索引"
@@ -5036,9 +5039,6 @@ msgstr "无法确定 DAC imagelabel"
 msgid "DAC seclabel couldn't be determined"
 msgstr "无法确定 DAC seclabel"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5054,18 +5054,12 @@ msgstr ""
 "没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV pirority 属"
 "性。"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "无法修改 DNS SRV 记录，只能添加或者删除。"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
 "没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV weight 属性。"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "无法修改 DNS TXT 记录，只能添加或者删除。"
 
 msgid "Data processed:"
 msgstr "处理的数据："
@@ -15194,6 +15188,9 @@ msgstr "目标域 panic 设备数 %1$zu 与源 %2$zu 不匹配"
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "目标域并口端口计数 %1$zu 与源 %2$zu 不映射"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15361,6 +15358,14 @@ msgstr "目标 panic 型号 '%1$s' 与源 '%2$s' 不匹配"
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "目标平行端口 %1$d 与源 %2$d 不映射"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -19518,10 +19523,6 @@ msgstr "VM 未定义"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX 条目 '%1$s' 包含不支持的方案 '%2$s'"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX 条目 '%1$s' 不包含端口部分"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX 条目 ‘annotation' 包含无效换码顺序"
 
@@ -19873,6 +19874,9 @@ msgstr "策略拒绝访问"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "访问被拒绝：%1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "活动"
@@ -21635,6 +21639,9 @@ msgstr "无法修改网络设备虚拟机 PCI 地址"
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "无法将网络设备型号从 %1$s 改为 %2$s"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "无法修改网络设备 rom 栏设置"
 
@@ -21749,6 +21756,10 @@ msgstr "无法解析 json %1$s: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "无法解析 json %1$s ：未终止的 strin/map/array"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -25734,6 +25745,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "无法将文件移到 %1$s "
 
@@ -28067,6 +28082,9 @@ msgstr "无效的 secret uuid '%1$s'"
 msgid "invalid server address"
 msgstr "无效的服务器地址"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "为 '%1$s' 提供的无效大小"
@@ -28844,6 +28862,9 @@ msgstr "已限制锁定管理程序连接"
 msgid "lock owner details have not been registered"
 msgstr "未注册锁拥有者详情"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "逻辑卷 '%1$s' 是稀疏的，不支持卷清除"
@@ -29502,11 +29523,11 @@ msgid ""
 "shared between source and destination)"
 msgstr "使用增值复制（源和目的地共享同一基础映像）的非共享存储进行迁移"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "不支持带有临时磁盘的迁移"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "不支持带有 virtiofs 设备的迁移"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -30115,6 +30136,9 @@ msgstr "缺少 JSON 后备卷驱动程序 '%1$s' 的解析器实现"
 
 msgid "missing path for <reservations/>"
 msgstr "缺少 <reservations/> 的路径"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -31793,6 +31817,9 @@ msgstr "只支持单一内存 balloon 设备"
 msgid "only a single nvram device is supported"
 msgstr "只支持单一 nvram 设备"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "只支持一个 vsock 设备"
 
@@ -32691,6 +32718,9 @@ msgstr "为迁移提供 XML 可用性"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 总线不支持 %1$s 输入设备"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -34640,6 +34670,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen：提供一个路径或者默认使用 test:///"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -34724,9 +34758,6 @@ msgstr "机器没有快照"
 
 msgid "the new password"
 msgstr "新密码"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 passt 网络后端"
 
 msgid "the password is already encrypted"
 msgstr "密码已被加密"
@@ -36925,6 +36956,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "不支持的验证类型 %1$d"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "不支持的 Balloon 设备型号 '%1$s'"
 
@@ -37587,6 +37622,9 @@ msgstr "事件中的版本不匹配（实际 0x%1$x，期望 0x%2$x）"
 msgid "version parsing error"
 msgstr "版本解析出错"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "vgamem 属性只支持视频类型 qxl"
 
@@ -38235,6 +38273,25 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "无法修改 DNS SRV 记录，只能添加或者删除。"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "无法修改 DNS TXT 记录，只能添加或者删除。"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX 条目 '%1$s' 不包含端口部分"
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "不支持带有 virtiofs 设备的迁移"
+
+#~ msgid "the passt network backend is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 passt 网络后端"
 
 #~ msgid "S390 PV launch security is not supported with this QEMU binary"
 #~ msgstr "这个 QEMU 二进制文件不支持 S390 PV 启动安全性"

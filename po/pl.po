@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2023-02-13 12:20+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1659,6 +1659,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "wolumin pamięci masowej już istnieje"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5112,9 +5115,6 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined"
 msgstr ""
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5127,16 +5127,10 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
-msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
 msgstr ""
 
 msgid "Data processed:"
@@ -15942,6 +15936,9 @@ msgstr ""
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16119,6 +16116,14 @@ msgstr ""
 
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
+msgstr ""
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
 msgstr ""
 
 #, c-format
@@ -20528,10 +20533,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "Wpis VMX „%1$s” ma nieobsługiwany schemat „%2$s”"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "Wpis VMX „%1$s” nie zawiera części dotyczącej portu"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "Wpis VMX „annotation” zawiera nieprawidłową sekwencję sterującą"
 
@@ -20898,6 +20899,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "access denied: %1$s"
 msgstr "nie można uzyskać dostępu do urządzenia %1$s\n"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "aktywne"
@@ -22752,6 +22756,9 @@ msgstr ""
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "nie można ustawić trybu pliku „%s” na %04o"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr ""
 
@@ -22872,6 +22879,10 @@ msgstr "nie można przetworzyć JSON %1$s: %2$s"
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "nie można przetworzyć JSON %s: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -27057,6 +27068,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "nie powiodło się przeniesienie pliku do %1$s "
 
@@ -29513,6 +29528,9 @@ msgstr "nieprawidłowy UUID %1$s"
 msgid "invalid server address"
 msgstr "nieprawidłowy adres MAC"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "podano nieprawidłowy rozmiar „%1$s”"
@@ -30378,6 +30396,9 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "Utworzenie %1$s woluminów jest nieobsługiwane"
@@ -31098,12 +31119,11 @@ msgstr ""
 "migracja za pomocą niewspółdzielonej pamięci masowej za pomocą kopii "
 "przyrostowej (taki sam obraz podstawowy współdzielony między źródłem i celem)"
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "Utworzenie %s woluminów jest nieobsługiwane"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31772,6 +31792,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "brak nazwy dla gospodarza"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -33548,6 +33571,9 @@ msgstr "obsługiwane jest tylko pojedyncze urządzenie balonu pamięci"
 msgid "only a single nvram device is supported"
 msgstr "obsługiwane jest tylko pojedyncze urządzenie watchdog"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "obsługiwane jest tylko pojedyncze urządzenie watchdog"
@@ -34498,6 +34524,9 @@ msgstr ""
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "magistrala PS/2 nie obsługuje urządzenia wejściowego %1$s"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36556,6 +36585,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: należy podać ścieżkę lub użyć test:///domyślna"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36642,9 +36675,6 @@ msgid "the machine has no snapshot"
 msgstr "domena nie ma migawek"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -38863,6 +38893,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "nieobsługiwany typ uwierzytelniania %1$d"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "Nieobsługiwany typ urządzenia „%1$s”"
@@ -39547,6 +39581,9 @@ msgstr "wersja się nie zgadza (jest %1$x, oczekiwano %2$x)"
 msgid "version parsing error"
 msgstr "błąd podczas przetwarzania wersji"
 
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
+
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
@@ -40222,6 +40259,14 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "Wpis VMX „%1$s” nie zawiera części dotyczącej portu"
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "Utworzenie %s woluminów jest nieobsługiwane"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

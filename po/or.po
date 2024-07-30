@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1743,6 +1743,9 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "ଭଣ୍ଡାର vol ପୂର୍ବରୁ ଅବସ୍ଥିତ ଅଛି"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr ""
@@ -5122,10 +5125,6 @@ msgstr "DAC ପ୍ରତିଛବି ନାମପଟିକୁ ନିର୍ଦ୍
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel କୁ ନିର୍ଦ୍ଧାରଣ କରିପାରିଲା ନାହିଁ"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr ""
-"DNS HOST ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5138,19 +5137,11 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr ""
-"DNS SRV ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr ""
-"DNS SRV ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
 
 msgid "Data processed:"
 msgstr "କାର୍ଯ୍ୟକାରୀ ହୋଇଥିବା ତଥ୍ୟ:"
@@ -15676,6 +15667,9 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ ନିବେଶ ଉପକର
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ ସମାନ୍ତରାଳ ପୋର୍ଟ ସଂଖ୍ୟା %1$zu ଉତ୍ସ %2$zu ସହିତ  ମେଳଖାଇନଥାଏ"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -15846,6 +15840,14 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ RNG ମଡେଲ '%1$s' ଉତ୍ସ '%2$
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ସମାନ୍ତରାଳ ପୋର୍ଟ %1$d ଉତ୍ସ %2$d ସହିତ ମେଳଖାଉ ନାହିଁ"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20131,10 +20133,6 @@ msgstr ""
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX ନିବେଶ '%1$s' ରେ ଅସମର୍ଥିତ ଯୋଜନା '%2$s' ଅସମର୍ଥିତ"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX ନିବେଶ '%1$s' ରେ କୌଣସି ପୋର୍ଟ ଅଂଶ ଧାରଣ କରିନଥାଏ"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX ନିବେଶ 'ଟିପ୍ପଣୀ' ଅବୈଧ ଏସକେପ କ୍ରମ ଧାରଣ କରିଥାଏ"
 
@@ -20491,6 +20489,9 @@ msgstr "ନିତୀ ଦ୍ୱାରା ଅଭିଗମ୍ୟତାକୁ ବା
 #, c-format
 msgid "access denied: %1$s"
 msgstr "ପ୍ରବେଶାନୁମତି ନାହିଁ: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "ସକ୍ରିୟ"
@@ -22316,6 +22317,9 @@ msgstr "ନେଟୱର୍କ ଉପକରଣ ଅତିଥି PCI ଠିକଣ�
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ମଡେଲକୁ %1$s ରୁ %2$s କୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "ନେଟୱର୍କ ଉପକରଣ rom ପଟି ବିନ୍ୟାସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
@@ -22432,6 +22436,10 @@ msgstr "json %1$s କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ �
 #, fuzzy, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "json %s କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ: %s"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26567,6 +26575,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "ଫାଇଲକୁ  %1$s କୁ ଘୁଞ୍ଚାଇବାରେ ବିଫଳ"
 
@@ -28978,6 +28990,9 @@ msgstr "ଅବୈଧ ଗୋପନୀୟତା ପ୍ରକାର '%1$s'"
 msgid "invalid server address"
 msgstr "ଅବୈଧ MAC ଠିକଣା"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "'%1$s' ପାଇଁ ଅବୈଧ ଆକାର ଦିଆହୋଇଛି"
@@ -29794,6 +29809,9 @@ msgstr ""
 msgid "lock owner details have not been registered"
 msgstr ""
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "%1$s ଭଲ୍ୟୁମର ନିର୍ମାଣ ସମର୍ଥିତ ନୁହଁ"
@@ -30482,12 +30500,11 @@ msgid ""
 "shared between source and destination)"
 msgstr ""
 
-msgid "migration with transient disk is not supported"
+msgid "migration with this virtiofs device is not supported"
 msgstr ""
 
-#, fuzzy
-msgid "migration with virtiofs device is not supported"
-msgstr "ଉପକରଣର ସ୍ଥାୟୀ ସଂଲଗ୍ନ ସମର୍ଥିତ ନୁହଁ"
+msgid "migration with transient disk is not supported"
+msgstr ""
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31154,6 +31171,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "emulatorpin ପାଇଁ ଅନୁପସ୍ଥିତ cpuset"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -32905,6 +32925,9 @@ msgstr "କେବଳ ଏକ ସ୍ମୃତିସ୍ଥାନ ବ୍ୟାଲୁ
 msgid "only a single nvram device is supported"
 msgstr "କେବଳ ଏକକ nvram ଉପକରଣ ସମର୍ଥିତ"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only a single vsock device is supported"
 msgstr "କେବଳ ଏକକ nvram ଉପକରଣ ସମର୍ଥିତ"
@@ -33847,6 +33870,9 @@ msgstr "ସ୍ଥାନାନ୍ତରଣ ପାଇଁ XML ଉପଯୁକ୍ତ
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 bus ନିବେଶ ଉପକରଣ %1$s କୁ ସମର୍ଥନ କରେନାହିଁ"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -35882,6 +35908,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ଗୋଟିଏ ପଥ ପ୍ରଦାନ କରନ୍ତୁ କିମ୍ବା test:///default କୁ ବ୍ଯବହାର କରନ୍ତୁ"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -35969,9 +35999,6 @@ msgid "the machine has no snapshot"
 msgstr "ମେସିନରେ କୌଣସି ଆଶୁଚିତ୍ର ନାହିଁ"
 
 msgid "the new password"
-msgstr ""
-
-msgid "the passt network backend is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -38180,6 +38207,10 @@ msgstr ""
 msgid "unsupported authentication type %1$d"
 msgstr "ଅସମର୍ଥିତ ପ୍ରାଧିକରଣ ପ୍ରକାର %1$d"
 
+#, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "ଅସମର୍ଥିତ ହୋଷ୍ଟ ଉପକରଣ ଧାରା %1$s"
@@ -38851,6 +38882,9 @@ msgstr "ସଂସ୍କରଣ ମେଳ ଖାଉନାହିଁ (ପ୍ରକ�
 
 msgid "version parsing error"
 msgstr "ସଂସ୍କରଣ ବିଶ୍ଳେଷଣ ତୃଟି"
+
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
@@ -39530,6 +39564,26 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "DNS HOST ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "DNS SRV ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr ""
+#~ "DNS SRV ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX ନିବେଶ '%1$s' ରେ କୌଣସି ପୋର୍ଟ ଅଂଶ ଧାରଣ କରିନଥାଏ"
+
+#, fuzzy
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "ଉପକରଣର ସ୍ଥାୟୀ ସଂଲଗ୍ନ ସମର୍ଥିତ ନୁହଁ"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

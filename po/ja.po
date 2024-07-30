@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-06-25 13:01+0000\n"
+"POT-Creation-Date: 2024-07-29 07:45+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1859,6 +1859,9 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "ストレージドライバーがすでに登録されています"
+
+msgid "ACPI ERST device must reside on a PCI bus"
+msgstr ""
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "この QEMU では、ACPI インデックスはサポートされません"
@@ -5266,9 +5269,6 @@ msgstr "DAC imagelabel を判別できませんでした"
 msgid "DAC seclabel couldn't be determined"
 msgstr "DAC seclabel を判別できませんでした"
 
-msgid "DNS HOST records cannot be modified, only added or deleted"
-msgstr "DNS HOST レコードは更新できません、追加または削除のみできます"
-
 #, c-format
 msgid ""
 "DNS SRV port attribute not permitted without target for service '%1$s' in "
@@ -5285,9 +5285,6 @@ msgstr ""
 "DNS SRV 優先度属性は、ネットワーク '%1$s' のサービス '%2$s' のターゲットなし"
 "では許可されません"
 
-msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "DNS SRV レコードは変更できません、追加または削除のみできます"
-
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -5295,9 +5292,6 @@ msgid ""
 msgstr ""
 "DNS SRV のウェイト属性は、ネットワーク '%1$s' のサービス '%2$s' のターゲット"
 "なしでは許可されません"
-
-msgid "DNS TXT records cannot be modified, only added or deleted"
-msgstr "DNS TXT レコードは変更できません。追加または削除のみできます"
 
 msgid "Data processed:"
 msgstr "処理済みデータ:"
@@ -15999,6 +15993,9 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
 "ターゲットドメインのパラレルポート数 %1$zu がソースの %2$zu と一致しません"
 
+msgid "Target domain pstore device count does not match source"
+msgstr ""
+
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
@@ -16198,6 +16195,14 @@ msgstr "ターゲットのパニックモデル '%1$s' がソース '%2$s' と�
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "ターゲットのパラレルポート %1$d がソースの %2$d と一致しません"
+
+#, c-format
+msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
+msgstr ""
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20485,10 +20490,6 @@ msgstr "VM が定義されていません"
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
 msgstr "VMX エントリー '%1$s' がサポートされないスキーマ '%2$s' を含んでいます"
 
-#, c-format
-msgid "VMX entry '%1$s' doesn't contain a port part"
-msgstr "VMX エントリー '%1$s' が port 部分を含んでいません"
-
 msgid "VMX entry 'annotation' contains invalid escape sequence"
 msgstr "VMX エントリー 'annotation' が無効なエスケープシーケンスを含んでいます"
 
@@ -20862,6 +20863,9 @@ msgstr "ポリシーによりアクセスが拒否されました"
 #, c-format
 msgid "access denied: %1$s"
 msgstr "アクセスが拒否されました: %1$s"
+
+msgid "acpi-erst backend of pstore device is not supported"
+msgstr ""
 
 msgid "active"
 msgstr "動作中"
@@ -22704,6 +22708,9 @@ msgstr "ネットワークデバイスのゲスト PCI アドレスを変更で�
 msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "ネットワークデバイスのモデルを %1$s から %2$s に変更できません"
 
+msgid "cannot modify network device portgroup attribute"
+msgstr ""
+
 msgid "cannot modify network device rom bar setting"
 msgstr "ネットワークデバイスの rom bar 設定を変更できません"
 
@@ -22818,6 +22825,10 @@ msgstr "JSON %1$s を解析できません: %2$s"
 #, c-format
 msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr "JSON %1$s を解析できません: 未終了の string/map/array"
+
+#, c-format
+msgid "cannot parse openfiles '%1$s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -26954,6 +26965,10 @@ msgid "failed to monitor nbdkit process %1$i"
 msgstr ""
 
 #, c-format
+msgid "failed to monitor qemu in-shutdown process %1$i"
+msgstr ""
+
+#, c-format
 msgid "failed to move file to %1$s "
 msgstr "ファイルを %1$s に移動できませんでした "
 
@@ -29384,6 +29399,9 @@ msgstr "無効なシークレット uuid '%1$s'"
 msgid "invalid server address"
 msgstr "無効なサーバーアドレス"
 
+msgid "invalid size of ACPI ERST pstore device"
+msgstr ""
+
 #, c-format
 msgid "invalid size supplied for '%1$s'"
 msgstr "'%1$s' 用に無効なサイズがあります"
@@ -30187,6 +30205,9 @@ msgstr "ロックマネージャーの接続が制限されました"
 msgid "lock owner details have not been registered"
 msgstr "ロックオーナーの詳細が登録されていませんでした"
 
+msgid "locking options are not supported by this virtiofsd"
+msgstr ""
+
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr ""
@@ -30874,11 +30895,11 @@ msgstr ""
 "増分コピーとともに非共有のストレージを用いたマイグレーション (ソースと宛先の"
 "間で同じベースイメージを共有します)"
 
+msgid "migration with this virtiofs device is not supported"
+msgstr ""
+
 msgid "migration with transient disk is not supported"
 msgstr "一時ディスクを使用したマイグレーションはサポートされません"
-
-msgid "migration with virtiofs device is not supported"
-msgstr "virtiofs デバイスを使用したマイグレーションはサポートされません"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
@@ -31527,6 +31548,9 @@ msgstr "JSON バッキングボリュームドライバー '%1$s' のパーサ�
 
 msgid "missing path for <reservations/>"
 msgstr "<reservations/> のパスがありません"
+
+msgid "missing path for ACPI ERST pstore device"
+msgstr ""
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr ""
@@ -33284,6 +33308,9 @@ msgstr "メモリーバルーンデバイスは 1 つのみサポートされま
 msgid "only a single nvram device is supported"
 msgstr "単一の nvram デバイスのみがサポートされます"
 
+msgid "only a single pstore device is supported"
+msgstr ""
+
 msgid "only a single vsock device is supported"
 msgstr "単一の vsock デバイスのみがサポートされます"
 
@@ -34217,6 +34244,9 @@ msgstr "マイグレーションのために適切な XML を提供します"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 バスは %1$s 入力デバイスをサポートしません"
+
+msgid "pstore device is missing alias"
+msgstr ""
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -36276,6 +36306,10 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: パスを指定します、または test:///default を使用します"
 
 #, c-format
+msgid "the '%1$s' network backend is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
@@ -36369,10 +36403,6 @@ msgstr "マシンにはスナップショットがありません"
 
 msgid "the new password"
 msgstr "新しいパスワード"
-
-msgid "the passt network backend is not supported with this QEMU binary"
-msgstr ""
-"この QEMU バイナリーでは、passt ネットワークバックエンドはサポートされません"
 
 msgid "the password is already encrypted"
 msgstr "パスワードはすでに暗号化されています"
@@ -38630,6 +38660,10 @@ msgid "unsupported authentication type %1$d"
 msgstr "サポートのない認証タイプ %1$d です"
 
 #, c-format
+msgid "unsupported backend for pstore device: %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
 msgstr "サポートされていないバルーンデバイスモデル '%1$s'"
 
@@ -39312,6 +39346,9 @@ msgstr "イベントでのバージョンの不一致 (実際の 0x%1$x、予想
 
 msgid "version parsing error"
 msgstr "バージョンの解析においてエラーが発生しました"
+
+msgid "vfio migration was active, but 'transferred' data was missing"
+msgstr ""
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "vgamem 属性は、ビデオタイプ qxl でのみサポートされます"
@@ -40015,6 +40052,27 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#~ msgid "DNS HOST records cannot be modified, only added or deleted"
+#~ msgstr "DNS HOST レコードは更新できません、追加または削除のみできます"
+
+#~ msgid "DNS SRV records cannot be modified, only added or deleted"
+#~ msgstr "DNS SRV レコードは変更できません、追加または削除のみできます"
+
+#~ msgid "DNS TXT records cannot be modified, only added or deleted"
+#~ msgstr "DNS TXT レコードは変更できません。追加または削除のみできます"
+
+#, c-format
+#~ msgid "VMX entry '%1$s' doesn't contain a port part"
+#~ msgstr "VMX エントリー '%1$s' が port 部分を含んでいません"
+
+#~ msgid "migration with virtiofs device is not supported"
+#~ msgstr "virtiofs デバイスを使用したマイグレーションはサポートされません"
+
+#~ msgid "the passt network backend is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "この QEMU バイナリーでは、passt ネットワークバックエンドはサポートされませ"
+#~ "ん"
 
 #~ msgid "S390 PV launch security is not supported with this QEMU binary"
 #~ msgstr ""
