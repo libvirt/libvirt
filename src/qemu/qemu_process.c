@@ -6836,6 +6836,48 @@ qemuProcessPrepareLaunchSecurityGuestInput(virDomainObj *vm)
 
 
 static int
+qemuProcessPreparePstore(virDomainObj *vm)
+{
+    virDomainPstoreDef *pstore = vm->def->pstore;
+    VIR_AUTOCLOSE fd = -1;
+
+    if (!pstore)
+        return 0;
+
+    switch (pstore->backend) {
+    case VIR_DOMAIN_PSTORE_BACKEND_ACPI_ERST:
+        if ((fd = open(pstore->path, O_WRONLY | O_CREAT, 0600)) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot create file '%1$s'"),
+                                 pstore->path);
+            return -1;
+        }
+
+        if (ftruncate(fd, pstore->size * 1024) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to truncate file '%1$s'"),
+                                 pstore->path);
+            return -1;
+        }
+
+        if (VIR_CLOSE(fd) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to save '%1$s'"),
+                                 pstore->path);
+            return -1;
+        }
+
+        break;
+
+    case VIR_DOMAIN_PSTORE_BACKEND_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessPrepareHostStorageSourceVDPA(virStorageSource *src,
                                         qemuDomainObjPrivate *priv)
 {
@@ -7331,6 +7373,9 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         return -1;
 
     if (qemuProcessPrepareLaunchSecurityGuestInput(vm) < 0)
+        return -1;
+
+    if (qemuProcessPreparePstore(vm) < 0)
         return -1;
 
     return 0;
