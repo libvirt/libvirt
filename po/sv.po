@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-06-25 13:01+0000\n"
-"PO-Revision-Date: 2024-07-27 10:38+0000\n"
+"PO-Revision-Date: 2024-07-29 08:52+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -31586,8 +31586,8 @@ msgstr "stödda dumpformat saknas"
 msgid ""
 "missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"
 msgstr ""
-"tag id saknas — varje <vlan> måste ha åtmistone ett underelement <tag "
-"id='n'/>"
+"tag id saknas — varje <vlan> måste ha åtmistone ett underelement <tag id='n'/"
+">"
 
 msgid "missing target information for device"
 msgstr "saknar målinformation för enhet"
@@ -31855,7 +31855,8 @@ msgid "multiple matching interfaces found: %1$s"
 msgstr "flera matchande gränssnitt finns: %1$s"
 
 msgid "multiple memory devices found, use --alias or --node to select one"
-msgstr "flera minnesenheter finns, använd --alias eller --node för att välja en"
+msgstr ""
+"flera minnesenheter finns, använd --alias eller --node för att välja en"
 
 msgid "multiple stream callbacks not supported"
 msgstr "multipla strömåteranrop stödjs inte"
@@ -32118,24 +32119,26 @@ msgid ""
 "network device saved config file '%1$s' has unexpected contents, missing "
 "both 'MAC' and 'adminMAC': '%2$.60s'"
 msgstr ""
+"nätverksenhetens sparade konfigurationsfil ”%1$s” or oväntat innehåll, den "
+"saknar både ”MAC” och ”adminMAC”: ”%2$.60s”"
 
 #, c-format
 msgid "network device type '%1$s' is not supported by this hypervisor"
-msgstr ""
+msgstr "nätverksenhetstypen ”%1$s” städjs inte av denna hypervisor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network device with mac %1$s already exists"
-msgstr "oväntad domän %1$s finns redan"
+msgstr "en nätverksenhet med mac %1$s finns redan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network event callback %1$d not registered"
-msgstr "domänhändelse %1$d är inte registrerad"
+msgstr "återanrop vid nätverkshändelse %1$d är inte registrerat"
 
 msgid "network filter binding port dev"
-msgstr ""
+msgstr "nätverksfiltrets bindningsportsenhet"
 
 msgid "network filter binding portdev"
-msgstr ""
+msgstr "nätverksfiltrets bindningsportsenhet"
 
 #, c-format
 msgid "network filter config filename '%1$s' does not match name '%2$s'"
@@ -32145,13 +32148,11 @@ msgstr ""
 msgid "network filter information in XML"
 msgstr "nätverksfilterinformation i XML"
 
-#, fuzzy
 msgid "network filter name or uuid"
-msgstr "nätverksnamn eller uuid"
+msgstr "nätverksfiltrets namn eller uuid"
 
-#, fuzzy
 msgid "network information"
-msgstr "nätverksinformation i XML"
+msgstr "nätverksinformation"
 
 msgid "network information in XML"
 msgstr "nätverksinformation i XML"
@@ -32162,17 +32163,15 @@ msgstr "nätverksgränssnittsnamn"
 msgid "network interface type"
 msgstr "nätverksgränssnittstyp"
 
-#, fuzzy
 msgid "network is already active"
-msgstr "Domänen är redan aktiv"
+msgstr "nätverket är redan aktivt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network is already active as '%1$s'"
-msgstr "Domänen är redan aktiv"
+msgstr "nätverket är redan aktivt som ”%1$s”"
 
-#, fuzzy
 msgid "network is not running"
-msgstr "nätverket %s är inte aktivt"
+msgstr "nätverket kör inte"
 
 msgid "network name"
 msgstr "nätverksnamn"
@@ -32184,148 +32183,141 @@ msgstr "nätverksnamn eller uuid"
 msgid "network port %1$s exists already"
 msgstr "nätverksporten %1$s finns redan"
 
-#, fuzzy
 msgid "network port has no mac"
-msgstr "nätverket %s är inte aktivt"
+msgstr "nätverkets port har ingen mac"
 
 msgid "network port has no owner UUID"
-msgstr ""
+msgstr "nätverksporten har inget ägar-UUID"
 
-#, fuzzy
 msgid "network port has no owner name"
-msgstr "Nätverk %s har avdefinierats\n"
+msgstr "nätverksporten har inget ägarnamn"
 
-#, fuzzy
 msgid "network port has no uuid"
-msgstr "nätverksnamn eller uuid"
+msgstr "nätverksporten har inget uuid"
 
 msgid "network port information in XML"
 msgstr "nätverksportsinformation i XML"
 
-#, fuzzy
 msgid "network port not found"
-msgstr "Nätverk hittades inte"
+msgstr "nätverksporten finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network port not found: %1$s"
-msgstr "Nätverk hittades inte: %1$s"
+msgstr "nätverksporten finns inte: %1$s"
 
-#, fuzzy
 msgid "network state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "nätverkets tillståndsdrivrutin är inte aktiv"
 
 msgid "network uuid"
 msgstr "nätverks-uuid"
 
 msgid "network-based listen isn't possible, network driver isn't present"
 msgstr ""
+"nätverksbaserat lyssnande är inte möjligt, nätverksdrivrutinen är inte på "
+"plats"
 
-#, fuzzy
 msgid "network_update_xml"
-msgstr "nätverksnamn"
+msgstr "network_update_xml"
 
-#, fuzzy
 msgid "new bridge device name"
-msgstr "målenhetstyp"
+msgstr "nytt bryggenhetsnamn"
 
 msgid "new capacity for the vol, as scaled integer (default bytes)"
-msgstr ""
+msgstr "ny kapacitet för volymen, som ett skalat heltal (standard byte)"
 
 msgid "new domain name"
 msgstr "nytt domännamn"
 
 msgid "new maximum memory size, as scaled integer (default KiB)"
-msgstr ""
+msgstr "ny maximal minnesstorlek, som ett skalat heltal (standard KiB)"
 
 msgid "new memory size, as scaled integer (default KiB)"
-msgstr ""
+msgstr "ny minnesstorlek, som skalat heltal (standard KiB)"
 
 msgid "new metadata to set"
-msgstr ""
+msgstr "ny metadata att sätta"
 
-#, fuzzy
 msgid "new state of the device"
-msgstr "mål för diskenhet"
+msgstr "nytt tillstånd på enheten"
 
 msgid "new value of <requested/> size, as scaled integer (default KiB)"
-msgstr ""
+msgstr "nytt värde på storleken <requested/>, som skalat heltal (standard KiB)"
 
-#, fuzzy
 msgid "new xml too large to fit in file"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "den nya xml:en är för stor för att få plats i filen"
 
 msgid "nfsvers value for NFS pool mount option"
-msgstr ""
+msgstr "värdet nfsvers för NFS-poolmonteringsflaggan"
 
 #, c-format
 msgid "nkeycodes must be <= %1$d"
-msgstr ""
+msgstr "nkeycodes måste vara ≤ %1$d"
 
 msgid "nl_recv failed"
-msgstr ""
+msgstr "nl_recv misslyckades"
 
 msgid "nl_recv failed - returned 0 bytes"
-msgstr ""
+msgstr "nl_recv misslyckades — returnerade 0 byte"
 
 msgid "nl_recv returned with error"
-msgstr ""
+msgstr "nl_recv returnerade med fel"
 
 msgid "no"
 msgstr "nej"
 
 msgid "no CPU model specified"
-msgstr ""
+msgstr "ingen CPU-modell angiven"
 
 #, c-format
 msgid "no CPU model specified at index %1$zu"
-msgstr ""
+msgstr "ingen CPU-modell angiven vid index %1$zu"
 
 msgid "no CPUs found"
-msgstr ""
+msgstr "inga CPU:er finns"
 
 msgid "no CPUs given"
-msgstr ""
+msgstr "inga CPU:er angivna"
 
 msgid "no FLR, PM reset or bus reset available"
-msgstr ""
+msgstr "ingen FLR, PM-reset eller buss-reset tillgänglig"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
-msgstr ""
+msgstr "inget IFLA_PORT_RESPONSE finns i netlink-meddelandet"
 
 #, c-format
 msgid "no IP address found for interface '%1$s'"
-msgstr ""
+msgstr "ingen IP-adress finns till gränssnittet ”%1$s”"
 
 #, c-format
 msgid "no PCI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget PCI-buss-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no PCI domain ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget PCI-domän-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no PCI function ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget PCI-funktions-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no PCI product ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget PCI-produkt-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no PCI slot ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget PCI-facks-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no PCI vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget PCI-leverantörs-ID angivet för ”%1$s”"
 
 msgid "no SASL mechanisms are available"
-msgstr ""
+msgstr "inga SASL-mekanismer är tillgängliga"
 
 #, c-format
 msgid "no SCSI LUN ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget SCSI LUN-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no SCSI bus ID supplied for '%1$s'"
