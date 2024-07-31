@@ -301,9 +301,15 @@ virDomainObjListAddLocked(virDomainObjList *doms,
                 goto error;
             }
             if (!vm->persistent) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("domain '%1$s' is already being started"),
-                               vm->def->name);
+                if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
+                    virReportError(VIR_ERR_OPERATION_INVALID,
+                                   _("domain '%1$s' is being migrated out"),
+                                   vm->def->name);
+                } else {
+                    virReportError(VIR_ERR_OPERATION_INVALID,
+                                   _("domain '%1$s' is already being started"),
+                                   vm->def->name);
+                }
                 goto error;
             }
         }
