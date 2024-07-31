@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-07-29 08:52+0000\n"
+"PO-Revision-Date: 2024-08-01 20:41+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32345,83 +32345,83 @@ msgstr "inget SCSI LUN-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no SCSI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget SCSI-buss-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no SCSI host ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget SCSI-värd-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no SCSI target ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget SCSI-mål-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no USB bus number supplied for '%1$s'"
-msgstr ""
+msgstr "inget USB-bussnummer angivet för ”%1$s”"
 
 #, c-format
 msgid "no USB device number supplied for '%1$s'"
-msgstr ""
+msgstr "inget USB-enhetsnummer angivet för ”%1$s”"
 
 #, c-format
 msgid "no USB interface class supplied for '%1$s'"
-msgstr ""
+msgstr "ingen USB-gränssnittsklass angiven för ”%1$s”"
 
 #, c-format
 msgid "no USB interface number supplied for '%1$s'"
-msgstr ""
+msgstr "inget USB-gränssnittsnummer angivet för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no USB interface protocol supplied for '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "inget USB-gränssnittsprotokoll angivet för ”%1$s”"
 
 #, c-format
 msgid "no USB interface subclass supplied for '%1$s'"
-msgstr ""
+msgstr "ingen USB-gränssnittsunderklass angiven för ”%1$s”"
 
 #, c-format
 msgid "no USB product ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget USB-produkt-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "inget USB-leverantörs-ID angivet för ”%1$s”"
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
-msgstr ""
+msgstr "ingen WWNN angiven för ”%1$s”, och autogenereringen misslyckades"
 
 #, c-format
 msgid "no WWPN supplied for '%1$s', and auto-generation failed"
-msgstr ""
+msgstr "ingen WWPN angiven för ”%1$s”, och autogenereringen misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no assigned pty for device %1$s"
-msgstr "saknar källinformation för enhet %1$s"
+msgstr "ingen tilldelad pty för enheten %1$s"
 
 #, c-format
 msgid "no audio device with ID %1$u"
-msgstr ""
+msgstr "ingen audioenhet med ID %1$u"
 
 msgid "no autostart"
 msgstr "ingen autostart"
 
 msgid "no available memory line found"
-msgstr ""
+msgstr "ingen tillgänglig minnesrad finns"
 
 #, c-format
 msgid "no block device path supplied for '%1$s'"
-msgstr ""
+msgstr "ingen sökväg till blockenheten angiven för ”%1$s”"
 
 #, c-format
 msgid "no call waiting for reply with prog %1$d vers %2$d serial %3$d"
-msgstr ""
+msgstr "inget anrop väntar på svar med prog %1$d vers %2$d serie %3$d"
 
 msgid "no cgroup backend available"
-msgstr ""
+msgstr "ingen cgroup-bakände tillgänglig"
 
 msgid "no client username was found"
-msgstr ""
+msgstr "inget klientanvändarnamn fanns"
 
 #, c-format
 msgid "no client with matching id '%1$llu' found"
