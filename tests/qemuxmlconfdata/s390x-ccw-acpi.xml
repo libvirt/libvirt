@@ -1,0 +1,15 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory>4194304</memory>
+  <vcpu>4</vcpu>
+  <features>
+    <acpi/>
+  </features>
+  <os>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
+  </devices>
+</domain>

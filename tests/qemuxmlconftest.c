@@ -1732,7 +1732,23 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("input-usbmouse");
     DO_TEST_CAPS_LATEST("input-usbtablet");
-    DO_TEST_CAPS_LATEST("misc-acpi");
+
+    /* tests for ACPI support handling:
+     *  - existing positive test cases enabling ACPI for aarch64/x86_64/loongarch:
+     *     - firmware-manual-efi-acpi-q35
+     *     - firmware-manual-efi-acpi-aarch64
+     *     - firmware-auto-efi-loongarch64
+     *
+     *  - negative case for aarch64 with 'borzoi' machine not supporting ACPI
+     *
+     *  - s390x has hack to strip ACPI to preserve migration of old configs,
+     *    but should produce error when ABI_UPDATE is requested
+     */
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-noacpi-acpi", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-acpi", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-acpi", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR("s390x-ccw-acpi", "s390x");
+
     DO_TEST_CAPS_LATEST("misc-disable-s3");
     DO_TEST_CAPS_LATEST("misc-disable-suspends");
     DO_TEST_CAPS_LATEST("misc-enable-s4");
