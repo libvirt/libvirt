@@ -28,7 +28,7 @@
 #include "ch_interface.h"
 #include "virjson.h"
 #include "virlog.h"
-
+#include "datatypes.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
 
@@ -39,8 +39,9 @@ VIR_LOG_INIT("ch.ch_interface");
  * @driver: pointer to ch driver object
  * @vm: pointer to domain definition
  * @net: pointer to a guest net
- * @nicindexes: returned array of FDs of guest interfaces
- * @nnicindexes: returned number of guest interfaces
+ * @tapfds: returned array of tap FDs
+ * @nicindexes: returned array list of network interface indexes
+ * @nnicindexes: returned number of network interfaces
  *
  *
  * Returns 0 on success, -1 on error.
@@ -49,34 +50,47 @@ int
 virCHConnetNetworkInterfaces(virCHDriver *driver,
                              virDomainDef *vm,
                              virDomainNetDef *net,
-                             int *tapfds, int **nicindexes, size_t *nnicindexes)
+                             int *tapfds,
+                             int **nicindexes,
+                             size_t *nnicindexes)
 {
     virDomainNetType actualType = virDomainNetGetActualType(net);
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
+    g_autoptr(virConnect) conn = NULL;
+    size_t tapfdSize = net->driver.virtio.queues;
 
+    /* If appropriate, grab a physical device from the configured
+     * network's pool of devices, or resolve bridge device name
+     * to the one defined in the network definition.
+     */
+    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (!(conn = virGetConnectNetwork()))
+            return -1;
+        if (virDomainNetAllocateActualDevice(conn, vm, net) < 0)
+            return -1;
+    }
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-
         if (virDomainInterfaceEthernetConnect(vm, net,
                                               driver->ebtables, false,
                                               driver->privileged, tapfds,
                                               net->driver.virtio.queues) < 0)
             return -1;
 
-        G_GNUC_FALLTHROUGH;
+        break;
     case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (virDomainInterfaceBridgeConnect(vm, net,
+                                            tapfds,
+                                            &tapfdSize,
+                                            driver->privileged,
+                                            driver->ebtables,
+                                            false,
+                                            NULL) < 0)
+            return -1;
+        break;
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        if (nicindexes && nnicindexes && net->ifname) {
-            int nicindex = 0;
-
-            if (virNetDevGetIndex(net->ifname, &nicindex) < 0)
-                return -1;
-
-            VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex);
-        }
-
-        break;
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -93,6 +107,20 @@ virCHConnetNetworkInterfaces(virCHDriver *driver,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported Network type %1$d"), actualType);
         return -1;
+    }
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+        actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (nicindexes && nnicindexes && net->ifname) {
+            int nicindex = 0;
+
+            if (virNetDevGetIndex(net->ifname, &nicindex) < 0)
+                return -1;
+
+            VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex);
+        }
     }
 
     return 0;
