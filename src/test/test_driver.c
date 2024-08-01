@@ -10566,6 +10566,22 @@ testDomainDetachPrepHostdev(virDomainObj *vm,
 
 
 static int
+testDomainDetachPrepNet(virDomainObj *vm,
+                        virDomainNetDef *match,
+                        virDomainNetDef **detach)
+{
+    int detachidx;
+
+    if ((detachidx = virDomainNetFindIdx(vm->def, match)) < 0)
+        return -1;
+
+    *detach = vm->def->nets[detachidx];
+
+    return 0;
+}
+
+
+static int
 testDomainRemoveHostDevice(testDriver *driver G_GNUC_UNUSED,
                            virDomainObj *vm,
                            virDomainHostdevDef *hostdev)
@@ -10588,19 +10604,59 @@ testDomainRemoveHostDevice(testDriver *driver G_GNUC_UNUSED,
 
 
 static int
+testDomainRemoveNetDevice(testDriver *driver G_GNUC_UNUSED,
+                          virDomainObj *vm,
+                          virDomainNetDef *net)
+{
+    size_t i;
+    int actualType = virDomainNetGetActualType(net);
+
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_NULL:
+    case VIR_DOMAIN_NET_TYPE_VDS:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live detach of interface type %1$s is not implemented yet"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
+    VIR_DEBUG("Removing network interface %s from domain %p %s",
+              net->info.alias, vm, vm->def->name);
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        if (vm->def->nets[i] == net) {
+            virDomainNetRemove(vm->def, i);
+            break;
+        }
+    }
+
+    virDomainNetDefFree(net);
+    return 0;
+}
+
+static int
 testDomainRemoveDevice(testDriver *driver,
                        virDomainObj *vm,
                        virDomainDeviceDef *dev)
 {
     virDomainDeviceInfo *info = NULL;
     g_autofree char *alias = NULL;
-
-    if (dev->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("don't know how to remove a %1$s device"),
-                       virDomainDeviceTypeToString(dev->type));
-        return -1;
-    }
 
     /*
      * save the alias to use when sending a DEVICE_REMOVED event after
@@ -10610,8 +10666,47 @@ testDomainRemoveDevice(testDriver *driver,
         alias = g_strdup(info->alias);
     }
 
-    if (testDomainRemoveHostDevice(driver, vm, dev->data.hostdev) < 0)
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        if (testDomainRemoveNetDevice(driver, vm, dev->data.net) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        if (testDomainRemoveHostDevice(driver, vm, dev->data.hostdev) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
+    case VIR_DOMAIN_DEVICE_LAST:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live detach of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
         return -1;
+    }
 
     if (alias) {
         virObjectEvent *event;
@@ -10631,16 +10726,52 @@ testDomainDetachDeviceLive(testDriver *driver,
     virDomainDeviceDef detach = { .type = match->type };
     virDomainDeviceInfo *info = NULL;
 
-    if (match->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
+    switch (match->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        if (testDomainDetachPrepNet(vm, match->data.net,
+                                    &detach.data.net) < 0) {
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        if (testDomainDetachPrepHostdev(vm, match->data.hostdev,
+                                        &detach.data.hostdev) < 0) {
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
+    case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live detach of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(match->type));
         return -1;
     }
-
-    if (testDomainDetachPrepHostdev(vm, match->data.hostdev,
-                                    &detach.data.hostdev) < 0)
-        return -1;
 
     /* "detach" now points to the actual device we want to detach */
 
