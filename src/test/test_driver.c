@@ -10116,6 +10116,91 @@ testDomainAttachHostPCIDevice(testDriver *driver G_GNUC_UNUSED,
 
 
 static int
+testDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
+                           const char *prefix)
+{
+    int idx;
+
+    if (!info->alias)
+        return -1;
+    if (!STRPREFIX(info->alias, prefix))
+        return -1;
+
+    if (virStrToLong_i(info->alias + strlen(prefix), NULL, 10, &idx) < 0)
+        return -1;
+
+    return idx;
+}
+
+
+static void
+testAssignDeviceNetAlias(virDomainDef *def,
+                         virDomainNetDef *net,
+                         int idx)
+{
+    if (net->info.alias)
+        return;
+
+    if (idx == -1) {
+        size_t i;
+
+        idx = 0;
+        for (i = 0; i < def->nnets; i++) {
+            int thisidx;
+
+            if ((thisidx = testDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0)
+                continue; /* failure could be due to "hostdevN" */
+            if (thisidx >= idx)
+                idx = thisidx + 1;
+        }
+    }
+
+    net->info.alias = g_strdup_printf("net%d", idx);
+}
+
+
+static int
+testDomainAttachNetDevice(testDriver *driver G_GNUC_UNUSED,
+                          virDomainObj *vm,
+                          virDomainNetDef *net)
+{
+    virDomainNetType actualType;
+
+    actualType = virDomainNetGetActualType(net);
+
+    testAssignDeviceNetAlias(vm->def, net, -1);
+
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_NULL:
+    case VIR_DOMAIN_NET_TYPE_VDS:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("hotplug of interface type of %1$s is not implemented yet"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
+    VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net);
+
+    return 0;
+}
+
+static int
 testDomainAttachHostDevice(testDriver *driver,
                            virDomainObj *vm,
                            virDomainHostdevDef *hostdev)
@@ -10144,20 +10229,60 @@ testDomainAttachDeviceLive(virDomainObj *vm,
                            testDriver *driver)
 {
     const char *alias = NULL;
+    int ret = -1;
 
-    if (dev->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        testDomainObjCheckNetTaint(vm, dev->data.net);
+        ret = testDomainAttachNetDevice(driver, vm, dev->data.net);
+        if (ret == 0) {
+            alias = dev->data.net->info.alias;
+            dev->data.net = NULL;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        testDomainObjCheckHostdevTaint(vm, dev->data.hostdev);
+        ret = testDomainAttachHostDevice(driver, vm,
+                                         dev->data.hostdev);
+        if (ret == 0) {
+            alias = dev->data.hostdev->info->alias;
+            dev->data.hostdev = NULL;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
+    case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live attach of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
-
-    testDomainObjCheckHostdevTaint(vm, dev->data.hostdev);
-    if (testDomainAttachHostDevice(driver, vm, dev->data.hostdev) < 0)
-        return -1;
-
-    alias = dev->data.hostdev->info->alias;
-    dev->data.hostdev = NULL;
 
     if (alias) {
         virObjectEvent *event;
@@ -10165,7 +10290,7 @@ testDomainAttachDeviceLive(virDomainObj *vm,
         virObjectEventStateQueue(driver->eventState, event);
     }
 
-    return 0;
+    return ret;
 }
 
 
