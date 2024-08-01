@@ -48,3 +48,13 @@ int virDomainInterfaceClearQoS(virDomainDef *def,
                                virDomainNetDef *net);
 void virDomainClearNetBandwidth(virDomainDef *def)
     ATTRIBUTE_NONNULL(1);
+
+int virDomainInterfaceBridgeConnect(virDomainDef *def,
+                                    virDomainNetDef *net,
+                                    int *tapfd,
+                                    size_t *tapfdSize,
+                                    bool privileged,
+                                    ebtablesContext *ebtables,
+                                    bool macFilter,
+                                    const char *bridgeHelperName)
+    ATTRIBUTE_NONNULL(2) G_NO_INLINE;

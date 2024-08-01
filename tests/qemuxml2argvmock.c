@@ -35,6 +35,7 @@
 #include "virutil.h"
 #include "qemu/qemu_interface.h"
 #include "qemu/qemu_command.h"
+#include "domain_interface.h"
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -115,11 +116,14 @@ virNetDevTapCreate(char **ifname,
 
 
 int
-qemuInterfaceBridgeConnect(virDomainDef *def G_GNUC_UNUSED,
-                           virQEMUDriver *driver G_GNUC_UNUSED,
-                           virDomainNetDef *net G_GNUC_UNUSED,
-                           int *tapfd,
-                           size_t *tapfdSize)
+virDomainInterfaceBridgeConnect(virDomainDef *def G_GNUC_UNUSED,
+                                virDomainNetDef *net G_GNUC_UNUSED,
+                                int *tapfd,
+                                size_t *tapfdSize,
+                                bool privileged G_GNUC_UNUSED,
+                                ebtablesContext *ebtables G_GNUC_UNUSED,
+                                bool macFilter G_GNUC_UNUSED,
+                                const char *bridgeHelperName G_GNUC_UNUSED)
 {
     size_t i;
 
