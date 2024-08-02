@@ -1819,25 +1819,14 @@ virSecuritySELinuxRestoreImageLabelInt(virSecurityManager *mgr,
     if (src->readonly || src->shared)
         return 0;
 
-    if (virStorageSourceIsFD(src)) {
-        if (migrated)
-            return 0;
-
-        if (!src->fdtuple ||
-            !src->fdtuple->selinuxLabel ||
-            src->fdtuple->nfds == 0)
-            return 0;
-
-        ignore_value(virSecuritySELinuxFSetFilecon(src->fdtuple->fds[0],
-                                                   src->fdtuple->selinuxLabel));
-        return 0;
-    }
-
     /* If we have a shared FS and are doing migration, we must not change
      * ownership, because that kills access on the destination host which is
      * sub-optimal for the guest VM's I/O attempts :-) */
     if (migrated) {
         int rc = 1;
+
+        if (virStorageSourceIsFD(src))
+            return 0;
 
         if (virStorageSourceIsLocalStorage(src)) {
             if (!src->path)
@@ -1852,6 +1841,17 @@ virSecuritySELinuxRestoreImageLabelInt(virSecurityManager *mgr,
                       src->path);
             return 0;
         }
+    }
+
+    if (virStorageSourceIsFD(src)) {
+        if (!src->fdtuple ||
+            !src->fdtuple->selinuxLabel ||
+            src->fdtuple->nfds == 0)
+            return 0;
+
+        ignore_value(virSecuritySELinuxFSetFilecon(src->fdtuple->fds[0],
+                                                   src->fdtuple->selinuxLabel));
+        return 0;
     }
 
     /* This is not very clean. But so far we don't have NVMe
