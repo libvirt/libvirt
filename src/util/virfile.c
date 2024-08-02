@@ -3804,7 +3804,16 @@ virFileGetDefaultHugepage(virHugeTLBFS *fs,
     return NULL;
 }
 
-static bool
+
+/**
+ * virFileIsSharedFSOverride:
+ * @path: Path to check
+ * @overrides: string list of path overrides
+ *
+ * Checks whether @path is inside any of the shared filesystem override
+ * directories passed as @overrides.
+ */
+bool
 virFileIsSharedFSOverride(const char *path,
                           char *const *overrides)
 {
@@ -3840,6 +3849,7 @@ virFileIsSharedFSOverride(const char *path,
 
     return false;
 }
+
 
 int virFileIsSharedFS(const char *path,
                       char *const *overrides)

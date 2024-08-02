@@ -2359,6 +2359,7 @@ virFileIsLink;
 virFileIsMountPoint;
 virFileIsRegular;
 virFileIsSharedFS;
+virFileIsSharedFSOverride;
 virFileIsSharedFSType;
 virFileLength;
 virFileLinkPointsTo;
