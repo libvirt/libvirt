@@ -933,7 +933,6 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     g_autofree char *pidfile = NULL;
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 1000; /* ms */
-    bool setTPMStateLabel = true;
     pid_t pid = -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -960,13 +959,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
 
-    if (incomingMigration &&
-        virFileIsSharedFS(tpm->data.emulator.storagepath, cfg->sharedFilesystems) == 1) {
-        /* security labels must have been set up on source already */
-        setTPMStateLabel = false;
-    }
-
-    if (qemuSecuritySetTPMLabels(driver, vm, setTPMStateLabel) < 0)
+    if (qemuSecuritySetTPMLabels(driver, vm, true) < 0)
         return -1;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, cfg->swtpm_user,
@@ -1015,7 +1008,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         virProcessKillPainfully(pid, true);
     if (pidfile)
         unlink(pidfile);
-    qemuSecurityRestoreTPMLabels(driver, vm, setTPMStateLabel);
+    qemuSecurityRestoreTPMLabels(driver, vm, true);
     return -1;
 }
 
