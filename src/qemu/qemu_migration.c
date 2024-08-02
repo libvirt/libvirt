@@ -526,6 +526,66 @@ qemuMigrationDstPrepareStorage(virDomainObj *vm,
 }
 
 
+static void
+qemuMigrationDstPrepareDiskSeclabelOne(virStorageSource *src,
+                                       char *const *sharedFilesystems)
+{
+    if (!virStorageSourceIsLocalStorage(src))
+        return;
+
+    /* We care only about existing local storage */
+    if (virStorageSourceIsEmpty(src))
+        return;
+
+    /* Only paths which are on local filesystem but shared elsewhere are relevant */
+    if (!virFileIsSharedFSOverride(src->path, sharedFilesystems))
+        return;
+
+    src->seclabelSkipRemember = true;
+}
+
+
+static void
+qemuMigrationDstPrepareDiskSeclabels(virDomainObj *vm,
+                                     const char **migrate_disks,
+                                     unsigned int flags)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    size_t i;
+
+    /* In case when storage is exported from this host, security label
+     * remembering would behave differently compared to the host which mounts
+     * the exported filesystem. Specifically for incoming migration remembering
+     * a seclabel would remember a seclabel already allowing access to the image,
+     * which is not desired. Thus we skip remembering of seclabels for images
+     * which are local to this host but accessed in a shared way from another
+     * host.
+     */
+    if (!cfg->sharedFilesystems ||
+        cfg->sharedFilesystems[0] == NULL)
+        return;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *disk = vm->def->disks[i];
+
+        /* Any storage that was migrated via NBD is technically fully local so
+         * we want seclabels remembered */
+        if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
+            if (qemuMigrationAnyCopyDisk(disk, migrate_disks))
+                continue;
+        }
+
+        qemuMigrationDstPrepareDiskSeclabelOne(disk->src, cfg->sharedFilesystems);
+    }
+
+    if (vm->def->os.loader && vm->def->os.loader->nvram) {
+        qemuMigrationDstPrepareDiskSeclabelOne(vm->def->os.loader->nvram,
+                                               cfg->sharedFilesystems);
+    }
+}
+
+
 /**
  * qemuMigrationDstStartNBDServer:
  * @driver: qemu driver
@@ -3185,6 +3245,8 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
                                              listenAddress, port,
                                              dataFD[0])))
         goto error;
+
+    qemuMigrationDstPrepareDiskSeclabels(vm, migrate_disks, flags);
 
     if (qemuProcessPrepareDomain(driver, vm, startFlags) < 0)
         goto error;
