@@ -165,7 +165,7 @@ qemuExtDevicesCleanupHost(virQEMUDriver *driver,
         virDomainTPMDef *tpm = def->tpms[i];
 
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            qemuExtTPMCleanupHost(tpm, flags, outgoingMigration);
+            qemuExtTPMCleanupHost(driver, tpm, flags, outgoingMigration);
     }
 }
 

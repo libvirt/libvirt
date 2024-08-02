@@ -12129,7 +12129,12 @@ virQEMUFileOpenAs(uid_t fallback_uid,
     bool need_unlink = false;
     unsigned int vfoflags = 0;
     int fd = -1;
-    int path_shared = virFileIsSharedFS(path);
+    /* Note that it would be pointless to pass
+     * virQEMUDriverConfig.sharedFilesystems here, since those
+     * listed there are by definition paths that can be accessed
+     * as local from the current host. Thus, a second attempt at
+     * opening the file would not make a difference */
+    int path_shared = virFileIsSharedFS(path, NULL);
     uid_t uid = geteuid();
     gid_t gid = getegid();
 

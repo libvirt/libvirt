@@ -79,6 +79,7 @@ struct _virSecurityDACChownItem {
 typedef struct _virSecurityDACChownList virSecurityDACChownList;
 struct _virSecurityDACChownList {
     virSecurityManager *manager;
+    char **sharedFilesystems;
     virSecurityDACChownItem **items;
     size_t nItems;
     bool lock;
@@ -137,6 +138,7 @@ virSecurityDACChownListFree(void *opaque)
         virSecurityDACChownItemFree(list->items[i]);
     g_free(list->items);
     virObjectUnref(list->manager);
+    g_strfreev(list->sharedFilesystems);
     g_free(list);
 }
 
@@ -228,7 +230,9 @@ virSecurityDACTransactionRun(pid_t pid G_GNUC_UNUSED,
                 VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
         }
 
-        if (!(state = virSecurityManagerMetadataLock(list->manager, paths, npaths)))
+        if (!(state = virSecurityManagerMetadataLock(list->manager,
+                                                     list->sharedFilesystems,
+                                                     paths, npaths)))
             return -1;
 
         for (i = 0; i < list->nItems; i++) {
@@ -533,6 +537,7 @@ virSecurityDACPreFork(virSecurityManager *mgr)
 /**
  * virSecurityDACTransactionStart:
  * @mgr: security manager
+ * @sharedFilesystems: list of filesystem to consider shared
  *
  * Starts a new transaction. In transaction nothing is chown()-ed until
  * TransactionCommit() is called. This is implemented as a list that is
@@ -544,7 +549,8 @@ virSecurityDACPreFork(virSecurityManager *mgr)
  *        -1 otherwise.
  */
 static int
-virSecurityDACTransactionStart(virSecurityManager *mgr)
+virSecurityDACTransactionStart(virSecurityManager *mgr,
+                               char *const *sharedFilesystems)
 {
     g_autoptr(virSecurityDACChownList) list = NULL;
 
@@ -557,6 +563,7 @@ virSecurityDACTransactionStart(virSecurityManager *mgr)
     list = g_new0(virSecurityDACChownList, 1);
 
     list->manager = virObjectRef(mgr);
+    list->sharedFilesystems = g_strdupv((char **) sharedFilesystems);
 
     if (virThreadLocalSet(&chownList, list) < 0) {
         virReportSystemError(errno, "%s",
@@ -859,6 +866,7 @@ virSecurityDACRestoreFileLabel(virSecurityManager *mgr,
 
 static int
 virSecurityDACSetImageLabelInternal(virSecurityManager *mgr,
+                                    char *const *sharedFilesystems G_GNUC_UNUSED,
                                     virDomainDef *def,
                                     virStorageSource *src,
                                     virStorageSource *parent,
@@ -938,6 +946,7 @@ virSecurityDACSetImageLabelInternal(virSecurityManager *mgr,
 
 static int
 virSecurityDACSetImageLabel(virSecurityManager *mgr,
+                            char *const *sharedFilesystems,
                             virDomainDef *def,
                             virStorageSource *src,
                             virSecurityDomainImageLabelFlags flags)
@@ -948,7 +957,8 @@ virSecurityDACSetImageLabel(virSecurityManager *mgr,
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         const bool isChainTop = flags & VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
 
-        if (virSecurityDACSetImageLabelInternal(mgr, def, n, parent, isChainTop) < 0)
+        if (virSecurityDACSetImageLabelInternal(mgr, sharedFilesystems,
+                                                def, n, parent, isChainTop) < 0)
             return -1;
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
@@ -962,6 +972,7 @@ virSecurityDACSetImageLabel(virSecurityManager *mgr,
 
 static int
 virSecurityDACRestoreImageLabelInt(virSecurityManager *mgr,
+                                   char *const *sharedFilesystems,
                                    virDomainDef *def,
                                    virStorageSource *src,
                                    bool migrated)
@@ -1004,7 +1015,7 @@ virSecurityDACRestoreImageLabelInt(virSecurityManager *mgr,
             if (!src->path)
                 return 0;
 
-            if ((rc = virFileIsSharedFS(src->path)) < 0)
+            if ((rc = virFileIsSharedFS(src->path, sharedFilesystems)) < 0)
                 return -1;
         }
 
@@ -1038,16 +1049,19 @@ virSecurityDACRestoreImageLabelInt(virSecurityManager *mgr,
 
 static int
 virSecurityDACRestoreImageLabel(virSecurityManager *mgr,
+                                char *const *sharedFilesystems,
                                 virDomainDef *def,
                                 virStorageSource *src,
                                 virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
-    return virSecurityDACRestoreImageLabelInt(mgr, def, src, false);
+    return virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
+                                              def, src, false);
 }
 
 
 struct virSecurityDACMoveImageMetadataData {
     virSecurityManager *mgr;
+    char **sharedFilesystems;
     const char *src;
     const char *dst;
 };
@@ -1062,7 +1076,9 @@ virSecurityDACMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
     virSecurityManagerMetadataLockState *state;
     int ret;
 
-    if (!(state = virSecurityManagerMetadataLock(data->mgr, paths, G_N_ELEMENTS(paths))))
+    if (!(state = virSecurityManagerMetadataLock(data->mgr,
+                                                 data->sharedFilesystems,
+                                                 paths, G_N_ELEMENTS(paths))))
         return -1;
 
     ret = virSecurityMoveRememberedLabel(SECURITY_DAC_NAME, data->src, data->dst);
@@ -1079,12 +1095,17 @@ virSecurityDACMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
 
 static int
 virSecurityDACMoveImageMetadata(virSecurityManager *mgr,
+                                char *const *sharedFilesystems,
                                 pid_t pid,
                                 virStorageSource *src,
                                 virStorageSource *dst)
 {
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);
-    struct virSecurityDACMoveImageMetadataData data = { .mgr = mgr, 0 };
+    struct virSecurityDACMoveImageMetadataData data = {
+        .mgr = mgr,
+        .sharedFilesystems = (char **) sharedFilesystems,
+        0
+    };
     int rc;
 
     /* If dynamicOwnership is turned off, or owner remembering is
@@ -1883,6 +1904,7 @@ virSecurityDACRestoreSysinfoLabel(virSecurityManager *mgr,
 
 static int
 virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
+                              char *const *sharedFilesystems,
                               virDomainDef *def,
                               bool migrated,
                               bool chardevStdioLogd)
@@ -1907,6 +1929,7 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
 
     for (i = 0; i < def->ndisks; i++) {
         if (virSecurityDACRestoreImageLabelInt(mgr,
+                                               sharedFilesystems,
                                                def,
                                                def->disks[i]->src,
                                                migrated) < 0)
@@ -1974,7 +1997,8 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
     }
 
     if (def->os.loader && def->os.loader->nvram) {
-        if (virSecurityDACRestoreImageLabelInt(mgr, def, def->os.loader->nvram,
+        if (virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
+                                               def, def->os.loader->nvram,
                                                migrated) < 0)
             rc = -1;
     }
@@ -2120,6 +2144,7 @@ virSecurityDACSetSysinfoLabel(virSecurityManager *mgr,
 
 static int
 virSecurityDACSetAllLabel(virSecurityManager *mgr,
+                          char *const *sharedFilesystems,
                           virDomainDef *def,
                           const char *incomingPath G_GNUC_UNUSED,
                           bool chardevStdioLogd,
@@ -2145,7 +2170,8 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
         /* XXX fixme - we need to recursively label the entire tree :-( */
         if (virDomainDiskGetType(def->disks[i]) == VIR_STORAGE_TYPE_DIR)
             continue;
-        if (virSecurityDACSetImageLabel(mgr, def, def->disks[i]->src,
+        if (virSecurityDACSetImageLabel(mgr, sharedFilesystems,
+                                        def, def->disks[i]->src,
                                         VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
                                         VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
             return -1;
@@ -2214,7 +2240,8 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
     }
 
     if (def->os.loader && def->os.loader->nvram) {
-        if (virSecurityDACSetImageLabel(mgr, def, def->os.loader->nvram,
+        if (virSecurityDACSetImageLabel(mgr, sharedFilesystems,
+                                        def, def->os.loader->nvram,
                                         VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
                                         VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
             return -1;

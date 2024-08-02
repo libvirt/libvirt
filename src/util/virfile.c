@@ -2604,8 +2604,14 @@ virFileOpenAs(const char *path,
                 goto error;
 
             /* On Linux we can also verify the FS-type of the
-             * directory.  (this is a NOP on other platforms). */
-            if (virFileIsSharedFS(path) <= 0)
+             * directory.  (this is a NOP on other platforms).
+             *
+             * Note that it would be pointless to pass
+             * virQEMUDriverConfig.sharedFilesystems here, since those
+             * listed there are by definition paths that can be accessed
+             * as local from the current host. Thus, a second attempt at
+             * opening the file would not make a difference */
+            if (virFileIsSharedFS(path, NULL) <= 0)
                 goto error;
         }
 
@@ -3798,7 +3804,8 @@ virFileGetDefaultHugepage(virHugeTLBFS *fs,
     return NULL;
 }
 
-int virFileIsSharedFS(const char *path)
+int virFileIsSharedFS(const char *path,
+                      char *const *overrides G_GNUC_UNUSED)
 {
     return virFileIsSharedFSType(path,
                                  VIR_FILE_SHFS_NFS |

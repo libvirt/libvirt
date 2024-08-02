@@ -116,6 +116,7 @@ virSecurityDomainReleaseLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 virSecurityDomainSetAllLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                char *const *sharedFilesystems G_GNUC_UNUSED,
                                 virDomainDef *sec G_GNUC_UNUSED,
                                 const char *incomingPath G_GNUC_UNUSED,
                                 bool chardevStdioLogd G_GNUC_UNUSED,
@@ -126,6 +127,7 @@ virSecurityDomainSetAllLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 virSecurityDomainRestoreAllLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    char *const *sharedFilesystems G_GNUC_UNUSED,
                                     virDomainDef *vm G_GNUC_UNUSED,
                                     bool migrated G_GNUC_UNUSED,
                                     bool chardevStdioLogd G_GNUC_UNUSED)
@@ -189,6 +191,7 @@ virSecurityGetBaseLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 virSecurityDomainRestoreImageLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                      char *const *sharedFilesystems G_GNUC_UNUSED,
                                       virDomainDef *def G_GNUC_UNUSED,
                                       virStorageSource *src G_GNUC_UNUSED,
                                       virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
@@ -198,6 +201,7 @@ virSecurityDomainRestoreImageLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 virSecurityDomainSetImageLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                  char *const *sharedFilesystems G_GNUC_UNUSED,
                                   virDomainDef *def G_GNUC_UNUSED,
                                   virStorageSource *src G_GNUC_UNUSED,
                                   virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
@@ -207,6 +211,7 @@ virSecurityDomainSetImageLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 virSecurityDomainMoveImageMetadataNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                      char *const *sharedFilesystems G_GNUC_UNUSED,
                                       pid_t pid G_GNUC_UNUSED,
                                       virStorageSource *src G_GNUC_UNUSED,
                                       virStorageSource *dst G_GNUC_UNUSED)

@@ -1435,6 +1435,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
                           unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     int nsnapshots;
     int pauseReason;
     size_t i;
@@ -1609,7 +1610,7 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
             }
         }
 
-        if (qemuTPMHasSharedStorage(vm->def)&&
+        if (qemuTPMHasSharedStorage(driver, vm->def) &&
             !qemuTPMCanMigrateSharedStorage(vm->def)) {
             virReportError(VIR_ERR_NO_SUPPORT, "%s",
                            _("the running swtpm does not support migration with shared storage"));
@@ -1621,19 +1622,22 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
 }
 
 static bool
-qemuMigrationSrcIsSafe(virDomainDef *def,
-                       virQEMUCaps *qemuCaps,
+qemuMigrationSrcIsSafe(virDomainObj *vm,
                        const char **migrate_disks,
                        unsigned int flags)
 
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUCaps *qemuCaps = priv->qemuCaps;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     bool storagemigration = flags & (VIR_MIGRATE_NON_SHARED_DISK |
                                      VIR_MIGRATE_NON_SHARED_INC);
     size_t i;
     int rc;
 
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDef *disk = def->disks[i];
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *disk = vm->def->disks[i];
         const char *src = virDomainDiskGetSource(disk);
         virStorageType actualType = virStorageSourceGetActualType(disk->src);
         bool unsafe = false;
@@ -1652,7 +1656,7 @@ qemuMigrationSrcIsSafe(virDomainDef *def,
         /* However, disks on local FS (e.g. ext4) are not safe. */
         switch (actualType) {
         case VIR_STORAGE_TYPE_FILE:
-            if ((rc = virFileIsSharedFS(src)) < 0) {
+            if ((rc = virFileIsSharedFS(src, cfg->sharedFilesystems)) < 0) {
                 return false;
             } else if (rc == 0) {
                 unsafe = true;
@@ -2646,7 +2650,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         return NULL;
 
     if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
-        !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps, migrate_disks, flags))
+        !qemuMigrationSrcIsSafe(vm, migrate_disks, flags))
         return NULL;
 
     if (flags & VIR_MIGRATE_POSTCOPY &&
@@ -6130,7 +6134,6 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
     int ret = -1;
     virErrorPtr orig_err = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = vm->job->privateData;
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
@@ -6155,7 +6158,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
             goto endjob;
 
         if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
-            !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps, migrate_disks, flags))
+            !qemuMigrationSrcIsSafe(vm, migrate_disks, flags))
             goto endjob;
 
         qemuMigrationSrcStoreDomainState(vm);

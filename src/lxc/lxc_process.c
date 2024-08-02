@@ -170,7 +170,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     }
 
     if (flags & VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL) {
-        virSecurityManagerRestoreAllLabel(driver->securityManager,
+        virSecurityManagerRestoreAllLabel(driver->securityManager, NULL,
                                           vm->def, false, false);
     }
 
@@ -1320,7 +1320,7 @@ int virLXCProcessStart(virLXCDriver * driver,
     stopFlags |= VIR_LXC_PROCESS_CLEANUP_RELEASE_SECLABEL;
 
     VIR_DEBUG("Setting domain security labels");
-    if (virSecurityManagerSetAllLabel(driver->securityManager,
+    if (virSecurityManagerSetAllLabel(driver->securityManager, NULL,
                                       vm->def, NULL, false, false) < 0)
         goto cleanup;
     stopFlags |= VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL;

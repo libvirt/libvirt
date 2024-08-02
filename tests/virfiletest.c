@@ -313,7 +313,7 @@ testFileIsSharedFSType(const void *opaque G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    actual = virFileIsSharedFS(data->filename);
+    actual = virFileIsSharedFS(data->filename, NULL);
 
     if (actual != data->expected) {
         fprintf(stderr, "Unexpected FS type. Expected %d got %d\n",

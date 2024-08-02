@@ -415,6 +415,7 @@ AppArmorGenSecurityLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 AppArmorSetSecurityAllLabel(virSecurityManager *mgr,
+                            char *const *sharedFilesystems G_GNUC_UNUSED,
                             virDomainDef *def,
                             const char *incomingPath,
                             bool chardevStdioLogd G_GNUC_UNUSED,
@@ -489,6 +490,7 @@ AppArmorReleaseSecurityLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 
 static int
 AppArmorRestoreSecurityAllLabel(virSecurityManager *mgr G_GNUC_UNUSED,
+                                char *const *sharedFilesystems G_GNUC_UNUSED,
                                 virDomainDef *def,
                                 bool migrated G_GNUC_UNUSED,
                                 bool chardevStdioLogd G_GNUC_UNUSED)
@@ -607,6 +609,7 @@ AppArmorClearSecuritySocketLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 /* Called when hotplugging */
 static int
 AppArmorRestoreSecurityImageLabel(virSecurityManager *mgr,
+                                  char *const *sharedFilesystems G_GNUC_UNUSED,
                                   virDomainDef *def,
                                   virStorageSource *src,
                                   virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
@@ -711,6 +714,7 @@ AppArmorRestoreInputLabel(virSecurityManager *mgr,
 /* Called when hotplugging */
 static int
 AppArmorSetSecurityImageLabelInternal(virSecurityManager *mgr,
+                                      char *const *sharedFilesystems G_GNUC_UNUSED,
                                       virDomainDef *def,
                                       virStorageSource *src)
 {
@@ -744,6 +748,7 @@ AppArmorSetSecurityImageLabelInternal(virSecurityManager *mgr,
 
 static int
 AppArmorSetSecurityImageLabel(virSecurityManager *mgr,
+                              char *const *sharedFilesystems,
                               virDomainDef *def,
                               virStorageSource *src,
                               virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
@@ -759,7 +764,8 @@ AppArmorSetSecurityImageLabel(virSecurityManager *mgr,
         return 0;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (AppArmorSetSecurityImageLabelInternal(mgr, def, n) < 0)
+        if (AppArmorSetSecurityImageLabelInternal(mgr, sharedFilesystems,
+                                                  def, n) < 0)
             return -1;
     }
 

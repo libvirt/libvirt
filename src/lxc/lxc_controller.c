@@ -1919,7 +1919,8 @@ static int virLXCControllerSetupDisk(virLXCController *ctrl,
     /* Labelling normally operates on src, but we need
      * to actually label the dst here, so hack the config */
     def->src->path = dst;
-    if (virSecurityManagerSetImageLabel(securityDriver, ctrl->def, def->src,
+    if (virSecurityManagerSetImageLabel(securityDriver,
+                                        NULL, ctrl->def, def->src,
                                         VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN) < 0)
         goto cleanup;
 

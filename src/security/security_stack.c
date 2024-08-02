@@ -140,13 +140,15 @@ virSecurityStackPreFork(virSecurityManager *mgr)
 
 
 static int
-virSecurityStackTransactionStart(virSecurityManager *mgr)
+virSecurityStackTransactionStart(virSecurityManager *mgr,
+                                 char *const *sharedFilesystems)
 {
     virSecurityStackData *priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItem *item = priv->itemsHead;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerTransactionStart(item->securityManager) < 0)
+        if (virSecurityManagerTransactionStart(item->securityManager,
+                                               sharedFilesystems) < 0)
             goto rollback;
     }
 
@@ -337,6 +339,7 @@ virSecurityStackRestoreHostdevLabel(virSecurityManager *mgr,
 
 static int
 virSecurityStackSetAllLabel(virSecurityManager *mgr,
+                            char *const *sharedFilesystems,
                             virDomainDef *vm,
                             const char *incomingPath,
                             bool chardevStdioLogd,
@@ -346,8 +349,9 @@ virSecurityStackSetAllLabel(virSecurityManager *mgr,
     virSecurityStackItem *item = priv->itemsHead;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerSetAllLabel(item->securityManager, vm,
-                                          incomingPath, chardevStdioLogd,
+        if (virSecurityManagerSetAllLabel(item->securityManager,
+                                          sharedFilesystems,
+                                          vm, incomingPath, chardevStdioLogd,
                                           migrated) < 0)
             goto rollback;
     }
@@ -357,6 +361,7 @@ virSecurityStackSetAllLabel(virSecurityManager *mgr,
  rollback:
     for (item = item->prev; item; item = item->prev) {
         if (virSecurityManagerRestoreAllLabel(item->securityManager,
+                                              sharedFilesystems,
                                               vm,
                                               migrated,
                                               chardevStdioLogd) < 0) {
@@ -373,6 +378,7 @@ virSecurityStackSetAllLabel(virSecurityManager *mgr,
 
 static int
 virSecurityStackRestoreAllLabel(virSecurityManager *mgr,
+                                char *const *sharedFilesystems,
                                 virDomainDef *vm,
                                 bool migrated,
                                 bool chardevStdioLogd)
@@ -382,8 +388,11 @@ virSecurityStackRestoreAllLabel(virSecurityManager *mgr,
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerRestoreAllLabel(item->securityManager, vm,
-                                              migrated, chardevStdioLogd) < 0)
+        if (virSecurityManagerRestoreAllLabel(item->securityManager,
+                                              sharedFilesystems,
+                                              vm,
+                                              migrated,
+                                              chardevStdioLogd) < 0)
             rc = -1;
     }
 
@@ -638,6 +647,7 @@ virSecurityStackGetBaseLabel(virSecurityManager *mgr, int virtType)
 
 static int
 virSecurityStackSetImageLabel(virSecurityManager *mgr,
+                              char *const *sharedFilesystems,
                               virDomainDef *vm,
                               virStorageSource *src,
                               virSecurityDomainImageLabelFlags flags)
@@ -646,8 +656,9 @@ virSecurityStackSetImageLabel(virSecurityManager *mgr,
     virSecurityStackItem *item = priv->itemsHead;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerSetImageLabel(item->securityManager, vm, src,
-                                            flags) < 0)
+        if (virSecurityManagerSetImageLabel(item->securityManager,
+                                            sharedFilesystems,
+                                            vm, src, flags) < 0)
             goto rollback;
     }
 
@@ -656,6 +667,7 @@ virSecurityStackSetImageLabel(virSecurityManager *mgr,
  rollback:
     for (item = item->prev; item; item = item->prev) {
         if (virSecurityManagerRestoreImageLabel(item->securityManager,
+                                                sharedFilesystems,
                                                 vm,
                                                 src,
                                                 flags) < 0) {
@@ -672,6 +684,7 @@ virSecurityStackSetImageLabel(virSecurityManager *mgr,
 
 static int
 virSecurityStackRestoreImageLabel(virSecurityManager *mgr,
+                                  char *const *sharedFilesystems,
                                   virDomainDef *vm,
                                   virStorageSource *src,
                                   virSecurityDomainImageLabelFlags flags)
@@ -682,6 +695,7 @@ virSecurityStackRestoreImageLabel(virSecurityManager *mgr,
 
     for (; item; item = item->next) {
         if (virSecurityManagerRestoreImageLabel(item->securityManager,
+                                                sharedFilesystems,
                                                 vm, src, flags) < 0)
             rc = -1;
     }
@@ -691,6 +705,7 @@ virSecurityStackRestoreImageLabel(virSecurityManager *mgr,
 
 static int
 virSecurityStackMoveImageMetadata(virSecurityManager *mgr,
+                                  char *const *sharedFilesystems,
                                   pid_t pid,
                                   virStorageSource *src,
                                   virStorageSource *dst)
@@ -701,6 +716,7 @@ virSecurityStackMoveImageMetadata(virSecurityManager *mgr,
 
     for (; item; item = item->next) {
         if (virSecurityManagerMoveImageMetadata(item->securityManager,
+                                                sharedFilesystems,
                                                 pid, src, dst) < 0)
             rc = -1;
     }

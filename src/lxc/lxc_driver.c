@@ -3265,7 +3265,7 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
         char *tmpsrc = def->src->path;
         def->src->path = data->file;
         if (virSecurityManagerSetImageLabel(data->driver->securityManager,
-                                            data->vm->def, def->src,
+                                            NULL, data->vm->def, def->src,
                                             VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN) < 0) {
             def->src->path = tmpsrc;
             goto cleanup;
