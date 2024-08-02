@@ -3804,9 +3804,49 @@ virFileGetDefaultHugepage(virHugeTLBFS *fs,
     return NULL;
 }
 
-int virFileIsSharedFS(const char *path,
-                      char *const *overrides G_GNUC_UNUSED)
+static bool
+virFileIsSharedFSOverride(const char *path,
+                          char *const *overrides)
 {
+    g_autofree char *dirpath = NULL;
+    char *p = NULL;
+
+    if (!path || path[0] != '/' || !overrides)
+        return false;
+
+    if (g_strv_contains((const char *const *) overrides, path))
+        return true;
+
+    dirpath = g_strdup(path);
+
+    /* Continue until we've scanned the entire path */
+    while (p != dirpath) {
+
+        /* Find the last slash */
+        if ((p = strrchr(dirpath, '/')) == NULL)
+            break;
+
+        /* Truncate the path by overwriting the slash that we've just
+         * found with a null byte. If it is the very first slash in
+         * the path, we need to handle things slightly differently */
+        if (p == dirpath)
+            *(p+1) = '\0';
+        else
+            *p = '\0';
+
+        if (g_strv_contains((const char *const *) overrides, dirpath))
+            return true;
+    }
+
+    return false;
+}
+
+int virFileIsSharedFS(const char *path,
+                      char *const *overrides)
+{
+    if (virFileIsSharedFSOverride(path, overrides))
+        return 1;
+
     return virFileIsSharedFSType(path,
                                  VIR_FILE_SHFS_NFS |
                                  VIR_FILE_SHFS_GFS2 |
