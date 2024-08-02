@@ -1983,9 +1983,9 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
 
 static int
 virSecuritySELinuxSetImageLabel(virSecurityManager *mgr,
-                               virDomainDef *def,
-                               virStorageSource *src,
-                               virSecurityDomainImageLabelFlags flags)
+                                virDomainDef *def,
+                                virStorageSource *src,
+                                virSecurityDomainImageLabelFlags flags)
 {
     virStorageSource *parent = src;
     virStorageSource *n;
