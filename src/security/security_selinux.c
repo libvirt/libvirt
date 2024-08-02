@@ -1992,6 +1992,9 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
 
         ret = virSecuritySELinuxFSetFilecon(src->fdtuple->fds[0], use_label);
     } else {
+        if (src->seclabelSkipRemember)
+            remember = false;
+
         ret = virSecuritySELinuxSetFilecon(mgr, path, use_label, remember);
     }
 

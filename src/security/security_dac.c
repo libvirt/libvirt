@@ -940,6 +940,9 @@ virSecurityDACSetImageLabelInternal(virSecurityManager *mgr,
      */
     remember = isChainTop && !src->readonly && !src->shared;
 
+    if (src->seclabelSkipRemember)
+        remember = false;
+
     return virSecurityDACSetOwnership(mgr, src, NULL, user, group, remember);
 }
 

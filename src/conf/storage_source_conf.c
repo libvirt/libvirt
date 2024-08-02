@@ -820,6 +820,9 @@ virStorageSourceCopy(const virStorageSource *src,
     /* storage driver metadata are not copied */
     def->drv = NULL;
 
+    /* flag to avoid seclabel remember is not copied */
+    def->seclabelSkipRemember = false;
+
     def->path = g_strdup(src->path);
     def->fdgroup = g_strdup(src->fdgroup);
     def->volume = g_strdup(src->volume);

@@ -431,6 +431,15 @@ struct _virStorageSource {
     bool thresholdEventWithIndex;
 
     virStorageSourceFDTuple *fdtuple;
+
+    /* Setting 'seclabelSkipRemember' to true will cause the security driver to
+     * not remember the security label even if it otherwise were to be
+     * remembered. This is needed in cases such as incoming migration for
+     * shared images where the existing security label may no longer be the
+     * correct. The security driver otherwise doesn't have enough information
+     * to do this decision.
+     */
+    bool seclabelSkipRemember;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);
