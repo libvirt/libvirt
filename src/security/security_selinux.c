@@ -1837,8 +1837,15 @@ virSecuritySELinuxRestoreImageLabelInt(virSecurityManager *mgr,
         }
 
         if (rc == 1) {
+            g_autofree char *oldlabel = NULL;
+
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
                       src->path);
+
+            /* We still want to remove the local reference of the remembered
+             * seclabel. The destination will take its own reference when
+             * starting the migrated VM */
+            ignore_value(virSecuritySELinuxRecallLabel(src->path, &oldlabel));
             return 0;
         }
     }

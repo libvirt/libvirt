@@ -1022,6 +1022,9 @@ virSecurityDACRestoreImageLabelInt(virSecurityManager *mgr,
         if (rc == 1) {
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
                       src->path);
+
+            ignore_value(virSecurityDACRecallLabel(priv, src->path, NULL, NULL));
+
             return 0;
         }
     }
