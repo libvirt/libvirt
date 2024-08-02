@@ -119,3 +119,8 @@ module Test_libvirtd_qemu =
 { "deprecation_behavior" = "none" }
 { "sched_core" = "none" }
 { "storage_use_nbdkit" = "@USE_NBDKIT_DEFAULT@" }
+{ "shared_filesystems"
+    { "1" = "/path/to/images" }
+    { "2" = "/path/to/nvram" }
+    { "3" = "/path/to/swtpm" }
+}

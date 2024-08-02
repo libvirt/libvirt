@@ -233,6 +233,8 @@ struct _virQEMUDriverConfig {
     bool storageUseNbdkit;
 
     virQEMUSchedCore schedCore;
+
+    char **sharedFilesystems;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUDriverConfig, virObjectUnref);

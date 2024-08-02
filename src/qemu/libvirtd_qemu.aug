@@ -143,6 +143,8 @@ module Libvirtd_qemu =
 
    let storage_entry = bool_entry "storage_use_nbdkit"
 
+   let filesystem_entry = str_array_entry "shared_filesystems"
+
    (* Entries that used to exist in the config which are now
     * deleted. We keep on parsing them so we don't break
     * ability to parse old configs after upgrade
@@ -173,6 +175,7 @@ module Libvirtd_qemu =
              | swtpm_entry
              | capability_filters_entry
              | storage_entry
+             | filesystem_entry
              | obsolete_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]

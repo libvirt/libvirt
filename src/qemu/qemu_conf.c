@@ -386,6 +386,8 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     g_strfreev(cfg->capabilityfilters);
 
+    g_strfreev(cfg->sharedFilesystems);
+
     g_free(cfg->deprecationBehavior);
 }
 
@@ -1096,6 +1098,32 @@ virQEMUDriverConfigLoadStorageEntry(virQEMUDriverConfig *cfg,
 }
 
 
+static int
+virQEMUDriverConfigLoadFilesystemEntry(virQEMUDriverConfig *cfg,
+                                       virConf *conf)
+{
+    char **iter;
+
+    if (virConfGetValueStringList(conf, "shared_filesystems", false,
+                                  &cfg->sharedFilesystems) < 0)
+        return -1;
+
+    if (!cfg->sharedFilesystems)
+        return 0;
+
+    /* The paths provided by the user might contain trailing slashes
+     * and other fun diversions, which would break the naive string
+     * comparisons that we're later going to use them for */
+    for (iter = cfg->sharedFilesystems; *iter; iter++) {
+        char *canon = virFileCanonicalizePath(*iter);
+        g_free(*iter);
+        *iter = canon;
+    }
+
+    return 0;
+}
+
+
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
                                 const char *filename,
                                 bool privileged)
@@ -1168,6 +1196,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
         return -1;
 
     if (virQEMUDriverConfigLoadStorageEntry(cfg, conf) < 0)
+        return -1;
+
+    if (virQEMUDriverConfigLoadFilesystemEntry(cfg, conf) < 0)
         return -1;
 
     return 0;

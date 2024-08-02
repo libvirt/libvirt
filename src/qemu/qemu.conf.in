@@ -985,3 +985,29 @@
 # note that the default might change in future releases.
 #
 #storage_use_nbdkit = @USE_NBDKIT_DEFAULT@
+
+# libvirt will normally prevent migration if the storage backing the VM is not
+# on a shared filesystems. Sometimes, however, the storage *is* shared despite
+# not being detected as such: for example, this is the case when one of the
+# hosts involved in the migration is exporting its local storage to the other
+# one via NFS.
+#
+# Any directory listed here will be assumed to live on a shared filesystem,
+# making migration possible in scenarios such as the one described above. It's
+# the system's administrator responsibility to ensure that other hosts can
+# access this directory.
+#
+# This option is not symmetrical and should only be used on hosts where the
+# storage is being exported from. It must not be used on hosts accessing the
+# storage via a remote protocol.
+#
+# NOTE: this option is intended to help in very specific scenarios that are
+# rarely encountered. If you find yourself reaching for this option, consider
+# reworking your environment so that it follows a more common architecture
+# rather than using it.
+#
+#shared_filesystems = [
+#  "/path/to/images",
+#  "/path/to/nvram",
+#  "/path/to/swtpm"
+#]
