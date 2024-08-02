@@ -1377,17 +1377,16 @@ virValidateWWN(const char *wwn)
  * Returns -1 on error, 0 otherwise.
  */
 int
-virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
+virParseOwnershipIds(const char *label,
+                     uid_t *uidPtr,
+                     gid_t *gidPtr)
 {
-    int rc = -1;
     uid_t theuid;
     gid_t thegid;
-    char *tmp_label = NULL;
+    g_autofree char *tmp_label = g_strdup(label);
     char *sep = NULL;
     char *owner = NULL;
     char *group = NULL;
-
-    tmp_label = g_strdup(label);
 
     /* Split label */
     sep = strchr(tmp_label, ':');
@@ -1395,7 +1394,7 @@ virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Failed to parse uid and gid from '%1$s'"),
                        label);
-        goto cleanup;
+        return -1;
     }
     *sep = '\0';
     owner = tmp_label;
@@ -1406,19 +1405,14 @@ virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
      */
     if (virGetUserID(owner, &theuid) < 0 ||
         virGetGroupID(group, &thegid) < 0)
-        goto cleanup;
+        return -1;
 
     if (uidPtr)
         *uidPtr = theuid;
     if (gidPtr)
         *gidPtr = thegid;
 
-    rc = 0;
-
- cleanup:
-    VIR_FREE(tmp_label);
-
-    return rc;
+    return 0;
 }
 
 static time_t selfLastChanged;
