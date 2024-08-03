@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-01 20:41+0000\n"
+"PO-Revision-Date: 2024-08-03 19:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32431,158 +32431,156 @@ msgstr "det finns ingen klient som matchar id ”%1$llu”"
 msgid "no config file for %1$s"
 msgstr "ingen konfigurationsfil för %1$s"
 
-#, fuzzy
 msgid "no connection driver available"
-msgstr "ogiltig anslutningspekare i"
+msgstr "ingen anslutningsdrivrutin tillgänglig"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no connection driver available for %1$s"
-msgstr "ingen konfigurationsfil för %1$s"
+msgstr "ingen anslutningsdrivrutin tillgänglig för %1$s"
 
 msgid "no console devices available"
-msgstr ""
+msgstr "inga konsolenheter tillgängliga"
 
 #, c-format
 msgid "no device capabilities for '%1$s'"
-msgstr ""
+msgstr "inga enhetsförmågor för ”%1$s”"
 
 #, c-format
 msgid ""
 "no device found at address '%1$s' matching MAC address '%2$s' and alias "
 "'%3$s'"
 msgstr ""
+"ingen enhet finns på adressen ”%1$s” som matchar MAC-adressen ”%2$s” och har "
+"alias ”%3$s”"
 
 #, c-format
 msgid "no device found with alias %1$s"
-msgstr ""
+msgstr "ingen enhet finns med aliaset %1$s"
 
 #, c-format
 msgid "no disk format for %1$s was specified"
-msgstr ""
+msgstr "inget diskformat på %1$s angavs"
 
 #, c-format
 msgid "no disk found with alias '%1$s' or id '%2$s'"
-msgstr ""
+msgstr "inga diskar finns med aliaset ”%1$s” eller id ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no disk named '%1$s'"
-msgstr "okänd disktyp ”%1$s”"
+msgstr "inga diskar med namnet ”%1$s”"
 
 msgid "no disks selected for backup"
-msgstr ""
+msgstr "inga diskar valda för säkerhetskopiering"
 
 msgid "no domain XML passed"
-msgstr ""
+msgstr "ingen domän-XML skickad"
 
 msgid "no domain backup job present"
-msgstr ""
+msgstr "inget domänsäkerhetskopieringsjobb finns"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain checkpoint with matching name '%1$s'"
-msgstr "ingen lagringspool med matchande namn ”%1$s”"
+msgstr "ingen domänkontrollpunkt med matchande namn ”%1$s”"
 
-#, fuzzy
 msgid "no domain config"
-msgstr "visa domäntitel"
+msgstr "ingen domänkonfiguration"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain snapshot with matching name '%1$s'"
-msgstr "ingen lagringspool med matchande namn ”%1$s”"
+msgstr "ingen domänögonblicksbild med matchande namn ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with matching id %1$d"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "ingen domän med matchande id %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with matching id '%1$d'"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "ingen domän med matchande id ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with matching name '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "ingen domän med matchande namn ”%1$s”"
 
-#, fuzzy
 msgid "no domain with matching uuid"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "ingen domän med matchande uuid"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with matching uuid '%1$s'"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "ingen domän med matchande uuid ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with matching uuid '%1$s' (%2$s)"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "ingen domän med matchande uuid ”%1$s” (%2$s)"
 
 msgid "no error"
 msgstr "inget fel"
 
 msgid "no extended partition found and no primary partition available"
-msgstr ""
+msgstr "ingen utökad partition finns och ingen primär partition är tillgänglig"
 
 msgid "no file descriptor received"
-msgstr ""
+msgstr "ingen filbeskrivare mottagen"
 
 #, c-format
 msgid "no firmwares found in %1$s"
-msgstr ""
+msgstr "ingen fast programvara finns i %1$s"
 
 msgid "no free memory device slot available"
-msgstr ""
+msgstr "inget fritt fack för en minnesenhet är tillgängligt"
 
 msgid "no fs mount option name specified"
-msgstr ""
+msgstr "inget namn på fs-monteringsflaggan angivet"
 
 msgid "no guest CPU model specified"
-msgstr ""
+msgstr "ingen gäst-CPU-modell angiven"
 
 msgid "no host device manager defined"
-msgstr ""
+msgstr "ingen värdenhetshanterare definierad"
 
-#, fuzzy
 msgid "no hostname found"
-msgstr "Domän hittades inte"
+msgstr "inget värdnamn finns"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no hostname found for domain %1$s"
-msgstr "Misslyckades att avdefiniera domän %1$s"
+msgstr "inget värdnamn finns för domänen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no hostname found: %1$s"
-msgstr "Domän hittades inte: %1$s"
+msgstr "inget värdnamn finns %1$s"
 
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
-msgstr ""
+msgstr "inget iSCSI-gränssnitt definierat för IQN %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no interface with matching mac '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "inget gränssnitt med matchande mac ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no interface with matching name '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "inget gränssnitt med matchande namn ”%1$s”"
 
-#, fuzzy
 msgid "no job is active on the domain"
-msgstr "lista inaktiva & aktiva domäner<"
+msgstr "inget jobb är aktivt i domänen"
 
 msgid "no large enough free extent"
-msgstr ""
+msgstr "ingen fri utsträckning som är tillräckligt stor"
 
 msgid "no limit"
 msgstr "ingen gräns"
 
 msgid "no loader path specified and firmware auto selection disabled"
 msgstr ""
+"ingen laddarsökväg angiven och den fasta programvarans autoval avaktiverat"
 
 msgid "no map for cgroup BPF prog"
-msgstr ""
+msgstr "ingen avbildning för cgroup-BPF-prog"
 
 msgid "no matching RNG device was found"
-msgstr ""
+msgstr "ingen matchande RNG-enhet finns"
 
 msgid "no matching filesystem device was found"
-msgstr ""
+msgstr "ingen matchande filsystemsenhet finns"
 
 #, fuzzy
 msgid "no matching redirdev was not found"
