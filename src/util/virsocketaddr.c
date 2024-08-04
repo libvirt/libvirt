@@ -685,31 +685,34 @@ virSocketAddrMask(const virSocketAddr *addr,
                   const virSocketAddr *netmask,
                   virSocketAddr *network)
 {
-    memset(network, 0, sizeof(*network));
+    virSocketAddr tmp = { 0 };
+
     if (addr->data.stor.ss_family != netmask->data.stor.ss_family) {
         network->data.stor.ss_family = AF_UNSPEC;
         return -1;
     }
 
     if (addr->data.stor.ss_family == AF_INET) {
-        network->data.inet4.sin_addr.s_addr
+        tmp.data.inet4.sin_addr.s_addr
             = (addr->data.inet4.sin_addr.s_addr
                & netmask->data.inet4.sin_addr.s_addr);
-        network->data.inet4.sin_port = 0;
-        network->data.stor.ss_family = AF_INET;
-        network->len = addr->len;
+        tmp.data.inet4.sin_port = 0;
+        tmp.data.stor.ss_family = AF_INET;
+        tmp.len = addr->len;
+        *network = tmp;
         return 0;
     }
     if (addr->data.stor.ss_family == AF_INET6) {
         size_t i;
         for (i = 0; i < 16; i++) {
-            network->data.inet6.sin6_addr.s6_addr[i]
+            tmp.data.inet6.sin6_addr.s6_addr[i]
                 = (addr->data.inet6.sin6_addr.s6_addr[i]
                    & netmask->data.inet6.sin6_addr.s6_addr[i]);
         }
-        network->data.inet6.sin6_port = 0;
-        network->data.stor.ss_family = AF_INET6;
-        network->len = addr->len;
+        tmp.data.inet6.sin6_port = 0;
+        tmp.data.stor.ss_family = AF_INET6;
+        tmp.len = addr->len;
+        *network = tmp;
         return 0;
     }
     network->data.stor.ss_family = AF_UNSPEC;
