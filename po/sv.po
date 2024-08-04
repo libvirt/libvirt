@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-03 19:38+0000\n"
+"PO-Revision-Date: 2024-08-05 08:39+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32582,78 +32582,75 @@ msgstr "ingen matchande RNG-enhet finns"
 msgid "no matching filesystem device was found"
 msgstr "ingen matchande filsystemsenhet finns"
 
-#, fuzzy
 msgid "no matching redirdev was not found"
-msgstr "Domän hittades inte"
+msgstr "ingen matchande redirdev fanns"
 
 msgid "no matching watchdog was found"
-msgstr ""
+msgstr "ingen matchande vakthund fanns"
 
 msgid "no medium attachments"
-msgstr ""
+msgstr "inga medieinkopplingar"
 
 msgid "no memory device found"
-msgstr ""
+msgstr "ingen minnesenhet finns"
 
 msgid "no model provided for USB controller"
-msgstr ""
+msgstr "ingen modell given på USB-styrenheten"
 
 msgid "no monitor path"
-msgstr ""
+msgstr "ingen monitorsökväg"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no network interface supplied for '%1$s'"
-msgstr "nätverksgränssnittstyp"
+msgstr "inget nätverksgränssnitt angivet för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no network with matching name '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "inget nätverk med matchande namn ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no network with matching uuid '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "inget nätverk med matchande uuid ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no network with matching uuid '%1$s' (%2$s)"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "inget nätverk med matchande uuid ”%1$s” (%2$s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no node device for '%1$s' with matching wwnn '%2$s' and wwpn '%3$s'"
-msgstr "det finns ingen server med namn som matchar ”%s”"
+msgstr "ingen nodenhet för ”%1$s” med matchande wwnn ”%2$s” och wwpn ”%3$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no node device with matching name '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "ingen nodenhet med matchande namn ”%1$s”"
 
-#, fuzzy
 msgid "no node device with matching name 'scsi_host12'"
-msgstr "ingen lagringsvolym med matchande namn ”%s”"
+msgstr "ingen nodenhet med matchande namn ”scsi_host12”"
 
 #, c-format
 msgid "no nwfilter binding for port dev '%1$s'"
-msgstr ""
+msgstr "ingen nwfilter-bindning för portenheten ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no nwfilter with matching name '%1$s'"
-msgstr "ingen lagringsvolym med matchande namn ”%1$s”"
+msgstr "inget nwfilter med matchande namn ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no nwfilter with matching uuid '%1$s'"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "inget nwfilter med matchande uuid ”%1$s”"
 
-#, fuzzy
 msgid "no parent for this device"
-msgstr "mål för diskenhet"
+msgstr "ingen förälder till denna enhet"
 
 msgid "no polkit agent available to authenticate"
-msgstr ""
+msgstr "ingen polkit-agent tillgänglig för att autentisera"
 
 #, c-format
 msgid "no polkit agent available to authenticate action '%1$s'"
-msgstr ""
+msgstr "ingen polkit-agent tillgänglig för autentiseringsåtgärden ”%1$s”"
 
 msgid "no prefix found"
-msgstr ""
+msgstr "inget prefix finns"
 
 msgid "no rbd option name specified"
 msgstr ""
