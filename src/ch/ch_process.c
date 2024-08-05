@@ -490,6 +490,48 @@ virCHProcessSetup(virDomainObj *vm)
 }
 
 
+/**
+ * chMonitorSocketConnect:
+ * @mon: pointer to monitor object
+ *
+ * Connects to the monitor socket. Caller is responsible for closing the socketfd
+ *
+ * Returns socket fd on success, -1 on error
+ */
+static int
+chMonitorSocketConnect(virCHMonitor *mon)
+{
+    struct sockaddr_un server_addr = { };
+    int sock;
+
+    sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (sock < 0) {
+        virReportSystemError(errno, "%s", _("Failed to open a UNIX socket"));
+        return -1;
+    }
+
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sun_family = AF_UNIX;
+    if (virStrcpyStatic(server_addr.sun_path, mon->socketpath) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("UNIX socket path '%1$s' too long"),
+                       mon->socketpath);
+        goto error;
+    }
+
+    if (connect(sock, (struct sockaddr *)&server_addr,
+                sizeof(server_addr)) == -1) {
+        virReportSystemError(errno, "%s", _("Failed to connect to mon socket"));
+        goto error;
+    }
+
+    return sock;
+ error:
+    VIR_FORCE_CLOSE(sock);
+    return -1;
+}
+
+
 #define PKT_TIMEOUT_MS 500 /* ms */
 
 static char *
@@ -532,6 +574,42 @@ chSocketRecv(int sock)
 
 #undef PKT_TIMEOUT_MS
 
+static int
+chSocketProcessHttpResponse(int sock)
+{
+    g_autofree char *response = NULL;
+    int http_res;
+
+    response = chSocketRecv(sock);
+    if (response == NULL) {
+        return -1;
+    }
+
+    /* Parse the HTTP response code */
+    if (sscanf(response, "HTTP/1.%*d %d", &http_res) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to parse HTTP response code"));
+        return -1;
+    }
+    if (http_res != 204 && http_res != 200) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Unexpected response from CH: %1$s"), response);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+chCloseFDs(int *fds, size_t nfds)
+{
+    size_t i;
+    for (i = 0; i < nfds; i++) {
+        VIR_FORCE_CLOSE(fds[i]);
+    }
+    return 0;
+}
+
 /**
  * chProcessAddNetworkDevices:
  * @driver: pointer to ch driver object
@@ -554,7 +632,6 @@ chProcessAddNetworkDevices(virCHDriver *driver,
 {
     size_t i;
     VIR_AUTOCLOSE mon_sockfd = -1;
-    struct sockaddr_un server_addr;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) http_headers = VIR_BUFFER_INITIALIZER;
 
@@ -564,25 +641,8 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         return -1;
     }
 
-    mon_sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (mon_sockfd < 0) {
-        virReportSystemError(errno, "%s", _("Failed to open a UNIX socket"));
+    if ((mon_sockfd = chMonitorSocketConnect(mon)) < 0)
         return -1;
-    }
-
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sun_family = AF_UNIX;
-    if (virStrcpyStatic(server_addr.sun_path, mon->socketpath) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("UNIX socket path '%1$s' too long"), mon->socketpath);
-        return -1;
-    }
-
-    if (connect(mon_sockfd, (struct sockaddr *)&server_addr,
-                sizeof(server_addr)) == -1) {
-        virReportSystemError(errno, "%s", _("Failed to connect to mon socket"));
-        return -1;
-    }
 
     virBufferAddLit(&http_headers, "PUT /api/v1/vm.add-net HTTP/1.1\r\n");
     virBufferAddLit(&http_headers, "Host: localhost\r\n");
@@ -592,11 +652,9 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         g_autofree int *tapfds = NULL;
         g_autofree char *payload = NULL;
         g_autofree char *response = NULL;
-        size_t j;
         size_t tapfd_len;
         size_t payload_len;
         int saved_errno;
-        int http_res;
         int rc;
 
         if (vmdef->nets[i]->driver.virtio.queues == 0) {
@@ -640,9 +698,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         saved_errno = errno;
 
         /* Close sent tap fds in Libvirt, as they have been dup()ed in CH */
-        for (j = 0; j < tapfd_len; j++) {
-            VIR_FORCE_CLOSE(tapfds[j]);
-        }
+        chCloseFDs(tapfds, tapfd_len);
 
         if (rc < 0) {
             virReportSystemError(saved_errno, "%s",
@@ -650,24 +706,8 @@ chProcessAddNetworkDevices(virCHDriver *driver,
             return -1;
         }
 
-        /* Process the response from CH */
-        response = chSocketRecv(mon_sockfd);
-        if (response == NULL) {
+        if (chSocketProcessHttpResponse(mon_sockfd) < 0)
             return -1;
-        }
-
-        /* Parse the HTTP response code */
-        rc = sscanf(response, "HTTP/1.%*d %d", &http_res);
-        if (rc != 1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Failed to parse HTTP response code"));
-            return -1;
-        }
-        if (http_res != 204 && http_res != 200) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected response from CH: %1$s"), response);
-            return -1;
-        }
     }
 
     return 0;
