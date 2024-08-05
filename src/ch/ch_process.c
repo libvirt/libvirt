@@ -665,7 +665,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
         }
         if (http_res != 204 && http_res != 200) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected response from CH: %1$d"), http_res);
+                           _("Unexpected response from CH: %1$s"), response);
             return -1;
         }
     }
