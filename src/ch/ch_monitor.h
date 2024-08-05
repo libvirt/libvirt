@@ -115,7 +115,6 @@ int virCHMonitorRebootVM(virCHMonitor *mon);
 int virCHMonitorSuspendVM(virCHMonitor *mon);
 int virCHMonitorResumeVM(virCHMonitor *mon);
 int virCHMonitorSaveVM(virCHMonitor *mon, const char *to);
-int virCHMonitorRestoreVM(virCHMonitor *mon, const char *from);
 int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);
 
 void virCHMonitorCPUInfoFree(virCHMonitorCPUInfo *cpus);
@@ -130,3 +129,5 @@ int
 virCHMonitorBuildNetJson(virDomainNetDef *netdef,
                          int netindex,
                          char **jsonstr);
+int virCHMonitorBuildRestoreJson(const char *from,
+                                 char **jsonstr);

@@ -913,6 +913,12 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
 {
     virCHDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(priv->driver);
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) http_headers = VIR_BUFFER_INITIALIZER;
+    g_autofree char *payload = NULL;
+    g_autofree char *response = NULL;
+    VIR_AUTOCLOSE mon_sockfd = -1;
+    size_t payload_len;
 
     if (!priv->monitor) {
         /* Get the first monitor connection if not already */
@@ -927,12 +933,6 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     vm->def->id = vm->pid;
     priv->machineName = virCHDomainGetMachineName(vm);
 
-    if (virCHMonitorRestoreVM(priv->monitor, from) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to restore domain"));
-        return -1;
-    }
-
     /* Pass 0, NULL as restore only works without networking support */
     if (virDomainCgroupSetupCgroup("ch", vm,
                                    0, NULL, /* nnicindexes, nicindexes */
@@ -941,6 +941,34 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
                                    0, /*maxThreadsPerProc*/
                                    priv->driver->privileged,
                                    priv->machineName) < 0)
+        return -1;
+
+    if (virCHMonitorBuildRestoreJson(from, &payload) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to restore domain"));
+        return -1;
+    }
+
+    virBufferAddLit(&http_headers, "PUT /api/v1/vm.restore HTTP/1.1\r\n");
+    virBufferAddLit(&http_headers, "Host: localhost\r\n");
+    virBufferAddLit(&http_headers, "Content-Type: application/json\r\n");
+    virBufferAsprintf(&buf, "%s", virBufferCurrentContent(&http_headers));
+    virBufferAsprintf(&buf, "Content-Length: %ld\r\n\r\n", strlen(payload));
+    virBufferAsprintf(&buf, "%s", payload);
+    payload_len = virBufferUse(&buf);
+    payload = virBufferContentAndReset(&buf);
+
+    if ((mon_sockfd = chMonitorSocketConnect(priv->monitor)) < 0)
+        return -1;
+
+    if (virSocketSendMsgWithFDs(mon_sockfd, payload, payload_len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to send restore request to CH"));
+        return -1;
+    }
+
+    /* Restore is a synchronous operation in CH. so, pass false to wait until there's a response */
+    if (chSocketProcessHttpResponse(mon_sockfd, false) < 0)
         return -1;
 
     if (virCHProcessSetup(vm) < 0)

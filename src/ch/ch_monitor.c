@@ -993,9 +993,19 @@ virCHMonitorSaveVM(virCHMonitor *mon, const char *to)
 }
 
 int
-virCHMonitorRestoreVM(virCHMonitor *mon, const char *from)
+virCHMonitorBuildRestoreJson(const char *from,
+                             char **jsonstr)
 {
-    return virCHMonitorSaveRestoreVM(mon, from, false);
+    g_autoptr(virJSONValue) restore_json = virJSONValueNewObject();
+
+    g_autofree char *path_url = g_strdup_printf("file://%s", from);
+    if (virJSONValueObjectAppendString(restore_json, "source_url", path_url))
+        return -1;
+
+    if (!(*jsonstr = virJSONValueToString(restore_json, false)))
+        return -1;
+
+    return 0;
 }
 
 /**
