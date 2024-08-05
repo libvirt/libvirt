@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-05 08:39+0000\n"
+"PO-Revision-Date: 2024-08-05 23:47+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32653,51 +32653,49 @@ msgid "no prefix found"
 msgstr "inget prefix finns"
 
 msgid "no rbd option name specified"
-msgstr ""
+msgstr "inget rbd-flaggenamn angivet"
 
 #, c-format
 msgid "no rbd option value specified for name '%1$s'"
-msgstr ""
+msgstr "inget rbd-flaggevärde angivet för namnet ”%1$s”"
 
 #, c-format
 msgid "no removable media size supplied for '%1$s'"
-msgstr ""
+msgstr "ingen storlek på löstagbart medium för givet ”%1$s”"
 
 msgid "no replacement string in template"
-msgstr ""
+msgstr "ingen ersättningssträng i mallen"
 
 msgid "no running guests."
-msgstr ""
+msgstr "inga körande gäster."
 
 msgid "no screens to take screenshot from"
-msgstr ""
+msgstr "inga skärmar att ta skärmbilder ifrån"
 
 msgid "no secret provided for luks encryption"
-msgstr ""
+msgstr "ingen hemlighet gavs för luks-kryptering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no secret with matching usage '%1$s'"
-msgstr "det finns ingen server med namn som matchar ”%1$s”"
+msgstr "ingen hemlighet med matchande användning ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no secret with matching uuid '%1$s'"
-msgstr "det finns ingen server med namn som matchar ”%1$s”"
+msgstr "ingen hemlighet med matchande uuid ”%1$s”"
 
 #, c-format
 msgid "no server with matching name '%1$s' found"
 msgstr "det finns ingen server med namn som matchar ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no size supplied for '%1$s'"
-msgstr "ingen konfigurationsfil för %1$s"
+msgstr "ingen storlek angiven på ”%1$s”"
 
-#, fuzzy
 msgid "no sockets found"
-msgstr "Domän hittades inte"
+msgstr "inga uttag finns"
 
-#, fuzzy
 msgid "no space"
-msgstr "inget tillstånd"
+msgstr "inget utrymme"
 
 msgid "no state"
 msgstr "inget tillstånd"
@@ -32722,9 +32720,9 @@ msgstr "ingen lagringspool med matchande uuid ”%1$s”"
 msgid "no storage pool with matching uuid '%1$s' (%2$s)"
 msgstr "ingen lagringspool med matchande uuid ”%1$s” (%2$s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no storage pools were found on host '%1$s'"
-msgstr "ingen lagringspool med matchande namn ”%1$s”"
+msgstr "inga lagringspooler fanns på värden ”%1$s”"
 
 #, c-format
 msgid "no storage vol with matching key %1$s"
@@ -32747,25 +32745,25 @@ msgid "no storage vol with matching path '%1$s' (%2$s)"
 msgstr "ingen lagringsvolym med matchande sökväg ”%1$s” (%2$s)"
 
 msgid "no stream callback registered"
-msgstr ""
+msgstr "inget strömåteranrop registrerat"
 
 msgid "no such screen ID"
-msgstr ""
+msgstr "ingen sådan skärm-ID"
 
 msgid "no suitable callback authentication callback was found"
-msgstr ""
+msgstr "inget passande återanrop för återanropsautentisering fanns"
 
 msgid "no suitable callback for host key verification"
-msgstr ""
+msgstr "inget lämpligt återanrop för värdnyckelverifiering"
 
 msgid "no suitable info found"
-msgstr ""
+msgstr "ingen lämplig information finns"
 
 msgid "no suitable method to retrieve authentication credentials"
-msgstr ""
+msgstr "ingen lämplig metod att hämta autentiseringskreditiv"
 
 msgid "no suitable method to retrieve key passphrase"
-msgstr ""
+msgstr "ingen lämplig metod att hämta nyckellösenfrasen"
 
 #, c-format
 msgid "no system UUID supplied for '%1$s'"
