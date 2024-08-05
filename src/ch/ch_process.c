@@ -535,11 +535,12 @@ chMonitorSocketConnect(virCHMonitor *mon)
 #define PKT_TIMEOUT_MS 500 /* ms */
 
 static char *
-chSocketRecv(int sock)
+chSocketRecv(int sock, bool use_timeout)
 {
     struct pollfd pfds[1];
     char *buf = NULL;
     size_t buf_len = 1024;
+    int timeout = PKT_TIMEOUT_MS;
     int ret;
 
     buf = g_new0(char, buf_len);
@@ -547,8 +548,11 @@ chSocketRecv(int sock)
     pfds[0].fd = sock;
     pfds[0].events = POLLIN;
 
+    if (!use_timeout)
+        timeout = -1;
+
     do {
-        ret = poll(pfds, G_N_ELEMENTS(pfds), PKT_TIMEOUT_MS);
+        ret = poll(pfds, G_N_ELEMENTS(pfds), timeout);
     } while (ret < 0 && errno == EINTR);
 
     if (ret <= 0) {
@@ -575,12 +579,12 @@ chSocketRecv(int sock)
 #undef PKT_TIMEOUT_MS
 
 static int
-chSocketProcessHttpResponse(int sock)
+chSocketProcessHttpResponse(int sock, bool use_poll_timeout)
 {
     g_autofree char *response = NULL;
     int http_res;
 
-    response = chSocketRecv(sock);
+    response = chSocketRecv(sock, use_poll_timeout);
     if (response == NULL) {
         return -1;
     }
@@ -706,7 +710,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
             return -1;
         }
 
-        if (chSocketProcessHttpResponse(mon_sockfd) < 0)
+        if (chSocketProcessHttpResponse(mon_sockfd, true) < 0)
             return -1;
     }
 
