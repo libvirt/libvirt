@@ -981,7 +981,7 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
         if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create connection to CH socket"));
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -992,7 +992,7 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     if (virCHMonitorBuildRestoreJson(vm->def, from, &payload) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to restore domain"));
-        return -1;
+        goto cleanup;
     }
 
     virBufferAddLit(&http_headers, "PUT /api/v1/vm.restore HTTP/1.1\r\n");
@@ -1005,7 +1005,7 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     payload = virBufferContentAndReset(&buf);
 
     if ((mon_sockfd = chMonitorSocketConnect(priv->monitor)) < 0)
-        return -1;
+        goto cleanup;
 
     if (virCHRestoreCreateNetworkDevices(driver, vm->def, &tapfds, &ntapfds, &nicindexes, &nnicindexes) < 0)
         goto cleanup;
@@ -1042,5 +1042,7 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
  cleanup:
     if (tapfds)
         chCloseFDs(tapfds, ntapfds);
+    if (ret)
+        virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
     return ret;
 }
