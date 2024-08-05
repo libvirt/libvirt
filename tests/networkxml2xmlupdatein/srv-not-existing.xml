@@ -1,1 +1,0 @@
-<srv service='name' protocol='tcp' domain='unknown-domain' target='.' port='666' priority='99' weight='10'/>

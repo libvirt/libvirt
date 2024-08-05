@@ -3257,6 +3257,12 @@ virNetworkDefUpdateDNSSrv(virNetworkDef *def,
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
     int foundCt = 0;
 
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("DNS SRV records cannot be modified, only added or deleted"));
+        goto cleanup;
+    }
+
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "srv") < 0)
         goto cleanup;
 
@@ -3305,27 +3311,6 @@ virNetworkDefUpdateDNSSrv(virNetworkDef *def,
         /* remove it */
         virNetworkDNSSrvDefClear(&dns->srvs[foundIdx]);
         VIR_DELETE_ELEMENT(dns->srvs, foundIdx, dns->nsrvs);
-
-    } else if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
-
-        if (foundCt == 0) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("couldn't locate a matching DNS SRV record in network %1$s"),
-                           def->name);
-            goto cleanup;
-        }
-
-        if (foundCt > 1) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("multiple DNS SRV records matching all specified fields were found in network %1$s"),
-                           def->name);
-            goto cleanup;
-        }
-
-        virNetworkDNSSrvDefClear(&dns->srvs[foundIdx]);
-
-        memcpy(&dns->srvs[foundIdx], &srv, sizeof(virNetworkDNSSrvDef));
-        memset(&srv, 0, sizeof(virNetworkDNSSrvDef));
 
     } else {
         virNetworkDefUpdateUnknownCommand(command);

@@ -1,1 +1,0 @@
-<srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1221' priority='42' weight='69'/>

@@ -337,6 +337,7 @@ mymain(void)
             "nat-network-dns-srv-record",
             "nat-network-dns-srv-records",
             VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
+
     DO_TEST_FAIL("delete-missing-srv-record-service",
                  "srv-record-service",
                  "nat-network",
@@ -359,15 +360,6 @@ mymain(void)
             "nat-network-dns-srv-record",
             "nat-network",
             VIR_NETWORK_UPDATE_COMMAND_DELETE);
-    DO_TEST("modify-srv-record-protocol",
-            "srv-record-modify-few",
-            "nat-network-dns-srv-record",
-            "nat-network-dns-srv-modify-few",
-            VIR_NETWORK_UPDATE_COMMAND_MODIFY);
-    DO_TEST_FAIL("modify-not-existing-srv-record",
-                 "srv-not-existing",
-                 "nat-network-dns-srv-record",
-                 VIR_NETWORK_UPDATE_COMMAND_MODIFY);
 
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
