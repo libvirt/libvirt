@@ -621,7 +621,7 @@ chProcessAddNetworkDevices(virCHDriver *driver,
                                          nicindexes, nnicindexes) < 0)
             return -1;
 
-        if (virCHMonitorBuildNetJson(vmdef->nets[i], &payload) < 0) {
+        if (virCHMonitorBuildNetJson(vmdef->nets[i], i, &payload) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to build net json"));
             return -1;
