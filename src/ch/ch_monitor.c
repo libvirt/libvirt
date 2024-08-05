@@ -981,14 +981,32 @@ virCHMonitorSaveVM(virCHMonitor *mon,
 }
 
 int
-virCHMonitorBuildRestoreJson(const char *from,
+virCHMonitorBuildRestoreJson(virDomainDef *vmdef,
+                             const char *from,
                              char **jsonstr)
 {
+    size_t i;
     g_autoptr(virJSONValue) restore_json = virJSONValueNewObject();
-
     g_autofree char *path_url = g_strdup_printf("file://%s", from);
+
     if (virJSONValueObjectAppendString(restore_json, "source_url", path_url))
         return -1;
+
+    /* Pass the netconfig needed to restore with new netfds */
+    if (vmdef->nnets) {
+        g_autoptr(virJSONValue) nets = virJSONValueNewArray();
+        for (i = 0; i < vmdef->nnets; i++) {
+            g_autoptr(virJSONValue) net_json = virJSONValueNewObject();
+            g_autofree char *id = g_strdup_printf("%s_%ld", CH_NET_ID_PREFIX, i);
+            if (virJSONValueObjectAppendString(net_json, "id", id) < 0)
+                return -1;
+            if (virJSONValueObjectAppendNumberInt(net_json, "num_fds", vmdef->nets[i]->driver.virtio.queues))
+                return -1;
+            virJSONValueArrayAppend(nets, &net_json);
+        }
+        if (virJSONValueObjectAppend(restore_json, "net_fds", &nets))
+            return -1;
+    }
 
     if (!(*jsonstr = virJSONValueToString(restore_json, false)))
         return -1;

@@ -680,22 +680,25 @@ chDomainDestroy(virDomainPtr dom)
 }
 
 static int
-chDomainSaveAdditionalValidation(virDomainDef *vmdef)
+chDomainSaveRestoreAdditionalValidation(virCHDriver *driver,
+                                        virDomainDef *vmdef)
 {
-    /*
-    SAVE and RESTORE are functional only without any networking and
-    device passthrough configuration
-    */
-    if (vmdef->nnets > 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot save domain with network interfaces"));
-        return -1;
-    }
+    /* SAVE and RESTORE are functional only without any host device
+     * passthrough configuration */
     if  (vmdef->nhostdevs > 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot save domain with host devices"));
+                       _("cannot save/restore domain with host devices"));
         return -1;
     }
+
+    if (vmdef->nnets > 0) {
+        if (!virBitmapIsBitSet(driver->chCaps, CH_RESTORE_WITH_NEW_TAPFDS)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot save/restore domain with network devices"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -728,7 +731,7 @@ chDoDomainSave(virCHDriver *driver,
     VIR_AUTOCLOSE fd = -1;
     int ret = -1;
 
-    if (chDomainSaveAdditionalValidation(vm->def) < 0)
+    if (chDomainSaveRestoreAdditionalValidation(driver, vm->def) < 0)
         goto end;
 
     domainState = virDomainObjGetState(vm, NULL);
@@ -1085,6 +1088,9 @@ chDomainRestoreFlags(virConnectPtr conn,
         goto cleanup;
 
     if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    if (chDomainSaveRestoreAdditionalValidation(driver, def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, &def,

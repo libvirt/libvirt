@@ -65,6 +65,12 @@ virCHCapsInitCHVersionCaps(int version)
     if (version >= 36000000)
         virCHCapsSet(chCaps, CH_SOCKET_BACKEND_SERIAL_PORT);
 
+    /* Starting v40, Cloud-Hypervisor supports restore with new net fds.
+     * This is required to be able to restore a guest with network config define.
+     * https://github.com/cloud-hypervisor/cloud-hypervisor/releases/tag/v40.0 */
+    if (version >= 40000000)
+        virCHCapsSet(chCaps, CH_RESTORE_WITH_NEW_TAPFDS);
+
     return g_steal_pointer(&chCaps);
 
 }

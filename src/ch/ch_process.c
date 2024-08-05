@@ -29,6 +29,7 @@
 #include "ch_process.h"
 #include "domain_cgroup.h"
 #include "domain_interface.h"
+#include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virjson.h"
@@ -718,6 +719,56 @@ chProcessAddNetworkDevices(virCHDriver *driver,
 }
 
 /**
+ * virCHRestoreCreateNetworkDevices:
+ * @driver: pointer to driver structure
+ * @vmdef: pointer to domain definition
+ * @vmtapfds: returned array of FDs of guest interfaces
+ * @nvmtapfds: returned number of network indexes
+ * @nicindexes: returned array of network indexes
+ * @nnicindexes: returned number of network indexes
+ *
+ * Create network devices for the domain. This function is called during
+ * domain restore.
+ *
+ * Returns 0 on success or -1 in case of error
+*/
+static int
+virCHRestoreCreateNetworkDevices(virCHDriver *driver,
+                                 virDomainDef *vmdef,
+                                 int **vmtapfds,
+                                 size_t *nvmtapfds,
+                                 int **nicindexes,
+                                 size_t *nnicindexes)
+{
+    size_t i, j;
+    size_t tapfd_len;
+    size_t index_vmtapfds;
+    for (i = 0; i < vmdef->nnets; i++) {
+        g_autofree int *tapfds = NULL;
+        tapfd_len = vmdef->nets[i]->driver.virtio.queues;
+        if (virCHDomainValidateActualNetDef(vmdef->nets[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("net definition failed validation"));
+            return -1;
+        }
+        tapfds = g_new0(int, tapfd_len);
+        memset(tapfds, -1, (tapfd_len) * sizeof(int));
+
+        /* Connect Guest interfaces */
+        if (virCHConnetNetworkInterfaces(driver, vmdef, vmdef->nets[i], tapfds,
+                                          nicindexes, nnicindexes) < 0)
+            return -1;
+
+        index_vmtapfds = *nvmtapfds;
+        VIR_EXPAND_N(*vmtapfds, *nvmtapfds, tapfd_len);
+        for (j = 0; j < tapfd_len; j++) {
+            VIR_APPEND_ELEMENT_INPLACE(*vmtapfds, index_vmtapfds, tapfds[j]);
+        }
+    }
+    return 0;
+}
+
+/**
  * virCHProcessStartValidate:
  * @driver: pointer to driver structure
  * @vm: domain object
@@ -918,7 +969,12 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     g_autofree char *payload = NULL;
     g_autofree char *response = NULL;
     VIR_AUTOCLOSE mon_sockfd = -1;
+    g_autofree int *tapfds = NULL;
+    g_autofree int *nicindexes = NULL;
     size_t payload_len;
+    size_t ntapfds = 0;
+    size_t nnicindexes = 0;
+    int ret = -1;
 
     if (!priv->monitor) {
         /* Get the first monitor connection if not already */
@@ -933,17 +989,7 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     vm->def->id = vm->pid;
     priv->machineName = virCHDomainGetMachineName(vm);
 
-    /* Pass 0, NULL as restore only works without networking support */
-    if (virDomainCgroupSetupCgroup("ch", vm,
-                                   0, NULL, /* nnicindexes, nicindexes */
-                                   &priv->cgroup,
-                                   cfg->cgroupControllers,
-                                   0, /*maxThreadsPerProc*/
-                                   priv->driver->privileged,
-                                   priv->machineName) < 0)
-        return -1;
-
-    if (virCHMonitorBuildRestoreJson(from, &payload) < 0) {
+    if (virCHMonitorBuildRestoreJson(vm->def, from, &payload) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to restore domain"));
         return -1;
@@ -961,20 +1007,40 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     if ((mon_sockfd = chMonitorSocketConnect(priv->monitor)) < 0)
         return -1;
 
-    if (virSocketSendMsgWithFDs(mon_sockfd, payload, payload_len, NULL, 0) < 0) {
+    if (virCHRestoreCreateNetworkDevices(driver, vm->def, &tapfds, &ntapfds, &nicindexes, &nnicindexes) < 0)
+        goto cleanup;
+
+    if (virDomainCgroupSetupCgroup("ch", vm,
+                                   nnicindexes, nicindexes,
+                                   &priv->cgroup,
+                                   cfg->cgroupControllers,
+                                   0, /*maxThreadsPerProc*/
+                                   priv->driver->privileged,
+                                   priv->machineName) < 0)
+        goto cleanup;
+
+    /* Bring up netdevs before restoring vm */
+    if (virDomainInterfaceStartDevices(vm->def) < 0)
+        goto cleanup;
+
+    if (virSocketSendMsgWithFDs(mon_sockfd, payload, payload_len, tapfds, ntapfds) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to send restore request to CH"));
-        return -1;
+        goto cleanup;
     }
 
     /* Restore is a synchronous operation in CH. so, pass false to wait until there's a response */
     if (chSocketProcessHttpResponse(mon_sockfd, false) < 0)
-        return -1;
+        goto cleanup;
 
     if (virCHProcessSetup(vm) < 0)
-        return -1;
+        goto cleanup;
 
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
+    ret = 0;
 
-    return 0;
+ cleanup:
+    if (tapfds)
+        chCloseFDs(tapfds, ntapfds);
+    return ret;
 }

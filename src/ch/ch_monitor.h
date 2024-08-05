@@ -130,5 +130,6 @@ int
 virCHMonitorBuildNetJson(virDomainNetDef *netdef,
                          int netindex,
                          char **jsonstr);
-int virCHMonitorBuildRestoreJson(const char *from,
+int virCHMonitorBuildRestoreJson(virDomainDef *vmdef,
+                                 const char *from,
                                  char **jsonstr);
