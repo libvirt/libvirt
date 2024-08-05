@@ -19,6 +19,12 @@ v10.7.0 (unreleased)
 
 * **Improvements**
 
+  * ch: support restore with network devices
+
+    Cloud-Hypervisor starting from V40.0 supports restoring file descriptor
+    backed network devices. So, create new net fds and pass them via
+    SCM_RIGHTS to CH during restore operation.
+
 * **Bug fixes**
 
 
