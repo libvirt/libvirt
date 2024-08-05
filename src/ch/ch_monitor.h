@@ -114,7 +114,8 @@ int virCHMonitorShutdownVM(virCHMonitor *mon);
 int virCHMonitorRebootVM(virCHMonitor *mon);
 int virCHMonitorSuspendVM(virCHMonitor *mon);
 int virCHMonitorResumeVM(virCHMonitor *mon);
-int virCHMonitorSaveVM(virCHMonitor *mon, const char *to);
+int virCHMonitorSaveVM(virCHMonitor *mon,
+                       const char *to);
 int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);
 
 void virCHMonitorCPUInfoFree(virCHMonitorCPUInfo *cpus);

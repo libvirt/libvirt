@@ -927,8 +927,9 @@ virCHMonitorResumeVM(virCHMonitor *mon)
     return virCHMonitorPutNoContent(mon, URL_VM_RESUME);
 }
 
-static int
-virCHMonitorSaveRestoreVM(virCHMonitor *mon, const char *path, bool save)
+int
+virCHMonitorSaveVM(virCHMonitor *mon,
+                   const char *to)
 {
     g_autofree char *url = NULL;
     int responseCode = 0;
@@ -938,22 +939,15 @@ virCHMonitorSaveRestoreVM(virCHMonitor *mon, const char *path, bool save)
     struct curl_slist *headers = NULL;
     struct curl_data data = {0};
 
-    if (save)
-        url = g_strdup_printf("%s/%s", URL_ROOT, URL_VM_SAVE);
-    else
-        url = g_strdup_printf("%s/%s", URL_ROOT, URL_VM_RESTORE);
+    url = g_strdup_printf("%s/%s", URL_ROOT, URL_VM_SAVE);
 
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
 
-    path_url = g_strdup_printf("file://%s", path);
-    if (save) {
-        if (virCHMonitorBuildKeyValueStringJson(&payload, "destination_url", path_url) != 0)
-            return -1;
-    } else {
-        if (virCHMonitorBuildKeyValueStringJson(&payload, "source_url", path_url) != 0)
-            return -1;
-    }
+    path_url = g_strdup_printf("file://%s", to);
+    if (virCHMonitorBuildKeyValueStringJson(&payload, "destination_url", path_url) != 0)
+        return -1;
+
 
     VIR_WITH_OBJECT_LOCK_GUARD(mon) {
         /* reset all options of a libcurl session handle at first */
@@ -984,12 +978,6 @@ virCHMonitorSaveRestoreVM(virCHMonitor *mon, const char *path, bool save)
     curl_easy_reset(mon->handle);
     curl_slist_free_all(headers);
     return ret;
-}
-
-int
-virCHMonitorSaveVM(virCHMonitor *mon, const char *to)
-{
-    return virCHMonitorSaveRestoreVM(mon, to, true);
 }
 
 int
