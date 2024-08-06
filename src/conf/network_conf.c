@@ -3385,6 +3385,13 @@ virNetworkDefUpdateDNSTxt(virNetworkDef *def,
             goto cleanup;
         }
 
+        if (!txt.value) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("missing value of modifying DNS TXT record in network %1$s"),
+                           def->name);
+            goto cleanup;
+        }
+
         VIR_FREE(dns->txts[foundIdx].value);
         dns->txts[foundIdx].value = g_steal_pointer(&txt.value);
 
