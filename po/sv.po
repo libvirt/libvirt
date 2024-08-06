@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-05 23:47+0000\n"
+"PO-Revision-Date: 2024-08-07 08:40+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32767,78 +32767,78 @@ msgstr "ingen lämplig metod att hämta nyckellösenfrasen"
 
 #, c-format
 msgid "no system UUID supplied for '%1$s'"
-msgstr ""
+msgstr "inget system-UUID angivet för ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no target device %1$s"
-msgstr "målenhetstyp"
+msgstr "ingen målenhet %1$s"
 
 #, c-format
 msgid "no target name supplied for '%1$s'"
-msgstr ""
+msgstr "inget målnamn angivet för ”%1$s”"
 
 msgid "no threads found"
-msgstr ""
+msgstr "inga trådar finns"
 
 msgid "no tls service found, unable to update tls files"
-msgstr ""
+msgstr "ingen tls-tjänst finns, kan inte uppdatera tls-filer"
 
 msgid "no transaction running, nothing to be committed."
-msgstr ""
+msgstr "ingen transaktion körs, inget att fastställa."
 
 msgid "no transaction running, nothing to rollback."
-msgstr ""
+msgstr "ingen transaktion kör, inget att rulla tillbaka."
 
 #, c-format
 msgid "no unused %1$s names available"
-msgstr ""
+msgstr "inga oanvända %1$s-namn tillgängliga"
 
 msgid "no valid connection"
 msgstr "ingen giltig anslutning"
 
 msgid "no valid netlink response was received"
-msgstr ""
+msgstr "inget giltigt netlink-svar mottogs"
 
 msgid "no vcpus selected for modification"
-msgstr ""
+msgstr "inga vcpu:er valda för ändring"
 
 msgid "no virtio-serial controllers are available"
-msgstr ""
+msgstr "inga virtio-serial-styrenheter är tillgängliga"
 
 msgid "no x86 CPU data found"
-msgstr ""
+msgstr "inga x86 CPU-data finns"
 
 #, c-format
 msgid ""
 "node '%1$s' has unexpected NULL content. This could be caused by malformed "
 "input, or a memory allocation failure"
 msgstr ""
+"noden ”%1$s” har oväntat NULL-innehåll. Detta kan orsakas av felformaterad "
+"indata, eller ett minnesallokeringsmisslyckande"
 
 #, c-format
 msgid "node '%1$s' has unexpected type %2$d"
-msgstr ""
+msgstr "noden ”%1$s” har oväntad typ %2$d"
 
-#, fuzzy
 msgid "node CPU stats not implemented on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "nod-CPU-statistik är inte implementerat på denna plattform"
 
 msgid "node SEV information"
-msgstr ""
+msgstr "nod-SEV-information"
 
-#, fuzzy
 msgid "node cpu info not implemented on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "nod-cpu-information är inte implementerat på denna plattform"
 
 msgid "node cpu map"
-msgstr ""
+msgstr "nod-cpu-avbildning"
 
 #, c-format
 msgid "node device '%1$s' in %2$s must match connection"
-msgstr ""
+msgstr "nodenheten ”%1$s” i %2$s måste matcha anslutningen"
 
 #, c-format
 msgid "node device '%1$s' is not persistent"
-msgstr ""
+msgstr "nodenheten ”%1$s” är inte varaktig"
 
 msgid "node device details in XML"
 msgstr ""
