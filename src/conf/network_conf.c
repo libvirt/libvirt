@@ -3167,7 +3167,7 @@ virNetworkDefUpdateDNSHost(virNetworkDef *def,
 
         /* when adding we want to only check duplicates of address since having
          * multiple addresses with the same hostname is a legitimate configuration */
-        if (!isAdd) {
+        if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
             for (j = 0; j < host.nnames && !foundThisTime; j++) {
                 for (k = 0; k < dns->hosts[i].nnames && !foundThisTime; k++) {
                     if (STREQ(host.names[j], dns->hosts[i].names[k]))
@@ -3220,6 +3220,13 @@ virNetworkDefUpdateDNSHost(virNetworkDef *def,
         if (foundCt == 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("couldn't locate a matching DNS HOST record in network %1$s"),
+                           def->name);
+            goto cleanup;
+        }
+
+        if (foundCt > 1) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("multiple matching DNS HOST records were found in network %1$s"),
                            def->name);
             goto cleanup;
         }
