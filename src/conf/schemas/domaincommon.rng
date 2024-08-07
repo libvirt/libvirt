@@ -6100,6 +6100,11 @@
                 <ref name="uint8"/>
               </attribute>
             </optional>
+            <optional>
+              <attribute name="dma_translation">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
         <optional>

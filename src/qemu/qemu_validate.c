@@ -5094,6 +5094,12 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                        _("iommu: aw_bits is not supported with this QEMU binary"));
         return -1;
     }
+    if (iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION))  {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: updating dma translation is not supported with this QEMU binary"));
+        return -1;
+    }
 
     return 0;
 }

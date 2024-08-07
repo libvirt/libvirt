@@ -13931,6 +13931,10 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
         if (virXMLPropUInt(driver, "aw_bits", 10, VIR_XML_PROP_NONE,
                            &iommu->aw_bits) < 0)
             return NULL;
+
+        if (virXMLPropTristateSwitch(driver, "dma_translation", VIR_XML_PROP_NONE,
+                                     &iommu->dma_translation) < 0)
+            return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt,
@@ -21467,6 +21471,13 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
                        dst->aw_bits, src->aw_bits);
         return false;
     }
+    if (src->dma_translation != dst->dma_translation) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
+                       virTristateSwitchTypeToString(dst->dma_translation),
+                       virTristateSwitchTypeToString(src->dma_translation));
+        return false;
+    }
 
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
@@ -27450,6 +27461,10 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     if (iommu->aw_bits > 0) {
         virBufferAsprintf(&driverAttrBuf, " aw_bits='%d'",
                           iommu->aw_bits);
+    }
+    if (iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " dma_translation='%s'",
+                          virTristateSwitchTypeToString(iommu->dma_translation));
     }
 
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);

@@ -8611,6 +8611,13 @@ Example:
       mapping larger iova addresses in the guest. :since:`Since 6.5.0` (QEMU/KVM
       only)
 
+   ``dma_translation``
+      The ``dma_translation`` attribute with possible values ``on`` and ``off`` can
+      be used to turn off the dma translation for IOMMU. It is useful when only
+      interrupt remapping is required but dma translation overhead is unwanted, for
+      example to efficiently enable more than 255 vCPUs.
+      :since:`Since 10.7.0` (QEMU/KVM only)
+
 The ``virtio`` IOMMU devices can further have ``address`` element as described
 in `Device addresses`_ (address has to by type of ``pci``).
 
