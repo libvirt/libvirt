@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-07 08:40+0000\n"
+"PO-Revision-Date: 2024-08-08 10:31+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32841,84 +32841,85 @@ msgid "node device '%1$s' is not persistent"
 msgstr "nodenheten ”%1$s” är inte varaktig"
 
 msgid "node device details in XML"
-msgstr ""
+msgstr "nodenhetsdetaljer i XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "node device event callback %1$d not registered"
-msgstr "domänhändelse %1$d är inte registrerad"
+msgstr "händelseåteranropet för nodenheten %1$d är inte registrerat"
 
 msgid "node device information"
-msgstr ""
+msgstr "nodenhetsinformation"
 
 msgid "node device is not active"
-msgstr ""
+msgstr "nodenheten är inte aktiv"
 
-#, fuzzy
 msgid "node get memory parameters not implemented on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr ""
+"nodens parametrar för att hämta minne är inte implementerade på denna "
+"plattform"
 
-#, fuzzy
 msgid "node info not implemented on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "nodinformation är inte implementerat på denna plattform"
 
 msgid "node information"
 msgstr "nodinformation"
 
-#, fuzzy
 msgid "node memory stats not implemented on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "nodminnesstatistik är inte implementerat på denna plattform"
 
-#, fuzzy
 msgid "node online CPU map not implemented on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr ""
+"nodens avbildning för online-CPU är inte implementerad på denna plattform"
 
-#, fuzzy
 msgid "node present CPU map not implemented on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr ""
+"nodens avbildning för närvarande CPU är inte implementerad på denna plattform"
 
-#, fuzzy
 msgid "node set memory parameters not implemented on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr ""
+"nodens parametrar för att sätta minne är inte implementerade på denna "
+"plattform"
 
 #, c-format
 msgid "node-name '%1$s' too long for qemu"
-msgstr ""
+msgstr "nodnamnet ”%1$s” är för långt för qemu"
 
-#, fuzzy
 msgid "nodedev state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "nodenhetens tillståndsdrivrutin är inte aktiv"
 
 #, c-format
 msgid "nodeset attribute of hugepages of sizes %1$llu and %2$llu intersect"
 msgstr ""
+"attributet nodeset på hugepages av storlekarna %1$llu och %2$llu skär "
+"varandra"
 
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
+"nodeset för NUMA-minnestrimning måste vara satt om ”placement” är ”static”"
 
 #, c-format
 msgid "non unique alias detected: %1$s"
-msgstr ""
+msgstr "icke-unikt alias upptäckt: %1$s"
 
 #, c-format
 msgid "non-shared storage migration into '%1$s' target is not supported"
-msgstr ""
+msgstr "odelad lagringsmigrering till målet ”%1$s” stödjs inte"
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
-msgstr ""
+msgstr "nollskild ncpus matchar inte med NULL cpus"
 
 msgid "nonzero ncpus doesn't match with NULL xmlCPUs"
-msgstr ""
+msgstr "nollskild ncpus matchar inte med NULL xmlCPUs"
 
 #, c-format
 msgid "not a hugetlbfs mount: '%1$s'"
-msgstr ""
+msgstr "inte en hugetlbfs-montering: ”%1$s”"
 
 msgid "not specified"
 msgstr "ej angivet"
 
-#, fuzzy
 msgid "not supported on non-linux platforms"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "stödjs inte på andra plattformar än linux"
 
 msgid "nothing selected for snapshot"
 msgstr ""
