@@ -26,7 +26,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device '{"driver":"intel-iommu","id":"iommu0","intremap":"on"}' \
+-device '{"driver":"intel-iommu","id":"iommu0","intremap":"on","dma-translation":false}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action reset \

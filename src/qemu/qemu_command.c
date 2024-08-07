@@ -6209,6 +6209,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                                   "S:eim", qemuOnOffAuto(iommu->eim),
                                   "T:device-iotlb", iommu->iotlb,
                                   "z:aw-bits", iommu->aw_bits,
+                                  "T:dma-translation", iommu->dma_translation,
                                   NULL) < 0)
             return -1;
 
