@@ -1143,6 +1143,7 @@ virXMLParseHelper(int domcode,
     xmlNodePtr rootnode;
     const char *docname;
     int parseFlags = XML_PARSE_NONET | XML_PARSE_NOWARNING;
+    g_autofree char *xmlStrPtr = NULL;
 
     if (filename)
         docname = filename;
@@ -1166,10 +1167,11 @@ virXMLParseHelper(int domcode,
     }
 
     if (filename) {
-        xml = xmlCtxtReadFile(pctxt, filename, NULL, parseFlags);
-    } else {
-        xml = xmlCtxtReadDoc(pctxt, BAD_CAST xmlStr, url, NULL, parseFlags);
+        if (virFileReadAll(filename, 1024*1024*10, &xmlStrPtr) < 0)
+            return NULL;
+        xmlStr = xmlStrPtr;
     }
+    xml = xmlCtxtReadDoc(pctxt, BAD_CAST xmlStr, url, NULL, parseFlags);
 
     if (!xml) {
         if (virGetLastErrorCode() == VIR_ERR_OK) {

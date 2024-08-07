@@ -1,1 +1,1 @@
-XML error: failed to parse xml document 'ABS_SRCDIR/qemuxmlconfdata/nonexistent-file.xml'
+Failed to open file 'ABS_SRCDIR/qemuxmlconfdata/nonexistent-file.xml': No such file or directory
