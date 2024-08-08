@@ -10,14 +10,16 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-dummy/.config \
 -name guest=dummy,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-dummy/master-key.aes"}' \
--machine pc-i440fx-2.3,usb=off,dump-guest-core=off,acpi=off \
+-machine pc,usb=off,dump-guest-core=off,acpi=off \
 -accel kvm \
 -cpu qemu64 \
 -m size=7864320k,slots=16,maxmem=16777216k \
 -overcommit mem-lock=off \
 -smp 12,sockets=12,cores=1,threads=1 \
--numa node,nodeid=0,cpus=0-1,cpus=5,cpus=7-11,mem=3840 \
--numa node,nodeid=1,cpus=2-4,cpus=6,mem=3840 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":4026531840,"host-nodes":[0,1,2,3],"policy":"bind"}' \
+-numa node,nodeid=0,cpus=0-1,cpus=5,cpus=7-11,memdev=ram-node0 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node1","size":4026531840,"host-nodes":[0,1,2,3],"policy":"bind"}' \
+-numa node,nodeid=1,cpus=2-4,cpus=6,memdev=ram-node1 \
 -uuid 4d92ec27-9ebf-400b-ae91-20c71c647c19 \
 -display none \
 -no-user-config \

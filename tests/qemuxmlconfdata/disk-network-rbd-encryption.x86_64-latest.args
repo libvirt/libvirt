@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-encryptdisk/.config \
 -name guest=encryptdisk,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-encryptdisk/master-key.aes"}' \
--machine pc-i440fx-2.1,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel tcg \
 -cpu qemu64 \
 -m size=1048576k \
