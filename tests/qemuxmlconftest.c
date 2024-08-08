@@ -372,6 +372,7 @@ testCheckExclusiveFlags(int flags)
                   FLAG_REAL_CAPS |
                   FLAG_SLIRP_HELPER |
                   FLAG_ALLOW_DUPLICATE_OUTPUT |
+                  FLAG_ALLOW_MISSING_INPUT |
                   0, -1);
 
     return 0;
@@ -671,7 +672,8 @@ testQemuConfXMLCommon(testQemuInfo *info,
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
 
-    if (!virFileExists(info->infile)) {
+    if (!(info->flags & FLAG_ALLOW_MISSING_INPUT) &&
+        !virFileExists(info->infile)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Input file '%s' not found", info->infile);
         goto cleanup;
@@ -1236,6 +1238,10 @@ mymain(void)
     g_unsetenv("PIPEWIRE_CORE");
     g_unsetenv("PIPEWIRE_REMOTE");
     g_unsetenv("PIPEWIRE_RUNTIME_DIR");
+
+    DO_TEST_CAPS_ARCH_LATEST_FULL("nonexistent-file", "x86_64",
+                                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR | FLAG_ALLOW_MISSING_INPUT);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("broken-xml-invalid");
 
     DO_TEST_CAPS_LATEST("x86_64-pc-minimal");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("x86_64-pc-minimal");

@@ -61,6 +61,7 @@ typedef enum {
     FLAG_REAL_CAPS          = 1 << 2,
     FLAG_SLIRP_HELPER       = 1 << 3,
     FLAG_ALLOW_DUPLICATE_OUTPUT = 1 << 4, /* allow multiple tests with the same output file */
+    FLAG_ALLOW_MISSING_INPUT = 1 << 5,
 } testQemuInfoFlags;
 
 struct testQemuConf {
