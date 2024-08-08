@@ -206,9 +206,9 @@
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
   <flag name='intel-iommu.dma-translation'/>
-  <version>9000050</version>
+  <version>9000090</version>
   <microcodeVersion>43100246</microcodeVersion>
-  <package>v9.0.0-1388-g80e8f06021-dirty</package>
+  <package>v9.1.0-rc0-121-g75c7f57403</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -458,6 +458,7 @@
     <property name='kvmclock' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
     <property name='amx-complex' type='boolean' value='false'/>
+    <property name='avx-vnni-int16' type='boolean' value='false'/>
     <property name='pschange-mc-no' type='boolean' value='true' migratable='yes'/>
     <property name='v-vmsave-vmload' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-rdrand-exit' type='boolean' value='false'/>
@@ -2036,69 +2037,65 @@
   <cpu type='kvm' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='486' typename='486-x86_64-cpu' usable='yes'/>
   <machine type='kvm' name='pc-i440fx-9.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-5.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-5.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-6.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-4.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-5.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-4.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-5.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-9.1' alias='q35' hotplugCpus='yes' maxCpus='4096' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-q35-7.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-8.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-8.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-6.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-7.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='x-remote' maxCpus='1' acpi='no'/>
-  <machine type='kvm' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-6.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-4.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-4.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-5.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-4.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-4.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-5.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-9.0' hotplugCpus='yes' maxCpus='4096' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-7.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-8.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-8.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-6.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-6.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-9.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-7.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-5.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-5.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-7.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='microvm' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='microvm.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-8.2' hotplugCpus='yes' maxCpus='1024' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-8.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-5.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-5.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-q35-6.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='pc-i440fx-7.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='kvm' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='kvm' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <hostCPU type='tcg' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -2347,6 +2344,7 @@
     <property name='kvmclock' type='boolean' value='false'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
     <property name='amx-complex' type='boolean' value='false'/>
+    <property name='avx-vnni-int16' type='boolean' value='false'/>
     <property name='pschange-mc-no' type='boolean' value='false'/>
     <property name='v-vmsave-vmload' type='boolean' value='false'/>
     <property name='vmx-rdrand-exit' type='boolean' value='false'/>
@@ -3877,69 +3875,65 @@
   <cpu type='tcg' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='486' typename='486-x86_64-cpu' usable='yes'/>
   <machine type='tcg' name='pc-i440fx-9.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-5.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-5.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-6.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-4.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-5.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-4.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-5.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-9.1' alias='q35' hotplugCpus='yes' maxCpus='4096' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-q35-7.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-8.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-8.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-6.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-7.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='x-remote' maxCpus='1' acpi='no'/>
-  <machine type='tcg' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-6.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-4.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-4.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-5.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-4.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-4.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-5.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-9.0' hotplugCpus='yes' maxCpus='4096' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-7.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-8.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-8.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-6.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-6.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-9.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-7.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-5.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-5.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-7.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='microvm' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='microvm.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-8.2' hotplugCpus='yes' maxCpus='1024' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-8.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-5.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-5.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-q35-6.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='pc-i440fx-7.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram' acpi='yes'/>
-  <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' acpi='yes'/>
+  <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram' deprecated='yes' acpi='yes'/>
   <hypervCapabilities supported='yes'>
     <cap name='relaxed'/>
     <cap name='vapic'/>
