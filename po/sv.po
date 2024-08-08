@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-08 10:31+0000\n"
+"PO-Revision-Date: 2024-08-09 20:41+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -32922,147 +32922,148 @@ msgid "not supported on non-linux platforms"
 msgstr "stödjs inte på andra plattformar än linux"
 
 msgid "nothing selected for snapshot"
-msgstr ""
+msgstr "inget valt till ögonblicksbild"
 
 msgid "notify server to update TLS related files online."
-msgstr ""
+msgstr "notifiera servern att uppdatera TLS-relaterade filer uppkopplat."
 
 msgid ""
 "notify server to update the CA cert, CA CRL, server cert / key without "
 "restarts. See OPTIONS for currently supported attributes."
 msgstr ""
+"notifiera servern att uppdatera CA-certifikatet, CA CRL, servercertifikat/-"
+"nyckel utan omstarter. Se FLAGGOR för nu stödda attribut."
 
 #, c-format
 msgid "nparams count exceeds maximum: %1$u > %2$u"
-msgstr ""
+msgstr "nparams-antalet överskrider maximum: %1$u > %2$u"
 
 #, c-format
 msgid "nparams in %1$s must be %2$d"
-msgstr ""
+msgstr "nparams i %1$s måste vara %2$d"
 
 #, c-format
 msgid "nparams in %1$s must be equal to %2$d"
-msgstr ""
+msgstr "nparams i %1$s måste vara lika med %2$d"
 
 msgid "nparams must be non-negative"
-msgstr ""
+msgstr "nparams får inte vara negativt"
 
 msgid "nparams too large"
 msgstr "nparams är för stor"
 
 msgid "numa parameters are not supported by vz driver"
-msgstr ""
+msgstr "numa-parametrar stödjs inte av vz-drivrutinen"
 
 msgid "numad is not available on this host"
-msgstr ""
+msgstr "numad är inte tillgänglig på denna värd"
 
 msgid "number of bytes read:"
-msgstr ""
+msgstr "antal lästa byte:"
 
 msgid "number of bytes written:"
-msgstr ""
+msgstr "antal skrivna byte:"
 
 msgid "number of compression threads for multithread compression"
-msgstr ""
+msgstr "antal komprimeringstrådar vid multitrådad komprimering"
 
 msgid "number of connections for parallel migration"
-msgstr ""
+msgstr "antal anslutningar vid parallell migrering"
 
 msgid "number of decompression threads for multithread compression"
-msgstr ""
+msgstr "antal dekomprimeringstrådar vid multitrådad komprimering"
 
 msgid "number of flush operations:"
-msgstr ""
+msgstr "antal flush-åtgärder:"
 
 msgid ""
 "number of millisecs the shared memory service should sleep before next scan"
 msgstr ""
+"antal millisekunder tjänsten för delat minne skall sova före nästa skanning"
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr ""
+"antal sidor att skanna före tjänsten för delat minne lägger sig att sova"
 
 msgid "number of read operations:"
-msgstr ""
+msgstr "antal läsåtgärder:"
 
 msgid "number of seconds the daemon will run without any active connection"
-msgstr ""
+msgstr "antal sekunder demonen kommer köra utan någon aktiv anslutning"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
-msgstr ""
+msgstr "antal sekunder att tysta trafik på nyss anslutna portar"
 
 msgid "number of virtual CPUs"
 msgstr "antal virtuella CPU:er"
 
 msgid "number of write operations:"
-msgstr ""
+msgstr "antal skrivåtgärder:"
 
 msgid "numbers not allowed in VMX format"
-msgstr ""
+msgstr "siffror är inte tillåtna i VMX-format"
 
 msgid "numerical overflow"
-msgstr ""
+msgstr "numeriskt spill"
 
 #, c-format
 msgid "numerical overflow: %1$s"
-msgstr ""
+msgstr "numeriskt spill: %1$s"
 
 msgid "nvcpus is zero"
-msgstr ""
+msgstr "nvcpus är noll"
 
 msgid "nvdimm isn't supported by this QEMU binary"
 msgstr "nvdimm stödjs inte av denna QEMU-binär"
 
 msgid "nvdimm label must be at least 128KiB"
-msgstr ""
+msgstr "nvdimm-etiketten måste vara åtminstone 128 KiB"
 
 msgid "nvdimm pmem property is not available with this QEMU binary"
-msgstr ""
+msgstr "nvdimm-egenskapen pmem är inte tillgänglig med denna QEMU-binär"
 
 msgid "nvdimm readonly property is not available with this QEMU binary"
-msgstr ""
+msgstr "nvdimm-egenskapen readonly är inte tillgänglig med denna QEMU-binär"
 
 msgid "nvram address type must be spaprvio"
-msgstr ""
+msgstr "nvram-adresstypen måste vara spaprvio"
 
 msgid "nvram device is not supported by this QEMU binary"
-msgstr ""
+msgstr "nvram-enheten stödjs inte av denna QEMU-binär"
 
-#, fuzzy
 msgid "nvram device is only supported for PPC64"
-msgstr "spicevmc-enhetstyp stödjer bara virtio"
+msgstr "nvram-enheten stödjs bara för PPC64"
 
 msgid "nwfilter is in use"
-msgstr ""
+msgstr "nwfilter används"
 
-#, fuzzy
 msgid "nwfilter state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "nwfilter-tillståndsdrivrutinen är inte aktiv"
 
 msgid "object props can't be NULL"
-msgstr ""
+msgstr "objektegenskaper kan inte vara NULL"
 
 #, c-format
 msgid "object size %1$zu of %2$s is not larger than parent class %3$zu"
-msgstr ""
+msgstr "objektstorleken %1$zu av %2$s är inte större än föräldraklassen %3$zu"
 
 msgid "occupied"
-msgstr ""
+msgstr "uppdagen"
 
 msgid "offline"
 msgstr "oansluten"
 
-#, fuzzy
 msgid "offline migration"
-msgstr "live-migrering"
+msgstr "frånkopplad migrering"
 
 msgid "offline migration cannot handle non-shared storage"
-msgstr ""
+msgstr "frånkopplad migrering kan inte hantera odelad lagring"
 
 msgid "offline migration is not supported by the destination host"
-msgstr ""
+msgstr "frånkopplad migrering stödjs inte av målvärden"
 
 msgid "offline migration is not supported by the source host"
-msgstr ""
+msgstr "frånkopplad migrering stödjs inte av källvärden"
 
 msgid "offline migration must be specified with the persistent flag set"
 msgstr ""
