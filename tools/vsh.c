@@ -3040,6 +3040,9 @@ vshReadlineDeinit(vshControl *ctl)
 
     g_clear_pointer(&ctl->historydir, g_free);
     g_clear_pointer(&ctl->historyfile, g_free);
+
+    /* Allow vshReadlineInit() to be called again. */
+    autoCompleteOpaque = NULL;
 }
 
 char *
