@@ -2174,6 +2174,7 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-fallback", "8.0.0");
 
     DO_TEST_CAPS_LATEST("cpu-numa1");
+    DO_TEST_CAPS_LATEST("cpu-numa-memory-oldstyle");
     DO_TEST_CAPS_LATEST("cpu-numa2");
     DO_TEST_CAPS_LATEST("cpu-numa-no-memory-element");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("cpu-numa3");
