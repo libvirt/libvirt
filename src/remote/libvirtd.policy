@@ -27,7 +27,11 @@ License along with this library.  If not, see
 <policyconfig>
     <action id="org.libvirt.unix.monitor">
       <description>Monitor local virtualized systems</description>
+      <description xml:lang="zh_TW">監控本地虛擬化系統</description>
+      <description xml:lang="zh_CN">监控本地虚拟化系统</description>
       <message>System policy prevents monitoring of local virtualized systems</message>
+      <message xml:lang="zh_TW">系統策略禁止監控本地虛擬化系統</message>
+      <message xml:lang="zh_CN">系统策略禁止监控本地虚拟化系统</message>
       <defaults>
         <!-- Any program can use libvirt in read-only mode for monitoring,
              even if not part of a session -->
@@ -39,7 +43,11 @@ License along with this library.  If not, see
 
     <action id="org.libvirt.unix.manage">
       <description>Manage local virtualized systems</description>
+      <description xml:lang="zh_TW">管理本地虛擬化系統</description>
+      <description xml:lang="zh_CN">管理本地虚拟化系统</description>
       <message>System policy prevents management of local virtualized systems</message>
+      <message xml:lang="zh_TW">系統策略禁止管理本地虛擬化系統</message>
+      <message xml:lang="zh_CN">系统策略禁止管理本地虚拟化系统</message>
       <defaults>
         <!-- Any program can use libvirt in read/write mode if they
              provide the root password -->
