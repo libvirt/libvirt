@@ -199,6 +199,10 @@ struct _qemuDomainObjPrivate {
      * private XML. */
     virBitmap *migrationCaps;
 
+    /* True if QEMU supports "postcopy-recover-setup" migration state. Checked
+     * QEMU enters the state, not to be stored in private XML. */
+    bool migrationRecoverSetup;
+
     /* true if qemu-pr-helper process is running for the domain */
     bool prDaemonRunning;
 

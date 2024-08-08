@@ -1503,6 +1503,10 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         }
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER_SETUP:
+        priv->migrationRecoverSetup = true;
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
         if (virDomainObjIsFailedPostcopy(vm, vm->job)) {
             int eventType = -1;

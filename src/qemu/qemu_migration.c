@@ -1802,6 +1802,10 @@ qemuMigrationUpdateJobType(virDomainJobData *jobData)
         jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY;
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER_SETUP:
+        jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY_RECOVER;
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_PAUSED:
         jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED;
         break;
@@ -1943,6 +1947,7 @@ qemuMigrationJobCheckStatus(virDomainObj *vm,
     case VIR_DOMAIN_JOB_STATUS_MIGRATING:
     case VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED:
     case VIR_DOMAIN_JOB_STATUS_POSTCOPY:
+    case VIR_DOMAIN_JOB_STATUS_POSTCOPY_RECOVER:
     case VIR_DOMAIN_JOB_STATUS_PAUSED:
         break;
     }
@@ -2028,6 +2033,7 @@ qemuMigrationAnyCompleted(virDomainObj *vm,
     case VIR_DOMAIN_JOB_STATUS_MIGRATING:
     case VIR_DOMAIN_JOB_STATUS_POSTCOPY:
     case VIR_DOMAIN_JOB_STATUS_PAUSED:
+    case VIR_DOMAIN_JOB_STATUS_POSTCOPY_RECOVER:
         /* The migration was aborted by us rather than QEMU itself. */
         jobData->status = VIR_DOMAIN_JOB_STATUS_FAILED;
         return -2;
@@ -4669,6 +4675,7 @@ qemuMigrationSrcIsCanceled(virDomainObj *vm)
 
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_PAUSED:
     case QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER:
     case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:

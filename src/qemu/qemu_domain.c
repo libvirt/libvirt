@@ -1873,6 +1873,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
     virHashRemoveAll(priv->statsSchema);
 
     g_slist_free_full(g_steal_pointer(&priv->threadContextAliases), g_free);
+
+    priv->migrationRecoverSetup = false;
 }
 
 
