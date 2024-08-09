@@ -85,6 +85,16 @@ char *vir_g_strdup_vprintf(const char *msg, va_list args)
 
 void vir_g_source_unref(GSource *src, GMainContext *ctx);
 
+
+/* Drop once we require glib-2.68 at minimum */
+guint
+vir_g_string_replace(GString *string,
+                     const gchar *find,
+                     const gchar *replace,
+                     guint limit);
+#undef g_string_replace
+#define g_string_replace vir_g_string_replace
+
 #if !GLIB_CHECK_VERSION(2, 73, 2)
 # if (defined(__has_attribute) && __has_attribute(__noinline__)) || G_GNUC_CHECK_VERSION (2, 96)
 #  if defined (__cplusplus) && __cplusplus >= 201103L
