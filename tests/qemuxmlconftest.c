@@ -687,8 +687,12 @@ testQemuConfXMLCommon(testQemuInfo *info,
         }
 
         if (info->flags & FLAG_EXPECT_PARSE_ERROR) {
-            g_autofree char *tmperr = g_strdup_printf("%s\n", NULLSTR(err->message));
-            if (virTestCompareToFile(tmperr, info->errfile) >= 0) {
+            g_autoptr(GString) errstr = g_string_new(NULLSTR(err->message));
+
+            g_string_replace(errstr, abs_srcdir, "ABS_SRCDIR", 0);
+            g_string_append_c(errstr, '\n');
+
+            if (virTestCompareToFile(errstr->str, info->errfile) >= 0) {
                 info->prep_skip = true;
             }
         }
