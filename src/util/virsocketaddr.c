@@ -28,7 +28,11 @@
  * Helpers to extract the IP arrays from the virSocketAddr *
  * That part is the less portable of the module
  */
-typedef unsigned char virSocketAddrIPv4[4];
+typedef union {
+    uint32_t val;
+    unsigned char bytes[4];
+} virSocketAddrIPv4;
+
 typedef unsigned short virSocketAddrIPv6[8];
 typedef unsigned char virSocketAddrIPv6Bytes[16];
 typedef unsigned char virSocketAddrIPv6Nibbles[32];
@@ -46,7 +50,7 @@ virSocketAddrGetIPv4Addr(const virSocketAddr *addr,
     val = ntohl(addr->data.inet4.sin_addr.s_addr);
 
     for (i = 0; i < 4; i++) {
-        (*tab)[3 - i] = val & 0xFF;
+        tab->bytes[3 - i] = val & 0xFF;
         val >>= 8;
     }
 
@@ -838,7 +842,7 @@ int virSocketAddrCheckNetmask(virSocketAddr *addr1, virSocketAddr *addr2,
             return -1;
 
         for (i = 0; i < 4; i++) {
-            if ((t1[i] & tm[i]) != (t2[i] & tm[i]))
+            if ((t1.bytes[i] & tm.bytes[i]) != (t2.bytes[i] & tm.bytes[i]))
                 return 0;
         }
 
@@ -986,14 +990,14 @@ virSocketAddrGetRange(virSocketAddr *start, virSocketAddr *end,
          * are the same
          */
         for (i = 0; i < 2; i++) {
-            if (t1[i] != t2[i]) {
+            if (t1.bytes[i] != t2.bytes[i]) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("range %1$s - %2$s is too large (> 65535)"),
                                startStr, endStr);
                 return -1;
             }
         }
-        ret = (t2[2] - t1[2]) * 256 + (t2[3] - t1[3]);
+        ret = (t2.bytes[2] - t1.bytes[2]) * 256 + (t2.bytes[3] - t1.bytes[3]);
         if (ret < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("range %1$s - %2$s is reversed "),
@@ -1064,7 +1068,7 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask)
             return -1;
 
         for (i = 0; i < 4; i++)
-            if (tm[i] == 0xff)
+            if (tm.bytes[i] == 0xff)
                 c += 8;
             else
                 break;
@@ -1075,7 +1079,7 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask)
         j = i << 3;
         while (j < (8 * 4)) {
             bit = 1 << (7 - (j & 7));
-            if ((tm[j >> 3] & bit))
+            if ((tm.bytes[j >> 3] & bit))
                 c++;
             else
                 break;
@@ -1084,7 +1088,7 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask)
 
         while (j < (8 * 4)) {
             bit = 1 << (7 - (j & 7));
-            if ((tm[j >> 3] & bit))
+            if ((tm.bytes[j >> 3] & bit))
                 return -1;
             j++;
         }
@@ -1326,7 +1330,7 @@ virSocketAddrPTRDomain(const virSocketAddr *addr,
             return -1;
 
         for (i = prefix / 8; i > 0; i--)
-            virBufferAsprintf(&buf, "%u.", ip[i - 1]);
+            virBufferAsprintf(&buf, "%u.", ip.bytes[i - 1]);
 
         virBufferAddLit(&buf, VIR_SOCKET_ADDR_IPV4_ARPA);
     } else if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6)) {
@@ -1389,7 +1393,7 @@ virSocketAddrBytes(const virSocketAddr *addr,
             return 0;
 
         virSocketAddrGetIPv4Addr(addr, &ip);
-        memcpy(bytes, ip, sizeof(ip));
+        memcpy(bytes, &ip, sizeof(ip));
         return sizeof(ip);
     }
 
