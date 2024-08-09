@@ -41,18 +41,10 @@ static int
 virSocketAddrGetIPv4Addr(const virSocketAddr *addr,
                          virSocketAddrIPv4 *tab)
 {
-    unsigned long val;
-    size_t i;
-
     if (!addr || !tab || addr->data.stor.ss_family != AF_INET)
         return -1;
 
-    val = ntohl(addr->data.inet4.sin_addr.s_addr);
-
-    for (i = 0; i < 4; i++) {
-        tab->bytes[3 - i] = val & 0xFF;
-        val >>= 8;
-    }
+    tab->val = addr->data.inet4.sin_addr.s_addr;
 
     return 0;
 }
@@ -841,10 +833,8 @@ int virSocketAddrCheckNetmask(virSocketAddr *addr1, virSocketAddr *addr2,
             (virSocketAddrGetIPv4Addr(netmask, &tm) < 0))
             return -1;
 
-        for (i = 0; i < 4; i++) {
-            if ((t1.bytes[i] & tm.bytes[i]) != (t2.bytes[i] & tm.bytes[i]))
-                return 0;
-        }
+        if ((t1.val & tm.val) != (t2.val & tm.val))
+            return 0;
 
     } else if (addr1->data.stor.ss_family == AF_INET6) {
         virSocketAddrIPv6 t1, t2, tm;
@@ -976,35 +966,35 @@ virSocketAddrGetRange(virSocketAddr *start, virSocketAddr *end,
     }
 
     if (VIR_SOCKET_ADDR_IS_FAMILY(start, AF_INET)) {
-        virSocketAddrIPv4 t1, t2;
+        virSocketAddrIPv4 startv4, endv4;
+        uint32_t startHost, endHost;
 
-        if (virSocketAddrGetIPv4Addr(start, &t1) < 0 ||
-            virSocketAddrGetIPv4Addr(end, &t2) < 0) {
+        if (virSocketAddrGetIPv4Addr(start, &startv4) < 0 ||
+            virSocketAddrGetIPv4Addr(end, &endv4) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to get IPv4 address for start or end of range %1$s - %2$s"),
                            startStr, endStr);
             return -1;
         }
 
-        /* legacy check that everything except the last two bytes
-         * are the same
-         */
-        for (i = 0; i < 2; i++) {
-            if (t1.bytes[i] != t2.bytes[i]) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("range %1$s - %2$s is too large (> 65535)"),
-                               startStr, endStr);
-                return -1;
-            }
-        }
-        ret = (t2.bytes[2] - t1.bytes[2]) * 256 + (t2.bytes[3] - t1.bytes[3]);
-        if (ret < 0) {
+        startHost = ntohl(startv4.val);
+        endHost = ntohl(endv4.val);
+
+        if (endHost < startHost) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("range %1$s - %2$s is reversed "),
                            startStr, endStr);
             return -1;
         }
-        ret++;
+
+        if (endHost - startHost > 65535) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("range %1$s - %2$s is too large (> 65535)"),
+                           startStr, endStr);
+            return -1;
+        }
+
+        ret = endHost - startHost + 1;
     } else if (VIR_SOCKET_ADDR_IS_FAMILY(start, AF_INET6)) {
         virSocketAddrIPv6 t1, t2;
 
