@@ -205,6 +205,7 @@
   <flag name='virtio-sound'/>
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
+  <flag name='intel-iommu.dma-translation'/>
   <version>9000050</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v9.0.0-1388-g80e8f06021-dirty</package>

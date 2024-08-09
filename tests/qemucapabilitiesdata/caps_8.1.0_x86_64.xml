@@ -202,6 +202,7 @@
   <flag name='usb-mtp'/>
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
+  <flag name='intel-iommu.dma-translation'/>
   <version>8001000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v8.1.0</package>

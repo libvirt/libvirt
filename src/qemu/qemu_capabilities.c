@@ -713,6 +713,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "sev-snp-guest", /* QEMU_CAPS_SEV_SNP_GUEST */
               "netdev.user", /* QEMU_CAPS_NETDEV_USER */
               "acpi-erst", /* QEMU_CAPS_DEVICE_ACPI_ERST */
+              "intel-iommu.dma-translation", /* QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION */
     );
 
 
@@ -1516,6 +1517,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "eim", QEMU_CAPS_INTEL_IOMMU_EIM, NULL },
     { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, NULL },
     { "aw-bits", QEMU_CAPS_INTEL_IOMMU_AW_BITS, NULL },
+    { "dma-translation", QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsMCH[] = {
