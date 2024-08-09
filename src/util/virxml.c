@@ -1047,6 +1047,11 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
     cur = ctxt->input->cur;
     base = ctxt->input->base;
 
+    /* skip backwards over NUL terminator, in case we failed
+     * parsing at the EOF position */
+    if ((cur > base) && *cur == '\0')
+        cur--;
+
     /* skip backwards over any end-of-lines */
     while ((cur > base) && ((*(cur) == '\n') || (*(cur) == '\r')))
         cur--;
