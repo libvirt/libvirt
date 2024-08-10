@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-09 20:41+0000\n"
+"PO-Revision-Date: 2024-08-11 07:40+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -33066,70 +33066,74 @@ msgid "offline migration is not supported by the source host"
 msgstr "frånkopplad migrering stödjs inte av källvärden"
 
 msgid "offline migration must be specified with the persistent flag set"
-msgstr ""
+msgstr "frånkopplad migrering måste anges med flaggan beständighet satt"
 
 msgid "ok"
 msgstr ""
 
 msgid "old qcow/qcow2 encryption is not supported"
-msgstr ""
+msgstr "gammal qcow-/qcow2-kryptering stödjs inte"
 
 msgid ""
 "on_reboot, on_poweroff and on_crash parameters are not supported by vz driver"
 msgstr ""
+"parametrarna on_reboot, on_poweroff och on_crash stödjs inte av vz-"
+"drivrutinen"
 
 msgid "one of --enable, --disable is required"
-msgstr ""
+msgstr "en av --enable, --disable krävs"
 
 msgid "one of --list, --all, or --event <type> is required"
-msgstr ""
+msgstr "en av --list, --all eller --event <typ> krävs"
 
 msgid "online non-hotpluggable vcpus must be ordered in ascending order"
-msgstr ""
+msgstr "uppkopplade ej urkopplingsbara vcpu:er måste ordnas i stigande ordning"
 
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
+"uppkopplade ej urkopplingsbara vcpu:er behöver ordnas före urkopplingsbara "
+"vcpu:er"
 
 msgid "only 'connect' mode is supported for external TPM device"
-msgstr ""
+msgstr "endast läget ”connect” stödjs för en extern TPM-enhet"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
-msgstr ""
+msgstr "endast ”dimm”-adresser stödjs för enheten pc-dimm"
 
 #, c-format
 msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr ""
+msgstr "endast ”pci”-adresser stödjs för enheten %1$s"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
-msgstr ""
+msgstr "endast ”pci”-adresser stödjs för delat minnes-enheten"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
-msgstr ""
+msgstr "endast ”pci”-adresser stödjs för virtio-pmem-enheten"
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
 "supported"
 msgstr ""
+"endast 1 grafisk enhet av varje typ (sdl, vnc, spice, headless, dbus) stödjs"
 
 msgid "only JSON objects can be top level"
-msgstr ""
+msgstr "endast JSON-objekt kan vara toppnivå"
 
 msgid "only RAW volumes are supported by this storage pool"
-msgstr ""
+msgstr "endast RAW-volymer stödjs av denna lagringspool"
 
 msgid "only S390 guests support panic device of model 's390'"
-msgstr ""
+msgstr "endast S390-gäster stödjer panikenheter av modellen ”s390”"
 
 msgid "only TCP protocol can be converted to InetSocketAddress"
-msgstr ""
+msgstr "endast TCP-protokoll kan konverteras till InetSocketAddress"
 
 msgid "only TCP transport is supported for iSCSI volumes"
-msgstr ""
+msgstr "endast TCP-transport stödjs till iSCSI-volymer"
 
-#, fuzzy
 msgid "only USB input devices are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "endast USB-inmatningsenheter stödjs"
 
 msgid "only a single IOMMU device is supported"
 msgstr ""
