@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-11 07:40+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-08-12 08:40+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -33136,68 +33136,67 @@ msgid "only USB input devices are supported"
 msgstr "endast USB-inmatningsenheter stödjs"
 
 msgid "only a single IOMMU device is supported"
-msgstr ""
+msgstr "bara en enda IOMMU-enhet stödjs"
 
 msgid "only a single TPM Proxy device is supported"
-msgstr ""
+msgstr "bara en enda TPM-Proxy-enhet stödjs"
 
 msgid "only a single TPM non-proxy device is supported"
-msgstr ""
+msgstr "bara en enda TPM-icke-proxy-enhet stödjs"
 
 msgid "only a single memory balloon device is supported"
-msgstr ""
+msgstr "bara en enda minnesballongsenhet stödjs"
 
 msgid "only a single nvram device is supported"
-msgstr ""
+msgstr "bara en enda nvram-enhet stödjs"
 
 msgid "only a single pstore device is supported"
-msgstr ""
+msgstr "bara en enda pstore-enhet stödjs"
 
 msgid "only a single vsock device is supported"
-msgstr ""
+msgstr "bara en enda vsock-enhet stödjs"
 
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
-msgstr ""
+msgstr "endast bussen ”virtio” stödjs till ”passthrough”-inmatningsenheter"
 
 #, c-format
 msgid "only bus 'virtio' is supported for input model '%1$s'"
-msgstr ""
+msgstr "endast bussen ”virtio” stödjs till inmatningsmodellen ”%1$s”"
 
 msgid "only can reboot running/paused domain"
-msgstr ""
+msgstr "det går bara att starta om en körande/pausad domän"
 
 msgid "only can resume paused domain"
-msgstr ""
+msgstr "det går bara att återuppta en pausad domän"
 
 msgid "only can save running/paused domain"
-msgstr ""
+msgstr "det går bara att spara en körande/pausad domän"
 
 msgid "only can shutdown running/paused domain"
-msgstr ""
+msgstr "det går bara att stänga av en körande/pausad domän"
 
 msgid "only can suspend running domain"
-msgstr ""
+msgstr "det går bara att vila en körande domän"
 
 msgid "only connect if safe console handling is supported"
-msgstr ""
+msgstr "anslut endast om säker konsolhantering stödjs"
 
 #, c-format
 msgid ""
 "only cpu feature policies 'require' and 'disable' are supported for %1$s"
-msgstr ""
+msgstr "endast cpu-funktionspolicyerna ”require” och ”disable” stödjs för %1$s"
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
-msgstr ""
+msgstr "endast i686- och x86_64-gäster stödjer panikenheten av modell ”hyperv”"
 
 msgid "only list pool of specified type(s) (if supported)"
-msgstr ""
+msgstr "lista endast pooler av angivna typer (om det stödjs)"
 
 msgid "only model 'netfront' is supported for Xen PV(H) domains"
-msgstr ""
+msgstr "endast modellen ”netfront” stödjs för Xen PV(H)-domäner"
 
-#, fuzzy
 msgid "only nmdm console types are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "endast nmdm-konsoltyper stödjs"
 
 msgid "only one RNG backend is supported"
 msgstr ""
