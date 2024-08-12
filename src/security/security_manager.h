@@ -85,7 +85,8 @@ int virSecurityManagerTransactionStart(virSecurityManager *mgr,
                                        char *const *sharedFilesystems);
 int virSecurityManagerTransactionCommit(virSecurityManager *mgr,
                                         pid_t pid,
-                                        bool lock);
+                                        bool lock,
+                                        bool lockMetadataException);
 void virSecurityManagerTransactionAbort(virSecurityManager *mgr);
 
 void *virSecurityManagerGetPrivateData(virSecurityManager *mgr);
@@ -254,7 +255,8 @@ virSecurityManagerMetadataLockState *
 virSecurityManagerMetadataLock(virSecurityManager *mgr,
                                char *const *sharedFilesystems,
                                const char **paths,
-                               size_t npaths);
+                               size_t npaths,
+                               bool lockMetadataException);
 
 void
 virSecurityManagerMetadataUnlock(virSecurityManager *mgr,

@@ -50,7 +50,8 @@ typedef int (*virSecurityDriverTransactionStart) (virSecurityManager *mgr,
                                                   char *const *sharedFilesystems);
 typedef int (*virSecurityDriverTransactionCommit) (virSecurityManager *mgr,
                                                    pid_t pid,
-                                                   bool lock);
+                                                   bool lock,
+                                                   bool lockMetadataException);
 typedef void (*virSecurityDriverTransactionAbort) (virSecurityManager *mgr);
 
 typedef int (*virSecurityDomainSetDaemonSocketLabel)(virSecurityManager *mgr,

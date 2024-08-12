@@ -81,6 +81,7 @@ struct _virSecuritySELinuxContextList {
     virSecuritySELinuxContextItem **items;
     size_t nItems;
     bool lock;
+    bool lockMetadataException;
 };
 
 #define SECURITY_SELINUX_VOID_DOI       "0"
@@ -300,7 +301,8 @@ virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
 
         if (!(state = virSecurityManagerMetadataLock(list->manager,
                                                      list->sharedFilesystems,
-                                                     paths, npaths)))
+                                                     paths, npaths,
+                                                     list->lockMetadataException)))
             goto cleanup;
 
         for (i = 0; i < list->nItems; i++) {
@@ -1193,6 +1195,7 @@ virSecuritySELinuxTransactionStart(virSecurityManager *mgr,
  * @mgr: security manager
  * @pid: domain's PID
  * @lock: lock and unlock paths that are relabeled
+ * @lockMetadataException: don't lock metadata for lock files
  *
  * If @pis is not -1 then enter the @pid namespace (usually @pid refers
  * to a domain) and perform all the sefilecon()-s on the list. If @pid
@@ -1213,7 +1216,8 @@ virSecuritySELinuxTransactionStart(virSecurityManager *mgr,
 static int
 virSecuritySELinuxTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
                                     pid_t pid,
-                                    bool lock)
+                                    bool lock,
+                                    bool lockMetadataException)
 {
     virSecuritySELinuxContextList *list;
     int rc;
@@ -1233,6 +1237,7 @@ virSecuritySELinuxTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
     }
 
     list->lock = lock;
+    list->lockMetadataException = lockMetadataException;
 
     if (pid != -1) {
         rc = virProcessRunInMountNamespace(pid,
@@ -2091,7 +2096,8 @@ virSecuritySELinuxMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
 
     if (!(state = virSecurityManagerMetadataLock(data->mgr,
                                                  data->sharedFilesystems,
-                                                 paths, G_N_ELEMENTS(paths))))
+                                                 paths, G_N_ELEMENTS(paths),
+                                                 false)))
         return -1;
 
     ret = virSecurityMoveRememberedLabel(SECURITY_SELINUX_NAME, data->src, data->dst);

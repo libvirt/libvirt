@@ -57,7 +57,8 @@ qemuSecuritySetAllLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -94,7 +95,8 @@ qemuSecurityRestoreAllLabel(virQEMUDriver *driver,
 
     if (transactionStarted &&
         virSecurityManagerTransactionCommit(driver->securityManager,
-                                            -1, priv->rememberOwner) < 0)
+                                            -1, priv->rememberOwner,
+                                            false) < 0)
         VIR_WARN("Unable to run security manager transaction");
 
     virSecurityManagerTransactionAbort(driver->securityManager);
@@ -133,7 +135,8 @@ qemuSecuritySetImageLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -171,7 +174,8 @@ qemuSecurityRestoreImageLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -227,7 +231,8 @@ qemuSecuritySetHostdevLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -261,7 +266,8 @@ qemuSecurityRestoreHostdevLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -294,7 +300,8 @@ qemuSecuritySetMemoryLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -327,7 +334,8 @@ qemuSecurityRestoreMemoryLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -360,7 +368,8 @@ qemuSecuritySetInputLabel(virDomainObj *vm,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -393,7 +402,8 @@ qemuSecurityRestoreInputLabel(virDomainObj *vm,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -427,7 +437,8 @@ qemuSecuritySetChardevLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -461,7 +472,8 @@ qemuSecurityRestoreChardevLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -492,7 +504,8 @@ qemuSecuritySetNetdevLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -524,7 +537,8 @@ qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -552,7 +566,8 @@ qemuSecuritySetTPMLabels(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            -1, priv->rememberOwner) < 0)
+                                            -1, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -580,7 +595,8 @@ qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            -1, priv->rememberOwner) < 0)
+                                            -1, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -615,7 +631,8 @@ qemuSecurityDomainSetPathLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -648,7 +665,8 @@ qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
+                                            pid, priv->rememberOwner,
+                                            false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -694,7 +712,7 @@ qemuSecurityDomainSetMountNSPathLabel(virQEMUDriver *driver,
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            vm->pid, false) < 0)
+                                            vm->pid, false, false) < 0)
         goto cleanup;
 
     ret = 0;

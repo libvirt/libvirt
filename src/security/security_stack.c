@@ -164,13 +164,15 @@ virSecurityStackTransactionStart(virSecurityManager *mgr,
 static int
 virSecurityStackTransactionCommit(virSecurityManager *mgr,
                                   pid_t pid,
-                                  bool lock)
+                                  bool lock,
+                                  bool lockMetadataException)
 {
     virSecurityStackData *priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItem *item = priv->itemsHead;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerTransactionCommit(item->securityManager, pid, lock) < 0)
+        if (virSecurityManagerTransactionCommit(item->securityManager, pid,
+                                                lock, lockMetadataException) < 0)
             goto rollback;
     }
 

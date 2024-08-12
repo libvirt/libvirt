@@ -83,6 +83,7 @@ struct _virSecurityDACChownList {
     virSecurityDACChownItem **items;
     size_t nItems;
     bool lock;
+    bool lockMetadataException;
 };
 
 
@@ -232,7 +233,8 @@ virSecurityDACTransactionRun(pid_t pid G_GNUC_UNUSED,
 
         if (!(state = virSecurityManagerMetadataLock(list->manager,
                                                      list->sharedFilesystems,
-                                                     paths, npaths)))
+                                                     paths, npaths,
+                                                     list->lockMetadataException)))
             return -1;
 
         for (i = 0; i < list->nItems; i++) {
@@ -580,6 +582,7 @@ virSecurityDACTransactionStart(virSecurityManager *mgr,
  * @mgr: security manager
  * @pid: domain's PID
  * @lock: lock and unlock paths that are relabeled
+ * @lockMetadataException: don't lock metadata for lock files
  *
  * If @pid is not -1 then enter the @pid namespace (usually @pid refers
  * to a domain) and perform all the chown()-s on the list. If @pid is -1
@@ -599,7 +602,8 @@ virSecurityDACTransactionStart(virSecurityManager *mgr,
 static int
 virSecurityDACTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
                                 pid_t pid,
-                                bool lock)
+                                bool lock,
+                                bool lockMetadataException)
 {
     g_autoptr(virSecurityDACChownList) list = NULL;
     int rc;
@@ -618,6 +622,7 @@ virSecurityDACTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
     }
 
     list->lock = lock;
+    list->lockMetadataException = lockMetadataException;
 
     if (pid != -1) {
         rc = virProcessRunInMountNamespace(pid,
@@ -1084,7 +1089,8 @@ virSecurityDACMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
 
     if (!(state = virSecurityManagerMetadataLock(data->mgr,
                                                  data->sharedFilesystems,
-                                                 paths, G_N_ELEMENTS(paths))))
+                                                 paths, G_N_ELEMENTS(paths),
+                                                 false)))
         return -1;
 
     ret = virSecurityMoveRememberedLabel(SECURITY_DAC_NAME, data->src, data->dst);
