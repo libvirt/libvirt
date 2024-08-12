@@ -1456,6 +1456,9 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         VIR_WARN("Failed to remove network backend for netdev %s",
                  netdev_name);
 
+    qemuFDPassTransferMonitorRollback(netpriv->vdpafd, priv->mon);
+    qemuFDPassDirectTransferMonitorRollback(netpriv->slirpfd, priv->mon);
+
     for (n = netpriv->tapfds; n; n = n->next)
         qemuFDPassDirectTransferMonitorRollback(n->data, priv->mon);
 
