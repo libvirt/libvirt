@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-12 08:40+0000\n"
+"PO-Revision-Date: 2024-08-12 10:46+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -33199,72 +33199,68 @@ msgid "only nmdm console types are supported"
 msgstr "endast nmdm-konsoltyper stödjs"
 
 msgid "only one RNG backend is supported"
-msgstr ""
+msgstr "bara en RNG-bakände stödjs"
 
 msgid "only one TPM backend is supported"
-msgstr ""
+msgstr "bara en TPM-bakände stödjs"
 
 msgid "only one backup job is supported"
-msgstr ""
+msgstr "bara ett säkerhetskopieringsjobb stödjs"
 
 msgid "only one crypto backend is supported"
-msgstr ""
+msgstr "bara en kryptobakände stödjs"
 
 msgid "only one emulatorpin is supported"
-msgstr ""
+msgstr "bara en emulatorpin stödjs"
 
 msgid "only one emulatorsched is supported"
-msgstr ""
+msgstr "bara en emulatorsched stödjs"
 
-#, fuzzy
 msgid "only one filesystem supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "bara ett filsystem stödjs"
 
 msgid "only one hotpluggable entity can be selected"
-msgstr ""
+msgstr "bara en urkopplingsbar enhet kan väljas"
 
-#, fuzzy
 msgid "only one log element is allowed for character device"
-msgstr "okänd typ presenterad för värd för teckenenhet: %s"
+msgstr "bara ett loggelement tillåts som teckenenhet"
 
 msgid "only one numatune is supported"
-msgstr ""
+msgstr "bara en numatune stödjs"
 
-#, fuzzy
 msgid "only one protocol element is allowed for character device"
-msgstr "okänd typ presenterad för värd för teckenenhet: %s"
+msgstr "bara ett protokollelement tillåts som teckenenhet"
 
 msgid "only one resource element is supported"
-msgstr ""
+msgstr "bara ett resurselement stödjs"
 
 msgid "only one set of redirection filter rule is supported"
-msgstr ""
+msgstr "bara en uppsättning omdirigeringsfilterregler stödjs"
 
-#, fuzzy
 msgid "only one source element is allowed for character device"
-msgstr "okänd typ presenterad för värd för teckenenhet: %s"
+msgstr "endast ett källelement tillåts som teckenenhet"
 
 msgid "only one source host address may be specified for the iSCSI hostdev"
-msgstr ""
+msgstr "bara en källvärdadress kan anges för iSCSI-värdenheten"
 
 msgid "only pSeries guests support panic device of model 'pseries'"
-msgstr ""
+msgstr "endast pSeries-gäster stödjer panikenheter av modellen ”pseries”"
 
 #, c-format
 msgid "only scheme, host and port are supported in vz migration URI: %1$s"
-msgstr ""
+msgstr "endast schema, värd och port stödjs i vz-migrerings-URI:n: %1$s"
 
 msgid "only sending a signal to pid 1 is supported"
-msgstr ""
+msgstr "endast att skicka en signal till pid 1 stödjs"
 
 msgid "only single ISA controller is supported"
-msgstr ""
+msgstr "bara en enda ISA-styrenhet stödjs"
 
 msgid "only single USB controller is supported"
-msgstr ""
+msgstr "bara en enda USB-styrenhet stödjs"
 
 msgid "only single input device is supported"
-msgstr ""
+msgstr "bara en enda indataenhet stödjs"
 
 msgid "only snapshot=no is supported with vhostuser disk"
 msgstr ""
