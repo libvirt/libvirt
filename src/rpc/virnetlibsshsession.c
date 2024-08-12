@@ -170,6 +170,25 @@ virNetLibsshSessionOnceInit(void)
 }
 VIR_ONCE_GLOBAL_INIT(virNetLibsshSession);
 
+
+static int virNetLibsshChannelGetExitStatus(ssh_channel channel,
+                                            uint32_t *exit_status)
+{
+#ifdef WITH_SSH_CHANNEL_GET_EXIT_STATE
+    return ssh_channel_get_exit_state(channel, exit_status, NULL, NULL);
+#else
+    int rc;
+
+    rc = *exit_status = ssh_channel_get_exit_status(channel);
+
+    if (rc != SSH_OK)
+        return SSH_ERROR;
+
+    return *exit_status;
+#endif
+}
+
+
 static virNetLibsshAuthMethod *
 virNetLibsshSessionAuthMethodNew(virNetLibsshSession *sess)
 {
@@ -1179,12 +1198,16 @@ virNetLibsshChannelRead(virNetLibsshSession *sess,
     }
 
     if (ssh_channel_is_eof(sess->channel)) {
+        uint32_t exit_status;
+        int rc;
  eof:
-        if (ssh_channel_get_exit_status(sess->channel)) {
+
+        rc = virNetLibsshChannelGetExitStatus(sess->channel, &exit_status);
+        if (rc != SSH_OK || exit_status != 0) {
             virReportError(VIR_ERR_LIBSSH,
                            _("Remote command terminated with non-zero code: %1$d"),
-                           ssh_channel_get_exit_status(sess->channel));
-            sess->channelCommandReturnValue = ssh_channel_get_exit_status(sess->channel);
+                           exit_status);
+            sess->channelCommandReturnValue = exit_status;
             sess->state = VIR_NET_LIBSSH_STATE_ERROR_REMOTE;
             virObjectUnlock(sess);
             return -1;
@@ -1227,12 +1250,16 @@ virNetLibsshChannelWrite(virNetLibsshSession *sess,
     }
 
     if (ssh_channel_is_eof(sess->channel)) {
-        if (ssh_channel_get_exit_status(sess->channel)) {
+        uint32_t exit_status;
+        int rc;
+
+        rc = virNetLibsshChannelGetExitStatus(sess->channel, &exit_status);
+        if (rc != SSH_OK || exit_status != 0) {
             virReportError(VIR_ERR_LIBSSH,
                            _("Remote program terminated with non-zero code: %1$d"),
-                           ssh_channel_get_exit_status(sess->channel));
+                           exit_status);
             sess->state = VIR_NET_LIBSSH_STATE_ERROR_REMOTE;
-            sess->channelCommandReturnValue = ssh_channel_get_exit_status(sess->channel);
+            sess->channelCommandReturnValue = exit_status;
 
             ret = -1;
             goto cleanup;
