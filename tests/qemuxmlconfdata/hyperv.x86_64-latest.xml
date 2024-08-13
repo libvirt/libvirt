@@ -26,6 +26,7 @@
       <ipi state='on'/>
       <evmcs state='on'/>
       <avic state='on'/>
+      <emsr_bitmap state='on'/>
     </hyperv>
   </features>
   <cpu mode='custom' match='exact' check='none'>

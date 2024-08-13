@@ -3950,5 +3950,6 @@
     <cap name='tlbflush'/>
     <cap name='ipi'/>
     <cap name='avic'/>
+    <cap name='emsr_bitmap'/>
   </hypervCapabilities>
 </qemuCaps>

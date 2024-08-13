@@ -6523,6 +6523,11 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                                       def->hyperv_vendor_id);
                 break;
 
+            case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
+                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAsprintf(&buf, ",%s=on", "hv-emsr-bitmap");
+                break;
+
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }

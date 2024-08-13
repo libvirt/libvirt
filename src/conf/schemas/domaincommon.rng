@@ -7967,6 +7967,11 @@
                 <ref name="featurestate"/>
               </element>
             </optional>
+            <optional>
+              <element name="emsr_bitmap">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
           </interleave>
         </group>
       </choice>

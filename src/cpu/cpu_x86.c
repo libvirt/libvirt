@@ -107,6 +107,9 @@ KVM_FEATURE_DEF(VIR_CPU_x86_HV_IPI,
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_EVMCS,
                 0x40000004, 0x00004000, 0x0);
 
+KVM_FEATURE_DEF(VIR_CPU_x86_HV_EMSR_BITMAP,
+                0x4000000A, 0x00080000, 0x0);
+
 static virCPUx86Feature x86_kvm_features[] =
 {
     KVM_FEATURE(VIR_CPU_x86_KVM_PV_UNHALT),
@@ -124,6 +127,7 @@ static virCPUx86Feature x86_kvm_features[] =
     KVM_FEATURE(VIR_CPU_x86_HV_IPI),
     KVM_FEATURE(VIR_CPU_x86_HV_EVMCS),
     KVM_FEATURE(VIR_CPU_x86_HV_STIMER_DIRECT),
+    KVM_FEATURE(VIR_CPU_x86_HV_EMSR_BITMAP),
 };
 
 typedef struct _virCPUx86Signature virCPUx86Signature;

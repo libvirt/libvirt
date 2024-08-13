@@ -287,6 +287,7 @@
         <value>tlbflush</value>
         <value>ipi</value>
         <value>avic</value>
+        <value>emsr_bitmap</value>
       </enum>
     </hyperv>
     <launchSecurity supported='no'/>

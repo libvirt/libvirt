@@ -25,6 +25,7 @@
       <tlbflush state='off'/>
       <ipi state='off'/>
       <evmcs state='off'/>
+      <emsr_bitmap state='off'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

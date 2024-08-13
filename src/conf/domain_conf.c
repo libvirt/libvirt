@@ -212,6 +212,7 @@ VIR_ENUM_IMPL(virDomainHyperv,
               "ipi",
               "evmcs",
               "avic",
+              "emsr_bitmap",
 );
 
 VIR_ENUM_IMPL(virDomainKVM,
@@ -16575,6 +16576,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
         case VIR_DOMAIN_HYPERV_IPI:
         case VIR_DOMAIN_HYPERV_EVMCS:
         case VIR_DOMAIN_HYPERV_AVIC:
+        case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
             break;
 
         case VIR_DOMAIN_HYPERV_STIMER:
@@ -21023,6 +21025,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
             case VIR_DOMAIN_HYPERV_AVIC:
+            case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
                 if (src->hyperv_features[i] != dst->hyperv_features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of HyperV enlightenment feature '%1$s' differs: source: '%2$s', destination: '%3$s'"),
@@ -27765,6 +27768,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
                 case VIR_DOMAIN_HYPERV_IPI:
                 case VIR_DOMAIN_HYPERV_EVMCS:
                 case VIR_DOMAIN_HYPERV_AVIC:
+                case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
                     virBufferAddLit(&childBuf, "/>\n");
                     break;
 
