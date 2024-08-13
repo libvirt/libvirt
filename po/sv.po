@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-12 10:46+0000\n"
+"PO-Revision-Date: 2024-08-14 07:40+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -33263,50 +33263,46 @@ msgid "only single input device is supported"
 msgstr "bara en enda indataenhet stödjs"
 
 msgid "only snapshot=no is supported with vhostuser disk"
-msgstr ""
+msgstr "endast snapshot=no stödjs med en vhostuser-disken"
 
 msgid "only source type 'unix' is supported for external TPM device"
-msgstr ""
+msgstr "endast källtypen ”unix” stödjs för en extern TPM-enhet"
 
-#, fuzzy
 msgid "only supports mount filesystem type"
-msgstr "okänd filsystemstyp ”%s”"
+msgstr "stödjer endast monteringsfilsystemstypen"
 
 msgid "only supports passthrough accessmode"
-msgstr ""
+msgstr "stödjer endast åtkomstmetoden genomgång"
 
-#, fuzzy
 msgid "only tablet input devices are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "endast inmatningsenheten platta stödjs"
 
 msgid "only the 'qemu' driver can be used with network disks"
-msgstr ""
+msgstr "endast drivrutinen ”qemu” kan användas med nätverksdiskar"
 
-#, fuzzy
 msgid "only two serial ports are supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "endast två serieportar stödjs"
 
-#, fuzzy
 msgid "only two source elements are allowed for character device"
-msgstr "okänd typ presenterad för värd för teckenenhet: %s"
+msgstr "endast två källelement tillåts för en teckenenhet"
 
 msgid "only virtiofs filesystems can be hotplugged"
-msgstr ""
+msgstr "endast virtiofs-filsystem kan kopplas om under drift"
 
 msgid "open an editor to modify the description"
-msgstr ""
+msgstr "öppna en redigerare för att ändra beskrivningen"
 
 #, c-format
 msgid "open(\"%1$s\")"
-msgstr ""
+msgstr "open(\"%1$s\")"
 
 #, c-format
 msgid "openwsman: %1$s"
-msgstr ""
+msgstr "openwsman: %1$s"
 
 #, c-format
 msgid "operation '%1$s' not supported for backend '%2$s'"
-msgstr ""
+msgstr "åtgärden ”%1$s” stödjs inte för bakänden ”%2$s”"
 
 msgid "operation aborted"
 msgstr "åtgärden avbruten"
@@ -33325,33 +33321,33 @@ msgstr "operation misslyckades: %1$s"
 msgid "operation forbidden for read only access"
 msgstr "operation ej tillåten vid skrivskyddad åtkomst"
 
-#, fuzzy, c-format
+#, c-format
 msgid "operation forbidden: %1$s"
-msgstr "operation misslyckades: %1$s"
+msgstr "åtgärden förbjuden: %1$s"
 
 #, c-format
 msgid "operation type %1$d not supported"
-msgstr ""
+msgstr "åtgärdstyp %1$d stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "option %1$s requires a positive integer argument"
-msgstr "sndbuf måste vara ett positivt heltal"
+msgstr "flaggan %1$s måste ha ett positivt heltalsargument"
 
 #, c-format
 msgid "option %1$s takes a numeric argument"
-msgstr ""
+msgstr "flaggan %1$s tar ett numeriskt argument"
 
 #, c-format
 msgid "option '-%1$c' requires an argument"
-msgstr ""
+msgstr "flaggan ”-%1$c” kräver ett argument"
 
 #, c-format
 msgid "option '-%1$c'/'--%2$s' requires an argument"
-msgstr ""
+msgstr "flaggan ”%1$c”/”--%2$s” kräver ett argument"
 
-#, fuzzy, c-format
+#, c-format
 msgid "option --%1$s already seen"
-msgstr "anslutningen redan öppen"
+msgstr "flaggan --%1$s har redan setts"
 
 #, c-format
 msgid "option parsing failed: %1$s\n"
