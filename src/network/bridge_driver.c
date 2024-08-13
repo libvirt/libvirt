@@ -2838,6 +2838,10 @@ networkValidate(virNetworkDriverState *driver,
         return -1;
     }
 
+    if (!virNetDevBandwidthValidate(def->bandwidth)) {
+        return -1;
+    }
+
     /* we support configs with a single PF defined:
      *   <pf dev='eth0'/>
      * or with a list of netdev names:

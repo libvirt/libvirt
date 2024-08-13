@@ -22,6 +22,7 @@
 
 #include "domain_validate.h"
 #include "domain_conf.h"
+#include "netdev_bandwidth_conf.h"
 #include "vircgroup.h"
 #include "virconftypes.h"
 #include "virlog.h"
@@ -2068,6 +2069,10 @@ virDomainActualNetDefValidate(const virDomainNetDef *net)
         return -1;
     }
 
+    if (!virNetDevBandwidthValidate(bandwidth)) {
+        return -1;
+    }
+
     if (virDomainNetDefValidatePortOptions(macstr, actualType, vport,
                                            virDomainNetGetActualPortOptionsIsolated(net)) < 0) {
         return -1;
@@ -2140,6 +2145,10 @@ virDomainNetDefValidate(const virDomainNetDef *net)
           net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("The <portForward> element can only be used with <interface type='user'> and its 'passt' backend"));
+        return -1;
+    }
+
+    if (!virNetDevBandwidthValidate(net->bandwidth)) {
         return -1;
     }
 
