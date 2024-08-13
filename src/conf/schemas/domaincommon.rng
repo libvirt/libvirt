@@ -7972,6 +7972,11 @@
                 <ref name="featurestate"/>
               </element>
             </optional>
+            <optional>
+              <element name="xmm_input">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
           </interleave>
         </group>
       </choice>

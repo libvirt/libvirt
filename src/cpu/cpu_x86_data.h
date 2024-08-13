@@ -51,6 +51,7 @@ struct _virCPUx86MSR {
 #define VIR_CPU_x86_HV_RUNTIME   "hv-runtime"
 #define VIR_CPU_x86_HV_SYNIC     "hv-synic"
 #define VIR_CPU_x86_HV_STIMER    "hv-stimer"
+#define VIR_CPU_x86_HV_XMM_INPUT "hv-xmm_input"
 #define VIR_CPU_x86_HV_RELAXED   "hv-relaxed"
 #define VIR_CPU_x86_HV_SPINLOCKS "hv-spinlocks"
 #define VIR_CPU_x86_HV_VAPIC     "hv-vapic"

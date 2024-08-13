@@ -1990,6 +1990,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
        <ipi state='on'/>
        <evmcs state='on'/>
        <emsr_bitmap state='on'/>
+       <xmm_input state='on'/>
      </hyperv>
      <kvm>
        <hidden state='on'/>
@@ -2079,6 +2080,7 @@ are:
    evmcs           Enable Enlightened VMCS                                                on, off                                      :since:`4.10.0 (QEMU 3.1)`
    avic            Enable use Hyper-V SynIC with hardware APICv/AVIC                      on, off                                      :since:`8.10.0 (QEMU 6.2)`
    emsr_bitmap     Avoid unnecessary updates to L2 MSR Bitmap upon vmexits.               on, off                                      :since:`10.7.0 (QEMU 7.1)`
+   xmm_input       Enable XMM Fast Hypercall Input                                        on, off                                      :since:`10.7.0 (QEMU 7.1)`
    =============== ====================================================================== ============================================ =======================================================
 
    :since:`Since 8.0.0`, the hypervisor can be configured further by setting

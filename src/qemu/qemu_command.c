@@ -6528,6 +6528,11 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                     virBufferAsprintf(&buf, ",%s=on", "hv-emsr-bitmap");
                 break;
 
+            case VIR_DOMAIN_HYPERV_XMM_INPUT:
+                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAsprintf(&buf, ",%s=on", "hv-xmm-input");
+                break;
+
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }

@@ -289,6 +289,7 @@
         <value>ipi</value>
         <value>avic</value>
         <value>emsr_bitmap</value>
+        <value>xmm_input</value>
       </enum>
     </hyperv>
     <launchSecurity supported='no'/>

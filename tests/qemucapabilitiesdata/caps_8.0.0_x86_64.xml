@@ -3457,5 +3457,6 @@
     <cap name='ipi'/>
     <cap name='avic'/>
     <cap name='emsr_bitmap'/>
+    <cap name='xmm_input'/>
   </hypervCapabilities>
 </qemuCaps>
