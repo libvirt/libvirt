@@ -825,6 +825,7 @@ virNetDevBandwidthFormat;
 virNetDevBandwidthHasFloor;
 virNetDevBandwidthParse;
 virNetDevBandwidthSupportsFloor;
+virNetDevBandwidthValidate;
 virNetDevSupportsBandwidth;
 
 
