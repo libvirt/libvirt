@@ -68,14 +68,14 @@ option('driver_libvirtd', type: 'feature', value: 'auto', description: 'libvirtd
 option('driver_libxl', type: 'feature', value: 'auto', description: 'libxenlight driver')
 # dep:driver_remote dep:driver_libvirtd
 option('driver_lxc', type: 'feature', value: 'auto', description: 'Linux Container driver')
-# dep:curl dep:yajl dep:driver_remote dep:driver_libvirtd
+# dep:curl dep:json_c dep:driver_remote dep:driver_libvirtd
 option('driver_ch', type: 'feature', value: 'auto', description: 'Cloud-Hypervisor driver')
 option('ch_user', type: 'string', value: '', description: 'username to run Cloud-Hypervisor system instance as')
 option('ch_group', type: 'string', value: '', description: 'groupname to run Cloud-Hypervisor system instance as')
 # dep:driver_remote dep:driver_libvirtd
 option('driver_network', type: 'feature', value: 'auto', description: 'virtual network driver')
 option('driver_openvz', type: 'feature', value: 'auto', description: 'OpenVZ driver')
-# dep:yajl dep:driver_remote dep:driver_libvirtd
+# dep:json_c dep:driver_remote dep:driver_libvirtd
 option('driver_qemu', type: 'feature', value: 'auto', description: 'QEMU/KVM driver')
 option('qemu_user', type: 'string', value: '', description: 'username to run QEMU system instance as')
 option('qemu_group', type: 'string', value: '', description: 'groupname to run QEMU system instance as')
@@ -123,7 +123,7 @@ option('host_validate', type: 'feature', value: 'auto', description: 'build virt
 option('init_script', type: 'combo', choices: ['systemd', 'openrc', 'check', 'none'], value: 'check', description: 'Style of init script to install')
 option('loader_nvram', type: 'string', value: '', description: 'Pass list of pairs of <loader>:<nvram> paths. Both pairs and list items are separated by a colon.')
 option('login_shell', type: 'feature', value: 'auto', description: 'build virt-login-shell')
-# dep:yajl dep:driver_network dep:libvirtd
+# dep:json_c dep:driver_network dep:libvirtd
 option('nss', type: 'feature', value: 'auto', description: 'enable Name Service Switch plugin for resolving guest IP addresses')
 # dep:numactl
 option('numad', type: 'feature', value: 'auto', description: 'use numad to manage CPU placement dynamically')

@@ -1627,10 +1627,10 @@ if not get_option('driver_ch').disabled() and host_machine.system() == 'linux' a
     endif
   endif
 
-  if not yajl_dep.found()
+  if not yajl_dep.found() or not json_c_dep.found()
     use_ch = false
     if get_option('driver_ch').enabled()
-      error('YAJL 2 is required to build Cloud-Hypervisor driver')
+      error('YAJL 2 *AND* json-c is required to build Cloud-Hypervisor driver')
     endif
   endif
 
@@ -1701,10 +1701,10 @@ endif
 if not get_option('driver_qemu').disabled()
   use_qemu = true
 
-  if not yajl_dep.found()
+  if not yajl_dep.found() or not json_c_dep.found()
     use_qemu = false
     if get_option('driver_qemu').enabled()
-      error('YAJL 2 is required to build QEMU driver')
+      error('YAJL 2 *AND* json-c is required to build QEMU driver')
     endif
   endif
 
@@ -2027,9 +2027,9 @@ endif
 
 if not get_option('nss').disabled()
   use_nss = true
-  if not yajl_dep.found()
+  if not yajl_dep.found() or not json_c_dep.found()
     if get_option('nss').enabled()
-      error('Can\'t build nss plugin without yajl')
+      error('Can\'t build nss plugin without YAJL 2 *AND* json-c')
     else
       use_nss = false
     endif

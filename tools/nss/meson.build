@@ -28,6 +28,7 @@ nss_libvirt_impl = static_library(
     '-DLIBVIRT_NSS'
   ],
   dependencies: [
+    json_c_dep,
     tools_dep,
     yajl_dep,
   ],
@@ -44,6 +45,7 @@ nss_libvirt_guest_impl = static_library(
     '-DLIBVIRT_NSS_GUEST',
   ],
   dependencies: [
+    json_c_dep,
     tools_dep,
     yajl_dep,
   ],

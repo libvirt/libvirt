@@ -362,6 +362,7 @@ BuildRequires: augeas
 BuildRequires: systemd-devel >= 185
 BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: yajl-devel
+BuildRequires: json-c-devel
     %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
     %endif
@@ -1367,8 +1368,8 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dapparmor_profiles=disabled \
            -Dsecdriver_apparmor=disabled \
            -Dudev=enabled \
-           -Djson_c=disabled \
            -Dyajl=enabled \
+           -Djson_c=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
            %{?arg_nbdkit} \

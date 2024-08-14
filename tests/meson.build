@@ -10,6 +10,7 @@ tests_dep = declare_dependency(
     dlopen_dep,
     glib_dep,
     gnutls_dep,
+    json_c_dep,
     libnl_dep,
     libxml_dep,
     rpc_dep,

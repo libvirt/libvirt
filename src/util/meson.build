@@ -193,6 +193,7 @@ virt_util_lib = static_library(
     capng_dep,
     devmapper_dep,
     gnutls_dep,
+    json_c_dep,
     intl_dep,
     libbsd_dep,
     libm_dep,
