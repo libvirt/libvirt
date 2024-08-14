@@ -648,7 +648,7 @@ list
 
    list [--inactive | --all]
         [--managed-save] [--title]
-        { [--table] | --name | --uuid | --id }
+        { [--table] | --name | --id } [--uuid]
         [--persistent] [--transient]
         [--with-managed-save] [--without-managed-save]
         [--autostart] [--no-autostart]
@@ -791,12 +791,12 @@ are printed instead of names. If *--id* is specified then domain's ID's
 are printed indead of names. However, it is possible to combine
 *--name*, *--uuid* and *--id* to select only desired fields for
 printing. Flag *--table* specifies that the legacy table-formatted
-output should be used, but it is mutually exclusive with *--name*,
-*--uuid* and *--id*. This is the default and will be used if neither of
-*--name*, *--uuid* or *--id* is specified. If neither *--name* nor *--uuid* is
-specified, but *--id* is, then only active domains are listed, even with the
-*--all* parameter as otherwise the output would just contain bunch of lines
-with just *-1*.
+output should be used, but it is mutually exclusive with *--name*, and *--id*.
+This is the default and will be used if neither of *--name*, *--uuid* or *--id*
+is specified. If neither *--name* nor *--uuid* is specified, but *--id* is,
+then only active domains are listed, even with the *--all* parameter as otherwise
+the output would just contain bunch of lines with just *-1*. If *--table* is
+combined with *--uuid*, then domain uuid is printed as an extra column.
 
 If *--title* is specified, then the short domain description (title) is
 printed in an extra column. This flag is usable only with the default
