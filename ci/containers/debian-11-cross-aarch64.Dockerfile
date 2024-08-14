@@ -99,7 +99,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libudev-dev:arm64 \
                       libxen-dev:arm64 \
                       libxml2-dev:arm64 \
-                      libyajl-dev:arm64 \
                       systemtap-sdt-dev:arm64 && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

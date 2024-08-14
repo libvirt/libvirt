@@ -84,8 +84,7 @@ function install_buildenv() {
         systemd-rpm-macros \
         systemtap-sdt-devel \
         wireshark-devel \
-        xen-devel \
-        yajl-devel
+        xen-devel
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
     rpm -qa | sort > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers

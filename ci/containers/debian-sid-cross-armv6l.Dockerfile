@@ -98,7 +98,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libtirpc-dev:armel \
                       libudev-dev:armel \
                       libxml2-dev:armel \
-                      libyajl-dev:armel \
                       systemtap-sdt-dev:armel && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

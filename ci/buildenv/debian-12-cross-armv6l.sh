@@ -88,7 +88,6 @@ function install_buildenv() {
             libtirpc-dev:armel \
             libudev-dev:armel \
             libxml2-dev:armel \
-            libyajl-dev:armel \
             systemtap-sdt-dev:armel
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\

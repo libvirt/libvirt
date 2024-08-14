@@ -67,8 +67,7 @@ function install_buildenv() {
         sed \
         util-linux-dev \
         wireshark-dev \
-        xen-dev \
-        yajl-dev
+        xen-dev
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
     apk list --installed | sort > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers

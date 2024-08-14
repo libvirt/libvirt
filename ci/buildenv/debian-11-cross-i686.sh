@@ -87,7 +87,6 @@ function install_buildenv() {
             libtirpc-dev:i386 \
             libudev-dev:i386 \
             libxml2-dev:i386 \
-            libyajl-dev:i386 \
             systemtap-sdt-dev:i386
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\

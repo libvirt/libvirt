@@ -60,7 +60,6 @@ RUN zypper update -y && \
            libxml2 \
            libxml2-devel \
            libxslt \
-           libyajl-devel \
            lvm2 \
            make \
            meson \

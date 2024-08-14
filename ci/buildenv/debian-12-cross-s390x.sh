@@ -88,7 +88,6 @@ function install_buildenv() {
             libtirpc-dev:s390x \
             libudev-dev:s390x \
             libxml2-dev:s390x \
-            libyajl-dev:s390x \
             systemtap-sdt-dev:s390x
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\

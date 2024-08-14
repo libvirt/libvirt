@@ -98,7 +98,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libtirpc-dev:mipsel \
                       libudev-dev:mipsel \
                       libxml2-dev:mipsel \
-                      libyajl-dev:mipsel \
                       systemtap-sdt-dev:mipsel && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

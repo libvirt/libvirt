@@ -99,7 +99,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libtirpc-dev:s390x \
                       libudev-dev:s390x \
                       libxml2-dev:s390x \
-                      libyajl-dev:s390x \
                       systemtap-sdt-dev:s390x && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

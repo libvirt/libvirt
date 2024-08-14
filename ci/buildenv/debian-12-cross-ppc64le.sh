@@ -88,7 +88,6 @@ function install_buildenv() {
             libtirpc-dev:ppc64el \
             libudev-dev:ppc64el \
             libxml2-dev:ppc64el \
-            libyajl-dev:ppc64el \
             systemtap-sdt-dev:ppc64el
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\

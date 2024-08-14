@@ -99,7 +99,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libtirpc-dev:ppc64el \
                       libudev-dev:ppc64el \
                       libxml2-dev:ppc64el \
-                      libyajl-dev:ppc64el \
                       systemtap-sdt-dev:ppc64el && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

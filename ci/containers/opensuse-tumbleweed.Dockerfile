@@ -60,7 +60,6 @@ RUN zypper dist-upgrade -y && \
            libxml2 \
            libxml2-devel \
            libxslt \
-           libyajl-devel \
            lvm2 \
            make \
            meson \

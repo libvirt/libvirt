@@ -100,7 +100,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libudev-dev:armhf \
                       libxen-dev:armhf \
                       libxml2-dev:armhf \
-                      libyajl-dev:armhf \
                       systemtap-sdt-dev:armhf && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

@@ -65,7 +65,6 @@ function install_buildenv() {
             libxen-dev \
             libxml2-dev \
             libxml2-utils \
-            libyajl-dev \
             locales \
             lvm2 \
             make \

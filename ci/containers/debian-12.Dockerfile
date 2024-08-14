@@ -66,7 +66,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libxen-dev \
                       libxml2-dev \
                       libxml2-utils \
-                      libyajl-dev \
                       locales \
                       lvm2 \
                       make \

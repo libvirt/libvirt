@@ -88,7 +88,6 @@ function install_buildenv() {
             libudev-dev:armhf \
             libxen-dev:armhf \
             libxml2-dev:armhf \
-            libyajl-dev:armhf \
             systemtap-sdt-dev:armhf
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\
