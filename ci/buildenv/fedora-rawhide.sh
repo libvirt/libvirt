@@ -83,6 +83,7 @@ function install_buildenv() {
         systemd-devel \
         systemd-rpm-macros \
         systemtap-sdt-devel \
+        systemtap-sdt-dtrace \
         wireshark-devel \
         xen-devel
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED

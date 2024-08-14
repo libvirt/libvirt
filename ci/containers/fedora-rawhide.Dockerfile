@@ -94,6 +94,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                systemd-devel \
                systemd-rpm-macros \
                systemtap-sdt-devel \
+               systemtap-sdt-dtrace \
                wireshark-devel \
                xen-devel && \
     nosync dnf autoremove -y && \

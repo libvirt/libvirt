@@ -82,7 +82,8 @@ RUN zypper dist-upgrade -y && \
            sanlock-devel \
            sed \
            systemd-rpm-macros \
-           systemtap-sdt-devel \
+           systemtap-dtrace \
+           systemtap-headers \
            wireshark-devel \
            xen-devel && \
     zypper clean --all && \
