@@ -191,7 +191,7 @@ x86_64-opensuse-leap-15:
     CFLAGS: -Wno-missing-include-dirs
     NAME: opensuse-leap-15
     RPM: skip
-    TARGET_BASE_IMAGE: registry.opensuse.org/opensuse/leap:15.5
+    TARGET_BASE_IMAGE: registry.opensuse.org/opensuse/leap:15.6
 
 
 x86_64-opensuse-tumbleweed:
