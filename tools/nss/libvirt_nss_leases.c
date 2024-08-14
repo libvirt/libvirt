@@ -26,38 +26,10 @@
 #include <stdbool.h>
 #include <fcntl.h>
 
-#include <yajl/yajl_gen.h>
-#include <yajl/yajl_parse.h>
+#include <json.h>
 
 #include "libvirt_nss_leases.h"
 #include "libvirt_nss.h"
-
-enum {
-    FIND_LEASES_STATE_START,
-    FIND_LEASES_STATE_LIST,
-    FIND_LEASES_STATE_ENTRY,
-};
-
-
-typedef struct {
-    const char *name;
-    char **macs;
-    size_t nmacs;
-    int state;
-    unsigned long long now;
-    int af;
-    bool *found;
-    leaseAddress **addrs;
-    size_t *naddrs;
-
-    char *key;
-    struct {
-        unsigned long long expiry;
-        char *ipaddr;
-        char *macaddr;
-        char *hostname;
-    } entry;
-} findLeasesParser;
 
 
 static int
@@ -156,190 +128,120 @@ appendAddr(const char *name __attribute__((unused)),
 }
 
 
+/**
+ * findLeaseInJSON
+ *
+ * @jobj: the json object containing the leases
+ * @name: the requested hostname (optional if a MAC address is present)
+ * @macs: the array of MAC addresses we're matching (optional if we have a hostname)
+ * @nmacs: the size of the MAC array
+ * @af: the requested address family
+ * @now: current time (to eliminate expired leases)
+ * @addrs: the returned matching addresses
+ * @naddrs: size of the returned array
+ * @found: whether a match was found
+ *
+ * Returns 0 even if nothing was found
+ *        -1 on error
+ */
 static int
-findLeasesParserInteger(void *ctx,
-                        long long val)
+findLeaseInJSON(json_object *jobj,
+                const char *name,
+                char **macs,
+                size_t nmacs,
+                int af,
+                time_t now,
+                leaseAddress **addrs,
+                size_t *naddrs,
+                bool *found)
 {
-    findLeasesParser *parser = ctx;
-
-    DEBUG("Parse int state=%d '%lld' (map key '%s')",
-          parser->state, val, NULLSTR(parser->key));
-    if (!parser->key)
-        return 0;
-
-    if (parser->state == FIND_LEASES_STATE_ENTRY) {
-        if (strcmp(parser->key, "expiry-time"))
-            return 0;
-
-        parser->entry.expiry = val;
-    } else {
-        return 0;
-    }
-    return 1;
-}
-
-
-static int
-findLeasesParserString(void *ctx,
-                       const unsigned char *stringVal,
-                       size_t stringLen)
-{
-    findLeasesParser *parser = ctx;
-
-    DEBUG("Parse string state=%d '%.*s' (map key '%s')",
-          parser->state, (int)stringLen, (const char *)stringVal,
-          NULLSTR(parser->key));
-    if (!parser->key)
-        return 0;
-
-    if (parser->state == FIND_LEASES_STATE_ENTRY) {
-        if (!strcmp(parser->key, "ip-address")) {
-            if (!(parser->entry.ipaddr = strndup((char *)stringVal, stringLen)))
-                return 0;
-        } else if (!strcmp(parser->key, "mac-address")) {
-            if (!(parser->entry.macaddr = strndup((char *)stringVal, stringLen)))
-                return 0;
-        } else if (!strcmp(parser->key, "hostname")) {
-            if (!(parser->entry.hostname = strndup((char *)stringVal, stringLen)))
-                return 0;
-        } else {
-            return 1;
-        }
-    } else {
-        return 0;
-    }
-    return 1;
-}
-
-
-static int
-findLeasesParserMapKey(void *ctx,
-                       const unsigned char *stringVal,
-                       size_t stringLen)
-{
-    findLeasesParser *parser = ctx;
-
-    DEBUG("Parse map key state=%d '%.*s'",
-          parser->state, (int)stringLen, (const char *)stringVal);
-
-    free(parser->key);
-    if (!(parser->key = strndup((char *)stringVal, stringLen)))
-        return 0;
-
-    return 1;
-}
-
-
-static int
-findLeasesParserStartMap(void *ctx)
-{
-    findLeasesParser *parser = ctx;
-
-    DEBUG("Parse start map state=%d", parser->state);
-
-    if (parser->state != FIND_LEASES_STATE_LIST)
-        return 0;
-
-    free(parser->key);
-    parser->key = NULL;
-    parser->state = FIND_LEASES_STATE_ENTRY;
-
-    return 1;
-}
-
-
-static int
-findLeasesParserEndMap(void *ctx)
-{
-    findLeasesParser *parser = ctx;
     size_t i;
-    bool found = false;
+    int len;
 
-    DEBUG("Parse end map state=%d", parser->state);
+    if (!json_object_is_type(jobj, json_type_array)) {
+        ERROR("parsed JSON does not contain the leases array");
+        return -1;
+    }
 
-    if (parser->entry.macaddr == NULL)
-        return 0;
+    len = json_object_array_length(jobj);
+    for (i = 0; i < len; i++) {
+        json_object *lease = NULL;
+        json_object *expiry = NULL;
+        json_object *ipobj = NULL;
+        unsigned long long expiryTime;
+        const char *ipaddr;
 
-    if (parser->state != FIND_LEASES_STATE_ENTRY)
-        return 0;
+        lease = json_object_array_get_idx(jobj, i);
 
-    if (parser->nmacs) {
-        DEBUG("Check %zu macs", parser->nmacs);
-        for (i = 0; i < parser->nmacs && !found; i++) {
-            DEBUG("Check mac '%s' vs '%s'", parser->macs[i], NULLSTR(parser->entry.macaddr));
-            if (parser->entry.macaddr && !strcmp(parser->macs[i], parser->entry.macaddr))
-                found = true;
+        if (macs) {
+            const char *macAddr;
+            bool match = false;
+            json_object *val;
+            size_t j;
+
+            val = json_object_object_get(lease, "mac-address");
+            if (!val)
+                continue;
+
+            macAddr = json_object_get_string(val);
+            if (!macAddr)
+                continue;
+
+            for (j = 0; j < nmacs; j++) {
+                if (strcmp(macs[j], macAddr) == 0) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match)
+                continue;
+        } else {
+            const char *leaseName;
+            json_object *val;
+
+            val = json_object_object_get(lease, "hostname");
+            if (!val)
+                continue;
+
+            leaseName = json_object_get_string(val);
+            if (!leaseName)
+                continue;
+
+            if (strcasecmp(leaseName, name) != 0)
+                continue;
         }
-    } else {
-        DEBUG("Check name '%s' vs '%s'", parser->name, NULLSTR(parser->entry.hostname));
-        if (parser->entry.hostname && !strcasecmp(parser->name, parser->entry.hostname))
-            found = true;
-    }
-    DEBUG("Found %d", found);
-    if (parser->entry.expiry != 0 &&
-        parser->entry.expiry < parser->now) {
-        DEBUG("Entry expired at %llu vs now %llu",
-              parser->entry.expiry, parser->now);
-        found = false;
-    }
-    if (!parser->entry.ipaddr)
-        found = false;
 
-    if (found) {
-        *parser->found = true;
+        expiry = json_object_object_get(lease, "expiry-time");
+        if (!expiry) {
+            ERROR("Missing expiry time for %s", name);
+            return -1;
+        }
 
-        if (appendAddr(parser->name,
-                       parser->addrs, parser->naddrs,
-                       parser->entry.ipaddr,
-                       parser->entry.expiry,
-                       parser->af) < 0)
-            return 0;
-    }
+        expiryTime = json_object_get_uint64(expiry);
+        if (expiryTime > 0 && expiryTime < now) {
+            DEBUG("Skipping expired lease for %s", name);
+            continue;
+        }
 
-    free(parser->entry.macaddr);
-    free(parser->entry.ipaddr);
-    free(parser->entry.hostname);
-    parser->entry.expiry = 0;
-    parser->entry.macaddr = NULL;
-    parser->entry.ipaddr = NULL;
-    parser->entry.hostname = NULL;
+        ipobj = json_object_object_get(lease, "ip-address");
+        if (!ipobj) {
+            DEBUG("Missing IP address for %s", name);
+            continue;
+        }
+        ipaddr = json_object_get_string(ipobj);
 
-    parser->state = FIND_LEASES_STATE_LIST;
+        DEBUG("Found record for %s", name);
+        *found = true;
 
-    return 1;
-}
-
-
-static int
-findLeasesParserStartArray(void *ctx)
-{
-    findLeasesParser *parser = ctx;
-
-    DEBUG("Parse start array state=%d", parser->state);
-
-    if (parser->state == FIND_LEASES_STATE_START) {
-        parser->state = FIND_LEASES_STATE_LIST;
-    } else {
-        return 0;
+        if (appendAddr(name,
+                       addrs, naddrs,
+                       ipaddr,
+                       expiryTime,
+                       af) < 0)
+            return -1;
     }
 
-    return 1;
-}
-
-
-static int
-findLeasesParserEndArray(void *ctx)
-{
-    findLeasesParser *parser = ctx;
-
-    DEBUG("Parse end array state=%d", parser->state);
-
-    if (parser->state == FIND_LEASES_STATE_LIST)
-        parser->state = FIND_LEASES_STATE_START;
-    else
-        return 0;
-
-    return 1;
+    return 0;
 }
 
 
@@ -356,30 +258,10 @@ findLeases(const char *file,
 {
     int fd = -1;
     int ret = -1;
-    const yajl_callbacks parserCallbacks = {
-        NULL, /* null */
-        NULL, /* bool */
-        findLeasesParserInteger,
-        NULL, /* double */
-        NULL, /* number */
-        findLeasesParserString,
-        findLeasesParserStartMap,
-        findLeasesParserMapKey,
-        findLeasesParserEndMap,
-        findLeasesParserStartArray,
-        findLeasesParserEndArray,
-    };
-    findLeasesParser parserState = {
-        .name = name,
-        .macs = macs,
-        .nmacs = nmacs,
-        .af = af,
-        .now = now,
-        .found = found,
-        .addrs = addrs,
-        .naddrs = naddrs,
-    };
-    yajl_handle parser = NULL;
+    json_object *jobj = NULL;
+    json_tokener *tok = NULL;
+    enum json_tokener_error jerr;
+    int jsonflags = JSON_TOKENER_STRICT | JSON_TOKENER_VALIDATE_UTF8;
     char line[1024];
     ssize_t nreadTotal = 0;
     int rv;
@@ -389,13 +271,10 @@ findLeases(const char *file,
         goto cleanup;
     }
 
-    parser = yajl_alloc(&parserCallbacks, NULL, &parserState);
-    if (!parser) {
-        ERROR("Unable to create JSON parser");
-        goto cleanup;
-    }
+    tok = json_tokener_new();
+    json_tokener_set_flags(tok, jsonflags);
 
-    while (1) {
+    do {
         rv = read(fd, line, sizeof(line));
         if (rv < 0)
             goto cleanup;
@@ -403,37 +282,31 @@ findLeases(const char *file,
             break;
         nreadTotal += rv;
 
-        if (yajl_parse(parser, (const unsigned char *)line, rv)  !=
-            yajl_status_ok) {
-            unsigned char *err = yajl_get_error(parser, 1,
-                                                (const unsigned char*)line, rv);
-            ERROR("Parse failed %s", (const char *) err);
-            yajl_free_error(parser, err);
-            goto cleanup;
-        }
-    }
+        jobj = json_tokener_parse_ex(tok, line, rv);
+        jerr = json_tokener_get_error(tok);
+    } while (jerr == json_tokener_continue);
 
-    if (nreadTotal > 0 &&
-        yajl_complete_parse(parser) != yajl_status_ok) {
-        ERROR("Parse failed %s",
-              yajl_get_error(parser, 1, NULL, 0));
+    if (jerr == json_tokener_continue) {
+        ERROR("Cannot parse %s: incomplete json found", file);
         goto cleanup;
     }
 
-    ret = 0;
+    if (nreadTotal > 0 && jerr != json_tokener_success) {
+        ERROR("Cannot parse %s: %s", file, json_tokener_error_desc(jerr));
+        goto cleanup;
+    }
+
+    ret = findLeaseInJSON(jobj, name, macs, nmacs, af, now,
+                          addrs, naddrs, found);
 
  cleanup:
+    json_object_put(jobj);
+    json_tokener_free(tok);
     if (ret != 0) {
         free(*addrs);
         *addrs = NULL;
         *naddrs = 0;
     }
-    if (parser)
-        yajl_free(parser);
-    free(parserState.entry.ipaddr);
-    free(parserState.entry.macaddr);
-    free(parserState.entry.hostname);
-    free(parserState.key);
     if (fd != -1)
         close(fd);
     return ret;
