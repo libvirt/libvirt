@@ -20,13 +20,14 @@
 # Daniel P. Berrange <berrange@redhat.com>, 2022.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Jiri Denemark <jdenemar@redhat.com>, 2023.
+# jianqing yan <yanjianqing@kylinos.cn>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2023-04-04 17:20+0000\n"
-"Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
+"PO-Revision-Date: 2024-08-15 13:40+0000\n"
+"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -34,7 +35,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 5.6.2\n"
 
 msgid ""
 "\n"
@@ -570,9 +571,9 @@ msgstr "%1$s （%2$d 中的）"
 msgid "%1$s can't be empty"
 msgstr "%1$s 不能为空"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s 不能设置为高于 %2$s"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -582,9 +583,9 @@ msgstr "%1$s 无法解析 GID '%2$s'"
 msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s 无法解析 UID '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "此 QEMU 二进制文件不支持%1$s 磁盘"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -671,9 +672,9 @@ msgstr "%1$s 长度超过上限：%2$d > %3$d"
 msgid "%1$s model of watchdog can go only on PCI bus"
 msgstr "watchdog 的 %1$s 模型只能在 PCI 总线运行"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr ""
+msgstr "此机器类型不能使用watchdog的%1$s模型"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1144,9 +1145,9 @@ msgstr "%1$s_DEBUG 的值无效"
 msgid "'%1$s'"
 msgstr "'%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "'%1$s' 'index' value '%2$s' malformed"
-msgstr ""
+msgstr "'%1$s' 'index' 值 '%2$s' 格式不正确"
 
 #, c-format
 msgid "'%1$s' D-Bus address is not handled"
@@ -1212,9 +1213,9 @@ msgstr "'%1$s' 不是一个合适的 pr 帮助程序"
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件中不支持 '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "'%1$s' launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "此QEMU二进制文件不支持'%1$s'安全启动"
 
 #, c-format
 msgid "'%1$s' missing"
@@ -1259,8 +1260,9 @@ msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 元素不能在 'cpu' 元素与 'match' 属性一同使用"
 
+#, fuzzy
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
-msgstr ""
+msgstr "virtio-gpu设备的'blo'支持需要memfd内存后端"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' 指的是不存在的 NUMA 节点缓存"
@@ -1276,14 +1278,17 @@ msgid ""
 "type instead"
 msgstr "QEMU 不直接支持 'directory' 存储格式，请使用 'dir' 磁盘类型"
 
+#, fuzzy
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "'discard_no_unref'与只读磁盘不兼容"
 
+#, fuzzy
 msgid "'discard_no_unref' is not supported by this QEMU binary"
-msgstr ""
+msgstr "此 QEMU 二进制文件不支持'discard_no_unref'"
 
+#, fuzzy
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "'discard_no_unref'仅适用于 qcow2 磁盘格式"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "在 guest-get-fsinfo 的回复中缺少 'disk' 或者不是一个阵列"
@@ -1318,8 +1323,9 @@ msgstr "virtio scsi 控制器仅支持'iothread'属性"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread' 只支持 virtio-scsi 控制器"
 
+#, fuzzy
 msgid "'legacy KVM' device assignment is no longer supported on this system"
-msgstr ""
+msgstr "此系统不再支持'传统 KVM'设备分配"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus 的回复中缺少 'logical-id'"
@@ -1408,10 +1414,11 @@ msgid ""
 msgstr ""
 "当内存元素中的模式是 'restrictive' 时，memnode 元素中需要 'restrictive' 模式"
 
+#, fuzzy
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
-msgstr ""
+msgstr "当 memnode 元素中的模式为 'restrictive' 时，内存元素中需要 'restrictive' 模式"
 
 #, c-format
 msgid ""
@@ -1672,8 +1679,9 @@ msgstr ""
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "<hostdev> 属性 'display' 仅支持 model='vfio-pci'"
 
+#, fuzzy
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune> 不支持 bus='sd'"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> 只允许 lun 设备"
@@ -1772,8 +1780,9 @@ msgstr "加密描述中应包含一个 <secret type='passphrase'...> 元素"
 msgid "A storage driver is already registered"
 msgstr "存储驱动程序已注册"
 
+#, fuzzy
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "ACPI ERST 设备必须位于 PCI 总线上"
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "这个 QEMU 不支持 ACPI 索引"
@@ -1851,8 +1860,9 @@ msgstr "进行自动 numa 分配时需要来自 numad 的提示"
 msgid "After dumping core, failed to resume domain '%1$d' with libxenlight"
 msgstr "转储 core 后，使用 libxenlight 恢复域 '%1$d' 失败"
 
+#, fuzzy
 msgid "Agent authentication is not supported on this host"
-msgstr ""
+msgstr "此主机不支持代理身份验证"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr "没人听说过这么高的缓存级别"
@@ -1877,8 +1887,9 @@ msgstr "分配："
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr "允许设置或修改域的描述或标题。"
 
+#, fuzzy
 msgid "Allows setting or modifying the description or title of a network."
-msgstr ""
+msgstr "允许设置或修改网络的描述或标题。"
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "出错，但原因不明"
@@ -1944,10 +1955,11 @@ msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
 msgstr "选项 --max-clients和--max-unauth-clients 中至少有 1 个是必需的"
 
+#, fuzzy
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
-msgstr ""
+msgstr "选项 --min-workers, --max-workers, --priority-workers 中至少有一个是必需的"
 
 msgid "At least one tty is required"
 msgstr "至少需要一个 tty"
@@ -2000,8 +2012,9 @@ msgstr "尝试使用同步回复发送异步信息"
 msgid "Attempted double use of PCI Address %1$s"
 msgstr "曾尝试重复使用 PCI 地址 %1$s"
 
+#, fuzzy
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "尝试启动 nbdkit 两次"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2070,8 +2083,9 @@ msgstr "错误的 ipv4 开始地址 '%1$s' 在 <nat> 在 <forward> 在网络 '%2
 msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr "resctrl 监控的错误的前缀 '%1$s'"
 
+#, fuzzy
 msgid "Bad usage"
-msgstr ""
+msgstr "使用不当"
 
 msgid "Bad value for nativeMode"
 msgstr "nativeMode 的不良值"
@@ -2191,9 +2205,9 @@ msgstr "忙碌"
 msgid "CA certificate:"
 msgstr "CA 证书："
 
-#, c-format
+#, c-format, fuzzy
 msgid "CCW addresses are not supported by machine type '%1$s'"
-msgstr ""
+msgstr "机器类型'%1$s'不支持 CCW 地址"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2496,8 +2510,9 @@ msgstr "无法添加另一个 USB 控制器：这个域禁用 USB"
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "无法添加主机 USB 设备：这台主机禁用了 USB"
 
+#, fuzzy
 msgid "Can't apply empty firewall command"
-msgstr ""
+msgstr "无法应用空防火墙命令"
 
 msgid "Can't change domain configuration in managed save state"
 msgstr "无法更改受管保存状态下的域配置"
@@ -2583,10 +2598,11 @@ msgstr "无法节写 prlctl 输出结果"
 msgid "Can't perform authentication: Authentication callback not provided"
 msgstr "无法执行认证：未提供认证回叫"
 
+#, fuzzy
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
-msgstr ""
+msgstr "无法执行键盘交互式身份验证：未提供身份验证回调"
 
 #, c-format
 msgid "Can't read %1$s"
@@ -2754,9 +2770,9 @@ msgstr "无法在这个平台中生成 macvlan 设备"
 msgid "Cannot create resctrl directory '%1$s'"
 msgstr "无法创建 resctrl 目录 '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot create save directory '%1$s'"
-msgstr ""
+msgstr "无法创建保存目录 '%1$s'"
 
 #, c-format
 msgid "Cannot create socket '%1$s'"
@@ -2850,9 +2866,9 @@ msgstr "无法找到具有 PVR 0x%1$08x 的 CPU 型号"
 msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr "无法找到厂商 ID 0x 的 CPU 供应商%1$02llx"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
-msgstr ""
+msgstr "找不到块设备 '%2$s'(%3$s)的blkio cgroup统计信息(%1$s)"
 
 #, c-format
 msgid "Cannot find boot device of requested type %1$s"
@@ -36723,9 +36739,9 @@ msgstr "未知的 secret 类型 '%1$s'"
 msgid "unknown smbios mode '%1$s'"
 msgstr "未知的 smbios 模式 ‘%1$s’"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unknown state '%1$s' for '%2$s'"
-msgstr ""
+msgstr "'%2$s'的未知状态'%1$s'"
 
 #, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
@@ -36857,11 +36873,11 @@ msgstr "大小为 %1$lld 的未处理孔已在队列中"
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr "为网络 '%1$s' 指定的无法到达的静态路由网关 '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "unrecognized 'firewall_backend = '%1$s' set in network driver config file "
 "%2$s"
-msgstr ""
+msgstr "无法识别在网络驱动程序配置文件 %2$s 中的 'firewall_backend = '%1$s' 设置"
 
 #, c-format
 msgid "unrecognized command name '%1$s'"
@@ -36955,9 +36971,9 @@ msgstr "不支持的音频模型 %1$s"
 msgid "unsupported authentication type %1$d"
 msgstr "不支持的验证类型 %1$d"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unsupported backend for pstore device: %1$s"
-msgstr ""
+msgstr "pstore 设备不支持的后端： %1$s"
 
 #, c-format
 msgid "unsupported balloon device model '%1$s'"
@@ -37005,8 +37021,9 @@ msgstr "<reservations/> 的不支持的连接类型：%1$s"
 msgid "unsupported console target type %1$s"
 msgstr "不支持的控制台目标类型 %1$s"
 
+#, fuzzy
 msgid "unsupported controller device"
-msgstr ""
+msgstr "不支持的控制器设备"
 
 #, c-format
 msgid "unsupported cpu feature '%1$s'"
@@ -37096,7 +37113,7 @@ msgstr "不支持的标签 (0x%1$x)"
 
 #, fuzzy, c-format
 msgid "unsupported flags (0x%1$x) in function %2$s"
-msgstr "功能 %s 中不支持的标记 (0x%x)"
+msgstr "功能 %2$s 中不支持的标记 (0x%1$x)"
 
 #, c-format
 msgid "unsupported flags: (0x%1$x)"
@@ -37209,8 +37226,9 @@ msgstr "不支持的状态值"
 msgid "unsupported storage pool event ID %1$d"
 msgstr "不支持的储存池事件 ID %1$d"
 
+#, fuzzy
 msgid "unsupported storage type for this code path"
-msgstr ""
+msgstr "此代码路径不支持的存储类型"
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -37311,10 +37329,13 @@ msgstr "使用网络为 delta 到当前大小，而不是新大小。"
 msgid "use multifunction pci under specified address"
 msgstr "在指定地址中使用多功能 pci"
 
+#, fuzzy
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"使用“VIR_MIGRATE_PARAM_MIGRATE_DISKS”需要使用“VIR_MIGRATE_NON_SHARED_DISK”或“"
+"VIR_MIGRATE_NON_SHARED_INC”标志"
 
 msgid "use of <server> requires pull mode backup"
 msgstr "使用 <server> 需要 pull 模式备份"
@@ -37623,7 +37644,7 @@ msgid "version parsing error"
 msgstr "版本解析出错"
 
 msgid "vfio migration was active, but 'transferred' data was missing"
-msgstr ""
+msgstr "vfio迁移处于活动状态，但缺少“已传输”数据"
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "vgamem 属性只支持视频类型 qxl"
@@ -37658,9 +37679,9 @@ msgstr "视频分辨率值必须大于 0"
 msgid "video type %1$s is not supported by libxl"
 msgstr "libxl 不支持显卡类型 %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "video type '%1$s' does not support blob resources"
-msgstr ""
+msgstr "视频类型 '%1$s' 不支持 blob 资源"
 
 #, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
@@ -37778,9 +37799,9 @@ msgstr "virVMXContext 没有设定 formatFileName 功能"
 msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext 中没有设定 parseFileName 功能"
 
-#, c-format
+#, c-format, fuzzy
 msgid "virt type '%1$s' is not supported"
-msgstr ""
+msgstr "不支持virt 类型 '%1$s'"
 
 #, c-format
 msgid ""
@@ -37831,8 +37852,9 @@ msgstr "控制器 %1$u 上的 virtio 串行端口 %2$u 已被占用"
 msgid "virtio-mem device is missing <requested/>"
 msgstr "缺少 virtio-mem 设备 <requested/>"
 
+#, fuzzy
 msgid "virtio-mem does not support dynamicMemslots"
-msgstr ""
+msgstr "virtio-mem 不支持动态内存插槽"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 virtio-mem"
@@ -37867,8 +37889,9 @@ msgstr "virtio-scsi IOThreads 仅适用于 virtio pci 和 virtio ccw 控制器"
 msgid "virtio-serial controller %1$u not available"
 msgstr "virtio-serial 控制器 %1$u 不可用"
 
+#, fuzzy
 msgid "virtio-sound controller is not supported in this QEMU binary"
-msgstr ""
+msgstr "virtio-sound 控制器在此 QEMU 二进制文件中不受支持"
 
 msgid "virtiofs does not support fmode and dmode"
 msgstr "virtiofs 不支持 fmode 和 dmode"
@@ -37882,8 +37905,9 @@ msgstr "virtiofs 不支持 model"
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs 不支持 multidevs"
 
+#, fuzzy
 msgid "virtiofs does not support read-only access"
-msgstr ""
+msgstr "virtiofs 不支持只读访问"
 
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs 不支持 wrpolicy"
