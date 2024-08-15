@@ -578,27 +578,35 @@
 #   "/dev/infiniband/uverbs0"
 
 
-# The default format for QEMU/KVM guest save images is raw; that is, the
-# memory from the domain is dumped out directly to a file.  If you have
-# guests with a large amount of memory, however, this can take up quite
-# a bit of space.  If you would like to compress the images while they
-# are being saved to disk, you can also set "zstd", "lzop", "gzip", "bzip2",
-# or "xz" for save_image_format. Note that this means you slow down the process
-# of saving a domain in order to save disk space.
+# The libvirt QEMU driver supports serveral different save image formats.
+# The term "format" is used loosely to describe how the save image data is
+# represented on disk. It could be a continguous stream of guest memory blocks,
+# or a stream of compressed memory blocks.
 #
-# save_image_format is used when you use 'virsh save' or 'virsh managedsave'
-# at scheduled saving, and it is an error if the specified save_image_format
-# is not valid, or the requested compression program can't be found.
+# A continguous stream of guest memory blocks is the default format for QEMU/KVM
+# guest save images and is termed "raw". The raw format can consume considerable
+# disk space when saving large memory guests. Various compression formats are
+# available for specifying a save image compressed by the named algorithm.
+# Supported compression formats are "zstd", "lzop", "gzip", "bzip2", and "xz".
+
+# save_image_format can be used to select the desired save format. "raw" is
+# the traditional format used by libvirt and is also the default. The
+# compression formats can be used to save disk space, although this typically
+# results in longer save and restore times.
 #
-# dump_image_format is used when you use 'virsh dump' at emergency
-# crashdump, and if the specified dump_image_format is not valid, or
-# the requested compression program can't be found, this falls
-# back to "raw" compression.
+# save_image_format is used with 'virsh save' or 'virsh managedsave'. It is
+# an error if the specified save_image_format is not valid, or cannot be
+# supported by the system.
 #
-# snapshot_image_format specifies the compression algorithm of the memory save
+# dump_image_format is analogous to save_image_format and is used with
+# 'virsh dump' at emergency crashdump. If the specified dump_image_format is
+# not valid or cannot be supported by the system, this falls back to the
+# "raw" format.
+#
+# Likewise, snapshot_image_format specifies the format of the memory save
 # image when an external snapshot of a domain is taken. This does not apply
 # on disk image format. It is an error if the specified format isn't valid,
-# or the requested compression program can't be found.
+# or the system cannot support the requested format.
 #
 #save_image_format = "raw"
 #dump_image_format = "raw"
