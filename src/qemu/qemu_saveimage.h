@@ -38,7 +38,7 @@ struct _virQEMUSaveHeader {
     uint32_t version;
     uint32_t data_len;
     uint32_t was_running;
-    uint32_t compressed;
+    uint32_t format;
     uint32_t cookieOffset;
     uint32_t unused[14];
 };
@@ -121,7 +121,7 @@ virQEMUSaveData *
 virQEMUSaveDataNew(char *domXML,
                    qemuDomainSaveCookie *cookieObj,
                    bool running,
-                   int compressed,
+                   int format,
                    virDomainXMLOption *xmlopt);
 
 void

@@ -55,8 +55,8 @@ typedef enum {
     QEMU_SAVE_FORMAT_LAST
 } virQEMUSaveFormat;
 
-VIR_ENUM_DECL(qemuSaveCompression);
-VIR_ENUM_IMPL(qemuSaveCompression,
+VIR_ENUM_DECL(qemuSaveFormat);
+VIR_ENUM_IMPL(qemuSaveFormat,
               QEMU_SAVE_FORMAT_LAST,
               "raw",
               "gzip",
@@ -72,7 +72,7 @@ qemuSaveImageBswapHeader(virQEMUSaveHeader *hdr)
     hdr->version = GUINT32_SWAP_LE_BE(hdr->version);
     hdr->data_len = GUINT32_SWAP_LE_BE(hdr->data_len);
     hdr->was_running = GUINT32_SWAP_LE_BE(hdr->was_running);
-    hdr->compressed = GUINT32_SWAP_LE_BE(hdr->compressed);
+    hdr->format = GUINT32_SWAP_LE_BE(hdr->format);
     hdr->cookieOffset = GUINT32_SWAP_LE_BE(hdr->cookieOffset);
 }
 
@@ -97,7 +97,7 @@ virQEMUSaveData *
 virQEMUSaveDataNew(char *domXML,
                    qemuDomainSaveCookie *cookieObj,
                    bool running,
-                   int compressed,
+                   int format,
                    virDomainXMLOption *xmlopt)
 {
     virQEMUSaveData *data = NULL;
@@ -114,7 +114,7 @@ virQEMUSaveDataNew(char *domXML,
     memcpy(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic));
     header->version = QEMU_SAVE_VERSION;
     header->was_running = running ? 1 : 0;
-    header->compressed = compressed;
+    header->format = format;
 
     data->xml = domXML;
     return data;
@@ -227,22 +227,22 @@ virQEMUSaveDataFinish(virQEMUSaveData *data,
 
 
 static virCommand *
-qemuSaveImageGetCompressionCommand(virQEMUSaveFormat compression)
+qemuSaveImageGetCompressionCommand(virQEMUSaveFormat format)
 {
     virCommand *ret = NULL;
-    const char *prog = qemuSaveCompressionTypeToString(compression);
+    const char *prog = qemuSaveFormatTypeToString(format);
 
     if (!prog) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Invalid compressed save format %1$d"),
-                       compression);
+                       format);
         return NULL;
     }
 
     ret = virCommandNew(prog);
     virCommandAddArg(ret, "-dc");
 
-    if (compression == QEMU_SAVE_FORMAT_LZOP)
+    if (format == QEMU_SAVE_FORMAT_LZOP)
         virCommandAddArg(ret, "--ignore-warn");
 
     return ret;
@@ -282,10 +282,10 @@ qemuSaveImageDecompressionStart(virQEMUSaveData *data,
     if (header->version != 2)
         return 0;
 
-    if (header->compressed == QEMU_SAVE_FORMAT_RAW)
+    if (header->format == QEMU_SAVE_FORMAT_RAW)
         return 0;
 
-    if (!(cmd = qemuSaveImageGetCompressionCommand(header->compressed)))
+    if (!(cmd = qemuSaveImageGetCompressionCommand(header->format)))
         return -1;
 
     *intermediatefd = *fd;
@@ -443,8 +443,8 @@ qemuSaveImageCreate(virQEMUDriver *driver,
 
 
 /* qemuSaveImageGetCompressionProgram:
- * @imageFormat: String representation from qemu.conf for the compression
- *               image format being used (dump, save, or snapshot).
+ * @imageFormat: String representation from qemu.conf of the image format
+ *               being used (dump, save, or snapshot).
  * @compresspath: Pointer to a character string to store the fully qualified
  *                path from virFindFileInPath.
  * @styleFormat: String representing the style of format (dump, save, snapshot)
@@ -454,8 +454,8 @@ qemuSaveImageCreate(virQEMUDriver *driver,
  *                   and let the path remain as NULL.
  *
  * Returns:
- *    virQEMUSaveFormat    - Integer representation of the compression
- *                           program to be used for particular style
+ *    virQEMUSaveFormat    - Integer representation of the save image
+ *                           format to be used for particular style
  *                           (e.g. dump, save, or snapshot).
  *    QEMU_SAVE_FORMAT_RAW - If there is no qemu.conf imageFormat value or
  *                           no there was an error, then just return RAW
@@ -475,7 +475,7 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
     if (!imageFormat)
         return QEMU_SAVE_FORMAT_RAW;
 
-    if ((ret = qemuSaveCompressionTypeFromString(imageFormat)) < 0)
+    if ((ret = qemuSaveFormatTypeFromString(imageFormat)) < 0)
         goto error;
 
     if (ret == QEMU_SAVE_FORMAT_RAW)

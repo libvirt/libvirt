@@ -2605,7 +2605,7 @@ static int
 qemuDomainSaveInternal(virQEMUDriver *driver,
                        virDomainObj *vm,
                        const char *path,
-                       int compressed,
+                       int format,
                        virCommand *compressor,
                        const char *xmlin,
                        unsigned int flags)
@@ -2683,7 +2683,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
     if (!(cookie = qemuDomainSaveCookieNew(vm)))
         goto endjob;
 
-    if (!(data = virQEMUSaveDataNew(xml, cookie, was_running, compressed,
+    if (!(data = virQEMUSaveDataNew(xml, cookie, was_running, format,
                                     driver->xmlopt)))
         goto endjob;
     xml = NULL;
@@ -2749,7 +2749,7 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(virCommand) compressor = NULL;
     g_autofree char *path = NULL;
-    int compressed;
+    int format;
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -2761,16 +2761,16 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     }
 
     cfg = virQEMUDriverGetConfig(driver);
-    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                         &compressor,
-                                                         "save", false)) < 0)
+    if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
+                                                     &compressor,
+                                                     "save", false)) < 0)
         return -1;
 
     path = qemuDomainManagedSavePath(driver, vm);
 
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, path);
 
-    if (qemuDomainSaveInternal(driver, vm, path, compressed,
+    if (qemuDomainSaveInternal(driver, vm, path, format,
                                compressor, dxml, flags) < 0)
         return -1;
 
@@ -2784,7 +2784,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
-    int compressed;
+    int format;
     g_autoptr(virCommand) compressor = NULL;
     int ret = -1;
     virDomainObj *vm = NULL;
@@ -2795,9 +2795,9 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
-    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                         &compressor,
-                                                         "save", false)) < 0)
+    if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
+                                                     &compressor,
+                                                     "save", false)) < 0)
         goto cleanup;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
@@ -2809,7 +2809,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    ret = qemuDomainSaveInternal(driver, vm, path, compressed,
+    ret = qemuDomainSaveInternal(driver, vm, path, format,
                                  compressor, dxml, flags);
 
  cleanup:
@@ -2835,7 +2835,7 @@ qemuDomainSaveParams(virDomainPtr dom,
     g_autoptr(virCommand) compressor = NULL;
     const char *to = NULL;
     const char *dxml = NULL;
-    int compressed;
+    int format;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -2869,15 +2869,15 @@ qemuDomainSaveParams(virDomainPtr dom,
     }
 
     cfg = virQEMUDriverGetConfig(driver);
-    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                         &compressor,
-                                                         "save", false)) < 0)
+    if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
+                                                     &compressor,
+                                                     "save", false)) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    ret = qemuDomainSaveInternal(driver, vm, to, compressed,
+    ret = qemuDomainSaveInternal(driver, vm, to, format,
                                  compressor, dxml, flags);
 
  cleanup:

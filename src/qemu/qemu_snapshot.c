@@ -1426,7 +1426,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     bool memory_existing = false;
     bool thaw = false;
     bool pmsuspended = false;
-    int compressed;
+    int format;
     g_autoptr(virCommand) compressor = NULL;
     virQEMUSaveData *data = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
@@ -1503,9 +1503,9 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
                                           JOB_MASK(VIR_JOB_SUSPEND) |
                                           JOB_MASK(VIR_JOB_MIGRATION_OP)));
 
-        if ((compressed = qemuSaveImageGetCompressionProgram(cfg->snapshotImageFormat,
-                                                             &compressor,
-                                                             "snapshot", false)) < 0)
+        if ((format = qemuSaveImageGetCompressionProgram(cfg->snapshotImageFormat,
+                                                         &compressor,
+                                                         "snapshot", false)) < 0)
             goto cleanup;
 
         if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
@@ -1516,7 +1516,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
         if (!(data = virQEMUSaveDataNew(xml,
                                         (qemuDomainSaveCookie *) snapdef->cookie,
-                                        resume, compressed, driver->xmlopt)))
+                                        resume, format, driver->xmlopt)))
             goto cleanup;
         xml = NULL;
 
