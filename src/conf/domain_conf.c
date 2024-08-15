@@ -17294,16 +17294,6 @@ virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
                                          loaderNode) < 0)
         return -1;
 
-    if (loader->nvram &&
-        loader->format && loader->nvram->format &&
-        loader->format != loader->nvram->format) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Format mismatch: loader.format='%1$s' nvram.format='%2$s'"),
-                       virStorageFileFormatTypeToString(loader->format),
-                       virStorageFileFormatTypeToString(loader->nvram->format));
-        return -1;
-    }
-
     return 0;
 }
 
