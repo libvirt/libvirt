@@ -102,8 +102,7 @@ virArpTableGet(void)
             return table;
 
         VIR_WARNINGS_NO_CAST_ALIGN
-        parse_rtattr(tb, NDA_MAX, NDA_RTA(r),
-                     nh->nlmsg_len - NLMSG_LENGTH(sizeof(*r)));
+        parse_rtattr(tb, NDA_MAX, NDA_RTA(r), NLMSG_PAYLOAD(nh, sizeof(*r)));
         VIR_WARNINGS_RESET
 
         if (tb[NDA_DST] == NULL || tb[NDA_LLADDR] == NULL)
