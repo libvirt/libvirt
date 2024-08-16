@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-15 13:40+0000\n"
+"PO-Revision-Date: 2024-08-17 00:22+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
@@ -14220,8 +14220,9 @@ msgstr "显示这个 CPU 的统计数据"
 msgid "Show total statistics only"
 msgstr "只显示总体统计数据"
 
+#, fuzzy
 msgid "Show/Set scheduler parameters."
-msgstr "显示/设置日程安排变量"
+msgstr "显示/设置调度程序变量。"
 
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "显示或修改域的 XML 元数据。"
@@ -22721,8 +22722,9 @@ msgstr "控制域的进入流量"
 msgid "control domain's outgoing traffics"
 msgstr "控制域的外出流量"
 
+#, fuzzy
 msgid "control or query domain emulator affinity"
-msgstr "控制火车查询域模拟器亲和性"
+msgstr "控制或者查询域模拟器亲和性"
 
 msgid "control or query domain vcpu affinity"
 msgstr "控制或者查询域 vcpu 亲和性"
@@ -34049,8 +34051,9 @@ msgstr "显示每个打印事件的时间戳"
 msgid "show version"
 msgstr "显示版本"
 
+#, fuzzy
 msgid "show/set scheduler parameters"
-msgstr "显示/设置日程安排变量"
+msgstr "显示/设置调度程序变量"
 
 msgid "shut off"
 msgstr "关闭"
