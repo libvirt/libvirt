@@ -81,10 +81,9 @@ virArpTableGet(void)
     for (; NLMSG_OK(nh, msglen); nh = NLMSG_NEXT(nh, msglen)) {
         VIR_WARNINGS_RESET
         struct ndmsg *r = NLMSG_DATA(nh);
-        int len = nh->nlmsg_len;
         void *addr;
 
-        if ((len -= NLMSG_LENGTH(sizeof(*nh))) < 0) {
+        if (nh->nlmsg_len < NLMSG_SPACE(sizeof(*r))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("wrong nlmsg len"));
             goto cleanup;
