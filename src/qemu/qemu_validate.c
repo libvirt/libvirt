@@ -3037,6 +3037,12 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
 
+        if (virStorageSourceIsEmpty(disk->src)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'usb' disk must not be empty"));
+            return -1;
+        }
+
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

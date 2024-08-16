@@ -16,8 +16,7 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source file='/root/boot.iso'/>
-      <target dev='sda' bus='usb'/>
+      <target dev='sdb' bus='usb'/>
       <readonly/>
     </disk>
     <controller type='usb' index='0'/>
