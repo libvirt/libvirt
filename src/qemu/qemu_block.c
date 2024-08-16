@@ -1927,6 +1927,9 @@ qemuBlockStorageSourceChainDetach(qemuMonitor *mon,
 {
     size_t i;
 
+    if (!data)
+        return;
+
     if (data->copyOnReadAttached)
         ignore_value(qemuMonitorBlockdevDel(mon, data->copyOnReadNodename));
 
