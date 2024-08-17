@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-07-23 15:38+0000\n"
+"PO-Revision-Date: 2024-08-18 12:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1413,7 +1413,7 @@ msgid "'partition' missing in reply of guest-get-disks"
 msgstr "'partition' missing in reply of guest-get-disks"
 
 msgid "'pci-controller' missing"
-msgstr ""
+msgstr "'pci-controller' missing"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' and 'burst' require 'average' attribute"
@@ -1428,37 +1428,43 @@ msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
+"'reconnect' attribute unsupported 'server' mode for <interface "
+"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
 msgstr ""
+"'restrictive' mode is required in memnode element when mode is 'restrictive' "
+"in memory element"
 
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
 msgstr ""
+"'restrictive' mode is required in memory element when mode is 'restrictive' "
+"in memnode element"
 
 #, c-format
 msgid ""
 "'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 msgstr ""
+"'sibling_id %1$d' does not refer to a valid cell within NUMA 'cell id %2$d'"
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
-msgstr ""
+msgstr "'socket' attribute is valid only for listen type 'socket'"
 
 msgid "'target' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "'target' refers to a non-existent NUMA node"
 
-#, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "SATA is not supported with this QEMU binary"
+msgstr "'tftp' protocol is not supported with this QEMU binary"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
-msgstr ""
+msgstr "'tlsHostname' field is not supported by this QEMU"
 
 msgid "'tlsHostname' field is supported only with NBD disks"
-msgstr ""
+msgstr "'tlsHostname' field is supported only with NBD disks"
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
