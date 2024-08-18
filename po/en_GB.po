@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-18 12:38+0000\n"
+"PO-Revision-Date: 2024-08-19 07:37+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1466,41 +1466,36 @@ msgstr "'tlsHostname' field is not supported by this QEMU"
 msgid "'tlsHostname' field is supported only with NBD disks"
 msgstr "'tlsHostname' field is supported only with NBD disks"
 
-#, fuzzy
 msgid "'trim' algorithm not supported"
-msgstr "wiping algorithm %d not supported"
+msgstr "'trim' algorithm not supported"
 
-#, fuzzy
 msgid "'type' missing in reply of guest-get-fsinfo"
-msgstr "'online' missing in reply of guest-get-vcpus"
+msgstr "'type' missing in reply of guest-get-fsinfo"
 
-#, fuzzy
 msgid "'user' missing in reply of guest-get-users"
-msgstr "'online' missing in reply of guest-get-vcpus"
+msgstr "'user' missing in reply of guest-get-users"
 
 #, c-format
 msgid "'value %1$d' is invalid for 'sibling id %2$d' under NUMA 'cell id %3$d'"
-msgstr ""
+msgstr "'value %1$d' is invalid for 'sibling id %2$d' under NUMA 'cell id %3$d'"
 
-#, fuzzy
 msgid "'vhostuser' driver is only supported with 'virtio' device"
-msgstr "vhost-net is only supported for virtio network interfaces"
+msgstr "'vhostuser' driver is only supported with 'virtio' device"
 
 msgid "'virtio-s390' addresses are no longer supported"
-msgstr ""
+msgstr "'virtio-s390' addresses are no longer supported"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 
 msgid "(<null>)"
-msgstr ""
+msgstr "(<null>)"
 
 msgid "(CPU_definition)"
 msgstr "(CPU_definition)"
 
-#, fuzzy
 msgid "(_migration_cookie)"
-msgstr "(qemu_migration_cookie)"
+msgstr "(_migration_cookie)"
 
 msgid "(bridge interface definition)"
 msgstr "(bridge interface definition)"
@@ -1514,13 +1509,11 @@ msgstr "(definition_of_secret)"
 msgid "(device_definition)"
 msgstr "(device_definition)"
 
-#, fuzzy
 msgid "(disk_definition)"
-msgstr "(device_definition)"
+msgstr "(disk_definition)"
 
-#, fuzzy
 msgid "(domainCapabilities)"
-msgstr "(capabilities)"
+msgstr "(domainCapabilities)"
 
 #, fuzzy
 msgid "(domain_backup)"
@@ -1540,7 +1533,7 @@ msgid "(esx execute response)"
 msgstr "(esx execute response)"
 
 msgid "(gluster_cli_output)"
-msgstr ""
+msgstr "(gluster_cli_output)"
 
 msgid "(interface definition)"
 msgstr "(interface definition)"
@@ -1583,7 +1576,7 @@ msgid "(re)connect to hypervisor"
 msgstr "(re)connect to hypervisor"
 
 msgid "(save cookie)"
-msgstr ""
+msgstr "(save cookie)"
 
 #, fuzzy
 msgid "(snapshot_tree)"
@@ -1599,7 +1592,7 @@ msgid "(storage_volume_definition)"
 msgstr "(storage_volume_definition)"
 
 msgid "(test driver)"
-msgstr ""
+msgstr "(test driver)"
 
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
@@ -1617,7 +1610,7 @@ msgstr "--%1$s <string>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <string>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -1632,19 +1625,22 @@ msgid "--%1$s or --current is required"
 msgstr "--%1$s or --current is required"
 
 msgid "------------------------------"
-msgstr ""
+msgstr "------------------------------"
 
 msgid "-------------------------------------------------"
-msgstr ""
+msgstr "-------------------------------------------------"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
+"--async requires at least one of --timeout, --wait, --pivot, or --finish"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
+"--async requires at least one of --timeout, --wait, --pivot, or --keep-"
+"overlay"
 
 #, fuzzy
 msgid "--descendants requires --from"
@@ -2129,13 +2125,12 @@ msgstr ""
 msgid "Backup Dump XML"
 msgstr "Snapshot Dump XML"
 
-#, fuzzy
 msgid "Backup started\n"
-msgstr "Block Copy started"
+msgstr "Backup started\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Bad $%1$s value."
-msgstr "cannot read %1$s value"
+msgstr "Bad $%1$s value."
 
 #, c-format
 msgid "Bad ipv4 end address '%1$s' in <nat> in <forward> in network '%2$s'"
@@ -2274,9 +2269,8 @@ msgstr "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgid "Busy"
 msgstr "Busy"
 
-#, fuzzy
 msgid "CA certificate:"
-msgstr "Invalid certificate"
+msgstr "CA certificate:"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
@@ -2327,9 +2321,8 @@ msgstr ""
 msgid "CPU cache specification is not supported for '%1$s' architecture"
 msgstr "Operation is not supported for device: %1$s"
 
-#, fuzzy
 msgid "CPU data"
-msgstr "CPU map:"
+msgstr "CPU data"
 
 #, c-format
 msgid "CPU described in %1$s is identical to host CPU\n"
@@ -2593,9 +2586,8 @@ msgstr ""
 msgid "Can't change domain configuration in managed save state"
 msgstr "mark inactive domains with managed save state"
 
-#, fuzzy
 msgid "Can't change domain state."
-msgstr "Failed to get domain state"
+msgstr "Can't change domain state."
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
@@ -2623,9 +2615,8 @@ msgstr "Can't determine page size"
 msgid "Can't determine pid file path."
 msgstr "Can't determine pid file path."
 
-#, fuzzy
 msgid "Can't determine restart state file path"
-msgstr "Can't determine pid file path."
+msgstr "Can't determine restart state file path"
 
 msgid "Can't determine socket paths"
 msgstr "Can't determine socket paths"
@@ -3888,9 +3879,8 @@ msgstr "Commit aborted"
 msgid "Compiled against library: libvirt %1$d.%2$d.%3$d\n"
 msgstr "Compiled against library: libvirt %1$d.%2$d.%3$d\n"
 
-#, fuzzy
 msgid "Compiled with support for:"
-msgstr "Compiled with support for:\n"
+msgstr "Compiled with support for:"
 
 msgid "Compiled with support for:\n"
 msgstr "Compiled with support for:\n"
@@ -3975,9 +3965,8 @@ msgstr "Config entry '%1$s' must represent an integer value"
 msgid "Configuration file"
 msgstr "operation failed"
 
-#, fuzzy
 msgid "Configuration file (unless overridden by -f):"
-msgstr "configuration file syntax error"
+msgstr "Configuration file (unless overridden by -f):"
 
 msgid "Configure a domain to be automatically started at boot."
 msgstr "Configure a domain to be automatically started at boot."
@@ -4012,17 +4001,15 @@ msgid ""
 msgstr ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 
-#, fuzzy
 msgid "Connected since"
-msgstr "Connected to domain %s\n"
+msgstr "Connected since"
 
 #, c-format
 msgid "Connected to domain '%1$s'\n"
 msgstr ""
 
-#, fuzzy
 msgid "Connected to the admin server"
-msgstr "Connected to domain %s\n"
+msgstr "Connected to the admin server"
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -5935,9 +5922,8 @@ msgstr ""
 msgid "Domain restored from %1$s\n"
 msgstr "Domain restored from %1$s\n"
 
-#, fuzzy
 msgid "Domain should have at least one disk defined"
-msgstr "Domain %s has been undefined\n"
+msgstr "Domain should have at least one disk defined"
 
 #, c-format
 msgid "Domain snapshot %1$s children deleted\n"
@@ -5969,9 +5955,8 @@ msgstr "Domain snapshot not found: %1$s"
 msgid "Domain title can't contain newlines"
 msgstr "Domain title can't contain newlines"
 
-#, fuzzy
 msgid "Domain title not changed\n"
-msgstr "Domain is not paused"
+msgstr "Domain title not changed\n"
 
 #, fuzzy
 msgid "Domain title updated successfully"
@@ -6194,9 +6179,8 @@ msgstr "Ensure data previously on a volume is not accessible to future reads"
 msgid "Enter %1$s's password for %2$s"
 msgstr "Enter %1$s's password for %2$s"
 
-#, fuzzy
 msgid "Enter new value for secret:"
-msgstr "Enter username for %s"
+msgstr "Enter new value for secret:"
 
 #, c-format
 msgid "Enter username for %1$s"
@@ -6241,9 +6225,8 @@ msgstr ""
 msgid "Error in xmlNewProp"
 msgstr ""
 
-#, fuzzy
 msgid "Error message:"
-msgstr "message"
+msgstr "Error message:"
 
 msgid "Error notify callback must be supplied"
 msgstr "Error notify callback must be supplied"
@@ -8576,9 +8559,8 @@ msgstr "Failed to start interface %1$s"
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr "Failed to set vcpus for domain '%1$d' with libxenlight"
 
-#, fuzzy
 msgid "Failed to setup keepalive on connection\n"
-msgstr "Failed to set new domain description"
+msgstr "Failed to setup keepalive on connection\n"
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -10245,9 +10227,9 @@ msgstr ""
 msgid "Invalid libxl cpuid value: %1$s"
 msgstr "Invalid collection period value '%d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid lifecycle action '%1$s'."
-msgstr "invalid failure action: '%1$s'\n"
+msgstr "Invalid lifecycle action '%1$s'."
 
 #, fuzzy, c-format
 msgid "Invalid lifecycle type '%1$s'."
@@ -10361,9 +10343,9 @@ msgstr "invalid network pointer in"
 msgid "Invalid network port pointer: %1$s"
 msgstr "Invalid network filter: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid node id %1$u "
-msgstr "Invalid mode: %s"
+msgstr "Invalid node id %1$u "
 
 #, fuzzy, c-format
 msgid "Invalid nodeset of 'numatune': %1$s"
@@ -11118,9 +11100,8 @@ msgstr ""
 msgid "Mediated host device assignment requires VFIO support"
 msgstr ""
 
-#, fuzzy
 msgid "Memory"
-msgstr "Max memory:"
+msgstr "Memory"
 
 #, c-format
 msgid "Memory '%1$llu' must be less than %2$llu"
@@ -13411,9 +13392,8 @@ msgstr "Parsed JSON reply '%1$s' isn't an object"
 msgid "Partition path '%1$s' must start with '/'"
 msgstr "Partition path '%1$s' must start with '/'"
 
-#, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr "No qemu command-line argument specified"
+msgstr "Passing secret value as command-line argument is insecure!"
 
 #, c-format
 msgid "Passphrase for key '%1$s'"
@@ -13502,9 +13482,8 @@ msgstr "Persistent"
 msgid "Persistent:"
 msgstr "Persistent:"
 
-#, fuzzy
 msgid "Physical"
-msgstr "Physical:"
+msgstr "Physical"
 
 msgid "Physical:"
 msgstr "Physical:"
@@ -14508,9 +14487,8 @@ msgstr "Secret %1$s created\n"
 msgid "Secret %1$s deleted\n"
 msgstr "Secret %1$s deleted\n"
 
-#, fuzzy
 msgid "Secret Events"
-msgstr "Secret value set\n"
+msgstr "Secret Events"
 
 msgid "Secret not found"
 msgstr "Secret not found"
@@ -14616,9 +14594,8 @@ msgstr "Serial port index %1$d out of [0..3] range"
 msgid "Serial property not supported for drive bus '%1$s'"
 msgstr "Operation is not supported for device: %1$s"
 
-#, fuzzy
 msgid "Server certificate:"
-msgstr "Invalid certificate"
+msgstr "Server certificate:"
 
 #, c-format
 msgid "Server count %1$zd greater than default name count %2$zu"
@@ -14632,9 +14609,8 @@ msgstr "Secret not found"
 msgid "Server not found: %1$s"
 msgstr "Secret not found: %1$s"
 
-#, fuzzy
 msgid "Server private key:"
-msgstr "secret is private"
+msgstr "Server private key:"
 
 msgid "Server to alter the client-related configuration limits on."
 msgstr ""
@@ -16727,13 +16703,13 @@ msgstr "Time elapsed:"
 msgid "Time remaining:"
 msgstr "Time remaining:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Time: %1$lld"
-msgstr "Time elapsed:"
+msgstr "Time: %1$lld"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Time: %1$s"
-msgstr "Device: %1$s\n"
+msgstr "Time: %1$s"
 
 msgid "Timed out during operation"
 msgstr "Timed out during operation"
@@ -17399,9 +17375,9 @@ msgstr "Unable to configure libxl's memory management parameters"
 msgid "Unable to construct table of device aliases"
 msgstr "Unable to create tap device %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to convert lease expiry time to long long: %1$s"
-msgstr "Failed to convert '%1$s' to unsigned long long"
+msgstr "Unable to convert lease expiry time to long long: %1$s"
 
 #, fuzzy
 msgid "Unable to convert time"
@@ -18301,9 +18277,9 @@ msgstr "Unable to open %1$s"
 msgid "Unable to open %1$s (%2$d)"
 msgstr "Unable to open %1$s (%2$d)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %1$s, is tun module loaded?"
-msgstr "Unable to become session leader"
+msgstr "Unable to open %1$s, is tun module loaded?"
 
 #, c-format
 msgid "Unable to open '%1$s'"
@@ -19119,11 +19095,13 @@ msgstr ""
 msgid "Unable to update server's tls related files."
 msgstr "Unable to save state file %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to validate doc against %1$s\n"
 "%2$s"
-msgstr "Unable to allocate lease %s"
+msgstr ""
+"Unable to validate doc against %1$s\n"
+"%2$s"
 
 #, c-format
 msgid "Unable to verify TLS peer: %1$s"
@@ -19422,9 +19400,9 @@ msgstr "Unexpected root filesystem without loop device"
 msgid "Unexpected rule protocol %1$d"
 msgstr "Unexpected message proc %d != %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected server name '%1$s' during restart"
-msgstr "unexpected hostdev driver name type %d "
+msgstr "Unexpected server name '%1$s' during restart"
 
 #, c-format
 msgid "Unexpected signal received: %1$d"
@@ -20212,9 +20190,8 @@ msgid ""
 "method"
 msgstr ""
 
-#, fuzzy
 msgid "Usage:"
-msgstr "Usage"
+msgstr "Usage:"
 
 #, c-format
 msgid ""
@@ -20319,9 +20296,8 @@ msgstr ""
 msgid "V1 controller '%1$s' is not wanted, but '%2$s' is co-mounted"
 msgstr ""
 
-#, fuzzy
 msgid "VCPU"
-msgstr "VCPU:"
+msgstr "VCPU"
 
 msgid "VCPU:"
 msgstr "VCPU:"
@@ -20670,9 +20646,8 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
-#, fuzzy
 msgid "a device with the same address already exists "
-msgstr "Device %s already exists"
+msgstr "a device with the same address already exists "
 
 msgid "a different backing store cannot be specified."
 msgstr "a different backing store cannot be specified."
@@ -23649,9 +23624,8 @@ msgstr ""
 msgid "connect"
 msgstr ""
 
-#, fuzzy
 msgid "connect to daemon's admin server"
-msgstr "Connected to domain %s\n"
+msgstr "connect to daemon's admin server"
 
 msgid "connect to the guest console"
 msgstr "connect to the guest console"
@@ -24845,9 +24819,9 @@ msgstr "disk %1$s not found"
 msgid "disk '%1$s' specified twice"
 msgstr "disk '%1$s' specified twice"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk '%1$s' was not found in the domain config"
-msgstr "Volume '%1$s' was not found in domain's definition.\n"
+msgstr "disk '%1$s' was not found in the domain config"
 
 msgid ""
 "disk 'queue' count must be configured for explicit iothread to queue mapping"
@@ -25812,13 +25786,13 @@ msgstr ""
 msgid "event '%1$s' for node device %2$s\n"
 msgstr "Destroyed node device '%s'\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%1$s' for secret %2$s\n"
-msgstr "revert requires force: %s"
+msgstr "event '%1$s' for secret %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%1$s' for storage pool %2$s\n"
-msgstr "unknown storage pool type %s"
+msgstr "event '%1$s' for storage pool %2$s\n"
 
 #, c-format
 msgid ""
@@ -25908,9 +25882,9 @@ msgstr ""
 msgid "event 'lifecycle' for secret %1$s: %2$s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "event 'lifecycle' for storage pool %1$s: %2$s\n"
-msgstr "Failed to autostart storage pool '%1$s': %2$s"
+msgstr "event 'lifecycle' for storage pool %1$s: %2$s\n"
 
 #, c-format
 msgid ""
@@ -26026,9 +26000,9 @@ msgstr "eventID in %1$s must be less than %2$d"
 msgid "eventID must be less than %1$d"
 msgstr "eventID in %s must be less than %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "events received: %1$d\n"
-msgstr "Unexpected signal received: %1$d"
+msgstr "events received: %1$d\n"
 
 msgid "exactly one of 'device' and 'nodename' need to be specified"
 msgstr ""
@@ -28534,11 +28508,13 @@ msgid ""
 "devel@lists.libvirt.org"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "interface %1$s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%2$s'"
-msgstr "<virtualport> element unsupported for <interface type='%s'>"
+msgstr ""
+"interface %1$s - <port isolated='yes'/> is not supported for network "
+"interfaces with type='%2$s'"
 
 #, c-format
 msgid ""
@@ -29048,9 +29024,9 @@ msgstr "invalid interface pointer in %1$s"
 msgid "invalid iommuGroup number attribute for '%1$s'"
 msgstr "invalid iommuGroup number attribute '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid iothreads count '%1$s'"
-msgstr "invalid failure action: '%1$s'\n"
+msgstr "invalid iothreads count '%1$s'"
 
 #, fuzzy
 msgid "invalid job statistics type"
@@ -29083,9 +29059,9 @@ msgstr "invalid keycode: '%1$s'"
 msgid "invalid length for new profile"
 msgstr "invalid length for new profile"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid lifecycle action '%1$u'"
-msgstr "invalid failure action: '%s'\n"
+msgstr "invalid lifecycle action '%1$u'"
 
 #, fuzzy, c-format
 msgid "invalid lifecycle type '%1$u'"
@@ -31099,13 +31075,11 @@ msgstr "missing capacity element"
 msgid "missing cellno argument"
 msgstr "missing argument"
 
-#, fuzzy
 msgid "missing connection mode for <reservations/>"
-msgstr "missing operating system information"
+msgstr "missing connection mode for <reservations/>"
 
-#, fuzzy
 msgid "missing connection type for <reservations/>"
-msgstr "missing operating system information"
+msgstr "missing connection type for <reservations/>"
 
 #, fuzzy
 msgid "missing cookie name"
@@ -31463,9 +31437,8 @@ msgstr ""
 msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "missing path for <reservations/>"
-msgstr "missing name information"
+msgstr "missing path for <reservations/>"
 
 msgid "missing path for ACPI ERST pstore device"
 msgstr ""
@@ -32276,9 +32249,8 @@ msgstr "network %s is not active"
 msgid "network port has no owner UUID"
 msgstr ""
 
-#, fuzzy
 msgid "network port has no owner name"
-msgstr "Network %s has been undefined\n"
+msgstr "network port has no owner name"
 
 #, fuzzy
 msgid "network port has no uuid"
@@ -32625,9 +32597,9 @@ msgstr "No description for domain: %1$s"
 msgid "no hostname found: %1$s"
 msgstr "Domain not found: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
-msgstr "Interface %s defined from %s\n"
+msgstr "no iSCSI interface defined for IQN %1$s"
 
 #, fuzzy, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -33050,9 +33022,8 @@ msgstr "number of bytes written:"
 msgid "number of compression threads for multithread compression"
 msgstr ""
 
-#, fuzzy
 msgid "number of connections for parallel migration"
-msgstr "number of read operations:"
+msgstr "number of connections for parallel migration"
 
 msgid "number of decompression threads for multithread compression"
 msgstr ""
@@ -33476,9 +33447,8 @@ msgstr "optional initiator IQN to use for query"
 msgid "optional port to query"
 msgstr "optional port to query"
 
-#, fuzzy
 msgid "options"
-msgstr "Location:"
+msgstr "options"
 
 #, fuzzy
 msgid "os.type is not defined"
@@ -33560,9 +33530,8 @@ msgstr "packet %1$d bytes received from server too small, want %2$d"
 msgid "page cache size for xbzrle compression"
 msgstr "invalid cipher size for TLS session"
 
-#, fuzzy
 msgid "page count"
-msgstr "error count:"
+msgstr "page count"
 
 #, fuzzy
 msgid "page info is not supported on this platform"
@@ -34544,9 +34513,9 @@ msgstr "read error on pipe"
 msgid "read max, as scaled integer (default bytes)"
 msgstr "size of the vol, as scaled integer (default bytes)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "read only access prevents %1$s"
-msgstr "unable to access device %1$s\n"
+msgstr "read only access prevents %1$s"
 
 #, fuzzy
 msgid "read secret from file"
@@ -36260,13 +36229,12 @@ msgstr ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
 
-#, fuzzy
 msgid "the CPU is incompatible with host CPU"
-msgstr "CPU described in %s is incompatible with host CPU\n"
+msgstr "the CPU is incompatible with host CPU"
 
-#, fuzzy, c-format
+#, c-format
 msgid "the CPU is incompatible with host CPU: %1$s"
-msgstr "CPU described in %1$s is incompatible with host CPU\n"
+msgstr "the CPU is incompatible with host CPU: %1$s"
 
 #, c-format
 msgid "the MAC address '%1$s' matches multiple interfaces"
@@ -38601,13 +38569,13 @@ msgstr "unsupported configuration"
 msgid "unsupported configuration: %1$s"
 msgstr "unsupported configuration: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported connection mode for <reservations/>: %1$s"
-msgstr "unsupported configuration: %1$s"
+msgstr "unsupported connection mode for <reservations/>: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported connection type for <reservations/>: %1$s"
-msgstr "unsupported configuration: %1$s"
+msgstr "unsupported connection type for <reservations/>: %1$s"
 
 #, c-format
 msgid "unsupported console target type %1$s"
