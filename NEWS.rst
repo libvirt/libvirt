@@ -17,6 +17,12 @@ v10.7.0 (unreleased)
 
 * **New features**
 
+  * qemu: Introduce the ability to disable the built-in PS/2 controller
+
+    It is now possible to control the state of the ``ps2`` feature in the
+    domain XML for descendants of the generic PC machine type (``i440fx``,
+    ``q35``, ``xenfv`` and ``isapc``).
+
 * **Improvements**
 
   * ch: support restore with network devices
