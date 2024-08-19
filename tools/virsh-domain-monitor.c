@@ -1891,6 +1891,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
         if (optTable) {
             const char *domName = virDomainGetName(dom);
             const char *stateStr = NULL;
+            g_autofree char *title = NULL;
+            const char *arg[2] = {};
 
             state = virshDomainState(ctl, dom, NULL);
 
@@ -1906,43 +1908,33 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
             }
 
             if (optTitle && !optUUID) {
-                g_autofree char *title = NULL;
-
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
-                if (vshTableRowAppend(table, id_buf,
-                                      domName, stateStr,
-                                      title, NULL) < 0)
-                    goto cleanup;
+
+                arg[0] = title;
             } else if (optUUID && !optTitle) {
                 if (virDomainGetUUIDString(dom, uuid) < 0) {
                     vshError(ctl, "%s", _("Failed to get domain's UUID"));
                     goto cleanup;
                 }
-                if (vshTableRowAppend(table, id_buf,
-                                      domName, stateStr,
-                                      uuid, NULL) < 0)
-                    goto cleanup;
-            } else if (optUUID && optTitle) {
-                g_autofree char *title = NULL;
 
+                arg[0] = uuid;
+            } else if (optUUID && optTitle) {
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
                 if (virDomainGetUUIDString(dom, uuid) < 0) {
                     vshError(ctl, "%s", _("Failed to get domain's UUID"));
                     goto cleanup;
                 }
-                if (vshTableRowAppend(table, id_buf,
-                                      domName, stateStr,
-                                      title, uuid, NULL) < 0)
-                    goto cleanup;
-            } else {
-                if (vshTableRowAppend(table, id_buf,
-                                      domName, stateStr,
-                                      NULL) < 0)
-                    goto cleanup;
+
+                arg[0] = title;
+                arg[1] = uuid;
             }
 
+            if (vshTableRowAppend(table, id_buf,
+                                  domName, stateStr,
+                                  arg[0], arg[1], NULL) < 0)
+                goto cleanup;
         } else {
             if (optUUID) {
                 if (virDomainGetUUIDString(dom, uuid) < 0) {
