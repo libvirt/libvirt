@@ -6,7 +6,7 @@
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
     <nvram type='network' format='qcow2'>
-      <source protocol='nbd' name='bar'>
+      <source protocol='nbd'>
         <host name='example.org' port='6000'/>
       </source>
     </nvram>
