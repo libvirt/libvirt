@@ -1889,6 +1889,9 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
             ignore_value(virStrcpyStatic(id_buf, "-"));
 
         if (optTable) {
+            const char *domName = virDomainGetName(dom);
+            const char *stateStr = NULL;
+
             state = virshDomainState(ctl, dom, NULL);
 
             /* Domain could've been removed in the meantime */
@@ -1896,8 +1899,11 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                 continue;
 
             if (managed && state == VIR_DOMAIN_SHUTOFF &&
-                virDomainHasManagedSaveImage(dom, 0) > 0)
-                state = -2;
+                virDomainHasManagedSaveImage(dom, 0) > 0) {
+                stateStr = _("saved");
+            } else {
+                stateStr = virshDomainStateToString(state);
+            }
 
             if (optTitle && !optUUID) {
                 g_autofree char *title = NULL;
@@ -1905,9 +1911,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
                 if (vshTableRowAppend(table, id_buf,
-                                      virDomainGetName(dom),
-                                      state == -2 ? _("saved")
-                                      : virshDomainStateToString(state),
+                                      domName, stateStr,
                                       title, NULL) < 0)
                     goto cleanup;
             } else if (optUUID && !optTitle) {
@@ -1916,9 +1920,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                     goto cleanup;
                 }
                 if (vshTableRowAppend(table, id_buf,
-                                      virDomainGetName(dom),
-                                      state == -2 ? _("saved")
-                                      : virshDomainStateToString(state),
+                                      domName, stateStr,
                                       uuid, NULL) < 0)
                     goto cleanup;
             } else if (optUUID && optTitle) {
@@ -1931,16 +1933,12 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                     goto cleanup;
                 }
                 if (vshTableRowAppend(table, id_buf,
-                                      virDomainGetName(dom),
-                                      state == -2 ? _("saved")
-                                      : virshDomainStateToString(state),
+                                      domName, stateStr,
                                       title, uuid, NULL) < 0)
                     goto cleanup;
             } else {
                 if (vshTableRowAppend(table, id_buf,
-                                      virDomainGetName(dom),
-                                      state == -2 ? _("saved")
-                                      : virshDomainStateToString(state),
+                                      domName, stateStr,
                                       NULL) < 0)
                     goto cleanup;
             }
