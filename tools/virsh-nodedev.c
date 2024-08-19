@@ -1233,7 +1233,7 @@ cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
 
     parent = virNodeDeviceGetParent(device);
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virNodeDeviceGetName(device));
-    vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "");
+    vshPrint(ctl, "%-15s %s\n", _("Parent:"), NULLSTR_EMPTY(parent));
     vshPrint(ctl, "%-15s %s\n", _("Active:"), virNodeDeviceIsActive(device) ?
              _("yes") : _("no"));
     vshPrint(ctl, "%-15s %s\n", _("Persistent:"),

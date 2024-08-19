@@ -188,8 +188,8 @@ virNetDevIPAddrAdd(const char *ifname,
 
     VIR_DEBUG("Adding IP address %s/%d%s%s%s%s to %s",
               NULLSTR(ipStr), prefix,
-              peerStr ? " peer " : "", peerStr ? peerStr : "",
-              bcastStr ? " bcast " : "", bcastStr ? bcastStr : "",
+              peerStr ? " peer " : "", NULLSTR_EMPTY(peerStr),
+              bcastStr ? " bcast " : "", NULLSTR_EMPTY(bcastStr),
               ifname);
 
     if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_NEWADDR, ifname,
@@ -206,8 +206,8 @@ virNetDevIPAddrAdd(const char *ifname,
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Failed to add IP address %1$s/%2$d%3$s%4$s%5$s%6$s to %7$s"),
                        ipStr, prefix,
-                       peerStr ? " peer " : "", peerStr ? peerStr : "",
-                       bcastStr ? " bcast " : "", bcastStr ? bcastStr : "",
+                       peerStr ? " peer " : "", NULLSTR_EMPTY(peerStr),
+                       bcastStr ? " bcast " : "", NULLSTR_EMPTY(bcastStr),
                        ifname);
         return -1;
     }

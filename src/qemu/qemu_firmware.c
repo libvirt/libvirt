@@ -1090,7 +1090,7 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
 
     loader->nvram->path = g_strdup_printf("%s/%s_VARS%s",
                                           cfg->nvramDir, def->name,
-                                          ext ? ext : "");
+                                          NULLSTR_EMPTY(ext));
 }
 
 

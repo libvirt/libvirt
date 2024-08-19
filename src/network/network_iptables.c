@@ -867,10 +867,10 @@ iptablesForwardMasquerade(virFirewall *fw,
     if (addrStartStr && addrStartStr[0]) {
         if (addrEndStr && addrEndStr[0]) {
             natRangeStr = g_strdup_printf("%s-%s%s", addrStartStr, addrEndStr,
-                                          portRangeStr ? portRangeStr : "");
+                                          NULLSTR_EMPTY(portRangeStr));
         } else {
             natRangeStr = g_strdup_printf("%s%s", addrStartStr,
-                                          portRangeStr ? portRangeStr : "");
+                                          NULLSTR_EMPTY(portRangeStr));
         }
 
         virFirewallCmdAddArgList(fw, fwCmd,

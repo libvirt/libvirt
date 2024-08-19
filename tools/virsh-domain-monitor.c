@@ -712,11 +712,11 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
         mac = virXPathString("string(./mac/@address)", ctxt);
 
         if (vshTableRowAppend(table,
-                              target ? target : "-",
+                              NULLSTR_MINUS(target),
                               type,
-                              source ? source : "-",
-                              model ? model : "-",
-                              mac ? mac : "-",
+                              NULLSTR_MINUS(source),
+                              NULLSTR_MINUS(model),
+                              NULLSTR_MINUS(mac),
                               NULL) < 0)
             return false;
     }

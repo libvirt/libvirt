@@ -455,7 +455,7 @@ cmdCheckpointInfo(vshControl *ctl,
                  _("unexpected problem querying checkpoint state"));
         return false;
     }
-    vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "-");
+    vshPrint(ctl, "%-15s %s\n", _("Parent:"), NULLSTR_MINUS(parent));
 
     /* Children, Descendants.  */
     flags = 0;

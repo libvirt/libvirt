@@ -168,7 +168,7 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         }
 
         if (cred[i].type != VIR_CRED_EXTERNAL) {
-            cred[i].result = bufptr ? bufptr : g_strdup(cred[i].defresult ? cred[i].defresult : "");
+            cred[i].result = bufptr ? bufptr : g_strdup(NULLSTR_EMPTY(cred[i].defresult));
             cred[i].resultlen = strlen(cred[i].result);
         }
     }
