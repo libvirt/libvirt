@@ -22907,8 +22907,141 @@
 }
 
 {
-  "execute": "query-cpu-definitions",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "generic-pc-machine"
+  },
   "id": "libvirt-41"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "graphics",
+      "description": "Set on/off to enable/disable graphics emulation",
+      "type": "bool"
+    },
+    {
+      "name": "memory-encryption",
+      "description": "Set memory encryption object to use",
+      "type": "string"
+    },
+    {
+      "name": "dtb",
+      "description": "Linux kernel device tree file",
+      "type": "string"
+    },
+    {
+      "name": "usb",
+      "description": "Set on/off to enable/disable usb",
+      "type": "bool"
+    },
+    {
+      "name": "phandle-start",
+      "description": "The first phandle ID we may generate dynamically",
+      "type": "int"
+    },
+    {
+      "name": "dump-guest-core",
+      "description": "Include guest memory in a core dump",
+      "type": "bool"
+    },
+    {
+      "name": "append",
+      "description": "Linux kernel command line",
+      "type": "string"
+    },
+    {
+      "name": "suppress-vmdesc",
+      "description": "Set on to disable self-describing migration",
+      "type": "bool"
+    },
+    {
+      "name": "mem-merge",
+      "description": "Enable/disable memory merge support",
+      "type": "bool"
+    },
+    {
+      "name": "dt-compatible",
+      "description": "Overrides the \"compatible\" property of the dt root node",
+      "type": "string"
+    },
+    {
+      "name": "kernel",
+      "description": "Linux kernel image file",
+      "type": "string"
+    },
+    {
+      "name": "dumpdtb",
+      "description": "Dump current dtb to a file and quit",
+      "type": "string"
+    },
+    {
+      "name": "initrd",
+      "description": "Linux initial ramdisk file",
+      "type": "string"
+    },
+    {
+      "name": "firmware",
+      "description": "Firmware image",
+      "type": "string"
+    },
+    {
+      "name": "memory-backend",
+      "description": "Set RAM backendValid value is ID of hostmem based backend",
+      "type": "string"
+    },
+    {
+      "name": "smm",
+      "description": "Enable SMM",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "acpi",
+      "description": "Enable ACPI",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "smbus",
+      "type": "bool"
+    },
+    {
+      "name": "max-ram-below-4g",
+      "description": "Maximum ram below the 4G boundary (32bit boundary)",
+      "type": "size"
+    },
+    {
+      "name": "pit",
+      "type": "bool"
+    },
+    {
+      "name": "sata",
+      "type": "bool"
+    },
+    {
+      "name": "vmport",
+      "description": "Enable vmport (pc & q35)",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "device-memory-region-size",
+      "type": "int"
+    },
+    {
+      "name": "hpet",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-41"
+}
+
+{
+  "execute": "query-cpu-definitions",
+  "id": "libvirt-42"
 }
 
 {
@@ -24689,12 +24822,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -24702,12 +24835,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -24715,12 +24848,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -26004,12 +26137,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -26087,16 +26220,16 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-45"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-46"
 }
 
 {
-  "id": "libvirt-46",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-47"
+}
+
+{
+  "id": "libvirt-47",
   "error": {
     "class": "GenericError",
     "desc": "SEV is not enabled in KVM"
@@ -26111,7 +26244,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -26420,7 +26553,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -26434,7 +26567,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -26743,7 +26876,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -26758,7 +26891,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -27067,7 +27200,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {

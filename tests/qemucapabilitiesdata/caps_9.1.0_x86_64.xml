@@ -206,6 +206,7 @@
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
   <flag name='intel-iommu.dma-translation'/>
+  <flag name='machine-i8042-opt'/>
   <version>9000090</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v9.1.0-rc0-121-g75c7f57403</package>

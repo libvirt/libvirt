@@ -693,6 +693,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_NETDEV_USER, /* -netdev user */
     QEMU_CAPS_DEVICE_ACPI_ERST, /* -device acpi-erst */
     QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION, /* intel-iommu.dma-translation */
+    QEMU_CAPS_MACHINE_I8042_OPT, /* -machine xxx,i8042=on/off; use virQEMUCapsSupportsI8042Toggle() to query this capability */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
@@ -720,6 +721,9 @@ bool virQEMUCapsSupportsVmport(virQEMUCaps *qemuCaps,
 
 bool virQEMUCapsSupportsI8042(virQEMUCaps *qemuCaps,
                               const virDomainDef *def);
+
+bool virQEMUCapsSupportsI8042Toggle(virQEMUCaps *qemuCaps,
+                                    const virDomainDef *def);
 
 const char *virQEMUCapsGetBinary(virQEMUCaps *qemuCaps);
 virArch virQEMUCapsGetArch(virQEMUCaps *qemuCaps);
