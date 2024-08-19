@@ -4874,8 +4874,8 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
     int cap;
     int ccwCap;
 
-    if (input->bus == VIR_DOMAIN_INPUT_BUS_PS2 && !ARCH_IS_X86(def->os.arch) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_I8042)) {
+    if (input->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
+        !virQEMUCapsSupportsI8042(qemuCaps, def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("%1$s is not supported by this QEMU binary"),
                        virDomainInputBusTypeToString(input->bus));

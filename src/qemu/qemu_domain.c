@@ -3925,9 +3925,10 @@ virXMLNamespace virQEMUDriverDomainXMLNamespace = {
 
 
 static int
-qemuDomainDefAddImplicitInputDevice(virDomainDef *def)
+qemuDomainDefAddImplicitInputDevice(virDomainDef *def,
+                                    virQEMUCaps *qemuCaps)
 {
-    if (ARCH_IS_X86(def->os.arch)) {
+    if (virQEMUCapsSupportsI8042(qemuCaps, def)) {
         if (virDomainDefMaybeAddInput(def,
                                       VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                       VIR_DOMAIN_INPUT_BUS_PS2) < 0)
@@ -4166,7 +4167,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     bool addITCOWatchdog = false;
 
     /* add implicit input devices */
-    if (qemuDomainDefAddImplicitInputDevice(def) < 0)
+    if (qemuDomainDefAddImplicitInputDevice(def, qemuCaps) < 0)
         return -1;
 
     /* Add implicit PCI root controller if the machine has one */
@@ -9177,6 +9178,21 @@ qemuDomainMachineIsMipsMalta(const char *machine,
     return false;
 }
 
+static bool
+qemuDomainMachineIsXenFV(const char *machine,
+                         const virArch arch)
+{
+    if (!ARCH_IS_X86(arch))
+        return false;
+
+    if (STREQ(machine, "xenfv") ||
+        STRPREFIX(machine, "xenfv-")) {
+        return true;
+    }
+
+    return false;
+}
+
 
 /* You should normally avoid this function and use
  * qemuDomainHasBuiltinIDE() instead. */
@@ -9261,6 +9277,12 @@ bool
 qemuDomainIsLoongArchVirt(const virDomainDef *def)
 {
     return qemuDomainMachineIsLoongArchVirt(def->os.machine, def->os.arch);
+}
+
+bool
+qemuDomainIsXenFV(const virDomainDef *def)
+{
+    return qemuDomainMachineIsXenFV(def->os.machine, def->os.arch);
 }
 
 

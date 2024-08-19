@@ -535,7 +535,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_SMP_DIES, /*  -smp dies= */
 
     /* 350 */
-    QEMU_CAPS_DEVICE_I8042, /* PS/2 controller */
+    QEMU_CAPS_DEVICE_I8042, /* PS/2 controller, use virQEMUCapsSupportsI8042() to query this capability */
     QEMU_CAPS_OBJECT_RNG_BUILTIN, /* -object rng-builtin */
     X_QEMU_CAPS_VIRTIO_NET_FAILOVER, /* virtio-net-*.failover */
     QEMU_CAPS_DEVICE_TPM_SPAPR, /* -device tpm-spapr */
@@ -717,6 +717,9 @@ void virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps);
 
 bool virQEMUCapsSupportsVmport(virQEMUCaps *qemuCaps,
                                const virDomainDef *def);
+
+bool virQEMUCapsSupportsI8042(virQEMUCaps *qemuCaps,
+                              const virDomainDef *def);
 
 const char *virQEMUCapsGetBinary(virQEMUCaps *qemuCaps);
 virArch virQEMUCapsGetArch(virQEMUCaps *qemuCaps);

@@ -6008,6 +6008,19 @@ virQEMUCapsSupportsVmport(virQEMUCaps *qemuCaps,
         STREQ(def->os.machine, "isapc");
 }
 
+bool
+virQEMUCapsSupportsI8042(virQEMUCaps *qemuCaps,
+                         const virDomainDef *def)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_I8042))
+        return false;
+
+    return qemuDomainIsI440FX(def) ||
+        qemuDomainIsQ35(def) ||
+        qemuDomainIsXenFV(def) ||
+        STREQ(def->os.machine, "isapc");
+}
+
 
 /*
  * The preferred machine to use if none is listed explicitly
