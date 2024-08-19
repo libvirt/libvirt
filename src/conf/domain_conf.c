@@ -17153,15 +17153,16 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
                               &format, VIR_STORAGE_FILE_NONE) < 0) {
         return -1;
     }
-    if (format &&
-        format != VIR_STORAGE_FILE_RAW &&
-        format != VIR_STORAGE_FILE_QCOW2) {
+    src->format = format;
+
+    if (src->format != VIR_STORAGE_FILE_NONE &&
+        src->format != VIR_STORAGE_FILE_RAW &&
+        src->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unsupported nvram format '%1$s'"),
-                       virStorageFileFormatTypeToString(format));
+                       virStorageFileFormatTypeToString(src->format));
         return -1;
     }
-    src->format = format;
 
     if ((typePresent = virXMLPropEnum(nvramNode, "type",
                                       virStorageTypeFromString, VIR_XML_PROP_NONE,
@@ -17243,15 +17244,17 @@ virDomainLoaderDefParseXMLLoader(virDomainLoaderDef *loader,
                               &format, VIR_STORAGE_FILE_NONE) < 0) {
         return -1;
     }
-    if (format &&
-        format != VIR_STORAGE_FILE_RAW &&
-        format != VIR_STORAGE_FILE_QCOW2) {
+
+    loader->format = format;
+
+    if (loader->format != VIR_STORAGE_FILE_NONE &&
+        loader->format != VIR_STORAGE_FILE_RAW &&
+        loader->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unsupported loader format '%1$s'"),
-                       virStorageFileFormatTypeToString(format));
+                       virStorageFileFormatTypeToString(loader->format));
         return -1;
     }
-    loader->format = format;
 
     return 0;
 }
