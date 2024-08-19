@@ -143,6 +143,13 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
                                _("vmport is not available with this QEMU binary"));
                 return -1;
             }
+
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
+                def->features[VIR_DOMAIN_FEATURE_PS2] == VIR_TRISTATE_SWITCH_OFF) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vmport feature requires the ps2 feature not to be disabled"));
+                return -1;
+            }
             break;
 
         case VIR_DOMAIN_FEATURE_VMCOREINFO:
@@ -238,6 +245,22 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_VIRT_RAS)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                               _("ras feature is not available with this QEMU binary"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_PS2:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+                !virQEMUCapsSupportsI8042(qemuCaps, def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("ps2 feature is not available with this QEMU binary"));
+                return -1;
+            }
+
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+                !virQEMUCapsSupportsI8042Toggle(qemuCaps, def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("ps2 feature state cannot be controlled with this QEMU binary"));
                 return -1;
             }
             break;

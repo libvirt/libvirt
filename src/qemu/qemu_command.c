@@ -6888,6 +6888,11 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
         virBufferAsprintf(buf, ",ras=%s", str);
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_PS2] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_PS2]);
+        virBufferAsprintf(buf, ",i8042=%s", str);
+    }
+
     return 0;
 }
 

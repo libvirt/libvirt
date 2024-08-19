@@ -2022,6 +2022,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      </tcg>
      <async-teardown enabled='yes'/>
      <ras state='on'/>
+     <ps2 state='on'/>
    </features>
    ...
 
@@ -2262,6 +2263,11 @@ are:
    exceptions when enabled (``on``). If the attribute is not defined, the
    hypervisor default will be used.
    :since:`Since 10.4.0` (QEMU/KVM and ARM virt guests only)
+``ps2``
+   Depending on the ``state`` attribute (values ``on``, ``off``) enable or
+   disable the emulation of a PS/2 controller used by ``ps2`` bus input devices.
+   If the attribute is not defined, the hypervisor default will be used.
+   :since:`Since 10.7.0` (QEMU only)
 
 Time keeping
 ------------

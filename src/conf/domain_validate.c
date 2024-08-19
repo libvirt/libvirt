@@ -2753,6 +2753,29 @@ virDomainInputDefValidate(const virDomainInputDef *input,
         return -1;
     }
 
+    switch ((virDomainInputBus) input->bus) {
+    case VIR_DOMAIN_INPUT_BUS_PS2:
+        if (def->features[VIR_DOMAIN_FEATURE_PS2] == VIR_TRISTATE_SWITCH_OFF) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ps2 bus inputs require the ps2 feature not to be disabled"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_INPUT_BUS_DEFAULT:
+    case VIR_DOMAIN_INPUT_BUS_USB:
+    case VIR_DOMAIN_INPUT_BUS_XEN:
+    case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+    case VIR_DOMAIN_INPUT_BUS_NONE:
+        break;
+
+    case VIR_DOMAIN_INPUT_BUS_LAST:
+    default:
+        virReportEnumRangeError(virDomainInputBus, input->bus);
+        return -1;
+    }
+
     return 0;
 }
 

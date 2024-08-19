@@ -3928,7 +3928,8 @@ static int
 qemuDomainDefAddImplicitInputDevice(virDomainDef *def,
                                     virQEMUCaps *qemuCaps)
 {
-    if (virQEMUCapsSupportsI8042(qemuCaps, def)) {
+    if (virQEMUCapsSupportsI8042(qemuCaps, def) &&
+        def->features[VIR_DOMAIN_FEATURE_PS2] != VIR_TRISTATE_SWITCH_OFF) {
         if (virDomainDefMaybeAddInput(def,
                                       VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                       VIR_DOMAIN_INPUT_BUS_PS2) < 0)
