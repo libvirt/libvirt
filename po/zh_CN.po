@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-17 00:22+0000\n"
+"PO-Revision-Date: 2024-08-21 13:38+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
@@ -35,7 +35,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7\n"
 
 msgid ""
 "\n"
@@ -435,7 +435,7 @@ msgstr ""
 "\n"
 "libvirt 锁定管理守护进程：\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "\n"
 "Usage:\n"
@@ -448,6 +448,15 @@ msgid ""
 "  qemu/$domname\t\t\ttries looking up $domname under system followed by "
 "session URI\n"
 msgstr ""
+"\n"
+"用法：\n"
+"%1$s 主机名端口\n"
+"\n"
+"主机名应采用以下形式之一：\n"
+"\n"
+"qemu:system/$domname 用于 qemu:///system 下的域\n"
+"  qemu:session/$domname 用于 qemu:///session 下的域\n"
+"  qemu/$domname 尝试在系统下查找$domname，然后查找会话 URI\n"
 
 #, c-format
 msgid ""
@@ -495,9 +504,9 @@ msgstr " %1$s (指定关键字'%2$s'时可以显示此部分帮助信息)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (使用关键字 '%2$s' 来显示帮助信息):\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <string>..."
 
 msgid " Hypervisors:"
 msgstr " 管理程序（即虚拟化层）方面:"
@@ -511,9 +520,9 @@ msgstr " 网络："
 msgid " Storage:"
 msgstr " 存储："
 
-#, c-format
+#, c-format, fuzzy
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <string>]..."
 
 #, c-format
 msgid ""
@@ -943,9 +952,9 @@ msgstr "%1$s: secret %2$s 的事件\"生命周期\"：%3$s\n"
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
 msgstr "%1$s: 存储池 %2$s 的事件\"生命周期\"：%3$s\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
-msgstr ""
+msgstr "%1$s： 网络%2$s的事件 'metadata-change' ： 类型 %3$s，uri %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -1575,9 +1584,9 @@ msgstr "--%1$s <number>"
 msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
-#, c-format
+#, c-format, fuzzy
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <string>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -3112,13 +3121,13 @@ msgstr "无法解析 UUID '%1$s'"
 msgid "Cannot parse adapter '%1$s'"
 msgstr "无法解析适配器 '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
-msgstr ""
+msgstr "无法解析 blkio cgroup （%1$s） 入口 '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
-msgstr ""
+msgstr "无法解析 blkio cgroup （'%1$s'） 入口 '%2$s'"
 
 #, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
@@ -3305,9 +3314,9 @@ msgstr "无法共享未初始化的 CURL 句柄"
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "如果关闭重新标记功能则无法指定标签。model=%1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot specify relabel if label is missing. model=%1$s"
-msgstr ""
+msgstr "如果缺少标签，则无法指定重新标记。模型=%1$s"
 
 #, c-format
 msgid "Cannot stat %1$s"
@@ -3336,28 +3345,31 @@ msgstr "无法取消共享挂载名称空间"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "无法取消共享未初始化的 CRUL 句柄"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
-msgstr ""
+msgstr "无法更新设备 '%1$s'，父地址不匹配（当前父地址 '%2$s'）"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
-msgstr ""
+msgstr "无法更新设备 '%1$s'，类型不匹配（当前类型 '%2$s'）"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
-msgstr ""
+msgstr "无法更新设备 '%1$s，uuid 不匹配（当前 uuid '%2$s'）"
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "无法对 %1$s 传输直接使用套接字模式"
 
+#, fuzzy
 msgid ""
 "Cannot use direct socket mode if no URI is set. For more information see "
 "https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
+"如果未设置 URI，则无法使用直接套接字模式。有关详细信息，请参阅 "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -3526,113 +3538,140 @@ msgstr ""
 "检查主机设置：接口 %1$s 具有内核自动配置的 IPv6 路由，在不将 accept_ra 设置"
 "为 2 的情况下启用转发将导致内核刷新它们，从而破坏网络。"
 
+#, fuzzy
 msgid "Checking CA cert access"
-msgstr ""
+msgstr "检查 CA 证书访问"
 
+#, fuzzy
 msgid "Checking cert access"
-msgstr ""
+msgstr "检查证书访问"
 
+#, fuzzy
 msgid "Checking cert hostname match"
-msgstr ""
+msgstr "检查证书主机名匹配"
 
+#, fuzzy
 msgid "Checking cert properties"
-msgstr ""
+msgstr "检查证书属性"
 
+#, fuzzy
 msgid "Checking custom PKI base dir access"
-msgstr ""
+msgstr "检查自定义 PKI 基本目录访问权限"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Checking for %1$s module"
-msgstr ""
+msgstr "正在检查 %1$s 模块"
 
+#, fuzzy
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
+msgstr "检查 AMD 安全加密虚拟化加密状态 （SEV-ES）"
 
+#, fuzzy
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
 "SNP)"
-msgstr ""
+msgstr "检查 AMD 安全加密虚拟化 - 安全嵌套分页 （SEV-SNP）"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
-msgstr ""
+msgstr "检查 Linux >= %1$d.%2$d.%3$d"
 
+#, fuzzy
 msgid "Checking for PowerPC KVM module loaded"
-msgstr ""
+msgstr "检查PowerPC KVM模块加载"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Checking for cgroup '%1$s' controller support"
-msgstr ""
+msgstr "检查 cgroup '%1$s' 控制器支持"
 
+#, fuzzy
 msgid "Checking for device assignment IOMMU support"
-msgstr ""
+msgstr "检查设备分配 IOMMU 支持"
 
+#, fuzzy
 msgid "Checking for hardware virtualization"
-msgstr ""
+msgstr "检查硬件虚拟化"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Checking for namespace '%1$s'"
-msgstr ""
+msgstr "检查命名空间 '%1$s'"
 
+#, fuzzy
 msgid "Checking for secure guest support"
-msgstr ""
+msgstr "检查安全的虚机支持"
 
+#, fuzzy
 msgid "Checking if CA cert exists"
-msgstr ""
+msgstr "检查 CA 证书是否存在"
 
+#, fuzzy
 msgid "Checking if IOMMU is enabled by kernel"
-msgstr ""
+msgstr "检查内核是否启用了 IOMMU"
 
+#, fuzzy
 msgid "Checking if cert exists"
-msgstr ""
+msgstr "检查证书是否存在"
 
+#, fuzzy
 msgid "Checking if custom PKI base dir exists"
-msgstr ""
+msgstr "检查自定义 PKI 基本目录是否存在"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Checking if device '%1$s' exists"
-msgstr ""
+msgstr "检查设备 '%1$s' 是否存在"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Checking if device '%1$s' is accessible"
-msgstr ""
+msgstr "检查设备 '%1$s' 是否可访问"
 
+#, fuzzy
 msgid "Checking if key exists"
-msgstr ""
+msgstr "检查密钥是否存在"
 
+#, fuzzy
 msgid "Checking if system CA dir exists"
-msgstr ""
+msgstr "检查系统 CA 目录是否存在"
 
+#, fuzzy
 msgid "Checking if system PKI dir exists"
-msgstr ""
+msgstr "检查系统 PKI 目录是否存在"
 
+#, fuzzy
 msgid "Checking if system cert dir exists"
-msgstr ""
+msgstr "检查系统证书目录是否存在"
 
+#, fuzzy
 msgid "Checking if system key dir exists"
-msgstr ""
+msgstr "检查系统密钥目录是否存在"
 
+#, fuzzy
 msgid "Checking if user PKI base dir exists"
-msgstr ""
+msgstr "检查用户 PKI 基本目录是否存在"
 
+#, fuzzy
 msgid "Checking key access"
-msgstr ""
+msgstr "检查密钥访问"
 
+#, fuzzy
 msgid "Checking system CA dir access"
-msgstr ""
+msgstr "检查系统 CA 目录访问权限"
 
+#, fuzzy
 msgid "Checking system PKI dir access"
-msgstr ""
+msgstr "检查系统 PKI 目录访问权限"
 
+#, fuzzy
 msgid "Checking system cert dir access"
-msgstr ""
+msgstr "检查系统证书目录访问权限"
 
+#, fuzzy
 msgid "Checking system key dir access"
-msgstr ""
+msgstr "检查系统密钥目录访问权限"
 
+#, fuzzy
 msgid "Checking user PKI base dir access"
-msgstr ""
+msgstr "检查用户 PKI 基本目录访问权限"
 
 #, c-format
 msgid "Checkpoint %1$s XML configuration not changed.\n"
@@ -3788,17 +3827,17 @@ msgstr "压缩缓存："
 msgid "Compression cache: %1$.3lf %2$s"
 msgstr "压缩缓存：%1$.3lf %2$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Compression method '%1$s' is only supported with parallel migration"
-msgstr ""
+msgstr "压缩方法 '%1$s' 仅在并行迁移中受支持"
 
 #, c-format
 msgid "Compression method '%1$s' is specified twice"
 msgstr "压缩方法 '%1$s' 被指定了两次"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Compression method '%1$s' isn't supported with parallel migration"
-msgstr ""
+msgstr "并行迁移不支持压缩方法 '%1$s'"
 
 msgid "Compression overflows:"
 msgstr "压缩流量："
@@ -3888,8 +3927,9 @@ msgstr "已连接到管理服务器"
 msgid "Connections from inside daemon must be direct"
 msgstr "来自内部守护进程的连接必须是直接连接"
 
+#, fuzzy
 msgid "Console only works in PTY mode"
-msgstr ""
+msgstr "控制台仅在 PTY 模式下工作"
 
 msgid "Constant pages:"
 msgstr "常数页："
@@ -4890,9 +4930,9 @@ msgstr "无法为文件系统设置源目录"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "无法为 xmlNodeParam 设置 wsman 命名空间地址"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Could not start 'nbdkit'. exitstatus: %1$d"
-msgstr ""
+msgstr "无法启动'nbdkit'。退出状态: %1$d"
 
 msgid "Could not start 'virtiofsd'"
 msgstr "无法启动 'virtiofsd'"
@@ -5009,9 +5049,9 @@ msgstr "为现有卷生成卷"
 msgid "Create a vol."
 msgstr "创建一个卷。"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Create the dir %1$s"
-msgstr ""
+msgstr "创建目录 %1$s"
 
 msgid "Created"
 msgstr "创建"
@@ -5114,8 +5154,9 @@ msgstr "定义新网络过滤器或者更新现有过滤器。"
 msgid "Define a pool."
 msgstr "定义池。"
 
+#, fuzzy
 msgid "Define or modify a device by an xml file on a node"
-msgstr ""
+msgstr "通过节点上的 xml 文件定义或修改设备"
 
 msgid "Define or modify a persistent physical host interface."
 msgstr "定义或修改持久的物理主机接口。"
@@ -5132,10 +5173,12 @@ msgstr "定义或者修改 secret"
 msgid "Defined"
 msgstr "已定义"
 
+#, fuzzy
 msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
-msgstr ""
+msgstr "定义或修改节点上可分配给域的持久性设备。必须先启动设备，然后才能将其分配给域"
+"。"
 
 msgid "Delete a domain checkpoint"
 msgstr "删除域检查点"
@@ -5332,9 +5375,9 @@ msgstr "未找到 USB 设备 %1$04x:%2$04x 总线：%3$u 设备：%4$u"
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "未找到 USB 设备总线：%1$u 设备：%2$u"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Did not get all free page data for node %1$d"
-msgstr ""
+msgstr "未获取节点 %1$d 的所有可用页面数据"
 
 msgid ""
 "Different bind and connect parameters for udp character device is not "
@@ -5394,8 +5437,9 @@ msgstr "成功分离磁盘\n"
 msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "磁盘设备 '%1$s' 不支持快照功能"
 
+#, fuzzy
 msgid "Disk discard_no_unref is not supported by vz driver."
-msgstr ""
+msgstr "vz 驱动程序不支持磁盘discard_no_unref。"
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
@@ -5707,11 +5751,13 @@ msgstr ""
 "域需要 KVM，但不可用。在主机 BIOS 中启用了检查虚拟化，同时将主机配置为载入 "
 "kvm 模块。"
 
+#, fuzzy
 msgid ""
 "Domain requires MSHV device, but it is not available. Check that "
 "virtualization is enabled in the host BIOS, and host configuration is setup "
 "to load the mshv modules."
-msgstr ""
+msgstr "域需要 MSHV 设备，但它不可用。检查主机 BIOS 中是否启用了虚拟化，"
+"并且是否设置了主机配置以加载 mshv 模块。"
 
 msgid "Domain requires at least 1 vCPU"
 msgstr "域需要至少 1 个 vCPU"
@@ -5845,9 +5891,9 @@ msgstr "重复的哈希表键 '%1$s'"
 msgid "Duplicate info for NUMA latencies"
 msgstr "NUMA 延迟的重复信息"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
+msgstr "iothread '%1$u' 的重复映射"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -6420,8 +6466,9 @@ msgstr "添加信号处理观察失败"
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr "添加存储控制器失败（名称：%1$s、busType: %2$d）"
 
+#, fuzzy
 msgid "Failed to allocate AF_VSOCK socket"
-msgstr ""
+msgstr "分配AF_VSOCK套接字失败"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
@@ -6441,9 +6488,9 @@ msgstr "分配 tty 失败"
 msgid "Failed to apply capabilities: %1$d"
 msgstr "应用功能失败：%1$d"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to apply firewall command '%1$s': %2$s"
-msgstr ""
+msgstr "应用防火墙命令 '%1$s'： %2$s失败"
 
 #, c-format
 msgid "Failed to attach device from %1$s"
@@ -6497,8 +6544,9 @@ msgstr "将挂载目录 %1$s 捆绑到 %2$s 失败"
 msgid "Failed to bind socket to '%1$s'"
 msgstr "将插槽捆绑到 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to build net json"
-msgstr ""
+msgstr "构建网络 json失败"
 
 msgid "Failed to build pidfile path"
 msgstr "构建 pidfile 路径失败"
@@ -6555,9 +6603,9 @@ msgstr "chown 设备 %1$s 失败"
 msgid "Failed to clean up %1$s"
 msgstr "清除 %1$s 失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to cleanup stale managed save dir '%1$s'"
-msgstr ""
+msgstr "清理过时的托管保存目录 '%1$s'失败"
 
 #, c-format
 msgid "Failed to clear security context for agent for %1$s"
@@ -6604,8 +6652,9 @@ msgstr "显示树形列表失败"
 msgid "Failed to connect socket to '%1$s'"
 msgstr "将插槽连接到 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to connect to mon socket"
-msgstr ""
+msgstr "连接到 mon 套接字失败"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
@@ -36464,9 +36513,9 @@ msgstr "未知的 '%1$s' 的 SCSI 目标功能 '%2$s'"
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "未知的 SDL_AUDIODRIVER 设置 %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unknown SEV type '%1$s'"
-msgstr ""
+msgstr "未知的 SEV 类型 '%1$s'"
 
 #, c-format
 msgid "unknown address type '%1$s' in network %2$s"
