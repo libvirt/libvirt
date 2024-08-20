@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-19 07:37+0000\n"
+"PO-Revision-Date: 2024-08-21 13:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7\n"
 
 msgid ""
 "\n"
@@ -1515,13 +1515,11 @@ msgstr "(disk_definition)"
 msgid "(domainCapabilities)"
 msgstr "(domainCapabilities)"
 
-#, fuzzy
 msgid "(domain_backup)"
-msgstr "(domain_snapshot)"
+msgstr "(domain_backup)"
 
-#, fuzzy
 msgid "(domain_checkpoint)"
-msgstr "(domain_definition)"
+msgstr "(domain_checkpoint)"
 
 msgid "(domain_definition)"
 msgstr "(domain_definition)"
@@ -1541,9 +1539,8 @@ msgstr "(interface definition)"
 msgid "(interface_definition)"
 msgstr "(interface_definition)"
 
-#, fuzzy
 msgid "(libxl_migration_cookie)"
-msgstr "(qemu_migration_cookie)"
+msgstr "(libxl_migration_cookie)"
 
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
@@ -1551,9 +1548,8 @@ msgstr "(metadata_xml)"
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
-#, fuzzy
 msgid "(networkport_definition)"
-msgstr "(network_definition)"
+msgstr "(networkport_definition)"
 
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
@@ -1561,9 +1557,8 @@ msgstr "(node_device_definition)"
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
-#, fuzzy
 msgid "(nwfilterbinding_definition)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilterbinding_definition)"
 
 #, fuzzy
 msgid "(nwfilterbinding_status)"
@@ -39888,7 +39883,7 @@ msgid "zPCI %1$s %2$o is already reserved"
 msgstr "A close callback is already registered"
 
 msgid "zero-copy is only available for parallel migration"
-msgstr ""
+msgstr "zero-copy is only available for parallel migration"
 
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
