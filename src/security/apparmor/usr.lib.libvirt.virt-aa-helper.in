@@ -41,7 +41,7 @@ profile virt-aa-helper @libexecdir@/virt-aa-helper {
   deny /dev/mapper/* r,
 
   @libexecdir@/virt-aa-helper mr,
-  /{usr/,}sbin/apparmor_parser Ux,
+  /{usr/,}{s,}bin/apparmor_parser Ux,
 
   @sysconfdir@/apparmor.d/libvirt/* r,
   @sysconfdir@/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
