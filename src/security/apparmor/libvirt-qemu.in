@@ -34,6 +34,7 @@
   # only modify its comm value or those in its thread group.
   owner @{PROC}/@{pid}/task/@{tid}/comm rw,
   @{PROC}/sys/kernel/cap_last_cap r,
+  @{PROC}/sys/vm/max_map_count r,
   @{PROC}/sys/vm/overcommit_memory r,
   # detect hardware capabilities via qemu_getauxval
   owner @{PROC}/*/auxv r,
