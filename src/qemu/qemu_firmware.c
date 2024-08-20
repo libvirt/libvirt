@@ -1332,13 +1332,6 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                           flash->nvram_template.format);
                 return false;
             }
-            if (loader && loader->nvram && loader->nvram->format &&
-                STRNEQ(flash->nvram_template.format, virStorageFileFormatTypeToString(loader->nvram->format))) {
-                VIR_DEBUG("Discarding loader with mismatching nvram template format '%s' != '%s'",
-                          flash->nvram_template.format,
-                          virStorageFileFormatTypeToString(loader->nvram->format));
-                return false;
-            }
         }
     } else if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_MEMORY) {
         if (loader && loader->type &&
