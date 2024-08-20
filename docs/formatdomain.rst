@@ -271,7 +271,10 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    up libvirt copies so called master NVRAM store file either selected by the
    firmware autoselection process or defined in ``qemu.conf``.
    If needed, the ``template`` attribute can be used to override the
-   automatically chosen NVRAM template.
+   automatically chosen NVRAM template and ``templateFormat`` to specify the
+   format for the template file (currently supported are ``raw`` and ``qcow2``).
+   When firmware auto-selection is in use the ``templateFormat`` field reflects
+   the format of the picked template. :since:`Since 10.10.0 (QEMU only)`
 
    Note, that for transient domains if the NVRAM file has been created by
    libvirt it is left behind and it is management application's responsibility
@@ -285,9 +288,8 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    **Note:** ``network`` backed NVRAM the variables are not instantiated from
    the ``template`` and it's user's responsibility to provide a valid NVRAM image.
 
-   This element supports a ``format`` attribute, which has the same semantics
-   as the attribute of the same name for the ``<loader>`` element.
-   :since:`Since 9.2.0 (QEMU only)`
+   This element supports a ``format`` attribute, which specifies the format
+   of the NVRAM image. :since:`Since 9.2.0 (QEMU only)`
 
    It is not valid to provide this element if the loader is marked as
    stateless.

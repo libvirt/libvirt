@@ -17148,6 +17148,22 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
 
     loader->nvramTemplate = virXMLPropString(nvramNode, "template");
 
+    if (virXMLPropEnumDefault(nvramNode, "templateFormat",
+                              virStorageFileFormatTypeFromString, VIR_XML_PROP_NONE,
+                              &format, VIR_STORAGE_FILE_NONE) < 0) {
+        return -1;
+    }
+    loader->nvramTemplateFormat = format;
+
+    if (loader->nvramTemplateFormat != VIR_STORAGE_FILE_NONE &&
+        loader->nvramTemplateFormat != VIR_STORAGE_FILE_RAW &&
+        loader->nvramTemplateFormat != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Unsupported nvram template format '%1$s'"),
+                       virStorageFileFormatTypeToString(loader->nvramTemplateFormat));
+        return -1;
+    }
+
     if (virXMLPropEnumDefault(nvramNode, "format",
                               virStorageFileFormatTypeFromString, VIR_XML_PROP_NONE,
                               &format, VIR_STORAGE_FILE_NONE) < 0) {
@@ -26824,6 +26840,11 @@ virDomainLoaderDefFormatNvram(virBuffer *buf,
     bool childNewline = false;
 
     virBufferEscapeString(&attrBuf, " template='%s'", loader->nvramTemplate);
+
+    if (loader->nvramTemplateFormat > VIR_STORAGE_FILE_NONE) {
+        virBufferAsprintf(&attrBuf, " templateFormat='%s'",
+                          virStorageFileFormatTypeToString(loader->nvramTemplateFormat));
+    }
 
     if (loader->nvram) {
         virStorageSource *src = loader->nvram;

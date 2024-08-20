@@ -11,7 +11,7 @@
       <feature enabled='no' name='secure-boot'/>
     </firmware>
     <loader readonly='yes' type='pflash'>/usr/share/edk2/loongarch64/QEMU_EFI.fd</loader>
-    <nvram template='/usr/share/edk2/loongarch64/QEMU_VARS.fd'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+    <nvram template='/usr/share/edk2/loongarch64/QEMU_VARS.fd' templateFormat='raw'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>

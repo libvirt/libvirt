@@ -11,7 +11,7 @@
       <feature enabled='no' name='secure-boot'/>
     </firmware>
     <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
-    <nvram template='/usr/share/edk2/aarch64/vars-template-pflash.raw'>/var/lib/libvirt/qemu/nvram/test_VARS.fd</nvram>
+    <nvram template='/usr/share/edk2/aarch64/vars-template-pflash.raw' templateFormat='raw'>/var/lib/libvirt/qemu/nvram/test_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>

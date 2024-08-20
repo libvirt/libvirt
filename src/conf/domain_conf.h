@@ -2346,6 +2346,7 @@ struct _virDomainLoaderDef {
     virStorageSource *nvram;
     bool newStyleNVRAM;
     char *nvramTemplate;   /* user override of path to master nvram */
+    virStorageFileFormat nvramTemplateFormat;
 };
 
 virDomainLoaderDef *virDomainLoaderDefNew(void);

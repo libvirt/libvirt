@@ -348,6 +348,11 @@
                 <attribute name="template">
                   <ref name="absFilePath"/>
                 </attribute>
+                <optional>
+                  <attribute name="templateFormat">
+                    <ref name="pflashFormatTypes"/>
+                  </attribute>
+                </optional>
               </optional>
               <optional>
                 <ref name="pflashFormat"/>
@@ -7883,12 +7888,16 @@
     </element>
   </define>
 
+  <define name="pflashFormatTypes">
+    <choice>
+      <value>raw</value>
+      <value>qcow2</value>
+    </choice>
+  </define>
+
   <define name="pflashFormat">
     <attribute name="format">
-      <choice>
-        <value>raw</value>
-        <value>qcow2</value>
-      </choice>
+      <ref name="pflashFormatTypes"/>
     </attribute>
   </define>
 

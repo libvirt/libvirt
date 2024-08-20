@@ -1065,7 +1065,13 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
 
     loader->nvram = virStorageSourceNew();
     loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-    loader->nvram->format = loader->format;
+
+    /* The nvram template format should be always present but as a failsafe,
+     * duplicate the loader format if it is not available. */
+    if (loader->nvramTemplateFormat > VIR_STORAGE_FILE_NONE)
+        loader->nvram->format = loader->nvramTemplateFormat;
+    else
+        loader->nvram->format = loader->format;
 
     if (loader->nvram->format == VIR_STORAGE_FILE_RAW) {
         /* The extension used by raw edk2 builds has historically
@@ -1422,8 +1428,16 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
              * We can't create or reset non-local NVRAM files, so filling
              * in nvramTemplate for those would be misleading */
             VIR_FREE(loader->nvramTemplate);
-            if (!loader->nvram ||
-                (loader->nvram && virStorageSourceIsLocalStorage(loader->nvram))) {
+            loader->nvramTemplateFormat = VIR_STORAGE_FILE_NONE;
+
+            if (!loader->nvram || virStorageSourceIsLocalStorage(loader->nvram)) {
+                /* validation when parsing the JSON files ensures that we get
+                 * only 'raw' and 'qcow2' here. Fall back to sharing format with loader */
+                if (flash->nvram_template.format)
+                    loader->nvramTemplateFormat = virStorageFileFormatTypeFromString(flash->nvram_template.format);
+                else
+                    loader->nvramTemplateFormat = loader->format;
+
                 loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
             }
         }
@@ -1661,7 +1675,7 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
         loader->format = VIR_STORAGE_FILE_RAW;
 
         /* Only use the default template path if one hasn't been
-         * provided by the user.
+         * provided by the user. Assume that the template is in 'raw' format.
          *
          * In addition to fully-custom templates, which are a valid
          * use case, we could simply be in a situation where
@@ -1682,8 +1696,13 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
          * In this case, the global default is to have Secure Boot
          * disabled, but the domain configuration explicitly enables
          * it, and we shouldn't overrule this choice */
-        if (!loader->nvramTemplate)
+        if (!loader->nvramTemplate) {
             loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
+            loader->nvramTemplateFormat = VIR_STORAGE_FILE_RAW;
+        }
+
+        if (loader->nvramTemplateFormat == VIR_STORAGE_FILE_NONE)
+            loader->nvramTemplateFormat = VIR_STORAGE_FILE_RAW;
 
         VIR_DEBUG("decided on firmware '%s' template '%s'",
                   loader->path, NULLSTR(loader->nvramTemplate));
