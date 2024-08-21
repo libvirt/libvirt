@@ -143,12 +143,13 @@ udevGetDevices(struct udev *udev, virUdevStatus status)
  *
  * @conn: connection object
  * @names: optional pointer to array to be filled with interface names
- * @names_len: size of @names
+ * @names_len: size of @names, -1 if only number of interfaces is required (@names is then ignored)
  * @status: status of interfaces to be listed
  * @filter: ACL filter function
  *
  * Lists interfaces with status matching @status filling them into @names (if
- * non-NULL) and returns the number of such interfaces.
+ * @names_len is positive, caller is expected to pass a properly sized array)
+ * and returns the number of such interfaces.
  *
  * In case of an error -1 is returned and no interfaces are filled into @names.
  */
@@ -189,7 +190,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
         g_autoptr(virInterfaceDef) def = NULL;
 
         /* Ensure we won't exceed the size of our array */
-        if (names && count >= names_len)
+        if (names_len >= 0 && count >= names_len)
             break;
 
         path = udev_list_entry_get_name(dev_entry);
@@ -204,7 +205,8 @@ udevListInterfacesByStatus(virConnectPtr conn,
 
         def = udevGetMinimalDefForDevice(dev);
         if (filter(conn, def)) {
-            if (names)
+            /* Fill the array only if caller want's it */
+            if (names_len >= 0)
                 names[count] = g_strdup(name);
             count++;
         }
@@ -224,7 +226,7 @@ udevConnectNumOfInterfaces(virConnectPtr conn)
     if (virConnectNumOfInterfacesEnsureACL(conn) < 0)
         return -1;
 
-    return udevListInterfacesByStatus(conn, NULL, 0, VIR_UDEV_IFACE_ACTIVE,
+    return udevListInterfacesByStatus(conn, NULL, -1, VIR_UDEV_IFACE_ACTIVE,
                                       virConnectNumOfInterfacesCheckACL);
 }
 
@@ -247,7 +249,7 @@ udevConnectNumOfDefinedInterfaces(virConnectPtr conn)
     if (virConnectNumOfDefinedInterfacesEnsureACL(conn) < 0)
         return -1;
 
-    return udevListInterfacesByStatus(conn, NULL, 0, VIR_UDEV_IFACE_INACTIVE,
+    return udevListInterfacesByStatus(conn, NULL, -1, VIR_UDEV_IFACE_INACTIVE,
                                       virConnectNumOfDefinedInterfacesCheckACL);
 }
 
