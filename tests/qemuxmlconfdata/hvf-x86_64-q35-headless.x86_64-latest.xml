@@ -11,7 +11,7 @@
       <feature enabled='yes' name='secure-boot'/>
     </firmware>
     <loader readonly='yes' secure='yes' type='pflash'>/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd</loader>
-    <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd' templateFormat='raw'>/var/lib/libvirt/qemu/nvram/test_VARS.fd</nvram>
+    <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd' templateFormat='raw' format='raw'>/var/lib/libvirt/qemu/nvram/test_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>

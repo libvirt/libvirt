@@ -26862,8 +26862,7 @@ virDomainLoaderDefFormatNvram(virBuffer *buf,
                 return -1;
         }
 
-        if (src->format &&
-            src->format != VIR_STORAGE_FILE_RAW) {
+        if (src->format != VIR_STORAGE_FILE_NONE) {
             virBufferEscapeString(&attrBuf, " format='%s'",
                                   virStorageFileFormatTypeToString(src->format));
         }
