@@ -268,12 +268,14 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    Some UEFI firmwares may want to use a non-volatile memory to store some
    variables. In the host, this is represented as a file and the absolute path
    to the file is stored in this element. Moreover, when the domain is started
-   up libvirt copies so called master NVRAM store file defined in ``qemu.conf``.
-   If needed, the ``template`` attribute can be used to per domain override map
-   of master NVRAM stores from the config file. Note, that for transient domains
-   if the NVRAM file has been created by libvirt it is left behind and it is
-   management application's responsibility to save and remove file (if needed to
-   be persistent). :since:`Since 1.2.8`
+   up libvirt copies so called master NVRAM store file either selected by the
+   firmware autoselection process or defined in ``qemu.conf``.
+   If needed, the ``template`` attribute can be used to override the
+   automatically chosen NVRAM template.
+
+   Note, that for transient domains if the NVRAM file has been created by
+   libvirt it is left behind and it is management application's responsibility
+   to save and remove file (if needed to be persistent). :since:`Since 1.2.8`
 
    :since:`Since 8.5.0`,  it's possible for the element to have ``type`` attribute
    (accepts values ``file``, ``block`` and ``network``) in that case the NVRAM
