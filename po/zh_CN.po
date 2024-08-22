@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-21 13:38+0000\n"
+"PO-Revision-Date: 2024-08-23 13:38+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
@@ -6656,9 +6656,9 @@ msgstr "将插槽连接到 '%1$s' 失败"
 msgid "Failed to connect to mon socket"
 msgstr "连接到 mon 套接字失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
-msgstr ""
+msgstr "连接 '%1$s'： %2$s 的 nbdkit失败"
 
 msgid "Failed to connect to ssh agent"
 msgstr "连接到 ssh 代理失败"
@@ -6666,9 +6666,9 @@ msgstr "连接到 ssh 代理失败"
 msgid "Failed to connect to the admin server"
 msgstr "连接admin server失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
-msgstr ""
+msgstr "连接到 vsock （cid=%1$llu port=%2$u）失败"
 
 #, c-format
 msgid "Failed to connect: %1$s"
@@ -6725,9 +6725,9 @@ msgstr "生成 '%1$s' 失败：%2$s"
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "创建 SASL 客户端环境失败：%1$d（%2$s）"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to create SAVE dir %1$s"
-msgstr ""
+msgstr "创建保存目录 %1$s失败"
 
 msgid "Failed to create XML"
 msgstr "创建XML失败"
@@ -6916,9 +6916,9 @@ msgstr "创建卷 %1$s 失败"
 msgid "Failed to create vol from %1$s"
 msgstr "在 %1$s 中创建卷失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to create/open domain save xml file '%1$s'"
-msgstr ""
+msgstr "创建/打开域保存 xml 文件“%1$s”失败"
 
 #, c-format
 msgid "Failed to define domain from %1$s"
@@ -7254,9 +7254,9 @@ msgstr "获取客户端套接字 PID 失败"
 msgid "Failed to get client socket identity"
 msgstr "获取客户端插槽身份失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to get current process capabilities: %1$d"
-msgstr ""
+msgstr "获取当前进程功能： %1$d失败"
 
 msgid "Failed to get disk information"
 msgstr "获得磁盘信息失败"
@@ -7302,8 +7302,9 @@ msgstr "获取域 %1$s 的内存统计失败"
 msgid "Failed to get network autostart state"
 msgstr "获取网络自动启动状态失败"
 
+#, fuzzy
 msgid "Failed to get network description xml"
-msgstr ""
+msgstr "获取网络描述 xml失败"
 
 msgid "Failed to get network persistence info"
 msgstr "获取域持久信息失败"
@@ -7494,9 +7495,9 @@ msgstr "使用 libxenlight 为域 '%1$d' 列出 vcpu 失败"
 msgid "Failed to list volumes"
 msgstr "列出卷失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to load PCI driver module %1$s: %2$s"
-msgstr ""
+msgstr "加载 PCI 驱动程序模块 %1$s:%2$s失败"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
@@ -7645,8 +7646,9 @@ msgstr "打开 %1$s 失败"
 msgid "Failed to open '%1$s'"
 msgstr "打开 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to open a UNIX socket"
-msgstr ""
+msgstr "打开一个UNIX套接字失败"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
@@ -7660,9 +7662,9 @@ msgstr "打开 cpuinfo 文件 '%1$s' 失败"
 msgid "Failed to open domain image file '%1$s'"
 msgstr "打开域映像文件 '%1$s' 失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to open domain save file '%1$s'"
-msgstr ""
+msgstr "打开域保存文件'%1$s'失败"
 
 #, c-format
 msgid "Failed to open file '%1$s'"
@@ -7703,8 +7705,9 @@ msgstr "解析 %1$s 失败：仅支持 com1 和 com2。"
 msgid "Failed to parse CCW address '%1$s'"
 msgstr "解析 CCW 地址 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to parse HTTP response code"
-msgstr ""
+msgstr "解析HTTP响应代码失败"
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -7771,8 +7774,9 @@ msgstr "解析内存失败：大小不匹配"
 msgid "Failed to parse mode '%1$s'"
 msgstr "解析模式 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to parse network description xml"
-msgstr ""
+msgstr "解析网络描述xml失败"
 
 #, c-format
 msgid "Failed to parse network device name from '%1$s'"
@@ -8005,9 +8009,9 @@ msgstr "删除管理的保存文件 '%1$s' 失败"
 msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr "删除域 '%1$s' 的受管保存镜像失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to remove managed save path '%1$s'"
-msgstr ""
+msgstr "删除托管保存路径 '%1$s'失败"
 
 #, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
@@ -8138,9 +8142,9 @@ msgstr "运行 '%1$s' 命令生成新的 iscsi 接口失败"
 msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr "运行 '%1$s' 命令使用 IQN '%2$s' 更新 iscsi 接口失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to run firewall command %1$s: %2$s"
-msgstr ""
+msgstr "运行防火墙命令%1$s: %2$s失败"
 
 #, c-format
 msgid "Failed to save '%1$s' for '%2$s'"
@@ -8149,8 +8153,9 @@ msgstr "为 '%1$s' 保存 '%2$s' 失败"
 msgid "Failed to save VM settings"
 msgstr "保存虚拟机设置失败"
 
+#, fuzzy
 msgid "Failed to save domain"
-msgstr ""
+msgstr "保存域失败"
 
 #, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
@@ -8186,8 +8191,9 @@ msgstr "发送查询命令失败：%1$s"
 msgid "Failed to send migration data to destination host"
 msgstr "向目标主机发送迁移数据失败"
 
+#, fuzzy
 msgid "Failed to send net-add request to CH"
-msgstr ""
+msgstr "向 CH 发送 net-add 请求的操作失败"
 
 #, c-format
 msgid "Failed to send request to init control %1$s"
@@ -8279,11 +8285,13 @@ msgstr "设定新域描述失败"
 msgid "Failed to set new domain title"
 msgstr "设置新的域标题失败"
 
+#, fuzzy
 msgid "Failed to set new network description"
-msgstr ""
+msgstr "设置新的网络描述失败"
 
+#, fuzzy
 msgid "Failed to set new network title"
-msgstr ""
+msgstr "设置新的网络标题失败"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "设定非块文件描述符标记失败"
@@ -8337,8 +8345,9 @@ msgstr "使用 libxenlight 关闭域 '%1$d' 失败"
 msgid "Failed to shutdown domain '%1$s'"
 msgstr "关闭域 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to shutoff after domain save"
-msgstr ""
+msgstr "域保存后关闭失败"
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
@@ -8539,9 +8548,9 @@ msgstr "更新接口链接状态失败"
 msgid "Failed to update network %1$s"
 msgstr "更新网络 %1$s 失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to update node device %1$s from '%2$s'"
-msgstr ""
+msgstr "从“%2$s”更新节点设备 %1$s失败"
 
 msgid "Failed to verify peer's certificate"
 msgstr "对等证书验证失败"
@@ -8558,8 +8567,9 @@ msgstr "使用路径 '%1$zu' 在存储卷中写入 %2$s 字节失败"
 msgid "Failed to write '%1$s'"
 msgstr "写 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to write file header"
-msgstr ""
+msgstr "写入文件头失败"
 
 msgid "Failed to write pixel data"
 msgstr "写像素数据失败"
@@ -8579,14 +8589,16 @@ msgstr "写入 pid 文件 '%1$s' 失败"
 msgid "Failed to write vmx file '%1$s'"
 msgstr "写入 vmx 文件 '%1$s' 失败"
 
+#, fuzzy
 msgid "Failed to write xml definition"
-msgstr ""
+msgstr "编写 xml 定义失败"
 
 msgid "Failed to write xml description"
 msgstr "写入 xml 描述失败"
 
+#, fuzzy
 msgid "Failed while adding guest interfaces"
-msgstr ""
+msgstr "添加客户机接口时失败"
 
 msgid "Failed! Volume not removed."
 msgstr "失败！卷已被删除。"
@@ -8716,12 +8728,13 @@ msgstr "客户端请求后完成"
 msgid "Finished after host request"
 msgstr "主机请求后完成"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Firewall backend '%1$s' not available on this platform"
-msgstr ""
+msgstr "防火墙后端 '%1$s' 在此平台上不可用"
 
+#, fuzzy
 msgid "Firewall backend is not implemented"
-msgstr ""
+msgstr "防火墙后端未实现"
 
 msgid "Firmware entry is missing 'name' attribute"
 msgstr "固件条目缺少 'name' 属性"
@@ -8747,10 +8760,13 @@ msgid ""
 "exclusive"
 msgstr "标记 'VIR_DOMAIN_AFFECT_LIVE' 和 'VIR_DOMAIN_AFFECT_CONFIG' 是互斥的"
 
+#, fuzzy
 msgid ""
 "Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
 "'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
+"标志“VIR_NETWORK_UPDATE_AFFECT_LIVE”和“VIR_NETWORK_UPDATE_AFFECT_CONFIG”是互"
+"斥的"
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -8885,17 +8901,21 @@ msgstr "获取或者数值 numa 参数"
 msgid "Get or set perf event"
 msgstr "获取或设置 perf 事件"
 
+#, fuzzy
 msgid "Get or set the current blkio parameters for a guest domain."
-msgstr ""
+msgstr "获取或设置客户机域的当前 blkio 参数。"
 
+#, fuzzy
 msgid "Get or set the current memory parameters for a guest domain."
-msgstr ""
+msgstr "获取或设置客户机域的当前内存参数。"
 
+#, fuzzy
 msgid "Get or set the current numa parameters for a guest domain."
-msgstr ""
+msgstr "获取或设置客户机域的当前 numa 参数。"
 
+#, fuzzy
 msgid "Get or set the current perf events for a guest domain."
-msgstr ""
+msgstr "获取或设置客户机域的当前perf事件。"
 
 msgid "Get or set the current snapshot"
 msgstr "获取或者设定当前快照"
@@ -8987,8 +9007,9 @@ msgstr "虚拟机代理不响应：%1$s"
 msgid "Guest agent not available for now"
 msgstr "现在无法使用虚拟机代理"
 
+#, fuzzy
 msgid "Guest networking is not supported by this version of ch"
-msgstr ""
+msgstr "此版本的 ch 不支持客户机网络"
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "此 QEMU 不支持 HMAT"
