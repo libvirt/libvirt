@@ -4609,6 +4609,14 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
     if (virFileExists(loader->nvram->path) && !reset_nvram)
         return 0;
 
+    /* virFileRewrite() would overwrite the device node-file/symlink rather than
+     * just write the data to it, thus block-device nvram is not yet supported */
+    if (virStorageSourceIsBlockLocal(loader->nvram)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("creation or formatting of nvram type='block' is not supported"));
+        return -1;
+    }
+
     if (!loader->nvramTemplate) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("unable to find any master var store for loader: %1$s"),
