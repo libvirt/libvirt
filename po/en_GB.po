@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-21 13:38+0000\n"
+"PO-Revision-Date: 2024-08-26 15:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1560,9 +1560,8 @@ msgstr "(nwfilter_definition)"
 msgid "(nwfilterbinding_definition)"
 msgstr "(nwfilterbinding_definition)"
 
-#, fuzzy
 msgid "(nwfilterbinding_status)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilterbinding_status)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1573,9 +1572,8 @@ msgstr "(re)connect to hypervisor"
 msgid "(save cookie)"
 msgstr "(save cookie)"
 
-#, fuzzy
 msgid "(snapshot_tree)"
-msgstr "snapshot name"
+msgstr "(snapshot_tree)"
 
 msgid "(storage_pool_definition)"
 msgstr "(storage_pool_definition)"
@@ -1637,68 +1635,72 @@ msgstr ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 
-#, fuzzy
 msgid "--descendants requires --from"
-msgstr "--descendants requires either --from or --current"
+msgstr "--descendants requires --from"
 
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants requires either --from or --current"
 
 msgid "--format only works with --memory-only"
-msgstr ""
+msgstr "--format only works with --memory-only"
 
 msgid ""
 "--listen parameter not permitted with systemd activation sockets, see 'man "
 "libvirtd' for further guidance"
 msgstr ""
+"--listen parameter not permitted with systemd activation sockets, see 'man "
+"libvirtd' for further guidance"
 
-#, fuzzy
 msgid "--max-unauth-clients must be less than or equal to --max-clients"
-msgstr "cellNum in %s must be less than or equal to %d"
+msgstr "--max-unauth-clients must be less than or equal to --max-clients"
 
-#, fuzzy
 msgid "--min-workers must be less than or equal to --max-workers"
-msgstr "cellNum in %s must be less than or equal to %d"
+msgstr "--min-workers must be less than or equal to --max-workers"
 
 msgid "--source-protocol option requires --sourcetype network"
-msgstr ""
+msgstr "--source-protocol option requires --sourcetype network"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
+"--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
+"--verbose requires at least one of --timeout, --wait, --pivot, or --keep-"
+"overlay"
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: Interface not found"
 
 msgid "3d acceleration is not supported by this QEMU binary"
-msgstr ""
+msgstr "3D acceleration is not supported by this QEMU binary"
 
 msgid "3d acceleration is supported only with 'virtio' video device"
-msgstr ""
+msgstr "3D acceleration is supported only with 'virtio' video device"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-bit PCI hole setting is only for root PCI controllers"
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<active_pcr_banks/> requires TPM version '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %1$s are "
 "mutually exclusive"
-msgstr "invalid <interface> element found in <forward> of network %1$s"
+msgstr ""
+"<address>, <interface>, and <pf> elements of <forward> in network %1$s are "
+"mutually exclusive"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
-msgstr ""
+msgstr "<config> element is currently supported only with 'rbd' disks"
 
 msgid "<domainbackup> must specify TCP port for now"
-msgstr ""
+msgstr "<domainbackup> must specify TCP port for now"
 
 #, c-format
 msgid ""
