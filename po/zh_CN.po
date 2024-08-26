@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-07-29 07:45+0000\n"
-"PO-Revision-Date: 2024-08-23 13:38+0000\n"
+"PO-Revision-Date: 2024-08-26 15:38+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
@@ -9250,17 +9250,19 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr "IOMMU 中断重映射需要分离 I/O APIC(ioapic driver='qemu')"
 
+#, fuzzy
 msgid "IORT table header ended early"
-msgstr ""
+msgstr "IORT 表头提前结束"
 
+#, fuzzy
 msgid "IORT table node header ended early"
-msgstr ""
+msgstr "IORT 表节点标头提前结束"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
-msgstr ""
+msgstr "IORT 表节点类型 %1$s 的长度无效: 获取 %2$u，预期至少为 %3$zu"
 
 msgid "IOThread ID"
 msgstr "IOThread ID"
@@ -9268,9 +9270,9 @@ msgstr "IOThread ID"
 msgid "IOThread ID number"
 msgstr "IOThread ID 号"
 
-#, c-format
+#, c-format, fuzzy
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
-msgstr ""
+msgstr "这个 QEMU 二进制文件不提供磁盘“%1$s”的 IOThread 映射"
 
 msgid "IOThread to be used by supported device"
 msgstr "支持的设备使用的 IOThread"
@@ -9423,8 +9425,9 @@ msgstr "安装的 bhyve 二进制文件不支持定义 CPU 拓扑"
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "接口 '%1$s' 中的规则实例化失败"
 
+#, fuzzy
 msgid "Integrity error in watchdog models"
-msgstr ""
+msgstr "watchdog模型中的完整性错误"
 
 msgid "Interface"
 msgstr "接口"
@@ -9889,8 +9892,9 @@ msgstr "等待代理时无效的文件描述符"
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
 msgstr "等待监控(vm='%1$s')时无效的文件描述符。"
 
+#, fuzzy
 msgid "Invalid firewall command has 0 arguments"
-msgstr ""
+msgstr "无效的 firewall 命令有 0 个参数"
 
 msgid "Invalid firmware name"
 msgstr "无效的固件名称"
@@ -10170,9 +10174,9 @@ msgstr "无效安全标签 '%1$s'"
 msgid "Invalid setting for HPT resizing"
 msgstr "HPT 调整大小的无效的设置"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr ""
+msgstr "pseries 功能“%1$s”的设置无效"
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -11607,10 +11611,12 @@ msgstr "不支持 NIC 型号"
 msgid "NOTE"
 msgstr "注意"
 
+#, fuzzy
 msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
-msgstr ""
+msgstr "注意: 正在连接到默认守护程序。使用 '-c' 指定守护进程（例如 "
+"virtqemud:///system）\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON 类型不能转换为命令行"
@@ -11655,10 +11661,12 @@ msgstr "此主机上不提供 NUMA"
 msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr "只在单一节点中支持将 NUMA 内存调整为 'preferred' 模式"
 
+#, fuzzy
 msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
-msgstr ""
+msgstr "NUMA 模式，是严格、首选和交错模式之一，或者是来自 virDomainNumatuneMemMode "
+"枚举的一个数字"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -11795,11 +11803,13 @@ msgstr "已开始网络配置更改事务\n"
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr "网络配置文件 '%1$s' 与网络名称 '%2$s' 不匹配"
 
+#, fuzzy
 msgid "Network description not changed\n"
-msgstr ""
+msgstr "网络描述未更改\n"
 
+#, fuzzy
 msgid "Network description updated successfully"
-msgstr ""
+msgstr "网络描述更新成功"
 
 #, c-format
 msgid "Network device %1$s already exists"
@@ -11886,14 +11896,17 @@ msgstr "UUID 为 %1$s 的网络端口已存在"
 msgid "Network port with UUID %1$s does not exist"
 msgstr "UUID 为 %1$s 的网络端口不存在"
 
+#, fuzzy
 msgid "Network title can't contain newlines"
-msgstr ""
+msgstr "网络标题不能包含换行符"
 
+#, fuzzy
 msgid "Network title not changed\n"
-msgstr ""
+msgstr "网络标题未更改\n"
 
+#, fuzzy
 msgid "Network title updated successfully"
-msgstr ""
+msgstr "网络标题更新成功"
 
 #, c-format
 msgid "Network type %1$d is not supported"
@@ -11989,8 +12002,9 @@ msgstr "没有与 ID '%1$llu' 匹配的客户端"
 msgid "No complete agent response found in %1$d bytes"
 msgstr "%1$d 字节中没有找到完整的代理响应"
 
+#, fuzzy
 msgid "No compression algorithm selected for parallel migration"
-msgstr ""
+msgstr "未选择用于并行迁移的压缩算法"
 
 #, c-format
 msgid "No current block job for %1$s"
@@ -12012,9 +12026,9 @@ msgstr "没有提供默认的服务器名称"
 msgid "No description for domain: %1$s"
 msgstr "没有域描述：%1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "No description for network: %1$s"
-msgstr ""
+msgstr "没有网络: %1$s的描述"
 
 msgid "No device model command-line argument specified"
 msgstr "没有指定设备型号命令行参数"
@@ -12085,8 +12099,9 @@ msgstr "流程 0x%1$x 预期没有事件发生"
 msgid "No filesystems are mounted in the domain"
 msgstr "域中没有挂载文件系统"
 
+#, fuzzy
 msgid "No firewall backend is available"
-msgstr ""
+msgstr "没有可用的防火墙后端"
 
 msgid "No free NBD devices"
 msgstr "没有可用的 NBD 设备"
@@ -12232,9 +12247,9 @@ msgstr "不支持多个视频设备"
 msgid "No title for domain: %1$s"
 msgstr "没有域的标题：%1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "No title for network: %1$s"
-msgstr ""
+msgstr "网络: %1$s无标题"
 
 msgid "No total stats available"
 msgstr "没有可用的总体统计数据"
@@ -12250,8 +12265,9 @@ msgstr "SRIOV PF %1$s 中没有可用 Vf"
 msgid "No usable target index found for %1$d"
 msgstr "没有找到 %1$d 的可用目标索引"
 
+#, fuzzy
 msgid "No usable vsock found"
-msgstr ""
+msgstr "未找到可用的 vsock"
 
 msgid ""
 "No user interaction callback provided: Can't get input from keyboard "
@@ -12374,9 +12390,9 @@ msgstr "不要创新附加活跃的设备 %1$s"
 msgid "Not resetting active device %1$s"
 msgstr "不要重置活跃设备 %1$s"
 
-#, sh-format
+#, fuzzy, sh-format
 msgid "Not shutting down transient guests on URI: $uri: "
-msgstr ""
+msgstr "未关闭 URI : $uri上的临时客户机： "
 
 msgid "Not supported"
 msgstr "尚不支持"
@@ -12476,8 +12492,9 @@ msgstr "仅支持 'credit' 和 'credit2' 调度程序"
 msgid "Only 1 IDE controller is supported"
 msgstr "仅支持 1 个 IDE 控制器"
 
+#, fuzzy
 msgid "Only 1 cluster per die is supported"
-msgstr ""
+msgstr "每个芯片仅支持 1 个簇"
 
 msgid "Only 1 die per socket is supported"
 msgstr "每个套接字只支持 1 个模具"
@@ -12590,9 +12607,10 @@ msgstr "只能指定 --table, --name 和 --uuid 中的指定一个参数。"
 msgid "Only one boot device is supported"
 msgstr "只支持一个引导设备"
 
+#, fuzzy
 msgid ""
 "Only one compression method could be specified with parallel compression"
-msgstr ""
+msgstr "只能使用并行压缩指定一种压缩方法"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "仅支持型号 vfio-ap 的一个 hostdev。"
@@ -12698,13 +12716,15 @@ msgstr "选项 --all 与 --inactive 不兼容"
 msgid "Option --file is required"
 msgstr "选项 --file 是必需的"
 
+#, fuzzy
 msgid "Option --transient is incompatible with --persistent and --inactive"
-msgstr ""
+msgstr "选项 --transient 与 --persistent 和 --inactive 不兼容"
 
+#, fuzzy
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
-msgstr ""
+msgstr "选项 --tree 与 --cap、--inactive、--persistent 和 --transient 不兼容"
 
 msgid "Option argument is empty"
 msgstr "选项参数为空"
@@ -13049,13 +13069,13 @@ msgstr "策略工具包拒绝来自 <anonymous> 的操作 %1$s"
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "尝试了 polkit 验证，即使 polkit 不可用"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Poll on sock %1$d failed"
-msgstr ""
+msgstr "对套接字 %1$d 的轮询失败"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Poll on sock %1$d timed out"
-msgstr ""
+msgstr "对 套接字%1$d 的轮询超时"
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -13293,9 +13313,9 @@ msgstr "QEMU 报告非 kvm 域 virt 类型的无效的默认 CPU 型号 \"host\"
 msgid "QEMU reports migration is still running"
 msgstr "QEMU 报告迁移仍在运行"
 
-#, c-format
+#, c-format, fuzzy
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
-msgstr ""
+msgstr "QEMU 意外关闭了监视器 （vm='%1$s'）"
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
@@ -13442,8 +13462,9 @@ msgstr "正则表达式 '%1$s' 必须正好有 1 个匹配组，而不是 %2$d"
 msgid "Relative backing during copy not supported yet"
 msgstr "还不支持复制过程中的相对备份"
 
+#, fuzzy
 msgid "Reload domain's graphics display certificates"
-msgstr ""
+msgstr "重新加载域的图形显示证书"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
@@ -13519,9 +13540,9 @@ msgstr "所需操作无效"
 msgid "Requested operation is not valid: %1$s"
 msgstr "所需操作无效：%1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
-msgstr ""
+msgstr "请求将大小调整为“%1$llu”，但设备大小为“%2$llu”"
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
@@ -13620,11 +13641,13 @@ msgstr "恢复 $uri URI 中的虚拟机"
 msgid "Retrieve identity details about <client> from <server>"
 msgstr "从 <server> 中获取有关 <client> 的详细信息"
 
+#, fuzzy
 msgid "Retrieve server's client-related configuration limits"
-msgstr ""
+msgstr "检索 Server 的客户端相关配置限制"
 
+#, fuzzy
 msgid "Retrieve threadpool attributes from a server."
-msgstr ""
+msgstr "从服务器检索 threadpool 属性。"
 
 msgid "Return pool info in bytes"
 msgstr "以字节为单位的返回池信息"
@@ -14081,8 +14104,9 @@ msgid ""
 msgstr ""
 "目标类型为 '%1$s' 且目标型号为 '%2$s' 的串行设备与客户机架构或机器类型不兼容"
 
+#, fuzzy
 msgid "Serial only works in UNIX/PTY modes"
-msgstr ""
+msgstr "串行仅在 UNIX/PTY 模式下工作"
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -14297,8 +14321,9 @@ msgstr "显示/设置调度程序变量。"
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr "显示或修改域的 XML 元数据。"
 
+#, fuzzy
 msgid "Shows or modifies the XML metadata of a network."
-msgstr ""
+msgstr "显示或修改网络的 XML 元数据。"
 
 msgid "Shutdown"
 msgstr "关机"
@@ -14789,13 +14814,13 @@ msgstr "指定了 TLS 用法，但缺少名称"
 msgid "TLS:"
 msgstr "TLS："
 
-#, c-format
+#, c-format, fuzzy
 msgid "TPM 1.2 is not supported for model '%1$s'"
-msgstr ""
+msgstr "型号“%1$s”不支持 TPM 1.2"
 
-#, c-format
+#, c-format, fuzzy
 msgid "TPM 1.2 is not supported on architecture '%1$s'"
-msgstr ""
+msgstr "“%1$s”架构不支持 TPM 1.2"
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
@@ -14830,9 +14855,9 @@ msgstr "目标 CPU 缓存与源不匹配"
 msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "目标 CPU 检查 %1$s 与源 %2$s 不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Target CPU clusters %1$d does not match source %2$d"
-msgstr ""
+msgstr "目的端 CPU 簇 %1$d 与源端 %2$d 不匹配"
 
 #, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
@@ -15023,11 +15048,11 @@ msgstr "目标控制器类型 %1$s 与源 %2$s 不匹配"
 msgid "Target controller vectors %1$d does not match source %2$d"
 msgstr "目标控制器矢量 %1$d 与源 %2$d 不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
 "%6$04x"
-msgstr ""
+msgstr "目的端设备 CCW 地址 %1$x.%2$x.%3$04x 与源端%4$x.%5$x.%6$04x 不匹配"
 
 #, c-format
 msgid ""
@@ -15103,21 +15128,21 @@ msgstr "目标磁盘总线 %1$s 与源 %2$s 不匹配"
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "目标磁盘设备 %1$s 与源 %2$s 不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Target disk discard_granularity %1$u does not match source %2$u"
-msgstr ""
+msgstr "目的端磁盘 discard_granularity %1$u 与源端 %2$u 不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "目的端磁盘 logical_block_size %1$u 与源端 %2$u 不匹配"
 
 #, c-format
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "目标磁盘型号 %1$s 与源 %2$s 不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
-msgstr ""
+msgstr "目的端磁盘 physical_block_size %1$u 与源端 %2$u 不匹配"
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -15275,8 +15300,9 @@ msgstr "目标域 panic 设备数 %1$zu 与源 %2$zu 不匹配"
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "目标域并口端口计数 %1$zu 与源 %2$zu 不映射"
 
+#, fuzzy
 msgid "Target domain pstore device count does not match source"
-msgstr ""
+msgstr "目的端域 pstore 设备计数与源端不匹配"
 
 #, c-format
 msgid ""
@@ -15371,16 +15397,17 @@ msgstr "目标输入型号 %1$s 与源 %2$s 不匹配"
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr "目标最大内存 '%1$llu' 与源 '%2$llu' 不匹配"
 
+#, fuzzy
 msgid ""
 "Target memory device 'dynamicMemslots' property doesn't match source memory "
 "device"
-msgstr ""
+msgstr "目的端内存设备“dynamicMemslots”属性与源端内存设备不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
-msgstr ""
+msgstr "目的端内存设备地址“0x%1$llx”与源端内存设备地址“0x%2$llx”不匹配"
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
@@ -15446,13 +15473,13 @@ msgstr "目标 panic 型号 '%1$s' 与源 '%2$s' 不匹配"
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "目标平行端口 %1$d 与源 %2$d 不映射"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "目的端 pstore 设备后端“%1$s”与源端“%2$s”不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
-msgstr ""
+msgstr "目的端pstore大小 '%1$llu' 与源端 '%2$llu' 不匹配"
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -15498,10 +15525,10 @@ msgstr "目标共享内存大小 '%1$llu' 与源 '%2$llu' 不匹配"
 msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "目标声卡型号 %1$s 与源 %2$s 不匹配"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "目的端声卡多声道设置“%1$s”与源端“%2$s”不匹配"
 
 #, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
@@ -15633,10 +15660,11 @@ msgid ""
 "%1$s"
 msgstr "只有网络 %1$s 中的 <forward> 'mode' 为 'nat' 时方可使用 <nat> 元素"
 
+#, fuzzy
 msgid ""
 "The <portForward> element can only be used with <interface type='user'> and "
 "its 'passt' backend"
-msgstr ""
+msgstr "<portForward>元素只能与 <interface type='user'> 及其 'passt' 后端一起使用"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -15646,17 +15674,20 @@ msgstr "CA 证书 %1$s 已过期"
 msgid "The CA certificate %1$s is not yet active"
 msgstr "CA 证书 %1$s 还为激活"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"所有用户都必须可以访问 CA 证书 %1$s。以 root 身份运行:  chown root.root %2$s;"
+"chmod 0644 %3$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
-msgstr ""
+msgstr "其他用户不得访问 CA 证书 %1$s。以此用户身份运行: chown %2$d.%3$d %4$s;chmod "
+"0600 %5$s"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
