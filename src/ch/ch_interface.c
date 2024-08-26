@@ -101,6 +101,7 @@ virCHConnetNetworkInterfaces(virCHDriver *driver,
         if (virCHInterfaceUpdateNicindexes(net, nicindexes, nnicindexes) < 0)
             return -1;
         break;
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (virDomainInterfaceBridgeConnect(vm, net,
                                             tapfds,
@@ -114,7 +115,6 @@ virCHConnetNetworkInterfaces(virCHDriver *driver,
         if (virCHInterfaceUpdateNicindexes(net, nicindexes, nnicindexes) < 0)
             return -1;
         break;
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         if (virCHInterfaceUpdateNicindexes(net, nicindexes, nnicindexes) < 0)
             return -1;
