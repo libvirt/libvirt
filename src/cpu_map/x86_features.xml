@@ -463,6 +463,9 @@
   <feature name='amx-complex'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00000100'/>
   </feature>
+  <feature name='avx-vnni-int16'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00000400'/>
+  </feature>
   <feature name='prefetchiti'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00004000'/>
   </feature>
