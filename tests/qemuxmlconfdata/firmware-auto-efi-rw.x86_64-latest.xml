@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
-    <loader readonly='no'/>
+    <loader readonly='no' format='raw'/>
     <boot dev='hd'/>
   </os>
   <features>

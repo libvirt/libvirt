@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
-    <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>
+    <loader readonly='yes' secure='yes' type='pflash' format='raw'>/usr/share/OVMF/OVMF_CODE.secboot.fd</loader>
     <nvram template='/usr/share/OVMF/OVMF_VARS.secboot.fd' templateFormat='raw' format='raw'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>

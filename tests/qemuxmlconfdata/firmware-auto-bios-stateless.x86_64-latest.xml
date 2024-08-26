@@ -10,7 +10,7 @@
       <feature enabled='no' name='enrolled-keys'/>
       <feature enabled='no' name='secure-boot'/>
     </firmware>
-    <loader type='rom' stateless='yes'>/usr/share/seabios/bios-256k.bin</loader>
+    <loader type='rom' stateless='yes' format='raw'>/usr/share/seabios/bios-256k.bin</loader>
     <boot dev='hd'/>
   </os>
   <features>

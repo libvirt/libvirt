@@ -26900,9 +26900,8 @@ virDomainLoaderDefFormat(virBuffer *buf,
                           virTristateBoolTypeToString(loader->stateless));
     }
 
-    if (loader->format &&
-        loader->format != VIR_STORAGE_FILE_RAW) {
-        virBufferEscapeString(&loaderAttrBuf, " format='%s'",
+    if (loader->format > VIR_STORAGE_FILE_NONE) {
+        virBufferAsprintf(&loaderAttrBuf, " format='%s'",
                               virStorageFileFormatTypeToString(loader->format));
     }
 

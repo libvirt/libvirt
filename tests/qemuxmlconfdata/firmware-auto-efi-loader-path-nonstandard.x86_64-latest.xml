@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
-    <loader readonly='yes' type='pflash'>/path/to/OVMF_CODE.fd</loader>
+    <loader readonly='yes' type='pflash' format='raw'>/path/to/OVMF_CODE.fd</loader>
     <boot dev='hd'/>
   </os>
   <features>

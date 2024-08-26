@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
-    <loader type='rom' stateless='yes'>/usr/share/seabios/bios.bin</loader>
+    <loader type='rom' stateless='yes' format='raw'>/usr/share/seabios/bios.bin</loader>
     <boot dev='hd'/>
   </os>
   <cpu mode='custom' match='exact' check='none'>

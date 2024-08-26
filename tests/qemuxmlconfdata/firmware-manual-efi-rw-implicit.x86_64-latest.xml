@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-i440fx-4.0'>hvm</type>
-    <loader type='pflash'>/path/to/guest_BOTH.fd</loader>
+    <loader type='pflash' format='raw'>/path/to/guest_BOTH.fd</loader>
     <boot dev='hd'/>
   </os>
   <features>

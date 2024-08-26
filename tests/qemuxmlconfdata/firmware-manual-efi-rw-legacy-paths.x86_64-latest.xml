@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
-    <loader readonly='no' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+    <loader readonly='no' type='pflash' format='raw'>/usr/share/OVMF/OVMF_CODE.fd</loader>
     <boot dev='hd'/>
   </os>
   <features>

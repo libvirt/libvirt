@@ -15,7 +15,7 @@
       <feature enabled='no' name='enrolled-keys'/>
       <feature enabled='no' name='secure-boot'/>
     </firmware>
-    <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
+    <loader readonly='yes' type='pflash' format='raw'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
     <nvram template='/usr/share/edk2/aarch64/vars-template-pflash.raw' templateFormat='raw' format='raw'>/path/to/guest_VARS.raw</nvram>
     <boot dev='hd'/>
   </os>
