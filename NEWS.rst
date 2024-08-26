@@ -31,6 +31,10 @@ v10.7.0 (unreleased)
     backed network devices. So, create new net fds and pass them via
     SCM_RIGHTS to CH during restore operation.
 
+  * ch: support basic networking modes
+    Cloud-Hypervisor driver now supports Ethernet, Network (NAT) and Bridge
+    networking modes.
+
 * **Bug fixes**
 
 
