@@ -119,14 +119,12 @@ testSchemaDir(const char *schema,
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
         g_autofree char *xml_path = NULL;
         bool exception = false;
-        GStatBuf sb;
 
         if (!virStringHasSuffix(ent->d_name, ".xml"))
             continue;
         if (ent->d_name[0] == '.')
             continue;
-        if (g_lstat(ent->d_name, &sb) >= 0 &&
-            S_ISLNK(sb.st_mode))
+        if (virFileIsLink(ent->d_name))
             continue;
         if (filter &&
             !g_regex_match(filter, ent->d_name, 0, NULL))
