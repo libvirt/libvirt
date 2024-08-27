@@ -34,6 +34,26 @@
 
 VIR_LOG_INIT("ch.ch_interface");
 
+
+static int
+virCHInterfaceUpdateNicindexes(virDomainNetDef *net,
+                               int **nicindexes,
+                               size_t *nnicindexes)
+{
+    int nicindex = 0;
+
+    if (!nicindexes || !nnicindexes || !net->ifname)
+        return 0;
+
+    if (virNetDevGetIndex(net->ifname, &nicindex) < 0)
+        return -1;
+
+    VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex);
+
+    return 0;
+}
+
+
 /**
  * virCHConnetNetworkInterfaces:
  * @driver: pointer to ch driver object
@@ -78,6 +98,8 @@ virCHConnetNetworkInterfaces(virCHDriver *driver,
                                               net->driver.virtio.queues) < 0)
             return -1;
 
+        if (virCHInterfaceUpdateNicindexes(net, nicindexes, nnicindexes) < 0)
+            return -1;
         break;
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (virDomainInterfaceBridgeConnect(vm, net,
@@ -88,9 +110,15 @@ virCHConnetNetworkInterfaces(virCHDriver *driver,
                                             false,
                                             NULL) < 0)
             return -1;
+
+        if (virCHInterfaceUpdateNicindexes(net, nicindexes, nnicindexes) < 0)
+            return -1;
         break;
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
+        if (virCHInterfaceUpdateNicindexes(net, nicindexes, nnicindexes) < 0)
+            return -1;
+        break;
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -107,20 +135,6 @@ virCHConnetNetworkInterfaces(virCHDriver *driver,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported Network type %1$d"), actualType);
         return -1;
-    }
-
-    if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-        actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-        actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if (nicindexes && nnicindexes && net->ifname) {
-            int nicindex = 0;
-
-            if (virNetDevGetIndex(net->ifname, &nicindex) < 0)
-                return -1;
-
-            VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex);
-        }
     }
 
     return 0;
