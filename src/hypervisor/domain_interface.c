@@ -532,6 +532,7 @@ virDomainClearNetBandwidth(virDomainDef *def)
  *
  * Returns 0 in case of success or -1 on failure
  */
+#ifndef WIN32
 static int
 virDomainCreateInBridgePortWithHelper(const char *bridgeHelperName,
                                       const char *brname,
@@ -583,9 +584,9 @@ virDomainCreateInBridgePortWithHelper(const char *bridgeHelperName,
     virCommandPassFD(cmd, pair[1],
                      VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     virCommandClearCaps(cmd);
-#ifdef CAP_NET_ADMIN
+# ifdef CAP_NET_ADMIN
     virCommandAllowCap(cmd, CAP_NET_ADMIN);
-#endif
+# endif
     if (virCommandRunAsync(cmd, NULL) < 0) {
         *tapfd = -1;
         goto cleanup;
@@ -626,6 +627,20 @@ virDomainCreateInBridgePortWithHelper(const char *bridgeHelperName,
     return *tapfd < 0 ? -1 : 0;
 }
 
+#else /* WIN32 */
+
+static int
+virDomainCreateInBridgePortWithHelper(const char *bridgeHelperName G_GNUC_UNUSED,
+                                      const char *brname G_GNUC_UNUSED,
+                                      char **ifname G_GNUC_UNUSED,
+                                      int *tapfd G_GNUC_UNUSED,
+                                      unsigned int unusedflags G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("bridge port creation is not supported on this platform"));
+    return -1;
+}
+#endif
 
 /* virDomainInterfaceBridgeConnect:
  * @def: the definition of the VM
