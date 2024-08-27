@@ -2649,6 +2649,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("panic-double");
     DO_TEST_CAPS_LATEST("panic-no-address");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-panic-no-model", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("riscv64-panic-no-model", "riscv64");
 
     DO_TEST_CAPS_LATEST("pvpanic-pci-x86_64");
     DO_TEST_CAPS_ARCH_LATEST("pvpanic-pci-aarch64", "aarch64");
