@@ -4159,7 +4159,10 @@ qemuDomainDefaultPanicModel(const virDomainDef *def)
     if (ARCH_IS_S390(def->os.arch))
         return VIR_DOMAIN_PANIC_MODEL_S390;
 
-    return VIR_DOMAIN_PANIC_MODEL_ISA;
+    if (ARCH_IS_X86(def->os.arch))
+        return VIR_DOMAIN_PANIC_MODEL_ISA;
+
+    return VIR_DOMAIN_PANIC_MODEL_DEFAULT;
 }
 
 

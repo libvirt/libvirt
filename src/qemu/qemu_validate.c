@@ -1048,8 +1048,12 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
             }
             break;
 
-        /* default model value was changed before in post parse */
         case VIR_DOMAIN_PANIC_MODEL_DEFAULT:
+            /* PostParse couldn't figure out a sensible default model */
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("no panic model provided, and no default for the architecture and machine type"));
+            return -1;
+
         case VIR_DOMAIN_PANIC_MODEL_LAST:
             break;
         }
