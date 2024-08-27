@@ -19,6 +19,6 @@
     </tpm>
     <video/>
     <memballoon model='none'/>
-    <!-- No default model for <panic/> on aarch64 -->
+    <panic/>
   </devices>
 </domain>

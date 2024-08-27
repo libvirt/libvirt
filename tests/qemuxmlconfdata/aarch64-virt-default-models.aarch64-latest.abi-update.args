@@ -44,4 +44,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-gpu-pci","id":"video0","max_outputs":1,"bus":"pci.5","addr":"0x0"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-device '{"driver":"pvpanic-pci","bus":"pcie.0","addr":"0x2"}' \
 -msg timestamp=on

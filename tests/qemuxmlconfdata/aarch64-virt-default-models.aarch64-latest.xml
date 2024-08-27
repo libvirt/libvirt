@@ -78,5 +78,8 @@
       <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </video>
     <memballoon model='none'/>
+    <panic model='pvpanic'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </panic>
   </devices>
 </domain>
