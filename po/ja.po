@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1500,6 +1500,9 @@ msgstr "'trim' アルゴリズムはサポートされません"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo の返信に 'type' がありません"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "guest-get-users の応答に 'user' がありません"
@@ -5285,6 +5288,9 @@ msgstr ""
 "DNS SRV 優先度属性は、ネットワーク '%1$s' のサービス '%2$s' のターゲットなし"
 "では許可されません"
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr "DNS SRV レコードは変更できません、追加または削除のみできます"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8486,6 +8492,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "リクエストを init control %1$s に送信することに失敗しました"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 msgid "Failed to serialize snapshot"
 msgstr "スナップショットのシリアル化に失敗しました"
 
@@ -11596,6 +11605,9 @@ msgstr "出力定義に補助データがありません"
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "バックエンド %1$d がありません"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 msgid "Missing bridge name"
 msgstr "ブリッジ名がありません"
@@ -15845,6 +15857,12 @@ msgstr "ターゲットドメインの IOMMU デバイス数がソースと一�
 
 #, c-format
 msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr ""
 "ターゲットドメイン IOMMU デバイスの eim 値 '%1$s' がソース '%2$s' と一致しま"
@@ -19491,7 +19509,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "予期しないプロトコル %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -21716,6 +21734,9 @@ msgstr "ブリッジ名 '%1$s' はすでに使用中です"
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "ブリッジ名は %1$s モードにおいて許可されません (ネットワーク '%2$s')"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr ""
@@ -23090,15 +23111,15 @@ msgstr "非アクティブなドメインの vcpu 情報を取得できません
 msgid "cannot revert snapshot of running domain"
 msgstr "実行中のドメインのスナップショットを復元できません"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "ファイル '%1$s' を保存できません"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29574,6 +29595,9 @@ msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr ""
 "この QEMU バイナリーでは、iommu: 割り込みの再マッピングはサポートされません"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d が見つかりません"
@@ -31798,6 +31822,10 @@ msgstr "cookie '%1$s' の値がありません"
 #, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "マイグレーションパラメーター '%1$s' の値がありません"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 msgid "missing values for acceleration"
 msgstr "アクセラレーションの値がありません"
@@ -34244,6 +34272,15 @@ msgstr "マイグレーションのために適切な XML を提供します"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 バスは %1$s 入力デバイスをサポートしません"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -39148,6 +39185,10 @@ msgid "validate the redefined checkpoint"
 msgstr "再定義されたチェックポイントを検証します"
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 "値 '%1$llu' は coalesce パラメーターには大きすぎます、最大値は '%2$lu' です"
@@ -39709,6 +39750,9 @@ msgstr ""
 "vmplayer は libvirt の suspend/resume (vmware の pause/unpause) 操作をサポー"
 "トしません "
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 msgid "vmport is not available with this QEMU binary"
 msgstr "この QEMU バイナリーでは、vmport は使用できません"
 
@@ -40055,9 +40099,6 @@ msgstr ""
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST レコードは更新できません、追加または削除のみできます"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr "DNS SRV レコードは変更できません、追加または削除のみできます"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr "DNS TXT レコードは変更できません。追加または削除のみできます"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1393,6 +1393,9 @@ msgid "'trim' algorithm not supported"
 msgstr "ଡ୍ରାଇଭ ହଟପ୍ଲଗ ସମର୍ଥିତ ନୁହଁ"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
+msgstr ""
+
+msgid "'usb' disk must not be empty"
 msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
@@ -5137,6 +5140,10 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr ""
+"DNS SRV ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8310,6 +8317,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "ନିୟନ୍ତ୍ରକ ପାଖକୁ ଅନବରତ ସଂକେତ ପଠାଇବାରେ ବିଫଳ"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 msgid "Failed to serialize snapshot"
 msgstr "ଆଶୁଚିତ୍ରକୁ କ୍ରମାନ୍ବୟରେ ପ୍ରସାରିତ କରିବା ସମୟରେ ବିଫଳ"
 
@@ -11345,6 +11355,9 @@ msgstr "JSON ଦଲିଲରେ max_clients ତଥ୍ୟ ଅନୁପସ୍ଥ�
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "ଅନୁପସ୍ଥିତ ପୃଷ୍ଠଭୂମି %1$d"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 #, fuzzy
 msgid "Missing bridge name"
@@ -15544,6 +15557,12 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ ନାମ '%1$s' ଉତ୍�
 msgid "Target domain IOMMU device count does not match source"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡମେନ RNG ଉପକରଣ ସଂଖ୍ୟା %zu ଉତ୍ସ %zu ସହିତ  ମେଳଖାଇନଥାଏ"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
@@ -19173,7 +19192,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ପ୍ରଟୋକଲ %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -21322,6 +21341,9 @@ msgstr "ବ୍ରିଜ ନାମ '%1$s' ପୂର୍ବରୁ ବ୍ୟବହ�
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s ଧାରାରେ ବ୍ରିଜ ନାମ ଅନୁମତି ପ୍ରାପ୍ତ ନୁହଁ (ନେଟୱର୍କ '%2$s')"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s ଧାରାରେ ବ୍ରିଜ ନାମ ଅନୁମତି ପ୍ରାପ୍ତ ନୁହଁ (ନେଟୱର୍କ '%2$s')"
@@ -22705,15 +22727,15 @@ msgstr "ଗୋଟିଏ ନିଷ୍କ୍ରିୟ ପରିସରରେ vcpus 
 msgid "cannot revert snapshot of running domain"
 msgstr "ଚାଲୁଥିବା ଡେମନର ଆଶୁଚିତ୍ରକୁ ପରିବର୍ତ୍ତନ କରାଯାଇପାରିବ ନାହିଁ"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "ଫାଇଲ '%1$s' କୁ ସଂରକ୍ଷଣ କରି ପାରିବ ନାହିଁ"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29166,6 +29188,9 @@ msgstr "SATA ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥ�
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "vhost-net ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥିତ ନୁହଁ"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "iothread %1$d not found"
 msgstr "hostdev %s ମିଳିଲା ନାହିଁ"
@@ -31417,6 +31442,10 @@ msgstr "ହୋଷ୍ଟ ପାଇଁ ନାମ ନାହିଁ"
 #, fuzzy, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "%1$s ରେ ଅନୁପସ୍ଥିତ ନାମ ସୂଚନା"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "missing values for acceleration"
@@ -33870,6 +33899,15 @@ msgstr "ସ୍ଥାନାନ୍ତରଣ ପାଇଁ XML ଉପଯୁକ୍ତ
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 bus ନିବେଶ ଉପକରଣ %1$s କୁ ସମର୍ଥନ କରେନାହିଁ"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -38693,6 +38731,10 @@ msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 
@@ -39233,6 +39275,9 @@ msgid ""
 "operation "
 msgstr ""
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 #, fuzzy
 msgid "vmport is not available with this QEMU binary"
 msgstr "ସହଭାଗୀ ସ୍ମୃତିସ୍ଥାନ ଏହି QEMU ବାଇନାରୀ ସହିତ ଉପଲବ୍ଧ ନାହିଁ"
@@ -39568,10 +39613,6 @@ msgstr ""
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr ""
 #~ "DNS HOST ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr ""
-#~ "DNS SRV ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr ""

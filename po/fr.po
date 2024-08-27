@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1548,6 +1548,9 @@ msgstr "L'algorithme ’trim’ n'est pas pris en charge"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "'type' manquant dans la réponse de guest-get-fsinfo"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "'user' manquant dans la réponse de guest-get-users"
@@ -5483,6 +5486,11 @@ msgstr ""
 "L'attribut de priorité SRV du DNS n'est pas autorisé sans cible pour le "
 "service '%1$s' dans le réseau '%2$s'"
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr ""
+"Les enregistrements DNS SRV ne peuvent pas être modifiés, mais seulement "
+"ajoutés ou supprimés"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8738,6 +8746,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "Échec de l'envoi de la demande au contrôle init %1$s"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 msgid "Failed to serialize snapshot"
 msgstr "Échec de la sérialisation du cliché"
 
@@ -11948,6 +11959,9 @@ msgstr "Données auxiliaires manquantes dans la définition de la sortie"
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "Backend manquant %1$d"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 msgid "Missing bridge name"
 msgstr "Nom du pont manquant"
@@ -16438,6 +16452,12 @@ msgstr ""
 
 #, c-format
 msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr ""
 "La valeur eim du périphérique IOMMU du domaine cible '%1$s' ne correspond "
@@ -20209,7 +20229,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "Protocole inattendu %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -22526,6 +22546,9 @@ msgstr "Le nom du pont '%1$s' est déjà utilisé."
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "nom de pont non autorisé en mode %1$s (réseau '%2$s')"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "zone de pont non autorisée en mode %1$s (réseau '%2$s')"
@@ -23991,15 +24014,15 @@ msgstr "impossible de récupérer les informations vcpu pour un domaine inactif"
 msgid "cannot revert snapshot of running domain"
 msgstr "Impossible de rétablir un instantané d'un domaine en cours d'exécution"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "ne peut pas enregistrer le fichier '%1$s'"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -30649,6 +30672,9 @@ msgstr ""
 "iommu : le remappage des interruptions n'est pas pris en charge par ce "
 "binaire QEMU"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d introuvable"
@@ -32965,6 +32991,10 @@ msgstr "valeur manquante pour le cookie '%1$s'"
 #, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "valeur manquante pour le paramètre de migration '%1$s'"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 msgid "missing values for acceleration"
 msgstr "valeurs manquantes pour l'accélération"
@@ -35503,6 +35533,15 @@ msgstr "fournir un XML adapté aux migrations"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "le bus ps2 ne prend pas en charge le périphérique d’entrée %1$s"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -40581,6 +40620,10 @@ msgid "validate the redefined checkpoint"
 msgstr "valider le point de contrôle redéfini"
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 "a valeur '%1$llu' est trop grande pour le paramètre de coalescence, le "
@@ -41154,6 +41197,9 @@ msgstr ""
 "vmplayer ne prend pas en charge l'opération suspend/reprend de libvirt "
 "(vmware pause/unpause) "
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport n'est pas disponible avec ce binaire QEMU"
 
@@ -41512,11 +41558,6 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr ""
 #~ "Les enregistrements DNS HOST ne peuvent pas être modifiés, mais seulement "
-#~ "ajoutés ou supprimés"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr ""
-#~ "Les enregistrements DNS SRV ne peuvent pas être modifiés, mais seulement "
 #~ "ajoutés ou supprimés"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"

@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1490,6 +1490,9 @@ msgstr "algoritmus „trim“ není podporován"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "v odpovědi guest-get-fsinfo chybí 'type'"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "v odpovědi quest-get-users chybí 'user'"
@@ -5309,6 +5312,9 @@ msgstr ""
 "DNS SRV atribut priority (priorita) není dovolen bez cíle pro službu „%1$s“ "
 "v síti „%2$s“"
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr "DNS SRV záznamy není možné měnit – pouze přidávat nebo mazat"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8509,6 +8515,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "Nepodařilo se odeslat požadavek do řízení inicializace %1$s"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 msgid "Failed to serialize snapshot"
 msgstr "Nepodařilo se serializovat zachycený stav"
 
@@ -11605,6 +11614,9 @@ msgstr "Chybí pomocná data v definici výstupu"
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "Chybí podpůrná vrstva %1$d"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 msgid "Missing bridge name"
 msgstr "Chybí název síťového mostu"
@@ -15820,6 +15832,12 @@ msgstr "Počet IOMMU zařízení cílové domény se neshoduje se zdrojovým"
 
 #, c-format
 msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr ""
 "Hodnota „%1$s“ eim IOMMU zařízení cílové domény se neshoduje se zdrojovou "
@@ -19456,7 +19474,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "neočekávaný protokol %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -21681,6 +21699,9 @@ msgstr "název mostu „%1$s“ už je používán."
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "v režimu %1$s není možné zadávat název síťového mostu (síť „%2$s“)"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "v režimu %1$s není možné zadávat zónu síťového mostu (síť „%2$s“)"
@@ -23072,15 +23093,15 @@ msgstr "není možné získat informace o virt. procesoru pro neaktivní doménu
 msgid "cannot revert snapshot of running domain"
 msgstr "není možné vracet spuštěnou doménu do podoby zachyceného stavu"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "nedaří se uložit soubor „%1$s“"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29568,6 +29589,9 @@ msgstr "iommu: eim není tímto sestavením QEMU podporováno"
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: přemapování přerušení není s touto binárkou QEMU podporováno"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "iothread %1$d not found"
 msgstr "iotherad %1$d nenalezen"
@@ -31822,6 +31846,10 @@ msgstr "chybí hodnota pro cookie '%1$s'"
 #, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "chybí hodnota pro parametr stěhování „%1$s“"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 msgid "missing values for acceleration"
 msgstr "chybí hodnoty pro akceleraci"
@@ -34266,6 +34294,15 @@ msgstr "poskytnout XML použitelné pro migrace"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "sběrnice ps2 nepodporuje vstupní zařízení %1$s"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -39175,6 +39212,10 @@ msgid "validate the redefined checkpoint"
 msgstr "ověřit znovu definovaný kontrolní bod"
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 "hodnota '%1$llu' je příliš velká jako parametr utišení, maximu je '%2$lu'"
@@ -39736,6 +39777,9 @@ msgstr ""
 "vmplayer nepodporuje operaci libvirt pozastavit/rozjet (vmware pauze/"
 "unpauze) "
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport není s touto binárkou QEMU podporován"
 
@@ -40069,9 +40113,6 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST záznamy není možné upravovat – pouze přidávat nebo mazat"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr "DNS SRV záznamy není možné měnit – pouze přidávat nebo mazat"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr "DNS TXT záznamy není možné upravovat, pouze přidávat nebo mazat"

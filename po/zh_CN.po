@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2024-08-26 15:38+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -435,7 +435,7 @@ msgstr ""
 "\n"
 "libvirt 锁定管理守护进程：\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "\n"
 "Usage:\n"
@@ -504,7 +504,7 @@ msgstr " %1$s (指定关键字'%2$s'时可以显示此部分帮助信息)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (使用关键字 '%2$s' 来显示帮助信息):\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid " --%1$s <string>..."
 msgstr " --%1$s <string>..."
 
@@ -520,7 +520,7 @@ msgstr " 网络："
 msgid " Storage:"
 msgstr " 存储："
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid " [--%1$s <string>]..."
 msgstr " [--%1$s <string>]..."
 
@@ -580,7 +580,7 @@ msgstr "%1$s （%2$d 中的）"
 msgid "%1$s can't be empty"
 msgstr "%1$s 不能为空"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "%1$s cannot be set higher than %2$s"
 msgstr "%1$s 不能设置为高于 %2$s"
 
@@ -592,7 +592,7 @@ msgstr "%1$s 无法解析 GID '%2$s'"
 msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s 无法解析 UID '%2$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持%1$s 磁盘"
 
@@ -681,7 +681,7 @@ msgstr "%1$s 长度超过上限：%2$d > %3$d"
 msgid "%1$s model of watchdog can go only on PCI bus"
 msgstr "watchdog 的 %1$s 模型只能在 PCI 总线运行"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
 msgstr "此机器类型不能使用watchdog的%1$s模型"
 
@@ -952,7 +952,7 @@ msgstr "%1$s: secret %2$s 的事件\"生命周期\"：%3$s\n"
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
 msgstr "%1$s: 存储池 %2$s 的事件\"生命周期\"：%3$s\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr "%1$s： 网络%2$s的事件 'metadata-change' ： 类型 %3$s，uri %4$s\n"
 
@@ -1154,7 +1154,7 @@ msgstr "%1$s_DEBUG 的值无效"
 msgid "'%1$s'"
 msgstr "'%1$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "'%1$s' 'index' value '%2$s' malformed"
 msgstr "'%1$s' 'index' 值 '%2$s' 格式不正确"
 
@@ -1222,7 +1222,7 @@ msgstr "'%1$s' 不是一个合适的 pr 帮助程序"
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件中不支持 '%1$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
 msgstr "此QEMU二进制文件不支持'%1$s'安全启动"
 
@@ -1427,7 +1427,8 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
-msgstr "当 memnode 元素中的模式为 'restrictive' 时，内存元素中需要 'restrictive' 模式"
+msgstr ""
+"当 memnode 元素中的模式为 'restrictive' 时，内存元素中需要 'restrictive' 模式"
 
 #, c-format
 msgid ""
@@ -1454,6 +1455,9 @@ msgstr "不支持 'trim' 算法"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo 回复中缺少 'type'"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "guest-get-users 的回复中缺少 'user'"
@@ -1584,7 +1588,7 @@ msgstr "--%1$s <number>"
 msgid "--%1$s <string>"
 msgstr "--%1$s <string>"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "--%1$s <string>..."
 msgstr "--%1$s <string>..."
 
@@ -1968,7 +1972,8 @@ msgstr "选项 --max-clients和--max-unauth-clients 中至少有 1 个是必需�
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
-msgstr "选项 --min-workers, --max-workers, --priority-workers 中至少有一个是必需的"
+msgstr ""
+"选项 --min-workers, --max-workers, --priority-workers 中至少有一个是必需的"
 
 msgid "At least one tty is required"
 msgstr "至少需要一个 tty"
@@ -2214,7 +2219,7 @@ msgstr "忙碌"
 msgid "CA certificate:"
 msgstr "CA 证书："
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
 msgstr "机器类型'%1$s'不支持 CCW 地址"
 
@@ -2779,7 +2784,7 @@ msgstr "无法在这个平台中生成 macvlan 设备"
 msgid "Cannot create resctrl directory '%1$s'"
 msgstr "无法创建 resctrl 目录 '%1$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot create save directory '%1$s'"
 msgstr "无法创建保存目录 '%1$s'"
 
@@ -2875,7 +2880,7 @@ msgstr "无法找到具有 PVR 0x%1$08x 的 CPU 型号"
 msgid "Cannot find CPU vendor with vendor id 0x%1$02llx"
 msgstr "无法找到厂商 ID 0x 的 CPU 供应商%1$02llx"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot find blkio cgroup stats (%1$s) for block device '%2$s' (%3$s)"
 msgstr "找不到块设备 '%2$s'(%3$s)的blkio cgroup统计信息(%1$s)"
 
@@ -3121,11 +3126,11 @@ msgstr "无法解析 UUID '%1$s'"
 msgid "Cannot parse adapter '%1$s'"
 msgstr "无法解析适配器 '%1$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot parse blkio cgroup (%1$s) entry '%2$s'"
 msgstr "无法解析 blkio cgroup （%1$s） 入口 '%2$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
 msgstr "无法解析 blkio cgroup （'%1$s'） 入口 '%2$s'"
 
@@ -3314,7 +3319,7 @@ msgstr "无法共享未初始化的 CURL 句柄"
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr "如果关闭重新标记功能则无法指定标签。model=%1$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
 msgstr "如果缺少标签，则无法指定重新标记。模型=%1$s"
 
@@ -3345,17 +3350,17 @@ msgstr "无法取消共享挂载名称空间"
 msgid "Cannot unshare uninitialized CURL handle"
 msgstr "无法取消共享未初始化的 CRUL 句柄"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
 msgstr "无法更新设备 '%1$s'，父地址不匹配（当前父地址 '%2$s'）"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
 msgstr "无法更新设备 '%1$s'，类型不匹配（当前类型 '%2$s'）"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
 msgstr "无法更新设备 '%1$s，uuid 不匹配（当前 uuid '%2$s'）"
 
@@ -3368,8 +3373,8 @@ msgid ""
 "Cannot use direct socket mode if no URI is set. For more information see "
 "https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
-"如果未设置 URI，则无法使用直接套接字模式。有关详细信息，请参阅 "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
+"如果未设置 URI，则无法使用直接套接字模式。有关详细信息，请参阅 https://"
+"libvirt.org/kbase/failed_connection_after_install.html"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -3558,7 +3563,7 @@ msgstr "检查证书属性"
 msgid "Checking custom PKI base dir access"
 msgstr "检查自定义 PKI 基本目录访问权限"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Checking for %1$s module"
 msgstr "正在检查 %1$s 模块"
 
@@ -3573,7 +3578,7 @@ msgid ""
 "SNP)"
 msgstr "检查 AMD 安全加密虚拟化 - 安全嵌套分页 （SEV-SNP）"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
 msgstr "检查 Linux >= %1$d.%2$d.%3$d"
 
@@ -3581,7 +3586,7 @@ msgstr "检查 Linux >= %1$d.%2$d.%3$d"
 msgid "Checking for PowerPC KVM module loaded"
 msgstr "检查PowerPC KVM模块加载"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Checking for cgroup '%1$s' controller support"
 msgstr "检查 cgroup '%1$s' 控制器支持"
 
@@ -3593,7 +3598,7 @@ msgstr "检查设备分配 IOMMU 支持"
 msgid "Checking for hardware virtualization"
 msgstr "检查硬件虚拟化"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Checking for namespace '%1$s'"
 msgstr "检查命名空间 '%1$s'"
 
@@ -3617,11 +3622,11 @@ msgstr "检查证书是否存在"
 msgid "Checking if custom PKI base dir exists"
 msgstr "检查自定义 PKI 基本目录是否存在"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Checking if device '%1$s' exists"
 msgstr "检查设备 '%1$s' 是否存在"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Checking if device '%1$s' is accessible"
 msgstr "检查设备 '%1$s' 是否可访问"
 
@@ -3827,7 +3832,7 @@ msgstr "压缩缓存："
 msgid "Compression cache: %1$.3lf %2$s"
 msgstr "压缩缓存：%1$.3lf %2$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Compression method '%1$s' is only supported with parallel migration"
 msgstr "压缩方法 '%1$s' 仅在并行迁移中受支持"
 
@@ -3835,7 +3840,7 @@ msgstr "压缩方法 '%1$s' 仅在并行迁移中受支持"
 msgid "Compression method '%1$s' is specified twice"
 msgstr "压缩方法 '%1$s' 被指定了两次"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Compression method '%1$s' isn't supported with parallel migration"
 msgstr "并行迁移不支持压缩方法 '%1$s'"
 
@@ -4930,7 +4935,7 @@ msgstr "无法为文件系统设置源目录"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "无法为 xmlNodeParam 设置 wsman 命名空间地址"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Could not start 'nbdkit'. exitstatus: %1$d"
 msgstr "无法启动'nbdkit'。退出状态: %1$d"
 
@@ -5049,7 +5054,7 @@ msgstr "为现有卷生成卷"
 msgid "Create a vol."
 msgstr "创建一个卷。"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Create the dir %1$s"
 msgstr "创建目录 %1$s"
 
@@ -5109,6 +5114,9 @@ msgid ""
 msgstr ""
 "没有用于网络 '%1$s' 中服务 '%2$s' 的目标，则不允许使用 DNS SRV pirority 属"
 "性。"
+
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr "无法修改 DNS SRV 记录，只能添加或者删除。"
 
 #, c-format
 msgid ""
@@ -5177,8 +5185,9 @@ msgstr "已定义"
 msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
-msgstr "定义或修改节点上可分配给域的持久性设备。必须先启动设备，然后才能将其分配给域"
-"。"
+msgstr ""
+"定义或修改节点上可分配给域的持久性设备。必须先启动设备，然后才能将其分配给"
+"域。"
 
 msgid "Delete a domain checkpoint"
 msgstr "删除域检查点"
@@ -5375,7 +5384,7 @@ msgstr "未找到 USB 设备 %1$04x:%2$04x 总线：%3$u 设备：%4$u"
 msgid "Did not find USB device bus:%1$u device:%2$u"
 msgstr "未找到 USB 设备总线：%1$u 设备：%2$u"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Did not get all free page data for node %1$d"
 msgstr "未获取节点 %1$d 的所有可用页面数据"
 
@@ -5756,8 +5765,9 @@ msgid ""
 "Domain requires MSHV device, but it is not available. Check that "
 "virtualization is enabled in the host BIOS, and host configuration is setup "
 "to load the mshv modules."
-msgstr "域需要 MSHV 设备，但它不可用。检查主机 BIOS 中是否启用了虚拟化，"
-"并且是否设置了主机配置以加载 mshv 模块。"
+msgstr ""
+"域需要 MSHV 设备，但它不可用。检查主机 BIOS 中是否启用了虚拟化，并且是否设置"
+"了主机配置以加载 mshv 模块。"
 
 msgid "Domain requires at least 1 vCPU"
 msgstr "域需要至少 1 个 vCPU"
@@ -5891,7 +5901,7 @@ msgstr "重复的哈希表键 '%1$s'"
 msgid "Duplicate info for NUMA latencies"
 msgstr "NUMA 延迟的重复信息"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Duplicate mapping for iothread '%1$u'"
 msgstr "iothread '%1$u' 的重复映射"
 
@@ -6488,7 +6498,7 @@ msgstr "分配 tty 失败"
 msgid "Failed to apply capabilities: %1$d"
 msgstr "应用功能失败：%1$d"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to apply firewall command '%1$s': %2$s"
 msgstr "应用防火墙命令 '%1$s'： %2$s失败"
 
@@ -6603,7 +6613,7 @@ msgstr "chown 设备 %1$s 失败"
 msgid "Failed to clean up %1$s"
 msgstr "清除 %1$s 失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to cleanup stale managed save dir '%1$s'"
 msgstr "清理过时的托管保存目录 '%1$s'失败"
 
@@ -6656,7 +6666,7 @@ msgstr "将插槽连接到 '%1$s' 失败"
 msgid "Failed to connect to mon socket"
 msgstr "连接到 mon 套接字失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
 msgstr "连接 '%1$s'： %2$s 的 nbdkit失败"
 
@@ -6666,7 +6676,7 @@ msgstr "连接到 ssh 代理失败"
 msgid "Failed to connect to the admin server"
 msgstr "连接admin server失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
 msgstr "连接到 vsock （cid=%1$llu port=%2$u）失败"
 
@@ -6725,7 +6735,7 @@ msgstr "生成 '%1$s' 失败：%2$s"
 msgid "Failed to create SASL client context: %1$d (%2$s)"
 msgstr "创建 SASL 客户端环境失败：%1$d（%2$s）"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to create SAVE dir %1$s"
 msgstr "创建保存目录 %1$s失败"
 
@@ -6916,7 +6926,7 @@ msgstr "创建卷 %1$s 失败"
 msgid "Failed to create vol from %1$s"
 msgstr "在 %1$s 中创建卷失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to create/open domain save xml file '%1$s'"
 msgstr "创建/打开域保存 xml 文件“%1$s”失败"
 
@@ -7254,7 +7264,7 @@ msgstr "获取客户端套接字 PID 失败"
 msgid "Failed to get client socket identity"
 msgstr "获取客户端插槽身份失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to get current process capabilities: %1$d"
 msgstr "获取当前进程功能： %1$d失败"
 
@@ -7495,7 +7505,7 @@ msgstr "使用 libxenlight 为域 '%1$d' 列出 vcpu 失败"
 msgid "Failed to list volumes"
 msgstr "列出卷失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to load PCI driver module %1$s: %2$s"
 msgstr "加载 PCI 驱动程序模块 %1$s:%2$s失败"
 
@@ -7662,7 +7672,7 @@ msgstr "打开 cpuinfo 文件 '%1$s' 失败"
 msgid "Failed to open domain image file '%1$s'"
 msgstr "打开域映像文件 '%1$s' 失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to open domain save file '%1$s'"
 msgstr "打开域保存文件'%1$s'失败"
 
@@ -8009,7 +8019,7 @@ msgstr "删除管理的保存文件 '%1$s' 失败"
 msgid "Failed to remove managed save image for domain '%1$s'"
 msgstr "删除域 '%1$s' 的受管保存镜像失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to remove managed save path '%1$s'"
 msgstr "删除托管保存路径 '%1$s'失败"
 
@@ -8142,7 +8152,7 @@ msgstr "运行 '%1$s' 命令生成新的 iscsi 接口失败"
 msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
 msgstr "运行 '%1$s' 命令使用 IQN '%2$s' 更新 iscsi 接口失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
 msgstr "运行防火墙命令%1$s: %2$s失败"
 
@@ -8198,6 +8208,9 @@ msgstr "向 CH 发送 net-add 请求的操作失败"
 #, c-format
 msgid "Failed to send request to init control %1$s"
 msgstr "向初始化控制 %1$s 发送请求失败"
+
+msgid "Failed to send restore request to CH"
+msgstr ""
 
 msgid "Failed to serialize snapshot"
 msgstr "序列化快照失败"
@@ -8548,7 +8561,7 @@ msgstr "更新接口链接状态失败"
 msgid "Failed to update network %1$s"
 msgstr "更新网络 %1$s 失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to update node device %1$s from '%2$s'"
 msgstr "从“%2$s”更新节点设备 %1$s失败"
 
@@ -8728,7 +8741,7 @@ msgstr "客户端请求后完成"
 msgid "Finished after host request"
 msgstr "主机请求后完成"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Firewall backend '%1$s' not available on this platform"
 msgstr "防火墙后端 '%1$s' 在此平台上不可用"
 
@@ -9258,7 +9271,7 @@ msgstr "IORT 表头提前结束"
 msgid "IORT table node header ended early"
 msgstr "IORT 表节点标头提前结束"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
@@ -9270,7 +9283,7 @@ msgstr "IOThread ID"
 msgid "IOThread ID number"
 msgstr "IOThread ID 号"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不提供磁盘“%1$s”的 IOThread 映射"
 
@@ -10174,7 +10187,7 @@ msgstr "无效安全标签 '%1$s'"
 msgid "Invalid setting for HPT resizing"
 msgstr "HPT 调整大小的无效的设置"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
 msgstr "pseries 功能“%1$s”的设置无效"
 
@@ -11143,6 +11156,9 @@ msgstr "在输出定义中缺少辅助数据"
 msgid "Missing backend %1$d"
 msgstr "缺少后端 %1$d"
 
+msgid "Missing bridge helper name"
+msgstr ""
+
 msgid "Missing bridge name"
 msgstr "缺少网桥名称"
 
@@ -11615,8 +11631,9 @@ msgstr "注意"
 msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
-msgstr "注意: 正在连接到默认守护程序。使用 '-c' 指定守护进程（例如 "
-"virtqemud:///system）\n"
+msgstr ""
+"注意: 正在连接到默认守护程序。使用 '-c' 指定守护进程（例如 virtqemud:///"
+"system）\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "NULL JSON 类型不能转换为命令行"
@@ -11665,8 +11682,9 @@ msgstr "只在单一节点中支持将 NUMA 内存调整为 'preferred' 模式"
 msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
-msgstr "NUMA 模式，是严格、首选和交错模式之一，或者是来自 virDomainNumatuneMemMode "
-"枚举的一个数字"
+msgstr ""
+"NUMA 模式，是严格、首选和交错模式之一，或者是来自 virDomainNumatuneMemMode 枚"
+"举的一个数字"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
@@ -12026,7 +12044,7 @@ msgstr "没有提供默认的服务器名称"
 msgid "No description for domain: %1$s"
 msgstr "没有域描述：%1$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "No description for network: %1$s"
 msgstr "没有网络: %1$s的描述"
 
@@ -12247,7 +12265,7 @@ msgstr "不支持多个视频设备"
 msgid "No title for domain: %1$s"
 msgstr "没有域的标题：%1$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "No title for network: %1$s"
 msgstr "网络: %1$s无标题"
 
@@ -13069,11 +13087,11 @@ msgstr "策略工具包拒绝来自 <anonymous> 的操作 %1$s"
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "尝试了 polkit 验证，即使 polkit 不可用"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Poll on sock %1$d failed"
 msgstr "对套接字 %1$d 的轮询失败"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Poll on sock %1$d timed out"
 msgstr "对 套接字%1$d 的轮询超时"
 
@@ -13313,7 +13331,7 @@ msgstr "QEMU 报告非 kvm 域 virt 类型的无效的默认 CPU 型号 \"host\"
 msgid "QEMU reports migration is still running"
 msgstr "QEMU 报告迁移仍在运行"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
 msgstr "QEMU 意外关闭了监视器 （vm='%1$s'）"
 
@@ -13540,7 +13558,7 @@ msgstr "所需操作无效"
 msgid "Requested operation is not valid: %1$s"
 msgstr "所需操作无效：%1$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
 msgstr "请求将大小调整为“%1$llu”，但设备大小为“%2$llu”"
 
@@ -14814,11 +14832,11 @@ msgstr "指定了 TLS 用法，但缺少名称"
 msgid "TLS:"
 msgstr "TLS："
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "TPM 1.2 is not supported for model '%1$s'"
 msgstr "型号“%1$s”不支持 TPM 1.2"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "TPM 1.2 is not supported on architecture '%1$s'"
 msgstr "“%1$s”架构不支持 TPM 1.2"
 
@@ -14855,7 +14873,7 @@ msgstr "目标 CPU 缓存与源不匹配"
 msgid "Target CPU check %1$s does not match source %2$s"
 msgstr "目标 CPU 检查 %1$s 与源 %2$s 不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Target CPU clusters %1$d does not match source %2$d"
 msgstr "目的端 CPU 簇 %1$d 与源端 %2$d 不匹配"
 
@@ -15048,7 +15066,7 @@ msgstr "目标控制器类型 %1$s 与源 %2$s 不匹配"
 msgid "Target controller vectors %1$d does not match source %2$d"
 msgstr "目标控制器矢量 %1$d 与源 %2$d 不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
 "%6$04x"
@@ -15128,11 +15146,11 @@ msgstr "目标磁盘总线 %1$s 与源 %2$s 不匹配"
 msgid "Target disk device %1$s does not match source %2$s"
 msgstr "目标磁盘设备 %1$s 与源 %2$s 不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Target disk discard_granularity %1$u does not match source %2$u"
 msgstr "目的端磁盘 discard_granularity %1$u 与源端 %2$u 不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
 msgstr "目的端磁盘 logical_block_size %1$u 与源端 %2$u 不匹配"
 
@@ -15140,7 +15158,7 @@ msgstr "目的端磁盘 logical_block_size %1$u 与源端 %2$u 不匹配"
 msgid "Target disk model %1$s does not match source %2$s"
 msgstr "目标磁盘型号 %1$s 与源 %2$s 不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
 msgstr "目的端磁盘 physical_block_size %1$u 与源端 %2$u 不匹配"
 
@@ -15176,6 +15194,12 @@ msgstr "目标域 IOMMU 设备缓存模式 '%1$s' 与源 '%2$s' 不匹配"
 
 msgid "Target domain IOMMU device count does not match source"
 msgstr "目标域 IOMMU 设备数与源不匹配"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15403,7 +15427,7 @@ msgid ""
 "device"
 msgstr "目的端内存设备“dynamicMemslots”属性与源端内存设备不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
@@ -15473,11 +15497,11 @@ msgstr "目标 panic 型号 '%1$s' 与源 '%2$s' 不匹配"
 msgid "Target parallel port %1$d does not match source %2$d"
 msgstr "目标平行端口 %1$d 与源 %2$d 不映射"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
 msgstr "目的端 pstore 设备后端“%1$s”与源端“%2$s”不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
 msgstr "目的端pstore大小 '%1$llu' 与源端 '%2$llu' 不匹配"
 
@@ -15525,7 +15549,7 @@ msgstr "目标共享内存大小 '%1$llu' 与源 '%2$llu' 不匹配"
 msgid "Target sound card model %1$s does not match source %2$s"
 msgstr "目标声卡型号 %1$s 与源 %2$s 不匹配"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
 msgstr "目的端声卡多声道设置“%1$s”与源端“%2$s”不匹配"
@@ -15664,7 +15688,8 @@ msgstr "只有网络 %1$s 中的 <forward> 'mode' 为 'nat' 时方可使用 <nat
 msgid ""
 "The <portForward> element can only be used with <interface type='user'> and "
 "its 'passt' backend"
-msgstr "<portForward>元素只能与 <interface type='user'> 及其 'passt' 后端一起使用"
+msgstr ""
+"<portForward>元素只能与 <interface type='user'> 及其 'passt' 后端一起使用"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -15674,7 +15699,7 @@ msgstr "CA 证书 %1$s 已过期"
 msgid "The CA certificate %1$s is not yet active"
 msgstr "CA 证书 %1$s 还为激活"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
@@ -15682,11 +15707,12 @@ msgstr ""
 "所有用户都必须可以访问 CA 证书 %1$s。以 root 身份运行:  chown root.root %2$s;"
 "chmod 0644 %3$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
-msgstr "其他用户不得访问 CA 证书 %1$s。以此用户身份运行: chown %2$d.%3$d %4$s;chmod "
+msgstr ""
+"其他用户不得访问 CA 证书 %1$s。以此用户身份运行: chown %2$d.%3$d %4$s;chmod "
 "0600 %5$s"
 
 #, c-format
@@ -18684,7 +18710,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "意外协议 %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -20799,6 +20825,9 @@ msgstr "桥接名称 '%1$s' 已在使用。"
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s 模式（网络 '%2$s'）下不允许使用桥接名"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s 模式（网络 '%2$s'）下不允许使用网桥区域"
@@ -22134,15 +22163,15 @@ msgstr "无法检索不活跃域的 vcpu 信息"
 msgid "cannot revert snapshot of running domain"
 msgstr "无法转换运行中的域的快照"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "无法保存文件 '%1$s'"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -28365,6 +28394,9 @@ msgstr "iommu：此 QEMU 二进制文件不支持 eim"
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu：此 QEMU 二进制文件不支持中断重映射"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "iothread %1$d not found"
 msgstr "IOThread %1$d 未找到"
@@ -30492,6 +30524,10 @@ msgstr "缺少 cookie '%1$s' 的值"
 #, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "缺少 migration 参数 '%1$s' 的值"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 msgid "missing values for acceleration"
 msgstr "缺少加速的值"
@@ -32837,6 +32873,15 @@ msgstr "为迁移提供 XML 可用性"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 总线不支持 %1$s 输入设备"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -36565,7 +36610,7 @@ msgstr "未知的 '%1$s' 的 SCSI 目标功能 '%2$s'"
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
 msgstr "未知的 SDL_AUDIODRIVER 设置 %1$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unknown SEV type '%1$s'"
 msgstr "未知的 SEV 类型 '%1$s'"
 
@@ -36843,7 +36888,7 @@ msgstr "未知的 secret 类型 '%1$s'"
 msgid "unknown smbios mode '%1$s'"
 msgstr "未知的 smbios 模式 ‘%1$s’"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unknown state '%1$s' for '%2$s'"
 msgstr "'%2$s'的未知状态'%1$s'"
 
@@ -36977,11 +37022,12 @@ msgstr "大小为 %1$lld 的未处理孔已在队列中"
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr "为网络 '%1$s' 指定的无法到达的静态路由网关 '%2$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "unrecognized 'firewall_backend = '%1$s' set in network driver config file "
 "%2$s"
-msgstr "无法识别在网络驱动程序配置文件 %2$s 中的 'firewall_backend = '%1$s' 设置"
+msgstr ""
+"无法识别在网络驱动程序配置文件 %2$s 中的 'firewall_backend = '%1$s' 设置"
 
 #, c-format
 msgid "unrecognized command name '%1$s'"
@@ -37075,7 +37121,7 @@ msgstr "不支持的音频模型 %1$s"
 msgid "unsupported authentication type %1$d"
 msgstr "不支持的验证类型 %1$d"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unsupported backend for pstore device: %1$s"
 msgstr "pstore 设备不支持的后端： %1$s"
 
@@ -37438,8 +37484,8 @@ msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
-"使用“VIR_MIGRATE_PARAM_MIGRATE_DISKS”需要使用“VIR_MIGRATE_NON_SHARED_DISK”或“"
-"VIR_MIGRATE_NON_SHARED_INC”标志"
+"使用“VIR_MIGRATE_PARAM_MIGRATE_DISKS”需要使"
+"用“VIR_MIGRATE_NON_SHARED_DISK”或“VIR_MIGRATE_NON_SHARED_INC”标志"
 
 msgid "use of <server> requires pull mode backup"
 msgstr "使用 <server> 需要 pull 模式备份"
@@ -37557,6 +37603,10 @@ msgstr "针对模式验证 XML 文档"
 
 msgid "validate the redefined checkpoint"
 msgstr "验证重新定义的检查点"
+
+#, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
 
 #, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
@@ -37783,7 +37833,7 @@ msgstr "视频分辨率值必须大于 0"
 msgid "video type %1$s is not supported by libxl"
 msgstr "libxl 不支持显卡类型 %1$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "video type '%1$s' does not support blob resources"
 msgstr "视频类型 '%1$s' 不支持 blob 资源"
 
@@ -37903,7 +37953,7 @@ msgstr "virVMXContext 没有设定 formatFileName 功能"
 msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext 中没有设定 parseFileName 功能"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "virt type '%1$s' is not supported"
 msgstr "不支持virt 类型 '%1$s'"
 
@@ -38082,6 +38132,9 @@ msgid ""
 "vmplayer does not support libvirt suspend/resume (vmware pause/unpause) "
 "operation "
 msgstr "vmplayer 不支持 libvirt suspend/resume (vmware pause/unpause) 操作 "
+
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
 
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport 不适用于这个 QEMU 二进制文件"
@@ -38404,9 +38457,6 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr "无法修改 DNS SRV 记录，只能添加或者删除。"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr "无法修改 DNS TXT 记录，只能添加或者删除。"

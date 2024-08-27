@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -1252,6 +1252,9 @@ msgid "'trim' algorithm not supported"
 msgstr "station hotplug wordt niet ondersteund"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
+msgstr ""
+
+msgid "'usb' disk must not be empty"
 msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
@@ -5061,6 +5064,9 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr ""
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8333,6 +8339,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "Vernietigen van pool %1$s is mislukt"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to serialize snapshot"
 msgstr "Snapshot maken mislukte: %s"
@@ -11399,6 +11408,9 @@ msgstr ""
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "Ontbrekend backend %1$d"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 #, fuzzy
 msgid "Missing bridge name"
@@ -15631,6 +15643,12 @@ msgstr ""
 msgid "Target domain IOMMU device count does not match source"
 msgstr ""
 
+#, c-format
+msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
@@ -19394,7 +19412,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "onverwacht pool type"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 #, fuzzy
@@ -21569,6 +21587,9 @@ msgstr "brug naam '%1$s' al in gebruik."
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr ""
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr ""
@@ -22972,15 +22993,15 @@ msgstr "kan vcpu vastzetten niet tonen voor inactief domein"
 msgid "cannot revert snapshot of running domain"
 msgstr "kan snapshot van draaiend domein niet terugdraaien"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "cannot save file '%1$s'"
 msgstr "kan stat bestand '%1$s' niet uitvoeren"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot seek in '%1$s'"
@@ -29504,6 +29525,9 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "iothread %1$d not found"
 msgstr "geen threads gevonden"
@@ -31831,6 +31855,10 @@ msgstr "ontbrekende naam voor host"
 #, fuzzy, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "ontbrekende bron informatie voor apparaat %1$s"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "missing values for acceleration"
@@ -34305,6 +34333,15 @@ msgstr ""
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 bus ondersteunt %1$s input apparaat niet"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -39157,6 +39194,10 @@ msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 
@@ -39698,6 +39739,9 @@ msgid ""
 msgstr ""
 "vmplayer biedt geen ondersteuning voor libvirt suspend/resume (vmware "
 "onderbreken/hervatten) bewerking"
+
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
 
 #, fuzzy
 msgid "vmport is not available with this QEMU binary"

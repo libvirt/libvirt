@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1372,6 +1372,9 @@ msgstr "El algoritmo «trim» no se admite"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "Falta «type» en la respuesta de guest-get-fsinfo"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "Falta «user» en la respuesta de guest-get-users"
@@ -5238,6 +5241,11 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr ""
+"Registros DNS SRV no se pueden ser modificados, solamente se pueden añadir o "
+"borrar"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8508,6 +8516,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "Falló el envío de solicitud a init control %1$s"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to serialize snapshot"
 msgstr "Falló al borrar la instantánea %s "
@@ -11629,6 +11640,9 @@ msgstr "Faltan datos de max_clients en documento JSON"
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "No se encuentra backend para %1$d"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 #, fuzzy
 msgid "Missing bridge name"
@@ -16022,6 +16036,12 @@ msgstr ""
 "Conteo de dispositivo hub de dominio de destino %zu no coincide con fuente "
 "%zu"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
@@ -19777,7 +19797,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "tipo de grupo no esperado"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -21971,6 +21991,9 @@ msgstr "el nombre del puente '%1$s' ya está siendo utilizado."
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "Nombre de puente no tiene permiso en modo %1$s (red '%2$s')"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "Nombre de puente no tiene permiso en modo %1$s (red '%2$s')"
@@ -23407,15 +23430,15 @@ msgid "cannot revert snapshot of running domain"
 msgstr ""
 "no es posible revertir capturas instantáneas en el dominio en ejecución"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "No se puede guardar el archivo '%1$s'"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29986,6 +30009,9 @@ msgstr "No existe soporte para SATA con este binario QEMU"
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "vhost-net no tiene soporte con este binario de QEMU"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "iothread %1$d not found"
 msgstr "No se encontró hostdev %s"
@@ -32294,6 +32320,10 @@ msgstr "no se encuentra el nombre del equipo"
 #, fuzzy, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "Falta información de nombre en %1$s"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "missing values for acceleration"
@@ -34827,6 +34857,15 @@ msgstr "Proporcionar migraciones aptas para XML "
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "El bus ps2 no tiene soporte para el dispositivo de entrada %1$s"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -39774,6 +39813,10 @@ msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 
@@ -40320,6 +40363,9 @@ msgid ""
 msgstr ""
 "vmplayer no soporta la operación libvirt suspender/reanudar (pause/unpause)"
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 #, fuzzy
 msgid "vmport is not available with this QEMU binary"
 msgstr "Inhabilitar memoria compartida no está disponible con el binario QEMU"
@@ -40657,11 +40703,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Registros DNS HOST no pueden ser modificados, únicamente añadidos o "
 #~ "borrados"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr ""
-#~ "Registros DNS SRV no se pueden ser modificados, solamente se pueden "
-#~ "añadir o borrar"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr ""

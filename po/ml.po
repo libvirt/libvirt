@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1328,6 +1328,9 @@ msgstr "വൈപ്പിങ് ആല്‍ഗോരിഥം %d പിന്�
 #, fuzzy
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "'online', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 #, fuzzy
 msgid "'user' missing in reply of guest-get-users"
@@ -5116,6 +5119,10 @@ msgid ""
 "in network '%2$s'"
 msgstr ""
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr ""
+"DNS SRV റിക്കോര്‍ഡുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടി നീക്കാം"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8323,6 +8330,9 @@ msgstr ""
 msgid "Failed to send request to init control %1$s"
 msgstr "init കണ്ട്രോള്‍ %1$s-ലേക്കു് ആവശ്യം അയയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to serialize snapshot"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
@@ -11383,6 +11393,9 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍  max_clients ഡ
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "ബാക്കെന്‍ഡ് %1$d ലഭ്യമല്ല"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 #, fuzzy
 msgid "Missing bridge name"
@@ -15651,6 +15664,12 @@ msgid "Target domain IOMMU device count does not match source"
 msgstr ""
 "ടാര്‍ഗറ്റ് ഡൊമെയിന്‍ ഹബ് ഡിവൈസിന്റെ എണ്ണം %zu-നു്,  %zu ശ്രോതസ്സൂമായി പൊരുത്തപ്പെടുന്നില്ല."
 
+#, c-format
+msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
@@ -19326,7 +19345,7 @@ msgid "Unexpected protocol %1$d"
 msgstr "അപ്രതീക്ഷിതമായ പൂള്‍ രീതി"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
 msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
@@ -21494,6 +21513,9 @@ msgstr "ബ്രിഡ്ജ് നാമം '%1$s' നിലവില്‍ �
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "ബ്രിഡ്ജ് നാമം %1$s രീതിയില്‍ അനുവദിച്ചിട്ടില്ല (നെറ്റ്‌‌വര്‍ക്ക് '%2$s')"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "ബ്രിഡ്ജ് നാമം %1$s രീതിയില്‍ അനുവദിച്ചിട്ടില്ല (നെറ്റ്‌‌വര്‍ക്ക് '%2$s')"
@@ -22889,15 +22911,15 @@ msgstr "നിര്‍ജ്ജീവമായൊരു ഡൊമെയിന�
 msgid "cannot revert snapshot of running domain"
 msgstr "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനുള്ള സ്നാപ്പ്ഷോട്ട് തിരികെ ലഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "cannot save domain with host devices"
-msgstr ""
-
-msgid "cannot save domain with network interfaces"
-msgstr ""
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "'%1$s' എന്ന ഫയല്‍ സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമാകുന്നില്ല"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29391,6 +29413,9 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "iothread %1$d not found"
 msgstr "hostdev %s ലഭ്യമായില്ല"
@@ -31660,6 +31685,10 @@ msgstr "ഹോസ്റ്റിനുള്ള നാമം ലഭ്യമല�
 #, fuzzy, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "%1$s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "missing values for acceleration"
@@ -34127,6 +34156,15 @@ msgstr "നീക്കം ചെയ്യുന്നതിനു് ഉചി�
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 ബസ്  %1$s ഇന്‍പുട്ട് ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr ""
@@ -38981,6 +39019,10 @@ msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 
@@ -39525,6 +39567,9 @@ msgid ""
 "operation "
 msgstr "വി.എം പ്ലെയര്‍ libvirt സസ്പെന്‍ഡ്/റെസ്യൂമെ (vmware pause/unpause) പിന്തുണക്കുന്നില്ല"
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 #, fuzzy
 msgid "vmport is not available with this QEMU binary"
 msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന്ന മെമ്മറി പ്രവര്‍ത്തന രഹിതമാക്കുന്നതു് ലഭ്യമല്ല"
@@ -39858,10 +39903,6 @@ msgstr ""
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr ""
 #~ "DNS HOST റിക്കോര്‍ഡുകളില്‍ മാറ്റങ്ങള്‍ വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടിനീക്കാം"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr ""
-#~ "DNS SRV റിക്കോര്‍ഡുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല, ചേര്‍ക്കാം അല്ലെങ്കില്‍ വെട്ടി നീക്കാം"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr ""

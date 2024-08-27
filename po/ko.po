@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2024-07-30 10:38+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1468,6 +1468,9 @@ msgstr "'trim' 알고리즘을 지원하지 않습니다"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo의 대답에서 'type'(종류)가 누락되었습니다"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "guest-get-users의 대답에서 'user'(사용자)가 누락되었습니다"
@@ -5224,6 +5227,9 @@ msgstr ""
 "네트워크 '%1$s'의 서비스 '%2$s'에 대한 대상이 없으면 DNS SRV 우선 순위 특성"
 "이 허용되지 않습니다"
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr "DNS SRV 기록은 수정 할 수없으며, 추가 또는 삭제만 가능합니다"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8377,6 +8383,9 @@ msgstr "net-add 요청을 CH로 전송하는데 실패"
 msgid "Failed to send request to init control %1$s"
 msgstr "제어 %1$s 초기화에 대한 요청을 보내지 못했습니다"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 msgid "Failed to serialize snapshot"
 msgstr "순간찍기 직렬화에 실패함"
 
@@ -11394,6 +11403,9 @@ msgstr "출력 정의에서 보조 자료 누락"
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "백엔드 %1$d가 누락됨"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 msgid "Missing bridge name"
 msgstr "브리지 이름이 없습니다"
@@ -15534,6 +15546,12 @@ msgstr "대상 도메인 IOMMU 장치 수가 소스와 일치하지 않습니다
 
 #, c-format
 msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr ""
 "대상 도메인 IOMMU 장치 eim 값 '%1$s'이(가) 소스 '%2$s'과(와) 일치하지 않습니"
@@ -15542,12 +15560,14 @@ msgstr ""
 #, c-format
 msgid ""
 "Target domain IOMMU device intremap value '%1$s' does not match source '%2$s'"
-msgstr "대상 도메인 IOMMU 장치 intremap 값 '%1$s'은 원천 '%2$s'와 일치하지 않습니다"
+msgstr ""
+"대상 도메인 IOMMU 장치 intremap 값 '%1$s'은 원천 '%2$s'와 일치하지 않습니다"
 
 #, c-format
 msgid ""
 "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
-msgstr "대상 도메인 IOMMU 장치 iotlb 값 '%1$s' 는 원천 '%2$s' 와 일치하지 않습니다"
+msgstr ""
+"대상 도메인 IOMMU 장치 iotlb 값 '%1$s' 는 원천 '%2$s' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
@@ -19147,8 +19167,8 @@ msgid "Unexpected protocol %1$d"
 msgstr "예상치 못한 통신규약 %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
-msgstr "CH에서 예상치 못한 응답: %1$d"
+msgid "Unexpected response from CH: %1$s"
+msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "루프 장치가 없는 예기치 않은 루트 파일 시스템"
@@ -21311,6 +21331,9 @@ msgstr "브리지 이름 '%1$s'가 이미 사용중."
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "브릿지 이름은 %1$s 방법(네트워크 '%2$s')에서 허용되지 않습니다"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "%1$s 모드 (네트워크 '%2$s')에서 브릿지 영역이 허용되지 않음"
@@ -22682,15 +22705,15 @@ msgstr "비활성 도메인에 대한 vcpu 정보를 검색할 수 없습니다"
 msgid "cannot revert snapshot of running domain"
 msgstr "동작 중인 도메인의 순간찍기를 되돌릴 수 없습니다"
 
-msgid "cannot save domain with host devices"
-msgstr "호스트 장치에 도메인을 저장 할 수 없습니다"
-
-msgid "cannot save domain with network interfaces"
-msgstr "네트워크 연결장치에 도메인을 저장 할 수 없습니다"
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "파일 '%1$s'을 저장 할 수 없습니다"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29051,6 +29074,9 @@ msgstr "iommu: eim은 이 QEMU 바이너리에서 지원하지 않습니다"
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: 이 QEMU 바이너리에서는 인터럽트 재매핑이 지원되지 않습니다"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d를 찾을 수 없습니다"
@@ -31209,6 +31235,10 @@ msgstr "쿠키 '%1$s'에 대한 누락된 값"
 #, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "이전 매개변수 '%1$s'를 위해 누락된 값"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 msgid "missing values for acceleration"
 msgstr "가속에 대한 누락된 값"
@@ -33597,6 +33627,15 @@ msgstr "이전을 위한 적절한 XML을 제공합니다"
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 버스는 %1$s 입력 장치를 지원하지 않습니다"
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
+msgstr ""
 
 msgid "pstore device is missing alias"
 msgstr "pstore 장치는 별칭이 없습니다"
@@ -38412,6 +38451,10 @@ msgid "validate the redefined checkpoint"
 msgstr "재정의된 체크포인트 검증"
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr "'%1$llu' 값이 병합 매개변수에 비해 너무 큽니다. 최대값은 '%2$lu'입니다"
 
@@ -38958,6 +39001,9 @@ msgstr ""
 "vmplayer는 libvirt 일시 중지/재개(vmware 일시 중지/일시 중지 해제) 작업을 지"
 "원하지 않습니다 "
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport는 이 QEMU 바이너리와 함께 사용할 수 없습니다"
 
@@ -39283,11 +39329,18 @@ msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
 
+#, c-format
+#~ msgid "Unexpected response from CH: %1$d"
+#~ msgstr "CH에서 예상치 못한 응답: %1$d"
+
+#~ msgid "cannot save domain with host devices"
+#~ msgstr "호스트 장치에 도메인을 저장 할 수 없습니다"
+
+#~ msgid "cannot save domain with network interfaces"
+#~ msgstr "네트워크 연결장치에 도메인을 저장 할 수 없습니다"
+
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS 호스트 기록을 수정 할 수 없습니다. 추가 또는 삭제만 가능합니다"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr "DNS SRV 기록은 수정 할 수없으며, 추가 또는 삭제만 가능합니다"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr "DNS TXT 기록은 수정 할 수 없으며, 추가 또는 삭제만 가능합니다"

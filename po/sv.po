@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-07-29 07:45+0000\n"
+"POT-Creation-Date: 2024-08-27 08:20+0000\n"
 "PO-Revision-Date: 2024-08-14 07:40+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1493,6 +1493,9 @@ msgstr "algoritmen ”trim” stödjs inte"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "”type” saknas i svar från guest-get-fsinfo"
+
+msgid "'usb' disk must not be empty"
+msgstr ""
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "”user” saknas i svaret på guest-get-users"
@@ -5303,6 +5306,9 @@ msgstr ""
 "DNS SRV prioritetsattribut är inte tillåtet utan mål för tjänsten ”%1$s” i "
 "nätverket ”%2$s”"
 
+msgid "DNS SRV records cannot be modified, only added or deleted"
+msgstr "DNS SRV-poster kan inte ändras, endast läggas till eller tas bort"
+
 #, c-format
 msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
@@ -8488,6 +8494,9 @@ msgstr "Misslyckades att skicka en net-add-begäran till CH"
 msgid "Failed to send request to init control %1$s"
 msgstr "Misslyckades med att skicka begäranden till initieringskontrollen %1$s"
 
+msgid "Failed to send restore request to CH"
+msgstr ""
+
 msgid "Failed to serialize snapshot"
 msgstr "Misslyckades med att serialisera ögonblicksbilden"
 
@@ -11570,6 +11579,9 @@ msgstr "Saknade tilläggsdata i utdatadefinitionen"
 #, c-format
 msgid "Missing backend %1$d"
 msgstr "Saknad bakände %1$d"
+
+msgid "Missing bridge helper name"
+msgstr ""
 
 msgid "Missing bridge name"
 msgstr "Saknat bryggnamn"
@@ -15759,6 +15771,12 @@ msgstr "Måldomänens IOMMU-enhetsantal stämmer inte med källan"
 
 #, c-format
 msgid ""
+"Target domain IOMMU device dma translation '%1$s' does not match source "
+"'%2$s'"
+msgstr ""
+
+#, c-format
+msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr ""
 "Måldomänens IOMMU-enhets eim-värde ”%1$s” stämmer inte med källan ”%2$s”"
@@ -19386,8 +19404,8 @@ msgid "Unexpected protocol %1$d"
 msgstr "Oväntat protokoll %1$d"
 
 #, c-format
-msgid "Unexpected response from CH: %1$d"
-msgstr "Oväntat svar från CH: %1$d"
+msgid "Unexpected response from CH: %1$s"
+msgstr ""
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "Oväntat rotfilsystem utan slingenhet"
@@ -21611,6 +21629,9 @@ msgstr "bryggamnet ”%1$s” används redan."
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "bryggnamn är inte tillåtna i %1$s-läge (nätverket ”%2$s”)"
 
+msgid "bridge port creation is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "bryggzoner är inte tillåtna i %1$s-läge (nätverket ”%2$s”)"
@@ -22991,15 +23012,15 @@ msgstr "kan inte hämta vcpu-information för en inaktiv domän"
 msgid "cannot revert snapshot of running domain"
 msgstr "kan inte återställa en ögonblicksbild av en körande domän"
 
-msgid "cannot save domain with host devices"
-msgstr "kan inte spara en domän med värdenheter"
-
-msgid "cannot save domain with network interfaces"
-msgstr "kan inte spara en domän med nätverksgränssnitt"
-
 #, c-format
 msgid "cannot save file '%1$s'"
 msgstr "kan inte spara filen ”%1$s”"
+
+msgid "cannot save/restore domain with host devices"
+msgstr ""
+
+msgid "cannot save/restore domain with network devices"
+msgstr ""
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29449,6 +29470,9 @@ msgstr "iommu: eim stödjs inte med denna QEMU-binär"
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: avbrottsomkoppling stödjs inte med denna QEMU-binär"
 
+msgid "iommu: updating dma translation is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d finns inte"
@@ -31659,6 +31683,10 @@ msgstr "värdet saknas på kakan ”%1$s”"
 #, c-format
 msgid "missing value for migration parameter '%1$s'"
 msgstr "värdet saknas på migreringsparametern ”%1$s”"
+
+#, c-format
+msgid "missing value of modifying DNS TXT record in network %1$s"
+msgstr ""
 
 msgid "missing values for acceleration"
 msgstr "värdet på accelerationen saknas"
@@ -34064,6 +34092,15 @@ msgstr ""
 
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
+msgstr ""
+
+msgid "ps2 bus inputs require the ps2 feature not to be disabled"
+msgstr ""
+
+msgid "ps2 feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "ps2 feature state cannot be controlled with this QEMU binary"
 msgstr ""
 
 msgid "pstore device is missing alias"
@@ -38842,6 +38879,10 @@ msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
+msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
+msgstr ""
+
+#, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
 
@@ -39366,6 +39407,9 @@ msgid ""
 "operation "
 msgstr ""
 
+msgid "vmport feature requires the ps2 feature not to be disabled"
+msgstr ""
+
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport är inte tillgängligt med denna QEMU-binär"
 
@@ -39690,11 +39734,18 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 
+#, c-format
+#~ msgid "Unexpected response from CH: %1$d"
+#~ msgstr "Oväntat svar från CH: %1$d"
+
+#~ msgid "cannot save domain with host devices"
+#~ msgstr "kan inte spara en domän med värdenheter"
+
+#~ msgid "cannot save domain with network interfaces"
+#~ msgstr "kan inte spara en domän med nätverksgränssnitt"
+
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST-poster kan inte ändras, endast läggas till eller tas bort"
-
-#~ msgid "DNS SRV records cannot be modified, only added or deleted"
-#~ msgstr "DNS SRV-poster kan inte ändras, endast läggas till eller tas bort"
 
 #~ msgid "DNS TXT records cannot be modified, only added or deleted"
 #~ msgstr "DNS TXT-poster kan inte ändras, endast läggas till eller tas bort"
