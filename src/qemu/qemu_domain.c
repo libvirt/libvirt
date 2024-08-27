@@ -4150,6 +4150,19 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
 }
 
 
+static virDomainPanicModel
+qemuDomainDefaultPanicModel(const virDomainDef *def)
+{
+    if (qemuDomainIsPSeries(def))
+        return VIR_DOMAIN_PANIC_MODEL_PSERIES;
+
+    if (ARCH_IS_S390(def->os.arch))
+        return VIR_DOMAIN_PANIC_MODEL_S390;
+
+    return VIR_DOMAIN_PANIC_MODEL_ISA;
+}
+
+
 static int
 qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
                                virDomainDef *def,
@@ -4397,13 +4410,12 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         return -1;
 
     if (addPanicDevice) {
+        virDomainPanicModel defaultModel = qemuDomainDefaultPanicModel(def);
         size_t j;
+
         for (j = 0; j < def->npanics; j++) {
             if (def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT ||
-                (ARCH_IS_PPC64(def->os.arch) &&
-                     def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_PSERIES) ||
-                (ARCH_IS_S390(def->os.arch) &&
-                     def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_S390))
+                def->panics[j]->model == defaultModel)
                 break;
         }
 
@@ -6100,14 +6112,8 @@ static int
 qemuDomainDevicePanicDefPostParse(virDomainPanicDef *panic,
                                   const virDomainDef *def)
 {
-    if (panic->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT) {
-        if (qemuDomainIsPSeries(def))
-            panic->model = VIR_DOMAIN_PANIC_MODEL_PSERIES;
-        else if (ARCH_IS_S390(def->os.arch))
-            panic->model = VIR_DOMAIN_PANIC_MODEL_S390;
-        else
-            panic->model = VIR_DOMAIN_PANIC_MODEL_ISA;
-    }
+    if (panic->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT)
+        panic->model = qemuDomainDefaultPanicModel(def);
 
     return 0;
 }
