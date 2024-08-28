@@ -6032,15 +6032,16 @@ virQEMUCapsSupportsI8042(virQEMUCaps *qemuCaps,
 
 bool
 virQEMUCapsSupportsI8042Toggle(virQEMUCaps *qemuCaps,
-                               const virDomainDef *def)
+                               const char *machine,
+                               const virArch arch)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_I8042_OPT))
         return false;
 
-    return qemuDomainIsI440FX(def) ||
-        qemuDomainIsQ35(def) ||
-        qemuDomainIsXenFV(def) ||
-        STREQ(def->os.machine, "isapc");
+    return qemuDomainMachineIsI440FX(machine, arch) ||
+           qemuDomainMachineIsQ35(machine, arch) ||
+           qemuDomainMachineIsXenFV(machine, arch) ||
+           STREQ(machine, "isapc");
 }
 
 

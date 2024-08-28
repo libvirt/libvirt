@@ -723,7 +723,8 @@ bool virQEMUCapsSupportsI8042(virQEMUCaps *qemuCaps,
                               const virDomainDef *def);
 
 bool virQEMUCapsSupportsI8042Toggle(virQEMUCaps *qemuCaps,
-                                    const virDomainDef *def);
+                                    const char *machine,
+                                    const virArch arch);
 
 const char *virQEMUCapsGetBinary(virQEMUCaps *qemuCaps);
 virArch virQEMUCapsGetArch(virQEMUCaps *qemuCaps);

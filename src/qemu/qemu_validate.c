@@ -258,7 +258,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
 
             if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
-                !virQEMUCapsSupportsI8042Toggle(qemuCaps, def)) {
+                !virQEMUCapsSupportsI8042Toggle(qemuCaps, def->os.machine, def->os.arch)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("ps2 feature state cannot be controlled with this QEMU binary"));
                 return -1;
