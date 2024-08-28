@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-06-27 09:36+0000\n"
+"PO-Revision-Date: 2024-08-29 05:38+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.7\n"
 
 msgid ""
 "\n"
@@ -1537,7 +1537,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "у відповіді guest-get-fsinfo пропущено «type»"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "диск 'usb' не може бути порожнім"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "у відповіді guest-get-users пропущено «user»"
@@ -1907,7 +1907,7 @@ msgid "A storage driver is already registered"
 msgstr "Драйвер сховища даних вже зареєстровано"
 
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "Пристрій ACPI ERST має перебувати на шині PCI"
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "підтримки індексу ACPI у цьому QEMU не передбачено"
@@ -8710,7 +8710,7 @@ msgid "Failed to send request to init control %1$s"
 msgstr "Не вдалося надіслати запит до засобу керування init %1$s"
 
 msgid "Failed to send restore request to CH"
-msgstr ""
+msgstr "Не вдалося надіслати запит щодо відновлення до CH"
 
 msgid "Failed to serialize snapshot"
 msgstr "Не вдалося перетворити знімок у послідовну форму"
@@ -11892,7 +11892,7 @@ msgid "Missing backend %1$d"
 msgstr "Не вистачає модуля %1$d"
 
 msgid "Missing bridge helper name"
-msgstr ""
+msgstr "Не вказано назви допоміжного засобу містка"
 
 msgid "Missing bridge name"
 msgstr "Пропущено назву містка"
@@ -16367,6 +16367,7 @@ msgid ""
 "Target domain IOMMU device dma translation '%1$s' does not match source "
 "'%2$s'"
 msgstr ""
+"DMA-перехід «%1$s» домену призначення IOMMU не відповідає джерелу, «%2$s»"
 
 #, c-format
 msgid ""
@@ -16545,7 +16546,7 @@ msgstr ""
 "кількості джерела, %2$zu"
 
 msgid "Target domain pstore device count does not match source"
-msgstr ""
+msgstr "Кількість пристроїв pstore домену призначення не відповідає джерелу"
 
 #, c-format
 msgid ""
@@ -16780,10 +16781,12 @@ msgstr ""
 #, c-format
 msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
 msgstr ""
+"Модуль обробки пристрою pstore «%1$s» призначення не відповідає джерелу "
+"«%2$s»"
 
 #, c-format
 msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
-msgstr ""
+msgstr "Розмір pstore «%1$llu» призначення не відповідає джерелу, «%2$llu»"
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
@@ -20206,7 +20209,7 @@ msgstr "Неочікуваний протокол, %1$d"
 
 #, c-format
 msgid "Unexpected response from CH: %1$s"
-msgstr ""
+msgstr "Неочікувана відповідь від CH: %1$s"
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "Неочікувана коренева файлова система без петльового пристрою (loop)"
@@ -21594,7 +21597,7 @@ msgid "access denied: %1$s"
 msgstr "доступ заборонено: %1$s"
 
 msgid "acpi-erst backend of pstore device is not supported"
-msgstr ""
+msgstr "Підтримки модуля обробки acpi-erst пристрою pstore не передбачено"
 
 msgid "active"
 msgstr "активна"
@@ -22496,7 +22499,7 @@ msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "не можна визначати назву містка у режимі %1$s (мережа «%2$s»)"
 
 msgid "bridge port creation is not supported on this platform"
-msgstr ""
+msgstr "на цій платформі не передбачено підтримки створення портів містків"
 
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
@@ -23544,7 +23547,7 @@ msgid "cannot modify network device model from %1$s to %2$s"
 msgstr "не вдалося змінити модель пристрою мережі з %1$s на %2$s"
 
 msgid "cannot modify network device portgroup attribute"
-msgstr ""
+msgstr "не можна змінювати portgroup мережевого пристрою"
 
 msgid "cannot modify network device rom bar setting"
 msgstr "неможливо змінити параметр запису ROM пристрою мережі"
@@ -23668,7 +23671,7 @@ msgstr "не вдалося обробити json %1$s: незавершений
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
-msgstr ""
+msgstr "не вдалося обробити openfiles «%1$s» для virtiofs"
 
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
@@ -23944,9 +23947,10 @@ msgstr "не вдалося зберегти файл «%1$s»"
 
 msgid "cannot save/restore domain with host devices"
 msgstr ""
+"не можна зберігати або відновлювати домен із пристроями основної системи"
 
 msgid "cannot save/restore domain with network devices"
-msgstr ""
+msgstr "не можна зберігати або відновлювати домен із мережевими пристроями"
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -27885,7 +27889,7 @@ msgstr "не вдалося виконати спостереження за п�
 
 #, c-format
 msgid "failed to monitor qemu in-shutdown process %1$i"
-msgstr ""
+msgstr "не вдалося встановити спостереження за процесом in-shutdown qemu %1$i"
 
 #, c-format
 msgid "failed to move file to %1$s "
@@ -30412,7 +30416,7 @@ msgid "invalid server address"
 msgstr "некоректна адреса сервера"
 
 msgid "invalid size of ACPI ERST pstore device"
-msgstr ""
+msgstr "некоректний розмір ACPI ERST пристрою pstore"
 
 #, c-format
 msgid "invalid size supplied for '%1$s'"
@@ -30589,6 +30593,8 @@ msgstr ""
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
 msgstr ""
+"iommu: у цьому виконуваному файлі QEMU не передбачено оновлення перенесення "
+"dma"
 
 #, c-format
 msgid "iothread %1$d not found"
@@ -31249,7 +31255,7 @@ msgid "lock owner details have not been registered"
 msgstr "дані щодо власника блокування не було зареєстровано"
 
 msgid "locking options are not supported by this virtiofsd"
-msgstr ""
+msgstr "підтримки параметрів блокування у цій virtiofsd не передбачено"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
@@ -32001,7 +32007,7 @@ msgstr ""
 "джерелом і призначенням)"
 
 msgid "migration with this virtiofs device is not supported"
-msgstr ""
+msgstr "підтримки перенесення з цим пристроєм virtiofs не передбачено"
 
 msgid "migration with transient disk is not supported"
 msgstr "підтримки перенесення із проміжним диском не передбачено"
@@ -32674,7 +32680,7 @@ msgid "missing path for <reservations/>"
 msgstr "не вказано шлях для <reservations/>"
 
 msgid "missing path for ACPI ERST pstore device"
-msgstr ""
+msgstr "пропущено шлях для ACPI ERST пристрою pstore"
 
 msgid "missing path in nbdkit capabilities cache"
 msgstr "не вистачає шляху у кеші можливостей nbdkit"
@@ -32925,7 +32931,7 @@ msgstr "не вказано значення для параметра пере�
 
 #, c-format
 msgid "missing value of modifying DNS TXT record in network %1$s"
-msgstr ""
+msgstr "пропущено значення зміни запису DNS TXT у мережі %1$s"
 
 msgid "missing values for acceleration"
 msgstr "не вказано значень для прискорення"
@@ -34470,7 +34476,7 @@ msgid "only a single nvram device is supported"
 msgstr "передбачено підтримку лише одного пристрою nvram"
 
 msgid "only a single pstore device is supported"
-msgstr ""
+msgstr "передбачено підтримку лише одного пристрою pstore"
 
 msgid "only a single vsock device is supported"
 msgstr "передбачено підтримку лише одного пристрою vsock"
@@ -35447,16 +35453,16 @@ msgid "ps2 bus does not support %1$s input device"
 msgstr "шина ps2 не підтримує пристрій вводу %1$s"
 
 msgid "ps2 bus inputs require the ps2 feature not to be disabled"
-msgstr ""
+msgstr "використання вхідних даних шини ps2 потребує вмикання можливості ps2"
 
 msgid "ps2 feature is not available with this QEMU binary"
-msgstr ""
+msgstr "із цим виконуваним файлом QEMU підтримка можливості ps2 недоступна"
 
 msgid "ps2 feature state cannot be controlled with this QEMU binary"
-msgstr ""
+msgstr "із цим виконуваним файлом QEMU не можна керувати станом можливості ps2"
 
 msgid "pstore device is missing alias"
-msgstr ""
+msgstr "для пристрою pstore не визначено альтернативної назви"
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
@@ -37593,6 +37599,8 @@ msgstr "testOpen: вкажіть шлях або використовуйте te
 #, c-format
 msgid "the '%1$s' network backend is not supported with this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки модуля роботи з "
+"мережею «%1$s»"
 
 #, c-format
 msgid ""
@@ -39973,7 +39981,7 @@ msgstr "непідтримуваний тип розпізнавання %1$d"
 
 #, c-format
 msgid "unsupported backend for pstore device: %1$s"
-msgstr ""
+msgstr "непідтримуваний модуль роботи для пристрою pstore: %1$s"
 
 #, c-format
 msgid "unsupported balloon device model '%1$s'"
@@ -40481,6 +40489,8 @@ msgstr "перевірити повторно визначену контрол�
 #, c-format
 msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
 msgstr ""
+"значення «%1$llu» є надто великим для параметра «%2$s», максимальним є "
+"значення «%3$llu»"
 
 #, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
@@ -40700,7 +40710,7 @@ msgid "version parsing error"
 msgstr "помилка визначення версії"
 
 msgid "vfio migration was active, but 'transferred' data was missing"
-msgstr ""
+msgstr "було активним перенесення vfio, але дані «transferred» не було вказано"
 
 msgid "vgamem attribute only supported for video type qxl"
 msgstr "підтримку атрибута vgamem передбачено лише для типу відео qxl"
@@ -41064,7 +41074,7 @@ msgstr ""
 "(призупинка-відновлення роботи vmware) "
 
 msgid "vmport feature requires the ps2 feature not to be disabled"
-msgstr ""
+msgstr "використання можливості vmport потребує вмикання можливості ps2"
 
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport є недоступним, якщо використовується цей виконуваний файл QEMU"
