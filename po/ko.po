@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-07-30 10:38+0000\n"
+"PO-Revision-Date: 2024-08-29 05:38+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7\n"
 
 msgid ""
 "\n"
@@ -1470,7 +1470,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo의 대답에서 'type'(종류)가 누락되었습니다"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "'usb' 디스크는 비워두면 안됩니다"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "guest-get-users의 대답에서 'user'(사용자)가 누락되었습니다"
@@ -8384,7 +8384,7 @@ msgid "Failed to send request to init control %1$s"
 msgstr "제어 %1$s 초기화에 대한 요청을 보내지 못했습니다"
 
 msgid "Failed to send restore request to CH"
-msgstr ""
+msgstr "CH로 복구 요청을 전송하는 데 실패함"
 
 msgid "Failed to serialize snapshot"
 msgstr "순간찍기 직렬화에 실패함"
@@ -11405,7 +11405,7 @@ msgid "Missing backend %1$d"
 msgstr "백엔드 %1$d가 누락됨"
 
 msgid "Missing bridge helper name"
-msgstr ""
+msgstr "브릿지 도움말 이름이 없습니다"
 
 msgid "Missing bridge name"
 msgstr "브리지 이름이 없습니다"
@@ -15548,7 +15548,7 @@ msgstr "대상 도메인 IOMMU 장치 수가 소스와 일치하지 않습니다
 msgid ""
 "Target domain IOMMU device dma translation '%1$s' does not match source "
 "'%2$s'"
-msgstr ""
+msgstr "대상 도메인 IOMMU 장치 dma 번역 '%1$s'은 원천 '%2$s'와 일치하지 않습니다"
 
 #, c-format
 msgid ""
@@ -19168,7 +19168,7 @@ msgstr "예상치 못한 통신규약 %1$d"
 
 #, c-format
 msgid "Unexpected response from CH: %1$s"
-msgstr ""
+msgstr "CH에서 예상치 못한 응답: %1$s"
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "루프 장치가 없는 예기치 않은 루트 파일 시스템"
@@ -21332,7 +21332,7 @@ msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "브릿지 이름은 %1$s 방법(네트워크 '%2$s')에서 허용되지 않습니다"
 
 msgid "bridge port creation is not supported on this platform"
-msgstr ""
+msgstr "브릿지 포트 생성은 이와 같은 기술환경에서 지원하지 않습니다"
 
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
@@ -22710,10 +22710,10 @@ msgid "cannot save file '%1$s'"
 msgstr "파일 '%1$s'을 저장 할 수 없습니다"
 
 msgid "cannot save/restore domain with host devices"
-msgstr ""
+msgstr "호스트 장치로 도메인을 저장/복구 할 수 없습니다"
 
 msgid "cannot save/restore domain with network devices"
-msgstr ""
+msgstr "네트워크 장치로 도메인을 저장/복구 할 수 없습니다"
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29075,7 +29075,7 @@ msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: 이 QEMU 바이너리에서는 인터럽트 재매핑이 지원되지 않습니다"
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: dma 전환 최신화는 이와 같은 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "iothread %1$d not found"
@@ -31238,7 +31238,7 @@ msgstr "이전 매개변수 '%1$s'를 위해 누락된 값"
 
 #, c-format
 msgid "missing value of modifying DNS TXT record in network %1$s"
-msgstr ""
+msgstr "네트워크 %1$s에서 수정 중인 DNS TXT 레코드의 누락된 값"
 
 msgid "missing values for acceleration"
 msgstr "가속에 대한 누락된 값"
@@ -33629,13 +33629,13 @@ msgid "ps2 bus does not support %1$s input device"
 msgstr "ps2 버스는 %1$s 입력 장치를 지원하지 않습니다"
 
 msgid "ps2 bus inputs require the ps2 feature not to be disabled"
-msgstr ""
+msgstr "ps2 버스 입력은 ps2 기능이 비활성화 되어야 합니다"
 
 msgid "ps2 feature is not available with this QEMU binary"
-msgstr ""
+msgstr "ps2 기능은 이와 같은 QEMU 바이너리에서 사용 할 수 없습니다"
 
 msgid "ps2 feature state cannot be controlled with this QEMU binary"
-msgstr ""
+msgstr "ps2 기능 상태는 이와 같은 QEMU 바이너리와 함께 제어 될 수 없습니다"
 
 msgid "pstore device is missing alias"
 msgstr "pstore 장치는 별칭이 없습니다"
@@ -38452,7 +38452,7 @@ msgstr "재정의된 체크포인트 검증"
 
 #, c-format
 msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
-msgstr ""
+msgstr "값 '%1$llu'은 '%2$s' 매개변수로 너무 크며, 최대는 '%3$llu'입니다"
 
 #, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
@@ -39002,7 +39002,7 @@ msgstr ""
 "원하지 않습니다 "
 
 msgid "vmport feature requires the ps2 feature not to be disabled"
-msgstr ""
+msgstr "vmport 기능은 ps2 기능이 비활성화 되지 않아야 합니다"
 
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport는 이 QEMU 바이너리와 함께 사용할 수 없습니다"
