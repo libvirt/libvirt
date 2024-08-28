@@ -258,6 +258,7 @@
     <backingStoreInput supported='yes'/>
     <backup supported='no'/>
     <async-teardown supported='no'/>
+    <ps2 supported='no'/>
     <sev supported='yes'>
       <cbitpos>47</cbitpos>
       <reducedPhysBits>1</reducedPhysBits>

@@ -260,6 +260,7 @@
     <backingStoreInput supported='yes'/>
     <backup supported='yes'/>
     <async-teardown supported='no'/>
+    <ps2 supported='yes'/>
     <sev supported='no'/>
     <sgx supported='yes'>
       <flc>no</flc>

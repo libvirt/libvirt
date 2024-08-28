@@ -276,6 +276,7 @@
     <backup supported='no'/>
     <async-teardown supported='no'/>
     <s390-pv supported='yes'/>
+    <ps2 supported='no'/>
     <sev supported='no'/>
     <sgx supported='no'/>
     <launchSecurity supported='yes'>

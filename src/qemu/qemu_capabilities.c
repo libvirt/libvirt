@@ -6702,6 +6702,18 @@ virQEMUCapsFillDomainFeatureS390PVCaps(virQEMUCaps *qemuCaps,
     }
 }
 
+
+static void
+virQEMUCapsFillDomainFeaturePS2Caps(virQEMUCaps *qemuCaps,
+                                    virDomainCaps *domCaps)
+{
+    if (virQEMUCapsSupportsI8042Toggle(qemuCaps, domCaps->machine, domCaps->arch))
+        domCaps->features[VIR_DOMAIN_CAPS_FEATURE_PS2] = VIR_TRISTATE_BOOL_YES;
+    else
+        domCaps->features[VIR_DOMAIN_CAPS_FEATURE_PS2] = VIR_TRISTATE_BOOL_NO;
+}
+
+
 /**
  * virQEMUCapsFillDomainFeatureSGXCaps:
  * @qemuCaps: QEMU capabilities
@@ -6786,6 +6798,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainFeaturePS2Caps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSGXCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureHypervCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainDeviceCryptoCaps(qemuCaps, crypto);

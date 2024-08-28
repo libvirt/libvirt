@@ -326,6 +326,9 @@
         <ref name="s390-pv"/>
       </optional>
       <optional>
+        <ref name="ps2"/>
+      </optional>
+      <optional>
         <ref name="sev"/>
       </optional>
       <optional>
@@ -379,6 +382,12 @@
 
   <define name="s390-pv">
     <element name="s390-pv">
+      <ref name="supported"/>
+    </element>
+  </define>
+
+  <define name="ps2">
+    <element name="ps2">
       <ref name="supported"/>
     </element>
   </define>
