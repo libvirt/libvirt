@@ -823,10 +823,16 @@ virDomainChrDef *qemuFindAgentConfig(virDomainDef *def);
 
 /* You should normally avoid these functions and use the variant that
  * doesn't have "Machine" in the name instead. */
+bool qemuDomainMachineIsQ35(const char *machine,
+                            const virArch arch);
+bool qemuDomainMachineIsI440FX(const char *machine,
+                               const virArch arch);
 bool qemuDomainMachineIsARMVirt(const char *machine,
                                 const virArch arch);
 bool qemuDomainMachineIsPSeries(const char *machine,
                                 const virArch arch);
+bool qemuDomainMachineIsXenFV(const char *machine,
+                              const virArch arch);
 bool qemuDomainMachineHasBuiltinIDE(const char *machine,
                                     const virArch arch);
 
