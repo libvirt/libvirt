@@ -754,6 +754,12 @@ element in the domain XML <formatdomain.html#launch-security>`__. For more
 details on the Protected Virtualization feature please see `Protected
 Virtualization on s390 <kbase/s390_protected_virt.html>`__.
 
+ps2 capability
+^^^^^^^^^^^^^^
+
+Reports whether it is possible to disable the machine's built-in PS/2
+controller.
+
 SEV capabilities
 ^^^^^^^^^^^^^^^^
 
