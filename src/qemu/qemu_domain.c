@@ -9046,7 +9046,7 @@ qemuFindAgentConfig(virDomainDef *def)
 }
 
 /* You should normally avoid this function and use
- * qemuDomainMachineIsQ35() instead. */
+ * qemuDomainIsQ35() instead. */
 bool
 qemuDomainMachineIsQ35(const char *machine,
                        const virArch arch)
@@ -9064,7 +9064,7 @@ qemuDomainMachineIsQ35(const char *machine,
 
 
 /* You should normally avoid this function and use
- * qemuDomainMachineIsI440FX() instead. */
+ * qemuDomainIsI440FX() instead. */
 bool
 qemuDomainMachineIsI440FX(const char *machine,
                           const virArch arch)
@@ -9184,7 +9184,7 @@ qemuDomainMachineIsMipsMalta(const char *machine,
 
 
 /* You should normally avoid this function and use
- * qemuDomainMachineIsXenFV() instead. */
+ * qemuDomainIsXenFV() instead. */
 bool
 qemuDomainMachineIsXenFV(const char *machine,
                          const virArch arch)
