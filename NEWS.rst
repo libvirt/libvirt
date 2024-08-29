@@ -13,6 +13,18 @@ v10.7.0 (unreleased)
 
 * **Security**
 
+  * CVE-2024-8235: Crash of ``virtinterfaced`` via ``virConnectListInterfaces()``
+
+    A refactor of the code fetching the list of interfaces for multiple APIs
+    introduced corner case on platforms where allocating 0 bytes of memory
+    results in a NULL pointer.
+
+    This corner case would lead to a NULL-pointer dereference and subsequent
+    crash of ``virtinterfaced`` if ``virConnectListInterfaces()`` is called
+    requesting 0 networks to be filled.
+
+    The bug was introduced in libvirt-10.4.0
+
 * **Removed features**
 
 * **New features**
