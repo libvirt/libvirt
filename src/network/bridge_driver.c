@@ -501,8 +501,12 @@ networkUpdateState(virNetworkObj *obj,
         return -1;
     }
 
-    if (virNetworkObjIsActive(obj))
+    if (virNetworkObjIsActive(obj)) {
         virNetworkObjPortForEach(obj, networkUpdatePort, obj);
+
+        if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
+            driver->inhibitCallback(true, driver->inhibitOpaque);
+    }
 
     /* Try and read dnsmasq pids of both active and inactive networks, just in
      * case a network became inactive and we need to clean up. */
@@ -617,8 +621,8 @@ static virDrvStateInitResult
 networkStateInitialize(bool privileged,
                        const char *root,
                        bool monolithic G_GNUC_UNUSED,
-                       virStateInhibitCallback callback G_GNUC_UNUSED,
-                       void *opaque G_GNUC_UNUSED)
+                       virStateInhibitCallback callback,
+                       void *opaque)
 {
     virNetworkDriverConfig *cfg;
     bool autostart = true;
@@ -639,6 +643,9 @@ networkStateInitialize(bool privileged,
         g_clear_pointer(&network_driver, g_free);
         goto error;
     }
+
+    network_driver->inhibitCallback = callback;
+    network_driver->inhibitOpaque = opaque;
 
     network_driver->privileged = privileged;
 
@@ -2419,6 +2426,9 @@ networkStartNetwork(virNetworkDriverState *driver,
                                 obj, network_driver->xmlopt) < 0)
         goto cleanup;
 
+    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+
     virNetworkObjSetActive(obj, true);
     VIR_INFO("Network '%s' started up", def->name);
     ret = 0;
@@ -2492,6 +2502,10 @@ networkShutdownNetwork(virNetworkDriverState *driver,
                    VIR_HOOK_SUBOP_END);
 
     virNetworkObjSetActive(obj, false);
+
+    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
+
     virNetworkObjUnsetDefTransient(obj);
     return ret;
 }

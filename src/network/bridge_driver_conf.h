@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "internal.h"
+#include "libvirt_internal.h"
 #include "virthread.h"
 #include "virdnsmasq.h"
 #include "virnetworkobj.h"
@@ -48,6 +48,13 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkDriverConfig, virObjectUnref);
 typedef struct _virNetworkDriverState virNetworkDriverState;
 struct _virNetworkDriverState {
     virMutex lock;
+
+    /* Atomic inc/dec only */
+    unsigned int nactive;
+
+    /* Immutable pointers. Caller must provide locking */
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
 
     /* Read-only */
     bool privileged;
