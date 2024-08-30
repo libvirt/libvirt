@@ -210,6 +210,48 @@ virSecuritySELinuxRecallLabel(const char *path,
 }
 
 
+/**
+ * virSecuritySELinuxForgetLabels:
+ * @path: file or directory to work on
+ *
+ * Forgets rememebered SELinux labels for @path, including its
+ * children if it is a directory.
+ *
+ * This is intended to be used in cleanup paths, so failure to forget
+ * a single label is not considered fatal; instead, a best-effort
+ * attempt to continue and forget as many labels as possible will be
+ * made.
+ */
+static void
+virSecuritySELinuxForgetLabels(const char *path)
+{
+    struct dirent *ent;
+    g_autoptr(DIR) dir = NULL;
+    g_autofree char *con = NULL;
+
+    if (virSecuritySELinuxRecallLabel(path, &con) < 0)
+        VIR_WARN("Failed to forget remembered SELinux labels for %s, ignoring", path);
+
+    if (!virFileIsDir(path))
+        return;
+
+    if (virDirOpen(&dir, path) < 0)
+        return;
+
+    while (virDirRead(dir, &ent, NULL) > 0) {
+        g_autofree char *spath = NULL;
+        g_autofree char *scon = NULL;
+
+        spath = g_strdup_printf("%s/%s", path, ent->d_name);
+
+        if (virSecuritySELinuxRecallLabel(spath, &scon) < 0)
+            VIR_WARN("Failed to forget remembered SELinux labels for %s, ignoring", spath);
+    }
+
+    return;
+}
+
+
 static int virSecuritySELinuxSetFilecon(virSecurityManager *mgr,
                                         const char *path,
                                         const char *tcon,
@@ -3709,6 +3751,13 @@ virSecuritySELinuxRestoreTPMLabels(virSecurityManager *mgr,
         if (restoreTPMStateLabel) {
             ret = virSecuritySELinuxRestoreFileLabels(mgr,
                                                       def->tpms[i]->data.emulator.storagepath);
+        } else {
+            /* Even if we're not restoring the original label for the
+             * TPM state directory, we should still forget any
+             * remembered label so that a subsequent attempt at TPM
+             * startup will not fail due to the state directory being
+             * considered as still in use */
+            virSecuritySELinuxForgetLabels(def->tpms[i]->data.emulator.storagepath);
         }
 
         if (ret == 0 &&
