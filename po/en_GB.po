@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-08-26 15:38+0000\n"
+"PO-Revision-Date: 2024-09-01 21:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.7.1\n"
 
 msgid ""
 "\n"
@@ -1473,7 +1473,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "'type' missing in reply of guest-get-fsinfo"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "'usb' disk must not be empty"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "'user' missing in reply of guest-get-users"
@@ -1713,16 +1713,16 @@ msgstr ""
 "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
-msgstr ""
+msgstr "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune> is not supported with bus='sd'"
 
 msgid "<reservations/> allowed only for lun devices"
-msgstr ""
+msgstr "<reservations/> allowed only for LUN devices"
 
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
-msgstr ""
+msgstr "<snapshot> element is currently supported only with 'rbd' disks"
 
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
