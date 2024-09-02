@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v10.7.0 (unreleased)
+v10.7.0 (2024-09-02)
 ====================
 
 * **Security**
@@ -24,8 +24,6 @@ v10.7.0 (unreleased)
     requesting 0 networks to be filled.
 
     The bug was introduced in libvirt-10.4.0
-
-* **Removed features**
 
 * **New features**
 
@@ -46,9 +44,6 @@ v10.7.0 (unreleased)
   * ch: support basic networking modes
     Cloud-Hypervisor driver now supports Ethernet, Network (NAT) and Bridge
     networking modes.
-
-* **Bug fixes**
-
 
 v10.6.0 (2024-08-05)
 ====================
