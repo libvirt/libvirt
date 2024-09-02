@@ -429,8 +429,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: /usr/bin/dtrace
 # For mount/umount in FS driver
 BuildRequires: util-linux
-# For showmount in FS driver (netfs discovery)
-BuildRequires: nfs-utils
     %if %{with_numad}
 BuildRequires: numad
     %endif

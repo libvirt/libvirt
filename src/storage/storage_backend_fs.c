@@ -106,7 +106,7 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNewArgList(SHOWMOUNT,
+    cmd = virCommandNewArgList("showmount",
                                "--no-headers",
                                "--exports",
                                state->host,

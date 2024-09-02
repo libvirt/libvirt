@@ -1855,13 +1855,6 @@ if conf.has('WITH_LIBVIRTD')
       conf.set_quoted('MOUNT', mount_prog.full_path())
       conf.set_quoted('UMOUNT', umount_prog.full_path())
       conf.set_quoted('MKFS', mkfs_prog.full_path())
-
-      showmount_prog = find_program('showmount', required: false, dirs: libvirt_sbin_path)
-      showmount_path = ''
-      if showmount_prog.found()
-        showmount_path = showmount_prog.full_path()
-      endif
-      conf.set_quoted('SHOWMOUNT', showmount_path)
     endif
   endif
 
