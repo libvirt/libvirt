@@ -2447,6 +2447,8 @@ networkShutdownNetwork(virNetworkDriverState *driver,
         return -1;
     }
 
+    virNetworkObjDeleteAllPorts(obj, cfg->stateDir);
+
     /* now that we know it's stopped call the hook if present */
     networkRunHook(obj, NULL, VIR_HOOK_NETWORK_OP_STOPPED,
                    VIR_HOOK_SUBOP_END);
@@ -3457,8 +3459,6 @@ networkDestroy(virNetworkPtr net)
 
     if ((ret = networkShutdownNetwork(driver, obj)) < 0)
         goto cleanup;
-
-    virNetworkObjDeleteAllPorts(obj, cfg->stateDir);
 
     /* @def replaced in virNetworkObjUnsetDefTransient */
     def = virNetworkObjGetDef(obj);
