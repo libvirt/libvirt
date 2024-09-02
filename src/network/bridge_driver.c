@@ -2405,9 +2405,6 @@ networkShutdownNetwork(virNetworkDriverState *driver,
 
     VIR_INFO("Shutting down network '%s'", def->name);
 
-    if (!virNetworkObjIsActive(obj))
-        return 0;
-
     stateFile = virNetworkConfigFile(cfg->stateDir, def->name);
     if (!stateFile)
         return -1;
