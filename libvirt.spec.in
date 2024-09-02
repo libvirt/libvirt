@@ -667,7 +667,7 @@ an implementation of the secret key APIs.
 Summary: Storage driver plugin including base backends for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-Requires: nfs-utils
+Recommends: nfs-utils
 # For mkfs
 Requires: util-linux
 # For storage wiping with different algorithms
