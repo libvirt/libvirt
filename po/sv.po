@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-08-14 07:40+0000\n"
+"PO-Revision-Date: 2024-09-03 09:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.7.1\n"
 
 msgid ""
 "\n"
@@ -1495,7 +1495,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "”type” saknas i svar från guest-get-fsinfo"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "”usb”-disken får inte vara tom"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "”user” saknas i svaret på guest-get-users"
@@ -8495,7 +8495,7 @@ msgid "Failed to send request to init control %1$s"
 msgstr "Misslyckades med att skicka begäranden till initieringskontrollen %1$s"
 
 msgid "Failed to send restore request to CH"
-msgstr ""
+msgstr "Misslyckades att skicka en återställningsbegäran till CH"
 
 msgid "Failed to serialize snapshot"
 msgstr "Misslyckades med att serialisera ögonblicksbilden"
@@ -11581,7 +11581,7 @@ msgid "Missing backend %1$d"
 msgstr "Saknad bakände %1$d"
 
 msgid "Missing bridge helper name"
-msgstr ""
+msgstr "Brygghjälpnamnet saknas"
 
 msgid "Missing bridge name"
 msgstr "Saknat bryggnamn"
@@ -15774,6 +15774,7 @@ msgid ""
 "Target domain IOMMU device dma translation '%1$s' does not match source "
 "'%2$s'"
 msgstr ""
+"Måldomänens IOMMU-enhets dma-översättning ”%1$s” matchar inte källan ”%2$s”"
 
 #, c-format
 msgid ""
@@ -19405,7 +19406,7 @@ msgstr "Oväntat protokoll %1$d"
 
 #, c-format
 msgid "Unexpected response from CH: %1$s"
-msgstr ""
+msgstr "Oväntat svar från CH: %1$s"
 
 msgid "Unexpected root filesystem without loop device"
 msgstr "Oväntat rotfilsystem utan slingenhet"
@@ -21630,7 +21631,7 @@ msgid "bridge name not allowed in %1$s mode (network '%2$s')"
 msgstr "bryggnamn är inte tillåtna i %1$s-läge (nätverket ”%2$s”)"
 
 msgid "bridge port creation is not supported on this platform"
-msgstr ""
+msgstr "att skapa en bryggport stödjs inte på denna plattform"
 
 #, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
@@ -23017,10 +23018,10 @@ msgid "cannot save file '%1$s'"
 msgstr "kan inte spara filen ”%1$s”"
 
 msgid "cannot save/restore domain with host devices"
-msgstr ""
+msgstr "kan inte spara/återställa en domän med värdenheter"
 
 msgid "cannot save/restore domain with network devices"
-msgstr ""
+msgstr "kan inte spara/återställa en domän med nätverksenheter"
 
 #, c-format
 msgid "cannot seek in '%1$s'"
@@ -29471,7 +29472,7 @@ msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: avbrottsomkoppling stödjs inte med denna QEMU-binär"
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: att uppdatera dma-överättningen stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "iothread %1$d not found"
@@ -31686,7 +31687,7 @@ msgstr "värdet saknas på migreringsparametern ”%1$s”"
 
 #, c-format
 msgid "missing value of modifying DNS TXT record in network %1$s"
-msgstr ""
+msgstr "värde saknas för att ändra DNS TXT-posten i nätverket %1$s"
 
 msgid "missing values for acceleration"
 msgstr "värdet på accelerationen saknas"
@@ -33379,114 +33380,111 @@ msgstr "flaggan --%1$s har redan setts"
 
 #, c-format
 msgid "option parsing failed: %1$s\n"
-msgstr ""
+msgstr "tolkning av flaggor misslyckades: %1$s\n"
 
-#, fuzzy
 msgid "optional CPU features are not supported"
-msgstr "Endast x509-certifikat stöds"
+msgstr "valrfira CPU-funktioner stödjs inte"
 
 msgid "optional file of source xml to query for pools"
-msgstr ""
+msgstr "frivillig fil med käll-xml att fråga efter pooler"
 
 msgid "optional file to read keys from"
-msgstr ""
+msgstr "frivillig fil att läsa nycklar ifrån"
 
 msgid "optional host to query"
-msgstr ""
+msgstr "frivillig värd att fråga"
 
 msgid "optional initiator IQN to use for query"
-msgstr ""
+msgstr "frivillig initierar-IQN att använda för frågan"
 
 msgid "optional port to query"
-msgstr ""
+msgstr "frivillig port att fråga"
 
 msgid "options"
 msgstr "flaggor"
 
 msgid "os.type is not defined"
-msgstr ""
+msgstr "os.type är inte definierat"
 
 #, c-format
 msgid "out of bounds index - count %1$zu at %2$zu"
-msgstr ""
+msgstr "index utanför gränserna — antalet %1$zu vid %2$zu"
 
 msgid "out of memory"
 msgstr "slut på minne"
 
-#, fuzzy, c-format
+#, c-format
 msgid "out of memory: %1$s"
-msgstr "slut på minne"
+msgstr "slut på minne: %1$s"
 
 msgid "outbound average is mandatory"
-msgstr ""
+msgstr "utgående genomsnitt är obligatoriskt"
 
 msgid "outbound floor is unsupported yet"
-msgstr ""
+msgstr "utgående golv stödjs inte ännu"
 
 #, c-format
 msgid "outbound rate larger than maximum %1$u"
-msgstr ""
+msgstr "utgående hastighet är större en maximala %1$u"
 
 msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr ""
+msgstr "utgående RDMA-migreringar stödjs inte med denna QEMU-binär"
 
 msgid "output an XML string for the hypervisor sysinfo, if available"
-msgstr ""
+msgstr "mata ut en XML-sträng till hypervisorn:s sysinfo, om tillgängligt"
 
 msgid "output help for each command"
-msgstr ""
+msgstr "skriv ut hjälp för varje kommando"
 
 msgid "output the list of options which are missing completers"
-msgstr ""
+msgstr "skriv ut listan av flaggor som saknar kompletterare"
 
 msgid "output to stderr"
-msgstr ""
+msgstr "skriv ut till standard fel"
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes\n"
-msgstr ""
+msgstr "spill i konvertering av %1$ld MiB/s till byte\n"
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
-msgstr ""
+msgstr "spill i summan av statistik för blkio cgroup (%1$s) fältet ”%2$s”"
 
 msgid "override the destination host name used for TLS verification"
-msgstr ""
+msgstr "åsidosätt målvärdnamnet som används till TLS-verifiering"
 
 msgid "overwrite any existing data"
-msgstr ""
+msgstr "skriv över befintliga data"
 
 #, c-format
 msgid "owner %1$lld does not hold the resource lock"
-msgstr ""
+msgstr "ägaren %1$lld håller inte resurslåset"
 
 msgid "p2p migration is not supported by the source host"
-msgstr ""
+msgstr "p2p-migrering stödjs inte av källvärden"
 
 msgid "packed driver option is only supported for virtio devices"
-msgstr ""
+msgstr "drivrutinsflaggan packed stödjs endast för virtio-enheter"
 
 #, c-format
 msgid "packet %1$d bytes received from server too large, want %2$d"
-msgstr ""
+msgstr "paketets %1$d byte mottagna från servern är för stort, vill ha %2$d"
 
 #, c-format
 msgid "packet %1$d bytes received from server too small, want %2$d"
-msgstr ""
+msgstr "paketets %1$d byte mottagna från servern är för litet, vill ha %2$d"
 
 msgid "page cache size for xbzrle compression"
-msgstr ""
+msgstr "sidcachesn storlek för xbzrle-komprimering"
 
 msgid "page count"
 msgstr "sidantal"
 
-#, fuzzy
 msgid "page info is not supported on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "sidinfo stödjs inte på denna plattform"
 
-#, fuzzy
 msgid "page pool allocation is not supported on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "sidpoolsallokering stödjs inte på denna plattform"
 
 #, c-format
 msgid "page size %1$u is not available"
