@@ -1789,7 +1789,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
 
     case VIR_NETWORK_FORWARD_ROUTE:
     case VIR_NETWORK_FORWARD_NAT:
-    case VIR_NETWORK_FORWARD_OPEN:
         /* It's pointless to specify L3 forwarding without specifying
          * the network we're on.
          */
@@ -1806,8 +1805,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
                            def->name);
             return NULL;
         }
+        break;
 
-        if (def->forward.type == VIR_NETWORK_FORWARD_OPEN && def->forward.nifs) {
+    case VIR_NETWORK_FORWARD_OPEN:
+        if (def->forward.nifs) {
             /* an open network by definition can't place any restrictions
              * on what traffic is allowed or where it goes, so specifying
              * a forwarding device is nonsensical.
