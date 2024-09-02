@@ -2094,8 +2094,8 @@ qemuDomainDestroyFlags(virDomainPtr dom,
         VIR_WARN("Failed to remove logs for VM '%s'", vm->def->name);
 
     event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_STOPPED,
-                                     VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+                                              VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     virDomainAuditStop(vm, "destroyed");
 
     ret = 0;
