@@ -2387,7 +2387,6 @@ networkStartNetwork(virNetworkDriverState *driver,
         virErrorPtr save_err;
 
         virErrorPreserveLast(&save_err);
-        virNetworkObjUnsetDefTransient(obj);
         networkShutdownNetwork(driver, obj);
         virErrorRestore(&save_err);
     }
