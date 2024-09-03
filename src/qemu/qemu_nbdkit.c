@@ -544,18 +544,18 @@ qemuNbdkitCapsFormatCache(qemuNbdkitCaps *nbdkitCaps)
 
     virBufferEscapeString(&buf, "<path>%s</path>\n",
                           nbdkitCaps->path);
-    virBufferAsprintf(&buf, "<nbdkitctime>%lu</nbdkitctime>\n",
-                      nbdkitCaps->ctime);
+    virBufferAsprintf(&buf, "<nbdkitctime>%llu</nbdkitctime>\n",
+                      (long long)nbdkitCaps->ctime);
     virBufferEscapeString(&buf, "<plugindir>%s</plugindir>\n",
                           nbdkitCaps->pluginDir);
-    virBufferAsprintf(&buf, "<plugindirmtime>%lu</plugindirmtime>\n",
-                      nbdkitCaps->pluginDirMtime);
+    virBufferAsprintf(&buf, "<plugindirmtime>%llu</plugindirmtime>\n",
+                      (long long)nbdkitCaps->pluginDirMtime);
     virBufferEscapeString(&buf, "<filterdir>%s</filterdir>\n",
                           nbdkitCaps->filterDir);
-    virBufferAsprintf(&buf, "<filterdirmtime>%lu</filterdirmtime>\n",
-                      nbdkitCaps->filterDirMtime);
-    virBufferAsprintf(&buf, "<selfctime>%lu</selfctime>\n",
-                      nbdkitCaps->libvirtCtime);
+    virBufferAsprintf(&buf, "<filterdirmtime>%llu</filterdirmtime>\n",
+                      (long long)nbdkitCaps->filterDirMtime);
+    virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
+                      (long long)nbdkitCaps->libvirtCtime);
     virBufferAsprintf(&buf, "<selfvers>%u</selfvers>\n",
                       nbdkitCaps->libvirtVersion);
 
@@ -593,10 +593,10 @@ virNbdkitCapsSaveFile(void *data,
         return -1;
     }
 
-    VIR_DEBUG("Saved caps '%s' for '%s' with (%lu, %lu)",
+    VIR_DEBUG("Saved caps '%s' for '%s' with (%llu, %llu)",
               filename, nbdkitCaps->path,
-              nbdkitCaps->ctime,
-              nbdkitCaps->libvirtCtime);
+              (long long)nbdkitCaps->ctime,
+              (long long)nbdkitCaps->libvirtCtime);
 
     return 0;
 }
@@ -1054,7 +1054,7 @@ qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
     }
 
     if (proc->source->timeout > 0) {
-        g_autofree char *timeout = g_strdup_printf("%llu", proc->source->timeout);
+        g_autofree char *timeout = g_strdup_printf("%llu", (long long)proc->source->timeout);
         virCommandAddArgPair(cmd, "timeout", timeout);
     }
 
