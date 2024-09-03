@@ -492,8 +492,9 @@ networkUpdateState(virNetworkObj *obj,
     if (virNetworkObjIsActive(obj))
         virNetworkObjPortForEach(obj, networkUpdatePort, obj);
 
-    /* Try and read dnsmasq pids of active networks */
-    if (virNetworkObjIsActive(obj) && def->ips && (def->nips > 0)) {
+    /* Try and read dnsmasq pids of both active and inactive networks, just in
+     * case a network became inactive and we need to clean up. */
+    if (def->ips && (def->nips > 0)) {
         const char *binpath = NULL;
         pid_t dnsmasqPid;
 
