@@ -325,10 +325,10 @@ networkDnsmasqConfigFileName(virNetworkDriverConfig *cfg,
 }
 
 
-/* do needed cleanup steps and remove the network from the list */
+/* do needed cleanup steps */
 static int
-networkRemoveInactive(virNetworkDriverState *driver,
-                      virNetworkObj *obj)
+networkCleanupInactive(virNetworkDriverState *driver,
+                       virNetworkObj *obj)
 {
     g_autoptr(virNetworkDriverConfig) cfg = virNetworkDriverGetConfig(driver);
     g_autofree char *leasefile = NULL;
@@ -371,6 +371,18 @@ networkRemoveInactive(virNetworkDriverState *driver,
 
     /* remove status file */
     unlink(statusfile);
+
+    return 0;
+}
+
+
+/* do needed cleanup steps and remove the network from the list */
+static int
+networkRemoveInactive(virNetworkDriverState *driver,
+                      virNetworkObj *obj)
+{
+    if (networkCleanupInactive(driver, obj) < 0)
+        return -1;
 
     /* remove the network definition */
     virNetworkObjRemoveInactive(driver->networks, obj);
