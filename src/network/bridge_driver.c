@@ -510,6 +510,12 @@ networkUpdateState(virNetworkObj *obj,
         virNetworkObjSetDnsmasqPid(obj, dnsmasqPid);
     }
 
+    /* Clean up after networks which were active but we have found out they are
+     * actually down */
+    if (!virNetworkObjIsActive(obj)) {
+        networkShutdownNetwork(driver, obj);
+    }
+
     return 0;
 }
 
