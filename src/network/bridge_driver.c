@@ -489,7 +489,8 @@ networkUpdateState(virNetworkObj *obj,
         return -1;
     }
 
-    virNetworkObjPortForEach(obj, networkUpdatePort, obj);
+    if (virNetworkObjIsActive(obj))
+        virNetworkObjPortForEach(obj, networkUpdatePort, obj);
 
     /* Try and read dnsmasq pids of active networks */
     if (virNetworkObjIsActive(obj) && def->ips && (def->nips > 0)) {
