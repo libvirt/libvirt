@@ -1851,7 +1851,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
     case VIR_NETWORK_FORWARD_BRIDGE:
         if (def->delay || stp || def->bridgeZone) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("bridge delay/stp/zone options only allowed in route, nat, and isolated mode, not in %1$s (network '%2$s')"),
+                           _("bridge delay/stp/zone options only allowed in open, route, nat, and isolated mode, not in %1$s (network '%2$s')"),
                            virNetworkForwardTypeToString(def->forward.type),
                            def->name);
             return NULL;
