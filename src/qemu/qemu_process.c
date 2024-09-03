@@ -5183,7 +5183,6 @@ qemuProcessSetupRawIO(virDomainObj *vm,
 {
     bool rawio = false;
     size_t i;
-    int ret = -1;
 
     /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -5191,9 +5190,7 @@ qemuProcessSetupRawIO(virDomainObj *vm,
 
         if (disk->rawio == VIR_TRISTATE_BOOL_YES) {
             rawio = true;
-#ifndef CAP_SYS_RAWIO
             break;
-#endif
         }
     }
 
@@ -5213,18 +5210,16 @@ qemuProcessSetupRawIO(virDomainObj *vm,
         }
     }
 
-    ret = 0;
-
     if (rawio) {
 #ifdef CAP_SYS_RAWIO
         virCommandAllowCap(cmd, CAP_SYS_RAWIO);
 #else
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Raw I/O is not supported on this platform"));
-        ret = -1;
+        return -1;
 #endif
     }
-    return ret;
+    return 0;
 }
 
 
