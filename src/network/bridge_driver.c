@@ -534,6 +534,23 @@ networkUpdateState(virNetworkObj *obj,
 
 
 static int
+networkCleanupTransientInactive(virNetworkObj *obj,
+                                void *opaque)
+{
+    virNetworkDriverState *driver = opaque;
+
+    if (!virNetworkObjIsActive(obj) &&
+        !virNetworkObjIsPersistent(obj)) {
+        /* We can only do a cleanup here so that this can be called from an
+         * iterator over the networks */
+        networkCleanupInactive(driver, obj);
+    }
+
+    return 0;
+}
+
+
+static int
 networkAutostartConfig(virNetworkObj *obj,
                        void *opaque)
 {
@@ -658,6 +675,11 @@ networkStateInitialize(bool privileged,
      * network's state file). */
     virNetworkObjListForEach(network_driver->networks,
                              networkUpdateState,
+                             network_driver);
+    /* Before removing inactive transient networks from the list make sure we
+     * clean up after them as well */
+    virNetworkObjListForEach(network_driver->networks,
+                             networkCleanupTransientInactive,
                              network_driver);
     virNetworkObjListPrune(network_driver->networks,
                            VIR_CONNECT_LIST_NETWORKS_INACTIVE |
