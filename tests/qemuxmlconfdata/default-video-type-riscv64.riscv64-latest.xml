@@ -8,6 +8,9 @@
     <type arch='riscv64' machine='virt'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>rv64</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

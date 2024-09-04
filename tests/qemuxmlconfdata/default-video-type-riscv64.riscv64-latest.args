@@ -10,8 +10,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-r/.config \
 -name guest=default-video-type-riscv64-test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-default-video-type-r/master-key.aes"}' \
--machine virt,usb=off,dump-guest-core=off,memory-backend=riscv_virt_board.ram \
+-machine virt,usb=off,dump-guest-core=off,memory-backend=riscv_virt_board.ram,acpi=off \
 -accel tcg \
+-cpu rv64 \
 -m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"riscv_virt_board.ram","size":1073741824}' \
 -overcommit mem-lock=off \
