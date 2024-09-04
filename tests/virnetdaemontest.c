@@ -26,7 +26,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-#if !defined(WIN32) && defined(WITH_YAJL)
+#if !defined(WIN32) && defined(WITH_JSON)
 struct testClientPriv {
     int magic;
 };

@@ -329,7 +329,7 @@ if host_machine.system() == 'linux'
     { 'name': 'virscsitest' },
     { 'name': 'virusbtest' },
   ]
-  if conf.has('WITH_YAJL')
+  if conf.has('WITH_JSON')
     tests += [
       { 'name': 'virnetdevopenvswitchtest' },
     ]
@@ -406,7 +406,7 @@ if conf.has('WITH_NETWORK')
   ]
 endif
 
-if conf.has('WITH_NODE_DEVICES') and conf.has('WITH_YAJL')
+if conf.has('WITH_NODE_DEVICES') and conf.has('WITH_JSON')
   tests += [
     { 'name': 'nodedevmdevctltest', 'link_with': [ node_device_driver_impl ] },
   ]
@@ -555,7 +555,7 @@ if conf.has('WITH_VMX')
   ]
 endif
 
-if conf.has('WITH_YAJL')
+if conf.has('WITH_JSON')
   tests += [
     { 'name': 'virjsontest' },
     { 'name': 'virmacmaptest' },

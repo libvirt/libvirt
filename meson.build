@@ -1414,6 +1414,7 @@ if yajl_dep.found()
   endif
 
   conf.set('WITH_YAJL', 1)
+  conf.set('WITH_JSON', 1)
 endif
 
 

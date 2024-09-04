@@ -815,7 +815,7 @@ mymain(void)
                             "  <host name='example.org' port='1234'/>\n"
                             "</source>\n", 1);
 
-#ifdef WITH_YAJL
+#ifdef WITH_JSON
     TEST_BACKING_PARSE("json:", NULL);
     TEST_BACKING_PARSE("json:asdgsdfg", NULL);
     TEST_BACKING_PARSE("json:{}", NULL);
@@ -1192,7 +1192,7 @@ mymain(void)
                         "  <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>\n"
                         "</source>\n");
 
-#endif /* WITH_YAJL */
+#endif /* WITH_JSON */
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
