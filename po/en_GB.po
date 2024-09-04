@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-01 21:38+0000\n"
+"PO-Revision-Date: 2024-09-05 20:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1\n"
+"X-Generator: Weblate 5.7.2\n"
 
 msgid ""
 "\n"
@@ -1728,13 +1728,13 @@ msgstr "<snapshot> element is currently supported only with 'rbd' disks"
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid> does not match secret file name '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<virtualport type='%1$s'> not supported for network '%2$s' which uses IP "
 "forwarding"
 msgstr ""
-"<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
-"bridge device"
+"<virtualport type='%1$s'> not supported for network '%2$s' which uses IP "
+"forwarding"
 
 #, c-format
 msgid ""
@@ -1793,18 +1793,16 @@ msgstr "A different callback was requested"
 msgid ""
 "A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
+"A domain definition can have no more than one cipher node with name %1$s"
 
-#, fuzzy
 msgid "A interface driver is already registered"
-msgstr "A close callback is already registered"
+msgstr "A interface driver is already registered"
 
-#, fuzzy
 msgid "A network driver is already registered"
-msgstr "Network device %s already exists"
+msgstr "A network driver is already registered"
 
-#, fuzzy
 msgid "A network filter driver is already registered"
-msgstr "A close callback is already registered"
+msgstr "A network filter driver is already registered"
 
 #, c-format
 msgid ""
@@ -1814,22 +1812,21 @@ msgstr ""
 "A network with forward mode='%1$s' can specify a bridge name or a forward "
 "dev, but not both (network '%2$s')"
 
-#, fuzzy
 msgid "A node device driver is already registered"
-msgstr "A close callback is already registered"
+msgstr "A node device driver is already registered"
 
-#, fuzzy
 msgid "A secret driver is already registered"
-msgstr "A close callback is already registered"
+msgstr "A secret driver is already registered"
 
 msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
 "description"
 msgstr ""
+"A single <secret type='passphrase'...> element is expected in encryption "
+"description"
 
-#, fuzzy
 msgid "A storage driver is already registered"
-msgstr "A close callback is already registered"
+msgstr "A storage driver is already registered"
 
 msgid "ACPI ERST device must reside on a PCI bus"
 msgstr ""
