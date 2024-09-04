@@ -37,10 +37,10 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"52:54:00:ee:96:6c","bus":"pci.0","addr":"0x3"}' \
 -netdev '{"type":"socket","listen":":2015","id":"hostnet2"}' \
 -device '{"driver":"rtl8139","netdev":"hostnet2","id":"net2","mac":"52:54:00:95:db:c0","bus":"pci.0","addr":"0x4"}' \
--chardev socket,id=charnet3,path=/tmp/vhost2.sock,reconnect=10 \
+-chardev socket,id=charnet3,path=/tmp/vhost2.sock,reconnect-ms=10000 \
 -netdev '{"type":"vhost-user","chardev":"charnet3","id":"hostnet3"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet3","id":"net3","mac":"52:54:00:ee:96:6d","bus":"pci.0","addr":"0x5"}' \
--chardev socket,id=charnet4,path=/tmp/vhost3.sock,reconnect=0 \
+-chardev socket,id=charnet4,path=/tmp/vhost3.sock,reconnect-ms=0 \
 -netdev '{"type":"vhost-user","chardev":"charnet4","queues":4,"id":"hostnet4"}' \
 -device '{"driver":"virtio-net-pci","mq":true,"vectors":10,"netdev":"hostnet4","id":"net4","mac":"52:54:00:ee:96:6e","bus":"pci.0","addr":"0x6"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
