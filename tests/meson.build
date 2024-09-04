@@ -17,7 +17,6 @@ tests_dep = declare_dependency(
     sasl_dep,
     selinux_dep,
     xdr_dep,
-    yajl_dep,
   ],
   include_directories: [
     conf_inc_dir,

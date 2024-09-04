@@ -204,7 +204,6 @@ virt_util_lib = static_library(
     src_dep,
     thread_dep,
     win32_dep,
-    yajl_dep,
   ],
 )
 

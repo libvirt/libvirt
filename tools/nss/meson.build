@@ -30,7 +30,6 @@ nss_libvirt_impl = static_library(
   dependencies: [
     json_c_dep,
     tools_dep,
-    yajl_dep,
   ],
 )
 
@@ -47,7 +46,6 @@ nss_libvirt_guest_impl = static_library(
   dependencies: [
     json_c_dep,
     tools_dep,
-    yajl_dep,
   ],
 )
 

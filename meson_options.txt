@@ -51,7 +51,6 @@ option('udev', type: 'feature', value: 'auto', description: 'udev support')
 # dep:driver_remote
 option('wireshark_dissector', type: 'feature', value: 'auto', description: 'wireshark support')
 option('wireshark_plugindir', type: 'string', value: '', description: 'wireshark plugins directory for use when installing wireshark plugin')
-option('yajl', type: 'feature', value: 'auto', description: 'yajl support')
 
 
 # build driver options

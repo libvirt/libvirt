@@ -559,7 +559,6 @@ if conf.has('WITH_REMOTE')
       src_dep,
       rpc_dep,
       xdr_dep,
-      yajl_dep,
     ],
     include_directories: [
       admin_inc_dir,

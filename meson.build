@@ -1383,48 +1383,6 @@ if wireshark_dep.found()
   endif
 endif
 
-yajl_version = '2.0.3'
-yajl_dep = dependency('yajl', version: '>=' + yajl_version, required: get_option('yajl'))
-if yajl_dep.found()
-  # Kludge for yajl include path on non-Linux
-  #
-  # As of 2.1.0, upstream yajl.pc has -I${includedir}/yajl among
-  # its Cflags, which is clearly wrong. This does not affect Linux
-  # because ${includedir} is already part of the default include path,
-  # but on other platforms that's not the case and the result is that
-  # <yajl/yajl.h> can't be located, causing the build to fail.
-  #
-  # Since upstream development for yajl has stopped years ago, there's
-  # little hope of this issue getting fixed by a new upstream release.
-  # Some non-Linux operating systems such as FreeBSD have elected to
-  # carry a small downstream patch, but in the case of Homebrew on
-  # macOS this approach has been rejected[1] and so we're left with no
-  # choice but to work around the issue ourselves.
-  #
-  # [1] https://github.com/Homebrew/homebrew-core/pull/74516
-  if host_machine.system() != 'linux'
-    yajl_includedir = yajl_dep.get_variable(pkgconfig : 'includedir')
-    if yajl_includedir.contains('include/yajl')
-      rc = run_command(
-        'python3', '-c',
-        'print("@0@".replace("@1@", "@2@"))'.format(
-          yajl_includedir, 'include/yajl', 'include',
-        ),
-        check: true,
-      )
-      yajl_includedir = rc.stdout().strip()
-      yajl_dep = declare_dependency(
-        compile_args: [ '-I' + yajl_includedir ],
-        dependencies: [ yajl_dep ],
-      )
-    endif
-  endif
-
-  conf.set('WITH_YAJL', 1)
-  conf.set('WITH_JSON', 1)
-endif
-
-
 # generic build dependencies checks
 
 if bash_completion_dep.found() and not readline_dep.found()
@@ -1627,10 +1585,10 @@ if not get_option('driver_ch').disabled() and host_machine.system() == 'linux' a
     endif
   endif
 
-  if not yajl_dep.found() or not json_c_dep.found()
+  if not json_c_dep.found()
     use_ch = false
     if get_option('driver_ch').enabled()
-      error('YAJL 2 *AND* json-c is required to build Cloud-Hypervisor driver')
+      error('json-c is required to build Cloud-Hypervisor driver')
     endif
   endif
 
@@ -1701,10 +1659,10 @@ endif
 if not get_option('driver_qemu').disabled()
   use_qemu = true
 
-  if not yajl_dep.found() or not json_c_dep.found()
+  if not json_c_dep.found()
     use_qemu = false
     if get_option('driver_qemu').enabled()
-      error('YAJL 2 *AND* json-c is required to build QEMU driver')
+      error('json-c is required to build QEMU driver')
     endif
   endif
 
@@ -2027,9 +1985,9 @@ endif
 
 if not get_option('nss').disabled()
   use_nss = true
-  if not yajl_dep.found() or not json_c_dep.found()
+  if not json_c_dep.found()
     if get_option('nss').enabled()
-      error('Can\'t build nss plugin without YAJL 2 *AND* json-c')
+      error('Can\'t build nss plugin without json-c')
     else
       use_nss = false
     endif
@@ -2373,7 +2331,6 @@ libs_summary = {
   'selinux': selinux_dep.found(),
   'udev': udev_dep.found(),
   'xdr': xdr_dep.found(),
-  'yajl': yajl_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 
