@@ -232,7 +232,7 @@ int virNetDevTapCreate(char **ifname,
         if (ioctl(fd, TUNSETIFF, &ifr) < 0) {
             virReportSystemError(errno,
                                  _("Unable to create tap device %1$s"),
-                                 NULLSTR(*ifname));
+                                 *ifname);
             goto cleanup;
         }
 
@@ -247,7 +247,7 @@ int virNetDevTapCreate(char **ifname,
             ioctl(fd, TUNSETPERSIST, 1) < 0) {
             virReportSystemError(errno,
                                  _("Unable to set tap device %1$s to persistent"),
-                                 NULLSTR(*ifname));
+                                 *ifname);
             goto cleanup;
         }
         tapfd[i] = fd;
