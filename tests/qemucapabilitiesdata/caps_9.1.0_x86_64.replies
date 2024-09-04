@@ -16,11 +16,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 90,
-      "minor": 0,
+      "micro": 0,
+      "minor": 1,
       "major": 9
     },
-    "package": "v9.1.0-rc0-121-g75c7f57403"
+    "package": "v9.1.0"
   },
   "id": "libvirt-2"
 }
@@ -33790,7 +33790,7 @@
       "default-cpu-type": "qemu64-x86_64-cpu",
       "acpi": true,
       "cpu-max": 288,
-      "deprecated": false,
+      "deprecated": true,
       "default-ram-id": "pc.ram"
     },
     {
@@ -33890,7 +33890,7 @@
       "default-cpu-type": "qemu64-x86_64-cpu",
       "acpi": true,
       "cpu-max": 255,
-      "deprecated": false,
+      "deprecated": true,
       "default-ram-id": "pc.ram"
     },
     {
@@ -43510,7 +43510,7 @@
       "default-cpu-type": "qemu64-x86_64-cpu",
       "acpi": true,
       "cpu-max": 288,
-      "deprecated": false,
+      "deprecated": true,
       "default-ram-id": "pc.ram"
     },
     {
@@ -43610,7 +43610,7 @@
       "default-cpu-type": "qemu64-x86_64-cpu",
       "acpi": true,
       "cpu-max": 255,
-      "deprecated": false,
+      "deprecated": true,
       "default-ram-id": "pc.ram"
     },
     {
