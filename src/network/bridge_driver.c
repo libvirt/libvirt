@@ -2127,6 +2127,8 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         def->forward.type != VIR_NETWORK_FORWARD_OPEN)
         networkRemoveFirewallRules(obj);
 
+    networkUnsetBridgeZone(def);
+
     virNetworkObjUnrefMacMap(obj);
 
     ignore_value(virNetDevBridgeDelete(def->bridge));
@@ -2164,6 +2166,8 @@ networkShutdownNetworkVirtual(virNetworkObj *obj)
 
     if (def->forward.type != VIR_NETWORK_FORWARD_OPEN)
         networkRemoveFirewallRules(obj);
+
+    networkUnsetBridgeZone(def);
 
     ignore_value(virNetDevBridgeDelete(def->bridge));
 

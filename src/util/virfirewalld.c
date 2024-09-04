@@ -449,6 +449,29 @@ virFirewallDInterfaceSetZone(const char *iface,
 }
 
 
+int
+virFirewallDInterfaceUnsetZone(const char *iface)
+{
+    GDBusConnection *sysbus = virGDBusGetSystemBus();
+    g_autoptr(GVariant) message = NULL;
+
+    if (!sysbus)
+        return -1;
+
+    message = g_variant_new("(ss)", "", iface);
+
+    return virGDBusCallMethod(sysbus,
+                             NULL,
+                             NULL,
+                             NULL,
+                             VIR_FIREWALL_FIREWALLD_SERVICE,
+                             "/org/fedoraproject/FirewallD1",
+                             "org.fedoraproject.FirewallD1.zone",
+                             "removeInterface",
+                             message);
+}
+
+
 void
 virFirewallDSynchronize(void)
 {
