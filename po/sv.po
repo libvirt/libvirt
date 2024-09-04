@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-03 09:38+0000\n"
+"PO-Revision-Date: 2024-09-05 20:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.1\n"
+"X-Generator: Weblate 5.7.2\n"
 
 msgid ""
 "\n"
@@ -33488,111 +33488,111 @@ msgstr "sidpoolsallokering stödjs inte på denna plattform"
 
 #, c-format
 msgid "page size %1$u is not available"
-msgstr ""
+msgstr "sidstorleken %1$u är inte tillgänglig"
 
 #, c-format
 msgid "page size %1$u is not available on node %2$d"
-msgstr ""
+msgstr "sidstorleken %1$u är inte tillgänglig på nod %2$d"
 
 msgid "page size (in kibibytes)"
-msgstr ""
+msgstr "sidstorlek (i kibibyte)"
 
 msgid "page_per_vq option is only supported for virtio devices"
-msgstr ""
+msgstr "flaggan page_per_vq stödjs endast för virtio-enheter"
 
 msgid "panic is supported only with ISA address type"
-msgstr ""
+msgstr "panic stödjs endast med adresstypen ISA"
 
 msgid "panicked"
 msgstr "panikslagen"
 
 msgid "parallel ports are not supported"
-msgstr ""
+msgstr "parallellportar stödjs inte"
 
 #, c-format
 msgid "parallels bus does not support %1$s input device"
-msgstr ""
+msgstr "bussen parallels stödjer inte inmatningsenheten %1$s"
 
 #, c-format
 msgid "parallels containers don't support input bus %1$s"
-msgstr ""
+msgstr "parallels-behållare stödjer inte inmatningsbussen %1$s"
 
 #, c-format
 msgid "parameter %1$s too big for destination"
-msgstr ""
+msgstr "parametern %1$s är för stor för målet"
 
 #, c-format
 msgid "parameter '%1$s' not supported"
-msgstr ""
+msgstr "parametern ”%1$s” stödjs inte"
 
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
-msgstr ""
+msgstr "parametern ”%1$s” förekommer flera gånger"
 
 msgid "parameter=value"
-msgstr ""
+msgstr "parameter=värde"
 
 #, c-format
 msgid "parent %1$s for moment %2$s not found"
-msgstr ""
+msgstr "föräldern %1$s för momentet %2$s finns inte"
 
 #, c-format
 msgid "parent %1$s would create cycle to %2$s"
-msgstr ""
+msgstr "föräldern %1$s skulle skapa en cykel till %2$s"
 
 #, c-format
 msgid "parent '%1$s' is not an fc_host for the wwnn/wwpn"
-msgstr ""
+msgstr "föräldern ”%1$s” är inte en fc_host för wwnn/wwpn"
 
 #, c-format
 msgid "parent '%1$s' is not properly formatted"
-msgstr ""
+msgstr "föräldern ”%1$s” är inte rätt formatterad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parent '%1$s' specified for vHBA does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "föräldern ”%1$s” angiven för vHBA finns inte"
 
 msgid "parser error"
 msgstr "avläsningsfel"
 
 msgid "partial string to autocomplete"
-msgstr ""
+msgstr "partiell sträng att autokomplettera"
 
 msgid "pass file descriptors N,M,... along with the command"
-msgstr ""
+msgstr "skicka filbeskrivare N,M,… tillsammans med kommandot"
 
 msgid "pass file descriptors N,M,... to the guest"
-msgstr ""
+msgstr "skicka filbeskrivare N,M,… till gästen"
 
 msgid "passphrase is too long for the buffer"
-msgstr ""
+msgstr "lösenfrasen är för lång för bufferten"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "läget passthrough kräver ett attribut av teckenenhetstyp"
 
 #, c-format
 msgid "path '%1$s' doesn't reference a file"
-msgstr ""
+msgstr "sökvägen ”%1$s” refererar inte en fil"
 
-#, fuzzy, c-format
+#, c-format
 msgid "path '%1$s' is not absolute"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "sökvägen ”%1$s” är inte absolut"
 
 msgid "path does not exist, skipping file type checks"
 msgstr "sökvägen finns inte, hoppar över kontroller av filtyp"
 
 #, c-format
 msgid "path is required for model '%1$s'"
-msgstr ""
+msgstr "en sökväg krävs för modellen ”%1$s”"
 
 msgid "path is required for model 'nvdimm'"
-msgstr ""
+msgstr "en sökväg krävs för modellen ”nvdimm”"
 
 msgid "path of backing file in chain for a partial pull"
-msgstr ""
+msgstr "sökväg till bakomliggande fil i kedjan för en partiell dragning"
 
 msgid "path of base file to commit into (default bottom of chain)"
-msgstr ""
+msgstr "sökväg till basfilen att fastställa in i (standard botten av kedjan)"
 
 msgid "path of the copy to create"
 msgstr ""
