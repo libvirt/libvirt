@@ -697,6 +697,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 465 */
     QEMU_CAPS_SNAPSHOT_INTERNAL_QMP, /* internal snapshot support via QMP commands 'snapshot-save'/'snapshot-delete' */
+    QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS, /* 'reconnect-ms' option for chardevs supported */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

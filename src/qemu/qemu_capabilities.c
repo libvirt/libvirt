@@ -718,6 +718,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 465 */
               "snapshot-internal-qmp", /* QEMU_CAPS_SNAPSHOT_INTERNAL_QMP */
+              "chardev-reconnect-miliseconds", /* QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS */
     );
 
 
@@ -1559,6 +1560,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+virtio-blk-vhost-vdpa/$fdset", QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA},
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
+    { "chardev-add/arg-type/backend/+socket/data/reconnect-ms", QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
