@@ -381,24 +381,9 @@ networkSetBridgeZone(virNetworkDef *def)
                 if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
                     return -1;
             } else {
-                unsigned long long version;
-                int vresult = virFirewallDGetVersion(&version);
-
-                if (vresult < 0)
-                    return -1;
-
-                /* Support for nftables backend was added in firewalld
-                 * 0.6.0. Support for rule priorities (required by the
-                 * 'libvirt' zone, which should be installed by a
-                 * libvirt package, *not* by firewalld) was not added
-                 * until firewalld 0.7.0 (unless it was backported).
-                 */
-                if (version >= 6000 &&
-                    virFirewallDGetBackend() == VIR_FIREWALLD_BACKEND_NFTABLES) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("firewalld is set to use the nftables backend, but the required firewalld 'libvirt' zone is missing. Either set the firewalld backend to 'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --with-firewalld-zone"));
-                    return -1;
-                }
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("firewalld can't find the 'libvirt' zone that should have been installed with libvirt"));
+                return -1;
             }
         }
     }
