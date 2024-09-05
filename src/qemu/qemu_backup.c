@@ -125,7 +125,8 @@ qemuBackupDiskDataCleanupOne(virDomainObj *vm,
 
     if (!dd->started) {
         if (dd->added) {
-            qemuDomainObjEnterMonitor(vm);
+            if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_BACKUP) < 0)
+                return;
             qemuBlockStorageSourceAttachRollback(priv->mon, dd->crdata->srcdata[0]);
             qemuDomainObjExitMonitor(vm);
         }
