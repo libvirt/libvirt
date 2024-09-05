@@ -21,6 +21,17 @@ v10.8.0 (unreleased)
 
 * **Bug fixes**
 
+  * virsh: Fix script-friedly output of ``virsh list --uuid``
+
+    The script-friendly output of just 1 UUID per line was mistakenly replaced
+    by the full human-targetted table view full of redundant information
+    and very hard to parse. Users who wish to see the UUIDs in the tabular
+    output need to use ``virsh list --table --uuid`` as old behaviour was
+    reverted.
+
+    Note that this also broke the ``libvirt-guests`` script. The bug was
+    introduced in `v10.7.0 (2024-09-02)`_.
+
 
 v10.7.0 (2024-09-02)
 ====================
