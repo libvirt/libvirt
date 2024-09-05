@@ -1,0 +1,33 @@
+Following script-friendly outputs of commands must not change
+4dea22b3-1d52-d8f3-2516-782e98ab3fa0
+ef861801-45b9-11cb-88e3-afbfe5370493
+08721f99-3d1d-4aec-96eb-97803297bb36
+
+4dea22b3-1d52-d8f3-2516-782e98ab3fa0
+ef861801-45b9-11cb-88e3-afbfe5370493
+08721f99-3d1d-4aec-96eb-97803297bb36
+
+fv0
+fc4
+fc5
+
+fv0
+fc4
+fc5
+
+4dea22b3-1d52-d8f3-2516-782e98ab3fa0 fv0
+ef861801-45b9-11cb-88e3-afbfe5370493 fc4
+08721f99-3d1d-4aec-96eb-97803297bb36 fc5
+
+running
+
+running (unknown)
+
+fc4
+
+1
+
+Domain: 'fv0'
+  state.state=1
+  state.reason=0
+

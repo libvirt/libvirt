@@ -1,0 +1,11 @@
+echo "Following script-friendly outputs of commands must not change"
+list --uuid;
+list --uuid --all;
+list --name;
+list --name --all;
+list --uuid --name --all;
+domstate fv0
+domstate fv0 --reason
+domname ef861801-45b9-11cb-88e3-afbfe5370493
+domid fv0
+domstats fv0

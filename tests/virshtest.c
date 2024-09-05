@@ -352,6 +352,8 @@ mymain(void)
                  "checkpoint-create test --redefine checkpoint-c2.xml ;"
                  "checkpoint-info test c2");
 
+    DO_TEST_SCRIPT("script-friendly-options", NULL, VIRSH_CUSTOM);
+
     /* completion doesn't work on non-readline builds */
     need_readline = true;
 
