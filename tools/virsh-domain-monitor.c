@@ -1857,7 +1857,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS("table", "name");
     VSH_EXCLUSIVE_OPTIONS("table", "id");
 
-    if (!optName && !optID)
+    if (!optUUID && !optName && !optID)
         optTable = true;
 
     if (!(list = virshDomainListCollect(ctl, flags)))
