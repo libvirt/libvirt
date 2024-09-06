@@ -356,12 +356,30 @@ libxlDomainDefValidate(const virDomainDef *def,
     return 0;
 }
 
+static int
+libxlDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                             const virDomainDef *def,
+                             void *opaque G_GNUC_UNUSED,
+                             void *parseOpaque G_GNUC_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_NET && dev->data.net->filter) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("filterref is not supported in %1$s"),
+                       virDomainVirtTypeToString(def->virtType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virDomainDefParserConfig libxlDomainDefParserConfig = {
     .macPrefix = { 0x00, 0x16, 0x3e },
     .netPrefix = LIBXL_GENERATED_PREFIX_XEN,
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
     .domainPostParseCallback = libxlDomainDefPostParse,
     .domainValidateCallback = libxlDomainDefValidate,
+    .deviceValidateCallback = libxlDomainDeviceDefValidate,
 
     .features = VIR_DOMAIN_DEF_FEATURE_USER_ALIAS |
                 VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
@@ -1460,6 +1478,10 @@ libxlDomainStartNew(libxlDriverPrivate *driver,
                      managed_save_path);
 
         vm->hasManagedSave = false;
+    } else {
+        /* Validate configuration if starting a new VM */
+        if (virDomainDefValidate(vm->def, 0, driver->xmlopt, NULL) < 0)
+            goto cleanup;
     }
 
     ret = libxlDomainStart(driver, vm, start_paused, restore_fd, restore_ver);
