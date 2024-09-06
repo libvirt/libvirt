@@ -347,6 +347,12 @@ virConfParseLong(virConfParserCtxt *ctxt, long long *val)
         return -1;
     }
     while ((ctxt->cur < ctxt->end) && (g_ascii_isdigit(CUR))) {
+        if (l > LLONG_MAX / 10) {
+            virConfError(ctxt, VIR_ERR_OVERFLOW,
+                         _("numeric overflow in conf value"));
+            return -1;
+        }
+
         l = l * 10 + (CUR - '0');
         NEXT;
     }
