@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-05 20:38+0000\n"
+"PO-Revision-Date: 2024-09-07 20:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -33595,148 +33595,157 @@ msgid "path of base file to commit into (default bottom of chain)"
 msgstr "sökväg till basfilen att fastställa in i (standard botten av kedjan)"
 
 msgid "path of the copy to create"
-msgstr ""
+msgstr "sökväg till kopian att skapa"
 
 msgid "path of top file to commit from (default top of chain)"
-msgstr ""
+msgstr "sökväg till toppfilen att fastställa ifrån (standard toppen av kedjan)"
 
 msgid "path to emulator binary (/domain/devices/emulator)"
-msgstr ""
+msgstr "sökväg till emulatorbinären (/domän/enhet/emulator)"
 
 msgid "path to file containing the secret"
-msgstr ""
+msgstr "sökväg till filen som innehåller hemligheten"
 
 msgid "path to file containing the secret header"
-msgstr ""
+msgstr "sökväg till filen som innehåller hemlighetens huvud"
 
 msgid "path to inputvol secret data file is required"
-msgstr ""
+msgstr "en sökväg till datafilen med en hemlighet till inputvol krävs"
 
 msgid "path to secret data file is required"
-msgstr ""
+msgstr "en sökväg till datafilen med hemligheten krävs"
 
 msgid "paused"
 msgstr "stannad"
 
 #, c-format
 msgid "pcap_compile: %1$s"
-msgstr ""
+msgstr "pcap_compile: %1$s"
 
-#, fuzzy
 msgid "pcap_create failed"
-msgstr "operation misslyckades"
+msgstr "pcap_create misslyckades"
 
 #, c-format
 msgid "pcap_setdirection: %1$s"
-msgstr ""
+msgstr "pcap_setdirection: %1$s"
 
 #, c-format
 msgid "pcap_setfilter: %1$s"
-msgstr ""
+msgstr "pcap_setfilter: %1$s"
 
 #, c-format
 msgid "pci backend driver type '%1$s' is not supported"
-msgstr ""
+msgstr "pci-bakändens drivrutinstyp ”%1$s” stödjs inte"
 
 #, c-format
 msgid "pci device %1$s is not a PCI-Express device"
-msgstr ""
+msgstr "pci-enheten %1$s är inte en PCI-Express-enhet"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
-msgstr ""
+msgstr "pci-enhetens bakändesdrivrutins tilldelning (t.ex. ”vfio” eller ”xen”)"
 
 #, c-format
 msgid "pci driver '%1$s' supposedly loaded by module '%2$s' not found in sysfs"
 msgstr ""
+"pci-drivrutinen ”%1$s” förmodligen laddad av modulen ”%2$s” finns inte i "
+"sysfs"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
 msgstr ""
+"pci-expander-bus-styrenheter stödjs endast på 440fx-baserade maskintyper"
 
 msgid "pci-root and pcie-root controllers should have index 0"
-msgstr ""
+msgstr "pci-rot- och pcie-rot-styrenheter skall ha index 0"
 
 msgid "pci-root and pcie-root controllers should not have an address"
-msgstr ""
+msgstr "pci-rot- och pcie-rot-styrenheter skall inte ha en adress"
 
 msgid "pcie-expander-bus controllers are not supported with this machine type"
-msgstr ""
+msgstr "pci-expander-bus-styrenheter stödjs inte med denna maskintyp"
 
 msgid "peeking is not supported for FD passed images"
-msgstr ""
+msgstr "att kika stödjs inte för FD-skickade avbilder"
 
 msgid "peeking is not supported for vhostuser disk"
-msgstr ""
+msgstr "att kika stödjs inte på en vhostuser-disk"
 
 #, c-format
 msgid "peeking is only supported for disk with 'raw' format not '%1$s'"
-msgstr ""
+msgstr "att kika stödjs endast för diskar med formatet ”raw”, inte ”%1$s”"
 
-#, fuzzy
 msgid "peer-2-peer migration"
-msgstr "live-migrering"
+msgstr "part-till-part-migrering"
 
 msgid "per-device IO Weights, in the form of /path/to/device,weight,..."
-msgstr ""
+msgstr "IO-vikter per enhet, på formatet /sökväg/till/enhet,vikt,…"
 
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
+"startelement per enhet kan inte användas tillsammans med os-/startelement"
 
 msgid ""
 "per-device bytes read per second, in the form of /path/to/device,"
 "read_bytes_sec,..."
 msgstr ""
+"lästa byte per enhet per sekund, på formatet /sökväg/till/"
+"enhet,lästa_byte_s,…"
 
 msgid ""
 "per-device bytes wrote per second, in the form of /path/to/device,"
 "write_bytes_sec,..."
 msgstr ""
+"skrivna byte per enhet per sekund, på formatet /sökväg/till/"
+"enhet,skrivna_byte_s,…"
 
 msgid ""
 "per-device read I/O limit per second, in the form of /path/to/device,"
 "read_iops_sec,..."
 msgstr ""
+"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,läs_op_s,…"
 
 msgid ""
 "per-device write I/O limit per second, in the form of /path/to/device,"
 "write_iops_sec,..."
 msgstr ""
+"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
+"enhet,skriv_op_s,…"
 
 #, c-format
 msgid "perf event '%1$s' was already specified"
-msgstr ""
+msgstr "perf-händelsen ”%1$s” angavs redan"
 
 msgid "perf events which will be disabled"
-msgstr ""
+msgstr "perf-händelser som skall avaktiveras"
 
 msgid "perf events which will be enabled"
-msgstr ""
+msgstr "perf-händelser som skall aktiveras"
 
 msgid "perform a live core dump if supported"
-msgstr ""
+msgstr "utför en kärndump i drift om det stödjs"
 
 msgid "perform selected wiping algorithm"
-msgstr ""
+msgstr "utför den valda rensningsalgoritmen"
 
 msgid "period in seconds to set collection"
-msgstr ""
+msgstr "period i sekunder att sätta insamling"
 
 msgid "persist VM on destination"
-msgstr ""
+msgstr "beständig VM på målet"
 
 #, c-format
 msgid "persistent attach of device '%1$s' is not supported"
-msgstr ""
+msgstr "att varaktigt koppla in enheten ”%1$s” stödjs inte"
 
 msgid "persistent attach of device is not supported"
-msgstr ""
+msgstr "att varaktigt koppla in enheten stödjs inte"
 
 #, c-format
 msgid "persistent detach of device '%1$s' is not supported"
-msgstr ""
+msgstr "att varaktigt koppla ifrån enheten ”%1$s” stödjs inte"
 
 msgid "persistent detach of device is not supported"
-msgstr ""
+msgstr "att varaktigt koppla ifrån enheten stödjs inte"
 
 msgid "persistent reservations are not supported with NVRAM"
 msgstr ""
