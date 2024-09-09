@@ -16807,21 +16807,25 @@ virDomainFeaturesTCGDefParse(virDomainDef *def,
                              xmlXPathContextPtr ctxt,
                              xmlNodePtr node)
 {
-    g_autofree virDomainFeatureTCG *tcg = NULL;
+    unsigned long long tb_cache;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
-    tcg = g_new0(virDomainFeatureTCG, 1);
     ctxt->node = node;
 
     if (virDomainParseMemory("./tb-cache", "./tb-cache/@unit",
-                             ctxt, &tcg->tb_cache, false, false) < 0)
+                             ctxt, &tb_cache, false, false) < 0)
         return -1;
 
-    if (tcg->tb_cache == 0)
+    if (tb_cache == 0)
         return 0;
 
+    if (!def->tcg_features)
+        def->tcg_features = g_new0(virDomainFeatureTCG, 1);
+
+    def->tcg_features->tb_cache = tb_cache;
+
+
     def->features[VIR_DOMAIN_FEATURE_TCG] = VIR_TRISTATE_SWITCH_ON;
-    def->tcg_features = g_steal_pointer(&tcg);
     return 0;
 }
 
