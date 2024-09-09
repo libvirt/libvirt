@@ -338,11 +338,17 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
         return -1;
 
     for (i = 0; *ptr; i++) {
+        int c = *ptr - 'a';
+
         if (!g_ascii_islower(*ptr))
             break;
 
-        idx = (idx + (i < 1 ? 0 : 1)) * 26;
-        idx += *ptr - 'a';
+        idx = (idx + (i < 1 ? 0 : 1));
+
+        if (VIR_MULTIPLY_ADD_IS_OVERFLOW(INT_MAX, idx, 26, c))
+            return -1;
+
+        idx = idx * 26 + c;
         ptr++;
     }
 
