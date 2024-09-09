@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-07 20:38+0000\n"
+"PO-Revision-Date: 2024-09-09 19:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -13380,7 +13380,7 @@ msgid "PMSuspend type %1$d not supported by libxenlight driver"
 msgstr "PMSuspend-typen %1$d stödjs inte av drivrutinen libxenlight"
 
 msgid "PMSuspended"
-msgstr "PM-sövd"
+msgstr "PM-vila"
 
 #, c-format
 msgid "PMU is always enabled for architecture '%1$s'"
@@ -25323,7 +25323,7 @@ msgid "domain is not transient"
 msgstr "domänen är inte transient"
 
 msgid "domain is pmsuspended"
-msgstr "domänen är pm-sövd"
+msgstr "domänen är pm-vilande"
 
 msgid "domain is transient"
 msgstr "domänen är transient"
@@ -33748,50 +33748,49 @@ msgid "persistent detach of device is not supported"
 msgstr "att varaktigt koppla ifrån enheten stödjs inte"
 
 msgid "persistent reservations are not supported with NVRAM"
-msgstr ""
+msgstr "beständiga reservationer stödjs inte med NVRAM"
 
 #, c-format
 msgid "persistent update of device '%1$s' is not supported"
-msgstr ""
+msgstr "beständig uppdatering av enheten ”%1$s” stödjs inte"
 
 msgid "persistent update of device is not supported"
-msgstr ""
+msgstr "beständig uppdatering av enheten stödjs inte"
 
 msgid "physical address within the guest domain's memory to set the secret"
-msgstr ""
+msgstr "fysisk adress inom gästdomänens minne att sätta hemligheten"
 
 msgid "pid"
-msgstr ""
+msgstr "pid"
 
 #, c-format
 msgid "pid_value in %1$s is too large"
-msgstr ""
+msgstr "pid_value i %1$s är för stort"
 
 #, c-format
 msgid "pidfd_open failed for %1$i"
-msgstr ""
+msgstr "pidfd_open misslyckades för %1$i"
 
 msgid "pin all memory before starting RDMA live migration"
-msgstr ""
+msgstr "fäst allt minne före migreringen under drift av RDMA startas"
 
 msgid "platform unsupported"
-msgstr ""
+msgstr "plattformen stödjs inte"
 
 msgid "ploop"
-msgstr ""
+msgstr "ploop"
 
-#, fuzzy
 msgid "pmsuspended"
-msgstr "Domän %s suspenderad\n"
+msgstr "pm-vilande"
 
 msgid "polkit text authentication agent unavailable"
-msgstr ""
+msgstr "polkits textautentiseringsagent är inte tillgänglig"
 
 msgid "poll failed in libxlTunnel3MigrationSrcFunc"
-msgstr ""
+msgstr "poll misslyckades i libxlTunnel3MigrationSrcFunc"
 
 msgid "poll failed in migration tunnel"
-msgstr ""
+msgstr "poll misslyckades i migreringtunneln"
 
 #, c-format
 msgid "pool '%1$s' already exists with uuid %2$s"
@@ -33799,27 +33798,26 @@ msgstr "poolen ”%1$s” finns redan med uuid %2$s"
 
 #, c-format
 msgid "pool '%1$s' has asynchronous jobs running."
-msgstr ""
+msgstr "poolen ”%1$s” har asynkrona jobb körande."
 
 #, c-format
 msgid "pool '%1$s' is already defined with uuid %2$s"
 msgstr "poolen ”%1$s” är redan definierat med uuid %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pool '%1$s' is not active"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "poolen ”%1$s” är inte aktiv"
 
 #, c-format
 msgid "pool '%1$s' is starting up"
-msgstr ""
+msgstr "poolen ”%1$s” startar upp"
 
 #, c-format
 msgid "pool = '%1$s', volume = '%2$s'"
-msgstr ""
+msgstr "pool = ”%1$s”, volym = ”%2$s”"
 
-#, fuzzy
 msgid "pool does not support pool deletion"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "poolen stödjer inte radering av poolen"
 
 msgid "pool has no config file"
 msgstr "poolen har ingen konfigurationsfil"
@@ -33827,78 +33825,78 @@ msgstr "poolen har ingen konfigurationsfil"
 msgid "pool information in XML"
 msgstr "poolinformation i XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pool is already active as '%1$s'"
-msgstr "Domänen är redan aktiv"
+msgstr "poolen är redan aktiv som ”%1$s”"
 
 msgid "pool name"
-msgstr ""
+msgstr "poolnamn"
 
-#, fuzzy
 msgid "pool name or uuid"
-msgstr "domännamn eller uuid"
+msgstr "poolnamn eller -uuid"
 
 msgid "pool name or uuid of the input volume's pool"
-msgstr ""
+msgstr "poolnamn eller -uuid på indatavolymens pool"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pool type '%1$s' does not support source discovery"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "pooltypen ”%1$s” stödjer inte källupptäckt"
 
 #, c-format
 msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
-msgstr ""
+msgstr "port %1$u utanför intervallet i USB-adressbuss: %2$u port %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "port '%1$s' out of range"
-msgstr "värde på typeid är utanför intervallet"
+msgstr "porten ”%1$s” är utanför intervallet"
 
 msgid "port UUID"
-msgstr ""
+msgstr "port-UUID"
 
 msgid "port cannot be specified in 'nfs' protocol host"
-msgstr ""
+msgstr "port kan inte anges i ”nfs”-protokollvärd"
 
 msgid "port to use by target server for incoming disks migration"
-msgstr ""
+msgstr "port att använda av målservern för inkommande diskmigrering"
 
 msgid "port-profile setlink timed out"
-msgstr ""
+msgstr "portprofilens setlink tidsgräns gick ut"
 
 msgid "possible loop in QMP schema"
-msgstr ""
+msgstr "möjlig slinga i QMP-schema"
 
 msgid "post-copy"
-msgstr ""
+msgstr "efterkopiering"
 
 msgid "post-copy can only be started while outgoing migration is in progress"
-msgstr ""
+msgstr "efterkopiering kan endast startas när utgående migrering pågår"
 
-#, fuzzy
 msgid "post-copy failed"
-msgstr "operation misslyckades"
+msgstr "efterkopieringen misslyckades"
 
 msgid "post-copy is not supported with tunnelled migration"
-msgstr ""
+msgstr "efterkopiering stödjs inte vid tunnlad migrering"
 
 msgid "post-copy migration bandwidth limit in MiB/s"
-msgstr ""
+msgstr "efterkopieringens migrerings bandbreddsgräns i MiB/s"
 
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr ""
+"efterkopieringsmigrering stöjds inte med migrering inte under drift eller "
+"pausad"
 
 #, c-format
 msgid "post-copy migration of domain %1$s has not failed"
-msgstr ""
+msgstr "efterkopieringsmigrering av domänen %1$s har inte misslyckats"
 
 msgid "potentially unsafe disk format probing"
-msgstr ""
+msgstr "potentiellt osäker avkänning av diskformat"
 
 msgid "potentially unsafe use of host CPU passthrough"
-msgstr ""
+msgstr "potentiellt osäker användning av värd-CPU-geomgång"
 
 msgid "power-of-two granularity to use during the copy"
-msgstr ""
+msgstr "tvåpotensnoggrannheten att använda under kopieringen"
 
 #, c-format
 msgid "pr helper %1$s didn't show up"
