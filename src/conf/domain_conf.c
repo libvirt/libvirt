@@ -16621,6 +16621,8 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             if (value != VIR_TRISTATE_SWITCH_ON)
                 break;
 
+            g_clear_pointer(&def->hyperv_vendor_id, g_free);
+
             if (!(def->hyperv_vendor_id = virXMLPropString(node, "value"))) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing 'value' attribute for HyperV feature 'vendor_id'"));
