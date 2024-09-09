@@ -43,6 +43,17 @@
 
 #define VIR_INT_MULTIPLY_OVERFLOW(a,b) (G_UNLIKELY ((b) > 0 && (a) > G_MAXINT / (b)))
 
+/**
+ * VIR_MULTIPLY_ADD_IS_OVERFLOW:
+ * @limit: maximum value of data type
+ * @value: current value
+ * @multiply: number @value is going to be multiplied by
+ * @add: number that will be added to @value after multiplication
+ */
+#define VIR_MULTIPLY_ADD_IS_OVERFLOW(limit, value, multiply, add) \
+  (G_UNLIKELY(((multiply) > 0 && (value) > (limit) / (multiply)) || \
+              ((limit) - ((value) * (multiply)) < (add))))
+
 /* The library itself is allowed to use deprecated functions /
  * variables, so effectively undefine the deprecated attribute
  * which would otherwise be defined in libvirt.h.
