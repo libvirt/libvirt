@@ -16849,6 +16849,8 @@ virDomainFeaturesDefParse(virDomainDef *def,
             return -1;
         }
 
+        /* Beware that users can specify the given feature multiple times, so
+         * the parser must be able to handle that */
         switch ((virDomainFeature) val) {
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
