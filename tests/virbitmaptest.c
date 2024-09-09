@@ -577,18 +577,45 @@ test12b(const void *opaque G_GNUC_UNUSED)
 {
     g_autoptr(virBitmap) map = NULL;
 
-    if (!(map = virBitmapParseUnlimited("34,1023")))
+    if (!(map = virBitmapParseUnlimited("31,32,63,64,1023")))
         return -1;
 
-    if (checkBitmap(map, "34,1023", 1024) < 0)
+    if (checkBitmap(map, "31-32,63-64,1023", 1024) < 0)
         return -1;
 
-    virBitmapShrink(map, 35);
-    if (checkBitmap(map, "34", 35) < 0)
+    /* no shrink at full alloc */
+    virBitmapShrink(map, 1025);
+    if (checkBitmap(map, "31-32,63-64,1023", 1024) < 0)
         return -1;
 
-    virBitmapShrink(map, 34);
-    if (checkBitmap(map, "", 34) < 0)
+    /* shrink at the end */
+    virBitmapShrink(map, 1023);
+    if (checkBitmap(map, "31-32,63-64", 1023) < 0)
+        return -1;
+
+    /* extend back to see whether tail was cleared */
+    virBitmapSetBitExpand(map, 1022);
+    if (checkBitmap(map, "31-32,63-64,1022", 1023) < 0)
+        return -1;
+
+    virBitmapShrink(map, 64);
+    if (checkBitmap(map, "31-32,63", 64) < 0)
+        return -1;
+
+    virBitmapShrink(map, 65);
+    if (checkBitmap(map, "31-32,63", 64) < 0)
+        return -1;
+
+    virBitmapShrink(map, 63);
+    if (checkBitmap(map, "31-32", 63) < 0)
+        return -1;
+
+    virBitmapShrink(map, 32);
+    if (checkBitmap(map, "31", 32) < 0)
+        return -1;
+
+    virBitmapShrink(map, 31);
+    if (checkBitmap(map, "", 31) < 0)
         return -1;
 
     return 0;
