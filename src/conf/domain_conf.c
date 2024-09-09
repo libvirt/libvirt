@@ -17518,7 +17518,6 @@ static int
 virDomainDefParseBootInitOptions(virDomainDef *def,
                                  xmlXPathContextPtr ctxt)
 {
-    char *name = NULL;
     size_t i;
     int n;
     g_autofree xmlNodePtr *nodes = NULL;
@@ -17550,6 +17549,8 @@ virDomainDefParseBootInitOptions(virDomainDef *def,
 
     def->os.initenv = g_new0(virDomainOSEnv *, n + 1);
     for (i = 0; i < n; i++) {
+        g_autofree char *name = NULL;
+
         if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("No name supplied for <initenv> element"));
@@ -17565,7 +17566,7 @@ virDomainDefParseBootInitOptions(virDomainDef *def,
         }
 
         def->os.initenv[i] = g_new0(virDomainOSEnv, 1);
-        def->os.initenv[i]->name = name;
+        def->os.initenv[i]->name = g_steal_pointer(&name);
         def->os.initenv[i]->value = g_strdup((const char *)nodes[i]->children->content);
     }
     def->os.initenv[n] = NULL;
