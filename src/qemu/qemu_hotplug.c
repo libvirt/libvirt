@@ -3724,6 +3724,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     virDomainNetDef **devslot = NULL;
     virDomainNetDef *olddev;
     virDomainNetType oldType, newType;
+    bool actualSame = false;
     bool needReconnect = false;
     bool needBridgeChange = false;
     bool needFilterChange = false;
@@ -3944,15 +3945,49 @@ qemuDomainChangeNet(virQEMUDriver *driver,
      * free it if we fail for any reason
      */
     if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if (!(conn = virGetConnectNetwork()))
-            goto cleanup;
-        if (virDomainNetAllocateActualDevice(conn, vm->def, newdev) < 0)
-            goto cleanup;
-    }
+        if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK
+            && STREQ(olddev->data.network.name, newdev->data.network.name)) {
+            /* old and new are type='network', and the network name
+             * hasn't changed. In this case we *don't* want to get a
+             * new port ("actual device") from the network because we
+             * can use the old one (since it hasn't changed).
+             *
+             * So instead we just duplicate *the pointer to* the
+             * actualNetDef from olddev to newdev so that comparisons
+             * of actualNetDef will show no change. If the update is
+             * successful, we will clear the actualNetDef pointer from
+             * olddev before destroying it (or if the update fails,
+             * then we need to clear the pointer from newdev before
+             * destroying it)
+             */
+            newdev->data.network.actual = olddev->data.network.actual;
+            memcpy(newdev->data.network.portid, olddev->data.network.portid,
+                   sizeof(newdev->data.network.portid));
+            actualSame = true; /* old and new actual are pointing to same object */
+        } else {
+            /* either the olddev wasn't type='network', or else the
+             * name of the network changed. In this case we *do* want
+             * to get a new port from the new network (because we know
+             * that it *will* change), and then if the update is
+             * successful, we will release the port ("actual device")
+             * in olddev. Or if the update is a failure, we will
+             * release this new port
+             */
+            if (!(conn = virGetConnectNetwork()) ||
+                virDomainNetAllocateActualDevice(conn, vm->def, newdev) < 0) {
+                goto cleanup;
+            }
 
-    /* final validation now that we have full info on the type */
-    if (qemuDomainValidateActualNetDef(newdev, priv->qemuCaps) < 0)
-        goto cleanup;
+            /* final validation now that we have full info on the type */
+            if (qemuDomainValidateActualNetDef(newdev, priv->qemuCaps) < 0)
+                goto cleanup;
+
+            /* since there is a new actual, we definitely will want to
+             * replace olddev with newdev in the domain
+             */
+            needReplaceDevDef = true;
+        }
+    }
 
     newType = virDomainNetGetActualType(newdev);
 
@@ -4218,7 +4253,21 @@ qemuDomainChangeNet(virQEMUDriver *driver,
 
         /* this function doesn't work with HOSTDEV networks yet, thus
          * no need to change the pointer in the hostdev structure */
-        if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (actualSame) {
+            /* olddev and newdev have both been pointing at the
+             * same actual device object. Now that we know we're
+             * going to use newdev and dispose of olddev, we clear
+             * olddev->...actual so it doesn't get freed by upcoming
+             * virDomainNetDefFree(olddev) (which would be
+             * catastrophic because it is still being used by
+             * newdev)
+             */
+            olddev->data.network.actual = NULL;
+
+        } else if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            /* olddev had a port (actual device) and we aren't
+             * reusing it in newdev, so we need to release it
+             */
             if (conn || (conn = virGetConnectNetwork()))
                 virDomainNetReleaseActualDevice(conn, olddev);
             else
@@ -4260,10 +4309,29 @@ qemuDomainChangeNet(virQEMUDriver *driver,
      * that the changes were minor enough that we didn't need to
      * replace the entire device object.
      */
-    if (newdev && newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
-        virDomainNetReleaseActualDevice(conn, newdev);
-    virErrorRestore(&save_err);
+    if (newdev) {
+        if (actualSame) {
+            /* newdev->...actual was previously pointing to the
+             * olddev->...actual, but we've decided to free newdev and
+             * continue using olddev. So we need to clear
+             * newdev->...actual to avoid freeing the actualNetDef while
+             * olddev is still using it.
+             */
+            newdev->data.network.actual = NULL;
 
+        } else if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            /* we had allocated a new port (actual device) for newdev,
+             * but now we're not going to use it, so release it back to
+             * the network
+             */
+            if (conn || (conn = virGetConnectNetwork()))
+                virDomainNetReleaseActualDevice(conn, newdev);
+            else
+                VIR_WARN("Unable to release network device '%s'", NULLSTR(newdev->ifname));
+        }
+    }
+
+    virErrorRestore(&save_err);
     return ret;
 }
 
