@@ -1018,8 +1018,11 @@ CPU Tuning
       ``id``
          Host node id from which to allocate memory bandwidth.
       ``bandwidth``
-         The memory bandwidth to allocate from this node. The value by default
-         is in percentage.
+         The memory bandwidth to allocate from this node. The value is usually
+         in percent (Intel) but can also be in MB/s (if resctrl is mounted with
+         the ``mba_MBps`` option) or in 1/8 GB/s increments (AMD).  The user is
+         responsible for making sure the value makes sense on their system and
+         configuration.
 
 
 Memory Allocation
