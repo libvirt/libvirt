@@ -1269,12 +1269,6 @@ virResctrlAllocSetMemoryBandwidth(virResctrlAlloc *alloc,
 {
     virResctrlAllocMemBW *mem_bw = alloc->mem_bw;
 
-    if (memory_bandwidth > 100) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Memory Bandwidth value exceeding 100 is invalid."));
-        return -1;
-    }
-
     if (!mem_bw) {
         mem_bw = g_new0(virResctrlAllocMemBW, 1);
         alloc->mem_bw = mem_bw;
