@@ -1425,8 +1425,7 @@ virResctrlAllocParseProcessMemoryBandwidth(virResctrlInfo *resctrl,
                        _("Invalid bandwidth %1$u"), bandwidth);
         return -1;
     }
-    if (bandwidth < resctrl->membw_info->min_bandwidth ||
-        id > resctrl->membw_info->max_id) {
+    if (id > resctrl->membw_info->max_id) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"),
                        id);
@@ -1463,7 +1462,6 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfo *resctrl,
         return 0;
 
     if (!resctrl || !resctrl->membw_info ||
-        !resctrl->membw_info->min_bandwidth ||
         !resctrl->membw_info->bandwidth_granularity) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing or inconsistent resctrl info for memory bandwidth allocation"));
