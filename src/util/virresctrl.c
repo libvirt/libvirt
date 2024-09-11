@@ -1798,6 +1798,38 @@ virResctrlAllocNewFromInfo(virResctrlInfo *info)
     return g_steal_pointer(&ret);
 }
 
+
+static int
+virResctrlAllocCopyMemBW(virResctrlAlloc *dst,
+                         virResctrlAlloc *src)
+{
+    size_t i = 0;
+    virResctrlAllocMemBW *dst_bw = NULL;
+    virResctrlAllocMemBW *src_bw = src->mem_bw;
+
+    if (!src->mem_bw)
+        return 0;
+
+    if (!dst->mem_bw)
+        dst->mem_bw = g_new0(virResctrlAllocMemBW, 1);
+
+    dst_bw = dst->mem_bw;
+
+    if (src_bw->nbandwidths > dst_bw->nbandwidths)
+        VIR_EXPAND_N(dst_bw->bandwidths, dst_bw->nbandwidths,
+                     src_bw->nbandwidths - dst_bw->nbandwidths);
+
+    for (i = 0; i < src_bw->nbandwidths; i++) {
+        if (dst_bw->bandwidths[i])
+            continue;
+        dst_bw->bandwidths[i] = g_new0(unsigned int, 1);
+        *dst_bw->bandwidths[i] = *src_bw->bandwidths[i];
+    }
+
+    return 0;
+}
+
+
 /*
  * This function creates an allocation that represents all unused parts of all
  * caches in the system.  It uses virResctrlInfo for creating a new full
@@ -2027,37 +2059,6 @@ virResctrlAllocMemoryBandwidth(virResctrlInfo *resctrl,
             return -1;
         }
     }
-    return 0;
-}
-
-
-static int
-virResctrlAllocCopyMemBW(virResctrlAlloc *dst,
-                         virResctrlAlloc *src)
-{
-    size_t i = 0;
-    virResctrlAllocMemBW *dst_bw = NULL;
-    virResctrlAllocMemBW *src_bw = src->mem_bw;
-
-    if (!src->mem_bw)
-        return 0;
-
-    if (!dst->mem_bw)
-        dst->mem_bw = g_new0(virResctrlAllocMemBW, 1);
-
-    dst_bw = dst->mem_bw;
-
-    if (src_bw->nbandwidths > dst_bw->nbandwidths)
-        VIR_EXPAND_N(dst_bw->bandwidths, dst_bw->nbandwidths,
-                     src_bw->nbandwidths - dst_bw->nbandwidths);
-
-    for (i = 0; i < src_bw->nbandwidths; i++) {
-        if (dst_bw->bandwidths[i])
-            continue;
-        dst_bw->bandwidths[i] = g_new0(unsigned int, 1);
-        *dst_bw->bandwidths[i] = *src_bw->bandwidths[i];
-    }
-
     return 0;
 }
 
