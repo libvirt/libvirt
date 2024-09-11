@@ -2128,7 +2128,9 @@ virCapabilitiesInitResctrlMemory(virCaps *caps)
         node = g_new0(virCapsHostMemBWNode, 1);
 
         if (virResctrlInfoGetMemoryBandwidth(caps->host.resctrl,
-                                             bank->level, &node->control) > 0) {
+                                             bank->level,
+                                             bank->id,
+                                             &node->control) > 0) {
             node->id = bank->id;
             node->cpus = virBitmapNewCopy(bank->cpus);
 
@@ -2269,6 +2271,7 @@ virCapabilitiesInitCaches(virCaps *caps)
             if (i == caps->host.cache.nbanks) {
                 /* If it is a new cache, then update its resctrl information. */
                 if (virResctrlInfoGetCache(caps->host.resctrl,
+                                           bank->id,
                                            bank->level,
                                            bank->size,
                                            &bank->ncontrols,

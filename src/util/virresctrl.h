@@ -47,6 +47,7 @@ VIR_ENUM_DECL(virResctrlMonitorPrefix);
 
 typedef struct _virResctrlInfoPerCache virResctrlInfoPerCache;
 struct _virResctrlInfoPerCache {
+    unsigned int id;
     /* Smallest possible increase of the allocation size in bytes */
     unsigned long long granularity;
     /* Minimal allocatable size in bytes (if different from granularity) */
@@ -96,6 +97,7 @@ virResctrlInfoNew(void);
 
 int
 virResctrlInfoGetCache(virResctrlInfo *resctrl,
+                       unsigned int id,
                        unsigned int level,
                        unsigned long long size,
                        size_t *ncontrols,
@@ -104,6 +106,7 @@ virResctrlInfoGetCache(virResctrlInfo *resctrl,
 int
 virResctrlInfoGetMemoryBandwidth(virResctrlInfo *resctrl,
                                  unsigned int level,
+                                 unsigned int id,
                                  virResctrlInfoMemBWPerNode *control);
 /* Alloc-related things */
 typedef struct _virResctrlAlloc virResctrlAlloc;
