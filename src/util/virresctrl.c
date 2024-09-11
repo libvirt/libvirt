@@ -1805,19 +1805,6 @@ virResctrlAllocNewFromInfo(virResctrlInfo *info)
         }
     }
 
-    /* set default free memory bandwidth to 100% */
-    if (info->membw_info) {
-        ret->mem_bw = g_new0(virResctrlAllocMemBW, 1);
-
-        VIR_EXPAND_N(ret->mem_bw->bandwidths, ret->mem_bw->nbandwidths,
-                     info->membw_info->max_id + 1);
-
-        for (i = 0; i < ret->mem_bw->nbandwidths; i++) {
-            ret->mem_bw->bandwidths[i] = g_new0(unsigned int, 1);
-            *(ret->mem_bw->bandwidths[i]) = 100;
-        }
-    }
-
     return g_steal_pointer(&ret);
 }
 
@@ -1889,6 +1876,9 @@ virResctrlAllocGetUnused(virResctrlInfo *resctrl)
     alloc_default = virResctrlAllocGetDefault(resctrl);
     if (!alloc_default)
         return NULL;
+
+    /* Take MBA maximums from the root allocation */
+    virResctrlAllocCopyMemBW(ret, alloc_default);
 
     virResctrlAllocSubtract(ret, alloc_default);
 
