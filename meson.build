@@ -954,6 +954,11 @@ if blkid_dep.found()
   conf.set('WITH_BLKID', 1)
 endif
 
+libbsd_dep = dependency('libbsd', required: false)
+if libbsd_dep.found()
+  conf.set('WITH_LIBBSD', 1)
+endif
+
 capng_dep = dependency('libcap-ng', required: get_option('capng'))
 if capng_dep.found()
   conf.set('WITH_CAPNG', 1)
@@ -2335,6 +2340,7 @@ libs_summary = {
   'dlopen': dlopen_dep.found(),
   'fuse': fuse_dep.found(),
   'glusterfs': glusterfs_dep.found(),
+  'libbsd': libbsd_dep.found(),
   'libiscsi': libiscsi_dep.found(),
   'libkvm': libkvm_dep.found(),
   'libnbd': libnbd_dep.found(),

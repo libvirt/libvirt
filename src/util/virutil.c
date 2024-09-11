@@ -31,6 +31,10 @@
 # include <conio.h>
 #endif /* WIN32 */
 
+#ifdef WITH_LIBBSD
+# include <bsd/readpassphrase.h>
+#endif
+
 #ifdef __linux__
 # include <sys/sysmacros.h>
 #endif
@@ -1773,6 +1777,19 @@ char *virGetPassword(void)
     }
 
     return g_string_free(pw, FALSE);
+#elif WITH_LIBBSD /* !WIN32 */
+# ifndef PASS_MAX
+#  define PASS_MAX 1024
+# endif
+    char *pass = NULL;
+    g_autofree char *buffer = g_new0(char, PASS_MAX);
+
+    pass = readpassphrase("", buffer, PASS_MAX, 0);
+    if (pass == NULL) {
+        return NULL;
+    }
+
+    return g_steal_pointer(&buffer);
 #else /* !WIN32 */
     return g_strdup(getpass(""));
 #endif /* ! WIN32 */

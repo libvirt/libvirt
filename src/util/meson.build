@@ -194,6 +194,7 @@ virt_util_lib = static_library(
     devmapper_dep,
     gnutls_dep,
     intl_dep,
+    libbsd_dep,
     libm_dep,
     libnl_dep,
     libutil_dep,
