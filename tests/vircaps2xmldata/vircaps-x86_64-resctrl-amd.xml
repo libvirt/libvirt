@@ -1,0 +1,191 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>x86_64</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+    <migration_features>
+      <live/>
+    </migration_features>
+    <topology>
+      <cells num='2'>
+        <cell id='0'>
+          <memory unit='KiB'>1048576</memory>
+          <pages unit='KiB' size='4'>2048</pages>
+          <pages unit='KiB' size='2048'>4096</pages>
+          <pages unit='KiB' size='1048576'>6144</pages>
+          <cpus num='32'>
+            <cpu id='0' socket_id='0' die_id='0' cluster_id='65535' core_id='0' siblings='0,32'/>
+            <cpu id='1' socket_id='0' die_id='0' cluster_id='65535' core_id='1' siblings='1,33'/>
+            <cpu id='2' socket_id='0' die_id='0' cluster_id='65535' core_id='2' siblings='2,34'/>
+            <cpu id='3' socket_id='0' die_id='0' cluster_id='65535' core_id='3' siblings='3,35'/>
+            <cpu id='4' socket_id='0' die_id='2' cluster_id='65535' core_id='16' siblings='4,36'/>
+            <cpu id='5' socket_id='0' die_id='2' cluster_id='65535' core_id='17' siblings='5,37'/>
+            <cpu id='6' socket_id='0' die_id='2' cluster_id='65535' core_id='18' siblings='6,38'/>
+            <cpu id='7' socket_id='0' die_id='2' cluster_id='65535' core_id='19' siblings='7,39'/>
+            <cpu id='8' socket_id='0' die_id='3' cluster_id='65535' core_id='24' siblings='8,40'/>
+            <cpu id='9' socket_id='0' die_id='3' cluster_id='65535' core_id='25' siblings='9,41'/>
+            <cpu id='10' socket_id='0' die_id='3' cluster_id='65535' core_id='26' siblings='10,42'/>
+            <cpu id='11' socket_id='0' die_id='3' cluster_id='65535' core_id='27' siblings='11,43'/>
+            <cpu id='12' socket_id='0' die_id='1' cluster_id='65535' core_id='8' siblings='12,44'/>
+            <cpu id='13' socket_id='0' die_id='1' cluster_id='65535' core_id='9' siblings='13,45'/>
+            <cpu id='14' socket_id='0' die_id='1' cluster_id='65535' core_id='10' siblings='14,46'/>
+            <cpu id='15' socket_id='0' die_id='1' cluster_id='65535' core_id='11' siblings='15,47'/>
+            <cpu id='32' socket_id='0' die_id='0' cluster_id='65535' core_id='0' siblings='0,32'/>
+            <cpu id='33' socket_id='0' die_id='0' cluster_id='65535' core_id='1' siblings='1,33'/>
+            <cpu id='34' socket_id='0' die_id='0' cluster_id='65535' core_id='2' siblings='2,34'/>
+            <cpu id='35' socket_id='0' die_id='0' cluster_id='65535' core_id='3' siblings='3,35'/>
+            <cpu id='36' socket_id='0' die_id='2' cluster_id='65535' core_id='16' siblings='4,36'/>
+            <cpu id='37' socket_id='0' die_id='2' cluster_id='65535' core_id='17' siblings='5,37'/>
+            <cpu id='38' socket_id='0' die_id='2' cluster_id='65535' core_id='18' siblings='6,38'/>
+            <cpu id='39' socket_id='0' die_id='2' cluster_id='65535' core_id='19' siblings='7,39'/>
+            <cpu id='40' socket_id='0' die_id='3' cluster_id='65535' core_id='24' siblings='8,40'/>
+            <cpu id='41' socket_id='0' die_id='3' cluster_id='65535' core_id='25' siblings='9,41'/>
+            <cpu id='42' socket_id='0' die_id='3' cluster_id='65535' core_id='26' siblings='10,42'/>
+            <cpu id='43' socket_id='0' die_id='3' cluster_id='65535' core_id='27' siblings='11,43'/>
+            <cpu id='44' socket_id='0' die_id='1' cluster_id='65535' core_id='8' siblings='12,44'/>
+            <cpu id='45' socket_id='0' die_id='1' cluster_id='65535' core_id='9' siblings='13,45'/>
+            <cpu id='46' socket_id='0' die_id='1' cluster_id='65535' core_id='10' siblings='14,46'/>
+            <cpu id='47' socket_id='0' die_id='1' cluster_id='65535' core_id='11' siblings='15,47'/>
+          </cpus>
+        </cell>
+        <cell id='1'>
+          <memory unit='KiB'>2097152</memory>
+          <pages unit='KiB' size='4'>4096</pages>
+          <pages unit='KiB' size='2048'>6144</pages>
+          <pages unit='KiB' size='1048576'>8192</pages>
+          <cpus num='32'>
+            <cpu id='16' socket_id='1' die_id='4' cluster_id='65535' core_id='0' siblings='16,48'/>
+            <cpu id='17' socket_id='1' die_id='4' cluster_id='65535' core_id='1' siblings='17,49'/>
+            <cpu id='18' socket_id='1' die_id='4' cluster_id='65535' core_id='2' siblings='18,50'/>
+            <cpu id='19' socket_id='1' die_id='4' cluster_id='65535' core_id='3' siblings='19,51'/>
+            <cpu id='20' socket_id='1' die_id='6' cluster_id='65535' core_id='16' siblings='20,52'/>
+            <cpu id='21' socket_id='1' die_id='6' cluster_id='65535' core_id='17' siblings='21,53'/>
+            <cpu id='22' socket_id='1' die_id='6' cluster_id='65535' core_id='18' siblings='22,54'/>
+            <cpu id='23' socket_id='1' die_id='6' cluster_id='65535' core_id='19' siblings='23,55'/>
+            <cpu id='24' socket_id='1' die_id='7' cluster_id='65535' core_id='24' siblings='24,56'/>
+            <cpu id='25' socket_id='1' die_id='7' cluster_id='65535' core_id='25' siblings='25,57'/>
+            <cpu id='26' socket_id='1' die_id='7' cluster_id='65535' core_id='26' siblings='26,58'/>
+            <cpu id='27' socket_id='1' die_id='7' cluster_id='65535' core_id='27' siblings='27,59'/>
+            <cpu id='28' socket_id='1' die_id='5' cluster_id='65535' core_id='8' siblings='28,60'/>
+            <cpu id='29' socket_id='1' die_id='5' cluster_id='65535' core_id='9' siblings='29,61'/>
+            <cpu id='30' socket_id='1' die_id='5' cluster_id='65535' core_id='10' siblings='30,62'/>
+            <cpu id='31' socket_id='1' die_id='5' cluster_id='65535' core_id='11' siblings='31,63'/>
+            <cpu id='48' socket_id='1' die_id='4' cluster_id='65535' core_id='0' siblings='16,48'/>
+            <cpu id='49' socket_id='1' die_id='4' cluster_id='65535' core_id='1' siblings='17,49'/>
+            <cpu id='50' socket_id='1' die_id='4' cluster_id='65535' core_id='2' siblings='18,50'/>
+            <cpu id='51' socket_id='1' die_id='4' cluster_id='65535' core_id='3' siblings='19,51'/>
+            <cpu id='52' socket_id='1' die_id='6' cluster_id='65535' core_id='16' siblings='20,52'/>
+            <cpu id='53' socket_id='1' die_id='6' cluster_id='65535' core_id='17' siblings='21,53'/>
+            <cpu id='54' socket_id='1' die_id='6' cluster_id='65535' core_id='18' siblings='22,54'/>
+            <cpu id='55' socket_id='1' die_id='6' cluster_id='65535' core_id='19' siblings='23,55'/>
+            <cpu id='56' socket_id='1' die_id='7' cluster_id='65535' core_id='24' siblings='24,56'/>
+            <cpu id='57' socket_id='1' die_id='7' cluster_id='65535' core_id='25' siblings='25,57'/>
+            <cpu id='58' socket_id='1' die_id='7' cluster_id='65535' core_id='26' siblings='26,58'/>
+            <cpu id='59' socket_id='1' die_id='7' cluster_id='65535' core_id='27' siblings='27,59'/>
+            <cpu id='60' socket_id='1' die_id='5' cluster_id='65535' core_id='8' siblings='28,60'/>
+            <cpu id='61' socket_id='1' die_id='5' cluster_id='65535' core_id='9' siblings='29,61'/>
+            <cpu id='62' socket_id='1' die_id='5' cluster_id='65535' core_id='10' siblings='30,62'/>
+            <cpu id='63' socket_id='1' die_id='5' cluster_id='65535' core_id='11' siblings='31,63'/>
+          </cpus>
+        </cell>
+      </cells>
+    </topology>
+    <cache>
+      <bank id='0' level='2' type='both' size='1' unit='MiB' cpus='0,32'/>
+      <bank id='1' level='2' type='both' size='1' unit='MiB' cpus='1,33'/>
+      <bank id='2' level='2' type='both' size='1' unit='MiB' cpus='2,34'/>
+      <bank id='3' level='2' type='both' size='1' unit='MiB' cpus='3,35'/>
+      <bank id='8' level='2' type='both' size='1' unit='MiB' cpus='12,44'/>
+      <bank id='9' level='2' type='both' size='1' unit='MiB' cpus='13,45'/>
+      <bank id='10' level='2' type='both' size='1' unit='MiB' cpus='14,46'/>
+      <bank id='11' level='2' type='both' size='1' unit='MiB' cpus='15,47'/>
+      <bank id='16' level='2' type='both' size='1' unit='MiB' cpus='4,36'/>
+      <bank id='17' level='2' type='both' size='1' unit='MiB' cpus='5,37'/>
+      <bank id='18' level='2' type='both' size='1' unit='MiB' cpus='6,38'/>
+      <bank id='19' level='2' type='both' size='1' unit='MiB' cpus='7,39'/>
+      <bank id='24' level='2' type='both' size='1' unit='MiB' cpus='8,40'/>
+      <bank id='25' level='2' type='both' size='1' unit='MiB' cpus='9,41'/>
+      <bank id='26' level='2' type='both' size='1' unit='MiB' cpus='10,42'/>
+      <bank id='27' level='2' type='both' size='1' unit='MiB' cpus='11,43'/>
+      <bank id='32' level='2' type='both' size='1' unit='MiB' cpus='16,48'/>
+      <bank id='33' level='2' type='both' size='1' unit='MiB' cpus='17,49'/>
+      <bank id='34' level='2' type='both' size='1' unit='MiB' cpus='18,50'/>
+      <bank id='35' level='2' type='both' size='1' unit='MiB' cpus='19,51'/>
+      <bank id='40' level='2' type='both' size='1' unit='MiB' cpus='28,60'/>
+      <bank id='41' level='2' type='both' size='1' unit='MiB' cpus='29,61'/>
+      <bank id='42' level='2' type='both' size='1' unit='MiB' cpus='30,62'/>
+      <bank id='43' level='2' type='both' size='1' unit='MiB' cpus='31,63'/>
+      <bank id='48' level='2' type='both' size='1' unit='MiB' cpus='20,52'/>
+      <bank id='49' level='2' type='both' size='1' unit='MiB' cpus='21,53'/>
+      <bank id='50' level='2' type='both' size='1' unit='MiB' cpus='22,54'/>
+      <bank id='51' level='2' type='both' size='1' unit='MiB' cpus='23,55'/>
+      <bank id='56' level='2' type='both' size='1' unit='MiB' cpus='24,56'/>
+      <bank id='57' level='2' type='both' size='1' unit='MiB' cpus='25,57'/>
+      <bank id='58' level='2' type='both' size='1' unit='MiB' cpus='26,58'/>
+      <bank id='59' level='2' type='both' size='1' unit='MiB' cpus='27,59'/>
+      <bank id='0' level='3' type='both' size='16' unit='MiB' cpus='0-3,32-35'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='2' level='3' type='both' size='16' unit='MiB' cpus='12-15,44-47'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='4' level='3' type='both' size='16' unit='MiB' cpus='4-7,36-39'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='6' level='3' type='both' size='16' unit='MiB' cpus='8-11,40-43'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='8' level='3' type='both' size='16' unit='MiB' cpus='16-19,48-51'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='10' level='3' type='both' size='16' unit='MiB' cpus='28-31,60-63'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='12' level='3' type='both' size='16' unit='MiB' cpus='20-23,52-55'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <bank id='14' level='3' type='both' size='16' unit='MiB' cpus='24-27,56-59'>
+        <control granularity='1' unit='MiB' type='both' maxAllocs='16'/>
+      </bank>
+      <monitor level='3' reuseThreshold='4096' maxMonitors='256'>
+        <feature name='llc_occupancy'/>
+      </monitor>
+    </cache>
+    <memory_bandwidth>
+      <node id='0' cpus='0-3,32-35'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='2' cpus='12-15,44-47'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='4' cpus='4-7,36-39'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='6' cpus='8-11,40-43'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='8' cpus='16-19,48-51'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='10' cpus='28-31,60-63'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='12' cpus='20-23,52-55'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <node id='14' cpus='24-27,56-59'>
+        <control granularity='1' min='0' maxAllocs='16'/>
+      </node>
+      <monitor maxMonitors='256'>
+        <feature name='mbm_total_bytes'/>
+        <feature name='mbm_total_bytes_config'/>
+        <feature name='mbm_local_bytes'/>
+        <feature name='mbm_local_bytes_config'/>
+      </monitor>
+    </memory_bandwidth>
+  </host>
+
+</capabilities>

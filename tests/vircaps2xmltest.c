@@ -106,6 +106,9 @@ mymain(void)
     DO_TEST_FULL("resctrl-skx-twocaches", VIR_ARCH_X86_64, true, true);
     DO_TEST_FULL("resctrl-fake-feature", VIR_ARCH_X86_64, true, true);
 
+    DO_TEST_FULL("resctrl-amd", VIR_ARCH_X86_64, true, true);
+    DO_TEST_FULL("resctrl-mba_MBps", VIR_ARCH_X86_64, true, true);
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

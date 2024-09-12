@@ -83,6 +83,9 @@ mymain(void)
     DO_TEST_UNUSED("resctrl-skx");
     DO_TEST_UNUSED("resctrl-skx-twocaches");
 
+    DO_TEST_UNUSED("resctrl-amd");
+    DO_TEST_UNUSED("resctrl-mba_MBps");
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
