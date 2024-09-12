@@ -197,6 +197,17 @@ virResctrlInfoMemBWFree(virResctrlInfoMemBW *ptr)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virResctrlInfoMemBW, virResctrlInfoMemBWFree);
 
+static void
+virResctrlInfoPerTypeFree(virResctrlInfoPerType *ptr)
+{
+    if (!ptr)
+        return;
+
+    g_free(ptr);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virResctrlInfoPerType, virResctrlInfoPerTypeFree);
+
 
 static void
 virResctrlInfoDispose(void *obj)
@@ -214,7 +225,7 @@ virResctrlInfoDispose(void *obj)
 
         if (level->types) {
             for (j = 0; j < VIR_CACHE_TYPE_LAST; j++)
-                g_free(level->types[j]);
+                virResctrlInfoPerTypeFree(level->types[j]);
         }
         g_free(level->types);
         g_free(level);
@@ -539,7 +550,7 @@ virResctrlGetCacheInfo(virResctrlInfo *resctrl,
         int type = 0;
         unsigned int level = 0;
         virResctrlInfoPerLevel *i_level = NULL;
-        g_autofree virResctrlInfoPerType *i_type = NULL;
+        g_autoptr(virResctrlInfoPerType) i_type = NULL;
 
         VIR_DEBUG("Parsing info type '%s'", ent->d_name);
         if (ent->d_name[0] != 'L')
