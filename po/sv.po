@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-12 19:46+0000\n"
+"PO-Revision-Date: 2024-09-12 21:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -33936,62 +33936,62 @@ msgid "preallocate is not supported on this platform"
 msgstr "förallokering stödjs inte på denna plattform"
 
 msgid "preallocate is only supported for an unencrypted raw volume"
-msgstr ""
+msgstr "förallokering stödjs endast för en okrypterad rå volym"
 
 msgid "preallocate is only supported for raw type volume"
-msgstr ""
+msgstr "förallokering stödjs endast för volymer av rå typ"
 
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
-msgstr ""
+msgstr "förallokeringsmetadata (för qcow2 istället för full allokering)"
 
 msgid "preallocation threads are unsupported with this QEMU"
-msgstr ""
+msgstr "förallokeringstrådar stödjs inte med denna QEMU"
 
 msgid "prefix the message"
-msgstr ""
+msgstr "prefixa meddelandet"
 
-#, fuzzy
 msgid "prefix too long"
-msgstr "parametern profileid är för lång"
+msgstr "prefixet är för långt"
 
 msgid "preserve sparseness of volume"
-msgstr ""
+msgstr "bevara volymens gleshet"
 
 msgid "pretty-print any JSON output"
-msgstr ""
+msgstr "skönskriv eventuell JSON-utmatning"
 
 msgid "pretty-print any qemu monitor protocol output"
-msgstr ""
+msgstr "skönskriv utmatning från qemu:s övervakningsprotokoll"
 
 msgid "pretty-print the output"
-msgstr ""
+msgstr "skönskriv utmatningen"
 
 msgid "prevent any configuration changes to domain until migration ends"
 msgstr ""
+"förhindra ändringar av konfigurationen av domänen tills migreringen är klar"
 
 msgid "print XML document rather than attach the disk"
-msgstr ""
+msgstr "skriv XML-dokument istället för att koppla in disken"
 
 msgid "print XML document rather than attach the interface"
-msgstr ""
+msgstr "skriv XML-dokument istället för att koppla in gränssnittet"
 
 msgid "print XML document rather than change media"
-msgstr ""
+msgstr "skriv XML-dokument istället för att ändra mediet"
 
 msgid "print XML document rather than clone the volume"
-msgstr ""
+msgstr "skriv XML-dokument istället för att klona volymen"
 
 msgid "print XML document rather than create"
-msgstr ""
+msgstr "skriv XML-dokument istället för att skapa"
 
 msgid "print XML document rather than detach the disk"
-msgstr ""
+msgstr "skriv XML-dokument istället för att koppla ifrån disken"
 
 msgid "print XML document rather than detach the interface"
-msgstr ""
+msgstr "skriv XML-dokument istället för att koppla ifrån gränssnittet"
 
 msgid "print XML document rather than set the interface link state"
-msgstr ""
+msgstr "skriv XML-dokument istället för att sätta gränssnittets länktillstånd"
 
 msgid "print XML document, but don't define/create"
 msgstr ""
