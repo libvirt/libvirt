@@ -30,6 +30,10 @@
       </cells>
     </topology>
     <cache>
+      <bank id='0' level='2' type='both' size='256' unit='KiB' cpus='0-1'/>
+      <bank id='1' level='2' type='both' size='256' unit='KiB' cpus='2-3'/>
+      <bank id='2' level='2' type='both' size='256' unit='KiB' cpus='4-5'/>
+      <bank id='3' level='2' type='both' size='256' unit='KiB' cpus='6-7'/>
       <bank id='0' level='3' type='both' size='8' unit='MiB' cpus='0-7'/>
     </cache>
   </host>

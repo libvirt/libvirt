@@ -42,6 +42,18 @@
       </cells>
     </topology>
     <cache>
+      <bank id='0' level='2' type='both' size='256' unit='KiB' cpus='0'/>
+      <bank id='1' level='2' type='both' size='256' unit='KiB' cpus='1'/>
+      <bank id='2' level='2' type='both' size='256' unit='KiB' cpus='2'/>
+      <bank id='3' level='2' type='both' size='256' unit='KiB' cpus='3'/>
+      <bank id='4' level='2' type='both' size='256' unit='KiB' cpus='4'/>
+      <bank id='5' level='2' type='both' size='256' unit='KiB' cpus='5'/>
+      <bank id='8' level='2' type='both' size='256' unit='KiB' cpus='6'/>
+      <bank id='9' level='2' type='both' size='256' unit='KiB' cpus='7'/>
+      <bank id='10' level='2' type='both' size='256' unit='KiB' cpus='8'/>
+      <bank id='11' level='2' type='both' size='256' unit='KiB' cpus='9'/>
+      <bank id='12' level='2' type='both' size='256' unit='KiB' cpus='10'/>
+      <bank id='13' level='2' type='both' size='256' unit='KiB' cpus='11'/>
       <bank id='0' level='3' type='both' size='15' unit='MiB' cpus='0-5'/>
       <bank id='1' level='3' type='both' size='15' unit='MiB' cpus='6-11'/>
       <monitor level='3' reuseThreshold='270336' maxMonitors='176'>

@@ -2161,7 +2161,7 @@ virCapabilitiesInitCaches(virCaps *caps)
     /* Minimum level to expose in capabilities.  Can be lowered or removed (with
      * the appropriate code below), but should not be increased, because we'd
      * lose information. */
-    const int cache_min_level = 3;
+    const int cache_min_level = 2;
 
     if (virCapabilitiesInitResctrl(caps) < 0)
         return -1;
