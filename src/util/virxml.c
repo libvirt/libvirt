@@ -1029,14 +1029,15 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *contextstr = NULL;
     g_autofree char *pointerstr = NULL;
-
+    const xmlError *lastError = xmlCtxtGetLastError(ctxt);
 
     /* conditions for error printing */
     if (!ctxt ||
         (virGetLastErrorCode()) ||
         ctxt->input == NULL ||
-        ctxt->lastError.level != XML_ERR_FATAL ||
-        ctxt->lastError.message == NULL)
+        lastError == NULL ||
+        lastError->level != XML_ERR_FATAL ||
+        lastError->message == NULL)
         return;
 
     if (ctxt->_private)
@@ -1078,19 +1079,19 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
 
     pointerstr = virBufferContentAndReset(&buf);
 
-    if (ctxt->lastError.file) {
+    if (lastError->file) {
         virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
                               _("%1$s:%2$d: %3$s%4$s\n%5$s"),
-                              ctxt->lastError.file,
-                              ctxt->lastError.line,
-                              ctxt->lastError.message,
+                              lastError->file,
+                              lastError->line,
+                              lastError->message,
                               contextstr,
                               pointerstr);
     } else {
         virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
                               _("at line %1$d: %2$s%3$s\n%4$s"),
-                              ctxt->lastError.line,
-                              ctxt->lastError.message,
+                              lastError->line,
+                              lastError->message,
                               contextstr,
                               pointerstr);
     }
