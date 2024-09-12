@@ -186,6 +186,17 @@ struct _virResctrlInfo {
     virResctrlInfoMongrp *monitor_info;
 };
 
+static void
+virResctrlInfoMemBWFree(virResctrlInfoMemBW *ptr)
+{
+    if (!ptr)
+        return;
+
+    g_free(ptr);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virResctrlInfoMemBW, virResctrlInfoMemBWFree);
+
 
 static void
 virResctrlInfoDispose(void *obj)
@@ -212,7 +223,8 @@ virResctrlInfoDispose(void *obj)
     if (resctrl->monitor_info)
         g_strfreev(resctrl->monitor_info->features);
 
-    g_free(resctrl->membw_info);
+    virResctrlInfoMemBWFree(resctrl->membw_info);
+
     g_free(resctrl->levels);
     g_free(resctrl->monitor_info);
 }
@@ -628,7 +640,7 @@ static int
 virResctrlGetMemoryBandwidthInfo(virResctrlInfo *resctrl)
 {
     int rv = -1;
-    g_autofree virResctrlInfoMemBW *i_membw = NULL;
+    g_autoptr(virResctrlInfoMemBW) i_membw = NULL;
 
     /* query memory bandwidth allocation info */
     i_membw = g_new0(virResctrlInfoMemBW, 1);
