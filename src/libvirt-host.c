@@ -179,9 +179,7 @@ virConnectGetType(virConnectPtr conn)
  * @conn: pointer to the hypervisor connection
  * @hvVer: return value for the version of the running hypervisor (OUT)
  *
- * Get the version level of the Hypervisor running. This may work only with
- * hypervisor call, i.e. with privileged access to the hypervisor, not
- * with a Read-Only connection.
+ * Get the version level of the Hypervisor running.
  *
  * Returns -1 in case of error, 0 otherwise. if the version can't be
  *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
