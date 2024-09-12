@@ -794,7 +794,7 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
         goto cleanup;
     }
 
-    result = (char *)g_steal_pointer(&utf8->content);
+    result = (char *)xmlBufferDetach(utf8);
 
  cleanup:
     xmlCharEncCloseFunc(handler);
