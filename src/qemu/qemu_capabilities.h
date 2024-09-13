@@ -623,7 +623,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_MEMORY_BACKEND_RESERVE, /* -object memory-backend-*.reserve= */
     QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG, /* -M pc PIIX4_PM.acpi-root-pci-hotplug */
     QEMU_CAPS_NETDEV_JSON, /* -netdev accepts JSON */
-    QEMU_CAPS_CHARDEV_JSON, /* -chardev accepts JSON */
+    QEMU_CAPS_CHARDEV_JSON, /* Reserved for '-chardev' JSON support. For now used only in tests. */
 
     /* 415 */
     X_QEMU_CAPS_DEVICE_JSON_BROKEN_HOTPLUG, /* -device accepts JSON (must not be used - users are filtering the capbility) */
