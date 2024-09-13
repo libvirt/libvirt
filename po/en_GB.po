@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-05 20:38+0000\n"
+"PO-Revision-Date: 2024-09-14 06:56+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1829,28 +1829,27 @@ msgid "A storage driver is already registered"
 msgstr "A storage driver is already registered"
 
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "ACPI ERST device must reside on a PCI bus"
 
 msgid "ACPI index is not supported with this QEMU"
-msgstr ""
+msgstr "ACPI index is not supported with this QEMU"
 
 msgid "ACPI index is only supported for PCI devices"
-msgstr ""
+msgstr "ACPI index is only supported for PCI devices"
 
 msgid "ACPI requires UEFI on this architecture"
-msgstr ""
+msgstr "ACPI requires UEFI on this architecture"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
-msgstr ""
+msgstr "AES256CBC encryption invalid keylen=%1$zu"
 
 #, c-format
 msgid "AES256CBC initialization vector invalid len=%1$zu"
-msgstr ""
+msgstr "AES256CBC initialisation vector invalid len=%1$zu"
 
-#, fuzzy
 msgid "API error"
-msgstr "I/O error"
+msgstr "API error"
 
 msgid "Aborts the currently running domain job"
 msgstr "Aborts the currently running domain job"
@@ -1870,13 +1869,11 @@ msgstr "Activation of snoop request failed on interface '%1$s'"
 msgid "Active %1$s devices on bus with %2$s, not doing bus reset"
 msgstr "Active %1$s devices on bus with %2$s, not doing bus reset"
 
-#, fuzzy
 msgid "Active Block Commit"
-msgstr "Block Commit"
+msgstr "Active Block Commit"
 
-#, fuzzy
 msgid "Active Block Commit started"
-msgstr "Block Commit started"
+msgstr "Active Block Commit started"
 
 msgid "Active channel stream exists for this domain"
 msgstr "Active channel stream exists for this domain"
@@ -1887,36 +1884,34 @@ msgstr "Active console session exists for this domain"
 msgid "Active:"
 msgstr "Active:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Actual interface '%1$s' hostdev was not a PCI device"
-msgstr "device %1$s is not a PCI device"
+msgstr "Actual interface '%1$s' hostdev was not a PCI device"
 
-#, fuzzy
 msgid "Add an IOThread to the guest domain."
-msgstr "Inject NMI to the guest domain."
+msgstr "Add an IOThread to the guest domain."
 
 msgid "Add or remove vcpus"
-msgstr ""
+msgstr "Add or remove vCPUs"
 
 msgid "Added"
-msgstr ""
+msgstr "Added"
 
-#, fuzzy
 msgid "Address"
-msgstr "MAC Address"
+msgstr "Address"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
-msgstr ""
+msgstr "Advice from numad is needed in case of automatic NUMA placement"
 
 #, c-format
 msgid "After dumping core, failed to resume domain '%1$d' with libxenlight"
 msgstr "After dumping core, failed to resume domain '%1$d' with libxenlight"
 
 msgid "Agent authentication is not supported on this host"
-msgstr ""
+msgstr "Agent authentication is not supported on this host"
 
 msgid "Ain't nobody heard of that much cache level"
-msgstr ""
+msgstr "Ain't nobody heard of that much cache level"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "All identities provided by the SSH Agent were rejected"
@@ -1929,7 +1924,7 @@ msgstr ""
 "server"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
-msgstr ""
+msgstr "Allocate or free some pages in the pool for NUMA cell."
 
 msgid "Allocation"
 msgstr "Allocation"
@@ -1937,18 +1932,17 @@ msgstr "Allocation"
 msgid "Allocation:"
 msgstr "Allocation:"
 
-#, fuzzy
 msgid "Allows setting or modifying the description or title of a domain."
-msgstr "Shows or modifies the XML metadata of a domain."
+msgstr "Allows setting or modifying the description or title of a domain."
 
 msgid "Allows setting or modifying the description or title of a network."
-msgstr ""
+msgstr "Allows setting or modifying the description or title of a network."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "An error occurred, but the cause is unknown"
 
 msgid "An event loop implementation must be registered"
-msgstr ""
+msgstr "An event loop implementation must be registered"
 
 msgid "An explicit disk format must be specified"
 msgstr "An explicit disk format must be specified"
