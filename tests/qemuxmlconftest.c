@@ -504,6 +504,7 @@ static const struct testValidateSchemaCommandData commands[] = {
     { "-netdev", "netdev_add", false },
     { "-object", "object-add", false },
     { "-device", "device_add", true },
+    { "-chardev", "chardev-add", false },
 };
 
 static int
