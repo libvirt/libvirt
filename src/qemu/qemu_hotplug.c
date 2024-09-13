@@ -37,6 +37,7 @@
 #include "qemu_block.h"
 #include "qemu_snapshot.h"
 #include "qemu_virtiofs.h"
+#include "qemu_chardev.h"
 #include "domain_audit.h"
 #include "domain_cgroup.h"
 #include "domain_interface.h"
@@ -243,6 +244,9 @@ qemuHotplugChardevAttach(qemuMonitor *mon,
                          const char *alias,
                          virDomainChrSourceDef *def)
 {
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *ptypath = NULL;
+
     switch ((virDomainChrType) def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -272,7 +276,23 @@ qemuHotplugChardevAttach(qemuMonitor *mon,
         return -1;
     }
 
-    return qemuMonitorAttachCharDev(mon, alias, def);
+    if (qemuChardevGetBackendProps(def, false, alias, NULL, &props) < 0)
+        return -1;
+
+    if (qemuMonitorAttachCharDev(mon, &props, &ptypath) < 0)
+        return -1;
+
+    if (def->type == VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (!ptypath) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev-add reply was missing pty path"));
+            return -1;
+        }
+
+        def->data.file.path = g_steal_pointer(&ptypath);
+    }
+
+    return 0;
 }
 
 

@@ -1212,8 +1212,8 @@ int qemuMonitorGetTPMTypes(qemuMonitor *mon,
                            char ***tpmtypes);
 
 int qemuMonitorAttachCharDev(qemuMonitor *mon,
-                             const char *chrID,
-                             virDomainChrSourceDef *chr);
+                             virJSONValue **props,
+                             char **ptypath);
 int qemuMonitorDetachCharDev(qemuMonitor *mon,
                              const char *chrID);
 

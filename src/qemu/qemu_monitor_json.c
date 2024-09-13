@@ -6342,7 +6342,7 @@ int qemuMonitorJSONGetTPMTypes(qemuMonitor *mon,
 }
 
 
-static virJSONValue *
+static G_GNUC_UNUSED virJSONValue *
 qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                                      const virDomainChrSourceDef *chr)
 {
@@ -6571,40 +6571,28 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
 
 int
 qemuMonitorJSONAttachCharDev(qemuMonitor *mon,
-                             const char *chrID,
-                             virDomainChrSourceDef *chr)
+                             virJSONValue **props,
+                             char **ptypath)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    g_autoptr(virJSONValue) props = NULL;
+    virJSONValue *data;
 
-    if (!(props = qemuMonitorJSONAttachCharDevGetProps(chrID, chr)))
-        return -1;
-
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("chardev-add", &props)))
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("chardev-add", props)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-        virJSONValue *data;
+    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
+        return -1;
 
-        if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_OBJECT)))
-            return -1;
-
-        if (!(chr->data.file.path = g_strdup(virJSONValueObjectGetString(data, "pty")))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("chardev-add reply was missing pty path"));
-            return -1;
-        }
-    } else {
-        if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-            return -1;
-    }
+    if (ptypath)
+        *ptypath = g_strdup(virJSONValueObjectGetString(data, "pty"));
 
     return 0;
 }
+
 
 int
 qemuMonitorJSONDetachCharDev(qemuMonitor *mon,

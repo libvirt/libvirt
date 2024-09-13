@@ -24,6 +24,7 @@
 #include "qemu_alias.h"
 #include "qemu_security.h"
 #include "qemu_process.h"
+#include "qemu_chardev.h"
 
 #include "storage_source.h"
 #include "viralloc.h"
@@ -1682,7 +1683,13 @@ qemuBlockStorageSourceAttachApply(qemuMonitor *mon,
         return -1;
 
     if (data->chardevDef) {
-        if (qemuMonitorAttachCharDev(mon, data->chardevAlias, data->chardevDef) < 0)
+        g_autoptr(virJSONValue) props = NULL;
+
+        if (qemuChardevGetBackendProps(data->chardevDef, false,
+                                       data->chardevAlias, NULL, &props) < 0)
+            return -1;
+
+        if (qemuMonitorAttachCharDev(mon, &props, NULL) < 0)
             return -1;
 
         data->chardevAdded = true;

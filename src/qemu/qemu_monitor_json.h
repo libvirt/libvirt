@@ -584,8 +584,8 @@ qemuMonitorJSONGetTPMTypes(qemuMonitor *mon,
 
 int
 qemuMonitorJSONAttachCharDev(qemuMonitor *mon,
-                             const char *chrID,
-                             virDomainChrSourceDef *chr);
+                             virJSONValue **props,
+                             char **ptypath);
 int
 qemuMonitorJSONDetachCharDev(qemuMonitor *mon,
                              const char *chrID);

@@ -3523,14 +3523,12 @@ qemuMonitorGetTPMTypes(qemuMonitor *mon,
 
 int
 qemuMonitorAttachCharDev(qemuMonitor *mon,
-                         const char *chrID,
-                         virDomainChrSourceDef *chr)
+                         virJSONValue **props,
+                         char **ptypath)
 {
-    VIR_DEBUG("chrID=%s chr=%p", chrID, chr);
-
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONAttachCharDev(mon, chrID, chr);
+    return qemuMonitorJSONAttachCharDev(mon, props, ptypath);
 }
 
 

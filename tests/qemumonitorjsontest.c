@@ -28,6 +28,7 @@
 #include "qemu/qemu_monitor_json.h"
 #include "qemu/qemu_qapi.h"
 #include "qemu/qemu_alias.h"
+#include "qemu/qemu_chardev.h"
 #include "virerror.h"
 #include "cpu/cpu.h"
 #include "qemu/qemu_monitor.h"
@@ -553,6 +554,8 @@ testQemuMonitorJSONAttachChardev(const void *opaque)
 {
     const struct qemuMonitorJSONTestAttachChardevData *data = opaque;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewSchema(data->xmlopt, data->schema);
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *ptypath = NULL;
     int rc;
 
     if (!test)
@@ -575,20 +578,20 @@ testQemuMonitorJSONAttachChardev(const void *opaque)
             return -1;
     }
 
-    if ((rc = qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test),
-                                       "alias", data->chr)) < 0)
+    if (qemuChardevGetBackendProps(data->chr, false, "alias", NULL, &props) < 0)
+        return -1;
+
+    if ((rc = qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test), &props, &ptypath)) < 0)
         goto cleanup;
 
     if (data->chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-        if (STRNEQ_NULLABLE(data->expectPty, data->chr->data.file.path)) {
+        if (STRNEQ_NULLABLE(data->expectPty, ptypath)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "expected PTY path: %s got: %s",
                            NULLSTR(data->expectPty),
                            NULLSTR(data->chr->data.file.path));
             rc = -1;
         }
-
-        VIR_FREE(data->chr->data.file.path);
     }
 
  cleanup:
@@ -653,7 +656,9 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                        "'data':{'type':'vdagent'}}}");
 
         chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
-        CHECK("pty missing path", true,
+        /* Higher level code regards the missing path as error, but we simply
+         * check here what we've parsed */
+        CHECK("pty missing path", false,
               "{'id':'alias','backend':{'type':'pty','data':{}}}");
         if (qemuMonitorJSONTestAttachOneChardev(xmlopt, schema, "pty", chr,
                                                 "{'id':'alias',"
