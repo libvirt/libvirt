@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-12 21:35+0000\n"
+"PO-Revision-Date: 2024-09-14 06:56+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -33994,36 +33994,36 @@ msgid "print XML document rather than set the interface link state"
 msgstr "skriv XML-dokument istället för att sätta gränssnittets länktillstånd"
 
 msgid "print XML document, but don't define/create"
-msgstr ""
+msgstr "skriv XML-dokument, men definiera/skapa inte"
 
 msgid "print a more human readable output"
-msgstr ""
+msgstr "skriv en mer mänskligt läsbar utmatning"
 
 msgid "print domain's time in human readable form"
-msgstr ""
+msgstr "skriv domänens tid i mänskligt läsbar form"
 
 msgid "print help"
 msgstr "skriv ut hjälp"
 
 msgid "print lease info for a given network"
-msgstr ""
+msgstr "skriv ut hyresinformation för ett givet nätverk"
 
 msgid "print statistics for any kind of job (even failed ones)"
-msgstr ""
+msgstr "skriv statistik för godtyckligt sorts jobb (även misslyckade)"
 
 msgid "print the XML used to start the copy job instead of starting the job"
 msgstr ""
+"skriv XML:en som användes för att starta kopieringsjobbet istället för att "
+"starta jobbet"
 
-#, fuzzy
 msgid "print the admin server URI"
-msgstr "skriv ut de canonical-URI för hypervisor"
+msgstr "skriv ut admininstrationsserverl-URI:n"
 
 msgid "print the current directory"
 msgstr "akriv ut aktuell katalog"
 
-#, fuzzy
 msgid "print the domain's hostname"
-msgstr "skriv ut värdnamnet för hypervisor"
+msgstr "skriv ut domänens värdnamn"
 
 msgid "print the hypervisor canonical URI"
 msgstr "skriv ut de canonical-URI för hypervisor"
@@ -34031,36 +34031,35 @@ msgstr "skriv ut de canonical-URI för hypervisor"
 msgid "print the hypervisor hostname"
 msgstr "skriv ut värdnamnet för hypervisor"
 
-#, fuzzy
 msgid "print the hypervisor sysinfo"
-msgstr "skriv ut värdnamnet för hypervisor"
+msgstr "skriv ut sysinfon för hypervisor"
 
 msgid "print the raw data returned by libvirt"
-msgstr ""
+msgstr "skriv den råa datan returnerade av libvirt"
 
 msgid "print updated memory device XML instead of executing the change"
-msgstr ""
+msgstr "skriv uppdaterad minnesenhets-XML istället för att utföra ändringen"
 
 msgid "prints by percentage during 1 second."
-msgstr ""
+msgstr "skriver procentsatser under 1 sekund."
 
 msgid "prints specified cell statistics only."
-msgstr ""
+msgstr "skriver endast angiven cellstatistik."
 
 msgid "prints specified cpu statistics only."
-msgstr ""
+msgstr "skriver endast angiven cpu-statistik."
 
 msgid "process exited while connecting to monitor"
-msgstr ""
+msgstr "processen avslutade medan den anslöts till övervakaren"
 
 msgid "product is not supported with vhostuser disk"
-msgstr ""
+msgstr "produkten stödjs inte med vhostuser-disk"
 
 msgid "profile does not exist"
-msgstr ""
+msgstr "profilen finns inte"
 
 msgid "profile exists"
-msgstr ""
+msgstr "profilen finns"
 
 msgid "profileid parameter too long"
 msgstr "parametern profileid är för lång"
@@ -34069,13 +34068,13 @@ msgstr "parametern profileid är för lång"
 msgid "program mismatch (actual %1$x, expected %2$x)"
 msgstr "programmet matchar inte (aktuell %1$x, förväntad %2$x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "program mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "versioner matchar inte (aktuell %1$x, förväntad %2$x)"
+msgstr "programmet matchar inte i händelsen (aktuell 0x%1$x, förväntad 0x%2$x)"
 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
-msgstr ""
+msgstr "förbjudet tecken i DNS TXT-postnamn ”%1$s” för nätverket %2$s"
 
 msgid "property with name 'id' can't be overridden"
 msgstr ""
