@@ -3695,6 +3695,8 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     virDomainNetDef **devslot = NULL;
     virDomainNetDef *olddev;
     virDomainNetType oldType, newType;
+    const char *oldBridgeName = NULL;
+    const char *newBridgeName = NULL;
     bool actualSame = false;
     bool needReconnect = false;
     bool needBridgeChange = false;
@@ -3962,6 +3964,9 @@ qemuDomainChangeNet(virQEMUDriver *driver,
 
     newType = virDomainNetGetActualType(newdev);
 
+    oldBridgeName = virDomainNetGetActualBridgeName(olddev);
+    newBridgeName = virDomainNetGetActualBridgeName(newdev);
+
     if (newType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
         newType == VIR_DOMAIN_NET_TYPE_VDPA) {
         /* can't turn it into a type='hostdev' or type='vdpa' interface */
@@ -3993,13 +3998,6 @@ qemuDomainChangeNet(virQEMUDriver *driver,
             break;
 
         case VIR_DOMAIN_NET_TYPE_NETWORK:
-            if (STRNEQ(olddev->data.network.name, newdev->data.network.name)) {
-                if (virDomainNetGetActualVirtPortProfile(newdev))
-                    needReconnect = true;
-                else
-                    needBridgeChange = true;
-            }
-
             if (STRNEQ_NULLABLE(olddev->data.network.portgroup,
                                 newdev->data.network.portgroup)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -4040,59 +4038,85 @@ qemuDomainChangeNet(virQEMUDriver *driver,
             goto cleanup;
         }
     } else {
-        /* interface type has changed. There are a few special cases
-         * where this can only require a minor (or even no) change,
-         * but in most cases we need to do a full reconnection.
+        /* The interface type has changed. The only times when this
+         * wouldn't *always* require completely recreating the backend
+         * of the netdev (aka needReconnect, which QEMU doesn't
+         * support anyway) are:
          *
-         * As long as both the new and old types use a tap device
-         * connected to a host bridge (ie VIR_DOMAIN_NET_TYPE_NETWORK
-         * or VIR_DOMAIN_NET_TYPE_BRIDGE), we just need to connect to
-         * the new bridge.
+         * 1) if oldType and newType are both either _NETWORK or
+         *    _BRIDGE (because both of those end up connecting the tap
+         *    device to a bridge, and that is something that *can* be
+         *    redone without recreating the backend (and will be
+         *    handled below where needBridgeChange is set).
+         *
+         *    (NB: if either of these is _NETWORK or _BRIDGE, the
+         *    corresponding oldBridgeName/newBridgeName will be
+         *    non-null - this is simpler to check for than checking
+         *    each for both _NETWORK and _BRIDGE)
+         *
+         * 2) if oldType and newType are both _DIRECT (and presumably
+         *    will end up specifying the same link device, which is
+         *    checked further down where ActualDirectDev is checked)
+         *
+         * These two cases we'll allow through (for further checks
+         * below)...
          */
-        if ((oldType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-             oldType == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
-            (newType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-             newType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+        if (!((oldBridgeName && newBridgeName)
+              || (oldType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+                  newType == VIR_DOMAIN_NET_TYPE_DIRECT))) {
 
+            /* ...for all other combinations, we need a full reconnect
+             * (which currently isn't, and perhaps probably never will
+             * be, supported by QEMU, so needReconnect is effectively
+             * "NOT SUPPORTED")
+             */
+            needReconnect = true;
+        }
+
+        /* whatever else is done, when the interface type has changed,
+         * we need to replace olddev with newdev
+         */
+        needReplaceDevDef = true;
+    }
+
+    /* tests that need to be done whether or not type or actualType changes */
+
+    /* if both new and old use a bridge device */
+    if (newBridgeName) {
+
+        if (STRNEQ_NULLABLE(oldBridgeName, newBridgeName))
             needBridgeChange = true;
 
-        } else if (oldType == VIR_DOMAIN_NET_TYPE_DIRECT &&
-                   newType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-
-            /* this is the case of switching from type='direct' to
-             * type='network' for a network that itself uses direct
-             * (macvtap) devices. If the physical device and mode are
-             * the same, this doesn't require any actual setup
-             * change. If the physical device or mode *does* change,
-             * that will be caught in the common section below */
-
-        } else {
-
-            /* for all other combinations, we'll need a full reconnect */
-            needReconnect = true;
-
+        /* A change in virtportprofile also indicates we probably need
+         * to re-attach the bridge, e.g. if the profileid or type
+         * changed.
+         */
+        if (!virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
+                                        virDomainNetGetActualVirtPortProfile(newdev))) {
+            needBridgeChange = true;
         }
     }
 
-    /* now several things that are in multiple (but not all)
-     * different types, and can be safely compared even for those
-     * cases where they don't apply to a particular type.
+    /* if the newType is DIRECT then we've already set needReconnect
+     * if oldType was anything other than DIRECT. We also need to set
+     * it if the direct mode or anything in the virtportprofile has
+     * changed.
      */
-    if (STRNEQ_NULLABLE(virDomainNetGetActualBridgeName(olddev),
-                        virDomainNetGetActualBridgeName(newdev))) {
-        if (virDomainNetGetActualVirtPortProfile(newdev))
+    if (newType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (STRNEQ_NULLABLE(virDomainNetGetActualDirectDev(olddev),
+                            virDomainNetGetActualDirectDev(newdev)) ||
+            virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(newdev) ||
+            !virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
+                                        virDomainNetGetActualVirtPortProfile(newdev))) {
+            /* you really can't change much about a macvtap device once it's been created */
             needReconnect = true;
-        else
-            needBridgeChange = true;
+        }
     }
 
-    if (STRNEQ_NULLABLE(virDomainNetGetActualDirectDev(olddev),
-                        virDomainNetGetActualDirectDev(newdev)) ||
-        virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(newdev) ||
-        !virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
-                                    virDomainNetGetActualVirtPortProfile(newdev))) {
-        needReconnect = true;
-    }
+    /* now several things that are in multiple (but not all) different
+     * types, and can be safely compared even for those cases where
+     * they don't apply to a particular type.
+     */
 
     if (!virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
                              virDomainNetGetActualVlan(newdev))) {
