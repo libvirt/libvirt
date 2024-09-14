@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-14 06:56+0000\n"
+"PO-Revision-Date: 2024-09-14 19:47+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34077,71 +34077,74 @@ msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "förbjudet tecken i DNS TXT-postnamn ”%1$s” för nätverket %2$s"
 
 msgid "property with name 'id' can't be overridden"
-msgstr ""
+msgstr "egenskapen med namnet ”id” kan inte åsidosättas"
 
 #, c-format
 msgid "protocol '%1$s' accepts only one host"
-msgstr ""
+msgstr "protokollet ”%1$s” accepterar bara en värd"
 
 #, c-format
 msgid "protocol '%1$s' is not supported by nbdkit"
-msgstr ""
+msgstr "protokollet ”%1$s” stödjs inte av nbdkit"
 
 msgid "protocol misses the family attribute"
-msgstr ""
+msgstr "protokollet saknar familjeattributet"
 
 msgid "protocol used by disk device source"
-msgstr ""
+msgstr "protokoll använt av diskenhetskällan"
 
 msgid "provide XML suitable for migrations"
-msgstr ""
+msgstr "ge XML lämplig för migreringar"
 
 #, c-format
 msgid "ps2 bus does not support %1$s input device"
-msgstr ""
+msgstr "ps2-bussen stödjer inte inmatningsenheten %1$s"
 
 msgid "ps2 bus inputs require the ps2 feature not to be disabled"
-msgstr ""
+msgstr "ps2-bussens ingångar kräver att funktionen ps2 inte avaktiveras"
 
 msgid "ps2 feature is not available with this QEMU binary"
-msgstr ""
+msgstr "funktionen ps2 är inte tillgänglig med denna QEMU-binär"
 
 msgid "ps2 feature state cannot be controlled with this QEMU binary"
-msgstr ""
+msgstr "funktionen ps2:s tillstånd kan inte styras med denna QEMU-binär"
 
 msgid "pstore device is missing alias"
-msgstr ""
+msgstr "enheten pstore saknar alias"
 
 #, c-format
 msgid "pull mode backup for disk '%1$s' requires qcow2 driver"
-msgstr ""
+msgstr "säkerhetskopia i dragläge för disken ”%1$s” kräver drivrutinen qcow2"
 
 msgid "pvpanic is supported only with PCI address type"
-msgstr ""
+msgstr "pvpanic stödjs bara med adresstypen PCI"
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%1$s'"
 msgstr ""
+"qemu-agenten levererade inte fältet ”ip-address” till gränssnittet ”%1$s”"
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address-type' field for interface '%1$s'"
 msgstr ""
+"qemu-agenten levererade inte fältet ”ip-address-type” till gränssnittet "
+"”%1$s”"
 
 msgid "qemu agent didn't provide 'name' field"
-msgstr ""
+msgstr "qemu-agenten levererade inte fältet ”name”"
 
 msgid "qemu agent didn't return an array of disks"
-msgstr ""
+msgstr "qemu-agenten returnerade inte en vektor med diskar"
 
 msgid "qemu agent didn't return an array of interfaces"
-msgstr ""
+msgstr "qemu-agenten returnerade inte en vektor med gränssnitt"
 
 msgid "qemu agent didn't return an array of keys"
-msgstr ""
+msgstr "qemu-agenten returnerade inte en vektor med nycklar"
 
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
-msgstr ""
+msgstr "qemu rapporterade inte tråd-id för vcpu ”%1$zu”"
 
 msgid "qemu does not allow specifying screen ID"
 msgstr ""
