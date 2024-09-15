@@ -56,6 +56,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevopenvswitch.h"
 #include "virnetdevmidonet.h"
+#include "virnetdevtap.h"
 #include "device_conf.h"
 #include "storage_source.h"
 #include "storage_source_conf.h"
@@ -3533,7 +3534,6 @@ qemuDomainChangeNetBridge(virDomainObj *vm,
                           virDomainNetDef *olddev,
                           virDomainNetDef *newdev)
 {
-    int ret = -1;
     const char *oldbridge = virDomainNetGetActualBridgeName(olddev);
     const char *newbridge = virDomainNetGetActualBridgeName(newdev);
 
@@ -3547,50 +3547,21 @@ qemuDomainChangeNetBridge(virDomainObj *vm,
 
     if (virNetDevExists(newbridge) != 1) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("bridge %1$s doesn't exist"), newbridge);
+                       _("cannot add domain %1$s device %2$s to nonexistent bridge %3$s"),
+                       vm->def->name, newdev->ifname, newbridge);
         return -1;
     }
 
-    ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
-    virDomainAuditNet(vm, olddev, NULL, "detach", ret == 0);
-    if (ret < 0) {
-        /* warn but continue - possibly the old network
-         * had been destroyed and reconstructed, leaving the
-         * tap device orphaned.
-         */
-        VIR_WARN("Unable to detach device %s from bridge %s",
-                 olddev->ifname, oldbridge);
-    }
-
-    ret = virNetDevBridgeAddPort(newbridge, olddev->ifname);
-    if (ret == 0 &&
-        virDomainNetGetActualPortOptionsIsolated(newdev) == VIR_TRISTATE_BOOL_YES) {
-
-        ret = virNetDevBridgePortSetIsolated(newbridge, olddev->ifname, true);
-        if (ret < 0) {
-            virErrorPtr err;
-
-            virErrorPreserveLast(&err);
-            ignore_value(virNetDevBridgeRemovePort(newbridge, olddev->ifname));
-            virErrorRestore(&err);
-        }
-    }
-    virDomainAuditNet(vm, NULL, newdev, "attach", ret == 0);
-    if (ret < 0) {
-        virErrorPtr err;
-
-        virErrorPreserveLast(&err);
-        ret = virNetDevBridgeAddPort(oldbridge, olddev->ifname);
-        if (ret == 0 &&
-            virDomainNetGetActualPortOptionsIsolated(olddev) == VIR_TRISTATE_BOOL_YES) {
-            ignore_value(virNetDevBridgePortSetIsolated(newbridge, olddev->ifname, true));
-        }
-        virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
-        virErrorRestore(&err);
-        return -1;
-    }
-    /* caller will replace entire olddev with newdev in domain nets list */
-    return 0;
+    /* force the detach/reattach (final arg) to make sure we pick up virtualport changes
+     * even if the bridge name hasn't changed
+     */
+    return virNetDevTapReattachBridge(newdev->ifname,
+                                      virDomainNetGetActualBridgeName(newdev),
+                                      &newdev->mac, vm->def->uuid,
+                                      virDomainNetGetActualVirtPortProfile(newdev),
+                                      virDomainNetGetActualVlan(newdev),
+                                      virDomainNetGetActualPortOptionsIsolated(newdev),
+                                      newdev->mtu, NULL, true);
 }
 
 static int
