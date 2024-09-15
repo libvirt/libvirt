@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-14 19:47+0000\n"
+"PO-Revision-Date: 2024-09-15 09:33+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34147,84 +34147,89 @@ msgid "qemu didn't report thread id for vcpu '%1$zu'"
 msgstr "qemu rapporterade inte tråd-id för vcpu ”%1$zu”"
 
 msgid "qemu does not allow specifying screen ID"
-msgstr ""
+msgstr "qemu tillåter inte att man anger skärm-ID"
 
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
-msgstr ""
+msgstr "qemu stödjer inte mer än en post till Typ 2 i SMBIOS-tabellen"
 
-#, fuzzy
 msgid "qemu does not support the accel2d setting"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "qemu stödjer inte inställningen acceld2"
 
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr ""
+"qemu stödjer inte reversering av ögonblicksbilder tagna i tillståndet "
+"PMSUSPENDED"
 
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
-msgstr ""
+msgstr "qemu stödjer inte att ta ögonblicksbilder av gäster som är PMSUSPENDED"
 
 msgid ""
 "qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set "
 "to 'reboot'"
 msgstr ""
+"qemu-drivrutinen stödjer inte att ”onReboot” sätts till ”destroy” och "
+"”onPoweroff” sätts till ”reboot”"
 
 msgid ""
 "qemu driver doesn't support the 'preserve' action for "
 "'on_reboot'/'on_poweroff'"
 msgstr ""
+"qemu-drivrutinen stödjer inte åtgärden ”preserve” åt "
+"”on_reboot”/”on_poweroff”"
 
 msgid ""
 "qemu driver doesn't support the 'rename-restart' action for "
 "'on_reboot'/'on_poweroff'/'on_crash'"
 msgstr ""
+"qemu-drivrutinen stödjer inte åtgärden ”rename-restart” åt "
+"”on_reboot”/”on_poweroff”/”on_crash”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "qemu emulator '%1$s' does not support xen"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "qemu-emulatorn '%1$s' stödjer inte xen"
 
 msgid "qemu encryption engine expects only a single secret"
-msgstr ""
+msgstr "qemu-krypteringsmotorn förväntar sig endast en enda hemlighet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "qemu monitor event callback %1$d not registered"
-msgstr "domänhändelse %1$d är inte registrerad"
+msgstr "qemu-övervakningsåteranrop %1$d är inte registrerat"
 
 #, c-format
 msgid "qemu reported thread id for inactive vcpu '%1$zu'"
-msgstr ""
+msgstr "qemu rapporterade tråd-id för inaktiv vcpu ”%1$zu”"
 
 msgid "qemu returned malformed time"
-msgstr ""
+msgstr "qemu returnerade en felformaterad tid"
 
-#, fuzzy
 msgid "qemu state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "qemu-tillståndsdrivrutinen är inte aktiv"
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
-msgstr ""
+msgstr "qom-get felaktig objektegenskapstyp %1$d"
 
 msgid "qom-get reply was missing return data"
-msgstr ""
+msgstr "qom-get-svar saknades i returdata"
 
 msgid "qom-list reply data was missing 'name'"
 msgstr "svaret på qom-list saknade ”name”"
 
 msgid "qom-list reply has malformed 'type' data"
-msgstr ""
+msgstr "qom-list-svaret har felformaterad ”type”-data"
 
 msgid "qom-list-types reply data was missing 'name'"
 msgstr "svaret på qom-list-types saknade ”name”"
 
 #, c-format
 msgid "qom-set invalid object property type %1$d"
-msgstr ""
+msgstr "qom-set felaktig objektegenskapstyp %1$d"
 
-#, fuzzy
 msgid "query information about the guest (via agent)"
-msgstr "Returnerar grundinformation om domänen."
+msgstr "frågeinformation om gästen (via en agent)"
 
 msgid "query is supported only with HTTP(S) protocols"
-msgstr ""
+msgstr "frågan stödjs endast med protokollet HTTP(S)"
 
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr ""
