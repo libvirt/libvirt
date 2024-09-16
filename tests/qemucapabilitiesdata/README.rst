@@ -121,7 +121,7 @@ Fake test data dumps for certain architectures
 ==============================================
 
 For some architectures it was impossible or impractical to fetch real capability
-dumps. To ensure coverate of certain cases the dumps were collected from
+dumps. To ensure coverage of certain cases the dumps were collected from
 corresponding binaries running on a different architecture.
 
 Capabilities dumps for the following architectures are usually produced on real
