@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-15 09:33+0000\n"
+"PO-Revision-Date: 2024-09-16 15:44+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34232,61 +34232,62 @@ msgid "query is supported only with HTTP(S) protocols"
 msgstr "frågan stödjs endast med protokollet HTTP(S)"
 
 msgid "query or modify state of vcpu in the guest (via agent)"
-msgstr ""
+msgstr "fråga om eller ändra tillståndet på vcpu:n i gästen (via agenten)"
 
 msgid "query-block device entry was not in expected format"
-msgstr ""
+msgstr "enhetsposten från query-block var inte på det förväntade formatet"
 
 msgid "query-cpu-definitions reply data was missing 'name'"
-msgstr ""
+msgstr "svarsdata från query-cpu-definitions saknade ”name”"
 
 msgid "query-cpu-model-comparison reply data was missing 'result'"
-msgstr ""
+msgstr "svarsdata från query-cpu-model-comparison saknade ”result”"
 
 msgid "query-dirty-rate parsing 'vcpu-dirty-rate' in failure"
-msgstr ""
+msgstr "query-dirty-rate tolkar ”vcpu-dirty-rate” i misslyckande"
 
 msgid "query-dirty-rate reply was missing 'calc-time' data"
-msgstr ""
+msgstr "svaret från query-dirty-rate saknade datan ”calc-time”"
 
 msgid "query-dirty-rate reply was missing 'dirty-rate' data"
-msgstr ""
+msgstr "svaret från query-dirty-rate saknade datan ”dirty-rate”"
 
 msgid "query-dirty-rate reply was missing 'id' data"
-msgstr ""
+msgstr "svaret från query-dirty-rate saknade datan ”id”"
 
 msgid "query-dirty-rate reply was missing 'return' data"
-msgstr ""
+msgstr "svaret från query-dirty-rate saknade datan ”return”"
 
 msgid "query-dirty-rate reply was missing 'start-time' data"
-msgstr ""
+msgstr "svaret från query-dirty-rate saknade datan ”start-time”"
 
 msgid "query-dirty-rate reply was missing 'status' data"
-msgstr ""
+msgstr "svaret från query-dirty-rate saknade datan ”status”"
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
+msgstr "svaret från query-fdsets reply saknade ”fdset-id”"
 
 msgid "query-fdsets return data missing fd array element"
-msgstr ""
+msgstr "returdata från query-fdsets saknar fb-vektorelement"
 
 msgid "query-fdsets return data missing fdset array element"
-msgstr ""
+msgstr "returdata från query-fdsets saknar ett fdset-vektorelement"
 
 msgid "query-hotpluggable-cpus didn't return device props"
-msgstr ""
+msgstr "query-hotpluggable-cpus returnerade inte enhetsegenskaper"
 
 msgid "query-hotpluggable-cpus didn't return device type"
-msgstr ""
+msgstr "query-hotpluggable-cpus returnerade inte en enhetstyp"
 
 msgid "query-hotpluggable-cpus didn't return vcpus-count"
-msgstr ""
+msgstr "query-hotpluggable-cpus returnerade inte vcpus-count"
 
 msgid "query-hotpluggable-cpus entry doesn't report topology information"
 msgstr ""
+"posten från query-hotpluggable-cpus rapporterar inte topologiinformation"
 
 msgid "query-iothreads reply data was missing 'id'"
-msgstr ""
+msgstr "svarsdata från query-iothreads saknade ”id”"
 
 msgid "query-iothreads reply has malformed 'thread-id' data"
 msgstr ""
