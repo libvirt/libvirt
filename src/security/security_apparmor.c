@@ -318,26 +318,8 @@ AppArmorSetSecurityHostLabel(virSCSIVHostDevice *dev G_GNUC_UNUSED,
 static virSecurityDriverStatus
 AppArmorSecurityManagerProbe(const char *virtDriver G_GNUC_UNUSED)
 {
-    g_autofree char *template_qemu = NULL;
-    g_autofree char *template_lxc = NULL;
-
     if (use_apparmor() < 0)
         return SECURITY_DRIVER_DISABLE;
-
-    /* see if template file exists */
-    template_qemu = g_strdup_printf("%s/TEMPLATE.qemu", APPARMOR_DIR "/libvirt");
-    template_lxc = g_strdup_printf("%s/TEMPLATE.lxc", APPARMOR_DIR "/libvirt");
-
-    if (!virFileExists(template_qemu)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("template \'%1$s\' does not exist"), template_qemu);
-        return SECURITY_DRIVER_DISABLE;
-    }
-    if (!virFileExists(template_lxc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("template \'%1$s\' does not exist"), template_lxc);
-        return SECURITY_DRIVER_DISABLE;
-    }
 
     return SECURITY_DRIVER_ENABLE;
 }
