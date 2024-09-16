@@ -2158,9 +2158,6 @@ virResctrlAllocAssign(virResctrlInfo *resctrl,
     if (virResctrlAllocCopyMasks(alloc, alloc_default) < 0)
         return -1;
 
-    if (virResctrlAllocCopyMemBW(alloc, alloc_default) < 0)
-        return -1;
-
     for (level = 0; level < alloc->nlevels; level++) {
         virResctrlAllocPerLevel *a_level = alloc->levels[level];
         virResctrlAllocPerLevel *f_level = NULL;
