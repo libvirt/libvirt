@@ -692,7 +692,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                     0)
                     return -1;
             } else {
-                b_info->u.hvm.serial_list = *g_new0(libxl_string_list, def->nserials + 1);
+                b_info->u.hvm.serial_list = g_new0(char *, def->nserials + 1);
                 for (i = 0; i < def->nserials; i++) {
                     if (libxlMakeChrdevStr(def->serials[i],
                                            &b_info->u.hvm.serial_list[i]) < 0)

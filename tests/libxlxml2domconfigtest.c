@@ -208,6 +208,9 @@ mymain(void)
 
     DO_TEST("max-eventchannels-hvm");
 
+    DO_TEST("single-serial");
+    DO_TEST("multiple-serial");
+
     unlink("libxl-driver.log");
 
     testXLFreeDriver(driver);

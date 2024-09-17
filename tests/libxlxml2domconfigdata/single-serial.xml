@@ -1,0 +1,25 @@
+<domain type='xen'>
+  <name>test-hvm</name>
+  <description>None</description>
+  <uuid>2147d599-9cc6-c0dc-92ab-4064b5446e9b</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>4</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <clock offset='utc'/>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <apic/>
+    <acpi/>
+    <pae/>
+  </features>
+  <devices>
+    <serial type='pty'/>
+  </devices>
+</domain>

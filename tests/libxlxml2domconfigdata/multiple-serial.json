@@ -1,0 +1,63 @@
+{
+    "c_info": {
+        "type": "hvm",
+        "name": "test-hvm",
+        "uuid": "2147d599-9cc6-c0dc-92ab-4064b5446e9b"
+    },
+    "b_info": {
+        "max_vcpus": 4,
+        "avail_vcpus": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "max_memkb": 1048576,
+        "target_memkb": 1048576,
+        "shadow_memkb": 1234,
+        "sched_params": {
+
+        },
+        "acpi": "True",
+        "apic": "True",
+        "type.hvm": {
+            "pae": "True",
+            "nographic": "True",
+            "vga": {
+                "kind": "none"
+            },
+            "vnc": {
+                "enable": "False"
+            },
+            "sdl": {
+                "enable": "False"
+            },
+            "spice": {
+
+            },
+            "serial_list": [
+                "null",
+                "stdio",
+                "vc",
+                "pty",
+                "pipe:/tmp/file",
+                "file:/tmp/serial.log",
+                "/dev/ttyS2",
+                "udp::9999@:0",
+                "tcp:127.0.0.1:9999",
+                "unix:/tmp/serial-server.sock,server,nowait"
+            ],
+            "boot": "c",
+            "rdm": {
+
+            }
+        },
+        "arch_arm": {
+
+        },
+        "arch_x86": {
+
+        }
+    },
+    "on_reboot": "restart"
+}
