@@ -1,0 +1,149 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </controller>
+    <parallel type='dev'>
+      <source path='/dev/parport0'/>
+      <target port='0'/>
+    </parallel>
+    <channel type='null'>
+      <log file='/path/to/null.log' append='off'/>
+      <target type='virtio' name='chardev-null'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <channel type='vc'>
+      <log file='/path/to/vc.log' append='on'/>
+      <target type='virtio' name='chardev-vc'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='chardev-pty'/>
+      <address type='virtio-serial' controller='0' bus='0' port='3'/>
+    </channel>
+    <channel type='stdio'>
+      <target type='virtio' name='chardev-stdio'/>
+      <address type='virtio-serial' controller='0' bus='0' port='4'/>
+    </channel>
+    <channel type='file'>
+      <source path='/path/to/fileout'/>
+      <target type='virtio' name='chardev-file'/>
+      <address type='virtio-serial' controller='0' bus='0' port='5'/>
+    </channel>
+    <channel type='pipe'>
+      <source path='/path/to/pipe'/>
+      <target type='virtio' name='chardev-pipe'/>
+      <address type='virtio-serial' controller='0' bus='0' port='6'/>
+    </channel>
+    <channel type='dev'>
+      <source path='/path/to/device'/>
+      <target type='virtio' name='chardev-dev'/>
+      <address type='virtio-serial' controller='0' bus='0' port='7'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/path/to/unix-listen'/>
+      <target type='virtio' name='chardev-unix-listen'/>
+      <address type='virtio-serial' controller='0' bus='0' port='8'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='connect' path='/path/to/unix-listen'>
+        <reconnect enabled='yes' timeout='2'/>
+      </source>
+      <target type='virtio' name='chardev-unix-connect'/>
+      <address type='virtio-serial' controller='0' bus='0' port='9'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='bind' host='1.2.3.4' service='5678'/>
+      <protocol type='raw'/>
+      <target type='virtio' name='chardev-tcp-listen-raw'/>
+      <address type='virtio-serial' controller='0' bus='0' port='10'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='bind' host='1.2.3.4' service='5679'/>
+      <protocol type='telnet'/>
+      <target type='virtio' name='chardev-tcp-listen-telnet'/>
+      <address type='virtio-serial' controller='0' bus='0' port='11'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='connect' host='1.2.3.4' service='5678' tls='yes'>
+        <reconnect enabled='yes' timeout='2'/>
+      </source>
+      <protocol type='raw'/>
+      <target type='virtio' name='chardev-tcp-connect-raw'/>
+      <address type='virtio-serial' controller='0' bus='0' port='12'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='connect' host='hostname.global.' service='5679' tls='yes'>
+        <reconnect enabled='yes' timeout='2'/>
+      </source>
+      <protocol type='telnet'/>
+      <target type='virtio' name='chardev-tcp-connect-telnet'/>
+      <address type='virtio-serial' controller='0' bus='0' port='13'/>
+    </channel>
+    <channel type='udp'>
+      <source mode='connect' host='127.0.0.1' service='2222'/>
+      <target type='virtio' name='chardev-udp-nobind'/>
+      <address type='virtio-serial' controller='0' bus='0' port='14'/>
+    </channel>
+    <channel type='udp'>
+      <source mode='bind' host='127.0.0.1' service='1111'/>
+      <source mode='connect' host='127.0.0.1' service='2222'/>
+      <target type='virtio' name='chardev-udp-bind'/>
+      <address type='virtio-serial' controller='0' bus='0' port='15'/>
+    </channel>
+    <channel type='spicevmc'>
+      <target type='virtio' name='com.redhat.spice.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='16'/>
+    </channel>
+    <channel type='qemu-vdagent'>
+      <source>
+        <clipboard copypaste='no'/>
+        <mouse mode='server'/>
+      </source>
+      <target type='virtio' name='chardev-vdagent'/>
+      <address type='virtio-serial' controller='0' bus='0' port='17'/>
+    </channel>
+    <channel type='dbus'>
+      <source channel='test.channel.0'/>
+      <target type='virtio' name='chardev-dbus'/>
+      <address type='virtio-serial' controller='0' bus='0' port='18'/>
+    </channel>
+    <channel type='spiceport'>
+      <source channel='test.channel.0'/>
+      <target type='virtio' name='chardev-spiceport'/>
+      <address type='virtio-serial' controller='0' bus='0' port='19'/>
+    </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' autoport='yes' listen='0.0.0.0'>
+      <listen type='address' address='0.0.0.0'/>
+    </graphics>
+    <audio id='1' type='spice'/>
+    <video>
+      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <memballoon model='none'/>
+  </devices>
+</domain>

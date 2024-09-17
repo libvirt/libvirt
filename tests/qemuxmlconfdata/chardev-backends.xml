@@ -1,0 +1,111 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <channel type='null'>
+      <target type='virtio' name='chardev-null'/>
+      <log file='/path/to/null.log' append='off'/>
+    </channel>
+    <channel type='vc'>
+      <target type='virtio' name='chardev-vc'/>
+      <log file='/path/to/vc.log' append='on'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='chardev-pty'/>
+    </channel>
+    <channel type='stdio'>
+      <target type='virtio' name='chardev-stdio'/>
+    </channel>
+    <channel type='file'>
+      <source path='/path/to/fileout'/>
+      <target type='virtio' name='chardev-file'/>
+    </channel>
+    <channel type='pipe'>
+      <source path='/path/to/pipe'/>
+      <target type='virtio' name='chardev-pipe'/>
+    </channel>
+    <channel type='dev'>
+      <source path='/path/to/device'/>
+      <target type='virtio' name='chardev-dev'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/path/to/unix-listen'/>
+      <target type='virtio' name='chardev-unix-listen'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='connect' path='/path/to/unix-listen'>
+        <reconnect enabled='yes' timeout='2'/>
+      </source>
+      <target type='virtio' name='chardev-unix-connect'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='bind' host='1.2.3.4' service='5678'/>
+      <protocol type='raw'/>
+      <target type='virtio' name='chardev-tcp-listen-raw'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='bind' host='1.2.3.4' service='5679'/>
+      <protocol type='telnet'/>
+      <target type='virtio' name='chardev-tcp-listen-telnet'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='connect' host='1.2.3.4' service='5678' tls='yes'>
+        <reconnect enabled='yes' timeout='2'/>
+      </source>
+      <protocol type='raw'/>
+      <target type='virtio' name='chardev-tcp-connect-raw'/>
+    </channel>
+    <channel type='tcp'>
+      <source mode='connect' host='hostname.global.' service='5679' tls='yes'>
+        <reconnect enabled='yes' timeout='2'/>
+      </source>
+      <protocol type='telnet'/>
+      <target type='virtio' name='chardev-tcp-connect-telnet'/>
+    </channel>
+    <channel type='udp'>
+      <source mode='connect' host='127.0.0.1' service='2222'/>
+      <target type='virtio' name='chardev-udp-nobind'/>
+    </channel>
+    <channel type='udp'>
+      <source mode='bind' host='127.0.0.1' service='1111'/>
+      <source mode='connect' host='127.0.0.1' service='2222'/>
+      <target type='virtio' name='chardev-udp-bind'/>
+    </channel>
+    <!-- The commandline formatter requires that the target is strictly 'com.redhat.spice.0',
+         and spice graphics is present. -->
+    <channel type='spicevmc'>
+      <target type='virtio' name='com.redhat.spice.0'/>
+    </channel>
+    <channel type='qemu-vdagent'>
+      <target type='virtio' name='chardev-vdagent'/>
+      <source>
+        <clipboard copypaste='no'/>
+        <mouse mode='server'/>
+      </source>
+    </channel>
+    <channel type='dbus'>
+      <source channel='test.channel.0'/>
+      <target type='virtio' name='chardev-dbus'/>
+    </channel>
+    <channel type='spiceport'>
+      <source channel='test.channel.0'/>
+      <target type='virtio' name='chardev-spiceport'/>
+    </channel>
+    <!-- parallel port with 'dev' type is special as it has a specific backend in qemu -->
+    <parallel type='dev'>
+      <source path='/dev/parport0'/>
+      <target port='0'/>
+    </parallel>
+    <!-- spice graphics required by some of the spice-transported backends -->
+    <graphics type='spice' autoport='yes' listen='0.0.0.0'>
+      <listen type='address' address='0.0.0.0'/>
+    </graphics>
+    <memballoon model='none'/>
+  </devices>
+</domain>

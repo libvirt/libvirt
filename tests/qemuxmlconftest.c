@@ -1830,6 +1830,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("console-compat-auto");
     DO_TEST_CAPS_LATEST("console-compat-crash");
 
+    DO_TEST_CAPS_LATEST("chardev-backends");
+
     DO_TEST_CAPS_LATEST("serial-vc-chardev");
     DO_TEST_CAPS_LATEST("serial-pty-chardev");
     DO_TEST_CAPS_LATEST("serial-dev-chardev");
