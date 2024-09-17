@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-14 06:56+0000\n"
+"PO-Revision-Date: 2024-09-17 13:43+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1951,9 +1951,8 @@ msgstr "An explicit disk format must be specified"
 msgid "Ancestor model %1$s not found for CPU model %2$s"
 msgstr "Ancestor model %1$s not found for CPU model %2$s"
 
-#, fuzzy
 msgid "Another relabel transaction is already started"
-msgstr "Cannot share CURL handle that is already shared"
+msgstr "Another relabel transaction is already started"
 
 msgid "AnyType is missing 'type' property"
 msgstr "AnyType is missing 'type' property"
@@ -1962,15 +1961,19 @@ msgid ""
 "Append, reset or remove specified key from the authorized keys file for "
 "given user"
 msgstr ""
+"Append, reset or remove specified key from the authorised keys file for "
+"given user"
 
 msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
 msgstr ""
+"Argument 'cellid' in memnode element must correspond to existing guest's "
+"NUMA cell"
 
 #, c-format
 msgid "Argument 'node' %1$zu outranges defined number of NUMA nodes"
-msgstr ""
+msgstr "Argument 'node' %1$zu outranges defined number of NUMA nodes"
 
 msgid "Arguments must be non null"
 msgstr "Arguments must be non null"
@@ -1979,13 +1982,14 @@ msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
 msgstr ""
+"Arguments under memnode element do not correspond with existing guest's NUMA "
+"cell"
 
 msgid "At least one NUMA node has to have CPUs"
-msgstr ""
+msgstr "At least one NUMA node has to have CPUs"
 
-#, fuzzy
 msgid "At least one PTY console is required"
-msgstr "At least one cgroup controller is required"
+msgstr "At least one PTY console is required"
 
 msgid "At least one cgroup controller is required"
 msgstr "At least one cgroup controller is required"
@@ -1993,25 +1997,30 @@ msgstr "At least one cgroup controller is required"
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
 msgstr ""
+"At least one NUMA node has to be configured when enabling memory hotplug"
 
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
 msgstr ""
+"At least one of name, MAC, or IP attribute must be specified for static host "
+"definition in network '%1$s'"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
 msgstr ""
+"At least one of options --max-clients, --max-unauth-clients is mandatory"
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
 msgstr ""
+"At least one of options --min-workers, --max-workers, --priority-workers is "
+"mandatory"
 
-#, fuzzy
 msgid "At least one tty is required"
-msgstr "At least one cgroup controller is required"
+msgstr "At least one tty is required"
 
 msgid "Attach device from an XML <file>."
 msgstr "Attach device from an XML <file>."
@@ -2028,21 +2037,22 @@ msgstr "Attached device %1$s has no type"
 
 #, c-format
 msgid "Attaching devices of type %1$d is not implemented"
-msgstr ""
+msgstr "Attaching devices of type %1$d is not implemented"
 
 #, c-format
 msgid ""
 "Attaching memory device with size '%1$llu' would exceed domain's maxMemory "
 "config size '%2$llu'"
 msgstr ""
+"Attaching memory device with size '%1$llu' would exceed domain's maxMemory "
+"config size '%2$llu'"
 
 #, c-format
 msgid "Attempt to create %1$s without specifying mode"
 msgstr "Attempt to create %1$s without specifying mode"
 
-#, fuzzy
 msgid "Attempt to migrate guest to the same host"
-msgstr "Attempt to migrate guest to the same host %s"
+msgstr "Attempt to migrate guest to the same host"
 
 #, c-format
 msgid "Attempt to migrate guest to the same host %1$s"
@@ -2063,12 +2073,14 @@ msgid "Attempted double use of PCI Address %1$s"
 msgstr "Attempted double use of PCI Address %1$s"
 
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "Attempting to start nbdkit twice"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
 "mode"
 msgstr ""
+"Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
+"mode"
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Attribute mode is only allowed for guest CPU"
@@ -2085,7 +2097,7 @@ msgstr ""
 "qemu.conf"
 
 msgid "Auto converge throttle:"
-msgstr ""
+msgstr "Auto converge throttle:"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr "Automatic disk lease mode enabled, but no host ID is set"
