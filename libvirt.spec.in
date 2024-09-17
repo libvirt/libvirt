@@ -6,7 +6,7 @@
 %define min_rhel 8
 %define min_fedora 37
 
-%define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
+%define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x riscv64
 %if 0%{?rhel}
     %if 0%{?rhel} > 8
         %define arches_qemu_kvm     x86_64 aarch64 s390x
