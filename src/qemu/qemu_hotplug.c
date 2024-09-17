@@ -243,6 +243,35 @@ qemuHotplugChardevAttach(qemuMonitor *mon,
                          const char *alias,
                          virDomainChrSourceDef *def)
 {
+    switch ((virDomainChrType) def->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Hotplug unsupported for char device type '%1$s'"),
+                       virDomainChrTypeToString(def->type));
+        return -1;
+
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainChrType, def->type);
+        return -1;
+    }
+
     return qemuMonitorAttachCharDev(mon, alias, def);
 }
 

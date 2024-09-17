@@ -652,12 +652,6 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
               "{'id':'alias','backend':{'type':'spicevmc',"
                                        "'data':{'type':'vdagent'}}}");
 
-        chr->type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        CHECK("pipe", true, NULL);
-
-        chr->type = VIR_DOMAIN_CHR_TYPE_STDIO;
-        CHECK("stdio", true, NULL);
-
         chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
         CHECK("pty missing path", true,
               "{'id':'alias','backend':{'type':'pty','data':{}}}");
