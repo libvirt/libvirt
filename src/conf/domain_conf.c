@@ -30625,7 +30625,7 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
                                                 virDomainNetGetActualVirtPortProfile(iface),
                                                 virDomainNetGetActualVlan(iface),
                                                 virDomainNetGetActualPortOptionsIsolated(iface),
-                                                iface->mtu, NULL));
+                                                iface->mtu, NULL, false));
     }
 }
 

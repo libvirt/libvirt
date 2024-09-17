@@ -510,6 +510,9 @@ virNetDevTapAttachBridge(const char *tapname,
  * @virtVlan: vlan tag info
  * @mtu: requested MTU for port (or 0 for "default")
  * @actualMTU: MTU actually set for port (after accounting for bridge's MTU)
+ * @force: set true to force detach/reattach even if the bridge name is unchanged
+ *         (this can be useful if, for example, the profileid of the
+ *         <virtualport> changes)
  *
  * Ensures that the tap device (@tapname) is connected to the bridge
  * (@brname), potentially removing it from any existing bridge that
@@ -526,7 +529,8 @@ virNetDevTapReattachBridge(const char *tapname,
                            const virNetDevVlan *virtVlan,
                            virTristateBool isolatedPort,
                            unsigned int mtu,
-                           unsigned int *actualMTU)
+                           unsigned int *actualMTU,
+                           bool force)
 {
     bool useOVS = false;
     g_autofree char *master = NULL;
@@ -542,7 +546,7 @@ virNetDevTapReattachBridge(const char *tapname,
     }
 
     /* Nothing more todo if we're on the right bridge already */
-    if (STREQ_NULLABLE(brname, master))
+    if (STREQ_NULLABLE(brname, master) && !force)
         return 0;
 
     /* disconnect from current (incorrect) bridge, if any  */
