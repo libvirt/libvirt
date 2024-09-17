@@ -1506,18 +1506,18 @@ libxlMakeVfb(virPortAllocatorRange *graphicsports,
     virDomainGraphicsListenDef *glisten = NULL;
 
     libxl_device_vfb_init(x_vfb);
+    libxl_defbool_set(&x_vfb->sdl.enable, 0);
+    libxl_defbool_set(&x_vfb->vnc.enable, 0);
 
     switch (l_vfb->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             libxl_defbool_set(&x_vfb->sdl.enable, 1);
-            libxl_defbool_set(&x_vfb->vnc.enable, 0);
             libxl_defbool_set(&x_vfb->sdl.opengl, 0);
             x_vfb->sdl.display = g_strdup(l_vfb->data.sdl.display);
             x_vfb->sdl.xauthority = g_strdup(l_vfb->data.sdl.xauth);
             break;
         case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             libxl_defbool_set(&x_vfb->vnc.enable, 1);
-            libxl_defbool_set(&x_vfb->sdl.enable, 0);
             /* driver handles selection of free port */
             libxl_defbool_set(&x_vfb->vnc.findunused, 0);
             if (l_vfb->data.vnc.autoport) {
@@ -1542,13 +1542,18 @@ libxlMakeVfb(virPortAllocatorRange *graphicsports,
             x_vfb->keymap = g_strdup(l_vfb->data.vnc.keymap);
             break;
 
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            break;
+
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-            break;
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported graphics type %1$s"),
+                           virDomainGraphicsTypeToString(l_vfb->type));
+            return -1;
     }
 
     return 0;
