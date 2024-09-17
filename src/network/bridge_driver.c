@@ -3475,7 +3475,6 @@ static int
 networkDestroy(virNetworkPtr net)
 {
     virNetworkDriverState *driver = networkGetDriver();
-    g_autoptr(virNetworkDriverConfig) cfg = virNetworkDriverGetConfig(driver);
     virNetworkObj *obj;
     virNetworkDef *def;
     int ret = -1;
