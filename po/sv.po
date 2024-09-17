@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-16 15:51+0000\n"
+"PO-Revision-Date: 2024-09-17 09:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34293,97 +34293,100 @@ msgid "query-iothreads reply has malformed 'thread-id' data"
 msgstr "svaret från query-iothreads har felformaterad ”thread-id”-data"
 
 msgid "query-kvm replied unexpected data"
-msgstr ""
+msgstr "query-kvm svarade med oväntade data"
 
 msgid "query-machines reply data was missing 'name'"
-msgstr ""
+msgstr "svarsdata från query-machines saknade ”name”"
 
 msgid "query-machines reply has malformed 'acpi data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”acpi”-data"
 
 msgid "query-machines reply has malformed 'alias' data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”alias”-data"
 
 msgid "query-machines reply has malformed 'cpu-max' data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”cpu-max”-data"
 
 msgid "query-machines reply has malformed 'default-cpu-type' data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”default-cpu-type”-data"
 
 msgid "query-machines reply has malformed 'default-ram-id' data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”default-ram-id”-data"
 
 msgid "query-machines reply has malformed 'is-default' data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”is-default”-data"
 
 msgid "query-machines reply has malformed 'numa-mem-supported' data"
-msgstr ""
+msgstr "svaret från query-machines har felformaterad ”numa-mem-supported”-data"
 
 msgid "query-memory-devices reply data doesn't contain enum data"
-msgstr ""
+msgstr "svarsdata från query-memory-devices innehåller inte enum-data"
 
 msgid "query-memory-devices reply data doesn't contain enum type discriminator"
 msgstr ""
+"svarsdata från query-memory-devices innehåller inte diskriminerare av enum-"
+"typ"
 
 msgid "query-named-block-nodes entry was not in expected format"
 msgstr ""
+"posten query-named-block-nodes entry var inte på det förväntade formatet"
 
 msgid "query-rx-filter return data missing array element"
-msgstr ""
+msgstr "returdata från query-rx-filter saknar vektorelement"
 
 msgid "query-sev reply was missing some data"
-msgstr ""
+msgstr "svaret från query-sev reply saknar några data"
 
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
-msgstr ""
+msgstr "svaret från query-sev-capabilities saknade fältet ”cbitpos”"
 
 msgid "query-sev-capabilities reply was missing 'cert-chain' field"
-msgstr ""
+msgstr "svaret från query-sev-capabilities saknade fältet ”cert-chain”"
 
 msgid "query-sev-capabilities reply was missing 'pdh' field"
-msgstr ""
+msgstr "svaret från query-sev-capabilities saknade fältet ”pdh”"
 
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
-msgstr ""
+msgstr "svaret från query-sev-capabilities saknade fältet ”reduced-phys-bits”"
 
 msgid "query-sev-launch-measure reply was missing 'data'"
-msgstr ""
+msgstr "svaret från query-sev-launch-measure saknade ”data”"
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
-msgstr ""
+msgstr "svaret från query-sgx-capabilities saknade fältet ”flc”"
 
 msgid "query-sgx-capabilities reply was missing 'node' field"
-msgstr ""
+msgstr "svaret från query-sgx-capabilities saknade fältet ”node”"
 
 msgid "query-sgx-capabilities reply was missing 'section-size' field"
-msgstr ""
+msgstr "svaret från query-sgx-capabilities saknade fältet ”section-size”"
 
 msgid "query-sgx-capabilities reply was missing 'sgx1' field"
-msgstr ""
+msgstr "svaret query-sgx-capabilities saknade fältet ”sgx1”"
 
 msgid "query-sgx-capabilities reply was missing 'sgx2' field"
-msgstr ""
+msgstr "svaret från query-sgx-capabilities saknade fältet ”sgx2”"
 
 msgid "query-sgx-capabilities reply was missing 'size' field"
-msgstr ""
+msgstr "svaret från query-sgx-capabilities saknade fältet ”size”"
 
 msgid "query-status reply was missing running state"
-msgstr ""
+msgstr "svaret från query-status saknade körtillstånd"
 
 msgid "query-target reply was missing arch data"
-msgstr ""
+msgstr "svaret från query-target saknade arkitekturdata"
 
 msgid "query-version reply was missing 'major' version"
-msgstr ""
+msgstr "svaret från query-version saknade version ”major”"
 
 msgid "query-version reply was missing 'micro' version"
-msgstr ""
+msgstr "svaret från query-version saknade version ”micro”"
 
 msgid "query-version reply was missing 'minor' version"
-msgstr ""
+msgstr "svaret från query-version saknade version ”minor”"
 
 msgid "query-version reply was missing 'package' version"
-msgstr ""
+msgstr "svaret från query-version saknade version ”package”"
 
 msgid "query-version reply was missing 'qemu' data"
 msgstr ""
