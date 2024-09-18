@@ -1736,10 +1736,11 @@ qemuDomainSecretPrepare(virQEMUDriver *driver,
 
 
 int
-qemuGetMemoryBackingDomainPath(virQEMUDriver *driver,
+qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
                                const virDomainDef *def,
                                char **path)
 {
+    virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *root = driver->embeddedRoot;
     g_autofree char *shortName = NULL;
@@ -1760,7 +1761,7 @@ qemuGetMemoryBackingDomainPath(virQEMUDriver *driver,
 
 /**
  * qemuGetMemoryBackingPath:
- * @driver: the qemu driver
+ * @priv: domain private data
  * @def: domain definition
  * @alias: memory object alias
  * @memPath: constructed path
@@ -1771,7 +1772,7 @@ qemuGetMemoryBackingDomainPath(virQEMUDriver *driver,
  *          -1 otherwise (with error reported).
  */
 int
-qemuGetMemoryBackingPath(virQEMUDriver *driver,
+qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
                          const virDomainDef *def,
                          const char *alias,
                          char **memPath)
@@ -1785,7 +1786,7 @@ qemuGetMemoryBackingPath(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuGetMemoryBackingDomainPath(driver, def, &domainPath) < 0)
+    if (qemuGetMemoryBackingDomainPath(priv, def, &domainPath) < 0)
         return -1;
 
     *memPath = g_strdup_printf("%s/%s", domainPath, alias);

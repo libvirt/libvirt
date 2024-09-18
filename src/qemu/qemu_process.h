@@ -43,8 +43,7 @@ int qemuProcessBuildDestroyMemoryPaths(virQEMUDriver *driver,
                                        virDomainMemoryDef *mem,
                                        bool build);
 
-int qemuProcessDestroyMemoryBackingPath(virQEMUDriver *driver,
-                                        virDomainObj *vm,
+int qemuProcessDestroyMemoryBackingPath(virDomainObj *vm,
                                         virDomainMemoryDef *mem);
 
 void qemuProcessReconnectAll(virQEMUDriver *driver);

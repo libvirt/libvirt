@@ -2404,7 +2404,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     qemuDomainObjExitMonitor(vm);
 
     if (objAdded && mem)
-        ignore_value(qemuProcessDestroyMemoryBackingPath(driver, vm, mem));
+        ignore_value(qemuProcessDestroyMemoryBackingPath(vm, mem));
 
     virErrorRestore(&orig_err);
     if (!mem)
@@ -4761,7 +4761,7 @@ qemuDomainRemoveMemoryDevice(virQEMUDriver *driver,
     if (qemuDomainNamespaceTeardownMemory(vm, mem) <  0)
         VIR_WARN("Unable to remove memory device from /dev");
 
-    if (qemuProcessDestroyMemoryBackingPath(driver, vm, mem) < 0)
+    if (qemuProcessDestroyMemoryBackingPath(vm, mem) < 0)
         VIR_WARN("Unable to destroy memory backing path");
 
     qemuDomainReleaseMemoryDeviceSlot(vm, mem);
