@@ -230,6 +230,7 @@
   </devices>
   <libDir path='/var/lib/libvirt/qemu/domain-4-copy'/>
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-4-copy'/>
+  <memoryBackingDir path='/var/lib/libvirt/qemu/ram/4-copy'/>
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
   <nodename index='0'/>

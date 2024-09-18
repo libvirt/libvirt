@@ -256,6 +256,7 @@
   <numad nodeset='6' cpuset='0-7'/>
   <libDir path='/var/lib/libvirt/qemu/domain-1-upstream'/>
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-1-upstream'/>
+  <memoryBackingDir path='/var/lib/libvirt/qemu/ram/1-upstream'/>
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
   <nodename index='0'/>

@@ -1795,7 +1795,7 @@ qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
 
 
 /* This is the old way of setting up per-domain directories */
-static void
+static int
 qemuDomainSetPrivatePathsOld(virQEMUDriver *driver,
                              virDomainObj *vm)
 {
@@ -1808,6 +1808,13 @@ qemuDomainSetPrivatePathsOld(virQEMUDriver *driver,
     if (!priv->channelTargetDir)
         priv->channelTargetDir = g_strdup_printf("%s/domain-%s",
                                                  cfg->channelTargetDir, vm->def->name);
+
+    if (!priv->memoryBackingDir &&
+        qemuGetMemoryBackingDomainPath(priv, vm->def,
+                                       &priv->memoryBackingDir) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -1828,6 +1835,11 @@ qemuDomainSetPrivatePaths(virQEMUDriver *driver,
     if (!priv->channelTargetDir)
         priv->channelTargetDir = g_strdup_printf("%s/%s",
                                                  cfg->channelTargetDir, domname);
+
+    if (!priv->memoryBackingDir &&
+        qemuGetMemoryBackingDomainPath(priv, vm->def,
+                                       &priv->memoryBackingDir) < 0)
+        return -1;
 
     return 0;
 }
@@ -3434,7 +3446,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     priv->memoryBackingDir = virXPathString("string(./memoryBackingDir/@path)", ctxt);
 
-    qemuDomainSetPrivatePathsOld(driver, vm);
+    if (qemuDomainSetPrivatePathsOld(driver, vm) < 0)
+        return -1;
 
     if (virCPUDefParseXML(ctxt, "./cpu", VIR_CPU_TYPE_GUEST, &priv->origCPU,
                           false) < 0)

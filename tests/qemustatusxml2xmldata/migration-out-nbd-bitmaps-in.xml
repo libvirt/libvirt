@@ -320,6 +320,7 @@
   </devices>
   <libDir path='/var/lib/libvirt/qemu/domain-11-migr'/>
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-11-migr'/>
+  <memoryBackingDir path='/var/lib/libvirt/qemu/ram/11-migr'/>
   <cpu mode='custom' match='exact' check='partial'>
     <model fallback='forbid'>EPYC-Rome</model>
     <vendor>AMD</vendor>
