@@ -1762,7 +1762,6 @@ qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
 /**
  * qemuGetMemoryBackingPath:
  * @priv: domain private data
- * @def: domain definition
  * @alias: memory object alias
  * @memPath: constructed path
  *
@@ -1773,12 +1772,9 @@ qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
  */
 int
 qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
-                         const virDomainDef *def,
                          const char *alias,
                          char **memPath)
 {
-    g_autofree char *domainPath = NULL;
-
     if (!alias) {
         /* This should never happen (TM) */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1786,10 +1782,8 @@ qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
         return -1;
     }
 
-    if (qemuGetMemoryBackingDomainPath(priv, def, &domainPath) < 0)
-        return -1;
+    *memPath = g_strdup_printf("%s/%s", priv->memoryBackingDir, alias);
 
-    *memPath = g_strdup_printf("%s/%s", domainPath, alias);
     return 0;
 }
 

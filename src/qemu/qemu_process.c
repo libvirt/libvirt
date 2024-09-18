@@ -4094,12 +4094,9 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriver *driver,
     }
 
     if (!build || shouldBuildMB) {
-        g_autofree char *path = NULL;
-        if (qemuGetMemoryBackingDomainPath(QEMU_DOMAIN_PRIVATE(vm), vm->def, &path) < 0)
-            return -1;
-
         if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm,
-                                                   path, build) < 0)
+                                                   QEMU_DOMAIN_PRIVATE(vm)->memoryBackingDir,
+                                                   build) < 0)
             return -1;
     }
 
@@ -4113,7 +4110,7 @@ qemuProcessDestroyMemoryBackingPath(virDomainObj *vm,
 {
     g_autofree char *path = NULL;
 
-    if (qemuGetMemoryBackingPath(QEMU_DOMAIN_PRIVATE(vm), vm->def, mem->info.alias, &path) < 0)
+    if (qemuGetMemoryBackingPath(QEMU_DOMAIN_PRIVATE(vm), mem->info.alias, &path) < 0)
         return -1;
 
     if (unlink(path) < 0 &&

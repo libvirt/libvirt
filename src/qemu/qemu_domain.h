@@ -944,7 +944,6 @@ int qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
                                    char **path);
 
 int qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
-                             const virDomainDef *def,
                              const char *alias,
                              char **memPath);
 
