@@ -676,6 +676,7 @@ headers = [
   'sched.h',
   'sys/auxv.h',
   'sys/ioctl.h',
+  'sys/mman.h',
   'sys/mount.h',
   'sys/syscall.h',
   'sys/ucred.h',

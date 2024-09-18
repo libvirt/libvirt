@@ -26,6 +26,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#ifdef WITH_SYS_MMAN_H
+# include <sys/mman.h>
+#endif
+
 #include "virerror.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
@@ -286,6 +290,14 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
 
     cfg->deprecationBehavior = g_strdup("none");
     cfg->storageUseNbdkit = USE_NBDKIT_DEFAULT;
+
+#ifndef MADV_DONTDUMP
+    /* QEMU uses Linux extensions to madvise() (MADV_DODUMP/MADV_DONTDUMP) to
+     * include/exclude guest memory from core dump. These might be unavailable
+     * on some systems. Provide sane default. */
+    VIR_INFO("Host kernel doesn't support MADV_DONTDUMP. Enabling dump_guest_core");
+    cfg->dumpGuestCore = true;
+#endif
 
     return g_steal_pointer(&cfg);
 }

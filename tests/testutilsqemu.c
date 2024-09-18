@@ -407,6 +407,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cfg->hugetlbfs[0].deflt = true;
     cfg->hugetlbfs[1].size = 1048576;
 
+    cfg->dumpGuestCore = false;
+
     driver->privileged = true;
 
     return 0;

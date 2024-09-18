@@ -710,8 +710,8 @@
 
 # Determine if guest RAM is included in QEMU core dumps. By
 # default guest RAM will be excluded if a new enough QEMU is
-# present. Setting this to '1' will force guest RAM to always
-# be included in QEMU core dumps.
+# present and host kernel supports it. Setting this to '1' will
+# force guest RAM to always be included in QEMU core dumps.
 #
 # This setting will be ignored if the guest XML has set the
 # dumpCore attribute on the <memory> element.
