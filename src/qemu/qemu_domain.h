@@ -261,6 +261,8 @@ struct _qemuDomainObjPrivate {
 
     /* named file descriptor groups associated with the VM */
     GHashTable *fds;
+
+    char *memoryBackingDir;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

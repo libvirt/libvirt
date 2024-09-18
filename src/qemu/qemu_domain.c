@@ -1934,6 +1934,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
     g_slist_free_full(g_steal_pointer(&priv->threadContextAliases), g_free);
 
     priv->migrationRecoverSetup = false;
+
+    g_clear_pointer(&priv->memoryBackingDir, g_free);
 }
 
 
@@ -2708,6 +2710,7 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
     virBufferEscapeString(buf, "<libDir path='%s'/>\n", priv->libDir);
     virBufferEscapeString(buf, "<channelTargetDir path='%s'/>\n",
                           priv->channelTargetDir);
+    virBufferEscapeString(buf, "<memoryBackingDir path='%s'/>\n", priv->memoryBackingDir);
 
     virCPUDefFormatBufFull(buf, priv->origCPU, NULL);
 
@@ -3428,6 +3431,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     if ((tmp = virXPathString("string(./channelTargetDir/@path)", ctxt)))
         priv->channelTargetDir = tmp;
     tmp = NULL;
+
+    priv->memoryBackingDir = virXPathString("string(./memoryBackingDir/@path)", ctxt);
 
     qemuDomainSetPrivatePathsOld(driver, vm);
 

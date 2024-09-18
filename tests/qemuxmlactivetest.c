@@ -248,6 +248,8 @@ mymain(void)
 
     DO_TEST_STATUS("backup-pull");
 
+    DO_TEST_STATUS("memory-backing-dir");
+
  cleanup:
     qemuTestDriverFree(&driver);
 
