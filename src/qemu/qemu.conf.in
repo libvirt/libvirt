@@ -692,7 +692,7 @@
 # guest RAM, if the 'dump_guest_core' setting has been enabled,
 # or if the guest XML contains
 #
-#   <memory dumpcore="on">...guest ram...</memory>
+#   <memory dumpCore="on">...guest ram...</memory>
 #
 # If guest RAM is to be included, ensure the max_core limit
 # is set to at least the size of the largest expected guest
@@ -714,7 +714,7 @@
 # be included in QEMU core dumps.
 #
 # This setting will be ignored if the guest XML has set the
-# dumpcore attribute on the <memory> element.
+# dumpCore attribute on the <memory> element.
 #
 #dump_guest_core = 1
 
