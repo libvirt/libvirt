@@ -1604,64 +1604,6 @@ qemuGetDomainHupageMemPath(virQEMUDriver *driver,
 
 
 int
-qemuGetMemoryBackingDomainPath(virQEMUDriver *driver,
-                               const virDomainDef *def,
-                               char **path)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    const char *root = driver->embeddedRoot;
-    g_autofree char *shortName = NULL;
-
-    if (!(shortName = virDomainDefGetShortName(def)))
-        return -1;
-
-    if (root && !STRPREFIX(cfg->memoryBackingDir, root)) {
-        g_autofree char * hash = virDomainDriverGenerateRootHash("qemu", root);
-        *path = g_strdup_printf("%s/%s-%s", cfg->memoryBackingDir, hash, shortName);
-    } else {
-        *path = g_strdup_printf("%s/%s", cfg->memoryBackingDir, shortName);
-    }
-
-    return 0;
-}
-
-
-/**
- * qemuGetMemoryBackingPath:
- * @driver: the qemu driver
- * @def: domain definition
- * @alias: memory object alias
- * @memPath: constructed path
- *
- * Constructs path to memory backing dir and stores it at @memPath.
- *
- * Returns: 0 on success,
- *          -1 otherwise (with error reported).
- */
-int
-qemuGetMemoryBackingPath(virQEMUDriver *driver,
-                         const virDomainDef *def,
-                         const char *alias,
-                         char **memPath)
-{
-    g_autofree char *domainPath = NULL;
-
-    if (!alias) {
-        /* This should never happen (TM) */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("memory device alias is not assigned"));
-        return -1;
-    }
-
-    if (qemuGetMemoryBackingDomainPath(driver, def, &domainPath) < 0)
-        return -1;
-
-    *memPath = g_strdup_printf("%s/%s", domainPath, alias);
-    return 0;
-}
-
-
-int
 qemuHugepageMakeBasedir(virQEMUDriver *driver,
                         virHugeTLBFS *hugepage)
 {

@@ -936,6 +936,15 @@ void qemuDomainCleanupStorageSourceFD(virStorageSource *src);
 
 void qemuDomainStartupCleanup(virDomainObj *vm);
 
+int qemuGetMemoryBackingDomainPath(virQEMUDriver *driver,
+                                   const virDomainDef *def,
+                                   char **path);
+
+int qemuGetMemoryBackingPath(virQEMUDriver *driver,
+                             const virDomainDef *def,
+                             const char *alias,
+                             char **memPath);
+
 int qemuDomainSecretPrepare(virQEMUDriver *driver,
                             virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
