@@ -1300,7 +1300,6 @@ qemuBuildChardevCommand(virCommand *cmd,
                         virQEMUCaps *qemuCaps)
 {
     qemuDomainChrSourcePrivate *chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
-    g_autofree char *charstr = NULL;
 
     switch ((virDomainChrType) dev->type) {
     case VIR_DOMAIN_CHR_TYPE_TCP:
