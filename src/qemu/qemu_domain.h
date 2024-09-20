@@ -1132,7 +1132,8 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
                      const char *name);
 
 int
-qemuDomainObjWait(virDomainObj *vm);
+qemuDomainObjWait(virDomainObj *vm)
+    G_GNUC_WARN_UNUSED_RESULT;
 bool
 qemuDomainObjIsActive(virDomainObj *vm);
 
