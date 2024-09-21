@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-17 09:38+0000\n"
+"PO-Revision-Date: 2024-09-22 01:04+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34389,145 +34389,147 @@ msgid "query-version reply was missing 'package' version"
 msgstr "svaret från query-version saknade version ”package”"
 
 msgid "query-version reply was missing 'qemu' data"
-msgstr ""
+msgstr "svaret från query-version saknade ”qemu”-data"
 
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr ""
+"att fråga om maximal migreringshastighet efter kopiering stödjs inte av QEMU-"
+"binären"
 
 msgid "queue-size property isn't supported by this QEMU binary"
-msgstr ""
+msgstr "egenskapen queue-size stödjs inte av denna QEMU-binär"
 
 msgid "queue_size attribute in disk driver is only supported for virtio bus"
-msgstr ""
+msgstr "attributet queue_size i diskdrivrutinen stödjs endast för virtio-bussen"
 
 msgid ""
 "queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
+"attributet queues i diskdrivrutinelementet stödjs endast för virtio-bussen"
 
 msgid "quiesce guest's file systems"
-msgstr ""
+msgstr "tysta gästens filsystem"
 
 msgid "quit this interactive terminal"
 msgstr "avsluta denna interaktiva terminal"
 
 msgid "ram attribute only supported for video type qxl"
-msgstr ""
+msgstr "attributet ram stödjs endast för videotypen qxl"
 
 #, c-format
 msgid "range %1$s - %2$s is not entirely within network %3$s/%4$d"
-msgstr ""
+msgstr "intervallet %1$s – %2$s är inte helt inom nätverket %3$s/%4$d"
 
 #, c-format
 msgid "range %1$s - %2$s is reversed "
-msgstr ""
+msgstr "intervallet %1$s – %2$s är omvänt "
 
 #, c-format
 msgid "range %1$s - %2$s is too large (> 65535)"
-msgstr ""
+msgstr "intervallet %1$s – %2$s är för stort (> 65535)"
 
 #, c-format
 msgid "range %1$s - %2$s start larger than end"
-msgstr ""
+msgstr "intervallet %1$s – %2$s startar större än det slutar"
 
 msgid "ras feature is not available with this QEMU binary"
-msgstr ""
+msgstr "funktionen ras är inte tillgänglig med denna QEMU-binär"
 
 msgid "ras feature is only supported with ARM Virt machines"
-msgstr ""
+msgstr "funktionen ras stödjs endast med ARM Virt-maskiner"
 
 msgid "rawio can be used only with device='lun'"
-msgstr ""
+msgstr "rawio kan bara användas med device='lun'"
 
 msgid "rawio is only supported for scsi host device"
-msgstr ""
+msgstr "rawio stödjs endast för scsi-värdenheter"
 
 msgid "re-initialize NVRAM from its pristine template"
-msgstr ""
+msgstr "initiera om NVRAM från dess ursprungliga mall"
 
 msgid "read I/O operations limit per second"
-msgstr ""
+msgstr "gräns per sekund på läs-I/O-åtgärder"
 
 msgid "read I/O operations max"
-msgstr ""
+msgstr "max läs-I/O-åtgärder"
 
 msgid "read error on pipe"
-msgstr ""
+msgstr "läsfel i röret"
 
 msgid "read max, as scaled integer (default bytes)"
-msgstr ""
+msgstr "läsmax, som ett skalat heltal (standard byte)"
 
 #, c-format
 msgid "read only access prevents %1$s"
-msgstr ""
+msgstr "endast läsåtkomst förhindrar %1$s"
 
-#, fuzzy
 msgid "read secret from file"
-msgstr "avmontera enhet från en XML-fil"
+msgstr "läs hemligheten från en fil"
 
 msgid "read the secret from file without converting from base64"
-msgstr ""
+msgstr "läs hemligheten från en fil utan att konvertera från base64"
 
 msgid "read the secret from the terminal"
-msgstr ""
+msgstr "läs hemligheten från terminalen"
 
 msgid "read throughput limit, as scaled integer (default bytes)"
-msgstr ""
+msgstr "gräns på läsgenomströmnin, som ett skalat heltal (standard byte)"
 
 msgid "read-only connection"
 msgstr "anslutning skrivskyddad"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
-msgstr ""
+msgstr "förhandsläsning stödjs endast med protokollen HTTP(S)/FTP(s)"
 
 msgid "readonly ide disks are not supported"
-msgstr ""
+msgstr "endast läsbara ide-diskar stödjs inte"
 
 msgid "readonly is not supported with vhostuser disk"
-msgstr ""
+msgstr "endast läsbart stödjs inte med vhostuser-diskar"
 
 msgid "readonly sata disks are not supported"
-msgstr ""
+msgstr "endast läsbara sata-diskar stödjs inte"
 
 msgid "ready"
 msgstr "klar"
 
 msgid "reattach node device to its device driver"
-msgstr ""
+msgstr "återkoppla nodenheten till sin enhetsdrivrutin"
 
 msgid "reboot a domain"
 msgstr "starta om en domän"
 
 msgid "received error event on socket"
-msgstr ""
+msgstr "mottog en felhändelse på uttaget"
 
 msgid "received hangup event on socket"
-msgstr ""
+msgstr "mottog en avringningshändelse på uttaget"
 
 msgid "received malformed monitor, check the XML definition"
-msgstr ""
+msgstr "mottog felformaterad övervakar, kontrollera XML-definitionen"
 
 msgid "received unexpected cookie with P2P migration"
-msgstr ""
+msgstr "mottog oväntad kaka med P2P-migreringen"
 
 msgid "reconnect delay is supported only with NBD protocol"
-msgstr ""
+msgstr "återanslutningsfördröjning stödjs endast med protokollet NBD"
 
 msgid "recv handler failed"
-msgstr ""
+msgstr "recv-hanteraren misslyckades"
 
 msgid "recv holeHandler failed"
-msgstr ""
+msgstr "recv holeHandler misslyckades"
 
 #, c-format
 msgid "recv on sock %1$d failed"
-msgstr ""
+msgstr "recv på uttag %1$d misslyckades"
 
 msgid "redefine metadata for existing checkpoint"
-msgstr ""
+msgstr "omdefiniera metdata för en befintlig kontrollpunkt"
 
 msgid "redefine metadata for existing snapshot"
-msgstr ""
+msgstr "omdefiniera metadata för en befintlig ögonblicksbild"
 
 #, fuzzy
 msgid "redefine the XML for a domain's managed save state file"
