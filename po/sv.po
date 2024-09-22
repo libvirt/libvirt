@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-22 18:46+0000\n"
+"PO-Revision-Date: 2024-09-22 20:33+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34555,119 +34555,135 @@ msgstr "uppdateringen av ploop misslyckades: kan inte radera DiskDescriptor.xml"
 
 #, c-format
 msgid "refusing to generate file name for disk '%1$s'"
-msgstr ""
+msgstr "vägrar att generera filnamn för disken ”%1$s”"
 
 msgid "remoteDomainAuthorizedSSHKeysGet: returned number of keys exceeds limit"
 msgstr ""
+"remoteDomainAuthorizedSSHKeysGet: det returnerade antalet nycklar "
+"överskrider gränsen"
 
 msgid "remoteDomainAuthorizedSSHKeysSet: returned number of keys exceeds limit"
 msgstr ""
+"remoteDomainAuthorizedSSHKeysSet: det returnerade antalet nycklar "
+"överskrider gränsen"
 
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr ""
+"remoteDomainBlockStatsFlags: det returnerade antalet statusar överskrider "
+"gränsen"
 
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr ""
+"remoteDomainGetCPUStats: det returnerade antalet statusar överskrider gränsen"
 
 msgid "remoteDomainGetMessages: returned number of msgs exceeds limit"
 msgstr ""
+"remoteDomainGetMessages: det returnerade antalet meddelanden överskrider "
+"gränsen"
 
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr ""
+"remoteNodeGetCPUStats: det returnerade antalet statusar överskrider gränsen"
 
 msgid "remoteNodeGetMemoryStats: returned number of stats exceeds limit"
 msgstr ""
+"remoteNodeGetMemoryStats: det returnerade antalet statusar överskrider "
+"gränsen"
 
 msgid "remote_open: for 'ext' transport, command is required"
-msgstr ""
+msgstr "remote_open: för transporten ”ext” krävs ett kommando"
 
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2|libssh)"
 msgstr ""
+"remote_open: transporten i URL:en är inte känd (skall vara "
+"tls|unix|ssh|ext|tcp|libssh2|libssh)"
 
 msgid "removable is only valid for usb or scsi disks"
-msgstr ""
+msgstr "removable är endast giltigt för usb- eller scsi-diskar"
 
 msgid "remove TPM state"
-msgstr ""
+msgstr "ta bort TPM-tillståndet"
 
 msgid "remove all associated storage volumes (use with caution)"
-msgstr ""
+msgstr "ta bort alla tillhörande lagringsvolymer (används med försiktighet)"
 
 msgid "remove all domain checkpoint metadata (vm must be inactive)"
 msgstr ""
+"ta bort all metadata för domänkontrollpunkter (vm:en måste vara inaktiv)"
 
 msgid "remove all domain snapshot metadata (vm must be inactive)"
 msgstr ""
+"ta bort all metadata för domänögonblicksbilder (vm:en måste vara inaktiv)"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
 msgstr ""
+"ta bort tillhörande lagringsvolymer (kommaseparerad lista med mål eller "
+"källsökvägar) (se domblklist)"
 
 msgid "remove domain logs"
-msgstr ""
+msgstr "ta bort domänloggar"
 
-#, fuzzy
 msgid "remove domain managed state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "ta bort domänens sparat tillstånd-fil"
 
 msgid "remove keys from the authorized keys file"
-msgstr ""
+msgstr "ta bort nycklar från filen med auktoriserade nycklar"
 
 msgid "remove nvram file"
-msgstr ""
+msgstr "ta bort nvram-filen"
 
 msgid "remove the metadata corresponding to an uri"
-msgstr ""
+msgstr "ta bort metadata motsvarande en uri"
 
 #, c-format
 msgid "removing block or network volumes is not supported: %1$s"
-msgstr ""
+msgstr "att ta bort block- eller nätverksvolymer stödjs inte: %1$s"
 
 #, c-format
 msgid ""
 "removing of '%1$s' volumes is not supported by the gluster backend: %2$s"
-msgstr ""
+msgstr "att ta bort ”%1$s”-volymer stödjs inte av gluster-bakänden: %2$s"
 
 msgid "rename a domain"
 msgstr "byt namn på en domän"
 
 msgid "rename to new name during migration (if supported)"
-msgstr ""
+msgstr "byt namn till ett nytt namn under migreringen (om det stödjs)"
 
-#, c-format
+#, c-format, fuzzy
 msgid "rename(\"%1$s\", \"%2$s\")"
-msgstr ""
+msgstr "rename(\"%1$s\", \"%2$s\")"
 
 msgid "reply data was missing 'name'"
 msgstr "svarsdata saknade ”name”"
 
 msgid "reply data was missing 'option' name or parameters"
-msgstr ""
+msgstr "svarsdata saknade ”option”-namn eller -parametrar"
 
 msgid "reply was missing return data"
-msgstr ""
+msgstr "svret saknade returdata"
 
 msgid "report active users"
-msgstr ""
+msgstr "rapportera aktiva användare"
 
 msgid "report daemon version too"
-msgstr ""
+msgstr "rapportera även demonversionen"
 
 msgid "report disk information"
-msgstr ""
+msgstr "rapportera diskinformation"
 
-#, fuzzy
 msgid "report domain IOThread information"
-msgstr "domäninformation"
+msgstr "rapportera domänens IOThread-information"
 
 msgid "report domain balloon statistics"
-msgstr ""
+msgstr "rapportera domänens ballongstatistik"
 
 msgid "report domain block device statistics"
-msgstr ""
+msgstr "rapportera domänens blockenhetsstatistik"
 
 msgid "report domain dirty rate information"
 msgstr ""
