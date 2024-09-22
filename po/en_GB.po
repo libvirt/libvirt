@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-17 13:43+0000\n"
+"PO-Revision-Date: 2024-09-22 12:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -2060,7 +2060,7 @@ msgstr "Attempt to migrate guest to the same host %1$s"
 
 #, c-format
 msgid "Attempt to overwrite resctrlid='%1$s' with id='%2$s'"
-msgstr ""
+msgstr "Attempt to overwrite resctrlid='%1$s' with id='%2$s'"
 
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr "Attempt to send a non-blocking message with a synchronous reply"
@@ -2085,9 +2085,8 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Attribute mode is only allowed for guest CPU"
 
-#, fuzzy
 msgid "Audit is not supported by the kernel"
-msgstr "unpriv_sgio is not supported by this kernel"
+msgstr "Audit is not supported by the kernel"
 
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
@@ -2115,19 +2114,20 @@ msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
 "'virtproxyd'."
 msgstr ""
+"Available servers on a daemon. Currently only supports 'libvirtd' or "
+"'virtproxyd'."
 
 msgid "Available:"
 msgstr "Available:"
 
 msgid "BIOS serial console only supported on x86 architectures"
-msgstr ""
+msgstr "BIOS serial console only supported on x86 architectures"
 
 msgid "Backup"
-msgstr ""
+msgstr "Backup"
 
-#, fuzzy
 msgid "Backup Dump XML"
-msgstr "Snapshot Dump XML"
+msgstr "Backup Dump XML"
 
 msgid "Backup started\n"
 msgstr "Backup started\n"
@@ -2146,25 +2146,23 @@ msgstr "Bad ipv4 start address '%1$s' in <nat> in <forward> in network '%2$s'"
 
 #, c-format
 msgid "Bad prefix name '%1$s' for resctrl monitor"
-msgstr ""
+msgstr "Bad prefix name '%1$s' for resctrl monitor"
 
 msgid "Bad usage"
-msgstr ""
+msgstr "Bad usage"
 
 msgid "Bad value for nativeMode"
 msgstr "Bad value for nativeMode"
 
-#, fuzzy
 msgid "Bandwidth rate limiting is not supported"
-msgstr "disk format %s is not supported"
+msgstr "Bandwidth rate limiting is not supported"
 
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 
-#, fuzzy
 msgid "Bhyve version does not support framebuffer"
-msgstr "Kernel does not support private devpts"
+msgstr "Bhyve version does not support framebuffer"
 
 #, c-format
 msgid ""
