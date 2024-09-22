@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-22 01:04+0000\n"
+"PO-Revision-Date: 2024-09-22 18:46+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34531,29 +34531,27 @@ msgstr "omdefiniera metdata för en befintlig kontrollpunkt"
 msgid "redefine metadata for existing snapshot"
 msgstr "omdefiniera metadata för en befintlig ögonblicksbild"
 
-#, fuzzy
 msgid "redefine the XML for a domain's managed save state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "definiera om XML:en för en domäns hanterade spartillstånds-fil"
 
-#, fuzzy
 msgid "redefine the XML for a domain's saved state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "definiera om XML:en för en domäns spartillståndsfil"
 
 msgid "redefine the existing set of logging filters"
-msgstr ""
+msgstr "definiera om den beintliga uppsättningen loggningsfilter"
 
 msgid "redefine the existing set of logging outputs"
-msgstr ""
+msgstr "definiera om den befintliga uppsättningen loggningutmatningar"
 
 #, c-format
 msgid "referenced filter '%1$s' is missing"
-msgstr ""
+msgstr "det refererade filtret ”%1$s” saknas"
 
 msgid "refresh a pool"
-msgstr ""
+msgstr "uppdatera en pool"
 
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
-msgstr ""
+msgstr "uppdateringen av ploop misslyckades: kan inte radera DiskDescriptor.xml"
 
 #, c-format
 msgid "refusing to generate file name for disk '%1$s'"
