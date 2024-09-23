@@ -1735,7 +1735,7 @@ qemuDomainSecretPrepare(virQEMUDriver *driver,
 }
 
 
-int
+static int
 qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
                                const virDomainDef *def,
                                char **path)

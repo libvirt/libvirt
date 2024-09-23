@@ -939,10 +939,6 @@ void qemuDomainCleanupStorageSourceFD(virStorageSource *src);
 void qemuDomainStartupCleanup(virDomainObj *vm);
 
 
-int qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
-                                   const virDomainDef *def,
-                                   char **path);
-
 int qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
                              const char *alias,
                              char **memPath);
