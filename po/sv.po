@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-22 20:33+0000\n"
+"PO-Revision-Date: 2024-09-23 12:29+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34654,7 +34654,7 @@ msgstr "byt namn på en domän"
 msgid "rename to new name during migration (if supported)"
 msgstr "byt namn till ett nytt namn under migreringen (om det stödjs)"
 
-#, c-format, fuzzy
+#, c-format
 msgid "rename(\"%1$s\", \"%2$s\")"
 msgstr "rename(\"%1$s\", \"%2$s\")"
 
@@ -34686,135 +34686,130 @@ msgid "report domain block device statistics"
 msgstr "rapportera domänens blockenhetsstatistik"
 
 msgid "report domain dirty rate information"
-msgstr ""
+msgstr "rapportera domänens information om smutsighetshastighet"
 
 msgid "report domain memory usage"
-msgstr ""
+msgstr "rapportera domänens minnesanvändning"
 
-#, fuzzy
 msgid "report domain network interface information"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "rapportera domänens information om nätverksgränssnitt"
 
 msgid "report domain perf event statistics"
-msgstr ""
+msgstr "rapportera domänens perf-händelsestatistik"
 
 msgid "report domain physical cpu usage"
-msgstr ""
+msgstr "rapportera domänens användning av fysisk cpu"
 
-#, fuzzy
 msgid "report domain state"
-msgstr "domäntillstånd"
+msgstr "rapportera domäntillståndet"
 
-#, fuzzy
 msgid "report domain virtual cpu information"
-msgstr "domäninformation"
+msgstr "rapportera domänens information om virtuell cpu"
 
 msgid "report error if CPUs are incompatible"
-msgstr ""
+msgstr "rapportera fel om CPU:er är inkompatibla"
 
-#, fuzzy
 msgid "report filesystem information"
-msgstr "saknar operativsysteminformation"
+msgstr "rapportera filsystemsinformation"
 
-#, fuzzy
 msgid "report hostname"
-msgstr "misslyckades att få värdnamn"
+msgstr "rapportera värdnamn"
 
 msgid "report hypervisor-specific statistics"
-msgstr ""
+msgstr "rapportera hypervisor-specifik statistik"
 
 msgid "report interface information"
-msgstr ""
+msgstr "rapportera gränssnittsinformation"
 
 msgid "report only stats that are accessible instantly"
-msgstr ""
+msgstr "rapportera endast statistik som är omedelbart tillgänglig"
 
 msgid "report operating system information"
 msgstr "rapportera operativsysteminformation"
 
-#, fuzzy
 msgid "report timezone information"
-msgstr "domäninformation"
+msgstr "rapportera tidszonsinformation"
 
 #, c-format
 msgid "requested USB port %1$s not present on USB bus %2$u"
-msgstr ""
+msgstr "den begärda USB-porten %1$s finns inte på USB-buss %2$u"
 
 #, c-format
 msgid "requested authentication type %1$s rejected"
-msgstr ""
+msgstr "den begärda autentiseringstypen %1$s avvisades"
 
 #, c-format
 msgid "requested cpu amount exceeds maximum (%1$d > %2$d)"
-msgstr ""
+msgstr "begärd cpu-mängd överskrider maximum (%1$d > %2$d)"
 
 #, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
-msgstr ""
+msgstr "begärd cpu-mängd överskrider den maximalt stödda mängden (%1$d > %2$d)"
 
 #, c-format
 msgid "requested firewall_backend '%1$s' is not available"
-msgstr ""
+msgstr "begärd brandväggsbakände ”%1$s” är inte tillgänglig"
 
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
+"den begärda storleken måste var ett heltal och mutipel av blockstorleken"
 
 #, c-format
 msgid "requested size must be smaller than or equal to @size (%1$lluKiB)"
 msgstr ""
+"den begärda storleken måste vara mindre eller lika med @size (%1$llu KiB)"
 
 msgid "requested size of the cache (in bytes) used for compression"
-msgstr ""
+msgstr "den begärda storleken på cachen (i byte) som används för komprimering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "requested target '%1$s' does not match target '%2$s'"
-msgstr "Mål-CPU-funktionen %1$s stämmer inte med källan %2$s"
+msgstr "det begärda målet ”%1$s” stämmer inte med målet “%2$s”"
 
 #, c-format
 msgid "requested vcpu '%1$d' is not present in the domain"
-msgstr ""
+msgstr "den begärda vcpu:n ”%1$d” finns inte i domänen"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "requested vcpu count is greater than the count of enabled vcpus in the "
 "domain: %1$d > %2$d"
 msgstr ""
-"Det begärda antalet virtuella processorer är större än maximalt tillåtet "
-"antal virtuella processorer för domänen: %1$d > %2$d"
+"det begärda antalet vcpu:er är större än antalet aktiverade vcpu:er i "
+"domänen: %1$d > %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %1$d > "
 "%2$d"
 msgstr ""
-"Det begärda antalet virtuella processorer är större än maximalt tillåtet "
-"antal virtuella processorer för domänen: %1$d > %2$d"
+"de begärda vcpu:erna är större än max tillåtna vcpu:er för domänen: %1$d > "
+"%2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the live domain: "
 "%1$u > %2$u"
 msgstr ""
-"Det begärda antalet virtuella processorer är större än maximalt tillåtet "
-"antal virtuella processorer för domänen: %d > %d"
+"de begärda vcpu:erna är större än max tillåtna vcpu:er för den körande "
+"domänen: %1$u > %2$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the persistent "
 "domain: %1$u > %2$u"
 msgstr ""
-"Det begärda antalet virtuella processorer är större än maximalt tillåtet "
-"antal virtuella processorer för domänen: %d > %d"
+"de begärda vcpu:erna är större än max tillåtna vcpu:er för den bestående "
+"domänen: %1$u > %2$u"
 
 msgid "require atomic operation"
-msgstr ""
+msgstr "begär en atomär åtgärd"
 
 msgid "resctrl locking is not supported on this platform"
-msgstr ""
+msgstr "resctrl-låsning stödjs inte på denna plattform"
 
-#, fuzzy
 msgid "reservations not supported with this QEMU binary"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "reservationer stödjs inte med denna QEMU-binär"
 
 msgid "reset"
 msgstr "återställ"
@@ -34822,34 +34817,37 @@ msgstr "återställ"
 msgid "reset a domain"
 msgstr "återställ en domän"
 
-#, fuzzy
 msgid "reset node device"
-msgstr "mål för diskenhet"
+msgstr "återställ nodenheten"
 
 msgid "reset the domain after core dump"
-msgstr ""
+msgstr "återställ domänen efter att kärnan dumpades"
 
 msgid "resetting of nvram is not supported with network backed nvram"
-msgstr ""
+msgstr "att återställa nvram stödjs inte med nvram backade via nätverket"
 
 msgid "resize a vol"
-msgstr ""
+msgstr "ändra storlek på en volym"
 
 msgid "resize of a 'sd' disk with storage slice is not supported"
-msgstr ""
+msgstr "att ändra storlek på en ”sd”-disk med lagringsskivor stödjs inte"
 
 msgid "resize of a disk with storage slice is supported only for 'raw' images"
 msgstr ""
+"att ändra storlek på en disk med lagringsskivor stödjs endast för ”råa” "
+"avbilder"
 
 msgid ""
 "resize of a disk with storage slice with non-zero 'offset' is not supported"
 msgstr ""
+"att ändra storlek på en disk med lagringsskivor med ”offset” skilt från noll "
+"stödjs inte"
 
 msgid "resize of qcow2 encrypted image is not supported"
-msgstr ""
+msgstr "att ändra storlek på en qcow2-krypterad avbild stödjs inte"
 
 msgid "resize to capacity of source (block device)"
-msgstr ""
+msgstr "ändra storlek till källans kapacitet (blockenhet)"
 
 msgid "resource busy"
 msgstr ""
