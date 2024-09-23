@@ -4110,7 +4110,8 @@ qemuProcessDestroyMemoryBackingPath(virDomainObj *vm,
 {
     g_autofree char *path = NULL;
 
-    if (qemuGetMemoryBackingPath(QEMU_DOMAIN_PRIVATE(vm), mem->info.alias, &path) < 0)
+    if (qemuDomainGetMemoryBackingPath(QEMU_DOMAIN_PRIVATE(vm),
+                                       mem->info.alias, &path) < 0)
         return -1;
 
     if (unlink(path) < 0 &&

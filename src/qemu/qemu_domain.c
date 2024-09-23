@@ -1736,9 +1736,9 @@ qemuDomainSecretPrepare(virQEMUDriver *driver,
 
 
 static int
-qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
-                               const virDomainDef *def,
-                               char **path)
+qemuDomainGenerateMemoryBackingPath(qemuDomainObjPrivate *priv,
+                                    const virDomainDef *def,
+                                    char **path)
 {
     virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1760,7 +1760,7 @@ qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
 
 
 /**
- * qemuGetMemoryBackingPath:
+ * qemuDomainGetMemoryBackingPath:
  * @priv: domain private data
  * @alias: memory object alias
  * @memPath: constructed path
@@ -1771,9 +1771,9 @@ qemuGetMemoryBackingDomainPath(qemuDomainObjPrivate *priv,
  *          -1 otherwise (with error reported).
  */
 int
-qemuGetMemoryBackingPath(qemuDomainObjPrivate *priv,
-                         const char *alias,
-                         char **memPath)
+qemuDomainGetMemoryBackingPath(qemuDomainObjPrivate *priv,
+                               const char *alias,
+                               char **memPath)
 {
     if (!alias) {
         /* This should never happen (TM) */
@@ -1804,8 +1804,8 @@ qemuDomainSetPrivatePathsOld(virQEMUDriver *driver,
                                                  cfg->channelTargetDir, vm->def->name);
 
     if (!priv->memoryBackingDir &&
-        qemuGetMemoryBackingDomainPath(priv, vm->def,
-                                       &priv->memoryBackingDir) < 0)
+        qemuDomainGenerateMemoryBackingPath(priv, vm->def,
+                                            &priv->memoryBackingDir) < 0)
         return -1;
 
     return 0;
@@ -1831,8 +1831,8 @@ qemuDomainSetPrivatePaths(virQEMUDriver *driver,
                                                  cfg->channelTargetDir, domname);
 
     if (!priv->memoryBackingDir &&
-        qemuGetMemoryBackingDomainPath(priv, vm->def,
-                                       &priv->memoryBackingDir) < 0)
+        qemuDomainGenerateMemoryBackingPath(priv, vm->def,
+                                            &priv->memoryBackingDir) < 0)
         return -1;
 
     return 0;

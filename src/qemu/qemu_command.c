@@ -3222,7 +3222,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         } else {
             /* We can have both pagesize and mem source. If that's the case,
              * prefer hugepages as those are more specific. */
-            if (qemuGetMemoryBackingPath(priv, mem->info.alias, &memPath) < 0)
+            if (qemuDomainGetMemoryBackingPath(priv, mem->info.alias,
+                                               &memPath) < 0)
                 return -1;
         }
 
@@ -7116,7 +7117,7 @@ qemuBuildMemPathStr(const virDomainDef *def,
             return -1;
         prealloc = true;
     } else if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
-        if (qemuGetMemoryBackingPath(priv, "ram", &mem_path) < 0)
+        if (qemuDomainGetMemoryBackingPath(priv, "ram", &mem_path) < 0)
             return -1;
     }
 
