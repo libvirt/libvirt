@@ -32,6 +32,7 @@ struct testQEMUSchemaValidateCtxt {
 /**
  * Validate that the schema member doesn't have some significant features:
  * - 'deprecated' - schema member is deprecated
+ * - 'unstable' - schema member is considered unstable
  */
 static int
 testQEMUSchemaValidateFeatures(virJSONValue *root,
@@ -55,6 +56,11 @@ testQEMUSchemaValidateFeatures(virJSONValue *root,
             !(curstr = virJSONValueGetString(cur))) {
             virBufferAsprintf(ctxt->debug, "ERROR: features of '%s' are malformed", name);
             return -2;
+        }
+
+        if (STREQ(curstr, "unstable")) {
+            virBufferAsprintf(ctxt->debug, "ERROR: '%s' is unstable", name);
+            return -1;
         }
 
         if (STREQ(curstr, "deprecated")) {
