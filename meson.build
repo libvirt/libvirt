@@ -2246,45 +2246,45 @@ run_command('chmod', 'a+x', meson.current_build_dir() / 'run', check: true)
 # print configuration summary
 
 driver_summary = {
-  'QEMU': conf.has('WITH_QEMU'),
-  'OpenVZ': conf.has('WITH_OPENVZ'),
-  'VMware': conf.has('WITH_VMWARE'),
-  'VBox': conf.has('WITH_VBOX'),
-  'libxl': conf.has('WITH_LIBXL'),
-  'LXC': conf.has('WITH_LXC'),
+  'Bhyve': conf.has('WITH_BHYVE'),
   'Cloud-Hypervisor': conf.has('WITH_CH'),
   'ESX': conf.has('WITH_ESX'),
   'Hyper-V': conf.has('WITH_HYPERV'),
-  'vz': conf.has('WITH_VZ'),
-  'Bhyve': conf.has('WITH_BHYVE'),
-  'Test': conf.has('WITH_TEST'),
-  'Remote': conf.has('WITH_REMOTE'),
-  'Network': conf.has('WITH_NETWORK'),
-  'Libvirtd': conf.has('WITH_LIBVIRTD'),
   'Interface': conf.has('WITH_INTERFACE'),
+  'Libvirtd': conf.has('WITH_LIBVIRTD'),
+  'libxl': conf.has('WITH_LIBXL'),
+  'LXC': conf.has('WITH_LXC'),
+  'Network': conf.has('WITH_NETWORK'),
+  'OpenVZ': conf.has('WITH_OPENVZ'),
+  'QEMU': conf.has('WITH_QEMU'),
+  'Remote': conf.has('WITH_REMOTE'),
+  'Test': conf.has('WITH_TEST'),
+  'VBox': conf.has('WITH_VBOX'),
+  'VMware': conf.has('WITH_VMWARE'),
+  'vz': conf.has('WITH_VZ'),
 }
 summary(driver_summary, section: 'Drivers', bool_yn: true)
 
 storagedriver_summary = {
   'Dir': conf.has('WITH_STORAGE_DIR'),
+  'Disk': conf.has('WITH_STORAGE_DISK'),
   'FS': conf.has('WITH_STORAGE_FS'),
-  'NetFS': conf.has('WITH_STORAGE_FS'),
-  'LVM': conf.has('WITH_STORAGE_LVM'),
+  'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
   'iSCSI': conf.has('WITH_STORAGE_ISCSI'),
   'iscsi-direct': conf.has('WITH_STORAGE_ISCSI_DIRECT'),
-  'SCSI': conf.has('WITH_STORAGE_SCSI'),
+  'LVM': conf.has('WITH_STORAGE_LVM'),
   'mpath': conf.has('WITH_STORAGE_MPATH'),
-  'Disk': conf.has('WITH_STORAGE_DISK'),
+  'NetFS': conf.has('WITH_STORAGE_FS'),
   'RBD': conf.has('WITH_STORAGE_RBD'),
-  'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
-  'ZFS': conf.has('WITH_STORAGE_ZFS'),
+  'SCSI': conf.has('WITH_STORAGE_SCSI'),
   'Virtuozzo storage': conf.has('WITH_STORAGE_VSTORAGE'),
+  'ZFS': conf.has('WITH_STORAGE_ZFS'),
 }
 summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
 
 secdriver_summary = {
-  'SELinux': conf.has('WITH_SECDRIVER_SELINUX'),
   'AppArmor': conf.has('WITH_SECDRIVER_APPARMOR'),
+  'SELinux': conf.has('WITH_SECDRIVER_SELINUX'),
 }
 summary(secdriver_summary, section: 'Security Drivers', bool_yn: true)
 
@@ -2352,25 +2352,25 @@ else
   loader_res = ''
 endif
 misc_summary = {
-  'Warning Flags': supported_cc_flags,
+  'Char device locks': chrdev_lock_files,
   'docs': gen_docs,
-  'tests': tests_enabled,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),
+  'Init script': init_script,
+  'Loader/NVRAM': loader_res,
+  'nbdkit': conf.has('WITH_NBDKIT'),
   'nss': conf.has('WITH_NSS'),
   'numad': conf.has('WITH_NUMAD'),
-  'nbdkit': conf.has('WITH_NBDKIT'),
-  'Init script': init_script,
-  'Char device locks': chrdev_lock_files,
-  'Loader/NVRAM': loader_res,
   'pm_utils': conf.has('WITH_PM_UTILS'),
-  'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
-  'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
-  'TLS priority': conf.get_unquoted('TLS_PRIORITY'),
   'SSH proxy': conf.has('WITH_SSH_PROXY'),
   'sysctl config': conf.has('WITH_SYSCTL'),
+  'tests': tests_enabled,
+  'TLS priority': conf.get_unquoted('TLS_PRIORITY'),
   'userfaultfd sysctl': conf.has('WITH_USERFAULTFD_SYSCTL'),
+  'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
+  'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
+  'Warning Flags': supported_cc_flags,
 }
 if conf.has('WITH_NETWORK')
   misc_summary += {
