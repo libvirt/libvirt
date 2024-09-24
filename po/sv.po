@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-08-27 08:20+0000\n"
-"PO-Revision-Date: 2024-09-23 12:29+0000\n"
+"PO-Revision-Date: 2024-09-24 14:45+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34850,78 +34850,82 @@ msgid "resize to capacity of source (block device)"
 msgstr "ändra storlek till källans kapacitet (blockenhet)"
 
 msgid "resource busy"
-msgstr ""
+msgstr "resursen är upptagen"
 
 #, c-format
 msgid "resource busy: %1$s"
-msgstr ""
+msgstr "resursen är upptagen: %1$s"
 
 msgid "resource relabeling is not compatible with 'none' label type"
-msgstr ""
+msgstr "ometikettering av resursen är inte kompatibelt med etikettypen ”none”"
 
 msgid "restore a domain from a saved state in a file"
 msgstr "återställ en domän från ett sparat tillstånd i en fil"
 
-#, fuzzy
 msgid "restore domain into paused state"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "återställ en domän till pausat tillstånd"
 
 msgid "restore domain into running state"
-msgstr ""
+msgstr "återställ domänen till körande tillstånd"
 
 msgid "restored"
 msgstr "återställd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "result too large: %1$llu"
-msgstr "nparams är för stor"
+msgstr "resultatet är för stort: %1$llu"
 
 msgid "resume a domain"
 msgstr "fortsätt en domän"
 
 msgid "resume a paused guest after connecting to console"
-msgstr ""
+msgstr "återuppta en pausad gäst efter att ha anslutit till konsolen"
 
 msgid "resume failed post-copy migration"
-msgstr ""
+msgstr "återuppta en misslyckad efterkopieringsmigrering"
 
-#, fuzzy
 msgid "resume operation failed"
-msgstr "operation misslyckades"
+msgstr "att återuppta åtgärden misslyckades"
 
 msgid "resuming after dump failed"
-msgstr ""
+msgstr "att återuppta efter dumpen misslyckades"
 
 msgid "resuming after snapshot failed"
-msgstr ""
+msgstr "att återuppta efter ögonblicksbilden misslyckades"
 
 #, c-format
 msgid "resuming failed post-copy migration of domain %1$s already in progress"
 msgstr ""
+"återupptagandet av den misslyckades efterkopieringsmigrerigen av domänen %1$"
+"s pågår redan"
 
 msgid "resuming failed post-copy migration requires change protection"
 msgstr ""
+"att återuppta en misslyckade efterkopieringsmigrering kräver ändrade "
+"rättigheter"
 
 msgid "resuming failed post-copy migration requires post-copy to be enabled"
 msgstr ""
+"att återuppta en misslyckade efterkopieringsmigrering kräver att "
+"efterkopiering är aktiverat"
 
 msgid "retrieve client's identity info from server"
-msgstr ""
+msgstr "hämta klientens identitetsinformation från servern"
 
 msgid "retrieve vcpu count from the guest instead of the hypervisor"
-msgstr ""
+msgstr "hämta antalet vcpu:er från gästen istället för hypervisorn"
 
 msgid "return human readable output"
-msgstr ""
+msgstr "returnera mänskligt läsbar utdata"
 
 msgid "return statistics of a recently completed job"
-msgstr ""
+msgstr "returnera statistik över nyligen fullbordade jobb"
 
 msgid "return the physical size of the volume in allocation field"
-msgstr ""
+msgstr "returnera den fysiska storleken på volymen i allokeringsfältet"
 
 msgid "return the pool uuid rather than pool name"
-msgstr ""
+msgstr "returnera pool-uuid:n istället för poolnamnet"
 
 msgid "returned buffer is not same size as requested"
 msgstr ""
