@@ -39,6 +39,12 @@ v10.8.0 (unreleased)
     ``daemon-driver-storage-core`` RPM package now doesn't strongly depend on it
     if the users wish for a more minimal deployment.
 
+  * Switch from YAJL to json-c for JSON parsing and formatting
+
+    The parser and formatter in the libvirt library, as well
+    as the parsers in the nss plugin were rewritten to use json-c
+    instead of YAJL, which is effectively dead upstream.
+
 * **Bug fixes**
 
   * virsh: Fix script-friedly output of ``virsh list --uuid``
