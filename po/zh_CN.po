@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2024-08-26 15:38+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -10827,9 +10827,6 @@ msgstr "大小为 %1$u 的内存带宽分配小于最小允许分配的值 %2$u"
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "已为节点 %1$u 定义了内存带宽"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr "超过 100 的内存带宽值是无效的。"
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11285,10 +11282,6 @@ msgstr "缺少级别 '%1$u' 类型 '%2$s' 的 resctrl 信息或不一致的 resc
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr "缺少内存带宽分配的 resctrl 信息 或不一致的 resctrl 信息"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
-msgstr "缺少内存带宽节点 '%1$u' 的 resctrl 信息或不一致的 resctrl 信息"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr "在 query-rx-filter 响应中缺少或无效的 'broadcast-allowed'"
@@ -16128,6 +16121,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "这台主机不是由 vCenter 管理"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "这个快照有子项，请删除之前的这些快照"
 
@@ -16815,12 +16811,6 @@ msgstr "无法创建 %1$s"
 msgid "Unable to create HardDisk"
 msgstr "无法创建 HardDisk"
 
-msgid "Unable to create JSON formatter"
-msgstr "无法生成 JSON 格式化程序"
-
-msgid "Unable to create JSON parser"
-msgstr "无法生成 JSON 解析程序"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "无法为 TSC 探测创建 KVM 虚拟机"
 
@@ -16899,6 +16889,12 @@ msgstr "无法创建中介设备：%1$s"
 
 msgid "Unable to create migration thread"
 msgstr "无法生成迁移线程"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 msgid "Unable to create pipes"
 msgstr "无法创建管道"
@@ -18997,10 +18993,6 @@ msgid "Unknown parameter type"
 msgstr "未知的参数类型"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "未知的协议 '%1$s'"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "未知 qemu 功能标签 %1$s"
 
@@ -19238,10 +19230,6 @@ msgstr "不支持的设备类型 '%1$s' 的总线类型 '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "不支持的 capacity-to-allocation 关系"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "不支持的字符设备 TCP 协议 '%1$s'"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -20542,8 +20530,8 @@ msgid ""
 msgstr "带宽 %1$llu 大于 %2$lu，这是这个 API 所支持的最大值"
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "带宽控制器 ID %1$zd 不存在，最大控制器 ID 为 %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr "带宽限制，单位 MiB/s"
@@ -20783,10 +20771,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "接口名称和类型不能为 NULL"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "桥接 %1$s 不存在"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "桥接 '%1$s' 中有无效掩码或者 IP 地址"
 
@@ -20799,11 +20783,9 @@ msgstr "桥接现有网络设备"
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
-"只在路由、nat 和隔离模式下允许桥接 delay/stp/zone 选项，而不是在 %1$s （网络 "
-"'%2$s'）中"
 
 msgid "bridge interface misses the bridge element"
 msgstr "bridge 接口缺少 bridge 元素"
@@ -21065,6 +21047,10 @@ msgstr "由于 max_queued 的限制，无法获取状态更改锁（由 monitor=
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "由于 max_queued 的限制无法获取状态更改锁定"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -21895,14 +21881,6 @@ msgstr "无法将 instanceid 参数解析为 uuid"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "无法将 interfaceid 参数解析为 uuid"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "无法解析 json %1$s: %2$s"
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "无法解析 json %1$s ：未终止的 strin/map/array"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -24253,6 +24231,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "已使用 uuid %1$s 定义域名 '%2$s'"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "未迁移域 '%1$s'"
 
@@ -25413,9 +25395,6 @@ msgstr "无法转换大小：'%1$s'"
 msgid "failed to convert the XML node tree"
 msgstr "无法转换 XML 节点树"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr "无法将 virJSONValue 转换为 yajl 数据"
-
 msgid "failed to copy all device rules"
 msgstr "无法复制所有设备规则"
 
@@ -25620,9 +25599,6 @@ msgstr "无法找到 VLAN 设备 '%1$s' 的真实设备"
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "无法完成磁盘 %1$s 的作业"
-
-msgid "failed to format JSON"
-msgstr "无法格式化 JSON"
 
 #, c-format
 msgid "failed to format image: '%1$s'"
@@ -26675,16 +26651,9 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr "在删除磁盘 '%1$s' 快照时完成块作业失败：'%2$s'"
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
-"firewalld 被设置为使用 nftables 后端，但所需的 firewalld 'libvirt' 区缺失。"
-"将 firewalld 后端设为\"iptables\"，或者通过将 firewalld 升级到支持规则优先级"
-"的版本(0.7.0+)和/或使用 --with-firewalld-zone 重建 libvirt，来确保 firewalld "
-"有一个 'libvirt' 区。"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "没有针对这个驱动程序实现固件自动选择"
@@ -31477,6 +31446,10 @@ msgstr "没有匹配名称 '%1$s' 的 nwfilter"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "没有匹配 uuid '%1$s' 的 nwfilter"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "这个设备没有上一级设备"
 
@@ -31829,6 +31802,9 @@ msgstr "写入操作数："
 
 msgid "numbers not allowed in VMX format"
 msgstr "VMX 格式中不允许有数字"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "数字溢出"
@@ -34800,6 +34776,10 @@ msgstr "tb-cache 大小必须是 MiB 的整数倍"
 msgid "tcp"
 msgstr "tcp"
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "团队 hostdev 设备必须有 type='transient'"
 
@@ -34812,10 +34792,6 @@ msgstr "如果团队类型为 'transient' ，则必须设置团队持久性属�
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr "如果团队类型为 '%1$s'，则不允许使用团队持久性属性"
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "模板 '%1$s' 不存在"
 
 msgid "template does not exist"
 msgstr "模板不存在"
@@ -38454,6 +38430,74 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "Memory Bandwidth value exceeding 100 is invalid."
+#~ msgstr "超过 100 的内存带宽值是无效的。"
+
+#, c-format
+#~ msgid ""
+#~ "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
+#~ msgstr "缺少内存带宽节点 '%1$u' 的 resctrl 信息或不一致的 resctrl 信息"
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "无法生成 JSON 格式化程序"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "无法生成 JSON 解析程序"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "未知的协议 '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "不支持的字符设备 TCP 协议 '%1$s'"
+
+#, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr "带宽控制器 ID %1$zd 不存在，最大控制器 ID 为 %2$u"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "桥接 %1$s 不存在"
+
+#, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr ""
+#~ "只在路由、nat 和隔离模式下允许桥接 delay/stp/zone 选项，而不是在 %1$s （网"
+#~ "络 '%2$s'）中"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "无法解析 json %1$s: %2$s"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "无法解析 json %1$s ：未终止的 strin/map/array"
+
+#~ msgid "failed to convert virJSONValue to yajl data"
+#~ msgstr "无法将 virJSONValue 转换为 yajl 数据"
+
+#~ msgid "failed to format JSON"
+#~ msgstr "无法格式化 JSON"
+
+#~ msgid ""
+#~ "firewalld is set to use the nftables backend, but the required firewalld "
+#~ "'libvirt' zone is missing. Either set the firewalld backend to "
+#~ "'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading "
+#~ "firewalld to a version supporting rule priorities (0.7.0+) and/or "
+#~ "rebuilding libvirt with --with-firewalld-zone"
+#~ msgstr ""
+#~ "firewalld 被设置为使用 nftables 后端，但所需的 firewalld 'libvirt' 区缺"
+#~ "失。将 firewalld 后端设为\"iptables\"，或者通过将 firewalld 升级到支持规则"
+#~ "优先级的版本(0.7.0+)和/或使用 --with-firewalld-zone 重建 libvirt，来确保 "
+#~ "firewalld 有一个 'libvirt' 区。"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "模板 '%1$s' 不存在"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"

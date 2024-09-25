@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2018-09-10 04:24+0000\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
@@ -10710,9 +10710,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr ""
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11180,10 +11177,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -16010,6 +16003,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr ""
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -16712,12 +16708,6 @@ msgstr "無法載入憑證"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-msgid "Unable to create JSON formatter"
-msgstr ""
-
-msgid "Unable to create JSON parser"
-msgstr ""
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr ""
 
@@ -16801,6 +16791,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to create migration thread"
 msgstr "無法讀取設定檔"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -18962,10 +18958,6 @@ msgstr "未知處理程序：%d"
 msgid "Unknown parameter type"
 msgstr "未知的作業系統類型"
 
-#, fuzzy, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "未知的指令：「%1$s」"
-
 #, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr ""
@@ -19205,10 +19197,6 @@ msgid "Unsupported bus type '%1$s' for device type '%2$s'"
 msgstr ""
 
 msgid "Unsupported capacity-to-allocation relation"
-msgstr ""
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
 msgstr ""
 
 #, c-format
@@ -20511,7 +20499,7 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
 
 msgid "bandwidth limit in MiB/s"
@@ -20752,10 +20740,6 @@ msgid "both interface name and type must not be NULL"
 msgstr ""
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr ""
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr ""
 
@@ -20769,8 +20753,8 @@ msgstr "消止網路裝置 %s 時發生錯誤"
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
 
 msgid "bridge interface misses the bridge element"
@@ -21035,6 +21019,10 @@ msgid ""
 msgstr ""
 
 msgid "cannot acquire state change lock due to max_queued limit"
+msgstr ""
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
 msgstr ""
 
 #, c-format
@@ -21875,14 +21863,6 @@ msgid "cannot parse instanceid parameter as a uuid"
 msgstr ""
 
 msgid "cannot parse interfaceid parameter as a uuid"
-msgstr ""
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr ""
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
 msgstr ""
 
 #, c-format
@@ -24268,6 +24248,10 @@ msgstr "區域 %1$s 正在重新開機中\n"
 msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr ""
 
+#, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "區域 %1$s 正在重新開機中\n"
@@ -25468,9 +25452,6 @@ msgstr "無法取得區域「%1$s」"
 msgid "failed to convert the XML node tree"
 msgstr "無法連上 hypervisor"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "無法消止「%s」節點裝置"
@@ -25689,9 +25670,6 @@ msgstr "無法消止「%1$s」節點裝置"
 #, fuzzy, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "無法從 %1$s 定義區域"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -26823,11 +26801,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 msgid "firmware auto selection not implemented for this driver"
@@ -31737,6 +31712,10 @@ msgstr ""
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr ""
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 #, fuzzy
 msgid "no parent for this device"
 msgstr "找不到裝置的目標資訊"
@@ -32086,6 +32065,9 @@ msgid "number of write operations:"
 msgstr ""
 
 msgid "numbers not allowed in VMX format"
+msgstr ""
+
+msgid "numeric overflow in conf value"
 msgstr ""
 
 msgid "numerical overflow"
@@ -35100,6 +35082,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -35111,10 +35097,6 @@ msgstr ""
 
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
-msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
 msgstr ""
 
 msgid "template does not exist"
@@ -38731,6 +38713,10 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "未知的指令：「%1$s」"
 
 #, fuzzy
 #~ msgid "failed to create udev enumerate thread"

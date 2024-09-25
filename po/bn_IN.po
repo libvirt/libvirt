@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -11000,9 +11000,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "VM-র জন্য নিরাপত্তার লেবেল পূর্বেই নির্ধারিত হয়েছে"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11487,10 +11484,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -16481,6 +16474,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "এই হোস্ট একটি vCenter দ্বারা পরিচালিত নয়"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -17207,14 +17203,6 @@ msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-#, fuzzy
-msgid "Unable to create JSON formatter"
-msgstr "সকেট নির্মাণ করতে ব্যর্থ"
-
-#, fuzzy
-msgid "Unable to create JSON parser"
-msgstr "সকেট নির্মাণ করতে ব্যর্থ"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr ""
 
@@ -17301,6 +17289,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to create migration thread"
 msgstr "সকেট নির্মাণ করতে ব্যর্থ"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -19568,10 +19562,6 @@ msgstr "অজানা প্যারামিটার ধরন: %d"
 msgid "Unknown parameter type"
 msgstr "অজানা প্যারামিটার ধরন: %d"
 
-#, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "অজানা প্রোটোকল '%1$s'"
-
 #, fuzzy, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "অজানা টেন্ট ফ্ল্যাগ %1$s"
@@ -19813,10 +19803,6 @@ msgstr "অসমর্থিত ডিভাইস ধরন '%s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "অসমর্থিত ডিভাইস ধরন '%1$s'"
 
 #, fuzzy, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21155,9 +21141,9 @@ msgid ""
 "by this API"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "টার্গেট কন্ট্রোলার ইনডেক্স %d %d সোর্সের সংগে মেলে না"
+#, c-format
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr ""
@@ -21402,10 +21388,6 @@ msgstr "hostdev মোড '%s' সমর্থিত নয়"
 msgid "both interface name and type must not be NULL"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "'%1$s' বর্তমানে উপস্থিত নেই"
-
 #, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr ""
@@ -21417,11 +21399,11 @@ msgstr ""
 msgid "bridge an existing network device"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
-msgstr "%1$s মোডে ব্রিজ নাম অনুমোদিত নয় (নেটওয়ার্ক '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
+msgstr ""
 
 msgid "bridge interface misses the bridge element"
 msgstr "ব্রিজ ইন্টারফেসের মধ্যে bridge স্বত্বা অনুপস্থিত"
@@ -21694,6 +21676,10 @@ msgstr ""
 #, fuzzy
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "অবস্থা পরিবর্তনের লক প্রাপ্ত করতে ব্যর্থ"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22570,14 +22556,6 @@ msgstr "instanceid প্যারামিটার uuid হিসাবে প
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "json %1$s পার্স করা সম্ভব নয়: %2$s"
-
-#, fuzzy, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "json %s পার্স করা সম্ভব নয়: %s"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25049,6 +25027,10 @@ msgstr "ডোমেইন '%1$s' বর্তমানে সক্রিয়"
 msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "'%1$s' ডোমেইন uuid %2$s সহ পূর্বেই নির্ধারিত হয়েছে"
 
+#, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "ডোমেইন %1$s পুনরায় বুট করা হচ্ছে\n"
@@ -26265,9 +26247,6 @@ msgstr "গোপনীয় তথ্য '%1$s' প্রাপ্ত করত�
 msgid "failed to convert the XML node tree"
 msgstr "নোড ডিভাইসের সংখ্যঅ গণনা করতে ব্যর্থ"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
@@ -26485,9 +26464,6 @@ msgstr "%1$s-র ঊর্ধ্বতন ডিভাইস সন্ধান 
 #, fuzzy, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "সংগ্রহের ড্রাইভার অনুসন্ধান করতে ব্যর্থ: %1$s"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -27611,11 +27587,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 msgid "firmware auto selection not implemented for this driver"
@@ -32709,6 +32682,10 @@ msgstr "'%1$s' নামের সাথে সুসংগত নেটওয়�
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "uuid '%1$s'-র সাথে সুসংগত গোপনীয় তথ্য অনুপস্থিত"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "চিহ্নিত ডিভাইসের ঊর্ধ্বে কিছু নেই"
 
@@ -33080,6 +33057,9 @@ msgstr "কর্ম চলাকালীন সময়সীমার উত্
 
 msgid "numbers not allowed in VMX format"
 msgstr "VMX বিন্যাসের সংখ্যা অনুমোদিত নয়"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr ""
@@ -36217,6 +36197,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36229,10 +36213,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "'%1$s' টেমপ্লেট বর্তমানে উপস্থিত নেই"
 
 #, fuzzy
 msgid "template does not exist"
@@ -39953,6 +39933,48 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "সকেট নির্মাণ করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "সকেট নির্মাণ করতে ব্যর্থ"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "অজানা প্রোটোকল '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "অসমর্থিত ডিভাইস ধরন '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr "টার্গেট কন্ট্রোলার ইনডেক্স %d %d সোর্সের সংগে মেলে না"
+
+#, fuzzy, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "'%1$s' বর্তমানে উপস্থিত নেই"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr "%1$s মোডে ব্রিজ নাম অনুমোদিত নয় (নেটওয়ার্ক '%2$s')"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "json %1$s পার্স করা সম্ভব নয়: %2$s"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "json %s পার্স করা সম্ভব নয়: %s"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "'%1$s' টেমপ্লেট বর্তমানে উপস্থিত নেই"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST রেকর্ড সংশোধন করা যাবে না, শুধুমাত্র যোগ করা বা মোছা যাবে"

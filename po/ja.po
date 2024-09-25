@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -11253,9 +11253,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "メモリー帯域幅は、ノード %1$u に対してすでに定義されています"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr "100 を超えるメモリー帯域幅の値は無効です。"
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11738,11 +11735,6 @@ msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr "メモリー帯域幅割り当ての resctrl 情報がないか、一貫性がありません"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
-msgstr ""
-"メモリー帯域幅ノード '%1$u' の resctrl 情報がないか、一貫性がありません"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr "query-rx-filter の応答に 'broadcast-allowed' がないか無効です"
@@ -16883,6 +16875,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "このホストは vCenter により管理されていません"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 "このスナップショットには子があります、先にこれらのスナップショットを削除して"
@@ -17598,12 +17593,6 @@ msgstr "%1$s を作成できません"
 msgid "Unable to create HardDisk"
 msgstr "ハードディスクを作成できません"
 
-msgid "Unable to create JSON formatter"
-msgstr "JSON フォーマッターを作成できません"
-
-msgid "Unable to create JSON parser"
-msgstr "JSON パーサーを作成できません"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "TSC プロービング用の KVMVM を作成できません"
 
@@ -17684,6 +17673,12 @@ msgstr "仲介デバイスを作成できません: %1$s"
 
 msgid "Unable to create migration thread"
 msgstr "マイグレーションのスレッドを作成できません"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 msgid "Unable to create pipes"
 msgstr "パイプを作成できません"
@@ -19799,10 +19794,6 @@ msgid "Unknown parameter type"
 msgstr "不明なパラメータータイプ"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "不明なプロトコル '%1$s'"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "不明な QEMU ケイパビリティーフラグ %1$s"
 
@@ -20051,10 +20042,6 @@ msgstr ""
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "サポートされない capacity-to-allocation の関係です"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "サポートされないキャラクターデバイスの TCP プロトコル '%1$s' です"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21431,9 +21418,8 @@ msgstr ""
 "帯域幅 %1$llu は、この API でサポートされる最大値 %2$lu よりも大きいです"
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
-"帯域幅コントローラー ID %1$zd が存在しません、最大コントローラー ID %2$u"
 
 msgid "bandwidth limit in MiB/s"
 msgstr "MiB/s 単位の帯域制限値"
@@ -21690,10 +21676,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "インターフェイス名とタイプの両方を NULL にすることはできません"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "ブリッジ %1$s が存在しません"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "ブリッジ '%1$s' が無効なネットマスクまたは IP アドレスを持ちます"
 
@@ -21706,11 +21688,9 @@ msgstr "既存のネットワークデバイスをブリッジします"
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
-"ブリッジ遅延/stp/ゾーンオプションは、ルート、nat、および分離モードでのみ許可"
-"され、%1$s (ネットワーク '%2$s') では許可されません"
 
 msgid "bridge interface misses the bridge element"
 msgstr "ブリッジインターフェイスにブリッジ要素がありません"
@@ -21994,6 +21974,10 @@ msgstr ""
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "max_queued 制限のため状態変更ロックを獲得できません"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22838,14 +22822,6 @@ msgstr "UUID として instanceid パラメーターを解析できません"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "interfaceid パラメーターを UUID として解析できません"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "JSON %1$s を解析できません: %2$s"
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "JSON %1$s を解析できません: 未終了の string/map/array"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25294,6 +25270,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "ドメイン '%1$s' がすでに UUID %2$s を用いて定義されています"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "ドメイン '%1$s' は移行されていません"
 
@@ -26498,9 +26478,6 @@ msgstr "サイズの変換に失敗しました: '%1$s'"
 msgid "failed to convert the XML node tree"
 msgstr "XML ノードツリーの変換に失敗しました"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr "virJSONValue の yajl データへの変換に失敗しました"
-
 msgid "failed to copy all device rules"
 msgstr "すべてのデバイスルールのコピーに失敗しました"
 
@@ -26708,9 +26685,6 @@ msgstr "VLAN デバイス '%1$s' の実際のデバイスを見つけること�
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "ディスク %1$s のジョブの終了に失敗しました"
-
-msgid "failed to format JSON"
-msgstr "JSON のフォーマットに失敗しました"
 
 #, c-format
 msgid "failed to format image: '%1$s'"
@@ -27784,17 +27758,9 @@ msgstr ""
 "た: '%2$s'"
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
-"firewalld は nftables バックエンドを使用するように設定されていますが、必要な "
-"firewalld の 'libvirt' ゾーンがありません。firewalld のバックエンドを "
-"'iptables' に設定するか、firewalld をルール優先度をサポートするバージョン "
-"(0.7.0+) にアップグレードするか、--with-firewalld-zone で libvirt を再構築し"
-"て、firewalld に 'libvirt' ゾーンがあることを確認します"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "このドライバーにはファームウェアの自動選択が実装されていません"
@@ -32822,6 +32788,10 @@ msgstr "名前 '%1$s' に一致する nwfilter がありません"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "UUID '%1$s' に一致する nwfilter がありません"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "このデバイス用のペアレントはありません"
 
@@ -33183,6 +33153,9 @@ msgstr "書き込み回数:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "数字は VMX 形式内では許可されません"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "数値のオーバーフロー"
@@ -36304,6 +36277,10 @@ msgstr "tb-cache サイズは MiB の整数倍である必要があります"
 msgid "tcp"
 msgstr "TCP"
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "チーミング hostdev デバイスには type='transient' が必要です"
 
@@ -36318,10 +36295,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr "チーミングタイプが '%1$s' の場合、チーミング永続属性は許可されません"
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "テンプレート '%1$s' が存在しません"
 
 msgid "template does not exist"
 msgstr "テンプレートが存在しません"
@@ -40096,6 +40069,77 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#~ msgid "Memory Bandwidth value exceeding 100 is invalid."
+#~ msgstr "100 を超えるメモリー帯域幅の値は無効です。"
+
+#, c-format
+#~ msgid ""
+#~ "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
+#~ msgstr ""
+#~ "メモリー帯域幅ノード '%1$u' の resctrl 情報がないか、一貫性がありません"
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "JSON フォーマッターを作成できません"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "JSON パーサーを作成できません"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "不明なプロトコル '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "サポートされないキャラクターデバイスの TCP プロトコル '%1$s' です"
+
+#, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr ""
+#~ "帯域幅コントローラー ID %1$zd が存在しません、最大コントローラー ID %2$u"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "ブリッジ %1$s が存在しません"
+
+#, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr ""
+#~ "ブリッジ遅延/stp/ゾーンオプションは、ルート、nat、および分離モードでのみ許"
+#~ "可され、%1$s (ネットワーク '%2$s') では許可されません"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "JSON %1$s を解析できません: %2$s"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "JSON %1$s を解析できません: 未終了の string/map/array"
+
+#~ msgid "failed to convert virJSONValue to yajl data"
+#~ msgstr "virJSONValue の yajl データへの変換に失敗しました"
+
+#~ msgid "failed to format JSON"
+#~ msgstr "JSON のフォーマットに失敗しました"
+
+#~ msgid ""
+#~ "firewalld is set to use the nftables backend, but the required firewalld "
+#~ "'libvirt' zone is missing. Either set the firewalld backend to "
+#~ "'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading "
+#~ "firewalld to a version supporting rule priorities (0.7.0+) and/or "
+#~ "rebuilding libvirt with --with-firewalld-zone"
+#~ msgstr ""
+#~ "firewalld は nftables バックエンドを使用するように設定されていますが、必要"
+#~ "な firewalld の 'libvirt' ゾーンがありません。firewalld のバックエンドを "
+#~ "'iptables' に設定するか、firewalld をルール優先度をサポートするバージョン "
+#~ "(0.7.0+) にアップグレードするか、--with-firewalld-zone で libvirt を再構築"
+#~ "して、firewalld に 'libvirt' ゾーンがあることを確認します"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "テンプレート '%1$s' が存在しません"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST レコードは更新できません、追加または削除のみできます"

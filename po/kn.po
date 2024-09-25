@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -11155,9 +11155,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "VM ಗಾಗಿ ಸುರಕ್ಷತಾ ಲೇಬಲ್ ಅನ್ನು ಈಗಾಗಲೆ ಸೂಚಿಸಲಾಗಿದೆ"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11656,10 +11653,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -16784,6 +16777,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "ಆತಿಥೇಯವನ್ನು vCenter ಇಂದ ನೋಡಿಕೊಳ್ಳಲಾಗುತ್ತಿಲ್ಲ"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -17501,12 +17497,6 @@ msgstr "%1$s ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ�
 msgid "Unable to create HardDisk"
 msgstr ""
 
-msgid "Unable to create JSON formatter"
-msgstr "JSON ಫಾರ್ಮ್ಯಾಟರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
-msgid "Unable to create JSON parser"
-msgstr "JSON ಪಾರ್ಸರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
 #, fuzzy
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "JSON ಫಾರ್ಮ್ಯಾಟರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -17592,6 +17582,12 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "ವರ್ಗಾವಣೆ ತ್ರೆಡ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -19793,10 +19789,6 @@ msgid "Unknown parameter type"
 msgstr "ಅಜ್ಞಾತ ನಿಯತಾಂಕದ ಬಗೆ: %d"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "ಅಜ್ಞಾತ ಪ್ರೊಟೊಕಾಲ್ '%1$s'"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "ಗೊತ್ತಿರದ qemu ಸಾಮರ್ಥ್ಯಗಳ ಫ್ಲ್ಯಾಗ್‌ %1$s"
 
@@ -20036,10 +20028,6 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಬಸ್‌ ಬಗೆ '%1$s', ಸಾ�
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "ಬೆಂಬಲವಿರದ ನಿಯೋಜಿಸುವ-ಸಾಮರ್ಥ್ಯದ ಸಂಬಂಧ"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಕ್ಯಾರೆಕ್ಟರ್ ಸಾಧನದ TCP ಪ್ರೊಟೊಕಾಲ್ '%1$s'"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21396,9 +21384,9 @@ msgid ""
 "by this API"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "ಗುರಿ ನಿಯಂತ್ರಕ ಸೂಚಕ %d ಎಂಬುದು %d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+#, c-format
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr "MiB/s ನಲ್ಲಿ ಬ್ಯಾಂಡ್‌ವಿಡ್ತಿನ ಮಿತಿ"
@@ -21645,10 +21633,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "ಆರ್ಗ್ಯುಮೆಂಟ್ virt_type ಎನ್ನುವುದು NULL ಆಗಿರುವಂತಿಲ್ಲ"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "%1$s ಬ್ರಿಜ್‌ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "'%1$s' ಬ್ರಿಜ್ ಒಂದು ಅಮಾನ್ಯವಾದ ನೆಟ್‌ಮಾಸ್ಕ್ ಅಥವ IP ವಿಳಾಸವನ್ನು ಹೊಂದಿದೆ"
 
@@ -21659,11 +21643,11 @@ msgstr "'%1$s' ಬ್ರಿಜ್ ಒಂದು ಅಮಾನ್ಯವಾದ ಪ�
 msgid "bridge an existing network device"
 msgstr "ಈಗಿರುವ ಜಾಲಬಂಧ ಸಾಧನವನ್ನು ಬ್ರಿಜ್‌ ಮಾಡು"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
-msgstr "%1$s ಕ್ರಮದಲ್ಲಿ ಬ್ರಿಜ್ ಹೆಸರಿಗೆ ಅನುಮತಿ ಇಲ್ಲ (ಜಾಲಬಂಧ '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
+msgstr ""
 
 msgid "bridge interface misses the bridge element"
 msgstr "ಬ್ರಿಡ್ಜ್ ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ ಬ್ರಿಡ್ಜ್ ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -21940,6 +21924,10 @@ msgstr "max_queued ಮಿತಿಯ ಕಾರಣದಿಂದಾಗಿ ಸ್ಥ�
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "max_queued ಮಿತಿಯ ಕಾರಣದಿಂದಾಗಿ ಸ್ಥಿತಿ ಬದಲಾವಣೆ ಲಾಕ್ ಅನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22804,14 +22792,6 @@ msgstr "instanceid ನಿಯತಾಂಕವನ್ನು uuid ಆಗಿ ಪಾರ
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "interfaceid ನಿಯತಾಂಕವನ್ನು uuid ಆಗಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "json %1$s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ: %2$s"
-
-#, fuzzy, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "json %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ: %s"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25273,6 +25253,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "'%1$s' ಡೊಮೇನ್‌ ಅನ್ನು ಈಗಾಗಲೆ uuid %2$s ನೊಂದಿಗೆ ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "'%1$s' ಡೊಮೇನ್‌ ಅನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
@@ -26480,9 +26464,6 @@ msgstr "'%1$s' ಸೀಕ್ರೆಟ್ ಅನ್ನು ಪಡೆದುಕೊಳ
 msgid "failed to convert the XML node tree"
 msgstr "ನೋಡ್ ಸಾಧನಗಳನ್ನು ಲೆಕ್ಕ ಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "qemu ಸಾಧನ ಪಟ್ಟಿಯನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -26697,9 +26678,6 @@ msgstr "'%1$s' ಎಂಬ VLAN ಸಾಧನಕ್ಕಾಗಿ VID ಅನ್ನು
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "%1$s ಡಿಸ್ಕಿಗಾಗಿ ಕೆಲಸವನ್ನು ಪೂರ್ಣಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -27820,11 +27798,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 #, fuzzy
@@ -32919,6 +32894,10 @@ msgstr "'%1$s' ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುವ ಯಾ
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "'%1$s' ಹೆಸರಿಗೆ ಹೊಂದಿಕೆಯಾಗುವ ಯಾವುದೆ nwfilter ಇಲ್ಲ"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "ಈ ಸಾಧನಕ್ಕೆ ಯಾವುದೆ ಮೂಲವಿಲ್ಲ"
 
@@ -33287,6 +33266,9 @@ msgstr "ಬರೆಯುವ ಕಾರ್ಯಾಚರಣೆಯ ಸಂಖ್ಯೆ:
 
 msgid "numbers not allowed in VMX format"
 msgstr "VMX ವಿನ್ಯಾಸದಲ್ಲಿ ಸಂಖ್ಯೆಗಳಿಗೆ ಅನುಮತಿ ಇಲ್ಲ"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "ಅಂಕೀಯ ಮಿತಿಮೀರಿಕೆ"
@@ -36441,6 +36423,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36453,10 +36439,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "ನಮೂನೆ '%1$s' ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
 
 msgid "template does not exist"
 msgstr "ಸಿದ್ಧವಿನ್ಯಾಸ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
@@ -40181,6 +40163,46 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "JSON ಫಾರ್ಮ್ಯಾಟರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "JSON ಪಾರ್ಸರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "ಅಜ್ಞಾತ ಪ್ರೊಟೊಕಾಲ್ '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಕ್ಯಾರೆಕ್ಟರ್ ಸಾಧನದ TCP ಪ್ರೊಟೊಕಾಲ್ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr "ಗುರಿ ನಿಯಂತ್ರಕ ಸೂಚಕ %d ಎಂಬುದು %d ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "%1$s ಬ್ರಿಜ್‌ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr "%1$s ಕ್ರಮದಲ್ಲಿ ಬ್ರಿಜ್ ಹೆಸರಿಗೆ ಅನುಮತಿ ಇಲ್ಲ (ಜಾಲಬಂಧ '%2$s')"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "json %1$s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ: %2$s"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "json %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ: %s"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "ನಮೂನೆ '%1$s' ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr ""

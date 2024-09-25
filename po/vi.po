@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -11008,9 +11008,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "nhãn bảo mật đã định nghĩa cho máy ảo"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11497,10 +11494,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -16457,6 +16450,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Máy chủ này không được quản lý bởi một vCenter"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -17188,14 +17184,6 @@ msgstr "Thất bại khi tạo %1$s"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-#, fuzzy
-msgid "Unable to create JSON formatter"
-msgstr "không thể tạo cặp socket"
-
-#, fuzzy
-msgid "Unable to create JSON parser"
-msgstr "không thể tạo cặp socket"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr ""
 
@@ -17282,6 +17270,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to create migration thread"
 msgstr "Không thể lấy trạng thái miền"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -19558,10 +19552,6 @@ msgstr "Phát hành không rõ: %1$s"
 msgid "Unknown parameter type"
 msgstr "kiểu phân vùng không rõ"
 
-#, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "Giao thức không rõ '%1$s'"
-
 #, fuzzy, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "không có các khả năng thiết bị cho '%1$s'"
@@ -19803,10 +19793,6 @@ msgstr "Kiểu tuyến không được hỗ trợ '%1$s' cho kiểu thiết bị
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "Mối quan hệ dung-lượng---cấp-phát không được hỗ trợ"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "Giao thức TCP thiết bị ký tự không hỗ trợ '%1$s'"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21147,7 +21133,7 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
 
 msgid "bandwidth limit in MiB/s"
@@ -21394,10 +21380,6 @@ msgstr "chế độ hostdev '%s' không được hỗ trợ"
 msgid "both interface name and type must not be NULL"
 msgstr "tên giao diện %s không vừa bộ đệm"
 
-#, fuzzy, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "'%1$s' không tồn tại"
-
 #, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr ""
@@ -21411,8 +21393,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
 
 msgid "bridge interface misses the bridge element"
@@ -21682,6 +21664,10 @@ msgstr ""
 #, fuzzy
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "không thể lấy được khóa thay đổi trạng thái"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22562,14 +22548,6 @@ msgstr "không thể phân tích thông số instanceid như một uuid"
 #, fuzzy
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "không thể phân tích thông số instanceid như một uuid"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "không thể phân tích json %1$s: %2$s"
-
-#, fuzzy, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "không thể phân tích json %s: %s"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25029,6 +25007,10 @@ msgstr "Miền '%1$s' đã đang chạy"
 msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "mieenf '%1$s' đã được tạo với uuid %2$s"
 
+#, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "miền '%1$s' không đang xử lý di trú vào"
@@ -26239,9 +26221,6 @@ msgstr "thất bại khi lấy bí mật '%1$s'"
 msgid "failed to convert the XML node tree"
 msgstr "Thất bại khi đếm các thiết bị nút"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "Thất bại khi tạo thiết bị %s"
@@ -26459,9 +26438,6 @@ msgstr "Thất bại khi tìm thiết bị cha cho %1$s"
 #, fuzzy, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "Thất bại khi tìm trình điều khiển lưu trữ: %1$s"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -27589,11 +27565,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 #, fuzzy
@@ -32684,6 +32657,10 @@ msgstr "không có mạng khớp tên '%1$s'"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "không có bí mật khớp uuid '%1$s'"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "không có cha cho thiết bị này"
 
@@ -33054,6 +33031,9 @@ msgstr "Hết thời gian trong khi thao tác"
 
 msgid "numbers not allowed in VMX format"
 msgstr "các số không cho phép trong định dạng VMX"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr ""
@@ -36180,6 +36160,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36192,10 +36176,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "mẫu '%1$s' không tồn tại"
 
 #, fuzzy
 msgid "template does not exist"
@@ -39890,6 +39870,38 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "không thể tạo cặp socket"
+
+#, fuzzy
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "không thể tạo cặp socket"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "Giao thức không rõ '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "Giao thức TCP thiết bị ký tự không hỗ trợ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "'%1$s' không tồn tại"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "không thể phân tích json %1$s: %2$s"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "không thể phân tích json %s: %s"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "mẫu '%1$s' không tồn tại"
 
 #, c-format
 #~ msgid "VMX entry '%1$s' doesn't contain a port part"

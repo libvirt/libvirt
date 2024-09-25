@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2024-06-02 15:35+0000\n"
 "Last-Translator: \"Sergey A.\" <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -11245,11 +11245,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "Для узла %1$u уже определена пропускная способность памяти"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-"Значение пропускной способности памяти, превышающее 100, является "
-"некорректным."
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11730,12 +11725,6 @@ msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr ""
 "Отсутствуют или являются некорректными данные resctrl для выделения "
 "пропускной способности памяти"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
-msgstr ""
-"Отсутствуют или являются некорректными данные resctrl для узла пропускной "
-"способности памяти «%1$u»"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr ""
@@ -16898,6 +16887,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Этот хост не находится под управлением vCenter"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "У этого снимка имеются дочерние. Удалите сначала эти снимки"
 
@@ -17617,12 +17609,6 @@ msgstr "Не удалось создать %1$s"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-msgid "Unable to create JSON formatter"
-msgstr "Ну удалось создать средство форматирования JSON"
-
-msgid "Unable to create JSON parser"
-msgstr "Не удалось создать анализатор JSON"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "Не удалось виртуальную машину KVM для проверки TSC"
 
@@ -17703,6 +17689,12 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "Не удалось создать поток миграции"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 msgid "Unable to create pipes"
 msgstr "Не удалось создать каналы обработки"
@@ -19838,10 +19830,6 @@ msgid "Unknown parameter type"
 msgstr "Неизвестный тип параметра"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "Неизвестный протокол «%1$s»"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "Неизвестный флаг функций qemu %1$s"
 
@@ -20090,10 +20078,6 @@ msgstr "Тип шины «%1$s» для устройства типа «%2$s» �
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "Неподдерживаемое соотношение ёмкости и выделения памяти"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "TCP-протокол символьного устройства «%1$s» не поддерживается"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21467,10 +21451,8 @@ msgstr ""
 "этим API значение"
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
-"идентификатор контроллера пропускной способности %1$zd не существует, "
-"максимальное значение идентификатора контроллера — %2$u"
 
 msgid "bandwidth limit in MiB/s"
 msgstr "ограничение пропускной способности в МиБ/с"
@@ -21729,10 +21711,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "как имя, так и тип интерфейса не могут содержать NULL"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "%1$s не существует"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "Недопустимая маска сети или IP-адрес моста «%1$s»"
 
@@ -21745,11 +21723,9 @@ msgstr "создать мост для существующего сетевог
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
-"параметры задержки, STP и зоны моста можно указывать только для режимов "
-"route, nat и isolated, но не %1$s (сеть «%2$s»)"
 
 msgid "bridge interface misses the bridge element"
 msgstr "Отсутствует элемент bridge для интерфейса моста"
@@ -22043,6 +22019,10 @@ msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
 "не удалось получить блокировку изменения состояния из-за ограничения "
 "max_queued"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22920,14 +22900,6 @@ msgstr "не удалось разобрать получить UUID из пар
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "не удалось извлечь UUID из параметра «interfaceid»"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "не удалось разобрать JSON %1$s: %2$s"
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "не удалось разобрать JSON %1$s: незавершённая строка, карта или массив"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25362,6 +25334,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "домену «%1$s» уже присвоен UUID %2$s"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "домен «%1$s» не переносится"
 
@@ -26538,9 +26514,6 @@ msgstr "не удалось преобразовать размер: «%1$s»"
 msgid "failed to convert the XML node tree"
 msgstr "не удалось выполнить преобразование иерархии узлов XML"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 msgid "failed to copy all device rules"
 msgstr "не удалось скопировать все правила устройств"
 
@@ -26748,9 +26721,6 @@ msgstr "Не удалось найти настоящее устройство �
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "не удалось завершить задание для диска %1$s"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, c-format
 msgid "failed to format image: '%1$s'"
@@ -27817,18 +27787,9 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
-"firewalld настроен на использование модуля nftables, но не "
-"указанообязательной зоны «libvirt» firewalld. Либо установите модуль "
-"firewalld в значение «iptables», либо определите для firewalld зону«libvirt» "
-"путём обновления firewalld до версии, в которой предусмотрена "
-"поддержкаприоритетности правил (0.7.0+), и/или повторной сборки libvirt с "
-"параметром--with-firewalld-zone."
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "для этого драйвера не реализован автоматический выбор микропрограммы"
@@ -32911,6 +32872,10 @@ msgstr "нет nwfilter с совпадающим именем «%1$s»"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "нет nwfilter с совпадающим UUID «%1$s»"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "нет родительского устройства"
 
@@ -33268,6 +33233,9 @@ msgstr "число операций записи:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "числа в формате VMX не допускаются"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "числовое переполнение"
@@ -36398,6 +36366,10 @@ msgstr ""
 msgid "tcp"
 msgstr "tcp"
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36414,10 +36386,6 @@ msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
 "постоянный атрибут объединения запрещён, если типом объединения является "
 "«%1$s»"
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "шаблон «%1$s» не существует"
 
 msgid "template does not exist"
 msgstr "шаблон не существует"
@@ -40211,6 +40179,77 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#~ msgid "Memory Bandwidth value exceeding 100 is invalid."
+#~ msgstr ""
+#~ "Значение пропускной способности памяти, превышающее 100, является "
+#~ "некорректным."
+
+#, c-format
+#~ msgid ""
+#~ "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
+#~ msgstr ""
+#~ "Отсутствуют или являются некорректными данные resctrl для узла пропускной "
+#~ "способности памяти «%1$u»"
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "Ну удалось создать средство форматирования JSON"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "Не удалось создать анализатор JSON"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "Неизвестный протокол «%1$s»"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "TCP-протокол символьного устройства «%1$s» не поддерживается"
+
+#, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr ""
+#~ "идентификатор контроллера пропускной способности %1$zd не существует, "
+#~ "максимальное значение идентификатора контроллера — %2$u"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "%1$s не существует"
+
+#, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr ""
+#~ "параметры задержки, STP и зоны моста можно указывать только для режимов "
+#~ "route, nat и isolated, но не %1$s (сеть «%2$s»)"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "не удалось разобрать JSON %1$s: %2$s"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr ""
+#~ "не удалось разобрать JSON %1$s: незавершённая строка, карта или массив"
+
+#~ msgid ""
+#~ "firewalld is set to use the nftables backend, but the required firewalld "
+#~ "'libvirt' zone is missing. Either set the firewalld backend to "
+#~ "'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading "
+#~ "firewalld to a version supporting rule priorities (0.7.0+) and/or "
+#~ "rebuilding libvirt with --with-firewalld-zone"
+#~ msgstr ""
+#~ "firewalld настроен на использование модуля nftables, но не "
+#~ "указанообязательной зоны «libvirt» firewalld. Либо установите модуль "
+#~ "firewalld в значение «iptables», либо определите для firewalld "
+#~ "зону«libvirt» путём обновления firewalld до версии, в которой "
+#~ "предусмотрена поддержкаприоритетности правил (0.7.0+), и/или повторной "
+#~ "сборки libvirt с параметром--with-firewalld-zone."
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "шаблон «%1$s» не существует"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "записи DNS HOST можно добавить или удалить, но нельзя изменить"

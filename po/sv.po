@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2024-09-24 14:45+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -11243,9 +11243,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "Minnesbandbredden är redan definierad för nod %1$u"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr "Minnesbandbreddsvärde överskridande 100 är felaktigt."
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11713,11 +11710,6 @@ msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr ""
 "Saknad eller inkonsistent resctrl-information för "
 "minnesbandbreddsallokeringen"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
-msgstr ""
-"Saknad eller inkonsistent resctrl-information för minnesbandbreddsnod ”%1$u”"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr "Saknat eller felaktigt ”broadcast-allowed” i query-rx-filter-svaret"
@@ -16791,6 +16783,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Denna värd hanteras inte av ett vCenter"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "Denna ögonblicksbid har barn, radera dessa ögonblicksbilder först"
 
@@ -17492,12 +17487,6 @@ msgstr "Kan inte skapa %1$s"
 msgid "Unable to create HardDisk"
 msgstr "Kan inte skapa HardDisk"
 
-msgid "Unable to create JSON formatter"
-msgstr "Kan inte skapa en JSON-formaterare"
-
-msgid "Unable to create JSON parser"
-msgstr "Kan inte skapa en JSON-tolk"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "Kan inte skap en KVM VM för TSC-avkänning"
 
@@ -17578,6 +17567,12 @@ msgstr "Kan inte skapa en medierad enhet: %1$s"
 
 msgid "Unable to create migration thread"
 msgstr "Kan inte skapa en migrationstråd"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 msgid "Unable to create pipes"
 msgstr "Kan inte skapa rör"
@@ -19694,10 +19689,6 @@ msgid "Unknown parameter type"
 msgstr "Okänd parametertyp"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "Okänt protokoll ”%1$s”"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "Okänd flagga för qemu-förmågor %1$s"
 
@@ -19938,10 +19929,6 @@ msgstr "Ej stödd busstyp ”%1$s” för enhetstypen ”%2$s”"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "Ej stödd relation kapacetet-till-allokering"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "Ej stött TCP-protokoll för teckenenhet ”%1$s”"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21329,8 +21316,8 @@ msgstr ""
 "stödjs av detta API"
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "bandbreddsstyrenheten med id %1$zd finns inte, max styrenhets-id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr "bandbreddsgräns i MiB/s"
@@ -21586,10 +21573,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "både gränssnittsnamnet och typen får inte vara NULL"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "bryggan %1$s finns inte"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "bryggan ”%1$s” har en felaktig nätmask eller IP-adress"
 
@@ -21602,11 +21585,9 @@ msgstr "brygga en befintlig nätverksenhet"
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
-"bryggalternativen delay/stp/zone är endast tillåtna i lägena route, nat och "
-"isolated, inte i %1$s (nätverket ”%2$s”)"
 
 msgid "bridge interface misses the bridge element"
 msgstr "bryggsgränssnittet saknar bryggelementet"
@@ -21889,6 +21870,10 @@ msgstr ""
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
 "kan inte ta låset på tillståndsändringen på grund av gränsen max_queued"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22741,14 +22726,6 @@ msgstr "kan inte tolka parametern instanceid som ett uuid"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "kan inte tolka parametern interfaceid som ett uuid"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "kan inte tolka json %1$s: %2$s"
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "kan inte tolka json %1$s: oavslutad sträng/avbildning/vektor"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25184,6 +25161,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "domänen ”%1$s” migreras inte"
 
@@ -26381,9 +26362,6 @@ msgstr "misslyckades att konvertera storleken: ”%1$s”"
 msgid "failed to convert the XML node tree"
 msgstr "misslyckades att konvertera XML-nodträdet"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr "misslyckades att konvertera virJSONValue till yajl-data"
-
 msgid "failed to copy all device rules"
 msgstr "misslyckades att kopiera alla enhetsregler"
 
@@ -26590,9 +26568,6 @@ msgstr "misslyckades att hitta den verkliga enheten för VLAN-enheten ”%1$s”
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "misslyckades att avsluta jobbet för disken %1$s"
-
-msgid "failed to format JSON"
-msgstr "misslyckades att formatera JSON"
 
 #, c-format
 msgid "failed to format image: '%1$s'"
@@ -27668,17 +27643,9 @@ msgstr ""
 "ögonblicksbild: ”%2$s”"
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
-"firewalld är satt till att använda bakänden nftables, men den nödvändiga "
-"firewalld-zonen ”libvirt” saknas. Sätt antingen bakänden för firewalld till "
-"”iptables”, eller se till att firewalld har en zon ”libvirt” genom att "
-"uppgradera firewalld till en version som stödjer regelprioriteter (0.7.0+) "
-"och/eller genom att bygga om libvirt med --with-firewalld-zone"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr ""
@@ -32668,6 +32635,10 @@ msgstr "inget nwfilter med matchande namn ”%1$s”"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "inget nwfilter med matchande uuid ”%1$s”"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "ingen förälder till denna enhet"
 
@@ -33031,6 +33002,9 @@ msgstr "antal skrivåtgärder:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "siffror är inte tillåtna i VMX-format"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "numeriskt spill"
@@ -33688,15 +33662,15 @@ msgid ""
 "per-device bytes read per second, in the form of /path/to/device,"
 "read_bytes_sec,..."
 msgstr ""
-"lästa byte per enhet per sekund, på formatet /sökväg/till/"
-"enhet,lästa_byte_s,…"
+"lästa byte per enhet per sekund, på formatet /sökväg/till/enhet,"
+"lästa_byte_s,…"
 
 msgid ""
 "per-device bytes wrote per second, in the form of /path/to/device,"
 "write_bytes_sec,..."
 msgstr ""
-"skrivna byte per enhet per sekund, på formatet /sökväg/till/"
-"enhet,skrivna_byte_s,…"
+"skrivna byte per enhet per sekund, på formatet /sökväg/till/enhet,"
+"skrivna_byte_s,…"
 
 msgid ""
 "per-device read I/O limit per second, in the form of /path/to/device,"
@@ -33708,8 +33682,8 @@ msgid ""
 "per-device write I/O limit per second, in the form of /path/to/device,"
 "write_iops_sec,..."
 msgstr ""
-"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
-"enhet,skriv_op_s,…"
+"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,"
+"skriv_op_s,…"
 
 #, c-format
 msgid "perf event '%1$s' was already specified"
@@ -34401,7 +34375,8 @@ msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "egenskapen queue-size stödjs inte av denna QEMU-binär"
 
 msgid "queue_size attribute in disk driver is only supported for virtio bus"
-msgstr "attributet queue_size i diskdrivrutinen stödjs endast för virtio-bussen"
+msgstr ""
+"attributet queue_size i diskdrivrutinen stödjs endast för virtio-bussen"
 
 msgid ""
 "queues attribute in disk driver element is only supported for virtio bus"
@@ -34551,7 +34526,8 @@ msgid "refresh a pool"
 msgstr "uppdatera en pool"
 
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
-msgstr "uppdateringen av ploop misslyckades: kan inte radera DiskDescriptor.xml"
+msgstr ""
+"uppdateringen av ploop misslyckades: kan inte radera DiskDescriptor.xml"
 
 #, c-format
 msgid "refusing to generate file name for disk '%1$s'"
@@ -34597,8 +34573,8 @@ msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2|libssh)"
 msgstr ""
-"remote_open: transporten i URL:en är inte känd (skall vara "
-"tls|unix|ssh|ext|tcp|libssh2|libssh)"
+"remote_open: transporten i URL:en är inte känd (skall vara tls|unix|ssh|ext|"
+"tcp|libssh2|libssh)"
 
 msgid "removable is only valid for usb or scsi disks"
 msgstr "removable är endast giltigt för usb- eller scsi-diskar"
@@ -34896,8 +34872,8 @@ msgstr "att återuppta efter ögonblicksbilden misslyckades"
 #, c-format
 msgid "resuming failed post-copy migration of domain %1$s already in progress"
 msgstr ""
-"återupptagandet av den misslyckades efterkopieringsmigrerigen av domänen %1$"
-"s pågår redan"
+"återupptagandet av den misslyckades efterkopieringsmigrerigen av domänen "
+"%1$s pågår redan"
 
 msgid "resuming failed post-copy migration requires change protection"
 msgstr ""
@@ -36107,6 +36083,10 @@ msgstr ""
 msgid "tcp"
 msgstr "tcp"
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36119,10 +36099,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "template '%1$s' does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
 
 #, fuzzy
 msgid "template does not exist"
@@ -39769,6 +39745,78 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Memory Bandwidth value exceeding 100 is invalid."
+#~ msgstr "Minnesbandbreddsvärde överskridande 100 är felaktigt."
+
+#, c-format
+#~ msgid ""
+#~ "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
+#~ msgstr ""
+#~ "Saknad eller inkonsistent resctrl-information för minnesbandbreddsnod "
+#~ "”%1$u”"
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "Kan inte skapa en JSON-formaterare"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "Kan inte skapa en JSON-tolk"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "Okänt protokoll ”%1$s”"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "Ej stött TCP-protokoll för teckenenhet ”%1$s”"
+
+#, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr ""
+#~ "bandbreddsstyrenheten med id %1$zd finns inte, max styrenhets-id %2$u"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "bryggan %1$s finns inte"
+
+#, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr ""
+#~ "bryggalternativen delay/stp/zone är endast tillåtna i lägena route, nat "
+#~ "och isolated, inte i %1$s (nätverket ”%2$s”)"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "kan inte tolka json %1$s: %2$s"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "kan inte tolka json %1$s: oavslutad sträng/avbildning/vektor"
+
+#~ msgid "failed to convert virJSONValue to yajl data"
+#~ msgstr "misslyckades att konvertera virJSONValue till yajl-data"
+
+#~ msgid "failed to format JSON"
+#~ msgstr "misslyckades att formatera JSON"
+
+#~ msgid ""
+#~ "firewalld is set to use the nftables backend, but the required firewalld "
+#~ "'libvirt' zone is missing. Either set the firewalld backend to "
+#~ "'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading "
+#~ "firewalld to a version supporting rule priorities (0.7.0+) and/or "
+#~ "rebuilding libvirt with --with-firewalld-zone"
+#~ msgstr ""
+#~ "firewalld är satt till att använda bakänden nftables, men den nödvändiga "
+#~ "firewalld-zonen ”libvirt” saknas. Sätt antingen bakänden för firewalld "
+#~ "till ”iptables”, eller se till att firewalld har en zon ”libvirt” genom "
+#~ "att uppgradera firewalld till en version som stödjer regelprioriteter "
+#~ "(0.7.0+) och/eller genom att bygga om libvirt med --with-firewalld-zone"
+
+#, fuzzy, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "Hyra %s i låsrymden %s finns inte"
 
 #, c-format
 #~ msgid "Unexpected response from CH: %1$d"

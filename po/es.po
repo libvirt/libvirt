@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -11269,9 +11269,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "ya se ha definido una etiqueta de seguridad para VM"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11785,10 +11782,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -17065,6 +17058,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Este equipo no está siendo administrado por un vCenter"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -17784,12 +17780,6 @@ msgstr "No se puede crear %1$s"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-msgid "Unable to create JSON formatter"
-msgstr "No se puede crear formateador de JSON"
-
-msgid "Unable to create JSON parser"
-msgstr "No  se  puede crear lector de JSON"
-
 #, fuzzy
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "No se puede crear formateador de JSON"
@@ -17875,6 +17865,12 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "No se  pudo  crear migración de hilos"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -20087,10 +20083,6 @@ msgid "Unknown parameter type"
 msgstr "tipo de parámetro desconocido: %d"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "Protocolo '%1$s' desconocido"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "Indicador desconocido de capacidades Qemu %1$s"
 
@@ -20333,10 +20325,6 @@ msgstr "Tipo de bus '%1$s' no soportado para el tipo de dispositivo '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "No existe soporte para la relación capacidad-alojamiento"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "Protocolo TCP de dispositivo de caracteres '%1$s' no soportado"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21694,9 +21682,9 @@ msgid ""
 "by this API"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "El indice de controlador elegido %d no coincide con la fuente %d"
+#, c-format
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr "Límite de ancho de banda en MIB/s"
@@ -21950,10 +21938,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "el argumento virt_type no debe ser NULL"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "puente %1$s no existe"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "puente '%1$s' tiene una máscara de red inválida o dirección IP"
 
@@ -21964,11 +21948,11 @@ msgstr "Puente '%1$s' tiene un prefijo inválido"
 msgid "bridge an existing network device"
 msgstr "Crear puente de un dispositivo de red existente"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
-msgstr "Nombre de puente no tiene permiso en modo %1$s (red '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
+msgstr ""
 
 msgid "bridge interface misses the bridge element"
 msgstr "la interfaz de puente no encuentra un elemento de puente"
@@ -22254,6 +22238,10 @@ msgstr ""
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
 "No se puede adquirir estado de cambio de cerrojo debido al límite max_queued"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -23144,14 +23132,6 @@ msgstr "No es posible analizar el parámetro instanceid como si fuera un UUID"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "No se  puede leer  parámetro interfaceid como un UUID"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "no es posible analizar json %1$s: %2$s"
-
-#, fuzzy, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "no es posible analizar json %s: %s"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25656,6 +25636,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "El dominio '%1$s' ya se ha definido con uuid %2$s"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "Dominio '%1$s' no se está  migrando"
 
@@ -26871,9 +26855,6 @@ msgstr "Falló al obtener secreto '%1$s'"
 msgid "failed to convert the XML node tree"
 msgstr "Falló al numerar los dispositivos de nodo"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "No se pudo analizar lista de dispositivo QEMU"
@@ -27087,9 +27068,6 @@ msgstr "No se pudo encontrar  VID para el dispositivo VLAN '%1$s'"
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "Falló al restablecer dispositivo de bloque '%1$s'"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -28211,11 +28189,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 #, fuzzy
@@ -33334,6 +33309,10 @@ msgstr "wfilter no coincide con nombre '%1$s'"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "wfilter no coincide con nombre '%1$s'"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "No hay archivos principales para este dispositivo"
 
@@ -33724,6 +33703,9 @@ msgstr "Número de operaciones de escritura:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "números no permitidos en formato VMX"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "numerical overflow"
@@ -36933,6 +36915,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36945,10 +36931,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "no existe el modelo '%1$s'"
 
 msgid "template does not exist"
 msgstr "Plantilla no existe"
@@ -40698,6 +40680,46 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "No se puede crear formateador de JSON"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "No  se  puede crear lector de JSON"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "Protocolo '%1$s' desconocido"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "Protocolo TCP de dispositivo de caracteres '%1$s' no soportado"
+
+#, fuzzy, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr "El indice de controlador elegido %d no coincide con la fuente %d"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "puente %1$s no existe"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr "Nombre de puente no tiene permiso en modo %1$s (red '%2$s')"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "no es posible analizar json %1$s: %2$s"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "no es posible analizar json %s: %s"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "no existe el modelo '%1$s'"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr ""

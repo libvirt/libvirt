@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -11265,9 +11265,6 @@ msgstr "Přidělení propustnosti paměti velikosti %1$u je nižší minimum %2$
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "Šířka pásma paměti už definována pro uzel %1$u"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr "Hodnota šíře pásma paměti překračující 100 není platná."
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11747,11 +11744,6 @@ msgstr ""
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr ""
 "Chybějící nebo nejednotné resctrl info pro přidělení propustnosti paměti"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
-msgstr ""
-"Chybějící nebo nejednotné resctrl info pro uzel propustnosti paměti „%1$u“"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr "Chybějící nebo neplatné 'broadcast-allowed' v odpovědi query-rx-filter"
@@ -16838,6 +16830,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Tento hostitel není spravován vCenter"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "Tento zachycený stav má jemu podřízené – nejdříve smažte je"
 
@@ -17546,12 +17541,6 @@ msgstr "Nedaří se vytvořit %1$s"
 msgid "Unable to create HardDisk"
 msgstr "Nedaří se vytvořit HardDisk"
 
-msgid "Unable to create JSON formatter"
-msgstr "Nedaří se vytvořit formátování JSON"
-
-msgid "Unable to create JSON parser"
-msgstr "Nedaří se vytvořit zpracování JSON"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr ""
 "Nedaří se vytvořit KVM virt. stroj pro zkoumání čítače časového razítka (TSC)"
@@ -17635,6 +17624,12 @@ msgstr "Nedaří se vytvořit zprostředkované zařízení: %1$s"
 
 msgid "Unable to create migration thread"
 msgstr "Nedaří se vytvořit vlákno migrace"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 msgid "Unable to create pipes"
 msgstr "Nedaří se vytvořit roury"
@@ -19763,10 +19758,6 @@ msgid "Unknown parameter type"
 msgstr "Neznámý typ parametru"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "Neznámý protokol „%1$s“"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "Neznámý příznak %1$s schopností qemu"
 
@@ -20006,10 +19997,6 @@ msgstr "Nepodporovaný typ sběrnice „%1$s“ pro typ zařízení „%2$s“"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "Nepodporovaný vztah kapacita-přiřazení"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "Nepodporovaný protokol TCP znakového zařízení „%1$s“"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21388,10 +21375,8 @@ msgstr ""
 "tímto aplikačním programovým rozhraním"
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
-"identifikátor %1$zd řadiče propustnosti neexistuje, nejvyšší možný "
-"identifikátor %2$u"
 
 msgid "bandwidth limit in MiB/s"
 msgstr "limit přenosového pásma v MiB/s"
@@ -21655,10 +21640,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "je třeba, aby ani název, ani typ rozhraní nebyly prázdné"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "most %1$s už existuje"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "most „%1$s“ nemá platnou masku sítě nebo IP adresu"
 
@@ -21671,11 +21652,9 @@ msgstr "přemostit existující síťové rozhraní"
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
-"volby mostu delay/stp/zone jsou povoleny pouze v režimu route, nat a "
-"isolated, ne v %1$s (síť „%2$s“)"
 
 msgid "bridge interface misses the bridge element"
 msgstr "rozhraní typu most chybí prvek bridge"
@@ -21958,6 +21937,10 @@ msgstr ""
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "nedaří se získat zámek změny stavu kvůli limitu max_qeued"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22820,14 +22803,6 @@ msgstr "nedaří se zpracovat parametr instanceid jako uuid"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "není možné zpracovat parametr interfaceid jako uuid"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "nedaří se zpracovat json %1$s: %2$s"
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "nedaří se zpracovat json %1$s: neukončený řetězec/mapa/pole"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25273,6 +25248,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "doména „%1$s“ už je definovaná s uuid %2$s"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "doména „%1$s“ není migrována"
 
@@ -26472,9 +26451,6 @@ msgstr "nepodařilo se převést velikost: „%1$s“"
 msgid "failed to convert the XML node tree"
 msgstr "nepodařilo se zkonvertovat strom XML uzlu"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr "nepodařilo se převést virJSONValue na yajl data"
-
 msgid "failed to copy all device rules"
 msgstr "nepodařilo se zkopírovat všechna pravidla pro zařízení"
 
@@ -26685,9 +26661,6 @@ msgstr "nepodařilo se nalézt skutečné zařízení pro VLAN zařízení „%1
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "nepodařilo se dokončit úlohu pro disk %1$s"
-
-msgid "failed to format JSON"
-msgstr "nepodařilo se formátovat JSON"
 
 #, c-format
 msgid "failed to format image: '%1$s'"
@@ -27769,17 +27742,9 @@ msgstr ""
 "'%1$s': '%2$s'"
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
-"firewalld je nastavené, aby používalo podpůrnou vrstvu nftables, ale "
-"potřebná firewalld zóna 'libvirt' chybí. Buď nastavte podpůrnou vrstvu "
-"firewalld na 'iptables', nebo zajistěte, aby firewalld mělo zónu 'libvirt' a "
-"to přechodem na verzi firewalld, která podporuje priority pravidel (0.7.0 a "
-"novější) a/nebo libvirt zkompilujte s --with-firewalld-zone"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "automatický výběr firmware není pro tento ovladač implementován"
@@ -32843,6 +32808,10 @@ msgstr "žádný nwfiltr s názvem odpovídajícím „%1$s“"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "žádný nwfilter s nikde se neopakujícím identifikátorem „%1$s“"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "žádné nadřazené pro toto zařízení"
 
@@ -33206,6 +33175,9 @@ msgstr "počet zápisových operací:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "ve formátu VMX nejsou dovolená čísla"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "číselné přetečení"
@@ -36337,6 +36309,10 @@ msgstr "je třeba, aby velikost tb-cache bylo celé číslo v násobcích MiB"
 msgid "tcp"
 msgstr "tcp"
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "je třeba, aby zařízení hostitele pro týmování měly type='transient'"
 
@@ -36351,10 +36327,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr "pokud je typ týmování '%1$s', pak atribut persistence není podporován"
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "šablona „%1$s“ neexistuje"
 
 msgid "template does not exist"
 msgstr "šablona neexistuje"
@@ -40110,6 +40082,79 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#~ msgid "Memory Bandwidth value exceeding 100 is invalid."
+#~ msgstr "Hodnota šíře pásma paměti překračující 100 není platná."
+
+#, c-format
+#~ msgid ""
+#~ "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
+#~ msgstr ""
+#~ "Chybějící nebo nejednotné resctrl info pro uzel propustnosti paměti „%1$u“"
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "Nedaří se vytvořit formátování JSON"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "Nedaří se vytvořit zpracování JSON"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "Neznámý protokol „%1$s“"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "Nepodporovaný protokol TCP znakového zařízení „%1$s“"
+
+#, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr ""
+#~ "identifikátor %1$zd řadiče propustnosti neexistuje, nejvyšší možný "
+#~ "identifikátor %2$u"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "most %1$s už existuje"
+
+#, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr ""
+#~ "volby mostu delay/stp/zone jsou povoleny pouze v režimu route, nat a "
+#~ "isolated, ne v %1$s (síť „%2$s“)"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "nedaří se zpracovat json %1$s: %2$s"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "nedaří se zpracovat json %1$s: neukončený řetězec/mapa/pole"
+
+#~ msgid "failed to convert virJSONValue to yajl data"
+#~ msgstr "nepodařilo se převést virJSONValue na yajl data"
+
+#~ msgid "failed to format JSON"
+#~ msgstr "nepodařilo se formátovat JSON"
+
+#~ msgid ""
+#~ "firewalld is set to use the nftables backend, but the required firewalld "
+#~ "'libvirt' zone is missing. Either set the firewalld backend to "
+#~ "'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading "
+#~ "firewalld to a version supporting rule priorities (0.7.0+) and/or "
+#~ "rebuilding libvirt with --with-firewalld-zone"
+#~ msgstr ""
+#~ "firewalld je nastavené, aby používalo podpůrnou vrstvu nftables, ale "
+#~ "potřebná firewalld zóna 'libvirt' chybí. Buď nastavte podpůrnou vrstvu "
+#~ "firewalld na 'iptables', nebo zajistěte, aby firewalld mělo zónu "
+#~ "'libvirt' a to přechodem na verzi firewalld, která podporuje priority "
+#~ "pravidel (0.7.0 a novější) a/nebo libvirt zkompilujte s --with-firewalld-"
+#~ "zone"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "šablona „%1$s“ neexistuje"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST záznamy není možné upravovat – pouze přidávat nebo mazat"

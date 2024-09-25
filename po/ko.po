@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2024-08-29 05:38+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -11068,9 +11068,6 @@ msgstr "%1$u 크기의 메모리 대역폭 할당이 허용된 최소 할당 %2$
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "메모리 대역폭은 이미 노드 %1$u에 정의되었습니다"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr "100을 초과하는 메모리 대역폭 값은 유효하지 않습니다."
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11533,11 +11530,6 @@ msgstr "레벨 '%1$u' 유형 '%2$s'에 대한 resctrl 정보가 없거나 일치
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr "메모리 대역폭 할당에 대한 resctrl 정보가 없거나 일관성이 없습니다"
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
-msgstr ""
-"메모리 대역폭 노드 '%1$u'에 대한 resctrl 정보가 없거나 일치하지 않습니다"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr "query-rx-filter 응답에 'broadcast-allowed'가 없거나 잘못되었습니다"
@@ -15548,7 +15540,8 @@ msgstr "대상 도메인 IOMMU 장치 수가 소스와 일치하지 않습니다
 msgid ""
 "Target domain IOMMU device dma translation '%1$s' does not match source "
 "'%2$s'"
-msgstr "대상 도메인 IOMMU 장치 dma 번역 '%1$s'은 원천 '%2$s'와 일치하지 않습니다"
+msgstr ""
+"대상 도메인 IOMMU 장치 dma 번역 '%1$s'은 원천 '%2$s'와 일치하지 않습니다"
 
 #, c-format
 msgid ""
@@ -16560,6 +16553,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "이 호스트는 vCenter에 의해 관리되지 않습니다"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "이 순간찍기는 하위 항목이 있고, 미리 이들 순간찍기를 삭제하세요"
 
@@ -17258,12 +17254,6 @@ msgstr "%1$s을 생성할 수 없습니다"
 msgid "Unable to create HardDisk"
 msgstr "하드디스크를 생성 할 수 없습니다"
 
-msgid "Unable to create JSON formatter"
-msgstr "JSON 포맷터를 생성할 수 없습니다"
-
-msgid "Unable to create JSON parser"
-msgstr "JSON을 구문 분석을 생성할 수 없습니다"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "TSC 프로빙을 위한 KVM VM을 생성 할 수 없음"
 
@@ -17344,6 +17334,12 @@ msgstr "중재된 장치를 만들 수 없음: %1$s"
 
 msgid "Unable to create migration thread"
 msgstr "이전 쓰레드를 생성 할 수 없습니다"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 msgid "Unable to create pipes"
 msgstr "파이프를 생성할 수 없습니다"
@@ -19456,10 +19452,6 @@ msgid "Unknown parameter type"
 msgstr "알 수 없는 매개 변수 유형"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "알려지지 않은 프로토콜 '%1$s'"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "알 수 없는 qemu 기능 플래그 %1$s"
 
@@ -19697,10 +19689,6 @@ msgstr "장치 유형 '%1$s'를 위해 지원하지 않는 버스 유형 '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "지원되지 않는 capacity-to-allocation 관계"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "지원되지 않는 문자 장치 TCP 프로토콜 '%1$s'"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21040,8 +21028,8 @@ msgid ""
 msgstr "대역폭 %1$llu가 이 API에서 지원하는 최대값인 %2$lu보다 큽니다"
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "대역폭 제어기 id %1$zd는 존재하지 않으며, 최대 제어기 id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr "대역폭 제한(MiB/s)"
@@ -21288,10 +21276,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "연결장치 이름과 유형 모두 비워두지 않아야 합니다"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "브릿지 %1$s가 존재하지 않습니다"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "브리지 '%1$s'에 잘못된 넷마스크 또는 IP 주소가 있습니다"
 
@@ -21304,11 +21288,9 @@ msgstr "기존 네트워크 장치 브릿지"
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
-"브릿지 지연/멈춤/대역 선택은 %1$s (네트워크 '%2$s')가 아니라 경로, nat 과 분"
-"리된 방법에서만 허용됩니다"
 
 msgid "bridge interface misses the bridge element"
 msgstr "브리지 인터페이스에 bridge 요소가 빠졌습니다"
@@ -21585,6 +21567,10 @@ msgstr ""
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "max_queued 제한으로 인해 상태 변경 잠금을 획득할 수 없습니다"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22433,14 +22419,6 @@ msgstr "uuid로 인스턴스 ID 매개 변수를 구문 분석할 수 없음"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "uuid로 인터페이스 ID 매개 변수를 구문 분석할 수 없음"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "json %1$s를 구문 분석할 수 없음: %2$s"
-
-#, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "json %1$s를 구문 분석 할 수 없음: 종료되지 않은 문자열/맵/정렬"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -24844,6 +24822,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "도메인 '%1$s'가 uuid %2$s로 이미 정의되어 있습니다"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "도메인 %1$s가 이전되지 않음"
 
@@ -26026,9 +26008,6 @@ msgstr "크기 변환 실패: '%1$s'"
 msgid "failed to convert the XML node tree"
 msgstr "XML 노드 트리를 변환하지 못했습니다"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr "virJSONValue를 yajl 데이터로 변환하지 못했습니다"
-
 msgid "failed to copy all device rules"
 msgstr "모든 장치 규칙을 복사하지 못했습니다"
 
@@ -26235,9 +26214,6 @@ msgstr "VLAN 장치 '%1$s'을 위한 실제 장치를 찾는데 실패했습니�
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "디스크 %1$s의 작업 종료 실패"
-
-msgid "failed to format JSON"
-msgstr "JSON 형식을 지정하지 못했습니다"
 
 #, c-format
 msgid "failed to format image: '%1$s'"
@@ -27299,17 +27275,9 @@ msgstr ""
 "마무리 블록 작업은 디스크 '%1$s' 순간찍기를 삭제하는 동안에 실패함: '%2$s'"
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
-"firewalld는 nftables 백엔드를 사용하도록 설정되어 있지만 필요한 firewalld "
-"'libvirt' 영역이 없습니다. firewalld 백엔드를 'iptables'로 설정하거나 "
-"firewalld를 규칙 우선 순위(0.7.0+)를 지원하는 버전으로 업그레이드하거나 --"
-"with-firewalld-zone을 사용하여 libvirt를 다시 빌드하여 firewalld에 'libvirt' "
-"영역이 있는지 확인하십시오"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "이 드라이버에 대해 펌웨어 자동 선택이 구현되지 않았습니다"
@@ -32220,6 +32188,10 @@ msgstr "이름 '%1$s'와 일치하는 nwfilter가 없음"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "uuid '%1$s'와 일치하는 nwfilter가 없음"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "이 장치에 대한 부모가 없음"
 
@@ -32573,6 +32545,9 @@ msgstr "쓰기 동작 수:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "VMX 형식에서 숫자는 허용되지 않습니다"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "숫자 오버플로"
@@ -35600,6 +35575,10 @@ msgstr "tb-캐쉬 크기는 Mbyte의 정수배여야 합니다"
 msgid "tcp"
 msgstr "tcp"
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "팀 구성 hostdev 장치에는 type='transient'가 있어야 합니다"
 
@@ -35612,10 +35591,6 @@ msgstr "팀 구성 유형이 '일시적'인 경우 팀 구성 지속 속성을 �
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr "팀 구성 유형이 '%1$s'인 경우 팀 구성 지속 속성이 허용되지 않습니다"
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "템플릿 '%1$s'는 존재하지 않습니다"
 
 msgid "template does not exist"
 msgstr "템플릿이 존재하지 않음"
@@ -39328,6 +39303,76 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#~ msgid "Memory Bandwidth value exceeding 100 is invalid."
+#~ msgstr "100을 초과하는 메모리 대역폭 값은 유효하지 않습니다."
+
+#, c-format
+#~ msgid ""
+#~ "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
+#~ msgstr ""
+#~ "메모리 대역폭 노드 '%1$u'에 대한 resctrl 정보가 없거나 일치하지 않습니다"
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "JSON 포맷터를 생성할 수 없습니다"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "JSON을 구문 분석을 생성할 수 없습니다"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "알려지지 않은 프로토콜 '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "지원되지 않는 문자 장치 TCP 프로토콜 '%1$s'"
+
+#, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr "대역폭 제어기 id %1$zd는 존재하지 않으며, 최대 제어기 id %2$u"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "브릿지 %1$s가 존재하지 않습니다"
+
+#, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr ""
+#~ "브릿지 지연/멈춤/대역 선택은 %1$s (네트워크 '%2$s')가 아니라 경로, nat 과 "
+#~ "분리된 방법에서만 허용됩니다"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "json %1$s를 구문 분석할 수 없음: %2$s"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "json %1$s를 구문 분석 할 수 없음: 종료되지 않은 문자열/맵/정렬"
+
+#~ msgid "failed to convert virJSONValue to yajl data"
+#~ msgstr "virJSONValue를 yajl 데이터로 변환하지 못했습니다"
+
+#~ msgid "failed to format JSON"
+#~ msgstr "JSON 형식을 지정하지 못했습니다"
+
+#~ msgid ""
+#~ "firewalld is set to use the nftables backend, but the required firewalld "
+#~ "'libvirt' zone is missing. Either set the firewalld backend to "
+#~ "'iptables', or ensure that firewalld has a 'libvirt' zone by upgrading "
+#~ "firewalld to a version supporting rule priorities (0.7.0+) and/or "
+#~ "rebuilding libvirt with --with-firewalld-zone"
+#~ msgstr ""
+#~ "firewalld는 nftables 백엔드를 사용하도록 설정되어 있지만 필요한 firewalld "
+#~ "'libvirt' 영역이 없습니다. firewalld 백엔드를 'iptables'로 설정하거나 "
+#~ "firewalld를 규칙 우선 순위(0.7.0+)를 지원하는 버전으로 업그레이드하거나 --"
+#~ "with-firewalld-zone을 사용하여 libvirt를 다시 빌드하여 firewalld에 "
+#~ "'libvirt' 영역이 있는지 확인하십시오"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "템플릿 '%1$s'는 존재하지 않습니다"
 
 #, c-format
 #~ msgid "Unexpected response from CH: %1$d"

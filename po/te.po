@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -10931,9 +10931,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "VM కొరకు రక్షణ label యిప్పటికే నిర్వచించబడివుంది"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11427,10 +11424,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -16442,6 +16435,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "ఈ అతిధేయి vCenter చేత నిర్వహించబడుటలేదు"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -17152,12 +17148,6 @@ msgstr "%1$s సృష్టించలేదు"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-msgid "Unable to create JSON formatter"
-msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
-
-msgid "Unable to create JSON parser"
-msgstr "JSON పార్సర్ సృష్టించలేదు"
-
 #, fuzzy
 msgid "Unable to create KVM VM for TSC probing"
 msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
@@ -17241,6 +17231,12 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "మైగ్రేషన్ త్రెడ్ సృష్టించలేదు"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -19436,10 +19432,6 @@ msgid "Unknown parameter type"
 msgstr "తెలియని పారామితి రకం: %d"
 
 #, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "తెలియని నిభందన(ప్రోటోకాల్) '%1$s'"
-
-#, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "తెలియని qemu సామర్థ్యాల ఫ్లాగ్ %1$s"
 
@@ -19679,10 +19671,6 @@ msgstr "తోడ్పాటులేని బస్ రకం '%1$s' పర�
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "తోడ్పాటులేని సామర్ధ్యం-కేటాయింపు సంబందం"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "తోడ్పాటులేని కారెక్టర్ పరికరం TCP ప్రొటోకాల్ '%1$s'"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21012,9 +21000,9 @@ msgid ""
 "by this API"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
-msgstr "లక్ష్యపు నియంత్రిక విషయసూచి %d మూలపు %d తో సరిపోలడంలేదు"
+#, c-format
+msgid "bandwidth controller id %1$zd does not exist"
+msgstr ""
 
 msgid "bandwidth limit in MiB/s"
 msgstr "బాండ్‌విడ్త్ పరిమితి MiB/s లో"
@@ -21260,10 +21248,6 @@ msgid "both interface name and type must not be NULL"
 msgstr "ఆర్గుమెంట్ virt_type తప్పకుండా NULL కాకూడదు"
 
 #, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "బ్రిడ్జ్ %1$s లేదు"
-
-#, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "బ్రిడ్జ్ '%1$s' చెల్లని నెట్‌మాస్క్ లేదా ఐపి చిరునామా కలిగివుంది"
 
@@ -21274,11 +21258,11 @@ msgstr "బ్రిడ్జ్ '%1$s' చెల్లునటువంటి 
 msgid "bridge an existing network device"
 msgstr "ఇప్పటికేవున్న నెట్వర్కు పరికరం బ్రిడ్జ్ చేయి"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
-msgstr "%1$s రీతినందు బ్రడ్జ్ పేరు అనుమతించబడదు (నెట్వర్కు '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
+msgstr ""
 
 msgid "bridge interface misses the bridge element"
 msgstr "బ్రిడ్జి యింటర్ఫేస్ బ్రిడ్జి మూలకంను వదిలివేసింది"
@@ -21552,6 +21536,10 @@ msgstr "max_queued పరిమితి కారణంగా స్టేట�
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "max_queued పరిమితి కారణంగా స్టేట్ చేంజ్ లాక్ పొందలేదు"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22412,14 +22400,6 @@ msgstr "ఇన్‌స్టాన్సుఐడి పారామితి �
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "ఇంటర్ఫేస్‌ఐడి పారామితి ను uuid వలె పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "json %1$sను పార్శ్ చేయలేక పోయింది: %2$s"
-
-#, fuzzy, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "json %sను పార్శ్ చేయలేక పోయింది: %s"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -24857,6 +24837,10 @@ msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "‍డొమైన్ '%1$s' యిప్పటికే uuid %2$sతో నిర్వచించబడింది"
 
 #, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
+#, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "డొమైన్ '%1$s' మైగ్రేట్ కావడంలేదు"
 
@@ -26058,9 +26042,6 @@ msgstr "రహస్యము '%1$s' పొందుటకు విఫలమై
 msgid "failed to convert the XML node tree"
 msgstr "నోడ్ పరికరాలను లెక్కించుటకు విఫలమైంది"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "qemu పరికర జాబితా పార్స్ చేయుటకు విఫలమైంది"
@@ -26274,9 +26255,6 @@ msgstr "VID ను VLAN పరికరం '%1$s' కొరకు కనుగ�
 #, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "డిస్కు %1$s కొరకు జాబ్ పూర్తిచేయుటకు విఫలమైంది"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -27388,11 +27366,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 #, fuzzy
@@ -32439,6 +32414,10 @@ msgstr "సరిపోలు పేరు '%1$s' తో ఏ nwfilter లేద�
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "సరిపోలు పేరు '%1$s' తో ఏ nwfilter లేదు'"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "ఈ పరికరముకు పేరెంట్ లేదు"
 
@@ -32804,6 +32783,9 @@ msgstr "వ్రాయు ఆపరేషన్ల సంఖ్య:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "VMX ఫార్మాట్‌నందు సంఖ్యలు అనుమతించబడవు"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr "న్యూమరికల్ వోవర్‌ఫ్లో"
@@ -35932,6 +35914,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -35944,10 +35930,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "మాదిరి '%1$s' లేదు"
 
 msgid "template does not exist"
 msgstr "మాదిరి లేదు"
@@ -39642,6 +39624,46 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "JSON ఫార్మాటర్ సృష్టించలేదు"
+
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "JSON పార్సర్ సృష్టించలేదు"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "తెలియని నిభందన(ప్రోటోకాల్) '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "తోడ్పాటులేని కారెక్టర్ పరికరం TCP ప్రొటోకాల్ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+#~ msgstr "లక్ష్యపు నియంత్రిక విషయసూచి %d మూలపు %d తో సరిపోలడంలేదు"
+
+#, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "బ్రిడ్జ్ %1$s లేదు"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "bridge delay/stp/zone options only allowed in route, nat, and isolated "
+#~ "mode, not in %1$s (network '%2$s')"
+#~ msgstr "%1$s రీతినందు బ్రడ్జ్ పేరు అనుమతించబడదు (నెట్వర్కు '%2$s')"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "json %1$sను పార్శ్ చేయలేక పోయింది: %2$s"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "json %sను పార్శ్ చేయలేక పోయింది: %s"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "మాదిరి '%1$s' లేదు"
 
 #~ msgid "DNS HOST records cannot be modified, only added or deleted"
 #~ msgstr "DNS HOST రికార్డ్స్ సవరించబడలేవు, జతచేసినవి లేదా తొలగించినవి మాత్రమే"

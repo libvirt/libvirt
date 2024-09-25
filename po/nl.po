@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-08-27 08:20+0000\n"
+"POT-Creation-Date: 2024-09-25 07:59+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -11056,9 +11056,6 @@ msgstr ""
 msgid "Memory Bandwidth already defined for node %1$u"
 msgstr "beveiliging label al gedefinieerd voor VM"
 
-msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
-
 #, c-format
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
@@ -11550,10 +11547,6 @@ msgid "Missing or inconsistent resctrl info for level '%1$u' type '%2$s'"
 msgstr ""
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
-msgstr ""
-
-#, c-format
-msgid "Missing or inconsistent resctrl info for memory bandwidth node '%1$u'"
 msgstr ""
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
@@ -16596,6 +16589,9 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Deze host wordt niet beheerd door een vCenter"
 
+msgid "This platform does not support setting the bridge device zone"
+msgstr ""
+
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
@@ -17329,14 +17325,6 @@ msgstr "%1$s aanmaken mislukte"
 msgid "Unable to create HardDisk"
 msgstr ""
 
-#, fuzzy
-msgid "Unable to create JSON formatter"
-msgstr "kan socket paar niet aanmaken"
-
-#, fuzzy
-msgid "Unable to create JSON parser"
-msgstr "kan socket paar niet aanmaken"
-
 msgid "Unable to create KVM VM for TSC probing"
 msgstr ""
 
@@ -17423,6 +17411,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to create migration thread"
 msgstr "Kan domein status niet krijgen"
+
+#, c-format
+msgid ""
+"Unable to create multiple fds for tap device %1$s (maybe existing device was "
+"created without multi_queue flag)"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to create pipes"
@@ -19703,10 +19697,6 @@ msgstr "Onbekende vrijgave: %1$s"
 msgid "Unknown parameter type"
 msgstr "onbekend partitie type"
 
-#, c-format
-msgid "Unknown protocol '%1$s'"
-msgstr "Onbekend protocol '%1$s'"
-
 #, fuzzy, c-format
 msgid "Unknown qemu capabilities flag %1$s"
 msgstr "geen apparaat mogelijkheden voor '%1$s'"
@@ -19948,10 +19938,6 @@ msgstr "Niet-ondersteund bus type '%1$s' voor apparaat type '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "Niet-ondersteunde capaciteit-toewijzing relatie"
-
-#, c-format
-msgid "Unsupported character device TCP protocol '%1$s'"
-msgstr "Niet-ondersteund karakter TCP protocol '%1$s'"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -21299,7 +21285,7 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "bandwidth controller id %1$zd does not exist, max controller id %2$u"
+msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
 
 msgid "bandwidth limit in MiB/s"
@@ -21546,10 +21532,6 @@ msgstr "hostdev mode '%s' niet ondersteund"
 msgid "both interface name and type must not be NULL"
 msgstr "interface naam %s past niet in buffer"
 
-#, fuzzy, c-format
-msgid "bridge %1$s doesn't exist"
-msgstr "bestand %1$s bestaat niet"
-
 #, c-format
 msgid "bridge '%1$s' has an invalid netmask or IP address"
 msgstr "brug '%1$s' heeft een ongeldig netmasker of IP adres"
@@ -21563,8 +21545,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
-"not in %1$s (network '%2$s')"
+"bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
+"mode, not in %1$s (network '%2$s')"
 msgstr ""
 
 msgid "bridge interface misses the bridge element"
@@ -21836,6 +21818,10 @@ msgstr ""
 #, fuzzy
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "kan toestand verander slot niet verkrijgen"
+
+#, c-format
+msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -22711,14 +22697,6 @@ msgstr "kan instanceid parameter niet ontleden als een uuid"
 #, fuzzy
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "kan instanceid parameter niet ontleden als een uuid"
-
-#, c-format
-msgid "cannot parse json %1$s: %2$s"
-msgstr "kan json %1$s niet ontleden: %2$s"
-
-#, fuzzy, c-format
-msgid "cannot parse json %1$s: unterminated string/map/array"
-msgstr "kan json %s niet ontleden: %s"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -25183,6 +25161,10 @@ msgstr "Domein '%1$s' is al actief"
 msgid "domain '%1$s' is already defined with uuid %2$s"
 msgstr "domein '%1$s' is al gedefinieerd met uuid %2$s"
 
+#, c-format
+msgid "domain '%1$s' is being migrated out"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "domain '%1$s' is not being migrated"
 msgstr "domein '%1$s' verwerkt de binnenkomende migratie niet"
@@ -26392,9 +26374,6 @@ msgstr "verkrijgen van geheim '%1$s' mislukte"
 msgid "failed to convert the XML node tree"
 msgstr "Tellen van node apparaten mislukte"
 
-msgid "failed to convert virJSONValue to yajl data"
-msgstr ""
-
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "Apparaat %s maken mislukte"
@@ -26610,9 +26589,6 @@ msgstr "Vinden van ouder apparaat voor %1$s mislukte"
 #, fuzzy, c-format
 msgid "failed to finish job for disk %1$s"
 msgstr "Vinden van opslag driver mislukte: %1$s"
-
-msgid "failed to format JSON"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%1$s'"
@@ -27736,11 +27712,8 @@ msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
 
 msgid ""
-"firewalld is set to use the nftables backend, but the required firewalld "
-"'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
-"or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
-"version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
-"with-firewalld-zone"
+"firewalld can't find the 'libvirt' zone that should have been installed with "
+"libvirt"
 msgstr ""
 
 #, fuzzy
@@ -32852,6 +32825,10 @@ msgstr "geen mwfiltern met overeenkomende naam '%1$s'"
 msgid "no nwfilter with matching uuid '%1$s'"
 msgstr "geen mwfiltern met overeenkomende naam '%1$s'"
 
+msgid ""
+"no panic model provided, and no default for the architecture and machine type"
+msgstr ""
+
 msgid "no parent for this device"
 msgstr "geen ouder voor dit apparaat"
 
@@ -33221,6 +33198,9 @@ msgstr "Time-out tijdens het gebruik"
 
 msgid "numbers not allowed in VMX format"
 msgstr "nummers niet toegestaan in VMX formaat"
+
+msgid "numeric overflow in conf value"
+msgstr ""
 
 msgid "numerical overflow"
 msgstr ""
@@ -36358,6 +36338,10 @@ msgstr ""
 msgid "tcp"
 msgstr ""
 
+#, c-format
+msgid "tcp chardev protocol '%1$s' not supported"
+msgstr ""
+
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
 
@@ -36370,10 +36354,6 @@ msgstr ""
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
 msgstr ""
-
-#, c-format
-msgid "template '%1$s' does not exist"
-msgstr "sjabloon '%1$s' bestaat niet"
 
 msgid "template does not exist"
 msgstr "sjabloon bestaat niet"
@@ -40071,6 +40051,38 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Unable to create JSON formatter"
+#~ msgstr "kan socket paar niet aanmaken"
+
+#, fuzzy
+#~ msgid "Unable to create JSON parser"
+#~ msgstr "kan socket paar niet aanmaken"
+
+#, c-format
+#~ msgid "Unknown protocol '%1$s'"
+#~ msgstr "Onbekend protocol '%1$s'"
+
+#, c-format
+#~ msgid "Unsupported character device TCP protocol '%1$s'"
+#~ msgstr "Niet-ondersteund karakter TCP protocol '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "bridge %1$s doesn't exist"
+#~ msgstr "bestand %1$s bestaat niet"
+
+#, c-format
+#~ msgid "cannot parse json %1$s: %2$s"
+#~ msgstr "kan json %1$s niet ontleden: %2$s"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse json %1$s: unterminated string/map/array"
+#~ msgstr "kan json %s niet ontleden: %s"
+
+#, c-format
+#~ msgid "template '%1$s' does not exist"
+#~ msgstr "sjabloon '%1$s' bestaat niet"
 
 #, c-format
 #~ msgid "VMX entry '%1$s' doesn't contain a port part"
