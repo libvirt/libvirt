@@ -2980,7 +2980,8 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->eim != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT ||
-            iommu->aw_bits != 0) {
+            iommu->aw_bits != 0 ||
+            iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("iommu model '%1$s' doesn't support additional attributes"),
                            virDomainIOMMUModelTypeToString(iommu->model));

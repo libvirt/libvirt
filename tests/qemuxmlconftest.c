@@ -2766,6 +2766,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-no-acpi");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-invalid-address-type");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-invalid-address");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-dma-translation");
 
     DO_TEST_CAPS_LATEST("cpu-hotplug-startup");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("cpu-hotplug-granularity", "ppc64");
