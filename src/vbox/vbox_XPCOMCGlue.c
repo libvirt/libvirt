@@ -78,7 +78,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
            unsigned int *version)
 {
     int result = -1;
-    char *name = NULL;
+    g_autofree char *name = NULL;
     PFNVBOXGETXPCOMCFUNCTIONS pfnGetFunctions;
 
     if (dir != NULL) {
@@ -88,7 +88,6 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
             if (!ignoreMissing)
                 VIR_ERROR(_("Library '%1$s' doesn't exist"), name);
 
-            VIR_FREE(name);
             return -1;
         }
     } else {
@@ -151,8 +150,6 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
     if (hVBoxXPCOMC != NULL && result < 0) {
         g_clear_pointer(&hVBoxXPCOMC, dlclose);
     }
-
-    VIR_FREE(name);
 
     return result;
 }
