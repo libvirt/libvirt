@@ -10691,6 +10691,11 @@ static const vshCmdOptDef opts_migrate[] = {
      .completer = virshDomainMigrateDisksCompleter,
      .help = N_("comma separated list of disks to be migrated")
     },
+    {.name = "migrate-disks-detect-zeroes",
+     .type = VSH_OT_STRING,
+     .completer = virshDomainMigrateDisksCompleter,
+     .help = N_("comma separated list of disks to be migrated with zero detection enabled")
+    },
     {.name = "disks-port",
      .type = VSH_OT_INT,
      .unwanted_positional = true,
@@ -10904,6 +10909,27 @@ doMigrate(void *opaque)
                                         &nparams,
                                         &maxparams,
                                         VIR_MIGRATE_PARAM_MIGRATE_DISKS,
+                                        (const char **)val) < 0) {
+            goto save_error;
+        }
+    }
+
+    if (vshCommandOptString(ctl, cmd, "migrate-disks-detect-zeroes", &opt) < 0)
+        goto out;
+    if (opt) {
+        g_autofree char **val = NULL;
+
+        if (!(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))) {
+            vshError(ctl, "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--copy-storage-inc'");
+            goto out;
+        }
+
+        val = g_strsplit(opt, ",", 0);
+
+        if (virTypedParamsAddStringList(&params,
+                                        &nparams,
+                                        &maxparams,
+                                        VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES,
                                         (const char **)val) < 0) {
             goto save_error;
         }

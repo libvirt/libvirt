@@ -3389,7 +3389,9 @@ migrate
       [--postcopy-after-precopy] [--postcopy-resume] [--zerocopy]
       domain desturi [migrateuri] [graphicsuri] [listen-address] [dname]
       [--timeout seconds [--timeout-suspend | --timeout-postcopy]]
-      [--xml file] [--migrate-disks disk-list] [--disks-port port]
+      [--xml file]
+      [--migrate-disks disk-list] [--migrate-disks-detect-zeroes disk-list]
+      [--disks-port port]
       [--compressed] [--comp-methods method-list]
       [--comp-mt-level] [--comp-mt-threads] [--comp-mt-dthreads]
       [--comp-xbzrle-cache] [--comp-zlib-level] [--comp-zstd-level]
@@ -3420,6 +3422,10 @@ images on source host to the images found at the same place on the destination
 host. By default only non-shared non-readonly images are transferred. Use
 *--migrate-disks* to explicitly specify a list of disk targets to
 transfer via the comma separated ``disk-list`` argument.
+The *--migrate-disks-detect-zeroes* option which takes a comma separated list of
+disk target names enables zeroed block detection for the listed migrated disks.
+These blocks are not transferred or allocated on destination, effectively
+sparsifying the disk at the cost of CPU overhead.
 With *--copy-storage-synchronous-writes* flag used the disk data migration will
 synchronously handle guest disk writes to both the original source and the
 destination to ensure that the disk migration converges at the price of possibly
