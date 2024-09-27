@@ -394,18 +394,22 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
  * @ret: pointer to the returned array
  *
  * Filters @params retaining only the parameters named @name in the
- * resulting array @ret. Caller should free the @ret array but not
- * the items since they are pointing to the @params elements.
+ * resulting array @ret.
  *
- * Returns amount of elements in @ret on success, -1 on error.
+ * Important Caller should free the @ret array but not the items since they are
+ * pointing to the @params elements. I.e. callers must not use
+ * 'virTypedParamsFree' or equivalent on pointer returned via @ret.
+ *
+ * Returns amount of elements in @ret.
  */
-int
+size_t
 virTypedParamsFilter(virTypedParameterPtr params,
                      int nparams,
                      const char *name,
                      virTypedParameterPtr **ret)
 {
-    size_t i, n = 0;
+    size_t i;
+    size_t n = 0;
 
     *ret = g_new0(virTypedParameterPtr, nparams);
 
@@ -443,16 +447,13 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
                             const char ***values)
 {
     size_t i, n;
-    int nfiltered;
+    size_t nfiltered;
     virTypedParameterPtr *filtered = NULL;
 
     virCheckNonNullArgGoto(values, error);
     *values = NULL;
 
     nfiltered = virTypedParamsFilter(params, nparams, name, &filtered);
-
-    if (nfiltered < 0)
-        goto error;
 
     if (nfiltered)
         *values = g_new0(const char *, nfiltered);

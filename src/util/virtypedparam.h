@@ -81,7 +81,7 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
                             int nparams,
                             const char *name,
                             const char ***values);
-int
+size_t
 virTypedParamsFilter(virTypedParameterPtr params,
                      int nparams,
                      const char *name,
