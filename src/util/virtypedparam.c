@@ -391,10 +391,12 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
  * @params: array of typed parameters
  * @nparams: number of parameters in the @params array
  * @name: name of the parameter to find
+ * @type: type of fields to filter (ignored if 0 is passed)
  * @ret: pointer to the returned array
  *
  * Filters @params retaining only the parameters named @name in the
- * resulting array @ret.
+ * resulting array @ret. If @type is non-zero it also filters out parameters
+ * whose type doesn't match @type.
  *
  * Important Caller should free the @ret array but not the items since they are
  * pointing to the @params elements. I.e. callers must not use
@@ -406,6 +408,7 @@ size_t
 virTypedParamsFilter(virTypedParameterPtr params,
                      int nparams,
                      const char *name,
+                     int type,
                      virTypedParameterPtr **ret)
 {
     size_t i;
@@ -414,10 +417,14 @@ virTypedParamsFilter(virTypedParameterPtr params,
     *ret = g_new0(virTypedParameterPtr, nparams);
 
     for (i = 0; i < nparams; i++) {
-        if (STREQ(params[i].field, name)) {
-            (*ret)[n] = &params[i];
-            n++;
-        }
+        if (STRNEQ(params[i].field, name))
+            continue;
+
+        if (type != 0 &&
+            params[i].type != type)
+            continue;
+
+        (*ret)[n++] = &params[i];
     }
 
     return n;
@@ -453,7 +460,7 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
 
     *values = NULL;
 
-    nfiltered = virTypedParamsFilter(params, nparams, name, &filtered);
+    nfiltered = virTypedParamsFilter(params, nparams, name, 0, &filtered);
 
     if (nfiltered == 0)
         return 0;

@@ -85,6 +85,7 @@ size_t
 virTypedParamsFilter(virTypedParameterPtr params,
                      int nparams,
                      const char *name,
+                     int type,
                      virTypedParameterPtr **ret)
     G_GNUC_WARN_UNUSED_RESULT;
 

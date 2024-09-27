@@ -91,13 +91,14 @@ testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
         { .field = "bar", .type = VIR_TYPED_PARAM_UINT },
         { .field = "foo", .type = VIR_TYPED_PARAM_INT },
         { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
-        { .field = "foo", .type = VIR_TYPED_PARAM_INT }
+        { .field = "foo", .type = VIR_TYPED_PARAM_INT },
+        { .field = "foobar", .type = VIR_TYPED_PARAM_INT },
     };
     virTypedParameterPtr *filtered = NULL;
 
 
     nfiltered = virTypedParamsFilter(params, G_N_ELEMENTS(params),
-                                     "foo", &filtered);
+                                     "foo", 0, &filtered);
     if (nfiltered != 3)
         goto cleanup;
 
@@ -108,7 +109,7 @@ testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
     VIR_FREE(filtered);
 
     nfiltered = virTypedParamsFilter(params, G_N_ELEMENTS(params),
-                                     "bar", &filtered);
+                                     "bar", VIR_TYPED_PARAM_UINT, &filtered);
 
     if (nfiltered != 2)
         goto cleanup;
@@ -117,6 +118,13 @@ testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
         if (filtered[i] != &params[i * 2])
             goto cleanup;
     }
+    VIR_FREE(filtered);
+
+    nfiltered = virTypedParamsFilter(params, G_N_ELEMENTS(params),
+                                     "foobar", VIR_TYPED_PARAM_STRING, &filtered);
+
+    if (nfiltered != 1)
+        goto cleanup;
 
     rv = 0;
  cleanup:
