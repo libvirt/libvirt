@@ -2599,9 +2599,9 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
               " cookieout=%p, cookieoutlen=%p,"
-              " nmigrate_disks=%zu, migrate_disks=%p, flags=0x%x",
+              " migrate_disks=%p, flags=0x%x",
               driver, vm, NULLSTR(xmlin), NULLSTR(dname),
-              cookieout, cookieoutlen, nmigrate_disks,
+              cookieout, cookieoutlen,
               migrate_disks, flags);
 
     /* Only set the phase if we are inside VIR_ASYNC_JOB_MIGRATION_OUT.
@@ -3735,12 +3735,12 @@ qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
               "def=%p, origname=%s, listenAddress=%s, "
-              "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, "
+              "migrate_disks=%p, nbdPort=%d, "
               "nbdURI=%s, flags=0x%x",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
               *def, origname, NULLSTR(listenAddress),
-              nmigrate_disks, migrate_disks, nbdPort, NULLSTR(nbdURI),
+              migrate_disks, nbdPort, NULLSTR(nbdURI),
               flags);
 
     *uri_out = NULL;
@@ -4775,11 +4775,11 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%x, resource=%lu, "
               "spec=%p (dest=%d, fwd=%d), dconn=%p, graphicsuri=%s, "
-              "nmigrate_disks=%zu, migrate_disks=%p",
+              "migrate_disks=%p",
               driver, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
               spec, spec->destType, spec->fwdType, dconn,
-              NULLSTR(graphicsuri), nmigrate_disks, migrate_disks);
+              NULLSTR(graphicsuri), migrate_disks);
 
     if (storageMigration)
         storageMigration = qemuMigrationHasAnyStorageMigrationDisks(vm->def,
@@ -5199,10 +5199,10 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%x, resource=%lu, "
-              "graphicsuri=%s, nmigrate_disks=%zu migrate_disks=%p",
+              "graphicsuri=%s, migrate_disks=%p",
               driver, vm, uri, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
-              NULLSTR(graphicsuri), nmigrate_disks, migrate_disks);
+              NULLSTR(graphicsuri), migrate_disks);
 
     if (!(uribits = qemuMigrationAnyParseURI(uri, NULL)))
         return -1;
@@ -5303,10 +5303,10 @@ qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%x, resource=%lu, "
-              "graphicsuri=%s, nmigrate_disks=%zu, migrate_disks=%p",
+              "graphicsuri=%s, migrate_disks=%p",
               driver, vm, st, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
-              NULLSTR(graphicsuri), nmigrate_disks, migrate_disks);
+              NULLSTR(graphicsuri), migrate_disks);
 
     spec.fwdType = MIGRATION_FWD_STREAM;
     spec.fwd.stream = st;
@@ -5571,11 +5571,11 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, dconnuri=%s, vm=%p, xmlin=%s, "
               "dname=%s, uri=%s, graphicsuri=%s, listenAddress=%s, "
-              "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, nbdURI=%s, "
+              "migrate_disks=%p, nbdPort=%d, nbdURI=%s, "
               "bandwidth=%llu, useParams=%d, flags=0x%x",
               driver, sconn, dconn, NULLSTR(dconnuri), vm, NULLSTR(xmlin),
               NULLSTR(dname), NULLSTR(uri), NULLSTR(graphicsuri),
-              NULLSTR(listenAddress), nmigrate_disks, migrate_disks, nbdPort,
+              NULLSTR(listenAddress), migrate_disks, nbdPort,
               NULLSTR(nbdURI), bandwidth, useParams, flags);
 
     /* Unlike the virDomainMigrateVersion3 counterpart, we don't need
@@ -5937,12 +5937,12 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
     int rc;
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, uri=%s, "
-              "graphicsuri=%s, listenAddress=%s, nmigrate_disks=%zu, "
+              "graphicsuri=%s, listenAddress=%s, "
               "migrate_disks=%p, nbdPort=%d, nbdURI=%s, flags=0x%x, "
               "dname=%s, resource=%lu",
               driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), NULLSTR(graphicsuri), NULLSTR(listenAddress),
-              nmigrate_disks, migrate_disks, nbdPort, NULLSTR(nbdURI),
+              migrate_disks, nbdPort, NULLSTR(nbdURI),
               flags, NULLSTR(dname), resource);
 
     if (flags & VIR_MIGRATE_TUNNELLED && uri) {
@@ -6304,13 +6304,13 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
 
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, graphicsuri=%s, listenAddress=%s, "
-              "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, "
+              "migrate_disks=%p, nbdPort=%d, "
               "nbdURI=%s, "
               "cookiein=%s, cookieinlen=%d, cookieout=%p, cookieoutlen=%p, "
               "flags=0x%x, dname=%s, resource=%lu, v3proto=%d",
               driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), NULLSTR(graphicsuri), NULLSTR(listenAddress),
-              nmigrate_disks, migrate_disks, nbdPort, NULLSTR(nbdURI),
+              migrate_disks, nbdPort, NULLSTR(nbdURI),
               NULLSTR(cookiein), cookieinlen, cookieout, cookieoutlen,
               flags, NULLSTR(dname), resource, v3proto);
 
