@@ -877,9 +877,7 @@ virStorageDriver *vboxGetStorageDriver(uint32_t uVersion)
     /* Install gVBoxAPI according to the vbox API version.
      * Return -1 for unsupported version.
      */
-    if (uVersion >= 6000051 && uVersion < 6001051) {
-        vbox61InstallUniformedAPI(&gVBoxAPI);
-    } else if (uVersion >= 7000000 && uVersion < 7000004) {
+    if (uVersion >= 7000000 && uVersion < 7000004) {
         vbox70InstallUniformedAPI(&gVBoxAPI);
     } else {
         return NULL;
