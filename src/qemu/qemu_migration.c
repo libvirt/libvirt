@@ -2466,19 +2466,8 @@ qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookie *mig,
         if (!nodedata)
             continue;
 
-        if (migrate_disks) {
-            bool migrating = false;
-
-            for (j = 0; j < nmigrate_disks; j++) {
-                if (STREQ(migrate_disks[j], diskdef->dst)) {
-                    migrating = true;
-                    break;
-                }
-            }
-
-            if (!migrating)
-                continue;
-        }
+        if (!qemuMigrationAnyCopyDisk(diskdef, nmigrate_disks, migrate_disks))
+            continue;
 
         for (j = 0; j < nodedata->nbitmaps; j++) {
             qemuMigrationBlockDirtyBitmapsDiskBitmap *bitmap;
