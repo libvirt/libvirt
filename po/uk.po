@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-08-29 05:38+0000\n"
+"PO-Revision-Date: 2024-09-27 04:03+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.7.2\n"
 
 msgid ""
 "\n"
@@ -17534,6 +17534,7 @@ msgstr "Цією основною системою не керує vCenter"
 
 msgid "This platform does not support setting the bridge device zone"
 msgstr ""
+"На цій платформі не передбачено можливості встановлення зони пристрою містка"
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "У цього знімка є дочірні. Будь ласка, спочатку вилучіть ці знімки"
@@ -18335,6 +18336,8 @@ msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
 msgstr ""
+"Не вдалося створити декілька дескрипторів файлів для пристрою tap %1$s ("
+"можливо, наявний пристрій було створено без прапорця multi_queue)"
 
 msgid "Unable to create pipes"
 msgstr "Не вдалося створити канали обробки"
@@ -22164,7 +22167,7 @@ msgstr ""
 
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
-msgstr ""
+msgstr "контролера потоку з ідентифікатором %1$zd не існує"
 
 msgid "bandwidth limit in MiB/s"
 msgstr "обмеження ширини каналу у МіБ/с"
@@ -22453,6 +22456,8 @@ msgid ""
 "bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
 "mode, not in %1$s (network '%2$s')"
 msgstr ""
+"параметрами delay/stp/zone містка можна скористатися лише у режимах open, "
+"route, nat та isolated, а не у %1$s (мережа «%2$s»)"
 
 msgid "bridge interface misses the bridge element"
 msgstr "Відсутній елемент bridge для інтерфейсу моста"
@@ -22752,6 +22757,7 @@ msgstr ""
 #, c-format
 msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
 msgstr ""
+"неможливо додати пристрій домену %1$s %2$s до містка %3$s, якого не існує"
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -26156,7 +26162,7 @@ msgstr "домену «%1$s» уже призначений UUID %2$s"
 
 #, c-format
 msgid "domain '%1$s' is being migrated out"
-msgstr ""
+msgstr "виконуємо перенесення назовні домену «%1$s»"
 
 #, c-format
 msgid "domain '%1$s' is not being migrated"
@@ -28670,6 +28676,8 @@ msgid ""
 "firewalld can't find the 'libvirt' zone that should have been installed with "
 "libvirt"
 msgstr ""
+"firewalld не вдалося знайти зону «libvirt», яку мало бути встановлено разом "
+"із libvirt"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "для цього драйвера не реалізовано автоматичного вибору мікропрограми"
@@ -33909,6 +33917,7 @@ msgstr "немає nwfilter із відповідним UUID «%1$s»"
 msgid ""
 "no panic model provided, and no default for the architecture and machine type"
 msgstr ""
+"не надано моделі паніки, а типової для цієї архітектури і типу машини немає"
 
 msgid "no parent for this device"
 msgstr "немає батьківського пристрою"
@@ -34281,7 +34290,7 @@ msgid "numbers not allowed in VMX format"
 msgstr "числа неприпустимі у форматі VMX"
 
 msgid "numeric overflow in conf value"
-msgstr ""
+msgstr "переповнення числового значення у значенні налаштування"
 
 msgid "numerical overflow"
 msgstr "числове переповнення"
@@ -37526,7 +37535,7 @@ msgstr "tcp"
 
 #, c-format
 msgid "tcp chardev protocol '%1$s' not supported"
-msgstr ""
+msgstr "підтримки протоколу chardev tcp «%1$s» не передбачено"
 
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "командні пристрої hostdev повинні мати значення type='transient'"
