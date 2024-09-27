@@ -74,6 +74,8 @@
     VIR_MIGRATE_PARAM_LISTEN_ADDRESS,   VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_MIGRATE_DISKS,    VIR_TYPED_PARAM_STRING | \
                                         VIR_TYPED_PARAM_MULTIPLE, \
+    VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES, VIR_TYPED_PARAM_STRING | \
+                                                   VIR_TYPED_PARAM_MULTIPLE, \
     VIR_MIGRATE_PARAM_DISKS_PORT,       VIR_TYPED_PARAM_INT, \
     VIR_MIGRATE_PARAM_COMPRESSION,      VIR_TYPED_PARAM_STRING | \
                                         VIR_TYPED_PARAM_MULTIPLE, \
@@ -123,6 +125,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
                       char **cookieout,
                       int *cookieoutlen,
                       const char **migrate_disks,
+                      const char **migrate_disks_detect_zeroes,
                       unsigned int flags);
 
 virDomainDef *
@@ -174,6 +177,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                         const char *graphicsuri,
                         const char *listenAddress,
                         const char **migrate_disks,
+                        const char **migrate_disks_detect_zeroes,
                         int nbdPort,
                         const char *nbdURI,
                         qemuMigrationParams *migParams,
