@@ -1218,6 +1218,8 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriver *driver,
                                            virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virStorageSource) src = NULL;
+
     VIR_DEBUG("copy job '%s' on VM '%s' pivoted", job->name, vm->def->name);
 
     /* mirror may be NULL for copy job corresponding to migration */
@@ -1241,9 +1243,11 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriver *driver,
 
     qemuBlockJobRewriteConfigDiskSource(vm, job->disk, job->disk->mirror);
 
-    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->src);
-    virObjectUnref(job->disk->src);
+    src = g_steal_pointer(&job->disk->src);
+
     job->disk->src = g_steal_pointer(&job->disk->mirror);
+
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, src);
 }
 
 
@@ -1254,6 +1258,7 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriver *driver,
                                            virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virStorageSource) mirror = NULL;
 
     VIR_DEBUG("copy job '%s' on VM '%s' aborted", job->name, vm->def->name);
 
@@ -1277,9 +1282,10 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriver *driver,
             g_clear_pointer(&job->disk->mirror->backingStore, virObjectUnref);
     }
 
+    mirror = g_steal_pointer(&job->disk->mirror);
+
     /* activeWrite bitmap is removed automatically here */
-    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->mirror);
-    g_clear_pointer(&job->disk->mirror, virObjectUnref);
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, mirror);
 }
 
 
