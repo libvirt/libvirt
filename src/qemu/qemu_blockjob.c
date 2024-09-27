@@ -1561,12 +1561,18 @@ qemuBlockJobEventProcess(virQEMUDriver *driver,
     case QEMU_BLOCKJOB_STATE_COMPLETED:
     case QEMU_BLOCKJOB_STATE_FAILED:
     case QEMU_BLOCKJOB_STATE_CANCELLED:
-    case QEMU_BLOCKJOB_STATE_CONCLUDED:
-        if (job->disk) {
-            job->disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-            job->disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        }
+    case QEMU_BLOCKJOB_STATE_CONCLUDED: {
+        virDomainDiskDef *disk = job->disk;
+
         qemuBlockJobEventProcessConcluded(job, driver, vm, asyncJob);
+
+        /* Job was unregistered from the disk but we must ensure that the
+         * data is cleared */
+        if (disk) {
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+            disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        }
+    }
         break;
 
     case QEMU_BLOCKJOB_STATE_READY:
