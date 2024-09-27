@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-09-25 10:42+0000\n"
+"PO-Revision-Date: 2024-09-27 04:03+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -21572,7 +21572,7 @@ msgstr "max_queued 제한으로 인해 상태 변경 잠금을 획득할 수 없
 
 #, c-format
 msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
-msgstr ""
+msgstr "도메인 %1$s 장치 %2$s를 추가 할 수 없습니다 (존재하지 않는 브릿지 %3$s에서)"
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -24825,7 +24825,7 @@ msgstr "도메인 '%1$s'가 uuid %2$s로 이미 정의되어 있습니다"
 
 #, c-format
 msgid "domain '%1$s' is being migrated out"
-msgstr ""
+msgstr "도메인 '%1$s'는 이전 중입니다"
 
 #, c-format
 msgid "domain '%1$s' is not being migrated"
@@ -27279,7 +27279,7 @@ msgstr ""
 msgid ""
 "firewalld can't find the 'libvirt' zone that should have been installed with "
 "libvirt"
-msgstr ""
+msgstr "firewalld는 libvirt로 설치 되어야 하는 'libvirt' 영역을 찾을 수 없습니다"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "이 드라이버에 대해 펌웨어 자동 선택이 구현되지 않았습니다"
@@ -32192,7 +32192,7 @@ msgstr "uuid '%1$s'와 일치하는 nwfilter가 없음"
 
 msgid ""
 "no panic model provided, and no default for the architecture and machine type"
-msgstr ""
+msgstr "패닉 모델이 제공되지 않았고, 구조 및 장비 유형을 위한 기본값이 없습니다"
 
 msgid "no parent for this device"
 msgstr "이 장치에 대한 부모가 없음"
@@ -32549,7 +32549,7 @@ msgid "numbers not allowed in VMX format"
 msgstr "VMX 형식에서 숫자는 허용되지 않습니다"
 
 msgid "numeric overflow in conf value"
-msgstr ""
+msgstr "conf 값의 숫자 넘침"
 
 msgid "numerical overflow"
 msgstr "숫자 오버플로"
@@ -35579,7 +35579,7 @@ msgstr "tcp"
 
 #, c-format
 msgid "tcp chardev protocol '%1$s' not supported"
-msgstr ""
+msgstr "tcp chardev 통신규약 '%1$s'는 지원되지 않습니다"
 
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "팀 구성 hostdev 장치에는 type='transient'가 있어야 합니다"
