@@ -382,18 +382,12 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
 
 static bool
 qemuMigrationAnyCopyDisk(virDomainDiskDef const *disk,
-                         size_t nmigrate_disks, const char **migrate_disks)
+                         size_t nmigrate_disks G_GNUC_UNUSED,
+                         const char **migrate_disks)
 {
-    size_t i;
-
-    /* Check if the disk alias is in the list */
-    if (nmigrate_disks) {
-        for (i = 0; i < nmigrate_disks; i++) {
-            if (STREQ(disk->dst, migrate_disks[i]))
-                return true;
-        }
-        return false;
-    }
+    /* List of disks to migrate takes priority if present */
+    if (migrate_disks)
+        return g_strv_contains(migrate_disks, disk->dst);
 
     /* Default is to migrate only non-shared non-readonly disks
      * with source */
@@ -2666,19 +2660,20 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
             return NULL;
         }
 
-        if (nmigrate_disks) {
-            size_t i, j;
+        if (migrate_disks) {
+            size_t j;
+            const char **d;
+
             /* Check user requested only known disk targets. */
-            for (i = 0; i < nmigrate_disks; i++) {
+            for (d = migrate_disks; *d; d++) {
                 for (j = 0; j < vm->def->ndisks; j++) {
-                    if (STREQ(vm->def->disks[j]->dst, migrate_disks[i]))
+                    if (STREQ(vm->def->disks[j]->dst, *d))
                         break;
                 }
 
                 if (j == vm->def->ndisks) {
                     virReportError(VIR_ERR_INVALID_ARG,
-                                   _("disk target %1$s not found"),
-                                   migrate_disks[i]);
+                                   _("disk target %1$s not found"), *d);
                     return NULL;
                 }
             }
@@ -2691,7 +2686,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                                                      nmigrate_disks))
             cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     } else {
-        if (nmigrate_disks > 0) {
+        if (migrate_disks) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of 'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"));
             return NULL;
@@ -5566,7 +5561,6 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
-    size_t i;
     bool offline = !!(flags & VIR_MIGRATE_OFFLINE);
 
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, dconnuri=%s, vm=%p, xmlin=%s, "
@@ -5625,11 +5619,15 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
                                     VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
                                     listenAddress) < 0)
             goto cleanup;
-        for (i = 0; i < nmigrate_disks; i++)
-            if (virTypedParamsAddString(&params, &nparams, &maxparams,
-                                        VIR_MIGRATE_PARAM_MIGRATE_DISKS,
-                                        migrate_disks[i]) < 0)
-                goto cleanup;
+        if (migrate_disks) {
+            const char **d;
+
+            for (d = migrate_disks; *d; d++)
+                if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                            VIR_MIGRATE_PARAM_MIGRATE_DISKS,
+                                            *d) < 0)
+                    goto cleanup;
+        }
         if (nbdPort &&
             virTypedParamsAddInt(&params, &nparams, &maxparams,
                                  VIR_MIGRATE_PARAM_DISKS_PORT,
@@ -6020,7 +6018,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
 
     /* Only xmlin, dname, uri, and bandwidth parameters can be used with
      * old-style APIs. */
-    if (!useParams && (graphicsuri || listenAddress || nmigrate_disks)) {
+    if (!useParams && (graphicsuri || listenAddress || migrate_disks)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Migration APIs with extensible parameters are not supported but extended parameters were passed"));
         goto cleanup;
