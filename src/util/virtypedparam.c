@@ -439,8 +439,8 @@ virTypedParamsFilter(virTypedParameterPtr params,
  * @values: array of returned values
  *
  * Finds all parameters with desired @name within @params and
- * store their values into @values. If none of the @params are strings named
- * @name the returned @values will be NULL.
+ * store their values into a NULL-terminated string list @values. If none of
+ * the @params are strings named @name the returned @values will be NULL.
  *
  * Important: The strings in the returned string list @values are borrowed from
  * @params and thus caller must free only the pointer returned as @values, but
@@ -465,7 +465,7 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
     if (nfiltered == 0)
         return 0;
 
-    *values = g_new0(const char *, nfiltered);
+    *values = g_new0(const char *, nfiltered + 1);
 
     for (i = 0; i < nfiltered; i++) {
         (*values)[i] = filtered[i]->value.s;
