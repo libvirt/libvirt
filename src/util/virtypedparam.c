@@ -432,13 +432,13 @@ virTypedParamsFilter(virTypedParameterPtr params,
  * @values: array of returned values
  *
  * Finds all parameters with desired @name within @params and
- * store their values into @values. The @values array is self
- * allocated and its length is stored into @picked. When no
- * longer needed, caller should free the returned array, but not
- * the items since they are taken from @params array.
+ * store their values into @values.
  *
- * Returns amount of strings in @values array on success,
- * -1 otherwise.
+ * Important: The strings in the returned string list @values are borrowed from
+ * @params and thus caller must free only the pointer returned as @values, but
+ * not the contents.
+ *
+ * Returns amount of strings in @values array on success.
  */
 int
 virTypedParamsGetStringList(virTypedParameterPtr params,
@@ -446,31 +446,26 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
                             const char *name,
                             const char ***values)
 {
-    size_t i, n;
+    size_t i;
+    size_t n = 0;
     size_t nfiltered;
-    virTypedParameterPtr *filtered = NULL;
+    g_autofree virTypedParameterPtr *filtered = NULL;
 
-    virCheckNonNullArgGoto(values, error);
     *values = NULL;
 
     nfiltered = virTypedParamsFilter(params, nparams, name, &filtered);
 
-    if (nfiltered)
-        *values = g_new0(const char *, nfiltered);
+    if (nfiltered == 0)
+        return 0;
 
-    for (n = 0, i = 0; i < nfiltered; i++) {
+    *values = g_new0(const char *, nfiltered);
+
+    for (i = 0; i < nfiltered; i++) {
         if (filtered[i]->type == VIR_TYPED_PARAM_STRING)
             (*values)[n++] = filtered[i]->value.s;
     }
 
-    VIR_FREE(filtered);
     return n;
-
- error:
-    if (values)
-        VIR_FREE(*values);
-    VIR_FREE(filtered);
-    return -1;
 }
 
 
