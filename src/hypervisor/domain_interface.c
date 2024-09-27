@@ -541,6 +541,7 @@ virDomainCreateInBridgePortWithHelper(const char *bridgeHelperName,
                                       unsigned int flags)
 {
     const char *const bridgeHelperDirs[] = {
+        "/usr/libexec/qemu",
         "/usr/libexec",
         "/usr/lib/qemu",
         "/usr/lib",
