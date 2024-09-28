@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-09-24 14:45+0000\n"
+"PO-Revision-Date: 2024-09-29 17:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -16784,7 +16784,7 @@ msgid "This host is not managed by a vCenter"
 msgstr "Denna värd hanteras inte av ett vCenter"
 
 msgid "This platform does not support setting the bridge device zone"
-msgstr ""
+msgstr "Denna plattform stödjer inte att ställa in bryggenhetszonen"
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "Denna ögonblicksbid har barn, radera dessa ögonblicksbilder först"
@@ -17573,6 +17573,8 @@ msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
 msgstr ""
+"Kan inte skapa flera fb:re för tap-enheten %1$s (kanske var den befintlige "
+"enheten skapad utan flaggan multi_queue)"
 
 msgid "Unable to create pipes"
 msgstr "Kan inte skapa rör"
@@ -21317,7 +21319,7 @@ msgstr ""
 
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
-msgstr ""
+msgstr "någon bandbreddstyrenhet med id %1$zd finns inte"
 
 msgid "bandwidth limit in MiB/s"
 msgstr "bandbreddsgräns i MiB/s"
@@ -21588,6 +21590,8 @@ msgid ""
 "bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
 "mode, not in %1$s (network '%2$s')"
 msgstr ""
+"bryggflaggorna delay/std/zone är endast tillåtna i lägena open, route, nat "
+"ohc isolated, inte i %1$s (nätverket ”%2$s”)"
 
 msgid "bridge interface misses the bridge element"
 msgstr "bryggsgränssnittet saknar bryggelementet"
@@ -21874,6 +21878,7 @@ msgstr ""
 #, c-format
 msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
 msgstr ""
+"kan inte lägga till domänen %1$s enheten %2$s till en obefintlig brygga %3$s"
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -25162,7 +25167,7 @@ msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
 
 #, c-format
 msgid "domain '%1$s' is being migrated out"
-msgstr ""
+msgstr "domänen ”%1$s” migreras ut"
 
 #, c-format
 msgid "domain '%1$s' is not being migrated"
@@ -27646,6 +27651,8 @@ msgid ""
 "firewalld can't find the 'libvirt' zone that should have been installed with "
 "libvirt"
 msgstr ""
+"firewalld kan inte hitta zonen ”libvirt” som skulle ha installerats med "
+"libvirt"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr ""
@@ -32638,6 +32645,8 @@ msgstr "inget nwfilter med matchande uuid ”%1$s”"
 msgid ""
 "no panic model provided, and no default for the architecture and machine type"
 msgstr ""
+"ingen panikmodell angiven, och inget standardfall för arkitekturen och "
+"maskintypen"
 
 msgid "no parent for this device"
 msgstr "ingen förälder till denna enhet"
@@ -33004,7 +33013,7 @@ msgid "numbers not allowed in VMX format"
 msgstr "siffror är inte tillåtna i VMX-format"
 
 msgid "numeric overflow in conf value"
-msgstr ""
+msgstr "numeriskt spill i konfigurationsvärdet"
 
 msgid "numerical overflow"
 msgstr "numeriskt spill"
@@ -34904,42 +34913,41 @@ msgid "return the pool uuid rather than pool name"
 msgstr "returnera pool-uuid:n istället för poolnamnet"
 
 msgid "returned buffer is not same size as requested"
-msgstr ""
+msgstr "den returnerade bufferten är inte av samma storlek som begärt"
 
 msgid "returned number of disk errors exceeds limit"
-msgstr ""
+msgstr "det returnerade antalet diskfel överskrider gränsen"
 
 msgid "returns the storage pool for a given volume key or path"
-msgstr ""
+msgstr "returnerar lagringspoolen för en given volymnyckel eller sökväg"
 
 msgid "returns the volume key for a given volume name or path"
-msgstr ""
+msgstr "returnerar volymnyckeln för ett givet volymnamn eller sökväg"
 
 msgid "returns the volume name for a given volume key or path"
-msgstr ""
+msgstr "returnerar volymnamnet för en given volymnyckel eller sökväg"
 
 msgid "returns the volume path for a given volume name or key"
-msgstr ""
+msgstr "returnerar volymsökvägen för ett givet volymnamn eller nyckel"
 
 msgid "reuse any existing external files"
-msgstr ""
+msgstr "återanvänd befintliga externa filer"
 
-#, fuzzy
 msgid "reuse existing destination"
-msgstr "saknar enhetsinformation"
+msgstr "återanvänd befintlig destination"
 
 msgid "reuse files provided by caller"
-msgstr ""
+msgstr "återanvänd filer givna av anroparen"
 
 msgid "reused mirror destination format must be specified"
-msgstr ""
+msgstr "målformat för återanvänd spegel måste anges"
 
 msgid "revert requires force"
-msgstr ""
+msgstr "återställning kräver framtvingande"
 
 #, c-format
 msgid "revert requires force: %1$s"
-msgstr ""
+msgstr "återställning kräver framtvingand: %1$s"
 
 msgid "revert to current snapshot"
 msgstr ""
