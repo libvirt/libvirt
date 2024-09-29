@@ -19,6 +19,19 @@ v10.8.0 (unreleased)
 
 * **Improvements**
 
+  * network: make networks with ``<forward mode='open'/>`` more useful
+
+    It is now permissable to have a ``<forward mode='open'>`` network that
+    has no IP address assigned to the host's port of the bridge. This
+    is the only way to create a libvirt network where guests are
+    unreachable from the host (and vice versa) and also 0 firewall
+    rules are added on the host.
+
+    It is now also possible for a ``<forward mode='open'/>`` network to
+    use the ``zone`` attribute of ``<bridge>`` to set the firewalld zone of
+    the bridge interface (normally it would not be set, as is done
+    with other forward modes).
+
 * **Bug fixes**
 
   * virsh: Fix script-friedly output of ``virsh list --uuid``
@@ -32,6 +45,18 @@ v10.8.0 (unreleased)
     Note that this also broke the ``libvirt-guests`` script. The bug was
     introduced in `v10.7.0 (2024-09-02)`_.
 
+  * network/qemu: fix some cases where ``device-update`` of a network
+    interface was failing:
+
+    * If the interface was connected to a libvirt network that was
+      providing a pool of VFs to be used with macvtap passthrough
+      mode, then *any* update to the interface would fail, even
+      changing the link state. Updating (the updateable parts of) a
+      macvtap passthrough interface will now succeed.
+
+    * It previously was not possible to move an interface from a Linux
+      host bridge to an OVS bridge. This (and the opposite direction)
+      now works.
 
 v10.7.0 (2024-09-02)
 ====================
