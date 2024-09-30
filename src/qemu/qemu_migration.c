@@ -361,6 +361,8 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
     virBufferAddLit(&buf, "<volume>\n");
     virBufferAdjustIndent(&buf, 2);
     virBufferEscapeString(&buf, "<name>%s</name>\n", volName);
+    if (disk->src->format == VIR_STORAGE_FILE_QCOW2)
+        virBufferAddLit(&buf, "<allocation>0</allocation>\n");
     virBufferAsprintf(&buf, "<capacity>%llu</capacity>\n", capacity);
     virBufferAddLit(&buf, "<target>\n");
     virBufferAdjustIndent(&buf, 2);
