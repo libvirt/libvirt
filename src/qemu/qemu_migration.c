@@ -2576,6 +2576,37 @@ qemuMigrationSrcBeginXML(virDomainObj *vm,
 }
 
 
+/**
+ * qemuMigrationSrcBeginPhaseValidateDiskTargetList:
+ * @vm: domain object
+ * @disks: NULL-terminated list of disk 'dst' strings to validate
+ *
+ * Validates that all members of the @disk list are valid disk targets.
+ */
+static int
+qemuMigrationSrcBeginPhaseValidateDiskTargetList(virDomainObj *vm,
+                                                 const char **disks)
+{
+    size_t i;
+    const char **d;
+
+    for (d = disks; *d; d++) {
+        for (i = 0; i < vm->def->ndisks; i++) {
+            if (STREQ(vm->def->disks[i]->dst, *d))
+                break;
+        }
+
+        if (i == vm->def->ndisks) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("disk target %1$s not found"), *d);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /* The caller is supposed to lock the vm and start a migration job. */
 static char *
 qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
@@ -2660,24 +2691,9 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
             return NULL;
         }
 
-        if (migrate_disks) {
-            size_t j;
-            const char **d;
-
-            /* Check user requested only known disk targets. */
-            for (d = migrate_disks; *d; d++) {
-                for (j = 0; j < vm->def->ndisks; j++) {
-                    if (STREQ(vm->def->disks[j]->dst, *d))
-                        break;
-                }
-
-                if (j == vm->def->ndisks) {
-                    virReportError(VIR_ERR_INVALID_ARG,
-                                   _("disk target %1$s not found"), *d);
-                    return NULL;
-                }
-            }
-        }
+        if (migrate_disks &&
+            qemuMigrationSrcBeginPhaseValidateDiskTargetList(vm, migrate_disks) < 0)
+            return NULL;
 
         priv->nbdPort = 0;
 
