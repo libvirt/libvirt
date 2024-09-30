@@ -3918,12 +3918,19 @@ qemuDomainChangeNet(virQEMUDriver *driver,
      * free it if we fail for any reason
      */
     if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK
-            && STREQ(olddev->data.network.name, newdev->data.network.name)) {
+        if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+            oldType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+            virDomainNetGetActualDirectMode(olddev) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU &&
+            STREQ(olddev->data.network.name, newdev->data.network.name)) {
             /* old and new are type='network', and the network name
-             * hasn't changed. In this case we *don't* want to get a
-             * new port ("actual device") from the network because we
-             * can use the old one (since it hasn't changed).
+             * hasn't changed *and* this is a network where each
+             * connection is allocated exclusive use of a VF
+             * device. In this case we *don't* want to get a new port
+             * ("actual device") from the network because attempting
+             * to allocate a new device would also allocate a
+             * new/different VF, causing the update to fail. And
+             * anyway we can use olddev's actualNetDef (since it
+             * hasn't changed).
              *
              * So instead we just duplicate *the pointer to* the
              * actualNetDef from olddev to newdev so that comparisons
