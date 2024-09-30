@@ -32,6 +32,13 @@ v10.8.0 (unreleased)
     the bridge interface (normally it would not be set, as is done
     with other forward modes).
 
+  * storage: Lessen dependancy on the ``showmount`` program
+
+    Libvirt now automatically detects presence of ``showmount`` during runtime
+    as we do with other helper programs and also the
+    ``daemon-driver-storage-core`` RPM package now doesn't strongly depend on it
+    if the users wish for a more minimal deployment.
+
 * **Bug fixes**
 
   * virsh: Fix script-friedly output of ``virsh list --uuid``
@@ -57,6 +64,17 @@ v10.8.0 (unreleased)
     * It previously was not possible to move an interface from a Linux
       host bridge to an OVS bridge. This (and the opposite direction)
       now works.
+
+  * qemu: backup: Fix possible crashes when running monitoring commands during backup job
+
+    The qemu monitor code was fixed to not crash in specific cases when
+    monitoing APIs are called during a backup job.
+
+  * Fix various memleaks and overflows
+
+    Multiple memory leaks and overflows in corner cases were fixed based on
+    upstream issues reported.
+
 
 v10.7.0 (2024-09-02)
 ====================
