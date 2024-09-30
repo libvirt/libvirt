@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-09-29 17:38+0000\n"
+"PO-Revision-Date: 2024-09-30 18:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -34950,50 +34950,53 @@ msgid "revert requires force: %1$s"
 msgstr "återställning kräver framtvingand: %1$s"
 
 msgid "revert to current snapshot"
-msgstr ""
+msgstr "återgå till aktuell ögonblicksbild"
 
 msgid "rollback to previous restore point"
-msgstr ""
+msgstr "rulla tillbaka till föregående återställningspunkt"
 
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr ""
+"rulla tillbaka till föregående sparade konfiguration skapad via iface-begin"
 
 msgid "root path must be absolute"
-msgstr ""
+msgstr "rotsökvägen måste vara absolut"
 
 msgid "rotation rate is not supported with this QEMU"
-msgstr ""
+msgstr "rotationshastighet stödjs inte med denna QEMU"
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
-msgstr ""
+msgstr "rotationshastighet är endast giltigt för SCSI/IDE/SATA-bussen"
 
 msgid "rotation rate is only valid for disk device"
-msgstr ""
+msgstr "rotationshastighet är endast giltigt för en diskenhet"
 
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
 msgstr ""
+"kör åtgärden angiven av en flagga --timeout-* (viloläge som standard) om "
+"migreringen i drift överskrider disgränsen (i sekunder)"
 
 msgid "running"
 msgstr "kör"
 
 msgid "running with undesirable elevated privileges"
-msgstr ""
+msgstr "kör med oönskade förhöjda privilegier"
 
-#, fuzzy, c-format
+#, c-format
 msgid "runstate '%1$d' out of range'"
-msgstr "värdet på managerid är utanför intervallet"
+msgstr "körtillståndet ”%1$d” utanför intervallet"
 
 msgid "rx_queue_size has to be a power of two"
-msgstr ""
+msgstr "rx_queue_size måste vara en tvåpotens"
 
 msgid "sandbox can only be used with driver=virtiofs"
-msgstr ""
+msgstr "en sandlåda kan endast användas med driver=virtiofs"
 
 #, c-format
 msgid "sanlock error %1$d"
-msgstr ""
+msgstr "sanlock-fel %1$d"
 
 #, c-format
 msgid "sasl start reply data too long %1$d"
@@ -35010,28 +35013,25 @@ msgid "save canceled"
 msgstr "sparandet avbrutet"
 
 msgid "save image is incomplete"
-msgstr ""
+msgstr "den sparade avbilden är ofullständig"
 
 msgid "save image magic is incorrect"
-msgstr ""
+msgstr "den sparade avbildens magiska tal är felaktigt"
 
 msgid "saved"
 msgstr "sparad"
 
-#, fuzzy
 msgid "saved state domain information in XML"
-msgstr "domäninformation i XML"
+msgstr "det sparade tillståndets domäninformation i XML"
 
-#, fuzzy
 msgid "saved state file to edit"
-msgstr "spara ett domäntillstånd till en fil"
+msgstr "fil för sparat tillstånd att redigera"
 
 msgid "saved state file to modify"
-msgstr ""
+msgstr "fil för sparat tillstånd att ändra"
 
-#, fuzzy
 msgid "saved state file to read"
-msgstr "spara ett domäntillstånd till en fil"
+msgstr "fil för sparat tillstånd att läsa"
 
 msgid "saving"
 msgstr "sparar"
@@ -35039,82 +35039,83 @@ msgstr "sparar"
 #, c-format
 msgid "saving domain '%1$s' failed to allocate space for metadata"
 msgstr ""
+"när domänen ”%1$s” sparades misslyckades det att allokera utrymme för "
+"metadata"
 
-#, fuzzy, c-format
+#, c-format
 msgid "saving domain '%1$s' to '%2$s': open failed"
-msgstr "spara ett domäntillstånd till en fil"
+msgstr "när domänen ”%1$s” sparades till ”%2$s”: att öppna misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "saving domain '%1$s' to '%2$s': write failed"
-msgstr "spara ett domäntillstånd till en fil"
+msgstr "när domänen ”%1$s” sparades till ”%2$s”: att skriva misslyckades"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %1$s"
-msgstr ""
+msgstr "schema och värd är obligatoriska i en vz-migrerings-URI: %1$s"
 
 msgid "sclpconsole is not supported in this QEMU binary"
-msgstr ""
+msgstr "sclpconsole stödjs inte i denna QEMU-binär"
 
 msgid "sclplmconsole is not supported in this QEMU binary"
-msgstr ""
+msgstr "sclplmconsole stödjs inte i denna QEMU-binär"
 
 #, c-format
 msgid "screen ID higher than monitor count (%1$d)"
-msgstr ""
+msgstr "skärm-ID är högre än antalet monitorer (%1$d)"
 
 msgid "screenshot of a current domain console"
-msgstr ""
+msgstr "ögonblicksbild av den aktiva domänens konsol"
 
 msgid "script used to bridge network interface"
 msgstr "skript som används för brygga nätverksgränssnitt"
 
-#, fuzzy
 msgid "scripts are not supported on LXC network interfaces"
-msgstr "skript som används för brygga nätverksgränssnitt"
+msgstr "skript stödjs inte till LXC-nätverksgränssnitt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "scripts are not supported on interfaces of type %1$s"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "skript stödjs inte till gränssnitt av typen %1$s"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
-msgstr ""
+msgstr "scsi-block-”lun”-enheter stödjer inte egenskapen seriell"
 
 #, c-format
 msgid "sd card '%1$s' does not support multiple encryption secrets"
-msgstr ""
+msgstr "sd-kortet ”%1$s” stödjer inte flera krypteringshemligheter"
 
 #, c-format
 msgid "seclabel for model %1$s is already provided"
-msgstr ""
+msgstr "seclabel för modellen %1$s är redan given"
 
 #, c-format
 msgid "seconds=%1$d is invalid, please choose value within [%2$d, %3$d]."
-msgstr ""
+msgstr "seconds=%1$d är ogiltigt, välj ett värde inom [%2$d, %3$d]."
 
 #, c-format
 msgid "secret '%1$s' does not have a value"
-msgstr ""
+msgstr "hemligheten ”%1$s” har inte något värde"
 
 #, c-format
 msgid "secret '%1$s' in %2$s must match connection"
-msgstr ""
+msgstr "hemligheten ”%1$s” i %2$s måste matcha förbindelsen"
 
 msgid "secret UUID"
-msgstr ""
+msgstr "hemlighets-UUID"
 
 msgid "secret attributes in XML"
-msgstr ""
+msgstr "hemlighetsattribut i XML"
 
 msgid "secret is private"
-msgstr ""
+msgstr "hemligheten är privat"
 
-#, fuzzy
 msgid "secret state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "hemlighetstillståndsdrivrutinen är inte aktiv"
 
 #, c-format
 msgid "secret with uuid %1$s is of type '%2$s' not expected '%3$s' type"
 msgstr ""
+"hemligheten med uuid %1$s är av typen ”%2$s” inte den förväntade typen ”%3$s”"
 
 #, c-format
 msgid "security DOI string exceeds max %1$d bytes"
