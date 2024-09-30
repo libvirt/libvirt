@@ -45,6 +45,11 @@ v10.8.0 (unreleased)
     as the parsers in the nss plugin were rewritten to use json-c
     instead of YAJL, which is effectively dead upstream.
 
+  * Relax restrictions for memorytune settings
+
+    It should now be possible to use resctrl on AMD CPUs as well as Intel CPUs
+    when the resctrl filesystem is mounted with ``mba_MBps`` option.
+
 * **Bug fixes**
 
   * virsh: Fix script-friedly output of ``virsh list --uuid``
@@ -80,6 +85,20 @@ v10.8.0 (unreleased)
 
     Multiple memory leaks and overflows in corner cases were fixed based on
     upstream issues reported.
+
+  * network: Better cleanup after disappeared networks
+
+    If a network disappeared while virtnetworkd was not running not all clean up
+    was done properly once the daemon was started, especially when only the
+    network interface disappeared.  This could have in some cases resulted in
+    the network being shown as inactive, but not being able to start.
+
+  * qemu: Remember memory backing directory for domains
+
+    If ``memory_backing_dir`` is changed during the lifetime of a domain with
+    file backed memory, files in the old directory would not be cleaned up once
+    the domain is shut down.  Now the directory that was used during startup is
+    remembered for each running domain.
 
 
 v10.7.0 (2024-09-02)
