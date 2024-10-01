@@ -798,6 +798,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
                     bool *has_manual,
                     unsigned int *flags)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     bool active = virDomainObjIsActive(vm);
     bool reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
@@ -899,7 +900,8 @@ qemuSnapshotPrepare(virDomainObj *vm,
         return -1;
     }
 
-    /* internal snapshots + pflash based loader have the following problems:
+    /* internal snapshots + pflash based loader have the following problems when
+     * using the old HMP 'savevm' command:
      * - if the variable store is raw, the snapshot fails
      * - allowing a qcow2 image as the varstore would make it eligible to receive
      *   the vmstate dump, which would make it huge
@@ -910,14 +912,28 @@ qemuSnapshotPrepare(virDomainObj *vm,
      * not an issue. Allow this as there are existing users of this case.
      *
      * Avoid the issues by forbidding internal snapshot with pflash if the
-     * VM is active.
+     * VM is active when using 'savevm'.
+     *
+     * With the new QMP commands we can control where the VM state (memory)
+     * image goes and thus can allow snapshots, but we'll still require that the
+     * varstore is in qcow2 format.
      */
-    if (active &&
-        found_internal &&
-        virDomainDefHasOldStyleUEFI(vm->def)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("internal snapshots of a VM with pflash based firmware are not supported"));
-        return -1;
+    if (active && found_internal) {
+        if (virDomainDefHasOldStyleUEFI(vm->def) &&
+            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("internal snapshots of a VM with pflash based firmware are not supported with this qemu"));
+            return -1;
+        }
+
+        if (vm->def->os.loader &&
+            vm->def->os.loader->nvram &&
+            vm->def->os.loader->nvram->format != VIR_STORAGE_FILE_QCOW2) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("internal snapshots of a VM with pflash based firmware require QCOW2 nvram format"));
+            return -1;
+        }
+
     }
 
     /* Alter flags to let later users know what we learned.  */
