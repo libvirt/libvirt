@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-09-22 12:38+0000\n"
+"PO-Revision-Date: 2024-10-02 04:48+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -2184,9 +2184,8 @@ msgstr "Block Copy"
 msgid "Block Copy started"
 msgstr "Block Copy started"
 
-#, fuzzy
 msgid "Block I/O tuning is not available in session mode"
-msgstr "Block I/O tuning is not available on this host"
+msgstr "Block I/O tuning is not available in session mode"
 
 msgid "Block I/O tuning is not available on this host"
 msgstr "Block I/O tuning is not available on this host"
@@ -2197,29 +2196,28 @@ msgstr "Block Pull"
 msgid "Block Pull started"
 msgstr "Block Pull started"
 
-#, fuzzy
 msgid "Block commit"
-msgstr "Block Commit"
+msgstr "Block commit"
 
 #, c-format
 msgid "Block device '%1$s' is resized"
 msgstr "Block device '%1$s' is resized"
 
-#, fuzzy
 msgid "Booted"
-msgstr "booted"
+msgstr "Booted"
 
-#, fuzzy
 msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
-msgstr "'adapter' and 'address' must be specified for scsi hostdev source"
+msgstr ""
+"Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 
 msgid ""
 "Both port and URI requested for disk migration while being mutually exclusive"
 msgstr ""
+"Both port and URI requested for disk migration while being mutually exclusive"
 
 msgid "Both secret and the secret header are required"
-msgstr ""
+msgstr "Both secret and the secret header are required"
 
 msgid "Bounded"
 msgstr "Bounded"
@@ -2276,19 +2274,19 @@ msgstr "CA certificate:"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
-msgstr ""
+msgstr "CCW addresses are not supported by machine type '%1$s'"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
-msgstr ""
+msgstr "CHS geometry can not be set for '%1$s' bus"
 
 #, c-format
 msgid "CHS translation mode can only be set for 'ide' bus not '%1$s'"
-msgstr ""
+msgstr "CHS translation mode can only be set for 'ide' bus not '%1$s'"
 
 #, c-format
 msgid "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
-msgstr ""
+msgstr "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
 
 msgid "CPU Affinity"
 msgstr "CPU Affinity"
@@ -2309,15 +2307,15 @@ msgid "CPU arch %1$s does not match host arch"
 msgstr "CPU arch %1$s does not match host arch"
 
 msgid "CPU architecture (/domain/os/type/@arch)"
-msgstr ""
+msgstr "CPU architecture (/domain/os/type/@arch)"
 
 #, c-format
 msgid "CPU cache mode '%1$s' can only be used with '%2$s' / '%3$s' CPUs"
-msgstr ""
+msgstr "CPU cache mode '%1$s' can only be used with '%2$s' / '%3$s' CPUs"
 
 #, c-format
 msgid "CPU cache mode '%1$s' can only be used with level='3'"
-msgstr ""
+msgstr "CPU cache mode '%1$s' can only be used with level='3'"
 
 #, fuzzy, c-format
 msgid "CPU cache specification is not supported for '%1$s' architecture"
@@ -2364,7 +2362,7 @@ msgstr "CPU model %1$s is not supported by hypervisor"
 
 #, c-format
 msgid "CPU flags requested but can't determine default CPU for arch %1$s"
-msgstr ""
+msgstr "CPU flags requested but can't determine default CPU for arch %1$s"
 
 msgid "CPU frequency:"
 msgstr "CPU frequency:"
@@ -2377,12 +2375,16 @@ msgid ""
 "CPU maximum physical address bits number specification cannot be used with "
 "mode='%1$s'"
 msgstr ""
+"CPU maximum physical address bits number specification cannot be used with "
+"mode='%1$s'"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits specification is not supported for '%1$s' "
 "architecture"
 msgstr ""
+"CPU maximum physical address bits specification is not supported for '%1$s' "
+"architecture"
 
 #, fuzzy, c-format
 msgid ""
@@ -2404,11 +2406,11 @@ msgstr "CPU model %1$s too long for destination"
 
 #, c-format
 msgid "CPU model '%1$s'"
-msgstr ""
+msgstr "CPU model '%1$s'"
 
 #, c-format
 msgid "CPU model '%1$s' not supported by hypervisor"
-msgstr ""
+msgstr "CPU model '%1$s' not supported by hypervisor"
 
 msgid "CPU model:"
 msgstr "CPU model:"
@@ -2423,7 +2425,7 @@ msgid "CPU socket(s):"
 msgstr "CPU socket(s):"
 
 msgid "CPU throttling rate increment for auto-convergence"
-msgstr ""
+msgstr "CPU throttling rate increment for auto-convergence"
 
 msgid "CPU time"
 msgstr "CPU time"
@@ -2436,7 +2438,7 @@ msgid "CPU topology doesn't match maximum vcpu count"
 msgstr "Failed to retrieve maximum vcpu count"
 
 msgid "CPU topology doesn't match the desired vcpu count"
-msgstr ""
+msgstr "CPU topology doesn't match the desired vCPU count"
 
 #, fuzzy
 msgid "CPU tuning is not available in session mode"
@@ -2462,7 +2464,7 @@ msgstr "CPU vendor specified without CPU model"
 
 #, c-format
 msgid "CPU vendor value 0x%1$2llx already defined"
-msgstr ""
+msgstr "CPU vendor value 0x%1$2llx already defined"
 
 msgid "CPU vendors do not match"
 msgstr "CPU vendors do not match"
@@ -2497,10 +2499,12 @@ msgid ""
 "Cache allocation for the whole cache is not possible, specify size smaller "
 "than %1$llu"
 msgstr ""
+"Cache allocation for the whole cache is not possible, specify size smaller "
+"than %1$llu"
 
 #, c-format
 msgid "Cache allocation of size %1$llu is not divisible by granularity %2$llu"
-msgstr ""
+msgstr "Cache allocation of size %1$llu is not divisible by granularity %2$llu"
 
 #, c-format
 msgid ""
