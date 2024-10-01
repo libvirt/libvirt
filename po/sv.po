@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-09-30 18:38+0000\n"
+"PO-Revision-Date: 2024-10-01 12:40+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35119,86 +35119,84 @@ msgstr ""
 
 #, c-format
 msgid "security DOI string exceeds max %1$d bytes"
-msgstr ""
+msgstr "säkerhets-DOI-strängen överskrider maximala %1$d byte"
 
 #, c-format
 msgid "security doi exceeds maximum: %1$zu"
-msgstr ""
+msgstr "säkerhets-doi:n överskrider maximum: %1$zu"
 
-#, fuzzy
 msgid "security image label already defined for VM"
-msgstr "säkerhetsavbildsetikett saknas"
+msgstr "säkerhetsavbildsetiketten ärredan definierad för VM:en"
 
 msgid "security imagelabel is missing"
 msgstr "säkerhetsavbildsetikett saknas"
 
 msgid "security label already defined for VM"
-msgstr ""
+msgstr "säkerhetsetiketten är redan definierad för VM:en"
 
 #, c-format
 msgid ""
 "security label driver mismatch: '%1$s' model configured for domain, but "
 "hypervisor driver is '%2$s'."
 msgstr ""
+"säkerhetsetikettsdrivrutinen stämmer inte: modellen ”%1$s” är konfigurerad "
+"för domänen, men hypervisorns drivrutin är ”%2$s”."
 
-#, fuzzy, c-format
+#, c-format
 msgid "security label exceeds maximum length: %1$d"
-msgstr "säkerhetsetikett saknas"
+msgstr "säkerhetsetiketten överskrider maximal längd: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "security label exceeds maximum: %1$zd"
-msgstr "säkerhetsetikett saknas"
+msgstr "säkerhetsetiketten överskrider maximum: %1$zd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "security label exceeds maximum: %1$zu"
-msgstr "säkerhetsetikett saknas"
+msgstr "säkerhetsetiketten överskrider maximum: %1$zu"
 
 msgid "security label is missing"
 msgstr "säkerhetsetikett saknas"
 
 #, c-format
 msgid "security label model %1$s is not supported with selinux"
-msgstr ""
+msgstr "säkerhetsetikettens modell %1$s stödjs inte med selinux"
 
 #, c-format
 msgid "security model exceeds maximum: %1$zu"
-msgstr ""
+msgstr "säkerhetsmodellen överskrider maximum: %1$zu"
 
 #, c-format
 msgid "security model string exceeds max %1$d bytes"
-msgstr ""
+msgstr "säkerhetsmodellsträngen överskrider maximala %1$d byte"
 
 msgid ""
 "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
 "\"dbus\")"
-msgstr ""
+msgstr "välj en grafisk display (t.ex. ”vnc”, ”spice”, ”rdp”, ”dbus”)"
 
-#, fuzzy
 msgid "send handler failed"
-msgstr "att öppna skivavbildsfilen misslyckades"
+msgstr "sändningshanteraren misslyckades"
 
 msgid "send holeHandler failed"
-msgstr ""
+msgstr "skickande-holeHandler misslyckades"
 
-#, fuzzy
 msgid "send skipHandler failed"
-msgstr "att öppna skivavbildsfilen misslyckades"
+msgstr "skickande-skipHandler misslyckades"
 
 msgid "sending of PortProfileRequest failed."
-msgstr ""
+msgstr "att skicka PortProfileRequest misslyckades."
 
 msgid "serial is not supported with vhostuser disk"
-msgstr ""
+msgstr "seriell stödjs inte med vhostuser-diskar"
 
-#, fuzzy
 msgid "serial of disk device"
-msgstr "drivrutin för diskenhet"
+msgstr "seriell för diskenhet"
 
 msgid "server to which <client> is connected to"
-msgstr ""
+msgstr "server till vilken <client> är förbunden"
 
 msgid "server verification (of our certificate or IP address) failed"
-msgstr ""
+msgstr "serververifiering (av vårt certifikat eller IP-adress) misslyckades"
 
 msgid "server which the client is currently connected to"
 msgstr ""
