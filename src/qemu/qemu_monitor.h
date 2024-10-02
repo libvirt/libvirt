@@ -709,6 +709,9 @@ struct _qemuBlockNamedNodeData {
     qemuBlockNamedNodeDataBitmap **bitmaps;
     size_t nbitmaps;
 
+    /* NULL terminated string list of internal snapshot names */
+    char **snapshots;
+
     /* the cluster size of the image is valid only when > 0 */
     unsigned long long clusterSize;
 

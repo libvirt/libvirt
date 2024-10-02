@@ -1,0 +1,298 @@
+[
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "snapshots": [
+          {
+            "vm-clock-nsec": 992826708,
+            "name": "1727868651",
+            "date-sec": 1727868651,
+            "date-nsec": 317899000,
+            "vm-clock-sec": 466,
+            "id": "1",
+            "vm-state-size": 57440493
+          },
+          {
+            "vm-clock-nsec": 159450672,
+            "name": "1727872064",
+            "date-sec": 1727872064,
+            "date-nsec": 991275000,
+            "vm-clock-sec": 2431,
+            "id": "2",
+            "vm-state-size": 57342213
+          }
+        ],
+        "virtual-size": 104857600,
+        "filename": "/tmp/internal-snaps.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 115228672,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "libvirt-1-format",
+      "backing_file_depth": 0,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/tmp/internal-snaps.qcow2"
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 115409408,
+        "filename": "/tmp/internal-snaps.qcow2",
+        "format": "file",
+        "actual-size": 115228672,
+        "format-specific": {
+          "type": "file",
+          "data": {
+
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "libvirt-1-storage",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/tmp/internal-snaps.qcow2"
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 708837376,
+        "filename": "/var/lib/libvirt/images/systemrescuecd-amd64-6.1.2.iso",
+        "format": "file",
+        "actual-size": 708841472,
+        "format-specific": {
+          "type": "file",
+          "data": {
+
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "libvirt-2-storage",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/systemrescuecd-amd64-6.1.2.iso"
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "snapshots": [
+          {
+            "vm-clock-nsec": 992826708,
+            "name": "1727868651",
+            "date-sec": 1727868651,
+            "date-nsec": 317899000,
+            "vm-clock-sec": 466,
+            "id": "1",
+            "vm-state-size": 0
+          },
+          {
+            "vm-clock-nsec": 159450672,
+            "name": "1727872064",
+            "date-sec": 1727872064,
+            "date-nsec": 991275000,
+            "vm-clock-sec": 2431,
+            "id": "2",
+            "vm-state-size": 0
+          }
+        ],
+        "virtual-size": 540672,
+        "filename": "/var/lib/libvirt/qemu/nvram/int-q35_VARS.qcow2",
+        "cluster-size": 4096,
+        "format": "qcow2",
+        "actual-size": 602112,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "libvirt-pflash1-format",
+      "backing_file_depth": 0,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/qemu/nvram/int-q35_VARS.qcow2"
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 598528,
+        "filename": "/var/lib/libvirt/qemu/nvram/int-q35_VARS.qcow2",
+        "format": "file",
+        "actual-size": 602112,
+        "format-specific": {
+          "type": "file",
+          "data": {
+
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "libvirt-pflash1-storage",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/qemu/nvram/int-q35_VARS.qcow2"
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 3653632,
+        "filename": "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2",
+        "cluster-size": 4096,
+        "format": "qcow2",
+        "actual-size": 3678208,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "libvirt-pflash0-format",
+      "backing_file_depth": 0,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2"
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 3678208,
+        "filename": "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2",
+        "format": "file",
+        "actual-size": 3678208,
+        "format-specific": {
+          "type": "file",
+          "data": {
+
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "libvirt-pflash0-storage",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2"
+    }
+]

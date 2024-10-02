@@ -594,6 +594,15 @@ testQemuDetectBitmapsWorker(GHashTable *nodedata,
                           bitmap->granularity, bitmap->dirtybytes);
     }
 
+    if (data->snapshots) {
+        char **sn;
+
+        virBufferAddLit(buf, "internal snapshots:");
+
+        for (sn = data->snapshots; *sn; sn++)
+            virBufferAsprintf(buf, " '%s'", *sn);
+    }
+
     virBufferAdjustIndent(buf, -1);
 }
 
@@ -1201,6 +1210,7 @@ mymain(void)
     TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
     TEST_IMAGE_CREATE("network-ssh-qcow2", NULL);
 
+    /* The following group also tests internal snapshot detection */
 #define TEST_BITMAP_DETECT(testname) \
     do { \
         if (virTestRun("bitmap detect " testname, \
@@ -1213,6 +1223,7 @@ mymain(void)
     TEST_BITMAP_DETECT("basic");
     TEST_BITMAP_DETECT("snapshots");
     TEST_BITMAP_DETECT("synthetic");
+    TEST_BITMAP_DETECT("snapshots-internal");
 
 #define TEST_BACKUP_BITMAP_CALCULATE(testname, source, incrbackup, named) \
     do { \

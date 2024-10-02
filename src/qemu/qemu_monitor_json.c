@@ -2569,6 +2569,7 @@ qemuMonitorJSONBlockNamedNodeDataFree(qemuBlockNamedNodeData *data)
 
     for (i = 0; i < data->nbitmaps; i++)
         qemuMonitorJSONBlockNamedNodeDataBitmapFree(data->bitmaps[i]);
+    g_strfreev(data->snapshots);
     g_free(data->bitmaps);
     g_free(data);
 }
@@ -2631,6 +2632,7 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
     GHashTable *nodes = opaque;
     virJSONValue *img;
     virJSONValue *bitmaps;
+    virJSONValue *snapshots;
     virJSONValue *format_specific;
     const char *nodename;
     g_autoptr(qemuBlockNamedNodeData) ent = NULL;
@@ -2653,6 +2655,24 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 
     if ((bitmaps = virJSONValueObjectGetArray(val, "dirty-bitmaps")))
         qemuMonitorJSONBlockGetNamedNodeDataBitmaps(bitmaps, ent);
+
+    if ((snapshots = virJSONValueObjectGetArray(img, "snapshots"))) {
+        size_t nsnapshots = virJSONValueArraySize(snapshots);
+        size_t nsnapnames = 0;
+        size_t i;
+
+        ent->snapshots = g_new0(char *, nsnapshots + 1);
+
+        for (i = 0; i < nsnapshots; i++) {
+            virJSONValue *snapshot = virJSONValueArrayGet(snapshots, i);
+            const char *name = virJSONValueObjectGetString(snapshot, "name");
+
+            if (!name)
+                continue;
+
+            ent->snapshots[nsnapnames++] = g_strdup(name);
+        }
+    }
 
     /* query qcow2 format specific props */
     if ((format_specific = virJSONValueObjectGetObject(img, "format-specific")) &&
