@@ -87,11 +87,13 @@ int qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
 
 int qemuSecuritySetTPMLabels(virQEMUDriver *driver,
                              virDomainObj *vm,
-                             bool setTPMStateLabel);
+                             bool setTPMStateLabel,
+                             bool lockMetadataException);
 
 int qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
                                  virDomainObj *vm,
-                                 bool restoreTPMStateLabel);
+                                 bool restoreTPMStateLabel,
+                                 bool lockMetadataException);
 
 int qemuSecuritySetSavedStateLabel(virQEMUDriver *driver,
                                    virDomainObj *vm,

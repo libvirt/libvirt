@@ -551,7 +551,8 @@ qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
 int
 qemuSecuritySetTPMLabels(virQEMUDriver *driver,
                          virDomainObj *vm,
-                         bool setTPMStateLabel)
+                         bool setTPMStateLabel,
+                         bool lockMetadataException)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -567,7 +568,7 @@ qemuSecuritySetTPMLabels(virQEMUDriver *driver,
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
                                             -1, priv->rememberOwner,
-                                            false) < 0)
+                                            lockMetadataException) < 0)
         goto cleanup;
 
     ret = 0;
@@ -580,7 +581,8 @@ qemuSecuritySetTPMLabels(virQEMUDriver *driver,
 int
 qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
                              virDomainObj *vm,
-                             bool restoreTPMStateLabel)
+                             bool restoreTPMStateLabel,
+                             bool lockMetadataException)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -596,7 +598,7 @@ qemuSecurityRestoreTPMLabels(virQEMUDriver *driver,
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
                                             -1, priv->rememberOwner,
-                                            false) < 0)
+                                            lockMetadataException) < 0)
         goto cleanup;
 
     ret = 0;

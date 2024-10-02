@@ -934,6 +934,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 1000; /* ms */
     pid_t pid = -1;
+    bool lockMetadataException = false;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -959,7 +960,21 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
 
-    if (qemuSecuritySetTPMLabels(driver, vm, true) < 0)
+    if (incomingMigration && qemuTPMHasSharedStorage(driver, vm->def)) {
+        /* If the TPM is being migrated over shared storage, we can't
+         * lock all files before labeling them: the source swtpm
+         * process is still holding on to the lock file, and it will
+         * only release it after negotiation with the target swtpm
+         * process, which we can't start until labeling has been
+         * performed.
+         *
+         * So we explicity request for the lock file not to be locked
+         * before labeling in this specific, narrow scenario in order
+         * to make migration possible at all */
+        lockMetadataException = true;
+    }
+
+    if (qemuSecuritySetTPMLabels(driver, vm, true, lockMetadataException) < 0)
         return -1;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, cfg->swtpm_user,
@@ -1008,7 +1023,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         virProcessKillPainfully(pid, true);
     if (pidfile)
         unlink(pidfile);
-    qemuSecurityRestoreTPMLabels(driver, vm, true);
+    qemuSecurityRestoreTPMLabels(driver, vm, true, lockMetadataException);
     return -1;
 }
 
@@ -1144,7 +1159,7 @@ qemuExtTPMStop(virQEMUDriver *driver,
     if (outgoingMigration && qemuTPMHasSharedStorage(driver, vm->def))
         restoreTPMStateLabel = false;
 
-    if (qemuSecurityRestoreTPMLabels(driver, vm, restoreTPMStateLabel) < 0)
+    if (qemuSecurityRestoreTPMLabels(driver, vm, restoreTPMStateLabel, false) < 0)
         VIR_WARN("Unable to restore labels on TPM state and/or log file");
 }
 
