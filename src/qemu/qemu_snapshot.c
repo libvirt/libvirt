@@ -3731,6 +3731,14 @@ qemuSnapshotActiveInternalDeleteGetDevices(virDomainObj *vm,
     g_auto(GStrv) devices = g_new0(char *, vm->def->ndisks + 2);
     size_t ndevs = 0;
     size_t i = 0;
+    /* variables below are used for checking of corner cases */
+    g_autoptr(GHashTable) foundDisks = virHashNew(NULL);
+    g_auto(virBuffer) errMissingSnap = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) errUnexpectedSnap = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) errExtraDisks = VIR_BUFFER_INITIALIZER;
+    GHashTableIter htitr;
+    void *key;
+    bool warn = false;
 
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_SNAPSHOT)))
         return NULL;
@@ -3759,6 +3767,7 @@ qemuSnapshotActiveInternalDeleteGetDevices(virDomainObj *vm,
             continue;
 
         devices[ndevs++] = g_strdup(format_nodename);
+        g_hash_table_insert(foundDisks, g_strdup(domdisk->dst), NULL);
     }
 
     if (vm->def->os.loader &&
@@ -3773,6 +3782,50 @@ qemuSnapshotActiveInternalDeleteGetDevices(virDomainObj *vm,
             g_strv_contains((const char **) d->snapshots, snapname)) {
             devices[ndevs++] = g_strdup(format_nodename);
         }
+    }
+
+    /* We currently don't want this code to become stricter than what 'delvm'
+     * did thus we'll report if the on-disk state mismatches the snapshot
+     * definition only as a warning */
+    for (i = 0; i < snapdef->ndisks; i++) {
+        virDomainSnapshotDiskDef *snapdisk = snapdef->disks + i;
+
+        switch (snapdisk->snapshot) {
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
+            if (g_hash_table_contains(foundDisks, snapdisk->name)) {
+                g_hash_table_remove(foundDisks, snapdisk->name);
+            } else {
+                virBufferAsprintf(&errMissingSnap, "%s ", snapdisk->name);
+                warn = true;
+            }
+            break;
+
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_NO:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_LAST:
+            if (g_hash_table_contains(foundDisks, snapdisk->name)) {
+                virBufferAsprintf(&errUnexpectedSnap, "%s ", snapdisk->name);
+                warn = true;
+                g_hash_table_remove(foundDisks, snapdisk->name);
+            }
+        }
+    }
+
+    g_hash_table_iter_init(&htitr, foundDisks);
+
+    while (g_hash_table_iter_next(&htitr, &key, NULL)) {
+        warn = true;
+        virBufferAsprintf(&errExtraDisks, "%s ", (const char *) key);
+    }
+
+    if (warn) {
+        VIR_WARN("inconsistent internal snapshot state (deletion): VM='%s' snapshot='%s' missing='%s' unexpected='%s' extra='%s",
+                 vm->def->name, snapname,
+                 virBufferCurrentContent(&errMissingSnap),
+                 virBufferCurrentContent(&errUnexpectedSnap),
+                 virBufferCurrentContent(&errExtraDisks));
     }
 
     return g_steal_pointer(&devices);
