@@ -1848,9 +1848,11 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
     for (i = 0; lines[i] != NULL; i++) {
         const char *line = lines[i];
 
-        /* Needs CONFIG_SCHEDSTATS. The second check
-         * is the old name the kernel used in past */
-        if (STRPREFIX(line, "se.statistics.wait_sum") ||
+        /* Needs CONFIG_SCHEDSTATS. The second check is the name used before
+         * kernel commit ceeadb83aea2, the third one is the old name the kernel
+         * used in past */
+        if (STRPREFIX(line, "wait_sum") ||
+            STRPREFIX(line, "se.statistics.wait_sum") ||
             STRPREFIX(line, "se.wait_sum")) {
             line = strchr(line, ':');
             if (!line) {
