@@ -19,6 +19,22 @@ v10.9.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: internal snapshot improvements
+
+    The qemu internal snapshot handling code was updated to use modern commands
+    which avoid the problems the old ones had, preventing use of internal
+    snapshots on VMs with UEFI NVRAM. Internal snapshots of VMs using UEFI are
+    now possible provided that the NVRAM is in ``qcow2`` format.
+
+    The new code also allows better control when deleting snapshots. To prevent
+    possible regressions no strict checking is done, but in case inconsistent
+    state is encountered a log message is added::
+
+      warning : qemuSnapshotActiveInternalDeleteGetDevices:3841 : inconsistent internal snapshot state (deletion): VM='snap' snapshot='1727959843' missing='vda ' unexpected='' extra=''
+
+    Users are encouraged to report any occurence of the above message along
+    with steps they took to the upstream tracker.
+
 * **Bug fixes**
 
 
