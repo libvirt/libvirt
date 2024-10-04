@@ -46,6 +46,4 @@ int virFirewallDApplyRule(virFirewallLayer layer,
 int virFirewallDInterfaceSetZone(const char *iface,
                                  const char *zone);
 
-int virFirewallDInterfaceUnsetZone(const char *iface);
-
 void virFirewallDSynchronize(void);

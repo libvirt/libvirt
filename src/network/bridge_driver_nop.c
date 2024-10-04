@@ -51,12 +51,6 @@ networkSetBridgeZone(virNetworkDef *def)
 }
 
 
-void
-networkUnsetBridgeZone(virNetworkDef *def G_GNUC_UNUSED)
-{
-}
-
-
 int networkAddFirewallRules(virNetworkDef *def G_GNUC_UNUSED,
                             virFirewallBackend firewallBackend,
                             virFirewall **fwRemoval G_GNUC_UNUSED)

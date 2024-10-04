@@ -392,20 +392,6 @@ networkSetBridgeZone(virNetworkDef *def)
 }
 
 
-void
-networkUnsetBridgeZone(virNetworkDef *def)
-{
-    /* If there is a libvirt-managed bridge device remove it from any
-     * zone it had been placed in as a part of deleting the bridge.
-     * DO NOT CALL THIS FOR 'bridge' forward mode, since that
-     * bridge is not managed by libvirt.
-     */
-    if (def->bridge && def->forward.type != VIR_NETWORK_FORWARD_BRIDGE
-        && virFirewallDIsRegistered() == 0) {
-        virFirewallDInterfaceUnsetZone(def->bridge);
-    }
-}
-
 int
 networkAddFirewallRules(virNetworkDef *def,
                         virFirewallBackend firewallBackend,
