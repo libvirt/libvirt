@@ -1735,10 +1735,15 @@ networkReloadFirewallRulesHelper(virNetworkObj *obj,
         case VIR_NETWORK_FORWARD_NONE:
         case VIR_NETWORK_FORWARD_NAT:
         case VIR_NETWORK_FORWARD_ROUTE:
-            /* Only three of the L3 network types that are configured by
-             * libvirt need to have iptables rules reloaded. The 4th L3
-             * network type, forward='open', doesn't need this because it
-             * has no iptables rules.
+        case VIR_NETWORK_FORWARD_OPEN:
+            /* even 'open' forward type networks need to call
+             * networkAdd/RemoveFirewallRules() in spite of the fact
+             * that, by definition, libvirt doesn't add any firewall
+             * rules for those networks.. This is because libvirt
+             * *does* support explicitly naming (in the config) a
+             * firewalld zone the network's bridge should be added to,
+             * and this functionality is also handled by
+             * networkAdd/RemoveFirewallRules()
              */
             networkRemoveFirewallRules(obj);
             ignore_value(networkAddFirewallRules(def, cfg->firewallBackend, &fwRemoval));
@@ -1746,7 +1751,6 @@ networkReloadFirewallRulesHelper(virNetworkObj *obj,
             saveStatus = true;
             break;
 
-        case VIR_NETWORK_FORWARD_OPEN:
         case VIR_NETWORK_FORWARD_BRIDGE:
         case VIR_NETWORK_FORWARD_PRIVATE:
         case VIR_NETWORK_FORWARD_VEPA:
@@ -2000,10 +2004,8 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         goto error;
 
     /* Add "once per network" rules */
-    if (def->forward.type != VIR_NETWORK_FORWARD_OPEN &&
-        networkAddFirewallRules(def, cfg->firewallBackend, &fwRemoval) < 0) {
+    if (networkAddFirewallRules(def, cfg->firewallBackend, &fwRemoval) < 0)
         goto error;
-    }
 
     virNetworkObjSetFwRemoval(obj, fwRemoval);
     firewalRulesAdded = true;
@@ -2119,8 +2121,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     if (devOnline)
         ignore_value(virNetDevSetOnline(def->bridge, false));
 
-    if (firewalRulesAdded &&
-        def->forward.type != VIR_NETWORK_FORWARD_OPEN)
+    if (firewalRulesAdded)
         networkRemoveFirewallRules(obj);
 
     virNetworkObjUnrefMacMap(obj);
@@ -2158,8 +2159,7 @@ networkShutdownNetworkVirtual(virNetworkObj *obj)
 
     ignore_value(virNetDevSetOnline(def->bridge, false));
 
-    if (def->forward.type != VIR_NETWORK_FORWARD_OPEN)
-        networkRemoveFirewallRules(obj);
+    networkRemoveFirewallRules(obj);
 
     ignore_value(virNetDevBridgeDelete(def->bridge));
 
@@ -3307,6 +3307,7 @@ networkUpdate(virNetworkPtr net,
         case VIR_NETWORK_FORWARD_NONE:
         case VIR_NETWORK_FORWARD_NAT:
         case VIR_NETWORK_FORWARD_ROUTE:
+        case VIR_NETWORK_FORWARD_OPEN:
             switch (section) {
             case VIR_NETWORK_SECTION_FORWARD:
             case VIR_NETWORK_SECTION_FORWARD_INTERFACE:
@@ -3325,7 +3326,6 @@ networkUpdate(virNetworkPtr net,
             }
             break;
 
-        case VIR_NETWORK_FORWARD_OPEN:
         case VIR_NETWORK_FORWARD_BRIDGE:
         case VIR_NETWORK_FORWARD_PRIVATE:
         case VIR_NETWORK_FORWARD_VEPA:

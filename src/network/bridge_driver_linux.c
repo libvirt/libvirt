@@ -337,90 +337,101 @@ networkAddFirewallRules(virNetworkDef *def,
                         virFirewallBackend firewallBackend,
                         virFirewall **fwRemoval)
 {
+    if (def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
 
-    networkSetupPrivateChains(firewallBackend, false);
-
-    if (errInitV4 &&
-        (virNetworkDefGetIPByIndex(def, AF_INET, 0) ||
-         virNetworkDefGetRouteByIndex(def, AF_INET, 0))) {
-        virSetError(errInitV4);
-        return -1;
-    }
-
-    if (errInitV6 &&
-        (virNetworkDefGetIPByIndex(def, AF_INET6, 0) ||
-         virNetworkDefGetRouteByIndex(def, AF_INET6, 0) ||
-         def->ipv6nogw)) {
-        virSetError(errInitV6);
-        return -1;
-    }
-
-    if (def->bridgeZone) {
-
-        /* if a firewalld zone has been specified, fail/log an error
-         * if we can't honor it
-         */
-        if (virFirewallDIsRegistered() < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("zone %1$s requested for network %2$s but firewalld is not active"),
-                           def->bridgeZone, def->name);
-            return -1;
-        }
-
-        if (virFirewallDInterfaceSetZone(def->bridge, def->bridgeZone) < 0)
-            return -1;
+        VIR_DEBUG("No firewall rules to add for mode='open' network '%s'", def->name);
 
     } else {
 
-        /* if firewalld is active, try to set the "libvirt" zone. This is
-         * desirable (for consistency) if firewalld is using the iptables
-         * backend, but is necessary (for basic network connectivity) if
-         * firewalld is using the nftables backend
-         */
-        if (virFirewallDIsRegistered() == 0) {
+        VIR_DEBUG("Adding firewall rules for mode='%s' network '%s' using %s",
+                  virNetworkForwardTypeToString(def->forward.type),
+                  def->name,
+                  virFirewallBackendTypeToString(firewallBackend));
 
-            /* if the "libvirt" zone exists, then set it. If not, and
-             * if firewalld is using the nftables backend, then we
-             * need to log an error because the combination of
-             * nftables + default zone means that traffic cannot be
-             * forwarded (and even DHCP and DNS from guest to host
-             * will probably no be permitted by the default zone
-             *
-             * Routed networks use a different zone and policy which we also
-             * need to verify exist. Probing for the policy guarantees the
-             * running firewalld has support for policies (firewalld >= 0.9.0).
+        networkSetupPrivateChains(firewallBackend, false);
+
+        if (errInitV4 &&
+            (virNetworkDefGetIPByIndex(def, AF_INET, 0) ||
+             virNetworkDefGetRouteByIndex(def, AF_INET, 0))) {
+            virSetError(errInitV4);
+            return -1;
+        }
+
+        if (errInitV6 &&
+            (virNetworkDefGetIPByIndex(def, AF_INET6, 0) ||
+             virNetworkDefGetRouteByIndex(def, AF_INET6, 0) ||
+             def->ipv6nogw)) {
+            virSetError(errInitV6);
+            return -1;
+        }
+
+        if (def->bridgeZone) {
+
+            /* if a firewalld zone has been specified, fail/log an error
+             * if we can't honor it
              */
-            if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE &&
-                virFirewallDPolicyExists("libvirt-routed-out") &&
-                virFirewallDZoneExists("libvirt-routed")) {
-                if (virFirewallDInterfaceSetZone(def->bridge, "libvirt-routed") < 0)
-                    return -1;
-            } else if (virFirewallDZoneExists("libvirt")) {
-                if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
-                    return -1;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("firewalld can't find the 'libvirt' zone that should have been installed with libvirt"));
+            if (virFirewallDIsRegistered() < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("zone %1$s requested for network %2$s but firewalld is not active"),
+                               def->bridgeZone, def->name);
                 return -1;
             }
+
+            if (virFirewallDInterfaceSetZone(def->bridge, def->bridgeZone) < 0)
+                return -1;
+
+        } else {
+
+            /* if firewalld is active, try to set the "libvirt" zone. This is
+             * desirable (for consistency) if firewalld is using the iptables
+             * backend, but is necessary (for basic network connectivity) if
+             * firewalld is using the nftables backend
+             */
+            if (virFirewallDIsRegistered() == 0) {
+
+                /* if the "libvirt" zone exists, then set it. If not, and
+                 * if firewalld is using the nftables backend, then we
+                 * need to log an error because the combination of
+                 * nftables + default zone means that traffic cannot be
+                 * forwarded (and even DHCP and DNS from guest to host
+                 * will probably no be permitted by the default zone
+                 *
+                 * Routed networks use a different zone and policy which we also
+                 * need to verify exist. Probing for the policy guarantees the
+                 * running firewalld has support for policies (firewalld >= 0.9.0).
+                 */
+                if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE &&
+                    virFirewallDPolicyExists("libvirt-routed-out") &&
+                    virFirewallDZoneExists("libvirt-routed")) {
+                    if (virFirewallDInterfaceSetZone(def->bridge, "libvirt-routed") < 0)
+                        return -1;
+                } else if (virFirewallDZoneExists("libvirt")) {
+                    if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
+                        return -1;
+                } else {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("firewalld can't find the 'libvirt' zone that should have been installed with libvirt"));
+                    return -1;
+                }
+            }
         }
-    }
 
-    switch (firewallBackend) {
-    case VIR_FIREWALL_BACKEND_NONE:
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("No firewall backend is available"));
-        return -1;
+        switch (firewallBackend) {
+        case VIR_FIREWALL_BACKEND_NONE:
+            virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                           _("No firewall backend is available"));
+            return -1;
 
-    case VIR_FIREWALL_BACKEND_IPTABLES:
-        return iptablesAddFirewallRules(def, fwRemoval);
+        case VIR_FIREWALL_BACKEND_IPTABLES:
+            return iptablesAddFirewallRules(def, fwRemoval);
 
-    case VIR_FIREWALL_BACKEND_NFTABLES:
-        return nftablesAddFirewallRules(def, fwRemoval);
+        case VIR_FIREWALL_BACKEND_NFTABLES:
+            return nftablesAddFirewallRules(def, fwRemoval);
 
-    case VIR_FIREWALL_BACKEND_LAST:
-        virReportEnumRangeError(virFirewallBackend, firewallBackend);
-        return -1;
+        case VIR_FIREWALL_BACKEND_LAST:
+            virReportEnumRangeError(virFirewallBackend, firewallBackend);
+            return -1;
+        }
     }
     return 0;
 }
@@ -429,21 +440,29 @@ networkAddFirewallRules(virNetworkDef *def,
 void
 networkRemoveFirewallRules(virNetworkObj *obj)
 {
+    virNetworkDef *def = virNetworkObjGetDef(obj);
     virFirewall *fw;
 
-    if ((fw = virNetworkObjGetFwRemoval(obj)) == NULL) {
-        /* No information about firewall rules in the network status,
-         * so we assume the old iptables-based rules from 10.2.0 and
-         * earlier.
-         */
-        VIR_DEBUG("No firewall info in network status, assuming old-style iptables");
-        iptablesRemoveFirewallRules(virNetworkObjGetDef(obj));
-        return;
-    }
+    if (def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
 
-    /* fwRemoval info was stored in the network status, so use that to
-     * remove the firewall
-     */
-    VIR_DEBUG("Removing firewall rules with commands saved in network status");
-    virFirewallApply(fw);
+        VIR_DEBUG("No firewall rules to remove for mode='open' network '%s'", def->name);
+
+    } else {
+
+        if ((fw = virNetworkObjGetFwRemoval(obj)) == NULL) {
+            /* No information about firewall rules in the network status,
+             * so we assume the old iptables-based rules from 10.2.0 and
+             * earlier.
+             */
+            VIR_DEBUG("No firewall info in status of network '%s', assuming old-style iptables", def->name);
+            iptablesRemoveFirewallRules(def);
+            return;
+        }
+
+        /* fwRemoval info was stored in the network status, so use that to
+         * remove the firewall
+         */
+        VIR_DEBUG("Removing firewall rules of network '%s' using commands saved in status", def->name);
+        virFirewallApply(fw);
+    }
 }
