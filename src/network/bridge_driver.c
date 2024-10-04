@@ -1999,10 +1999,6 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
     if (networkSetIPv6Sysctls(obj) < 0)
         goto error;
 
-    /* set the firewall zone for the bridge device on the host */
-    if (networkSetBridgeZone(def) < 0)
-        goto error;
-
     /* Add "once per network" rules */
     if (def->forward.type != VIR_NETWORK_FORWARD_OPEN &&
         networkAddFirewallRules(def, cfg->firewallBackend, &fwRemoval) < 0) {
