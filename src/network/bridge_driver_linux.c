@@ -459,19 +459,37 @@ networkRemoveFirewallRules(virNetworkObj *obj)
     } else {
 
         if ((fw = virNetworkObjGetFwRemoval(obj)) == NULL) {
+
             /* No information about firewall rules in the network status,
              * so we assume the old iptables-based rules from 10.2.0 and
              * earlier.
              */
             VIR_DEBUG("No firewall info in status of network '%s', assuming old-style iptables", def->name);
             iptablesRemoveFirewallRules(def);
-            return;
-        }
 
-        /* fwRemoval info was stored in the network status, so use that to
-         * remove the firewall
-         */
-        VIR_DEBUG("Removing firewall rules of network '%s' using commands saved in status", def->name);
-        virFirewallApply(fw);
+        } else {
+
+            /* fwRemoval info was stored in the network status, so use that to
+             * remove the firewall
+             */
+            VIR_DEBUG("Removing firewall rules of network '%s' using commands saved in status", def->name);
+            virFirewallApply(fw);
+        }
+    }
+
+    /* all forward modes could have had a zone set, even 'open' mode
+     * iff it was specified in the config. firewalld preserves the
+     * name of an interface in a zone's list even after the interface
+     * has been deleted, which is problematic if the next use of that
+     * same interface name wants *no* zone set. To avoid this, we must
+     * "unset" the zone if we set it when the network was started.
+     */
+    if (virFirewallDIsRegistered() == 0 &&
+        (def->forward.type != VIR_NETWORK_FORWARD_OPEN ||
+         def->bridgeZone)) {
+
+        VIR_DEBUG("unsetting zone for '%s' (current zone is '%s')",
+                  def->bridge, def->bridgeZone);
+        virFirewallDInterfaceUnsetZone(def->bridge);
     }
 }
