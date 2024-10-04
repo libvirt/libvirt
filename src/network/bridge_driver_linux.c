@@ -337,6 +337,64 @@ networkAddFirewallRules(virNetworkDef *def,
                         virFirewallBackend firewallBackend,
                         virFirewall **fwRemoval)
 {
+    /* If firewalld is running on the system, a firewalld zone is
+     * always set for the bridge device of all bridge-based managed
+     * networks of all forward modes *except* 'open', which is only
+     * set if specifically requested in the config.
+     */
+    if (def->bridgeZone) {
+
+        /* if a firewalld zone has been specified, fail/log an error
+         * if we can't honor it
+         */
+        if (virFirewallDIsRegistered() < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("zone %1$s requested for network %2$s but firewalld is not active"),
+                           def->bridgeZone, def->name);
+            return -1;
+        }
+
+        if (virFirewallDInterfaceSetZone(def->bridge, def->bridgeZone) < 0)
+            return -1;
+
+    } else if (def->forward.type != VIR_NETWORK_FORWARD_OPEN) {
+
+        /* if firewalld is active, try to set the "libvirt" zone by
+         * default (forward mode='open' networks have no zone set by
+         * default, but we honor it if one is specified). This is
+         * desirable (for consistency) if firewalld is using the
+         * iptables backend, but is necessary (for basic network
+         * connectivity) if firewalld is using the nftables backend
+         */
+        if (virFirewallDIsRegistered() == 0) {
+
+            /* if the "libvirt" zone exists, then set it. If not, and
+             * if firewalld is using the nftables backend, then we
+             * need to log an error because the combination of
+             * nftables + default zone means that traffic cannot be
+             * forwarded (and even DHCP and DNS from guest to host
+             * will probably no be permitted by the default zone
+             *
+             * Routed networks use a different zone and policy which we also
+             * need to verify exist. Probing for the policy guarantees the
+             * running firewalld has support for policies (firewalld >= 0.9.0).
+             */
+            if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE &&
+                virFirewallDPolicyExists("libvirt-routed-out") &&
+                virFirewallDZoneExists("libvirt-routed")) {
+                if (virFirewallDInterfaceSetZone(def->bridge, "libvirt-routed") < 0)
+                    return -1;
+            } else if (virFirewallDZoneExists("libvirt")) {
+                if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
+                    return -1;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("firewalld can't find the 'libvirt' zone that should have been installed with libvirt"));
+                return -1;
+            }
+        }
+    }
+
     if (def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
 
         VIR_DEBUG("No firewall rules to add for mode='open' network '%s'", def->name);
@@ -348,6 +406,7 @@ networkAddFirewallRules(virNetworkDef *def,
                   def->name,
                   virFirewallBackendTypeToString(firewallBackend));
 
+        /* one-time (per system boot) initialization */
         networkSetupPrivateChains(firewallBackend, false);
 
         if (errInitV4 &&
@@ -365,57 +424,7 @@ networkAddFirewallRules(virNetworkDef *def,
             return -1;
         }
 
-        if (def->bridgeZone) {
-
-            /* if a firewalld zone has been specified, fail/log an error
-             * if we can't honor it
-             */
-            if (virFirewallDIsRegistered() < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("zone %1$s requested for network %2$s but firewalld is not active"),
-                               def->bridgeZone, def->name);
-                return -1;
-            }
-
-            if (virFirewallDInterfaceSetZone(def->bridge, def->bridgeZone) < 0)
-                return -1;
-
-        } else {
-
-            /* if firewalld is active, try to set the "libvirt" zone. This is
-             * desirable (for consistency) if firewalld is using the iptables
-             * backend, but is necessary (for basic network connectivity) if
-             * firewalld is using the nftables backend
-             */
-            if (virFirewallDIsRegistered() == 0) {
-
-                /* if the "libvirt" zone exists, then set it. If not, and
-                 * if firewalld is using the nftables backend, then we
-                 * need to log an error because the combination of
-                 * nftables + default zone means that traffic cannot be
-                 * forwarded (and even DHCP and DNS from guest to host
-                 * will probably no be permitted by the default zone
-                 *
-                 * Routed networks use a different zone and policy which we also
-                 * need to verify exist. Probing for the policy guarantees the
-                 * running firewalld has support for policies (firewalld >= 0.9.0).
-                 */
-                if (def->forward.type == VIR_NETWORK_FORWARD_ROUTE &&
-                    virFirewallDPolicyExists("libvirt-routed-out") &&
-                    virFirewallDZoneExists("libvirt-routed")) {
-                    if (virFirewallDInterfaceSetZone(def->bridge, "libvirt-routed") < 0)
-                        return -1;
-                } else if (virFirewallDZoneExists("libvirt")) {
-                    if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
-                        return -1;
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("firewalld can't find the 'libvirt' zone that should have been installed with libvirt"));
-                    return -1;
-                }
-            }
-        }
-
+        /* now actually add the rules */
         switch (firewallBackend) {
         case VIR_FIREWALL_BACKEND_NONE:
             virReportError(VIR_ERR_NO_SUPPORT, "%s",
