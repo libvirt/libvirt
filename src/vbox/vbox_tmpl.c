@@ -429,13 +429,18 @@ static int _pfnInitialize(struct _vboxDriver *driver)
 {
     nsresult rc;
 
-    if (!(driver->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION)))
+    if (!(driver->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION))) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unable to get pointer to VirtualBox vtable"));
         return -1;
+    }
 
     rc = driver->pFuncs->pfnClientInitialize(IVIRTUALBOXCLIENT_IID_STR,
                                              &driver->vboxClient);
 
     if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unable to initialize VirtualBox C API client"));
         return -1;
     } else {
         driver->vboxClient->vtbl->GetVirtualBox(driver->vboxClient, &driver->vboxObj);
