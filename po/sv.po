@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-01 12:40+0000\n"
+"PO-Revision-Date: 2024-10-06 11:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35199,145 +35199,157 @@ msgid "server verification (of our certificate or IP address) failed"
 msgstr "serververifiering (av vårt certifikat eller IP-adress) misslyckades"
 
 msgid "server which the client is currently connected to"
-msgstr ""
+msgstr "server till vilken klienten för närvarande är ansluten"
 
 msgid "server which to list connected clients from"
-msgstr ""
+msgstr "server från vilken anslutna klienter skall listas"
 
 #, c-format
 msgid ""
 "service attribute '%1$s' in network '%2$s' is too long, limit is %3$d bytes"
 msgstr ""
+"serviceattributet ”%1$s” i nätverket ”%2$s” är för långt, gränsen är %3$d "
+"byte"
 
 msgid "set a secret value"
-msgstr ""
+msgstr "sätt ett hemligt värde"
 
 msgid "set domain to be paused on next start"
-msgstr ""
+msgstr "sätt domänen till att pausas vid nästa start"
 
 msgid "set domain to be paused on restore"
-msgstr ""
+msgstr "sätt domänen till att pausas vid återställning"
 
 msgid "set domain to be paused on start"
-msgstr ""
+msgstr "sätt domänen till att pausas vid start"
 
 msgid "set domain to be running on next start"
-msgstr ""
+msgstr "sätt domänen till att köras vid nästa start"
 
 msgid "set domain to be running on restore"
-msgstr ""
+msgstr "sätt domänen till att köras vid återställning"
 
 msgid "set domain to be running on start"
-msgstr ""
+msgstr "sätt domänen till att köras vid start"
 
 msgid "set link state of a virtual interface"
-msgstr ""
+msgstr "sätt länktillståndet på ett virtuellt gränssnitt"
 
 msgid "set maximum limit on next boot"
-msgstr ""
+msgstr "sätt maximal gräns vid nästa start"
 
 msgid "set maximum tolerable downtime"
-msgstr ""
+msgstr "sätt maximal tolerabel nertid"
 
-#, fuzzy
 msgid "set on all NUMA cells"
-msgstr "visa ledigt minne för alla NUMA-celler"
+msgstr "sätt på alla NUMA-celler"
 
 msgid "set post-copy migration bandwidth"
-msgstr ""
+msgstr "sätt bandbredden på efterkopieringsmigrering"
 
-#, fuzzy
 msgid "set server workerpool parameters"
-msgstr "Kan inte hämta parametrar för trådpoolen"
+msgstr "sätt serverns arbetspoolsparametrar"
 
 msgid "set server's client-related configuration limits"
-msgstr ""
+msgstr "sätt serverns klientrelaterade konfigurationsgränser"
 
 msgid "set the auto shutdown timeout of the daemon"
-msgstr ""
+msgstr "sätt tidsgränsen för automatisk nerstängning av demonen"
 
 msgid "set the bandwidth limit in MiB/s"
-msgstr ""
+msgstr "sätt bandbreddsgränsen i MiB/s"
 
 msgid "set the maximum IOThread polling time in ns"
-msgstr ""
+msgstr "sätt den maximala IOThread-pollningstiden i ns"
 
 msgid ""
 "set the threshold for block-threshold event for a given block device or it's "
 "backing chain element"
 msgstr ""
+"sätt tröskelvärdet för blocktröskelhändelser för en given blockenhet eller "
+"dess bakomliggande kedjas element"
 
 msgid "set the user password inside the domain"
-msgstr ""
+msgstr "sätt användarlösenordet inuti domänen"
 
 msgid "set the value for reduction of the IOThread polling time"
-msgstr ""
+msgstr "sätt värdet för minskning av IOThread-pollningstiden"
 
 msgid "set the value to increase the IOThread polling time"
-msgstr ""
+msgstr "sätt värdet för ökning av IOThread-pollningstiden"
 
 msgid "set threshold for block-threshold event for a block device"
-msgstr ""
+msgstr "sätt tröskelvärdet för blocktröskelhändelser för en blockenhet"
 
 msgid "set to the time of the host running virsh"
-msgstr ""
+msgstr "sätt till tiden för värden som kör virsh"
 
 msgid ""
 "setting 'value' attribute of 'qemu:property' doesn't make sense with "
 "'remove' type"
 msgstr ""
+"att sätta attributet ”value” på ”qemu:property” är meningslöst med typen "
+"”remove”"
 
 msgid "setting ACPI S3/S4 not supported"
-msgstr ""
+msgstr "att sätta ACPI S3/S4 stödjs inte"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
-msgstr ""
+msgstr "att sätta MTU på gränssnittstypen %1$s stödjs inte ännu"
 
 msgid "setting a launch secret is only supported in SEV-enabled domains"
-msgstr ""
+msgstr "att sätta starthemligheten stödjs endast i domäner med SEV möjligt"
 
 #, c-format
 msgid "setting bandwidth on interfaces of type '%1$s' is not implemented yet"
 msgstr ""
+"att sätta bandbredden på gränssnitt av typen ”%1$s” är inte implementerat "
+"ännu"
 
 msgid "setting device threshold is not supported for vhostuser disk"
-msgstr ""
+msgstr "att sätta enhetsgränssnittet stödjs inte för vhostuser-diskar"
 
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr ""
+"att sätta policyer för tidtagare att komma ifatt stödjs endast med "
+"tickpolicy='catchup'"
 
 msgid "setting source evdev path only supported for passthrough input devices"
 msgstr ""
+"att sätta käll-evdev-sökvägen stödjs endast för inmatningsenheter med "
+"genomgång"
 
 #, c-format
 msgid ""
 "setting the '%1$s' property on a '%2$s' device is not supported by this QEMU "
 "binary"
 msgstr ""
+"att sätta egenskapen ”%1$s” på en ”%2$s”-enhet stödjs inte av denna QEMU-"
+"binär"
 
 msgid "setting the panic device address is not supported for model 'hyperv'"
-msgstr ""
+msgstr "att sätta panikenhetsadressen stödjs inte för modellen ”hyperv”"
 
 msgid "setting the panic device address is not supported for model 'pseries'"
-msgstr ""
+msgstr "att sätta panikenhetsadressen stödjs inte för modellen ”pseries”"
 
 msgid "setting the panic device address is not supported for model 's390'"
-msgstr ""
+msgstr "att sätta panikenhetsadressen stödjs inte för modellen ”s390”"
 
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
-msgstr ""
+msgstr "att sätta virtiofs-startordning stödjs inte med denna QEMU-binär"
 
 msgid "setting virtiofs boot order is supported only with PCI bus"
-msgstr ""
+msgstr "att sätta virtiofs-startordning stödjs endast med en PCI-buss"
 
 msgid "setuid or setgid failed"
-msgstr ""
+msgstr "setuid eller setgid misslyckades"
 
 #, c-format
 msgid "setup of pcap handle failed: %1$s"
-msgstr ""
+msgstr "att sätta upp pcap-handtaget misslyckades: %1$s"
 
 msgid "sgio can be used only with device='lun'"
 msgstr ""
