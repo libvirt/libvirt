@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-06 11:38+0000\n"
+"PO-Revision-Date: 2024-10-08 08:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35352,81 +35352,85 @@ msgid "setup of pcap handle failed: %1$s"
 msgstr "att sätta upp pcap-handtaget misslyckades: %1$s"
 
 msgid "sgio can be used only with device='lun'"
-msgstr ""
+msgstr "sgio kan bara användas med device='lun'"
 
-#, fuzzy
 msgid "sgio is only supported for scsi host device"
-msgstr "Inget stöd för flera videoenheter"
+msgstr "sgio stödjs endast för scsi-värdenheter"
 
 msgid "sgx epc isn't supported by this QEMU binary"
-msgstr ""
+msgstr "sgx epc stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid ""
 "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
 msgstr ""
+"sgx epc storlek %1$lld på värdnod %2$d är mindre än begärd storlek %3$lld"
 
 #, c-format
 msgid ""
 "sgx epc size %1$lld on host node %2$zd is less than requested size %3$lld"
 msgstr ""
+"sgx epc storlek %1$lld på värdnod %2$zd är mindre än begärd storlek %3$lld"
 
 msgid "sgx-epc memory info data is missing 'memdev'"
-msgstr ""
+msgstr "sgx-epc-minnesinformationsdata saknar ”memdev”"
 
 #, c-format
 msgid "shallow copy of disk '%1$s' into a raw file is not possible"
-msgstr ""
+msgstr "grund kopiering av disken ”%1$s” till en rå fil är inte möjligt"
 
 msgid "shareable is not supported with vhostuser disk"
-msgstr ""
+msgstr "delbarhet stödjs inte med en vhostuser-disk"
 
 #, c-format
 msgid "shared access for disk '%1$s' requires use of supported storage format"
 msgstr ""
+"delad åtkomst för disken ”%1$s” kräver användning av ett stött lagringsformat"
 
 msgid "shared access mode required for virtio-pmem device"
-msgstr ""
+msgstr "delat åtkomstläge krävs för virtio-pmem-enheten"
 
 #, c-format
 msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
-msgstr ""
+msgstr "”%1$llu” delar måste vara i intervallet [%2$llu, %3$llu]"
 
 msgid "sheepdog protocol accepts only one host"
-msgstr ""
+msgstr "protokollet sheepdog accepterar bara en värd"
 
 #, c-format
 msgid ""
 "shmem device '%1$s' cannot be migrated, only shmem with role='%2$s' can be "
 "migrated"
 msgstr ""
+"shmem-enheten ”%1$s” kan inte migreras, endast shmem med role='%2$s' kan "
+"migreras"
 
 msgid "shmem element must contain 'name' attribute"
-msgstr ""
+msgstr "shmem-element måste innehålla attributet ”name”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "shmem model '%1$s' does not support size setting"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "shmem-modellen ”%1$s” stödjer inte att sätta storlek"
 
-#, fuzzy, c-format
+#, c-format
 msgid "shmem model '%1$s' doesn't support msi"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "shmem-modellen ”%1$s” stödjer inte msi"
 
 #, c-format
 msgid "shmem model '%1$s' is not supported by this QEMU binary"
-msgstr ""
+msgstr "shmem-modellen ”%1$s” stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "shmem model '%1$s' is supported only with server option disabled"
-msgstr ""
+msgstr "shmem-modellen ”%1$s” stödjs bara med serveralternativet avaktiverat"
 
 #, c-format
 msgid "shmem model '%1$s' is supported only with server option enabled"
-msgstr ""
+msgstr "shmem-modellen ”%1$s” stödjs endast mes serveralternativet aktiverat"
 
 #, c-format
 msgid "shmem name '%1$s' must not contain '/'"
-msgstr ""
+msgstr "shmem-namnet ”%1$s” får inte innehålla ”/”"
 
 msgid "shmem name cannot be equal to '.'"
 msgstr ""
