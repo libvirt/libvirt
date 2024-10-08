@@ -20,7 +20,7 @@ accomplish this *without* incurring guest down time.  Here's how to go
 about it.
 
 The same principles used in the `live full disk backup
-<https://libvirt.org/kbase/live_full_disk_backup.html>` document are
+<https://libvirt.org/kbase/live_full_disk_backup.html>`_ document are
 used here too.
 
 Reducing the disk image chain length
