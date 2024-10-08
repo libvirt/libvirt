@@ -6095,6 +6095,7 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
 {
     size_t i;
     virCPUDef *cpu = def->cpu;
+    g_auto(GStrv) knownFeatures = NULL;
 
     switch ((virCPUMode) cpu->mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
@@ -6153,9 +6154,14 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
     if (cpu->vendor_id)
         virBufferAsprintf(buf, ",vendor=%s", cpu->vendor_id);
 
+    if (ARCH_IS_X86(def->os.arch) &&
+        virQEMUCapsGetCPUFeatures(qemuCaps, def->virtType, false, &knownFeatures) < 0)
+        return -1;
+
     for (i = 0; i < cpu->nfeatures; i++) {
         const char *featname =
             virQEMUCapsCPUFeatureToQEMU(def->os.arch, cpu->features[i].name);
+
         switch ((virCPUFeaturePolicy) cpu->features[i].policy) {
         case VIR_CPU_FEATURE_FORCE:
         case VIR_CPU_FEATURE_REQUIRE:
@@ -6164,7 +6170,12 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
 
         case VIR_CPU_FEATURE_DISABLE:
         case VIR_CPU_FEATURE_FORBID:
-            virBufferAsprintf(buf, ",%s=off", featname);
+            /* Features unknown to QEMU are implicitly disabled and we can just
+             * skip them. */
+            if (!knownFeatures ||
+                g_strv_contains((const char **) knownFeatures, cpu->features[i].name)) {
+                virBufferAsprintf(buf, ",%s=off", featname);
+            }
             break;
 
         case VIR_CPU_FEATURE_OPTIONAL:
