@@ -57,7 +57,7 @@ Remote libvirt supports a range of transports:
    shell) <https://www.openssh.com/>`__ connection. Requires `Netcat
    (nc) <https://en.wikipedia.org/wiki/Netcat>`__ installed and libvirtd should be
    running on the remote machine. You should use some sort of ssh key management
-   (eg. `ssh-agent <http://mah.everybody.org/docs/ssh>`__) otherwise programs
+   (eg. `ssh-agent <https://man.openbsd.org/ssh-agent>`__) otherwise programs
    which use this transport will stop to ask for a password.
 ``ext``
    Any external program which can make a connection to the remote machine by
