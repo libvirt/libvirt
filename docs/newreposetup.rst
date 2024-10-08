@@ -129,37 +129,3 @@ required under the **Settings** page:
 
 In the master git repository create a file `.github/lockdown.yml` to restrict
 use of issue tracker and pull requests.
-
-
-libvirt.org
-===========
-
-The `libvirt project server <https://libvirt.org>`_ hosts read-only mirrors of
-all the libvirt Git repositories in the directory ``/data/git``.
-
-When creating a new repository the following steps are required:
-
-* Create repo with
-  ::
-
-     $ sudo su -
-     # cd /data/git
-     # mkdir $repo.git
-     # cd $repo.git
-     # git init --bare
-     # touch export
-     # touch git-daemon-export-ok
-     # cd ..
-     # chown -R gitmirror.gitmirror $repo.git
-     # chmod -R g+w $repo.git
-     # find -type d $repo.git | xargs chmod g+s
-
-* Set the ``description`` and ``config`` files following other repos' example
-
-* Setup mirroring
-  ::
-
-    $ sudo su - gitmirror
-    # ./newrepo.sh /data/git/$repo.git
-    # cd mirrors
-    # $HOME/sync-one.sh $repo.git
