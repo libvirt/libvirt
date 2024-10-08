@@ -287,7 +287,6 @@ def translate_feature(name):
         "MSR_VMX_EPT_INVEPT_ALL_CONTEXT": "vmx-invept-all-context",
         "MSR_VMX_EPT_INVVPID": "vmx-invvpid",
         "MSR_VMX_EPT_INVVPID_SINGLE_ADDR": "vmx-invvpid-single-addr",
-        "MSR_VMX_EPT_INVVPID_SINGLE_CONTEXT": "vmx-invvpid-single-context",
         "MSR_VMX_EPT_INVVPID_ALL_CONTEXT": "vmx-invvpid-all-context",
         "MSR_VMX_EPT_INVVPID_SINGLE_CONTEXT_NOGLOBALS": "vmx-invvpid-single-context-noglobals",
 
@@ -306,6 +305,7 @@ def translate_feature(name):
         name in ("MSR_VMX_BASIC_DUAL_MONITOR", "dual-monitor"),
         name in ("CPUID_EXT3_TOPOEXT", "topoext"),
         name in ("MSR_VMX_EPT_UC", "MSR_VMX_EPT_WB"),
+        name in ("MSR_VMX_EPT_INVVPID_SINGLE_CONTEXT"),
     ])
 
     if ignore:

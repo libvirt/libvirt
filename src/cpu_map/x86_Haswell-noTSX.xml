@@ -93,7 +93,6 @@
     <feature name='vmx-invvpid' added='yes'/>
     <feature name='vmx-invvpid-all-context' added='yes'/>
     <feature name='vmx-invvpid-single-addr' added='yes'/>
-    <feature name='vmx-invvpid-single-context' added='yes'/>
     <feature name='vmx-invvpid-single-context-noglobals' added='yes'/>
     <feature name='vmx-io-bitmap' added='yes'/>
     <feature name='vmx-io-exit' added='yes'/>

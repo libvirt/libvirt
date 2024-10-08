@@ -151,7 +151,6 @@
     <feature name='vmx-invvpid'/>
     <feature name='vmx-invvpid-all-context'/>
     <feature name='vmx-invvpid-single-addr'/>
-    <feature name='vmx-invvpid-single-context'/>
     <feature name='vmx-invvpid-single-context-noglobals'/>
     <feature name='vmx-io-bitmap'/>
     <feature name='vmx-io-exit'/>
