@@ -3531,22 +3531,26 @@ virQEMUCapsProbeQMPSGXCapabilities(virQEMUCaps *qemuCaps,
  * QEMU never supported them or they were dropped as they never did anything
  * useful.
  */
+const char *ignoredFeatures[] = {
+    "cmt", "mbm_total", "mbm_local", /* never supported by QEMU */
+    "osxsave", "ospke",              /* dropped from QEMU */
+};
+
 bool
 virQEMUCapsCPUFilterFeatures(const char *name,
                              virCPUFeaturePolicy policy G_GNUC_UNUSED,
                              void *opaque)
 {
     virArch *arch = opaque;
+    size_t i;
 
     if (!ARCH_IS_X86(*arch))
         return true;
 
-    if (STREQ(name, "cmt") ||
-        STREQ(name, "mbm_total") ||
-        STREQ(name, "mbm_local") ||
-        STREQ(name, "osxsave") ||
-        STREQ(name, "ospke"))
-        return false;
+    for (i = 0; i < G_N_ELEMENTS(ignoredFeatures); i++) {
+        if (STREQ(name, ignoredFeatures[i]))
+            return false;
+    }
 
     return true;
 }
