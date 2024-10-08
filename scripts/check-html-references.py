@@ -53,7 +53,7 @@ def get_file_list(prefix):
 
 
 # loads an XHTML and extracts all anchors, local and remote links for the one file
-def process_file(filename):
+def process_file(filename, project_uri):
     tree = ET.parse(filename)
     root = tree.getroot()
     docname = root.get('data-sourcedoc')
@@ -65,6 +65,7 @@ def process_file(filename):
     anchors = [filename]
     targets = []
     images = []
+    projectlinks = []
 
     for elem in root.findall('.//html:a', ns):
         target = elem.get('href')
@@ -76,6 +77,10 @@ def process_file(filename):
         if target:
             if re.search('://', target):
                 externallinks.append(target)
+
+                if project_uri is not None and target.startswith(project_uri):
+                    projectlinks.append((target, docname))
+
             elif target[0] != '#' and 'mailto:' not in target:
                 targetfull = os.path.normpath(os.path.join(dirname, target))
 
@@ -106,22 +111,24 @@ def process_file(filename):
                 imagefull = os.path.normpath(os.path.join(dirname, src))
                 images.append((imagefull, docname))
 
-    return (anchors, targets, images)
+    return (anchors, targets, images, projectlinks)
 
 
-def process_all(filelist):
+def process_all(filelist, project_uri):
     anchors = []
     targets = []
     images = []
+    projectlinks = []
 
     for file in filelist:
-        anchor, target, image = process_file(file)
+        anchor, target, image, projectlink = process_file(file, project_uri)
 
         targets = targets + target
         anchors = anchors + anchor
         images = images + image
+        projectlinks = projectlinks + projectlink
 
-    return (targets, anchors, images)
+    return (targets, anchors, images, projectlinks)
 
 
 def check_targets(targets, anchors):
@@ -236,6 +243,26 @@ def check_https(links):
     return fail
 
 
+# checks prohibited external links to local files
+def check_projectlinks(projectlinks, exceptions):
+    fail = False
+
+    for (link, filename) in projectlinks:
+        allowed = False
+
+        if exceptions is not None:
+            for exc in exceptions:
+                if exc in filename:
+                    allowed = True
+                    break
+
+        if not allowed:
+            print(f'ERROR: prohibited external URI \'{link}\' to local project in \'{filename}\'')
+            fail = True
+
+    return fail
+
+
 parser = argparse.ArgumentParser(description='HTML reference checker')
 parser.add_argument('--webroot', required=True,
                     help='path to the web root')
@@ -247,6 +274,10 @@ parser.add_argument('--ignore-images', action='append',
                     help='paths to images that should be considered as used')
 parser.add_argument('--require-https', action="store_true",
                     help='require secure https for external links')
+parser.add_argument('--project-uri',
+                    help='external prefix of the local project (e.g. https://libvirt.org; external links with that prefix are prohibited')
+parser.add_argument('--project-uri-exceptions', action='append',
+                    help='list of path prefixes excluded from the "--project-uri" checks')
 
 args = parser.parse_args()
 
@@ -254,7 +285,7 @@ files, imagefiles = get_file_list(os.path.abspath(args.webroot))
 
 entrypoint = os.path.join(os.path.abspath(args.webroot), args.entrypoint)
 
-targets, anchors, usedimages = process_all(files)
+targets, anchors, usedimages, projectlinks = process_all(files, args.project_uri)
 
 fail = False
 
@@ -281,6 +312,9 @@ else:
         fail = True
 
     if check_images(usedimages, imagefiles, args.ignore_images):
+        fail = True
+
+    if check_projectlinks(projectlinks, args.project_uri_exceptions):
         fail = True
 
     if args.require_https:
