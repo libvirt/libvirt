@@ -358,6 +358,7 @@ if tests_enabled[0]
     python3_prog,
     args: [
       check_html_references_prog.full_path(),
+      '--require-https',
       '--webroot',
       meson.project_build_root() / 'docs'
     ],

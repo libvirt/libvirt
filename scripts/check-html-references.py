@@ -224,6 +224,18 @@ def check_images(usedimages, imagefiles, ignoreimages):
     return fail
 
 
+# checks that all links are accessed via https
+def check_https(links):
+    fail = False
+
+    for link in links:
+        if link.startswith('http://'):
+            print(f'ERROR: URI \'{link}\' uses insecure "http" protocol')
+            fail = True
+
+    return fail
+
+
 parser = argparse.ArgumentParser(description='HTML reference checker')
 parser.add_argument('--webroot', required=True,
                     help='path to the web root')
@@ -233,6 +245,8 @@ parser.add_argument('--external', action="store_true",
                     help='print external references instead')
 parser.add_argument('--ignore-images', action='append',
                     help='paths to images that should be considered as used')
+parser.add_argument('--require-https', action="store_true",
+                    help='require secure https for external links')
 
 args = parser.parse_args()
 
@@ -268,6 +282,13 @@ else:
 
     if check_images(usedimages, imagefiles, args.ignore_images):
         fail = True
+
+    if args.require_https:
+        if check_https(externallinks):
+            fail = True
+
+        if check_https(externalimages):
+            fail = True
 
     if fail:
         sys.exit(1)
