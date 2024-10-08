@@ -50,6 +50,7 @@
   <feature policy='require' name='vmx-invvpid'/>
   <feature policy='require' name='vmx-invvpid-single-addr'/>
   <feature policy='require' name='vmx-invvpid-all-context'/>
+  <feature policy='require' name='vmx-invvpid-single-context-noglobals'/>
   <feature policy='require' name='vmx-intr-exit'/>
   <feature policy='require' name='vmx-nmi-exit'/>
   <feature policy='require' name='vmx-vnmi'/>

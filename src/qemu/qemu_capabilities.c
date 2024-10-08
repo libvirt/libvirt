@@ -3570,6 +3570,7 @@ virQEMUCapsCPUFeatureTranslationTable virQEMUCapsCPUFeaturesX86[] = {
     {"perfctr_core", "perfctr-core"},
     {"perfctr_nb", "perfctr-nb"},
     {"tsc_adjust", "tsc-adjust"},
+    {"vmx-invvpid-single-context-noglobals", "vmx-invept-single-context-noglobals"},
     {NULL, NULL}
 };
 
