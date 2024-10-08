@@ -10,7 +10,7 @@ Overview
 Live full disk backups are preferred in many scenarios, *despite* their
 space requirements.  The following outlines an efficient method to do
 that using libvirt's APIs.  This method involves concepts: the notion of
-`backing chains <https://libvirt.org/kbase/backing_chains.html>`_,
+`backing chains <backing_chains.html>`_,
 `QCOW2 overlays
 <https://www.qemu.org/docs/master/interop/live-block-operations.html#disk-image-backing-chain-notation>`_,
 and a special operation called "active block-commit", which allows

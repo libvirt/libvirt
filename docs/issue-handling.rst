@@ -178,5 +178,5 @@ community.
 .. _Untriaged issues: https://gitlab.com/libvirt/libvirt/-/issues/?sort=created_date&state=opened&not%5Blabel_name%5D%5B%5D=state%3A%3Aunconfirmed&not%5Blabel_name%5D%5B%5D=state%3A%3Aneedinfo&not%5Blabel_name%5D%5B%5D=state%3A%3Aconfirmed&first_page_size=100
 .. _Unconfirmed bugs: https://gitlab.com/libvirt/libvirt/-/issues/?sort=created_date&state=opened&label_name%5B%5D=kind%3A%3Abug&label_name%5B%5D=state%3A%3Aunconfirmed&first_page_size=100
 .. _Unconfirmed features: https://gitlab.com/libvirt/libvirt/-/issues/?sort=created_date&state=opened&label_name%5B%5D=kind%3A%3Aenhancement&label_name%5B%5D=state%3A%3Aunconfirmed&first_page_size=100
-.. _debug logs: https://libvirt.org/kbase/debuglogs.html
+.. _debug logs: kbase/debuglogs.html
 .. _code of conduct: governance.html#code-of-conduct

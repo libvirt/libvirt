@@ -370,7 +370,7 @@ RPM packages
 
 * libvirt-docs
 
-  A local copy of the `libvirt website <https://libvirt.org>`_ website content
+  A local copy of the libvirt website website content
   that matches the deployed version of libvirt.
 
 * libvirt-libs

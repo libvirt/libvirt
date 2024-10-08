@@ -23,9 +23,7 @@ Adding a new API to libvirt is not difficult, but there are quite a few
 steps. This document assumes that you are familiar with C programming
 and have checked out the libvirt code from the source code repository
 and successfully built the existing tree. Instructions on how to check
-out and build the code can be found at:
-
-https://libvirt.org/downloads.html
+out and build the code can be found at the `downloads <downloads.html>`__ page.
 
 Once you have a working development environment, the steps to create a
 new API are:

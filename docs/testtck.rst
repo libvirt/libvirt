@@ -101,7 +101,7 @@ script containing functions describing GitLab job definitions it can be
 utilized to run integration test suite as well. In this case, one needs to
 get a copy of their libvirt repository containing the changes to be tested
 inside the VM (either by cloning it manually or sharing the repo e.g. via
-`virtiofs <https://libvirt.org/kbase/virtiofs.html>`__). Make sure that the
+`virtiofs <kbase/virtiofs.html>`__). Make sure that the
 user which is going to execute the following has passwordless "sudo" permissions
 (lcitool's default "test" user does). Then it's just a matter of running
 

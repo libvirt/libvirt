@@ -27,7 +27,7 @@ For libvirt before **6.7.0**, it can be configured by:
    ../configure --with-dtrace
 
 For libvirt **6.7.0** or later, configure it by the ``meson`` (seeing
-`libvirt compiling <https://libvirt.org/compiling.html>`__):
+`libvirt compiling <../compiling.html>`__):
 
 ::
 

@@ -120,8 +120,8 @@ Libvirt daemons run either in the ``system`` mode or on ``session`` (user)
 mode, depending on the configuration of the host and available permission
 levels.
 
-The `connection URI <https://libvirt.org/uri.html>`__ influences which daemon
-the client will communicate with.
+The `connection URI <../uri.html>`__ influences which daemon the client will
+communicate with.
 
 System daemon mode
 ~~~~~~~~~~~~~~~~~~

@@ -54,9 +54,8 @@ Connecting to VMware ESX/vSphere
 --------------------------------
 
 Details on the capabilities, certificates, and connection string syntax used for
-connecting to VMware ESX and vSphere can be found online here:
-
-https://libvirt.org/drvesx.html
+connecting to VMware ESX and vSphere can be found on the
+`ESX driver <drvesx.html>`_ page.
 
 TLS Certificates
 ----------------

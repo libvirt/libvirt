@@ -7,8 +7,7 @@ Merging disk image image chains
 Context
 =======
 
-Sometimes a `disk image chain
-<https://libvirt.org/kbase/backing_chains.html>`_ can get long and
+Sometimes a `disk image chain <backing_chains.html>`_ can get long and
 cumbersome.  For the purpose of illustration, consider this smaller disk
 image chain::
 
@@ -20,8 +19,7 @@ accomplish this *without* incurring guest down time.  Here's how to go
 about it.
 
 The same principles used in the `live full disk backup
-<https://libvirt.org/kbase/live_full_disk_backup.html>`_ document are
-used here too.
+<live_full_disk_backup.html>`_ document are used here too.
 
 Reducing the disk image chain length
 ====================================

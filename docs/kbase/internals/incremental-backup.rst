@@ -16,9 +16,9 @@ this document will try to summarize them.
 Glossary
 ========
 
-See the knowledge base article on
-`domain state capture <https://libvirt.org/kbase/domainstatecapture.html>`_ for
-a deeper explanation of some of the concepts.
+See the knowledge base article on `domain state capture
+<../domainstatecapture.html>`_ for a deeper explanation of some of the
+concepts.
 
 Checkpoint
 
