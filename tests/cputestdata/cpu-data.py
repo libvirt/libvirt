@@ -457,6 +457,11 @@ def parseMap():
         for reg in _KEYS[data.tag] + _REGS[data.tag]:
             feature[reg] = int(data.attrib.get(reg, "0"), 0)
         cpuMap[f.attrib["name"]] = feature
+
+        for alias in f.iterfind("alias"):
+            if alias.attrib["source"] == "qemu":
+                cpuMap[alias.attrib["name"]] = feature
+
     return cpuMap
 
 
