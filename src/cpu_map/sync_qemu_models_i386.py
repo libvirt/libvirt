@@ -278,8 +278,6 @@ def translate_feature(name):
         "MSR_VMX_EPT_EXECONLY": "vmx-ept-execonly",
         "MSR_VMX_EPT_PAGE_WALK_LENGTH_4": "vmx-page-walk-4",
         "MSR_VMX_EPT_PAGE_WALK_LENGTH_5": "vmx-page-walk-5",
-        "MSR_VMX_EPT_UC": "vmx-ept-uc",
-        "MSR_VMX_EPT_WB": "vmx-ept-wb",
         "MSR_VMX_EPT_2MB": "vmx-ept-2mb",
         "MSR_VMX_EPT_1GB": "vmx-ept-1gb",
         "MSR_VMX_EPT_INVEPT": "vmx-invept",
@@ -307,6 +305,7 @@ def translate_feature(name):
         name in ("CPUID_EXT_MONITOR", "monitor"),
         name in ("MSR_VMX_BASIC_DUAL_MONITOR", "dual-monitor"),
         name in ("CPUID_EXT3_TOPOEXT", "topoext"),
+        name in ("MSR_VMX_EPT_UC", "MSR_VMX_EPT_WB"),
     ])
 
     if ignore:

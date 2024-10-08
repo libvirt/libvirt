@@ -58,7 +58,6 @@
     <feature name='vmx-ept-1gb' added='yes'/>
     <feature name='vmx-ept-2mb' added='yes'/>
     <feature name='vmx-ept-execonly' added='yes'/>
-    <feature name='vmx-ept-wb' added='yes'/>
     <feature name='vmx-exit-ack-intr' added='yes'/>
     <feature name='vmx-exit-load-efer' added='yes'/>
     <feature name='vmx-exit-load-pat' added='yes'/>

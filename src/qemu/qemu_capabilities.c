@@ -3534,6 +3534,7 @@ virQEMUCapsProbeQMPSGXCapabilities(virQEMUCaps *qemuCaps,
 const char *ignoredFeatures[] = {
     "cmt", "mbm_total", "mbm_local", /* never supported by QEMU */
     "osxsave", "ospke",              /* dropped from QEMU */
+    "vmx-ept-uc", "vmx-ept-wb",      /* never supported by QEMU */
 };
 
 bool

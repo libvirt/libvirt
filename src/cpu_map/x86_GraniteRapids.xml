@@ -129,7 +129,6 @@
     <feature name='vmx-ept-1gb'/>
     <feature name='vmx-ept-2mb'/>
     <feature name='vmx-ept-execonly'/>
-    <feature name='vmx-ept-wb'/>
     <feature name='vmx-eptad'/>
     <feature name='vmx-eptp-switching'/>
     <feature name='vmx-exit-ack-intr'/>
