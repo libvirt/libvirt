@@ -6889,23 +6889,21 @@ qemuDomainMakeCPUMigratable(virArch arch,
         virCPUDefUpdateFeature(cpu, "pconfig", VIR_CPU_FEATURE_DISABLE);
     }
 
-    if (virCPUx86GetAddedFeatures(cpu->model, &data.added) < 0)
-        return -1;
-
-    /* Drop features marked as added in a cpu model, but only
-     * when they are not mentioned in origCPU, i.e., when they were not
-     * explicitly mentioned by the user.
-     */
-    if (data.added) {
-        g_auto(GStrv) keep = NULL;
-
-        if (origCPU) {
-            keep = virCPUDefListExplicitFeatures(origCPU);
-            data.keep = keep;
-        }
-
-        if (virCPUDefFilterFeatures(cpu, qemuDomainDropAddedCPUFeatures, &data) < 0)
+    if (origCPU) {
+        if (virCPUx86GetAddedFeatures(cpu->model, &data.added) < 0)
             return -1;
+
+        /* Drop features marked as added in a cpu model, but only
+         * when they are not mentioned in origCPU, i.e., when they were not
+         * explicitly mentioned by the user.
+         */
+        if (data.added) {
+            g_auto(GStrv) keep = virCPUDefListExplicitFeatures(origCPU);
+            data.keep = keep;
+
+            if (virCPUDefFilterFeatures(cpu, qemuDomainDropAddedCPUFeatures, &data) < 0)
+                return -1;
+        }
     }
 
     return 0;
