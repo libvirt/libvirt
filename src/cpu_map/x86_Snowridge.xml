@@ -1,5 +1,6 @@
 <cpus>
   <model name='Snowridge'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='6' model='134'/> <!-- 080665 -->
     <vendor name='Intel'/>

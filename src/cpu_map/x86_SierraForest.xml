@@ -1,5 +1,6 @@
 <cpus>
   <model name='SierraForest'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='6' model='175'/>
     <vendor name='Intel'/>

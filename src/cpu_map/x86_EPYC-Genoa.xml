@@ -1,5 +1,6 @@
 <cpus>
   <model name='EPYC-Genoa'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='25' model='17'/>
     <vendor name='AMD'/>

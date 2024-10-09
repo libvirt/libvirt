@@ -1,5 +1,6 @@
 <cpus>
   <model name='Dhyana'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='24' model='0'/> <!-- 900f00 -->
     <vendor name='Hygon'/>

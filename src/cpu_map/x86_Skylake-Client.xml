@@ -1,5 +1,6 @@
 <cpus>
   <model name='Skylake-Client'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='6' model='94'/> <!-- 0506e0 -->
     <signature family='6' model='78'/> <!-- 0406e0 -->

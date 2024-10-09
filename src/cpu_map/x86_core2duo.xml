@@ -1,5 +1,6 @@
 <cpus>
   <model name='core2duo'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <vendor name='Intel'/>
     <feature name='apic'/>

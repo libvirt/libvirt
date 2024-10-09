@@ -1,5 +1,6 @@
 <cpus>
   <model name='SapphireRapids'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='6' model='143'/>
     <vendor name='Intel'/>

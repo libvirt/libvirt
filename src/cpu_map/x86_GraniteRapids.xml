@@ -1,5 +1,6 @@
 <cpus>
   <model name='GraniteRapids'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='6' model='173'/>
     <vendor name='Intel'/>

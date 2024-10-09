@@ -1,5 +1,6 @@
 <cpus>
   <model name='Cooperlake'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='6' model='85' stepping='10-11'/> <!-- 05065b -->
     <vendor name='Intel'/>

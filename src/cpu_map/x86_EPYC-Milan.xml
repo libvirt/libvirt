@@ -1,5 +1,6 @@
 <cpus>
   <model name='EPYC-Milan'>
+    <check partial='compat'/>
     <decode host='on' guest='on'/>
     <signature family='25' model='1'/>
     <vendor name='AMD'/>

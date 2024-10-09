@@ -1,5 +1,6 @@
 <cpus>
   <model name='Icelake-Server-noTSX'>
+    <check partial='compat'/>
     <decode host='on' guest='off'/>
     <signature family='6' model='106'/> <!-- 0606A5 -->
     <vendor name='Intel'/>
