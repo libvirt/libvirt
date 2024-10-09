@@ -35,6 +35,14 @@ v10.9.0 (unreleased)
     Users are encouraged to report any occurence of the above message along
     with steps they took to the upstream tracker.
 
+  * qemu: improve documentation of image format settings
+
+    The documentation of the various ``*_image_format`` settings in ``qemu.conf``
+    imply they can only be used to control compression of the image. The
+    documentation has been improved to clarify the settings describe the
+    representation of guest memory blocks on disk, which includes compression
+    among other possible layouts.
+
 * **Bug fixes**
 
 
