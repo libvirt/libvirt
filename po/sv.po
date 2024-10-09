@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-08 08:38+0000\n"
+"PO-Revision-Date: 2024-10-10 14:46+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35433,24 +35433,23 @@ msgid "shmem name '%1$s' must not contain '/'"
 msgstr "shmem-namnet ”%1$s” får inte innehålla ”/”"
 
 msgid "shmem name cannot be equal to '.'"
-msgstr ""
+msgstr "shmem-namnet kan inte vara lika med ”.”"
 
 msgid "shmem name cannot be equal to '..'"
-msgstr ""
+msgstr "shmem-namnet kan inte vara lika med ”..”"
 
-#, fuzzy
 msgid "shmem name cannot include '/' character"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "shmem-namnet kan inte innehålla tecknet ”/”"
 
 msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
 msgstr ""
+"shmem-storleken måste vara en potens av 2 och åtmistone 1 MiB (1024 KiB)"
 
 msgid "show all possible graphical displays"
-msgstr ""
+msgstr "visa alla möjliga grafiska displayer"
 
-#, fuzzy
 msgid "show domain cpu statistics"
-msgstr "visa domäntitel"
+msgstr "visa domän-cpu-statistik"
 
 msgid "show domain title"
 msgstr "visa domäntitel"
@@ -35461,27 +35460,26 @@ msgstr "visa ledigt minne för alla NUMA-celler"
 msgid "show free pages for all NUMA cells"
 msgstr "visa ledigt sidor för alla NUMA-celler"
 
-#, fuzzy
 msgid "show inactive defined XML"
-msgstr "lista inaktiva domäner"
+msgstr "visa inaktiv definierad XML"
 
 msgid "show network title"
-msgstr ""
+msgstr "visa nätverkstiteln"
 
 msgid "show or set domain's custom XML metadata"
-msgstr ""
+msgstr "visa eller sätt domänens anpassade XML-metadata"
 
 msgid "show or set domain's description or title"
-msgstr ""
+msgstr "visa eller sätt domänens beskrivning eller titel"
 
 msgid "show or set network's custom XML metadata"
-msgstr ""
+msgstr "visa eller sätt nätverkets anpassade XML-metadata"
 
 msgid "show or set network's description or title"
-msgstr ""
+msgstr "visa eller sätt nätverkets beskrivning eller titel"
 
 msgid "show timestamp for each printed event"
-msgstr ""
+msgstr "visa tidsstämpel för varje utskriven händelse"
 
 msgid "show version"
 msgstr "visa version"
@@ -35496,35 +35494,35 @@ msgid "shutdown"
 msgstr "avstängning"
 
 msgid "shutdown mode: acpi|agent|initctl|signal|paravirt"
-msgstr ""
+msgstr "avstängningsläge: acpi|agent|initctl|signal|paravirt"
 
 msgid "shutting down"
 msgstr "stänger av"
 
-#, fuzzy, c-format
+#, c-format
 msgid "signum value %1$d is out of range"
-msgstr "värde på typeid är utanför intervallet"
+msgstr "signum-värdet %1$d är utanför intervallet"
 
 msgid "size > maximum buffer size"
 msgstr "size > maximal buffertstorlek"
 
 #, c-format
 msgid "size must be less than %1$llu"
-msgstr ""
+msgstr "storleken måste vara mindre än %1$llu"
 
 #, c-format
 msgid "size must not exceed %1$zu"
-msgstr ""
+msgstr "storleken får inte överskrida %1$zu"
 
 #, c-format
 msgid "size of memory module '%1$zu' overflowed after alignment"
-msgstr ""
+msgstr "storleken på minnesmodulen ”%1$zu” spillde över efter justering"
 
 msgid "size of the vol, as scaled integer (default bytes)"
-msgstr ""
+msgstr "storleken på volymen, som ett skalat heltal (standard byte)"
 
 msgid "size value too large"
-msgstr ""
+msgstr "storleksvärdet är för stort"
 
 msgid "sizes are represented in bytes rather than pretty units"
 msgstr ""
