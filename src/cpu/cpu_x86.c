@@ -150,6 +150,7 @@ struct _virCPUx86Model {
     char *name;
     bool decodeHost;
     bool decodeGuest;
+    bool compatCheck;
     virCPUx86Vendor *vendor;
     virCPUx86Signatures *signatures;
     virCPUx86Data data;
@@ -1464,6 +1465,36 @@ x86ModelCompare(virCPUx86Model *model1,
 
 
 static int
+x86ModelParseCheck(virCPUx86Model *model,
+                   xmlXPathContextPtr ctxt)
+{
+    g_autofree char *check = NULL;
+    int rc;
+
+    if ((rc = virXPathBoolean("boolean(./check)", ctxt)) <= 0)
+        return rc;
+
+    check = virXPathString("string(./check/@partial)", ctxt);
+    if (!check) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing check/@partial in CPU model %1$s"),
+                       model->name);
+        return -1;
+    }
+
+    if (STRNEQ(check, "compat")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid check/@partial value '%1$s' in CPU model %2$s"),
+                       check, model->name);
+        return -1;
+    }
+
+    model->compatCheck = true;
+    return 0;
+}
+
+
+static int
 x86ModelParseDecode(virCPUx86Model *model,
                     xmlXPathContextPtr ctxt)
 {
@@ -1692,6 +1723,9 @@ x86ModelParse(xmlXPathContextPtr ctxt,
 
     model = g_new0(virCPUx86Model, 1);
     model->name = g_strdup(name);
+
+    if (x86ModelParseCheck(model, ctxt) < 0)
+        return -1;
 
     if (x86ModelParseDecode(model, ctxt) < 0)
         return -1;
