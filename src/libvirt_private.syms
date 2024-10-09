@@ -1538,6 +1538,7 @@ virCPUDataNewCopy;
 virCPUDataParse;
 virCPUDataParseNode;
 virCPUExpandFeatures;
+virCPUGetCheckMode;
 virCPUGetHost;
 virCPUGetHostIsSupported;
 virCPUGetModels;

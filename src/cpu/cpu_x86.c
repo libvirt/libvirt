@@ -3608,6 +3608,38 @@ virCPUx86GetAddedFeatures(const char *modelName,
 }
 
 
+/**
+ * virCPUx86GetCheckMode:
+ * @modelName: CPU model
+ * @compat: where to store compatible partial checking is required
+ *
+ * Gets the mode required for "partial" check of a CPU definition which uses
+ * the @modelName. On success @compat will be set to true if a compatible
+ * check needs to be done, false otherwise.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+static int
+virCPUx86GetCheckMode(const char *modelName,
+                      bool *compat)
+{
+    virCPUx86Map *map;
+    virCPUx86Model *model;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFind(map, modelName))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown CPU model %1$s"), modelName);
+        return -1;
+    }
+
+    *compat = model->compatCheck;
+    return 0;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
@@ -3640,4 +3672,5 @@ struct cpuArchDriver cpuDriverX86 = {
     (defined(__linux__) || defined(__FreeBSD__))
     .dataGetHost = virCPUx86DataGetHost,
 #endif
+    .getCheckMode = virCPUx86GetCheckMode,
 };

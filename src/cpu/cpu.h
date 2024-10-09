@@ -136,6 +136,10 @@ typedef virCPUCompareResult
 typedef virCPUData *
 (*virCPUArchDataGetHost)(void);
 
+typedef int
+(*virCPUArchGetCheckMode)(const char *modelName,
+                          bool *compat);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -163,6 +167,7 @@ struct cpuArchDriver {
     virCPUArchDataAddFeature dataAddFeature;
     virCPUArchDataIsIdentical dataIsIdentical;
     virCPUArchDataGetHost dataGetHost;
+    virCPUArchGetCheckMode getCheckMode;
 };
 
 
@@ -306,6 +311,11 @@ virCPUDataIsIdentical(const virCPUData *a,
 
 virCPUData*
 virCPUDataGetHost(void);
+
+int
+virCPUGetCheckMode(virArch arch,
+                   const virCPUDef *cpu,
+                   bool *compat);
 
 bool
 virCPUArchIsSupported(virArch arch);

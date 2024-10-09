@@ -1242,6 +1242,37 @@ virCPUDataGetHost(void)
 
 
 /**
+ * virCPUGetCheckMode:
+ * @arch: CPU architecture
+ * @cpu: CPU definition
+ * @compat: where to store compatible partial checking is required
+ *
+ * Gets the mode required for "partial" check of the CPU definition @cpu
+ * based on the CPU model used. On success @compat will be set to true if
+ * a compatible check needs to be done, false otherwise.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virCPUGetCheckMode(virArch arch,
+                   const virCPUDef *cpu,
+                   bool *compat)
+{
+    struct cpuArchDriver *driver;
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return -1;
+
+    if (!driver->getCheckMode) {
+        *compat = true;
+        return 0;
+    }
+
+    return driver->getCheckMode(cpu->model, compat);
+}
+
+
+/**
  * virCPUArchIsSupported:
  *
  * @arch: CPU architecture
