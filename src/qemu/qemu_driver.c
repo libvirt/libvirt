@@ -11641,8 +11641,11 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                                 validateXML) < 0)
         return VIR_CPU_COMPARE_ERROR;
 
-    if (ARCH_IS_X86(arch))
-        return virCPUCompare(arch, hvCPU, cpu, failIncompatible);
+    if (ARCH_IS_X86(arch)) {
+        return qemuDomainCheckCPU(arch, virttype, qemuCaps, cpu,
+                                  VIR_QEMU_CAPS_HOST_CPU_REPORTED,
+                                  failIncompatible);
+    }
 
     if (ARCH_IS_S390(arch) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON)) {

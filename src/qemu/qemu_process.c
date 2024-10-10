@@ -6268,11 +6268,8 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
         virCPUFeaturePolicy removedPolicy = VIR_CPU_FEATURE_DISABLE;
 
         if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
-            !virQEMUCapsIsCPUUsable(qemuCaps, def->virtType, def->cpu) &&
-            virCPUCompare(hostarch,
-                          virQEMUCapsGetHostModel(qemuCaps, def->virtType,
-                                                  VIR_QEMU_CAPS_HOST_CPU_FULL),
-                          def->cpu, true) < 0)
+            qemuDomainCheckCPU(hostarch, def->virtType, qemuCaps, def->cpu,
+                               VIR_QEMU_CAPS_HOST_CPU_FULL, true) < 0)
             return -1;
 
         /* When starting a fresh domain we disable all features removed from

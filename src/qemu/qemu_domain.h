@@ -1176,3 +1176,10 @@ int
 qemuDomainStorageUpdatePhysical(virQEMUDriverConfig *cfg,
                                 virDomainObj *vm,
                                 virStorageSource *src);
+virCPUCompareResult
+qemuDomainCheckCPU(virArch arch,
+                   virDomainVirtType virtType,
+                   virQEMUCaps *qemuCaps,
+                   virCPUDef *cpu,
+                   virQEMUCapsHostCPUType compatCPU,
+                   bool failIncompatible);

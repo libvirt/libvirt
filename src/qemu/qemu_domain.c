@@ -13223,3 +13223,43 @@ qemuDomainStorageUpdatePhysical(virQEMUDriverConfig *cfg,
 
     return ret;
 }
+
+
+/**
+ * qemuDomainCheckCPU:
+ * @arch: CPU architecture
+ * @virtType: domain type (KVM vs. TCG)
+ * @qemuCaps: QEMU capabilities
+ * @cpu: CPU definition to check against "host CPU"
+ * @compatCPU: type of CPU used for old style check
+ * @failIncompatible: return an error instead of VIR_CPU_COMPARE_INCOMPATIBLE
+ *
+ * Perform a "partial" check of the @cpu against a "host CPU". Old style check
+ * used with all existing CPU models uses cpu_map definition of the model in
+ * @cpu and compares it to the host CPU fetched @qemuCaps according to
+ * @compatCPU.
+ *
+ * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
+ * the two CPUs are incompatible, VIR_CPU_COMPARE_IDENTICAL when the two CPUs
+ * are identical, VIR_CPU_COMPARE_SUPERSET when the @cpu CPU is a superset of
+ * the @host CPU. If @failIncompatible is true, the function will return
+ * VIR_CPU_COMPARE_ERROR (and set VIR_ERR_CPU_INCOMPATIBLE error) when the
+ * two CPUs are incompatible.
+ */
+virCPUCompareResult
+qemuDomainCheckCPU(virArch arch,
+                   virDomainVirtType virtType,
+                   virQEMUCaps *qemuCaps,
+                   virCPUDef *cpu,
+                   virQEMUCapsHostCPUType compatCPU,
+                   bool failIncompatible)
+{
+    virCPUDef *host;
+
+    if (virQEMUCapsIsCPUUsable(qemuCaps, virtType, cpu))
+        return VIR_CPU_COMPARE_SUPERSET;
+
+    host = virQEMUCapsGetHostModel(qemuCaps, virtType, compatCPU);
+
+    return virCPUCompare(arch, host, cpu, failIncompatible);
+}
