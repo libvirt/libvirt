@@ -1245,7 +1245,10 @@ typedef enum {
  *
  * virDomainMigrate* params multiple field: The multiple values that list
  * the block devices for which zero detection (to avoid transferring zero blocks)
- * is to be enabled. This may increase CPU overhead of the migration. At the
+ * is to be enabled. Users must ensure that any pre-created storage source on
+ * the destination will be cleared and thus read all-zeroes before using this
+ * feature, otherwise the destination image may become corrupted.
+ * This may increase CPU overhead of the migration. At the
  * moment this is only supported by the QEMU driver but not for the tunnelled
  * migration.
  *
