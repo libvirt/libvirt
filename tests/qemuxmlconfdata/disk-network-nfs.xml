@@ -26,8 +26,8 @@
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source protocol='gluster' name='Volume2/Image'>
-        <host transport='unix' socket='/path/to/sock'/>
+      <source protocol='nfs' name='/Volume2/Image'>
+        <host name='example.org'/>
       </source>
       <backingStore type='network'>
         <format type='qcow2'/>
