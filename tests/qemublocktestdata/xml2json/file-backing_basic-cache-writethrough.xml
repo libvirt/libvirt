@@ -20,7 +20,7 @@
     </source>
     <backingStore type='network' index='2'>
       <format type='qcow2'/>
-      <source protocol='gluster' name='images/c'>
+      <source protocol='nbd' name='images/c'>
         <host name='test.org'/>
         <privateData>
           <nodenames>

@@ -19,19 +19,16 @@
 (
   source only properties:
   {
-    "driver": "gluster",
-    "volume": "images",
-    "path": "c",
-    "server": [
-      {
-        "type": "inet",
-        "host": "test.org",
-        "port": "24007"
-      }
-    ]
+    "driver": "nbd",
+    "server": {
+      "type": "inet",
+      "host": "test.org",
+      "port": "10809"
+    },
+    "export": "images/c"
   }
   backing store string:
-  gluster://test.org:24007/images/c
+  nbd://test.org:10809/images/c
 )
 (
   source only properties:

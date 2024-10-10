@@ -54,16 +54,13 @@
   "backing": "node-d-f"
 }
 {
-  "driver": "gluster",
-  "volume": "images",
-  "path": "c",
-  "server": [
-    {
-      "type": "inet",
-      "host": "test.org",
-      "port": "24007"
-    }
-  ],
+  "driver": "nbd",
+  "server": {
+    "type": "inet",
+    "host": "test.org",
+    "port": "10809"
+  },
+  "export": "images/c",
   "node-name": "node-c-s",
   "auto-read-only": true,
   "discard": "unmap",
