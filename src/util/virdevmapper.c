@@ -321,14 +321,14 @@ bool
 virIsDevMapperDevice(const char *dev_name)
 {
     struct stat buf;
-    unsigned int major;
+    unsigned int maj = 0;
 
-    if (virDevMapperGetMajor(&major) < 0)
+    if (virDevMapperGetMajor(&maj) < 0)
         return false;
 
     if (!stat(dev_name, &buf) &&
         S_ISBLK(buf.st_mode) &&
-        major(buf.st_rdev) == major)
+        major(buf.st_rdev) == maj)
         return true;
 
     return false;
