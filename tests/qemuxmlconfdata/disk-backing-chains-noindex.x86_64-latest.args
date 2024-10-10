@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/tmp/missing-backing-store.qcow","node-name":"libvirt-25-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-25-format","read-only":true,"driver":"qcow2","file":"libvirt-25-storage"}' \
--blockdev '{"driver":"gluster","volume":"Volume2","path":"Image","server":[{"type":"unix","path":"/path/to/sock"}],"debug":4,"node-name":"libvirt-24-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"driver":"nbd","server":{"type":"unix","path":"/path/to/sock"},"export":"Volume2/Image","node-name":"libvirt-24-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-24-format","read-only":false,"driver":"qcow2","file":"libvirt-24-storage","backing":"libvirt-25-format"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-24-format","id":"virtio-disk0","bootindex":1}' \
 -blockdev '{"driver":"file","filename":"/tmp/Fedora-17-x86_64-Live-KDE.iso","node-name":"libvirt-23-storage","read-only":true}' \
@@ -46,7 +46,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/run/nbdsock"},"export":"bar","node-name":"libvirt-17-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-17-format","read-only":false,"driver":"qcow2","file":"libvirt-17-storage","backing":"libvirt-18-format"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-17-format","id":"virtio-disk1"}' \
--blockdev '{"driver":"gluster","volume":"Volume1","path":"Image","server":[{"type":"inet","host":"example.org","port":"6000"}],"debug":4,"node-name":"libvirt-16-storage","read-only":false}' \
+-blockdev '{"driver":"nbd","server":{"type":"inet","host":"example.org","port":"6000"},"export":"Volume1/Image","node-name":"libvirt-16-storage","read-only":false}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-16-storage","id":"virtio-disk2"}' \
 -blockdev '{"driver":"file","filename":"/tmp/image.qcow","node-name":"libvirt-15-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-15-format","read-only":true,"driver":"qcow2","file":"libvirt-15-storage","backing":null}' \

@@ -16,7 +16,7 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='network' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source protocol='gluster' name='Volume2/Image'>
+      <source protocol='nbd' name='Volume2/Image'>
         <host transport='unix' socket='/path/to/sock'/>
       </source>
       <backingStore type='file'>
@@ -65,7 +65,7 @@
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <backingStore/>
-      <source protocol='gluster' name='Volume1/Image'>
+      <source protocol='nbd' name='Volume1/Image'>
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vdc' bus='virtio'/>
