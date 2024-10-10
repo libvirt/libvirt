@@ -1576,7 +1576,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-wrong-secrettype");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-source-auth-both");
-    DO_TEST_CAPS_LATEST("disk-network-gluster");
+    /* 'gluster' protocol backend was deprecated in qemu-9.2 */
+    DO_TEST_CAPS_VER("disk-network-gluster", "9.1.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-rbd-encryption", "6.0.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption");
