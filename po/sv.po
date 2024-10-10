@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-10 14:46+0000\n"
+"PO-Revision-Date: 2024-10-11 20:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35525,155 +35525,158 @@ msgid "size value too large"
 msgstr "storleksvärdet är för stort"
 
 msgid "sizes are represented in bytes rather than pretty units"
-msgstr ""
+msgstr "storlekar representeras i byte snarare än snygga enheter"
 
 msgid "skip validation of the XML against the schema"
-msgstr ""
+msgstr "hoppa över validering av XML:en mot schemat"
 
-#, fuzzy
 msgid "skipped non-absolute path"
-msgstr "absolut sökväg förväntas: %s"
+msgstr "hoppade över en icke-absolut sökväg"
 
 msgid "skipped restricted file"
-msgstr ""
+msgstr "hoppade över en begränsad fil"
 
 msgid "slices are not supported with NVRAM"
-msgstr ""
+msgstr "skivor stödjs inte med NVRAM"
 
 msgid "snapshot"
-msgstr ""
+msgstr "ögonblicksbild"
 
 #, c-format
 msgid "snapshot %1$s disappeared from list"
-msgstr ""
+msgstr "ögonblicksbilden %1$s försvann från listan"
 
 #, c-format
 msgid "snapshot '%1$s' does not have a parent"
-msgstr ""
+msgstr "ögonblicksbilden ”%1$s” har inte en förälder"
 
 #, c-format
 msgid "snapshot '%1$s' has no parent"
-msgstr ""
+msgstr "ögonblicksbilden ”%1$s” har ingen förälder"
 
 #, c-format
 msgid "snapshot '%1$s' lacks domain '%2$s' rollback info"
-msgstr ""
+msgstr "ögonblicksbilden ”%1$s” saknar domänen ”%2$s” återrullningsinformation"
 
 msgid "snapshot VM disk source and parent disk source are not the same"
-msgstr ""
+msgstr "ögonblicksbildens VM-diskkälla och föräldradiskkälla är inte samma"
 
 #, c-format
 msgid "snapshot disk '%1$s' was target of not completed snapshot delete"
 msgstr ""
+"ögonblicksbilden ”%1$s” var målet av en oavslutad radering av ögonblicksbild"
 
-#, fuzzy
 msgid "snapshot information"
-msgstr "nodinformation"
+msgstr "ögonblicksbildsinformation"
 
 msgid "snapshot name"
-msgstr ""
+msgstr "ögonblicksbildsnamn"
 
 msgid ""
 "snapshot without memory state, removal of existing managed saved state "
 "strongly recommended to avoid corruption"
 msgstr ""
+"ögonblicksbild utan minnestillstånd, att ta bort ett befintligt hanterat "
+"sparat tillstånd rekommenderas bestämt för att undvika förvanskning"
 
 msgid "snapshotName is null"
-msgstr ""
+msgstr "snapshotName är null"
 
 msgid "snapshots have inconsistent relations"
-msgstr ""
+msgstr "ögonblicksbilderna har inkonsekventa relationer"
 
 msgid "sndbuf must be a positive integer"
 msgstr "sndbuf måste vara ett positivt heltal"
 
-#, fuzzy
 msgid "socketpair failed"
-msgstr "operation misslyckades"
+msgstr "socketpair misslyckades"
 
-#, fuzzy
 msgid "sockpair failed"
-msgstr "operation misslyckades"
+msgstr "sockpair misslyckades"
 
 msgid "sort list topologically rather than by name"
-msgstr ""
+msgstr "sortera listan topologiskt istället för efter namn"
 
 #, c-format
 msgid "sound card model '%1$s' is not supported by qemu"
-msgstr ""
+msgstr "ljudkortsmodellen ”%1$s” stödjs inte av qemu"
 
-#, fuzzy
 msgid "source config data format"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "källkonfigurationsdataformat"
 
 msgid "source device for underlying storage"
-msgstr ""
+msgstr "källenhet för underliggande lagring"
 
 #, c-format
 msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr ""
+"källa för disken ”%1$s” är inte en normal fil; vägrar att generera ett "
+"externt ögonblicksbildsnamn"
 
-#, fuzzy
 msgid "source media is a block device"
-msgstr "källa för skivenhet"
+msgstr "källmediet är en blockenhet"
 
 msgid "source name for underlying storage"
-msgstr ""
+msgstr "källnamnet för underliggande lagring"
 
 msgid "source of disk device or name of network disk"
-msgstr ""
+msgstr "källa till diskenheten eller namnet på nätverksdisken"
 
 msgid "source of network interface"
 msgstr "källa för nätverksgränssnitt"
 
-#, fuzzy
 msgid "source of the media"
-msgstr "källa för skivenhet"
+msgstr "källa för mediet"
 
 msgid "source path for underlying storage"
-msgstr ""
+msgstr "källsökväg för underliggande lagring"
 
 msgid "source-host for underlying storage"
-msgstr ""
+msgstr "källvärd för underliggande lagring"
 
 msgid "source-mode is mandatory"
-msgstr ""
+msgstr "källäge är obligatoriskt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "spapr-vio address %1$#llx already in use"
-msgstr "lagringsvolymnamnet ”%s” används redan."
+msgstr "spapr-vio-adressen %1$#llx används redan"
 
 #, c-format
 msgid "spapr-vio reg='0x%1$llx' exceeds maximum possible value (0xffffffff)"
 msgstr ""
+"spapr-vio reg='0x%1$llx' överskrider det maximalt möjliga värdet (0xffffffff)"
 
 msgid "sparse files not supported"
-msgstr ""
+msgstr "glesa filer stödjs inte"
 
 msgid "specified"
-msgstr ""
+msgstr "angivet"
 
 msgid "specify the format of memory-only dump"
-msgstr ""
+msgstr "ange formatet på dump endast till minnet"
 
 msgid ""
 "specifying a script is only supported with interface types bridge and "
 "ethernet"
 msgstr ""
+"att ange ett skript stödjs endast med gränssnittstyperna brygga och ethernet"
 
 msgid "specifying mountpoints is not supported"
-msgstr ""
+msgstr "att ange monteringspunkter stödjs inte"
 
 msgid ""
 "spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"
 msgstr ""
+"spice TLS-port satt i XML-konfigurationen, men TLS är avaktiverat i qemu.conf"
 
 msgid ""
 "spice defaultMode insecure requested in XML configuration, but plaintext "
 "connection is not available"
 msgstr ""
+"spice defaultMode osäkert begärt i XML-konfigurationen, men "
+"klartextsförbindelser är inte tillgängliga"
 
 msgid ""
 "spice defaultMode secure requested in XML configuration, but TLS connection "
