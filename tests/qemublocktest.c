@@ -39,7 +39,7 @@ VIR_LOG_INIT("tests.storagetest");
 struct testBackingXMLjsonXMLdata {
     int type;
     const char *xml;
-    bool legacy;
+    bool deprecated;
     GHashTable *schema;
     virJSONValue *schemaroot;
 };
@@ -80,7 +80,7 @@ testBackingXMLjsonXML(const void *args)
     }
 
     if (testQEMUSchemaValidate(backendprops, data->schemaroot,
-                               data->schema, false, &debug) < 0) {
+                               data->schema, data->deprecated, &debug) < 0) {
         g_autofree char *debugmsg = virBufferContentAndReset(&debug);
         g_autofree char *debugprops = virJSONValueToString(backendprops, true);
 
@@ -1053,6 +1053,8 @@ mymain(void)
                          "  <readahead size='1024'/>\n"
                          "  <timeout seconds='1337'/>\n"
                          "</source>\n");
+    /* 'gluster' is deprecated as of qemu-9.2, once removed this tests can be dropped too */
+    xmljsonxmldata.deprecated = true;
     TEST_JSON_FORMAT_NET("<source protocol='gluster' name='vol/file'>\n"
                          "  <host name='example.com' port='24007'/>\n"
                          "</source>\n");
@@ -1061,6 +1063,7 @@ mymain(void)
                          "  <host transport='unix' socket='/path/socket'/>\n"
                          "  <host name='example.com' port='24007'/>\n"
                          "</source>\n");
+    xmljsonxmldata.deprecated = false;
     TEST_JSON_FORMAT_NET("<source protocol='nbd'>\n"
                          "  <host transport='unix' socket='/path/to/socket'/>\n"
                          "</source>\n");
