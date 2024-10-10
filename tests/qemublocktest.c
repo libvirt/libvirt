@@ -455,6 +455,8 @@ struct testQemuImageCreateData {
     virJSONValue *schemaroot;
     virQEMUDriver *driver;
     virQEMUCaps *qemuCaps;
+
+    bool deprecated;
 };
 
 static const char *testQemuImageCreatePath = abs_srcdir "/qemublocktestdata/imagecreate/";
@@ -528,7 +530,7 @@ testQemuImageCreate(const void *opaque)
             return -1;
 
         if (testQEMUSchemaValidate(formatprops, data->schemaroot, data->schema,
-                                   false, &debug) < 0) {
+                                   data->deprecated, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create format json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
@@ -543,7 +545,7 @@ testQemuImageCreate(const void *opaque)
             return -1;
 
         if (testQEMUSchemaValidate(protocolprops, data->schemaroot, data->schema,
-                                   false, &debug) < 0) {
+                                   data->deprecated, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create protocol json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
@@ -1209,7 +1211,10 @@ mymain(void)
     TEST_IMAGE_CREATE("qcow2-backing-raw-slice", "raw-slice");
     TEST_IMAGE_CREATE("qcow2-backing-qcow2-slice", "qcow2-slice");
 
+    /* 'gluster' is deprecated as of qemu-9.2, once removed this tests can be dropped too */
+    imagecreatedata.deprecated = true;
     TEST_IMAGE_CREATE("network-gluster-qcow2", NULL);
+    imagecreatedata.deprecated = false;
     TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
     TEST_IMAGE_CREATE("network-ssh-qcow2", NULL);
 
