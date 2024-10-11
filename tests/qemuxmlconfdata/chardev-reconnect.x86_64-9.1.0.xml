@@ -1,0 +1,72 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <controller type='virtio-serial' index='1'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </controller>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='ccid' index='0'/>
+    <smartcard mode='passthrough' type='unix'>
+      <source mode='connect' path='/var/lib/libvirt/qemu/channel/target/asdf'>
+        <reconnect enabled='yes' timeout='20'/>
+      </source>
+      <address type='ccid' controller='0' slot='0'/>
+    </smartcard>
+    <channel type='tcp'>
+      <source mode='connect' host='localhost' service='1234'>
+        <reconnect enabled='yes' timeout='10'/>
+      </source>
+      <protocol type='raw'/>
+      <target type='virtio' name='asdf'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='connect' path='/var/lib/libvirt/qemu/channel/target/fdsa'>
+        <reconnect enabled='no'/>
+      </source>
+      <target type='virtio' name='fdsa'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
+    </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <redirdev bus='usb' type='tcp'>
+      <source mode='connect' host='localhost' service='3456'>
+        <reconnect enabled='yes' timeout='15'/>
+      </source>
+      <protocol type='raw'/>
+    </redirdev>
+    <memballoon model='none'/>
+    <rng model='virtio'>
+      <backend model='egd' type='tcp'>
+        <source mode='connect' host='localhost' service='2345'>
+          <reconnect enabled='yes' timeout='5'/>
+        </source>
+        <protocol type='raw'/>
+      </backend>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </rng>
+  </devices>
+</domain>
