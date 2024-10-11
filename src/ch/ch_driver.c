@@ -1365,6 +1365,7 @@ static int chStateCleanup(void)
     virObjectUnref(ch_driver->xmlopt);
     virObjectUnref(ch_driver->caps);
     virObjectUnref(ch_driver->domains);
+    virObjectUnref(ch_driver->hostdevMgr);
     virMutexDestroy(&ch_driver->lock);
     g_clear_pointer(&ch_driver, g_free);
 
@@ -1412,6 +1413,9 @@ chStateInitialize(bool privileged,
         goto cleanup;
 
     if (!(ch_driver->config = virCHDriverConfigNew(privileged)))
+        goto cleanup;
+
+    if (!(ch_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto cleanup;
 
     if ((rv = chExtractVersion(ch_driver)) < 0) {
