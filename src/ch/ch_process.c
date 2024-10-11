@@ -971,12 +971,13 @@ virCHProcessStart(virCHDriver *driver,
 }
 
 int
-virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
+virCHProcessStop(virCHDriver *driver,
                  virDomainObj *vm,
                  virDomainShutoffReason reason)
 {
     int ret;
     int retries = 0;
+    unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     virCHDomainObjPrivate *priv = vm->privateData;
     virCHDriverConfig *cfg = virCHDriverGetConfig(driver);
     virDomainDef *def = vm->def;
@@ -1015,6 +1016,8 @@ virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
 
+    virHostdevReAttachDomainDevices(driver->hostdevMgr, CH_DRIVER_NAME, def,
+                                    hostdev_flags);
     return 0;
 }
 
