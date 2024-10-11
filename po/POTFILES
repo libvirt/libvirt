@@ -21,6 +21,7 @@ src/bhyve/bhyve_process.c
 src/ch/ch_conf.c
 src/ch/ch_domain.c
 src/ch/ch_driver.c
+src/ch/ch_hostdev.c
 src/ch/ch_interface.c
 src/ch/ch_monitor.c
 src/ch/ch_process.c

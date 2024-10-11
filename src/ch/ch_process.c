@@ -37,6 +37,7 @@
 #include "virnuma.h"
 #include "virstring.h"
 #include "ch_interface.h"
+#include "ch_hostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
 
@@ -808,6 +809,40 @@ virCHProcessStartValidate(virCHDriver *driver,
     return 0;
 }
 
+static int
+virCHProcessPrepareDomainHostdevs(virDomainObj *vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
+
+        if (virCHDomainPrepareHostdev(hostdev) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * virCHProcessPrepareDomain:
+ * @vm: domain object
+ *
+ * This function groups all code that modifies only live XML of a domain which
+ * is about to start and it's the only place to do those modifications.
+ *
+ * This function MUST be called before virCHProcessPrepareHost().
+ *
+ */
+static int
+virCHProcessPrepareDomain(virDomainObj *vm)
+{
+    if (virCHProcessPrepareDomainHostdevs(vm) < 0)
+        return -1;
+
+    return 0;
+}
+
 /**
  * virCHProcessStart:
  * @driver: pointer to driver structure
@@ -836,6 +871,10 @@ virCHProcessStart(virCHDriver *driver,
     }
 
     if (virCHProcessStartValidate(driver, vm) < 0) {
+        return -1;
+    }
+
+    if (virCHProcessPrepareDomain(vm) < 0) {
         return -1;
     }
 
