@@ -131,14 +131,6 @@ qemuHostdevUpdateActiveDomainDevices(virQEMUDriver *driver,
 
 
 bool
-qemuHostdevNeedsVFIO(const virDomainHostdevDef *hostdev)
-{
-    return virHostdevIsPCIDevice(hostdev) ||
-        virHostdevIsMdevDevice(hostdev);
-}
-
-
-bool
 qemuHostdevHostSupportsPassthroughVFIO(void)
 {
     /* condition 1 - host has IOMMU */

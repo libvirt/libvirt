@@ -23,8 +23,6 @@
 
 #include "qemu_conf.h"
 
-bool qemuHostdevNeedsVFIO(const virDomainHostdevDef *hostdev);
-
 bool qemuHostdevHostSupportsPassthroughVFIO(void);
 
 int qemuHostdevUpdateActiveNVMeDisks(virQEMUDriver *driver,

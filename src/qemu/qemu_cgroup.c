@@ -32,6 +32,7 @@
 #include "virfile.h"
 #include "virdevmapper.h"
 #include "virglibutil.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -481,7 +482,7 @@ qemuSetupHostdevCgroup(virDomainObj *vm,
         return -1;
     }
 
-    if (qemuHostdevNeedsVFIO(dev) &&
+    if (virHostdevNeedsVFIO(dev) &&
         qemuCgroupAllowDevicePath(vm, QEMU_DEV_VFIO,
                                   VIR_CGROUP_DEVICE_RW, false) < 0) {
         return -1;
@@ -530,7 +531,7 @@ qemuTeardownHostdevCgroup(virDomainObj *vm,
         return -1;
     }
 
-    if (qemuHostdevNeedsVFIO(dev) &&
+    if (virHostdevNeedsVFIO(dev) &&
         !qemuDomainNeedsVFIO(vm->def) &&
         qemuCgroupDenyDevicePath(vm, QEMU_DEV_VFIO,
                                  VIR_CGROUP_DEVICE_RWM, false) < 0) {

@@ -2512,3 +2512,10 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManager *hostdev_mgr,
     }
     goto cleanup;
 }
+
+bool
+virHostdevNeedsVFIO(const virDomainHostdevDef *hostdev)
+{
+    return virHostdevIsPCIDevice(hostdev) ||
+        virHostdevIsMdevDevice(hostdev);
+}
