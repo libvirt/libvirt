@@ -1092,8 +1092,14 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
     copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
     copysrc->format = VIR_STORAGE_FILE_RAW;
 
-    if (detect_zeroes)
-        copysrc->detect_zeroes = VIR_DOMAIN_DISK_DETECT_ZEROES_ON;
+    if (detect_zeroes) {
+        /* We need to use both VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP and
+         * VIR_DOMAIN_DISK_DISCARD_UNMAP as the qemu NBD client otherwise singals
+         * to the server to fully allocate the zero blocks
+         */
+        copysrc->detect_zeroes = VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP;
+        copysrc->discard = VIR_DOMAIN_DISK_DISCARD_UNMAP;
+    }
 
     copysrc->backingStore = virStorageSourceNew();
 
