@@ -685,6 +685,7 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
     curl_easy_setopt(mon->handle, CURLOPT_URL, url);
     curl_easy_setopt(mon->handle, CURLOPT_UPLOAD, 1L);
     curl_easy_setopt(mon->handle, CURLOPT_HTTPHEADER, NULL);
+    curl_easy_setopt(mon->handle, CURLOPT_INFILESIZE, 0L);
 
     responseCode = virCHMonitorCurlPerform(mon->handle);
 
