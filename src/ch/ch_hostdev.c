@@ -22,10 +22,30 @@
 
 #include "ch_hostdev.h"
 #include "virlog.h"
+#include "virerror.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
 
 VIR_LOG_INIT("ch.ch_hostdev");
+
+int
+virCHHostdevPrepareDomainDevices(virCHDriver *driver,
+                                 virDomainDef *def,
+                                 unsigned int flags)
+
+{
+    if (!def->nhostdevs)
+        return 0;
+
+    if (virHostdevPreparePCIDevices(driver->hostdevMgr, CH_DRIVER_NAME,
+                                    def->name, def->uuid,
+                                    def->hostdevs, def->nhostdevs,
+                                    flags) < 0)
+        return -1;
+
+    return 0;
+}
 
 static int
 virCHDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev)

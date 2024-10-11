@@ -25,3 +25,8 @@
 
 int
 virCHDomainPrepareHostdev(virDomainHostdevDef *hostdev);
+
+int
+virCHHostdevPrepareDomainDevices(virCHDriver *driver,
+                                 virDomainDef *def,
+                                 unsigned int flags);

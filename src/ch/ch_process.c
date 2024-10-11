@@ -825,6 +825,33 @@ virCHProcessPrepareDomainHostdevs(virDomainObj *vm)
 }
 
 /**
+ * virCHProcessPrepareHost:
+ * @driver: ch driver
+ * @vm: domain object
+ *
+ * This function groups all code that modifies host system to prepare
+ * environment for a domain which is about to start.
+ *
+ * This function MUST be called only after virCHProcessPrepareDomain().
+ */
+static int
+virCHProcessPrepareHost(virCHDriver *driver, virDomainObj *vm)
+{
+    unsigned int hostdev_flags = 0;
+    virCHDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
+
+    if (virCHHostdevPrepareDomainDevices(driver, vm->def, hostdev_flags) < 0)
+        return -1;
+
+    /* Ensure no historical cgroup for this VM is lying around */
+    VIR_DEBUG("Ensuring no historical cgroup is lying around");
+    virDomainCgroupRemoveCgroup(vm, priv->cgroup, priv->machineName);
+
+    return 0;
+}
+
+/**
  * virCHProcessPrepareDomain:
  * @vm: domain object
  *
@@ -877,6 +904,9 @@ virCHProcessStart(virCHDriver *driver,
     if (virCHProcessPrepareDomain(vm) < 0) {
         return -1;
     }
+
+    if (virCHProcessPrepareHost(driver, vm) < 0)
+        return -1;
 
     if (!priv->monitor) {
         /* And we can get the first monitor connection now too */
