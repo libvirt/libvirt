@@ -105,7 +105,7 @@ fillQemuCaps(virDomainCaps *domCaps,
         return -1;
 
     /* The function above tries to query host's VFIO capabilities by calling
-     * qemuHostdevHostSupportsPassthroughVFIO() which, however, can't be
+     * virHostdevHostSupportsPassthroughVFIO() which, however, can't be
      * successfully mocked as they are not exposed as internal APIs. Therefore,
      * instead of mocking set the expected values here by hand. */
     VIR_DOMAIN_CAPS_ENUM_SET(domCaps->hostdev.pciBackend,

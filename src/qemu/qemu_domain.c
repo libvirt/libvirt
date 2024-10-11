@@ -9865,7 +9865,7 @@ static int
 qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
                             virQEMUCaps *qemuCaps)
 {
-    bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+    bool supportsPassthroughVFIO = virHostdevHostSupportsPassthroughVFIO();
     virDeviceHostdevPCIDriverName *driverName = &hostdev->source.subsys.u.pci.driver.name;
 
     /* assign defaults for hostdev passthrough */

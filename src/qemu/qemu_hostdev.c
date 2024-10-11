@@ -130,21 +130,6 @@ qemuHostdevUpdateActiveDomainDevices(virQEMUDriver *driver,
 }
 
 
-bool
-qemuHostdevHostSupportsPassthroughVFIO(void)
-{
-    /* condition 1 - host has IOMMU */
-    if (!virHostHasIOMMU())
-        return false;
-
-    /* condition 2 - /dev/vfio/vfio exists */
-    if (!virFileExists(QEMU_DEV_VFIO))
-        return false;
-
-    return true;
-}
-
-
 int
 qemuHostdevPrepareOneNVMeDisk(virQEMUDriver *driver,
                               const char *name,

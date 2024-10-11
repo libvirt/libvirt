@@ -11482,7 +11482,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
      * further validation until then.
      */
 
-    if (!qemuHostdevHostSupportsPassthroughVFIO()) {
+    if (!virHostdevHostSupportsPassthroughVFIO()) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("VFIO device assignment is currently not supported on this system"));
          return -1;

@@ -29,6 +29,7 @@
 #include "virhostdev.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virutil.h"
 #include "virnetdev.h"
@@ -38,6 +39,7 @@
 
 VIR_LOG_INIT("util.hostdev");
 
+#define VIR_DEV_VFIO "/dev/vfio/vfio"
 #define HOSTDEV_STATE_DIR RUNSTATEDIR "/libvirt/hostdevmgr"
 
 static virHostdevManager *manager; /* global hostdev manager, never freed */
@@ -2518,4 +2520,18 @@ virHostdevNeedsVFIO(const virDomainHostdevDef *hostdev)
 {
     return virHostdevIsPCIDevice(hostdev) ||
         virHostdevIsMdevDevice(hostdev);
+}
+
+bool
+virHostdevHostSupportsPassthroughVFIO(void)
+{
+    /* condition 1 - host has IOMMU */
+    if (!virHostHasIOMMU())
+        return false;
+
+    /* condition 2 - /dev/vfio/vfio exists */
+    if (!virFileExists(VIR_DEV_VFIO))
+        return false;
+
+    return true;
 }

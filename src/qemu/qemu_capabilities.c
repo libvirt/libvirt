@@ -6430,7 +6430,7 @@ static void
 virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCaps *qemuCaps,
                                        virDomainCapsDeviceHostdev *hostdev)
 {
-    bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+    bool supportsPassthroughVFIO = virHostdevHostSupportsPassthroughVFIO();
 
     hostdev->supported = VIR_TRISTATE_BOOL_YES;
     hostdev->mode.report = true;
