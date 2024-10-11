@@ -143,6 +143,7 @@ qemuChardevBackendAddSocketAddressUNIX(virJSONValue **backendData,
 int
 qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
                            bool commandline,
+                           virQEMUCaps *qemuCaps,
                            const char *alias,
                            const char **backendType,
                            virJSONValue **props)
@@ -213,6 +214,7 @@ qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
         virTristateBool waitval = VIR_TRISTATE_BOOL_ABSENT;
         virTristateBool server = VIR_TRISTATE_BOOL_ABSENT;
         int reconnect = -1;
+        long long reconnect_ms = -1;
 
         *backendType = "socket";
 
@@ -243,10 +245,17 @@ qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
                 reconnect = 0;
         }
 
+        if (reconnect != -1 &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS)) {
+            reconnect_ms = reconnect * 1000;
+            reconnect = -1;
+        }
+
         if (virJSONValueObjectAdd(props,
                                   "T:server", server,
                                   "T:wait", waitval,
                                   "k:reconnect", reconnect,
+                                  "K:reconnect-ms", reconnect_ms,
                                   NULL) < 0)
             return -1;
     }
@@ -257,6 +266,7 @@ qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
         virTristateBool telnet = VIR_TRISTATE_BOOL_ABSENT;
         virTristateBool server = VIR_TRISTATE_BOOL_ABSENT;
         int reconnect = -1;
+        long long reconnect_ms = -1;
 
         *backendType = "socket";
 
@@ -280,6 +290,12 @@ qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
         else if (chr->data.tcp.reconnect.enabled == VIR_TRISTATE_BOOL_NO)
             reconnect = 0;
 
+        if (reconnect != -1 &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS)) {
+            reconnect_ms = reconnect * 1000;
+            reconnect = -1;
+        }
+
         if (qemuChardevBackendAddSocketAddressInet(props, "addr",
                                                    commandline, NULL,
                                                    chr->data.tcp.host,
@@ -291,6 +307,7 @@ qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
                                   "T:server", server,
                                   "T:wait", waitval,
                                   "k:reconnect", reconnect,
+                                  "K:reconnect-ms", reconnect_ms,
                                   "S:tls-creds", chrSourcePriv->tlsCredsAlias,
                                   NULL) < 0)
             return -1;
@@ -462,7 +479,8 @@ qemuChardevBuildCommandline(virCommand *cmd,
     bool useJSON = virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_JSON);
     const char *backendType = NULL;
 
-    if (qemuChardevGetBackendProps(dev, !useJSON, charAlias, &backendType, &props) < 0)
+    if (qemuChardevGetBackendProps(dev, !useJSON, qemuCaps, charAlias,
+                                   &backendType, &props) < 0)
         return -1;
 
     if (useJSON) {

@@ -2027,7 +2027,7 @@ qemuBuildDiskSourceCommandLine(virCommand *cmd,
     size_t i;
 
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk, qemuCaps)))
             return -1;
     } else if (!qemuDiskBusIsSD(disk->bus)) {
         if (virStorageSourceIsEmpty(disk->src))
@@ -10824,18 +10824,21 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk)
 /**
  * qemuBuildStorageSourceAttachPrepareChardev:
  * @src: disk source to prepare
+ * @qemuCaps: qemu capabilities object borrowed for chardev backend generation
  *
  * Prepare qemuBlockStorageSourceAttachData *for vhost-user disk
  * to be used with -chardev.
  */
 static qemuBlockStorageSourceAttachData *
-qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk)
+qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk,
+                                           virQEMUCaps *qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
     data->chardevDef = disk->src->vhostuser;
+    data->qemuCaps = qemuCaps;
     data->chardevAlias = qemuDomainGetVhostUserChrAlias(disk->info.alias);
 
     return g_steal_pointer(&data);
@@ -10937,14 +10940,15 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk)
  * disk's backend via -chardev.
  */
 qemuBlockStorageSourceChainData *
-qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk)
+qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk,
+                                                virQEMUCaps *qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
     data = g_new0(qemuBlockStorageSourceChainData, 1);
 
-    if (!(elem = qemuBuildStorageSourceAttachPrepareChardev(disk)))
+    if (!(elem = qemuBuildStorageSourceAttachPrepareChardev(disk, qemuCaps)))
         return NULL;
 
     VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem);

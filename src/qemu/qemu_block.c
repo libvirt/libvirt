@@ -1685,7 +1685,7 @@ qemuBlockStorageSourceAttachApply(qemuMonitor *mon,
     if (data->chardevDef) {
         g_autoptr(virJSONValue) props = NULL;
 
-        if (qemuChardevGetBackendProps(data->chardevDef, false,
+        if (qemuChardevGetBackendProps(data->chardevDef, false, data->qemuCaps,
                                        data->chardevAlias, NULL, &props) < 0)
             return -1;
 

@@ -578,7 +578,7 @@ testQemuMonitorJSONAttachChardev(const void *opaque)
             return -1;
     }
 
-    if (qemuChardevGetBackendProps(data->chr, false, "alias", NULL, &props) < 0)
+    if (qemuChardevGetBackendProps(data->chr, false, NULL, "alias", NULL, &props) < 0)
         return -1;
 
     if ((rc = qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test), &props, &ptypath)) < 0)

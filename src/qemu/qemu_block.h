@@ -105,6 +105,7 @@ struct qemuBlockStorageSourceAttachData {
 
     char *driveCmd;
 
+    virQEMUCaps *qemuCaps; /* borrowed from VM, valid only for chardev-backed source */
     virDomainChrSourceDef *chardevDef;
     char *chardevAlias;
     bool chardevAdded;

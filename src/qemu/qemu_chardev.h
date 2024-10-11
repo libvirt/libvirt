@@ -17,6 +17,7 @@ qemuChardevBuildCommandline(virCommand *cmd,
 int
 qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
                            bool commandline,
+                           virQEMUCaps *qemuCaps,
                            const char *alias,
                            const char **backendType,
                            virJSONValue **props);

@@ -106,7 +106,8 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk);
 
 
 qemuBlockStorageSourceChainData *
-qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk);
+qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk,
+                                                virQEMUCaps *qemuCaps);
 
 
 qemuBlockStorageSourceChainData *
