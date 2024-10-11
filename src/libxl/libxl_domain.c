@@ -873,7 +873,7 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
         priv->deathW = NULL;
     }
 
-    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
+    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     /* Release auto-allocated graphics ports */

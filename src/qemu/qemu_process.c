@@ -8711,7 +8711,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     if (priv->eventThread)
         g_object_unref(g_steal_pointer(&priv->eventThread));
 
-    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
+    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     /* Clear network bandwidth */

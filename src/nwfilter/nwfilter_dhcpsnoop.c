@@ -588,7 +588,7 @@ virNWFilterSnoopReqPut(virNWFilterSnoopReq *req)
     if (!req)
         return;
 
-    if (!!g_atomic_int_dec_and_test(&req->refctr)) {
+    if (g_atomic_int_dec_and_test(&req->refctr)) {
         /*
          * delete the request:
          * - if we don't find req on the global list anymore
@@ -743,7 +743,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReq *req,
  skip_instantiate:
     g_free(ipl);
 
-    ignore_value(!!g_atomic_int_dec_and_test(&virNWFilterSnoopState.nLeases));
+    ignore_value(g_atomic_int_dec_and_test(&virNWFilterSnoopState.nLeases));
     return ret;
 }
 
@@ -1004,7 +1004,7 @@ static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
                        _("Instantiation of rules failed on interface '%1$s'"),
                        req->binding->portdevname);
     }
-    ignore_value(!!g_atomic_int_dec_and_test(job->qCtr));
+    ignore_value(g_atomic_int_dec_and_test(job->qCtr));
 }
 
 /*
@@ -1388,7 +1388,7 @@ virNWFilterDHCPSnoopThread(void *req0)
             pcap_close(pcapConf[i].handle);
     }
 
-    ignore_value(!!g_atomic_int_dec_and_test(&virNWFilterSnoopState.nThreads));
+    ignore_value(g_atomic_int_dec_and_test(&virNWFilterSnoopState.nThreads));
 
     return;
 }

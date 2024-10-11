@@ -203,7 +203,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     vm->pid = 0;
     vm->def->id = -1;
 
-    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
+    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     virLXCDomainReAttachHostDevices(driver, vm->def);

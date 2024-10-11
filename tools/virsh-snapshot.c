@@ -780,8 +780,8 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
         return -1;
     }
     if (STREQ(state, "disk-snapshot")) {
-        return !!((flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
-                  (flags & VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL));
+        return (flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
+               (flags & VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL);
     }
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL))
