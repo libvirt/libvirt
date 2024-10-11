@@ -7914,7 +7914,8 @@ southbridge, which is used with the q35 machine type. :since:`Since 9.1.0`
    -  'poweroff' - forcefully power off the guest
    -  'pause' - pause the guest
    -  'none' - do nothing
-   -  'dump' - automatically dump the guest :since:`Since 0.8.7`
+   -  'dump' - automatically dump the guest, beware that after the
+      dump the guest will be resumed :since:`Since 0.8.7`
    -  'inject-nmi' - inject a non-maskable interrupt into the guest
       :since:`Since 1.2.17`
 
