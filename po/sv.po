@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-11 20:38+0000\n"
+"PO-Revision-Date: 2024-10-13 08:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35682,39 +35682,45 @@ msgid ""
 "spice defaultMode secure requested in XML configuration, but TLS connection "
 "is not available"
 msgstr ""
+"spice defaultMode säkert begärt i XML-konfigurationen, men TLS-förbindelser "
+"är inte tillgängliga"
 
 msgid ""
 "spice insecure channels set in XML configuration, but plaintext connection "
 "is not available"
 msgstr ""
+"spice osäkra kanaler satta i XML-konfigurationen, men klartextförbindelser "
+"är inte tillgängliga"
 
 msgid ""
 "spice secure channels set in XML configuration, but TLS connection is not "
 "available"
 msgstr ""
+"spice säkra kanaler satt i XML-konfigurationen, men TLS-förbindelser är inte "
+"tillgängliga"
 
 #, c-format
 msgid "spice_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "spice_tls_x509_cert_dir-katalogen ”%1$s” finns inte"
 
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc-enhetstyp stödjer bara virtio"
 
 msgid "split each argument on ','; ',,' is an escape sequence"
-msgstr ""
+msgstr "dela varje argument vid ”,”; ”,,” är en specialkod"
 
-#, fuzzy, c-format
+#, c-format
 msgid "splitting StorageUrl failed %1$s"
-msgstr "att ta bort %s-enheten misslyckades: %s"
+msgstr "att dela StorageUrl misslyckades %1$s"
 
 msgid "ssh protocol accepts only one host"
-msgstr ""
+msgstr "ssh-protokollet accepterar bara en värd"
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
-msgstr ""
+msgstr "ssl-verifiering stödjs endast med protokollen HTTPS/FTPS"
 
 msgid "start"
-msgstr ""
+msgstr "start"
 
 msgid "start a (previously defined) inactive domain"
 msgstr "starta en (tidigare definierad) inaktiv domän"
@@ -35733,97 +35739,97 @@ msgstr "starta ett fysiskt värdgränssnitt."
 
 #, c-format
 msgid "start cell %1$d out of range (0-%2$d)"
-msgstr ""
+msgstr "startcell %1$d utanför intervallet (0-%2$d)"
 
 #, c-format
 msgid "start of range %1$s - %2$s in network %3$s/%4$d is the network address"
 msgstr ""
+"starten på intervallet %1$s - %2$s i nätverket %3$s/%4$d är nätverksadressen"
 
 #, c-format
 msgid "start_cpu %1$d larger than maximum of %2$d"
-msgstr ""
+msgstr "start_cpu %1$d är större en maximum på %2$d"
 
 msgid "started"
 msgstr "startad"
 
 msgid "starting up"
-msgstr ""
+msgstr "startar upp"
 
 #, c-format
 msgid "stat of '%1$s' failed"
-msgstr ""
+msgstr "status av ”%1$s” misslyckades"
 
 msgid "statistic value too large"
-msgstr ""
+msgstr "statistikvärdet är för stort"
 
-#, fuzzy, c-format
+#, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "versioner matchar inte (aktuell %1$x, förväntad %2$x)"
+msgstr "statusen stämmer inte i händelsen (aktuell 0x%1$x, förväntad 0x%2$x)"
 
 msgid "stopped, with no saved guests"
-msgstr ""
+msgstr "stoppad, utan sparade gäster"
 
 msgid "stopped, with saved guests"
-msgstr ""
+msgstr "stoppad, med sparade gäster"
 
 msgid "storage file backend not initialized"
-msgstr ""
+msgstr "lagringsfilens bakände är inte initierad"
 
 #, c-format
 msgid ""
 "storage file reading is not supported for storage type %1$s (protocol: %2$s)"
 msgstr ""
+"att läsa lagringsfilen stödjs inte för lagringstypen %1$s (protokoll: %2$s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage format '%1$s' does not support backing store"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "lagringsformatet ”%1$s” stödjer inte bakomliggande lagring"
 
 msgid "storage format 'fat' is supported only with 'dir' storage type"
-msgstr ""
+msgstr "lagringsformatet ”fat” stödjs endast med lagringstypen ”dir”"
 
 msgid ""
 "storage format 'iso' is not directly supported by QEMU, use 'raw' instead"
 msgstr ""
+"lagringsformatet ”iso” stödjs inte direkt av QEMU, använd ”raw” istället"
 
 #, c-format
 msgid "storage pool '%1$s' containing volume '%2$s' is not active"
-msgstr ""
+msgstr "lagringspoolen ”%1$s” som innehåller volymen ”%2$s” är inte aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%1$s' in %2$s must match connection"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "lagringspoolen ”%1$s” i ”%2$s” måste stämma med förbindelsen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%1$s' is active"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "lagringspoolen ”%1$s” är inte aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%1$s' is already active"
-msgstr "lagringsvolymnamnet ”%1$s” används redan."
+msgstr "lagringspoolen ”%1$s” är redan aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%1$s' is not active"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "lagringspoolen ”%1$s” är inte aktiv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%1$s' is starting up"
-msgstr "lagringsvolymnamnet ”%1$s” används redan."
+msgstr "lagringspoolen ”%1$s” startar upp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%1$s' is still active"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "lagringspoolen ”%1$s” är fortfarande aktiv"
 
-#, fuzzy
 msgid "storage pool capabilities"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "lagringspoolens förmågor"
 
-#, fuzzy
 msgid "storage pool does not support changing of volume capacity"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "lagringspoolen stödjer inte att ändra volymkapaciteter"
 
-#, fuzzy
 msgid "storage pool does not support encrypted volumes"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "lagringspoolen stödjer inte krypterade volymer"
 
 msgid "storage pool does not support vol deletion"
 msgstr "lagringspool stödjer inte radering av volymer"
@@ -35843,32 +35849,29 @@ msgstr "lagringspool stödjer inte att skicka upp volymer"
 msgid "storage pool doesn't support volume wiping"
 msgstr "lagringspool stödjer inte rensning av volymer"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool event callback %1$d not registered"
-msgstr "domänhändelse %1$d är inte registrerad"
+msgstr "lagringspoolens händelseåteranrop %1$d är inte registrerat"
 
-#, fuzzy
 msgid "storage pool information"
-msgstr "nodinformation"
+msgstr "lagringspoolsinformation"
 
-#, fuzzy
 msgid "storage pool is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "lagringspoolen är inte aktiv"
 
 msgid "storage pool missing auth type"
-msgstr ""
+msgstr "lagringspoolen saknar auth-typ"
 
-#, fuzzy
 msgid "storage pool only supports LUKS encrypted volumes"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "lagringspoolen stödjer endast LUKS-krypterade volymer"
 
 #, c-format
 msgid "storage pool protocol ver '%1$s' must not contain ','"
-msgstr ""
+msgstr "lagringspoolen protokoll version ”%1$s” får inte innehålla ”,”"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
-msgstr ""
+msgstr "lagringspoolsprotokollets version stödjs inte av pooltypen ”%1$s”"
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
