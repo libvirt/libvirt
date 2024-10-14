@@ -333,7 +333,10 @@ mymain(void)
     if (virTestRun("Labelling " # name, testSELinuxLabeling, name) < 0) \
         ret = -1;
 
-    setcon("system_r:system_u:libvirtd_t:s0:c0.c1023");
+    if (!g_setenv("FAKE_SELINUX_CONTEXT", "system_r:system_u:libvirtd_t:s0:c0.c1023", TRUE)) {
+        perror("Cannot set process security context");
+        return EXIT_FAILURE;
+    }
 
     DO_TEST_LABELING("disks");
     DO_TEST_LABELING("kernel");

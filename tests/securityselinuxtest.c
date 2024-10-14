@@ -211,7 +211,7 @@ testSELinuxGenLabel(const void *opaque)
     context_t con = NULL;
     context_t imgcon = NULL;
 
-    if (setcon_raw(data->pidcon) < 0) {
+    if (!g_setenv("FAKE_SELINUX_CONTEXT", data->pidcon, TRUE)) {
         perror("Cannot set process security context");
         return -1;
     }
