@@ -644,39 +644,32 @@ mymain(void)
 
     DO_TEST_ATTACH("s390x", "base-ccw-live", "ccw-virtio", false, true,
                    "blockdev-add", QMP_OK,
-                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
     DO_TEST_DETACH("s390x", "base-ccw-live", "ccw-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("s390x", "base-ccw-live-with-ccw-virtio", "ccw-virtio-2", false, true,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
 
     DO_TEST_DETACH("s390x", "base-ccw-live-with-ccw-virtio", "ccw-virtio-2", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk0") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("s390x", "base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, true,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
 
     DO_TEST_DETACH("s390x", "base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk0") QMP_OK,
-                   "blockdev-del", QMP_OK,
                    "blockdev-del", QMP_OK);
 
     /* Attach a second device, then detach the first one. Then attach the first one again. */
     DO_TEST_ATTACH("s390x", "base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, true,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);
@@ -685,7 +678,6 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK);
 
     DO_TEST_ATTACH("s390x", "base-ccw-live-with-2-ccw-virtio", "ccw-virtio-1-reverse", false, false,
-                   "blockdev-add", QMP_OK,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
                    "query-block", QMP_EMPTY_ARRAY);

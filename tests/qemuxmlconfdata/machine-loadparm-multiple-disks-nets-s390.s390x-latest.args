@@ -26,12 +26,10 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device '{"driver":"virtio-blk-ccw","devno":"fe.0.0002","drive":"libvirt-2-format","id":"virtio-disk0","bootindex":1}' \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-ccw","devno":"fe.0.0003","drive":"libvirt-1-format","id":"virtio-disk1","bootindex":3}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-2-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0002","drive":"libvirt-2-storage","id":"virtio-disk0","bootindex":1}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0003","drive":"libvirt-1-storage","id":"virtio-disk1","bootindex":3}' \
 -netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-ccw","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:54","bootindex":2,"devno":"fe.0.0000"}' \
 -netdev '{"type":"user","id":"hostnet1"}' \
