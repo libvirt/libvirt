@@ -3303,7 +3303,7 @@ qemuSnapshotDeleteUpdateDisks(void *payload,
 /* Deleting external snapshot is started by running qemu block-commit job.
  * We need to wait for all block-commit jobs to be 'ready' or 'pending' to
  * continue with external snapshot deletion. */
-static int
+static bool
 qemuSnapshotDeleteBlockJobIsRunning(qemuBlockjobState state)
 {
     switch (state) {
@@ -3311,7 +3311,7 @@ qemuSnapshotDeleteBlockJobIsRunning(qemuBlockjobState state)
     case QEMU_BLOCKJOB_STATE_RUNNING:
     case QEMU_BLOCKJOB_STATE_ABORTING:
     case QEMU_BLOCKJOB_STATE_PIVOTING:
-        return 1;
+        return true;
 
     case QEMU_BLOCKJOB_STATE_COMPLETED:
     case QEMU_BLOCKJOB_STATE_FAILED:
@@ -3323,7 +3323,7 @@ qemuSnapshotDeleteBlockJobIsRunning(qemuBlockjobState state)
         break;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -3359,17 +3359,13 @@ static int
 qemuSnapshotDeleteBlockJobRunning(virDomainObj *vm,
                                   qemuBlockJobData *job)
 {
-    int rc;
     qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
 
-    while ((rc = qemuSnapshotDeleteBlockJobIsRunning(job->state)) > 0) {
+    while (qemuSnapshotDeleteBlockJobIsRunning(job->state)) {
         if (qemuDomainObjWait(vm) < 0)
             return -1;
         qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
     }
-
-    if (rc < 0)
-        return -1;
 
     return 0;
 }
