@@ -12,8 +12,6 @@
 
 #include <config.h>
 
-#include <gmodule.h>
-
 #ifdef WITH_WS_VERSION
 # include <wireshark/ws_version.h>
 #else
