@@ -1002,10 +1002,10 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
     bool isDev = S_ISCHR(data->sb.st_mode) || S_ISBLK(data->sb.st_mode);
     bool isReg = S_ISREG(data->sb.st_mode) || S_ISFIFO(data->sb.st_mode) || S_ISSOCK(data->sb.st_mode);
     bool isDir = S_ISDIR(data->sb.st_mode);
-    bool exists = false;
+    bool existed = false;
 
     if (virFileExists(data->file))
-        exists = true;
+        existed = true;
 
     if (virFileMakeParentPath(data->file) < 0) {
         virReportSystemError(errno,
@@ -1131,7 +1131,7 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
         virFileMoveMount(data->target, data->file) < 0)
         goto cleanup;
 
-    ret = exists;
+    ret = existed;
  cleanup:
     if (ret < 0 && delDevice) {
         if (isDir)
