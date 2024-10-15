@@ -1090,43 +1090,45 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
         goto cleanup;
     }
 
-    if (lchown(data->file, data->sb.st_uid, data->sb.st_gid) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to chown device %1$s"),
-                             data->file);
-        goto cleanup;
-    }
-
-    /* Symlinks don't have mode */
-    if (!isLink &&
-        chmod(data->file, data->sb.st_mode) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to set permissions for device %1$s"),
-                             data->file);
-        goto cleanup;
-    }
-
-    if (data->acl &&
-        virFileSetACLs(data->file, data->acl) < 0 &&
-        errno != ENOTSUP) {
-        virReportSystemError(errno,
-                             _("Unable to set ACLs on %1$s"), data->file);
-        goto cleanup;
-    }
-
-# ifdef WITH_SELINUX
-    if (data->tcon &&
-        lsetfilecon_raw(data->file, (const char *)data->tcon) < 0) {
-        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
-        if (errno != EOPNOTSUPP && errno != ENOTSUP) {
-        VIR_WARNINGS_RESET
+    if (!existed) {
+        if (lchown(data->file, data->sb.st_uid, data->sb.st_gid) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to set SELinux label on %1$s"),
+                                 _("Failed to chown device %1$s"),
                                  data->file);
             goto cleanup;
         }
-    }
+
+        /* Symlinks don't have mode */
+        if (!isLink &&
+            chmod(data->file, data->sb.st_mode) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to set permissions for device %1$s"),
+                                 data->file);
+            goto cleanup;
+        }
+
+        if (data->acl &&
+            virFileSetACLs(data->file, data->acl) < 0 &&
+            errno != ENOTSUP) {
+            virReportSystemError(errno,
+                                 _("Unable to set ACLs on %1$s"), data->file);
+            goto cleanup;
+        }
+
+# ifdef WITH_SELINUX
+        if (data->tcon &&
+            lsetfilecon_raw(data->file, (const char *)data->tcon) < 0) {
+            VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
+            if (errno != EOPNOTSUPP && errno != ENOTSUP) {
+            VIR_WARNINGS_RESET
+                virReportSystemError(errno,
+                                     _("Unable to set SELinux label on %1$s"),
+                                     data->file);
+                goto cleanup;
+            }
+        }
 # endif
+    }
 
     /* Finish mount process started earlier. */
     if ((isReg || isDir) &&
