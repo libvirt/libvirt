@@ -13234,10 +13234,16 @@ qemuDomainStorageUpdatePhysical(virQEMUDriverConfig *cfg,
  * @compatCPU: type of CPU used for old style check
  * @failIncompatible: return an error instead of VIR_CPU_COMPARE_INCOMPATIBLE
  *
- * Perform a "partial" check of the @cpu against a "host CPU". Old style check
- * used with all existing CPU models uses cpu_map definition of the model in
- * @cpu and compares it to the host CPU fetched @qemuCaps according to
- * @compatCPU.
+ * Perform a "partial" check of the @cpu against a "host CPU".
+ *
+ * Old style check used with all existing CPU models uses cpu_map definition of
+ * the model in @cpu and compares it to the host CPU fetched @qemuCaps
+ * according to @compatCPU.
+ *
+ * For future CPU models (without <check partial='compat'/>) only explicitly
+ * requested features are checked against the host CPU definition provided by
+ * QEMU and the usability (with a list of blocking features) info for the base
+ * CPU model. Our definition of the mode in cpu_map is ignored completely.
  *
  * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
  * the two CPUs are incompatible, VIR_CPU_COMPARE_IDENTICAL when the two CPUs
@@ -13254,12 +13260,31 @@ qemuDomainCheckCPU(virArch arch,
                    virQEMUCapsHostCPUType compatCPU,
                    bool failIncompatible)
 {
-    virCPUDef *host;
+    virCPUDef *hypervisorCPU;
+    bool compat = false;
+    char **blockers = NULL;
 
     if (virQEMUCapsIsCPUUsable(qemuCaps, virtType, cpu))
         return VIR_CPU_COMPARE_SUPERSET;
 
-    host = virQEMUCapsGetHostModel(qemuCaps, virtType, compatCPU);
+    hypervisorCPU = virQEMUCapsGetHostModel(qemuCaps, virtType,
+                                            VIR_QEMU_CAPS_HOST_CPU_REPORTED);
 
-    return virCPUCompare(arch, host, cpu, failIncompatible);
+    /* Force compat check if the CPU model is not found in qemuCaps or
+     * we don't have host CPU data from QEMU */
+    if (!cpu->model ||
+        hypervisorCPU->fallback != VIR_CPU_FALLBACK_FORBID ||
+        virQEMUCapsGetCPUBlockers(qemuCaps, virtType,
+                                  cpu->model, &blockers) < 0)
+        compat = true;
+    else if (virCPUGetCheckMode(arch, cpu, &compat) < 0)
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (compat) {
+        virCPUDef *host = virQEMUCapsGetHostModel(qemuCaps, virtType, compatCPU);
+        return virCPUCompare(arch, host, cpu, failIncompatible);
+    }
+
+    return virCPUCompareUnusable(arch, hypervisorCPU, cpu,
+                                 blockers, failIncompatible);
 }
