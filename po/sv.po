@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-13 08:38+0000\n"
+"PO-Revision-Date: 2024-10-15 09:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -35875,25 +35875,23 @@ msgstr "lagringspoolsprotokollets version stödjs inte av pooltypen ”%1$s”"
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
-msgstr ""
+msgstr "lagringens källpool ”%1$s” volymen ”%2$s” är inte översatt"
 
-#, fuzzy
 msgid "storage state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "lagringens tillståndsdrivrutin är inte aktiv"
 
 msgid "storage type 'dir' requires use of storage format 'fat'"
-msgstr ""
+msgstr "lagringstypen ”dir” kräver att lagringsformatet ”fat” används"
 
 msgid "storage vol already exists"
 msgstr "lagringsvolymen finns redan"
 
-#, fuzzy
 msgid "storage vol information"
-msgstr "nodinformation"
+msgstr "lagringsvolyminformation"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage volume %1$s exists already"
-msgstr "nätverk %1$s finns redan"
+msgstr "lagringsvolymen %1$s finns redan"
 
 #, c-format
 msgid "storage volume name '%1$s' already in use."
@@ -35901,21 +35899,20 @@ msgstr "lagringsvolymnamnet ”%1$s” används redan."
 
 #, c-format
 msgid "store '%1$s' for backup of '%2$s' exists"
-msgstr ""
+msgstr "lagret ”%1$s” för säkerhetskopian ”%2$s” finns"
 
-#, fuzzy
 msgid "stream aborted by another thread"
-msgstr "strömmen avbröts med oväntad status %d"
+msgstr "strömmen avbröts av en annan tråd"
 
 #, c-format
 msgid "stream aborted with unexpected status %1$d"
 msgstr "strömmen avbröts med oväntad status %1$d"
 
 msgid "stream already has a callback registered"
-msgstr ""
+msgstr "strömmen har redan ett återanrop registrerat"
 
 msgid "stream does not have a callback registered"
-msgstr ""
+msgstr "strömen har inte något återanrop registrerat"
 
 msgid "stream had I/O failure"
 msgstr "strömmen hade I/O-fel"
@@ -35925,108 +35922,112 @@ msgstr "strömmen avslutades oväntat"
 
 #, c-format
 msgid "stream in %1$s must match connection of volume '%2$s'"
-msgstr ""
+msgstr "strömmen i %1$s måste stämma med förbindelsen för volymen ”%2$s”"
 
 msgid "stream is closed"
-msgstr ""
+msgstr "strömmen är stängd"
 
 msgid "stream is not open"
-msgstr ""
+msgstr "strömmen är inte öppen"
 
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
-msgstr ""
+msgstr "strömmen måste stämma med förbindelsen för domänen ”%1$s”"
 
 #, c-format
 msgid "string %1$s in %2$s must not be empty"
-msgstr ""
+msgstr "strängen %1$s i %2$s får inte vara tom"
 
 #, c-format
 msgid "string parameter '%1$s' unsupported"
-msgstr ""
+msgstr "strängparametern ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "string parameter name '%2$.*1$s' too long"
-msgstr "parametern profileid är för lång"
+msgstr "strängparameternamnet ”%2$.*1$s” är för långt"
 
 msgid "subdriver of disk device"
 msgstr "underdrivrutin till diskenhet"
 
 msgid "summary statistics are not supported yet"
-msgstr ""
+msgstr "sammanfattningsstatistik stödjs inte ännu"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
-msgstr ""
+msgstr "att ge <cipher> för domändisksdefinitionen är onödigt"
 
 msgid "suspend a domain"
 msgstr "suspendera en domän"
 
 msgid "suspend a domain gracefully using power management functions"
 msgstr ""
+"försätt en domän i vila snyggt genom att använda strömhanteringsfunktioner"
 
 msgid "suspend the guest after timeout"
-msgstr ""
+msgstr "söv gästen efter tidsgränsen"
 
 msgid "suspend the host node for a given time duration"
-msgstr ""
+msgstr "försätt värdnoden i vila under en given tidsperiod"
 
 msgid "switch to post-copy after timeout"
-msgstr ""
+msgstr "byt till efterkopiering efter tidsgränsen"
 
 msgid ""
 "switching to post-copy requires migration to be started with "
 "VIR_MIGRATE_POSTCOPY flag"
 msgstr ""
+"att byta till efterkopiering kräver att migreringen startats med flaggan "
+"VIR_MIGRATE_POSTCOPY"
 
 msgid "swtpm didn't show up"
-msgstr ""
+msgstr "swtpm dök inte upp"
 
 #, c-format
 msgid "swtpm died and reported: %1$s"
-msgstr ""
+msgstr "swtpm dog och rapporterade: %1$s"
 
 msgid "swtpm died unexpectedly"
-msgstr ""
+msgstr "swtpm dog oväntat"
 
 msgid "swtpm socket did not show up"
-msgstr ""
+msgstr "swtpm-uttaget dök inte upp"
 
 #, c-format
 msgid "syntax: %1$s DEVICE [-g]|[-p]\n"
-msgstr ""
+msgstr "syntax: %1$s ENHET [-g]|[-p]\n"
 
 msgid "sysconf(_SC_OPEN_MAX) failed"
-msgstr ""
+msgstr "sysconf(_SC_OPEN_MAX) misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "sysctl failed for '%1$s'"
-msgstr "ingen konfigurationsfil för %1$s"
+msgstr "sysctl misslyckades för ”%1$s”"
 
 msgid "system call error"
 msgstr "systemanropsfel"
 
 msgid "system pages pool can't be modified"
-msgstr ""
+msgstr "systemsidepoolen kan inte ändras"
 
 msgid "system:"
 msgstr "system:"
 
 #, c-format
 msgid "tainted: %1$s"
-msgstr ""
+msgstr "fläckad: %1$s"
 
 msgid "take a live snapshot"
-msgstr ""
+msgstr "ta en ögonblicksbild i drift"
 
 msgid "take a screenshot of a current domain console and store it into a file"
 msgstr ""
+"ta en ögonblicksbild av den aktuella domänkonsolen och spara den i en fil"
 
 msgid "take snapshot but create no metadata"
-msgstr ""
+msgstr "ta en ögonblicksbild men skapa inte metadata"
 
 #, c-format
 msgid "tap fd %1$d is not character device"
-msgstr ""
+msgstr "tap-fd %1$d är inte en teckenenhet"
 
 #, c-format
 msgid "target %1$s already exists"
@@ -36038,19 +36039,18 @@ msgstr "målet %1$s finns redan."
 
 #, c-format
 msgid "target %1$s doesn't exist."
-msgstr ""
+msgstr "målet %1$s finns inte."
 
-#, fuzzy, c-format
+#, c-format
 msgid "target %1$s:%2$d already exists"
-msgstr "lagringsvolymen finns redan"
+msgstr "målet %1$s:%2$d finns redan"
 
 #, c-format
 msgid "target '%1$s' duplicated for disk sources '%2$s' and '%3$s'"
-msgstr ""
+msgstr "målet ”%1$s” är dubblerat för diskkällorna ”%2$s” och ”%3$s”"
 
-#, fuzzy
 msgid "target NUMA node needs to be specified for memory device"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "en mål-NUMA-nod måste anges för minnesenheter"
 
 msgid "target bus of disk device"
 msgstr "målbuss för diskenhet"
