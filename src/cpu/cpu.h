@@ -186,6 +186,13 @@ virCPUCompare(virArch arch,
     ATTRIBUTE_NONNULL(3);
 
 int
+virCPUCompareUnusable(virArch arch,
+                      const virCPUDef *host,
+                      const virCPUDef *cpu,
+                      char **blockers,
+                      bool failIncompatible);
+
+int
 cpuDecode   (virCPUDef *cpu,
              const virCPUData *data,
              virDomainCapsCPUModels *models)

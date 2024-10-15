@@ -167,6 +167,79 @@ virCPUCompare(virArch arch,
 }
 
 
+/** virCPUCompareUnusable:
+ * @arch: CPU architecture
+ * @host: host CPU reported by the hypervisor
+ * @cpu: CPU to be compared with @host
+ * @blockers: NULL terminated list of features blocking usability of the CPU model from @cpu
+ * @failIncompatible: return an error instead of VIR_CPU_COMPARE_INCOMPATIBLE
+ *
+ * Check if @cpu can be run on @host when we know model used by @cpu is
+ * considered unusable by the hypervisor because it requires some features
+ * that cannot be provided on the host (the list of them is passed as
+ * @blockers) and/or @cpu requests additional features. The @cpu definition
+ * can still be compatible with @host if all @blockers are explicitly disabled
+ * and all explicitly requested features are supported by @host.
+ *
+ * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
+ * the @cpu cannot be created on @host, or VIR_CPU_COMPARE_SUPERSET when the
+ * @cpu is compatible with @host CPU. If @failIncompatible is true, the
+ * function will return VIR_CPU_COMPARE_ERROR (and set VIR_ERR_CPU_INCOMPATIBLE
+ * error) when the two CPUs are incompatible.
+ */
+int
+virCPUCompareUnusable(virArch arch,
+                      const virCPUDef *host,
+                      const virCPUDef *cpu,
+                      char **blockers,
+                      bool failIncompatible)
+{
+    g_autoptr(virCPUDef) expanded = NULL;
+    g_auto(virBuffer) features = VIR_BUFFER_INITIALIZER;
+    g_autofree char *str = NULL;
+    virCPUFeatureDef *feat;
+    char **blocker;
+    size_t i;
+
+    for (blocker = blockers; *blocker; blocker++) {
+        if (!(feat = virCPUDefFindFeature(cpu, *blocker)) ||
+            feat->policy != VIR_CPU_FEATURE_DISABLE) {
+            virBufferAddStr(&features, *blocker);
+            virBufferAddLit(&features, ", ");
+        }
+    }
+
+    expanded = virCPUDefCopy(host);
+    if (virCPUExpandFeatures(arch, expanded) < 0)
+        return VIR_CPU_COMPARE_ERROR;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (cpu->features[i].policy != VIR_CPU_FEATURE_REQUIRE)
+            continue;
+
+        if (!(feat = virCPUDefFindFeature(expanded, cpu->features[i].name)) ||
+            feat->policy != VIR_CPU_FEATURE_REQUIRE) {
+            virBufferAddStr(&features, cpu->features[i].name);
+            virBufferAddLit(&features, ", ");
+        }
+    }
+    virBufferTrim(&features, ", ");
+
+    if ((str = virBufferContentAndReset(&features))) {
+        if (failIncompatible) {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE,
+                           _("Host CPU does not provide required features: %1$s"),
+                           str);
+            return VIR_CPU_COMPARE_ERROR;
+        }
+
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
+
+    return VIR_CPU_COMPARE_SUPERSET;
+}
+
+
 /**
  * cpuDecode:
  *

@@ -1524,6 +1524,7 @@ virCPUBaseline;
 virCPUCheckFeature;
 virCPUCheckForbiddenFeatures;
 virCPUCompare;
+virCPUCompareUnusable;
 virCPUCompareXML;
 virCPUConvertLegacy;
 virCPUCopyMigratable;
