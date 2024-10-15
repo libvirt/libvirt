@@ -1022,6 +1022,7 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
                       data->file, data->target);
         } else {
             VIR_DEBUG("Creating symlink %s -> %s", data->file, data->target);
+            existed = false;
 
             /* First, unlink the symlink target. Symlinks change and
              * therefore we have no guarantees that pre-existing
@@ -1053,6 +1054,7 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
         } else {
             VIR_DEBUG("Creating dev %s (%d,%d)",
                       data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
+            existed = false;
             unlink(data->file);
             if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
                 virReportSystemError(errno,
