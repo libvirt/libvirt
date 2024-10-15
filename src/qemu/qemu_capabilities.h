@@ -795,6 +795,10 @@ bool virQEMUCapsIsCPUDeprecated(virQEMUCaps *qemuCaps,
 bool virQEMUCapsIsCPUUsable(virQEMUCaps *qemuCaps,
                             virDomainVirtType type,
                             virCPUDef *cpu);
+int virQEMUCapsGetCPUBlockers(virQEMUCaps *qemuCaps,
+                              virDomainVirtType type,
+                              const char *cpu,
+                              char ***blockers);
 bool virQEMUCapsIsMachineDeprecated(virQEMUCaps *qemuCaps,
                                     virDomainVirtType type,
                                     const char *machine);

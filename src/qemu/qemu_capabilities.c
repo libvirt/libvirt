@@ -2507,6 +2507,44 @@ virQEMUCapsIsCPUUsable(virQEMUCaps *qemuCaps,
 }
 
 
+/**
+ * virQEMUCapsGetCPUBlockers:
+ * @qemuCaps: QEMU capabilities
+ * @type: virtualization type
+ * @cpu: CPU model
+ * @blockers: where to store the list of features
+ *
+ * Get a list of features that prevent @cpu from being usable. The pointer to
+ * the list will be stored in @blockers and the caller must not free it. The
+ * pointer is valid as long as there is an active reference to @qemuCaps.
+ *
+ * Returns 0 on success, -1 when @cpu is not found in @qemuCaps.
+ */
+int
+virQEMUCapsGetCPUBlockers(virQEMUCaps *qemuCaps,
+                          virDomainVirtType type,
+                          const char *cpu,
+                          char ***blockers)
+{
+    qemuMonitorCPUDefs *defs;
+    size_t i;
+
+    defs = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels;
+
+    if (!defs)
+        return -1;
+
+    for (i = 0; i < defs->ncpus; i++) {
+        if (STREQ(defs->cpus[i].name, cpu)) {
+            *blockers = defs->cpus[i].blockers;
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
+
 bool
 virQEMUCapsIsMachineDeprecated(virQEMUCaps *qemuCaps,
                                virDomainVirtType type,
