@@ -11597,14 +11597,13 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                                 const char *xmlCPU,
                                 unsigned int flags)
 {
-    int ret = VIR_CPU_COMPARE_ERROR;
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     bool failIncompatible;
     bool validateXML;
     virCPUDef *hvCPU;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     virArch arch;
     virDomainVirtType virttype;
 
@@ -11613,7 +11612,7 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                   VIR_CPU_COMPARE_ERROR);
 
     if (virConnectCompareHypervisorCPUEnsureACL(conn) < 0)
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
     validateXML = !!(flags & VIR_CONNECT_COMPARE_CPU_VALIDATE_XML);
@@ -11625,7 +11624,7 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                                              machine,
                                              &arch, &virttype, NULL);
     if (!qemuCaps)
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     hvCPU = virQEMUCapsGetHostModel(qemuCaps, virttype,
                                     VIR_QEMU_CAPS_HOST_CPU_REPORTED);
@@ -11635,17 +11634,19 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                        _("QEMU '%1$s' does not support reporting CPU model for virttype '%2$s'"),
                        virQEMUCapsGetBinary(qemuCaps),
                        virDomainVirtTypeToString(virttype));
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
     }
 
     if (ARCH_IS_X86(arch)) {
-        ret = virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible,
-                               validateXML);
-    } else if (ARCH_IS_S390(arch) &&
-               virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON)) {
+        return virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible,
+                                validateXML);
+    }
+
+    if (ARCH_IS_S390(arch) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON)) {
         if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu,
                                     validateXML) < 0)
-            goto cleanup;
+            return VIR_CPU_COMPARE_ERROR;
 
         if (!cpu->model) {
             if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
@@ -11655,21 +11656,18 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
             } else {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("cpu parameter is missing a model name"));
-                goto cleanup;
+                return VIR_CPU_COMPARE_ERROR;
             }
         }
-        ret = qemuConnectCPUModelComparison(qemuCaps, cfg->libDir,
-                                            cfg->user, cfg->group,
-                                            hvCPU, cpu, failIncompatible);
-    } else {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("comparing with the hypervisor CPU is not supported for arch %1$s"),
-                       virArchToString(arch));
+        return qemuConnectCPUModelComparison(qemuCaps, cfg->libDir,
+                                             cfg->user, cfg->group,
+                                             hvCPU, cpu, failIncompatible);
     }
 
- cleanup:
-    virCPUDefFree(cpu);
-    return ret;
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                   _("comparing with the hypervisor CPU is not supported for arch %1$s"),
+                   virArchToString(arch));
+    return VIR_CPU_COMPARE_ERROR;
 }
 
 
