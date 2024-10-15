@@ -271,6 +271,7 @@ virLXCProcessSetupInterfaceTap(virDomainDef *vm,
 {
     g_autofree char *parentVeth = NULL;
     g_autofree char *containerVeth = NULL;
+    g_autofree char *backupIfname = NULL;
     const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
 
     VIR_DEBUG("calling vethCreate()");
@@ -315,13 +316,16 @@ virLXCProcessSetupInterfaceTap(virDomainDef *vm,
             return NULL;
     }
 
-    if (net->filter &&
-        virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net, false) < 0)
-        return NULL;
-
-    /* success is guaranteed, so update the interface object */
-    g_free(net->ifname);
+    /* success almost guaranteed, next function needs updated net->ifname */
+    backupIfname = g_steal_pointer(&net->ifname);
     net->ifname = g_steal_pointer(&parentVeth);
+
+    if (net->filter &&
+        virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net, false) < 0) {
+        g_free(net->ifname);
+        net->ifname = g_steal_pointer(&backupIfname);
+        return NULL;
+    }
 
     return g_steal_pointer(&containerVeth);
 }
