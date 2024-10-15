@@ -11637,17 +11637,15 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
         return VIR_CPU_COMPARE_ERROR;
     }
 
-    if (ARCH_IS_X86(arch)) {
-        return virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible,
-                                validateXML);
-    }
+    if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu,
+                                validateXML) < 0)
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (ARCH_IS_X86(arch))
+        return virCPUCompare(arch, hvCPU, cpu, failIncompatible);
 
     if (ARCH_IS_S390(arch) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON)) {
-        if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu,
-                                    validateXML) < 0)
-            return VIR_CPU_COMPARE_ERROR;
-
         if (!cpu->model) {
             if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
                 cpu->model = g_strdup("host");
