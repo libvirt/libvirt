@@ -172,6 +172,9 @@
   /usr/bin/qemu-system-xtensaeb rmix,
   /usr/bin/qemu-unicore32 rmix,
   /usr/bin/qemu-x86_64 rmix,
+  # Debian 12 has a wrapper script in /usr/bin while the actual
+  # binary lives in /usr/libexec (Debian: #1030926)
+  /usr/libexec/qemu-system-i386 rmix,
   # for Debian/Ubuntu qemu-block-extra / RPMs qemu-block-* (LP: #1554761)
   /usr/{lib,lib64}/qemu/*.so mr,
   /usr/lib/@{multiarch}/qemu/*.so mr,
