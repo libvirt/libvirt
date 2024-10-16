@@ -6315,9 +6315,15 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
             case VIR_DOMAIN_HYPERV_AVIC:
-                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",hv-%s=on",
-                                      virDomainHypervTypeToString(i));
+            case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
+            case VIR_DOMAIN_HYPERV_XMM_INPUT:
+                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                    const char *name = virDomainHypervTypeToString(i);
+                    g_autofree char *full_name = g_strdup_printf("hv-%s", name);
+                    const char *qemu_name = virQEMUCapsCPUFeatureToQEMU(def->os.arch,
+                                                                        full_name);
+                    virBufferAsprintf(&buf, ",%s=on", qemu_name);
+                }
                 if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
                     (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
                     virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_STIMER_DIRECT);
@@ -6334,16 +6340,6 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",hv-vendor-id=%s",
                                       def->hyperv_vendor_id);
-                break;
-
-            case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
-                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",%s=on", "hv-emsr-bitmap");
-                break;
-
-            case VIR_DOMAIN_HYPERV_XMM_INPUT:
-                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",%s=on", "hv-xmm-input");
                 break;
 
             case VIR_DOMAIN_HYPERV_LAST:
