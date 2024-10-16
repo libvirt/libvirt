@@ -74,7 +74,7 @@ function install_buildenv() {
             open-iscsi \
             perl-base \
             pkgconf \
-            policykit-1 \
+            polkitd \
             python3 \
             python3-docutils \
             python3-pytest \

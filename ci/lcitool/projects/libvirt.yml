@@ -63,8 +63,8 @@ packages:
   - numad
   - openwsman
   - perl
+  - pkcheck
   - pkg-config
-  - polkit
   - portablexdr
   - python3
   - python3-docutils

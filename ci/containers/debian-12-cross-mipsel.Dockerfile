@@ -42,7 +42,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       open-iscsi \
                       perl-base \
                       pkgconf \
-                      policykit-1 \
+                      polkitd \
                       python3 \
                       python3-docutils \
                       python3-pytest \
