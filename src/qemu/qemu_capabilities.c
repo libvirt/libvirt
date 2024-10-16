@@ -3583,6 +3583,9 @@ virQEMUCapsCPUFeatureTranslationTable virQEMUCapsCPUFeaturesX86[] = {
     {"perfctr_nb", "perfctr-nb"},
     {"tsc_adjust", "tsc-adjust"},
     {"vmx-invvpid-single-context-noglobals", "vmx-invept-single-context-noglobals"},
+    {"hv-vendor_id", "hv-vendor-id"},
+    {"hv-emsr_bitmap", "hv-emsr-bitmap"},
+    {"hv-xmm_input", "hv-xmm-input"},
     {NULL, NULL}
 };
 
