@@ -758,6 +758,19 @@ virBitmapSize(virBitmap *bitmap)
 
 
 /**
+ * Internal helper that clears the unused bits at the end of the last bitmap unit.
+ */
+static void
+virBitmapClearTail(virBitmap *bitmap)
+{
+    size_t tail = bitmap->nbits % VIR_BITMAP_BITS_PER_UNIT;
+
+    if (tail)
+        bitmap->map[bitmap->map_len - 1] &= -1UL >> (VIR_BITMAP_BITS_PER_UNIT - tail);
+}
+
+
+/**
  * virBitmapSetAll:
  * @bitmap: the bitmap
  *
@@ -765,15 +778,10 @@ virBitmapSize(virBitmap *bitmap)
  */
 void virBitmapSetAll(virBitmap *bitmap)
 {
-    int tail = bitmap->nbits % VIR_BITMAP_BITS_PER_UNIT;
-
     memset(bitmap->map, 0xff,
            bitmap->map_len * (VIR_BITMAP_BITS_PER_UNIT / CHAR_BIT));
 
-    /* Ensure tail bits are clear.  */
-    if (tail)
-        bitmap->map[bitmap->map_len - 1] &=
-            -1UL >> (VIR_BITMAP_BITS_PER_UNIT - tail);
+    virBitmapClearTail(bitmap);
 }
 
 
