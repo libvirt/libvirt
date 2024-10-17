@@ -50,6 +50,22 @@ struct _virBitmap {
 
 
 /**
+ * Calculates and returns the number of elements in the bitmap buffer to fit @bits.
+ */
+static size_t
+virBitmapBuffsize(size_t nbits)
+{
+    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < nbits) {
+        /* VIR_DIV_UP would overflow, let's overallocate by 1 entry instead of
+         * the potential overflow */
+        return (nbits / VIR_BITMAP_BITS_PER_UNIT) + 1;
+    }
+
+    return VIR_DIV_UP(nbits, VIR_BITMAP_BITS_PER_UNIT);
+}
+
+
+/**
  * virBitmapNew:
  * @size: number of bits
  *
@@ -61,15 +77,7 @@ virBitmap *
 virBitmapNew(size_t size)
 {
     virBitmap *bitmap;
-    size_t sz;
-
-    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size) {
-        /* VIR_DIV_UP would overflow, let's overallocate by 1 entry instead of
-         * the potential overflow */
-        sz = (size / VIR_BITMAP_BITS_PER_UNIT) + 1;
-    } else {
-        sz = VIR_DIV_UP(size, VIR_BITMAP_BITS_PER_UNIT);
-    }
+    size_t sz = virBitmapBuffsize(size);
 
     bitmap = g_new0(virBitmap, 1);
 
@@ -133,7 +141,7 @@ static void
 virBitmapExpand(virBitmap *map,
                 size_t b)
 {
-    size_t new_len = VIR_DIV_UP(b + 1, VIR_BITMAP_BITS_PER_UNIT);
+    size_t new_len = virBitmapBuffsize(b + 1);
 
     /* resize the memory if necessary */
     if (map->map_len < new_len) {
