@@ -582,7 +582,7 @@ virBitmapNewCopy(virBitmap *src)
 {
     virBitmap *dst = virBitmapNew(src->nbits);
 
-    memcpy(dst->map, src->map, src->map_len * sizeof(src->map[0]));
+    memcpy(dst->map, src->map, dst->map_len * sizeof(src->map[0]));
 
     return dst;
 }
