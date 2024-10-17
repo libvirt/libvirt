@@ -25,7 +25,7 @@ v10.9.0 (unreleased)
     has no access to the allocation state of blocks at the cost of CPU overhead.
 
     This feature is available via the ``--migrate-disks-detect-zeroes`` option
-    for ``virsh migrate`` or ``VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES_ZEROES``
+    for ``virsh migrate`` or ``VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES``
     migration parameter. See the documentation for caveats.
 
 * **Improvements**
