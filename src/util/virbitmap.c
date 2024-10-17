@@ -1187,33 +1187,13 @@ void
 virBitmapShrink(virBitmap *map,
                 size_t b)
 {
-    size_t toremove;
-    size_t nl = 0;
-    size_t nb = 0;
-
-    if (!map)
+    if (!map ||
+        map->nbits <= b)
         return;
 
-    if (map->nbits >= b)
-        map->nbits = b;
-
-    nl = map->nbits / VIR_BITMAP_BITS_PER_UNIT;
-    nb = map->nbits % VIR_BITMAP_BITS_PER_UNIT;
-
-    /* If we're at the end of the allocation the attempt to clear 'map->nbit'
-     * and further would be beyond the end of the bitmap */
-    if (nl >= map->map_alloc)
-        return;
-
-    map->map[nl] &= ((1UL << nb) - 1);
-
-    toremove = map->map_alloc - (nl + 1);
-
-    if (toremove == 0)
-        return;
-
-    VIR_SHRINK_N(map->map, map->map_alloc, toremove);
-
-    /* length needs to be fixed as well */
-    map->map_len = map->map_alloc;
+    map->nbits = b;
+    map->map_len = virBitmapBuffsize(b);
+    map->map = g_renew(unsigned long, map->map, map->map_len);
+    map->map_alloc = map->map_len;
+    virBitmapClearTail(map);
 }
