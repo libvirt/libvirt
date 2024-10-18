@@ -101,6 +101,7 @@
 #include "virutil.h"
 #include "storage_source.h"
 #include "backup_conf.h"
+#include "storage_file_probe.h"
 
 #include "logging/log_manager.h"
 #include "logging/log_protocol.h"
@@ -4584,6 +4585,70 @@ qemuPrepareNVRAMHelper(int dstFD,
 
 
 static int
+qemuPrepareNVRAMBlock(virDomainObj *vm,
+                      bool reset_nvram)
+{
+    virDomainLoaderDef *loader = vm->def->os.loader;
+    g_autoptr(virCommand) qemuimg = NULL;
+    const char *templateFormatStr = "raw";
+
+    if (!virFileExists(loader->nvram->path)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("'block' nvram backing device '%1$s' doesn't exist"),
+                       loader->nvram->path);
+        return -1;
+    }
+
+    if (!reset_nvram) {
+        int format;
+
+        if (loader->nvram->format == VIR_STORAGE_FILE_RAW) {
+            /* For 'raw' image libvirt can't check if the image is correct */
+            return 0;
+        }
+
+        if ((format = virStorageFileProbeFormat(loader->nvram->path, 0, 0)) < 0)
+            return -1;
+
+        /* If we find a qcow2 image assume it's correct */
+        if (format == VIR_STORAGE_FILE_QCOW2)
+            return 0;
+    }
+
+    /* The PFLASH device backing the NVRAM must have the exact size the
+     * firmware expects. This is almost impossible to achieve using a block
+     * device. Avoid headaches -> force users to use qcow2 which can
+     * restrict the size if libvirt is to format the image. */
+    if (loader->nvram->format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("only 'qcow2' formatted 'block' nvram backing can be formatted"));
+        return -1;
+    }
+
+    if (!loader->nvramTemplate) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("unable to find nvram template image"));
+        return -1;
+    }
+
+    if (loader->nvramTemplateFormat != VIR_STORAGE_FILE_NONE)
+        templateFormatStr = virStorageFileFormatTypeToString(loader->nvramTemplateFormat);
+
+    qemuimg = virCommandNewArgList("qemu-img", "convert",
+                                   "-f", templateFormatStr,
+                                   "-O", "qcow2",
+                                   loader->nvramTemplate,
+                                   loader->nvram->path,
+                                   NULL);
+
+    if (virCommandRun(qemuimg, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuPrepareNVRAMFile(virDomainObj *vm,
                      bool reset_nvram)
 {
@@ -4646,14 +4711,7 @@ qemuPrepareNVRAM(virDomainObj *vm,
         return qemuPrepareNVRAMFile(vm, reset_nvram);
 
     case VIR_STORAGE_TYPE_BLOCK:
-        /* virFileRewrite() would overwrite the device node-file/symlink rather than
-         * just write the data to it, thus block-device nvram is not yet supported */
-        if (virFileExists(loader->nvram->path) && !reset_nvram)
-            return 0;
-
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("creation or formatting of nvram type='block' is not supported"));
-        return -1;
+        return qemuPrepareNVRAMBlock(vm, reset_nvram);
 
     case VIR_STORAGE_TYPE_DIR:
     case VIR_STORAGE_TYPE_NETWORK:
