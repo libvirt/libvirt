@@ -1287,10 +1287,12 @@ qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk,
                                           domdisk->src->path, suffix);
 
     if (virFileExists(snapdisk->src->path)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("Overlay file '%1$s' for transient disk '%2$s' already exists"),
-                       snapdisk->src->path, domdisk->dst);
-        return NULL;
+        if (unlink(snapdisk->src->path) != 0) {
+            virReportSystemError(errno,
+                                 _("Failed to delete overlay file '%1$s' for transient disk '%2$s'"),
+                                 snapdisk->src->path, domdisk->dst);
+            return NULL;
+        }
     }
 
     return g_steal_pointer(&snapdisk);
