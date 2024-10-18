@@ -78,42 +78,163 @@
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='no' vendor='IBM'>gen15a</model>
+      <blockers model='gen15a'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>gen15a-base</model>
       <model usable='no' vendor='IBM'>gen15b</model>
+      <blockers model='gen15b'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>gen15b-base</model>
       <model usable='no' vendor='IBM'>gen16a</model>
+      <blockers model='gen16a'>
+        <feature name='beareh'/>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='nnpa'/>
+        <feature name='pai'/>
+        <feature name='paie'/>
+        <feature name='rdp'/>
+        <feature name='ri'/>
+        <feature name='type'/>
+        <feature name='vxpdeh2'/>
+      </blockers>
       <model usable='no' vendor='IBM'>gen16a-base</model>
+      <blockers model='gen16a-base'>
+        <feature name='type'/>
+      </blockers>
       <model usable='no' vendor='IBM'>gen16b</model>
+      <blockers model='gen16b'>
+        <feature name='beareh'/>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='nnpa'/>
+        <feature name='pai'/>
+        <feature name='paie'/>
+        <feature name='rdp'/>
+        <feature name='ri'/>
+        <feature name='type'/>
+        <feature name='vxpdeh2'/>
+      </blockers>
       <model usable='no' vendor='IBM'>gen16b-base</model>
+      <blockers model='gen16b-base'>
+        <feature name='type'/>
+      </blockers>
       <model usable='yes' vendor='unknown'>max</model>
       <model usable='yes' vendor='unknown'>qemu</model>
       <model usable='no' vendor='IBM'>z10BC</model>
+      <blockers model='z10BC'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z10BC-base</model>
       <model usable='no' vendor='IBM'>z10BC.2</model>
+      <blockers model='z10BC.2'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z10BC.2-base</model>
       <model usable='no' vendor='IBM'>z10EC</model>
+      <blockers model='z10EC'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z10EC-base</model>
       <model usable='no' vendor='IBM'>z10EC.2</model>
+      <blockers model='z10EC.2'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z10EC.2-base</model>
       <model usable='no' vendor='IBM'>z10EC.3</model>
+      <blockers model='z10EC.3'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z10EC.3-base</model>
       <model usable='no' vendor='IBM'>z114</model>
+      <blockers model='z114'>
+        <feature name='cmm'/>
+        <feature name='ipter'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z114-base</model>
       <model usable='no' vendor='IBM'>z13</model>
+      <blockers model='z13'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z13-base</model>
       <model usable='no' vendor='IBM'>z13.2</model>
+      <blockers model='z13.2'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z13.2-base</model>
       <model usable='no' vendor='IBM'>z13s</model>
+      <blockers model='z13s'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z13s-base</model>
       <model usable='no' vendor='IBM'>z14</model>
+      <blockers model='z14'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z14-base</model>
       <model usable='no' vendor='IBM'>z14.2</model>
+      <blockers model='z14.2'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z14.2-base</model>
       <model usable='no' vendor='IBM'>z14ZR1</model>
+      <blockers model='z14ZR1'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='mepoch'/>
+        <feature name='mepochptff'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z14ZR1-base</model>
       <model usable='no' vendor='IBM'>z196</model>
+      <blockers model='z196'>
+        <feature name='cmm'/>
+        <feature name='ipter'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z196-base</model>
       <model usable='no' vendor='IBM'>z196.2</model>
+      <blockers model='z196.2'>
+        <feature name='cmm'/>
+        <feature name='ipter'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z196.2-base</model>
       <model usable='yes' vendor='IBM'>z800</model>
       <model usable='yes' vendor='IBM'>z800-base</model>
@@ -140,20 +261,53 @@
       <model usable='yes' vendor='IBM'>z990.5</model>
       <model usable='yes' vendor='IBM'>z990.5-base</model>
       <model usable='no' vendor='IBM'>z9BC</model>
+      <blockers model='z9BC'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z9BC-base</model>
       <model usable='no' vendor='IBM'>z9BC.2</model>
+      <blockers model='z9BC.2'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z9BC.2-base</model>
       <model usable='no' vendor='IBM'>z9EC</model>
+      <blockers model='z9EC'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z9EC-base</model>
       <model usable='no' vendor='IBM'>z9EC.2</model>
+      <blockers model='z9EC.2'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z9EC.2-base</model>
       <model usable='no' vendor='IBM'>z9EC.3</model>
+      <blockers model='z9EC.3'>
+        <feature name='cmm'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>z9EC.3-base</model>
       <model usable='no' vendor='IBM'>zBC12</model>
+      <blockers model='zBC12'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>zBC12-base</model>
       <model usable='no' vendor='IBM'>zEC12</model>
+      <blockers model='zEC12'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>zEC12-base</model>
       <model usable='no' vendor='IBM'>zEC12.2</model>
+      <blockers model='zEC12.2'>
+        <feature name='cmm'/>
+        <feature name='edat2'/>
+        <feature name='ipter'/>
+        <feature name='ri'/>
+      </blockers>
       <model usable='yes' vendor='IBM'>zEC12.2-base</model>
     </mode>
   </cpu>

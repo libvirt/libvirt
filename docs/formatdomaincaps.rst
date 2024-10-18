@@ -194,9 +194,29 @@ CPUs <formatdomain.html#cpu-model-and-topology>`__.
        </mode>
        <mode name='custom' supported='yes'>
          <model usable='no' deprecated='no' vendor='Intel'>Broadwell</model>
+         <blockers model='Broadwell'>
+           <feature name='hle'/>
+           <feature name='rtm'/>
+         </blockers>
          <model usable='yes' deprecated='no' vendor='Intel'>Broadwell-noTSX</model>
-         <model usable='no' deprecated='yes' vendor='Intel'>Haswell</model>
          <model usable='no' deprecated='no' vendor='AMD'>EPYC-Milan</model>
+         <blockers model='EPYC-Milan'>
+           <feature name='clzero'/>
+           <feature name='cr8legacy'/>
+           <feature name='fxsr_opt'/>
+           <feature name='misalignsse'/>
+           <feature name='mmxext'/>
+           <feature name='osvw'/>
+           <feature name='perfctr_core'/>
+           <feature name='sse4a'/>
+           <feature name='wbnoinvd'/>
+           <feature name='xsaveerptr'/>
+         </blockers>
+         <model usable='no' deprecated='yes' vendor='Intel'>Haswell</model>
+         <blockers model='Haswell'>
+           <feature name='hle'/>
+           <feature name='rtm'/>
+         </blockers>
          ...
        </mode>
      </cpu>
@@ -230,24 +250,22 @@ more details about it:
    the model can be used directly on the host. A special value ``unknown``
    indicates libvirt does not have enough information to provide the usability
    data. When ``usable='no'`` the corresponding model cannot be used without
-   disabling some features that the CPU of such model is expected to have. The
-   list of features blocking usability of a particular CPU model is returned
-   as disabled features in the result of ``virConnectBaselineHypervisorCPU``
-   API (or ``virsh hypervisor-cpu-baseline``) when called on a CPU definition
-   using the CPU model and no additional feature elements. Models marked as
-   usable (``usable='yes'``) can be safely used in domain XMLs with
-   ``check='none'`` as the hypervisor guarantees the model can be used on the
-   current host and additional checks done by libvirt are redundant.
-   :since:`Since 10.2.0` libvirt automatically detects this situation and
-   avoids the redundant checks even when ``check='partial'`` is used, with
-   older releases disabling libvirt checks via ``check='none'`` for such models
-   is recommended to avoid needless issues with starting domains when libvirt's
-   definition of a particular model differs from hypervisor's definition. The
-   ``deprecated`` attribute reflects the hypervisor's policy on usage of this
-   model :since:`(since 7.1.0)`. The ``vendor`` attribute :since:`(since 8.9.0)`
-   contains the vendor of the CPU model for users who want to use CPU models
-   with specific vendors only. CPU models with undefined vendor will be listed
-   with ``vendor='unkwnown'``.
+   disabling some features that the CPU of such model is expected to have.
+   :since:`Since 10.9.0` each CPU model with ``usable='no'`` is followed by
+   a corresponding ``blockers`` element containing a list of features blocking
+   usability of the CPU model. Models marked as usable (``usable='yes'``) can
+   be safely used in domain XMLs with ``check='none'`` as the hypervisor
+   guarantees the model can be used on the current host and additional checks
+   done by libvirt are redundant. :since:`Since 10.2.0` libvirt automatically
+   detects this situation and avoids the redundant checks even when
+   ``check='partial'`` is used, with older releases disabling libvirt checks
+   via ``check='none'`` for such models is recommended to avoid needless issues
+   with starting domains when libvirt's definition of a particular model
+   differs from hypervisor's definition. The ``deprecated`` attribute reflects
+   the hypervisor's policy on usage of this model :since:`(since 7.1.0)`. The
+   ``vendor`` attribute :since:`(since 8.9.0)` contains the vendor of the CPU
+   model for users who want to use CPU models with specific vendors only. CPU
+   models with undefined vendor will be listed with ``vendor='unkwnown'``.
 
 I/O Threads
 ~~~~~~~~~~~

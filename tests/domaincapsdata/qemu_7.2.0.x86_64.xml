@@ -71,55 +71,319 @@
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>486</model>
       <model usable='no' vendor='Intel'>Broadwell</model>
+      <blockers model='Broadwell'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Broadwell-IBRS</model>
+      <blockers model='Broadwell-IBRS'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Broadwell-noTSX</model>
+      <blockers model='Broadwell-noTSX'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Broadwell-noTSX-IBRS</model>
+      <blockers model='Broadwell-noTSX-IBRS'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server</model>
+      <blockers model='Cascadelake-Server'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-noTSX</model>
+      <blockers model='Cascadelake-Server-noTSX'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='yes' vendor='Intel'>Conroe</model>
       <model usable='no' vendor='Intel'>Cooperlake</model>
+      <blockers model='Cooperlake'>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+        <feature name='taa-no'/>
+      </blockers>
       <model usable='yes' vendor='Hygon'>Dhyana</model>
       <model usable='yes' vendor='AMD'>EPYC</model>
       <model usable='yes' vendor='AMD'>EPYC-IBPB</model>
       <model usable='no' vendor='AMD'>EPYC-Milan</model>
+      <blockers model='EPYC-Milan'>
+        <feature name='erms'/>
+        <feature name='fsrm'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+      </blockers>
       <model usable='yes' vendor='AMD'>EPYC-Rome</model>
       <model usable='no' vendor='Intel'>Haswell</model>
+      <blockers model='Haswell'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Haswell-IBRS</model>
+      <blockers model='Haswell-IBRS'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Haswell-noTSX</model>
+      <blockers model='Haswell-noTSX'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Haswell-noTSX-IBRS</model>
+      <blockers model='Haswell-noTSX-IBRS'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server</model>
+      <blockers model='Icelake-Server'>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='gfni'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-noTSX</model>
+      <blockers model='Icelake-Server-noTSX'>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='gfni'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+      </blockers>
       <model usable='no' vendor='Intel'>IvyBridge</model>
+      <blockers model='IvyBridge'>
+        <feature name='erms'/>
+      </blockers>
       <model usable='no' vendor='Intel'>IvyBridge-IBRS</model>
+      <blockers model='IvyBridge-IBRS'>
+        <feature name='erms'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='yes' vendor='Intel'>Nehalem</model>
       <model usable='no' vendor='Intel'>Nehalem-IBRS</model>
+      <blockers model='Nehalem-IBRS'>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='yes' vendor='AMD'>Opteron_G1</model>
       <model usable='yes' vendor='AMD'>Opteron_G2</model>
       <model usable='yes' vendor='AMD'>Opteron_G3</model>
       <model usable='no' vendor='AMD'>Opteron_G4</model>
+      <blockers model='Opteron_G4'>
+        <feature name='fma4'/>
+        <feature name='xop'/>
+      </blockers>
       <model usable='no' vendor='AMD'>Opteron_G5</model>
+      <blockers model='Opteron_G5'>
+        <feature name='fma4'/>
+        <feature name='tbm'/>
+        <feature name='xop'/>
+      </blockers>
       <model usable='yes' vendor='Intel'>Penryn</model>
       <model usable='yes' vendor='Intel'>SandyBridge</model>
       <model usable='no' vendor='Intel'>SandyBridge-IBRS</model>
+      <blockers model='SandyBridge-IBRS'>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client</model>
+      <blockers model='Skylake-Client'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client-IBRS</model>
+      <blockers model='Skylake-Client-IBRS'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client-noTSX-IBRS</model>
+      <blockers model='Skylake-Client-noTSX-IBRS'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server</model>
+      <blockers model='Skylake-Server'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-IBRS</model>
+      <blockers model='Skylake-Server-IBRS'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-noTSX-IBRS</model>
+      <blockers model='Skylake-Server-noTSX-IBRS'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='Intel'>Snowridge</model>
+      <blockers model='Snowridge'>
+        <feature name='cldemote'/>
+        <feature name='core-capability'/>
+        <feature name='erms'/>
+        <feature name='gfni'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='mpx'/>
+        <feature name='spec-ctrl'/>
+        <feature name='split-lock-detect'/>
+      </blockers>
       <model usable='yes' vendor='Intel'>Westmere</model>
       <model usable='no' vendor='Intel'>Westmere-IBRS</model>
+      <blockers model='Westmere-IBRS'>
+        <feature name='spec-ctrl'/>
+      </blockers>
       <model usable='no' vendor='AMD'>athlon</model>
+      <blockers model='athlon'>
+        <feature name='3dnow'/>
+        <feature name='3dnowext'/>
+      </blockers>
       <model usable='no' vendor='Intel'>core2duo</model>
+      <blockers model='core2duo'>
+        <feature name='ss'/>
+      </blockers>
       <model usable='no' vendor='Intel'>coreduo</model>
+      <blockers model='coreduo'>
+        <feature name='ss'/>
+      </blockers>
       <model usable='yes' vendor='unknown'>kvm32</model>
       <model usable='yes' vendor='unknown'>kvm64</model>
       <model usable='no' vendor='Intel'>n270</model>
+      <blockers model='n270'>
+        <feature name='ss'/>
+      </blockers>
       <model usable='yes' vendor='unknown'>pentium</model>
       <model usable='yes' vendor='unknown'>pentium2</model>
       <model usable='yes' vendor='unknown'>pentium3</model>
       <model usable='no' vendor='AMD'>phenom</model>
+      <blockers model='phenom'>
+        <feature name='3dnow'/>
+        <feature name='3dnowext'/>
+      </blockers>
       <model usable='yes' vendor='unknown'>qemu32</model>
       <model usable='yes' vendor='unknown'>qemu64</model>
     </mode>
