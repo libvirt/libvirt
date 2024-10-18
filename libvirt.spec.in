@@ -19,7 +19,7 @@
 %define arches_x86              %{ix86} x86_64
 
 %define arches_systemtap_64bit  %{arches_64bit}
-%define arches_dmidecode        %{arches_x86}
+%define arches_dmidecode        %{arches_x86} aarch64 riscv64
 %define arches_xen              %{arches_x86} aarch64
 %if 0%{?fedora}
     %define arches_xen          x86_64 aarch64
