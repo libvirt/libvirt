@@ -4584,38 +4584,17 @@ qemuPrepareNVRAMHelper(int dstFD,
 
 
 static int
-qemuPrepareNVRAM(virQEMUDriver *driver,
-                 virDomainObj *vm,
-                 bool reset_nvram)
+qemuPrepareNVRAMFile(virDomainObj *vm,
+                     bool reset_nvram)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     VIR_AUTOCLOSE srcFD = -1;
     virDomainLoaderDef *loader = vm->def->os.loader;
     struct qemuPrepareNVRAMHelperData data;
 
-    if (!loader || !loader->nvram)
-        return 0;
-
-    if (!virStorageSourceIsLocalStorage(loader->nvram)) {
-        if (!reset_nvram) {
-            return 0;
-        } else {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                    _("resetting of nvram is not supported with network backed nvram"));
-            return -1;
-        }
-    }
-
     if (virFileExists(loader->nvram->path) && !reset_nvram)
         return 0;
-
-    /* virFileRewrite() would overwrite the device node-file/symlink rather than
-     * just write the data to it, thus block-device nvram is not yet supported */
-    if (virStorageSourceIsBlockLocal(loader->nvram)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("creation or formatting of nvram type='block' is not supported"));
-        return -1;
-    }
 
     if (!loader->nvramTemplate) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -4647,6 +4626,52 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
                        qemuPrepareNVRAMHelper,
                        &data) < 0) {
         return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuPrepareNVRAM(virDomainObj *vm,
+                 bool reset_nvram)
+{
+    virDomainLoaderDef *loader = vm->def->os.loader;
+
+    if (!loader || !loader->nvram)
+        return 0;
+
+    switch (virStorageSourceGetActualType(loader->nvram)) {
+    case VIR_STORAGE_TYPE_FILE:
+        return qemuPrepareNVRAMFile(vm, reset_nvram);
+
+    case VIR_STORAGE_TYPE_BLOCK:
+        /* virFileRewrite() would overwrite the device node-file/symlink rather than
+         * just write the data to it, thus block-device nvram is not yet supported */
+        if (virFileExists(loader->nvram->path) && !reset_nvram)
+            return 0;
+
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("creation or formatting of nvram type='block' is not supported"));
+        return -1;
+
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
+    case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
+    case VIR_STORAGE_TYPE_LAST:
+    case VIR_STORAGE_TYPE_NONE:
+        if (reset_nvram) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                    _("resetting of nvram is not supported with nvram device backed by '%1$s'"),
+                    virStorageTypeToString(virStorageSourceGetActualType(loader->nvram)));
+            return -1;
+        }
+
+        /* otherwise we just assume that the user did set up stuff correctly */
+        break;
     }
 
     return 0;
@@ -7283,7 +7308,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         return -1;
 
-    if (qemuPrepareNVRAM(driver, vm, !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM)) < 0)
+    if (qemuPrepareNVRAM(vm, !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM)) < 0)
         return -1;
 
     if (vm->def->vsock) {
