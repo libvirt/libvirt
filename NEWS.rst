@@ -54,6 +54,12 @@ v10.9.0 (unreleased)
     representation of guest memory blocks on disk, which includes compression
     among other possible layouts.
 
+  * Report CPU model blockers in domain capabilities
+
+    When a CPU model is reported as usable='no' an additional
+    ``<blockers model='...'>`` element is added for that CPU model listing
+    features required by the CPU model, but not supported on the host.
+
 * **Bug fixes**
 
 
