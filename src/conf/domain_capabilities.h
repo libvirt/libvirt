@@ -327,6 +327,8 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
 virDomainCapsCPUModel *
 virDomainCapsCPUModelsGet(virDomainCapsCPUModels *cpuModels,
                           const char *name);
+void
+virDomainCapsCPUModelsSort(virDomainCapsCPUModels *cpuModels);
 
 #define VIR_DOMAIN_CAPS_ENUM_IS_SET(capsEnum, value) \
     ((capsEnum).values & (1U << value))

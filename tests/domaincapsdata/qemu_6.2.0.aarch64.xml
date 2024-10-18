@@ -39,45 +39,45 @@
     </mode>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
-      <model usable='unknown' vendor='unknown'>cortex-a9</model>
-      <model usable='unknown' vendor='unknown'>pxa250</model>
-      <model usable='unknown' vendor='unknown'>pxa270-a1</model>
-      <model usable='unknown' vendor='unknown'>arm946</model>
-      <model usable='unknown' vendor='unknown'>pxa270-c0</model>
-      <model usable='unknown' vendor='unknown'>max</model>
+      <model usable='unknown' vendor='unknown'>a64fx</model>
       <model usable='unknown' vendor='unknown'>arm1026</model>
-      <model usable='unknown' vendor='unknown'>pxa260</model>
-      <model usable='unknown' vendor='unknown'>pxa270-b1</model>
-      <model usable='unknown' vendor='unknown'>cortex-a57</model>
-      <model usable='unknown' vendor='unknown'>pxa255</model>
-      <model usable='unknown' vendor='unknown'>cortex-r5</model>
       <model usable='unknown' vendor='unknown'>arm1136</model>
-      <model usable='unknown' vendor='unknown'>cortex-a7</model>
-      <model usable='unknown' vendor='unknown'>pxa261</model>
-      <model usable='unknown' vendor='unknown'>pxa270-c5</model>
-      <model usable='unknown' vendor='unknown'>cortex-m3</model>
+      <model usable='unknown' vendor='unknown'>arm1136-r2</model>
       <model usable='unknown' vendor='unknown'>arm1176</model>
-      <model usable='unknown' vendor='unknown'>sa1100</model>
-      <model usable='unknown' vendor='unknown'>cortex-a53</model>
-      <model usable='unknown' vendor='unknown'>ti925t</model>
-      <model usable='unknown' vendor='unknown'>cortex-m33</model>
-      <model usable='unknown' vendor='unknown'>cortex-a8</model>
+      <model usable='unknown' vendor='unknown'>arm11mpcore</model>
       <model usable='unknown' vendor='unknown'>arm926</model>
+      <model usable='unknown' vendor='unknown'>arm946</model>
+      <model usable='unknown' vendor='unknown'>cortex-a15</model>
+      <model usable='unknown' vendor='unknown'>cortex-a53</model>
+      <model usable='unknown' vendor='unknown'>cortex-a57</model>
+      <model usable='unknown' vendor='unknown'>cortex-a7</model>
       <model usable='unknown' vendor='unknown'>cortex-a72</model>
-      <model usable='unknown' vendor='unknown'>pxa270</model>
-      <model usable='unknown' vendor='unknown'>pxa270-a0</model>
+      <model usable='unknown' vendor='unknown'>cortex-a8</model>
+      <model usable='unknown' vendor='unknown'>cortex-a9</model>
+      <model usable='unknown' vendor='unknown'>cortex-m0</model>
+      <model usable='unknown' vendor='unknown'>cortex-m3</model>
+      <model usable='unknown' vendor='unknown'>cortex-m33</model>
       <model usable='unknown' vendor='unknown'>cortex-m4</model>
       <model usable='unknown' vendor='unknown'>cortex-m55</model>
-      <model usable='unknown' vendor='unknown'>a64fx</model>
       <model usable='unknown' vendor='unknown'>cortex-m7</model>
-      <model usable='unknown' vendor='unknown'>cortex-a15</model>
-      <model usable='unknown' vendor='unknown'>arm11mpcore</model>
+      <model usable='unknown' vendor='unknown'>cortex-r5</model>
       <model usable='unknown' vendor='unknown'>cortex-r5f</model>
-      <model usable='unknown' vendor='unknown'>cortex-m0</model>
-      <model usable='unknown' vendor='unknown'>sa1110</model>
-      <model usable='unknown' vendor='unknown'>arm1136-r2</model>
-      <model usable='unknown' vendor='unknown'>pxa270-b0</model>
+      <model usable='unknown' vendor='unknown'>max</model>
+      <model usable='unknown' vendor='unknown'>pxa250</model>
+      <model usable='unknown' vendor='unknown'>pxa255</model>
+      <model usable='unknown' vendor='unknown'>pxa260</model>
+      <model usable='unknown' vendor='unknown'>pxa261</model>
       <model usable='unknown' vendor='unknown'>pxa262</model>
+      <model usable='unknown' vendor='unknown'>pxa270</model>
+      <model usable='unknown' vendor='unknown'>pxa270-a0</model>
+      <model usable='unknown' vendor='unknown'>pxa270-a1</model>
+      <model usable='unknown' vendor='unknown'>pxa270-b0</model>
+      <model usable='unknown' vendor='unknown'>pxa270-b1</model>
+      <model usable='unknown' vendor='unknown'>pxa270-c0</model>
+      <model usable='unknown' vendor='unknown'>pxa270-c5</model>
+      <model usable='unknown' vendor='unknown'>sa1100</model>
+      <model usable='unknown' vendor='unknown'>sa1110</model>
+      <model usable='unknown' vendor='unknown'>ti925t</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>

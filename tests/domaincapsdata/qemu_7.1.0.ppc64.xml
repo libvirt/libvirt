@@ -36,9 +36,9 @@
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='unknown' vendor='IBM'>POWER10</model>
-      <model usable='unknown' vendor='IBM'>POWER9</model>
-      <model usable='unknown' vendor='IBM'>POWER8</model>
       <model usable='unknown' vendor='IBM'>POWER7</model>
+      <model usable='unknown' vendor='IBM'>POWER8</model>
+      <model usable='unknown' vendor='IBM'>POWER9</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>

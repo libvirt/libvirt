@@ -232,6 +232,27 @@ virDomainCapsCPUModelsGet(virDomainCapsCPUModels *cpuModels,
 }
 
 
+static int
+virDomainCapsCPUModelsCompare(const void *m1,
+                              const void *m2,
+                              void *opaque G_GNUC_UNUSED)
+{
+    const virDomainCapsCPUModel *model1 = m1;
+    const virDomainCapsCPUModel *model2 = m2;
+
+    return strcmp(model1->name, model2->name);
+}
+
+
+void
+virDomainCapsCPUModelsSort(virDomainCapsCPUModels *cpuModels)
+{
+    g_qsort_with_data(cpuModels->models, cpuModels->nmodels,
+                      sizeof(*cpuModels->models),
+                      virDomainCapsCPUModelsCompare, NULL);
+}
+
+
 int
 virDomainCapsEnumSet(virDomainCapsEnum *capsEnum,
                      const char *capsEnumName,

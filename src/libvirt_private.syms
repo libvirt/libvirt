@@ -212,6 +212,7 @@ virDomainCapsCPUModelsAdd;
 virDomainCapsCPUModelsCopy;
 virDomainCapsCPUModelsGet;
 virDomainCapsCPUModelsNew;
+virDomainCapsCPUModelsSort;
 virDomainCapsCPUUsableTypeFromString;
 virDomainCapsCPUUsableTypeToString;
 virDomainCapsEnumClear;

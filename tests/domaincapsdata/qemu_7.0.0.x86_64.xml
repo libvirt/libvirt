@@ -63,61 +63,61 @@
       <feature policy='require' name='pschange-mc-no'/>
     </mode>
     <mode name='custom' supported='yes'>
-      <model usable='yes' vendor='unknown'>qemu64</model>
-      <model usable='yes' vendor='unknown'>qemu32</model>
-      <model usable='no' vendor='AMD'>phenom</model>
-      <model usable='yes' vendor='unknown'>pentium3</model>
-      <model usable='yes' vendor='unknown'>pentium2</model>
-      <model usable='yes' vendor='unknown'>pentium</model>
-      <model usable='no' vendor='Intel'>n270</model>
-      <model usable='yes' vendor='unknown'>kvm64</model>
-      <model usable='yes' vendor='unknown'>kvm32</model>
-      <model usable='no' vendor='Intel'>coreduo</model>
-      <model usable='no' vendor='Intel'>core2duo</model>
-      <model usable='no' vendor='AMD'>athlon</model>
-      <model usable='no' vendor='Intel'>Westmere-IBRS</model>
-      <model usable='yes' vendor='Intel'>Westmere</model>
-      <model usable='no' vendor='Intel'>Snowridge</model>
-      <model usable='no' vendor='Intel'>Skylake-Server-noTSX-IBRS</model>
-      <model usable='no' vendor='Intel'>Skylake-Server-IBRS</model>
-      <model usable='no' vendor='Intel'>Skylake-Server</model>
-      <model usable='no' vendor='Intel'>Skylake-Client-noTSX-IBRS</model>
-      <model usable='no' vendor='Intel'>Skylake-Client-IBRS</model>
-      <model usable='no' vendor='Intel'>Skylake-Client</model>
-      <model usable='no' vendor='Intel'>SandyBridge-IBRS</model>
-      <model usable='yes' vendor='Intel'>SandyBridge</model>
-      <model usable='yes' vendor='Intel'>Penryn</model>
-      <model usable='no' vendor='AMD'>Opteron_G5</model>
-      <model usable='no' vendor='AMD'>Opteron_G4</model>
-      <model usable='yes' vendor='AMD'>Opteron_G3</model>
-      <model usable='yes' vendor='AMD'>Opteron_G2</model>
-      <model usable='yes' vendor='AMD'>Opteron_G1</model>
-      <model usable='no' vendor='Intel'>Nehalem-IBRS</model>
-      <model usable='yes' vendor='Intel'>Nehalem</model>
-      <model usable='no' vendor='Intel'>IvyBridge-IBRS</model>
-      <model usable='no' vendor='Intel'>IvyBridge</model>
-      <model usable='no' vendor='Intel'>Icelake-Server-noTSX</model>
-      <model usable='no' vendor='Intel'>Icelake-Server</model>
-      <model usable='no' deprecated='yes' vendor='Intel'>Icelake-Client-noTSX</model>
-      <model usable='no' deprecated='yes' vendor='Intel'>Icelake-Client</model>
-      <model usable='no' vendor='Intel'>Haswell-noTSX-IBRS</model>
-      <model usable='no' vendor='Intel'>Haswell-noTSX</model>
-      <model usable='no' vendor='Intel'>Haswell-IBRS</model>
-      <model usable='no' vendor='Intel'>Haswell</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome</model>
-      <model usable='no' vendor='AMD'>EPYC-Milan</model>
-      <model usable='yes' vendor='AMD'>EPYC-IBPB</model>
-      <model usable='yes' vendor='AMD'>EPYC</model>
-      <model usable='yes' vendor='Hygon'>Dhyana</model>
-      <model usable='no' vendor='Intel'>Cooperlake</model>
-      <model usable='yes' vendor='Intel'>Conroe</model>
-      <model usable='no' vendor='Intel'>Cascadelake-Server-noTSX</model>
-      <model usable='no' vendor='Intel'>Cascadelake-Server</model>
-      <model usable='no' vendor='Intel'>Broadwell-noTSX-IBRS</model>
-      <model usable='no' vendor='Intel'>Broadwell-noTSX</model>
-      <model usable='no' vendor='Intel'>Broadwell-IBRS</model>
-      <model usable='no' vendor='Intel'>Broadwell</model>
       <model usable='yes' vendor='unknown'>486</model>
+      <model usable='no' vendor='Intel'>Broadwell</model>
+      <model usable='no' vendor='Intel'>Broadwell-IBRS</model>
+      <model usable='no' vendor='Intel'>Broadwell-noTSX</model>
+      <model usable='no' vendor='Intel'>Broadwell-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel'>Cascadelake-Server</model>
+      <model usable='no' vendor='Intel'>Cascadelake-Server-noTSX</model>
+      <model usable='yes' vendor='Intel'>Conroe</model>
+      <model usable='no' vendor='Intel'>Cooperlake</model>
+      <model usable='yes' vendor='Hygon'>Dhyana</model>
+      <model usable='yes' vendor='AMD'>EPYC</model>
+      <model usable='yes' vendor='AMD'>EPYC-IBPB</model>
+      <model usable='no' vendor='AMD'>EPYC-Milan</model>
+      <model usable='yes' vendor='AMD'>EPYC-Rome</model>
+      <model usable='no' vendor='Intel'>Haswell</model>
+      <model usable='no' vendor='Intel'>Haswell-IBRS</model>
+      <model usable='no' vendor='Intel'>Haswell-noTSX</model>
+      <model usable='no' vendor='Intel'>Haswell-noTSX-IBRS</model>
+      <model usable='no' deprecated='yes' vendor='Intel'>Icelake-Client</model>
+      <model usable='no' deprecated='yes' vendor='Intel'>Icelake-Client-noTSX</model>
+      <model usable='no' vendor='Intel'>Icelake-Server</model>
+      <model usable='no' vendor='Intel'>Icelake-Server-noTSX</model>
+      <model usable='no' vendor='Intel'>IvyBridge</model>
+      <model usable='no' vendor='Intel'>IvyBridge-IBRS</model>
+      <model usable='yes' vendor='Intel'>Nehalem</model>
+      <model usable='no' vendor='Intel'>Nehalem-IBRS</model>
+      <model usable='yes' vendor='AMD'>Opteron_G1</model>
+      <model usable='yes' vendor='AMD'>Opteron_G2</model>
+      <model usable='yes' vendor='AMD'>Opteron_G3</model>
+      <model usable='no' vendor='AMD'>Opteron_G4</model>
+      <model usable='no' vendor='AMD'>Opteron_G5</model>
+      <model usable='yes' vendor='Intel'>Penryn</model>
+      <model usable='yes' vendor='Intel'>SandyBridge</model>
+      <model usable='no' vendor='Intel'>SandyBridge-IBRS</model>
+      <model usable='no' vendor='Intel'>Skylake-Client</model>
+      <model usable='no' vendor='Intel'>Skylake-Client-IBRS</model>
+      <model usable='no' vendor='Intel'>Skylake-Client-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel'>Skylake-Server</model>
+      <model usable='no' vendor='Intel'>Skylake-Server-IBRS</model>
+      <model usable='no' vendor='Intel'>Skylake-Server-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel'>Snowridge</model>
+      <model usable='yes' vendor='Intel'>Westmere</model>
+      <model usable='no' vendor='Intel'>Westmere-IBRS</model>
+      <model usable='no' vendor='AMD'>athlon</model>
+      <model usable='no' vendor='Intel'>core2duo</model>
+      <model usable='no' vendor='Intel'>coreduo</model>
+      <model usable='yes' vendor='unknown'>kvm32</model>
+      <model usable='yes' vendor='unknown'>kvm64</model>
+      <model usable='no' vendor='Intel'>n270</model>
+      <model usable='yes' vendor='unknown'>pentium</model>
+      <model usable='yes' vendor='unknown'>pentium2</model>
+      <model usable='yes' vendor='unknown'>pentium3</model>
+      <model usable='no' vendor='AMD'>phenom</model>
+      <model usable='yes' vendor='unknown'>qemu32</model>
+      <model usable='yes' vendor='unknown'>qemu64</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>

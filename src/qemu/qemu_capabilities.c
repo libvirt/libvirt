@@ -2159,6 +2159,7 @@ virQEMUCapsCPUDefsToModels(virArch arch,
                                   cpu->blockers, cpu->deprecated, vendor);
     }
 
+    virDomainCapsCPUModelsSort(cpuModels);
     return cpuModels;
 }
 

@@ -35,19 +35,19 @@
     </mode>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
-      <model usable='unknown' vendor='unknown'>rv64</model>
-      <model usable='unknown' vendor='unknown'>sifive-e51</model>
-      <model usable='unknown' vendor='unknown'>rv64i</model>
       <model usable='unknown' vendor='unknown'>any</model>
-      <model usable='unknown' vendor='unknown'>x-rv128</model>
-      <model usable='unknown' vendor='unknown'>shakti-c</model>
-      <model usable='unknown' vendor='unknown'>rva22u64</model>
-      <model usable='unknown' vendor='unknown'>rv64e</model>
       <model usable='unknown' vendor='unknown'>max</model>
+      <model usable='unknown' vendor='unknown'>rv64</model>
+      <model usable='unknown' vendor='unknown'>rv64e</model>
+      <model usable='unknown' vendor='unknown'>rv64i</model>
       <model usable='unknown' vendor='unknown'>rva22s64</model>
-      <model usable='unknown' vendor='unknown'>thead-c906</model>
+      <model usable='unknown' vendor='unknown'>rva22u64</model>
+      <model usable='unknown' vendor='unknown'>shakti-c</model>
+      <model usable='unknown' vendor='unknown'>sifive-e51</model>
       <model usable='unknown' vendor='unknown'>sifive-u54</model>
+      <model usable='unknown' vendor='unknown'>thead-c906</model>
       <model usable='unknown' vendor='unknown'>veyron-v1</model>
+      <model usable='unknown' vendor='unknown'>x-rv128</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>
