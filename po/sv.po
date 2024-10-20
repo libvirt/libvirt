@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-15 09:38+0000\n"
+"PO-Revision-Date: 2024-10-21 08:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36056,32 +36056,31 @@ msgid "target bus of disk device"
 msgstr "målbuss för diskenhet"
 
 msgid "target config data type format"
-msgstr ""
+msgstr "datatypsformatet på målkonfigurationen"
 
 msgid "target dev must be supplied when managed='no'"
-msgstr ""
+msgstr "målenheten måste anges när managed='no'"
 
 msgid "target device type"
 msgstr "målenhetstyp"
 
 msgid "target for underlying storage"
-msgstr ""
+msgstr "mål för underliggande lagring"
 
 msgid "target managed='no' but specified dev doesn't exist"
-msgstr ""
+msgstr "mål med managed='no' men den angivna enheten finns inte"
 
 msgid "target must be 0 for controller fdc"
-msgstr ""
+msgstr "målet måste vara 0 för styr-fdc"
 
 msgid "target must be 0 for controller model 'lsilogic'"
-msgstr ""
+msgstr "målet måste vara 0 för styrmodellen ”lsilogic”"
 
-#, fuzzy
 msgid "target must be 0 for ide controller"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "målet måste vara 0 för ide-styrenheter"
 
 msgid "target must be 0 for sata controller"
-msgstr ""
+msgstr "målet måste vara 0 för sata-styrenheter"
 
 msgid "target network name"
 msgstr "målets nätverksnamn"
@@ -36091,52 +36090,52 @@ msgstr "mål för diskenhet"
 
 #, c-format
 msgid "target pci device %1$04x:%2$02x:%3$02x.%4$d already exists"
-msgstr ""
+msgstr "mål-pci-enheten %1$04x:%2$02x:%3$02x:%4$d finns redan"
 
 #, c-format
 msgid "target port '%1$d' already allocated"
-msgstr ""
+msgstr "målporten ”%1$d” är redan allokerad"
 
 #, c-format
 msgid "target type must be specified for %1$s device"
 msgstr "måltypen måste anges för %1$s-enhet"
 
 msgid "target vm vcpu granularity does not allow the desired vcpu count"
-msgstr ""
+msgstr "mål-vm-vcpu-noggrannheten tillåter inte det önskade vcpu-antalet"
 
 msgid "tb-cache size must be an integer multiple of MiB"
-msgstr ""
+msgstr "tb-cache-storleken måste vara en heltalsmutipel av MiB"
 
 msgid "tcp"
 msgstr "tcp"
 
 #, c-format
 msgid "tcp chardev protocol '%1$s' not supported"
-msgstr ""
+msgstr "tcp-teckenhenhetsprotokollet ”%1$s” stödjs inte"
 
 msgid "teaming hostdev devices must have type='transient'"
-msgstr ""
+msgstr "teaming-hostdev-enheter måste ha type=”transient”"
 
 msgid "teaming is only supported for pci hostdev devices"
-msgstr ""
+msgstr "teaming stödjs endast för pci-hostdev-enheter"
 
 msgid "teaming persistent attribute must be set if teaming type is 'transient'"
 msgstr ""
+"beständigt teaming-attribut måste vara satt om teaming-typen är ”transient”"
 
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
-msgstr ""
+msgstr "beständigt teaming-attribut är inte tillåtet om teaming-typen är ”%1$s”"
 
-#, fuzzy
 msgid "template does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "mallen finns inte"
 
 #, c-format
 msgid "terminal QAPI query component '%1$s' of '%2$s' must not have followers"
-msgstr ""
+msgstr "terminal-QAPI-frågekomponenten ”%1$s” av ”%2$s” får inte ha följare"
 
 msgid "terminate gracefully"
-msgstr ""
+msgstr "avsluta snyggt"
 
 #, c-format
 msgid "test hypervisor does not support device assignment mode '%1$s'"
