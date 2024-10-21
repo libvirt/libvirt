@@ -533,6 +533,35 @@ def output_model(f, extra, model):
     f.write("</cpus>\n")
 
 
+def update_index(outdir, models):
+    index = os.path.join(outdir, "index.xml")
+    xml = lxml.etree.parse(index)
+
+    for vendor, files in models.items():
+        groups = xml.xpath(f"//arch[@name='x86']/group[@name='{vendor} CPU models']")
+        if not groups:
+            continue
+
+        group = groups[-1]
+        last = group.getchildren()[-1]
+        group_indent = last.tail
+        indent = f"{group_indent}  "
+        last.tail = indent
+
+        for file in files:
+            include = lxml.etree.SubElement(group, "include", filename=file)
+            include.tail = indent
+
+        group.getchildren()[-1].tail = group_indent
+
+    out = lxml.etree.tostring(xml, encoding="UTF-8")
+    out = out.decode("UTF-8").replace('"', "'")
+
+    with open(index, "w") as f:
+        f.write(out)
+        f.write("\n")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Synchronize x86 cpu models from QEMU i386 target.")
@@ -573,6 +602,8 @@ def main():
     for model in models_json:
         models.extend(expand_model(model))
 
+    files = dict()
+
     for model in models:
         name = f"x86_{model['name']}.xml"
         path = os.path.join(args.outdir, name)
@@ -582,9 +613,17 @@ def main():
             # change once released.
             continue
 
+        vendor = model['vendor']
+        if vendor:
+            if vendor not in files:
+                files[vendor] = []
+            files[vendor].append(name)
+
         extra = os.path.join(args.outdir, f"x86_{model['name']}.extra")
         with open(path, "wt") as f:
             output_model(f, extra, model)
+
+    update_index(args.outdir, files)
 
     features = set()
     for model in models:
