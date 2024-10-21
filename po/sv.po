@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-21 08:38+0000\n"
+"PO-Revision-Date: 2024-10-22 06:05+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36139,84 +36139,92 @@ msgstr "avsluta snyggt"
 
 #, c-format
 msgid "test hypervisor does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "test-hypervisorn stödjer inte enhetstilldelningsläget ”%1$s”"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ange en sökväg eller använd test:///default"
 
 #, c-format
 msgid "the '%1$s' network backend is not supported with this QEMU binary"
-msgstr ""
+msgstr "bakänden till nätverket ”%1$s” stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %1$s"
 msgstr ""
+"”dev”-attributet <forward> kan inte användas när underelementet <address> "
+"eller <pf> finns i nätverket %1$s"
 
 msgid "the CPU is incompatible with host CPU"
-msgstr ""
+msgstr "CPU:n är inkompatibel med värd-CPU:n"
 
 #, c-format
 msgid "the CPU is incompatible with host CPU: %1$s"
-msgstr ""
+msgstr "CPU:n är inkomatibel med värd-CPU:n: %1$s"
 
 #, c-format
 msgid "the MAC address '%1$s' matches multiple interfaces"
-msgstr ""
+msgstr "MAC-adressen ”%1$s” matchar flera gränssnitt"
 
 msgid "the QEMU binary does not support the ISA panic device"
-msgstr ""
+msgstr "QEMU-binären stödjer inte enheten ISA panic"
 
 msgid "the QEMU binary does not support the PCI pvpanic device"
-msgstr ""
+msgstr "QEMU-binären stödjer inte enheten PCI pvpanic"
 
 #, c-format
 msgid "the accel '%1$s' is not supported by '%2$s' on this host"
-msgstr ""
+msgstr "accelerationen ”%1$s” stödjs inte av ”%2$s” på denna värd"
 
 msgid ""
 "the address family of a dhcp range must match the address family of the dhcp "
 "element's parent"
 msgstr ""
+"adressfamiljen för ett dhcp-intervall måste stämma med adressfamiljen hos "
+"dhcp-elementets förälder"
 
 msgid ""
 "the address family of a host entry IP must match the address family of the "
 "dhcp element's parent"
 msgstr ""
+"adressfamiljen hos en host-posts IP måste stämma med adressfamiljen hos dhcp-"
+"elementets förälder"
 
 msgid "the backing volume if taking a snapshot"
-msgstr ""
+msgstr "den bakomliggande volymen om man tar en ögonblicksbild"
 
 msgid "the bandwidth limit is in bytes/s rather than MiB/s"
-msgstr ""
+msgstr "bandbreddsgränsen i byte/s istället för MiB/s"
 
 msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
 msgstr ""
+"anroparen stödjer inte protokollet keepalive; kanske saknar den "
+"händelseslingeimplementationen"
 
 msgid "the codeset of keycodes, default:linux"
-msgstr ""
+msgstr "koduppsättningen för tangentkoder, standard: linux"
 
 msgid ""
 "the copy job forces guest writes to be synchronously written to the "
 "destination"
 msgstr ""
+"kopieringsjobbet tvingar gästens skrivningar att vara synkront skrivna till "
+"målet"
 
 msgid "the copy job is not persisted if VM is turned off"
-msgstr ""
+msgstr "kopieringsjobbet är inte beständigt om VM:en slås av"
 
-#, fuzzy
 msgid "the default lockspace already exists"
-msgstr "Hyra %s i låsrymden %s finns redan"
+msgstr "standardlåsrymden finns redan"
 
 msgid "the domain already has a vsock device"
-msgstr ""
+msgstr "domänen har redan en vsock-enhet"
 
-#, fuzzy
 msgid "the domain does not have a current snapshot"
-msgstr "den här domänen har inte en enhet för att ta ögonblicksbilder"
+msgstr "domänen har inte en aktuell ögonblicksbild"
 
 msgid "the guest hasn't updated any stats yet"
 msgstr ""
