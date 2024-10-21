@@ -4,7 +4,7 @@ import argparse
 import copy
 import os
 import re
-import xml.etree.ElementTree
+import lxml.etree
 
 import lark
 
@@ -592,7 +592,7 @@ def main():
 
     try:
         filename = os.path.join(args.outdir, "x86_features.xml")
-        dom = xml.etree.ElementTree.parse(filename)
+        dom = lxml.etree.parse(filename)
         known = [x.attrib["name"] for x in dom.getroot().iter("feature")]
         unknown = [x for x in features if x not in known and x is not None]
     except Exception as e:
