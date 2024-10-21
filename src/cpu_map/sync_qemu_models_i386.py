@@ -502,8 +502,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Synchronize x86 cpu models from QEMU i386 target.")
     parser.add_argument(
-        "cpufile",
-        help="Path to 'target/i386/cpu.c' file in the QEMU repository",
+        "qemu",
+        help="Path to QEMU source code",
         type=os.path.realpath)
     parser.add_argument(
         "outdir",
@@ -512,7 +512,12 @@ def main():
 
     args = parser.parse_args()
 
-    builtin_x86_defs = read_builtin_x86_defs(args.cpufile)
+    cpufile = os.path.join(args.qemu, 'target/i386/cpu.c')
+    if not os.path.isfile(cpufile):
+        parser.print_help()
+        exit("QEMU source directory not found")
+
+    builtin_x86_defs = read_builtin_x86_defs(cpufile)
 
     ast = lark.Lark(r"""
         list: value ( "," value )* ","?
