@@ -454,11 +454,21 @@ def expand_model(model):
     versions = model.pop(".versions", [])
     for k, v in model.items():
         result["extra"]["model" + k] = v
+
+    print(result['name'])
     yield result
 
+    name = result["name"]
     for version in versions:
         result = copy.deepcopy(result)
-        result["name"] = version.pop(".alias", result["name"])
+
+        ver = int(version.pop(".version"))
+        result["name"] = f"{name}-v{ver}"
+        result["base"] = name
+
+        alias = version.pop(".alias", None)
+        if not alias and ver == 1:
+            alias = name
 
         props = version.pop(".props", dict())
         for k, v in props:
@@ -477,7 +487,24 @@ def expand_model(model):
         for k, v in version.items():
             result["extra"]["version" + k] = v
 
-        yield result
+        if alias:
+            print(f"v{ver}: {result['name']} => {alias}")
+            yield {
+                "vendor": result["vendor"],
+                "name": result["name"],
+                "base": result["base"],
+                "alias": alias,
+                "extra": None,
+                "features": [],
+            }
+
+            if ver != 1:
+                result["name"] = alias
+                print(f"v{ver}: {result['name']}")
+                yield result
+        else:
+            print(f"v{ver}: {result['name']}")
+            yield result
 
 
 def output_model(f, model):
@@ -487,11 +514,18 @@ def output_model(f, model):
             f.write(f"  '{k}': '{v}'\n")
         f.write("-->\n")
 
+    decode = "off" if "base" in model else "on"
+
     f.write("<cpus>\n")
     f.write(f"  <model name='{model['name']}'>\n")
-    f.write("    <decode host='on' guest='on'/>\n")
-    f.write(f"    <signature family='{model['family']}' model='{model['model']}'/>\n")
-    f.write(f"    <vendor name='{model['vendor']}'/>\n")
+    f.write(f"    <decode host='on' guest='{decode}'/>\n")
+
+    if "alias" in model:
+        f.write(f"    <model name='{model['alias']}'/>\n")
+    else:
+        f.write(f"    <signature family='{model['family']}' model='{model['model']}'/>\n")
+        f.write(f"    <vendor name='{model['vendor']}'/>\n")
+
     for feature in sorted(model["features"]):
         f.write(f"    <feature name='{feature}'/>\n")
     f.write("  </model>\n")
