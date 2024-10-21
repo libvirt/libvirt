@@ -19,7 +19,7 @@ def translate_vendor(name):
     if name in T:
         return T[name]
 
-    print("warning: Unknown vendor '{}'".format(name))
+    print(f"warning: Unknown vendor '{name}'")
     return name
 
 
@@ -318,7 +318,7 @@ def translate_feature(name):
         if name.replace("-", "_") == v.replace("-", "_"):
             return v
 
-    print("warning: Unknown feature '{}'".format(name))
+    print(f"warning: Unknown feature '{name}'")
     return name
 
 
@@ -484,17 +484,16 @@ def output_model(f, model):
     if model["extra"]:
         f.write("<!-- extra info from qemu:\n")
         for k, v in model["extra"].items():
-            f.write("  '{}': '{}'\n".format(k, v))
+            f.write(f"  '{k}': '{v}'\n")
         f.write("-->\n")
 
     f.write("<cpus>\n")
-    f.write("  <model name='{}'>\n".format(model["name"]))
+    f.write(f"  <model name='{model['name']}'>\n")
     f.write("    <decode host='on' guest='on'/>\n")
-    f.write("    <signature family='{}' model='{}'/>\n".format(
-        model["family"], model["model"]))
-    f.write("    <vendor name='{}'/>\n".format(model["vendor"]))
+    f.write(f"    <signature family='{model['family']}' model='{model['model']}'/>\n")
+    f.write(f"    <vendor name='{model['vendor']}'/>\n")
     for feature in sorted(model["features"]):
-        f.write("    <feature name='{}'/>\n".format(feature))
+        f.write(f"    <feature name='{feature}'/>\n")
     f.write("  </model>\n")
     f.write("</cpus>\n")
 
@@ -535,7 +534,7 @@ def main():
         models.extend(expand_model(model))
 
     for model in models:
-        name = os.path.join(args.outdir, "x86_{}.xml".format(model["name"]))
+        name = os.path.join(args.outdir, f"x86_{model['name']}.xml")
         with open(name, "wt") as f:
             output_model(f, model)
 
@@ -550,10 +549,10 @@ def main():
         unknown = [x for x in features if x not in known and x is not None]
     except Exception as e:
         unknown = []
-        print("warning: Unable to read libvirt x86_features.xml: {}".format(e))
+        print(f"warning: Unable to read libvirt x86_features.xml: {e}")
 
     for x in unknown:
-        print("warning: Feature unknown to libvirt: {}".format(x))
+        print(f"warning: Feature unknown to libvirt: {x}")
 
 
 if __name__ == "__main__":
