@@ -535,6 +535,10 @@ def main():
 
     for model in models:
         name = os.path.join(args.outdir, f"x86_{model['name']}.xml")
+        if os.path.isfile(name):
+            # Ignore existing models as CPU models in libvirt should never
+            # change once released.
+            continue
         with open(name, "wt") as f:
             output_model(f, model)
 
