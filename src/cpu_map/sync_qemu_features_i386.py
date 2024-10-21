@@ -70,6 +70,9 @@ FEATURES_EXTRA = {
         18: "cvt16",
     },
     (0x0000048c,): {
+        8: "vmx-ept-uc",
+        14: "vmx-ept-wb",
+        41: "vmx-invvpid-single-context",               # wrong name in qemu
         43: "vmx-invvpid-single-context-noglobals",     # wrong name in qemu
     }
 }
