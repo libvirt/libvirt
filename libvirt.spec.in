@@ -993,7 +993,6 @@ Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
-Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 Requires: xen
