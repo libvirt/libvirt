@@ -5985,12 +5985,24 @@
   <define name="tpm-backend-emulator-source">
     <optional>
       <element name="source">
-        <attribute name="type">
-          <value>file</value>
-        </attribute>
-        <attribute name="path">
-          <ref name="absFilePath"/>
-        </attribute>
+        <choice>
+          <group>
+            <attribute name="type">
+              <value>file</value>
+            </attribute>
+            <attribute name="path">
+              <ref name="absFilePath"/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>dir</value>
+            </attribute>
+            <attribute name="path">
+              <ref name="absDirPath"/>
+            </attribute>
+          </group>
+        </choice>
       </element>
     </optional>
   </define>

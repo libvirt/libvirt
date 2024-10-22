@@ -1326,6 +1326,7 @@ VIR_ENUM_IMPL(virDomainTPMSourceType,
               VIR_DOMAIN_TPM_SOURCE_TYPE_LAST,
               "default",
               "file",
+              "dir",
 );
 
 VIR_ENUM_IMPL(virDomainTPMPcrBank,

@@ -8199,7 +8199,8 @@ Example: usage of the TPM Emulator
 
    ``type``
       The type of storage. It's possible to provide "file" to utilize a single
-      file or block device where the TPM state will be stored.
+      file or block device where the TPM state will be stored, or "dir" for the
+      directory where the files will be stored.
 
    ``path``
       The path to the TPM state storage.
