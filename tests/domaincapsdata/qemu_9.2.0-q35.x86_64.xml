@@ -407,8 +407,35 @@
         <feature name='xfd'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='Intel'>SierraForest</model>
+      <model usable='no' vendor='Intel' canonical='SierraForest-v1'>SierraForest</model>
       <blockers model='SierraForest'>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cmpccxadd'/>
+        <feature name='erms'/>
+        <feature name='fbsdp-no'/>
+        <feature name='fsrm'/>
+        <feature name='fsrs'/>
+        <feature name='gfni'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='psdp-no'/>
+        <feature name='sbdr-ssdp-no'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v1</model>
+      <blockers model='SierraForest-v1'>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
         <feature name='avx-vnni'/>

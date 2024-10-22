@@ -62,6 +62,7 @@
       <include filename='x86_SapphireRapids.xml'/>
       <include filename='x86_GraniteRapids.xml'/>
       <include filename='x86_SierraForest.xml'/>
+      <include filename='x86_SierraForest-v1.xml'/>
     </group>
 
     <group name='AMD CPU models'>
