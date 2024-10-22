@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-22 06:05+0000\n"
+"PO-Revision-Date: 2024-10-23 08:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36227,102 +36227,114 @@ msgid "the domain does not have a current snapshot"
 msgstr "domänen har inte en aktuell ögonblicksbild"
 
 msgid "the guest hasn't updated any stats yet"
-msgstr ""
+msgstr "gästen har inte uppdaterat någon statistik ännu"
 
 msgid "the key code"
-msgstr ""
+msgstr "nyckelkoden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "the machine '%1$s' is not supported by emulator '%2$s'"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "maskinen ”%1$s” stödjs inte av emulatorn ”%2$s”"
 
 msgid "the machine has no snapshot"
-msgstr ""
+msgstr "maskinen har ingen ögonblicksbild"
 
 msgid "the new password"
-msgstr ""
+msgstr "det nya lösenordet"
 
 msgid "the password is already encrypted"
-msgstr ""
+msgstr "lösenordet är redan krypterat"
 
 msgid "the process ID"
-msgstr ""
+msgstr "process-ID:t"
 
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr "resultatet får inte plats i REMOTE_NODE_MAX_CELLS"
 
 msgid "the running swtpm does not support migration with shared storage"
-msgstr ""
+msgstr "den körande swtpm stödjer inte migrering med delad lagring"
 
 msgid "the signal number or name"
-msgstr ""
+msgstr "signalnumret eller -namnet"
 
 msgid "the state to restore"
 msgstr "tillståndet som ska återställas"
 
 msgid "the time (in milliseconds) how long the keys will be held"
-msgstr ""
+msgstr "tiden (i millisekunder) för hur länge nycklarna skall hållas"
 
 msgid "the username"
-msgstr ""
+msgstr "användarnamnet"
 
 #, c-format
 msgid "the virtiofs export directory '%1$s' does not exist"
-msgstr ""
+msgstr "exportkatalogen ”%1$s” för virtiofs finns inte"
 
 #, c-format
 msgid "the wwnn/wwpn for '%1$s' are assigned to an HBA"
-msgstr ""
+msgstr "wwnn/wwpn för ”%1$s” är tilldelade till en HBA"
 
 #, c-format
 msgid "there is already a DNS TXT record with name '%1$s' in network %2$s"
-msgstr ""
+msgstr "det finns redan en DNS TXT-post med namnet ”%1$s” i nätverket %2$s"
 
 #, c-format
 msgid ""
 "there is already at least one DNS HOST record with a matching field in "
 "network %1$s"
 msgstr ""
+"det finns redan åtminstone en DNS HOST-post med ett matchande fält i "
+"nätverket %1$s"
 
 #, c-format
 msgid ""
 "there is already at least one DNS SRV record matching all specified fields "
 "in network %1$s"
 msgstr ""
+"det finns redan åtminstone en DNS SRV-post med ett matchande fält i "
+"nätverket %1$s"
 
 #, c-format
 msgid ""
 "there is an existing dhcp host entry in network '%1$s' that matches \"<host "
 "mac='%2$s' name='%3$s' ip='%4$s'/>\""
 msgstr ""
+"det finns en befintlig dhcp host-post i nätverket ”%1$s” som matchar ”<host "
+"mac='%2$s' name='%3$s' ip='%4$s'/>”"
 
 #, c-format
 msgid ""
 "there is an existing dhcp range entry in network '%1$s' that matches "
 "\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
+"det finns en befintlig dhcp range-post i nätverket ”%1$s” som matchar ”"
+"<range start='%2$s' end='%3$s'/>”"
 
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
+"det finns en befintlig interface-post i nätverket ”%1$s” som matchar ”"
+"<interface dev='%2$s'>”"
 
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%1$s' that matches "
 "\"<portgroup name='%2$s'>\""
 msgstr ""
+"det finns en befintlig portgroup-post i nätverket ”%1$s” som matchar ”"
+"<portgroup name='%2$s'>”"
 
 msgid "there is another transaction running."
-msgstr ""
+msgstr "en annan transaktion kör."
 
 #, c-format
 msgid "there is no hub at port %1$u in USB address bus: %2$u port: %3$s"
-msgstr ""
+msgstr "det finns inget nav på port %1$u i USB-adressbussen: %2$u port: %3$s"
 
 msgid "this QEMU binary lacks multiple smartcard support"
-msgstr ""
+msgstr "denna QEMU-binär saknar stöd för multipla smartkort"
 
 msgid "this QEMU binary lacks smartcard host mode support"
 msgstr ""
