@@ -344,16 +344,23 @@ static char *
 qemuTPMGetSwtpmSetupStateArg(const virDomainTPMSourceType source_type,
                              const char *source_path)
 {
+    const char *lock = ",lock";
+
+    if (!virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_TPMSTATE_OPT_LOCK)) {
+        VIR_WARN("This swtpm version doesn't support explicit locking");
+        lock = "";
+    }
+
     switch (source_type) {
     case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
         /* the file:// prefix is supported since swtpm_setup 0.7.0 */
         /* assume the capability check for swtpm is redundant. */
-        return g_strdup_printf("file://%s", source_path);
+        return g_strdup_printf("file://%s%s", source_path, lock);
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
     case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
     default:
-        return g_strdup_printf("%s", source_path);
+        return g_strdup_printf("%s%s", source_path, lock);
     }
 }
 
