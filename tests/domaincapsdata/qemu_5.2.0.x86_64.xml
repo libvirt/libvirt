@@ -258,7 +258,8 @@
       <model usable='yes' vendor='Hygon'>Dhyana</model>
       <model usable='yes' vendor='AMD'>EPYC</model>
       <model usable='yes' vendor='AMD'>EPYC-IBPB</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome</model>
+      <model usable='yes' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
+      <model usable='yes' vendor='AMD'>EPYC-Rome-v1</model>
       <model usable='no' vendor='Intel' canonical='Haswell-v1'>Haswell</model>
       <blockers model='Haswell'>
         <feature name='erms'/>

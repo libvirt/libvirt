@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC-Rome</model>
+  <model>EPYC-Rome-v1</model>
   <vendor>AMD</vendor>
   <signature family='23' model='113' stepping='0'/>
   <feature name='monitor'/>

@@ -318,7 +318,12 @@
         <feature name='pcid'/>
         <feature name='pku'/>
       </blockers>
-      <model usable='yes' vendor='AMD'>EPYC-Rome</model>
+      <model usable='yes' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
+      <model usable='yes' vendor='AMD'>EPYC-Rome-v1</model>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v2</model>
+      <blockers model='EPYC-Rome-v2'>
+        <feature name='ibrs'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='Haswell-v1'>Haswell</model>
       <blockers model='Haswell'>
         <feature name='erms'/>

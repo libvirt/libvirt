@@ -1,13 +1,12 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC-Rome</model>
+  <model>EPYC-Rome-v3</model>
   <vendor>AMD</vendor>
   <signature family='23' model='49' stepping='0'/>
   <feature name='monitor'/>
   <feature name='osxsave'/>
   <feature name='ht'/>
   <feature name='cmt'/>
-  <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
   <feature name='cmp_legacy'/>
@@ -21,8 +20,6 @@
   <feature name='overflow-recov'/>
   <feature name='succor'/>
   <feature name='invtsc'/>
-  <feature name='ibrs'/>
-  <feature name='amd-ssbd'/>
   <feature name='lbrv'/>
   <feature name='svm-lock'/>
   <feature name='tsc-scale'/>

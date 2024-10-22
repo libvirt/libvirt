@@ -464,7 +464,7 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-Rome</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
       <blockers model='EPYC-Rome'>
         <feature name='amd-stibp'/>
         <feature name='clzero'/>
@@ -478,6 +478,71 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
         <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v1</model>
+      <blockers model='EPYC-Rome-v1'>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v2</model>
+      <blockers model='EPYC-Rome-v2'>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v3</model>
+      <blockers model='EPYC-Rome-v3'>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v4</model>
+      <blockers model='EPYC-Rome-v4'>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>

@@ -123,6 +123,10 @@
       <include filename='x86_EPYC.xml'/>
       <include filename='x86_EPYC-IBPB.xml'/>
       <include filename='x86_EPYC-Rome.xml'/>
+      <include filename='x86_EPYC-Rome-v1.xml'/>
+      <include filename='x86_EPYC-Rome-v2.xml'/>
+      <include filename='x86_EPYC-Rome-v3.xml'/>
+      <include filename='x86_EPYC-Rome-v4.xml'/>
       <include filename='x86_EPYC-Milan.xml'/>
       <include filename='x86_EPYC-Milan-v1.xml'/>
       <include filename='x86_EPYC-Milan-v2.xml'/>

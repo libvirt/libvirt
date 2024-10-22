@@ -488,13 +488,55 @@
         <feature name='xsaveerptr'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-Rome</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
       <blockers model='EPYC-Rome'>
         <feature name='3dnowprefetch'/>
         <feature name='amd-stibp'/>
         <feature name='clzero'/>
         <feature name='fxsr_opt'/>
         <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='rdpid'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='wbnoinvd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaveerptr'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v1</model>
+      <blockers model='EPYC-Rome-v1'>
+        <feature name='3dnowprefetch'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='rdpid'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='wbnoinvd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaveerptr'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v2</model>
+      <blockers model='EPYC-Rome-v2'>
+        <feature name='3dnowprefetch'/>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
         <feature name='misalignsse'/>
         <feature name='nrip-save'/>
         <feature name='osvw'/>
