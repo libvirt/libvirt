@@ -429,7 +429,30 @@ def transform(item):
     raise RuntimeError("unexpected item type")
 
 
-def expand_model(model):
+def get_signature(outdir, model):
+    file = os.path.join(outdir, f"x86_{model}.xml")
+
+    if not os.path.isfile(file):
+        return None
+
+    xml = lxml.etree.parse(file)
+
+    signature = []
+    for sig in xml.xpath("//signature"):
+        attr = sig.attrib
+        family = attr["family"]
+        model = attr["model"]
+        if "stepping" in attr:
+            stepping = attr["stepping"]
+        else:
+            stepping = None
+
+        signature.append((family, model, stepping))
+
+    return signature
+
+
+def expand_model(outdir, model):
     """Expand a qemu cpu model description that has its feature split up into
     different fields and may have differing versions into several libvirt-
     friendly cpu models."""
@@ -438,11 +461,14 @@ def expand_model(model):
         "name": model.pop(".name"),
         "vendor": translate_vendor(model.pop(".vendor")),
         "features": set(),
-        "extra": dict()}
+        "extra": dict(),
+        "signature": list(),
+    }
 
     if ".family" in model and ".model" in model:
-        result["family"] = model.pop(".family")
-        result["model"] = model.pop(".model")
+        result["signature"].append((model.pop(".family"),
+                                    model.pop(".model"),
+                                    None))
 
     for k in [k for k in model if k.startswith(".features")]:
         v = model.pop(k)
@@ -469,6 +495,10 @@ def expand_model(model):
         alias = version.pop(".alias", None)
         if not alias and ver == 1:
             alias = name
+
+            sig = get_signature(outdir, name)
+            if sig:
+                result["signature"] = sig
 
         props = version.pop(".props", dict())
         for k, v in props:
@@ -524,7 +554,11 @@ def output_model(f, extra, model):
     if "alias" in model:
         f.write(f"    <model name='{model['alias']}'/>\n")
     else:
-        f.write(f"    <signature family='{model['family']}' model='{model['model']}'/>\n")
+        for sig_family, sig_model, sig_stepping in model['signature']:
+            f.write(f"    <signature family='{sig_family}' model='{sig_model}'")
+            if sig_stepping:
+                f.write(f" stepping='{sig_stepping}'")
+            f.write("/>\n")
         f.write(f"    <vendor name='{model['vendor']}'/>\n")
 
     for feature in sorted(model["features"]):
@@ -600,7 +634,7 @@ def main():
 
     models = list()
     for model in models_json:
-        models.extend(expand_model(model))
+        models.extend(expand_model(args.outdir, model))
 
     files = dict()
 
