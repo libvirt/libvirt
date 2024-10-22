@@ -3726,7 +3726,7 @@ virSecuritySELinuxSetTPMLabels(virSecurityManager *mgr,
 
         if (setTPMStateLabel) {
             ret = virSecuritySELinuxSetFileLabels(mgr,
-                                                  def->tpms[i]->data.emulator.storagepath,
+                                                  def->tpms[i]->data.emulator.source_path,
                                                   seclabel);
         }
 
@@ -3756,14 +3756,14 @@ virSecuritySELinuxRestoreTPMLabels(virSecurityManager *mgr,
 
         if (restoreTPMStateLabel) {
             ret = virSecuritySELinuxRestoreFileLabels(mgr,
-                                                      def->tpms[i]->data.emulator.storagepath);
+                                                      def->tpms[i]->data.emulator.source_path);
         } else {
             /* Even if we're not restoring the original label for the
              * TPM state directory, we should still forget any
              * remembered label so that a subsequent attempt at TPM
              * startup will not fail due to the state directory being
              * considered as still in use */
-            virSecuritySELinuxForgetLabels(def->tpms[i]->data.emulator.storagepath);
+            virSecuritySELinuxForgetLabels(def->tpms[i]->data.emulator.source_path);
         }
 
         if (ret == 0 &&

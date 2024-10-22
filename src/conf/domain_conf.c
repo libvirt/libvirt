@@ -3461,7 +3461,7 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         virObjectUnref(def->data.emulator.source);
-        g_free(def->data.emulator.storagepath);
+        g_free(def->data.emulator.source_path);
         g_free(def->data.emulator.logfile);
         virBitmapFree(def->data.emulator.activePcrBanks);
         break;

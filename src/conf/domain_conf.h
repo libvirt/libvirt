@@ -1478,7 +1478,7 @@ struct _virDomainTPMDef {
         struct {
             virDomainTPMVersion version;
             virDomainChrSourceDef *source;
-            char *storagepath;
+            char *source_path;
             char *logfile;
             unsigned int debug;
             unsigned char secretuuid[VIR_UUID_BUFLEN];
