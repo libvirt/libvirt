@@ -340,9 +340,28 @@ qemuTPMVirCommandAddEncryption(virCommand *cmd,
 }
 
 
+static char *
+qemuTPMGetSwtpmSetupStateArg(const virDomainTPMSourceType source_type,
+                             const char *source_path)
+{
+    switch (source_type) {
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
+        /* the file:// prefix is supported since swtpm_setup 0.7.0 */
+        /* assume the capability check for swtpm is redundant. */
+        return g_strdup_printf("file://%s", source_path);
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
+    default:
+        return g_strdup_printf("%s", source_path);
+    }
+}
+
+
 /*
  * qemuTPMEmulatorRunSetup
  *
+ * @source_type: type of storage
  * @source_path: path to the directory for TPM state
  * @vmname: the name of the VM
  * @vmuuid: the UUID of the VM
@@ -360,7 +379,8 @@ qemuTPMVirCommandAddEncryption(virCommand *cmd,
  * certificates for it.
  */
 static int
-qemuTPMEmulatorRunSetup(const char *source_path,
+qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
+                        const char *source_path,
                         const char *vmname,
                         const unsigned char *vmuuid,
                         bool privileged,
@@ -376,6 +396,7 @@ qemuTPMEmulatorRunSetup(const char *source_path,
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autofree char *vmid = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
+    g_autofree char *tpm_state = qemuTPMGetSwtpmSetupStateArg(source_type, source_path);
 
     if (!swtpm_setup)
         return -1;
@@ -413,7 +434,7 @@ qemuTPMEmulatorRunSetup(const char *source_path,
 
     if (!incomingMigration) {
         virCommandAddArgList(cmd,
-                             "--tpm-state", source_path,
+                             "--tpm-state", tpm_state,
                              "--vmid", vmid,
                              "--logfile", logfile,
                              "--createek",
@@ -424,7 +445,7 @@ qemuTPMEmulatorRunSetup(const char *source_path,
                              NULL);
     } else {
         virCommandAddArgList(cmd,
-                             "--tpm-state", source_path,
+                             "--tpm-state", tpm_state,
                              "--logfile", logfile,
                              "--overwrite",
                              NULL);
@@ -465,6 +486,7 @@ qemuTPMPcrBankBitmapToStr(virBitmap *activePcrBanks)
  * qemuTPMEmulatorReconfigure
  *
  *
+ * @source_type: type of storage
  * @source_path: path to the directory for TPM state
  * @swtpm_user: The userid to switch to when setting up the TPM;
  *              typically this should be the uid of 'tss' or 'root'
@@ -478,7 +500,8 @@ qemuTPMPcrBankBitmapToStr(virBitmap *activePcrBanks)
  * Reconfigure the active PCR banks of a TPM 2.
  */
 static int
-qemuTPMEmulatorReconfigure(const char *source_path,
+qemuTPMEmulatorReconfigure(const virDomainTPMSourceType source_type,
+                           const char *source_path,
                            uid_t swtpm_user,
                            gid_t swtpm_group,
                            virBitmap *activePcrBanks,
@@ -490,6 +513,7 @@ qemuTPMEmulatorReconfigure(const char *source_path,
     int exitstatus;
     g_autofree char *activePcrBanksStr = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
+    g_autofree char *tpm_state = qemuTPMGetSwtpmSetupStateArg(source_type, source_path);
 
     if (!swtpm_setup)
         return -1;
@@ -510,7 +534,7 @@ qemuTPMEmulatorReconfigure(const char *source_path,
         return -1;
 
     virCommandAddArgList(cmd,
-                         "--tpm-state", source_path,
+                         "--tpm-state", tpm_state,
                          "--logfile", logfile,
                          "--pcr-banks", activePcrBanksStr,
                          "--reconfigure",
@@ -557,6 +581,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 {
     g_autoptr(virCommand) cmd = NULL;
     bool created = false;
+    bool run_setup = false;
     g_autofree char *swtpm = virTPMGetSwtpm();
     int pwdfile_fd = -1;
     int migpwdfile_fd = -1;
@@ -567,6 +592,18 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     if (!swtpm)
         return NULL;
 
+    if (tpm->data.emulator.source_type == VIR_DOMAIN_TPM_SOURCE_TYPE_FILE) {
+        if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_NVRAM_BACKEND_DIR)) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("%1$s does not support file storage"),
+                           swtpm);
+            goto error;
+        }
+        create_storage = false;
+        /* setup is run with --not-overwrite */
+        run_setup = true;
+    }
+
     /* Do not create storage and run swtpm_setup on incoming migration over
      * shared storage
      */
@@ -574,15 +611,18 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     if (incomingMigration && on_shared_storage)
         create_storage = false;
 
-    if (create_storage &&
-        qemuTPMEmulatorCreateStorage(tpm, &created, swtpm_user, swtpm_group) < 0)
-        return NULL;
+    if (create_storage) {
+        if (qemuTPMEmulatorCreateStorage(tpm, &created, swtpm_user, swtpm_group) < 0)
+            return NULL;
+        run_setup = created;
+    }
 
     if (tpm->data.emulator.hassecretuuid)
         secretuuid = tpm->data.emulator.secretuuid;
 
-    if (created &&
-        qemuTPMEmulatorRunSetup(tpm->data.emulator.source_path, vmname, vmuuid,
+    if (run_setup &&
+        qemuTPMEmulatorRunSetup(tpm->data.emulator.source_type,
+                                tpm->data.emulator.source_path, vmname, vmuuid,
                                 privileged, swtpm_user, swtpm_group,
                                 tpm->data.emulator.logfile,
                                 tpm->data.emulator.version,
@@ -590,7 +630,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
         goto error;
 
     if (!incomingMigration &&
-        qemuTPMEmulatorReconfigure(tpm->data.emulator.source_path,
+        qemuTPMEmulatorReconfigure(tpm->data.emulator.source_type,
+                                   tpm->data.emulator.source_path,
                                    swtpm_user, swtpm_group,
                                    tpm->data.emulator.activePcrBanks,
                                    tpm->data.emulator.logfile,
@@ -609,8 +650,18 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                            tpm->data.emulator.source->data.nix.path);
 
     virCommandAddArg(cmd, "--tpmstate");
-    virCommandAddArgFormat(cmd, "dir=%s,mode=0600",
-                           tpm->data.emulator.source_path);
+    switch (tpm->data.emulator.source_type) {
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
+        virCommandAddArgFormat(cmd, "backend-uri=file://%s",
+                               tpm->data.emulator.source_path);
+        break;
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
+        virCommandAddArgFormat(cmd, "dir=%s,mode=0600",
+                               tpm->data.emulator.source_path);
+        break;
+    }
 
     virCommandAddArg(cmd, "--log");
     if (tpm->data.emulator.debug != 0)
