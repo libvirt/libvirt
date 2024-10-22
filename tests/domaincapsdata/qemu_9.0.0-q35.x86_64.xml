@@ -202,8 +202,57 @@
       <blockers model='EPYC-Rome'>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='Intel'>GraniteRapids</model>
+      <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
+        <feature name='amx-bf16'/>
+        <feature name='amx-fp16'/>
+        <feature name='amx-int8'/>
+        <feature name='amx-tile'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-fp16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='erms'/>
+        <feature name='fbsdp-no'/>
+        <feature name='fsrc'/>
+        <feature name='fsrm'/>
+        <feature name='fsrs'/>
+        <feature name='fzrm'/>
+        <feature name='gfni'/>
+        <feature name='hle'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='prefetchiti'/>
+        <feature name='psdp-no'/>
+        <feature name='rtm'/>
+        <feature name='sbdr-ssdp-no'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='taa-no'/>
+        <feature name='tsx-ldtrk'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xfd'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>GraniteRapids-v1</model>
+      <blockers model='GraniteRapids-v1'>
         <feature name='amx-bf16'/>
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>

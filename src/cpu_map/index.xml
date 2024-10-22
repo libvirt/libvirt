@@ -61,6 +61,7 @@
       <include filename='x86_Snowridge.xml'/>
       <include filename='x86_SapphireRapids.xml'/>
       <include filename='x86_GraniteRapids.xml'/>
+      <include filename='x86_GraniteRapids-v1.xml'/>
       <include filename='x86_SierraForest.xml'/>
       <include filename='x86_SierraForest-v1.xml'/>
     </group>

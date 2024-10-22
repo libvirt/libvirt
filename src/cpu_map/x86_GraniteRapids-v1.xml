@@ -1,0 +1,6 @@
+<cpus>
+  <model name='GraniteRapids-v1'>
+    <decode host='on' guest='off'/>
+    <model name='GraniteRapids'/>
+  </model>
+</cpus>

@@ -257,8 +257,47 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='Intel'>GraniteRapids</model>
+      <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
+        <feature name='amx-bf16'/>
+        <feature name='amx-fp16'/>
+        <feature name='amx-int8'/>
+        <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-fp16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='gfni'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='mcdt-no'/>
+        <feature name='pcid'/>
+        <feature name='prefetchiti'/>
+        <feature name='rtm'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='tsx-ldtrk'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xfd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>GraniteRapids-v1</model>
+      <blockers model='GraniteRapids-v1'>
         <feature name='amx-bf16'/>
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
