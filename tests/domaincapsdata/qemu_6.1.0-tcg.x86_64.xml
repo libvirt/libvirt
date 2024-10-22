@@ -587,7 +587,7 @@
         <feature name='xsaveerptr'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Haswell</model>
+      <model usable='no' vendor='Intel' canonical='Haswell-v1'>Haswell</model>
       <blockers model='Haswell'>
         <feature name='avx'/>
         <feature name='avx2'/>
@@ -600,7 +600,7 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Haswell-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Haswell-v3'>Haswell-IBRS</model>
       <blockers model='Haswell-IBRS'>
         <feature name='avx'/>
         <feature name='avx2'/>
@@ -614,7 +614,7 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Haswell-noTSX</model>
+      <model usable='no' vendor='Intel' canonical='Haswell-v2'>Haswell-noTSX</model>
       <blockers model='Haswell-noTSX'>
         <feature name='avx'/>
         <feature name='avx2'/>
@@ -625,8 +625,58 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Haswell-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Haswell-v4'>Haswell-noTSX-IBRS</model>
       <blockers model='Haswell-noTSX-IBRS'>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Haswell-v1</model>
+      <blockers model='Haswell-v1'>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Haswell-v2</model>
+      <blockers model='Haswell-v2'>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Haswell-v3</model>
+      <blockers model='Haswell-v3'>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Haswell-v4</model>
+      <blockers model='Haswell-v4'>
         <feature name='avx'/>
         <feature name='avx2'/>
         <feature name='f16c'/>

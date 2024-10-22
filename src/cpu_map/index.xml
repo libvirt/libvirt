@@ -41,6 +41,10 @@
       <include filename='x86_Haswell-noTSX-IBRS.xml'/>
       <include filename='x86_Haswell.xml'/>
       <include filename='x86_Haswell-IBRS.xml'/>
+      <include filename='x86_Haswell-v1.xml'/>
+      <include filename='x86_Haswell-v2.xml'/>
+      <include filename='x86_Haswell-v3.xml'/>
+      <include filename='x86_Haswell-v4.xml'/>
       <include filename='x86_Broadwell-noTSX.xml'/>
       <include filename='x86_Broadwell-noTSX-IBRS.xml'/>
       <include filename='x86_Broadwell.xml'/>

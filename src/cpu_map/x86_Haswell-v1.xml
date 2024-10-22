@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Haswell-v1'>
+    <decode host='on' guest='off'/>
+    <model name='Haswell'/>
+  </model>
+</cpus>
