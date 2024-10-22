@@ -945,6 +945,10 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
     }
 
     if (tx && tx->average) {
+        if (tx->peak && tx->peak != tx->average) {
+            VIR_WARN("Setting different 'peak' value than 'average' for QoS for OVS interface %s might have unexpected results",
+                     ifname);
+        }
         if (virNetDevOpenvswitchInterfaceSetTxQos(ifname, tx, vmuuid) < 0)
             return -1;
     } else {
@@ -954,6 +958,10 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
     }
 
     if (rx) {
+        if (rx->peak && tx->peak != rx->average) {
+            VIR_WARN("Setting different 'peak' value than 'average' for QoS for OVS interface %s might have unexpected results",
+                     ifname);
+        }
         if (virNetDevOpenvswitchInterfaceSetRxQos(ifname, rx) < 0)
             return -1;
     } else {
