@@ -64,7 +64,7 @@
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown'>486</model>
-      <model usable='no' vendor='Intel'>Broadwell</model>
+      <model usable='no' vendor='Intel' canonical='Broadwell-v1'>Broadwell</model>
       <blockers model='Broadwell'>
         <feature name='erms'/>
         <feature name='hle'/>
@@ -72,7 +72,7 @@
         <feature name='pcid'/>
         <feature name='rtm'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Broadwell-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Broadwell-v3'>Broadwell-IBRS</model>
       <blockers model='Broadwell-IBRS'>
         <feature name='erms'/>
         <feature name='hle'/>
@@ -81,14 +81,44 @@
         <feature name='rtm'/>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Broadwell-noTSX</model>
+      <model usable='no' vendor='Intel' canonical='Broadwell-v2'>Broadwell-noTSX</model>
       <blockers model='Broadwell-noTSX'>
         <feature name='erms'/>
         <feature name='invpcid'/>
         <feature name='pcid'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Broadwell-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Broadwell-v4'>Broadwell-noTSX-IBRS</model>
       <blockers model='Broadwell-noTSX-IBRS'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Broadwell-v1</model>
+      <blockers model='Broadwell-v1'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Broadwell-v2</model>
+      <blockers model='Broadwell-v2'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Broadwell-v3</model>
+      <blockers model='Broadwell-v3'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Broadwell-v4</model>
+      <blockers model='Broadwell-v4'>
         <feature name='erms'/>
         <feature name='invpcid'/>
         <feature name='pcid'/>

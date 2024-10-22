@@ -45,6 +45,10 @@
       <include filename='x86_Broadwell-noTSX-IBRS.xml'/>
       <include filename='x86_Broadwell.xml'/>
       <include filename='x86_Broadwell-IBRS.xml'/>
+      <include filename='x86_Broadwell-v1.xml'/>
+      <include filename='x86_Broadwell-v2.xml'/>
+      <include filename='x86_Broadwell-v3.xml'/>
+      <include filename='x86_Broadwell-v4.xml'/>
       <include filename='x86_Skylake-Client.xml'/>
       <include filename='x86_Skylake-Client-IBRS.xml'/>
       <include filename='x86_Skylake-Client-noTSX-IBRS.xml'/>

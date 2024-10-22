@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Broadwell</model>
+  <model>Broadwell-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='79' stepping='1'/>
   <feature name='dtes64'/>
