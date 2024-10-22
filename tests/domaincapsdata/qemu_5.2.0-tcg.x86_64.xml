@@ -432,7 +432,7 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
       <blockers model='EPYC'>
         <feature name='3dnowprefetch'/>
         <feature name='avx'/>
@@ -448,7 +448,7 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-IBPB</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <blockers model='EPYC-IBPB'>
         <feature name='3dnowprefetch'/>
         <feature name='avx'/>
@@ -511,6 +511,60 @@
         <feature name='topoext'/>
         <feature name='umip'/>
         <feature name='wbnoinvd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaveerptr'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v1</model>
+      <blockers model='EPYC-v1'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='fxsr_opt'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v2</model>
+      <blockers model='EPYC-v2'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v3</model>
+      <blockers model='EPYC-v3'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='clzero'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
         <feature name='xsavec'/>
         <feature name='xsaveerptr'/>
         <feature name='xsaves'/>

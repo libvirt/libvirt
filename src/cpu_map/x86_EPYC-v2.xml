@@ -1,0 +1,6 @@
+<cpus>
+  <model name='EPYC-v2'>
+    <decode host='on' guest='off'/>
+    <model name='EPYC-IBPB'/>
+  </model>
+</cpus>

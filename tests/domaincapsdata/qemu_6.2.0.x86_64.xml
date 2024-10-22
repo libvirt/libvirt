@@ -291,8 +291,8 @@
         <feature name='taa-no'/>
       </blockers>
       <model usable='yes' vendor='Hygon'>Dhyana</model>
-      <model usable='yes' vendor='AMD'>EPYC</model>
-      <model usable='yes' vendor='AMD'>EPYC-IBPB</model>
+      <model usable='yes' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
+      <model usable='yes' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>
         <feature name='erms'/>
@@ -317,6 +317,9 @@
       <blockers model='EPYC-Rome-v2'>
         <feature name='ibrs'/>
       </blockers>
+      <model usable='yes' vendor='AMD'>EPYC-v1</model>
+      <model usable='yes' vendor='AMD'>EPYC-v2</model>
+      <model usable='yes' vendor='AMD'>EPYC-v3</model>
       <model usable='no' vendor='Intel' canonical='Haswell-v1'>Haswell</model>
       <blockers model='Haswell'>
         <feature name='erms'/>

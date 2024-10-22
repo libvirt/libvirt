@@ -122,6 +122,10 @@
       <include filename='x86_Opteron_G5.xml'/>
       <include filename='x86_EPYC.xml'/>
       <include filename='x86_EPYC-IBPB.xml'/>
+      <include filename='x86_EPYC-v1.xml'/>
+      <include filename='x86_EPYC-v2.xml'/>
+      <include filename='x86_EPYC-v3.xml'/>
+      <include filename='x86_EPYC-v4.xml'/>
       <include filename='x86_EPYC-Rome.xml'/>
       <include filename='x86_EPYC-Rome-v1.xml'/>
       <include filename='x86_EPYC-Rome-v2.xml'/>

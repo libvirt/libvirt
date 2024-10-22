@@ -323,7 +323,7 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
       <blockers model='EPYC'>
         <feature name='fxsr_opt'/>
         <feature name='misalignsse'/>
@@ -371,7 +371,7 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-IBPB</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <blockers model='EPYC-IBPB'>
         <feature name='fxsr_opt'/>
         <feature name='ibpb'/>
@@ -515,6 +515,51 @@
         <feature name='perfctr_core'/>
         <feature name='topoext'/>
         <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v1</model>
+      <blockers model='EPYC-v1'>
+        <feature name='fxsr_opt'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v2</model>
+      <blockers model='EPYC-v2'>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v3</model>
+      <blockers model='EPYC-v3'>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v4</model>
+      <blockers model='EPYC-v4'>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
