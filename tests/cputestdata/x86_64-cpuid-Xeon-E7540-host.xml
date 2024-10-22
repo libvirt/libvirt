@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Nehalem-IBRS</model>
+  <model>Nehalem-v2</model>
   <vendor>Intel</vendor>
   <signature family='6' model='46' stepping='6'/>
   <feature name='dtes64'/>

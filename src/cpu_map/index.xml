@@ -31,6 +31,8 @@
       <include filename='x86_Penryn.xml'/>
       <include filename='x86_Nehalem.xml'/>
       <include filename='x86_Nehalem-IBRS.xml'/>
+      <include filename='x86_Nehalem-v1.xml'/>
+      <include filename='x86_Nehalem-v2.xml'/>
       <include filename='x86_Westmere.xml'/>
       <include filename='x86_Westmere-IBRS.xml'/>
       <include filename='x86_Westmere-v1.xml'/>

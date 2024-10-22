@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Nehalem-v2'>
+    <decode host='on' guest='off'/>
+    <model name='Nehalem-IBRS'/>
+  </model>
+</cpus>

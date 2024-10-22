@@ -1052,9 +1052,14 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='yes' vendor='Intel'>Nehalem</model>
-      <model usable='no' vendor='Intel'>Nehalem-IBRS</model>
+      <model usable='yes' vendor='Intel' canonical='Nehalem-v1'>Nehalem</model>
+      <model usable='no' vendor='Intel' canonical='Nehalem-v2'>Nehalem-IBRS</model>
       <blockers model='Nehalem-IBRS'>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='yes' vendor='Intel'>Nehalem-v1</model>
+      <model usable='no' vendor='Intel'>Nehalem-v2</model>
+      <blockers model='Nehalem-v2'>
         <feature name='spec-ctrl'/>
       </blockers>
       <model usable='yes' vendor='AMD'>Opteron_G1</model>
