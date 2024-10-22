@@ -380,7 +380,7 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-Milan</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>
         <feature name='amd-ssbd'/>
         <feature name='amd-stibp'/>
@@ -395,6 +395,48 @@
         <feature name='pcid'/>
         <feature name='perfctr_core'/>
         <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v1</model>
+      <blockers model='EPYC-Milan-v1'>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='pcid'/>
+        <feature name='perfctr_core'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v2</model>
+      <blockers model='EPYC-Milan-v2'>
+        <feature name='amd-psfd'/>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='lfence-always-serializing'/>
+        <feature name='misalignsse'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='nrip-save'/>
+        <feature name='null-sel-clr-base'/>
+        <feature name='osvw'/>
+        <feature name='pcid'/>
+        <feature name='perfctr_core'/>
+        <feature name='stibp-always-on'/>
+        <feature name='topoext'/>
+        <feature name='vpclmulqdq'/>
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>

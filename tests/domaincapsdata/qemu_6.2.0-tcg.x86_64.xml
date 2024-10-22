@@ -530,8 +530,38 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-Milan</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>
+        <feature name='3dnowprefetch'/>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='clzero'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='fsrm'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='pcid'/>
+        <feature name='perfctr_core'/>
+        <feature name='rdpid'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='topoext'/>
+        <feature name='umip'/>
+        <feature name='wbnoinvd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaveerptr'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v1</model>
+      <blockers model='EPYC-Milan-v1'>
         <feature name='3dnowprefetch'/>
         <feature name='amd-ssbd'/>
         <feature name='amd-stibp'/>

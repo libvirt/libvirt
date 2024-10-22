@@ -336,7 +336,7 @@
         <feature name='xsaves'/>
       </blockers>
       <model usable='yes' vendor='AMD'>EPYC-IBPB</model>
-      <model usable='no' vendor='AMD'>EPYC-Milan</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>
         <feature name='erms'/>
         <feature name='fsrm'/>
@@ -344,6 +344,31 @@
         <feature name='invpcid'/>
         <feature name='pcid'/>
         <feature name='pku'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v1</model>
+      <blockers model='EPYC-Milan-v1'>
+        <feature name='erms'/>
+        <feature name='fsrm'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v2</model>
+      <blockers model='EPYC-Milan-v2'>
+        <feature name='amd-psfd'/>
+        <feature name='erms'/>
+        <feature name='fsrm'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='stibp-always-on'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
         <feature name='xsaves'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Rome</model>

@@ -51,6 +51,8 @@ cpumap_data = [
   'x86_EPYC-IBPB.xml',
   'x86_EPYC.xml',
   'x86_EPYC-Genoa.xml',
+  'x86_EPYC-Milan-v1.xml',
+  'x86_EPYC-Milan-v2.xml',
   'x86_EPYC-Milan.xml',
   'x86_EPYC-Rome.xml',
   'x86_features.xml',
