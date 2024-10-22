@@ -58,6 +58,8 @@
       <include filename='x86_Icelake-Server.xml'/>
       <include filename='x86_Icelake-Server-noTSX.xml'/>
       <include filename='x86_Cooperlake.xml'/>
+      <include filename='x86_Cooperlake-v1.xml'/>
+      <include filename='x86_Cooperlake-v2.xml'/>
       <include filename='x86_Snowridge.xml'/>
       <include filename='x86_Snowridge-v1.xml'/>
       <include filename='x86_Snowridge-v2.xml'/>

@@ -31,6 +31,8 @@ cpumap_data = [
   'x86_Cascadelake-Server-noTSX.xml',
   'x86_Cascadelake-Server.xml',
   'x86_Conroe.xml',
+  'x86_Cooperlake-v1.xml',
+  'x86_Cooperlake-v2.xml',
   'x86_Cooperlake.xml',
   'x86_core2duo.xml',
   'x86_coreduo.xml',

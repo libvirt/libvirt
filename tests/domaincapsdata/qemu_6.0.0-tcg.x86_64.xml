@@ -186,8 +186,41 @@
         <feature name='xsavec'/>
       </blockers>
       <model usable='yes' vendor='Intel'>Conroe</model>
-      <model usable='no' vendor='Intel'>Cooperlake</model>
+      <model usable='no' vendor='Intel' canonical='Cooperlake-v1'>Cooperlake</model>
       <blockers model='Cooperlake'>
+        <feature name='3dnowprefetch'/>
+        <feature name='arch-capabilities'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='hle'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='mds-no'/>
+        <feature name='pcid'/>
+        <feature name='pschange-mc-no'/>
+        <feature name='rdctl-no'/>
+        <feature name='rdseed'/>
+        <feature name='rtm'/>
+        <feature name='skip-l1dfl-vmentry'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='stibp'/>
+        <feature name='taa-no'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Cooperlake-v1</model>
+      <blockers model='Cooperlake-v1'>
         <feature name='3dnowprefetch'/>
         <feature name='arch-capabilities'/>
         <feature name='avx'/>
