@@ -83,9 +83,12 @@ Contributors to libvirt projects **must** assert that they are
 in compliance with the `Developer Certificate of Origin
 1.1 <https://developercertificate.org/>`__. This is achieved by
 adding a "Signed-off-by" line containing the contributor's name
-and e-mail to every commit message. The presence of this line
-attests that the contributor has read the above lined DCO and
-agrees with its statements.
+and e-mail to every commit message. The name should be the identity
+the contributor has chosen to be known as in the context of the
+community. It does not need to be a legal name, nor match any
+formal ID documents, but should not be anonymous, nor misrepresent
+who you are. The presence of this line attests that the contributor
+has read the above linked DCO and agrees with its statements.
 
 Further reading
 ===============

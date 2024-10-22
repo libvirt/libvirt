@@ -112,9 +112,9 @@ There are no special requirements to becoming a contributor other than having
 the interest and ability to provide a contribution. The libvirt project **does
 not require** any *"Contributor License Agreement"* to be signed prior to
 engagement with the community. However for contributing patches, providing a
-'Signed-off-by' line with the author's legal name and e-mail address to
-demonstrate agreement and compliance with the `Developer Certificate of
-Origin <https://developercertificate.org/>`__ is required.
+'Signed-off-by' line with the author's chosen name and e-mail address to
+demonstrate agreement and compliance with the `Developer Certificate
+of Origin <hacking.html#developer-certificate-of-origin>`__ is required.
 
 In making a non-patch contribution to the project, the community member is
 implicitly stating that they accept the terms of the license under which the
