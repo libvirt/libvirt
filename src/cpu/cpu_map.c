@@ -116,7 +116,7 @@ loadIncludes(xmlXPathContextPtr ctxt,
     int n;
     size_t i;
 
-    n = virXPathNodeSet("include", ctxt, &nodes);
+    n = virXPathNodeSet("include|group[@name]/include", ctxt, &nodes);
     if (n < 0)
         return -1;
 
