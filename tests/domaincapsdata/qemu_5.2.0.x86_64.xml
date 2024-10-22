@@ -469,7 +469,7 @@
       <blockers model='SandyBridge-IBRS'>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Client</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Client-v1'>Skylake-Client</model>
       <blockers model='Skylake-Client'>
         <feature name='erms'/>
         <feature name='hle'/>
@@ -477,7 +477,7 @@
         <feature name='pcid'/>
         <feature name='rtm'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Client-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Client-v2'>Skylake-Client-IBRS</model>
       <blockers model='Skylake-Client-IBRS'>
         <feature name='erms'/>
         <feature name='hle'/>
@@ -486,8 +486,32 @@
         <feature name='rtm'/>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Client-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Client-v3'>Skylake-Client-noTSX-IBRS</model>
       <blockers model='Skylake-Client-noTSX-IBRS'>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v1</model>
+      <blockers model='Skylake-Client-v1'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v2</model>
+      <blockers model='Skylake-Client-v2'>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v3</model>
+      <blockers model='Skylake-Client-v3'>
         <feature name='erms'/>
         <feature name='invpcid'/>
         <feature name='pcid'/>

@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Skylake-Client-IBRS</model>
+  <model>Skylake-Client-v2</model>
   <vendor>Intel</vendor>
   <signature family='6' model='158' stepping='10'/>
   <feature name='dtes64'/>

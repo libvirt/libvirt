@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Skylake-Client-v2'>
+    <decode host='on' guest='off'/>
+    <model name='Skylake-Client-IBRS'/>
+  </model>
+</cpus>

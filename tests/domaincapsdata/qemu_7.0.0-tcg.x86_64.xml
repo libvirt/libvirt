@@ -975,7 +975,7 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Client</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Client-v1'>Skylake-Client</model>
       <blockers model='Skylake-Client'>
         <feature name='3dnowprefetch'/>
         <feature name='avx'/>
@@ -991,7 +991,7 @@
         <feature name='x2apic'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Client-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Client-v2'>Skylake-Client-IBRS</model>
       <blockers model='Skylake-Client-IBRS'>
         <feature name='3dnowprefetch'/>
         <feature name='avx'/>
@@ -1008,7 +1008,7 @@
         <feature name='x2apic'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Client-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Client-v3'>Skylake-Client-noTSX-IBRS</model>
       <blockers model='Skylake-Client-noTSX-IBRS'>
         <feature name='3dnowprefetch'/>
         <feature name='avx'/>
@@ -1022,6 +1022,70 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
         <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v1</model>
+      <blockers model='Skylake-Client-v1'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rdseed'/>
+        <feature name='rtm'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v2</model>
+      <blockers model='Skylake-Client-v2'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rdseed'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v3</model>
+      <blockers model='Skylake-Client-v3'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rdseed'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Client-v4</model>
+      <blockers model='Skylake-Client-v4'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='avx2'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='rdseed'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Server-v1'>Skylake-Server</model>
       <blockers model='Skylake-Server'>

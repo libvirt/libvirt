@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Skylake-Client</model>
+  <model>Skylake-Client-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='158' stepping='9'/>
   <feature name='dtes64'/>

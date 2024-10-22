@@ -48,6 +48,10 @@
       <include filename='x86_Skylake-Client.xml'/>
       <include filename='x86_Skylake-Client-IBRS.xml'/>
       <include filename='x86_Skylake-Client-noTSX-IBRS.xml'/>
+      <include filename='x86_Skylake-Client-v1.xml'/>
+      <include filename='x86_Skylake-Client-v2.xml'/>
+      <include filename='x86_Skylake-Client-v3.xml'/>
+      <include filename='x86_Skylake-Client-v4.xml'/>
       <include filename='x86_Skylake-Server.xml'/>
       <include filename='x86_Skylake-Server-IBRS.xml'/>
       <include filename='x86_Skylake-Server-noTSX-IBRS.xml'/>
