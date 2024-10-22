@@ -660,7 +660,7 @@
         <feature name='x2apic'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Snowridge</model>
+      <model usable='no' vendor='Intel' canonical='Snowridge-v1'>Snowridge</model>
       <blockers model='Snowridge'>
         <feature name='3dnowprefetch'/>
         <feature name='arch-capabilities'/>
@@ -677,6 +677,78 @@
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
         <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Snowridge-v1</model>
+      <blockers model='Snowridge-v1'>
+        <feature name='3dnowprefetch'/>
+        <feature name='arch-capabilities'/>
+        <feature name='cldemote'/>
+        <feature name='core-capability'/>
+        <feature name='gfni'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='split-lock-detect'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Snowridge-v2</model>
+      <blockers model='Snowridge-v2'>
+        <feature name='3dnowprefetch'/>
+        <feature name='arch-capabilities'/>
+        <feature name='cldemote'/>
+        <feature name='core-capability'/>
+        <feature name='gfni'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='split-lock-detect'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Snowridge-v3</model>
+      <blockers model='Snowridge-v3'>
+        <feature name='3dnowprefetch'/>
+        <feature name='arch-capabilities'/>
+        <feature name='cldemote'/>
+        <feature name='core-capability'/>
+        <feature name='gfni'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='split-lock-detect'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Snowridge-v4</model>
+      <blockers model='Snowridge-v4'>
+        <feature name='3dnowprefetch'/>
+        <feature name='arch-capabilities'/>
+        <feature name='cldemote'/>
+        <feature name='gfni'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='rdseed'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
       </blockers>
       <model usable='yes' vendor='Intel'>Westmere</model>
       <model usable='no' vendor='Intel'>Westmere-IBRS</model>

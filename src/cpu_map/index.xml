@@ -59,6 +59,10 @@
       <include filename='x86_Icelake-Server-noTSX.xml'/>
       <include filename='x86_Cooperlake.xml'/>
       <include filename='x86_Snowridge.xml'/>
+      <include filename='x86_Snowridge-v1.xml'/>
+      <include filename='x86_Snowridge-v2.xml'/>
+      <include filename='x86_Snowridge-v3.xml'/>
+      <include filename='x86_Snowridge-v4.xml'/>
       <include filename='x86_SapphireRapids.xml'/>
       <include filename='x86_SapphireRapids-v1.xml'/>
       <include filename='x86_SapphireRapids-v2.xml'/>
