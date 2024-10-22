@@ -1,0 +1,6 @@
+<cpus>
+  <model name='SapphireRapids-v1'>
+    <decode host='on' guest='off'/>
+    <model name='SapphireRapids'/>
+  </model>
+</cpus>
