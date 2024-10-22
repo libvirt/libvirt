@@ -40,6 +40,8 @@ VIR_ENUM_IMPL(virTPMSwtpmFeature,
               VIR_TPM_SWTPM_FEATURE_LAST,
               "cmdarg-pwd-fd",
               "cmdarg-migration",
+              "nvram-backend-dir",
+              "nvram-backend-file",
 );
 
 VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,
