@@ -51,6 +51,11 @@
       <include filename='x86_Skylake-Server.xml'/>
       <include filename='x86_Skylake-Server-IBRS.xml'/>
       <include filename='x86_Skylake-Server-noTSX-IBRS.xml'/>
+      <include filename='x86_Skylake-Server-v1.xml'/>
+      <include filename='x86_Skylake-Server-v2.xml'/>
+      <include filename='x86_Skylake-Server-v3.xml'/>
+      <include filename='x86_Skylake-Server-v4.xml'/>
+      <include filename='x86_Skylake-Server-v5.xml'/>
       <include filename='x86_Cascadelake-Server.xml'/>
       <include filename='x86_Cascadelake-Server-noTSX.xml'/>
       <include filename='x86_Cascadelake-Server-v1.xml'/>

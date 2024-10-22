@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Skylake-Server-v1'>
+    <decode host='on' guest='off'/>
+    <model name='Skylake-Server'/>
+  </model>
+</cpus>

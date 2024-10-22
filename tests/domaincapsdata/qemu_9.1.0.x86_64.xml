@@ -966,7 +966,7 @@
         <feature name='pcid'/>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Server</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Server-v1'>Skylake-Server</model>
       <blockers model='Skylake-Server'>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -980,7 +980,7 @@
         <feature name='pku'/>
         <feature name='rtm'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Server-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Server-v2'>Skylake-Server-IBRS</model>
       <blockers model='Skylake-Server-IBRS'>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -995,7 +995,7 @@
         <feature name='rtm'/>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Skylake-Server-noTSX-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='Skylake-Server-v3'>Skylake-Server-noTSX-IBRS</model>
       <blockers model='Skylake-Server-noTSX-IBRS'>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -1007,6 +1007,75 @@
         <feature name='pcid'/>
         <feature name='pku'/>
         <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Server-v1</model>
+      <blockers model='Skylake-Server-v1'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Server-v2</model>
+      <blockers model='Skylake-Server-v2'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Server-v3</model>
+      <blockers model='Skylake-Server-v3'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Server-v4</model>
+      <blockers model='Skylake-Server-v4'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Skylake-Server-v5</model>
+      <blockers model='Skylake-Server-v5'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='erms'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+        <feature name='xsaves'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Snowridge-v1'>Snowridge</model>
       <blockers model='Snowridge'>
