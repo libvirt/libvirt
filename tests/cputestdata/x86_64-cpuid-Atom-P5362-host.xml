@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Westmere-IBRS</model>
+  <model>Westmere-v2</model>
   <vendor>Intel</vendor>
   <signature family='6' model='134' stepping='5'/>
   <feature name='pclmuldq'/>

@@ -723,9 +723,14 @@
         <feature name='spec-ctrl'/>
         <feature name='split-lock-detect'/>
       </blockers>
-      <model usable='yes' vendor='Intel'>Westmere</model>
-      <model usable='no' vendor='Intel'>Westmere-IBRS</model>
+      <model usable='yes' vendor='Intel' canonical='Westmere-v1'>Westmere</model>
+      <model usable='no' vendor='Intel' canonical='Westmere-v2'>Westmere-IBRS</model>
       <blockers model='Westmere-IBRS'>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='yes' vendor='Intel'>Westmere-v1</model>
+      <model usable='no' vendor='Intel'>Westmere-v2</model>
+      <blockers model='Westmere-v2'>
         <feature name='spec-ctrl'/>
       </blockers>
       <model usable='no' vendor='AMD'>athlon</model>

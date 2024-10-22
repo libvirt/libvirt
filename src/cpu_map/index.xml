@@ -33,6 +33,8 @@
       <include filename='x86_Nehalem-IBRS.xml'/>
       <include filename='x86_Westmere.xml'/>
       <include filename='x86_Westmere-IBRS.xml'/>
+      <include filename='x86_Westmere-v1.xml'/>
+      <include filename='x86_Westmere-v2.xml'/>
       <include filename='x86_SandyBridge.xml'/>
       <include filename='x86_SandyBridge-IBRS.xml'/>
       <include filename='x86_SandyBridge-v1.xml'/>

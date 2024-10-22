@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Westmere-v2'>
+    <decode host='on' guest='off'/>
+    <model name='Westmere-IBRS'/>
+  </model>
+</cpus>

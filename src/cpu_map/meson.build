@@ -129,6 +129,8 @@ cpumap_data = [
   'x86_Snowridge.xml',
   'x86_vendors.xml',
   'x86_Westmere-IBRS.xml',
+  'x86_Westmere-v1.xml',
+  'x86_Westmere-v2.xml',
   'x86_Westmere.xml',
 ]
 
