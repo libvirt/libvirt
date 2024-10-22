@@ -329,7 +329,7 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='Hygon'>Dhyana</model>
+      <model usable='no' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
       <blockers model='Dhyana'>
         <feature name='fxsr_opt'/>
         <feature name='ibpb'/>
@@ -338,6 +338,27 @@
         <feature name='osvw'/>
         <feature name='topoext'/>
         <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Hygon'>Dhyana-v1</model>
+      <blockers model='Dhyana-v1'>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Hygon'>Dhyana-v2</model>
+      <blockers model='Dhyana-v2'>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='topoext'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
       </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
       <blockers model='EPYC'>

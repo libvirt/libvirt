@@ -139,6 +139,8 @@
 
     <group name='Hygon CPU models'>
       <include filename='x86_Dhyana.xml'/>
+      <include filename='x86_Dhyana-v1.xml'/>
+      <include filename='x86_Dhyana-v2.xml'/>
     </group>
   </arch>
 

@@ -47,6 +47,8 @@ cpumap_data = [
   'x86_coreduo.xml',
   'x86_cpu64-rhel5.xml',
   'x86_cpu64-rhel6.xml',
+  'x86_Dhyana-v1.xml',
+  'x86_Dhyana-v2.xml',
   'x86_Dhyana.xml',
   'x86_EPYC-IBPB.xml',
   'x86_EPYC-v1.xml',

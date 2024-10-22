@@ -302,7 +302,12 @@
         <feature name='taa-no'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='yes' vendor='Hygon'>Dhyana</model>
+      <model usable='yes' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
+      <model usable='yes' vendor='Hygon'>Dhyana-v1</model>
+      <model usable='no' vendor='Hygon'>Dhyana-v2</model>
+      <blockers model='Dhyana-v2'>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='yes' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
       <model usable='no' vendor='AMD'>EPYC-Genoa</model>
       <blockers model='EPYC-Genoa'>

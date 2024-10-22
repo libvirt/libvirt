@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Dhyana-v1'>
+    <decode host='on' guest='off'/>
+    <model name='Dhyana'/>
+  </model>
+</cpus>
