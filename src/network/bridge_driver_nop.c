@@ -56,6 +56,8 @@ int networkAddFirewallRules(virNetworkDef *def G_GNUC_UNUSED,
     return 0;
 }
 
-void networkRemoveFirewallRules(virNetworkObj *obj G_GNUC_UNUSED)
+void
+networkRemoveFirewallRules(virNetworkObj *obj G_GNUC_UNUSED,
+                           bool unsetZone G_GNUC_UNUSED)
 {
 }

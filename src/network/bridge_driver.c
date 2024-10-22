@@ -1752,7 +1752,7 @@ networkReloadFirewallRulesHelper(virNetworkObj *obj,
              * and this functionality is also handled by
              * networkAdd/RemoveFirewallRules()
              */
-            networkRemoveFirewallRules(obj);
+            networkRemoveFirewallRules(obj, false);
             ignore_value(networkAddFirewallRules(def, cfg->firewallBackend, &fwRemoval));
             virNetworkObjSetFwRemoval(obj, fwRemoval);
             saveStatus = true;
@@ -2129,7 +2129,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         ignore_value(virNetDevSetOnline(def->bridge, false));
 
     if (firewalRulesAdded)
-        networkRemoveFirewallRules(obj);
+        networkRemoveFirewallRules(obj, true);
 
     virNetworkObjUnrefMacMap(obj);
 
@@ -2166,7 +2166,7 @@ networkShutdownNetworkVirtual(virNetworkObj *obj)
 
     ignore_value(virNetDevSetOnline(def->bridge, false));
 
-    networkRemoveFirewallRules(obj);
+    networkRemoveFirewallRules(obj, true);
 
     ignore_value(virNetDevBridgeDelete(def->bridge));
 
@@ -3332,7 +3332,7 @@ networkUpdate(virNetworkPtr net,
                  * old rules (and remember to load new ones after the
                  * update).
                  */
-                networkRemoveFirewallRules(obj);
+                networkRemoveFirewallRules(obj, false);
                 needFirewallRefresh = true;
                 break;
             default:

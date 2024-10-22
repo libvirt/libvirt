@@ -36,4 +36,5 @@ int networkAddFirewallRules(virNetworkDef *def,
                             virFirewallBackend firewallBackend,
                             virFirewall **fwRemoval);
 
-void networkRemoveFirewallRules(virNetworkObj *obj);
+void networkRemoveFirewallRules(virNetworkObj *obj,
+                                bool unsetZone);

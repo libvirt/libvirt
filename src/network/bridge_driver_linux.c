@@ -447,7 +447,8 @@ networkAddFirewallRules(virNetworkDef *def,
 
 
 void
-networkRemoveFirewallRules(virNetworkObj *obj)
+networkRemoveFirewallRules(virNetworkObj *obj,
+                           bool unsetZone)
 {
     virNetworkDef *def = virNetworkObjGetDef(obj);
     virFirewall *fw;
@@ -484,9 +485,10 @@ networkRemoveFirewallRules(virNetworkObj *obj)
      * same interface name wants *no* zone set. To avoid this, we must
      * "unset" the zone if we set it when the network was started.
      */
-    if (virFirewallDIsRegistered() == 0 &&
-        (def->forward.type != VIR_NETWORK_FORWARD_OPEN ||
-         def->bridgeZone)) {
+    if (unsetZone
+        && virFirewallDIsRegistered() == 0
+        && (def->forward.type != VIR_NETWORK_FORWARD_OPEN
+            || def->bridgeZone)) {
 
         VIR_DEBUG("unsetting zone for '%s' (current zone is '%s')",
                   def->bridge, def->bridgeZone);
