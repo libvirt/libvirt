@@ -5923,6 +5923,7 @@
           <interleave>
             <ref name="tpm-backend-emulator-encryption"/>
             <ref name="tpm-backend-emulator-active-pcr-banks"/>
+            <ref name="tpm-backend-emulator-source"/>
           </interleave>
           <optional>
             <attribute name="persistent_state">
@@ -5976,6 +5977,19 @@
         </attribute>
         <attribute name="mode">
           <value>connect</value>
+        </attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name="tpm-backend-emulator-source">
+    <optional>
+      <element name="source">
+        <attribute name="type">
+          <value>file</value>
+        </attribute>
+        <attribute name="path">
+          <ref name="absFilePath"/>
         </attribute>
       </element>
     </optional>

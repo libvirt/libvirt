@@ -34,6 +34,7 @@
           <sha256/>
           <sha512/>
         </active_pcr_banks>
+        <source type='file' path='/path/to/state'/>
       </backend>
     </tpm>
     <audio id='1' type='none'/>

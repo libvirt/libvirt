@@ -1322,6 +1322,12 @@ VIR_ENUM_IMPL(virDomainTPMVersion,
               "2.0",
 );
 
+VIR_ENUM_IMPL(virDomainTPMSourceType,
+              VIR_DOMAIN_TPM_SOURCE_TYPE_LAST,
+              "default",
+              "file",
+);
+
 VIR_ENUM_IMPL(virDomainTPMPcrBank,
               VIR_DOMAIN_TPM_PCR_BANK_LAST,
               "sha1",
@@ -10784,6 +10790,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     int nbackends;
     int nnodes;
     size_t i;
+    xmlNodePtr source_node = NULL;
     g_autofree char *path = NULL;
     g_autofree char *secretuuid = NULL;
     g_autofree char *persistent_state = NULL;
@@ -10855,6 +10862,22 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                 goto error;
             }
             def->data.emulator.hassecretuuid = true;
+        }
+
+        source_node = virXPathNode("./backend/source", ctxt);
+        if (source_node) {
+            if (virXMLPropEnum(source_node, "type",
+                               virDomainTPMSourceTypeTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &def->data.emulator.source_type) < 0)
+                goto error;
+            path = virXMLPropString(source_node, "path");
+            if (!path) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing TPM source path"));
+                goto error;
+            }
+            def->data.emulator.source_path = g_steal_pointer(&path);
         }
 
         persistent_state = virXMLPropString(backends[0], "persistent_state");
@@ -25069,6 +25092,11 @@ virDomainTPMDefFormat(virBuffer *buf,
                 virBufferAsprintf(&activePcrBanksBuf, "<%s/>\n", virDomainTPMPcrBankTypeToString(bank));
 
             virXMLFormatElement(&backendChildBuf, "active_pcr_banks", NULL, &activePcrBanksBuf);
+        }
+        if (def->data.emulator.source_type != VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT) {
+            virBufferAsprintf(&backendChildBuf, "<source type='%s'",
+                              virDomainTPMSourceTypeTypeToString(def->data.emulator.source_type));
+            virBufferEscapeString(&backendChildBuf, " path='%s'/>\n", def->data.emulator.source_path);
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_EXTERNAL:

@@ -8185,6 +8185,27 @@ Example: usage of the TPM Emulator
    The default version used depends on the combination of hypervisor, guest
    architecture, TPM model and backend.
 
+``source``
+   The ``source`` element specifies the location of the TPM state storage . This
+   element only works with the ``emulator`` backend.
+
+   When specified, it is the user's responsability to prevent files from being
+   used by multiple VMs or emulators (swtpm will also use advisory locking). If
+   not specified, the storage configuration is left to libvirt discretion.
+
+   This element requires that swtpm v0.7 or later is installed.
+
+   The following attributes are supported:
+
+   ``type``
+      The type of storage. It's possible to provide "file" to utilize a single
+      file or block device where the TPM state will be stored.
+
+   ``path``
+      The path to the TPM state storage.
+
+   :since:`Since v10.9.0`
+
 ``persistent_state``
    The ``persistent_state`` attribute indicates whether 'swtpm' TPM state is
    kept or not when a transient domain is powered off or undefined. This
