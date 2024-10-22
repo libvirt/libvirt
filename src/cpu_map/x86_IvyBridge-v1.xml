@@ -1,0 +1,6 @@
+<cpus>
+  <model name='IvyBridge-v1'>
+    <decode host='on' guest='off'/>
+    <model name='IvyBridge'/>
+  </model>
+</cpus>

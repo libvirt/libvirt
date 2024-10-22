@@ -992,15 +992,30 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='no' vendor='Intel'>IvyBridge</model>
+      <model usable='no' vendor='Intel' canonical='IvyBridge-v1'>IvyBridge</model>
       <blockers model='IvyBridge'>
         <feature name='avx'/>
         <feature name='f16c'/>
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='no' vendor='Intel'>IvyBridge-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='IvyBridge-v2'>IvyBridge-IBRS</model>
       <blockers model='IvyBridge-IBRS'>
+        <feature name='avx'/>
+        <feature name='f16c'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>IvyBridge-v1</model>
+      <blockers model='IvyBridge-v1'>
+        <feature name='avx'/>
+        <feature name='f16c'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>IvyBridge-v2</model>
+      <blockers model='IvyBridge-v2'>
         <feature name='avx'/>
         <feature name='f16c'/>
         <feature name='spec-ctrl'/>

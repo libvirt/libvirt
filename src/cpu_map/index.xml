@@ -37,6 +37,8 @@
       <include filename='x86_SandyBridge-IBRS.xml'/>
       <include filename='x86_IvyBridge.xml'/>
       <include filename='x86_IvyBridge-IBRS.xml'/>
+      <include filename='x86_IvyBridge-v1.xml'/>
+      <include filename='x86_IvyBridge-v2.xml'/>
       <include filename='x86_Haswell-noTSX.xml'/>
       <include filename='x86_Haswell-noTSX-IBRS.xml'/>
       <include filename='x86_Haswell.xml'/>

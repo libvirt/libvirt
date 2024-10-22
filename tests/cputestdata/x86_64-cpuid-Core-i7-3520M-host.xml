@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>IvyBridge</model>
+  <model>IvyBridge-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='58' stepping='9'/>
   <feature name='dtes64'/>
