@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Cascadelake-Server-v3'>
+    <decode host='on' guest='off'/>
+    <model name='Cascadelake-Server-noTSX'/>
+  </model>
+</cpus>

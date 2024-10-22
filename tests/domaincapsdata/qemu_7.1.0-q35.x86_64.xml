@@ -96,7 +96,7 @@
         <feature name='pcid'/>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Cascadelake-Server</model>
+      <model usable='no' vendor='Intel' canonical='Cascadelake-Server-v1'>Cascadelake-Server</model>
       <blockers model='Cascadelake-Server'>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -112,8 +112,86 @@
         <feature name='rtm'/>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Cascadelake-Server-noTSX</model>
+      <model usable='no' vendor='Intel' canonical='Cascadelake-Server-v3'>Cascadelake-Server-noTSX</model>
       <blockers model='Cascadelake-Server-noTSX'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Cascadelake-Server-v1</model>
+      <blockers model='Cascadelake-Server-v1'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Cascadelake-Server-v2</model>
+      <blockers model='Cascadelake-Server-v2'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='hle'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Cascadelake-Server-v3</model>
+      <blockers model='Cascadelake-Server-v3'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Cascadelake-Server-v4</model>
+      <blockers model='Cascadelake-Server-v4'>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Cascadelake-Server-v5</model>
+      <blockers model='Cascadelake-Server-v5'>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
         <feature name='avx512dq'/>
