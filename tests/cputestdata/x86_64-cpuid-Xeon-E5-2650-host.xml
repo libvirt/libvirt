@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>SandyBridge-IBRS</model>
+  <model>SandyBridge-v2</model>
   <vendor>Intel</vendor>
   <signature family='6' model='45' stepping='7'/>
   <feature name='dtes64'/>

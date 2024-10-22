@@ -98,6 +98,8 @@ cpumap_data = [
   'x86_qemu32.xml',
   'x86_qemu64.xml',
   'x86_SandyBridge-IBRS.xml',
+  'x86_SandyBridge-v1.xml',
+  'x86_SandyBridge-v2.xml',
   'x86_SandyBridge.xml',
   'x86_SapphireRapids-v1.xml',
   'x86_SapphireRapids-v2.xml',

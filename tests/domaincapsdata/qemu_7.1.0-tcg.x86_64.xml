@@ -1033,14 +1033,27 @@
         <feature name='xop'/>
       </blockers>
       <model usable='yes' vendor='Intel'>Penryn</model>
-      <model usable='no' vendor='Intel'>SandyBridge</model>
+      <model usable='no' vendor='Intel' canonical='SandyBridge-v1'>SandyBridge</model>
       <blockers model='SandyBridge'>
         <feature name='avx'/>
         <feature name='tsc-deadline'/>
         <feature name='x2apic'/>
       </blockers>
-      <model usable='no' vendor='Intel'>SandyBridge-IBRS</model>
+      <model usable='no' vendor='Intel' canonical='SandyBridge-v2'>SandyBridge-IBRS</model>
       <blockers model='SandyBridge-IBRS'>
+        <feature name='avx'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>SandyBridge-v1</model>
+      <blockers model='SandyBridge-v1'>
+        <feature name='avx'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>SandyBridge-v2</model>
+      <blockers model='SandyBridge-v2'>
         <feature name='avx'/>
         <feature name='spec-ctrl'/>
         <feature name='tsc-deadline'/>
