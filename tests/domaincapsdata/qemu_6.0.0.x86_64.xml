@@ -239,7 +239,7 @@
         <feature name='vaes'/>
         <feature name='vpclmulqdq'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Icelake-Server</model>
+      <model usable='no' vendor='Intel' canonical='Icelake-Server-v1'>Icelake-Server</model>
       <blockers model='Icelake-Server'>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
@@ -263,7 +263,7 @@
         <feature name='vaes'/>
         <feature name='vpclmulqdq'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Icelake-Server-noTSX</model>
+      <model usable='no' vendor='Intel' canonical='Icelake-Server-v2'>Icelake-Server-noTSX</model>
       <blockers model='Icelake-Server-noTSX'>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
@@ -282,6 +282,102 @@
         <feature name='pcid'/>
         <feature name='pku'/>
         <feature name='spec-ctrl'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Icelake-Server-v1</model>
+      <blockers model='Icelake-Server-v1'>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='gfni'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='rtm'/>
+        <feature name='spec-ctrl'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Icelake-Server-v2</model>
+      <blockers model='Icelake-Server-v2'>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='gfni'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Icelake-Server-v3</model>
+      <blockers model='Icelake-Server-v3'>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='gfni'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+        <feature name='taa-no'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Icelake-Server-v4</model>
+      <blockers model='Icelake-Server-v4'>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='fsrm'/>
+        <feature name='gfni'/>
+        <feature name='ibrs-all'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='spec-ctrl'/>
+        <feature name='taa-no'/>
         <feature name='vaes'/>
         <feature name='vpclmulqdq'/>
       </blockers>

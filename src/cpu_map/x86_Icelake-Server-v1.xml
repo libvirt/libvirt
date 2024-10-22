@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Icelake-Server-v1'>
+    <decode host='on' guest='off'/>
+    <model name='Icelake-Server'/>
+  </model>
+</cpus>

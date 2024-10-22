@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Icelake-Server</model>
+  <model>Icelake-Server-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='106' stepping='0'/>
   <feature name='dtes64'/>
