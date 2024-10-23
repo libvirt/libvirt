@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-23 08:38+0000\n"
+"PO-Revision-Date: 2024-10-24 19:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36337,25 +36337,25 @@ msgid "this QEMU binary lacks multiple smartcard support"
 msgstr "denna QEMU-binär saknar stöd för multipla smartkort"
 
 msgid "this QEMU binary lacks smartcard host mode support"
-msgstr ""
+msgstr "denna QEMU-binär saknar stöd för värdläge för smartkort"
 
 msgid "this QEMU binary lacks smartcard passthrough mode support"
-msgstr ""
+msgstr "denna QEMU-binär saknar stöd för genomgångsläge för smartkort"
 
 msgid "this QEMU does not support 'blob' for virtio-gpu devices"
-msgstr ""
+msgstr "denna QEMU-binär stödjer inte ”blob” för virtio-gpu-enheter"
 
 msgid "this QEMU does not support 'vhost-user' video device"
-msgstr ""
+msgstr "denna QEMU-binär stödjer inte videoenheten ”vhost-user”"
 
 msgid "this QEMU does not support the 'genid' capability"
-msgstr ""
+msgstr "denna QEMU stödjer inte förmågan ”genid”"
 
 msgid "this QEMU version didn't provide SGX EPC NUMA info"
-msgstr ""
+msgstr "denna QEMU-version tillhandahöll inte SGX EPC NUMA-information"
 
 msgid "this disk doesn't support update"
-msgstr ""
+msgstr "denna disk stödjer inte uppdatering"
 
 msgid "this domain does not have a device to delete snapshots"
 msgstr "den här domänen har inte en enhet för att radera ögonblicksbilder"
@@ -36367,14 +36367,15 @@ msgid "this domain exists already"
 msgstr "denna domän finns redan"
 
 msgid "this function is not supported by the connection driver"
-msgstr ""
+msgstr "denna funktion stödjs inte av anslutningsdrivrutinen"
 
 #, c-format
 msgid "this function is not supported by the connection driver: %1$s"
-msgstr ""
+msgstr "denna funktion stödjs inte av anslutningsdrivrutinen: %1$s"
 
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
+"denna libvirtd-instans tillåter bara migrering med flaggan VIR_MIGRATE_TLS"
 
 msgid "this network exists already"
 msgstr "detta nätverk finns redan"
@@ -36383,38 +36384,39 @@ msgid "this network port exists already"
 msgstr "denna nätverksport finns redan"
 
 msgid "this platform is missing dlopen"
-msgstr ""
+msgstr "denna plattform saknar dlopen"
 
 msgid "this qemu does not support TLS transport for NBD"
-msgstr ""
+msgstr "denna qemu stödjer inte TLS-transport för NBD"
 
 msgid "this qemu doesn't support the memory-backend-memfd object"
-msgstr ""
+msgstr "denna qemu stödjer inte objektet memory-backend-memfd"
 
 msgid "this qemu doesn't support the rng-builtin backend"
-msgstr ""
+msgstr "denna qemu stödjer inte bakänden rng-builtin"
 
 msgid "this qemu doesn't support the rng-egd backend"
-msgstr ""
+msgstr "denna qemu stödjer inte bakänden rng-egd"
 
 msgid "this qemu doesn't support the rng-random backend"
-msgstr ""
+msgstr "denna qemu stödjer inte bakänden rng-random"
 
 msgid "this qemu version does not support specific vCPU hotplug"
-msgstr ""
+msgstr "denna qemu-version stödjer inte specifik vCPU-koppling i drift"
 
-#, fuzzy
 msgid "this storage volume exists already"
-msgstr "detta nätverk finns redan"
+msgstr "denna lagringsvolym finns redan"
 
 #, c-format
 msgid "thread_pool_max (%1$d) must be a positive number or -1"
-msgstr ""
+msgstr "thread_pool_max (%1$d) måste vara ett positivt tal eller -1"
 
 #, c-format
 msgid ""
 "thread_pool_max (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
+"thread_pool_max (%1$d) måste vara lika med eller större än 0 för ändring i "
+"drift"
 
 msgid "thread_pool_max must be a positive integer"
 msgstr ""
