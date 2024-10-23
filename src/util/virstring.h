@@ -138,3 +138,5 @@ int virStringParseYesNo(const char *str,
 int virStringParseVersion(unsigned long long *version,
                           const char *str,
                           bool allowMissing);
+
+void virStringListRemoveDuplicates(char ***list);

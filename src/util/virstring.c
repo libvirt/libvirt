@@ -1065,3 +1065,32 @@ virStringParseVersion(unsigned long long *version,
 
     return 0;
 }
+
+
+/**
+ * virStringListRemoveDuplicates:
+ * @list: pointer to a sorted NULL-terminated string list
+ *
+ * Replace the list pointed to by @list with a new list without duplicate
+ * strings. The original list has to be sorted.
+ */
+void
+virStringListRemoveDuplicates(char ***list)
+{
+    size_t len = g_strv_length(*list);
+    char **unique;
+    size_t n = 0;
+    size_t i;
+
+    unique = g_malloc0_n(len + 1, sizeof(char *));
+
+    for (i = 0; i < len; i++) {
+        if (n > 0 && STREQ_NULLABLE(unique[n - 1], (*list)[i]))
+            g_free((*list)[i]);
+        else
+            unique[n++] = (*list)[i];
+    }
+
+    g_free(*list);
+    *list = g_renew(char *, unique, n + 1);
+}

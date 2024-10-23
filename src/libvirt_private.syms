@@ -3438,6 +3438,7 @@ virStringHasControlChars;
 virStringHasSuffix;
 virStringIsEmpty;
 virStringIsPrintable;
+virStringListRemoveDuplicates;
 virStringMatch;
 virStringMatchesNameSuffix;
 virStringParsePort;
