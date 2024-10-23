@@ -6996,6 +6996,9 @@
               <ref name="featurestate"/>
             </element>
           </optional>
+          <optional>
+            <ref name="aia"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -7291,6 +7294,18 @@
           <ref name="scaledInteger"/>
         </element>
       </optional>
+    </element>
+  </define>
+
+  <define name="aia">
+    <element name="aia">
+      <attribute name="value">
+        <choice>
+          <value>none</value>
+          <value>aplic</value>
+          <value>aplic-imsic</value>
+        </choice>
+      </attribute>
     </element>
   </define>
 

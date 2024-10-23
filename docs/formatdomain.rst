@@ -2043,6 +2043,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <async-teardown enabled='yes'/>
      <ras state='on'/>
      <ps2 state='on'/>
+     <aia value='aplic-imsic'/>
    </features>
    ...
 
@@ -2290,6 +2291,13 @@ are:
    disable the emulation of a PS/2 controller used by ``ps2`` bus input devices.
    If the attribute is not defined, the hypervisor default will be used.
    :since:`Since 10.7.0` (QEMU only)
+``aia``
+   Configure aia (Advanced Interrupt Architecture) for RISC-V 'virt'
+   guests. Possible values for the ``value`` attribute are ``aplic`` (one
+   emulated APLIC device present per socket), ``aplic-imsic`` (one APLIC and
+   one IMSIC device present per core), or ``none`` (no support for AIA).
+   If the attribute is not defined, the hypervisor default
+   will be used. :since:`Since 11.1.0` (QEMU/KVM and RISC-V guests only)
 
 Time keeping
 ------------

@@ -186,6 +186,7 @@ VIR_ENUM_IMPL(virDomainFeature,
               "async-teardown",
               "ras",
               "ps2",
+              "aia",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -1534,6 +1535,14 @@ VIR_ENUM_IMPL(virDomainLaunchSecurity,
 VIR_ENUM_IMPL(virDomainPstoreBackend,
               VIR_DOMAIN_PSTORE_BACKEND_LAST,
               "acpi-erst",
+);
+
+VIR_ENUM_IMPL(virDomainAIA,
+              VIR_DOMAIN_AIA_LAST,
+              "default",
+              "none",
+              "aplic",
+              "aplic-imsic",
 );
 
 typedef enum {
@@ -17171,6 +17180,18 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
         }
 
+        case VIR_DOMAIN_FEATURE_AIA: {
+            virDomainAIA value;
+
+            if (virXMLPropEnumDefault(nodes[i], "value", virDomainAIATypeFromString,
+                                      VIR_XML_PROP_NONZERO, &value,
+                                      VIR_DOMAIN_AIA_DEFAULT) < 0)
+                return -1;
+
+            def->features[val] = value;
+            break;
+        }
+
         case VIR_DOMAIN_FEATURE_TCG:
             if (virDomainFeaturesTCGDefParse(def, ctxt, nodes[i]) < 0)
                 return -1;
@@ -21157,6 +21178,17 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
                                featureName,
                                "value", virDomainIBSTypeToString(src->features[i]),
                                "value", virDomainIBSTypeToString(dst->features[i]));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_AIA:
+            if (src->features[i] != dst->features[i]) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%1$s' differs: source: '%2$s=%3$s', destination: '%4$s=%5$s'"),
+                               featureName,
+                               "value", virDomainAIATypeToString(src->features[i]),
+                               "value", virDomainAIATypeToString(dst->features[i]));
                 return false;
             }
             break;
@@ -28217,6 +28249,14 @@ virDomainDefFormatFeatures(virBuffer *buf,
             if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT)
                 virBufferAsprintf(&childBuf, "<async-teardown enabled='%s'/>\n",
                                   virTristateBoolTypeToString(def->features[i]));
+            break;
+
+        case VIR_DOMAIN_FEATURE_AIA:
+            if (def->features[i] == VIR_DOMAIN_AIA_DEFAULT)
+                break;
+
+            virBufferAsprintf(&childBuf, "<aia value='%s'/>\n",
+                              virDomainAIATypeToString(def->features[i]));
             break;
 
         case VIR_DOMAIN_FEATURE_LAST:

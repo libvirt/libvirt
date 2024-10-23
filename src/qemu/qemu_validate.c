@@ -264,6 +264,21 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_AIA:
+            if (def->features[i] != VIR_DOMAIN_AIA_DEFAULT &&
+                !qemuDomainIsRISCVVirt(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("aia feature is only supported with RISC-V Virt machines"));
+                return -1;
+            }
+            if (def->features[i] != VIR_DOMAIN_AIA_DEFAULT &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_VIRT_AIA)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                              _("aia feature is not available with this QEMU binary"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_SMM:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:

@@ -229,6 +229,8 @@ virDiskNameParse;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;
+virDomainAIATypeFromString;
+virDomainAIATypeToString;
 virDomainAudioDefFree;
 virDomainAudioFormatTypeFromString;
 virDomainAudioFormatTypeToString;

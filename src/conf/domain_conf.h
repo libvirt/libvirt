@@ -2206,6 +2206,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_ASYNC_TEARDOWN,
     VIR_DOMAIN_FEATURE_RAS,
     VIR_DOMAIN_FEATURE_PS2,
+    VIR_DOMAIN_FEATURE_AIA,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -2422,6 +2423,17 @@ typedef enum {
 } virDomainIBS;
 
 VIR_ENUM_DECL(virDomainIBS);
+
+typedef enum {
+    VIR_DOMAIN_AIA_DEFAULT = 0,
+    VIR_DOMAIN_AIA_NONE,
+    VIR_DOMAIN_AIA_APLIC,
+    VIR_DOMAIN_AIA_APLIC_IMSIC,
+
+    VIR_DOMAIN_AIA_LAST
+} virDomainAIA;
+
+VIR_ENUM_DECL(virDomainAIA);
 
 typedef struct _virDomainFeatureKVM virDomainFeatureKVM;
 struct _virDomainFeatureKVM {
