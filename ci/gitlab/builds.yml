@@ -599,7 +599,8 @@ mingw64-fedora-rawhide:
 x86_64-freebsd-13:
   extends: .cirrus_build_job
   needs: []
-  allow_failure: false
+  allow_failure:
+    exit_codes: 3
   variables:
     CIRRUS_VM_IMAGE_NAME: freebsd-13-3
     CIRRUS_VM_IMAGE_SELECTOR: image_family
@@ -613,7 +614,8 @@ x86_64-freebsd-13:
 x86_64-freebsd-14:
   extends: .cirrus_build_job
   needs: []
-  allow_failure: false
+  allow_failure:
+    exit_codes: 3
   variables:
     CIRRUS_VM_IMAGE_NAME: freebsd-14-0
     CIRRUS_VM_IMAGE_SELECTOR: image_family
@@ -627,7 +629,8 @@ x86_64-freebsd-14:
 aarch64-macos-14:
   extends: .cirrus_build_job
   needs: []
-  allow_failure: false
+  allow_failure:
+    exit_codes: 3
   variables:
     CIRRUS_VM_IMAGE_NAME: ghcr.io/cirruslabs/macos-runner:sonoma
     CIRRUS_VM_IMAGE_SELECTOR: image

@@ -282,8 +282,6 @@
   image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:latest
   interruptible: true
   needs: []
-  allow_failure:
-    exit_codes: 3
   script:
     - set -o allexport
     - source ci/cirrus/$NAME.vars
