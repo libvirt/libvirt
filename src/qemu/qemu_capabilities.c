@@ -725,6 +725,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 470 */
               "migrate-incoming.exit-on-error", /* QEMU_CAPS_MIGRATE_INCOMING_EXIT_ON_ERROR */
+              "machine.virt.aia", /* QEMU_CAPS_MACHINE_VIRT_AIA */
     );
 
 
@@ -1764,6 +1765,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
     { "iommu", QEMU_CAPS_MACHINE_VIRT_IOMMU },
     { "ras", QEMU_CAPS_MACHINE_VIRT_RAS },
+    { "aia", QEMU_CAPS_MACHINE_VIRT_AIA },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsGeneric[] = {

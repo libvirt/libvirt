@@ -142,6 +142,7 @@
   <flag name='usb-mtp'/>
   <flag name='netdev.user'/>
   <flag name='snapshot-internal-qmp'/>
+  <flag name='machine.virt.aia'/>
   <version>7002050</version>
   <microcodeVersion>0</microcodeVersion>
   <package>v7.2.0-333-g222059a0fc</package>
