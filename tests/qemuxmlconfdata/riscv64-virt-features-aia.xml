@@ -1,0 +1,27 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='riscv64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <aia value='none'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>rv64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-riscv64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

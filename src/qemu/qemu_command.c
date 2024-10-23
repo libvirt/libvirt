@@ -6741,6 +6741,11 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
         virBufferAsprintf(buf, ",i8042=%s", str);
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_AIA] != VIR_DOMAIN_AIA_DEFAULT) {
+        const char *str = virDomainAIATypeToString(def->features[VIR_DOMAIN_FEATURE_AIA]);
+        virBufferAsprintf(buf, ",aia=%s", str);
+    }
+
     return 0;
 }
 
