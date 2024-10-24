@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-09-25 07:59+0000\n"
-"PO-Revision-Date: 2024-10-24 19:38+0000\n"
+"PO-Revision-Date: 2024-10-25 06:22+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36419,75 +36419,76 @@ msgstr ""
 "drift"
 
 msgid "thread_pool_max must be a positive integer"
-msgstr ""
+msgstr "thread_pool_max måste vara ett positivt heltal"
 
 #, c-format
 msgid "thread_pool_min (%1$d) can't be greater than thread_pool_max (%2$d)"
-msgstr ""
+msgstr "thread_pool_min (%1$d) kan inte vara större än thread_pool_max (%2$d)"
 
 #, c-format
 msgid "thread_pool_min (%1$d) must be equal to or greater than -1"
-msgstr ""
+msgstr "thread_pool_min (%1$d) måste vara lika med eller större än -1"
 
 #, c-format
 msgid ""
 "thread_pool_min (%1$d) must be equal to or greater than 0 for live change"
 msgstr ""
+"thread_pool_min (%1$d) måste vara lika med eller större än 0 för ändring i "
+"drift"
 
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr ""
+msgstr "thread_pool_min och thread_pool_max stödjs inte av denna QEMU-binär"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
-msgstr ""
+msgstr "thread_pool_min måste vara mindre än eller lika med thread_pool_max"
 
 msgid "threshold as a scaled number (by default bytes)"
-msgstr ""
+msgstr "tröskelvärde som ett skalat tal (som standard byte)"
 
 msgid "time to set"
-msgstr ""
+msgstr "tid att ställa"
 
 #, c-format
 msgid "timed out waiting to open tray of '%1$s'"
-msgstr ""
+msgstr "tiden gick ut vid väntan på att öppna brickan av ”%1$s”"
 
 msgid "timeout is supported only with HTTP(S)/FTP(s) protocols"
-msgstr ""
+msgstr "tidsgränser stödjs endast med protokollen HTTP(S)/FTP(s)"
 
-#, fuzzy
 msgid "timeout must be positive"
-msgstr "sndbuf måste vara ett positivt heltal"
+msgstr "tidsgränsen måste vara positiv"
 
 msgid "timeout seconds"
-msgstr ""
+msgstr "tidsgräns sekunder"
 
 msgid "timeout seconds."
-msgstr ""
+msgstr "tidsgräns sekunder."
 
 msgid "timeout seconds. must be positive."
-msgstr ""
+msgstr "tidsgräns sekunder. måste vara positiv."
 
 msgid "timeout, async and block options are exclusive"
-msgstr ""
+msgstr "tidsgräns, async och blockalternativ är uteslutande"
 
 #, c-format
 msgid "timer %1$s doesn't support setting of timer frequency"
-msgstr ""
+msgstr "tidtagaren %1$s stödjer inte att ställa tidtagarfrekvensen"
 
 #, c-format
 msgid "timer %1$s doesn't support setting of timer mode"
-msgstr ""
+msgstr "tidtagaren %1$s stödjer inte att ställa in tidtagarläge"
 
 #, c-format
 msgid "timer %1$s doesn't support setting of timer tickpolicy"
-msgstr ""
+msgstr "tidtagaren %1$s stödjer inte att ställa in tidtagarens tickpolicy"
 
 #, c-format
 msgid "timer %1$s doesn't support setting of timer track"
-msgstr ""
+msgstr "tidtagaren %1$s stödjer inte att ställa in tidtagarspåret"
 
 msgid "title"
-msgstr ""
+msgstr "titel"
 
 msgid "titles are not supported by vz driver"
 msgstr ""
