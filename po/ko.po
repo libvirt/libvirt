@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-10-08 08:38+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -7152,6 +7152,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "네트워크 포트 %1$s을(를) 삭제하지 못했습니다"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "풀 %1$s를 삭제하는 데 실패"
 
@@ -9264,6 +9268,10 @@ msgstr "후크 스크립트 실행 실패: %1$s"
 msgid "Host CPU does not provide required features"
 msgstr "호스트 CPU는 필요한 기능을 제공하지 않습니다"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "호스트 CPU가 게스트 CPU와 정확히 일치하지 않습니다: 추가 기능"
 
@@ -9980,6 +9988,10 @@ msgstr "잘못된 문자 '%1$c' (id '%2$s', 네트워크 '%3$s')"
 
 msgid "Invalid character in source channel for char device"
 msgstr "char 장치의 소스 채널에 잘못된 문자가 있습니다"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11409,6 +11421,10 @@ msgstr "브리지 이름이 없습니다"
 
 msgid "Missing capability type"
 msgstr "기능 유형이 누락됨"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "JSON 문서에 클라이언트 자료가 누락되어 있습니다"
@@ -13085,10 +13101,6 @@ msgstr "XML 덤프로서의 볼륨 정보를 표준 출력으로 출력."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "resctrls에서 겹치는 vcpus"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr "임시 디스크 '%1$s'에 대한 오버레이 파일 '%2$s'가 이미 있습니다"
 
 msgid "PASS"
 msgstr "통과"
@@ -16553,9 +16565,6 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "이 호스트는 vCenter에 의해 관리되지 않습니다"
 
-msgid "This platform does not support setting the bridge device zone"
-msgstr "이와 같은 기술환경은 브릿지 장치 대역 설정하기를 지원하지 않습니다"
-
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "이 순간찍기는 하위 항목이 있고, 미리 이들 순간찍기를 삭제하세요"
 
@@ -17339,7 +17348,8 @@ msgstr "이전 쓰레드를 생성 할 수 없습니다"
 msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
-msgstr "탭 장치 %1$s를 위해 다중 fds를 생성 할 수 없음 (아마도 기존 장치는 다중_대기 "
+msgstr ""
+"탭 장치 %1$s를 위해 다중 fds를 생성 할 수 없음 (아마도 기존 장치는 다중_대기 "
 "플래그 없이 생성되었습니다)"
 
 msgid "Unable to create pipes"
@@ -21291,8 +21301,9 @@ msgstr "기존 네트워크 장치 브릿지"
 msgid ""
 "bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
 "mode, not in %1$s (network '%2$s')"
-msgstr "브릿지 지연/멈춤/구역 옵션만 open, nat 및 격리된 방식에서만 허용되고, %1$"
-"s에서는 아닙니다(네트워크 '%2$s')"
+msgstr ""
+"브릿지 지연/멈춤/구역 옵션만 open, nat 및 격리된 방식에서만 허용되고, %1$s에"
+"서는 아닙니다(네트워크 '%2$s')"
 
 msgid "bridge interface misses the bridge element"
 msgstr "브리지 인터페이스에 bridge 요소가 빠졌습니다"
@@ -21572,7 +21583,8 @@ msgstr "max_queued 제한으로 인해 상태 변경 잠금을 획득할 수 없
 
 #, c-format
 msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
-msgstr "도메인 %1$s 장치 %2$s를 추가 할 수 없습니다 (존재하지 않는 브릿지 %3$s에서)"
+msgstr ""
+"도메인 %1$s 장치 %2$s를 추가 할 수 없습니다 (존재하지 않는 브릿지 %3$s에서)"
 
 #, c-format
 msgid "cannot add guest CPU feature for %1$s architecture"
@@ -23221,6 +23233,10 @@ msgstr "사용할 압축 방법의 쉼표로 구분된 목록"
 msgid "comma separated list of disks to be migrated"
 msgstr "이전 되어야 할 디스크의 쉼표로 구분된 목록"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "command"
 
@@ -24210,6 +24226,10 @@ msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "하위에 있는 외부 디스크 순간찍기의 삭제는 지원되지 않습니다"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -27253,6 +27273,10 @@ msgid "filter would introduce a loop"
 msgstr "필터가 루프를 도입할 수 있습니다"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "유형 %1$s의 연결장치에서 필터가 지원되지 않음"
 
@@ -27279,7 +27303,8 @@ msgstr ""
 msgid ""
 "firewalld can't find the 'libvirt' zone that should have been installed with "
 "libvirt"
-msgstr "firewalld는 libvirt로 설치 되어야 하는 'libvirt' 영역을 찾을 수 없습니다"
+msgstr ""
+"firewalld는 libvirt로 설치 되어야 하는 'libvirt' 영역을 찾을 수 없습니다"
 
 msgid "firmware auto selection not implemented for this driver"
 msgstr "이 드라이버에 대해 펌웨어 자동 선택이 구현되지 않았습니다"
@@ -28314,8 +28339,15 @@ msgstr ""
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr "실행 중인 VM의 내부 순간찍기는 메모리 상태가 포함되어야 합니다"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
-msgstr "pflash 기반의 펌웨어가 있는 VM의 내부 순간찍기는 지원되지 않습니다"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "오직 내부 사용"
@@ -29644,6 +29676,10 @@ msgstr "장치 '%1$s'의 라이브 연결이 지원되지 않습니다"
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "장치 '%1$s'의 실시간 분리가 지원되지 않습니다"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -32192,7 +32228,8 @@ msgstr "uuid '%1$s'와 일치하는 nwfilter가 없음"
 
 msgid ""
 "no panic model provided, and no default for the architecture and machine type"
-msgstr "패닉 모델이 제공되지 않았고, 구조 및 장비 유형을 위한 기본값이 없습니다"
+msgstr ""
+"패닉 모델이 제공되지 않았고, 구조 및 장비 유형을 위한 기본값이 없습니다"
 
 msgid "no parent for this device"
 msgstr "이 장치에 대한 부모가 없음"
@@ -35050,6 +35087,10 @@ msgid ""
 msgstr ""
 "메모리 상태가 없는 순간찍기, 손상을 방지하려면 기존 관리 저장된 상태를 제거하"
 "는 것이 아주 좋습니다"
+
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
 
 msgid "snapshotName is null"
 msgstr "순간찍기 이름이 null입니다"
@@ -38097,6 +38138,10 @@ msgid "unsupported gluster lookup"
 msgstr "지원되지 않는 Gluster 조회"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "지원되지 않는 게스트 정보 유형 '0x%1$x'"
 
@@ -38305,6 +38350,11 @@ msgid ""
 msgstr ""
 "'VIR_MIGRATE_PARAM_MIGRATE_DISKS'의 사용은 'VIR_MIGRATE_NON_SHARED_DISK' 또"
 "는 'VIR_MIGRATE_NON_SHARED_INC' 플래그의 사용이 필요합니다"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "<server>를 사용하려면 풀 모드 백업이 필요합니다"
@@ -39305,6 +39355,17 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr "임시 디스크 '%1$s'에 대한 오버레이 파일 '%2$s'가 이미 있습니다"
+
+#~ msgid "This platform does not support setting the bridge device zone"
+#~ msgstr "이와 같은 기술환경은 브릿지 장치 대역 설정하기를 지원하지 않습니다"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr "pflash 기반의 펌웨어가 있는 VM의 내부 순간찍기는 지원되지 않습니다"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr "100을 초과하는 메모리 대역폭 값은 유효하지 않습니다."

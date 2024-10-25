@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-10-25 06:22+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -7250,6 +7250,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Misslyckades att radera nätverksporten %1$s"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Misslyckades att radera poolen %1$s"
 
@@ -9404,6 +9408,10 @@ msgstr "Exekvering av hakens skript misslyckades: %1$s"
 msgid "Host CPU does not provide required features"
 msgstr "Värd-CPU:n tillhandahåller inte de begärda funktionerna"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "Värd-CPU:n stämmer inte strikt med gäst-CPU:n: Extra funktioner"
 
@@ -10130,6 +10138,10 @@ msgstr "Felaktigt tecken ”%1$c” i id ”%2$s” av nätverket ”%3$s”"
 
 msgid "Invalid character in source channel for char device"
 msgstr "Felaktigt tecken i källkanalen för teckenenhet"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11585,6 +11597,10 @@ msgstr "Saknat bryggnamn"
 
 msgid "Missing capability type"
 msgstr "Saknad förmågetyp"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "Saknade klientdata i JSON-dokumentet"
@@ -13277,10 +13293,6 @@ msgstr "Skriv ut volyminformationen som en XML-dump till standard ut."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "Överlappande vcpu:er i resctrls"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr "Överläggsfilen ”%1$s” för den transienta disken ”%2$s” finns redan"
 
 msgid "PASS"
 msgstr "GODKÄND"
@@ -16782,9 +16794,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Denna värd hanteras inte av ett vCenter"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr "Denna plattform stödjer inte att ställa in bryggenhetszonen"
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "Denna ögonblicksbid har barn, radera dessa ögonblicksbilder först"
@@ -23540,6 +23549,10 @@ msgstr "kommaseparerad lista över komprimeringsmetoder att använda"
 msgid "comma separated list of disks to be migrated"
 msgstr "kommaseparerad lista över diskar att migrera"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "kommando"
 
@@ -24549,6 +24562,10 @@ msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "att radera externa diskögonblicksbilder med barn stödjs inte"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -27623,6 +27640,10 @@ msgid "filter would introduce a loop"
 msgstr "filtret skulle införa en slinga"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "filter stödjs inte på gränssnitt av typen %1$s"
 
@@ -28705,10 +28726,15 @@ msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 "intern ögonblicksbild av en körande VM måste inkludera minnestillståndet"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
 msgstr ""
-"interna ögonblicksbilder av en VM med pflash-baserad fast programvara stödjs "
-"inte"
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "endast för intern användning"
@@ -30054,6 +30080,10 @@ msgstr "inkoppling under drift av enheten “%1$s“ stödjs inte"
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "frånkoppling under drift av enheten “%1$s“ stödjs inte"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35579,6 +35609,10 @@ msgstr ""
 "ögonblicksbild utan minnestillstånd, att ta bort ett befintligt hanterat "
 "sparat tillstånd rekommenderas bestämt för att undvika förvanskning"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "snapshotName är null"
 
@@ -36125,7 +36159,8 @@ msgstr ""
 
 #, c-format
 msgid "teaming persistent attribute not allowed if teaming type is '%1$s'"
-msgstr "beständigt teaming-attribut är inte tillåtet om teaming-typen är ”%1$s”"
+msgstr ""
+"beständigt teaming-attribut är inte tillåtet om teaming-typen är ”%1$s”"
 
 msgid "template does not exist"
 msgstr "mallen finns inte"
@@ -36307,24 +36342,24 @@ msgid ""
 "there is an existing dhcp range entry in network '%1$s' that matches "
 "\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
-"det finns en befintlig dhcp range-post i nätverket ”%1$s” som matchar ”"
-"<range start='%2$s' end='%3$s'/>”"
+"det finns en befintlig dhcp range-post i nätverket ”%1$s” som matchar "
+"”<range start='%2$s' end='%3$s'/>”"
 
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-"det finns en befintlig interface-post i nätverket ”%1$s” som matchar ”"
-"<interface dev='%2$s'>”"
+"det finns en befintlig interface-post i nätverket ”%1$s” som matchar "
+"”<interface dev='%2$s'>”"
 
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%1$s' that matches "
 "\"<portgroup name='%2$s'>\""
 msgstr ""
-"det finns en befintlig portgroup-post i nätverket ”%1$s” som matchar ”"
-"<portgroup name='%2$s'>”"
+"det finns en befintlig portgroup-post i nätverket ”%1$s” som matchar "
+"”<portgroup name='%2$s'>”"
 
 msgid "there is another transaction running."
 msgstr "en annan transaktion kör."
@@ -38612,6 +38647,10 @@ msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
 msgid "unsupported gluster lookup"
 msgstr "disktypen stödjs inte %s"
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
@@ -38821,6 +38860,11 @@ msgstr ""
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
@@ -39794,6 +39838,19 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr "Överläggsfilen ”%1$s” för den transienta disken ”%2$s” finns redan"
+
+#~ msgid "This platform does not support setting the bridge device zone"
+#~ msgstr "Denna plattform stödjer inte att ställa in bryggenhetszonen"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr ""
+#~ "interna ögonblicksbilder av en VM med pflash-baserad fast programvara "
+#~ "stödjs inte"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr "Minnesbandbreddsvärde överskridande 100 är felaktigt."

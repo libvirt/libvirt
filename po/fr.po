@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2023-04-04 17:20+0000\n"
 "Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -7487,6 +7487,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Échec de la suppression du port réseau %1$s"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Impossible de supprimer le pool %1$s"
 
@@ -9683,6 +9687,10 @@ msgstr "L'exécution du script Hook a échoué : %1$s"
 msgid "Host CPU does not provide required features"
 msgstr "Le CPU hôte ne fournit pas les fonctionnalités requises"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 "Le CPU de l'hôte ne correspond pas strictement au CPU de l'invité : "
@@ -10439,6 +10447,10 @@ msgstr "Caractère non valide '%1$c' dans l'id '%2$s' du réseau '%3$s'"
 
 msgid "Invalid character in source channel for char device"
 msgstr "Caractère non valide dans le canal source pour le périphérique char"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11964,6 +11976,10 @@ msgstr "Nom du pont manquant"
 
 msgid "Missing capability type"
 msgstr "Type de capacité manquante"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "Données client manquantes dans le document JSON"
@@ -13743,11 +13759,6 @@ msgstr "Afficher les informations du volume comme flux XML vers stdout."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "Chevauchement des vcpus dans les resctrls"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr ""
-"Le fichier superposé '%1$s' pour le disque transitoire '%2$s' existe déjà"
 
 msgid "PASS"
 msgstr "PASS"
@@ -17515,9 +17526,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Cet hôte n'est pas géré par un vCenter"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -24573,6 +24581,10 @@ msgstr "liste séparée par des virgules des méthodes de compression à utilise
 msgid "comma separated list of disks to be migrated"
 msgstr "liste séparée par des virgules des disques à migrer"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "commande"
 
@@ -25627,6 +25639,10 @@ msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 "suppression des instantanés de disques externes avec enfants non prise en "
 "charge"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -28761,6 +28777,10 @@ msgid "filter would introduce a loop"
 msgstr "le filtre introduirait une boucle"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "Les filtres ne sont pas pris en charge sur les interfaces de type %1$s"
 
@@ -29875,10 +29895,15 @@ msgstr ""
 "L'instantané interne d'une VM en fonctionnement doit inclure l'état de la "
 "mémoire"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
 msgstr ""
-"Les instantanés internes d'une VM avec un firmware basé sur pflash ne sont "
-"pas pris en charge"
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "usage interne uniquement"
@@ -31268,6 +31293,10 @@ msgstr ""
 msgid "live detach of device '%1$s' is not supported"
 msgstr ""
 "Le détachement en direct du périphérique '%1$s' n'est pas pris en charge"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -37084,6 +37113,10 @@ msgstr ""
 "instantané sans état de la mémoire, la suppression de l'état géré sauvegardé "
 "existant est fortement recommandée pour éviter la corruption"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "snapshotName est nul"
 
@@ -40247,6 +40280,10 @@ msgid "unsupported gluster lookup"
 msgstr "recherche non prise en charge par gluster"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "Types d'informations sur les invités non pris en charge '0x%1$x'"
 
@@ -40459,6 +40496,11 @@ msgstr "utiliser le pci multifonction sous l'adresse spécifiée"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
@@ -41524,6 +41566,17 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr ""
+#~ "Le fichier superposé '%1$s' pour le disque transitoire '%2$s' existe déjà"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr ""
+#~ "Les instantanés internes d'une VM avec un firmware basé sur pflash ne "
+#~ "sont pas pris en charge"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr ""

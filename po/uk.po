@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-09-27 04:03+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -7452,6 +7452,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Не вдалося вилучити порт мережі %1$s"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Не вдалося вилучити буфер %1$s"
 
@@ -9640,6 +9644,10 @@ msgstr "Помилка під час виконання додаткового �
 msgid "Host CPU does not provide required features"
 msgstr "Процесором основної системи не надаються потрібні можливості"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 "Процесор основної системи не збігається точно з процесором гостьової "
@@ -10393,6 +10401,10 @@ msgstr "Некоректний символ, «%1$c», у ідентифікат
 
 msgid "Invalid character in source channel for char device"
 msgstr "Некоректний символ у записі каналу джерела для символьного пристрою"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11896,6 +11908,10 @@ msgstr "Пропущено назву містка"
 
 msgid "Missing capability type"
 msgstr "Не вказано типу можливості"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "У документі JSON не вистачає даних клієнта"
@@ -13674,10 +13690,6 @@ msgstr "Вивід інформації щодо тому у форматі да
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "Перекриття vcpus у resctrls"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr "Файл накладки «%1$s» для проміжного диска «%2$s» вже існує"
 
 msgid "PASS"
 msgstr "ПРОЙДЕНО"
@@ -17532,10 +17544,6 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Цією основною системою не керує vCenter"
 
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
-"На цій платформі не передбачено можливості встановлення зони пристрою містка"
-
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "У цього знімка є дочірні. Будь ласка, спочатку вилучіть ці знімки"
 
@@ -18336,8 +18344,8 @@ msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
 msgstr ""
-"Не вдалося створити декілька дескрипторів файлів для пристрою tap %1$s ("
-"можливо, наявний пристрій було створено без прапорця multi_queue)"
+"Не вдалося створити декілька дескрипторів файлів для пристрою tap %1$s "
+"(можливо, наявний пристрій було створено без прапорця multi_queue)"
 
 msgid "Unable to create pipes"
 msgstr "Не вдалося створити канали обробки"
@@ -24493,6 +24501,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr "список дисків, які слід перенести, з відокремленням записів комами"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "команда"
 
@@ -25528,6 +25540,10 @@ msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 "підтримки вилучення зовнішніх знімків дисків із дочірніми елементами не "
 "передбачено"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -28648,6 +28664,10 @@ msgid "filter would introduce a loop"
 msgstr "фільтрування призведе до циклічної обробки"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "підтримки фільтрування на інтерфейсі типу %1$s не передбачено"
 
@@ -29810,10 +29830,15 @@ msgstr ""
 "Внутрішній знімок запущеної віртуальної машини має включати дані щодо стану "
 "пам'яті"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
 msgstr ""
-"підтримки внутрішніх знімків віртуальної машини за допомогою мікрокоду на "
-"основі pflash не передбачено"
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "лише для внутрішнього використання"
@@ -31193,6 +31218,10 @@ msgstr "підтримки інтерактивного під'єднання п
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "підтримки інтерактивного від'єднання пристрою «%1$s» не передбачено"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -36991,6 +37020,10 @@ msgstr ""
 "знімок без стану пам'яті, наполегливо рекомендуємо вилучення наявного "
 "керованого збереженого стану для запобігання пошкодженню даних"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "Значення snapshotName є порожнім"
 
@@ -40114,6 +40147,10 @@ msgid "unsupported gluster lookup"
 msgstr "непідтримуваний фільтр gluster"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "непідтримувані типи інформації щодо гостьової системи «0x%1$x»"
 
@@ -40332,6 +40369,11 @@ msgid ""
 msgstr ""
 "використання «VIR_MIGRATE_PARAM_MIGRATE_DISKS» потребує використання "
 "прапорця «VIR_MIGRATE_NON_SHARED_DISK» або «VIR_MIGRATE_NON_SHARED_INC»"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "використання <server> потребує резервного копіювання у режимі pull"
@@ -41409,6 +41451,21 @@ msgstr "нуль-копіюванням можна скористатися ли
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "надійшов запит щодо зони %1$s для мережі %2$s, але firewalld не задіяно"
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr "Файл накладки «%1$s» для проміжного диска «%2$s» вже існує"
+
+#~ msgid "This platform does not support setting the bridge device zone"
+#~ msgstr ""
+#~ "На цій платформі не передбачено можливості встановлення зони пристрою "
+#~ "містка"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr ""
+#~ "підтримки внутрішніх знімків віртуальної машини за допомогою мікрокоду на "
+#~ "основі pflash не передбачено"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr "Значення ширини каналу пам'яті, що перевищує 100, є некоректним."

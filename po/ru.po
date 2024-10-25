@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-06-02 15:35+0000\n"
 "Last-Translator: \"Sergey A.\" <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -7257,6 +7257,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Не удалось удалить сетевой порт %1$s"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Не удалось удалить пул %1$s"
 
@@ -9394,6 +9398,10 @@ msgstr "Ошибка выполнения сценария обработчик�
 msgid "Host CPU does not provide required features"
 msgstr "Процессор физической системы не предоставляет обязательные функции"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 "Процессор физической системы не точно совпадает с процессором гостевой "
@@ -10126,6 +10134,10 @@ msgstr "Недопустимый символ «%1$c» в ID «%2$s» сети �
 
 msgid "Invalid character in source channel for char device"
 msgstr "Недопустимый символ в исходном канале для символьного устройства"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11598,6 +11610,10 @@ msgstr "Отсутствует имя моста"
 
 msgid "Missing capability type"
 msgstr "Отсутствует тип возможности"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "Документ JSON не содержит данных клиента"
@@ -13337,10 +13353,6 @@ msgstr "Вывести описание тома в виде XML в stdout."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "Перекрытие vcpus в resctrls"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr ""
 
 msgid "PASS"
 msgstr "OK"
@@ -16886,9 +16898,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Этот хост не находится под управлением vCenter"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "У этого снимка имеются дочерние. Удалите сначала эти снимки"
@@ -23725,6 +23734,10 @@ msgstr "список методов сжатия, разделённых зап�
 msgid "comma separated list of disks to be migrated"
 msgstr "список дисков для миграции, разделённых запятой"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "командная строка"
 
@@ -24730,6 +24743,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -27764,6 +27781,10 @@ msgid "filter would introduce a loop"
 msgstr "фильтр приведет к зацикливанию"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "интерфейсы типа %1$s не поддерживают использование фильтров"
 
@@ -28883,10 +28904,15 @@ msgstr ""
 "внутренний снимок запущенной виртуальной машины должен включать состояние "
 "памяти"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
 msgstr ""
-"внутренние снимки виртуальной машины с микропрограммой на основе pflash не "
-"поддерживаются"
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "только внутреннее использование"
@@ -30241,6 +30267,10 @@ msgstr "подключение устройства «%1$s» в «горячем
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "отключение устройства «%1$s» в «горячем» режиме не поддерживается"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35832,6 +35862,10 @@ msgstr ""
 "снимок без состояния памяти, во избежание повреждения данных настоятельно "
 "рекомендуется удалить существующее управляемое сохранённое состояние"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "имя снимка не определено"
 
@@ -38920,6 +38954,10 @@ msgid "unsupported gluster lookup"
 msgstr "неподдерживаемый фильтр gluster"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "неподдерживаемые типы информации о гостевой системе «0x%1$x»"
 
@@ -39126,6 +39164,11 @@ msgstr ""
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
@@ -40179,6 +40222,12 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr ""
+#~ "внутренние снимки виртуальной машины с микропрограммой на основе pflash "
+#~ "не поддерживаются"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr ""

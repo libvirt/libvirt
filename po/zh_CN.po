@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-08-26 15:38+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -6987,6 +6987,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "删除网络端口 %1$s 失败"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "删除池 %1$s 失败"
 
@@ -9079,6 +9083,10 @@ msgstr "Hook 脚本执行失败：%1$s"
 msgid "Host CPU does not provide required features"
 msgstr "主机 CPU 不提供所需功能"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "主机 CPU 没有严格与虚拟机 CPU匹配：有额外功能"
 
@@ -9767,6 +9775,10 @@ msgstr "无效字符 '%1$c' 出现在网络 '%2$s' id '%3$s' 中"
 
 msgid "Invalid character in source channel for char device"
 msgstr "字符设备的 source channel 中包含无效字符"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11161,6 +11173,10 @@ msgstr "缺少网桥名称"
 
 msgid "Missing capability type"
 msgstr "缺少功能类型"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "JSON 文件中缺少 client 数据"
@@ -12812,10 +12828,6 @@ msgstr "将卷信息作为一个 XML 转储输出到 stdout。"
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "resctrls 中重叠的 vcpus"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr "临时磁盘 '%1$s' 的覆盖文件 '%2$s' 已存在"
 
 msgid "PASS"
 msgstr "通过"
@@ -16120,9 +16132,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "这台主机不是由 vCenter 管理"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "这个快照有子项，请删除之前的这些快照"
@@ -22667,6 +22676,10 @@ msgstr "要使用的逗号分隔的压缩方法的列表"
 msgid "comma separated list of disks to be migrated"
 msgstr "要迁移的逗号分隔的磁盘的列表"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "命令"
 
@@ -23638,6 +23651,10 @@ msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "删除带有子磁盘的外部磁盘快照不被支持"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -26628,6 +26645,10 @@ msgid "filter would introduce a loop"
 msgstr "过滤器不能引进回路"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "%1$s 类型接口不支持过滤器"
 
@@ -27645,8 +27666,15 @@ msgstr "存储类型 %1$s 不支持磁盘 %2$s 的内部快照"
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr "正在运行的虚拟机的内部快照必须包含内存状态"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
-msgstr "不支持具有基于 pflash 的固件的虚拟机的内部快照"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "仅内部使用"
@@ -28957,6 +28985,10 @@ msgstr "不支持即时附加 '%1$s' 设备"
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "不支持即时断开设备 '%1$s'"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -34266,6 +34298,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr "没有内存状态的快照，强烈建议删除现有管理的保存状态以避免崩溃"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "snapshotName 为 null"
 
@@ -37253,6 +37289,10 @@ msgid "unsupported gluster lookup"
 msgstr "不支持的 gluster 查询"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "不支持的客户机信息类型 '0x%1$x'"
 
@@ -37462,6 +37502,11 @@ msgid ""
 msgstr ""
 "使用“VIR_MIGRATE_PARAM_MIGRATE_DISKS”需要使"
 "用“VIR_MIGRATE_NON_SHARED_DISK”或“VIR_MIGRATE_NON_SHARED_INC”标志"
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
 
 msgid "use of <server> requires pull mode backup"
 msgstr "使用 <server> 需要 pull 模式备份"
@@ -38430,6 +38475,14 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr "临时磁盘 '%1$s' 的覆盖文件 '%2$s' 已存在"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr "不支持具有基于 pflash 的固件的虚拟机的内部快照"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr "超过 100 的内存带宽值是无效的。"

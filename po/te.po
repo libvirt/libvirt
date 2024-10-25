@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -7015,6 +7015,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "నెట్వర్కు %1$s నవీకరించుటకు విఫలమైంది"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "%1$s పూల్ తొలగించుటలో విఫలమైంది"
 
@@ -9132,6 +9136,10 @@ msgstr "హుక్ స్క్రిప్ట్ నిర్వర్తన�
 msgid "Host CPU does not provide required features"
 msgstr "అతిధేయి CPU కావలసిన విశేషణాలను అందించదు"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "అతిధేయి CPU అనునది అతిథి CPU తో సరిపోలుటలేదు: అదనపు విశేషణాలు"
 
@@ -9836,6 +9844,10 @@ msgstr "చెల్లని అక్షరం '%1$c' ఐడి '%2$s' నం�
 #, fuzzy
 msgid "Invalid character in source channel for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు హోస్టు యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11293,6 +11305,10 @@ msgstr "సమయపాలకి పేరు లేదు"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "తప్పిపోయిన సామర్ధ్యము రకము"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "JSON పత్రము నందు క్లైంట్ దత్తాంశం దొరకలేదు"
@@ -13018,10 +13034,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "stdoutకు vol సమాచారమును XML డంప్‌వలె అవుట్‌పుట్ చేయుము."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
@@ -16434,9 +16446,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "ఈ అతిధేయి vCenter చేత నిర్వహించబడుటలేదు"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -23222,6 +23231,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr ""
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "ఆదేశము"
 
@@ -24223,6 +24236,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -27342,6 +27359,10 @@ msgid "filter would introduce a loop"
 msgstr "ఫిల్టర్ వలన లూప్ రావచ్చు"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "%1$s రకం యొక్క ఇంటర్ఫేసెస్ పైన వడపోతలు తోడ్పాటునీయవు"
 
@@ -28390,7 +28411,14 @@ msgstr "డిస్కు %1$s కొరకు అంతర్గత స్న�
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
 msgstr ""
 
 #, fuzzy
@@ -29769,6 +29797,10 @@ msgstr "పరికరం '%1$s' యొక్క లైవ్ అనుబం�
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "పరికరం '%1$s' లైవ్ వేర్పాటు తోడ్పాటునీయదు"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35372,6 +35404,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr ""
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "snapshotName is null"
 msgstr "స్నాప్‌షాట్ పేర్లను మాత్రమే జాబితాచేయి"
@@ -38415,6 +38451,10 @@ msgstr "తోడ్పాటులేని విశేషణం %1$s"
 msgid "unsupported gluster lookup"
 msgstr "మద్దతీయని డిస్కు రకము %s"
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "మద్దతీయని దృవీకరణ రకము %d"
@@ -38626,6 +38666,11 @@ msgstr "తెలిపిన చిరునామా కిందన బహు
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2015-02-27 04:41+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/fedora/language/"
@@ -6705,6 +6705,10 @@ msgstr ""
 msgid "Failed to delete network port %1$s"
 msgstr "Αποτυχία fork ως δαίμονα: %1$s"
 
+#, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Αδυναμία επεξεργασίας της κατάστασης '%1$s'"
@@ -8827,6 +8831,10 @@ msgstr ""
 msgid "Host CPU does not provide required features"
 msgstr ""
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 
@@ -9519,6 +9527,10 @@ msgid "Invalid character in source channel for char device"
 msgstr ""
 "Ελλιπής τιμή για την ιδιότητα πηγαίος εξυπηρετητής (source host ) για τη "
 "συσκευή χαρακτήρων (char device)  "
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -10929,6 +10941,10 @@ msgstr ""
 #, fuzzy
 msgid "Missing capability type"
 msgstr "δεν προσδιορίσθηκε ο τύπος της αποθηκευτικής ικανότητας για το '%s' "
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr ""
@@ -12588,10 +12604,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr ""
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
@@ -15899,9 +15911,6 @@ msgid ""
 msgstr ""
 
 msgid "This host is not managed by a vCenter"
-msgstr ""
-
-msgid "This platform does not support setting the bridge device zone"
 msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
@@ -22481,6 +22490,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr ""
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr ""
 
@@ -23448,6 +23461,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -26473,6 +26490,10 @@ msgstr ""
 msgid "filter would introduce a loop"
 msgstr ""
 
+#, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "μη υποστηριζόμενος τύπος monitor '%1$s'"
@@ -27488,7 +27509,14 @@ msgstr "ο προσαρμογέας έχει μη υποστηριζόμενο �
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
 msgstr ""
 
 msgid "internal use only"
@@ -28850,6 +28878,10 @@ msgstr ""
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
+msgstr ""
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
 msgstr ""
 
 #, c-format
@@ -34273,6 +34305,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr ""
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr ""
 
@@ -37243,6 +37279,10 @@ msgstr "μη υποστηριζόμενος τύπος monitor '%1$s'"
 msgid "unsupported gluster lookup"
 msgstr "μη υποστηριζόμενος δίαυλος εισόδου '%s'"
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "μη υποστηριζόμενος τύπος monitor '%s'"
@@ -37452,6 +37492,11 @@ msgstr ""
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 

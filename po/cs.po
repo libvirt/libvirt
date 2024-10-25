@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2023-07-27 16:21+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -7275,6 +7275,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Nepodařilo se smazat síťový port %1$s"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Nepodařilo se smazat fond %1$s"
 
@@ -9408,6 +9412,10 @@ msgstr "Vykonání zaháčkovaného skriptu se nezdařilo: %1$s"
 msgid "Host CPU does not provide required features"
 msgstr "Procesor hostitele neposkytuje potřebné funkce"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 "Procesor hostitele se neshoduje přesně s procesorem hosta: Funkce navíc"
@@ -10148,6 +10156,10 @@ msgstr "Neplatný znak „%1$c“ v identifikátoru „%2$s“ sítě „%3$s“
 
 msgid "Invalid character in source channel for char device"
 msgstr "Neplatný znak ve zdrojovém kanálu pro znakové zařízení"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11620,6 +11632,10 @@ msgstr "Chybí název síťového mostu"
 
 msgid "Missing capability type"
 msgstr "Chybí typ schopnosti"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "V JSON dokumentu chybí data klienta"
@@ -13320,10 +13336,6 @@ msgstr "Vypsat informace o svazku jako XML na standardní výstup."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "Překrývání vcpus v resctrls"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr "Překryvný soubor '%1$s' pro přechodný disk '%2$s' už existuje"
 
 msgid "PASS"
 msgstr "V POŘÁDKU"
@@ -16829,9 +16841,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Tento hostitel není spravován vCenter"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr "Tento zachycený stav má jemu podřízené – nejdříve smažte je"
@@ -23617,6 +23626,10 @@ msgstr "čárkou oddělovaný seznam metod komprese, které použít"
 msgid "comma separated list of disks to be migrated"
 msgstr "čárkou oddělovaný seznam disků, které migrovat"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "příkaz"
 
@@ -24639,6 +24652,10 @@ msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
 "mazání externích zachycených stavů disků, které mají podřízené, není "
 "podporováno"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -27717,6 +27734,10 @@ msgid "filter would introduce a loop"
 msgstr "filtr by vytvořil smyčku"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "filtry nepodporované na zařízení typu %1$s"
 
@@ -28804,10 +28825,15 @@ msgstr ""
 "je třeba aby, vnitřní zachycený stav spuštěného virt. stroje obsahoval stav "
 "paměti"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
 msgstr ""
-"vnitřní zachycené stavy virt. strojů s firmware, založeným na pflash, nejsou "
-"podporovány"
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "pouze pro použití v rámci vývoje"
@@ -30162,6 +30188,10 @@ msgstr "připojení zařízení „%1$s“ za chodu není podporováno"
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "odpojení zařízení „%1$s“ za chodu není podporováno"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35777,6 +35807,10 @@ msgstr ""
 "zachycený stav bez stavu paměti, odebrání existujícího spravovaného "
 "uloženého stavu je silně doporučováno, aby se předešlo poškození"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "Název zachyceného stavu není vyplněn"
 
@@ -38846,6 +38880,10 @@ msgid "unsupported gluster lookup"
 msgstr "nepodporované hledání gluster"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "nepodporované typy informací o hostovi '0x%1$x'"
 
@@ -39054,6 +39092,11 @@ msgstr "použít multifunkční pci pod zadanou adresou"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
@@ -40082,6 +40125,16 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr "Překryvný soubor '%1$s' pro přechodný disk '%2$s' už existuje"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr ""
+#~ "vnitřní zachycené stavy virt. strojů s firmware, založeným na pflash, "
+#~ "nejsou podporovány"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr "Hodnota šíře pásma paměti překračující 100 není platná."

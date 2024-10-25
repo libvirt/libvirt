@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -7250,6 +7250,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "ネットワークポート %1$s の削除に失敗しました"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "プール %1$s の削除に失敗しました"
 
@@ -9400,6 +9404,10 @@ msgstr "フックスクリプトの実行に失敗しました: %1$s"
 msgid "Host CPU does not provide required features"
 msgstr "ホスト CPU が要求された機能を提供していません"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "ホスト CPU がゲスト CPU と厳密に一致しません: 追加機能"
 
@@ -10137,6 +10145,10 @@ msgstr "無効な文字 '%1$c' が ID '%2$s' のネットワーク '%3$s' にあ
 
 msgid "Invalid character in source channel for char device"
 msgstr "無効な文字が char デバイスのソースチャネルにあります"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11611,6 +11623,10 @@ msgstr "ブリッジ名がありません"
 
 msgid "Missing capability type"
 msgstr "ケイパビリティータイプがありません"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "JSON ドキュメントに client データがありません"
@@ -13307,10 +13323,6 @@ msgstr "ボリューム情報を XML ダンプ形式で標準出力に出力し�
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "resctrls の重複する vcpus"
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
-msgstr "一時ディスク '%1$s' のオーバーレイファイル '%2$s' はすでに存在します"
 
 msgid "PASS"
 msgstr "成功"
@@ -16874,9 +16886,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "このホストは vCenter により管理されていません"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -23632,6 +23641,10 @@ msgstr "使用する圧縮方法のコンマ区切りリスト"
 msgid "comma separated list of disks to be migrated"
 msgstr "移行するディスクのコンマ区切りリスト"
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "コマンド"
 
@@ -24646,6 +24659,10 @@ msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr "子を持つ外部ディスクスナップショットの削除はサポートされていません"
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -27733,6 +27750,10 @@ msgid "filter would introduce a loop"
 msgstr "フィルターがループしています"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "フィルターは %1$s タイプのインターフェイスにおいてサポートされません"
 
@@ -28810,10 +28831,15 @@ msgstr ""
 "実行中の VM の内部スナップショットには、メモリーの状態が含まれている必要があ"
 "ります"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
 msgstr ""
-"pflash ベースのファームウェアを備えた VM の内部スナップショットはサポートされ"
-"ません"
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
+msgstr ""
 
 msgid "internal use only"
 msgstr "内部でのみ使用します"
@@ -30168,6 +30194,10 @@ msgstr "デバイス '%1$s' の動的接続はサポートされません"
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "デバイス '%1$s' の動的切断はサポートされません"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35738,6 +35768,10 @@ msgstr ""
 "メモリー状態のないスナップショット、破損を避けるために既存の管理保存状態を削"
 "除することを強くお勧めします"
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "snapshotName が null です"
 
@@ -38826,6 +38860,10 @@ msgid "unsupported gluster lookup"
 msgstr "サポートされない gluster ルックアップ"
 
 #, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "サポートされないゲスト情報タイプ '0x%1$x'"
 
@@ -39033,6 +39071,11 @@ msgstr "指定されたアドレスにおけるマルチファンクション PC
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
@@ -40069,6 +40112,17 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#, c-format
+#~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
+#~ msgstr ""
+#~ "一時ディスク '%1$s' のオーバーレイファイル '%2$s' はすでに存在します"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported"
+#~ msgstr ""
+#~ "pflash ベースのファームウェアを備えた VM の内部スナップショットはサポート"
+#~ "されません"
 
 #~ msgid "Memory Bandwidth value exceeding 100 is invalid."
 #~ msgstr "100 を超えるメモリー帯域幅の値は無効です。"

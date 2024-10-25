@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -7041,6 +7041,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Definiëren van netwerk uit %1$s mislukte"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Verwijderen van pool %1$s mislukte"
 
@@ -9247,6 +9251,10 @@ msgstr "Haak script uitvoering mislukte: %1$s"
 msgid "Host CPU does not provide required features"
 msgstr ""
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 
@@ -9958,6 +9966,10 @@ msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
 #, fuzzy
 msgid "Invalid character in source channel for char device"
 msgstr "Ontbrekend bron host attribuut voor karakter apparaat"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid class ID %1$d"
@@ -11416,6 +11428,10 @@ msgstr "timer naam ontbreekt"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "ontbrekend mogelijkheid type"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr ""
@@ -13133,10 +13149,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "Output de volume informatie als een XML dump naar stdout."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
@@ -16588,9 +16600,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Deze host wordt niet beheerd door een vCenter"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -23533,6 +23542,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr ""
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "commando"
 
@@ -24542,6 +24555,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -27686,6 +27703,10 @@ msgstr "filter met dezelfde UUID maar andere naam ('%1$s') bestaat al"
 msgid "filter would introduce a loop"
 msgstr "filter zou een lus introduceren"
 
+#, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "niet-ondersteund monitor type '%1$s'"
@@ -28748,7 +28769,14 @@ msgstr "interface heeft niet-ondersteund type '%s'"
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
 msgstr ""
 
 #, fuzzy
@@ -30156,6 +30184,10 @@ msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 #, fuzzy, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "hostdev mode '%1$s' niet ondersteund"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35803,6 +35835,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr ""
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "snapshotName is null"
 msgstr "snapshot naam"
@@ -38838,6 +38874,10 @@ msgstr "Niet-ondersteund config formaat '%1$s'"
 msgid "unsupported gluster lookup"
 msgstr "niet-ondersteund schijf type %s"
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "niet-ondersteund authenticatie type %d"
@@ -39053,6 +39093,11 @@ msgstr ""
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 

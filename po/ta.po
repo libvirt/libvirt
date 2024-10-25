@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -7174,6 +7174,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "பிணையம் %1$s ஐப் புதுப்பிக்க முடியவில்லை"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "தொகுப்பகம் %1$sஐ சேதப்படுத்த முடியவில்லை"
 
@@ -9306,6 +9310,10 @@ msgstr "ஹூக் ஸ்கிரிப்ட் செயல்படுத�
 msgid "Host CPU does not provide required features"
 msgstr "வழங்கி CPU ஆனது தேவையான அம்சங்களை வழங்கவில்லை"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "வழங்கி CPU ஆனது விருந்தினர் CPU உடன் கண்டிப்பாக பொருந்தவில்லை: கூடுதல் அம்சங்கள்"
 
@@ -10025,6 +10033,10 @@ msgstr "பிணையம் '%3$s' இன் id '%2$s' இல் செல்�
 
 msgid "Invalid character in source channel for char device"
 msgstr "char சாதனத்திற்கான மூல சேனலில் தவறான எழுத்து"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11500,6 +11512,10 @@ msgstr "டைமர் பெயர் இல்லை"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "கொள்ளளவு வகை விடுபட்டுள்ளது"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "JSON ஆவணத்தில் கிளையன்ட் தரவு விடுபட்டுள்ளது"
@@ -13243,10 +13259,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "XML dump லிருந்து stdoutக்கு தொகுதி தகவலின் வெளியீடு."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
@@ -16719,9 +16731,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "வழங்கியானது ஒரு vCenter ஆல் நிர்வகிக்கப்படவில்லை"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -23549,6 +23558,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr ""
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "கட்டளை"
 
@@ -24561,6 +24574,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -27691,6 +27708,10 @@ msgid "filter would introduce a loop"
 msgstr "வடிப்பி ஒரு சுழல் செயலை அறிமுகப்படுத்தும்"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "%1$s வகை இடைமுகங்களில் வடிப்பிகளுக்கு ஆதரவில்லை"
 
@@ -28748,7 +28769,14 @@ msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 "இயங்கிக் கொண்டிருக்கும் ஒரு VM இன் அக ஸ்னாப்ஷாட்ட்டில் நினைவக நிலையும் இருக்க வேண்டும்"
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
 msgstr ""
 
 #, fuzzy
@@ -30128,6 +30156,10 @@ msgstr "சாதனம் '%1$s' இன் நேரடி இணைப்ப�
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "சாதனம் '%1$s' இன் நேரடி பிரித்தெடுத்தலுக்கு ஆதரவில்லை"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35748,6 +35780,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr ""
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "snapshotName is null"
 msgstr "ஸ்னாப்ஷாட் பெயர்களை மட்டும் பட்டியலிடவும்"
@@ -38808,6 +38844,10 @@ msgstr "ஆதரிக்கப்படாத அம்சம் %1$s"
 msgid "unsupported gluster lookup"
 msgstr "துணைபுரியாத வட்டு வகை %s"
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "துணைபுரியாத அங்கீகார வகை %d"
@@ -39018,6 +39058,11 @@ msgstr "குறிப்பிடப்பட்ட முகவரியி�
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 

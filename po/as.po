@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -7074,6 +7074,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "নেটৱৰ্ক %1$s আপডেইট কৰিবলে ব্যৰ্থ"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "%1$s পুল আঁতৰাবলৈ বিফল"
 
@@ -9193,6 +9197,10 @@ msgstr "হুক স্ক্ৰিপ্ট এক্সিকিউষণ ব
 msgid "Host CPU does not provide required features"
 msgstr "হস্ট CPU এ প্ৰয়োজনীয় বৈশিষ্ট্যসমূহ প্ৰদান নকৰে"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "হস্ট CPU কঠোৰভাৱে অতিথি CPU ৰ সৈতে মিল নাখায়: অতিৰিক্ত বৈশিষ্ট"
 
@@ -9901,6 +9909,10 @@ msgstr "অবৈধ আখৰ '%1$c' আইডি '%2$s' ত  নেটৱৰ�
 
 msgid "Invalid character in source channel for char device"
 msgstr "char ডিভাইচৰ বাবে উৎস চেনেলত অবৈধ আখৰ"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11362,6 +11374,10 @@ msgstr "সন্ধানহীন টাইমাৰ নাম"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "হৰুৱা কাৰ্য্যক্ষমতাৰ ধৰণ"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "JSON দস্তাবেজত ক্লাএণ্ট তথ্য নাই"
@@ -13089,10 +13105,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "XML ডাম্প হিচাপে stdout ত ডোমেইন সংক্ৰান্ত তথ্য প্ৰদৰ্শন কৰা হ'ব।"
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
@@ -16539,9 +16551,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "এই হস্ট এটা vCenter দ্বাৰা ব্যৱস্থাপিত নহয়"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -23353,6 +23362,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr ""
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "কমান্ড"
 
@@ -24365,6 +24378,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -27487,6 +27504,10 @@ msgid "filter would introduce a loop"
 msgstr "ফিল্টাৰে এটা লুপ উন্মোচন কৰিব"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "ধৰণ %1$s ৰ আন্তঃপৃষ্ঠসমূহৰ বাবে ফিল্টাৰসমূহ সমৰ্থিত নহয়"
 
@@ -28538,7 +28559,14 @@ msgstr "ডিস্ক %1$s ৰ বাবে অভ্যন্তৰীক স
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
 msgstr ""
 
 #, fuzzy
@@ -29913,6 +29941,10 @@ msgstr "ডিভাইচ '%1$s' ৰ জীৱন্ত সংলগ্ন স�
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "ডিভাইচ '%1$s' ৰ জীৱন্ত অসংলগ্ন সমৰ্থিত নহয়"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35510,6 +35542,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr ""
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "snapshotName is null"
 msgstr "কেৱল স্নেপশ্বট নামসমূহ তালিকাভুক্ত কৰক"
@@ -38550,6 +38586,10 @@ msgstr "অসমৰ্থিত বৈশিষ্ট্য %1$s"
 msgid "unsupported gluster lookup"
 msgstr "%s ধৰণৰ ডিস্ক সমৰ্থিত নহয়"
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "অনুমোদন প্ৰণালী সমৰ্থিত নহয় %d"
@@ -38762,6 +38802,11 @@ msgstr "ধাৰ্য্যত ঠিকনাৰ অন্তৰ্গত ব
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 

@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-09-25 07:59+0000\n"
+"POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -7253,6 +7253,10 @@ msgid "Failed to delete network port %1$s"
 msgstr "Falló actualización de red %1$s"
 
 #, c-format
+msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to delete pool %1$s"
 msgstr "Falló al eliminar el grupo %1$s"
 
@@ -9433,6 +9437,10 @@ msgstr "Falló la ejecución del script de enganche: %1$s"
 msgid "Host CPU does not provide required features"
 msgstr "CPU de host no proporciona funcionalidades prohibidas"
 
+#, c-format
+msgid "Host CPU does not provide required features: %1$s"
+msgstr ""
+
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 "CPU de host no coincide estrictamente con CPU de huésped: Funcionalidades "
@@ -10153,6 +10161,10 @@ msgstr "Carácter '%1$c' es nulo en id '%2$s' de red '%3$s'"
 msgid "Invalid character in source channel for char device"
 msgstr ""
 "No se encuentra atributo de host de origen para el dispositivo de caracteres"
+
+#, c-format
+msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
+msgstr ""
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11648,6 +11660,10 @@ msgstr "No se encuentra el nombre del temporizador"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "No se encuentra el tipo de capacidad"
+
+#, c-format
+msgid "Missing check/@partial in CPU model %1$s"
+msgstr ""
 
 msgid "Missing client data in JSON document"
 msgstr "Faltan datos de clientes en documento JSON "
@@ -13424,10 +13440,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "Muestra la información del volumen como una descarga XML en stdout."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
-
-#, c-format
-msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
 msgstr ""
 
 msgid "PASS"
@@ -17057,9 +17069,6 @@ msgstr ""
 
 msgid "This host is not managed by a vCenter"
 msgstr "Este equipo no está siendo administrado por un vCenter"
-
-msgid "This platform does not support setting the bridge device zone"
-msgstr ""
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
@@ -23979,6 +23988,10 @@ msgstr ""
 msgid "comma separated list of disks to be migrated"
 msgstr ""
 
+msgid ""
+"comma separated list of disks to be migrated with zero detection enabled"
+msgstr ""
+
 msgid "command"
 msgstr "Comando"
 
@@ -25005,6 +25018,10 @@ msgid ""
 msgstr ""
 
 msgid "deletion of external disk snapshots with children not supported"
+msgstr ""
+
+#, c-format
+msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
 
 msgid ""
@@ -28165,6 +28182,10 @@ msgid "filter would introduce a loop"
 msgstr "el filtro podría introducir un bucle"
 
 #, c-format
+msgid "filterref is not supported in %1$s"
+msgstr ""
+
+#, c-format
 msgid "filters not supported on interfaces of type %1$s"
 msgstr "Los filtros no tienen soporte en interfaces de tipo %1$s"
 
@@ -29236,7 +29257,14 @@ msgstr ""
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-msgid "internal snapshots of a VM with pflash based firmware are not supported"
+msgid ""
+"internal snapshots of a VM with pflash based firmware are not supported with "
+"this qemu"
+msgstr ""
+
+msgid ""
+"internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
+"format"
 msgstr ""
 
 #, fuzzy
@@ -30628,6 +30656,10 @@ msgstr "El anexo en vivo de dispositivo '%1$s' no tiene soporte "
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
 msgstr "Desconexión en vivo del dispositivo '%1$s' no tiene soporte"
+
+#, c-format
+msgid "live detach of interface type %1$s is not implemented yet"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -36357,6 +36389,10 @@ msgid ""
 "strongly recommended to avoid corruption"
 msgstr ""
 
+#, c-format
+msgid "snapshot-save job failed: %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "snapshotName is null"
 msgstr "lista nombres de instantánea únicamente"
@@ -39459,6 +39495,10 @@ msgstr "Funcionalidad %1$s no tiene soporte"
 msgid "unsupported gluster lookup"
 msgstr "tipo de disco %s no soportado "
 
+#, c-format
+msgid "unsupported graphics type %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
 msgstr "tipo de autenticación %d no soportado"
@@ -39672,6 +39712,11 @@ msgstr "Usar PCI multifunción en la dirección especificada"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
+"'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
+msgstr ""
+
+msgid ""
+"use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
 
