@@ -414,7 +414,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd,
                                      virPCIVPDResource *res)
 {
     /* A buffer of up to one resource record field size (plus a zero byte) is needed. */
-    g_autofree uint8_t *buf = g_malloc0(PCI_VPD_MAX_FIELD_SIZE + 1);
+    g_autofree uint8_t *buf = g_new0(uint8_t, PCI_VPD_MAX_FIELD_SIZE + 1);
     uint16_t fieldDataLen = 0, bytesToRead = 0;
     uint16_t fieldPos = resPos;
     bool hasChecksum = false;
@@ -499,7 +499,7 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd,
                 break;
 
             case VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_BINARY:
-                fieldValue = g_malloc(fieldDataLen);
+                fieldValue = g_new0(char, fieldDataLen);
                 memcpy(fieldValue, buf, fieldDataLen);
                 break;
 
@@ -570,7 +570,7 @@ virPCIVPDParseVPDLargeResourceString(int vpdFileFd, uint16_t resPos,
     g_autofree char *resValue = NULL;
 
     /* The resource value is not NULL-terminated so add one more byte. */
-    g_autofree char *buf = g_malloc0(resDataLen + 1);
+    g_autofree char *buf = g_new0(char, resDataLen + 1);
 
     if (virPCIVPDReadVPDBytes(vpdFileFd, (uint8_t *)buf, resDataLen, resPos, csum) < 0)
         return -1;

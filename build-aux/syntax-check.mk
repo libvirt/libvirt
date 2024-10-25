@@ -92,8 +92,8 @@ sc_prohibit_raw_virclassnew:
 
 # Avoid raw malloc and free, except in documentation comments.
 sc_prohibit_raw_allocation:
-	@prohibit='^.[^*].*\<((m|c|re)alloc|free) *\([^)]' \
-	halt='use VIR_ macros from viralloc.h instead of malloc/free' \
+	@prohibit='^.[^*].*\<((m|c|re)alloc|free|g_malloc) *\([^)]' \
+	halt='use g_new0/g_malloc0/g_free instead of malloc/free/g_malloc' \
 	  $(_sc_search_regexp)
 
 # Avoid functions that can lead to double-close bugs.

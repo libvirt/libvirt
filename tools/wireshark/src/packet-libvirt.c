@@ -166,7 +166,7 @@ dissect_xdr_opaque(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf,
     gboolean rc;
     guint8 *val;
 
-    val = g_malloc(size);
+    val = g_new0(guint8, size);
     start = xdr_getpos(xdrs);
     if ((rc = xdr_opaque(xdrs, (caddr_t)val, size))) {
         gint len = xdr_getpos(xdrs) - start;
