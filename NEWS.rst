@@ -198,6 +198,17 @@ v10.7.0 (2024-09-02)
     domain XML for descendants of the generic PC machine type (``i440fx``,
     ``q35``, ``xenfv`` and ``isapc``).
 
+  * qemu: Add support for hyperv enlightenment feature ``hv-emsr-bitmap``
+
+    It is introduced since ``QEMU 7.10``, allowing L0 (KVM) and L1 (Hyper-V)
+    hypervisors to collaborate to avoid unnecessary updates to L2 MSR-Bitmap
+    upon vmexits.
+
+  * qemu: Add support for hyperv enlightenment feature ``hv-xmm-input``
+
+    It is introduced since ``QEMU 7.10``, allowing to pass parameters for
+    certain hypercalls using XMM registers (“XMM Fast Hypercall Input”).
+
 * **Improvements**
 
   * ch: support restore with network devices
