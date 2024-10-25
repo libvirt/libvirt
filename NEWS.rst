@@ -881,6 +881,10 @@ v9.8.0 (2023-10-02)
         <source dev='/dev/vhost-vdpa-0'>
         ...
 
+  * cpu_map: Add the EPYC-Genoa cpu model
+
+    This model is introduced since ``QEMU 8.1``.
+
 * **Improvements**
 
   * qemu: add nbdkit backend for network disks
