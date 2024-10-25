@@ -1467,7 +1467,8 @@ virJSONValueFromString(const char *jsonstring)
     jerr = json_tokener_get_error(tok);
     if (jerr != json_tokener_success) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", json_tokener_error_desc(jerr));
+                       _("failed to parse JSON: %1$s"),
+                       json_tokener_error_desc(jerr));
         goto cleanup;
     }
     ret = virJSONValueFromJsonC(jobj);
