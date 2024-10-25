@@ -338,6 +338,18 @@ v10.5.0 (2024-07-01)
 v10.4.0 (2024-06-03)
 ====================
 
+* **Security**
+
+  * ``CVE-2024-4418``: Fix stack use-after-free in virNetClientIOEventLoop()
+
+    Fix race condition leading to a stack use-after-free bug was found in libvirt.
+    Due to a bad assumption in the virNetClientIOEventLoop() method, the data
+    pointer to a stack-allocated virNetClientIOEventData structure ended up being
+    used in the virNetClientIOEventFD callback while the data pointer's stack frame
+    was concurrently being "freed" when returning from virNetClientIOEventLoop().
+    This flaw allows a local, unprivileged user to access virtproxyd without
+    authenticating.
+
 * **New features**
 
   * qemu: Support for ras feature for virt machine type
