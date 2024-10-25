@@ -491,6 +491,18 @@ v10.3.0 (2024-05-02)
 v10.2.0 (2024-04-02)
 ====================
 
+* **Security**
+
+  * ``CVE-2024-2494``: remote: check for negative array lengths before allocation
+
+   Fix the flaw of the RPC library APIs of libvirt. The RPC server
+   de-serialization code allocates memory for arrays before the non-negative
+   length check is performed by the C API entry points. Passing a negative length
+   to the g_new0 function results in a crash due to the negative length being
+   treated as a huge positive number. A local unprivileged user could use this
+   flaw to perform a denial of service attack by causing the libvirt daemon to
+   crash.
+
 * **New features**
 
   * ch: Basic save and restore support for ch driver
