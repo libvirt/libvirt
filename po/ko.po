@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-10-27 13:38+0000\n"
+"PO-Revision-Date: 2024-10-27 22:02+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -7153,7 +7153,7 @@ msgstr "네트워크 포트 %1$s을(를) 삭제하지 못했습니다"
 
 #, c-format
 msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
-msgstr ""
+msgstr "임시 디스크 '%2$s'에 대한 덮어쓰기 파일 '%1$s'를 삭제하는 데 실패함"
 
 #, c-format
 msgid "Failed to delete pool %1$s"
@@ -9270,7 +9270,7 @@ msgstr "호스트 CPU는 필요한 기능을 제공하지 않습니다"
 
 #, c-format
 msgid "Host CPU does not provide required features: %1$s"
-msgstr ""
+msgstr "호스트 CPU는 필수 기능을 제공하지 않습니다: %1$s"
 
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "호스트 CPU가 게스트 CPU와 정확히 일치하지 않습니다: 추가 기능"
@@ -9991,7 +9991,7 @@ msgstr "char 장치의 소스 채널에 잘못된 문자가 있습니다"
 
 #, c-format
 msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
-msgstr ""
+msgstr "CPU 모델 %2$s에서 잘못된 check/@partial 값 '%1$s'"
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11424,7 +11424,7 @@ msgstr "기능 유형이 누락됨"
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
-msgstr ""
+msgstr "CPU 모델 %1$s에서 누락된 check/@partial"
 
 msgid "Missing client data in JSON document"
 msgstr "JSON 문서에 클라이언트 자료가 누락되어 있습니다"
@@ -23235,7 +23235,7 @@ msgstr "이전 되어야 할 디스크의 쉼표로 구분된 목록"
 
 msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
-msgstr ""
+msgstr "0 탐지가 활성화되어 이전해야 할 디스크의 쉼표로 구분된 목록"
 
 msgid "command"
 msgstr "command"
