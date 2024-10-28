@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-10-25 06:22+0000\n"
+"PO-Revision-Date: 2024-10-29 04:07+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -7252,6 +7252,8 @@ msgstr "Misslyckades att radera nätverksporten %1$s"
 #, c-format
 msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
 msgstr ""
+"Misslyckades att radera överläggsfilen ”%1$s” för den transienta disken "
+"”%2$s”"
 
 #, c-format
 msgid "Failed to delete pool %1$s"
@@ -9410,7 +9412,7 @@ msgstr "Värd-CPU:n tillhandahåller inte de begärda funktionerna"
 
 #, c-format
 msgid "Host CPU does not provide required features: %1$s"
-msgstr ""
+msgstr "Värd-CPU:n tillhandahåller inte de nödvändiga funktionerna: %1$s"
 
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "Värd-CPU:n stämmer inte strikt med gäst-CPU:n: Extra funktioner"
@@ -10141,7 +10143,7 @@ msgstr "Felaktigt tecken i källkanalen för teckenenhet"
 
 #, c-format
 msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
-msgstr ""
+msgstr "Felaktigt check/@partial-värde ”%1$s” i CPU-modellen %2$s"
 
 #, c-format
 msgid "Invalid class ID %1$d"
@@ -11600,7 +11602,7 @@ msgstr "Saknad förmågetyp"
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
-msgstr ""
+msgstr "Saknat check/@partial-värde i CPU-modellen %1$s"
 
 msgid "Missing client data in JSON document"
 msgstr "Saknade klientdata i JSON-dokumentet"
@@ -23552,6 +23554,7 @@ msgstr "kommaseparerad lista över diskar att migrera"
 msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
+"kommaspearerad lista över diskar att migrera med nolldetektering aktiverat"
 
 msgid "command"
 msgstr "kommando"
@@ -24565,7 +24568,7 @@ msgstr "att radera externa diskögonblicksbilder med barn stödjs inte"
 
 #, c-format
 msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
-msgstr ""
+msgstr "radering av den interna ögonblicsbildsjobbet ”%1$s” misslyckades: %2$s"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -27641,7 +27644,7 @@ msgstr "filtret skulle införa en slinga"
 
 #, c-format
 msgid "filterref is not supported in %1$s"
-msgstr ""
+msgstr "filterref stödjs inte i %1$s"
 
 #, c-format
 msgid "filters not supported on interfaces of type %1$s"
@@ -28730,11 +28733,15 @@ msgid ""
 "internal snapshots of a VM with pflash based firmware are not supported with "
 "this qemu"
 msgstr ""
+"interna ögonblicksbilder av en VM med pflash-baserad fast programvara stödjs "
+"inte med denna qemu"
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
 "format"
 msgstr ""
+"interna ögonblicksbilder av en VM med pflash-baserad fast programvara kräver "
+"formatet QCOW2 nvram"
 
 msgid "internal use only"
 msgstr "endast för intern användning"
@@ -30084,6 +30091,7 @@ msgstr "frånkoppling under drift av enheten “%1$s“ stödjs inte"
 #, c-format
 msgid "live detach of interface type %1$s is not implemented yet"
 msgstr ""
+"frånkoppling under drift av gränssnittstypen %1$s är inte implementerat ännu"
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35611,7 +35619,7 @@ msgstr ""
 
 #, c-format
 msgid "snapshot-save job failed: %1$s"
-msgstr ""
+msgstr "jobbet för att spara ögonblicksbilden misslyckades: %1$s"
 
 msgid "snapshotName is null"
 msgstr "snapshotName är null"
@@ -36526,27 +36534,26 @@ msgid "title"
 msgstr "titel"
 
 msgid "titles are not supported by vz driver"
-msgstr ""
+msgstr "titlar stödjs inte av vz-drivrutinen"
 
 msgid "tls"
-msgstr ""
+msgstr "tls"
 
 #, c-format
 msgid "too many NUMA cells: %1$d > %2$d"
-msgstr ""
+msgstr "för många NUMA-celler: %1$d > %2$d"
 
 msgid "too many current snapshots"
-msgstr ""
+msgstr "för många aktuella ögonblicksbilder"
 
 msgid "too many disk checkpoint requests for domain"
-msgstr ""
+msgstr "för många begäranden av diskkontrollpunkter för domänen"
 
 msgid "too many disk snapshot requests for domain"
-msgstr ""
+msgstr "för många begäranden av diskögonblicksbilder för domänen"
 
-#, fuzzy
 msgid "too many disks"
-msgstr "för många drivrutiner registrerade"
+msgstr "för många diskar"
 
 msgid "too many drivers registered"
 msgstr "för många drivrutiner registrerade"
@@ -36555,130 +36562,163 @@ msgstr "för många drivrutiner registrerade"
 msgid "too many drivers registered in %1$s"
 msgstr "för många drivrutiner registrerade i %1$s"
 
-#, fuzzy
 msgid "too many file descriptors received"
-msgstr "för många drivrutiner registrerade"
+msgstr "för många filbeskrivare mottagna"
 
 msgid "too many keycodes"
-msgstr ""
+msgstr "för många nyckelkoder"
 
-#, fuzzy, c-format
+#, c-format
 msgid "too many memory stats requested: %1$d > %2$d"
-msgstr "för många drivrutiner registrerade i %s"
+msgstr "för många minnesstatistiker begärda: %1$d > %2$d"
 
 #, c-format
 msgid "too many parameters '%1$d' for limit '%2$d'"
 msgstr "för många parametrar ”%1$d” för gränsen ”%2$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "too many parameters '%1$u' for limit '%2$d'"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "för många parametrar ”%1$u” för gränsen ”%2$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "too many parameters '%1$u' for nparams '%2$d'"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "för många parametrar ”%1$u” för nparams ”%2$d”"
 
 #, c-format
 msgid ""
 "too many remote clients: %1$d > %2$d,in parameter 'clients' for "
 "'virServerListClients'"
 msgstr ""
+"för många fjärrklienter: %1$d > %2$d, i parametern ”clients” till "
+"”virServerListClients”"
 
 #, c-format
 msgid ""
 "too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
 "for 'virDomainCheckpointListAllChildren'"
 msgstr ""
+"för många fjärrdomänkontrollpunkter %1$d > %2$d, i parametern ”checkpoints” "
+"till ”virDomainCheckpointListAllChildren”"
 
 #, c-format
 msgid ""
 "too many remote domain_checkpoints: %1$d > %2$d,in parameter 'checkpoints' "
 "for 'virDomainListAllCheckpoints'"
 msgstr ""
+"för många fjärrdomänkontrollpunkter %1$d > %2$d, i parametern ”checkpoints” "
+"till ”virDomainListAllCheckpoints”"
 
 #, c-format
 msgid ""
 "too many remote domain_snapshots: %1$d > %2$d,in parameter 'snapshots' for "
 "'virDomainListAllSnapshots'"
 msgstr ""
+"för många fjärrdomänkontrollpunkter %1$d > %2$d, i parametern ”snapshots” "
+"till ”virDomainListAllSnapshots”"
 
 #, c-format
 msgid ""
 "too many remote domain_snapshots: %1$d > %2$d,in parameter 'snapshots' for "
 "'virDomainSnapshotListAllChildren'"
 msgstr ""
+"för många fjärrdomänkontrollpunkter %1$d > %2$d, i parametern ”snapshots” "
+"till ”virDomainSnapshotListAllChildren”"
 
 #, c-format
 msgid ""
 "too many remote domains: %1$d > %2$d,in parameter 'domains' for "
 "'virConnectListAllDomains'"
 msgstr ""
+"för många fjärrdomäner %1$d > %2$d, i parametern ”domains” till "
+"”virConnectListAllDomains”"
 
 #, c-format
 msgid ""
 "too many remote interfaces: %1$d > %2$d,in parameter 'ifaces' for "
 "'virConnectListAllInterfaces'"
 msgstr ""
+"för många fjärrgränssnitt %1$d > %2$d, i parametern ”ifaces” till "
+"”virConnectListAllInterfaces”"
 
 #, c-format
 msgid ""
 "too many remote network_ports: %1$d > %2$d,in parameter 'ports' for "
 "'virNetworkListAllPorts'"
 msgstr ""
+"för många fjärrnätverksportar %1$d > %2$d, i parametern ”ports” till "
+"”virNetworkListAllPorts”"
 
 #, c-format
 msgid ""
 "too many remote networks: %1$d > %2$d,in parameter 'nets' for "
 "'virConnectListAllNetworks'"
 msgstr ""
+"för många fjärrnätverk %1$d > %2$d, i parametern ”nets” till "
+"”virConnectListAllNetworks”"
 
 #, c-format
 msgid ""
 "too many remote node_devices: %1$d > %2$d,in parameter 'devices' for "
 "'virConnectListAllNodeDevices'"
 msgstr ""
+"för många fjärrnodenheter %1$d > %2$d, i parametern ”devices” till "
+"”virConnectListAllNodeDevices”"
 
 #, c-format
 msgid ""
 "too many remote nwfilter_bindings: %1$d > %2$d,in parameter 'bindings' for "
 "'virConnectListAllNWFilterBindings'"
 msgstr ""
+"för många fjärr-nwfilter-bindningar %1$d > %2$d, i parametern ”bindings” "
+"till ”virConnectListAllNWFilterBindings”"
 
 #, c-format
 msgid ""
 "too many remote nwfilters: %1$d > %2$d,in parameter 'filters' for "
 "'virConnectListAllNWFilters'"
 msgstr ""
+"för många fjärr-nwfilter %1$d > %2$d, i parametern ”filters” till "
+"”virConnectListAllNWFilters”"
 
 #, c-format
 msgid ""
 "too many remote secrets: %1$d > %2$d,in parameter 'secrets' for "
 "'virConnectListAllSecrets'"
 msgstr ""
+"för många fjärrhemligheter %1$d > %2$d, i parametern ”secrets” till "
+"”virConnectListAllSecrets”"
 
 #, c-format
 msgid ""
 "too many remote servers: %1$d > %2$d,in parameter 'servers' for "
 "'virConnectListServers'"
 msgstr ""
+"för många fjärrservrar %1$d > %2$d, i parametern ”servers” till "
+"”virConnectListServers”"
 
 #, c-format
 msgid ""
 "too many remote storage_pools: %1$d > %2$d,in parameter 'pools' for "
 "'virConnectListAllStoragePools'"
 msgstr ""
+"för många fjärrlagringspooler %1$d > %2$d, i parametern ”pools” till "
+"”virConnectListAllStoragePools”"
 
 #, c-format
 msgid ""
 "too many remote storage_vols: %1$d > %2$d,in parameter 'vols' for "
 "'virStoragePoolListAllVolumes'"
 msgstr ""
+"för många fjärrlagringsvolymer %1$d > %2$d, i parametern ”vols” till "
+"”virStoragePoolListAllVolumes”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedDomains'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListDefinedDomains”"
 
 #, c-format
 msgid ""
