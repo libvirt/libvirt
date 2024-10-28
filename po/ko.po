@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-10-27 22:02+0000\n"
+"PO-Revision-Date: 2024-10-28 12:48+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -24229,7 +24229,7 @@ msgstr "하위에 있는 외부 디스크 순간찍기의 삭제는 지원되지
 
 #, c-format
 msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
-msgstr ""
+msgstr "내부 순간찍기 '%1$s' 작업의 삭제가 실패함: %2$s"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -27274,7 +27274,7 @@ msgstr "필터가 루프를 도입할 수 있습니다"
 
 #, c-format
 msgid "filterref is not supported in %1$s"
-msgstr ""
+msgstr "filterref는 %1$s에서 지원되지 않습니다"
 
 #, c-format
 msgid "filters not supported on interfaces of type %1$s"
@@ -28342,12 +28342,13 @@ msgstr "실행 중인 VM의 내부 순간찍기는 메모리 상태가 포함되
 msgid ""
 "internal snapshots of a VM with pflash based firmware are not supported with "
 "this qemu"
-msgstr ""
+msgstr "pflash 기반의 펌웨어의 내부 순간찍기는 이와 같은 qemu에서 지원되지 않습니다"
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
 "format"
-msgstr ""
+msgstr "pflash 기반의 펌웨어를 갖는 VM의 내부 순간찍기는 QCOW2 nvram 형식이 "
+"필요합니다"
 
 msgid "internal use only"
 msgstr "오직 내부 사용"
@@ -29679,7 +29680,7 @@ msgstr "장치 '%1$s'의 실시간 분리가 지원되지 않습니다"
 
 #, c-format
 msgid "live detach of interface type %1$s is not implemented yet"
-msgstr ""
+msgstr "연결장치 유형 %1$s의 실시간 분리는 아직 구현되지 않았습니다"
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -35090,7 +35091,7 @@ msgstr ""
 
 #, c-format
 msgid "snapshot-save job failed: %1$s"
-msgstr ""
+msgstr "순간찍기-저장 작업이 실패함: %1$s"
 
 msgid "snapshotName is null"
 msgstr "순간찍기 이름이 null입니다"
@@ -38355,6 +38356,8 @@ msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES'의 사용은 플래그의 "
+"'VIR_MIGRATE_NON_SHARED_DISK' 또는 'VIR_MIGRATE_NON_SHARED_INC'가 필요합니다"
 
 msgid "use of <server> requires pull mode backup"
 msgstr "<server>를 사용하려면 풀 모드 백업이 필요합니다"
