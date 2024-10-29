@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-10-29 04:07+0000\n"
+"PO-Revision-Date: 2024-10-29 13:03+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36725,168 +36725,197 @@ msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedInterfaces'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListDefinedInterfaces”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedNetworks'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListDefinedNetworks”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListDefinedStoragePools'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListDefinedStoragePools”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListInterfaces'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListInterfaces”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListNWFilters'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListNWFilters”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListNetworks'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListNetworks”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virConnectListStoragePools'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virConnectListStoragePools”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virDomainSnapshotListChildrenNames'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virDomainSnapshotListChildrenNames”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virDomainSnapshotListNames'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virDomainSnapshotListNames”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virNodeDeviceListCaps'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virNodeDeviceListCaps”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virNodeListDevices'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virNodeListDevices”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'names' for "
 "'virStoragePoolListVolumes'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”names” till "
+"”virStoragePoolListVolumes”"
 
 #, c-format
 msgid ""
 "too many remote strings: %1$d > %2$d,in parameter 'uuids' for "
 "'virConnectListSecrets'"
 msgstr ""
+"för många fjärrsträngar %1$d > %2$d, i parametern ”uuids” till "
+"”virConnectListSecrets”"
 
 msgid "too many secrets for luks encryption"
-msgstr ""
+msgstr "för många hemligheter för luks-kryptering"
 
 #, c-format
 msgid "top '%1$s' in chain for '%2$s' has no backing file"
-msgstr ""
+msgstr "toppen ”%1$s” i kedjan till ”%2$s” har ingen bakomliggande fil"
 
 msgid "total I/O operations limit per second"
-msgstr ""
+msgstr "gräns på totala I/O-åtgärder per sekund"
 
 msgid "total I/O operations max"
-msgstr ""
+msgstr "max totala I/O-åtgärder"
 
 msgid "total and read/write bytes_sec cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv bytes_sec kan inte sättas samtidigt"
 
 msgid "total and read/write bytes_sec_max cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv bytes_sec_max kan inte sättas samtidigt"
 
 msgid "total and read/write iops_sec cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv iops_sec kan inte sättas samtidigt"
 
 msgid "total and read/write iops_sec_max cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv iops_sec_max kan inte sättas samtidigt"
 
 msgid "total and read/write of bytes_sec cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv bytes_sec kan inte sättas samtidigt"
 
 msgid "total and read/write of bytes_sec_max cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv bytes_sec_max kan inte sättas samtidigt"
 
 msgid "total and read/write of iops_sec cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv iops_sec kan inte sättas samtidigt"
 
 msgid "total and read/write of iops_sec_max cannot be set at the same time"
-msgstr ""
+msgstr "totala och läs/skriv iops_sec_max kan inte sättas samtidigt"
 
 msgid "total duration of flushes (ns):"
-msgstr ""
+msgstr "total varaktighet på tömningar (ns):"
 
 msgid "total duration of reads (ns):"
-msgstr ""
+msgstr "total varaktighet på läsningar (ns):"
 
 msgid "total duration of writes (ns):"
-msgstr ""
+msgstr "total varaktighet på skrivningar (ns):"
 
 msgid "total max, as scaled integer (default bytes)"
-msgstr ""
+msgstr "totalt max, som ett skalat heltal (standard byte)"
 
 msgid "total throughput limit, as scaled integer (default bytes)"
-msgstr ""
+msgstr "total genomströmningsgräns, som ett skalat heltat (standard byte)"
 
 #, c-format
 msgid "transient disk '%1$s' must not be empty"
-msgstr ""
+msgstr "den transienta disken ”%1$s” får inte vara tom"
 
 #, c-format
 msgid "transient disk '%1$s' must not be read-only"
-msgstr ""
+msgstr "den transienta disken ”%1$s” får inte vara bara läsbar"
 
 msgid ""
 "transient disk backing image sharing with destroy action of lifecycle isn't "
 "supported by this QEMU binary"
 msgstr ""
+"delning av bakomliggande avbild för en transient disk med åtgärden destroy i "
+"livscykeln stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "transient disk supported only with 'disk' device (%1$s)"
-msgstr ""
+msgstr "en transient disk stödjs endast med enheten ”disk” (%1$s)"
 
 #, c-format
 msgid "transient disk supported only with 'file' type (%1$s)"
-msgstr ""
+msgstr "en transient disk stödjs endast med typen ”file” (%1$s]"
 
 msgid "transient disks not supported yet"
-msgstr ""
+msgstr "transienta diskar stödjs inte ännu"
 
 msgid "transient domain cannot have runstate 'shutoff'"
-msgstr ""
+msgstr "transienta domäner kan inte ha körtillståndet ”shutoff”"
 
-#, fuzzy
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
-msgstr "den här domänen har inte en enhet för att ta ögonblicksbilder"
+msgstr ""
+"transienta domäner behöver begära kör eller pausa för att återgå till en "
+"inaktiv ögonblicksbild"
 
 msgid "transient domains do not have any persistent config"
-msgstr ""
+msgstr "transienta domäner har inte någon beständig konfiguration"
 
 msgid "transient is not supported with vhostuser disk"
-msgstr ""
+msgstr "transient stödjs inte med disken vhostuser"
 
 msgid "transient node devices do not have any persistent config"
 msgstr ""
