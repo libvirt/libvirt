@@ -68,13 +68,6 @@ libvirt_network \
 guest_nat \
 '{ type nat hook postrouting priority 100; policy accept; }'
 nft \
-add \
-chain \
-ip \
-libvirt_network \
-postroute_mangle \
-'{ type filter hook postrouting priority 0; policy accept; }'
-nft \
 list \
 table \
 ip6 \
@@ -143,10 +136,3 @@ ip6 \
 libvirt_network \
 guest_nat \
 '{ type nat hook postrouting priority 100; policy accept; }'
-nft \
-add \
-chain \
-ip6 \
-libvirt_network \
-postroute_mangle \
-'{ type filter hook postrouting priority 0; policy accept; }'

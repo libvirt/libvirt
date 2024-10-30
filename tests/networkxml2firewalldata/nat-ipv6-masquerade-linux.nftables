@@ -272,19 +272,3 @@ daddr \
 ff02::/16 \
 counter \
 return
-nft \
--ae insert \
-rule \
-ip \
-libvirt_network \
-postroute_mangle \
-oif \
-virbr0 \
-udp \
-dport \
-68 \
-counter \
-udp \
-checksum \
-set \
-0

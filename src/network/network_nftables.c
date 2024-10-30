@@ -51,7 +51,6 @@ VIR_LOG_INIT("network.nftables");
 #define VIR_NFTABLES_FWD_OUT_CHAIN "guest_output"
 #define VIR_NFTABLES_FWD_X_CHAIN "guest_cross"
 #define VIR_NFTABLES_NAT_POSTROUTE_CHAIN "guest_nat"
-#define VIR_NFTABLES_MANGLE_POSTROUTE_CHAIN "postroute_mangle"
 
 /* we must avoid using the standard "filter" table as used by
  * iptables, as any subsequent attempts to use iptables commands will
@@ -107,10 +106,6 @@ nftablesGlobalChain nftablesChains[] = {
 
     /* chains for NAT rules */
     {NULL, VIR_NFTABLES_NAT_POSTROUTE_CHAIN, "{ type nat hook postrouting priority 100; policy accept; }"},
-
-    /* chain for "mangle" rules that modify packets (e.g. 0 out UDP checksums) */
-    {NULL, VIR_NFTABLES_MANGLE_POSTROUTE_CHAIN, "{ type filter hook postrouting priority 0; policy accept; }"},
-
 };
 
 
@@ -649,44 +644,6 @@ nftablesAddDontMasquerade(virFirewall *fw,
 }
 
 
-/**
- * nftablesAddOutputFixUdpChecksum:
- *
- * Add a rule to @fw that will 0 out the checksum of udp packets
- * output from @iface with destination port @port.
-
- * Zeroing the checksum of a UDP packet tells the receiving end "you
- * don't need to validate the checksum", which is useful in cases
- * where the host (sender) thinks that packet checksums will be
- * computed elsewhere (and so leaves a partially computed checksum in
- * the packet header) while the guest (receiver) thinks that the
- * checksum has already been fully computed; in the meantime none of
- * the code in between has actually finished computing the
- * checksum.
- *
- * An example of this is DHCP response packets from host to
- * guest. If the checksum of each of these packets isn't zeroed, then
- * many guests (e.g. FreeBSD) will drop them with reason BAD CHECKSUM;
- * if the packets arrive at those guests with a checksum of 0, they
- * will happily accept the packet.
- */
-static void
-nftablesAddOutputFixUdpChecksum(virFirewall *fw,
-                                const char *iface,
-                                int port)
-{
-    g_autofree char *portstr = g_strdup_printf("%d", port);
-
-    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_IPV4,
-                      "insert", "rule", "ip",
-                      VIR_NFTABLES_PRIVATE_TABLE,
-                      VIR_NFTABLES_MANGLE_POSTROUTE_CHAIN,
-                      "oif", iface, "udp", "dport", portstr,
-                      "counter", "udp", "checksum", "set", "0",
-                      NULL);
-}
-
-
 static const char networkLocalMulticastIPv4[] = "224.0.0.0/24";
 static const char networkLocalMulticastIPv6[] = "ff02::/16";
 static const char networkLocalBroadcast[] = "255.255.255.255/32";
@@ -944,30 +901,6 @@ nftablesAddGeneralFirewallRules(virFirewall *fw,
 }
 
 
-static void
-nftablesAddChecksumFirewallRules(virFirewall *fw,
-                                 virNetworkDef *def)
-{
-    size_t i;
-    virNetworkIPDef *ipv4def;
-
-    /* Look for the first IPv4 address that has dhcp or tftpboot
-     * defined. We support dhcp config on 1 IPv4 interface only.
-     */
-    for (i = 0; (ipv4def = virNetworkDefGetIPByIndex(def, AF_INET, i)); i++) {
-        if (ipv4def->nranges || ipv4def->nhosts)
-            break;
-    }
-
-    /* If we are doing local DHCP service on this network, add a rule
-     * that will fixup the checksum of DHCP response packets back to
-     * the guests.
-     */
-    if (ipv4def)
-        nftablesAddOutputFixUdpChecksum(fw, def->bridge, 68);
-}
-
-
 static int
 nftablesAddIPSpecificFirewallRules(virFirewall *fw,
                                    virNetworkDef *def,
@@ -1018,8 +951,6 @@ nftablesAddFirewallRules(virNetworkDef *def, virFirewall **fwRemoval)
         if (nftablesAddIPSpecificFirewallRules(fw, def, ipdef) < 0)
             return -1;
     }
-
-    nftablesAddChecksumFirewallRules(fw, def);
 
     if (virFirewallApply(fw) < 0)
         return -1;
