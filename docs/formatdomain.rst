@@ -2767,14 +2767,13 @@ paravirtualized driver is specified via the ``disk`` element.
       per-process basis). This attribute is only valid when device is "lun". NB,
       ``rawio`` intends to confine the capability per-device, however, current
       QEMU implementation gives the domain process broader capability than that
-      (per-process basis, affects all the domain disks). To confine the
-      capability as much as possible for QEMU driver as this stage, ``sgio`` is
-      recommended, it's more secure than ``rawio``. :since:`Since 0.9.10`
+      (per-process basis, affects all the domain disks). :since:`Since 0.9.10`
    ``sgio``
       If supported by the hypervisor and OS, indicates whether unprivileged
       SG_IO commands are filtered for the disk. Valid settings are "filtered" or
       "unfiltered" where the default is "filtered". Only available when the
-      ``device`` is 'lun'. :since:`Since 1.0.2`
+      ``device`` is 'lun'. The attribute exists :since:`Since 1.0.2`, although
+      currently it's no longer supported by any hypervisor.
    ``snapshot``
       Indicates the default behavior of the disk during disk snapshots:
       ``internal`` requires a file format such as qcow2 that can store both
@@ -4346,7 +4345,7 @@ or:
 
    ...
    <devices>
-     <hostdev mode='subsystem' type='scsi' sgio='filtered' rawio='yes'>
+     <hostdev mode='subsystem' type='scsi' rawio='yes'>
        <source>
          <adapter name='scsi_host0'/>
          <address bus='0' target='0' unit='0'/>
@@ -4436,14 +4435,19 @@ or:
       ``display`` attribute to be set to ``on``.
    ``scsi``
       For SCSI devices, user is responsible to make sure the device is not used
-      by host. If supported by the hypervisor and OS, the optional ``sgio`` (
-      :since:`since 1.0.6` ) attribute indicates whether unprivileged SG_IO
-      commands are filtered for the disk. Valid settings are "filtered" or
-      "unfiltered", where the default is "filtered". The optional ``rawio`` (
-      :since:`since 1.2.9` ) attribute indicates whether the lun needs the rawio
-      capability. Valid settings are "yes" or "no". See the rawio description
-      within the `Hard drives, floppy disks, CDROMs`_ section. If a disk lun in the domain
-      already has the rawio capability, then this setting not required.
+      by host.
+
+      If supported by the hypervisor and OS, the optional ``sgio`` (
+      :since:`since 1.0.6`, but currently no longer supported by any hypervisor
+      driver ) attribute indicates whether unprivileged SG_IO commands are
+      filtered for the disk. Valid settings are "filtered" or
+      "unfiltered", where the default is "filtered".
+
+      The optional ``rawio`` (:since:`since 1.2.9` ) attribute indicates whether
+      the lun needs the rawio capability. Valid settings are "yes" or "no".
+      See the rawio description within the `Hard drives, floppy disks, CDROMs`_
+      section. If a disk lun in the domain already has the rawio capability,
+      then this setting not required.
    ``scsi_host``
       :since:`since 2.5.0` For SCSI devices, user is responsible to make sure
       the device is not used by host. This ``type`` passes all LUNs presented by
