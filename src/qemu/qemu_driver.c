@@ -11914,10 +11914,12 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
         goto cleanup;
 
     for (i = 0; i < ncpus; i++) {
-        if (!cpus[i]->addr || cpus[i]->addr->limit == 0)
+        if (!cpus[i]->addr || cpus[i]->addr->limit == 0) {
+            physAddrSize = 0;
             continue;
+        }
 
-        if (physAddrSize == 0 || cpus[i]->addr->limit < physAddrSize)
+        if (i == 0 || cpus[i]->addr->limit < physAddrSize)
             physAddrSize = cpus[i]->addr->limit;
     }
 
