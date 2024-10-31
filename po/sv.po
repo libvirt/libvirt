@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-10-29 13:03+0000\n"
+"PO-Revision-Date: 2024-11-01 04:56+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36918,72 +36918,72 @@ msgid "transient is not supported with vhostuser disk"
 msgstr "transient stödjs inte med disken vhostuser"
 
 msgid "transient node devices do not have any persistent config"
-msgstr ""
+msgstr "transienta nodenheter har inte någon beständig konfiguration"
 
-#, fuzzy, c-format
+#, c-format
 msgid "transport '%1$s' does not support socket attribute"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "transporten ”%1$s” stödjer inte attributet socket"
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
-msgstr ""
+msgstr "transportmetoderna unix, ssh och ext stödjs inte under Windows"
 
 #, c-format
 msgid "transport protocol '%1$s' is not yet supported"
-msgstr ""
+msgstr "transportprotokollet ”%1$s” stödjs inte ännu"
 
 msgid "transport rdma is not supported for <server>"
-msgstr ""
+msgstr "transport-rdma stödjs inte för <server>"
 
 msgid "tray is only valid for cdrom and floppy"
-msgstr ""
+msgstr "tray är endast giltigt för cdrom och floppy"
 
 msgid "treat event as a regex rather than literal filter"
 msgstr ""
+"behandla händelser som ett reguljäruttryck istället för litterala filter"
 
 msgid "treat event case-insensitively"
-msgstr ""
+msgstr "behanda händelser skiftlägesokänsligt"
 
 msgid "trigger two-stage active commit of top file"
-msgstr ""
+msgstr "utlös tvåstegs aktivt fastställande av toppfilen"
 
 msgid "try harder on risky reverts"
-msgstr ""
+msgstr "försök hårdare med riskabla återställanden"
 
 msgid "try to restore security label after use if possible"
-msgstr ""
+msgstr "försök att återställa säkerhetsetiketten efter användning om möjligt"
 
 msgid "tty console"
 msgstr "tty-konsol"
 
 msgid "tunnelFD argument is required for tunnelled migration"
-msgstr ""
+msgstr "argumentet tunnelFD krävs för tunnlad migrering"
 
-#, fuzzy
 msgid "tunnelled migration"
-msgstr "live-migrering"
+msgstr "tunnlad migrering"
 
 msgid "tunnelled migration failed to read from qemu"
-msgstr ""
+msgstr "tunnlad migrering misslyckades att läsa från qemu"
 
 msgid "tunnelled migration failed to read from xen side"
-msgstr ""
+msgstr "tunnlad migrering misslyckades att läsa från xen-sidan"
 
 msgid "tunnelled migration requested but NULL stream passed"
-msgstr ""
+msgstr "tunnlad migrering begärd men NULL-ström skickad"
 
 msgid "tunnelled offline migration does not make sense"
-msgstr ""
+msgstr "tunnlad frånkopplad migrering är meningslöst"
 
 #, c-format
 msgid "two master hugepages detected: %1$llu and %2$llu"
-msgstr ""
+msgstr "två huvud-hugepages upptäckta: %1$llu och %2$llu"
 
 msgid "tx_queue_size has to be a power of two"
-msgstr ""
+msgstr "tx_queue_size måste vara en potens av två"
 
 #, c-format
 msgid "type %1$s is not supported"
-msgstr ""
+msgstr "typen %1$s stödjs inte"
 
 #, fuzzy, c-format
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
