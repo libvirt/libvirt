@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v10.9.0 (unreleased)
+v10.9.0 (2024-11-01)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -59,9 +55,6 @@ v10.9.0 (unreleased)
     When a CPU model is reported as usable='no' an additional
     ``<blockers model='...'>`` element is added for that CPU model listing
     features required by the CPU model, but not supported on the host.
-
-* **Bug fixes**
-
 
 v10.8.0 (2024-10-01)
 ====================
