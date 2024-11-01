@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-01 04:56+0000\n"
+"PO-Revision-Date: 2024-11-01 23:25+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -36985,78 +36985,79 @@ msgstr "tx_queue_size måste vara en potens av två"
 msgid "type %1$s is not supported"
 msgstr "typen %1$s stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "type mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "versioner matchar inte (aktuell %1$x, förväntad %2$x)"
+msgstr "typen stämmer inte i händelsen (aktuell 0x%1$x, förväntad 0x%2$x)"
 
 #, c-format
 msgid "type must be less than %1$d"
-msgstr ""
+msgstr "typen måste vara mindre än %1$d"
 
 msgid "type of source (block|file|network)"
-msgstr ""
+msgstr "typ av källa (block|fil|nätverk)"
 
 msgid "type of storage pool sources to discover"
-msgstr ""
+msgstr "typ av lagringspoolskällor att upptäcka"
 
 msgid "type of storage pool sources to find"
-msgstr ""
+msgstr "typ av lagringspoolskällor att hitta"
 
 msgid "type of the pool"
-msgstr ""
+msgstr "poolens typ"
 
 msgid "type of update (add-first, add-last (add), delete, or modify)"
-msgstr ""
+msgstr "uppdateringens typ (add-first, add-last (add), delete, eller modify)"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
-msgstr ""
+msgstr "udev_monitor_new_from_netlink returnerade NULL"
 
 msgid "uid and gid should be mapped both"
-msgstr ""
+msgstr "aid och gid skall båda avbildas"
 
 #, c-format
 msgid "unable control COW flag on '%1$s'"
-msgstr ""
+msgstr "kan inte styra COW-flaggan på ”%1$s”"
 
 #, c-format
 msgid "unable create new SELinux label based on label '%1$s' and file '%2$s'"
 msgstr ""
+"kan inte skapa en ny SELinux-etikett paserat på etiketten ”%1$s” och filen "
+"”%2$s”"
 
 #, c-format
 msgid "unable get directory flags on '%1$s'"
-msgstr ""
+msgstr "kan inte få katalogflaggorna på ”%1$s”"
 
 #, c-format
 msgid "unable query filesystem type on '%1$s'"
-msgstr ""
+msgstr "kan inte fråga om filsystemstypen hos ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to access device %1$s\n"
-msgstr "Misslyckades att ansluta enhet från %1$s"
+msgstr "kan inte komma åt enheten %1$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to access disk %1$s\n"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte komma åt disken %1$s\n"
 
 #, c-format
 msgid "unable to add SSH host key for host '%1$s': %2$s"
-msgstr ""
+msgstr "kan inte lägga till SSH-värdnyckeln för värden ”%1$s”: %2$s"
 
-#, fuzzy
 msgid "unable to allocate security context"
-msgstr "Kan inte ladda certfikat"
+msgstr "kan inte allokera säkerhetskontexten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to allocate socket security context '%1$s'"
-msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
+msgstr "kan inte allokera uttagets säkerhetskontext ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to canonicalize %1$s"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "kan inte kanonisera %1$s"
 
 #, c-format
 msgid "unable to change config on '%1$s' graphics type"
-msgstr ""
+msgstr "kan inte ändra konfigurationen för grafiktypen hos ”%1$s”"
 
 #, c-format
 msgid "unable to change config on '%1$s' network type"
