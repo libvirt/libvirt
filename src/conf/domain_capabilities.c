@@ -669,6 +669,18 @@ virDomainCapsDeviceNetFormat(virBuffer *buf,
 }
 
 
+static void
+virDomainCapsDevicePanicFormat(virBuffer *buf,
+                               const virDomainCapsDevicePanic *panic)
+{
+    FORMAT_PROLOGUE(panic);
+
+    ENUM_PROCESS(panic, model, virDomainPanicModelTypeToString);
+
+    FORMAT_EPILOGUE(panic);
+}
+
+
 /**
  * virDomainCapsFeatureGICFormat:
  * @buf: target buffer
@@ -850,6 +862,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceChannelFormat(&buf, &caps->channel);
     virDomainCapsDeviceCryptoFormat(&buf, &caps->crypto);
     virDomainCapsDeviceNetFormat(&buf, &caps->net);
+    virDomainCapsDevicePanicFormat(&buf, &caps->panic);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");

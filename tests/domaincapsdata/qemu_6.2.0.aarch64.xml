@@ -209,6 +209,11 @@
         <value>default</value>
       </enum>
     </interface>
+    <panic supported='yes'>
+      <enum name='model'>
+        <value>pvpanic</value>
+      </enum>
+    </panic>
   </devices>
   <features>
     <gic supported='yes'>

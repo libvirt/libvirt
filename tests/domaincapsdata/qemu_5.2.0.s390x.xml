@@ -266,6 +266,11 @@
         <value>default</value>
       </enum>
     </interface>
+    <panic supported='yes'>
+      <enum name='model'>
+        <value>s390</value>
+      </enum>
+    </panic>
   </devices>
   <features>
     <gic supported='no'/>

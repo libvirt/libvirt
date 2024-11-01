@@ -536,6 +536,12 @@
         <value>default</value>
       </enum>
     </interface>
+    <panic supported='yes'>
+      <enum name='model'>
+        <value>isa</value>
+        <value>hyperv</value>
+      </enum>
+    </panic>
   </devices>
   <features>
     <gic supported='no'/>

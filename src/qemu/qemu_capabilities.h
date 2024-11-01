@@ -892,6 +892,10 @@ void virQEMUCapsFillDomainLaunchSecurity(virQEMUCaps *qemuCaps,
 void virQEMUCapsFillDomainDeviceNetCaps(virQEMUCaps *qemuCaps,
                                         virDomainCapsDeviceNet *net);
 
+void virQEMUCapsFillDomainDevicePanicCaps(virQEMUCaps *qemuCaps,
+                                          const char *machine,
+                                          virDomainCapsDevicePanic *panic);
+
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 

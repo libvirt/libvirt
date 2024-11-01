@@ -671,6 +671,30 @@ Interface device corresponds to `network interface
 ``backendType``
    Options for the ``type`` attribute of the ``<backend/>`` element
 
+Panic device
+^^^^^^^^^^^^
+
+Interface device corresponds to `panic device
+<formatdomain.html#panic-device>`__ (``<panic/>``) in domain XML.
+
+::
+
+  <domainCapabilities>
+    ...
+    <devices>
+      <panic supported='yes'>
+        <enum name='model'>
+          <value>isa</value>
+          <value>hyperv</value>
+        </enum>
+      </panic>
+      ...
+    </devices>
+  </domainCapabilities>
+
+``model``
+   Options for the ``model`` attribute of the ``<panic/>`` element
+
 
 Features
 ~~~~~~~~

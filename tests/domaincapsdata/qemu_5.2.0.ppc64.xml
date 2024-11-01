@@ -166,6 +166,11 @@
         <value>default</value>
       </enum>
     </interface>
+    <panic supported='yes'>
+      <enum name='model'>
+        <value>pseries</value>
+      </enum>
+    </panic>
   </devices>
   <features>
     <gic supported='no'/>

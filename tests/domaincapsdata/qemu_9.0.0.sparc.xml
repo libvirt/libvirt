@@ -129,6 +129,7 @@
         <value>passt</value>
       </enum>
     </interface>
+    <panic supported='no'/>
   </devices>
   <features>
     <gic supported='no'/>

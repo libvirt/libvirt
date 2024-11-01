@@ -6639,6 +6639,35 @@ virQEMUCapsFillDomainDeviceNetCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDevicePanicCaps(virQEMUCaps *qemuCaps,
+                                     const char *machine,
+                                     virDomainCapsDevicePanic *panic)
+{
+    panic->model.report = true;
+
+    if (ARCH_IS_S390(qemuCaps->arch))
+        VIR_DOMAIN_CAPS_ENUM_SET(panic->model, VIR_DOMAIN_PANIC_MODEL_S390);
+
+    if (ARCH_IS_X86(qemuCaps->arch))
+        VIR_DOMAIN_CAPS_ENUM_SET(panic->model, VIR_DOMAIN_PANIC_MODEL_HYPERV);
+
+    if (qemuDomainMachineIsPSeries(machine, qemuCaps->arch))
+        VIR_DOMAIN_CAPS_ENUM_SET(panic->model, VIR_DOMAIN_PANIC_MODEL_PSERIES);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC))
+        VIR_DOMAIN_CAPS_ENUM_SET(panic->model, VIR_DOMAIN_PANIC_MODEL_ISA);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC_PCI))
+        VIR_DOMAIN_CAPS_ENUM_SET(panic->model, VIR_DOMAIN_PANIC_MODEL_PVPANIC);
+
+    if (panic->model.values)
+        panic->supported = VIR_TRISTATE_BOOL_YES;
+    else
+        panic->supported = VIR_TRISTATE_BOOL_NO;
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6817,6 +6846,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceCrypto *crypto = &domCaps->crypto;
     virDomainCapsLaunchSecurity *launchSecurity = &domCaps->launchSecurity;
     virDomainCapsDeviceNet *net = &domCaps->net;
+    virDomainCapsDevicePanic *panic = &domCaps->panic;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
@@ -6859,6 +6889,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainDeviceCryptoCaps(qemuCaps, crypto);
     virQEMUCapsFillDomainLaunchSecurity(qemuCaps, launchSecurity);
     virQEMUCapsFillDomainDeviceNetCaps(qemuCaps, net);
+    virQEMUCapsFillDomainDevicePanicCaps(qemuCaps, domCaps->machine, panic);
 
     return 0;
 }
