@@ -10756,6 +10756,71 @@ testDomainDetachPrepNet(virDomainObj *vm,
 
 
 static int
+testDomainDetachPrepDisk(virDomainObj *vm,
+                         virDomainDiskDef *match,
+                         virDomainDiskDef **detach)
+{
+    virDomainDiskDef *disk;
+
+    if (!(disk = virDomainDiskByTarget(vm->def, match->dst))) {
+        virReportError(VIR_ERR_DEVICE_MISSING,
+                       _("disk %1$s not found"), match->dst);
+        return -1;
+    }
+
+    switch ((virDomainDiskDevice) disk->device) {
+    case VIR_DOMAIN_DISK_DEVICE_DISK:
+    case VIR_DOMAIN_DISK_DEVICE_LUN:
+
+        switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        case VIR_DOMAIN_DISK_BUS_USB:
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_IDE:
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_SD:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("This type of disk cannot be hot unplugged"));
+            return -1;
+
+        case VIR_DOMAIN_DISK_BUS_NONE:
+        case VIR_DOMAIN_DISK_BUS_LAST:
+        default:
+            virReportEnumRangeError(virDomainDiskBus, disk->bus);
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_DEVICE_CDROM:
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB ||
+            disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            break;
+        }
+        G_GNUC_FALLTHROUGH;
+
+    case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("disk device type '%1$s' cannot be detached"),
+                       virDomainDiskDeviceTypeToString(disk->device));
+        return -1;
+
+    case VIR_DOMAIN_DISK_DEVICE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDiskDevice, disk->device);
+        return -1;
+    }
+
+    *detach = disk;
+    return 0;
+}
+
+
+static int
 testDomainRemoveHostDevice(testDriver *driver G_GNUC_UNUSED,
                            virDomainObj *vm,
                            virDomainHostdevDef *hostdev)
@@ -10824,6 +10889,28 @@ testDomainRemoveNetDevice(testDriver *driver G_GNUC_UNUSED,
     return 0;
 }
 
+
+static int
+testDomainRemoveDiskDevice(testDriver *driver G_GNUC_UNUSED,
+                           virDomainObj *vm,
+                           virDomainDiskDef *disk)
+{
+    size_t i;
+
+    VIR_DEBUG("Removing disk %s from domain %p %s",
+              disk->info.alias, vm, vm->def->name);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (vm->def->disks[i] == disk) {
+            virDomainDiskRemove(vm->def, i);
+            break;
+        }
+    }
+
+    virDomainDiskDefFree(disk);
+    return 0;
+}
+
 static int
 testDomainRemoveDevice(testDriver *driver,
                        virDomainObj *vm,
@@ -10849,8 +10936,11 @@ testDomainRemoveDevice(testDriver *driver,
         if (testDomainRemoveHostDevice(driver, vm, dev->data.hostdev) < 0)
             return -1;
         break;
-    case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_DISK:
+        if (testDomainRemoveDiskDevice(driver, vm, dev->data.disk) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -10914,8 +11004,14 @@ testDomainDetachDeviceLive(testDriver *driver,
         }
         break;
 
-    case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_DISK:
+        if (testDomainDetachPrepDisk(vm, match->data.disk,
+                                     &detach.data.disk) < 0) {
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
