@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-10-11 20:38+0000\n"
+"PO-Revision-Date: 2024-11-02 12:30+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.2\n"
 
 msgid ""
 "\n"
@@ -2520,17 +2520,17 @@ msgstr ""
 msgid "Cache level %1$d does not support tuning"
 msgstr "Cache level %1$d does not support tuning"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %1$d does not support tuning for scope type '%2$s'"
-msgstr "The QEMU executable %s does not support TPM backend type %s"
+msgstr "Cache level %1$d does not support tuning for scope type '%2$s'"
 
 #, fuzzy, c-format
 msgid "Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"
-msgstr "The QEMU executable %s does not support TPM backend type %s"
+msgstr "Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"
 
 #, c-format
 msgid "Cache level '%1$u' already defined"
-msgstr ""
+msgstr "Cache level '%1$u' already defined"
 
 #, c-format
 msgid "Cache with id %1$u does not exists for level %2$d"
