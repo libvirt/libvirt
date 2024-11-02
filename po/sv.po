@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-01 23:25+0000\n"
+"PO-Revision-Date: 2024-11-02 10:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.2\n"
 
 msgid ""
 "\n"
@@ -37061,23 +37061,22 @@ msgstr "kan inte ändra konfigurationen för grafiktypen hos ”%1$s”"
 
 #, c-format
 msgid "unable to change config on '%1$s' network type"
-msgstr ""
+msgstr "kan inte ändra konfigurationen av nätverkstypen av ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to clear socket security context '%1$s'"
-msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
+msgstr "kan inte tömma uttagets säkerhetskontext ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to close %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte stänga %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to close file %1$s"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "kan inte stänga filen %1$s"
 
-#, fuzzy
 msgid "unable to close pipe"
-msgstr "kan inte skapa uttagspar"
+msgstr "kan inte stänga röret"
 
 #, c-format
 msgid "unable to connect to server at '%1$s:%2$s'"
@@ -37085,26 +37084,26 @@ msgstr "kan inte ansluta till servern på ”%1$s:%2$s”"
 
 #, c-format
 msgid "unable to control COW flag on '%1$s', not btrfs"
-msgstr ""
+msgstr "kan inte styra flaggan COW på ”%1$s”, inte btrfs"
 
 #, c-format
 msgid "unable to create %1$s <-> %2$s veth pair"
-msgstr ""
+msgstr "kan inte skapa ett veth-par %1$s ⟷ %2$s"
 
 msgid "unable to create blockdev props for vhostuser disk type"
-msgstr ""
+msgstr "kan inte skapa blockenhetsegenskaper för disktypen vhostuser"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to create hugepage path %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte skapa hugepage-sökvägen %1$s"
 
 #, c-format
 msgid "unable to create rundir %1$s: %2$s"
 msgstr "kan inte skapa körkatalogen %1$s: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to create selinux context for: %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte skapa en selinux-kontext för: %1$s"
 
 msgid "unable to create socket pair"
 msgstr "kan inte skapa uttagspar"
@@ -37114,54 +37113,54 @@ msgid ""
 "unable to delete interface '%1$s' in network '%2$s'. It is currently being "
 "used by %3$d domains."
 msgstr ""
+"kan inte radera gränssnittet ”%1$s” i nätverket ”%2$s”. Det används för "
+"närvarande av %3$d domäner."
 
 #, c-format
 msgid "unable to determine access mode of %1$s"
-msgstr ""
+msgstr "kan inte avgöra åtkomstläget för %1$s"
 
-#, fuzzy
 msgid "unable to determine if checkpoint has parent"
-msgstr "%s: fel: kan inte avgöra om demonen kör: %s\n"
+msgstr "kan inte avgöra om kontrollpunkten har en förälder"
 
-#, fuzzy
 msgid "unable to determine if snapshot has parent"
-msgstr "%s: fel: kan inte avgöra om demonen kör: %s\n"
+msgstr "kan inte avgöra om ögonblicksbilden har en förälder"
 
 #, c-format
 msgid "unable to disable host cpu perf event for %1$s"
-msgstr ""
+msgstr "kan inte avaktivera värd-cpu-perf-händelse för %1$s"
 
 #, c-format
 msgid "unable to enable host cpu perf event for %1$s"
-msgstr ""
+msgstr "kan inte aktivera värd-cpu-perf-händelse för %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to execute QEMU agent command '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "kan inte köra QEMU-agentkommandot ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to execute QEMU agent command '%1$s': %2$s"
-msgstr "kan inte skapa körkatalogen %1$s: %2$s"
+msgstr "kan inte köra QEMU-agentkommandot ”%1$s”: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to execute QEMU command '%1$s'"
-msgstr "misslyckades att hämta domän '%1$s'"
+msgstr "kan inte köra QEMU-kommandot ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to execute QEMU command '%1$s': %2$s"
-msgstr "kan inte skapa körkatalogen %1$s: %2$s"
+msgstr "kan inte köra QEMU-kommandot ”%1$s”: %2$s"
 
 #, c-format
 msgid "unable to find a SCSI controller for idx=%1$d"
-msgstr ""
+msgstr "kan inte hitta in SCSI-styrenhet för idx=%1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to find any emulator to serve '%1$s' architecture"
-msgstr "kan inte ansluta till servern på ”%s:%s”"
+msgstr "kan inte hitta någon emulator att betjäna arkitekturen ”%1$s”"
 
 #, c-format
 msgid "unable to find any master var store for loader: %1$s"
-msgstr ""
+msgstr "kan inte hitta något huvudvariabellager för laddaren: %1$s"
 
 msgid "unable to find audio backend for sound device"
 msgstr ""
