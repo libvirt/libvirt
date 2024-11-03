@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-02 10:36+0000\n"
+"PO-Revision-Date: 2024-11-03 13:08+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37163,67 +37163,64 @@ msgid "unable to find any master var store for loader: %1$s"
 msgstr "kan inte hitta något huvudvariabellager för laddaren: %1$s"
 
 msgid "unable to find audio backend for sound device"
-msgstr ""
+msgstr "kan inte hitta audio-bakänden för ljudenheten"
 
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
-msgstr ""
+msgstr "kan inte hitta diskmålet ”%1$s” till migrering av odelad lagring"
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
-msgstr ""
+msgstr "kan inte hitta föräldraenheten ”%1$s”"
 
 msgid "unable to find ploop tools, please install them"
-msgstr ""
+msgstr "kan inte hitta ploop-verktygen, vänligen installera dem"
 
 msgid "unable to find ploop, please install ploop tools"
-msgstr ""
+msgstr "kan inte hitta ploop, vänligen installera ploop-verktygen"
 
-#, fuzzy
 msgid "unable to find qemu-img"
-msgstr "kan inte initiera mutex"
+msgstr "kan inte hitta qemu-img"
 
 #, c-format
 msgid "unable to find valid requested VMware backend '%1$s'"
-msgstr ""
+msgstr "kan inte hitta en giltig begärd VMware-bakände ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to fsync %1$s"
-msgstr "kan inte initiera mutex"
+msgstr "kan inte fsync:a %1$s"
 
-#, fuzzy
 msgid "unable to generate uuid"
-msgstr "misslyckades med att generera XML"
+msgstr "kan inte generera ett uuid"
 
 msgid "unable to get Domain-0 information from libxenlight"
-msgstr ""
+msgstr "kan inte få information om Domain-0 från libxenlight"
 
 #, c-format
 msgid "unable to get PID %1$d security context"
-msgstr ""
+msgstr "kan inte få säkerhetskontexten för PID %1$d"
 
 #, c-format
 msgid "unable to get PID %1$d uid and gid via sysctl"
-msgstr ""
+msgstr "kan inte få aid och gid för PID %1$d visa sysctl"
 
 #, c-format
 msgid "unable to get SELinux context for '%1$s'"
-msgstr ""
+msgstr "kan inte få SELinux-kontexten för ”%1$s”"
 
 msgid "unable to get SELinux context for current process"
-msgstr ""
+msgstr "kan inte få SELinux-kontexten för den aktuella processen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to get SELinux context of %1$s"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "kan inte få SELinux-kontexten för %1$s"
 
-#, fuzzy
 msgid "unable to get cpu account"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "kan inte få cpu-account"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to get current process context '%1$s'"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "kan inte få den aktuella processens kontext ”%1$s”"
 
 #, c-format
 msgid "unable to get interface index for %1$s"
