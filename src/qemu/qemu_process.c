@@ -4624,6 +4624,12 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
         return -1;
     }
 
+    if (loader->nvram->format != loader->nvramTemplateFormat) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("conversion of the nvram template to another target format is not supported"));
+        return -1;
+    }
+
     if ((srcFD = virFileOpenAs(loader->nvramTemplate, O_RDONLY,
                                0, -1, -1, 0)) < 0) {
         virReportSystemError(-srcFD,
