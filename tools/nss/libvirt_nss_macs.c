@@ -134,6 +134,10 @@ findMACs(const char *file,
     }
 
     tok = json_tokener_new();
+    if (!tok) {
+        ERROR("failed to create JSON tokener");
+        goto cleanup;
+    }
     json_tokener_set_flags(tok, jsonflags);
 
     do {
@@ -162,7 +166,8 @@ findMACs(const char *file,
 
  cleanup:
     json_object_put(jobj);
-    json_tokener_free(tok);
+    if (tok)
+        json_tokener_free(tok);
     if (ret != 0) {
         for (i = 0; i < *nmacs; i++) {
             char *mac = (*macs)[i];

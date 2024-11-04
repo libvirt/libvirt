@@ -272,6 +272,10 @@ findLeases(const char *file,
     }
 
     tok = json_tokener_new();
+    if (!tok) {
+        ERROR("failed to create JSON tokener");
+        goto cleanup;
+    }
     json_tokener_set_flags(tok, jsonflags);
 
     do {
@@ -301,7 +305,8 @@ findLeases(const char *file,
 
  cleanup:
     json_object_put(jobj);
-    json_tokener_free(tok);
+    if (tok)
+        json_tokener_free(tok);
     if (ret != 0) {
         free(*addrs);
         *addrs = NULL;

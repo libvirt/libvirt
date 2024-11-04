@@ -1462,6 +1462,11 @@ virJSONValueFromString(const char *jsonstring)
     VIR_DEBUG("string=%s", jsonstring);
 
     tok = json_tokener_new();
+    if (!tok) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to create JSON tokener"));
+        return NULL;
+    }
     json_tokener_set_flags(tok, jsonflags);
     jobj = json_tokener_parse_ex(tok, jsonstring, strlen(jsonstring));
     jerr = json_tokener_get_error(tok);
@@ -1475,7 +1480,8 @@ virJSONValueFromString(const char *jsonstring)
 
  cleanup:
     json_object_put(jobj);
-    json_tokener_free(tok);
+    if (tok)
+        json_tokener_free(tok);
     return ret;
 }
 
