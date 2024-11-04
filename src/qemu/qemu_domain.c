@@ -10236,11 +10236,13 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
     pflash0->format = def->os.loader->format;
     pflash0->path = g_strdup(def->os.loader->path);
     pflash0->readonly = false;
+    pflash0->backingStore = virStorageSourceNew(); /* terminator */
     virTristateBoolToBool(def->os.loader->readonly, &pflash0->readonly);
     qemuBlockStorageSourceSetFormatNodename(pflash0, g_strdup("libvirt-pflash0-format"));
     qemuBlockStorageSourceSetStorageNodename(pflash0, g_strdup("libvirt-pflash0-storage"));
 
     if (def->os.loader->nvram) {
+        def->os.loader->nvram->backingStore = virStorageSourceNew(); /* terminator */
         if (qemuDomainPrepareStorageSourceBlockdevNodename(NULL,
                                                            def->os.loader->nvram,
                                                            "libvirt-pflash1",
