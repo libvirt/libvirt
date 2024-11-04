@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-03 14:32+0000\n"
+"PO-Revision-Date: 2024-11-04 13:45+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37236,74 +37236,69 @@ msgstr "kan inte få antalet monitorer"
 msgid "unable to get node capabilities"
 msgstr "kan inte ta fram nodegenskaper"
 
-#, fuzzy
 msgid "unable to get numa affinity"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "kan inte ta få numa-affinitet"
 
-#, fuzzy
 msgid "unable to get screen resolution"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "kan inte få skärmupplösningen"
 
-#, fuzzy
 msgid "unable to get selinux context range"
-msgstr "Kan inte få lokalt uttagsnamn"
+msgstr "kan inte få intervallet för selinux-kontexten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to get size of '%1$s'"
-msgstr "misslyckades att hämta nätverk '%1$s'"
+msgstr "kan inte få storleken på ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to get tty attributes: %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte få tty-egenskaperna: %1$s"
 
 #, c-format
 msgid "unable to get uid and gid for PID %1$d via procfs"
-msgstr ""
+msgstr "kan inte få aid och gid för PID %1$d via procfs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to handle agent type: %1$s"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "kan inte hantera agenttypen: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to handle monitor type: %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte hantera monitortypen: %1$s"
 
 msgid "unable to init mutex"
 msgstr "kan inte initiera mutex"
 
-#, fuzzy
 msgid "unable to initialize VirtualBox driver API"
-msgstr "Kan inte initiera certifikat"
+msgstr "kan inte initiera VirtualBox-drvirutins-API:et"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to load knownhosts file '%1$s': %2$s"
-msgstr "kan inte skapa körkatalogen %1$s: %2$s"
+msgstr "kan inte ladda filen knownhosts ”%1$s”: %2$s"
 
 #, c-format
 msgid "unable to lock %1$s for metadata change"
-msgstr ""
+msgstr "kan inte låsa %1$s för metadataändring"
 
 msgid "unable to make terminal raw: console isn't a tty"
-msgstr ""
+msgstr "kan inte göra terminalen rå: konsolen är inte en tty"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to open %1$s"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "kan inte öppna %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to open '%1$s'"
-msgstr "Misslyckades att öppna filen ”%1$s”"
+msgstr "kan inte öppna ”%1$s”"
 
 #, c-format
 msgid "unable to open host cpu perf event for %1$s"
-msgstr ""
+msgstr "kan inte öppna värd-cpu:ns perf-händelse för %1$s"
 
-#, fuzzy
 msgid "unable to open stream"
-msgstr "kan inte initiera mutex"
+msgstr "kan inte öppna strömmen"
 
 msgid "unable to open vhost-vsock device"
-msgstr ""
+msgstr "kan inte öppna vhost-vsock-enheten"
 
 #, c-format
 msgid "unable to parse %1$s"
@@ -37313,22 +37308,23 @@ msgstr "kan inte tolka %1$s"
 msgid "unable to parse FD: %1$s"
 msgstr "kan inte tolka FB: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse URI scheme '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte tolka uri-schemat ”%1$s”"
 
 #, c-format
 msgid "unable to parse URI: %1$s"
 msgstr "kan inte tolka URI:n: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse blkio device '%1$s' '%2$s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "kan inte tolka blkio-enheten ”%1$s” ”%2$s”"
 
 #, c-format
 msgid ""
 "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr ""
+"kan inte tolka innehållet i fältet ”file” i ”%1$s” från moln-hypervisor:n"
 
 #, fuzzy, c-format
 msgid "unable to parse diskspec: %1$s"
