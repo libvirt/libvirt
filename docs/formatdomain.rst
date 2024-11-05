@@ -8205,7 +8205,7 @@ Example: usage of the TPM Emulator
    ``path``
       The path to the TPM state storage.
 
-   :since:`Since v10.9.0`
+   :since:`Since v10.10.0`
 
 ``persistent_state``
    The ``persistent_state`` attribute indicates whether 'swtpm' TPM state is
