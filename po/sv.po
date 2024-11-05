@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-04 13:45+0000\n"
+"PO-Revision-Date: 2024-11-05 08:59+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37326,92 +37326,86 @@ msgid ""
 msgstr ""
 "kan inte tolka innehållet i fältet ”file” i ”%1$s” från moln-hypervisor:n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse diskspec: %1$s"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte tolka diskspecifikationen: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse json capabilities '%1$s'"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "kan inte tolka json-förmågor ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse json file '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte tolka json-filen ”%1$s”"
 
 #, c-format
 msgid "unable to parse mac address '%1$s'"
 msgstr "kan inte tolka mac-adressen ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse memspec: %1$s"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte tolka minnesspecifikationen: %1$s"
 
 msgid "unable to parse node capabilities"
 msgstr "kan inte ta tolka nodförmågor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse numa node id: %1$s"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte tolka numa-nod-id: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse page size: %1$s"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte tolka sidstorleken: %1$s"
 
 #, c-format
 msgid "unable to parse: %1$s"
 msgstr "kan inte tolka: %1$s"
 
 msgid "unable to perform snapshot filtering"
-msgstr ""
+msgstr "kan inte utföra filtrering av ögonblicksbilder"
 
 msgid "unable to poll on child"
-msgstr ""
+msgstr "kan inte polla barnet"
 
 msgid "unable to query cgroup BPF progs"
-msgstr ""
+msgstr "kan inte fråga om cgroup-BPF-program"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to read '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte läsa ”%1$s”"
 
-#, fuzzy
 msgid "unable to read child stderr"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "kan inte läsa barnets standard fel"
 
-#, fuzzy
 msgid "unable to read child stdout"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "kan inte läsa barnets standard ut"
 
-#, fuzzy
 msgid "unable to read domain master key file"
-msgstr "spara ett domäntillstånd till en fil"
+msgstr "kan inte läsa domänens huvdnyckelfil"
 
 msgid "unable to read from pipe"
-msgstr ""
+msgstr "kan inte läsa från röret"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to read server cert %1$s"
-msgstr "kan inte ansluta till servern på ”%s:%s”"
+msgstr "kan inte läsa serverncertifikatet %1$s"
 
-#, fuzzy
 msgid "unable to read vmware log file"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "kan inte läsa vmware-loggfilen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to read: %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte läsa: ”%1$s”"
 
-#, fuzzy
 msgid "unable to register monitor events"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "kan inte registrera övervakarhändelser"
 
-#, fuzzy
 msgid "unable to remove just-created copy target"
-msgstr "kan inte skapa uttagspar"
+msgstr "kan inte ta bort ett nyss skapat kopiemål"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to resolve symlink '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte slå upp symlänken ”%1$s”"
 
 #, fuzzy
 msgid "unable to restore position in file"
