@@ -4401,9 +4401,9 @@ or:
        </source>
        </hostdev>
        <hostdev mode='subsystem' type='mdev' model='vfio-ccw'>
-       <source>
-         <address uuid='9063cba3-ecef-47b6-abcf-3fef4fdcad85'/>
-       </source>
+         <source>
+           <address uuid='9063cba3-ecef-47b6-abcf-3fef4fdcad85'/>
+         </source>
        <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
        </hostdev>
      </devices>
@@ -5668,7 +5668,7 @@ Setting NIC driver-specific options
          <host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off' mrg_rxbuf='off'/>
          <guest csum='off' tso4='off' tso6='off' ecn='off' ufo='off'/>
        </driver>
-       </interface>
+     </interface>
    </devices>
    ...
 
@@ -6412,7 +6412,7 @@ interaction with the admin.
       ::
 
          <graphics type='vnc' ...>
-           <audio id='1'>
+           <audio id='1'/>
          </graphics>
 
       Where ``1`` is an id of the audio device (See `Audio backends`_). If no
@@ -6569,7 +6569,7 @@ interaction with the admin.
       ::
 
          <graphics type='dbus' ...>
-           <audio id='1'>
+           <audio id='1'/>
          </graphics>
 
       Where ``1`` is an id of the audio device (See `Audio backends`_).
@@ -7480,7 +7480,7 @@ backend using the ``<audio>`` sub-element:
    ...
    <devices>
      <sound model='ich7'>
-        <audio id='1'>
+        <audio id='1'/>
      </sound>
    </devices>
    ...
@@ -8975,7 +8975,7 @@ attributes and elements with ``type='sev'`` but differs in others. Example confi
       <guestVisibleWorkarounds>...</guestVisibleWorkarounds>
       <idBlock>...</idBlock>
       <idAuth>...</idAuth>
-      <hostData>.../hostData>
+      <hostData>...</hostData>
     </launchSecurity>
     ...
   </domain>
