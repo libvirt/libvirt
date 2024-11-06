@@ -719,6 +719,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 465 */
               "snapshot-internal-qmp", /* QEMU_CAPS_SNAPSHOT_INTERNAL_QMP */
               "chardev-reconnect-miliseconds", /* QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS */
+              "virtio-ccw.loadparm", /* QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM */
     );
 
 
@@ -1547,6 +1548,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = 
     { "boot-bypass", QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlkCCW[] = {
+    { "loadparm", QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM, NULL },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
@@ -1704,6 +1709,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-iommu-pci", virQEMUCapsDevicePropsVirtioIOMMU,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioIOMMU),
       QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI },
+    { "virtio-blk-ccw", virQEMUCapsDevicePropsVirtioBlkCCW,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlkCCW),
+      QEMU_CAPS_VIRTIO_CCW },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

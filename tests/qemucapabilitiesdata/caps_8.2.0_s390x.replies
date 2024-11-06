@@ -28218,11 +28218,292 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-blk-ccw"
+  },
+  "id": "libvirt-29"
+}
+
+{
+  "return": [
+    {
+      "name": "dev_id",
+      "description": "Read-only identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "name": "devno",
+      "description": "Identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "name": "subch_id",
+      "description": "Read-only identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "default-value": 2,
+      "name": "max_revision",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "share-rw",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "lcyls",
+      "type": "uint32"
+    },
+    {
+      "default-value": 256,
+      "name": "queue-size",
+      "type": "uint16"
+    },
+    {
+      "default-value": 0,
+      "name": "lsecs",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "heads",
+      "type": "uint32"
+    },
+    {
+      "default-value": "auto",
+      "name": "account-invalid",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "iothread",
+      "type": "link<iothread>"
+    },
+    {
+      "default-value": 0,
+      "name": "lheads",
+      "type": "uint32"
+    },
+    {
+      "default-value": 65535,
+      "name": "num-queues",
+      "type": "uint16"
+    },
+    {
+      "default-value": 0,
+      "name": "cyls",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "secs",
+      "type": "uint32"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-blk-device>"
+    },
+    {
+      "default-value": 0,
+      "name": "min_io_size",
+      "type": "size"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "default-value": true,
+      "name": "config-wce",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "seg-max-adjust",
+      "type": "bool"
+    },
+    {
+      "name": "drive",
+      "description": "Node name or ID of a block device to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": "auto",
+      "name": "werror",
+      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "type": "BlockdevOnError"
+    },
+    {
+      "default-value": true,
+      "name": "report-discard-granularity",
+      "type": "bool"
+    },
+    {
+      "default-value": "auto",
+      "name": "rerror",
+      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "type": "BlockdevOnError"
+    },
+    {
+      "default-value": "auto",
+      "name": "write-cache",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "default-value": true,
+      "name": "use-disabled-flag",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-legacy-check",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-started",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "physical_block_size",
+      "description": "A power of two between 512 B and 2 MiB",
+      "type": "size"
+    },
+    {
+      "default-value": false,
+      "name": "scsi",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "opt_io_size",
+      "type": "size"
+    },
+    {
+      "default-value": 0,
+      "name": "logical_block_size",
+      "description": "A power of two between 512 B and 2 MiB",
+      "type": "size"
+    },
+    {
+      "default-value": 4194303,
+      "name": "max-discard-sectors",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "discard",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "discard_granularity",
+      "type": "size"
+    },
+    {
+      "default-value": true,
+      "name": "request-merging",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "queue_reset",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "write-zeroes",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 4194303,
+      "name": "max-write-zeroes-sectors",
+      "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "packed",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": "auto",
+      "name": "account-failed",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "default-value": true,
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-enable-wce-if-config-wce",
+      "type": "bool"
+    },
+    {
+      "default-value": "auto",
+      "name": "backend_defaults",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-29"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
@@ -28312,7 +28593,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
@@ -28320,7 +28601,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
@@ -28399,12 +28680,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -28689,7 +28970,7 @@
       "default-ram-id": "s390.ram"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -28697,7 +28978,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -28810,12 +29091,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -29579,32 +29860,32 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "return": [],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -30835,12 +31116,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -30938,7 +31219,7 @@
       "capability": "dirty-limit"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -30949,7 +31230,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -30998,7 +31279,7 @@
       }
     }
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
