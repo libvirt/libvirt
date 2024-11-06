@@ -8755,6 +8755,37 @@ qemuMonitorJSONSnapshotSave(qemuMonitor *mon,
 
 
 int
+qemuMonitorJSONSnapshotLoad(qemuMonitor *mon,
+                            const char *jobname,
+                            const char *snapshotname,
+                            const char *vmstate_disk,
+                            const char **disks)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) devices = virJSONValueNewArray();
+
+    for (; *disks; disks++) {
+        if (virJSONValueArrayAppendString(devices, *disks) < 0)
+            return -1;
+    }
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("snapshot-load",
+                                           "s:job-id", jobname,
+                                           "s:tag", snapshotname,
+                                           "s:vmstate", vmstate_disk,
+                                           "a:devices", &devices,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    return qemuMonitorJSONCheckError(cmd, reply);
+}
+
+
+int
 qemuMonitorJSONSnapshotDelete(qemuMonitor *mon,
                               const char *jobname,
                               const char *snapshotname,

@@ -1627,6 +1627,13 @@ qemuMonitorSnapshotSave(qemuMonitor *mon,
                         const char **disks);
 
 int
+qemuMonitorSnapshotLoad(qemuMonitor *mon,
+                        const char *jobname,
+                        const char *snapshotname,
+                        const char *vmstate_disk,
+                        const char **disks);
+
+int
 qemuMonitorSnapshotDelete(qemuMonitor *mon,
                           const char *jobname,
                           const char *snapshotname,

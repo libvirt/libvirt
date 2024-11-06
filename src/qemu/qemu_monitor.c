@@ -2781,6 +2781,22 @@ qemuMonitorSnapshotSave(qemuMonitor *mon,
 
 
 int
+qemuMonitorSnapshotLoad(qemuMonitor *mon,
+                        const char *jobname,
+                        const char *snapshotname,
+                        const char *vmstate_disk,
+                        const char **disks)
+{
+    VIR_DEBUG("jobname='%s', snapshotname='%s', vmstate_disk='%s'",
+              jobname, snapshotname, vmstate_disk);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONSnapshotLoad(mon, jobname, snapshotname, vmstate_disk, disks);
+}
+
+
+int
 qemuMonitorSnapshotDelete(qemuMonitor *mon,
                           const char *jobname,
                           const char *snapshotname,
