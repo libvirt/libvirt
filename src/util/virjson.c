@@ -1437,6 +1437,11 @@ virJSONValueFromJsonC(json_object *jobj)
 
             cur = virJSONValueFromJsonC(val);
 
+            if (!cur) {
+                g_free(ret);
+                return NULL;
+            }
+
             virJSONValueArrayAppend(ret, &cur);
         }
         break;
