@@ -23,13 +23,14 @@
 # Ludek Janda <ljanda@redhat.com>, 2023.
 # grimst <grimaitres@gmail.com>, 2023.
 # Jérémie Tarot <silopolis@gmail.com>, 2023.
+# Léane GRASSER <leane.grasser@proton.me>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2023-04-04 17:20+0000\n"
-"Last-Translator: Jérémie Tarot <silopolis@gmail.com>\n"
+"PO-Revision-Date: 2024-11-06 11:34+0000\n"
+"Last-Translator: Léane GRASSER <leane.grasser@proton.me>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -37,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15.2\n"
+"X-Generator: Weblate 5.8.2\n"
 
 msgid ""
 "\n"
@@ -20753,7 +20754,7 @@ msgstr "Algorithme non pris en charge '%1$s'"
 
 #, c-format
 msgid "Unsupported boot device type: '%1$s'"
-msgstr "Type de périphérique d'amorçage non pris en charge : '%1$s'"
+msgstr "Type de périphérique de démarrage non pris en charge : '%1$s'"
 
 msgid "Unsupported boot order configuration"
 msgstr "Configuration de l'ordre de démarrage non prise en charge"
@@ -22487,7 +22488,7 @@ msgstr ""
 "les périphériques SCSI vhost"
 
 msgid "bootloader is not supported by QEMU"
-msgstr "Le chargeur de démarrage n'est pas pris en charge par QEMU"
+msgstr "Le bootloader n'est pas pris en charge par QEMU"
 
 msgid "both interface name and type must not be NULL"
 msgstr "Le nom et le type de l'interface ne doivent pas être NULL"
@@ -23591,7 +23592,8 @@ msgstr ""
 
 msgid "cannot modify network device boot index setting"
 msgstr ""
-"ne peut pas modifier l'état de l'index d'amorçage d'un périphérique réseau"
+"impossible de modifier le paramétrage de l'index de démarrage des "
+"périphériques réseau"
 
 msgid "cannot modify network device guest PCI address"
 msgstr "ne peut pas modifier l'adresse PCI invitée du périphérique réseau"
