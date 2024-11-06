@@ -4262,6 +4262,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
     bool addITCOWatchdog = false;
+    bool addIOMMU = false;
 
     /* add implicit input devices */
     if (qemuDomainDefAddImplicitInputDevice(def, qemuCaps) < 0)
@@ -4283,6 +4284,10 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
             addPCIeRoot = true;
             addImplicitSATA = true;
             addITCOWatchdog = true;
+
+            if (virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
+                addIOMMU = true;
+            }
 
             /* Prefer adding a USB3 controller if supported, fall back
              * to USB2 if there is no USB3 available, and if that's
@@ -4528,6 +4533,21 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
 
             VIR_APPEND_ELEMENT(def->watchdogs, def->nwatchdogs, watchdog);
         }
+    }
+
+    if (addIOMMU && !def->iommu &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM)) {
+        g_autoptr(virDomainIOMMUDef) iommu = NULL;
+
+        iommu = virDomainIOMMUDefNew();
+        iommu->model = VIR_DOMAIN_IOMMU_MODEL_INTEL;
+        /* eim requires intremap. */
+        iommu->intremap = VIR_TRISTATE_SWITCH_ON;
+        iommu->eim = VIR_TRISTATE_SWITCH_ON;
+
+        def->iommu = g_steal_pointer(&iommu);
     }
 
     if (qemuDomainDefAddDefaultAudioBackend(driver, def) < 0)
