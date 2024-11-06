@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-05 08:59+0000\n"
+"PO-Revision-Date: 2024-11-07 01:28+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37407,83 +37407,80 @@ msgstr "kan inte ta bort ett nyss skapat kopiemål"
 msgid "unable to resolve symlink '%1$s'"
 msgstr "kan inte slå upp symlänken ”%1$s”"
 
-#, fuzzy
 msgid "unable to restore position in file"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "kan inte återställa positionen i filen"
 
 #, c-format
 msgid "unable to save metadata for checkpoint %1$s"
-msgstr ""
+msgstr "kan inte spara metadata för kontrollpunkten %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to save metadata for snapshot %1$s"
-msgstr "Misslyckades att ta ögonblicksbild: %1$s"
+msgstr "kan inte spara metadata för ögonblicksbilden %1$s"
 
-#, fuzzy
 msgid "unable to seek"
-msgstr "kan inte initiera mutex"
+msgstr "kan inte söka"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to seek in %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte söka i %1$s"
 
-#, fuzzy
 msgid "unable to seek to hole"
-msgstr "Kan inte skriva till övervakaren"
+msgstr "kan inte söka till ett hål"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set AppArmor profile '%1$s' for '%2$s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "kan inte ställa in AppArmor-prfilen ”%1$s” för ”%2$s”"
 
 #, c-format
 msgid "unable to set SELinux security context '%1$s' for '%2$s'"
-msgstr ""
+msgstr "kan inte ställa in SELinux-säkerhetskontexten ”%1$s” för ”%2$s”"
 
 msgid "unable to set balloon driver collection period"
-msgstr ""
+msgstr "kan inte ställa in ballongdrivrutinens insamlingsintervall"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set blocking mode for '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte ställa in blockerande läge för ”%1$s”"
 
 #, c-format
 msgid "unable to set ownership of '%1$s' to %2$d:%3$d"
-msgstr ""
+msgstr "kan inte sätta ägarskapet av ”%1$s” till %2$d:%3$d"
 
 #, c-format
 msgid "unable to set ownership of '%1$s' to user %2$d:%3$d"
-msgstr ""
+msgstr "kan inte sätta ägarskapet av ”%1$s” till användare %2$d:%3$d"
 
 msgid "unable to set pipe size"
-msgstr ""
+msgstr "kan inte ställa in rörstorleken"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set security context '%1$s'"
-msgstr "kan inte ansluta till servern på ”%s:%s”"
+msgstr "kan inte ställa in säkerhetskontexten ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set security context '%1$s' on '%2$s'"
-msgstr "kan inte ansluta till servern på ”%1$s:%2$s”"
+msgstr "kan inte ställa in säkerhetskontexten ”%1$s” på ”%2$s”"
 
 #, c-format
 msgid "unable to set security context '%1$s' on fd %2$d"
-msgstr ""
+msgstr "kan inte ställa in säkerhetskontexten ”%1$s” på fb %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set security context range '%1$s'"
-msgstr "Misslyckades med att starta gränssnittet %1$s"
+msgstr "kan inte ställa in säkerhetskontextintervallet ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set socket security context '%1$s'"
-msgstr "Misslyckades att ansluta uttaget till ”%1$s”"
+msgstr "kan inte ställa in uttagets säkerhetskontext ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to set tty attributes: %1$s"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte ställa in tty-attributen: %1$s"
 
 #, c-format
 msgid "unable to set user and group to '%1$ld:%2$ld' on '%3$s'"
-msgstr ""
+msgstr "kan inte ställa in användare och grupp till ”%1$ld:%2$ld” på ”%3$s”"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr ""
