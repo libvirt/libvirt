@@ -22,6 +22,8 @@
 
 #include "qemu_capabilities.h"
 
+#define QEMU_MAX_VCPUS_WITHOUT_EIM 255
+
 int
 qemuValidateDomainDef(const virDomainDef *def,
                       void *opaque,

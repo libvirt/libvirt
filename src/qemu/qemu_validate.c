@@ -31,7 +31,6 @@
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
-#define QEMU_MAX_VCPUS_WITHOUT_EIM 255
 
 VIR_LOG_INIT("qemu.qemu_validate");
 

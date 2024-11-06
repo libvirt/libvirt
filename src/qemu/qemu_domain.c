@@ -6454,6 +6454,37 @@ qemuDomainPstoreDefPostParse(virDomainPstoreDef *pstore,
 
 
 static int
+qemuDomainIOMMUDefPostParse(virDomainIOMMUDef *iommu,
+                            const virDomainDef *def,
+                            virQEMUCaps *qemuCaps,
+                            unsigned int parseFlags)
+{
+    /* In case domain has huge number of vCPUS and Extended Interrupt Mode
+     * (EIM) is not explicitly turned off, let's enable it. If we didn't then
+     * guest will have troubles with interrupts. */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE &&
+        ARCH_IS_X86(def->os.arch) &&
+        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM &&
+        qemuDomainIsQ35(def) &&
+        iommu && iommu->model == VIR_DOMAIN_IOMMU_MODEL_INTEL) {
+
+        /* eim requires intremap. */
+        if (iommu->intremap == VIR_TRISTATE_SWITCH_ABSENT &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
+            iommu->intremap = VIR_TRISTATE_SWITCH_ON;
+        }
+
+        if (iommu->eim == VIR_TRISTATE_SWITCH_ABSENT &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM)) {
+            iommu->eim = VIR_TRISTATE_SWITCH_ON;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
                              const virDomainDef *def,
                              unsigned int parseFlags,
@@ -6518,6 +6549,11 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         ret = qemuDomainPstoreDefPostParse(dev->data.pstore, def, driver);
         break;
 
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        ret = qemuDomainIOMMUDefPostParse(dev->data.iommu, def,
+                                          qemuCaps, parseFlags);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -6530,7 +6566,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_RNG:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
         ret = 0;
