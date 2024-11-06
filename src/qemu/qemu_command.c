@@ -1608,6 +1608,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     g_autofree char *chardev = NULL;
     g_autofree char *drive = NULL;
     unsigned int bootindex = 0;
+    const char *bootLoadparm = NULL;
     unsigned int logical_block_size = disk->blockio.logical_block_size;
     unsigned int physical_block_size = disk->blockio.physical_block_size;
     unsigned int discard_granularity = disk->blockio.discard_granularity;
@@ -1746,8 +1747,12 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     }
 
     /* bootindex for floppies is configured via the fdc controller */
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         bootindex = disk->info.effectiveBootIndex;
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM))
+            bootLoadparm = disk->info.loadparm;
+    }
 
     if (disk->wwn) {
         unsigned long long w = 0;
@@ -1791,6 +1796,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:chardev", chardev,
                               "s:id", disk->info.alias,
                               "p:bootindex", bootindex,
+                              "S:loadparm", bootLoadparm,
                               "p:logical_block_size", logical_block_size,
                               "p:physical_block_size", physical_block_size,
                               "p:discard_granularity", discard_granularity,
@@ -3616,6 +3622,7 @@ qemuBuildNicDevProps(virDomainDef *def,
     g_autoptr(virJSONValue) props = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     g_autofree char *netdev = g_strdup_printf("host%s", net->info.alias);
+    const char *bootLoadparm = NULL;
 
     if (virDomainNetIsVirtioModel(net)) {
         const char *tx = NULL;
@@ -3701,11 +3708,15 @@ qemuBuildNicDevProps(virDomainDef *def,
 
     virMacAddrFormat(&net->mac, macaddr);
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM))
+        bootLoadparm = net->info.loadparm;
+
     if (virJSONValueObjectAdd(&props,
                               "s:netdev", netdev,
                               "s:id", net->info.alias,
                               "s:mac", macaddr,
                               "p:bootindex", net->info.effectiveBootIndex,
+                              "S:loadparm", bootLoadparm,
                               NULL) < 0)
         return NULL;
 
@@ -4751,15 +4762,21 @@ qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
 virJSONValue *
 qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
                              virDomainHostdevDef *dev,
-                             const char *backendAlias)
+                             const char *backendAlias,
+                             virQEMUCaps *qemuCaps)
 {
+    const char *bootLoadparm = NULL;
     g_autoptr(virJSONValue) props = NULL;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM))
+        bootLoadparm = dev->info->loadparm;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", "scsi-generic",
                               "s:drive", backendAlias,
                               "s:id", dev->info->alias,
                               "p:bootindex", dev->info->bootIndex,
+                              "S:loadparm", bootLoadparm,
                               NULL) < 0)
         return NULL;
 
@@ -4840,15 +4857,20 @@ qemuBuildHostdevMdevModelTypeString(virDomainHostdevSubsysMediatedDev *mdev)
 
 virJSONValue *
 qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
-                                 virDomainHostdevDef *dev)
+                                 virDomainHostdevDef *dev,
+                                 virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
     g_autofree char *mdevPath = NULL;
+    const char *bootLoadparm = NULL;
     /* 'ramfb' property must be omitted unless it's to be enabled */
     bool ramfb = mdevsrc->ramfb == VIR_TRISTATE_SWITCH_ON;
 
     mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM))
+        bootLoadparm = dev->info->loadparm;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", qemuBuildHostdevMdevModelTypeString(mdevsrc),
@@ -4857,6 +4879,7 @@ qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
                               "S:display", qemuOnOffAuto(mdevsrc->display),
                               "B:ramfb", ramfb,
                               "p:bootindex", dev->info->bootIndex,
+                              "S:loadparm", bootLoadparm,
                               NULL) < 0)
         return NULL;
 
@@ -4955,7 +4978,7 @@ qemuBuildHostdevSCSICommandLine(virCommand *cmd,
     if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data, qemuCaps) < 0)
         return -1;
 
-    if (!(devprops = qemuBuildSCSIHostdevDevProps(def, hostdev, backendAlias)))
+    if (!(devprops = qemuBuildSCSIHostdevDevProps(def, hostdev, backendAlias, qemuCaps)))
         return -1;
 
     if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
@@ -5054,7 +5077,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
                 return -1;
             }
 
-            if (!(devprops = qemuBuildHostdevMediatedDevProps(def, hostdev)))
+            if (!(devprops = qemuBuildHostdevMediatedDevProps(def, hostdev, qemuCaps)))
                 return -1;
 
             if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
@@ -6879,7 +6902,8 @@ qemuBuildMachineCommandLine(virCommand *cmd,
         virBufferAsprintf(&buf, ",max-cpu-compat=%s", cpu->model);
     }
 
-    qemuAppendLoadparmMachineParm(&buf, def);
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM))
+        qemuAppendLoadparmMachineParm(&buf, def);
 
     if (def->sec) {
         switch (def->sec->sectype) {

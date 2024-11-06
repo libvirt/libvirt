@@ -179,7 +179,8 @@ qemuBuildUSBHostdevDevProps(const virDomainDef *def,
 virJSONValue *
 qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
                              virDomainHostdevDef *dev,
-                             const char *backendAlias);
+                             const char *backendAlias,
+                             virQEMUCaps *qemuCaps);
 
 qemuBlockStorageSourceAttachData *
 qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
@@ -197,7 +198,8 @@ qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
 
 virJSONValue *
 qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
-                                 virDomainHostdevDef *dev);
+                                 virDomainHostdevDef *dev,
+                                 virQEMUCaps *qemuCaps);
 
 virJSONValue *
 qemuBuildRedirdevDevProps(const virDomainDef *def,

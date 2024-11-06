@@ -2541,7 +2541,8 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
                                                    priv->qemuCaps)))
         goto cleanup;
 
-    if (!(devprops = qemuBuildSCSIHostdevDevProps(vm->def, hostdev, backendalias)))
+    if (!(devprops = qemuBuildSCSIHostdevDevProps(vm->def, hostdev, backendalias,
+                                                  priv->qemuCaps)))
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
@@ -2761,7 +2762,8 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
 
     qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
 
-    if (!(devprops = qemuBuildHostdevMediatedDevProps(vm->def, hostdev)))
+    if (!(devprops = qemuBuildHostdevMediatedDevProps(vm->def, hostdev,
+                                                      priv->qemuCaps)))
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
