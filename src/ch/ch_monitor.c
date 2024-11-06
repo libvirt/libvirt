@@ -1002,7 +1002,8 @@ virCHMonitorBuildRestoreJson(virDomainDef *vmdef,
                 return -1;
             if (virJSONValueObjectAppendNumberInt(net_json, "num_fds", vmdef->nets[i]->driver.virtio.queues))
                 return -1;
-            virJSONValueArrayAppend(nets, &net_json);
+            if (virJSONValueArrayAppend(nets, &net_json) < 0)
+                return -1;
         }
         if (virJSONValueObjectAppend(restore_json, "net_fds", &nets))
             return -1;
