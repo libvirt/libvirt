@@ -247,7 +247,7 @@ qemuChardevGetBackendProps(const virDomainChrSourceDef *chr,
 
         if (reconnect != -1 &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS)) {
-            reconnect_ms = reconnect * 1000;
+            reconnect_ms = reconnect * (long long) 1000;
             reconnect = -1;
         }
 
