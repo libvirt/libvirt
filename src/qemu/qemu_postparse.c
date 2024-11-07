@@ -947,10 +947,8 @@ qemuCanonicalizeMachine(virDomainDef *def, virQEMUCaps *qemuCaps)
         return 0;
 
     if (STRNEQ(canon, def->os.machine)) {
-        char *tmp;
-        tmp = g_strdup(canon);
         VIR_FREE(def->os.machine);
-        def->os.machine = tmp;
+        def->os.machine = g_strdup(canon);
     }
 
     return 0;
