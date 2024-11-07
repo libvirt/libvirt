@@ -21,13 +21,14 @@
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Jiri Denemark <jdenemar@redhat.com>, 2023.
 # jianqing yan <yanjianqing@kylinos.cn>, 2024.
+# zk dc <zkdc2345@qq.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-08-26 15:38+0000\n"
-"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
+"PO-Revision-Date: 2024-11-08 03:57+0000\n"
+"Last-Translator: zk dc <zkdc2345@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -35,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.8.2\n"
 
 msgid ""
 "\n"
@@ -681,9 +682,9 @@ msgstr "%1$s 长度超过上限：%2$d > %3$d"
 msgid "%1$s model of watchdog can go only on PCI bus"
 msgstr "watchdog 的 %1$s 模型只能在 PCI 总线运行"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr "此机器类型不能使用watchdog的%1$s模型"
+msgstr "此机器类型中不能使用型号为 %1$s 的看门狗"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
@@ -1269,9 +1270,8 @@ msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 元素不能在 'cpu' 元素与 'match' 属性一同使用"
 
-#, fuzzy
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
-msgstr "virtio-gpu设备的'blo'支持需要memfd内存后端"
+msgstr "virtio-gpu 设备的 'blob' 支持需要 memfd 内存后端"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' 指的是不存在的 NUMA 节点缓存"
@@ -13532,8 +13532,8 @@ msgid ""
 "%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
 "by the host CPU"
 msgstr ""
-"请求的 TSC 频率 %1$llu Hz 超出了主机频率 %2$llu Hz 的容忍范围 ([%3$llu, "
-"%4$llu] Hz) ，且主机 CPU 不支持 TSC 扩展。"
+"请求的 TSC 频率 %1$llu Hz 超出了主机频率 %4$llu Hz 的容忍范围 ([%2$llu, "
+"%3$llu] Hz) ，且主机 CPU 不支持 TSC 缩放"
 
 #, c-format
 msgid "Requested data len %1$llu is larger than maximum %2$d"
