@@ -84,3 +84,8 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt);
 virDomainSnapshotDiskDef *
 qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk,
                                 const char *suffix);
+
+int
+qemuSnapshotInternalRevert(virDomainObj *vm,
+                           virDomainMomentObj *snapshot,
+                           virDomainAsyncJob asyncJob);

@@ -8041,6 +8041,13 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainVcpuPersistOrder(vm->def);
 
+    if (snapshot &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
+        VIR_DEBUG("reverting internal snapshot via QMP");
+        if (qemuSnapshotInternalRevert(vm, snapshot, asyncJob) < 0)
+            goto cleanup;
+    }
+
     VIR_DEBUG("Verifying and updating provided guest CPU");
     if (qemuProcessUpdateAndVerifyCPU(vm, asyncJob) < 0)
         goto cleanup;

@@ -10567,7 +10567,10 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildSecCommandLine(vm, cmd, def->sec) < 0)
         return NULL;
 
-    if (snapshot)
+    /* Internal snapshot reversion happens via QMP command after startup if
+     * supported */
+    if (snapshot &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP))
         virCommandAddArgList(cmd, "-loadvm", snapshot->def->name, NULL);
 
     if (def->namespaceData) {
