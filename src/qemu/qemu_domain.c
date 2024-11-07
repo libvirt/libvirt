@@ -2478,6 +2478,7 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
 
         case QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE:
         case QEMU_BLOCKJOB_TYPE_SNAPSHOT_DELETE:
+        case QEMU_BLOCKJOB_TYPE_SNAPSHOT_LOAD:
             /* No private data for internal snapshot jobs */
             break;
 
@@ -3035,6 +3036,7 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobData *job,
 
         case QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE:
         case QEMU_BLOCKJOB_TYPE_SNAPSHOT_DELETE:
+        case QEMU_BLOCKJOB_TYPE_SNAPSHOT_LOAD:
             /* No extra data for internal snapshot jobs. */
             break;
 

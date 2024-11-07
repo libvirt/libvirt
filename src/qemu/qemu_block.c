@@ -3777,6 +3777,7 @@ qemuBlockPivot(virDomainObj *vm,
     case QEMU_BLOCKJOB_TYPE_CREATE:
     case QEMU_BLOCKJOB_TYPE_SNAPSHOT_SAVE:
     case QEMU_BLOCKJOB_TYPE_SNAPSHOT_DELETE:
+    case QEMU_BLOCKJOB_TYPE_SNAPSHOT_LOAD:
     case QEMU_BLOCKJOB_TYPE_BROKEN:
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("job type '%1$s' does not support pivot"),
