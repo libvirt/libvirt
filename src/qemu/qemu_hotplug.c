@@ -2063,6 +2063,12 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     bool need_release = false;
     bool guestfwd = false;
 
+    if (qemuChrIsPlatformDevice(vmdef, chr)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cannot hotplug platform device"));
+        return -1;
+    }
+
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL) {
         guestfwd = chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD;
 
@@ -6049,6 +6055,12 @@ qemuDomainDetachDeviceChr(virQEMUDriver *driver,
                        _("chr type '%1$s' device not present in domain configuration"),
                        virDomainChrDeviceTypeToString(chr->deviceType));
         goto cleanup;
+    }
+
+    if (qemuChrIsPlatformDevice(vmdef, tmpChr)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cannot detach platform device"));
+        return -1;
     }
 
     if (vmdef->os.type == VIR_DOMAIN_OSTYPE_HVM &&
