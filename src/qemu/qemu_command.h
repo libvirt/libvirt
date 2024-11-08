@@ -219,6 +219,11 @@ virJSONValue *qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
 virJSONValue *qemuBuildShmemBackendMemProps(virDomainShmemDef *shmem)
     ATTRIBUTE_NONNULL(1);
 
+bool
+qemuChrIsPlatformDevice(const virDomainDef *def,
+                        virDomainChrDef *chr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 virJSONValue *
 qemuBuildShmemDevProps(virDomainDef *def,
                        virDomainShmemDef *shmem);

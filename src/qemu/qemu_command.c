@@ -9065,7 +9065,7 @@ qemuBuildChrDeviceCommandLine(virCommand *cmd,
 }
 
 
-static bool
+bool
 qemuChrIsPlatformDevice(const virDomainDef *def,
                         virDomainChrDef *chr)
 {
