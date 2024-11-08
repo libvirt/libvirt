@@ -17,6 +17,22 @@ v10.10.0 (unreleased)
 
 * **New features**
 
+  * qemu: add multi boot device support on s390x
+
+    For classical mainframe guests (i.e. LPAR or z/VM installations), you
+    always have to explicitly specify the disk where you want to boot from (or
+    "IPL" from, in s390x-speak -- IPL means "Initial Program Load").
+
+    In the past QEMU only used the first device in the boot order to IPL from.
+    With the new multi boot device support on s390x that is available with QEMU
+    version 9.2 and newer, this limitation is lifted. If the IPL fails for the
+    first device with the lowest boot index, the device with the second lowest
+    boot index will be tried and so on until IPL is successful or there are no
+    remaining boot devices to try.
+
+    Limitation: The s390x BIOS will try to IPL up to 8 total devices, any
+    number of which may be disks or network devices.
+
 * **Improvements**
 
 * **Bug fixes**
