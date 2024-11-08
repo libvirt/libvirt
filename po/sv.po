@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-07 01:28+0000\n"
+"PO-Revision-Date: 2024-11-08 22:00+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37483,39 +37483,38 @@ msgid "unable to set user and group to '%1$ld:%2$ld' on '%3$s'"
 msgstr "kan inte ställa in användare och grupp till ”%1$ld:%2$ld” på ”%3$s”"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
-msgstr ""
+msgstr "kan inte sätta vnet- eller multiqueue-flaggor på macvtap"
 
 #, c-format
 msgid "unable to share scheduling cookie from %1$lld"
-msgstr ""
+msgstr "kan inte dela schemaläggningskakan från %1$lld"
 
 #, c-format
 msgid "unable to share scheduling cookie to %1$lld"
-msgstr ""
+msgstr "kan inte dela schemaläggningskakan till %1$lld"
 
 #, c-format
 msgid "unable to stat %1$s"
-msgstr ""
+msgstr "kan inte ta status på %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to stat block copy target '%1$s'"
-msgstr "kan inte tolka mac-adressen ”%1$s”"
+msgstr "kan inte ta status på blockkopieringsmålet ”%1$s”"
 
 #, c-format
 msgid "unable to stat file descriptor %1$d path %2$s"
-msgstr ""
+msgstr "kan inte ta status på filbeskrivaren %1$d med sökväg %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to stat for disk %1$s: %2$s"
-msgstr "kan inte skapa körkatalogen %1$s: %2$s"
+msgstr "kan inte ta status på disken %1$s: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to stat: %1$s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "kan inte ta status: %1$s"
 
-#, fuzzy
 msgid "unable to truncate"
-msgstr "kan inte initiera mutex"
+msgstr "kan inte kapa"
 
 #, fuzzy, c-format
 msgid "unable to truncate %1$s"
