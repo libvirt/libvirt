@@ -6090,8 +6090,12 @@ qemuDomainDetachDeviceChr(virQEMUDriver *driver,
         if (rc < 0)
             goto cleanup;
     } else {
-        if (qemuDomainDeleteDevice(vm, tmpChr->info.alias) < 0)
+        ret = qemuDomainDeleteDevice(vm, tmpChr->info.alias);
+        if (ret < 0) {
+            if (ret == -2)
+                ret = qemuDomainRemoveChrDevice(driver, vm, tmpChr, true);
             goto cleanup;
+        }
     }
 
     if (guestfwd) {
@@ -6595,18 +6599,20 @@ qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
 
     qemuDomainMarkDeviceAliasForRemoval(vm, vcpupriv->alias);
 
-    if (qemuDomainDeleteDevice(vm, vcpupriv->alias) < 0) {
-        if (virDomainObjIsActive(vm))
-            virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
-        goto cleanup;
-    }
-
-    if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
-        if (rc == 0)
-            virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
-                           _("vcpu unplug request timed out. Unplug result must be manually inspected in the domain"));
-
-        goto cleanup;
+    rc = qemuDomainDeleteDevice(vm, vcpupriv->alias);
+    if (rc < 0) {
+        if (rc != -2) {
+            if (virDomainObjIsActive(vm))
+                virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
+            goto cleanup;
+        }
+    } else {
+        if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
+            if (rc == 0)
+                virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                               _("vcpu unplug request timed out. Unplug result must be manually inspected in the domain"));
+            goto cleanup;
+        }
     }
 
     if (qemuDomainRemoveVcpu(vm, vcpu) < 0)
