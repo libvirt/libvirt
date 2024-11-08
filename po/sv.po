@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-08 22:07+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-11-09 01:07+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -37574,61 +37574,62 @@ msgstr ""
 "avdefiniera ett fysiskt värdgränssnitt (ta bort det från konfigurationen)"
 
 msgid "undefine a secret"
-msgstr "Avdefiniera en hemlighet."
+msgstr "avdefiniera en hemlighet"
 
 msgid "undefine an inactive pool"
-msgstr ""
+msgstr "avdefiniera en inaktiv pool"
 
-#, fuzzy
 msgid "undefine an interface."
-msgstr "källa för nätverksgränssnitt"
+msgstr "avdefiniera ett gränssnitt."
 
 msgid "undefined"
 msgstr "odefinierad"
 
 msgid "undefined hardware architecture"
-msgstr ""
+msgstr "avdefiniera en hårdvaruarkitektur"
 
 #, c-format
 msgid "unexpected %1$s URI path '%2$s', try %3$s:///session"
-msgstr ""
+msgstr "oväntad %1$s-URI-sökväg ”%2$s”, försök med %3$s:///session"
 
 #, c-format
 msgid "unexpected %1$s URI path '%2$s', try %3$s:///system"
-msgstr ""
+msgstr "oväntad %1$s-URI-sökväg ”%2$s”, försök med %3$s:///system"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected %1$s action: %2$d"
-msgstr "oväntad data '%s'"
+msgstr "oväntad %1$s-åtgärd: %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected DateTime format: '%1$s'"
-msgstr "oväntad data '%1$s'"
+msgstr "oväntat DateTime-format: ”%1$s”"
 
 #, c-format
 msgid "unexpected OpenVZ URI path '%1$s', try openvz:///system"
-msgstr ""
+msgstr "oväntad OpenVZ-URI-sökväg ”%1$s”, försök med openvz:///system"
 
 msgid "unexpected VIR_DOMAIN_DEVICE_NONE"
-msgstr ""
+msgstr "oväntat VIR_DOMAIN_DEVICE_NONE"
 
 #, c-format
 msgid ""
 "unexpected VMware URI path '%1$s', try vmwareplayer:///session, vmwarews:///"
 "session or vmwarefusion:///session"
 msgstr ""
+"oväntad VMware-URI-sökväg ”%1$s”, försök med vmwareplayer:///session, "
+"vmwarews:///session eller vmwarefusion:///session"
 
 #, c-format
 msgid "unexpected Xen URI path '%1$s', try xen:///system"
-msgstr ""
+msgstr "oväntad Xen-URI-sökväg ”%1$s”, försök med xen:///system"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected accessmode %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "oväntat åtkomstläge %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected actual net type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad aktuell nättyp %1$d"
 
 #, fuzzy
 msgid "unexpected address type for fdc disk"
