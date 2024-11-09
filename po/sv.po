@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-09 01:07+0000\n"
+"PO-Revision-Date: 2024-11-09 14:44+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37631,32 +37631,28 @@ msgstr "oväntat åtkomstläge %1$d"
 msgid "unexpected actual net type %1$d"
 msgstr "oväntad aktuell nättyp %1$d"
 
-#, fuzzy
 msgid "unexpected address type for fdc disk"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad adresstyp för en fdc-disk"
 
-#, fuzzy
 msgid "unexpected address type for ide disk"
-msgstr "oväntade sysinfo typmodell %d"
+msgstr "oväntad adresstyp för en ide-disk"
 
 msgid "unexpected address type for sata disk"
-msgstr ""
+msgstr "oväntad adresstyp för en sata-disk"
 
-#, fuzzy
 msgid "unexpected address type for scsi disk"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad adresstyp för en scsi-disk"
 
-#, fuzzy
 msgid "unexpected address type for usb disk"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad adresstyp för en usb-disk"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected async job %1$d type expected %2$d"
-msgstr "oväntade sysinfo typmodell %d"
+msgstr "oväntat async-jobb %1$d typ %2$d förväntades"
 
 #, c-format
 msgid "unexpected audio type %1$d"
-msgstr ""
+msgstr "oväntad audiotyp %1$d"
 
 #, c-format
 msgid "unexpected binding %1$s already exists"
@@ -37666,61 +37662,59 @@ msgstr "oväntad bindning %1$s finns redan"
 msgid "unexpected boot device type %1$d"
 msgstr "oväntad startenhetstyp %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected bus type '%1$d'"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad busstyp ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected capability feature '%1$s'"
-msgstr "oväntad data '%1$s'"
+msgstr "oväntad förmågefunktion ”%1$s”"
 
 #, c-format
 msgid "unexpected char device type %1$d"
 msgstr "oväntad teckenenhetstyp %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected char type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad teckentyp %1$d"
 
-#, fuzzy
 msgid "unexpected chr device type"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad teckenenhetstyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected clock offset '%1$d'"
-msgstr "oväntad data '%s'"
+msgstr "oväntad klockförskjuting ”%1$d”"
 
-#, fuzzy
 msgid "unexpected code path"
-msgstr "oväntad data '%s'"
+msgstr "oväntad kodväg"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected codec type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad omkodartyp %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected controller type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad styrtyp %1$d"
 
 #, c-format
 msgid "unexpected data '%1$s'"
 msgstr "oväntad data '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk address type %1$s"
-msgstr "oväntad disktyp %1$s"
+msgstr "oväntad diskadresstyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk backing store format %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntat format på bakomliggande lagring %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk bus %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad diskbuss %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk device %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad diskenhet %1$d"
 
 #, c-format
 msgid "unexpected disk type %1$d"
@@ -37734,9 +37728,9 @@ msgstr "oväntad disktyp %1$s"
 msgid "unexpected domain %1$s already exists"
 msgstr "oväntad domän %1$s finns redan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected domain type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad domäntyp %1$d"
 
 #, c-format
 msgid ""
