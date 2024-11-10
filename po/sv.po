@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-09 14:44+0000\n"
+"PO-Revision-Date: 2024-11-10 16:12+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37736,24 +37736,26 @@ msgstr "oväntad domäntyp %1$d"
 msgid ""
 "unexpected element <%1$s>, expecting <%2$s>, while updating network '%3$s'"
 msgstr ""
+"oväntat element <%1$s>, <%2$s> förväntades, vid uppdatering av nätverket "
+"”%3$s”"
 
 msgid "unexpected encryption engine"
-msgstr ""
+msgstr "oväntad krypteringsmotor"
 
 msgid "unexpected encryption format"
-msgstr ""
+msgstr "oväntat krypteringsformat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected feature '%1$s'"
-msgstr "oväntad data '%1$s'"
+msgstr "oväntad funktion ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected filesystem type %1$d"
-msgstr "oväntad disktyp %s"
+msgstr "oväntad filsystemstyp %1$d"
 
 #, c-format
 msgid "unexpected host-model CPU for %1$s architecture"
-msgstr ""
+msgstr "oväntad värdmodells-CPU för arkitekturen %1$s"
 
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %1$d"
