@@ -16,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-11-10 16:12+0000\n"
-"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -37757,9 +37757,9 @@ msgstr "oväntad filsystemstyp %1$d"
 msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "oväntad värdmodells-CPU för arkitekturen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected hostdev mode %1$d"
-msgstr "oväntade sysinfo typmodell %1$d"
+msgstr "Oväntat hostdev-läge %1$d"
 
 #, fuzzy, c-format
 msgid "unexpected hostdev type %1$d"
