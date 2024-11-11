@@ -622,9 +622,10 @@ void virCHMonitorClose(virCHMonitor *mon)
         curl_easy_cleanup(mon->handle);
 
     if (mon->socketpath) {
-        if (virFileRemove(mon->socketpath, -1, -1) < 0) {
-            VIR_WARN("Unable to remove CH socket file '%s'",
-                     mon->socketpath);
+        if (virFileRemove(mon->socketpath, -1, -1) < 0 &&
+            errno != ENOENT) {
+            VIR_WARN("Unable to remove CH socket file '%s': %s",
+                     mon->socketpath, g_strerror(errno));
         }
         g_clear_pointer(&mon->socketpath, g_free);
     }
