@@ -626,7 +626,7 @@ void virCHMonitorClose(virCHMonitor *mon)
             VIR_WARN("Unable to remove CH socket file '%s'",
                      mon->socketpath);
         }
-        g_free(mon->socketpath);
+        g_clear_pointer(&mon->socketpath, g_free);
     }
 
     virObjectUnref(mon);
