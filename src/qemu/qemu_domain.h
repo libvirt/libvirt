@@ -670,11 +670,6 @@ int qemuDomainSnapshotWriteMetadata(virDomainObj *vm,
                                     virDomainXMLOption *xmlopt,
                                     const char *snapshotDir);
 
-int qemuDomainSnapshotForEachQcow2(virDomainDef *def,
-                                   virDomainMomentObj *snap,
-                                   const char *op,
-                                   bool try_all);
-
 typedef struct _virQEMUMomentRemove virQEMUMomentRemove;
 struct _virQEMUMomentRemove {
     virQEMUDriver *driver;
