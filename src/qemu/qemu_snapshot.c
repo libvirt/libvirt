@@ -185,7 +185,6 @@ qemuSnapshotDomainDefUpdateDisk(virDomainDef *domdef,
 
 /**
  * qemuSnapshotCreateQcow2Files:
- * @driver: QEMU driver
  * @def: domain definition
  * @snapdef: snapshot definition
  * @created: bitmap to store which disks were created
@@ -196,19 +195,14 @@ qemuSnapshotDomainDefUpdateDisk(virDomainDef *domdef,
  * Returns 0 on success, -1 on error.
  */
 static int
-qemuSnapshotCreateQcow2Files(virQEMUDriver *driver,
-                             virDomainDef *def,
+qemuSnapshotCreateQcow2Files(virDomainDef *def,
                              virDomainSnapshotDef *snapdef,
                              virBitmap *created)
 {
     size_t i;
-    const char *qemuImgPath;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainSnapshotDiskDef *snapdisk = NULL;
     virDomainDiskDef *defdisk = NULL;
-
-    if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
-        return -1;
 
     for (i = 0; i < snapdef->ndisks; i++) {
         g_autoptr(virCommand) cmd = NULL;
@@ -225,7 +219,7 @@ qemuSnapshotCreateQcow2Files(virQEMUDriver *driver,
             return -1;
 
         /* creates cmd line args: qemu-img create -f qcow2 -o */
-        if (!(cmd = virCommandNewArgList(qemuImgPath,
+        if (!(cmd = virCommandNewArgList("qemu-img",
                                          "create",
                                          "-f",
                                          virStorageFileFormatTypeToString(snapdisk->src->format),
@@ -281,7 +275,7 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
     /* If reuse is true, then qemuSnapshotPrepare already
      * ensured that the new files exist, and it was up to the user to
      * create them correctly.  */
-    if (!reuse && qemuSnapshotCreateQcow2Files(driver, vm->def, snapdef, created) < 0)
+    if (!reuse && qemuSnapshotCreateQcow2Files(vm->def, snapdef, created) < 0)
         goto cleanup;
 
     /* update disk definitions */
@@ -2300,7 +2294,6 @@ qemuSnapshotRevertExternalActive(virDomainObj *vm,
 
 /**
  * qemuSnapshotRevertExternalInactive:
- * @vm: domain object
  * @tmpsnapdef: temporary snapshot definition
  * @domdef: offline domain definition
  *
@@ -2310,17 +2303,15 @@ qemuSnapshotRevertExternalActive(virDomainObj *vm,
  * Returns 0 on success, -1 on error.
  */
 static int
-qemuSnapshotRevertExternalInactive(virDomainObj *vm,
-                                   virDomainSnapshotDef *tmpsnapdef,
+qemuSnapshotRevertExternalInactive(virDomainSnapshotDef *tmpsnapdef,
                                    virDomainDef *domdef)
 {
-    virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
     g_autoptr(virBitmap) created = NULL;
     int ret = -1;
 
     created = virBitmapNew(tmpsnapdef->ndisks);
 
-    if (qemuSnapshotCreateQcow2Files(driver, domdef, tmpsnapdef, created) < 0)
+    if (qemuSnapshotCreateQcow2Files(domdef, tmpsnapdef, created) < 0)
         goto cleanup;
 
     if (qemuSnapshotDomainDefUpdateDisk(domdef, tmpsnapdef, false) < 0)
@@ -2613,7 +2604,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
             return -1;
         }
 
-        if (qemuSnapshotRevertExternalInactive(vm, tmpsnapdef,
+        if (qemuSnapshotRevertExternalInactive(tmpsnapdef,
                                                *inactiveConfig) < 0) {
             return -1;
         }
@@ -3443,22 +3434,16 @@ qemuSnapshotSetInvalid(virDomainObj *vm,
 
 
 static void
-qemuSnapshotUpdateBackingStore(virDomainObj *vm,
-                               qemuSnapshotDeleteExternalData *data)
+qemuSnapshotUpdateBackingStore(qemuSnapshotDeleteExternalData *data)
 {
     GSList *cur = NULL;
-    const char *qemuImgPath;
-    virQEMUDriver *driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
-
-    if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
-        return;
 
     for (cur = data->disksWithBacking; cur; cur = g_slist_next(cur)) {
         struct _qemuSnapshotDisksWithBackingStoreData *backingData = cur->data;
         g_autoptr(virCommand) cmd = NULL;
 
         /* creates cmd line args: qemu-img create -f qcow2 -o */
-        if (!(cmd = virCommandNewArgList(qemuImgPath,
+        if (!(cmd = virCommandNewArgList("qemu-img",
                                          "rebase",
                                          "-u",
                                          "-F",
@@ -3565,7 +3550,7 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
 
         qemuBlockJobSyncEnd(vm, data->job, VIR_ASYNC_JOB_SNAPSHOT);
 
-        qemuSnapshotUpdateBackingStore(vm, data);
+        qemuSnapshotUpdateBackingStore(data);
 
         if (qemuSnapshotSetInvalid(vm, data->parentSnap, data->snapDisk, false) < 0)
             goto error;

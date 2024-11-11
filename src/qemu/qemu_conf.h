@@ -271,9 +271,6 @@ struct _virQEMUDriver {
     /* Immutable pointer, self-locking APIs */
     virDomainObjList *domains;
 
-    /* Immutable pointer */
-    char *qemuImgBinary;
-
     /* Immutable pointer, lockless APIs. Pointless abstraction */
     ebtablesContext *ebtables;
 

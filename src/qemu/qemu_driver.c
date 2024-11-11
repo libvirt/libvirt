@@ -679,8 +679,6 @@ qemuStateInitialize(bool privileged,
          virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
         goto error;
 
-    qemu_driver->qemuImgBinary = virFindFileInPath("qemu-img");
-
     if (!(qemu_driver->lockManager =
           virLockManagerPluginNew(cfg->lockManagerName ?
                                   cfg->lockManagerName : "nop",
@@ -1065,7 +1063,6 @@ qemuStateCleanup(void)
     virCPUDefFree(qemu_driver->hostcpu);
     virObjectUnref(qemu_driver->caps);
     ebtablesContextFree(qemu_driver->ebtables);
-    VIR_FREE(qemu_driver->qemuImgBinary);
     virObjectUnref(qemu_driver->domains);
     virObjectUnref(qemu_driver->nbdkitCapsCache);
 

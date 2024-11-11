@@ -665,8 +665,6 @@ int qemuDomainLogAppendMessage(virQEMUDriver *driver,
                                const char *fmt,
                                ...) G_GNUC_PRINTF(3, 4);
 
-const char *qemuFindQemuImgBinary(virQEMUDriver *driver);
-
 int qemuDomainSnapshotWriteMetadata(virDomainObj *vm,
                                     virDomainMomentObj *snapshot,
                                     virDomainXMLOption *xmlopt,

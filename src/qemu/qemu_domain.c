@@ -5671,17 +5671,6 @@ qemuDomainLogAppendMessage(virQEMUDriver *driver,
 }
 
 
-/* Locate an appropriate 'qemu-img' binary.  */
-const char *
-qemuFindQemuImgBinary(virQEMUDriver *driver)
-{
-    if (!driver->qemuImgBinary)
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find qemu-img"));
-
-    return driver->qemuImgBinary;
-}
-
 int
 qemuDomainSnapshotWriteMetadata(virDomainObj *vm,
                                 virDomainMomentObj *snapshot,
@@ -5727,18 +5716,11 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
                                   int ndisks)
 {
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
-    const char *qemuimgbin;
     size_t i;
     bool skipped = false;
 
-    qemuimgbin = qemuFindQemuImgBinary(driver);
-    if (qemuimgbin == NULL) {
-        /* qemuFindQemuImgBinary set the error */
-        return -1;
-    }
-
     for (i = 0; i < ndisks; i++) {
-        g_autoptr(virCommand) cmd = virCommandNewArgList(qemuimgbin, "snapshot",
+        g_autoptr(virCommand) cmd = virCommandNewArgList("qemu-img", "snapshot",
                                                          op, snap->def->name, NULL);
         int format = virDomainDiskGetFormat(def->disks[i]);
 
