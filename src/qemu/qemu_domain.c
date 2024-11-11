@@ -5708,8 +5708,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObj *vm,
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
 static int
-qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
-                                  virDomainDef *def,
+qemuDomainSnapshotForEachQcow2Raw(virDomainDef *def,
                                   virDomainMomentObj *snap,
                                   const char *op,
                                   bool try_all,
@@ -5748,8 +5747,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
             } else if (STREQ(op, "-c") && i) {
                 /* We must roll back partial creation by deleting
                  * all earlier snapshots.  */
-                qemuDomainSnapshotForEachQcow2Raw(driver, def, snap,
-                                                  "-d", false, i);
+                qemuDomainSnapshotForEachQcow2Raw(def, snap, "-d", false, i);
             }
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Disk device '%1$s' does not support snapshotting"),
@@ -5768,8 +5766,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
             } else if (STREQ(op, "-c") && i) {
                 /* We must roll back partial creation by deleting
                  * all earlier snapshots.  */
-                qemuDomainSnapshotForEachQcow2Raw(driver, def, snap,
-                                                  "-d", false, i);
+                qemuDomainSnapshotForEachQcow2Raw(def, snap, "-d", false, i);
             }
             return -1;
         }
@@ -5781,14 +5778,12 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
 int
-qemuDomainSnapshotForEachQcow2(virQEMUDriver *driver,
-                               virDomainDef *def,
+qemuDomainSnapshotForEachQcow2(virDomainDef *def,
                                virDomainMomentObj *snap,
                                const char *op,
                                bool try_all)
 {
-    return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap,
-                                             op, try_all, def->ndisks);
+    return qemuDomainSnapshotForEachQcow2Raw(def, snap, op, try_all, def->ndisks);
 }
 
 /* Hash iterator callback to discard multiple snapshots.  */

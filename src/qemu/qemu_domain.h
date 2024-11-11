@@ -670,8 +670,7 @@ int qemuDomainSnapshotWriteMetadata(virDomainObj *vm,
                                     virDomainXMLOption *xmlopt,
                                     const char *snapshotDir);
 
-int qemuDomainSnapshotForEachQcow2(virQEMUDriver *driver,
-                                   virDomainDef *def,
+int qemuDomainSnapshotForEachQcow2(virDomainDef *def,
                                    virDomainMomentObj *snap,
                                    const char *op,
                                    bool try_all);

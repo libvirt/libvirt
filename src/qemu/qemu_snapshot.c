@@ -251,11 +251,10 @@ qemuSnapshotCreateQcow2Files(virDomainDef *def,
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuSnapshotCreateInactiveInternal(virQEMUDriver *driver,
-                                   virDomainObj *vm,
+qemuSnapshotCreateInactiveInternal(virDomainObj *vm,
                                    virDomainMomentObj *snap)
 {
-    return qemuDomainSnapshotForEachQcow2(driver, vm->def, snap, "-c", false);
+    return qemuDomainSnapshotForEachQcow2(vm->def, snap, "-c", false);
 }
 
 
@@ -1935,7 +1934,7 @@ qemuSnapshotCreate(virDomainObj *vm,
             if (qemuSnapshotCreateInactiveExternal(driver, vm, snap, reuse) < 0)
                 goto error;
         } else {
-            if (qemuSnapshotCreateInactiveInternal(driver, vm, snap) < 0)
+            if (qemuSnapshotCreateInactiveInternal(vm, snap) < 0)
                 goto error;
         }
     }
@@ -2533,8 +2532,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuSnapshotInternalRevertInactive(virQEMUDriver *driver,
-                                   virDomainObj *vm,
+qemuSnapshotInternalRevertInactive(virDomainObj *vm,
                                    virDomainMomentObj *snap)
 {
     size_t i;
@@ -2553,7 +2551,7 @@ qemuSnapshotInternalRevertInactive(virQEMUDriver *driver,
     }
 
     /* Try all disks, but report failure if we skipped any.  */
-    if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-a", true) != 0)
+    if (qemuDomainSnapshotForEachQcow2(def, snap, "-a", true) != 0)
         return -1;
 
     return 0;
@@ -2611,7 +2609,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
 
         qemuSnapshotRevertExternalFinish(vm, tmpsnapdef, snap);
     } else {
-        if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
+        if (qemuSnapshotInternalRevertInactive(vm, snap) < 0) {
             qemuDomainRemoveInactive(driver, vm, 0, false);
             return -1;
         }
@@ -3893,8 +3891,7 @@ qemuSnapshotDiscardActiveInternal(virDomainObj *vm,
 
 /* Discard one snapshot (or its metadata), without reparenting any children.  */
 static int
-qemuSnapshotDiscardImpl(virQEMUDriver *driver,
-                        virDomainObj *vm,
+qemuSnapshotDiscardImpl(virDomainObj *vm,
                         virDomainMomentObj *snap,
                         GSList *externalData,
                         bool update_parent,
@@ -3922,7 +3919,7 @@ qemuSnapshotDiscardImpl(virQEMUDriver *driver,
                 if (qemuSnapshotDiscardExternal(vm, snap, externalData) < 0)
                     return -1;
             } else {
-                if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
+                if (qemuDomainSnapshotForEachQcow2(def, snap, "-d", true) < 0)
                     return -1;
             }
         } else {
@@ -3961,13 +3958,13 @@ qemuSnapshotDiscardImpl(virQEMUDriver *driver,
 
 
 static int
-qemuSnapshotDiscard(virQEMUDriver *driver,
+qemuSnapshotDiscard(virQEMUDriver *driver G_GNUC_UNUSED,
                     virDomainObj *vm,
                     virDomainMomentObj *snap,
                     bool update_parent,
                     bool metadata_only)
 {
-    return qemuSnapshotDiscardImpl(driver, vm, snap, NULL, update_parent, metadata_only);
+    return qemuSnapshotDiscardImpl(vm, snap, NULL, update_parent, metadata_only);
 }
 
 
@@ -3995,10 +3992,7 @@ qemuSnapshotDeleteSingle(virDomainObj *vm,
                          GSList *externalData,
                          bool metadata_only)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
-
-    return qemuSnapshotDiscardImpl(driver, vm, snap, externalData, true, metadata_only);
+    return qemuSnapshotDiscardImpl(vm, snap, externalData, true, metadata_only);
 }
 
 
