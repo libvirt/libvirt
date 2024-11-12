@@ -507,12 +507,13 @@ def expand_model(model):
             yield result
 
 
-def output_model(f, model):
+def output_model(f, extra, model):
     if model["extra"]:
-        f.write("<!-- extra info from qemu:\n")
-        for k, v in model["extra"].items():
-            f.write(f"  '{k}': '{v}'\n")
-        f.write("-->\n")
+        with open(extra, "wt") as ex:
+            ex.write("# THIS FILE SHOULD NEVER BE ADDED TO A COMMIT\n")
+            ex.write("extra info from qemu:\n")
+            for k, v in model["extra"].items():
+                ex.write(f"  {k}: {v}\n")
 
     decode = "off" if "base" in model else "on"
 
@@ -573,13 +574,17 @@ def main():
         models.extend(expand_model(model))
 
     for model in models:
-        name = os.path.join(args.outdir, f"x86_{model['name']}.xml")
-        if os.path.isfile(name):
+        name = f"x86_{model['name']}.xml"
+        path = os.path.join(args.outdir, name)
+
+        if os.path.isfile(path):
             # Ignore existing models as CPU models in libvirt should never
             # change once released.
             continue
-        with open(name, "wt") as f:
-            output_model(f, model)
+
+        extra = os.path.join(args.outdir, f"x86_{model['name']}.extra")
+        with open(path, "wt") as f:
+            output_model(f, extra, model)
 
     features = set()
     for model in models:
