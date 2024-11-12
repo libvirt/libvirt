@@ -780,6 +780,9 @@ void qemuDomainCleanupRun(virQEMUDriver *driver,
 
 void qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv);
 
+int qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfo **secinfo,
+                                              char **alias);
+
 extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
 extern virXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
@@ -848,6 +851,11 @@ bool qemuDomainSupportsPCIMultibus(const virDomainDef *def);
 int qemuDomainGetSCSIControllerModel(const virDomainDef *def,
                                      const virDomainControllerDef *cont,
                                      virQEMUCaps *qemuCaps);
+
+int qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
+                                        virDomainDef *def);
+
+virDomainPanicModel qemuDomainDefaultPanicModel(const virDomainDef *def);
 
 void qemuDomainUpdateCurrentMemorySize(virDomainObj *vm);
 
@@ -938,8 +946,12 @@ int qemuDomainSecretPrepare(virQEMUDriver *driver,
                             virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
-                                     unsigned int parseFlags);
+void
+qemuDomainChrDefDropDefaultPath(virDomainChrDef *chr,
+                                virQEMUDriver *driver);
+
+int
+qemuDomainNVDimmAlignSizePseries(virDomainMemoryDef *mem);
 
 int qemuDomainPrepareChannel(virDomainChrDef *chr,
                              const char *domainChannelTargetDir)

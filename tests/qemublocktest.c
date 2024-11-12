@@ -27,6 +27,7 @@
 #include "qemu/qemu_monitor_json.h"
 #include "qemu/qemu_backup.h"
 #include "qemu/qemu_checkpoint.h"
+#include "qemu/qemu_postparse.h"
 #include "qemu/qemu_validate.h"
 
 #define LIBVIRT_SNAPSHOT_CONF_PRIV_H_ALLOW
