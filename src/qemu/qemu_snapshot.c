@@ -347,6 +347,26 @@ qemuSnapshotForEachQcow2(virDomainDef *def,
         }
     }
 
+    if (def->os.loader && def->os.loader->nvram) {
+        virStorageSource *nvram = def->os.loader->nvram;
+
+        if (virStorageSourceIsLocalStorage(nvram) &&
+            nvram->format == VIR_STORAGE_FILE_QCOW2) {
+            if (qemuSnapshotForEachQcow2One(nvram, op, snap->def->name) < 0) {
+                if (create) {
+                    nrollback = def->ndisks;
+                    virErrorPreserveLast(&orig_err);
+                    goto rollback;
+                } else {
+                    VIR_WARN("failed 'qemu-img snapshot %s' action on NVRAM image",
+                             op);
+                    skipped = true;
+                    virResetLastError();
+                }
+            }
+        }
+    }
+
     return skipped ? 1 : 0;
 
  rollback:
