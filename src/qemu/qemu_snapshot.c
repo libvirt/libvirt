@@ -249,86 +249,121 @@ qemuSnapshotCreateQcow2Files(virDomainDef *def,
 }
 
 
-/* The domain is expected to be locked and inactive. Return -1 on normal
- * failure, 1 if we skipped a disk due to try_all.  */
 static int
-qemuSnapshotForEachQcow2Internal(virDomainDef *def,
-                                 virDomainMomentObj *snap,
-                                 const char *op,
-                                 bool try_all,
-                                 int ndisks)
+qemuSnapshotForEachQcow2One(virStorageSource *src,
+                            const char *op,
+                            const char *snapname)
+{
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = virCommandNewArgList("qemu-img", "snapshot",
+                               op, snapname, src->path, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuSnapshotForEachQcow2:
+ *
+ * @def: domain definition
+ * @snap: snapshot object
+ * @op: 'qemu-img snapshot' operation flag, one of "-c", "-d", "-a"
+ *
+ * Applies the selected 'qemu-img snapshot' operation @op on all relevant QCOW2
+ * images of @def. In case when @op is "-c" (create) any failure is fatal and
+ * rolled back. Otherwise the selected operation @op is applied on all images
+ * regardless of failure.
+ *
+ * Returns: -1 on errror; 0 on complete success; 1 on partial success in
+ * permissive modes.
+ */
+static int
+qemuSnapshotForEachQcow2(virDomainDef *def,
+                         virDomainMomentObj *snap,
+                         const char *op)
 {
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     size_t i;
     bool skipped = false;
+    bool create = STREQ(op, "-c");
+    size_t nrollback = -1;
+    virErrorPtr orig_err;
 
-    for (i = 0; i < ndisks; i++) {
-        g_autoptr(virCommand) cmd = virCommandNewArgList("qemu-img", "snapshot",
-                                                         op, snap->def->name, NULL);
-        int format = virDomainDiskGetFormat(def->disks[i]);
+    /* pre-checks */
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
 
-        /* FIXME: we also need to handle LVM here */
         if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
             snapdef->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL)
             continue;
 
-        if (!virStorageSourceIsLocalStorage(def->disks[i]->src)) {
+        if (!virStorageSourceIsLocalStorage(disk->src)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("can't manipulate inactive snapshots of disk '%1$s'"),
-                           def->disks[i]->dst);
+                           disk->dst);
             return -1;
         }
 
-        if (format > 0 && format != VIR_STORAGE_FILE_QCOW2) {
-            if (try_all) {
-                /* Continue on even in the face of error, since other
-                 * disks in this VM may have the same snapshot name.
-                 */
-                VIR_WARN("skipping snapshot action on %s",
-                         def->disks[i]->dst);
-                skipped = true;
-                continue;
-            } else if (STREQ(op, "-c") && i) {
-                /* We must roll back partial creation by deleting
-                 * all earlier snapshots.  */
-                qemuSnapshotForEachQcow2Internal(def, snap, "-d", false, i);
-            }
+        if (create &&
+            disk->src->format > VIR_STORAGE_FILE_NONE &&
+            disk->src->format != VIR_STORAGE_FILE_QCOW2) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Disk device '%1$s' does not support snapshotting"),
-                           def->disks[i]->dst);
-            return -1;
-        }
-
-        virCommandAddArg(cmd, virDomainDiskGetSource(def->disks[i]));
-
-        if (virCommandRun(cmd, NULL) < 0) {
-            if (try_all) {
-                VIR_WARN("skipping snapshot action on %s",
-                         def->disks[i]->dst);
-                skipped = true;
-                continue;
-            } else if (STREQ(op, "-c") && i) {
-                /* We must roll back partial creation by deleting
-                 * all earlier snapshots.  */
-                qemuSnapshotForEachQcow2Internal(def, snap, "-d", false, i);
-            }
+                           disk->dst);
             return -1;
         }
     }
 
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+
+        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
+            snapdef->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL)
+            continue;
+
+        if (disk->src->format > VIR_STORAGE_FILE_NONE &&
+            disk->src->format != VIR_STORAGE_FILE_QCOW2) {
+            VIR_WARN("skipping 'qemu-img snapshot %s' action on non-qcow2 disk '%s'",
+                     op, disk->dst);
+            skipped = true;
+            continue;
+        }
+
+        if (qemuSnapshotForEachQcow2One(disk->src, op, snap->def->name) < 0) {
+            if (create) {
+                nrollback = i;
+                virErrorPreserveLast(&orig_err);
+                goto rollback;
+            } else {
+                VIR_WARN("failed 'qemu-img snapshot %s' action on '%s'",
+                         op, disk->dst);
+                skipped = true;
+                virResetLastError();
+            }
+        }
+    }
+
     return skipped ? 1 : 0;
-}
 
+ rollback:
+    for (i = 0; i < nrollback; i++) {
+        virDomainDiskDef *disk = def->disks[i];
 
-/* The domain is expected to be locked and inactive. Return -1 on normal
- * failure, 1 if we skipped a disk due to try_all.  */
-static int
-qemuSnapshotForEachQcow2(virDomainDef *def,
-                         virDomainMomentObj *snap,
-                         const char *op,
-                         bool try_all)
-{
-    return qemuSnapshotForEachQcow2Internal(def, snap, op, try_all, def->ndisks);
+        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
+            snapdef->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL ||
+            (disk->src->format > VIR_STORAGE_FILE_NONE &&
+             disk->src->format != VIR_STORAGE_FILE_QCOW2))
+            continue;
+
+        ignore_value(qemuSnapshotForEachQcow2One(disk->src, "-d", snap->def->name));
+    }
+
+    virErrorRestore(&orig_err);
+    return -1;
 }
 
 
@@ -337,7 +372,7 @@ static int
 qemuSnapshotCreateInactiveInternal(virDomainObj *vm,
                                    virDomainMomentObj *snap)
 {
-    return qemuSnapshotForEachQcow2(vm->def, snap, "-c", false);
+    return qemuSnapshotForEachQcow2(vm->def, snap, "-c");
 }
 
 
@@ -2634,7 +2669,7 @@ qemuSnapshotInternalRevertInactive(virDomainObj *vm,
     }
 
     /* Try all disks, but report failure if we skipped any.  */
-    if (qemuSnapshotForEachQcow2(def, snap, "-a", true) != 0)
+    if (qemuSnapshotForEachQcow2(def, snap, "-a") != 0)
         return -1;
 
     return 0;
@@ -4002,7 +4037,7 @@ qemuSnapshotDiscardImpl(virDomainObj *vm,
                 if (qemuSnapshotDiscardExternal(vm, snap, externalData) < 0)
                     return -1;
             } else {
-                if (qemuSnapshotForEachQcow2(def, snap, "-d", true) < 0)
+                if (qemuSnapshotForEachQcow2(def, snap, "-d") < 0)
                     return -1;
             }
         } else {
