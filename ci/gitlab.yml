@@ -11,8 +11,11 @@
 #  - RUN_PIPELINE - force creation of a CI pipeline when
 #    pushing to a branch in a forked repository. Official
 #    CI pipelines are triggered when merge requests are
-#    created/updated. Setting this variable to a non-empty
-#    value allows CI testing prior to opening a merge request.
+#    created/updated. Setting this variable allows CI
+#    testing prior to opening a merge request. A value
+#    of "0" will create the pipeline but leave all jobs
+#    to be manually started, while "1" will immediately
+#    run all default jobs.
 #
 #  - RUN_PIPELINE_UPSTREAM_ENV - same semantics as RUN_PIPELINE,
 #    but uses the CI environment (containers) from the upstream project
@@ -38,11 +41,13 @@
 #
 # Aliases can be set for common usage
 #
-#  $ git config --local alias.push-ci "push -o ci.variable=RUN_PIPELINE=1"
+#  $ git config --local alias.push-ci "push -o ci.variable=RUN_PIPELINE=0"
+#  $ git config --local alias.push-ci-now "push -o ci.variable=RUN_PIPELINE=1"
 #
 # Allowing the less verbose invocation
 #
-#  $ git push-ci
+#  $ git push-ci     (create pipeline but don't start jobs)
+#  $ git push-ci-now (create pipeline and start default jobs)
 #
 # Pipeline variables can also be set in the repository
 # pipeline config globally, or set against scheduled pipelines
