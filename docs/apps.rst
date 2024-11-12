@@ -206,6 +206,11 @@ Libraries
    Allows using simple ruby objects to manipulate hypervisors, guests,
    storage, network etc. It is based on top of the `native ruby
    bindings <https://ruby.libvirt.org/>`__.
+`Perl Async bindings <https://github.com/ehuelsmann/perl-sys-async-virt#readme>`__
+   Perl `Sys::Async::Virt library <https://metacpan.org/pod/Sys::Async::Virt>`__
+   supporting the asynchronous paradigm introduced by `Future::AsyncAwait
+   <https://metacpan.org/pod/Future::AsyncAwait>`__ that tries to stay close to
+   the `Sys::Virt API <https://metacpan.org/pod/Sys::Virt>`__.
 
 LiveCD / Appliances
 -------------------
