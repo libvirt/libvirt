@@ -33,15 +33,6 @@ int virLXCProcessStop(virLXCDriver *driver,
                       virDomainShutoffReason reason,
                       unsigned int cleanupFlags);
 
-void virLXCProcessAutoDestroyRun(virLXCDriver *driver,
-                                 virConnectPtr conn);
-void virLXCProcessAutoDestroyShutdown(virLXCDriver *driver);
-int virLXCProcessAutoDestroyAdd(virLXCDriver *driver,
-                                virDomainObj *vm,
-                                virConnectPtr conn);
-int virLXCProcessAutoDestroyRemove(virLXCDriver *driver,
-                                   virDomainObj *vm);
-
 void virLXCProcessAutostartAll(virLXCDriver *driver);
 int virLXCProcessReconnectAll(virLXCDriver *driver,
                               virDomainObjList *doms);

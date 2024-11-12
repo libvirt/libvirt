@@ -193,7 +193,6 @@ int virDeviceHostdevPCIDriverInfoParseXML(xmlNodePtr node,
 int virDeviceHostdevPCIDriverInfoFormat(virBuffer *buf,
                                         const virDeviceHostdevPCIDriverInfo *driver);
 
-void virDeviceHostdevPCIDriverInfoPostParse(virDeviceHostdevPCIDriverInfo *driver);
 void virDeviceHostdevPCIDriverInfoClear(virDeviceHostdevPCIDriverInfo *driver);
 
 void virDomainDeviceInfoClear(virDomainDeviceInfo *info);

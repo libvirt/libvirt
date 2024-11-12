@@ -175,10 +175,6 @@ qemuMonitorJSONMigrate(qemuMonitor *mon,
 int
 qemuMonitorJSONGetMigrationBlockers(qemuMonitor *mon,
                                     char ***blockers);
-int
-qemuMonitorJSONGetSpiceMigrationStatus(qemuMonitor *mon,
-                                       bool *spice_migrated);
-
 
 int
 qemuMonitorJSONMigrateCancel(qemuMonitor *mon);
@@ -207,26 +203,6 @@ qemuMonitorJSONGraphicsRelocate(qemuMonitor *mon,
                                 int port,
                                 int tlsPort,
                                 const char *tlsSubject);
-
-int
-qemuMonitorJSONAddPCIHostDevice(qemuMonitor *mon,
-                                virPCIDeviceAddress *hostAddr,
-                                virPCIDeviceAddress *guestAddr);
-
-int
-qemuMonitorJSONAddPCIDisk(qemuMonitor *mon,
-                          const char *path,
-                          const char *bus,
-                          virPCIDeviceAddress *guestAddr);
-
-int
-qemuMonitorJSONAddPCINetwork(qemuMonitor *mon,
-                             const char *nicstr,
-                             virPCIDeviceAddress *guestAddr);
-
-int
-qemuMonitorJSONRemovePCIDevice(qemuMonitor *mon,
-                               virPCIDeviceAddress *guestAddr);
 
 int
 qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
@@ -267,11 +243,6 @@ qemuMonitorJSONQueryRxFilter(qemuMonitor *mon,
 int
 qemuMonitorJSONGetChardevInfo(qemuMonitor *mon,
                               GHashTable *info);
-
-int
-qemuMonitorJSONAttachPCIDiskController(qemuMonitor *mon,
-                                       const char *bus,
-                                       virPCIDeviceAddress *guestAddr);
 
 int
 qemuMonitorJSONAddDeviceProps(qemuMonitor *mon,

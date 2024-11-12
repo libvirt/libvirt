@@ -51,9 +51,6 @@ virInterfaceObj *
 virInterfaceObjListFindByName(virInterfaceObjList *interfaces,
                               const char *name);
 
-void
-virInterfaceObjFree(virInterfaceObj *obj);
-
 virInterfaceObjList *
 virInterfaceObjListClone(virInterfaceObjList *interfaces);
 

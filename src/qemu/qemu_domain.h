@@ -588,8 +588,6 @@ virDomainObj *qemuDomainObjFromDomain(virDomainPtr domain);
 
 qemuDomainSaveCookie *qemuDomainSaveCookieNew(virDomainObj *vm);
 
-void qemuDomainEventFlush(int timer, void *opaque);
-
 qemuMonitor *qemuDomainGetMonitor(virDomainObj *vm)
     ATTRIBUTE_NONNULL(1);
 void qemuDomainObjEnterMonitor(virDomainObj *obj)
@@ -644,9 +642,6 @@ void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainObj *obj,
                         virDomainTaintFlags taint,
                         qemuLogContext *logCtxt);
-
-char **qemuDomainObjGetTainting(virQEMUDriver *driver,
-                                virDomainObj *obj);
 
 void qemuDomainObjCheckTaint(virQEMUDriver *driver,
                              virDomainObj *obj,
@@ -715,10 +710,6 @@ int qemuDomainCheckDiskStartupPolicy(virQEMUDriver *driver,
                                      virDomainObj *vm,
                                      size_t diskIndex,
                                      bool cold_boot);
-
-int qemuDomainCheckDiskPresence(virQEMUDriver *driver,
-                                virDomainObj *vm,
-                                unsigned int flags);
 
 int qemuDomainStorageSourceValidateDepth(virStorageSource *src,
                                          int add,
@@ -946,9 +937,6 @@ int qemuDomainGetMemoryBackingPath(qemuDomainObjPrivate *priv,
 int qemuDomainSecretPrepare(virQEMUDriver *driver,
                             virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
-                                    virQEMUCaps *qemuCaps);
 
 int qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
                                      unsigned int parseFlags);

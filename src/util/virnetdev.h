@@ -185,16 +185,6 @@ int virNetDevGetMAC(const char *ifname,
                     virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
-int virNetDevReplaceMacAddress(const char *linkdev,
-                               const virMacAddr *macaddress,
-                               const char *stateDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    G_GNUC_WARN_UNUSED_RESULT;
-
-int virNetDevRestoreMacAddress(const char *linkdev,
-                               const char *stateDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
-
 int virNetDevSetCoalesce(const char *ifname,
                          virNetDevCoalesce *coalesce,
                          bool update)

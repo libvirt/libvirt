@@ -189,9 +189,6 @@ void qemuProcessShutdownOrReboot(virDomainObj *vm);
 void qemuProcessAutoDestroy(virDomainObj *dom,
                             virConnectPtr conn);
 
-int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
-                              virDomainThreadSchedParam *sp);
-
 virDomainDiskDef *qemuProcessFindDomainDiskByAliasOrQOM(virDomainObj *vm,
                                                           const char *alias,
                                                           const char *qomid);

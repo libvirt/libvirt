@@ -67,8 +67,6 @@ virLogHandler *virLogHandlerNewPostExecRestart(virJSONValue *child,
                                                virLogHandlerShutdownInhibitor inhibitor,
                                                void *opaque);
 
-void virLogHandlerFree(virLogHandler *handler);
-
 int virLogHandlerDomainOpenLogFile(virLogHandler *handler,
                                    const char *driver,
                                    const unsigned char *domuuid,

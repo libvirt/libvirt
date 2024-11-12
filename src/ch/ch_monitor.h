@@ -118,10 +118,6 @@ int virCHMonitorSaveVM(virCHMonitor *mon,
                        const char *to);
 int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);
 
-void virCHMonitorCPUInfoFree(virCHMonitorCPUInfo *cpus);
-int virCHMonitorGetCPUInfo(virCHMonitor *mon,
-                           virCHMonitorCPUInfo **vcpus,
-                           size_t maxvcpus);
 size_t virCHMonitorGetThreadInfo(virCHMonitor *mon, bool refresh,
                                  virCHMonitorThreadInfo **threads);
 int virCHMonitorGetIOThreads(virCHMonitor *mon,

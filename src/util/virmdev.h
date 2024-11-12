@@ -72,9 +72,6 @@ typedef int (*virMediatedDeviceCallback)(virMediatedDevice *dev,
 virMediatedDevice *
 virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model);
 
-virMediatedDevice *
-virMediatedDeviceCopy(virMediatedDevice *dev);
-
 void
 virMediatedDeviceFree(virMediatedDevice *dev);
 

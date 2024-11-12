@@ -26,7 +26,6 @@
 typedef struct _virNetLibsshSession virNetLibsshSession;
 
 virNetLibsshSession *virNetLibsshSessionNew(const char *username);
-void virNetLibsshSessionFree(virNetLibsshSession *sess);
 
 typedef enum {
     VIR_NET_LIBSSH_HOSTKEY_VERIFY_NORMAL,

@@ -29,7 +29,6 @@ virCgroup *virLXCCgroupCreate(virDomainDef *def,
                                 pid_t initpid,
                                 size_t nnicindexes,
                                 int *nicindexes);
-virCgroup *virLXCCgroupJoin(virDomainDef *def);
 int virLXCCgroupSetup(virDomainDef *def,
                       virCgroup *cgroup,
                       virBitmap *nodemask);

@@ -47,9 +47,6 @@ extern virXMLNamespace libxlDriverDomainXMLNamespace;
 extern const struct libxl_event_hooks ev_hooks;
 
 int
-libxlDomainObjPrivateInitCtx(virDomainObj *vm);
-
-int
 libxlDomainJobGetTimeElapsed(virDomainJobObj *job,
                              unsigned long long *timeElapsed);
 

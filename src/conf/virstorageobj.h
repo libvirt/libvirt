@@ -229,9 +229,6 @@ virStoragePoolObjGetNames(virStoragePoolObjList *pools,
                           char **const names,
                           int maxnames);
 
-void
-virStoragePoolObjFree(virStoragePoolObj *obj);
-
 typedef void
 (*virStoragePoolObjListIterator)(virStoragePoolObj *obj,
                                  const void *opaque);

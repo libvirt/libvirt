@@ -93,7 +93,6 @@ qemuBuildNicDevProps(virDomainDef *def,
                      virDomainNetDef *net,
                      virQEMUCaps *qemuCaps);
 
-char *qemuDeviceDriveHostAlias(virDomainDiskDef *disk);
 bool qemuDiskBusIsSD(int bus);
 
 int
@@ -207,8 +206,6 @@ qemuBuildRedirdevDevProps(const virDomainDef *def,
 
 virJSONValue *
 qemuBuildZPCIDevProps(virDomainDeviceInfo *dev);
-
-int qemuNetworkPrepareDevices(virDomainDef *def);
 
 bool
 qemuDiskConfigBlkdeviotuneEnabled(const virDomainDiskDef *disk);

@@ -939,10 +939,6 @@ void qemuMonitorChardevInfoFree(void *data);
 int qemuMonitorGetChardevInfo(qemuMonitor *mon,
                               GHashTable **retinfo);
 
-int qemuMonitorAttachPCIDiskController(qemuMonitor *mon,
-                                       const char *bus,
-                                       virPCIDeviceAddress *guestAddr);
-
 int qemuMonitorAddDeviceProps(qemuMonitor *mon,
                               virJSONValue **props);
 

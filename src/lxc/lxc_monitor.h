@@ -53,6 +53,3 @@ virLXCMonitor *virLXCMonitorNew(virDomainObj *vm,
                                   virLXCMonitorCallbacks *cb);
 
 void virLXCMonitorClose(virLXCMonitor *mon);
-
-void virLXCMonitorLock(virLXCMonitor *mon);
-void virLXCMonitorUnlock(virLXCMonitor *mon);

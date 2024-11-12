@@ -152,8 +152,6 @@ int virNetServerClientInit(virNetServerClient *client);
 int virNetServerClientInitKeepAlive(virNetServerClient *client,
                                     int interval,
                                     unsigned int count);
-bool virNetServerClientCheckKeepAlive(virNetServerClient *client,
-                                      virNetMessage *msg);
 int virNetServerClientStartKeepAlive(virNetServerClient *client);
 
 const char *virNetServerClientLocalAddrStringSASL(virNetServerClient *client);

@@ -126,9 +126,6 @@ typedef struct _testQemuInfo testQemuInfo;
 void testQemuInfoFree(testQemuInfo *info);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(testQemuInfo, testQemuInfoFree);
 
-virDomainXMLOption *testQemuXMLConfInit(void);
-
-
 virQEMUCaps *qemuTestParseCapabilitiesArch(virArch arch,
                                              const char *capsFile);
 virCPUDef *qemuTestGetCPUDef(qemuTestCPUDef d);
