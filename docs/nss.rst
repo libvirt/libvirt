@@ -36,8 +36,15 @@ of installing it will be similar.
 Configuration
 -------------
 
-To enable the module, modify ``/etc/nsswitch.conf`` so that the ``hosts`` line
-looks similar to
+If you're running a new enough version of Fedora (>= 37) or RHEL (>= 10), then
+you can use ``authselect`` to enable the module with a single command:
+
+::
+
+   # authselect enable-feature with-libvirt
+
+For other distributions, you will have to manually update the configuration in
+``/etc/nsswitch.conf`` so that the ``hosts`` line looks similar to
 
 ::
 
