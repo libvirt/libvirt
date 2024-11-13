@@ -8135,6 +8135,7 @@ Example: usage of the TPM Emulator
            <active_pcr_banks>
                <sha256/>
            </active_pcr_banks>
+           <profile source='local:restricted' removeDisabled='check'/>
          </backend>
        </tpm>
      </devices>
@@ -8228,6 +8229,35 @@ Example: usage of the TPM Emulator
    This attribute requires that swtpm_setup v0.7 or later is installed
    and may not have any effect otherwise. The selection of PCR banks only works
    with the ``emulator`` backend. :since:`Since 7.10.0`
+
+``profile``
+   The ``profile`` node is used to set a profile for a TPM 2.0 given in the
+   source attribute. This profile will be set when the TPM is initially
+   created and after that cannot be changed anymore. If no profile is provided,
+   then swtpm will use the latest built-in 'default' profile or the default
+   profile set in swtpm_setup.conf. Otherwise swtpm_setup will search for a
+   profile with the given name with appended .json suffix in a configurable
+   local and then in a distro directory. If none could be found in either, it
+   will fall back trying to use a built-in one.
+
+   The built-in 'null' profile provides backwards compatibility with
+   libtpms v0.9 but also restricts the user to use only TPM features that were
+   available at the time of libtpms v0.9. The built-in 'custom' profile is the
+   only profile that a user can modify and where the ``removeDisabled``
+   attribute has any effect. This attribute is particularly useful when a host
+   is running in FIPS mode and therefore some crypto algorithms (camellia,
+   tdes, unpadded RSA encryption, 1024-bit RSA keys, and others) are
+   disabled. When it is set to ``check`` (recommended) then only those
+   algorithms that are currently disabled will automatically be removed from
+   the 'custom' profile, while when it is set to ``fips-host`` then all
+   potentially disabled algorithms will be removed. :since:`Since 10.??.0`
+
+   TPM profiles provided by a distro can be referenced with the 'distro:'
+   prefix. Locally created TPM profiles can be referenced with the
+   'local:' prefix.
+
+   For further information about TPM profiles see the man pages for ``swtpm``
+   (swtpm v0.10).
 
 ``encryption``
    The ``encryption`` element allows the state of a TPM emulator to be
