@@ -1135,7 +1135,7 @@ sc_prohibit_backup_files:
 sc_avoid_remote_reference_to_local_file:
 	@prohibit='<#' \
 	in_vc_files='\.rst$$' \
-	halt='use local reference within a file' \
+	halt='use `section`_ or `here <section_>`__ instead of `here <#section>`__' \
 	  $(_sc_search_regexp)
 
 # This Perl code is slightly obfuscated.  Not only is each "$" doubled
