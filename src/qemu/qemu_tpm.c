@@ -366,6 +366,41 @@ qemuTPMGetSwtpmSetupStateArg(const virDomainTPMSourceType source_type,
 
 
 /*
+ * Add a (optional) profile to the swtpm_setup command line.
+ *
+ * @cmd: virCommand to add options to
+ * @emulator: emulator parameters
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int
+qemuTPMVirCommandAddProfile(virCommand *cmd,
+                            const virDomainTPMEmulatorDef *emulator)
+{
+    if (!emulator->profile.source)
+        return 0;
+
+    if (!virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PROFILE)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("swtpm_setup has no support for profiles"));
+        return -1;
+    }
+
+    virCommandAddArgList(cmd,
+                         "--profile-name", emulator->profile.source,
+                         NULL);
+
+    if (emulator->profile.removeDisabled) {
+        virCommandAddArgList(cmd,
+                             "--profile-remove-disable",
+                             virDomainTPMProfileRemoveDisabledTypeToString(emulator->profile.removeDisabled),
+                             NULL);
+    }
+    return 0;
+}
+
+
+/*
  * qemuTPMEmulatorRunSetup
  *
  * @emulator: emulator parameters
@@ -441,6 +476,8 @@ qemuTPMEmulatorRunSetup(const virDomainTPMEmulatorDef *emulator,
                              "--lock-nvram",
                              "--not-overwrite",
                              NULL);
+        if (qemuTPMVirCommandAddProfile(cmd, emulator) < 0)
+            return -1;
     } else {
         virCommandAddArgList(cmd,
                              "--tpm-state", tpm_state,
