@@ -575,6 +575,39 @@ qemuTPMEmulatorReconfigure(const virDomainTPMEmulatorDef *emulator,
     return 0;
 }
 
+static int
+qemuTPMVirCommandSwtpmAddEncryption(virCommand *cmd,
+                                    const virDomainTPMEmulatorDef *emulator,
+                                    const char *swtpm)
+{
+    int pwdfile_fd = -1;
+    int migpwdfile_fd = -1;
+
+    if (!emulator->hassecretuuid)
+        return 0;
+
+    if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("%1$s does not support passing passphrase via file descriptor"),
+                       swtpm);
+        return -1;
+    }
+
+    if (qemuTPMSetupEncryption(emulator->secretuuid,
+                               cmd, &pwdfile_fd) < 0)
+        return -1;
+
+    if (qemuTPMSetupEncryption(emulator->secretuuid,
+                               cmd, &migpwdfile_fd) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "--key");
+    virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", pwdfile_fd);
+
+    virCommandAddArg(cmd, "--migration-key");
+    virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", migpwdfile_fd);
+    return 0;
+}
 
 /*
  * qemuTPMEmulatorBuildCommand:
@@ -602,8 +635,6 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     bool created = false;
     bool run_setup = false;
     g_autofree char *swtpm = virTPMGetSwtpm();
-    int pwdfile_fd = -1;
-    int migpwdfile_fd = -1;
     const unsigned char *secretuuid = NULL;
     bool create_storage = true;
     bool on_shared_storage;
@@ -698,28 +729,10 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
         break;
     }
 
-    if (tpm->data.emulator.hassecretuuid) {
-        if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD)) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("%1$s does not support passing passphrase via file descriptor"),
-                           swtpm);
-            goto error;
-        }
-
-        if (qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
-                                   cmd, &pwdfile_fd) < 0)
-            goto error;
-
-        if (qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
-                                   cmd, &migpwdfile_fd) < 0)
-            goto error;
-
-        virCommandAddArg(cmd, "--key");
-        virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", pwdfile_fd);
-
-        virCommandAddArg(cmd, "--migration-key");
-        virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", migpwdfile_fd);
-    }
+    if (qemuTPMVirCommandSwtpmAddEncryption(cmd,
+                                            &tpm->data.emulator,
+                                            swtpm) < 0)
+        goto error;
 
     /* If swtpm supports it and the TPM state is stored on shared storage,
      * start swtpm with --migration release-lock-outgoing so it can migrate
