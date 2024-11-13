@@ -53,6 +53,7 @@ VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,
               "tpm-1.2",
               "tpm-2.0",
               "tpmstate-opt-lock",
+              "cmdarg-profile",
 );
 
 /**
