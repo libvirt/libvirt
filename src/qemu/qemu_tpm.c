@@ -372,9 +372,7 @@ qemuTPMGetSwtpmSetupStateArg(const virDomainTPMSourceType source_type,
  * @vmname: the name of the VM
  * @vmuuid: the UUID of the VM
  * @privileged: whether we are running in privileged mode
- * @swtpm_user: The userid to switch to when setting up the TPM;
- *              typically this should be the uid of 'tss' or 'root'
- * @swtpm_group: The group id to switch to
+ * @cfg: virQEMUDriverConfig
  * @secretuuid: UUID describing virStorageEncryption holding secret
  * @incomingMigration: whether we have an incoming migration
  *
@@ -386,8 +384,7 @@ qemuTPMEmulatorRunSetup(const virDomainTPMEmulatorDef *emulator,
                         const char *vmname,
                         const unsigned char *vmuuid,
                         bool privileged,
-                        uid_t swtpm_user,
-                        gid_t swtpm_group,
+                        const virQEMUDriverConfig *cfg,
                         const unsigned char *secretuuid,
                         bool incomingMigration)
 {
@@ -416,8 +413,8 @@ qemuTPMEmulatorRunSetup(const virDomainTPMEmulatorDef *emulator,
     virUUIDFormat(vmuuid, uuid);
     vmid = g_strdup_printf("%s:%s", vmname, uuid);
 
-    virCommandSetUID(cmd, swtpm_user);
-    virCommandSetGID(cmd, swtpm_group);
+    virCommandSetUID(cmd, cfg->swtpm_user); /* should be uid of 'tss' or 'root' */
+    virCommandSetGID(cmd, cfg->swtpm_group);
 
     switch (emulator->version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
@@ -487,17 +484,14 @@ qemuTPMPcrBankBitmapToStr(virBitmap *activePcrBanks)
  * qemuTPMEmulatorReconfigure
  *
  * @emulator: emulator parameters
- * @swtpm_user: The userid to switch to when setting up the TPM;
- *              typically this should be the uid of 'tss' or 'root'
- * @swtpm_group: The group id to switch to
+ * @cfg: virQEMUDriverConfig
  * @secretuuid: The secret's UUID needed for state encryption
  *
  * Reconfigure the active PCR banks of a TPM 2.
  */
 static int
 qemuTPMEmulatorReconfigure(const virDomainTPMEmulatorDef *emulator,
-                           uid_t swtpm_user,
-                           gid_t swtpm_group,
+                           const virQEMUDriverConfig *cfg,
                            const unsigned char *secretuuid)
 {
     g_autoptr(virCommand) cmd = NULL;
@@ -517,8 +511,8 @@ qemuTPMEmulatorReconfigure(const virDomainTPMEmulatorDef *emulator,
 
     cmd = virCommandNew(swtpm_setup);
 
-    virCommandSetUID(cmd, swtpm_user);
-    virCommandSetGID(cmd, swtpm_group);
+    virCommandSetUID(cmd, cfg->swtpm_user); /* should be uid of 'tss' or 'root' */
+    virCommandSetGID(cmd, cfg->swtpm_group);
 
     virCommandAddArgList(cmd, "--tpm2", NULL);
 
@@ -552,9 +546,7 @@ qemuTPMEmulatorReconfigure(const virDomainTPMEmulatorDef *emulator,
  * @vmname: The name of the VM
  * @vmuuid: The UUID of the VM
  * @privileged: whether we are running in privileged mode
- * @swtpm_user: The uid for the swtpm to run as (drop privileges to from root)
- * @swtpm_group: The gid for the swtpm to run as
- * @sharedFilesystems: list of filesystem to consider shared
+ * @cfg: virQEMUDriverConfig
  * @incomingMigration: whether we have an incoming migration
  *
  * Create the virCommand use for starting the emulator
@@ -566,9 +558,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                             const char *vmname,
                             const unsigned char *vmuuid,
                             bool privileged,
-                            uid_t swtpm_user,
-                            gid_t swtpm_group,
-                            char *const *sharedFilesystems,
+                            const virQEMUDriverConfig *cfg,
                             bool incomingMigration)
 {
     g_autoptr(virCommand) cmd = NULL;
@@ -599,12 +589,14 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     /* Do not create storage and run swtpm_setup on incoming migration over
      * shared storage
      */
-    on_shared_storage = virFileIsSharedFS(tpm->data.emulator.source_path, sharedFilesystems) == 1;
+    on_shared_storage = virFileIsSharedFS(tpm->data.emulator.source_path,
+                                          cfg->sharedFilesystems) == 1;
     if (incomingMigration && on_shared_storage)
         create_storage = false;
 
     if (create_storage) {
-        if (qemuTPMEmulatorCreateStorage(tpm, &created, swtpm_user, swtpm_group) < 0)
+        if (qemuTPMEmulatorCreateStorage(tpm, &created,
+                                         cfg->swtpm_user, cfg->swtpm_group) < 0)
             return NULL;
         run_setup = created;
     }
@@ -614,14 +606,12 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 
     if (run_setup &&
         qemuTPMEmulatorRunSetup(&tpm->data.emulator, vmname, vmuuid,
-                                privileged, swtpm_user, swtpm_group,
-                                secretuuid, incomingMigration) < 0)
+                                privileged, cfg,  secretuuid,
+                                incomingMigration) < 0)
         goto error;
 
     if (!incomingMigration &&
-        qemuTPMEmulatorReconfigure(&tpm->data.emulator,
-                                   swtpm_user, swtpm_group,
-                                   secretuuid) < 0)
+        qemuTPMEmulatorReconfigure(&tpm->data.emulator, cfg, secretuuid) < 0)
         goto error;
 
     unlink(tpm->data.emulator.source->data.nix.path);
@@ -657,8 +647,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 
     virCommandAddArg(cmd, "--terminate");
 
-    virCommandSetUID(cmd, swtpm_user);
-    virCommandSetGID(cmd, swtpm_group);
+    virCommandSetUID(cmd, cfg->swtpm_user);
+    virCommandSetGID(cmd, cfg->swtpm_group);
 
     switch (tpm->data.emulator.version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
@@ -979,9 +969,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
 
     if (!(cmd = qemuTPMEmulatorBuildCommand(tpm, vm->def->name, vm->def->uuid,
                                             driver->privileged,
-                                            cfg->swtpm_user,
-                                            cfg->swtpm_group,
-                                            cfg->sharedFilesystems,
+                                            cfg,
                                             incomingMigration)))
         return -1;
 
