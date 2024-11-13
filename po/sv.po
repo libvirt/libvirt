@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-13 20:38+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-11-13 21:42+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -38026,62 +38026,61 @@ msgstr "okänd arkitektur %1$s i QEMU:s förmågecache"
 
 #, c-format
 msgid "unknown architecture: %1$s"
-msgstr "Okänd arkitektur %1$s"
+msgstr "okänd arkitektur: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown arp bonding validate %1$s"
-msgstr "okänd diskenhet ”%1$s”"
+msgstr "okänd arp-bindningsvalidering %1$s"
 
 #, c-format
 msgid "unknown auth type '%1$s'"
 msgstr "okänd autentiseringstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown authentication type %1$s"
-msgstr "autentisering misslyckades: %1$s"
+msgstr "okänd autentiseringstyp %1$s"
 
 #, c-format
 msgid "unknown backend source type '%1$s' for external TPM"
-msgstr ""
+msgstr "okänd källtyp för bakänden ”%1$s” för extern TPM"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown backend type '%1$s' for egd"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänd bakändetyp ”%1$s” för egd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown backup mode '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okändt säkerhetskopieringsläge ”%1$s”"
 
 msgid "unknown base name while formatting virtio device"
-msgstr ""
+msgstr "okänt basnamn vid formatering av virtio-enheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown block IO status: %1$s"
-msgstr "okänd värd %1$s"
+msgstr "okänd block-IO-status: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown bonding mode %1$s"
-msgstr "okänt disk-IO-läge ”%1$s”"
+msgstr "okänt bindningsläge %1$s"
 
 #, fuzzy, c-format
 msgid "unknown capability type '%1$d' for '%2$s'"
-msgstr "okänd filsystemstyp ”%s”"
+msgstr "okänd förmågetyp ”%1$s” för ”%2$s”"
 
 #, c-format
 msgid "unknown character device type: %1$s"
 msgstr "okänd teckenenhetstyp: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown chr device type '%1$s'"
-msgstr "okänd teckenenhetstyp: %1$s"
+msgstr "okänd teckenenhetstyp ”%1$s”"
 
-#, fuzzy
 msgid "unknown chrdev type"
-msgstr "okänd OS-typ"
+msgstr "okänd chrdev-typ"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown clock adjustment '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okänd klockjustering ”%1$s”"
 
 #, fuzzy, c-format
 msgid "unknown clock basis '%1$s'"
