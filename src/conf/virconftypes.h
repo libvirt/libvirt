@@ -234,6 +234,8 @@ typedef struct _virDomainAudioDef virDomainAudioDef;
 
 typedef struct _virDomainTPMDef virDomainTPMDef;
 
+typedef struct _virDomainTPMEmulatorDef virDomainTPMEmulatorDef;
+
 typedef struct _virDomainThreadSchedParam virDomainThreadSchedParam;
 
 typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;

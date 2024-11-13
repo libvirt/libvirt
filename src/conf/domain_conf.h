@@ -1473,6 +1473,19 @@ typedef enum {
 
 #define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
+struct _virDomainTPMEmulatorDef {
+    virDomainTPMVersion version;
+    virDomainChrSourceDef *source;
+    virDomainTPMSourceType source_type;
+    char *source_path;
+    char *logfile;
+    unsigned int debug;
+    unsigned char secretuuid[VIR_UUID_BUFLEN];
+    bool hassecretuuid;
+    bool persistent_state;
+    virBitmap *activePcrBanks;
+};
+
 struct _virDomainTPMDef {
     virObject *privateData;
 
@@ -1483,18 +1496,7 @@ struct _virDomainTPMDef {
         struct {
             virDomainChrSourceDef *source;
         } passthrough;
-        struct {
-            virDomainTPMVersion version;
-            virDomainChrSourceDef *source;
-            virDomainTPMSourceType source_type;
-            char *source_path;
-            char *logfile;
-            unsigned int debug;
-            unsigned char secretuuid[VIR_UUID_BUFLEN];
-            bool hassecretuuid;
-            bool persistent_state;
-            virBitmap *activePcrBanks;
-        } emulator;
+        virDomainTPMEmulatorDef emulator;
         struct {
             virDomainChrSourceDef *source;
         } external;

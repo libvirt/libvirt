@@ -368,33 +368,26 @@ qemuTPMGetSwtpmSetupStateArg(const virDomainTPMSourceType source_type,
 /*
  * qemuTPMEmulatorRunSetup
  *
- * @source_type: type of storage
- * @source_path: path to the directory for TPM state
+ * @emulator: emulator parameters
  * @vmname: the name of the VM
  * @vmuuid: the UUID of the VM
  * @privileged: whether we are running in privileged mode
  * @swtpm_user: The userid to switch to when setting up the TPM;
  *              typically this should be the uid of 'tss' or 'root'
  * @swtpm_group: The group id to switch to
- * @logfile: The file to write the log into; it must be writable
- *           for the user given by userid or 'tss'
- * @tpmversion: The version of the TPM, either a TPM 1.2 or TPM 2
- * @encryption: pointer to virStorageEncryption holding secret
+ * @secretuuid: UUID describing virStorageEncryption holding secret
  * @incomingMigration: whether we have an incoming migration
  *
  * Setup the external swtpm by creating endorsement key and
  * certificates for it.
  */
 static int
-qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
-                        const char *source_path,
+qemuTPMEmulatorRunSetup(const virDomainTPMEmulatorDef *emulator,
                         const char *vmname,
                         const unsigned char *vmuuid,
                         bool privileged,
                         uid_t swtpm_user,
                         gid_t swtpm_group,
-                        const char *logfile,
-                        const virDomainTPMVersion tpmversion,
                         const unsigned char *secretuuid,
                         bool incomingMigration)
 {
@@ -403,14 +396,15 @@ qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autofree char *vmid = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
-    g_autofree char *tpm_state = qemuTPMGetSwtpmSetupStateArg(source_type, source_path);
+    g_autofree char *tpm_state = qemuTPMGetSwtpmSetupStateArg(emulator->source_type,
+                                                              emulator->source_path);
 
     if (!swtpm_setup)
         return -1;
 
-    if (!privileged && tpmversion == VIR_DOMAIN_TPM_VERSION_1_2 &&
+    if (!privileged && emulator->version == VIR_DOMAIN_TPM_VERSION_1_2 &&
         !virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_TPM12_NOT_NEED_ROOT)) {
-        return virFileWriteStr(logfile,
+        return virFileWriteStr(emulator->logfile,
                                _("Did not create EK and certificates since this requires privileged mode for a TPM 1.2\n"), 0600);
     }
 
@@ -425,7 +419,7 @@ qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);
 
-    switch (tpmversion) {
+    switch (emulator->version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
         break;
     case VIR_DOMAIN_TPM_VERSION_2_0:
@@ -443,7 +437,7 @@ qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
         virCommandAddArgList(cmd,
                              "--tpm-state", tpm_state,
                              "--vmid", vmid,
-                             "--logfile", logfile,
+                             "--logfile", emulator->logfile,
                              "--createek",
                              "--create-ek-cert",
                              "--create-platform-cert",
@@ -453,7 +447,7 @@ qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
     } else {
         virCommandAddArgList(cmd,
                              "--tpm-state", tpm_state,
-                             "--logfile", logfile,
+                             "--logfile", emulator->logfile,
                              "--overwrite",
                              NULL);
     }
@@ -463,7 +457,7 @@ qemuTPMEmulatorRunSetup(const virDomainTPMSourceType source_type,
     if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."),
-                          swtpm_setup, exitstatus, logfile);
+                          swtpm_setup, exitstatus, emulator->logfile);
         return -1;
     }
 
@@ -492,41 +486,32 @@ qemuTPMPcrBankBitmapToStr(virBitmap *activePcrBanks)
 /*
  * qemuTPMEmulatorReconfigure
  *
- *
- * @source_type: type of storage
- * @source_path: path to the directory for TPM state
+ * @emulator: emulator parameters
  * @swtpm_user: The userid to switch to when setting up the TPM;
  *              typically this should be the uid of 'tss' or 'root'
  * @swtpm_group: The group id to switch to
- * @activePcrBanks: The string describing the active PCR banks
- * @logfile: The file to write the log into; it must be writable
- *           for the user given by userid or 'tss'
- * @tpmversion: The version of the TPM, either a TPM 1.2 or TPM 2
  * @secretuuid: The secret's UUID needed for state encryption
  *
  * Reconfigure the active PCR banks of a TPM 2.
  */
 static int
-qemuTPMEmulatorReconfigure(const virDomainTPMSourceType source_type,
-                           const char *source_path,
+qemuTPMEmulatorReconfigure(const virDomainTPMEmulatorDef *emulator,
                            uid_t swtpm_user,
                            gid_t swtpm_group,
-                           virBitmap *activePcrBanks,
-                           const char *logfile,
-                           const virDomainTPMVersion tpmversion,
                            const unsigned char *secretuuid)
 {
     g_autoptr(virCommand) cmd = NULL;
     int exitstatus;
     g_autofree char *activePcrBanksStr = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
-    g_autofree char *tpm_state = qemuTPMGetSwtpmSetupStateArg(source_type, source_path);
+    g_autofree char *tpm_state = qemuTPMGetSwtpmSetupStateArg(emulator->source_type,
+                                                              emulator->source_path);
 
     if (!swtpm_setup)
         return -1;
 
-    if (tpmversion != VIR_DOMAIN_TPM_VERSION_2_0 ||
-        (activePcrBanksStr = qemuTPMPcrBankBitmapToStr(activePcrBanks)) == NULL ||
+    if (emulator->version != VIR_DOMAIN_TPM_VERSION_2_0 ||
+        (activePcrBanksStr = qemuTPMPcrBankBitmapToStr(emulator->activePcrBanks)) == NULL ||
         !virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_RECONFIGURE_PCR_BANKS))
         return 0;
 
@@ -542,7 +527,7 @@ qemuTPMEmulatorReconfigure(const virDomainTPMSourceType source_type,
 
     virCommandAddArgList(cmd,
                          "--tpm-state", tpm_state,
-                         "--logfile", logfile,
+                         "--logfile", emulator->logfile,
                          "--pcr-banks", activePcrBanksStr,
                          "--reconfigure",
                          NULL);
@@ -552,7 +537,7 @@ qemuTPMEmulatorReconfigure(const virDomainTPMSourceType source_type,
     if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' for details."),
-                          swtpm_setup, exitstatus, logfile);
+                          swtpm_setup, exitstatus, emulator->logfile);
         return -1;
     }
 
@@ -628,21 +613,14 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
         secretuuid = tpm->data.emulator.secretuuid;
 
     if (run_setup &&
-        qemuTPMEmulatorRunSetup(tpm->data.emulator.source_type,
-                                tpm->data.emulator.source_path, vmname, vmuuid,
+        qemuTPMEmulatorRunSetup(&tpm->data.emulator, vmname, vmuuid,
                                 privileged, swtpm_user, swtpm_group,
-                                tpm->data.emulator.logfile,
-                                tpm->data.emulator.version,
                                 secretuuid, incomingMigration) < 0)
         goto error;
 
     if (!incomingMigration &&
-        qemuTPMEmulatorReconfigure(tpm->data.emulator.source_type,
-                                   tpm->data.emulator.source_path,
+        qemuTPMEmulatorReconfigure(&tpm->data.emulator,
                                    swtpm_user, swtpm_group,
-                                   tpm->data.emulator.activePcrBanks,
-                                   tpm->data.emulator.logfile,
-                                   tpm->data.emulator.version,
                                    secretuuid) < 0)
         goto error;
 
