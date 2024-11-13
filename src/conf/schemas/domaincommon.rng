@@ -5929,6 +5929,7 @@
             <ref name="tpm-backend-emulator-encryption"/>
             <ref name="tpm-backend-emulator-active-pcr-banks"/>
             <ref name="tpm-backend-emulator-source"/>
+            <ref name="tpm-backend-emulator-profile"/>
           </interleave>
           <optional>
             <attribute name="persistent_state">
@@ -6047,6 +6048,30 @@
             </element>
           </optional>
         </interleave>
+      </element>
+    </optional>
+  </define>
+
+  <define name="profileName">
+    <data type="string">
+      <param name="pattern">[A-Za-z0-9.\-:]+</param>
+    </data>
+  </define>
+
+  <define name="tpm-backend-emulator-profile">
+    <optional>
+      <element name="profile">
+        <attribute name="source">
+          <ref name="profileName"/>
+        </attribute>
+        <optional>
+          <attribute name="removeDisabled">
+            <choice>
+              <value>check</value>
+              <value>fips-host</value>
+            </choice>
+          </attribute>
+        </optional>
       </element>
     </optional>
   </define>
