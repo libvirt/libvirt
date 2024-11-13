@@ -701,6 +701,13 @@ struct _qemuBlockNamedNodeDataBitmap {
     unsigned long long granularity;
 };
 
+
+typedef struct _qemuBlockNamedNodeDataSnapshot qemuBlockNamedNodeDataSnapshot;
+struct _qemuBlockNamedNodeDataSnapshot {
+    bool vmstate;
+};
+
+
 typedef struct _qemuBlockNamedNodeData qemuBlockNamedNodeData;
 struct _qemuBlockNamedNodeData {
     unsigned long long capacity;
@@ -709,8 +716,9 @@ struct _qemuBlockNamedNodeData {
     qemuBlockNamedNodeDataBitmap **bitmaps;
     size_t nbitmaps;
 
-    /* NULL terminated string list of internal snapshot names */
-    char **snapshots;
+    /* hash table indexed by snapshot name containing data about snapshots
+     * (qemuBlockNamedNodeDataSnapshot) */
+    GHashTable *snapshots;
 
     /* the cluster size of the image is valid only when > 0 */
     unsigned long long clusterSize;

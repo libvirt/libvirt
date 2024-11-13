@@ -598,12 +598,20 @@ testQemuDetectBitmapsWorker(GHashTable *nodedata,
     }
 
     if (data->snapshots) {
-        char **sn;
+        g_autofree virHashKeyValuePair *snaps = virHashGetItems(data->snapshots, NULL, true);
+        virHashKeyValuePair *n;
 
         virBufferAddLit(buf, "internal snapshots:");
 
-        for (sn = data->snapshots; *sn; sn++)
-            virBufferAsprintf(buf, " '%s'", *sn);
+        for (n = snaps; n->key; n++) {
+            const qemuBlockNamedNodeDataSnapshot *d = n->value;
+            const char *vms = "";
+
+            if (d->vmstate)
+                vms = "(*)";
+
+            virBufferAsprintf(buf, " '%s'%s", (const char *) n->key, vms);
+        }
     }
 
     virBufferAdjustIndent(buf, -1);

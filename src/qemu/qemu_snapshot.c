@@ -3897,8 +3897,7 @@ qemuSnapshotActiveInternalDeleteGetDevices(virDomainObj *vm,
             continue;
 
         /* there might be no snapshot for given disk  with given name */
-        if (!d->snapshots ||
-            !g_strv_contains((const char **) d->snapshots, snapname))
+        if (!virHashHasEntry(d->snapshots, snapname))
             continue;
 
         devices[ndevs++] = g_strdup(format_nodename);
@@ -3913,8 +3912,7 @@ qemuSnapshotActiveInternalDeleteGetDevices(virDomainObj *vm,
 
         if ((format_nodename = qemuBlockStorageSourceGetFormatNodename(vm->def->os.loader->nvram)) &&
             (d = virHashLookup(blockNamedNodeData, format_nodename)) &&
-            d->snapshots &&
-            g_strv_contains((const char **) d->snapshots, snapname)) {
+            virHashHasEntry(d->snapshots, snapname)) {
             devices[ndevs++] = g_strdup(format_nodename);
         }
     }
