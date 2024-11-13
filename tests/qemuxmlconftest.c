@@ -2508,6 +2508,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-pstate");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("aarch64-tpm-wrong-model", "aarch64");
     DO_TEST_CAPS_LATEST("tpm-external");
+    DO_TEST_CAPS_LATEST("tpm-emulator-crb-profile");
 
     g_setenv(TEST_TPM_ENV_VAR, TPM_VER_2_0, true);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tpm-emulator");

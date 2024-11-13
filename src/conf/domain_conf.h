@@ -1492,6 +1492,10 @@ struct _virDomainTPMEmulatorDef {
     bool hassecretuuid;
     bool persistent_state;
     virBitmap *activePcrBanks;
+    struct {
+        char *source; /* 'source' profile was created from */
+        virDomainTPMProfileRemoveDisabled removeDisabled;
+    } profile;
 };
 
 struct _virDomainTPMDef {

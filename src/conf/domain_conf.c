@@ -3478,6 +3478,7 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
         g_free(def->data.emulator.source_path);
         g_free(def->data.emulator.logfile);
         virBitmapFree(def->data.emulator.activePcrBanks);
+        g_free(def->data.emulator.profile.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
         virObjectUnref(def->data.external.source);
@@ -10786,6 +10787,15 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
  * <tpm model='tpm-tis'>
  *   <backend type='emulator' version='2.0' persistent_state='yes'>
  * </tpm>
+ *
+ * A profile for a TPM 2.0 can be added like this:
+ *
+ * <tpm model='tpm-crb'>
+ *   <backend type='emulator' version='2.0'>
+ *     <profile source='local:restricted' removeDisabled='check'/>
+ *   </backend>
+ * </tpm>
+ *
  */
 static virDomainTPMDef *
 virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
@@ -10805,6 +10815,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree xmlNodePtr *backends = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *type = NULL;
+    xmlNodePtr profile;
     int bank;
 
     if (!(def = virDomainTPMDefNew(xmlopt)))
@@ -10910,6 +10921,19 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                 goto error;
             }
             virBitmapSetBitExpand(def->data.emulator.activePcrBanks, bank);
+        }
+
+        if ((profile = virXPathNode("./backend/profile[1]", ctxt))) {
+            def->data.emulator.profile.source = virXMLPropString(profile, "source");
+            if (!def->data.emulator.profile.source) {
+                virReportError(VIR_ERR_XML_ERROR, "%s", _("missing profile source"));
+                goto error;
+            }
+            if (virXMLPropEnum(profile, "removeDisabled",
+                               virDomainTPMProfileRemoveDisabledTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &def->data.emulator.profile.removeDisabled) < 0)
+                goto error;
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
@@ -25114,6 +25138,18 @@ virDomainTPMDefFormat(virBuffer *buf,
             virBufferAsprintf(&backendChildBuf, "<source type='%s'",
                               virDomainTPMSourceTypeTypeToString(def->data.emulator.source_type));
             virBufferEscapeString(&backendChildBuf, " path='%s'/>\n", def->data.emulator.source_path);
+        }
+        if (def->data.emulator.profile.source) {
+            g_auto(virBuffer) profileAttrBuf = VIR_BUFFER_INITIALIZER;
+
+            virBufferAsprintf(&profileAttrBuf, " source='%s'",
+                              def->data.emulator.profile.source);
+            if (def->data.emulator.profile.removeDisabled) {
+               virBufferAsprintf(&profileAttrBuf, " removeDisabled='%s'",
+                                 virDomainTPMProfileRemoveDisabledTypeToString(def->data.emulator.profile.removeDisabled));
+            }
+
+            virXMLFormatElement(&backendChildBuf, "profile", &profileAttrBuf, NULL);
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_EXTERNAL:

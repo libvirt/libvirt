@@ -3026,6 +3026,13 @@ virDomainTPMDevValidate(const virDomainTPMDef *tpm)
                            virDomainTPMVersionTypeToString(VIR_DOMAIN_TPM_VERSION_2_0));
             return -1;
         }
+        if (tpm->data.emulator.profile.source &&
+            tpm->data.emulator.version != VIR_DOMAIN_TPM_VERSION_2_0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("<profile/> requires TPM version '%1$s'"),
+                           virDomainTPMVersionTypeToString(VIR_DOMAIN_TPM_VERSION_2_0));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
