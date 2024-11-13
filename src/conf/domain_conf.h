@@ -1471,6 +1471,14 @@ typedef enum {
     VIR_DOMAIN_TPM_SOURCE_TYPE_LAST
 } virDomainTPMSourceType;
 
+typedef enum {
+    VIR_DOMAIN_TPM_PROFILE_REMOVE_DISABLED_NONE = 0,
+    VIR_DOMAIN_TPM_PROFILE_REMOVE_DISABLED_CHECK,
+    VIR_DOMAIN_TPM_PROFILE_REMOVE_DISABLED_FIPS_HOST,
+
+    VIR_DOMAIN_TPM_PROFILE_REMOVE_DISABLED_LAST
+} virDomainTPMProfileRemoveDisabled;
+
 #define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
 struct _virDomainTPMEmulatorDef {
@@ -4291,6 +4299,7 @@ VIR_ENUM_DECL(virDomainTPMBackend);
 VIR_ENUM_DECL(virDomainTPMVersion);
 VIR_ENUM_DECL(virDomainTPMSourceType);
 VIR_ENUM_DECL(virDomainTPMPcrBank);
+VIR_ENUM_DECL(virDomainTPMProfileRemoveDisabled);
 VIR_ENUM_DECL(virDomainMemoryModel);
 VIR_ENUM_DECL(virDomainMemoryBackingModel);
 VIR_ENUM_DECL(virDomainMemorySource);

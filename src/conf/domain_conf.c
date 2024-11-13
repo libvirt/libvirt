@@ -1337,6 +1337,13 @@ VIR_ENUM_IMPL(virDomainTPMPcrBank,
               "sha512",
 );
 
+VIR_ENUM_IMPL(virDomainTPMProfileRemoveDisabled,
+              VIR_DOMAIN_TPM_PROFILE_REMOVE_DISABLED_LAST,
+              "none",
+              "check",
+              "fips-host",
+);
+
 VIR_ENUM_IMPL(virDomainIOMMUModel,
               VIR_DOMAIN_IOMMU_MODEL_LAST,
               "intel",

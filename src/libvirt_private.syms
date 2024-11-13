@@ -692,6 +692,8 @@ virDomainTPMModelTypeFromString;
 virDomainTPMModelTypeToString;
 virDomainTPMPcrBankTypeFromString;
 virDomainTPMPcrBankTypeToString;
+virDomainTPMProfileRemoveDisabledTypeFromString;
+virDomainTPMProfileRemoveDisabledTypeToString;
 virDomainTPMVersionTypeFromString;
 virDomainTPMVersionTypeToString;
 virDomainUSBDeviceDefForeach;
