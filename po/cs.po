@@ -7,7 +7,7 @@
 # dibalaj <dibalaj@dibalaj.cz>, 2013
 # Milan Kerslager <kerslage@linux.cz>, 2007
 # Zdenek <chmelarz@gmail.com>, 2016
-# Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019, 2023.
+# Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019, 2023, 2024.
 # Daniel Berrange <dan-zanata@berrange.com>, 2019
 # Matej Cepl <mcepl@cepl.eu>, 2021.
 # Daniel P. Berrange <berrange@redhat.com>, 2023.
@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2023-07-27 16:21+0000\n"
+"PO-Revision-Date: 2024-11-13 20:38+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.18.2\n"
+"X-Generator: Weblate 5.8.2\n"
 
 msgid ""
 "\n"
@@ -491,7 +491,7 @@ msgstr " %1$s (klíčové slovo nápovědy „%2$s“):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <řetězec>..."
 
 msgid " Hypervisors:"
 msgstr " Hypervizory:"
@@ -1847,7 +1847,7 @@ msgid "A storage driver is already registered"
 msgstr "Ovladač úložiště už je zaregistrován"
 
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "Je třeba, aby se ACPI ERST zařízení nacházelo na PCI sběrnici"
 
 msgid "ACPI index is not supported with this QEMU"
 msgstr "ACPI rejstřík není v tomto QEMU podporován"
@@ -1958,7 +1958,7 @@ msgid "Allows setting or modifying the description or title of a domain."
 msgstr "Umožňuje nastavení nebo změnu popisu či názvu domény."
 
 msgid "Allows setting or modifying the description or title of a network."
-msgstr ""
+msgstr "Umožňuje nastavit nebo změnit popis nebo název sítě."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Došlo k chybě, ale příčina není známa"
@@ -2095,7 +2095,7 @@ msgid "Attempted double use of PCI Address %1$s"
 msgstr "Pokus o použití PCI adresy %1$s dvakrát"
 
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "Pokus o spuštění nbdkit dvakrát"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2174,7 +2174,7 @@ msgid "Bad prefix name '%1$s' for resctrl monitor"
 msgstr "Chybný název předpony „%1$s“ pro resctrl monitor"
 
 msgid "Bad usage"
-msgstr ""
+msgstr "Nesprávné použití"
 
 msgid "Bad value for nativeMode"
 msgstr "Chybná hodnota pro nativeMode"
@@ -2303,7 +2303,7 @@ msgstr "Certifikát cert. autority:"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
-msgstr ""
+msgstr "CCW adresy nejsou strojem typu „%1$s“ podporovány"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2633,7 +2633,7 @@ msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "Není možné přidat USB zařízení. USB je v tomto hostiteli vypnuto"
 
 msgid "Can't apply empty firewall command"
-msgstr ""
+msgstr "Není možné uplatnit prázdný příkaz brány firewall"
 
 msgid "Can't change domain configuration in managed save state"
 msgstr "Není možné změnit nastavení domény ve stavu spravovaného uložení"
@@ -2916,7 +2916,7 @@ msgstr "Nedaří se vytvořit resctrl složku „%1$s“"
 
 #, c-format
 msgid "Cannot create save directory '%1$s'"
-msgstr ""
+msgstr "Není možné vytvořit složku pro ukládání „%1$s“"
 
 #, c-format
 msgid "Cannot create socket '%1$s'"
@@ -3514,14 +3514,20 @@ msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
 msgstr ""
+"Není možné zaktualizovat zařízení „%1$s“ – neshoda v nadřazené adrese ("
+"stávající nadřazená adresa „%2$s“)"
 
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
 msgstr ""
+"Není možné zaktualizovat zařízení „%1$s“ – neshoda v typu (stávající typ "
+"„%2$s“)"
 
 #, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
 msgstr ""
+"Není možné zaktualizovat zařízení „%1$s“ – neshoda v uuid (stávající uuid "
+"„%2$s“)"
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
@@ -3715,49 +3721,53 @@ msgstr ""
 "nastaveného na 2 způsobí že je jádro vyprázdní, čímž se rozbije síťování."
 
 msgid "Checking CA cert access"
-msgstr ""
+msgstr "Kontrola přístupu k certifikátům cert. autority"
 
 msgid "Checking cert access"
-msgstr ""
+msgstr "Kontrola přístupu k certifikátům"
 
 msgid "Checking cert hostname match"
-msgstr ""
+msgstr "Kontrola shody názvu stroje certifikátu"
 
 msgid "Checking cert properties"
-msgstr ""
+msgstr "Kontrola vlastností certifikátu"
 
 msgid "Checking custom PKI base dir access"
 msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
+msgstr "Kontrola modulu %1$s"
 
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
 msgstr ""
+"Zjišťování přítomnosti AMD Secure Encrypted Virtualization-Encrypted State "
+"(SEV-ES)"
 
 msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
 "SNP)"
 msgstr ""
+"Zjišťování přítomnosti AMD Secure Encrypted Virtualization-Secure Nested "
+"Paging (SEV-SNP)"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
-msgstr ""
+msgstr "Zjišťování přítomnosti Linux >= %1$d.%2$d.%3$d"
 
 msgid "Checking for PowerPC KVM module loaded"
-msgstr ""
+msgstr "Kontrola zda je načten PowerPC KVM modul"
 
 #, c-format
 msgid "Checking for cgroup '%1$s' controller support"
-msgstr ""
+msgstr "Kontrola podpory řadiče cgroup „%1$s“"
 
 msgid "Checking for device assignment IOMMU support"
 msgstr ""
 
 msgid "Checking for hardware virtualization"
-msgstr ""
+msgstr "Kontrola hardwarové virtualizace"
 
 #, c-format
 msgid "Checking for namespace '%1$s'"
@@ -3767,30 +3777,30 @@ msgid "Checking for secure guest support"
 msgstr ""
 
 msgid "Checking if CA cert exists"
-msgstr ""
+msgstr "Zjišťování zda existuje certifikát cert. autority"
 
 msgid "Checking if IOMMU is enabled by kernel"
-msgstr ""
+msgstr "Zjišťování zda je IOMMU zapnuté jádrem systému"
 
 msgid "Checking if cert exists"
-msgstr ""
+msgstr "Zjišťování zda existuje certifikát"
 
 msgid "Checking if custom PKI base dir exists"
 msgstr ""
 
 #, c-format
 msgid "Checking if device '%1$s' exists"
-msgstr ""
+msgstr "Zjišťování zda existuje zařízení „%1$s“"
 
 #, c-format
 msgid "Checking if device '%1$s' is accessible"
-msgstr ""
+msgstr "Zjišťování zda je zařízení „%1$s“ přístupné"
 
 msgid "Checking if key exists"
-msgstr ""
+msgstr "Zjišťování zda klíč existuje"
 
 msgid "Checking if system CA dir exists"
-msgstr ""
+msgstr "Zjišťování zda složka systémové cert. autority existuje"
 
 msgid "Checking if system PKI dir exists"
 msgstr ""
@@ -3799,13 +3809,13 @@ msgid "Checking if system cert dir exists"
 msgstr ""
 
 msgid "Checking if system key dir exists"
-msgstr ""
+msgstr "Zjišťování zda existuje systémová složka s klíči"
 
 msgid "Checking if user PKI base dir exists"
 msgstr ""
 
 msgid "Checking key access"
-msgstr ""
+msgstr "Kontrola přístupu ke klíčům"
 
 msgid "Checking system CA dir access"
 msgstr ""
@@ -4097,7 +4107,7 @@ msgid "Connections from inside daemon must be direct"
 msgstr "Je třeba, aby spojení zevnitř procesu služby byla přímá"
 
 msgid "Console only works in PTY mode"
-msgstr ""
+msgstr "Konzole funguje pouze v režimu PTY"
 
 msgid "Constant pages:"
 msgstr "Konstantní stránky:"
@@ -5129,7 +5139,7 @@ msgstr "Nedaří se nastavit adresu jmenného prostoru vsman pro xmlNodeParam"
 
 #, c-format
 msgid "Could not start 'nbdkit'. exitstatus: %1$d"
-msgstr ""
+msgstr "Nepodařilo se spustit „nbdkit“. Návratový stav: %1$d"
 
 msgid "Could not start 'virtiofsd'"
 msgstr "Nepodařilo se spustit „virtiofsd“"
@@ -5253,7 +5263,7 @@ msgstr "Vytvořit svazek."
 
 #, c-format
 msgid "Create the dir %1$s"
-msgstr ""
+msgstr "Vytvořit složku %1$s"
 
 msgid "Created"
 msgstr "Vytvořeno"
@@ -6760,7 +6770,7 @@ msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr "Nepodařilo se přidat řadič úložiště (název: %1$s, busType: %2$d)"
 
 msgid "Failed to allocate AF_VSOCK socket"
-msgstr ""
+msgstr "Nepodařilo se přidělit AF_VSOCK soket"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
@@ -6782,7 +6792,7 @@ msgstr "Nepodařilo se uplatnit schopnosti: %1$d"
 
 #, c-format
 msgid "Failed to apply firewall command '%1$s': %2$s"
-msgstr ""
+msgstr "Nepodařilo se uplatnit příkaz brány firewall „%1$s“:%2$s"
 
 #, c-format
 msgid "Failed to attach device from %1$s"
