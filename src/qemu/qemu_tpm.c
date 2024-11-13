@@ -628,15 +628,89 @@ qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
     }
 }
 
+/* qemuTPMEmulatorUpdateProfileName:
+ *
+ * @emulator: TPM emulator definition
+ * @persistentTPMDef: TPM definition from the persistent domain definition
+ * @cfg: virQEMUDriverConfig
+ * @saveDef: whether caller should save the persistent domain def
+ */
+static int
+qemuTPMEmulatorUpdateProfileName(virDomainTPMEmulatorDef *emulator,
+                                 virDomainTPMDef *persistentTPMDef,
+                                 const virQEMUDriverConfig *cfg,
+                                 bool *saveDef)
+{
+    g_autoptr(virJSONValue) object = NULL;
+    g_autofree char *stderr_buf = NULL;
+    g_autofree char *stdout_buf = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *swtpm = NULL;
+    virJSONValue *active_profile;
+    const char *profile_name;
+    int exitstatus;
+
+    if (emulator->version != VIR_DOMAIN_TPM_VERSION_2_0 ||
+        !virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_PRINT_INFO))
+        return 0;
+
+    swtpm = virTPMGetSwtpm();
+    if (!swtpm)
+        return -1;
+
+    cmd = virCommandNew(swtpm);
+
+    virCommandSetUID(cmd, cfg->swtpm_user); /* should be uid of 'tss' or 'root' */
+    virCommandSetGID(cmd, cfg->swtpm_group);
+
+    virCommandAddArgList(cmd, "socket", "--print-info", "0x20", "--tpm2", NULL);
+
+    qemuTPMVirCommandSwtpmAddTPMState(cmd, emulator);
+
+    if (qemuTPMVirCommandSwtpmAddEncryption(cmd, emulator, swtpm) < 0)
+        return -1;
+
+    virCommandClearCaps(cmd);
+
+    virCommandSetOutputBuffer(cmd, &stdout_buf);
+    virCommandSetErrorBuffer(cmd, &stderr_buf);
+
+    if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"),
+                          swtpm, exitstatus, stderr_buf);
+        return -1;
+    }
+
+    if (!(object = virJSONValueFromString(stdout_buf)))
+        return -1;
+
+    if (!(active_profile = virJSONValueObjectGetObject(object, "ActiveProfile")))
+        return -1;
+
+    profile_name = virJSONValueObjectGetString(active_profile, "Name");
+
+    g_free(emulator->profile.name);
+    emulator->profile.name = g_strdup(profile_name);
+
+    *saveDef = true;
+    g_free(persistentTPMDef->data.emulator.profile.name);
+    persistentTPMDef->data.emulator.profile.name = g_strdup(profile_name);
+
+    return 0;
+}
+
 /*
  * qemuTPMEmulatorBuildCommand:
  *
  * @tpm: TPM definition
+ * @persistentTPMDef: TPM definition from the persistent domain definition
  * @vmname: The name of the VM
  * @vmuuid: The UUID of the VM
  * @privileged: whether we are running in privileged mode
  * @cfg: virQEMUDriverConfig
  * @incomingMigration: whether we have an incoming migration
+ * @saveDef: whether caller should save the persistent domain def
  *
  * Create the virCommand use for starting the emulator
  * Do some initializations on the way, such as creation of storage
@@ -644,11 +718,13 @@ qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
  */
 static virCommand *
 qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
+                            virDomainTPMDef *persistentTPMDef,
                             const char *vmname,
                             const unsigned char *vmuuid,
                             bool privileged,
                             const virQEMUDriverConfig *cfg,
-                            bool incomingMigration)
+                            bool incomingMigration,
+                            bool *saveDef)
 {
     g_autoptr(virCommand) cmd = NULL;
     bool created = false;
@@ -695,6 +771,11 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
         qemuTPMEmulatorRunSetup(&tpm->data.emulator, vmname, vmuuid,
                                 privileged, cfg,  secretuuid,
                                 incomingMigration) < 0)
+        goto error;
+
+    if (run_setup && !incomingMigration &&
+        qemuTPMEmulatorUpdateProfileName(&tpm->data.emulator, persistentTPMDef,
+                                         cfg, saveDef) < 0)
         goto error;
 
     if (!incomingMigration &&
@@ -996,6 +1077,7 @@ qemuExtTPMEmulatorSetupCgroup(const char *swtpmStateDir,
  * @driver: QEMU driver
  * @vm: the domain object
  * @tpm: TPM definition
+ * @persistentTPMDef: TPM definition from persistent domain definition
  * @shortName: short and unique name of the domain
  * @incomingMigration: whether we have an incoming migration
  *
@@ -1008,6 +1090,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
                      virDomainObj *vm,
                      const char *shortName,
                      virDomainTPMDef *tpm,
+                     virDomainTPMDef *persistentTPMDef,
                      bool incomingMigration)
 {
     g_autoptr(virCommand) cmd = NULL;
@@ -1016,6 +1099,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     g_autofree char *pidfile = NULL;
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 1000; /* ms */
+    bool saveDef = false;
     pid_t pid = -1;
     bool lockMetadataException = false;
 
@@ -1024,11 +1108,17 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     /* stop any left-over TPM emulator for this VM */
     qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
 
-    if (!(cmd = qemuTPMEmulatorBuildCommand(tpm, vm->def->name, vm->def->uuid,
+    if (!(cmd = qemuTPMEmulatorBuildCommand(tpm, persistentTPMDef,
+                                            vm->def->name, vm->def->uuid,
                                             driver->privileged,
                                             cfg,
-                                            incomingMigration)))
+                                            incomingMigration,
+                                            &saveDef)))
         return -1;
+
+    if (saveDef &&
+        virDomainDefSave(vm->newDef, driver->xmlopt, cfg->configDir) < 0)
+        goto error;
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "TPM Emulator") < 0)
         return -1;
@@ -1213,6 +1303,7 @@ int
 qemuExtTPMStart(virQEMUDriver *driver,
                 virDomainObj *vm,
                 virDomainTPMDef *tpm,
+                virDomainTPMDef *persistentTPMDef,
                 bool incomingMigration)
 {
     g_autofree char *shortName = virDomainDefGetShortName(vm->def);
@@ -1220,7 +1311,8 @@ qemuExtTPMStart(virQEMUDriver *driver,
     if (!shortName)
         return -1;
 
-    return qemuTPMEmulatorStart(driver, vm, shortName, tpm, incomingMigration);
+    return qemuTPMEmulatorStart(driver, vm, shortName, tpm, persistentTPMDef,
+                                incomingMigration);
 }
 
 

@@ -1494,6 +1494,7 @@ struct _virDomainTPMEmulatorDef {
     virBitmap *activePcrBanks;
     struct {
         char *source; /* 'source' profile was created from */
+        char *name;   /* name read from active profile */
         virDomainTPMProfileRemoveDisabled removeDisabled;
     } profile;
 };

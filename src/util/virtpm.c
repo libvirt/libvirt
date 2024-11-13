@@ -42,6 +42,7 @@ VIR_ENUM_IMPL(virTPMSwtpmFeature,
               "cmdarg-migration",
               "nvram-backend-dir",
               "nvram-backend-file",
+              "cmdarg-print-info",
 );
 
 VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,

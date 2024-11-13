@@ -3479,6 +3479,7 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
         g_free(def->data.emulator.logfile);
         virBitmapFree(def->data.emulator.activePcrBanks);
         g_free(def->data.emulator.profile.source);
+        g_free(def->data.emulator.profile.name);
         break;
     case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
         virObjectUnref(def->data.external.source);
@@ -10925,10 +10926,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
 
         if ((profile = virXPathNode("./backend/profile[1]", ctxt))) {
             def->data.emulator.profile.source = virXMLPropString(profile, "source");
-            if (!def->data.emulator.profile.source) {
-                virReportError(VIR_ERR_XML_ERROR, "%s", _("missing profile source"));
-                goto error;
-            }
+            def->data.emulator.profile.name = virXMLPropString(profile, "name");
             if (virXMLPropEnum(profile, "removeDisabled",
                                virDomainTPMProfileRemoveDisabledTypeFromString,
                                VIR_XML_PROP_NONZERO,
@@ -25139,16 +25137,23 @@ virDomainTPMDefFormat(virBuffer *buf,
                               virDomainTPMSourceTypeTypeToString(def->data.emulator.source_type));
             virBufferEscapeString(&backendChildBuf, " path='%s'/>\n", def->data.emulator.source_path);
         }
-        if (def->data.emulator.profile.source) {
+        if (def->data.emulator.profile.source ||
+            def->data.emulator.profile.name) {
             g_auto(virBuffer) profileAttrBuf = VIR_BUFFER_INITIALIZER;
 
-            virBufferAsprintf(&profileAttrBuf, " source='%s'",
-                              def->data.emulator.profile.source);
+            if (def->data.emulator.profile.source) {
+                virBufferAsprintf(&profileAttrBuf, " source='%s'",
+                                  def->data.emulator.profile.source);
+            }
             if (def->data.emulator.profile.removeDisabled) {
                virBufferAsprintf(&profileAttrBuf, " removeDisabled='%s'",
                                  virDomainTPMProfileRemoveDisabledTypeToString(def->data.emulator.profile.removeDisabled));
             }
 
+            if (def->data.emulator.profile.name) {
+                virBufferAsprintf(&profileAttrBuf, " name='%s'",
+                                  def->data.emulator.profile.name);
+            }
             virXMLFormatElement(&backendChildBuf, "profile", &profileAttrBuf, NULL);
         }
         break;

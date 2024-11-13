@@ -8135,7 +8135,7 @@ Example: usage of the TPM Emulator
            <active_pcr_banks>
                <sha256/>
            </active_pcr_banks>
-           <profile source='local:restricted' removeDisabled='check'/>
+           <profile source='local:restricted' removeDisabled='check' name='custom:restricted'/>
          </backend>
        </tpm>
      </devices>
@@ -8233,12 +8233,14 @@ Example: usage of the TPM Emulator
 ``profile``
    The ``profile`` node is used to set a profile for a TPM 2.0 given in the
    source attribute. This profile will be set when the TPM is initially
-   created and after that cannot be changed anymore. If no profile is provided,
-   then swtpm will use the latest built-in 'default' profile or the default
-   profile set in swtpm_setup.conf. Otherwise swtpm_setup will search for a
-   profile with the given name with appended .json suffix in a configurable
-   local and then in a distro directory. If none could be found in either, it
-   will fall back trying to use a built-in one.
+   created and after that cannot be changed anymore. Once a profile has been
+   set the name attribute will be updated with the name of the profile that
+   is running. If no profile is provided, then swtpm will use the latest
+   built-in 'default' profile or the default profile set in swtpm_setup.conf.
+   Otherwise swtpm_setup will search for a profile with the given name with
+   appended .json suffix in a configurable local and then in a distro
+   directory. If none could be found in either, it will fall back trying to
+   use a built-in one.
 
    The built-in 'null' profile provides backwards compatibility with
    libtpms v0.9 but also restricts the user to use only TPM features that were

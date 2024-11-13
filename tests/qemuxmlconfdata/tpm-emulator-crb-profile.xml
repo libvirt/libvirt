@@ -29,7 +29,7 @@
     <input type='keyboard' bus='ps2'/>
     <tpm model='tpm-crb'>
       <backend type='emulator' version='2.0'>
-        <profile source='local:restricted' removeDisabled='check'/>
+        <profile source='local:restricted' removeDisabled='check' name='custom:restricted'/>
       </backend>
     </tpm>
     <audio id='1' type='none'/>

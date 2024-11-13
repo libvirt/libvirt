@@ -175,6 +175,7 @@ qemuExtDevicesStart(virQEMUDriver *driver,
                     virDomainObj *vm,
                     bool incomingMigration)
 {
+    virDomainDef *persistentDef = vm->newDef;
     virDomainDef *def = vm->def;
     size_t i;
 
@@ -189,9 +190,11 @@ qemuExtDevicesStart(virQEMUDriver *driver,
 
     for (i = 0; i < def->ntpms; i++) {
         virDomainTPMDef *tpm = def->tpms[i];
+        virDomainTPMDef *persistentTPMDef = persistentDef->tpms[i];
 
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
-            qemuExtTPMStart(driver, vm, tpm, incomingMigration) < 0)
+            qemuExtTPMStart(driver, vm, tpm, persistentTPMDef,
+                            incomingMigration) < 0)
             return -1;
     }
 

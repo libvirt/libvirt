@@ -44,9 +44,10 @@ void qemuExtTPMCleanupHost(virQEMUDriver *driver,
 int qemuExtTPMStart(virQEMUDriver *driver,
                     virDomainObj *vm,
                     virDomainTPMDef *def,
+                    virDomainTPMDef *persistentDefTPM,
                     bool incomingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtTPMStop(virQEMUDriver *driver,
