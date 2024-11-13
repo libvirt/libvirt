@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-12 10:00+0000\n"
+"PO-Revision-Date: 2024-11-13 20:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -37998,31 +37998,31 @@ msgstr "okänd OS-typ ”%1$s”"
 
 #, c-format
 msgid "unknown QEMU_AUDIO_DRV setting %1$s"
-msgstr ""
+msgstr "okänd QEMU_AUDIO_DRV-inställning %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown SCSI host capability type '%1$s' for '%2$s'"
-msgstr "okänd protokolltyp ”%s”"
+msgstr "okänd förmågetyp för SCSI-värd ”%1$s” för ”%2$s”"
 
 #, c-format
 msgid "unknown SCSI target capability type '%1$s' for '%2$s'"
-msgstr ""
+msgstr "okänd förmågetyp för SCSI-mål ”%1$s” för ”%2$s”"
 
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %1$s"
-msgstr ""
+msgstr "okänd SDL_AUDIODRIVER-inställning %1$s"
 
 #, c-format
 msgid "unknown SEV type '%1$s'"
-msgstr ""
+msgstr "okänd SEV-typ ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown address type '%1$s' in network %2$s"
-msgstr "okänd adresstyp ”%s”"
+msgstr "okänd adresstyp ”%1$s” i nätverket %2$s"
 
 #, c-format
 msgid "unknown arch %1$s in QEMU capabilities cache"
-msgstr ""
+msgstr "okänd arkitektur %1$s i QEMU:s förmågecache"
 
 #, fuzzy, c-format
 msgid "unknown architecture: %1$s"
