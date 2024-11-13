@@ -609,6 +609,25 @@ qemuTPMVirCommandSwtpmAddEncryption(virCommand *cmd,
     return 0;
 }
 
+static void
+qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
+                                  const virDomainTPMEmulatorDef *emulator)
+{
+    virCommandAddArg(cmd, "--tpmstate");
+    switch (emulator->source_type) {
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
+        virCommandAddArgFormat(cmd, "backend-uri=file://%s",
+                               emulator->source_path);
+        break;
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
+        virCommandAddArgFormat(cmd, "dir=%s,mode=0600",
+                               emulator->source_path);
+        break;
+    }
+}
+
 /*
  * qemuTPMEmulatorBuildCommand:
  *
@@ -692,19 +711,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
                            tpm->data.emulator.source->data.nix.path);
 
-    virCommandAddArg(cmd, "--tpmstate");
-    switch (tpm->data.emulator.source_type) {
-    case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
-        virCommandAddArgFormat(cmd, "backend-uri=file://%s",
-                               tpm->data.emulator.source_path);
-        break;
-    case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
-    case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
-    case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
-        virCommandAddArgFormat(cmd, "dir=%s,mode=0600",
-                               tpm->data.emulator.source_path);
-        break;
-    }
+    qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator);
 
     virCommandAddArg(cmd, "--log");
     if (tpm->data.emulator.debug != 0)
