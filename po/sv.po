@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-13 21:42+0000\n"
+"PO-Revision-Date: 2024-11-14 22:55+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -38063,9 +38063,9 @@ msgstr "okänd block-IO-status: %1$s"
 msgid "unknown bonding mode %1$s"
 msgstr "okänt bindningsläge %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown capability type '%1$d' for '%2$s'"
-msgstr "okänd förmågetyp ”%1$s” för ”%2$s”"
+msgstr "okänd förmågetyp ”%1$d” för ”%2$s”"
 
 #, c-format
 msgid "unknown character device type: %1$s"
@@ -38082,68 +38082,68 @@ msgstr "okänd chrdev-typ"
 msgid "unknown clock adjustment '%1$s'"
 msgstr "okänd klockjustering ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown clock basis '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okänd klockbas ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown clock offset '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okänd klockförskjutning ”%1$s”"
 
 #, c-format
 msgid "unknown codec type '%1$s'"
 msgstr "okänd omkodningtyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown codeset: '%1$s'"
-msgstr "okänt kommando: '%1$s'"
+msgstr "okänd koduppsättning: ”%1$s”"
 
 #, c-format
 msgid "unknown command: '%1$s'"
 msgstr "okänt kommando: '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown connected value %1$s"
-msgstr "okänt förfarande: %d"
+msgstr "okänt anslutet värde %1$s"
 
 #, c-format
 msgid "unknown device type '%1$s'"
 msgstr "okänd enhetstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown disk snapshot driver '%1$s'"
-msgstr "okänt disk-IO-läge ”%1$s”"
+msgstr "okänd drivrutin för diskögonblicksbilder ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown driver format value '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänt drivrutinsformatvärde ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown drm type '%1$s' for '%2$s'"
-msgstr "okänd disktyp ”%s”"
+msgstr "okänd drm-typ ”%1$s” för ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown dumpformat '%1$d'"
-msgstr "okänt kommando: '%s'"
+msgstr "okänt felsökningsformat ”%1$d”"
 
 msgid "unknown error"
 msgstr "okänt fel"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown event type %1$s"
-msgstr "okänd OS-typ %1$s"
+msgstr "okänd händelsetyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown firmware value %1$s"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänt värde på fast programvara %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown forwarding type '%1$s'"
-msgstr "okänd disktyp ”%1$s”"
+msgstr "okänd vidarebefordranstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown graphics type %1$s"
-msgstr "okänd disktyp ”%1$s”"
+msgstr "okänd grafiktyp %1$s"
 
 msgid "unknown host"
 msgstr "okänd värd"
@@ -38155,37 +38155,36 @@ msgstr "okänd värd %1$s"
 msgid "unknown host CPU"
 msgstr "okänd värd-CPU"
 
-#, fuzzy
 msgid "unknown host CPU model"
-msgstr "okänd värd"
+msgstr "okänd värd-CPU-modell"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown host device source address type '%1$s'"
-msgstr "okänd adresstyp ”%1$s”"
+msgstr "okänd adresstyp till källan vär värdenheten ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown hub device type '%1$s'"
-msgstr "okänd disktyp ”%1$s”"
+msgstr "okänd navenhetstyp ”%1$s”"
 
 #, c-format
 msgid "unknown indexing value '%1$u'"
-msgstr ""
+msgstr "okänt indexeringsvärde ”%1$u”"
 
 #, c-format
 msgid "unknown input bus type '%1$s'"
 msgstr "okänd inmatningsbusstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown input device type '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänd inmatningsenhetstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown input model '%1$s'"
-msgstr "okänt disk-IO-läge ”%1$s”"
+msgstr "okänd inmatningsmodell ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown inputvol storage vol type %1$d"
-msgstr "okänd protokolltyp ”%s”"
+msgstr "okänd lagringsvolymtyp för inputvol %1$d"
 
 #, fuzzy, c-format
 msgid "unknown interface link state '%1$s'"
