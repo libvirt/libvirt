@@ -161,7 +161,10 @@ struct _virCPUx86Model {
     virCPUx86Signatures *signatures;
     /* Inherited from ancestor */
     virCPUx86Data data;
-    /* Not inherited from ancestor */
+
+    /* Not inherited from ancestor.
+     * The corresponding features are removed from the new model data.
+     */
     GStrv removedFeatures;
 
     /* Features added to the CPU model after its original version was released.
@@ -172,7 +175,9 @@ struct _virCPUx86Model {
      * included in the CPU model by the hypervisor, but libvirt didn't support
      * them when introducing the CPU model. In other words, they were enabled,
      * but we ignored them.
+     *
      * Not inherited from ancestor.
+     * The corresponding features are a genuine part of the new model.
      */
     GStrv addedFeatures;
 };
@@ -1542,6 +1547,7 @@ x86ModelParseAncestor(virCPUx86Model *model,
     g_autofree char *name = NULL;
     virCPUx86Model *ancestor;
     int rc;
+    char **removed;
 
     if ((rc = virXPathBoolean("boolean(./model)", ctxt)) <= 0)
         return rc;
@@ -1564,6 +1570,13 @@ x86ModelParseAncestor(virCPUx86Model *model,
     model->vendor = ancestor->vendor;
     model->signatures = virCPUx86SignaturesCopy(ancestor->signatures);
     x86DataCopy(&model->data, &ancestor->data);
+
+    for (removed = ancestor->removedFeatures; removed && *removed; removed++) {
+        virCPUx86Feature *feat;
+
+        if ((feat = x86FeatureFind(map, *removed)))
+            x86DataSubtract(&model->data, &feat->data);
+    }
 
     return 0;
 }
