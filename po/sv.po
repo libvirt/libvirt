@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-14 22:55+0000\n"
+"PO-Revision-Date: 2024-11-16 20:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -38186,68 +38186,67 @@ msgstr "okänd inmatningsmodell ”%1$s”"
 msgid "unknown inputvol storage vol type %1$d"
 msgstr "okänd lagringsvolymtyp för inputvol %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown interface link state '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänt tillstånd på gränssnittslänken ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown interface startmode %1$s"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänt startläge för gränssnittet ”%1$s”"
 
 #, c-format
 msgid "unknown ip address type '%1$s'"
 msgstr "okänd ip-adresstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown memoryBacking/access/mode '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okänt memoryBacking/access/mode ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown memoryBacking/allocation/mode '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okänt memoryBacking/allocation/mode ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown memoryBacking/source/type '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänt memoryBacking/source/type ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown metadata type '%1$d'"
-msgstr "okänd disktyp ”%s”"
+msgstr "okänd metadatatyp ”%1$d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown migration parameter '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänd migreringsparameter ”%1$s”"
 
-#, fuzzy
 msgid "unknown migration protocol"
-msgstr "Okänt protokoll ”%s”"
+msgstr "okänt migreringsprotokoll"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown mii bonding carrier %1$s"
-msgstr "okänd diskenhet ”%1$s”"
+msgstr "okänd mii-bindningsbärvåg %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown mirror job type '%1$s'"
-msgstr "okänd diskbusstyp ”%1$s”"
+msgstr "okänd spegeljobbstyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown mirror ready state %1$s"
-msgstr "okänd värd %1$s"
+msgstr "okänd redotillstånd för spegeln %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown network device feature '%1$s'"
-msgstr "okänd diskenhet ”%1$s”"
+msgstr "okänd nätverksenhetsfunktion ”%1$s”"
 
 msgid "unknown option"
 msgstr "okänd flagga"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown panic info type '%1$s'"
-msgstr "okänd protokolltyp ”%1$s”"
+msgstr "okänd panikinfotyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown panic model '%1$s'"
-msgstr "okända åtkomstläge ”%1$s”"
+msgstr "okänd panikmodell ”%1$s”"
 
 #, c-format
 msgid "unknown parameter '%1$s'"
@@ -38257,32 +38256,31 @@ msgstr "okänd parameter ”%1$s”"
 msgid "unknown parameter type: %1$d"
 msgstr "okänd parametertyp: %1$d"
 
-#, fuzzy
 msgid "unknown partition type"
-msgstr "okänd parametertyp: %d"
+msgstr "okänd partitionstyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown pool format number %1$d"
-msgstr "okänd parametertyp: %1$d"
+msgstr "okänt poolformatsnummer %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown pool format type %1$s"
-msgstr "okänd protokolltyp ”%1$s”"
+msgstr "okänd poolformatstyp %1$s"
 
 #, c-format
 msgid "unknown procedure: %1$d"
 msgstr "okänt förfarande: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown redirdev bus '%1$s'"
-msgstr "okänd diskbusstyp ”%1$s”"
+msgstr "okänd redirdev-buss ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown redirdev character device type '%1$s'"
-msgstr "okänd teckenenhetstyp: %1$s"
+msgstr "okänd redirdev-teckenenhetstyp ”%1$s”"
 
 msgid "unknown rng-random backend"
-msgstr ""
+msgstr "okänd rng-random-bakände"
 
 #, c-format
 msgid "unknown secret type '%1$s'"
@@ -38294,31 +38292,31 @@ msgstr "okänt smbios-läge ”%1$s”"
 
 #, c-format
 msgid "unknown state '%1$s' for '%2$s'"
-msgstr ""
+msgstr "okänt tillstånd ”%1$s” för ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage capability type '%1$s' for '%2$s'"
-msgstr "okänd protokolltyp ”%s”"
+msgstr "okänd lagringsförmågetyp ”%1$s” för ”%2$s”"
 
 #, c-format
 msgid "unknown storage file meta->format %1$d"
-msgstr ""
+msgstr "okänt meta->format för lagringsfil %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage pool type %1$s"
-msgstr "okänd protokolltyp ”%1$s”"
+msgstr "okänd lagringspooltyp %1$s"
 
 #, c-format
 msgid "unknown storage pool volume refresh allocation type %1$s"
-msgstr ""
+msgstr "okänd allokeringstyp för uppdatering av lagringsvolymen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage source format '%1$s'"
-msgstr "Okänd källäge ”%1$s”"
+msgstr "okänt lagringskällformat ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage source type '%1$s'"
-msgstr "okän gränssnittstyp ”%1$s”"
+msgstr "okänd lagringskälltyp ”%1$s”"
 
 #, fuzzy, c-format
 msgid "unknown storage vol backing store type %1$d"
