@@ -40,6 +40,7 @@
 #include "virutil.h"
 #include "viruuid.h"
 #include "virnuma.h"
+#include "virhostmem.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
 
@@ -2209,6 +2210,19 @@ chDomainSetNumaParameters(virDomainPtr dom,
     return ret;
 }
 
+static int
+chNodeGetMemoryStats(virConnectPtr conn,
+                     int cellNum,
+                     virNodeMemoryStatsPtr params,
+                     int *nparams,
+                     unsigned int flags)
+{
+    if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
+        return -1;
+
+    return virHostMemGetStats(cellNum, params, nparams, flags);
+}
+
 /* Function Tables */
 static virHypervisorDriver chHypervisorDriver = {
     .name = "CH",
@@ -2266,6 +2280,7 @@ static virHypervisorDriver chHypervisorDriver = {
     .domainHasManagedSaveImage = chDomainHasManagedSaveImage,   /* 10.2.0 */
     .domainRestore = chDomainRestore,                       /* 10.2.0 */
     .domainRestoreFlags = chDomainRestoreFlags,             /* 10.2.0 */
+    .nodeGetMemoryStats = chNodeGetMemoryStats,             /* 10.10.0 */
 };
 
 static virConnectDriver chConnectDriver = {
