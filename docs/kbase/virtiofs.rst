@@ -13,9 +13,13 @@ is designed to offer local file system semantics and performance.
 
 See https://virtio-fs.gitlab.io/
 
-*Note:* virtiofs currently does not support migration so operations such as
-migration, save/managed-save, or snapshots with memory are not supported if
-a VM has a virtiofs filesystem connected.
+*Note:* Older versions of ``virtiofsd`` (prior to ``1.11``)  do not not support
+migration so operations such as migration, save/managed-save, or snapshots with
+memory may not supported if a VM has a virtiofs filesystem connected.
+
+Additionally snapshot operations managed by libvirt do not snapshot the state
+of the files shared via ``virtiofs``, and thus reverting to an earlier state is
+not recommended.
 
 Sharing a host directory with a guest
 =====================================
