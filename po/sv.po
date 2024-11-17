@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-16 20:38+0000\n"
+"PO-Revision-Date: 2024-11-17 12:04+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -38318,33 +38318,33 @@ msgstr "okänt lagringskällformat ”%1$s”"
 msgid "unknown storage source type '%1$s'"
 msgstr "okänd lagringskälltyp ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage vol backing store type %1$d"
-msgstr "okänd parametertyp: %1$d"
+msgstr "okänd typ på bakomliggande lagring för lagringsvolymen %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage vol type %1$d"
-msgstr "okänd protokolltyp ”%s”"
+msgstr "okänd lagringsvolymstyp %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown suffix '%1$s'"
-msgstr "okänd värd %1$s"
+msgstr "okänt suffix ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown target model '%1$s' specified for character device"
-msgstr "okänd typ presenterad för värd för teckenenhet: %1$s"
+msgstr "okänd målmodell ”%1$s” angiven för teckenenheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown target type '%1$s' specified for character device"
-msgstr "måltypen måste anges för %1$s-enhet"
+msgstr "okänd måltyp ”%1$s” angiven för teckenenheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown teaming type '%1$s'"
-msgstr "okänd disktyp ”%1$s”"
+msgstr "okänd teaming-typ ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown type '%1$s'"
-msgstr "okänd disktyp ”%1$s”"
+msgstr "okänd typ ”%1$s”"
 
 #, c-format
 msgid "unknown type presented to host for character device: %1$s"
@@ -38352,53 +38352,52 @@ msgstr "okänd typ presenterad för värd för teckenenhet: %1$s"
 
 #, c-format
 msgid "unknown value '%1$s' in attribute 'usable'"
-msgstr ""
+msgstr "okänt värde ”%1$s” i attributet ”usable”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown vhost-user type: '%1$s'"
-msgstr "okänd diskbusstyp ”%1$s”"
+msgstr "okänd vhost-användartyp: ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown virttype: %1$s"
-msgstr "okänd OS-typ %1$s"
+msgstr "okänd virttyp: %1$s"
 
-#, fuzzy
 msgid "unknown virtualization type"
-msgstr "okänd OS-typ"
+msgstr "okänd virtualiseringstyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown virtualport type %1$s"
-msgstr "okänd protokolltyp ”%1$s”"
+msgstr "okänd virtualport-typ %1$s"
 
 msgid "unknown volume encryption format"
-msgstr ""
+msgstr "okänt volymkrypteringsformat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown volume encryption format type %1$s"
-msgstr "okänd filsystemstyp ”%1$s”"
+msgstr "okänd volymkrypteringsformattyp %1$s"
 
 msgid "unknown volume encryption secret type"
-msgstr ""
+msgstr "okänd hemlighetstyp till volymkrypteringen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown volume encryption secret type %1$s"
-msgstr "okänd teckenenhetstyp: %1$s"
+msgstr "okänd hemlighetstyp till volymkrypteringen %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown volume format number %1$d"
-msgstr "okänt rotelement för nw-filter"
+msgstr "okänt volymformatnummer %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown volume format type %1$s"
-msgstr "okänd OS-typ %1$s"
+msgstr "okänd volymformattyp %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown volume type '%1$s'"
-msgstr "Okänd modelltyp ”%1$s”"
+msgstr "okänd volymtyp ”%1$s”"
 
 #, c-format
 msgid "unknown write_policy value '%1$u'"
-msgstr ""
+msgstr "okänt write_policy-värde ”%1$u”"
 
 #, fuzzy
 msgid "unlimited"
