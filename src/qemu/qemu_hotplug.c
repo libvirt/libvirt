@@ -837,7 +837,8 @@ qemuDomainAttachControllerDevice(virDomainObj *vm,
                                { .controller = controller } };
     bool releaseaddr = false;
 
-    if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+    if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI && \
+        controller->type != VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("'%1$s' controller cannot be hot plugged."),
                        virDomainControllerTypeToString(controller->type));
