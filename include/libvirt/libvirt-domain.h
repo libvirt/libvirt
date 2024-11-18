@@ -929,6 +929,19 @@ typedef enum {
      * VIR_MIGRATE_UNDEFINE_SOURCE is not used, it will end up persistent on
      * both hosts.
      *
+     * Note: If VIR_MIGRATE_PERSIST_DEST flag is used together with the
+     *       VIR_MIGRATE_PARAM_DEST_XML migration parameter which supplies an
+     *       updated definition for the destination host it's required to
+     *       supply also VIR_MIGRATE_PARAM_PERSIST_XML updated the same way.
+     *       Otherwise the persistent definition on the destination will not
+     *       contain the updates.
+     *
+     *       The VIR_MIGRATE_PERSIST_DEST flag should not be used with the
+     *       "xmlin" parameter of older APIs as that way an updated persistent
+     *       XML can't be supplied and thus the persistent definition will
+     *       likely be incorrect as it will be based on the persistent definition
+     *       on the source of the migration.
+     *
      * Since: 0.7.3
      */
     VIR_MIGRATE_PERSIST_DEST = (1 << 3),
