@@ -1387,6 +1387,7 @@ virVMXParseConfig(virVMXContext *ctx,
     char *sched_cpu_shares = NULL;
     char *guestOS = NULL;
     bool smbios_reflecthost = false;
+    bool uefi_secureboot = false;
     int controller;
     int bus;
     int port;
@@ -1961,6 +1962,27 @@ virVMXParseConfig(virVMXContext *ctx,
                            firmware);
             goto cleanup;
         }
+    }
+
+    /* vmx:uefi.secureBoot.enabled */
+    if (virVMXGetConfigBoolean(conf, "uefi.secureBoot.enabled",
+                               &uefi_secureboot, false, true) < 0) {
+        goto cleanup;
+    }
+    if (uefi_secureboot &&
+        def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+        int *features = def->os.firmwareFeatures;
+
+        if (!features) {
+            features = g_new0(int, VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST);
+            def->os.firmwareFeatures = features;
+        }
+        /* Just set both to true, as VMware doesn't have any concept
+         * of the two features separately.
+         */
+        features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] =
+            features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] =
+            VIR_TRISTATE_BOOL_YES;
     }
 
     if (virDomainDefPostParse(def, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,

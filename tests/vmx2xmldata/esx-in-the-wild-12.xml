@@ -9,6 +9,10 @@
   </cputune>
   <os firmware='efi'>
     <type arch='x86_64'>hvm</type>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
