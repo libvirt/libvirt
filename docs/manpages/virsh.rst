@@ -3409,7 +3409,8 @@ starting the domain on destination and without stopping it on source host.
 Offline migration may be used with inactive domains and it must be used with
 *--persistent* option.
 
-*--persistent* leaves the domain persistent on destination host,
+*--persistent* leaves the domain persistent on destination host (See below
+for quirks when used together with *--xml*),
 *--undefinesource* undefines the domain on the source host, and *--suspend*
 leaves the domain paused on the destination host.
 
@@ -3489,13 +3490,18 @@ such as GFS2 or GPFS. If you are sure the migration is safe or you just do not
 care, use *--unsafe* to force the migration.
 
 *dname* is used for renaming the domain to new name during migration, which
-also usually can be omitted.  Likewise, *--xml* ``file`` is usually
-omitted, but can be used to supply an alternative XML file for use on
-the destination to supply a larger set of changes to any host-specific
-portions of the domain XML, such as accounting for naming differences
-between source and destination in accessing underlying storage.
-If *--persistent* is enabled, *--persistent-xml* ``file`` can be used to
-supply an alternative XML file which will be used as the persistent guest
+also usually can be omitted.
+
+*--xml* ``file``, while usually not required, can be used to supply an
+alternative XML file for use on the destination to supply a larger set of
+changes to any host-specific portions of the domain XML, such as accounting for
+naming differences between source and destination in accessing underlying
+storage. If *--xml* is used together with *--persistent* it's usually required
+to provide a persistent XML definition via *--persistent-xml* (see below) which
+is fixed the same way as the XML passed to *--file* was.
+
+If *--persistent* is enabled, *--persistent-xml* ``file`` can be used
+to supply an alternative XML file which will be used as the persistent guest
 definition on the destination host.
 
 *--timeout* ``seconds`` tells virsh to run a specified action when live
