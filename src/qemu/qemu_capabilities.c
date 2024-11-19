@@ -720,6 +720,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "snapshot-internal-qmp", /* QEMU_CAPS_SNAPSHOT_INTERNAL_QMP */
               "chardev-reconnect-miliseconds", /* QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS */
               "virtio-ccw.loadparm", /* QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM */
+              "netdev-stream-reconnect-miliseconds", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS */
     );
 
 
@@ -1578,6 +1579,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     /* JSON support for -netdev was introduced for the 'dgram' netdev type */
     { "netdev_add/arg-type/type/^dgram", QEMU_CAPS_NETDEV_JSON },
     { "netdev_add/arg-type/+user", QEMU_CAPS_NETDEV_USER },
+    { "netdev_add/arg-type/+stream/reconnect-ms", QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS },
     { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_JSON },
     { "object-add/arg-type/+sev-guest/kernel-hashes", QEMU_CAPS_SEV_GUEST_KERNEL_HASHES },
     { "object-add/arg-type/+iothread/thread-pool-max", QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX },

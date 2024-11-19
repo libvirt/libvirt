@@ -135,6 +135,7 @@
   <flag name='snapshot-internal-qmp'/>
   <flag name='chardev-reconnect-miliseconds'/>
   <flag name='virtio-ccw.loadparm'/>
+  <flag name='netdev-stream-reconnect-miliseconds'/>
   <version>9001050</version>
   <microcodeVersion>39100247</microcodeVersion>
   <package>v9.1.0-1348-g11b8920ed2</package>
