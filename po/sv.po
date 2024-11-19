@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-17 12:04+0000\n"
+"PO-Revision-Date: 2024-11-19 09:21+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -38399,49 +38399,50 @@ msgstr "okänd volymtyp ”%1$s”"
 msgid "unknown write_policy value '%1$u'"
 msgstr "okänt write_policy-värde ”%1$u”"
 
-#, fuzzy
 msgid "unlimited"
-msgstr "ingen gräns"
+msgstr "obegränsad"
 
 #, c-format
 msgid "unlink(\"%1$s\")"
-msgstr ""
+msgstr "unlink(\"%1$s\")"
 
 #, c-format
 msgid "unmanaged target dev is not supported on interfaces of type '%1$s'"
-msgstr ""
+msgstr "ohanterad målenhet stödjs inte på gränssnitt av typen ”%1$s”"
 
 msgid "unpaused"
 msgstr "avpausad"
 
 msgid "unplug of device was rejected by the guest"
-msgstr ""
+msgstr "urkopplingen av enheten avvisades av gästen"
 
 #, c-format
 msgid "unprocessed hole of size %1$lld already in the queue"
-msgstr ""
+msgstr "ett obearbetat hål med storleken %1$lld finns redan i kön"
 
 #, c-format
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
-msgstr ""
+msgstr "onåbar gateway med statisk rutt ”%1$s” angiven för nätverket ”%2$s”"
 
 #, c-format
 msgid ""
 "unrecognized 'firewall_backend = '%1$s' set in network driver config file "
 "%2$s"
 msgstr ""
+"okänd ”firewall_backend = %1$s” angiven i nätverksdrivrutinens "
+"konfigurationsfil %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unrecognized command name '%1$s'"
-msgstr "okänt kommando: '%1$s'"
+msgstr "okänt kommandonamn ”%1$s”"
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
-msgstr ""
+msgstr "okänd kommandokod för nätverksuppdatering %1$d"
 
 #, c-format
 msgid "unrecognized section name '%1$s'"
-msgstr ""
+msgstr "okänt sektionsnamn ”%1$s”"
 
 msgid "unspecified error"
 msgstr "ospecificerat fel"
@@ -38451,73 +38452,75 @@ msgid ""
 "unsupported <bandwidth> element in <portgroup name='%1$s'> of network '%2$s' "
 "with forward mode='%3$s'"
 msgstr ""
+"okänt <bandwidth>-element i <portgroup name='%1$s'> i nätverket ”%2$s” med "
+"vidarebefordranslänget=”%3$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported CPU cache level for mode '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "ej stödd CPU-cachenivå för läget ”%1$s”"
 
 #, c-format
 msgid "unsupported CPU type: %1$s"
 msgstr "CPU-typen stödjs inte: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported Hyper-V stimer feature: %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "ej stödd Hyper-V stimer-funktion: %1$s"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
-msgstr ""
+msgstr "ej stödd Hyper-V Enlightenment-funktion: %1$s"
 
 #, c-format
 msgid "unsupported IPv6 address prefix='%1$u' - must be 64"
-msgstr ""
+msgstr "ej stött IPv6-adressprefix=”%1$u” — måste vara 64"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported KVM feature: %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "KVM-funktionen stödjs inte: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported Namespace feature: %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "Namespace-funktionen stödjs inte: %1$s"
 
-#, fuzzy
 msgid "unsupported OS parameters"
-msgstr "disktypen stödjs inte %s"
+msgstr "OS-parametrar stödjs inte"
 
 msgid "unsupported PCI controller model: only PCI root supported"
-msgstr ""
+msgstr "PCI-styrenhetsmodellen stödjs inte: endast PCI-rot stödjs"
 
-#, fuzzy
 msgid "unsupported SSH key type"
-msgstr "disktypen stödjs inte %s"
+msgstr "SSH-nyckeltypen stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported Xen feature: %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "Xen-funktionen stödjs inte: %1$s"
 
 #, c-format
 msgid "unsupported address family for range %1$s - %2$s, must be ipv4 or ipv6"
 msgstr ""
+"adressfamiljen stödjs inte för intervallet %1$s - %2$s, måste vara ipv4 "
+"eller ipv6"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported address type '%1$s' in network %2$s"
-msgstr "disktypen stödjs inte %s"
+msgstr "adresstypen ”%1$s” stödjs inte i nätverket %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported algorithm %1$d"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "algoritmen %1$d stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported architecture: %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "arkitekturen stödjs inte %1$s"
 
 #, c-format
 msgid "unsupported audio backend '%1$s'"
-msgstr ""
+msgstr "audiobakänden stödjs inte ”%1$s”"
 
 #, c-format
 msgid "unsupported audio model %1$s"
-msgstr ""
+msgstr "audiomodellen stödjs inte %1$s"
 
 #, c-format
 msgid "unsupported authentication type %1$d"
@@ -38525,30 +38528,30 @@ msgstr "autentiseringstyp %1$d stödjs inte"
 
 #, c-format
 msgid "unsupported backend for pstore device: %1$s"
-msgstr ""
+msgstr "bakänden för pstore-enhenten stödjs inte: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "ballongenhetsmodellen stödjs inte ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported chardev '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "chardev stödjs inte ”%1$s”"
 
 #, c-format
 msgid "unsupported chr device type '%1$s'"
 msgstr "teckenenhetstypen ”%1$s” stödjs inte"
 
 msgid "unsupported clock adjustment='reset'"
-msgstr ""
+msgstr "klockjusteringen=”reset” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported clock offset '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "klockförskutningen stödjs inte ”%1$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported clock offset='%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "klockavståndet=”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported config type %1$s"
