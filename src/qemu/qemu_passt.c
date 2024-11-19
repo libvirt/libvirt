@@ -104,12 +104,14 @@ qemuPasstAddNetProps(virDomainObj *vm,
         return -1;
     }
 
-    /* a narrow range of QEMU releases support -netdev stream, but
-     * don't support its "reconnect" option
-     */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT) &&
-        virJSONValueObjectAdd(netprops, "u:reconnect", 5, NULL) < 0) {
-        return -1;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS)) {
+            if (virJSONValueObjectAdd(netprops, "u:reconnect-ms", 5000, NULL) < 0)
+                return -1;
+        } else {
+            if (virJSONValueObjectAdd(netprops, "u:reconnect", 5, NULL) < 0)
+                return -1;
+        }
     }
 
     return 0;
