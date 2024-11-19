@@ -27,8 +27,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-08 03:57+0000\n"
-"Last-Translator: zk dc <zkdc2345@qq.com>\n"
+"PO-Revision-Date: 2024-11-19 09:21+0000\n"
+"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -1457,7 +1457,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo 回复中缺少 'type'"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "“USB”磁盘必须是非空的"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "guest-get-users 的回复中缺少 'user'"
@@ -6988,7 +6988,7 @@ msgstr "删除网络端口 %1$s 失败"
 
 #, c-format
 msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
-msgstr ""
+msgstr "删除临时磁盘“%2$s”的覆盖文件“%1$s”失败"
 
 #, c-format
 msgid "Failed to delete pool %1$s"
@@ -7515,7 +7515,7 @@ msgstr "加载 PCI 驱动程序模块 %1$s:%2$s失败"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
-msgstr ""
+msgstr "加载 PCI 驱动程序模块 %1$s失败：管理禁止"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
@@ -8214,7 +8214,7 @@ msgid "Failed to send request to init control %1$s"
 msgstr "向初始化控制 %1$s 发送请求失败"
 
 msgid "Failed to send restore request to CH"
-msgstr ""
+msgstr "向 CH 发送恢复请求失败"
 
 msgid "Failed to serialize snapshot"
 msgstr "序列化快照失败"
@@ -9085,7 +9085,7 @@ msgstr "主机 CPU 不提供所需功能"
 
 #, c-format
 msgid "Host CPU does not provide required features: %1$s"
-msgstr ""
+msgstr "主机 CPU 未提供所需的功能： %1$s"
 
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "主机 CPU 没有严格与虚拟机 CPU匹配：有额外功能"
@@ -11166,7 +11166,7 @@ msgid "Missing backend %1$d"
 msgstr "缺少后端 %1$d"
 
 msgid "Missing bridge helper name"
-msgstr ""
+msgstr "缺少网桥帮助程序名称"
 
 msgid "Missing bridge name"
 msgstr "缺少网桥名称"
@@ -15911,18 +15911,24 @@ msgid ""
 "The machine cannot act as a client or server. See https://libvirt.org/kbase/"
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
+"本机不能充当客户端或服务器。有关如何安装 %1$s 的信息，请参见 https://libvirt."
+"org/kbase/tlscerts.html#setting-up-a-certificate-authority-ca"
 
 #, c-format
 msgid ""
 "The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
+"本机不能充当客户端。有关如何重新生成 %1$s 的信息，请参见 https://libvirt.org/"
+"kbase/tlscerts.html#issuing-client-certificates"
 
 #, c-format
 msgid ""
 "The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
 "html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
+"本机不能充当服务器。有关如何重新生成 %1$s 的信息，请参见 https://libvirt.org/"
+"kbase/tlscerts.html#issuing-server-certificates"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "机器没有快照，但应该有"
@@ -16017,7 +16023,7 @@ msgstr ""
 #, c-format
 msgid ""
 "The system cert dir %1$s is usually installed as part of the libvirt package"
-msgstr ""
+msgstr "系统证书目录 %1$s 通常作为 libvirt 软件包的一部分安装"
 
 #, c-format
 msgid ""
@@ -16070,7 +16076,7 @@ msgid ""
 msgstr "这个 QEMU 不支持具有 egl-headless 图形类型的 OpenGL rendernode"
 
 msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
-msgstr ""
+msgstr "此 QEMU 不支持使用 'virtio-blk' 设备进行 SCSI 仿真"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "这个 QEMU 不支持 lun passthrough 的 scsi-block"
@@ -16644,7 +16650,7 @@ msgid "Unable to allocate lockspace %1$s"
 msgstr "无法分配锁空间 %1$s"
 
 msgid "Unable to allocate stack"
-msgstr ""
+msgstr "无法分配堆栈"
 
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
@@ -16870,7 +16876,7 @@ msgid "Unable to create epoll fd"
 msgstr "无法生成 epoll fd"
 
 msgid "Unable to create firewall command"
-msgstr ""
+msgstr "无法创建防火墙命令"
 
 msgid "Unable to create kqueue"
 msgstr "无法创建 kqueue"
@@ -17071,7 +17077,7 @@ msgstr "无法在 $PATH 中查找 '%1$s' 二进制文件"
 msgid ""
 "Unable to find '%1$s' firmware that is compatible with the current "
 "configuration"
-msgstr ""
+msgstr "找不到与当前配置兼容的“%1$s”固件"
 
 #, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
@@ -37290,7 +37296,7 @@ msgstr "不支持的 gluster 查询"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
-msgstr ""
+msgstr "不支持的图形类型 %1$s"
 
 #, c-format
 msgid "unsupported guest information types '0x%1$x'"
@@ -38155,7 +38161,7 @@ msgid ""
 msgstr "vmplayer 不支持 libvirt suspend/resume (vmware pause/unpause) 操作 "
 
 msgid "vmport feature requires the ps2 feature not to be disabled"
-msgstr ""
+msgstr "vmport 功能要求不禁用 PS2 功能"
 
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport 不适用于这个 QEMU 二进制文件"
