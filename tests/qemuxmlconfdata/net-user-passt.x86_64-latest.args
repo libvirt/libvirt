@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-storage","id":"ide0-0-0","bootindex":1}' \
--netdev '{"type":"stream","addr":{"type":"unix","path":"/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net0.socket"},"server":false,"reconnect":5,"id":"hostnet0"}' \
+-netdev '{"type":"stream","addr":{"type":"unix","path":"/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net0.socket"},"server":false,"reconnect-ms":5000,"id":"hostnet0"}' \
 -device '{"driver":"rtl8139","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

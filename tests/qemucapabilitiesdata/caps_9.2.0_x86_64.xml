@@ -209,9 +209,10 @@
   <flag name='machine-i8042-opt'/>
   <flag name='snapshot-internal-qmp'/>
   <flag name='chardev-reconnect-miliseconds'/>
-  <version>9001050</version>
+  <flag name='netdev-stream-reconnect-miliseconds'/>
+  <version>9001090</version>
   <microcodeVersion>43100247</microcodeVersion>
-  <package>v9.1.0-803-g05adb38839</package>
+  <package>v9.2.0-rc0-42-g3428a3894c</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -243,6 +244,7 @@
     <property name='amx-fp16' type='boolean' value='false'/>
     <property name='fred' type='boolean' value='false'/>
     <property name='vmx-eptp-switching' type='boolean' value='false'/>
+    <property name='ddpd-u' type='boolean' value='false'/>
     <property name='kvm-asyncpf' type='boolean' value='true' migratable='yes'/>
     <property name='perfctr-core' type='boolean' value='true' migratable='yes'/>
     <property name='mpx' type='boolean' value='false'/>
@@ -271,6 +273,7 @@
     <property name='mca' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt' type='boolean' value='false'/>
     <property name='sgx' type='boolean' value='false'/>
+    <property name='srso-user-kernel-no' type='boolean' value='false'/>
     <property name='vmx-exit-load-pat' type='boolean' value='false'/>
     <property name='vmx-intr-exit' type='boolean' value='false'/>
     <property name='min-level' type='number' value='16'/>
@@ -278,6 +281,7 @@
     <property name='xgetbv1' type='boolean' value='true' migratable='yes'/>
     <property name='cid' type='boolean' value='false'/>
     <property name='sgx-exinfo' type='boolean' value='false'/>
+    <property name='intel-psfd' type='boolean' value='false'/>
     <property name='amd-psfd' type='boolean' value='false'/>
     <property name='gds-no' type='boolean' value='true' migratable='yes'/>
     <property name='ds' type='boolean' value='false'/>
@@ -322,6 +326,8 @@
     <property name='pku' type='boolean' value='false'/>
     <property name='pks' type='boolean' value='false'/>
     <property name='smx' type='boolean' value='false'/>
+    <property name='sm3' type='boolean' value='false'/>
+    <property name='sm4' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4fmaps' type='boolean' value='false'/>
     <property name='vmcb-clean' type='boolean' value='true' migratable='yes'/>
@@ -331,9 +337,11 @@
     <property name='amd-no-ssb' type='boolean' value='false'/>
     <property name='npt' type='boolean' value='true' migratable='yes'/>
     <property name='sgxlc' type='boolean' value='false'/>
+    <property name='perfmon-v2' type='boolean' value='false'/>
     <property name='rdctl-no' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-invvpid' type='boolean' value='false'/>
     <property name='clwb' type='boolean' value='true' migratable='yes'/>
+    <property name='avx10-128' type='boolean' value='false'/>
     <property name='lbrv' type='boolean' value='true' migratable='yes'/>
     <property name='adx' type='boolean' value='true' migratable='yes'/>
     <property name='ss' type='boolean' value='false'/>
@@ -358,6 +366,7 @@
     <property name='vmx-activity-hlt' type='boolean' value='false'/>
     <property name='flushbyasid' type='boolean' value='true' migratable='yes'/>
     <property name='f16c' type='boolean' value='true' migratable='yes'/>
+    <property name='fdp-excptn-only' type='boolean' value='false'/>
     <property name='vmx-exit-ack-intr' type='boolean' value='false'/>
     <property name='ace2-en' type='boolean' value='false'/>
     <property name='pae' type='boolean' value='true' migratable='yes'/>
@@ -388,6 +397,7 @@
     <property name='kvm-poll-control' type='boolean' value='true' migratable='yes'/>
     <property name='avx512ifma' type='boolean' value='false'/>
     <property name='tm2' type='boolean' value='false'/>
+    <property name='zero-fcs-fds' type='boolean' value='false'/>
     <property name='kvm-pv-eoi' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-pv-ipi' type='boolean' value='true' migratable='yes'/>
     <property name='cx8' type='boolean' value='true' migratable='yes'/>
@@ -432,6 +442,7 @@
     <property name='vmx-entry-load-fred' type='boolean' value='false'/>
     <property name='clflush' type='boolean' value='true' migratable='yes'/>
     <property name='skinit' type='boolean' value='false'/>
+    <property name='srso-no' type='boolean' value='false'/>
     <property name='avx-vnni-int8' type='boolean' value='false'/>
     <property name='vmx-exit-secondary-ctls' type='boolean' value='false'/>
     <property name='tsc' type='boolean' value='true' migratable='yes'/>
@@ -470,7 +481,9 @@
     <property name='vmx-rdrand-exit' type='boolean' value='false'/>
     <property name='sgx-provisionkey' type='boolean' value='false'/>
     <property name='lwp' type='boolean' value='false'/>
+    <property name='ipred-ctrl' type='boolean' value='false'/>
     <property name='amd-ssbd' type='boolean' value='true' migratable='yes'/>
+    <property name='avx10-256' type='boolean' value='false'/>
     <property name='xop' type='boolean' value='false'/>
     <property name='ibpb' type='boolean' value='true' migratable='yes'/>
     <property name='ibrs' type='boolean' value='false'/>
@@ -528,6 +541,7 @@
     <property name='vmx-preemption-timer' type='boolean' value='false'/>
     <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-entry-load-pkrs' type='boolean' value='false'/>
+    <property name='avx10-512' type='boolean' value='false'/>
     <property name='vmx-vnmi-pending' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='false'/>
     <property name='vmx-vintr-pending' type='boolean' value='false'/>
@@ -536,6 +550,7 @@
     <property name='pmm-en' type='boolean' value='false'/>
     <property name='pcid' type='boolean' value='false'/>
     <property name='taa-no' type='boolean' value='false'/>
+    <property name='avx10' type='boolean' value='false'/>
     <property name='arch-capabilities' type='boolean' value='true' migratable='yes'/>
     <property name='vgif' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-secondary-ctls' type='boolean' value='false'/>
@@ -553,6 +568,7 @@
     <property name='rtm' type='boolean' value='false'/>
     <property name='kvm-hint-dedicated' type='boolean' value='false'/>
     <property name='sgx-aex-notify' type='boolean' value='false'/>
+    <property name='bhi-ctrl' type='boolean' value='false'/>
     <property name='amx-bf16' type='boolean' value='false'/>
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
@@ -574,12 +590,15 @@
     <property name='vmx-rdpmc-exit' type='boolean' value='false'/>
     <property name='vmx-mtf' type='boolean' value='false'/>
     <property name='vmx-entry-load-efer' type='boolean' value='false'/>
+    <property name='eraps' type='boolean' value='false'/>
     <property name='wrmsrns' type='boolean' value='false'/>
     <property name='model-id' type='string' value='AMD Ryzen 9 3900X 12-Core Processor            '/>
     <property name='sha-ni' type='boolean' value='true' migratable='yes'/>
+    <property name='rrsba-ctrl' type='boolean' value='false'/>
     <property name='fb-clear' type='boolean' value='false'/>
     <property name='vmx-exit-load-pkrs' type='boolean' value='false'/>
     <property name='abm' type='boolean' value='true' migratable='yes'/>
+    <property name='sha512' type='boolean' value='false'/>
     <property name='vmx-ept-advanced-exitinfo' type='boolean' value='false'/>
     <property name='vmx-enable-user-wait-pause' type='boolean' value='false'/>
     <property name='avx512pf' type='boolean' value='false'/>
@@ -684,8 +703,6 @@
     <blocker name='movdir64b'/>
     <blocker name='spec-ctrl'/>
     <blocker name='core-capability'/>
-    <blocker name='mpx'/>
-    <blocker name='mpx'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge' typename='Snowridge-x86_64-cpu' usable='no'>
@@ -697,8 +714,6 @@
     <blocker name='movdir64b'/>
     <blocker name='spec-ctrl'/>
     <blocker name='core-capability'/>
-    <blocker name='mpx'/>
-    <blocker name='mpx'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v5' typename='Skylake-Server-v5-x86_64-cpu' usable='no'>
@@ -713,10 +728,6 @@
     <blocker name='pku'/>
     <blocker name='spec-ctrl'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v4' typename='Skylake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -729,10 +740,6 @@
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v3' typename='Skylake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -745,10 +752,6 @@
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v2' typename='Skylake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -763,10 +766,6 @@
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v1' typename='Skylake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -780,10 +779,6 @@
     <blocker name='avx512bw'/>
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-noTSX-IBRS' typename='Skylake-Server-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -796,10 +791,6 @@
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-IBRS' typename='Skylake-Server-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -814,10 +805,6 @@
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server' typename='Skylake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -830,10 +817,6 @@
     <blocker name='avx512cd'/>
     <blocker name='avx512bw'/>
     <blocker name='avx512vl'/>
-    <blocker name='pku'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
     <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-v4' typename='Skylake-Client-v4-x86_64-cpu' usable='no'>
@@ -902,7 +885,6 @@
     <blocker name='fsrs'/>
     <blocker name='avx-ifma'/>
     <blocker name='xsaves'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='sbdr-ssdp-no'/>
     <blocker name='fbsdp-no'/>
@@ -929,7 +911,6 @@
     <blocker name='fsrs'/>
     <blocker name='avx-ifma'/>
     <blocker name='xsaves'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='sbdr-ssdp-no'/>
     <blocker name='fbsdp-no'/>
@@ -981,12 +962,6 @@
     <blocker name='fsrc'/>
     <blocker name='xsaves'/>
     <blocker name='xfd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-    <blocker name='amx-tile'/>
-    <blocker name='amx-tile'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
     <blocker name='sbdr-ssdp-no'/>
@@ -1031,12 +1006,6 @@
     <blocker name='fsrc'/>
     <blocker name='xsaves'/>
     <blocker name='xfd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-    <blocker name='amx-tile'/>
-    <blocker name='amx-tile'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
     <blocker name='sbdr-ssdp-no'/>
@@ -1081,12 +1050,6 @@
     <blocker name='fsrc'/>
     <blocker name='xsaves'/>
     <blocker name='xfd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-    <blocker name='amx-tile'/>
-    <blocker name='amx-tile'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1128,12 +1091,6 @@
     <blocker name='fsrc'/>
     <blocker name='xsaves'/>
     <blocker name='xfd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-    <blocker name='amx-tile'/>
-    <blocker name='amx-tile'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1189,9 +1146,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='avx512-4vnniw'/>
     <blocker name='avx512-4fmaps'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
   </cpu>
   <cpu type='kvm' name='KnightsMill' typename='KnightsMill-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
@@ -1203,9 +1157,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='avx512-4vnniw'/>
     <blocker name='avx512-4fmaps'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
   </cpu>
   <cpu type='kvm' name='IvyBridge-v2' typename='IvyBridge-v2-x86_64-cpu' usable='no'>
     <blocker name='erms'/>
@@ -1246,10 +1197,6 @@
     <blocker name='fsrm'/>
     <blocker name='spec-ctrl'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1276,10 +1223,6 @@
     <blocker name='fsrm'/>
     <blocker name='spec-ctrl'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1306,10 +1249,6 @@
     <blocker name='fsrm'/>
     <blocker name='spec-ctrl'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1335,10 +1274,6 @@
     <blocker name='la57'/>
     <blocker name='fsrm'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1362,10 +1297,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='la57'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1389,10 +1320,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='la57'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v1' typename='Icelake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1416,10 +1343,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='la57'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-noTSX' typename='Icelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1441,10 +1364,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='la57'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server' typename='Icelake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1468,10 +1387,6 @@
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='la57'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Haswell-v4' typename='Haswell-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1525,6 +1440,62 @@
     <blocker name='invpcid'/>
     <blocker name='rtm'/>
   </cpu>
+  <cpu type='kvm' name='GraniteRapids-v2' typename='GraniteRapids-v2-x86_64-cpu' usable='no'>
+    <blocker name='ss'/>
+    <blocker name='pcid'/>
+    <blocker name='hle'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='rtm'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='avx512ifma'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='la57'/>
+    <blocker name='bus-lock-detect'/>
+    <blocker name='cldemote'/>
+    <blocker name='movdiri'/>
+    <blocker name='movdir64b'/>
+    <blocker name='fsrm'/>
+    <blocker name='serialize'/>
+    <blocker name='tsx-ldtrk'/>
+    <blocker name='amx-bf16'/>
+    <blocker name='avx512-fp16'/>
+    <blocker name='amx-tile'/>
+    <blocker name='amx-int8'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='avx-vnni'/>
+    <blocker name='avx512-bf16'/>
+    <blocker name='fzrm'/>
+    <blocker name='fsrs'/>
+    <blocker name='fsrc'/>
+    <blocker name='amx-fp16'/>
+    <blocker name='xsaves'/>
+    <blocker name='xfd'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='taa-no'/>
+    <blocker name='sbdr-ssdp-no'/>
+    <blocker name='fbsdp-no'/>
+    <blocker name='psdp-no'/>
+    <blocker name='pbrsb-no'/>
+    <blocker name='prefetchiti'/>
+    <blocker name='avx10'/>
+    <blocker name='mcdt-no'/>
+    <blocker name='avx10-128'/>
+    <blocker name='avx10-256'/>
+    <blocker name='avx10-512'/>
+  </cpu>
   <cpu type='kvm' name='GraniteRapids-v1' typename='GraniteRapids-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
@@ -1564,12 +1535,6 @@
     <blocker name='amx-fp16'/>
     <blocker name='xsaves'/>
     <blocker name='xfd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-    <blocker name='amx-tile'/>
-    <blocker name='amx-tile'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
     <blocker name='sbdr-ssdp-no'/>
@@ -1618,12 +1583,6 @@
     <blocker name='amx-fp16'/>
     <blocker name='xsaves'/>
     <blocker name='xfd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-    <blocker name='amx-tile'/>
-    <blocker name='amx-tile'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
     <blocker name='sbdr-ssdp-no'/>
@@ -1671,7 +1630,6 @@
     <blocker name='amd-psfd'/>
     <blocker name='no-nested-data-bp'/>
     <blocker name='xsaves'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Milan-v1' typename='EPYC-Milan-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1681,7 +1639,6 @@
     <blocker name='fsrm'/>
     <blocker name='ibrs'/>
     <blocker name='xsaves'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Milan' typename='EPYC-Milan-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1691,7 +1648,6 @@
     <blocker name='fsrm'/>
     <blocker name='ibrs'/>
     <blocker name='xsaves'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-Genoa-v1' typename='EPYC-Genoa-v1-x86_64-cpu' usable='no'>
@@ -1722,10 +1678,6 @@
     <blocker name='no-nested-data-bp'/>
     <blocker name='auto-ibrs'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Genoa' typename='EPYC-Genoa-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1755,10 +1707,6 @@
     <blocker name='no-nested-data-bp'/>
     <blocker name='auto-ibrs'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='EPYC' typename='EPYC-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Dhyana-v2' typename='Dhyana-v2-x86_64-cpu' usable='no'>
@@ -1779,15 +1727,11 @@
     <blocker name='erms'/>
     <blocker name='mpx'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='mpx'/>
-    <blocker name='mpx'/>
   </cpu>
   <cpu type='kvm' name='Denverton' typename='Denverton-x86_64-cpu' usable='no'>
     <blocker name='erms'/>
     <blocker name='mpx'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='mpx'/>
-    <blocker name='mpx'/>
   </cpu>
   <cpu type='kvm' name='Cooperlake-v2' typename='Cooperlake-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1805,10 +1749,6 @@
     <blocker name='spec-ctrl'/>
     <blocker name='avx512-bf16'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1827,10 +1767,6 @@
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
     <blocker name='avx512-bf16'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1849,10 +1785,6 @@
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
     <blocker name='avx512-bf16'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1871,10 +1803,6 @@
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
     <blocker name='xsaves'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v4' typename='Cascadelake-Server-v4-x86_64-cpu' usable='no'>
@@ -1889,10 +1817,6 @@
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v3' typename='Cascadelake-Server-v3-x86_64-cpu' usable='no'>
@@ -1907,10 +1831,6 @@
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v2' typename='Cascadelake-Server-v2-x86_64-cpu' usable='no'>
@@ -1927,10 +1847,6 @@
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v1' typename='Cascadelake-Server-v1-x86_64-cpu' usable='no'>
@@ -1947,10 +1863,6 @@
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-noTSX' typename='Cascadelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1964,10 +1876,6 @@
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server' typename='Cascadelake-Server-x86_64-cpu' usable='no'>
@@ -1984,10 +1892,6 @@
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-v4' typename='Broadwell-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -2135,6 +2039,7 @@
     <property name='amx-fp16' type='boolean' value='false'/>
     <property name='fred' type='boolean' value='false'/>
     <property name='vmx-eptp-switching' type='boolean' value='false'/>
+    <property name='ddpd-u' type='boolean' value='false'/>
     <property name='kvm-asyncpf' type='boolean' value='false'/>
     <property name='perfctr-core' type='boolean' value='false'/>
     <property name='mpx' type='boolean' value='true' migratable='yes'/>
@@ -2163,6 +2068,7 @@
     <property name='mca' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt' type='boolean' value='false'/>
     <property name='sgx' type='boolean' value='false'/>
+    <property name='srso-user-kernel-no' type='boolean' value='false'/>
     <property name='vmx-exit-load-pat' type='boolean' value='false'/>
     <property name='vmx-intr-exit' type='boolean' value='false'/>
     <property name='min-level' type='number' value='13'/>
@@ -2170,6 +2076,7 @@
     <property name='xgetbv1' type='boolean' value='true' migratable='yes'/>
     <property name='cid' type='boolean' value='false'/>
     <property name='sgx-exinfo' type='boolean' value='false'/>
+    <property name='intel-psfd' type='boolean' value='false'/>
     <property name='amd-psfd' type='boolean' value='false'/>
     <property name='gds-no' type='boolean' value='false'/>
     <property name='ds' type='boolean' value='false'/>
@@ -2214,6 +2121,8 @@
     <property name='pku' type='boolean' value='true' migratable='yes'/>
     <property name='pks' type='boolean' value='true' migratable='yes'/>
     <property name='smx' type='boolean' value='false'/>
+    <property name='sm3' type='boolean' value='false'/>
+    <property name='sm4' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='false'/>
     <property name='avx512-4fmaps' type='boolean' value='false'/>
     <property name='vmcb-clean' type='boolean' value='false'/>
@@ -2223,9 +2132,11 @@
     <property name='amd-no-ssb' type='boolean' value='false'/>
     <property name='npt' type='boolean' value='true' migratable='yes'/>
     <property name='sgxlc' type='boolean' value='false'/>
+    <property name='perfmon-v2' type='boolean' value='false'/>
     <property name='rdctl-no' type='boolean' value='false'/>
     <property name='vmx-invvpid' type='boolean' value='false'/>
     <property name='clwb' type='boolean' value='true' migratable='yes'/>
+    <property name='avx10-128' type='boolean' value='false'/>
     <property name='lbrv' type='boolean' value='false'/>
     <property name='adx' type='boolean' value='true' migratable='yes'/>
     <property name='ss' type='boolean' value='true' migratable='yes'/>
@@ -2250,6 +2161,7 @@
     <property name='vmx-activity-hlt' type='boolean' value='false'/>
     <property name='flushbyasid' type='boolean' value='false'/>
     <property name='f16c' type='boolean' value='true' migratable='yes'/>
+    <property name='fdp-excptn-only' type='boolean' value='false'/>
     <property name='vmx-exit-ack-intr' type='boolean' value='false'/>
     <property name='ace2-en' type='boolean' value='false'/>
     <property name='pae' type='boolean' value='true' migratable='yes'/>
@@ -2280,6 +2192,7 @@
     <property name='kvm-poll-control' type='boolean' value='false'/>
     <property name='avx512ifma' type='boolean' value='false'/>
     <property name='tm2' type='boolean' value='false'/>
+    <property name='zero-fcs-fds' type='boolean' value='false'/>
     <property name='kvm-pv-eoi' type='boolean' value='false'/>
     <property name='kvm-pv-ipi' type='boolean' value='false'/>
     <property name='cx8' type='boolean' value='true' migratable='yes'/>
@@ -2324,6 +2237,7 @@
     <property name='vmx-entry-load-fred' type='boolean' value='false'/>
     <property name='clflush' type='boolean' value='true' migratable='yes'/>
     <property name='skinit' type='boolean' value='false'/>
+    <property name='srso-no' type='boolean' value='false'/>
     <property name='avx-vnni-int8' type='boolean' value='false'/>
     <property name='vmx-exit-secondary-ctls' type='boolean' value='false'/>
     <property name='tsc' type='boolean' value='true' migratable='yes'/>
@@ -2362,7 +2276,9 @@
     <property name='vmx-rdrand-exit' type='boolean' value='false'/>
     <property name='sgx-provisionkey' type='boolean' value='false'/>
     <property name='lwp' type='boolean' value='false'/>
+    <property name='ipred-ctrl' type='boolean' value='false'/>
     <property name='amd-ssbd' type='boolean' value='false'/>
+    <property name='avx10-256' type='boolean' value='false'/>
     <property name='xop' type='boolean' value='false'/>
     <property name='ibpb' type='boolean' value='false'/>
     <property name='ibrs' type='boolean' value='false'/>
@@ -2420,6 +2336,7 @@
     <property name='vmx-preemption-timer' type='boolean' value='false'/>
     <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-entry-load-pkrs' type='boolean' value='false'/>
+    <property name='avx10-512' type='boolean' value='false'/>
     <property name='vmx-vnmi-pending' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vintr-pending' type='boolean' value='false'/>
@@ -2428,6 +2345,7 @@
     <property name='pmm-en' type='boolean' value='false'/>
     <property name='pcid' type='boolean' value='false'/>
     <property name='taa-no' type='boolean' value='false'/>
+    <property name='avx10' type='boolean' value='false'/>
     <property name='arch-capabilities' type='boolean' value='false'/>
     <property name='vgif' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-secondary-ctls' type='boolean' value='false'/>
@@ -2445,6 +2363,7 @@
     <property name='rtm' type='boolean' value='false'/>
     <property name='kvm-hint-dedicated' type='boolean' value='false'/>
     <property name='sgx-aex-notify' type='boolean' value='false'/>
+    <property name='bhi-ctrl' type='boolean' value='false'/>
     <property name='amx-bf16' type='boolean' value='false'/>
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
@@ -2466,12 +2385,15 @@
     <property name='vmx-rdpmc-exit' type='boolean' value='false'/>
     <property name='vmx-mtf' type='boolean' value='false'/>
     <property name='vmx-entry-load-efer' type='boolean' value='false'/>
+    <property name='eraps' type='boolean' value='false'/>
     <property name='wrmsrns' type='boolean' value='false'/>
     <property name='model-id' type='string' value='QEMU TCG CPU version 2.5+'/>
     <property name='sha-ni' type='boolean' value='true' migratable='yes'/>
+    <property name='rrsba-ctrl' type='boolean' value='false'/>
     <property name='fb-clear' type='boolean' value='false'/>
     <property name='vmx-exit-load-pkrs' type='boolean' value='false'/>
     <property name='abm' type='boolean' value='true' migratable='yes'/>
+    <property name='sha512' type='boolean' value='false'/>
     <property name='vmx-ept-advanced-exitinfo' type='boolean' value='false'/>
     <property name='vmx-enable-user-wait-pause' type='boolean' value='false'/>
     <property name='avx512pf' type='boolean' value='false'/>
@@ -3268,6 +3190,52 @@
     <blocker name='hle'/>
     <blocker name='invpcid'/>
     <blocker name='rtm'/>
+  </cpu>
+  <cpu type='tcg' name='GraniteRapids-v2' typename='GraniteRapids-v2-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='tsc-adjust'/>
+    <blocker name='hle'/>
+    <blocker name='invpcid'/>
+    <blocker name='rtm'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='avx512ifma'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='bus-lock-detect'/>
+    <blocker name='cldemote'/>
+    <blocker name='movdiri'/>
+    <blocker name='movdir64b'/>
+    <blocker name='serialize'/>
+    <blocker name='tsx-ldtrk'/>
+    <blocker name='amx-bf16'/>
+    <blocker name='avx512-fp16'/>
+    <blocker name='amx-tile'/>
+    <blocker name='amx-int8'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='ssbd'/>
+    <blocker name='avx-vnni'/>
+    <blocker name='avx512-bf16'/>
+    <blocker name='amx-fp16'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+    <blocker name='xfd'/>
+    <blocker name='prefetchiti'/>
+    <blocker name='avx10'/>
+    <blocker name='mcdt-no'/>
+    <blocker name='avx10-128'/>
+    <blocker name='avx10-256'/>
+    <blocker name='avx10-512'/>
   </cpu>
   <cpu type='tcg' name='GraniteRapids-v1' typename='GraniteRapids-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
