@@ -6114,6 +6114,32 @@ qemuDomainPrepareStorageSourceConfig(virStorageSource *src,
 }
 
 
+static int
+qemuDomainPrepareStorageSource(virStorageSource *src,
+                               virDomainObj *vm,
+                               virDomainDiskDef *disk,
+                               virQEMUDriverConfig *cfg)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    /* convert detected ISO format to 'raw' as qemu would not understand it */
+    if (src->format == VIR_STORAGE_FILE_ISO)
+        src->format = VIR_STORAGE_FILE_RAW;
+
+    if (qemuDomainValidateStorageSource(src, priv->qemuCaps) < 0)
+        return -1;
+
+    qemuDomainPrepareStorageSourceConfig(src, cfg);
+    qemuDomainPrepareDiskSourceData(disk, src);
+
+    if (!qemuDiskBusIsSD(disk->bus) &&
+        qemuDomainPrepareStorageSourceBlockdev(disk, src, priv, cfg) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuDomainDetermineDiskChain:
  * @driver: qemu driver object
@@ -6134,7 +6160,6 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virStorageSource *src; /* iterator for the backing chain declared in XML */
     virStorageSource *n; /* iterator for the backing chain detected from disk */
-    qemuDomainObjPrivate *priv = vm->privateData;
     uid_t uid;
     gid_t gid;
 
@@ -6218,18 +6243,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         return -1;
 
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {
-        /* convert detected ISO format to 'raw' as qemu would not understand it */
-        if (n->format == VIR_STORAGE_FILE_ISO)
-            n->format = VIR_STORAGE_FILE_RAW;
-
-        if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
-            return -1;
-
-        qemuDomainPrepareStorageSourceConfig(n, cfg);
-        qemuDomainPrepareDiskSourceData(disk, n);
-
-        if (!qemuDiskBusIsSD(disk->bus) &&
-            qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+        if (qemuDomainPrepareStorageSource(n, vm, disk, cfg) < 0)
             return -1;
     }
 
