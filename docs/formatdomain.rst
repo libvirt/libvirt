@@ -8183,6 +8183,20 @@ Example: usage of the TPM Emulator
      </devices>
      ...
 
+Example: usage of external TPM emulator :since:`Since 9.0.0`
+
+::
+
+     ...
+     <devices>
+       <tpm model='tpm-tis'>
+         <backend type='external'>
+           <source type='unix' mode='connect' path='/tmp/path.sock'/>
+         </backend>
+       </tpm>
+     </devices>
+     ...
+
 ``model``
    The ``model`` attribute specifies what device model QEMU provides to the
    guest. If no model name is provided, ``tpm-tis`` will automatically be chosen
@@ -8221,6 +8235,12 @@ Example: usage of the TPM Emulator
       parameter can be used to enable logging in the emulator backend, and
       accepts non-zero integer values.
 
+   ``external``
+      For this backend, libvirt expects the TPM emulator to be started externally.
+      The path to the unix socket where the emulator is listening is passed
+      via the ``source`` element. Other ``backend`` sub-elements do not apply
+      in this case, since they are controlled by the emulator command line.
+
 ``version``
    The ``version`` attribute indicates the version of the TPM. This attribute
    only works with the ``emulator`` backend. The following versions are
@@ -8233,8 +8253,13 @@ Example: usage of the TPM Emulator
    architecture, TPM model and backend.
 
 ``source``
-   The ``source`` element specifies the location of the TPM state storage . This
-   element only works with the ``emulator`` backend.
+   For the ``emulator`` backend, the ``source`` element specifies the location
+   of the TPM state storage. :since:`Since v10.10.0`
+
+   For the ``external`` backend, it specifies the socket of the externally
+   started TPM emulator. :since:`Since v9.0.0`
+
+   This element does not work with the ``passthrough`` backend.
 
    When specified, it is the user's responsability to prevent files from being
    used by multiple VMs or emulators (swtpm will also use advisory locking). If
@@ -8245,14 +8270,18 @@ Example: usage of the TPM Emulator
    The following attributes are supported:
 
    ``type``
-      The type of storage. It's possible to provide "file" to utilize a single
-      file or block device where the TPM state will be stored, or "dir" for the
-      directory where the files will be stored.
+      For ``external`` backend, only type ``unix`` is supported.
+      For ``emulator`` backend, it's possible to provide ``file`` to utilize
+      a single file or block device where the TPM state will be stored,
+      or ``dir`` for the directory where the files will be stored.
+
+   ``mode``
+      Connection mode for the ``unix`` socket. Only ``connect`` is supported.
+      Can be omitted.
 
    ``path``
-      The path to the TPM state storage.
+      The path to the TPM state storage, or the unix socket.
 
-   :since:`Since v10.10.0`
 
 ``persistent_state``
    The ``persistent_state`` attribute indicates whether 'swtpm' TPM state is
