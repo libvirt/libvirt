@@ -106,6 +106,7 @@ qcow2GetClusterSize(const char *buf,
                     size_t buf_size);
 static int qcowXGetBackingStore(char **, int *,
                                 const char *, size_t);
+static int qcow2GetDataFile(char **, virBitmap *, char *, size_t);
 static int qcow2GetFeatures(virBitmap **features, int format,
                             char *buf, ssize_t len);
 static int vmdk4GetBackingStore(char **, int *,
@@ -127,6 +128,7 @@ qedGetBackingStore(char **, int *, const char *, size_t);
 
 #define QCOW2_HDR_EXTENSION_END 0
 #define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
+#define QCOW2_HDR_EXTENSION_DATA_FILE_NAME 0x44415441
 
 #define QCOW2v3_HDR_FEATURES_INCOMPATIBLE (QCOW2_HDR_TOTAL_SIZE)
 #define QCOW2v3_HDR_FEATURES_COMPATIBLE (QCOW2v3_HDR_FEATURES_INCOMPATIBLE+8)
@@ -314,7 +316,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         qcow2EncryptionInfo,
         qcow2GetClusterSize,
         qcowXGetBackingStore,
-        NULL,
+        qcow2GetDataFile,
         qcow2GetFeatures
     },
     [VIR_STORAGE_FILE_QED] = {
@@ -361,7 +363,7 @@ enum qcow2IncompatibleFeature {
 static const virStorageFileFeature qcow2IncompatibleFeatureArray[] = {
     VIR_STORAGE_FILE_FEATURE_LAST, /* QCOW2_INCOMPATIBLE_FEATURE_DIRTY */
     VIR_STORAGE_FILE_FEATURE_LAST, /* QCOW2_INCOMPATIBLE_FEATURE_CORRUPT */
-    VIR_STORAGE_FILE_FEATURE_LAST, /* QCOW2_INCOMPATIBLE_FEATURE_DATA_FILE */
+    VIR_STORAGE_FILE_FEATURE_DATA_FILE, /* QCOW2_INCOMPATIBLE_FEATURE_DATA_FILE */
     VIR_STORAGE_FILE_FEATURE_LAST, /* QCOW2_INCOMPATIBLE_FEATURE_COMPRESSION */
     VIR_STORAGE_FILE_FEATURE_EXTENDED_L2, /* QCOW2_INCOMPATIBLE_FEATURE_EXTL2 */
 };
@@ -393,7 +395,8 @@ cowGetBackingStore(char **res,
 static int
 qcow2GetExtensions(const char *buf,
                    size_t buf_size,
-                   int *backingFormat)
+                   int *backingFormat,
+                   char **dataFilePath)
 {
     size_t offset;
     size_t extension_start;
@@ -488,6 +491,15 @@ qcow2GetExtensions(const char *buf,
             break;
         }
 
+        case QCOW2_HDR_EXTENSION_DATA_FILE_NAME: {
+            if (!dataFilePath)
+                break;
+
+            *dataFilePath = g_new0(char, len + 1);
+            memcpy(*dataFilePath, buf + offset, len);
+            break;
+        }
+
         case QCOW2_HDR_EXTENSION_END:
             return 0;
         }
@@ -554,8 +566,28 @@ qcowXGetBackingStore(char **res,
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
-    if (qcow2GetExtensions(buf, buf_size, format) < 0)
+    if (qcow2GetExtensions(buf, buf_size, format, NULL) < 0)
         return 0;
+
+    return 0;
+}
+
+
+static int
+qcow2GetDataFile(char **res,
+                 virBitmap *features,
+                 char *buf,
+                 size_t buf_size)
+{
+    *res = NULL;
+
+    if (buf_size < QCOW2v3_HDR_FEATURES_INCOMPATIBLE + 8)
+        return 0;
+
+    if (features && virBitmapIsBitSet(features, VIR_STORAGE_FILE_FEATURE_DATA_FILE)) {
+        if (qcow2GetExtensions(buf, buf_size, NULL, res) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -967,6 +999,12 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
     if (fileTypeInfo[meta->format].getFeatures != NULL &&
         fileTypeInfo[meta->format].getFeatures(&meta->features, meta->format, buf, len) < 0)
         return -1;
+
+    VIR_FREE(meta->dataFileRaw);
+    if (fileTypeInfo[meta->format].getDataFile != NULL) {
+        fileTypeInfo[meta->format].getDataFile(&meta->dataFileRaw, meta->features,
+                                               buf, len);
+    }
 
     VIR_FREE(meta->compat);
     if (meta->format == VIR_STORAGE_FILE_QCOW2 && meta->features)
