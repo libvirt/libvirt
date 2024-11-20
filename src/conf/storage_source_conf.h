@@ -359,6 +359,9 @@ struct _virStorageSource {
     /* backing chain of the storage source */
     virStorageSource *backingStore;
 
+    /* qcow2 data file source */
+    virStorageSource *dataFileStore;
+
     /* metadata for storage driver access to remote and local volumes */
     void *drv;
 
@@ -369,6 +372,7 @@ struct _virStorageSource {
     /* Name of the child backing store recorded in metadata of the
      * current file.  */
     char *backingStoreRaw;
+    char *dataFileRaw;
     virStorageFileFormat backingStoreRawFormat;
 
     /* metadata that allows identifying given storage source */
