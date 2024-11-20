@@ -250,6 +250,8 @@ mymain(void)
 
     DO_TEST_STATUS("memory-backing-dir");
 
+    DO_TEST_STATUS("qcow2-data-file");
+
  cleanup:
     qemuTestDriverFree(&driver);
 
