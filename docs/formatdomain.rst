@@ -2727,6 +2727,25 @@ paravirtualized driver is specified via the ``disk`` element.
        <source dev='/dev/vhost-vdpa-0' />
        <target dev='vdg' bus='virtio'/>
      </disk>
+     <disk type='file' device='disk'>
+       <driver name='qemu' type='qcow2'/>
+       <source file='/path/to/datastore.qcow2'>
+         <dataStore type='file'>
+           <format type='raw'/>
+           <source file='/path/to/datastore'/>
+         <dataStore/>
+       </source>
+       <backingStore type='file'>
+         <format type='qcow2'/>
+         <source file='/var/lib/libvirt/images/base-with-data-file.qcow'>
+           <dataStore type='block'>
+             <format type='raw'/>
+             <source dev='/dev/mapper/base2'/>
+           <dataStore/>
+         </source>
+       </backingStore>
+       <target dev='vdh' bus='virtio'/>
+     </disk>
    </devices>
    ...
 
@@ -3097,6 +3116,28 @@ paravirtualized driver is specified via the ``disk`` element.
       attribute.
       :since:`Since 9.8.0`
 
+   ``dataStore``
+      This element describes external data store, which is storage holding the
+      actual data blocks of the given storage image. In such case the disk source
+      image holds only the metadata. This feature is currently supported only
+      by the ``qcow2`` format. :since:`Since 10.10.0`
+
+      The following attribute is supported in ``dataStore``:
+
+      ``type``
+         The ``type`` attribute represents the type of storage used by the data store,
+         see disk type attribute above for more details and possible values.
+
+      Moreover, ``dataStore`` supports the following sub-elements:
+
+      ``format``
+         The ``format`` element contains ``type`` attribute which specifies the
+         internal format of the data store. Only ``raw`` value is supported.
+
+      ``source``
+         This element has the same structure as the ``source`` element in ``disk``.
+         It specifies which file, device, or network location contains the data of
+         the described data store.
 
    For a "file" or "volume" disk type which represents a cdrom or floppy (the
    ``device`` attribute), it is possible to define policy what to do with the

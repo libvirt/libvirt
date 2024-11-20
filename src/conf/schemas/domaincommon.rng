@@ -1857,6 +1857,15 @@
         </element>
       </element>
     </optional>
+    <optional>
+      <element name="dataStore">
+        <interleave>
+          <ref name="diskFormat"/>
+          <ref name="diskSource"/>
+        </interleave>
+      </element>
+    </optional>
+
     <ref name="privateDataStorageSource"/>
   </define>
 
