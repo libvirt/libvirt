@@ -877,6 +877,10 @@ storage_source_add_files(virStorageSource *src,
         if (add_file_path(tmp, depth, buf) < 0)
             return -1;
 
+        if (tmp->dataFileStore &&
+            add_file_path(tmp->dataFileStore, depth, buf) < 0)
+            return -1;
+
         depth++;
     }
 
