@@ -1651,6 +1651,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-incompatible-address");
     DO_TEST_CAPS_LATEST("disk-backing-chains-index");
     DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
+    DO_TEST_CAPS_LATEST("disk-qcow2-datafile-store");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-source-fd", "x86_64",
                                   ARG_FD_GROUP, "testgroup2", 2, 200, 205,
                                   ARG_FD_GROUP, "testgroup5", 1, 204,
