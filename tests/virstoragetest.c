@@ -203,6 +203,26 @@ testStorageChain(const void *args)
                           NULLSTR(virStorageFileFormatTypeToString(elt->format)),
                           virStorageNetProtocolTypeToString(elt->protocol),
                           NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL));
+
+        if (elt->dataFileStore) {
+            g_autofree char *strippedPathDataFileRaw = virTestStablePath(elt->dataFileRaw);
+            g_autofree char *strippedPathDataFile = virTestStablePath(elt->dataFileStore->path);
+
+            virBufferAsprintf(&buf,
+                              "dataFileRaw: %s\n\n\n"
+                              "dataFileStoreSource:\n"
+                              "path: %s\n"
+                              "capacity: %lld\n"
+                              "encryption: %d\n"
+                              "type:%s\n"
+                              "format:%s\n",
+                              strippedPathDataFileRaw,
+                              strippedPathDataFile,
+                              elt->dataFileStore->capacity,
+                              !!elt->dataFileStore->encryption,
+                              NULLSTR(virStorageTypeToString(elt->dataFileStore->type)),
+                              NULLSTR(virStorageFileFormatTypeToString(elt->dataFileStore->format)));
+        }
     }
 
     virBufferTrim(&buf, "\n");
@@ -463,6 +483,16 @@ mymain(void)
     TEST_CHAIN("qcow2-auto_qcow2-qcow2_raw-raw", realchain, VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     testCleanupImages();
+
+    /* qcow2 + datafile
+     * 1) qcow2 image with data file
+     * 2) qcow2 -> qcow2 backing image with data file */
+    TEST_CHAIN("qcow2-datafile",
+               abs_srcdir "/virstoragetestdata/images/datafile.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2datafile-qcow2_qcow2-datafile",
+               abs_srcdir "/virstoragetestdata/images/qcow2datafile-datafile.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
     /* Test various combinations of qcow2 images with missing 'backing_format' */
     TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_qcow2-auto",
