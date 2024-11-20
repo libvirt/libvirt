@@ -1934,8 +1934,16 @@ virSecuritySELinuxRestoreImageLabel(virSecurityManager *mgr,
                                     virStorageSource *src,
                                     virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
-    return virSecuritySELinuxRestoreImageLabelInt(mgr, sharedFilesystems,
-                                                  def, src, false);
+    if (virSecuritySELinuxRestoreImageLabelInt(mgr, sharedFilesystems,
+                                               def, src, false) < 0)
+        return -1;
+
+    if (src->dataFileStore &&
+        virSecuritySELinuxRestoreImageLabelInt(mgr, sharedFilesystems,
+                                               def, src->dataFileStore, false) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -1997,7 +2005,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
             return 0;
 
         use_label = parent_seclabel->label;
-    } else if (parent == src) {
+    } else if (parent == src || parent->dataFileStore == src) {
         if (src->shared) {
             use_label = data->file_context;
         } else if (src->readonly) {
@@ -2065,6 +2073,14 @@ virSecuritySELinuxSetImageLabel(virSecurityManager *mgr,
         if (virSecuritySELinuxSetImageLabelInternal(mgr, sharedFilesystems,
                                                     def, n, parent,
                                                     isChainTop) < 0)
+            return -1;
+
+        /* Unlike backing images, data files are not designed to be shared by
+         * anyone. Thus, we always consider them as chain top. */
+        if (n->dataFileStore &&
+            virSecuritySELinuxSetImageLabelInternal(mgr, sharedFilesystems,
+                                                    def, n->dataFileStore, parent,
+                                                    true) < 0)
             return -1;
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
@@ -2929,6 +2945,13 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
                                                    def, disk->src,
                                                    migrated) < 0)
             rc = -1;
+
+        if (disk->src->dataFileStore &&
+            virSecuritySELinuxRestoreImageLabelInt(mgr, sharedFilesystems,
+                                                   def, disk->src->dataFileStore,
+                                                   migrated) < 0)
+            rc = -1;
+
     }
 
     for (i = 0; i < def->nhostdevs; i++) {
