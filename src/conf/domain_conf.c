@@ -7561,6 +7561,53 @@ virDomainStorageSourceParseSlices(virStorageSource *src,
 }
 
 
+static int
+virDomainDiskDataStoreParse(xmlXPathContextPtr ctxt,
+                            virStorageSource *src,
+                            unsigned int flags,
+                            virDomainXMLOption *xmlopt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    xmlNodePtr source;
+    g_autofree char *type = NULL;
+    g_autofree char *format = NULL;
+    g_autofree char *idx = NULL;
+    g_autoptr(virStorageSource) dataFileStore = NULL;
+
+    if (!(ctxt->node = virXPathNode("./dataStore", ctxt)))
+        return 0;
+
+    if (!(type = virXMLPropStringRequired(ctxt->node, "type")))
+        return -1;
+
+    if (!(format = virXPathString("string(./format/@type)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing data file store format"));
+        return -1;
+    }
+
+    if (!(source = virXPathNode("./source", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing disk data file store source"));
+        return -1;
+    }
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        idx = virXMLPropString(source, "index");
+
+    if (!(dataFileStore = virDomainStorageSourceParseBase(type, format, idx)))
+        return -1;
+
+    if (virDomainStorageSourceParse(source, ctxt, dataFileStore, flags, xmlopt) < 0)
+        return -1;
+
+    dataFileStore->readonly = src->readonly;
+    src->dataFileStore = g_steal_pointer(&dataFileStore);
+
+    return 0;
+}
+
+
 /**
  * virDomainStorageSourceParse:
  * @node: XML node pointing to the source element to parse
@@ -7651,6 +7698,9 @@ virDomainStorageSourceParse(xmlNodePtr node,
                                           ctxt, flags) < 0)
         return -1;
 
+    if (virDomainDiskDataStoreParse(ctxt, src, flags, xmlopt) < 0)
+        return -1;
+
     /* People sometimes pass a bogus '' source path when they mean to omit the
      * source element completely (e.g. CDROM without media). This is just a
      * little compatibility check to help those broken apps */
@@ -7720,6 +7770,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     backingStore->readonly = true;
 
     if (virDomainStorageSourceParse(source, ctxt, backingStore, flags, xmlopt) < 0 ||
+        virDomainDiskDataStoreParse(ctxt, backingStore, flags, xmlopt) < 0 ||
         virDomainDiskBackingStoreParse(ctxt, backingStore, flags, xmlopt) < 0)
         return -1;
 
@@ -22762,6 +22813,39 @@ virDomainDiskSourceFormatSlices(virBuffer *buf,
 }
 
 
+static int
+virDomainDiskDataStoreFormat(virBuffer *buf,
+                             virStorageSource *src,
+                             virDomainXMLOption *xmlopt,
+                             unsigned int flags)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) formatAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    bool inactive = flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+
+    if (!src->dataFileStore)
+        return 0;
+
+    /* don't write detected data file member to inactive xml */
+    if (inactive && src->dataFileStore->detected)
+        return 0;
+
+    virBufferAsprintf(&attrBuf, " type='%s'",
+                      virStorageTypeToString(src->dataFileStore->type));
+
+    virBufferAsprintf(&formatAttrBuf, " type='%s'", "raw");
+    virXMLFormatElement(&childBuf, "format", &formatAttrBuf, NULL);
+
+    if (virDomainDiskSourceFormat(&childBuf, src->dataFileStore, "source", 0,
+                                  true, flags, false, false, xmlopt) < 0)
+        return -1;
+
+    virXMLFormatElement(buf, "dataStore", &attrBuf, &childBuf);
+    return 0;
+}
+
+
 /**
  * virDomainDiskSourceFormat:
  * @buf: output buffer
@@ -22876,6 +22960,9 @@ virDomainDiskSourceFormat(virBuffer *buf,
 
     if (attrIndex && src->id != 0)
         virBufferAsprintf(&attrBuf, " index='%u'", src->id);
+
+    if (virDomainDiskDataStoreFormat(&childBuf, src, xmlopt, flags) < 0)
+        return -1;
 
     if (virDomainDiskSourceFormatPrivateData(&childBuf, src, flags, xmlopt) < 0)
         return -1;
