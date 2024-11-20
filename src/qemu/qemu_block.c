@@ -1302,6 +1302,13 @@ qemuBlockStorageSourceGetFormatQcow2Props(virStorageSource *src,
                               NULL) < 0)
         return -1;
 
+    if (src->dataFileStore) {
+        if (virJSONValueObjectAdd(&props,
+                                  "s:data-file", qemuBlockStorageSourceGetEffectiveNodename(src->dataFileStore),
+                                  NULL) < 0)
+        return -1;
+    }
+
     return 0;
 }
 
@@ -1859,6 +1866,13 @@ qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSource *src)
             return NULL;
 
         VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);
+
+        if (n->dataFileStore) {
+            if (!(backend = qemuBlockStorageSourceDetachPrepare(n->dataFileStore)))
+                return NULL;
+
+            VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);
+        }
     }
 
     return g_steal_pointer(&data);
@@ -2588,6 +2602,12 @@ qemuBlockStorageSourceCreateFormat(virDomainObj *vm,
     /* we don't bother creating only a true 'raw' image */
     if (qemuBlockStorageSourceIsRaw(src))
         return 0;
+
+    if (src->dataFileStore) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("creation of storage images with <dataStore> feature is not supported"));
+        return -1;
+    }
 
     if (qemuBlockStorageSourceCreateGetFormatProps(src, backingStore,
                                                    &createformatprops) < 0)

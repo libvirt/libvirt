@@ -6158,6 +6158,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
                              virStorageSource *disksrc)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    bool hadDataStore = false;
     virStorageSource *src; /* iterator for the backing chain declared in XML */
     virStorageSource *n; /* iterator for the backing chain detected from disk */
     uid_t uid;
@@ -6237,13 +6238,26 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
 
     qemuDomainGetImageIds(cfg, vm->def, src, disksrc, &uid, &gid);
 
+    hadDataStore = !!src->dataFileStore;
+
     if (virStorageSourceGetMetadata(src, uid, gid,
                                     QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH,
                                     true) < 0)
         return -1;
 
+    /* As we perform image properties detection on the last member of the
+     * backing chain we need to also consider the data store part of the current
+     * image */
+    if (src->dataFileStore && !hadDataStore &&
+        qemuDomainPrepareStorageSource(src->dataFileStore, vm, disk, cfg) < 0)
+        return -1;
+
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuDomainPrepareStorageSource(n, vm, disk, cfg) < 0)
+            return -1;
+
+        if (n->dataFileStore &&
+            qemuDomainPrepareStorageSource(n->dataFileStore, vm, disk, cfg) < 0)
             return -1;
     }
 
@@ -9484,7 +9498,7 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDef *disk,
         return;
 
     /* transfer properties valid only for the top level image */
-    if (src == disk->src)
+    if (src == disk->src || src == disk->src->dataFileStore)
         src->detect_zeroes = disk->detect_zeroes;
 
     /* transfer properties valid for the full chain */
@@ -9712,6 +9726,10 @@ qemuDomainPrepareDiskSourceBlockdev(virDomainDiskDef *disk,
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+            return -1;
+
+        if (n->dataFileStore &&
+            qemuDomainPrepareStorageSourceBlockdev(disk, n->dataFileStore, priv, cfg) < 0)
             return -1;
     }
 

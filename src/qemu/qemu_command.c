@@ -11018,6 +11018,11 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top)
         if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n,
                                                                 n->backingStore) < 0)
             return NULL;
+
+        /* the dataStore must not have a backing image so we pass NULL */
+        if (n->dataFileStore &&
+            qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n->dataFileStore, NULL) < 0)
+            return NULL;
     }
 
     return g_steal_pointer(&data);
