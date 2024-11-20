@@ -969,6 +969,13 @@ virSecurityDACSetImageLabel(virSecurityManager *mgr,
                                                 def, n, parent, isChainTop) < 0)
             return -1;
 
+        /* Unlike backing images, data files are not designed to be shared by
+         * anyone. Thus, we always consider them as chain top. */
+        if (n->dataFileStore &&
+            virSecurityDACSetImageLabelInternal(mgr, sharedFilesystems, def,
+                                                n->dataFileStore, n, true) < 0)
+            return -1;
+
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
             break;
 
@@ -1065,8 +1072,16 @@ virSecurityDACRestoreImageLabel(virSecurityManager *mgr,
                                 virStorageSource *src,
                                 virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
-    return virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
-                                              def, src, false);
+    if (virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
+                                           def, src, false) < 0)
+        return -1;
+
+    if (src->dataFileStore &&
+        virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
+                                           def, src->dataFileStore, false) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -1944,6 +1959,14 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
                                                sharedFilesystems,
                                                def,
                                                def->disks[i]->src,
+                                               migrated) < 0)
+            rc = -1;
+
+        if (def->disks[i]->src->dataFileStore &&
+            virSecurityDACRestoreImageLabelInt(mgr,
+                                               sharedFilesystems,
+                                               def,
+                                               def->disks[i]->src->dataFileStore,
                                                migrated) < 0)
             rc = -1;
     }
