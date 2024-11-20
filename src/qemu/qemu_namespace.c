@@ -272,6 +272,10 @@ qemuDomainSetupDisk(virStorageSource *src,
         } else {
             GSList *targetPaths = NULL;
 
+            if (next->dataFileStore &&
+                virStorageSourceIsLocalStorage(next->dataFileStore))
+                *paths = g_slist_prepend(*paths, g_strdup(next->dataFileStore->path));
+
             if (virStorageSourceIsEmpty(next) ||
                 !virStorageSourceIsLocalStorage(next)) {
                 /* Not creating device. Just continue. */

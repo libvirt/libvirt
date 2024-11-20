@@ -232,7 +232,14 @@ int
 qemuSetupImageCgroup(virDomainObj *vm,
                      virStorageSource *src)
 {
-    return qemuSetupImageCgroupInternal(vm, src, false);
+    if (qemuSetupImageCgroupInternal(vm, src, false) < 0)
+        return -1;
+
+    if (src->dataFileStore &&
+        qemuSetupImageCgroupInternal(vm, src->dataFileStore, false) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -319,6 +326,10 @@ qemuSetupImageChainCgroup(virDomainObj *vm,
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (qemuSetupImageCgroupInternal(vm, next, forceReadonly) < 0)
+            return -1;
+
+        if (next->dataFileStore &&
+            qemuSetupImageCgroupInternal(vm, next->dataFileStore, forceReadonly) < 0)
             return -1;
 
         /* setup only the top level image for read-write */
