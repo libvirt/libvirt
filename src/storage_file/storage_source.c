@@ -544,6 +544,39 @@ virStorageSourceNewFromBacking(virStorageSource *parent,
 
 
 /**
+ * virStorageSourceNewFromDataFile:
+ * @parent: storage source parent
+ *
+ * Creates a storage source which describes the data file image of @parent.
+ * Returned storage source format is VIR_STORAGE_FILE_RAW, and, unlike
+ * backing storage creation, readonly flag is copied from @parent.
+ */
+static virStorageSource *
+virStorageSourceNewFromDataFile(virStorageSource *parent)
+{
+    g_autoptr(virStorageSource) dataFile = NULL;
+    int rc;
+
+    if ((rc = virStorageSourceNewFromChild(parent,
+                                           parent->dataFileRaw,
+                                           &dataFile)) < 0)
+        return NULL;
+
+    if (rc == 1) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("can't use data file definition '%1$s'"),
+                       parent->dataFileRaw);
+        return NULL;
+    }
+
+    dataFile->format = VIR_STORAGE_FILE_RAW;
+    dataFile->readonly = parent->readonly;
+
+    return g_steal_pointer(&dataFile);
+}
+
+
+/**
  * @src: disk source definition structure
  * @fd: file descriptor
  * @sb: stat buffer
@@ -1389,6 +1422,14 @@ virStorageSourceGetMetadataRecurse(virStorageSource *src,
             VIR_FREE(src->backingStoreRaw);
             return -2;
         }
+    }
+
+    /* The image we're detecting on can have a '<dataStore>' explicitly
+     * configured without a '<backingStore/>' terminator so we must not
+     * overwrite it */
+    if (!src->dataFileStore && src->dataFileRaw) {
+        if (!(src->dataFileStore = virStorageSourceNewFromDataFile(src)))
+            return -1;
     }
 
     if (src->backingStoreRaw) {
