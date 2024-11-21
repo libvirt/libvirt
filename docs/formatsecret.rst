@@ -318,7 +318,7 @@ be omitted if the file contents are base64-encoded.
 
 ::
 
-   # virsh secret-set-value 6dd3e4a5-1d76-44ce-961f-f119f5aad935 --file --plain secretinfile
+   # virsh secret-set-value 6dd3e4a5-1d76-44ce-961f-f119f5aad935 --file secretinfile --plain
    Secret value set
 
 **WARNING** The following approach is **insecure** and deprecated. The secret
