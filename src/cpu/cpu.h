@@ -140,6 +140,9 @@ typedef int
 (*virCPUArchGetCheckMode)(const char *modelName,
                           bool *compat);
 
+typedef const char *
+(*virCPUArchGetCanonicalModel)(const char *model);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -168,6 +171,7 @@ struct cpuArchDriver {
     virCPUArchDataIsIdentical dataIsIdentical;
     virCPUArchDataGetHost dataGetHost;
     virCPUArchGetCheckMode getCheckMode;
+    virCPUArchGetCanonicalModel getCanonicalModel;
 };
 
 
@@ -323,6 +327,10 @@ int
 virCPUGetCheckMode(virArch arch,
                    const virCPUDef *cpu,
                    bool *compat);
+
+const char *
+virCPUGetCanonicalModel(virArch arch,
+                        const char *model);
 
 bool
 virCPUArchIsSupported(virArch arch);

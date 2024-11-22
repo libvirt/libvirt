@@ -1345,6 +1345,31 @@ virCPUGetCheckMode(virArch arch,
 }
 
 
+/** virCPUGetCanonicalModel:
+ *
+ * @arch: CPU architecture
+ * @model: CPU model to be checked
+ *
+ * Returns @model's canonical name if @model is an alias or NULL otherwise.
+ */
+const char *
+virCPUGetCanonicalModel(virArch arch,
+                        const char *model)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s model=%s", virArchToString(arch), model);
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return NULL;
+
+    if (!driver->getCanonicalModel)
+        return NULL;
+
+    return driver->getCanonicalModel(model);
+}
+
+
 /**
  * virCPUArchIsSupported:
  *

@@ -3697,6 +3697,24 @@ virCPUx86GetCheckMode(const char *modelName,
 }
 
 
+static const char *
+virCPUx86GetCanonicalModel(const char *modelName)
+{
+    virCPUx86Map *map;
+    virCPUx86Model *model;
+
+    if (!(map = virCPUx86GetMap()))
+        return NULL;
+
+    model = x86ModelFind(map, modelName);
+
+    if (!model || !model->canonical)
+        return NULL;
+
+    return model->canonical->name;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
@@ -3730,4 +3748,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .dataGetHost = virCPUx86DataGetHost,
 #endif
     .getCheckMode = virCPUx86GetCheckMode,
+    .getCanonicalModel = virCPUx86GetCanonicalModel,
 };
