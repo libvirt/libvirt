@@ -147,13 +147,21 @@ struct _virCPUx86Signatures {
 
 typedef struct _virCPUx86Model virCPUx86Model;
 struct _virCPUx86Model {
+    /* Not inherited from ancestor */
     char *name;
+    /* Not inherited from ancestor */
     bool decodeHost;
+    /* Not inherited from ancestor */
     bool decodeGuest;
+    /* Not inherited from ancestor */
     bool compatCheck;
+    /* Inherited from ancestor */
     virCPUx86Vendor *vendor;
+    /* Inherited from ancestor */
     virCPUx86Signatures *signatures;
+    /* Inherited from ancestor */
     virCPUx86Data data;
+    /* Not inherited from ancestor */
     GStrv removedFeatures;
 
     /* Features added to the CPU model after its original version was released.
@@ -164,6 +172,7 @@ struct _virCPUx86Model {
      * included in the CPU model by the hypervisor, but libvirt didn't support
      * them when introducing the CPU model. In other words, they were enabled,
      * but we ignored them.
+     * Not inherited from ancestor.
      */
     GStrv addedFeatures;
 };
