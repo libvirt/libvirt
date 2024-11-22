@@ -16,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
 "PO-Revision-Date: 2024-11-22 21:13+0000\n"
-"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -38724,9 +38724,9 @@ msgstr "nätverkshändelse-ID %1$d stödjs inte"
 msgid "unsupported node device event ID %1$d"
 msgstr "nodenhetens händelse-ID %1$d stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported numatune mode: '%1$d'"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "Ej stött numatune-läge ”%1$d”"
 
 #, c-format
 msgid "unsupported nvram disk type '%1$s'"
