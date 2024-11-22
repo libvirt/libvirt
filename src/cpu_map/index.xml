@@ -110,6 +110,10 @@
       <include filename='x86_GraniteRapids-v1.xml'/>
       <include filename='x86_SierraForest.xml'/>
       <include filename='x86_SierraForest-v1.xml'/>
+      <include filename='x86_Denverton.xml'/>
+      <include filename='x86_Denverton-v1.xml'/>
+      <include filename='x86_Denverton-v2.xml'/>
+      <include filename='x86_Denverton-v3.xml'/>
     </group>
 
     <group name='AMD CPU models'>

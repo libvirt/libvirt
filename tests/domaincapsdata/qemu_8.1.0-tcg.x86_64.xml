@@ -330,6 +330,47 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='Intel' canonical='Denverton-v1'>Denverton</model>
+      <blockers model='Denverton'>
+        <feature name='arch-capabilities'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v1</model>
+      <blockers model='Denverton-v1'>
+        <feature name='arch-capabilities'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v2</model>
+      <blockers model='Denverton-v2'>
+        <feature name='arch-capabilities'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v3</model>
+      <blockers model='Denverton-v3'>
+        <feature name='arch-capabilities'/>
+        <feature name='sha-ni'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='x2apic'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
       <blockers model='Dhyana'>
         <feature name='fxsr_opt'/>

@@ -302,6 +302,29 @@
         <feature name='taa-no'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='Intel' canonical='Denverton-v1'>Denverton</model>
+      <blockers model='Denverton'>
+        <feature name='erms'/>
+        <feature name='mpx'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v1</model>
+      <blockers model='Denverton-v1'>
+        <feature name='erms'/>
+        <feature name='mpx'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v2</model>
+      <blockers model='Denverton-v2'>
+        <feature name='erms'/>
+        <feature name='spec-ctrl'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v3</model>
+      <blockers model='Denverton-v3'>
+        <feature name='erms'/>
+        <feature name='spec-ctrl'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='yes' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
       <model usable='yes' vendor='Hygon'>Dhyana-v1</model>
       <model usable='no' vendor='Hygon'>Dhyana-v2</model>
