@@ -977,6 +977,17 @@
         <feature name='spec-ctrl'/>
         <feature name='tsc-deadline'/>
       </blockers>
+      <model usable='no' vendor='Intel'>KnightsMill</model>
+      <blockers model='KnightsMill'>
+        <feature name='avx512-4fmaps'/>
+        <feature name='avx512-4vnniw'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512er'/>
+        <feature name='avx512f'/>
+        <feature name='avx512pf'/>
+        <feature name='tsc-deadline'/>
+      </blockers>
       <model usable='yes' vendor='Intel' canonical='Nehalem-v1'>Nehalem</model>
       <model usable='no' vendor='Intel' canonical='Nehalem-v2'>Nehalem-IBRS</model>
       <blockers model='Nehalem-IBRS'>

@@ -95,6 +95,7 @@ cpumap_data = [
   'x86_IvyBridge-v1.xml',
   'x86_IvyBridge-v2.xml',
   'x86_IvyBridge.xml',
+  'x86_KnightsMill.xml',
   'x86_kvm32.xml',
   'x86_kvm64.xml',
   'x86_n270.xml',

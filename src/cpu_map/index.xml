@@ -114,6 +114,7 @@
       <include filename='x86_Denverton-v1.xml'/>
       <include filename='x86_Denverton-v2.xml'/>
       <include filename='x86_Denverton-v3.xml'/>
+      <include filename='x86_KnightsMill.xml'/>
     </group>
 
     <group name='AMD CPU models'>
