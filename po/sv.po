@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-19 09:28+0000\n"
+"PO-Revision-Date: 2024-11-22 21:08+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -38583,29 +38583,28 @@ msgstr "styrenheten stödjs inte"
 msgid "unsupported cpu feature '%1$s'"
 msgstr "cpu-funktionen ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported data type '%1$c' for arg '%2$s'"
-msgstr "disktypen stödjs inte %s"
+msgstr "datatypen ”%1$c” stödjs inte för argumentet ”%2$s”"
 
 #, c-format
 msgid "unsupported device type %1$s 0%2$o"
 msgstr "enhetstypen %1$s 0%2$o stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported device type in network %1$s interface pool"
-msgstr "källa för nätverksgränssnitt"
+msgstr "enhetstypen i gränssnittspoolen i nätverket %1$s stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk backup type '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "disksäkerhetskopieringstypen ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk bus '%1$s' with device setup"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "diskbussen ”%1$s” stödjs inte med enhetsuppsättningen"
 
-#, fuzzy
 msgid "unsupported disk device"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "diskenheten stödjs inte"
 
 #, c-format
 msgid "unsupported disk driver %1$s"
@@ -38613,7 +38612,7 @@ msgstr "diskdrivrutinen %1$s stödjs inte"
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
-msgstr ""
+msgstr "diskögonblicksbildstypen ”%1$s” stödjs inte"
 
 msgid "unsupported disk type"
 msgstr "disktypen stödjs inte"
@@ -38622,45 +38621,45 @@ msgstr "disktypen stödjs inte"
 msgid "unsupported disk type %1$s"
 msgstr "disktypen stödjs inte %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported driver name '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "drivrutinsnamnet ”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported driver name '%1$s' for disk '%2$s'"
-msgstr ""
+msgstr "drivrutinnamnet ”%1$s” stödjs inte för disken ”%2$s”"
 
 #, c-format
 msgid "unsupported dumpformat '%1$s' for this QEMU binary"
-msgstr ""
+msgstr "dumpformatet ”%1$s” stödjs inte för denna QEMU-binär"
 
 #, c-format
 msgid "unsupported element '%1$s' of 'origstates'"
-msgstr ""
+msgstr "elementet ”%1$s” av ”origstates” stödjs inte"
 
 #, c-format
 msgid "unsupported event ID %1$d"
 msgstr "ej stödd händelse-ID %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported failure action: '%1$s'\n"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "åtgärden vid misslyckande stödjs inte: ”%1$s”\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported feature %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "funktionen %1$s stödjs inte"
 
 #, c-format
 msgid "unsupported filesystem accessmode '%1$s'"
-msgstr ""
+msgstr "åtkomstläget ”%1$s” för filsystem stödjs inte"
 
 #, c-format
 msgid "unsupported filesystem driver '%1$s'"
-msgstr ""
+msgstr "filsystemsdrivrutinen ”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported filesystem type '%1$s'"
-msgstr ""
+msgstr "filsystemstypen ”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported flags (0x%1$x)"
@@ -38668,19 +38667,18 @@ msgstr "flaggor som inte stödjs: (0x%1$x)"
 
 #, c-format
 msgid "unsupported flags (0x%1$x) in function %2$s"
-msgstr ""
+msgstr "flaggorna (0x%1$x) i funktionen %2$s stödjs inte"
 
 #, c-format
 msgid "unsupported flags: (0x%1$x)"
 msgstr "flaggor som inte stödjs: (0x%1$x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported format %1$s"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "formatet %1$s stödjs inte"
 
-#, fuzzy
 msgid "unsupported gluster lookup"
-msgstr "disktypen stödjs inte %s"
+msgstr "gluster-uppslagningen stödjs inte"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
