@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-22 21:08+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-11-22 21:13+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -38682,46 +38682,47 @@ msgstr "gluster-uppslagningen stödjs inte"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
-msgstr "Grafiktypen ”%1$s” stödjs inte"
+msgstr "grafiktypen %1$s stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported guest information types '0x%1$x'"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "gästinformationstyperna ”0x%1$x” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported input bus %1$s"
-msgstr "ej stödd händelse-ID %d"
+msgstr "inmatningsbussen %1$s stödjs inte"
 
 msgid "unsupported input device configuration"
-msgstr ""
+msgstr "konfigurationen av inmatningsenheten stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported input storage vol type %1$d"
-msgstr "disktypen stödjs inte %s"
+msgstr "lagringsvolymtypen %1$d för inmatningen stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported interface type %1$s"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "gränssnittstypen %1$s stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported launch security type '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "startsäkerhetstypen ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported monitor type '%1$s'"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "monitortypen ”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported nested HVM setting for %1$s machine on this Xen version"
 msgstr ""
+"nästade HVM-inställningar för maskinen %1$s stödjs inte av denna Xen-version"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported network event ID %1$d"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "nätverkshändelse-ID %1$d stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported node device event ID %1$d"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "nodenhetens händelse-ID %1$d stödjs inte"
 
 #, fuzzy, c-format
 msgid "unsupported numatune mode: '%1$d'"
