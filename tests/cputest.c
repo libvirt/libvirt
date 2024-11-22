@@ -823,7 +823,8 @@ cpuTestUpdateLive(const void *arg)
         }
 
         virDomainCapsCPUModelsAdd(models, expected->model,
-                                  usable, blockers, false, expected->vendor);
+                                  usable, blockers, false,
+                                  expected->vendor, NULL);
 
         cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
         ignore_value(virCPUTranslate(data->arch, cpu, models));
@@ -902,7 +903,7 @@ cpuTestInitModels(const char **list)
     for (model = list; *model; model++) {
         virDomainCapsCPUModelsAdd(cpus, *model,
                                   VIR_DOMCAPS_CPU_USABLE_UNKNOWN,
-                                  NULL, false, NULL);
+                                  NULL, false, NULL, NULL);
     }
 
     return cpus;

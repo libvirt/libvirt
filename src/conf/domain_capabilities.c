@@ -122,6 +122,7 @@ virDomainCapsCPUModelsDispose(void *obj)
         g_free(cpuModels->models[i].name);
         g_strfreev(cpuModels->models[i].blockers);
         g_free(cpuModels->models[i].vendor);
+        g_free(cpuModels->models[i].canonical);
     }
 
     g_free(cpuModels->models);
@@ -184,7 +185,8 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModels *old)
                                   old->models[i].usable,
                                   old->models[i].blockers,
                                   old->models[i].deprecated,
-                                  old->models[i].vendor);
+                                  old->models[i].vendor,
+                                  old->models[i].canonical);
     }
 
     return cpuModels;
@@ -197,7 +199,8 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
                           virDomainCapsCPUUsable usable,
                           char **blockers,
                           bool deprecated,
-                          const char *vendor)
+                          const char *vendor,
+                          const char *canonical)
 {
     virDomainCapsCPUModel *cpu;
 
@@ -212,6 +215,7 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModels *cpuModels,
     cpu->blockers = g_strdupv(blockers);
     cpu->deprecated = deprecated;
     cpu->vendor = g_strdup(vendor);
+    cpu->canonical = g_strdup(canonical);
 }
 
 
@@ -429,6 +433,9 @@ virDomainCapsCPUCustomFormat(virBuffer *buf,
             virBufferAsprintf(buf, " vendor='%s'", model->vendor);
         else
             virBufferAddLit(buf, " vendor='unknown'");
+
+        if (model->canonical)
+            virBufferAsprintf(buf, " canonical='%s'", model->canonical);
 
         virBufferAsprintf(buf, ">%s</model>\n", model->name);
 

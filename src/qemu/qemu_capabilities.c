@@ -2144,7 +2144,7 @@ virQEMUCapsCPUDefsToModels(virArch arch,
                            qemuMonitorCPUDefs *defs,
                            const char **modelAllowed,
                            const char **modelForbidden,
-                           bool vendors)
+                           bool extraInfo)
 {
     virDomainCapsCPUModels *cpuModels = NULL;
     size_t i;
@@ -2155,6 +2155,7 @@ virQEMUCapsCPUDefsToModels(virArch arch,
     for (i = 0; i < defs->ncpus; i++) {
         qemuMonitorCPUDefInfo *cpu = defs->cpus + i;
         const char *vendor = NULL;
+        const char *canonical = NULL;
 
         if (modelAllowed && !g_strv_contains(modelAllowed, cpu->name))
             continue;
@@ -2162,11 +2163,14 @@ virQEMUCapsCPUDefsToModels(virArch arch,
         if (modelForbidden && g_strv_contains(modelForbidden, cpu->name))
             continue;
 
-        if (vendors)
+        if (extraInfo) {
             vendor = virCPUGetVendorForModel(arch, cpu->name);
+            canonical = virCPUGetCanonicalModel(arch, cpu->name);
+        }
 
         virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
-                                  cpu->blockers, cpu->deprecated, vendor);
+                                  cpu->blockers, cpu->deprecated,
+                                  vendor, canonical);
     }
 
     virDomainCapsCPUModelsSort(cpuModels);
