@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-22 21:13+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-11-23 09:27+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -38726,15 +38726,14 @@ msgstr "nodenhetens händelse-ID %1$d stödjs inte"
 
 #, c-format
 msgid "unsupported numatune mode: '%1$d'"
-msgstr "Ej stött numatune-läge ”%1$d”"
+msgstr "numatune-läget stödjs inte: ”%1$d”"
 
 #, c-format
 msgid "unsupported nvram disk type '%1$s'"
-msgstr ""
+msgstr "nvram-disktypen ”%1$s” stödjs inte"
 
-#, fuzzy
 msgid "unsupported option"
-msgstr "flaggan '-%c' stöds ej. Se --help."
+msgstr "flaggan stödjs inte"
 
 #, c-format
 msgid "unsupported option '%1$s'. See --help."
@@ -38744,78 +38743,76 @@ msgstr "flaggan ”%1$s” stödjs inte. Se --help."
 msgid "unsupported option '-%1$c'. See --help."
 msgstr "flaggan '-%1$c' stödjs ej. Se --help."
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported pit tickpolicy '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "pit-tickpolicyn ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported protocol family '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "protokollfamiljen ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported protocol type %1$s"
-msgstr "Konfigurationstypen stödjs inte %1$s"
+msgstr "protokolltypen %1$s stödjs inte"
 
 msgid "unsupported rendernode accel attribute without 'vhostuser'"
-msgstr ""
+msgstr "attributet rendernode accel stödjs inte utan ”vhostuser”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported rtc timer tickpolicy '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "rtc-timers tickpolicy ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported rtc timer track '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "rtc-timerns spårning ”%1$s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
-msgstr "ej stödd händelse-ID %d"
+msgstr "schemat %1$s i migrerings-URI:n %2$s stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported secret event ID %1$d"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "hemlighetens händelse-ID %1$d stödjs inte"
 
 #, c-format
 msgid "unsupported source type '%1$s'"
 msgstr "källtypen ”%1$s” stödjs inte"
 
-#, fuzzy
 msgid "unsupported state value"
-msgstr "disktypen stödjs inte %s"
+msgstr "tillståndsvärdet stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported storage pool event ID %1$d"
-msgstr "ej stödd händelse-ID %1$d"
+msgstr "lagringspoolens händelse-ID %1$d stödjs inte"
 
 msgid "unsupported storage type for this code path"
-msgstr ""
+msgstr "lagringstypen stödjs inte för denna kodväg"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported timer type (name) '%1$s'"
-msgstr "disktypen stödjs inte %1$s"
+msgstr "timertypen (namn) ”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported type '%1$s' in interface's <actual> element"
-msgstr ""
+msgstr "typen ”%1$s” i gränssnittets element <actual> stödjs inte"
 
 #, c-format
 msgid "unsupported type='%1$s' to model 'none'"
-msgstr ""
+msgstr "type='%1$s' till modellen ”none” stödjs inte"
 
-#, fuzzy
 msgid "unsupported usb model"
-msgstr "disktypen stödjs inte %s"
+msgstr "usbmodellen stödjs inte"
 
 #, c-format
 msgid "unsupported use of long flags in function %1$s"
-msgstr ""
+msgstr "användning av långa flaggor i funktionen %1$s stödjs inte"
 
 msgid "unsupported value"
 msgstr "värde som ej stödjs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported volume encryption format %1$d"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "volymkrypteringsformatet %1$d stödjs inte"
 
 msgid "unterminated number"
 msgstr "oterminerade nummer"
@@ -38827,17 +38824,17 @@ msgid "update device from an XML file"
 msgstr "uppdatera en enhet från en XML-fil"
 
 msgid "update guest CPU according to host CPU"
-msgstr ""
+msgstr "uppdatera gäst-CPU:n enligt värd-CPU:n"
 
 msgid "update memory device of a domain"
-msgstr ""
+msgstr "uppdatera minnesenheten för en domän"
 
 msgid "update parts of an existing network's configuration"
-msgstr ""
+msgstr "uppdatera delar av ett befintligt nätverks konfiguration"
 
 #, c-format
 msgid "updating device type '%1$s' is unsupported"
-msgstr ""
+msgstr "uppdaterar enhetstypen ”%1$s” stödjs inte"
 
 msgid "upload file contents to a volume"
 msgstr ""
