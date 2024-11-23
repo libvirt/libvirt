@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-23 09:27+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-11-24 09:38+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -38837,14 +38837,14 @@ msgid "updating device type '%1$s' is unsupported"
 msgstr "uppdaterar enhetstypen ”%1$s” stödjs inte"
 
 msgid "upload file contents to a volume"
-msgstr "Ladda upp filinnehåll till en volym"
+msgstr "ladda upp filinnehåll till en volym"
 
 msgid "upper boundary for worker thread pool"
-msgstr ""
+msgstr "övre gräns för arbetarens trådpool"
 
-#, fuzzy, c-format
+#, c-format
 msgid "uptime file has unexpected format '%1$s'"
-msgstr "oväntad data '%1$s'"
+msgstr "tiden uppe har ett oväntat format ”%1$s”"
 
 msgid "usage:"
 msgstr "användning:"
@@ -38852,98 +38852,106 @@ msgstr "användning:"
 #, c-format
 msgid ""
 "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
-msgstr ""
+msgstr "usb-styrenhetstypen ”%1$s” stödjer inte ”ports” med denna QEMU-binär"
 
-#, fuzzy
 msgid "usb device not found"
-msgstr "Domän hittades inte"
+msgstr "usb-enheten finns inte"
 
 msgid "usb keyboard is not supported by this QEMU binary"
 msgstr "usb-tangentbord stödjs inte av denna QEMU-binär"
 
 msgid "usb-audio controller is not supported by this QEMU binary"
-msgstr ""
+msgstr "styrenheten för usb-audio stödjs inte av denna QEMU-binär"
 
 msgid "usb-hub not supported by QEMU binary"
-msgstr ""
+msgstr "usb-hub:en stödjs inte av QEMU-binären"
 
 msgid "usb-serial requires address of usb type"
-msgstr ""
+msgstr "usb-serial kräver en adress av usb-typ"
 
-#, fuzzy
 msgid "use TLS for migration"
-msgstr "live-migrering"
+msgstr "använd TLS till migrering"
 
 msgid "use an editor to change the metadata"
-msgstr ""
+msgstr "använd en redigerare för att ändra metadatan"
 
 msgid "use backing file of top as base"
-msgstr ""
+msgstr "använd en bakomliggande fil ovanpå som bas"
 
 msgid "use btrfs COW lightweight copy"
 msgstr "använd btrfs lättvikts COW-kopiering"
 
 msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
+"använd kapaciteten som ett delta till aktuell storlek, snarare än den nya "
+"storleken"
 
 msgid "use multifunction pci under specified address"
-msgstr ""
+msgstr "använd flerfunktions-pci under den angivna adressen"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"användning av ”VIR_MIGRATE_PARAM_MIGRATE_DISKS” kräver användning av flaggan "
+"”VIR_MIGRATE_NON_SHARED_DISK” eller ”VIR_MIGRATE_NON_SHARED_INC”"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"användning av ”VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES” kräver "
+"användning av flaggan ”VIR_MIGRATE_NON_SHARED_DISK” eller "
+"”VIR_MIGRATE_NON_SHARED_INC”"
 
 msgid "use of <server> requires pull mode backup"
 msgstr ""
+"användning av <server> kräver säkerhetskopia i hämtningsläge (pull mode)"
 
 msgid "use of deprecated configuration settings"
-msgstr ""
+msgstr "användning av föråldrade konfigurationsinställningar"
 
 msgid "use of flags requires a copy job"
-msgstr ""
+msgstr "användning av flaggor kräver ett kopieringsjobb"
 
 msgid "use of host cdrom passthrough"
-msgstr ""
+msgstr "användning av värd-cdrom-genomgång"
 
 msgid "use seclabels allowing writes"
-msgstr ""
+msgstr "använd seclabels som tillåter skrivningar"
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
-msgstr ""
+msgstr "använd virDomainMigrateToURI3 till partner-till-partner-migrering"
 
 msgid "use zero-copy mechanism for migrating memory pages"
-msgstr ""
+msgstr "använd nollkopieringsmekanismen vid migrering av minnessidor"
 
 msgid "user"
 msgstr "användare"
 
 msgid "user cancelled authentication process"
-msgstr ""
+msgstr "användaren avbröt autentiseringsprocessen"
 
 msgid "user to list authorized keys for"
-msgstr ""
+msgstr "användare att lista auktoriserade nycklar för"
 
 msgid "user to set authorized keys for"
-msgstr ""
+msgstr "användare att sätta auktoriserade nycklar för"
 
 msgid "user:"
 msgstr "användare:"
 
 #, c-format
 msgid "using '%1$s' pools for backing 'volume' disks isn't yet supported"
-msgstr ""
+msgstr "att använda ”%1$s”-pooler bakom ”volume”-diskar stödjs inte ännu"
 
 #, c-format
 msgid ""
 "using disk target name '%1$s' conflicts with SCSI host device address "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u"
 msgstr ""
+"att använda diskmålnamnet ”%1$s” står i konflikt med SCSI-värdens enhets "
+"adress styrenhet=”%2$u” buss=”%3$u” mål=”%4$u” enhet=”%5$u”"
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
