@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-24 09:38+0000\n"
+"PO-Revision-Date: 2024-11-25 09:47+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -38955,80 +38955,85 @@ msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
-msgstr ""
+msgstr "att använda unix-uttag och fjärrservern ”%1$s” stödjs inte."
 
 #, c-format
 msgid "uuidstr in %1$s must be a valid UUID"
-msgstr ""
+msgstr "uuidstr i %1$s måste vara en giltig UUID"
 
 #, c-format
 msgid "v1 controller '%1$s' is not enabled for group"
-msgstr ""
+msgstr "v1-styrenheten ”%1$s” är inte aktiverad för gruppen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "v1 controller '%1$s' is not mounted"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "v1-styrenheten ”%1$s” är inte monterad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "v2 controller '%1$s' is not available"
-msgstr "nätverket %1$s är inte aktivt"
+msgstr "v2-styrenheten ”%1$s” är inte tillgänglig"
 
 #, c-format
 msgid "vCPU '%1$u' is not offlinable"
-msgstr ""
+msgstr "vCPU ”%1$u” kan inte frånkopplas"
 
 #, c-format
 msgid "vCPU '%1$u' is not present in domain definition"
-msgstr ""
+msgstr "vCPU ”%1$u” finns inte i domändefinitionen"
 
 msgid "vCPU '0' can't be modified"
-msgstr ""
+msgstr "vCPU ”0” kan inte ändras"
 
 #, c-format
 msgid "vCPU count exceeds maximum: %1$d > %2$d"
-msgstr ""
+msgstr "vCPU-antalet överskrider maximum: %1$d > %2$d"
 
 msgid ""
 "vCPU count provided by the guest agent can only be requested for live domains"
 msgstr ""
+"vCPU-antalet som anges av gästagenten kan endast begäras för live-domäner"
 
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %1$d > %2$d"
-msgstr ""
+msgstr "vCPU-avbildningsbuffertens längd överskrider maximum: %1$d > %2$d"
 
 #, c-format
 msgid "vCPUs count must be a multiple of the vCPU hotplug granularity (%1$u)"
 msgstr ""
+"vCPU-antalet måste vare en multipel av upplösningen av omkoppling i drift av "
+"vCPU:er (%1$u)"
 
 #, c-format
 msgid "vDPA chardev path '%1$s' does not exist"
-msgstr ""
+msgstr "vDPA-teckenenhetens sökväg ”%1$s” finns inte"
 
 msgid "vDPA devices are not supported with this QEMU binary"
-msgstr ""
+msgstr "vDPA-enheter stödjs inte med denna QEMU-binär"
 
 msgid "vDPA devices cannot be migrated"
-msgstr ""
+msgstr "vDPA-enheter kan inte migreras"
 
 msgid "vTPM usage specified, but name is missing"
 msgstr "vTPM-användning angiven, men namn saknas"
 
 msgid "validate the XML against the schema"
-msgstr ""
+msgstr "validera XML:en mot schemat"
 
 msgid "validate the XML document against schema"
-msgstr ""
+msgstr "validera XML-dokumentet mot schemat"
 
 msgid "validate the redefined checkpoint"
-msgstr ""
+msgstr "validera den omdefinierade kontrollpunkten"
 
 #, c-format
 msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
-msgstr ""
+msgstr "värdet ”%1$llu” är för stort för parametern ”%2$s”, maximum är ”%3$llu”"
 
 #, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
+"värdet ”%1$llu” är för stort för sammansmältningsparametern, maximum är "
+"”%2$lu”"
 
 #, c-format
 msgid "value '%1$s' cannot be set if '%2$s' is not set"
