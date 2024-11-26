@@ -3935,25 +3935,29 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if (olddev->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
             oldType == VIR_DOMAIN_NET_TYPE_DIRECT &&
-            virDomainNetGetActualDirectMode(olddev) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU &&
             STREQ(olddev->data.network.name, newdev->data.network.name)) {
             /* old and new are type='network', and the network name
-             * hasn't changed *and* this is a network where each
-             * connection is allocated exclusive use of a VF
-             * device. In this case we *don't* want to get a new port
-             * ("actual device") from the network because attempting
-             * to allocate a new device would also allocate a
-             * new/different VF, causing the update to fail. And
-             * anyway we can use olddev's actualNetDef (since it
-             * hasn't changed).
+             * hasn't changed *and* this is a "direct" network (a pool
+             * of 1 or more host ethernet devices where each guest
+             * interface is allocated one of those physical devices
+             * that it then connects to via macvtap). In this case we
+             * *don't* want to get a new port ("actual device") from
+             * the network because attempting to allocate a new port
+             * would also allocate a new/different ethernet (physical
+             * device), causing the update to fail (because the
+             * physical device of a macvtap-based interface can't be
+             * changed without completely unplugging and re-plugging
+             * the guest NIC).
              *
-             * So instead we just duplicate *the pointer to* the
-             * actualNetDef from olddev to newdev so that comparisons
-             * of actualNetDef will show no change. If the update is
-             * successful, we will clear the actualNetDef pointer from
-             * olddev before destroying it (or if the update fails,
-             * then we need to clear the pointer from newdev before
-             * destroying it)
+             * We can work around this issue by just re-using olddev's
+             * actualNetDef (since it hasn't changed) rather than
+             * allocating a new one.  We just duplicate *the pointer
+             * to* the actualNetDef from olddev to newdev so that
+             * comparisons of actualNetDef will show no change. If the
+             * update is successful, we will clear the actualNetDef
+             * pointer from olddev before destroying it (or if the
+             * update fails, then we need to clear the pointer from
+             * newdev before destroying it)
              */
             newdev->data.network.actual = olddev->data.network.actual;
             memcpy(newdev->data.network.portid, olddev->data.network.portid,
