@@ -9260,12 +9260,18 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (n->id == idx)
             return n;
+
+        if (n->dataFileStore && n->dataFileStore->id == idx)
+            return n->dataFileStore;
     }
 
     if (disk->mirror) {
         for (n = disk->mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
             if (n->id == idx)
                 return n;
+
+            if (n->dataFileStore && n->dataFileStore->id == idx)
+                return n->dataFileStore;
         }
     }
 
@@ -9281,6 +9287,9 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
             for (n = backupdisk->store; virStorageSourceIsBacking(n); n = n->backingStore) {
                 if (n->id == idx)
                     return n;
+
+                if (n->dataFileStore && n->dataFileStore->id == idx)
+                    return n->dataFileStore;
             }
         }
     }
