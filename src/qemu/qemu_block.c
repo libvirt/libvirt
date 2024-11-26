@@ -3182,7 +3182,7 @@ qemuBlockReopenAccess(virDomainObj *vm,
 
     /* If we are lacking the object here, qemu might have opened an image with
      * a node name unknown to us */
-    if (!src->backingStore) {
+    if (src->format >= VIR_STORAGE_FILE_BACKING && !src->backingStore) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("can't reopen image with unknown presence of backing store"));
         return -1;
