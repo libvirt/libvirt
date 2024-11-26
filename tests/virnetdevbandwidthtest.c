@@ -82,7 +82,8 @@ testVirNetDevBandwidthSet(const void *data)
         if (virNetDevOpenvswitchInterfaceSetQos(iface, band, info->uuid, true) < 0)
             return -1;
     } else {
-        unsigned int flags = VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
+        unsigned int flags = VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED |
+                             VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL;
 
         if (info->hierarchical_class)
             flags |= VIR_NETDEV_BANDWIDTH_SET_HIERARCHICAL_CLASS;

@@ -42,6 +42,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevBandwidth, virNetDevBandwidthFree);
 typedef enum {
     VIR_NETDEV_BANDWIDTH_SET_HIERARCHICAL_CLASS = (1 << 0),
     VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED = (1 << 1),
+    VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL = (1 << 2),
 } virNetDevBandwidthSetFlags;
 
 int virNetDevBandwidthSet(const char *ifname,

@@ -196,6 +196,21 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
  *     interface (so domain's RX/TX is host's RX/TX), and for some
  *     it's swapped (domain's RX/TX is hosts's TX/RX).
  *
+ *   VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL
+ *     If VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL is set, then the root
+ *     qdisc is deleted before adding any new qdisc/class/filter,
+ *     which causes any pre-existing filters to also be deleted. If
+ *     not set, then it's assumed that there are no existing rules (or
+ *     that those already there need to be kept). The caller should
+ *     set this flag for an existing interface that is having its
+ *     bandwidth settings modified, but can leave it unset if the
+ *     interface was newly created and this is the first time
+ *     bandwidth has been set, but someone else might have already
+ *     added the qdisc (e.g. this is the case when the network driver
+ *     is setting bandwidth for a virtual network bridge device - the
+ *     nftables backend may have already added qdisc handle 1:0 and a
+ *     filter, and we don't want to delete them)
+ *
  * Return 0 on success, -1 otherwise.
  */
 int
@@ -238,7 +253,11 @@ virNetDevBandwidthSet(const char *ifname,
         tx = bandwidth->out;
     }
 
-    virNetDevBandwidthClear(ifname);
+    /* Only if the caller requests, clear everything including root
+     * qdisc and all filters before adding everything.
+     */
+    if (flags & VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL)
+        virNetDevBandwidthClear(ifname);
 
     if (tx && tx->average) {
         average = g_strdup_printf("%llukbps", tx->average);

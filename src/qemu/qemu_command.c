@@ -8695,7 +8695,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                                                         !virDomainNetTypeSharesHostView(net)) < 0)
                     goto cleanup;
             } else {
-                unsigned int flags = 0;
+                unsigned int flags = VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL;
 
                 if (!virDomainNetTypeSharesHostView(net))
                     flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;

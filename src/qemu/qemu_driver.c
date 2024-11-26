@@ -9939,7 +9939,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 goto endjob;
             }
         } else {
-            unsigned int bwflags = 0;
+            unsigned int bwflags = VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL;
 
             if (!virDomainNetTypeSharesHostView(net))
                 bwflags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;

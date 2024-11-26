@@ -1332,7 +1332,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                                         !virDomainNetTypeSharesHostView(net)) < 0)
                     goto cleanup;
             } else {
-                int flags = 0;
+                int flags = VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL;
 
                 if (!virDomainNetTypeSharesHostView(net))
                     flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
@@ -4187,7 +4187,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
                                                         !virDomainNetTypeSharesHostView(newdev)) < 0)
                     goto cleanup;
             } else {
-                int flags = 0;
+                int flags = VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL;
 
                 if (!virDomainNetTypeSharesHostView(newdev))
                     flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;

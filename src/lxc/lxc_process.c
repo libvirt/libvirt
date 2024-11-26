@@ -609,7 +609,7 @@ virLXCProcessSetupInterfaces(virLXCDriver *driver,
         actualBandwidth = virDomainNetGetActualBandwidth(net);
         if (actualBandwidth) {
             if (virNetDevSupportsBandwidth(type)) {
-                unsigned int flags = 0;
+                unsigned int flags = VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL;
 
                 if (!virDomainNetTypeSharesHostView(net))
                     flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
