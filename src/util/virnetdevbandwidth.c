@@ -173,30 +173,35 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
  * virNetDevBandwidthSet:
  * @ifname: on which interface
  * @bandwidth: rates to set (may be NULL)
- * @hierarchical_class: whether to create hierarchical class
- * @swapped: true if IN/OUT should be set contrariwise
+ * @flags: bits indicating certain optional actions
  *
+
  * This function enables QoS on specified interface
  * and set given traffic limits for both, incoming
- * and outgoing traffic. Any previous setting get
- * overwritten. If @hierarchical_class is TRUE, create
- * hierarchical class. It is used to guarantee minimal
- * throughput ('floor' attribute in NIC).
+ * and outgoing traffic.
  *
- * If @swapped is set, the IN part of @bandwidth is set on
- * @ifname's TX, and vice versa. If it is not set, IN is set on
- * RX and OUT on TX. This is because for some types of interfaces
- * domain and the host live on the same side of the interface (so
- * domain's RX/TX is host's RX/TX), and for some it's swapped
- * (domain's RX/TX is hosts's TX/RX).
+ * @flags bits and their meanings:
+ *
+ *   VIR_NETDEV_BANDWIDTH_SET_HIERARCHICAL_CLASS
+ *     whether to create a hierarchical class
+ *     A hiearchical class structure is used to implement a minimal
+ *     throughput guarantee ('floor' attribute in NIC).
+ *
+ *   VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED
+ *     set if IN/OUT should be set backwards from what's indicated in
+ *     the bandwidth, i.e. the IN part of @bandwidth is set on
+ *     @ifname's TX, and the OUT part of @bandwidth is set on
+ *     @ifname's RX.  This is needed because for some types of
+ *     interfaces the domain and the host live on the same side of the
+ *     interface (so domain's RX/TX is host's RX/TX), and for some
+ *     it's swapped (domain's RX/TX is hosts's TX/RX).
  *
  * Return 0 on success, -1 otherwise.
  */
 int
 virNetDevBandwidthSet(const char *ifname,
                       const virNetDevBandwidth *bandwidth,
-                      bool hierarchical_class,
-                      bool swapped)
+                      unsigned int flags)
 {
     int ret = -1;
     virNetDevBandwidthRate *rx = NULL; /* From domain POV */
@@ -205,6 +210,7 @@ virNetDevBandwidthSet(const char *ifname,
     char *average = NULL;
     char *peak = NULL;
     char *burst = NULL;
+    bool hierarchical_class = flags & VIR_NETDEV_BANDWIDTH_SET_HIERARCHICAL_CLASS;
 
     if (!bandwidth) {
         /* nothing to be enabled */
@@ -224,7 +230,7 @@ virNetDevBandwidthSet(const char *ifname,
         return -1;
     }
 
-    if (swapped) {
+    if (flags & VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED) {
         rx = bandwidth->out;
         tx = bandwidth->in;
     } else {

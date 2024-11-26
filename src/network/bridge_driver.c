@@ -2109,8 +2109,11 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         }
     }
 
-    if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
+    if (virNetDevBandwidthSet(def->bridge, def->bandwidth,
+                              VIR_NETDEV_BANDWIDTH_SET_HIERARCHICAL_CLASS
+                              | VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED) < 0) {
         goto error;
+    }
 
     return 0;
 
@@ -2190,8 +2193,11 @@ networkStartNetworkBridge(virNetworkObj *obj)
      * type BRIDGE, is started. On failure, undo anything you've done,
      * and return -1. On success return 0.
      */
-    if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
+    if (virNetDevBandwidthSet(def->bridge, def->bandwidth,
+                              VIR_NETDEV_BANDWIDTH_SET_HIERARCHICAL_CLASS
+                              | VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED) < 0) {
         goto error;
+    }
 
     if (networkStartHandleMACTableManagerMode(obj) < 0)
         goto error;

@@ -9938,21 +9938,22 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 virErrorRestore(&orig_err);
                 goto endjob;
             }
-        } else if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
-                                         !virDomainNetTypeSharesHostView(net)) < 0) {
-            virErrorPtr orig_err;
+        } else {
+            unsigned int bwflags = 0;
 
-            virErrorPreserveLast(&orig_err);
-            ignore_value(virNetDevBandwidthSet(net->ifname,
-                                               net->bandwidth,
-                                               false,
-                                               !virDomainNetTypeSharesHostView(net)));
-            if (net->bandwidth) {
-                ignore_value(virDomainNetBandwidthUpdate(net,
-                                                         net->bandwidth));
+            if (!virDomainNetTypeSharesHostView(net))
+                bwflags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
+
+            if (virNetDevBandwidthSet(net->ifname, newBandwidth, bwflags) < 0) {
+                virErrorPtr orig_err;
+
+                virErrorPreserveLast(&orig_err);
+                ignore_value(virNetDevBandwidthSet(net->ifname, net->bandwidth, bwflags));
+                if (net->bandwidth)
+                    ignore_value(virDomainNetBandwidthUpdate(net, net->bandwidth));
+                virErrorRestore(&orig_err);
+                goto endjob;
             }
-            virErrorRestore(&orig_err);
-            goto endjob;
         }
 
         /* If the old bandwidth was cleared out, restore qdisc. */

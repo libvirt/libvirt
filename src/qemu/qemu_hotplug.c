@@ -1331,9 +1331,14 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                                         vm->def->uuid,
                                                         !virDomainNetTypeSharesHostView(net)) < 0)
                     goto cleanup;
-            } else if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
-                                             !virDomainNetTypeSharesHostView(net)) < 0) {
-                goto cleanup;
+            } else {
+                int flags = 0;
+
+                if (!virDomainNetTypeSharesHostView(net))
+                    flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
+
+                if (virNetDevBandwidthSet(net->ifname, actualBandwidth, flags) < 0)
+                    goto cleanup;
             }
         } else {
             VIR_WARN("setting bandwidth on interfaces of "
@@ -4181,9 +4186,14 @@ qemuDomainChangeNet(virQEMUDriver *driver,
                                                         vm->def->uuid,
                                                         !virDomainNetTypeSharesHostView(newdev)) < 0)
                     goto cleanup;
-            } else if (virNetDevBandwidthSet(newdev->ifname, newb, false,
-                                             !virDomainNetTypeSharesHostView(newdev)) < 0) {
-                goto cleanup;
+            } else {
+                int flags = 0;
+
+                if (!virDomainNetTypeSharesHostView(newdev))
+                    flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
+
+                if (virNetDevBandwidthSet(newdev->ifname, newb, flags) < 0)
+                    goto cleanup;
             }
         } else {
             if (virDomainInterfaceClearQoS(vm->def, olddev) < 0)

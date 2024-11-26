@@ -609,8 +609,12 @@ virLXCProcessSetupInterfaces(virLXCDriver *driver,
         actualBandwidth = virDomainNetGetActualBandwidth(net);
         if (actualBandwidth) {
             if (virNetDevSupportsBandwidth(type)) {
-                if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
-                                          !virDomainNetTypeSharesHostView(net)) < 0)
+                unsigned int flags = 0;
+
+                if (!virDomainNetTypeSharesHostView(net))
+                    flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
+
+                if (virNetDevBandwidthSet(net->ifname, actualBandwidth, flags) < 0)
                     goto cleanup;
             } else {
                 VIR_WARN("setting bandwidth on interfaces of "
