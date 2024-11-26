@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-10-25 06:15+0000\n"
-"PO-Revision-Date: 2024-11-25 09:47+0000\n"
+"PO-Revision-Date: 2024-11-26 14:13+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -39037,90 +39037,91 @@ msgstr ""
 
 #, c-format
 msgid "value '%1$s' cannot be set if '%2$s' is not set"
-msgstr ""
+msgstr "värdet ”%1$s” kan inte sättas om ”%2$s” inte är satt"
 
 #, c-format
 msgid "value '%1$s' cannot be smaller than '%2$s'"
-msgstr ""
+msgstr "värdet ”%1$s” får inte vara mindre än ”%2$s”"
 
 #, c-format
 msgid "value for 'ram' must be less than '%1$u'"
-msgstr ""
+msgstr "värdet på ”ram” får inte vara mindre än ”%1$u”"
 
 msgid "value for 'vgamem' must be at least 1 MiB (1024 KiB)"
-msgstr ""
+msgstr "värdet på ”vgamem” måste vara åtminstone 1 MiB (1024 KiB)"
 
 msgid "value for 'vgamem' must be power of two"
-msgstr ""
+msgstr "värdet på ”vgamem” måste vara en tvåpotens"
 
 msgid "value for 'vram' must be at least 1 MiB (1024 KiB)"
-msgstr ""
+msgstr "värdet på ”vram” måste vara åtminstone 1 MiB (1024 KiB)"
 
 #, c-format
 msgid "value for 'vram' must be less than '%1$u'"
-msgstr ""
+msgstr "värdet på ”vram” måste vara mindre än ”%1$u”"
 
 msgid "value for typeid out of range"
 msgstr "värde på typeid är utanför intervallet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "value of '%1$s' is out of range [%2$lld, %3$lld]"
-msgstr "värdet på managerid är utanför intervallet"
+msgstr "värdet på ”%1$s” är utanför intervallet [%2$lld, %3$lld]"
 
 #, c-format
 msgid "value of '%1$s' is too large"
-msgstr ""
+msgstr "värdet på ”%1$s” är för stort"
 
-#, fuzzy, c-format
+#, c-format
 msgid "value of cookie '%1$s' contains invalid characters"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "värdet på kakan ”%1$s” innehåller ogiltiga tecken"
 
 msgid "value of managerid out of range"
 msgstr "värdet på managerid är utanför intervallet"
 
 msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
-msgstr ""
+msgstr "värdet på attributet ”size” i elementet ”mtu” får vara högst 100000"
 
 msgid "value of typeidversion out of range"
 msgstr "värdet på typeidversion är utanför intervallet"
 
 #, c-format
 msgid "value too large: %1$llu%2$s"
-msgstr ""
+msgstr "värdet är för stort: %1$llu %2$s"
 
 #, c-format
 msgid "vcpu %1$d is out of range of live cpu count %2$d"
-msgstr ""
+msgstr "vcpu %1$d är utanför intervallet för antalet aktiva cpu:er %2$d"
 
 #, c-format
 msgid "vcpu %1$d is out of range of persistent cpu count %2$d"
-msgstr ""
+msgstr "vcpu %1$d är utanför intervallet för antalet beständiga cpu:er %2$d"
 
 #, c-format
 msgid "vcpu %1$zd is not present in live config"
-msgstr ""
+msgstr "vcpu %1$zd finns inte in de aktiva konfigurationen"
 
 #, c-format
 msgid "vcpu %1$zd is not present in persistent config"
-msgstr ""
+msgstr "vcpu %1$zd finns inte i den beständiga konfigurationen"
 
 #, c-format
 msgid "vcpu '%1$u' can't be unplugged"
-msgstr ""
+msgstr "vcpu ”%1$u” kan inte kopplas ur"
 
-#, fuzzy, c-format
+#, c-format
 msgid "vcpu '%1$u' is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "vcpu ”%1$u” är inte aktiv"
 
 #, c-format
 msgid ""
 "vcpu '%1$zd' belongs to a larger hotpluggable entity, but siblings were not "
 "selected"
 msgstr ""
+"vcpu ”%1$zd” tillhär en större urkopplingsbar enhet, men syskonen valdes inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "vcpu '%1$zd' can't be hotunplugged"
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "vcpu ”%1$zd” kan inte tas bort under drift"
 
 #, c-format
 msgid ""
