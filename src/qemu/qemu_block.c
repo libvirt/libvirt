@@ -3174,6 +3174,10 @@ qemuBlockReopenAccess(virDomainObj *vm,
     int rc;
     int ret = -1;
 
+    VIR_DEBUG("nodename:'%s' current-ro:'%d requested-ro='%d'",
+              qemuBlockStorageSourceGetEffectiveNodename(src),
+              src->readonly, readonly);
+
     if (src->readonly == readonly)
         return 0;
 
