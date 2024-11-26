@@ -1,3 +1,43 @@
+tc \
+qdisc \
+show \
+dev \
+virbr0 \
+handle \
+1:
+tc \
+qdisc \
+add \
+dev \
+virbr0 \
+root \
+handle \
+1: \
+htb \
+default \
+2
+tc \
+filter \
+add \
+dev \
+virbr0 \
+prio \
+2 \
+protocol \
+ip \
+parent \
+1: \
+u32 \
+match \
+ip \
+dport \
+68 \
+ffff \
+action \
+csum \
+ip \
+and \
+udp
 nft \
 -ae insert \
 rule \

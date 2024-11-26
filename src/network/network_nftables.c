@@ -29,6 +29,7 @@
 
 #include "internal.h"
 #include "virfirewalld.h"
+#include "vircommand.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virhash.h"
@@ -924,6 +925,67 @@ nftablesAddIPSpecificFirewallRules(virFirewall *fw,
 }
 
 
+/**
+ * nftablesAddUdpChecksumFixWithTC:
+ *
+ * Add a tc filter rule to @ifname (the bridge device of this network)
+ * that will recompute the checksum of udp packets output from @iface with
+ * destination port @port.
+ *
+ * Normally the checksum should be filled by some part of the basic
+ * network stack, but there are cases (e.g. DHCP response packets sent
+ * from virtualization host to a QEMU guest when the guest NIC uses
+ * vhost-net packet processing) when the host (sender) thinks that
+ * packet checksums will be computed elsewhere (and so leaves a
+ * partially computed checksum in the packet header) while the guest
+ * (receiver) thinks that the checksum has already been fully
+ * computed; in the meantime none of the code in between has actually
+ * finished computing the checksum.
+ *
+ * An example of this is DHCP response packets from host to guest. If
+ * the checksum of each of these packets isn't properly computed, then
+ * many guests (e.g. FreeBSD) will drop them with reason BAD CHECKSUM;
+ * this tc filter rule will fix the ip and udp checksums, and the
+ * FreeBSD dhcp client will happily accept the packet.
+ *
+ * (NB: if you're wondering how the tc qdisc and filter are removed
+ * when the network is destroyed, the answer is that the kernel
+ * automatically (and properly) removes them for us, so we don't need
+ * to worry about keeping track/deleting as we do with nftables rules)
+ */
+static int
+nftablesAddUdpChecksumFixWithTC(virFirewall *fw,
+                                const char *iface,
+                                int port)
+{
+    g_autofree char *portstr = g_strdup_printf("%d", port);
+
+    /* this will add the qdisc (that the filter below is attached to)
+     * unless it already exists
+     */
+    if (virNetDevBandWidthAddTxFilterParentQdisc(iface, true) < 0)
+        return -1;
+
+    /* add a filter to catch all udp packets with dst "port" and
+     * recompute their checksum
+     */
+    virFirewallAddCmd(fw, VIR_FIREWALL_LAYER_TC,
+                      "filter", "add", "dev", iface,
+                      "prio", "2", "protocol", "ip", "parent", "1:",
+                      "u32", "match", "ip", "dport", portstr, "ffff",
+                      "action", "csum", "ip", "and", "udp",
+                      NULL);
+
+    virFirewallAddRollbackCmd(fw, VIR_FIREWALL_LAYER_TC,
+                              "filter", "del", "dev", iface,
+                              "prio", "2", "protocol", "ip", "parent", "1:",
+                              "u32", "match", "ip", "dport", portstr, "ffff",
+                              "action", "csum", "ip", "and", "udp",
+                              NULL);
+    return 0;
+}
+
+
 /* nftablesAddFirewallrules:
  *
  * @def - the network that needs an nftables firewall added
@@ -943,6 +1005,12 @@ nftablesAddFirewallRules(virNetworkDef *def, virFirewall **fwRemoval)
     g_autoptr(virFirewall) fw = virFirewallNew(VIR_FIREWALL_BACKEND_NFTABLES);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK);
+
+    /* add the tc filter rule needed to fixup the checksum of dhcp
+     * response packets going from host to guest.
+     */
+    if (nftablesAddUdpChecksumFixWithTC(fw, def->bridge, 68) < 0)
+        return -1;
 
     nftablesAddGeneralFirewallRules(fw, def);
 
