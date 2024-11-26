@@ -3696,6 +3696,15 @@ qemuBlockCommit(virDomainObj *vm,
                                            false, false, false) < 0)
         goto cleanup;
 
+    if (baseSource->dataFileStore) {
+        if (qemuDomainStorageSourceAccessAllow(driver, vm, baseSource->dataFileStore,
+                                               false, false, false) < 0)
+            goto cleanup;
+
+        if (qemuBlockReopenReadWrite(vm, baseSource->dataFileStore, asyncJob) < 0)
+            goto cleanup;
+    }
+
     if (top_parent && top_parent != disk->src) {
         /* While top_parent is topmost image, we don't need to remember its
          * owner as it will be overwritten upon finishing the commit. Hence,
@@ -3703,6 +3712,15 @@ qemuBlockCommit(virDomainObj *vm,
         if (qemuDomainStorageSourceAccessAllow(driver, vm, top_parent,
                                                false, false, false) < 0)
             goto cleanup;
+
+        if (top_parent->dataFileStore) {
+            if (qemuDomainStorageSourceAccessAllow(driver, vm, top_parent->dataFileStore,
+                                                   false, false, false) < 0)
+                goto cleanup;
+
+            if (qemuBlockReopenReadWrite(vm, top_parent->dataFileStore, asyncJob) < 0)
+                goto cleanup;
+        }
     }
 
     if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
@@ -3748,12 +3766,25 @@ qemuBlockCommit(virDomainObj *vm,
     if (rc < 0 && clean_access) {
         virErrorPtr orig_err;
         virErrorPreserveLast(&orig_err);
+
         /* Revert access to read-only, if possible.  */
+        if (baseSource->dataFileStore) {
+            qemuDomainStorageSourceAccessAllow(driver, vm, baseSource->dataFileStore,
+                                               true, false, false);
+            qemuBlockReopenReadOnly(vm, baseSource->dataFileStore, asyncJob);
+        }
         qemuDomainStorageSourceAccessAllow(driver, vm, baseSource,
                                            true, false, false);
-        if (top_parent && top_parent != disk->src)
+        if (top_parent && top_parent != disk->src) {
+            if (top_parent->dataFileStore) {
+                qemuDomainStorageSourceAccessAllow(driver, vm, top_parent->dataFileStore,
+                                                   true, false, false);
+
+                qemuBlockReopenReadWrite(vm, top_parent->dataFileStore, asyncJob);
+            }
             qemuDomainStorageSourceAccessAllow(driver, vm, top_parent,
                                                true, false, false);
+        }
 
         virErrorRestore(&orig_err);
     }
