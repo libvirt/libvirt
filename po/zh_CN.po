@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-10-25 06:15+0000\n"
+"POT-Creation-Date: 2024-11-26 14:19+0000\n"
 "PO-Revision-Date: 2024-11-19 09:21+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -596,6 +596,10 @@ msgstr "%1$s 无法解析 UID '%2$s'"
 #, fuzzy, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持%1$s 磁盘"
+
+#, c-format
+msgid "%1$s does not support file storage"
+msgstr ""
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -1273,6 +1277,10 @@ msgstr "'arch' 元素不能在 'cpu' 元素与 'match' 属性一同使用"
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr "virtio-gpu 设备的 'blob' 支持需要 memfd 内存后端"
 
+#, c-format
+msgid "'block' nvram backing device '%1$s' doesn't exist"
+msgstr ""
+
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' 指的是不存在的 NUMA 节点缓存"
 
@@ -1680,6 +1688,9 @@ msgstr ""
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "目前只有 'rbd' 磁盘支持 <config> 元素"
 
+msgid "<dataStore> feature available only with qcow2 images"
+msgstr ""
+
 msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> 现在必须指定 TCP 端口"
 
@@ -1695,6 +1706,10 @@ msgstr "<hostdev> 属性 'display' 仅支持 model='vfio-pci'"
 #, fuzzy
 msgid "<iotune> is not supported with bus='sd'"
 msgstr "<iotune> 不支持 bus='sd'"
+
+#, c-format
+msgid "<profile/> requires TPM version '%1$s'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> 只允许 lun 设备"
@@ -2222,6 +2237,10 @@ msgstr "CA 证书："
 #, fuzzy, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
 msgstr "机器类型'%1$s'不支持 CCW 地址"
+
+#, c-format
+msgid "CH does not support device assignment mode '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2818,6 +2837,9 @@ msgstr "无法删除文件 '%1$s'"
 msgid "Cannot detach %1$s device with no alias"
 msgstr "无法分离没有别名的 %1$s 设备"
 
+msgid "Cannot detach platform device"
+msgstr ""
+
 msgid "Cannot determine balloon device path"
 msgstr "无法确定布尔值设备路径"
 
@@ -2992,6 +3014,9 @@ msgstr "无法通过名称获取存储控制器"
 
 msgid "Cannot get storage controller name"
 msgstr "无法获取存储控制器名称"
+
+msgid "Cannot hotplug platform device"
+msgstr ""
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "无法为当前身份初始化本地线程"
@@ -3240,6 +3265,12 @@ msgstr "无法解析 %1$s 地址：%2$s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "没有控制的 TTY 则不能运行互动控制台"
+
+#, c-format
+msgid ""
+"Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
+"alias of '%3$s'"
+msgstr ""
 
 msgid "Cannot set a base label with AppArmour"
 msgstr "无法使用 AppArmour 设定基础标签"
@@ -4859,6 +4890,10 @@ msgstr "无法检索虚拟交换机"
 #, c-format
 msgid "Could not revert to snapshot '%1$s': %2$s"
 msgstr "无法转换为快照 '%1$s': %2$s"
+
+#, c-format
+msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -8810,10 +8845,6 @@ msgstr "强制停止给定网络。"
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "强制停止给定的池。不损坏该池中的原始数据。"
-
-#, c-format
-msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr "格式不匹配：loader.format='%1$s' nvram.format='%2$s'"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -15696,6 +15727,11 @@ msgid ""
 msgstr ""
 "<portForward>元素只能与 <interface type='user'> 及其 'passt' 后端一起使用"
 
+msgid ""
+"The <source> of <dataStore> can't have another nested <dataStore> or "
+"<backingStore> element"
+msgstr ""
+
 #, c-format
 msgid "The CA certificate %1$s has expired"
 msgstr "CA 证书 %1$s 已过期"
@@ -19401,6 +19437,10 @@ msgid "Unsupported nvram format '%1$s'"
 msgstr "不支持的 NVRAM 格式 '%1$s'"
 
 #, c-format
+msgid "Unsupported nvram template format '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported object type %1$d"
 msgstr "不支持的对象类型 %1$d"
 
@@ -19659,6 +19699,10 @@ msgstr ""
 
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "VM 磁盘源和快照磁盘源不同"
+
+#, c-format
+msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
+msgstr ""
 
 msgid "VM is already active"
 msgstr "VM 已处于活动状态"
@@ -21006,6 +21050,10 @@ msgstr "无法更新网络的未识别部分"
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr "无法上传卷，所有现有的快照都将会丢失"
 
+#, c-format
+msgid "can't use data file definition '%1$s'"
+msgstr ""
+
 msgid "canceled"
 msgstr "已取消"
 
@@ -21731,6 +21779,9 @@ msgstr "无法修改 MTU"
 #, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "无法修改磁盘的 '%1$s' 字段"
+
+msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -22878,6 +22929,10 @@ msgstr "从 hyper 转换为 %1$s 溢出"
 msgid "conversion from string failed"
 msgstr "从字符串转换失败"
 
+msgid ""
+"conversion of the nvram template to another target format is not supported"
+msgstr ""
+
 msgid "convert a domain id or UUID to domain name"
 msgstr "将域 id 或 UUID 转换为域名"
 
@@ -23424,6 +23479,9 @@ msgstr "创建 qcow/qcow2 文件只支持 'luks' 加密"
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "不支持创建 qcow2 加密的镜像"
+
+msgid "creation of storage images with <dataStore> feature is not supported"
+msgstr ""
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
@@ -25432,6 +25490,9 @@ msgstr "无法生成 %1$s"
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
 msgstr "无法生成（启动）接口 %1$s ：%2$s%3$s%4$s"
 
+msgid "failed to create JSON tokener"
+msgstr ""
+
 #, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
 msgstr "无法创建 RBD 快照 %1$s@%2$s"
@@ -25964,6 +26025,10 @@ msgstr "解析 %1$s 失败"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "无法解析 %1$sversion"
+
+#, c-format
+msgid "failed to parse JSON: %1$s"
+msgstr ""
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -27355,6 +27420,10 @@ msgstr "忽略调试级别 %1$d 。调试级别范围是 [%2$d-%3$d]"
 
 msgid "image magic is incorrect"
 msgstr "镜像魔法不正确"
+
+#, c-format
+msgid "image of disk '%1$s' does not have internal snapshot '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
@@ -29011,6 +29080,10 @@ msgid "live update of device '%1$s' is not supported"
 msgstr "不支持即时更新设备 '%1$s'"
 
 #, c-format
+msgid "load of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
+
+#, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
 msgstr "loadparm 值 '%1$s' 必须在 1 到 8 个字符之间"
 
@@ -29900,6 +29973,9 @@ msgstr "QEMU 功能缓存中缺少 SGX 平台数据"
 msgid "missing TPM device backend"
 msgstr "缺少 TPM 设备后端"
 
+msgid "missing TPM source path"
+msgstr ""
+
 msgid "missing Xen migration stream version"
 msgstr "缺少 Xen 迁移流版本"
 
@@ -30000,6 +30076,9 @@ msgstr "现有快照中缺少生成快照的时间"
 msgid "missing cssid value for '%1$s'"
 msgstr "缺少 '%1$s' 的 csid 值"
 
+msgid "missing data file store format"
+msgstr ""
+
 #, c-format
 msgid "missing decode element in CPU model %1$s"
 msgstr "CPU 型号 %1$s 中缺少 decode 元素"
@@ -30031,6 +30110,9 @@ msgstr "缺少磁盘后端存储格式"
 
 msgid "missing disk backing store source"
 msgstr "缺少磁盘后端存储源"
+
+msgid "missing disk data file store source"
+msgstr ""
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
@@ -30553,6 +30635,10 @@ msgstr "缺少视频模式且无法确定默认模式"
 
 msgid "missing vlan tag data"
 msgstr "缺少 vlan 标签数据"
+
+#, c-format
+msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
+msgstr ""
 
 msgid "missing volume name and path for gluster volume"
 msgstr "缺少 gluster 卷的卷名称和路径"
@@ -31947,6 +32033,12 @@ msgstr "'pci' 地址只支持共享内存设备"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "'pci' 地址只支持 virtio-pmem 设备"
+
+msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
+msgstr ""
+
+msgid "only 'raw' images supported as <dataStore>"
+msgstr ""
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
@@ -33570,8 +33662,9 @@ msgstr "重置节点设备"
 msgid "reset the domain after core dump"
 msgstr "core 转储后重新设定该域"
 
-msgid "resetting of nvram is not supported with network backed nvram"
-msgstr "网络支持的 nvram 不支持 nvram 的重置"
+#, c-format
+msgid "resetting of nvram is not supported with nvram device backed by '%1$s'"
+msgstr ""
 
 msgid "resize a vol"
 msgstr "创新定义卷大小"
@@ -34264,6 +34357,9 @@ msgstr "跳过非绝对路径"
 msgid "skipped restricted file"
 msgstr "跳过限制的文件"
 
+msgid "slices are not supported for <dataStore>"
+msgstr ""
+
 msgid "slices are not supported with NVRAM"
 msgstr "NVRAM 不支持片"
 
@@ -34700,6 +34796,9 @@ msgstr "swtpm 意外终止"
 
 msgid "swtpm socket did not show up"
 msgstr "swtpm 套接字没有显示"
+
+msgid "swtpm_setup has no support for profiles"
+msgstr ""
 
 #, c-format
 msgid "syntax: %1$s DEVICE [-g]|[-p]\n"
@@ -35599,6 +35698,10 @@ msgid "tunnelled offline migration does not make sense"
 msgstr "管道离线迁移没有任何意义"
 
 #, c-format
+msgid "two disks images contain vm state section for internal snapshot '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "two master hugepages detected: %1$llu and %2$llu"
 msgstr "探测到两个主 hugepage：%1$llu 和 %2$llu"
 
@@ -35787,6 +35890,9 @@ msgstr "无法为声音后端找到音频设备"
 
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
+
+msgid "unable to find nvram template image"
 msgstr ""
 
 #, c-format
@@ -38481,6 +38587,13 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#, c-format
+#~ msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
+#~ msgstr "格式不匹配：loader.format='%1$s' nvram.format='%2$s'"
+
+#~ msgid "resetting of nvram is not supported with network backed nvram"
+#~ msgstr "网络支持的 nvram 不支持 nvram 的重置"
 
 #, c-format
 #~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"

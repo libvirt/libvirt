@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-10-25 06:15+0000\n"
+"POT-Creation-Date: 2024-11-26 14:19+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -526,6 +526,10 @@ msgstr "वस '%s' वाचणे अशक्य"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "%1$s does not support file storage"
 msgstr ""
 
 #, c-format
@@ -1200,6 +1204,10 @@ msgstr "'arch' एलिमेंटचा वापर 'cpu' एलिमें
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
 
+#, c-format
+msgid "'block' nvram backing device '%1$s' doesn't exist"
+msgstr ""
+
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
 
@@ -1625,6 +1633,9 @@ msgstr "नेटवर्क %1$sच्या <forward>मध्ये अव�
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "VFIO साधन वाटप आत्ता या प्रणालीवर समर्थीत नाही"
 
+msgid "<dataStore> feature available only with qcow2 images"
+msgstr ""
+
 msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 
@@ -1639,6 +1650,10 @@ msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
 
 msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
+
+#, c-format
+msgid "<profile/> requires TPM version '%1$s'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -2194,6 +2209,10 @@ msgstr "अवैध प्रमाणपत्र"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "CH does not support device assignment mode '%1$s'"
 msgstr ""
 
 #, c-format
@@ -2799,6 +2818,9 @@ msgstr "फाइल '%1$s' नष्ट करणे अशक्य"
 msgid "Cannot detach %1$s device with no alias"
 msgstr "डिव्हाइस लिजेस् प्राप्त करणे अशक्य"
 
+msgid "Cannot detach platform device"
+msgstr ""
+
 msgid "Cannot determine balloon device path"
 msgstr "बलून साधन मार्ग ओळखणे अशक्य"
 
@@ -2987,6 +3009,9 @@ msgstr "कंट्रोलर निर्देशांक '%s' वाच�
 #, fuzzy
 msgid "Cannot get storage controller name"
 msgstr "कंट्रोलर निर्देशांक '%s' वाचणे अशक्य"
+
+msgid "Cannot hotplug platform device"
+msgstr ""
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "सध्याच्या आइडेंटिटिकरिता स्थानीय थ्रेड सुरू करणे अशक्य"
@@ -3236,6 +3261,12 @@ msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "TTY ला नियंत्रत केल्याविना परस्पर कंसोल चालवणे अशक्य"
+
+#, c-format
+msgid ""
+"Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
+"alias of '%3$s'"
+msgstr ""
 
 msgid "Cannot set a base label with AppArmour"
 msgstr "AppArmour सह बेस लेबल ठरवणे अशक्य"
@@ -4876,6 +4907,10 @@ msgstr ""
 #, c-format
 msgid "Could not revert to snapshot '%1$s': %2$s"
 msgstr "स्नॅपशॉट '%1$s': %2$s कडे जाणे अशक्य"
+
+#, c-format
+msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -8910,10 +8945,6 @@ msgstr "जबरनरित्या नेटवर्कला बंद क
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "जबरनरित्या दिलेल्या पूलला बंद करा. पूलमधील रॉ डाटाचा वापर केला जात नाही"
-
-#, c-format
-msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -16045,6 +16076,11 @@ msgid ""
 "its 'passt' backend"
 msgstr ""
 
+msgid ""
+"The <source> of <dataStore> can't have another nested <dataStore> or "
+"<backingStore> element"
+msgstr ""
+
 #, c-format
 msgid "The CA certificate %1$s has expired"
 msgstr "CA सर्टिफिकेट %1$s ची वेळसमाप्ति आढळली"
@@ -19827,6 +19863,10 @@ msgid "Unsupported nvram format '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Unsupported nvram template format '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported object type %1$d"
 msgstr "असमर्थीत ऑब्जेक्ट प्रकार %1$d"
 
@@ -20082,6 +20122,10 @@ msgid "VFIO device assignment is not available on this platform"
 msgstr ""
 
 msgid "VM disk source and snapshot disk source are not the same"
+msgstr ""
+
+#, c-format
+msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
 msgstr ""
 
 msgid "VM is already active"
@@ -21480,6 +21524,10 @@ msgstr "नेटवर्कचे अनोळखे विभाग सुध
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
 
+#, c-format
+msgid "can't use data file definition '%1$s'"
+msgstr ""
+
 msgid "canceled"
 msgstr "रद्द केले"
 
@@ -22222,6 +22270,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "fd %d ला बाहेर स्थानांतरित करणे अशक्य"
+
+msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -23417,6 +23468,10 @@ msgstr "हायपर ते %1$s रूपांतर ओव्हरफ्�
 msgid "conversion from string failed"
 msgstr "स्ट्रिंगपासून रूपांतरन अपयशी"
 
+msgid ""
+"conversion of the nvram template to another target format is not supported"
+msgstr ""
+
 msgid "convert a domain id or UUID to domain name"
 msgstr "डोमेन id किंवा UUID ला डोमेन नावात रुपांतरित करा"
 
@@ -23972,6 +24027,9 @@ msgstr ""
 #, fuzzy
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "%s खंडाचे निर्माण समर्थीत नाही"
+
+msgid "creation of storage images with <dataStore> feature is not supported"
+msgstr ""
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
@@ -26052,6 +26110,9 @@ msgstr "%1$s निर्माण करण्यास अशक्य"
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
 msgstr "संवाद %1$s: %2$s%3$s%4$s निर्माण (सुरूवात) करण्यास अपयशी"
 
+msgid "failed to create JSON tokener"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
 msgstr "स्नॅपशॉट %s नष्ट करणे अपयशी"
@@ -26607,6 +26668,10 @@ msgstr "%1$s वाचण्यास अपयशी"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion वाचण्यास अपयशी"
+
+#, c-format
+msgid "failed to parse JSON: %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -28039,6 +28104,10 @@ msgstr "डिबग स्तर %1$d, [%2$d-%3$d] व्याप्तिच�
 
 msgid "image magic is incorrect"
 msgstr "प्रतिमा जादू अयोग्य आहे"
+
+#, c-format
+msgid "image of disk '%1$s' does not have internal snapshot '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
@@ -29747,6 +29816,10 @@ msgid "live update of device '%1$s' is not supported"
 msgstr "साधन '%1$s'ची लाइव्ह सुधारणा समर्थीत नाही"
 
 #, c-format
+msgid "load of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
+
+#, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
 msgstr ""
 
@@ -30686,6 +30759,9 @@ msgstr ""
 msgid "missing TPM device backend"
 msgstr "TPM साधन बॅकएंड आढळले नाही"
 
+msgid "missing TPM source path"
+msgstr ""
+
 #, fuzzy
 msgid "missing Xen migration stream version"
 msgstr "हरवलेली कार्यकारी प्रणाली माहिती"
@@ -30795,6 +30871,9 @@ msgstr "अस्तित्वातील स्नॅपशॉटपास�
 msgid "missing cssid value for '%1$s'"
 msgstr "मार्ग '%1$s' करिता gluster वॉल्युम नाव आढळले नाही"
 
+msgid "missing data file store format"
+msgstr ""
+
 #, c-format
 msgid "missing decode element in CPU model %1$s"
 msgstr ""
@@ -30826,6 +30905,9 @@ msgstr "डिस्क बॅकिंग साठवणे रूपण आ�
 
 msgid "missing disk backing store source"
 msgstr "डिस्क बॅकिंग साठवणे स्रोत आढळले नाही"
+
+msgid "missing disk data file store source"
+msgstr ""
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
@@ -31387,6 +31469,10 @@ msgstr "चलचित्र मॉडेल आढळले नाही व �
 
 msgid "missing vlan tag data"
 msgstr "vlan टॅग डाटा आढळले नाही"
+
+#, c-format
+msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing volume name and path for gluster volume"
@@ -32833,6 +32919,12 @@ msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
+msgstr ""
+
+msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
+msgstr ""
+
+msgid "only 'raw' images supported as <dataStore>"
 msgstr ""
 
 msgid ""
@@ -34537,7 +34629,8 @@ msgstr "स्वच्छ करा नोड साधन"
 msgid "reset the domain after core dump"
 msgstr "कोर डम्पनंतर डोमेनला मूळस्थितीत आणा"
 
-msgid "resetting of nvram is not supported with network backed nvram"
+#, c-format
+msgid "resetting of nvram is not supported with nvram device backed by '%1$s'"
 msgstr ""
 
 msgid "resize a vol"
@@ -35255,6 +35348,9 @@ msgstr "विना-ॲबसोल्युट मार्ग वगळले
 msgid "skipped restricted file"
 msgstr "प्रतिबंधित फाइल वगळली"
 
+msgid "slices are not supported for <dataStore>"
+msgstr ""
+
 msgid "slices are not supported with NVRAM"
 msgstr ""
 
@@ -35710,6 +35806,9 @@ msgid "swtpm died unexpectedly"
 msgstr ""
 
 msgid "swtpm socket did not show up"
+msgstr ""
+
+msgid "swtpm_setup has no support for profiles"
 msgstr ""
 
 #, c-format
@@ -36600,6 +36699,10 @@ msgid "tunnelled offline migration does not make sense"
 msgstr "टनल्ड ऑफलाइन स्थानांतरन असमंजस वाटतो"
 
 #, c-format
+msgid "two disks images contain vm state section for internal snapshot '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "two master hugepages detected: %1$llu and %2$llu"
 msgstr "दोन मास्टर ह्युजपेजेस आढळले: %1$llu आणि %2$llu"
 
@@ -36791,6 +36894,9 @@ msgstr ""
 
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
+
+msgid "unable to find nvram template image"
 msgstr ""
 
 #, c-format

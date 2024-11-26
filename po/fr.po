@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-10-25 06:15+0000\n"
+"POT-Creation-Date: 2024-11-26 14:19+0000\n"
 "PO-Revision-Date: 2024-11-19 12:47+0000\n"
 "Last-Translator: Léane GRASSER <leane.grasser@proton.me>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -594,6 +594,10 @@ msgstr "%1$s impossible d'analyser l'UID '%2$s'"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "%1$s does not support file storage"
 msgstr ""
 
 #, c-format
@@ -1352,6 +1356,10 @@ msgstr ""
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
 
+#, c-format
+msgid "'block' nvram backing device '%1$s' doesn't exist"
+msgstr ""
+
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "’cache’ fait référence à un cache de nœud NUMA inexistant"
 
@@ -1792,6 +1800,9 @@ msgstr ""
 "L’élément <config> n'est actuellement pris en charge que par les disques "
 "'rbd'"
 
+msgid "<dataStore> feature available only with qcow2 images"
+msgstr ""
+
 msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> doit spécifier le port TCP pour le moment"
 
@@ -1807,6 +1818,10 @@ msgstr ""
 "<hostdev> L'attribut 'display' n'est pris en charge qu'avec model='vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
+msgstr ""
+
+#, c-format
+msgid "<profile/> requires TPM version '%1$s'"
 msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
@@ -2386,6 +2401,10 @@ msgstr "Certificat AC :"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "CH does not support device assignment mode '%1$s'"
 msgstr ""
 
 #, c-format
@@ -3059,6 +3078,9 @@ msgstr "Impossible de supprimer le fichier '%1$s'"
 msgid "Cannot detach %1$s device with no alias"
 msgstr "Impossible de détacher le périphérique %1$s sans alias"
 
+msgid "Cannot detach platform device"
+msgstr ""
+
 msgid "Cannot determine balloon device path"
 msgstr "Impossible de déterminer le chemin du périphérique de ballon"
 
@@ -3255,6 +3277,9 @@ msgstr "Impossible d'obtenir le contrôleur de stockage par son nom"
 
 msgid "Cannot get storage controller name"
 msgstr "Impossible d'obtenir le nom du contrôleur de stockage"
+
+msgid "Cannot hotplug platform device"
+msgstr ""
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "Impossible d'initialiser le thread local pour l'identité actuelle"
@@ -3515,6 +3540,12 @@ msgstr "Impossible de résoudre %1$s l'adresse : %2$s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Impossible d'exécuter la console interactive sans un TTY de contrôle"
+
+#, c-format
+msgid ""
+"Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
+"alias of '%3$s'"
+msgstr ""
 
 msgid "Cannot set a base label with AppArmour"
 msgstr "Impossible de définir une étiquette de base avec AppArmour"
@@ -5211,6 +5242,10 @@ msgstr "Impossible de récupérer le commutateur virtuel"
 #, c-format
 msgid "Could not revert to snapshot '%1$s': %2$s"
 msgstr "Impossible de revenir à l'instantané '%1$s' : %2$s"
+
+#, c-format
+msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -9394,10 +9429,6 @@ msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr ""
 "Arrêtez de force un pool donné. Les données brutes du pool ne sont pas "
 "touchées"
-
-#, c-format
-msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr "Format discordant : loader.format='%1$s' nvram.format='%2$s'"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -17064,6 +17095,11 @@ msgid ""
 "its 'passt' backend"
 msgstr ""
 
+msgid ""
+"The <source> of <dataStore> can't have another nested <dataStore> or "
+"<backingStore> element"
+msgstr ""
+
 #, c-format
 msgid "The CA certificate %1$s has expired"
 msgstr "Le certificat de l'AC %1$s a expiré"
@@ -20935,6 +20971,10 @@ msgid "Unsupported nvram format '%1$s'"
 msgstr "Format NVRAM non pris en charge « %1$s »"
 
 #, c-format
+msgid "Unsupported nvram template format '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported object type %1$d"
 msgstr "Type d'objet non pris en charge %1$d"
 
@@ -21231,6 +21271,10 @@ msgid "VM disk source and snapshot disk source are not the same"
 msgstr ""
 "La source du disque de la VM et la source du disque de l'instantané ne sont "
 "pas les mêmes"
+
+#, c-format
+msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
+msgstr ""
 
 msgid "VM is already active"
 msgstr "La VM est déjà active"
@@ -22738,6 +22782,10 @@ msgstr ""
 "Impossible de télécharger le volume, tous les instantanés existants seront "
 "perdus"
 
+#, c-format
+msgid "can't use data file definition '%1$s'"
+msgstr ""
+
 msgid "canceled"
 msgstr "annulé"
 
@@ -23541,6 +23589,9 @@ msgstr "ne peut pas modifier le MTU"
 #, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "ne peut pas modifier le champ '%1$s' du disque"
+
+msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -24789,6 +24840,10 @@ msgstr "la conversion de hyper à %1$s a débordé"
 msgid "conversion from string failed"
 msgstr "la conversion à partir d'une chaîne de caractères a échoué"
 
+msgid ""
+"conversion of the nvram template to another target format is not supported"
+msgstr ""
+
 msgid "convert a domain id or UUID to domain name"
 msgstr "convertir l’ID ou l’UUID du domaine en nom de domaine"
 
@@ -25377,6 +25432,9 @@ msgstr "la création de fichiers qcow/qcow2 ne supporte que le cryptage 'luks'"
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "la création d'une image chiffrée qcow2 n'est pas prise en charge"
+
+msgid "creation of storage images with <dataStore> feature is not supported"
+msgstr ""
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
@@ -27512,6 +27570,9 @@ msgstr "n'a pas réussi à créer %1$s"
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
 msgstr "échec de la création (démarrage) de l'interface %1$s : %2$s%3$s%4$s"
 
+msgid "failed to create JSON tokener"
+msgstr ""
+
 #, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
 msgstr "échec de la création d'un instantané RBD %1$s@%2$s"
@@ -28065,6 +28126,10 @@ msgstr "n'a pas réussi à analyser %1$s"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "n'a pas réussi à analyser %1$sversion"
+
+#, c-format
+msgid "failed to parse JSON: %1$s"
+msgstr ""
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -29539,6 +29604,10 @@ msgstr "ignorer le niveau de débogage %1$d hors de la plage [%2$d-%3$d]"
 
 msgid "image magic is incorrect"
 msgstr "image magic incorrecte"
+
+#, c-format
+msgid "image of disk '%1$s' does not have internal snapshot '%2$s'"
+msgstr ""
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
@@ -31319,6 +31388,10 @@ msgstr ""
 "la mise à jour en direct du périphérique '%1$s' n'est pas prise en charge"
 
 #, c-format
+msgid "load of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
+
+#, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
 msgstr "la valeur loadparm '%1$s' doit être comprise entre 1 et 8 caractères"
 
@@ -32302,6 +32375,9 @@ msgstr ""
 msgid "missing TPM device backend"
 msgstr "l’arrière-plan du périphérique TPM est manquant"
 
+msgid "missing TPM source path"
+msgstr ""
+
 msgid "missing Xen migration stream version"
 msgstr "version manquante du flux de migration Xen"
 
@@ -32403,6 +32479,9 @@ msgstr "Heure de création manquante dans un instantané existant"
 msgid "missing cssid value for '%1$s'"
 msgstr "valeur cssid manquante pour '%1$s'"
 
+msgid "missing data file store format"
+msgstr ""
+
 #, c-format
 msgid "missing decode element in CPU model %1$s"
 msgstr "élément de décodage manquant dans le modèle CPU %1$s"
@@ -32435,6 +32514,9 @@ msgstr "format de sauvegarde du disque manquant"
 
 msgid "missing disk backing store source"
 msgstr "disque manquant source de sauvegarde"
+
+msgid "missing disk data file store source"
+msgstr ""
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
@@ -33007,6 +33089,10 @@ msgstr "modèle vidéo manquant et impossible de déterminer la valeur par défa
 
 msgid "missing vlan tag data"
 msgstr "données de balisage vlan manquantes"
+
+#, c-format
+msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
+msgstr ""
 
 msgid "missing volume name and path for gluster volume"
 msgstr "nom de volume et chemin d'accès manquants pour le volume gluster"
@@ -34508,6 +34594,12 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 "seules les adresses 'pci' sont prise en charge pour le périphérique virtio-"
 "pmem"
+
+msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
+msgstr ""
+
+msgid "only 'raw' images supported as <dataStore>"
+msgstr ""
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
@@ -36303,10 +36395,9 @@ msgstr "réinitialiser le périphérique de nœud"
 msgid "reset the domain after core dump"
 msgstr "réinitialiser le domaine après le core dump"
 
-msgid "resetting of nvram is not supported with network backed nvram"
+#, c-format
+msgid "resetting of nvram is not supported with nvram device backed by '%1$s'"
 msgstr ""
-"la réinitialisation des nvram n'est pas prise en charge avec les nvram "
-"sauvegardés en réseau"
 
 msgid "resize a vol"
 msgstr "modifier la taille d’un volume"
@@ -37069,6 +37160,9 @@ msgstr "chemin non-absolu ignoré"
 msgid "skipped restricted file"
 msgstr "fichier restreint ignoré"
 
+msgid "slices are not supported for <dataStore>"
+msgstr ""
+
 msgid "slices are not supported with NVRAM"
 msgstr "ne sont pas prises en charge par la NVRAM"
 
@@ -37546,6 +37640,9 @@ msgstr "swtpm est mort de façon inattendue"
 
 msgid "swtpm socket did not show up"
 msgstr "la prise swtpm n'est pas apparue"
+
+msgid "swtpm_setup has no support for profiles"
+msgstr ""
 
 #, c-format
 msgid "syntax: %1$s DEVICE [-g]|[-p]\n"
@@ -38548,6 +38645,10 @@ msgid "tunnelled offline migration does not make sense"
 msgstr "la migration hors ligne par tunnel n'a pas de sens"
 
 #, c-format
+msgid "two disks images contain vm state section for internal snapshot '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "two master hugepages detected: %1$llu and %2$llu"
 msgstr "deux hugepages maîtres détectées : %1$llu et %2$llu"
 
@@ -38744,6 +38845,9 @@ msgstr "Impossible de trouver le backend audio pour le périphérique sonore"
 
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
+msgstr ""
+
+msgid "unable to find nvram template image"
 msgstr ""
 
 #, c-format
@@ -41568,6 +41672,15 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#, c-format
+#~ msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
+#~ msgstr "Format discordant : loader.format='%1$s' nvram.format='%2$s'"
+
+#~ msgid "resetting of nvram is not supported with network backed nvram"
+#~ msgstr ""
+#~ "la réinitialisation des nvram n'est pas prise en charge avec les nvram "
+#~ "sauvegardés en réseau"
 
 #, c-format
 #~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"

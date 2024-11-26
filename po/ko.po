@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-10-25 06:15+0000\n"
+"POT-Creation-Date: 2024-11-26 14:19+0000\n"
 "PO-Revision-Date: 2024-10-28 12:48+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -588,6 +588,10 @@ msgstr "%1$s는 UID '%2$s'를 구문 분석 할 수 없습니다"
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
 msgstr "%1$s 디스크는 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#, c-format
+msgid "%1$s does not support file storage"
+msgstr ""
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -1283,6 +1287,10 @@ msgstr "'arch' 요소는 'match' 속성'에 'cpu' 요소안에서 사용 될 수
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr "virtio-gpu 장치를 위한 'blob' 지원은 memfd 메모리 백엔드가 필요합니다"
 
+#, c-format
+msgid "'block' nvram backing device '%1$s' doesn't exist"
+msgstr ""
+
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'캐쉬'는 존재하지 않는 NUMA 노드 캐쉬를 나타냅니다"
 
@@ -1707,6 +1715,9 @@ msgstr ""
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "<config>요소는 현재 오직 'rdb' 디스크에서만 지원됩니다"
 
+msgid "<dataStore> feature available only with qcow2 images"
+msgstr ""
+
 msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 "현재로써 <domainbackup> (도메인 백업)은 TCP포트를 반드시 지정해야합니다"
@@ -1724,6 +1735,10 @@ msgstr ""
 
 msgid "<iotune> is not supported with bus='sd'"
 msgstr "<iotune>는 bus='sd'를 지원하지 않습니다"
+
+#, c-format
+msgid "<profile/> requires TPM version '%1$s'"
+msgstr ""
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr ""
@@ -2292,6 +2307,10 @@ msgstr "인증서:"
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
 msgstr "CCW 주소는 장비 유형 '%1$s'에서 지원되지 않습니다"
+
+#, c-format
+msgid "CH does not support device assignment mode '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2915,6 +2934,9 @@ msgstr "파일 '%1$s'을 삭제할 수 없음"
 msgid "Cannot detach %1$s device with no alias"
 msgstr "별칭 없는 %1$s 장치를 분리 할 수 없습니다"
 
+msgid "Cannot detach platform device"
+msgstr ""
+
 msgid "Cannot determine balloon device path"
 msgstr "풍선(balloon) 장치 경로를 결정 할 수 없습니다"
 
@@ -3091,6 +3113,9 @@ msgstr "이름으로 저장소 제어기를 가져올 수 없습니다"
 
 msgid "Cannot get storage controller name"
 msgstr "저장소 제어기의 이름을 가져올 수 없습니다"
+
+msgid "Cannot hotplug platform device"
+msgstr ""
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "현재 ID에 대해 로컬 스레드를 초기화 할 수 없습니다"
@@ -3344,6 +3369,12 @@ msgstr "%1$s가 주소인 %2$s를 해결할 수 없습니다"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "제어가능한 TTY 없이는 대화형의 실행창을 실행할 수 없습니다"
+
+#, c-format
+msgid ""
+"Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
+"alias of '%3$s'"
+msgstr ""
 
 msgid "Cannot set a base label with AppArmour"
 msgstr "AppArmour 와 함께는 기초 레이블을 설정할 수 없습니다"
@@ -4966,6 +4997,10 @@ msgstr "가상 스위치를 검색할 수 없습니다"
 #, c-format
 msgid "Could not revert to snapshot '%1$s': %2$s"
 msgstr "순간찍기로 되돌릴 수 없음 '%1$s': %2$s"
+
+#, c-format
+msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -8993,10 +9028,6 @@ msgstr "주어진 네트워크를 강제로 중지합니다."
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "지정된 풀을 강제로 중지합니다. 풀에서 단순 자료는 그대로 유지됩니다"
-
-#, c-format
-msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
-msgstr "형식이 일치하지 않음: loader.format='%1$s' nvram.format='%2$s'"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -16077,6 +16108,11 @@ msgstr ""
 "<portForward> 요소는 <interface type='user'> 및 'passt' 백엔드와 함께만 사용 "
 "될 수 있습니다"
 
+msgid ""
+"The <source> of <dataStore> can't have another nested <dataStore> or "
+"<backingStore> element"
+msgstr ""
+
 #, c-format
 msgid "The CA certificate %1$s has expired"
 msgstr "CA 인증서 %1$s가 만료되었습니다"
@@ -19858,6 +19894,10 @@ msgid "Unsupported nvram format '%1$s'"
 msgstr "지원되지 않는 nvram 형식 '%1$s'"
 
 #, c-format
+msgid "Unsupported nvram template format '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported object type %1$d"
 msgstr "지원되지 않는 객체 유형 %1$d"
 
@@ -20138,6 +20178,10 @@ msgstr "VFIO 장치 할당은 이와 같은 기술환경에서 사용 할 수 �
 
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "VM 디스크 원천과 순간찍기 디스크 원천은 동일하지 않습니다"
+
+#, c-format
+msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
+msgstr ""
 
 msgid "VM is already active"
 msgstr "VM이 이미 실행중입니다"
@@ -21517,6 +21561,10 @@ msgstr "인식 할 수 없는 네트워크 부분을 최신화 할 수 없습니
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr "볼륨을 올릴 수 없으며, 모든 기존 순간찍기가 손실됩니다"
 
+#, c-format
+msgid "can't use data file definition '%1$s'"
+msgstr ""
+
 msgid "canceled"
 msgstr "취소"
 
@@ -22268,6 +22316,9 @@ msgstr "MTU를 수정할 수 없습니다"
 #, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "디스크의 '%1$s' 필드를 수정할 수 없습니다"
+
+msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
+msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -23429,6 +23480,10 @@ msgstr "하이퍼에서 %1$s 오버플로우로 변환"
 msgid "conversion from string failed"
 msgstr "문자열 변환 실패"
 
+msgid ""
+"conversion of the nvram template to another target format is not supported"
+msgstr ""
+
 msgid "convert a domain id or UUID to domain name"
 msgstr "도메인 id 또는 UUID를 도메인명으로 변환"
 
@@ -23986,6 +24041,9 @@ msgstr "qcow/qcow2 파일 생성은 'luks' 암호화만 지원합니다"
 
 msgid "creation of qcow2 encrypted image is not supported"
 msgstr "qcow2 암호화 이미지 생성은 지원되지 않습니다"
+
+msgid "creation of storage images with <dataStore> feature is not supported"
+msgstr ""
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
@@ -26044,6 +26102,9 @@ msgstr "%1$s 생성 실패"
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
 msgstr "%1$s 인터페이스 생성 (시작) 실패: %2$s%3$s%4$s"
 
+msgid "failed to create JSON tokener"
+msgstr ""
+
 #, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
 msgstr "RBD 순간찍기 %1$s@%2$s를 생성하는데 실패함"
@@ -26582,6 +26643,10 @@ msgstr "%1$s 구문 분석 실패"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion을(를) 구문 분석하지 못했습니다"
+
+#, c-format
+msgid "failed to parse JSON: %1$s"
+msgstr ""
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -28002,6 +28067,10 @@ msgid "image magic is incorrect"
 msgstr "이미지 매직이 잘못되었습니다"
 
 #, c-format
+msgid "image of disk '%1$s' does not have internal snapshot '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "image version is not supported (%1$d > %2$d)"
 msgstr "이미지 버전이 지원되지 않습니다(%1$d > %2$d)"
 
@@ -28342,13 +28411,15 @@ msgstr "실행 중인 VM의 내부 순간찍기는 메모리 상태가 포함되
 msgid ""
 "internal snapshots of a VM with pflash based firmware are not supported with "
 "this qemu"
-msgstr "pflash 기반의 펌웨어의 내부 순간찍기는 이와 같은 qemu에서 지원되지 않습니다"
+msgstr ""
+"pflash 기반의 펌웨어의 내부 순간찍기는 이와 같은 qemu에서 지원되지 않습니다"
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
 "format"
-msgstr "pflash 기반의 펌웨어를 갖는 VM의 내부 순간찍기는 QCOW2 nvram 형식이 "
-"필요합니다"
+msgstr ""
+"pflash 기반의 펌웨어를 갖는 VM의 내부 순간찍기는 QCOW2 nvram 형식이 필요합니"
+"다"
 
 msgid "internal use only"
 msgstr "오직 내부 사용"
@@ -29697,6 +29768,10 @@ msgid "live update of device '%1$s' is not supported"
 msgstr "장치 '%1$s'의 실시간 최신화가 지원되지 않습니다"
 
 #, c-format
+msgid "load of internal snapshot '%1$s' job failed: %2$s"
+msgstr ""
+
+#, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
 msgstr "loadparm 값 '%1$s'는 1 ~ 8개의 문자 사이여야 합니다"
 
@@ -30606,6 +30681,9 @@ msgstr "QEMU 기능 캐쉬에서 누락된 SGX 기술환경 자료"
 msgid "missing TPM device backend"
 msgstr "TPM 장치 백엔드가 누락되어 있음"
 
+msgid "missing TPM source path"
+msgstr ""
+
 msgid "missing Xen migration stream version"
 msgstr "Xen 이전 스트림 버전이 누락됨"
 
@@ -30706,6 +30784,9 @@ msgstr "기존 순간찍기에서 생성 시간이 누락됨"
 msgid "missing cssid value for '%1$s'"
 msgstr "'%1$s'에 대한 cssid 값이 없습니다"
 
+msgid "missing data file store format"
+msgstr ""
+
 #, c-format
 msgid "missing decode element in CPU model %1$s"
 msgstr "CPU 모델 %1$s에서 누락된 디코드 요소"
@@ -30737,6 +30818,9 @@ msgstr "누락된 디스크 백업 저장소 형식"
 
 msgid "missing disk backing store source"
 msgstr "누락된 디스크 백업 저장소 원천"
+
+msgid "missing disk data file store source"
+msgstr ""
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
@@ -31264,6 +31348,10 @@ msgstr "비디오 모델이 빠져있으며, 기본 모델명을 결정할 수 �
 
 msgid "missing vlan tag data"
 msgstr "vlan 태그 데이터 누락되어 있음"
+
+#, c-format
+msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
+msgstr ""
 
 msgid "missing volume name and path for gluster volume"
 msgstr "gluster 볼륨에 대한 볼륨 이름 및 경로 누락"
@@ -32696,6 +32784,12 @@ msgstr "공유 메모리 장치에는 'pci' 주소만 지원됩니다"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "virtio-pmem 장치에는 'pci' 주소만 지원됩니다"
+
+msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
+msgstr ""
+
+msgid "only 'raw' images supported as <dataStore>"
+msgstr ""
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
@@ -34342,8 +34436,9 @@ msgstr "노드 장치 리셋"
 msgid "reset the domain after core dump"
 msgstr "코어 덤프한 도메인을 재설정"
 
-msgid "resetting of nvram is not supported with network backed nvram"
-msgstr "nvram의 재설정은 네트워크 백업 nvram을 지원하지 않습니다"
+#, c-format
+msgid "resetting of nvram is not supported with nvram device backed by '%1$s'"
+msgstr ""
 
 msgid "resize a vol"
 msgstr "볼륨 크기 조정"
@@ -35047,6 +35142,9 @@ msgstr "건너뛴 비 절대 경로"
 msgid "skipped restricted file"
 msgstr "건너뛴 제한된 파일"
 
+msgid "slices are not supported for <dataStore>"
+msgstr ""
+
 msgid "slices are not supported with NVRAM"
 msgstr "슬라이스는 NVRAM을 지원하지 않습니다"
 
@@ -35501,6 +35599,9 @@ msgstr "swtpm은 예상치 못하게 죽었습니다"
 
 msgid "swtpm socket did not show up"
 msgstr "swtpm 소켓은 나타나지 않았습니다"
+
+msgid "swtpm_setup has no support for profiles"
+msgstr ""
 
 #, c-format
 msgid "syntax: %1$s DEVICE [-g]|[-p]\n"
@@ -36432,6 +36533,10 @@ msgid "tunnelled offline migration does not make sense"
 msgstr "터널링된 오프라인 이전은 의미가 없습니다"
 
 #, c-format
+msgid "two disks images contain vm state section for internal snapshot '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "two master hugepages detected: %1$llu and %2$llu"
 msgstr "두 개의 마스터 거대한 페이지가 감지되었습니다: %1$llu 및 %2$llu"
 
@@ -36625,6 +36730,9 @@ msgstr "사운드 장치에 대한 오디오 백엔드를 찾을 수 없습니�
 #, c-format
 msgid "unable to find disk target '%1$s' for non-shared-storage migration"
 msgstr "비-공유된-저장소 이전을 위해 디스크 대상 '%1$s'를 찾을 수 없음"
+
+msgid "unable to find nvram template image"
+msgstr ""
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -39358,6 +39466,13 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#, c-format
+#~ msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
+#~ msgstr "형식이 일치하지 않음: loader.format='%1$s' nvram.format='%2$s'"
+
+#~ msgid "resetting of nvram is not supported with network backed nvram"
+#~ msgstr "nvram의 재설정은 네트워크 백업 nvram을 지원하지 않습니다"
 
 #, c-format
 #~ msgid "Overlay file '%1$s' for transient disk '%2$s' already exists"
