@@ -147,6 +147,7 @@ mymain(void)
                 "</bandwidth>",
                 TC " qdisc del dev eth0 root\n"
                 TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc show dev eth0 handle 1:\n"
                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1024kbps quantum 87\n"
                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
@@ -177,6 +178,7 @@ mymain(void)
                 "</bandwidth>",
                 TC " qdisc del dev eth0 root\n"
                 TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc show dev eth0 handle 1:\n"
                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb quantum 1\n"
                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
@@ -199,6 +201,7 @@ mymain(void)
                 "</bandwidth>",
                 TC " qdisc del dev eth0 root\n"
                 TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc show dev eth0 handle 1:\n"
                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 4294967295kbps quantum 366503875\n"
                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"

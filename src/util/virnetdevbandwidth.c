@@ -805,12 +805,35 @@ int
 virNetDevBandWidthAddTxFilterParentQdisc(const char *ifname,
                                          bool hierarchical_class)
 {
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) testCmd = NULL;
+    g_autofree char *testResult = NULL;
 
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "root",
-                         "handle", "1:", "htb", "default",
-                         hierarchical_class ? "2" : "1", NULL);
+    /* first check it the qdisc with handle 1: was already added for
+     * this interface by someone else
+     */
+    testCmd = virCommandNew(TC);
+    virCommandAddArgList(testCmd, "qdisc", "show", "dev", ifname,
+                         "handle", "1:", NULL);
+    virCommandSetOutputBuffer(testCmd, &testResult);
 
-    return virCommandRun(cmd, NULL);
+    if (virCommandRun(testCmd, NULL) < 0)
+        return -1;
+
+    /* output will be something like: "qdisc htb 1: root refcnt ..."
+     * if the qdisc was already added. We just search for "qdisc" and
+     * " 1: " anywhere in the output to allow for tc changing its
+     * output format.
+     */
+    if (!(testResult && strstr(testResult, "qdisc") && strstr(testResult, " 1: "))) {
+        /* didn't find qdisc in output, so we need to add one */
+        g_autoptr(virCommand) addCmd = virCommandNew(TC);
+
+        virCommandAddArgList(addCmd, "qdisc", "add", "dev", ifname, "root",
+                             "handle", "1:", "htb", "default",
+                             hierarchical_class ? "2" : "1", NULL);
+
+        return virCommandRun(addCmd, NULL);
+    }
+
+    return 0;
 }
