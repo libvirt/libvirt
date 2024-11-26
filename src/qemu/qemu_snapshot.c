@@ -1434,12 +1434,14 @@ qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk,
  * qemuSnapshotDiskUpdateSource:
  * @vm: domain object
  * @dd: snapshot disk data object
+ * @asyncJob: async job type
  *
  * Updates disk definition after a successful snapshot.
  */
 static void
 qemuSnapshotDiskUpdateSource(virDomainObj *vm,
-                             qemuSnapshotDiskData *dd)
+                             qemuSnapshotDiskData *dd,
+                             virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -1450,6 +1452,11 @@ qemuSnapshotDiskUpdateSource(virDomainObj *vm,
 
     if (qemuSecurityMoveImageMetadata(driver, vm, dd->disk->src, dd->src) < 0)
         VIR_WARN("Unable to move disk metadata on vm %s", vm->def->name);
+
+    /* if the original image has a data-file turn it read-only */
+    if (dd->disk->src->dataFileStore) {
+        ignore_value(qemuBlockReopenReadOnly(vm, dd->disk->src->dataFileStore, asyncJob));
+    }
 
     /* unlock the write lock on the original image as qemu will no longer write to it */
     virDomainLockImageDetach(driver->lockManager, vm, dd->disk->src);
@@ -1498,7 +1505,7 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt)
         virDomainAuditDisk(snapctxt->vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
         if (rc == 0)
-            qemuSnapshotDiskUpdateSource(snapctxt->vm, dd);
+            qemuSnapshotDiskUpdateSource(snapctxt->vm, dd, snapctxt->asyncJob);
     }
 
     if (rc < 0)
