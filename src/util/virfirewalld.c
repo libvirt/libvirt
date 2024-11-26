@@ -43,6 +43,7 @@ VIR_LOG_INIT("util.firewalld");
 VIR_ENUM_DECL(virFirewallLayerFirewallD);
 VIR_ENUM_IMPL(virFirewallLayerFirewallD,
               VIR_FIREWALL_LAYER_LAST,
+              "",
               "eb",
               "ipv4",
               "ipv6",

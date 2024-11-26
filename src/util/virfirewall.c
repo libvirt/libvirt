@@ -47,6 +47,7 @@ VIR_ENUM_IMPL(virFirewallLayer,
               "ethernet",
               "ipv4",
               "ipv6",
+              "tc",
 );
 
 typedef struct _virFirewallGroup virFirewallGroup;
@@ -57,6 +58,7 @@ VIR_ENUM_IMPL(virFirewallLayerCommand,
               EBTABLES,
               IPTABLES,
               IP6TABLES,
+              TC,
 );
 
 struct _virFirewallCmd {
@@ -591,6 +593,7 @@ virFirewallCmdIptablesApply(virFirewall *firewall,
     case VIR_FIREWALL_LAYER_IPV6:
         virCommandAddArg(cmd, "-w");
         break;
+    case VIR_FIREWALL_LAYER_TC:
     case VIR_FIREWALL_LAYER_LAST:
         break;
     }
@@ -672,39 +675,52 @@ virFirewallCmdNftablesApply(virFirewall *firewall G_GNUC_UNUSED,
     size_t i;
     int status;
 
-    cmd = virCommandNew(NFT);
+    if (fwCmd->layer == VIR_FIREWALL_LAYER_TC) {
 
-    if ((virFirewallTransactionGetFlags(firewall) & VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK) &&
-        fwCmd->argsLen > 1) {
-        /* skip any leading options to get to command verb */
-        for (i = 0; i < fwCmd->argsLen - 1; i++) {
-            if (fwCmd->args[i][0] != '-')
-                break;
-        }
+        /* for VIR_FIREWALL_LAYER_TC, we run the 'tc' (traffic control) command with
+         * the supplied args.
+         */
+        cmd = virCommandNew(TC);
 
-        if (i + 1 < fwCmd->argsLen &&
-            VIR_NFTABLES_ARG_IS_CREATE(fwCmd->args[i])) {
+        /* NB: RAW commands don't support auto-rollback command creation */
 
-            cmdIdx = i;
-            objectType = fwCmd->args[i + 1];
+    } else {
 
-            /* we currently only handle auto-rollback for rules,
-             * chains, and tables, and those all can be "rolled
-             * back" by a delete command using the handle that is
-             * returned when "-ae" is added to the add/insert
-             * command.
-             */
-            if (STREQ_NULLABLE(objectType, "rule") ||
-                STREQ_NULLABLE(objectType, "chain") ||
-                STREQ_NULLABLE(objectType, "table")) {
+        cmd = virCommandNew(NFT);
 
-                needRollback = true;
-                /* this option to nft instructs it to add the
-                 * "handle" of the created object to stdout
+        if ((virFirewallTransactionGetFlags(firewall) & VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK) &&
+            fwCmd->argsLen > 1) {
+            /* skip any leading options to get to command verb */
+            for (i = 0; i < fwCmd->argsLen - 1; i++) {
+                if (fwCmd->args[i][0] != '-')
+                    break;
+            }
+
+            if (i + 1 < fwCmd->argsLen &&
+                VIR_NFTABLES_ARG_IS_CREATE(fwCmd->args[i])) {
+
+                cmdIdx = i;
+                objectType = fwCmd->args[i + 1];
+
+                /* we currently only handle auto-rollback for rules,
+                 * chains, and tables, and those all can be "rolled
+                 * back" by a delete command using the handle that is
+                 * returned when "-ae" is added to the add/insert
+                 * command.
                  */
-                virCommandAddArg(cmd, "-ae");
+                if (STREQ_NULLABLE(objectType, "rule") ||
+                    STREQ_NULLABLE(objectType, "chain") ||
+                    STREQ_NULLABLE(objectType, "table")) {
+
+                    needRollback = true;
+                    /* this option to nft instructs it to add the
+                     * "handle" of the created object to stdout
+                     */
+                    virCommandAddArg(cmd, "-ae");
+                }
             }
         }
+
     }
 
     for (i = 0; i < fwCmd->argsLen; i++)

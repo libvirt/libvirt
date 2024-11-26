@@ -73,6 +73,7 @@ VIR_ENUM_IMPL(nftablesLayer,
               "",
               "ip",
               "ip6",
+              "",
 );
 
 
