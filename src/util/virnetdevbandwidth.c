@@ -266,11 +266,7 @@ virNetDevBandwidthSet(const char *ifname,
         if (tx->burst)
             burst = g_strdup_printf("%llukb", tx->burst);
 
-        cmd = virCommandNew(TC);
-        virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "root",
-                             "handle", "1:", "htb", "default",
-                             hierarchical_class ? "2" : "1", NULL);
-        if (virCommandRun(cmd, NULL) < 0)
+        if (virNetDevBandWidthAddTxFilterParentQdisc(ifname, hierarchical_class) < 0)
             goto cleanup;
 
         /* If we are creating a hierarchical class, all non guaranteed traffic
@@ -793,4 +789,28 @@ virNetDevBandwidthSetRootQDisc(const char *ifname,
     }
 
     return 0;
+}
+
+/**
+ * virNetDevBandwidthAddTxFilterParentQdisc:
+ * @ifname: name of interface that needs a qdisc to attach tx filters to
+ * @hierarchical_class: true if hierarchical classes will be used on this interface
+ *
+ * Add a root Qdisc (Queueing Discipline) for attaching Tx filters to
+ * @ifname.
+ *
+ * returns 0 on success, -1 on failure
+ */
+int
+virNetDevBandWidthAddTxFilterParentQdisc(const char *ifname,
+                                         bool hierarchical_class)
+{
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "root",
+                         "handle", "1:", "htb", "default",
+                         hierarchical_class ? "2" : "1", NULL);
+
+    return virCommandRun(cmd, NULL);
 }
