@@ -3172,7 +3172,6 @@ qemuBlockReopenAccess(virDomainObj *vm,
     g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
     g_autoptr(virJSONValue) srcprops = NULL;
     int rc;
-    int ret = -1;
 
     VIR_DEBUG("nodename:'%s' current-ro:'%d requested-ro='%d'",
               qemuBlockStorageSourceGetEffectiveNodename(src),
@@ -3190,39 +3189,39 @@ qemuBlockReopenAccess(virDomainObj *vm,
     }
 
     src->readonly = readonly;
-    /* from now on all error paths must use 'goto cleanup' */
+    /* from now on all error paths must use 'goto error' which restores the original state */
 
     /* based on which is the current 'effecitve' layer we must reopen the
      * appropriate blockdev */
     if (qemuBlockStorageSourceGetFormatNodename(src)) {
         if (!(srcprops = qemuBlockStorageSourceGetFormatProps(src, src->backingStore)))
-            return -1;
+            goto error;
     } else if (qemuBlockStorageSourceGetSliceNodename(src)) {
         if (!(srcprops = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src, true, false)))
-            return -1;
+            goto error;
     } else {
         if (!(srcprops = qemuBlockStorageSourceGetBackendProps(src,
                                                                QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_EFFECTIVE_NODE)))
-            return -1;
+            goto error;
     }
 
     if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
-        return -1;
+        goto error;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-        goto cleanup;
+        goto error;
 
     rc = qemuMonitorBlockdevReopen(qemuDomainGetMonitor(vm), &reopenoptions);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
-        goto cleanup;
+        goto error;
 
-    ret = 0;
+    return 0;
 
- cleanup:
+ error:
     src->readonly = !readonly;
-    return ret;
+    return -1;
 }
 
 
