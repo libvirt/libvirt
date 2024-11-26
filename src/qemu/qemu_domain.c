@@ -2921,6 +2921,10 @@ qemuDomainVirStorageSourceFindByNodeName(virStorageSource *top,
     for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
         if (qemuDomainVirStorageSourceMatchNodename(tmp, nodeName))
             return tmp;
+
+        if (tmp->dataFileStore &&
+            qemuDomainVirStorageSourceMatchNodename(tmp->dataFileStore, nodeName))
+            return tmp->dataFileStore;
     }
 
     return NULL;
