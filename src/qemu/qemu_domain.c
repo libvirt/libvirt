@@ -2885,6 +2885,25 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
 
 
 /**
+ * qemuDomainVirStorageSourceMatchNodename:
+ * @src: storage source to match
+ * @nodeName to match
+ *
+ * Returns true if any of the nodenames of @src matches @nodeName.
+ */
+static bool
+qemuDomainVirStorageSourceMatchNodename(virStorageSource *src,
+                                        const char *nodeName)
+{
+    const char *nodestorage = qemuBlockStorageSourceGetStorageNodename(src);
+    const char *nodeformat = qemuBlockStorageSourceGetFormatNodename(src);
+
+    return (nodeformat && STREQ(nodeformat, nodeName)) ||
+           (nodestorage && STREQ(nodestorage, nodeName));
+}
+
+
+/**
  * qemuDomainVirStorageSourceFindByNodeName:
  * @top: backing chain top
  * @nodeName: node name to find in backing chain
@@ -2900,11 +2919,7 @@ qemuDomainVirStorageSourceFindByNodeName(virStorageSource *top,
     virStorageSource *tmp;
 
     for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
-        const char *nodestorage = qemuBlockStorageSourceGetStorageNodename(tmp);
-        const char *nodeformat = qemuBlockStorageSourceGetFormatNodename(tmp);
-
-        if ((nodeformat && STREQ(nodeformat, nodeName)) ||
-            (nodestorage && STREQ(nodestorage, nodeName)))
+        if (qemuDomainVirStorageSourceMatchNodename(tmp, nodeName))
             return tmp;
     }
 
