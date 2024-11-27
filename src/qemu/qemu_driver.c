@@ -9883,6 +9883,9 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     if (!bandwidth->out->average)
         VIR_FREE(bandwidth->out);
 
+    if (!virNetDevBandwidthValidate(bandwidth))
+        goto endjob;
+
     if (net) {
         newBandwidth = g_new0(virNetDevBandwidth, 1);
 
