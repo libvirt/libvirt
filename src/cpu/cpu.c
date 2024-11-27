@@ -201,11 +201,13 @@ virCPUCompareUnusable(virArch arch,
     char **blocker;
     size_t i;
 
-    for (blocker = blockers; *blocker; blocker++) {
-        if (!(feat = virCPUDefFindFeature(cpu, *blocker)) ||
-            feat->policy != VIR_CPU_FEATURE_DISABLE) {
-            virBufferAddStr(&features, *blocker);
-            virBufferAddLit(&features, ", ");
+    if (blockers) {
+        for (blocker = blockers; *blocker; blocker++) {
+            if (!(feat = virCPUDefFindFeature(cpu, *blocker)) ||
+                feat->policy != VIR_CPU_FEATURE_DISABLE) {
+                virBufferAddStr(&features, *blocker);
+                virBufferAddLit(&features, ", ");
+            }
         }
     }
 
