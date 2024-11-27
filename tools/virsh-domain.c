@@ -4237,7 +4237,10 @@ typedef void (*jobWatchTimeoutFunc)(vshControl *ctl, virDomainPtr dom,
 struct virshWatchData {
     vshControl *ctl;
     virDomainPtr dom;
+    GMainContext *context;
     jobWatchTimeoutFunc timeout_func;
+    int timeout_secs;
+    GSource *timeout_src;
     void *opaque;
     const char *label;
     GIOChannel *stdin_ioc;
@@ -4256,6 +4259,20 @@ virshWatchTimeout(gpointer opaque)
         (data->timeout_func)(data->ctl, data->dom, data->opaque);
 
     return G_SOURCE_REMOVE;
+}
+
+
+static void
+virshWatchSetTimeout(struct virshWatchData *data)
+{
+    vshDebug(data->ctl, VSH_ERR_DEBUG,
+             "watchJob: setting timeout of %d secs\n", data->timeout_secs);
+
+    data->timeout_src = g_timeout_source_new_seconds(data->timeout_secs);
+    g_source_set_callback(data->timeout_src,
+                          virshWatchTimeout,
+                          data, NULL);
+    g_source_attach(data->timeout_src, data->context);
 }
 
 
@@ -4290,10 +4307,17 @@ virshWatchProgress(gpointer opaque)
              jobinfo.type == VIR_DOMAIN_JOB_UNBOUNDED)) {
             vshTTYDisableInterrupt(data->ctl);
             data->jobStarted = true;
+            vshDebug(data->ctl, VSH_ERR_DEBUG,
+                     "watchJob: job started\n");
+        }
 
-            if (!data->verbose) {
+        if (data->jobStarted) {
+            if (data->timeout_secs > 0 && !data->timeout_src) {
+                if (jobinfo.dataTotal > 0)
+                    virshWatchSetTimeout(data);
+            } else if (!data->verbose) {
                 vshDebug(data->ctl, VSH_ERR_DEBUG,
-                         "watchJob: job started, disabling callback\n");
+                         "watchJob: disabling callback\n");
                 return G_SOURCE_REMOVE;
             }
         }
@@ -4356,13 +4380,15 @@ virshWatchJob(vshControl *ctl,
     struct sigaction sig_action;
     struct sigaction old_sig_action;
 #endif /* !WIN32 */
-    g_autoptr(GSource) timeout_src = NULL;
     g_autoptr(GSource) progress_src = NULL;
     g_autoptr(GSource) stdin_src = NULL;
     struct virshWatchData data = {
         .ctl = ctl,
         .dom = dom,
+        .context = g_main_loop_get_context(eventLoop),
         .timeout_func = timeout_func,
+        .timeout_secs = timeout_secs,
+        .timeout_src = NULL,
         .opaque = opaque,
         .label = label,
         .stdin_ioc = NULL,
@@ -4391,27 +4417,14 @@ virshWatchJob(vshControl *ctl,
         g_source_set_callback(stdin_src,
                               (GSourceFunc)virshWatchInterrupt,
                               &data, NULL);
-        g_source_attach(stdin_src,
-                        g_main_loop_get_context(eventLoop));
-    }
-
-    if (timeout_secs) {
-        vshDebug(ctl, VSH_ERR_DEBUG,
-                 "watchJob: setting timeout of %d secs\n", timeout_secs);
-        timeout_src = g_timeout_source_new_seconds(timeout_secs);
-        g_source_set_callback(timeout_src,
-                              virshWatchTimeout,
-                              &data, NULL);
-        g_source_attach(timeout_src,
-                        g_main_loop_get_context(eventLoop));
+        g_source_attach(stdin_src, data.context);
     }
 
     progress_src = g_timeout_source_new(500);
     g_source_set_callback(progress_src,
                           virshWatchProgress,
                           &data, NULL);
-    g_source_attach(progress_src,
-                    g_main_loop_get_context(eventLoop));
+    g_source_attach(progress_src, data.context);
 
     g_main_loop_run(eventLoop);
 
@@ -4420,8 +4433,10 @@ virshWatchJob(vshControl *ctl,
     if (*job_err == 0 && verbose) /* print [100 %] */
         virshPrintJobProgress(label, 0, 1);
 
-    if (timeout_src)
-        g_source_destroy(timeout_src);
+    if (data.timeout_src) {
+        g_source_destroy(data.timeout_src);
+        g_source_unref(data.timeout_src);
+    }
     g_source_destroy(progress_src);
     if (stdin_src)
         g_source_destroy(stdin_src);
