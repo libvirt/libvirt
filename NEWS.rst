@@ -33,6 +33,11 @@ v10.10.0 (unreleased)
     Limitation: The s390x BIOS will try to IPL up to 8 total devices, any
     number of which may be disks or network devices.
 
+  * qemu: Add support for versioned CPU models
+
+    Updates to QEMU CPU models with -vN suffix can now be used in libvirt just
+    like any other CPU model.
+
 * **Improvements**
 
 * **Bug fixes**
