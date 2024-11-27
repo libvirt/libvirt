@@ -38,9 +38,30 @@ v10.10.0 (unreleased)
     Updates to QEMU CPU models with -vN suffix can now be used in libvirt just
     like any other CPU model.
 
+  * qemu: Support for the 'data-file' QCOW2 image feature
+
+    The QEMU hypervisor driver now supports QCOW2 images with 'data-file'
+    feature present (both when probing form the image itself and when specified
+    explicitly via ``<dataStore>`` element). This can be useful when it's
+    required to keep data "raw" on disk, but the use case requires features
+    of the QCOW2 format such as incremental backups.
+
 * **Improvements**
 
+  * qemu: Support UEFI NVRAM images on block storage
+
+    Libvirt now allows users to use block storage as backend for UEFI NVRAM
+    images and allows them to be in format different than the template. When
+    qcow2 is used as the format, the images are now also auto-populated from the
+    template.
+
 * **Bug fixes**
+
+  * qemu: Fix reversion and inactive deletion of internal snapshots with UEFI NVRAM
+
+    In `v10.9.0 (2024-11-01)`_ creation of internal snapshots of VMs with UEFI
+    firmware was allowed, but certain operations such as reversion or inactive
+    deletion didn't work properly as they didn't consider the NVRAM qcow2 file.
 
 
 v10.9.0 (2024-11-01)
