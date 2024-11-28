@@ -263,7 +263,7 @@ virSysinfoParsePPCSystem(const char *base, virSysinfoSystemDef **sysdef)
     return ret;
 }
 
-static int
+static void
 virSysinfoParsePPCProcessor(const char *base, virSysinfoDef *ret)
 {
     const char *cur;
@@ -303,8 +303,6 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDef *ret)
         }
 
     }
-
-    return 0;
 }
 
 /* virSysinfoRead for PowerPC
@@ -325,8 +323,7 @@ virSysinfoReadPPC(void)
 
     ret->nprocessor = 0;
     ret->processor = NULL;
-    if (virSysinfoParsePPCProcessor(outbuf, ret) < 0)
-        return NULL;
+    virSysinfoParsePPCProcessor(outbuf, ret);
 
     if (virSysinfoParsePPCSystem(outbuf, &ret->system) < 0)
         return NULL;
@@ -383,7 +380,7 @@ virSysinfoParseARMSystem(const char *base, virSysinfoSystemDef **sysdef)
     return ret;
 }
 
-static int
+static void
 virSysinfoParseARMProcessor(const char *base, virSysinfoDef *ret)
 {
     const char *cur;
@@ -393,7 +390,7 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDef *ret)
 
     if (!(tmp_base = strstr(base, "model name")) &&
         !(tmp_base = strstr(base, "Processor")))
-        return 0;
+        return;
 
     eol = strchr(tmp_base, '\n');
     cur = strchr(tmp_base, ':') + 1;
@@ -420,7 +417,7 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDef *ret)
     }
 
     VIR_FREE(processor_type);
-    return 0;
+    return;
 }
 
 /* virSysinfoRead for ARMv7
@@ -451,8 +448,7 @@ virSysinfoReadARM(void)
 
     ret->nprocessor = 0;
     ret->processor = NULL;
-    if (virSysinfoParseARMProcessor(outbuf, ret) < 0)
-        return NULL;
+    virSysinfoParseARMProcessor(outbuf, ret);
 
     if (virSysinfoParseARMSystem(outbuf, &ret->system) < 0)
         return NULL;
@@ -753,7 +749,7 @@ virSysinfoParseX86System(const char *base, virSysinfoSystemDef **sysdef)
     return ret;
 }
 
-static int
+static void
 virSysinfoParseX86BaseBoard(const char *base,
                             virSysinfoBaseBoardDef **baseBoard,
                             size_t *nbaseBoard)
@@ -827,7 +823,6 @@ virSysinfoParseX86BaseBoard(const char *base,
 
     *nbaseBoard = nboards;
     *baseBoard = g_steal_pointer(&boards);
-    return 0;
 }
 
 
@@ -1006,7 +1001,7 @@ virSysinfoParseOEMStrings(const char *base,
 }
 
 
-static int
+static void
 virSysinfoParseX86Processor(const char *base, virSysinfoDef *ret)
 {
     const char *cur, *tmp_base;
@@ -1102,11 +1097,9 @@ virSysinfoParseX86Processor(const char *base, virSysinfoDef *ret)
 
         base += strlen("Processor Information");
     }
-
-    return 0;
 }
 
-static int
+static void
 virSysinfoParseX86Memory(const char *base, virSysinfoDef *ret)
 {
     const char *cur, *tmp_base;
@@ -1197,8 +1190,6 @@ virSysinfoParseX86Memory(const char *base, virSysinfoDef *ret)
     next:
         base += strlen("Memory Device");
     }
-
-    return 0;
 }
 
 virSysinfoDef *
@@ -1223,8 +1214,7 @@ virSysinfoReadDMI(void)
     if (virSysinfoParseX86System(outbuf, &ret->system) < 0)
         return NULL;
 
-    if (virSysinfoParseX86BaseBoard(outbuf, &ret->baseBoard, &ret->nbaseBoard) < 0)
-        return NULL;
+    virSysinfoParseX86BaseBoard(outbuf, &ret->baseBoard, &ret->nbaseBoard);
 
     if (virSysinfoParseX86Chassis(outbuf, &ret->chassis) < 0)
         return NULL;
@@ -1234,13 +1224,11 @@ virSysinfoReadDMI(void)
 
     ret->nprocessor = 0;
     ret->processor = NULL;
-    if (virSysinfoParseX86Processor(outbuf, ret) < 0)
-        return NULL;
+    virSysinfoParseX86Processor(outbuf, ret);
 
     ret->nmemory = 0;
     ret->memory = NULL;
-    if (virSysinfoParseX86Memory(outbuf, ret) < 0)
-        return NULL;
+    virSysinfoParseX86Memory(outbuf, ret);
 
     return g_steal_pointer(&ret);
 }
