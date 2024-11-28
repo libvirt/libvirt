@@ -1053,8 +1053,8 @@ bool virNetClientIsOpen(virNetClient *client)
 }
 
 
-int virNetClientAddProgram(virNetClient *client,
-                           virNetClientProgram *prog)
+void virNetClientAddProgram(virNetClient *client,
+                            virNetClientProgram *prog)
 {
     virObjectLock(client);
 
@@ -1062,7 +1062,6 @@ int virNetClientAddProgram(virNetClient *client,
     client->programs[client->nprograms-1] = virObjectRef(prog);
 
     virObjectUnlock(client);
-    return 0;
 }
 
 

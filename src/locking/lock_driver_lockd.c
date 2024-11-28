@@ -213,8 +213,7 @@ static virNetClient *virLockManagerLockDaemonConnectionNew(bool privileged,
                                          NULL)))
         goto error;
 
-    if (virNetClientAddProgram(client, *prog) < 0)
-        goto error;
+    virNetClientAddProgram(client, *prog);
 
     return client;
 

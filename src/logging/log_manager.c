@@ -88,8 +88,7 @@ virLogManagerConnect(bool privileged,
                                          NULL)))
         goto error;
 
-    if (virNetClientAddProgram(client, *prog) < 0)
-        goto error;
+    virNetClientAddProgram(client, *prog);
 
     VIR_FREE(daemonPath);
     VIR_FREE(logdpath);

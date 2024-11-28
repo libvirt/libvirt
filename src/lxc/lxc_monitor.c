@@ -169,9 +169,7 @@ virLXCMonitor *virLXCMonitorNew(virDomainObj *vm,
                                                 mon)))
         goto error;
 
-    if (virNetClientAddProgram(mon->client,
-                               mon->program) < 0)
-        goto error;
+    virNetClientAddProgram(mon->client, mon->program);
 
     mon->vm = virObjectRef(vm);
     memcpy(&mon->cb, cb, sizeof(mon->cb));

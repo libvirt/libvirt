@@ -1160,10 +1160,9 @@ doRemoteOpen(virConnectPtr conn,
                                                      conn)))
         goto error;
 
-    if (virNetClientAddProgram(priv->client, priv->remoteProgram) < 0 ||
-        virNetClientAddProgram(priv->client, priv->lxcProgram) < 0 ||
-        virNetClientAddProgram(priv->client, priv->qemuProgram) < 0)
-        goto error;
+    virNetClientAddProgram(priv->client, priv->remoteProgram);
+    virNetClientAddProgram(priv->client, priv->lxcProgram);
+    virNetClientAddProgram(priv->client, priv->qemuProgram);
 
     /* Try and authenticate with server */
     VIR_DEBUG("Trying authentication");

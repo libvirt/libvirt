@@ -214,8 +214,7 @@ remoteAdminPrivNew(const char *sock_path)
                                                  NULL, 0, NULL)))
         goto error;
 
-    if (virNetClientAddProgram(priv->client, priv->program) < 0)
-        goto error;
+    virNetClientAddProgram(priv->client, priv->program);
 
     return priv;
  error:
