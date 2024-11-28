@@ -124,8 +124,6 @@ testSchemaDir(const char *schema,
             continue;
         if (ent->d_name[0] == '.')
             continue;
-        if (virFileIsLink(ent->d_name))
-            continue;
         if (filter &&
             !g_regex_match(filter, ent->d_name, 0, NULL))
             continue;
@@ -134,10 +132,13 @@ testSchemaDir(const char *schema,
             g_strv_contains(entry->skip, ent->d_name))
             continue;
 
+        xml_path = g_strdup_printf("%s/%s", dir_path, ent->d_name);
+
+        if (virFileIsLink(xml_path) == 1)
+            continue;
+
         if (entry->exceptions)
             exception = g_strv_contains(entry->exceptions, ent->d_name);
-
-        xml_path = g_strdup_printf("%s/%s", dir_path, ent->d_name);
 
         if (testSchemaFile(schema, validator, xml_path, exception) < 0)
             ret = -1;
