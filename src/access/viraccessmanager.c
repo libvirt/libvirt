@@ -164,10 +164,7 @@ virAccessManager *virAccessManagerNewStack(const char **names)
         if (!child)
             goto error;
 
-        if (virAccessDriverStackAppend(manager, child) < 0) {
-            virObjectUnref(child);
-            goto error;
-        }
+        virAccessDriverStackAppend(manager, child);
     }
 
     return manager;

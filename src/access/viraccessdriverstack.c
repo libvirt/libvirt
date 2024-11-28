@@ -32,16 +32,14 @@ struct _virAccessDriverStackPrivate {
 };
 
 
-int virAccessDriverStackAppend(virAccessManager *manager,
-                               virAccessManager *child)
+void virAccessDriverStackAppend(virAccessManager *manager,
+                                virAccessManager *child)
 {
     virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
 
     VIR_EXPAND_N(priv->managers, priv->managersLen, 1);
 
     priv->managers[priv->managersLen-1] = child;
-
-    return 0;
 }
 
 
