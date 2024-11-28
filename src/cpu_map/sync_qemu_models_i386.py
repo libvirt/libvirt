@@ -484,6 +484,9 @@ def expand_model(outdir, model):
     print(result['name'])
     yield result
 
+    if len(versions) == 0:
+        versions.append({".version": "1"})
+
     name = result["name"]
     for version in versions:
         result = copy.deepcopy(result)
