@@ -215,6 +215,9 @@
       <optional>
         <ref name="interface"/>
       </optional>
+      <optional>
+        <ref name="panic"/>
+      </optional>
     </element>
   </define>
 
@@ -283,6 +286,13 @@
 
   <define name="crypto">
     <element name="crypto">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="panic">
+    <element name="panic">
       <ref name="supported"/>
       <ref name="enum"/>
     </element>
