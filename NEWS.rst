@@ -46,6 +46,12 @@ v10.10.0 (unreleased)
     required to keep data "raw" on disk, but the use case requires features
     of the QCOW2 format such as incremental backups.
 
+  * swtpm: Add support for profiles
+
+    Upcoming swtpm release will have TPM profile support that allows to
+    restrict a TPM's provided set of crypto algorithms and commands. Users can
+    now select profile by using ``<profile/>`` in their TPM XML definition.
+
 * **Improvements**
 
   * qemu: Support UEFI NVRAM images on block storage
@@ -55,6 +61,21 @@ v10.10.0 (unreleased)
     qcow2 is used as the format, the images are now also auto-populated from the
     template.
 
+  * qemu: Automatically add IOMMU when needed
+
+    When domain of 'qemu' or 'kvm' type has more than 255 vCPUs IOMMU with EIM
+    mode is required. Starting with this release libvirt automatically adds one
+    (or turns on the EIM mode if there's IOMMU without it).
+
+  * ch: allow hostdevs in domain definition
+
+    The Cloud Hypervisor driver (ch) now supports ``<hostdev/>``-s.
+
+  * ch: Enable callbacks for ch domain events
+
+    The Cloud Hypervisor driver (ch) now supports emitting events on domain
+    define, undefine, start, boot, stop and destroy.
+
 * **Bug fixes**
 
   * qemu: Fix reversion and inactive deletion of internal snapshots with UEFI NVRAM
@@ -62,6 +83,13 @@ v10.10.0 (unreleased)
     In `v10.9.0 (2024-11-01)`_ creation of internal snapshots of VMs with UEFI
     firmware was allowed, but certain operations such as reversion or inactive
     deletion didn't work properly as they didn't consider the NVRAM qcow2 file.
+
+  * virnetdevopenvswitch: Warn on unsupported QoS settings
+
+    For OpenVSwitch vNICs libivrt does not set QoS directly using 'tc' but
+    offloads setting to OVS. But OVS is not as feature full as libvirt in this
+    regard and setting different 'peak' than 'average' results in vNIC always
+    sticking with 'peak'. Produce a warning if that's the case.
 
 
 v10.9.0 (2024-11-01)
