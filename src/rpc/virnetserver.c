@@ -768,7 +768,7 @@ virNetServerAddServiceUNIX(virNetServer *srv,
 }
 
 
-int
+void
 virNetServerAddProgram(virNetServer *srv,
                        virNetServerProgram *prog)
 {
@@ -776,7 +776,6 @@ virNetServerAddProgram(virNetServer *srv,
 
     VIR_EXPAND_N(srv->programs, srv->nprograms, 1);
     srv->programs[srv->nprograms-1] = virObjectRef(prog);
-    return 0;
 }
 
 

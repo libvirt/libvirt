@@ -1063,10 +1063,7 @@ int main(int argc, char **argv) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
-    if (virNetServerAddProgram(srv, remoteProgram) < 0) {
-        ret = VIR_DAEMON_ERR_INIT;
-        goto cleanup;
-    }
+    virNetServerAddProgram(srv, remoteProgram);
 
     if (!(lxcProgram = virNetServerProgramNew(LXC_PROGRAM,
                                               LXC_PROTOCOL_VERSION,
@@ -1075,10 +1072,7 @@ int main(int argc, char **argv) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
-    if (virNetServerAddProgram(srv, lxcProgram) < 0) {
-        ret = VIR_DAEMON_ERR_INIT;
-        goto cleanup;
-    }
+    virNetServerAddProgram(srv, lxcProgram);
 
     if (!(qemuProgram = virNetServerProgramNew(QEMU_PROGRAM,
                                                QEMU_PROTOCOL_VERSION,
@@ -1087,10 +1081,7 @@ int main(int argc, char **argv) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
-    if (virNetServerAddProgram(srv, qemuProgram) < 0) {
-        ret = VIR_DAEMON_ERR_INIT;
-        goto cleanup;
-    }
+    virNetServerAddProgram(srv, qemuProgram);
 
     if (!(srvAdm = virNetServerNew("admin", 1,
                                    config->admin_min_workers,
@@ -1120,10 +1111,7 @@ int main(int argc, char **argv) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
-    if (virNetServerAddProgram(srvAdm, adminProgram) < 0) {
-        ret = VIR_DAEMON_ERR_INIT;
-        goto cleanup;
-    }
+    virNetServerAddProgram(srvAdm, adminProgram);
 
     if (timeout > 0) {
         if (virNetDaemonAutoShutdown(dmn, timeout) < 0)
