@@ -596,6 +596,32 @@ def update_index(outdir, models):
         f.write("\n")
 
 
+def update_meson(outdir, models):
+    meson = os.path.join(outdir, "meson.build")
+
+    with open(meson, "r") as f:
+        lines = f.readlines()
+
+    start = None
+    end = None
+    for i in range(len(lines)):
+        if start is None and lines[i].startswith("cpumap_data ="):
+            start = i + 1
+
+        if start is not None and lines[i] == "]\n":
+            end = i
+            break
+
+    xmls = lines[start:end]
+    for files in models.values():
+        xmls.extend([f"  '{file}',\n" for file in files])
+
+    with open(meson, "w") as f:
+        f.writelines(lines[:start])
+        f.writelines(sorted(xmls, key=str.lower))
+        f.writelines(lines[end:])
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Synchronize x86 cpu models from QEMU i386 target.")
@@ -658,6 +684,7 @@ def main():
             output_model(f, extra, model)
 
     update_index(args.outdir, files)
+    update_meson(args.outdir, files)
 
     features = set()
     for model in models:
