@@ -164,6 +164,11 @@
               <ref name="virYesNo"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="canonical">
+              <text/>
+            </attribute>
+          </optional>
           <attribute name='vendor'>
             <text/>
           </attribute>
