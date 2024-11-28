@@ -120,8 +120,8 @@ bool virNetClientHasPassFD(virNetClient *client);
 void virNetClientAddProgram(virNetClient *client,
                             virNetClientProgram *prog);
 
-int virNetClientAddStream(virNetClient *client,
-                          virNetClientStream *st);
+void virNetClientAddStream(virNetClient *client,
+                           virNetClientStream *st);
 
 void virNetClientRemoveStream(virNetClient *client,
                               virNetClientStream *st);

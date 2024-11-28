@@ -5663,10 +5663,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                         false)))
         return -1;
 
-    if (virNetClientAddStream(priv->client, netst) < 0) {
-        virObjectUnref(netst);
-        return -1;
-    }
+    virNetClientAddStream(priv->client, netst);
 
     st->driver = &remoteStreamDrv;
     st->privateData = netst;
@@ -6432,10 +6429,7 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
                                         false)))
         goto cleanup;
 
-    if (virNetClientAddStream(priv->client, netst) < 0) {
-        virObjectUnref(netst);
-        goto cleanup;
-    }
+    virNetClientAddStream(priv->client, netst);
 
     st->driver = &remoteStreamDrv;
     st->privateData = netst;

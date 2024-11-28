@@ -1822,10 +1822,7 @@ elsif ($mode eq "client") {
             print "    if (!(netst = virNetClientStreamNew(priv->remoteProgram, $call->{constname}, priv->counter, sparse)))\n";
             print "        goto cleanup;\n";
             print "\n";
-            print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";
-            print "        virObjectUnref(netst);\n";
-            print "        goto cleanup;\n";
-            print "    }";
+            print "    virNetClientAddStream(priv->client, netst);\n";
             print "\n";
             print "    st->driver = &remoteStreamDrv;\n";
             print "    st->privateData = netst;\n";
