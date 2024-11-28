@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-11-26 14:13+0000\n"
+"PO-Revision-Date: 2024-11-28 00:29+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -596,7 +596,7 @@ msgstr "%1$s-disk stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s stödjer inte fillagring"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -1311,7 +1311,7 @@ msgstr "stöd för ”blob” för virtio-gpu-enheter kräver en memfd-minnesbak
 
 #, c-format
 msgid "'block' nvram backing device '%1$s' doesn't exist"
-msgstr ""
+msgstr "”block” som nvrams bakomliggande enhet ”%1$s” finns inte"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "”cache” refererar till en NUMA-nodcaceh som inte finns"
@@ -1734,7 +1734,7 @@ msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "elementet <config> stödjs för närvarande bara med ”rbd”-diskar"
 
 msgid "<dataStore> feature available only with qcow2 images"
-msgstr ""
+msgstr "funktionen <dataStore> är endast tillgänglig med qcow2-avbilder"
 
 msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> måste tills vidare ange TCP-port"
@@ -1754,7 +1754,7 @@ msgstr "<iotune> stödjs inte med bus='sd'"
 
 #, c-format
 msgid "<profile/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<profile/> kräver TPM-version ”%1$s”"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> är endast tillåtna för lun-enheter"
@@ -2327,7 +2327,7 @@ msgstr "CCW-adresser stödjs inte av maskintypen ”%1$s”"
 
 #, c-format
 msgid "CH does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "CH stödjer inte enhetstilldelningsläget ”%1$s”"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2966,7 +2966,7 @@ msgid "Cannot detach %1$s device with no alias"
 msgstr "Det går inte att koppla ifrån en %1$s-enhet utan alias"
 
 msgid "Cannot detach platform device"
-msgstr ""
+msgstr "Kan inte koppla ifrån plattformsenheten"
 
 msgid "Cannot determine balloon device path"
 msgstr "Kan inte avgöra ballongenhetens sökväg"
@@ -3147,7 +3147,7 @@ msgid "Cannot get storage controller name"
 msgstr "Kan inte hämta lagringsstyrenhetsnamn"
 
 msgid "Cannot hotplug platform device"
-msgstr ""
+msgstr "Kan inte koppla in plattformsenheten under drift"
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "Kan inte initiera trådlokalt för den aktuella identiteten"
@@ -3413,6 +3413,8 @@ msgid ""
 "Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
 "alias of '%3$s'"
 msgstr ""
+"Kan inte sätta CPU-modellen ”%1$s” som kanoniskt namn på ”%2$s” när det "
+"redan är ett alias för ”%3$s”"
 
 msgid "Cannot set a base label with AppArmour"
 msgstr "Kan inte sätta en basetikett för AppArmour"
@@ -5072,7 +5074,7 @@ msgstr "Kunde inte återställa till ögonblicksbilden ”%1$s”: %2$s"
 
 #, c-format
 msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
-msgstr ""
+msgstr "Kunde inte köra ”%1$s --print-info”. slutstatus: %2$d; stdfel: %3$s"
 
 #, c-format
 msgid ""
@@ -16338,6 +16340,8 @@ msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
 "<backingStore> element"
 msgstr ""
+"<source> till <dataStore> kan inte ha ett annat nästat element <dataStore> "
+"eller <backingStore>"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -20139,7 +20143,7 @@ msgstr "Ej stött nvram-format ”%1$s”"
 
 #, c-format
 msgid "Unsupported nvram template format '%1$s'"
-msgstr ""
+msgstr "nvram-mallformatet ”%1$s” stödjs inte"
 
 #, c-format
 msgid "Unsupported object type %1$d"
@@ -20435,7 +20439,7 @@ msgstr "VM-diskkälla och ögonblicsbildskälla är inte samma"
 
 #, c-format
 msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
-msgstr ""
+msgstr "VM:en har inte hårddisken ”%1$s” refererad av ögonblicksbilden ”%2$s”"
 
 msgid "VM is already active"
 msgstr "VM:en är redan aktiv"
@@ -21867,7 +21871,7 @@ msgstr ""
 
 #, c-format
 msgid "can't use data file definition '%1$s'"
-msgstr ""
+msgstr "kan inte använda datafilsdefinitionen ”%1$s”"
 
 msgid "canceled"
 msgstr "avbruten"
@@ -22627,7 +22631,7 @@ msgid "cannot modify field '%1$s' of the disk"
 msgstr "kan inte modifiera fältet ”%1$s” av disken"
 
 msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
-msgstr ""
+msgstr "kan inte ändra fältet ”<iothreads>” (eller dess delar) på disken"
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -23804,7 +23808,7 @@ msgstr "konvertering från sträng misslyckades"
 
 msgid ""
 "conversion of the nvram template to another target format is not supported"
-msgstr ""
+msgstr "konvertering av nvram-mallen till ett annat målformat stödjs inte"
 
 msgid "convert a domain id or UUID to domain name"
 msgstr "konvertera ett domän-id eller UUID till domännamn"
@@ -24370,7 +24374,7 @@ msgid "creation of qcow2 encrypted image is not supported"
 msgstr "att skapa en krypterad qcow2-avbild stödjs inte"
 
 msgid "creation of storage images with <dataStore> feature is not supported"
-msgstr ""
+msgstr "att skapa lagringsavbilder med funktionen <dataStore> stödjs inte"
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
@@ -26460,7 +26464,7 @@ msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
 msgstr "misslyckades att skapa (starta) gränssnittet %1$s: %2$s%3$s%4$s"
 
 msgid "failed to create JSON tokener"
-msgstr ""
+msgstr "misslyckades att skapa JSON-tokenerare"
 
 #, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
@@ -27006,7 +27010,7 @@ msgstr "misslyckades att tolka versionen av %1$s"
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
-msgstr ""
+msgstr "misslyckades att tolka JSON: %1$s"
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
@@ -28449,7 +28453,7 @@ msgstr "avbildens magi är felaktig"
 
 #, c-format
 msgid "image of disk '%1$s' does not have internal snapshot '%2$s'"
-msgstr ""
+msgstr "avbilden av disken ”%1$s” har inte en intern ögonblicksbild ”%2$s”"
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
@@ -30181,6 +30185,7 @@ msgstr "uppdatering under drift av enheten ”%1$s” stödjs inte"
 #, c-format
 msgid "load of internal snapshot '%1$s' job failed: %2$s"
 msgstr ""
+"jobbet som laddade den interna ögonblicksbilden ”%1$s” misslyckades: %2$s"
 
 #, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
