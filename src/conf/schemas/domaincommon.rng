@@ -2010,18 +2010,20 @@
   </define>
 
   <define name="diskSourceNetworkNFS">
-    <element name="identity">
-      <optional>
-        <attribute name="user">
-          <ref name="genericName"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="group">
-          <ref name="genericName"/>
-        </attribute>
-      </optional>
-    </element>
+    <optional>
+      <element name="identity">
+        <optional>
+          <attribute name="user">
+            <ref name="genericName"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="group">
+            <ref name="genericName"/>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
   </define>
 
   <define name="diskSourceNetworkProtocolRBD">
