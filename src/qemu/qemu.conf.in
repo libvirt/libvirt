@@ -709,7 +709,9 @@
 # As a special case it can be set to the string "unlimited" to
 # to allow arbitrarily sized core dumps.
 #
-# By default the core dump size is set to 0 disabling all dumps
+# By default the core dump size is set to unlimited on
+# Linux where 'dump_guest_core' defaults to false, and
+# is set to 0 on other platforms, disabling all dumps
 #
 # Size is a positive integer specifying bytes or the
 # string "unlimited"
@@ -717,8 +719,8 @@
 #max_core = "unlimited"
 
 # Determine if guest RAM is included in QEMU core dumps. By
-# default guest RAM will be excluded if a new enough QEMU is
-# present and host kernel supports it. Setting this to '1' will
+# default guest RAM will be excluded on Linux platforms,
+# and included on all other patforms. Setting this to '1' will
 # force guest RAM to always be included in QEMU core dumps.
 #
 # This setting will be ignored if the guest XML has set the

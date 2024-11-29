@@ -291,10 +291,14 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
     cfg->deprecationBehavior = g_strdup("none");
     cfg->storageUseNbdkit = USE_NBDKIT_DEFAULT;
 
-#ifndef MADV_DONTDUMP
+#ifdef MADV_DONTDUMP
+    cfg->maxCore = ULLONG_MAX;
+#else
     /* QEMU uses Linux extensions to madvise() (MADV_DODUMP/MADV_DONTDUMP) to
-     * include/exclude guest memory from core dump. These might be unavailable
-     * on some systems. Provide sane default. */
+     * include/exclude guest memory from core dump. On non-Linux systems
+     * core dumps will unavoidably include all guest RAM, so toggle the
+     * default to reflect this and warn the admin.
+     */
     VIR_INFO("Host kernel doesn't support MADV_DONTDUMP. Enabling dump_guest_core");
     cfg->dumpGuestCore = true;
 #endif
