@@ -4243,8 +4243,19 @@ qemuSnapshotDeleteValidate(virDomainObj *vm,
             virDomainDiskDef *vmdisk = NULL;
             virDomainDiskDef *disk = NULL;
 
-            vmdisk = qemuDomainDiskByName(vm->def, snapDisk->name);
-            disk = qemuDomainDiskByName(snapdef->parent.dom, snapDisk->name);
+            if (!(vmdisk = qemuDomainDiskByName(vm->def, snapDisk->name))) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                            _("disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"),
+                            snapDisk->name, snap->def->name);
+                return -1;
+            }
+
+            if (!(disk = qemuDomainDiskByName(snapdef->parent.dom, snapDisk->name))) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                            _("disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of the deleted snapshot"),
+                            snapDisk->name, snap->def->name);
+                return -1;
+            }
 
             if (!virStorageSourceIsSameLocation(vmdisk->src, disk->src)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
