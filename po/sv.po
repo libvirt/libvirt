@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-11-28 00:29+0000\n"
+"PO-Revision-Date: 2024-11-30 22:38+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -31119,7 +31119,7 @@ msgid "missing TPM device backend"
 msgstr "TPM-enhetens bakände saknas"
 
 msgid "missing TPM source path"
-msgstr ""
+msgstr "saknad TPM-källsökväg"
 
 msgid "missing Xen migration stream version"
 msgstr "Xen-migreringens strömversion saknas"
@@ -31222,7 +31222,7 @@ msgid "missing cssid value for '%1$s'"
 msgstr "cssid-värdet skanas för ”%1$s”"
 
 msgid "missing data file store format"
-msgstr ""
+msgstr "saknat lagringsformat för datafil"
 
 #, c-format
 msgid "missing decode element in CPU model %1$s"
@@ -31257,7 +31257,7 @@ msgid "missing disk backing store source"
 msgstr "källan saknas för bakomliggande lagring"
 
 msgid "missing disk data file store source"
-msgstr ""
+msgstr "saknad lagringskälla för diskdatafil"
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
@@ -31809,6 +31809,7 @@ msgstr "vlan-taggdata saknas"
 #, c-format
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
+"saknad vmstat-sektion när en aktiv intern ögonblicksbild återställdes ”%1$s”"
 
 msgid "missing volume name and path for gluster volume"
 msgstr "volymnamn och sökväg sknas till gluster-volymen"
@@ -33253,10 +33254,10 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "endast ”pci”-adresser stödjs för virtio-pmem-enheten"
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
-msgstr ""
+msgstr "endast ”qcow2”-formaterad ”block”-nvram-bakomliggande kan formateras"
 
 msgid "only 'raw' images supported as <dataStore>"
-msgstr ""
+msgstr "endast ”raw”-avbilder stödjs som <dataStore>"
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
@@ -34945,7 +34946,7 @@ msgstr "återställ domänen efter att kärnan dumpades"
 
 #, c-format
 msgid "resetting of nvram is not supported with nvram device backed by '%1$s'"
-msgstr ""
+msgstr "återställning av nvram stödjs inte med en nvram-enhet backad av ”%1$s”"
 
 msgid "resize a vol"
 msgstr "ändra storlek på en volym"
@@ -35673,7 +35674,7 @@ msgid "skipped restricted file"
 msgstr "hoppade över en begränsad fil"
 
 msgid "slices are not supported for <dataStore>"
-msgstr ""
+msgstr "skivor stödjs inte för <dataStore>"
 
 msgid "slices are not supported with NVRAM"
 msgstr "skivor stödjs inte med NVRAM"
@@ -36135,7 +36136,7 @@ msgid "swtpm socket did not show up"
 msgstr "swtpm-uttaget dök inte upp"
 
 msgid "swtpm_setup has no support for profiles"
-msgstr ""
+msgstr "swtpm_setup har inget stöd för profiler"
 
 #, c-format
 msgid "syntax: %1$s DEVICE [-g]|[-p]\n"
@@ -37081,6 +37082,8 @@ msgstr "tunnlad frånkopplad migrering är meningslöst"
 #, c-format
 msgid "two disks images contain vm state section for internal snapshot '%1$s'"
 msgstr ""
+"två diskavbilder innehåller en vm-tillståndssektion för den interna "
+"ögonblicksbilden ”%1$s”"
 
 #, c-format
 msgid "two master hugepages detected: %1$llu and %2$llu"
@@ -37278,7 +37281,7 @@ msgid "unable to find disk target '%1$s' for non-shared-storage migration"
 msgstr "kan inte hitta diskmålet ”%1$s” till migrering av odelad lagring"
 
 msgid "unable to find nvram template image"
-msgstr ""
+msgstr "kan inte hitta nvram-mall-avbilden"
 
 #, c-format
 msgid "unable to find parent device '%1$s'"
@@ -39240,123 +39243,132 @@ msgid ""
 "vcpu '%1$zd' can't be modified as it is followed by non-hotpluggable online "
 "vcpus"
 msgstr ""
+"vcpu ”%1$zd” kan inte modifieras eftersom den följs av aktiva vcpu:er som "
+"inte kan kopplas ur under drift"
 
 #, c-format
 msgid "vcpu '%1$zd' is already in requested state"
-msgstr ""
+msgstr "vcpu ”%1$zd” är redan i det begärda tillståndet"
 
 #, c-format
 msgid "vcpu '%1$zu' is both offline and not hotpluggable"
 msgstr ""
+"vcpu ”%1$zu” är både frånkopplad och inte möjlig att koppla in under drift"
 
 #, c-format
 msgid "vcpu '%1$zu' is missing hotplug data"
-msgstr ""
+msgstr "vcpu ”%1$zu” saknar data om inkoppling under drift"
 
 #, c-format
 msgid ""
 "vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
 "%3$zd' which was partially selected"
 msgstr ""
+"vcpu ”%1$zu” valdes inte men den tillhör den i drift inkopplingsbara enheten "
+"”%2$zd-%3$zd” vilken delvis valdes"
 
 msgid "vcpu 0 can't be offline"
-msgstr ""
+msgstr "vcpu 0 kan inte vara frånkopplad"
 
 #, c-format
 msgid ""
 "vcpu enable order of vCPU '%1$zu' differs between source and destination "
 "definitions"
 msgstr ""
+"vcpu-aktiveringsordningen hos vCPU ”%1$zu” skiljer mellan käll- och "
+"destinationsdefinitionerna"
 
 #, c-format
 msgid "vcpu id '%1$u' is out of range of maximum vcpu count"
-msgstr ""
+msgstr "vcpu-id ”%1$u” är utanför intervallet för maximalt antal vcpu:er"
 
 #, c-format
 msgid "vcpu id '%1$u' reported by guest agent is out of range"
-msgstr ""
+msgstr "vcpu-id ”%1$u” rapporterad av gästagenten är utanför intervallet"
 
 msgid "vcpu number"
 msgstr "vcpu-nummer"
 
 #, c-format
 msgid "vcpu order '%1$u' exceeds vcpu count"
-msgstr ""
+msgstr "vcpu-ordning ”%1$u” överskrider vcpu-antalet"
 
 msgid ""
 "vcpu unplug request timed out. Unplug result must be manually inspected in "
 "the domain"
 msgstr ""
+"Begäran om urkoppling av vcpu:n överskred tidsgränsen. Resultatet av "
+"urkopplingen måste inspekteras manuellt i domänen"
 
 msgid "vcpu0 can't be hotpluggable"
-msgstr ""
+msgstr "vcpu0 kan inte kopplas ur under drift"
 
 msgid "vcpu0 must be enabled first"
-msgstr ""
+msgstr "vcpu0 måste aktiveras först"
 
 msgid "vcpupin cpumask differs from default cpumask"
-msgstr ""
+msgstr "vcpupin cpumask skiler från standard cpumask"
 
 msgid "vcpupin: Missing vCPU number in pin mode."
-msgstr ""
+msgstr "vcpupin: saknat vCPU-nummer i pin-läge."
 
 #, c-format
 msgid ""
 "vcpus '%1$zu' and '%2$zu' are in the same hotplug group but differ in "
 "configuration"
 msgstr ""
+"vcpu:erna ”%1$zu” och ”%2$zu” finns i samma grupp för omkoppling i drift men "
+"skiljer i konfiguration"
 
 msgid "vcpus is empty"
-msgstr ""
+msgstr "vcpu:er är tom"
 
 msgid "vcpus overlaps in resctrl groups"
-msgstr ""
+msgstr "vcpu:er överlappar i resctrl-grupper"
 
 msgid "vendor id is invalid"
-msgstr ""
+msgstr "leverantörs-id:t är ogiltigt"
 
 msgid "vendor is not supported with vhostuser disk"
-msgstr ""
+msgstr "leverantören stödjs inte med en vhostuser-disk"
 
 #, c-format
 msgid "vendor_id must be exactly %1$d characters long"
-msgstr ""
+msgstr "vendor_id måste vara exakt %1$d tecken långt"
 
 #, c-format
 msgid "version mismatch (actual %1$x, expected %2$x)"
 msgstr "versioner matchar inte (aktuell %1$x, förväntad %2$x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "version mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "versioner matchar inte (aktuell %1$x, förväntad %2$x)"
+msgstr "versioner matchar inte i händelsen (aktuell 0x%1$x, förväntad 0x%2$x)"
 
-#, fuzzy
 msgid "version parsing error"
-msgstr "avläsningsfel"
+msgstr "versionstolkningsfel"
 
 msgid "vfio migration was active, but 'transferred' data was missing"
-msgstr ""
+msgstr "vfio-migreringen var aktiv, men ”transferred”-data saknades"
 
 msgid "vgamem attribute only supported for video type qxl"
-msgstr ""
+msgstr "attributet vgamem stödjs endast för videotypen qxl"
 
 msgid "vhost-net is not supported with this QEMU binary"
 msgstr "vhost-net stödjs inte av denna QEMU-binär"
 
-#, fuzzy
 msgid "vhost-net is only supported for virtio network interfaces"
-msgstr "skript som används för brygga nätverksgränssnitt"
+msgstr "vhost-net stödjs endast för virtio-nätverksgränssnitt"
 
 msgid "vhost-net was requested for an interface, but is unavailable"
-msgstr ""
+msgstr "vhost-nät begärdes för ett gränssnitt men är inte tillgängligt"
 
 #, c-format
 msgid "vhost-scsi device file '%1$s' cannot be found"
-msgstr ""
+msgstr "vhost-scsi-enhetsfilen ”%1$s” kan inte hittas"
 
 #, c-format
 msgid "vhost-user type '%1$s' not supported"
-msgstr ""
+msgstr "vhost-användartypen ”%1$s” stödjs inte"
 
 msgid "vhost-user-gpu failed to start"
 msgstr ""
