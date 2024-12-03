@@ -49,7 +49,6 @@ struct _virLXCDriverConfig {
     char *stateDir;
     char *logDir;
     bool log_libvirtd;
-    int have_netns;
 
     char *securityDriverName;
     bool securityDefaultConfined;

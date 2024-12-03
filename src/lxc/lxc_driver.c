@@ -422,12 +422,6 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if ((def->nets != NULL) && !(cfg->have_netns)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("System lacks NETNS support"));
-        goto cleanup;
-    }
-
     if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
                                    0, &oldDef)))
@@ -974,12 +968,6 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
     if (virDomainCreateWithFilesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if ((vm->def->nets != NULL) && !(cfg->have_netns)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("System lacks NETNS support"));
-        goto cleanup;
-    }
-
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -1087,13 +1075,6 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
-
-    if ((def->nets != NULL) && !(cfg->have_netns)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("System lacks NETNS support"));
-        goto cleanup;
-    }
-
 
     if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
@@ -1386,22 +1367,6 @@ lxcDomainDestroy(virDomainPtr dom)
     return lxcDomainDestroyFlags(dom, 0);
 }
 
-static int lxcCheckNetNsSupport(void)
-{
-    g_autoptr(virCommand) cmd = virCommandNewArgList("ip", "link", "set", "lo",
-                                                     "netns", "-1", NULL);
-    int ip_rc;
-
-    if (virCommandRun(cmd, &ip_rc) < 0 || ip_rc == 255)
-        return 0;
-
-    if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_NET) < 0)
-        return 0;
-
-    return 1;
-}
-
-
 static virSecurityManager *
 lxcSecurityInit(virLXCDriverConfig *cfg)
 {
@@ -1481,7 +1446,6 @@ lxcStateInitialize(bool privileged,
         goto cleanup;
 
     cfg->log_libvirtd = false; /* by default log to container logfile */
-    cfg->have_netns = lxcCheckNetNsSupport();
 
     /* Call function to load lxc driver configuration information */
     if (virLXCLoadDriverConfig(cfg, SYSCONFDIR "/libvirt/lxc.conf") < 0)
