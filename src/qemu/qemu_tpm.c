@@ -773,7 +773,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                                 incomingMigration) < 0)
         goto error;
 
-    if (run_setup && !incomingMigration &&
+    if (run_setup && !incomingMigration && persistentTPMDef &&
         qemuTPMEmulatorUpdateProfileName(&tpm->data.emulator, persistentTPMDef,
                                          cfg, saveDef) < 0)
         goto error;

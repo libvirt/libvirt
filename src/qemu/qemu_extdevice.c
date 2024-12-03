@@ -190,7 +190,18 @@ qemuExtDevicesStart(virQEMUDriver *driver,
 
     for (i = 0; i < def->ntpms; i++) {
         virDomainTPMDef *tpm = def->tpms[i];
-        virDomainTPMDef *persistentTPMDef = persistentDef->tpms[i];
+        virDomainTPMDef *persistentTPMDef = NULL;
+
+        if (persistentDef) {
+            /* do not try to update the profile in the persistent definition
+             * if the device does not match */
+            if (persistentDef->ntpms == def->ntpms)
+                persistentTPMDef = persistentDef->tpms[i];
+            if (persistentTPMDef &&
+                (persistentTPMDef->type != tpm->type ||
+                 persistentTPMDef->model != tpm->model))
+                persistentTPMDef = NULL;
+        }
 
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
             qemuExtTPMStart(driver, vm, tpm, persistentTPMDef,
