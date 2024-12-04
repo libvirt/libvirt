@@ -331,7 +331,7 @@ Requires: libvirt-libs = %{version}-%{release}
 BuildRequires: python3-docutils
 BuildRequires: meson >= 0.56.0
 BuildRequires: ninja-build
-BuildRequires: git
+BuildRequires: git-core
 BuildRequires: perl-interpreter
 BuildRequires: python3
 BuildRequires: python3-pytest
