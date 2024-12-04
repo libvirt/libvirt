@@ -958,7 +958,7 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
     }
 
     if (rx) {
-        if (rx->peak && tx->peak != rx->average) {
+        if (rx->peak && rx->peak != rx->average) {
             VIR_WARN("Setting different 'peak' value than 'average' for QoS for OVS interface %s might have unexpected results",
                      ifname);
         }
