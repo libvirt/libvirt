@@ -854,8 +854,13 @@
       <model usable='yes' vendor='unknown'>pentium2-v1</model>
       <model usable='yes' vendor='unknown' canonical='pentium3-v1'>pentium3</model>
       <model usable='yes' vendor='unknown'>pentium3-v1</model>
-      <model usable='no' vendor='AMD'>phenom</model>
+      <model usable='no' vendor='AMD' canonical='phenom-v1'>phenom</model>
       <blockers model='phenom'>
+        <feature name='3dnow'/>
+        <feature name='3dnowext'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>phenom-v1</model>
+      <blockers model='phenom-v1'>
         <feature name='3dnow'/>
         <feature name='3dnowext'/>
       </blockers>
