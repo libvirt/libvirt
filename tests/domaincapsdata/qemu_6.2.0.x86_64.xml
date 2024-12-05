@@ -923,7 +923,8 @@
       </blockers>
       <model usable='yes' vendor='unknown' canonical='pentium-v1'>pentium</model>
       <model usable='yes' vendor='unknown'>pentium-v1</model>
-      <model usable='yes' vendor='unknown'>pentium2</model>
+      <model usable='yes' vendor='unknown' canonical='pentium2-v1'>pentium2</model>
+      <model usable='yes' vendor='unknown'>pentium2-v1</model>
       <model usable='yes' vendor='unknown'>pentium3</model>
       <model usable='no' vendor='AMD'>phenom</model>
       <blockers model='phenom'>

@@ -112,6 +112,7 @@ cpumap_data = [
   'x86_Penryn.xml',
   'x86_pentium-v1.xml',
   'x86_pentium.xml',
+  'x86_pentium2-v1.xml',
   'x86_pentium2.xml',
   'x86_pentium3.xml',
   'x86_pentiumpro.xml',
