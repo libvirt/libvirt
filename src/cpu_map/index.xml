@@ -161,6 +161,7 @@
       <include filename='x86_EPYC-Milan-v1.xml'/>
       <include filename='x86_EPYC-Milan-v2.xml'/>
       <include filename='x86_EPYC-Genoa.xml'/>
+      <include filename='x86_EPYC-Genoa-v1.xml'/>
     </group>
 
     <group name='Hygon CPU models'>

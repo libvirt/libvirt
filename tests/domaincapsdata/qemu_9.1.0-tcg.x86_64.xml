@@ -387,8 +387,47 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='no' vendor='AMD'>EPYC-Genoa</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Genoa-v1'>EPYC-Genoa</model>
       <blockers model='EPYC-Genoa'>
+        <feature name='amd-psfd'/>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='clzero'/>
+        <feature name='fxsr_opt'/>
+        <feature name='gfni'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='lfence-always-serializing'/>
+        <feature name='misalignsse'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='nrip-save'/>
+        <feature name='null-sel-clr-base'/>
+        <feature name='osvw'/>
+        <feature name='pcid'/>
+        <feature name='perfctr_core'/>
+        <feature name='stibp-always-on'/>
+        <feature name='topoext'/>
+        <feature name='vnmi'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Genoa-v1</model>
+      <blockers model='EPYC-Genoa-v1'>
         <feature name='amd-psfd'/>
         <feature name='amd-ssbd'/>
         <feature name='amd-stibp'/>
