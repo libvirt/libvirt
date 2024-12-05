@@ -32,6 +32,7 @@
       <include filename='x86_cpu64-rhel5.xml'/>
       <include filename='x86_cpu64-rhel6.xml'/>
       <include filename='x86_qemu64.xml'/>
+      <include filename='x86_qemu64-v1.xml'/>
       <include filename='x86_kvm64.xml'/>
     </group>
 

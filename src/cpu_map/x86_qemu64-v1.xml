@@ -1,0 +1,6 @@
+<cpus>
+  <model name='qemu64-v1'>
+    <decode host='on' guest='off'/>
+    <model name='qemu64'/>
+  </model>
+</cpus>

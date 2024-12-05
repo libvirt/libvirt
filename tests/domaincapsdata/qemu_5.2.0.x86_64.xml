@@ -818,7 +818,8 @@
       </blockers>
       <model usable='yes' vendor='unknown' canonical='qemu32-v1'>qemu32</model>
       <model usable='yes' vendor='unknown'>qemu32-v1</model>
-      <model usable='yes' vendor='unknown'>qemu64</model>
+      <model usable='yes' vendor='unknown' canonical='qemu64-v1'>qemu64</model>
+      <model usable='yes' vendor='unknown'>qemu64-v1</model>
     </mode>
   </cpu>
   <memoryBacking supported='yes'>
