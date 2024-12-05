@@ -998,8 +998,15 @@
       <blockers model='Opteron_G3-v1'>
         <feature name='misalignsse'/>
       </blockers>
-      <model usable='no' vendor='AMD'>Opteron_G4</model>
+      <model usable='no' vendor='AMD' canonical='Opteron_G4-v1'>Opteron_G4</model>
       <blockers model='Opteron_G4'>
+        <feature name='fma4'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='xop'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>Opteron_G4-v1</model>
+      <blockers model='Opteron_G4-v1'>
         <feature name='fma4'/>
         <feature name='misalignsse'/>
         <feature name='nrip-save'/>

@@ -143,6 +143,7 @@
       <include filename='x86_Opteron_G3.xml'/>
       <include filename='x86_Opteron_G3-v1.xml'/>
       <include filename='x86_Opteron_G4.xml'/>
+      <include filename='x86_Opteron_G4-v1.xml'/>
       <include filename='x86_Opteron_G5.xml'/>
       <include filename='x86_EPYC.xml'/>
       <include filename='x86_EPYC-IBPB.xml'/>

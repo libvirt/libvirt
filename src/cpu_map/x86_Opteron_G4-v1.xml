@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Opteron_G4-v1'>
+    <decode host='on' guest='off'/>
+    <model name='Opteron_G4'/>
+  </model>
+</cpus>

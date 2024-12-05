@@ -669,8 +669,13 @@
       <model usable='yes' vendor='AMD'>Opteron_G2-v1</model>
       <model usable='yes' vendor='AMD' canonical='Opteron_G3-v1'>Opteron_G3</model>
       <model usable='yes' vendor='AMD'>Opteron_G3-v1</model>
-      <model usable='no' vendor='AMD'>Opteron_G4</model>
+      <model usable='no' vendor='AMD' canonical='Opteron_G4-v1'>Opteron_G4</model>
       <blockers model='Opteron_G4'>
+        <feature name='fma4'/>
+        <feature name='xop'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>Opteron_G4-v1</model>
+      <blockers model='Opteron_G4-v1'>
         <feature name='fma4'/>
         <feature name='xop'/>
       </blockers>

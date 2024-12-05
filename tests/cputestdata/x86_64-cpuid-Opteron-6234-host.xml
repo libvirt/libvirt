@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Opteron_G4</model>
+  <model>Opteron_G4-v1</model>
   <vendor>AMD</vendor>
   <signature family='21' model='1' stepping='2'/>
   <feature name='monitor'/>
