@@ -664,7 +664,8 @@
       <blockers model='Nehalem-v2'>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='yes' vendor='AMD'>Opteron_G1</model>
+      <model usable='yes' vendor='AMD' canonical='Opteron_G1-v1'>Opteron_G1</model>
+      <model usable='yes' vendor='AMD'>Opteron_G1-v1</model>
       <model usable='yes' vendor='AMD'>Opteron_G2</model>
       <model usable='yes' vendor='AMD'>Opteron_G3</model>
       <model usable='no' vendor='AMD'>Opteron_G4</model>
