@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>n270</model>
+  <model>n270-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='28' stepping='10'/>
   <feature name='dtes64'/>

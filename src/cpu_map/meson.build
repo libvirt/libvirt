@@ -100,6 +100,7 @@ cpumap_data = [
   'x86_KnightsMill.xml',
   'x86_kvm32.xml',
   'x86_kvm64.xml',
+  'x86_n270-v1.xml',
   'x86_n270.xml',
   'x86_Nehalem-IBRS.xml',
   'x86_Nehalem-v1.xml',

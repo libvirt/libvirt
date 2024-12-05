@@ -1,0 +1,6 @@
+<cpus>
+  <model name='n270-v1'>
+    <decode host='on' guest='off'/>
+    <model name='n270'/>
+  </model>
+</cpus>
