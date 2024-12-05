@@ -121,6 +121,7 @@ cpumap_data = [
   'x86_pentium3.xml',
   'x86_pentiumpro.xml',
   'x86_phenom.xml',
+  'x86_qemu32-v1.xml',
   'x86_qemu32.xml',
   'x86_qemu64.xml',
   'x86_SandyBridge-IBRS.xml',

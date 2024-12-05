@@ -1756,7 +1756,8 @@
       <blockers model='phenom'>
         <feature name='fxsr_opt'/>
       </blockers>
-      <model usable='yes' vendor='unknown'>qemu32</model>
+      <model usable='yes' vendor='unknown' canonical='qemu32-v1'>qemu32</model>
+      <model usable='yes' vendor='unknown'>qemu32-v1</model>
       <model usable='yes' vendor='unknown'>qemu64</model>
     </mode>
   </cpu>
