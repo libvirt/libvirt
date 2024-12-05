@@ -28,6 +28,7 @@
       <include filename='x86_qemu32.xml'/>
       <include filename='x86_qemu32-v1.xml'/>
       <include filename='x86_kvm32.xml'/>
+      <include filename='x86_kvm32-v1.xml'/>
       <include filename='x86_cpu64-rhel5.xml'/>
       <include filename='x86_cpu64-rhel6.xml'/>
       <include filename='x86_qemu64.xml'/>
