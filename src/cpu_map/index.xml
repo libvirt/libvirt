@@ -34,6 +34,7 @@
       <include filename='x86_qemu64.xml'/>
       <include filename='x86_qemu64-v1.xml'/>
       <include filename='x86_kvm64.xml'/>
+      <include filename='x86_kvm64-v1.xml'/>
     </group>
 
     <group name='Intel CPU models'>

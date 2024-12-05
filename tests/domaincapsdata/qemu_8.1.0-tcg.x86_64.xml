@@ -1486,7 +1486,8 @@
       <model usable='yes' vendor='Intel'>coreduo-v1</model>
       <model usable='yes' vendor='unknown' canonical='kvm32-v1'>kvm32</model>
       <model usable='yes' vendor='unknown'>kvm32-v1</model>
-      <model usable='yes' vendor='unknown'>kvm64</model>
+      <model usable='yes' vendor='unknown' canonical='kvm64-v1'>kvm64</model>
+      <model usable='yes' vendor='unknown'>kvm64-v1</model>
       <model usable='yes' vendor='Intel' canonical='n270-v1'>n270</model>
       <model usable='yes' vendor='Intel'>n270-v1</model>
       <model usable='yes' vendor='unknown' canonical='pentium-v1'>pentium</model>

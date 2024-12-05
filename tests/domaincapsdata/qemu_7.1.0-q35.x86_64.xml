@@ -920,7 +920,8 @@
       </blockers>
       <model usable='yes' vendor='unknown' canonical='kvm32-v1'>kvm32</model>
       <model usable='yes' vendor='unknown'>kvm32-v1</model>
-      <model usable='yes' vendor='unknown'>kvm64</model>
+      <model usable='yes' vendor='unknown' canonical='kvm64-v1'>kvm64</model>
+      <model usable='yes' vendor='unknown'>kvm64-v1</model>
       <model usable='no' vendor='Intel' canonical='n270-v1'>n270</model>
       <blockers model='n270'>
         <feature name='ss'/>

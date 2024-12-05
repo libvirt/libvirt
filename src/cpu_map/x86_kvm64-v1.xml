@@ -1,0 +1,6 @@
+<cpus>
+  <model name='kvm64-v1'>
+    <decode host='on' guest='off'/>
+    <model name='kvm64'/>
+  </model>
+</cpus>
