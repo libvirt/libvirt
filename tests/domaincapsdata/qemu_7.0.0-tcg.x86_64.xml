@@ -78,7 +78,8 @@
       <feature policy='disable' name='misalignsse'/>
     </mode>
     <mode name='custom' supported='yes'>
-      <model usable='yes' vendor='unknown'>486</model>
+      <model usable='yes' vendor='unknown' canonical='486-v1'>486</model>
+      <model usable='yes' vendor='unknown'>486-v1</model>
       <model usable='no' vendor='Intel' canonical='Broadwell-v1'>Broadwell</model>
       <blockers model='Broadwell'>
         <feature name='3dnowprefetch'/>

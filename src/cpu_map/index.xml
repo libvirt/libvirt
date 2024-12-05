@@ -5,6 +5,7 @@
 
     <group name='generic'>
       <include filename='x86_486.xml'/>
+      <include filename='x86_486-v1.xml'/>
     </group>
 
     <group name='Intel-based QEMU generic CPU models'>
