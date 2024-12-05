@@ -1324,8 +1324,20 @@
         <feature name='nrip-save'/>
         <feature name='xop'/>
       </blockers>
-      <model usable='no' vendor='AMD'>Opteron_G5</model>
+      <model usable='no' vendor='AMD' canonical='Opteron_G5-v1'>Opteron_G5</model>
       <blockers model='Opteron_G5'>
+        <feature name='3dnowprefetch'/>
+        <feature name='avx'/>
+        <feature name='f16c'/>
+        <feature name='fma'/>
+        <feature name='fma4'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='tbm'/>
+        <feature name='xop'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>Opteron_G5-v1</model>
+      <blockers model='Opteron_G5-v1'>
         <feature name='3dnowprefetch'/>
         <feature name='avx'/>
         <feature name='f16c'/>
