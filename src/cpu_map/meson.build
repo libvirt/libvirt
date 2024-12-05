@@ -45,6 +45,7 @@ cpumap_data = [
   'x86_Cooperlake-v2.xml',
   'x86_Cooperlake.xml',
   'x86_core2duo.xml',
+  'x86_coreduo-v1.xml',
   'x86_coreduo.xml',
   'x86_cpu64-rhel5.xml',
   'x86_cpu64-rhel6.xml',

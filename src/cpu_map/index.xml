@@ -17,6 +17,7 @@
       <include filename='x86_pentium3-v1.xml'/>
       <include filename='x86_pentiumpro.xml'/>
       <include filename='x86_coreduo.xml'/>
+      <include filename='x86_coreduo-v1.xml'/>
       <include filename='x86_n270.xml'/>
       <include filename='x86_core2duo.xml'/>
     </group>

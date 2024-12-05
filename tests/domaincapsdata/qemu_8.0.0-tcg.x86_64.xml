@@ -1495,7 +1495,8 @@
       </blockers>
       <model usable='yes' vendor='AMD'>athlon</model>
       <model usable='yes' vendor='Intel'>core2duo</model>
-      <model usable='yes' vendor='Intel'>coreduo</model>
+      <model usable='yes' vendor='Intel' canonical='coreduo-v1'>coreduo</model>
+      <model usable='yes' vendor='Intel'>coreduo-v1</model>
       <model usable='yes' vendor='unknown'>kvm32</model>
       <model usable='yes' vendor='unknown'>kvm64</model>
       <model usable='yes' vendor='Intel'>n270</model>

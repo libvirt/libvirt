@@ -910,8 +910,12 @@
       <blockers model='core2duo'>
         <feature name='ss'/>
       </blockers>
-      <model usable='no' vendor='Intel'>coreduo</model>
+      <model usable='no' vendor='Intel' canonical='coreduo-v1'>coreduo</model>
       <blockers model='coreduo'>
+        <feature name='ss'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>coreduo-v1</model>
+      <blockers model='coreduo-v1'>
         <feature name='ss'/>
       </blockers>
       <model usable='yes' vendor='unknown'>kvm32</model>
