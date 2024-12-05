@@ -10,6 +10,7 @@
 
     <group name='Intel-based QEMU generic CPU models'>
       <include filename='x86_pentium.xml'/>
+      <include filename='x86_pentium-v1.xml'/>
       <include filename='x86_pentium2.xml'/>
       <include filename='x86_pentium3.xml'/>
       <include filename='x86_pentiumpro.xml'/>

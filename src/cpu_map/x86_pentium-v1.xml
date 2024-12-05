@@ -1,0 +1,6 @@
+<cpus>
+  <model name='pentium-v1'>
+    <decode host='on' guest='off'/>
+    <model name='pentium'/>
+  </model>
+</cpus>
