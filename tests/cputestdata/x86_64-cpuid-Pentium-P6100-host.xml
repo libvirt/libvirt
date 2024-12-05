@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>core2duo</model>
+  <model>core2duo-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='37' stepping='5'/>
   <feature name='dtes64'/>

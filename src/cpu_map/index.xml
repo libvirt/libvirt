@@ -21,6 +21,7 @@
       <include filename='x86_n270.xml'/>
       <include filename='x86_n270-v1.xml'/>
       <include filename='x86_core2duo.xml'/>
+      <include filename='x86_core2duo-v1.xml'/>
     </group>
 
     <group name='Generic QEMU CPU models'>

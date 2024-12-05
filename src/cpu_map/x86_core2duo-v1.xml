@@ -1,0 +1,6 @@
+<cpus>
+  <model name='core2duo-v1'>
+    <decode host='on' guest='off'/>
+    <model name='core2duo'/>
+  </model>
+</cpus>

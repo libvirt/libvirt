@@ -901,8 +901,12 @@
         <feature name='3dnow'/>
         <feature name='3dnowext'/>
       </blockers>
-      <model usable='no' vendor='Intel'>core2duo</model>
+      <model usable='no' vendor='Intel' canonical='core2duo-v1'>core2duo</model>
       <blockers model='core2duo'>
+        <feature name='ss'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>core2duo-v1</model>
+      <blockers model='core2duo-v1'>
         <feature name='ss'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='coreduo-v1'>coreduo</model>
