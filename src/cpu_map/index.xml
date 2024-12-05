@@ -39,6 +39,7 @@
 
     <group name='Intel CPU models'>
       <include filename='x86_Conroe.xml'/>
+      <include filename='x86_Conroe-v1.xml'/>
       <include filename='x86_Penryn.xml'/>
       <include filename='x86_Nehalem.xml'/>
       <include filename='x86_Nehalem-IBRS.xml'/>

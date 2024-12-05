@@ -252,7 +252,8 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
-      <model usable='yes' vendor='Intel'>Conroe</model>
+      <model usable='yes' vendor='Intel' canonical='Conroe-v1'>Conroe</model>
+      <model usable='yes' vendor='Intel'>Conroe-v1</model>
       <model usable='no' vendor='Intel' canonical='Cooperlake-v1'>Cooperlake</model>
       <blockers model='Cooperlake'>
         <feature name='arch-capabilities'/>

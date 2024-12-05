@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Conroe</model>
+  <model>Conroe-v1</model>
   <vendor>Intel</vendor>
   <signature family='6' model='15' stepping='11'/>
   <feature name='dtes64'/>

@@ -351,7 +351,8 @@
         <feature name='x2apic'/>
         <feature name='xsavec'/>
       </blockers>
-      <model usable='yes' vendor='Intel'>Conroe</model>
+      <model usable='yes' vendor='Intel' canonical='Conroe-v1'>Conroe</model>
+      <model usable='yes' vendor='Intel'>Conroe-v1</model>
       <model usable='no' vendor='Intel' canonical='Cooperlake-v1'>Cooperlake</model>
       <blockers model='Cooperlake'>
         <feature name='3dnowprefetch'/>
