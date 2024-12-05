@@ -114,6 +114,7 @@ cpumap_data = [
   'x86_Nehalem.xml',
   'x86_Opteron_G1-v1.xml',
   'x86_Opteron_G1.xml',
+  'x86_Opteron_G2-v1.xml',
   'x86_Opteron_G2.xml',
   'x86_Opteron_G3.xml',
   'x86_Opteron_G4.xml',

@@ -139,6 +139,7 @@
       <include filename='x86_Opteron_G1.xml'/>
       <include filename='x86_Opteron_G1-v1.xml'/>
       <include filename='x86_Opteron_G2.xml'/>
+      <include filename='x86_Opteron_G2-v1.xml'/>
       <include filename='x86_Opteron_G3.xml'/>
       <include filename='x86_Opteron_G4.xml'/>
       <include filename='x86_Opteron_G5.xml'/>
