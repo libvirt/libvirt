@@ -24,6 +24,7 @@ cpumap_data = [
   'ppc64_vendors.xml',
   'x86_486-v1.xml',
   'x86_486.xml',
+  'x86_athlon-v1.xml',
   'x86_athlon.xml',
   'x86_Broadwell-IBRS.xml',
   'x86_Broadwell-noTSX-IBRS.xml',

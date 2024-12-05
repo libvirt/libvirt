@@ -1460,7 +1460,8 @@
       <blockers model='Westmere-v2'>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='yes' vendor='AMD'>athlon</model>
+      <model usable='yes' vendor='AMD' canonical='athlon-v1'>athlon</model>
+      <model usable='yes' vendor='AMD'>athlon-v1</model>
       <model usable='yes' vendor='Intel' canonical='core2duo-v1'>core2duo</model>
       <model usable='yes' vendor='Intel'>core2duo-v1</model>
       <model usable='yes' vendor='Intel' canonical='coreduo-v1'>coreduo</model>

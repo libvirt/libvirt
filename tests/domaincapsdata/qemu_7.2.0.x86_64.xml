@@ -915,8 +915,13 @@
       <blockers model='Westmere-v2'>
         <feature name='spec-ctrl'/>
       </blockers>
-      <model usable='no' vendor='AMD'>athlon</model>
+      <model usable='no' vendor='AMD' canonical='athlon-v1'>athlon</model>
       <blockers model='athlon'>
+        <feature name='3dnow'/>
+        <feature name='3dnowext'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>athlon-v1</model>
+      <blockers model='athlon-v1'>
         <feature name='3dnow'/>
         <feature name='3dnowext'/>
       </blockers>

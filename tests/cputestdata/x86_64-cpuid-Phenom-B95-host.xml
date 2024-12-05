@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>athlon</model>
+  <model>athlon-v1</model>
   <vendor>AMD</vendor>
   <signature family='16' model='4' stepping='2'/>
   <feature name='pni'/>

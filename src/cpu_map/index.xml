@@ -133,6 +133,7 @@
 
     <group name='AMD CPU models'>
       <include filename='x86_athlon.xml'/>
+      <include filename='x86_athlon-v1.xml'/>
       <include filename='x86_phenom.xml'/>
       <include filename='x86_Opteron_G1.xml'/>
       <include filename='x86_Opteron_G2.xml'/>
