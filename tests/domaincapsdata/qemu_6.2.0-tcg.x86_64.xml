@@ -1303,7 +1303,8 @@
         <feature name='tbm'/>
         <feature name='xop'/>
       </blockers>
-      <model usable='yes' vendor='Intel'>Penryn</model>
+      <model usable='yes' vendor='Intel' canonical='Penryn-v1'>Penryn</model>
+      <model usable='yes' vendor='Intel'>Penryn-v1</model>
       <model usable='no' vendor='Intel' canonical='SandyBridge-v1'>SandyBridge</model>
       <blockers model='SandyBridge'>
         <feature name='avx'/>

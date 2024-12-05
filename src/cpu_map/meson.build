@@ -115,6 +115,7 @@ cpumap_data = [
   'x86_Opteron_G3.xml',
   'x86_Opteron_G4.xml',
   'x86_Opteron_G5.xml',
+  'x86_Penryn-v1.xml',
   'x86_Penryn.xml',
   'x86_pentium-v1.xml',
   'x86_pentium.xml',
