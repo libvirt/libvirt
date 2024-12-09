@@ -722,6 +722,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-ccw.loadparm", /* QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM */
               "netdev-stream-reconnect-miliseconds", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS */
               "query-cpu-model-expansion.deprecated-props", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS */
+
+              /* 470 */
+              "migrate-incoming.exit-on-error", /* QEMU_CAPS_MIGRATE_INCOMING_EXIT_ON_ERROR */
     );
 
 
@@ -1596,6 +1599,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "screendump/arg-type/format/^png", QEMU_CAPS_SCREENSHOT_FORMAT_PNG },
     { "set-numa-node/arg-type/+hmat-lb", QEMU_CAPS_NUMA_HMAT },
     { "query-cpu-model-expansion/ret-type/deprecated-props", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS },
+    { "migrate-incoming/arg-type/exit-on-error", QEMU_CAPS_MIGRATE_INCOMING_EXIT_ON_ERROR },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;

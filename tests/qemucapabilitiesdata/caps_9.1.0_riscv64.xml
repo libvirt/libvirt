@@ -168,6 +168,7 @@
   <flag name='netdev.user'/>
   <flag name='acpi-erst'/>
   <flag name='snapshot-internal-qmp'/>
+  <flag name='migrate-incoming.exit-on-error'/>
   <version>9001000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>v9.1.0</package>

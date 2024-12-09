@@ -210,6 +210,7 @@
   <flag name='snapshot-internal-qmp'/>
   <flag name='chardev-reconnect-miliseconds'/>
   <flag name='netdev-stream-reconnect-miliseconds'/>
+  <flag name='migrate-incoming.exit-on-error'/>
   <version>9001090</version>
   <microcodeVersion>43100247</microcodeVersion>
   <package>v9.2.0-rc0-42-g3428a3894c</package>
