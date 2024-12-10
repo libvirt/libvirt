@@ -6676,7 +6676,7 @@ qemuDomainDiskChangeSupportedIothreads(virDomainDiskDef *disk,
 
  fail:
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                   _("cannot modify field '<iothreads>' (or it's parts) of the disk"));
+                   _("cannot modify '<iothreads>' configuration of the disk"));
     return false;
 }
 
