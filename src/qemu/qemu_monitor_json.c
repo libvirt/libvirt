@@ -7269,13 +7269,15 @@ qemuMonitorJSONFindLinkPath(qemuMonitor *mon,
 
 int
 qemuMonitorJSONMigrateIncoming(qemuMonitor *mon,
-                               const char *uri)
+                               const char *uri,
+                               virTristateBool exitOnError)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("migrate-incoming",
                                            "s:uri", uri,
+                                           "T:exit-on-error", exitOnError,
                                            NULL)))
         return -1;
 

@@ -2378,10 +2378,17 @@ qemuMigrationDstRun(virDomainObj *vm,
                     const char *uri,
                     virDomainAsyncJob asyncJob)
 {
+    virTristateBool exitOnError = VIR_TRISTATE_BOOL_ABSENT;
     qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     VIR_DEBUG("Setting up incoming migration with URI %s", uri);
+
+    /* Ask QEMU not to exit on failure during incoming migration (if supported)
+     * so that we can properly check and report error during Finish phase.
+     */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_INCOMING_EXIT_ON_ERROR))
+        exitOnError = VIR_TRISTATE_BOOL_NO;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
@@ -2390,7 +2397,7 @@ qemuMigrationDstRun(virDomainObj *vm,
     if (rv < 0)
         goto exit_monitor;
 
-    rv = qemuMonitorMigrateIncoming(priv->mon, uri);
+    rv = qemuMonitorMigrateIncoming(priv->mon, uri, exitOnError);
 
  exit_monitor:
     qemuDomainObjExitMonitor(vm);

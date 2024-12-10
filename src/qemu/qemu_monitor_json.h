@@ -607,7 +607,8 @@ qemuMonitorJSONFindLinkPath(qemuMonitor *mon,
 
 int
 qemuMonitorJSONMigrateIncoming(qemuMonitor *mon,
-                               const char *uri)
+                               const char *uri,
+                               virTristateBool exitOnError)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int

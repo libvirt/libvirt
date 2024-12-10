@@ -1294,7 +1294,8 @@ int qemuMonitorGetMemoryDeviceInfo(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorMigrateIncoming(qemuMonitor *mon,
-                               const char *uri);
+                               const char *uri,
+                               virTristateBool exitOnError);
 
 int qemuMonitorMigrateStartPostCopy(qemuMonitor *mon);
 

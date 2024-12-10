@@ -3811,13 +3811,15 @@ qemuMonitorGetMemoryDeviceInfo(qemuMonitor *mon,
 
 int
 qemuMonitorMigrateIncoming(qemuMonitor *mon,
-                           const char *uri)
+                           const char *uri,
+                           virTristateBool exitOnError)
 {
-    VIR_DEBUG("uri=%s", uri);
+    VIR_DEBUG("uri=%s, exitOnError=%s",
+              uri, virTristateBoolTypeToString(exitOnError));
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONMigrateIncoming(mon, uri);
+    return qemuMonitorJSONMigrateIncoming(mon, uri, exitOnError);
 }
 
 
