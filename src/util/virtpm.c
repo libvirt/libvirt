@@ -43,6 +43,7 @@ VIR_ENUM_IMPL(virTPMSwtpmFeature,
               "nvram-backend-dir",
               "nvram-backend-file",
               "cmdarg-print-info",
+              "tpmstate-opt-lock",
 );
 
 VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,

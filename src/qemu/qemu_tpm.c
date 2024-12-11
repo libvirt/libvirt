@@ -606,17 +606,24 @@ static void
 qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
                                   const virDomainTPMEmulatorDef *emulator)
 {
+    const char *lock = ",lock";
+
+    if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_TPMSTATE_OPT_LOCK)) {
+        VIR_WARN("This swtpm version doesn't support explicit locking");
+        lock = "";
+    }
+
     virCommandAddArg(cmd, "--tpmstate");
     switch (emulator->source_type) {
     case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
-        virCommandAddArgFormat(cmd, "backend-uri=file://%s",
-                               emulator->source_path);
+        virCommandAddArgFormat(cmd, "backend-uri=file://%s%s",
+                               emulator->source_path, lock);
         break;
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
     case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
-        virCommandAddArgFormat(cmd, "dir=%s,mode=0600",
-                               emulator->source_path);
+        virCommandAddArgFormat(cmd, "dir=%s,mode=0600%s",
+                               emulator->source_path, lock);
         break;
     }
 }
