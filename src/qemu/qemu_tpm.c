@@ -214,9 +214,31 @@ qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
 static void
 qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 {
-    g_autofree char *path = g_path_get_dirname(tpm->data.emulator.source_path);
+    const char *source_path = tpm->data.emulator.source_path;
 
-    ignore_value(virFileDeleteTree(path));
+    switch (tpm->data.emulator.source_type) {
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE: {
+        if (unlink(source_path) && errno != ENOENT)
+            virReportSystemError(errno,
+                                 _("Cannot delete file '%1$s'"),
+                                 source_path);
+        break;
+    }
+
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR: {
+        ignore_value(virFileDeleteTree(source_path));
+        break;
+    }
+
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
+    case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
+    default: {
+        g_autofree char *vm_uuid_dir = g_path_get_dirname(source_path);
+
+        ignore_value(virFileDeleteTree(vm_uuid_dir));
+    }
+
+    }
 }
 
 
