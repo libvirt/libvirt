@@ -6163,6 +6163,9 @@ static char
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
+        goto cleanup;
+
     qemuDomainUpdateCurrentMemorySize(vm);
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE))
@@ -6176,6 +6179,8 @@ static char
         flags &= ~VIR_DOMAIN_XML_UPDATE_CPU;
 
     ret = qemuDomainFormatXML(driver, vm, flags);
+
+    virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
