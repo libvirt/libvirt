@@ -53,7 +53,6 @@ VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,
               "cmdarg-reconfigure-pcr-banks",
               "tpm-1.2",
               "tpm-2.0",
-              "tpmstate-opt-lock",
               "cmdarg-profile",
 );
 
