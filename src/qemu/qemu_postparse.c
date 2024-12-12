@@ -1547,6 +1547,13 @@ qemuDomainDefEnableDefaultFeatures(virDomainDef *def,
          * capabilities, we still want to enable this */
         def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
     }
+
+    /* IOMMU with intremap requires split I/O APIC */
+    if (def->iommu &&
+        def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
+        def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_DOMAIN_IOAPIC_NONE) {
+        def->features[VIR_DOMAIN_FEATURE_IOAPIC] = VIR_DOMAIN_IOAPIC_QEMU;
+    }
 }
 
 
