@@ -1431,14 +1431,6 @@ qemuMonitorStopCPUs(qemuMonitor *mon)
 
 
 int
-qemuMonitorCheck(qemuMonitor *mon)
-{
-    bool running;
-    return qemuMonitorGetStatus(mon, &running, NULL);
-}
-
-
-int
 qemuMonitorGetStatus(qemuMonitor *mon,
                      bool *running,
                      virDomainPausedReason *reason)

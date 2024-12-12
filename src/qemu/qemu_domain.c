@@ -9007,24 +9007,6 @@ qemuDomainVcpuPersistOrder(virDomainDef *def)
 }
 
 
-int
-qemuDomainCheckMonitor(virDomainObj *vm,
-                       virDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    int ret;
-
-    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-        return -1;
-
-    ret = qemuMonitorCheck(priv->mon);
-
-    qemuDomainObjExitMonitor(vm);
-
-    return ret;
-}
-
-
 bool
 qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
                            virQEMUCaps *qemuCaps)

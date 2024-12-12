@@ -558,7 +558,6 @@ typedef enum {
 VIR_ENUM_DECL(qemuMonitorVMStatus);
 int qemuMonitorVMStatusToPausedReason(const char *status);
 
-int qemuMonitorCheck(qemuMonitor *mon);
 int qemuMonitorGetStatus(qemuMonitor *mon,
                          bool *running,
                          virDomainPausedReason *reason)

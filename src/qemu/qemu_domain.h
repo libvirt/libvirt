@@ -968,9 +968,6 @@ bool qemuDomainVcpuHotplugIsInOrder(virDomainDef *def)
 void qemuDomainVcpuPersistOrder(virDomainDef *def)
     ATTRIBUTE_NONNULL(1);
 
-int qemuDomainCheckMonitor(virDomainObj *vm,
-                           virDomainAsyncJob asyncJob);
-
 bool qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
                                 virQEMUCaps *qemuCaps);
 

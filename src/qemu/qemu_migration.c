@@ -6850,10 +6850,11 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
         goto error;
 
     if (retcode != 0) {
-        /* Check for a possible error on the monitor in case Finish was called
-         * earlier than monitor EOF handler got a chance to process the error
+        /* Checking the migration status will read the migration error if
+         * set and QEMU is still alive. If the process died and EOF handler
+         * was not run yet, the appropriate monitor error will be set.
          */
-        qemuDomainCheckMonitor(vm, VIR_ASYNC_JOB_MIGRATION_IN);
+        qemuMigrationJobCheckStatus(vm, VIR_ASYNC_JOB_MIGRATION_IN);
         goto error;
     }
 
