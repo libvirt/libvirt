@@ -20671,13 +20671,27 @@ virDomainHostdevDefCheckABIStability(virDomainHostdevDef *src,
         return false;
     }
 
-    if (src->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        src->source.subsys.type != dst->source.subsys.type) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target host device subsystem %1$s does not match source %2$s"),
-                       virDomainHostdevSubsysTypeToString(dst->source.subsys.type),
-                       virDomainHostdevSubsysTypeToString(src->source.subsys.type));
-        return false;
+    if (src->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virDomainHostdevSubsysType srcType = src->source.subsys.type;
+        virDomainHostdevSubsysType dstType = dst->source.subsys.type;
+
+        /* If the source and destination subsys types aren't the same,
+         * then migration can't be supported, *except* that it might
+         * be supported to migrate from subsys type 'pci' to 'mdev'
+         * and vice versa. (libvirt can't know for certain whether or
+         * not it will actually work, so we have to just allow it and
+         * count on QEMU to provide us with an error if it fails)
+         */
+
+        if (srcType != dstType
+            && ((srcType != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI && srcType != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV)
+                || (dstType != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI && dstType != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target host device subsystem type %1$s is not compatible with source subsystem type %2$s"),
+                           virDomainHostdevSubsysTypeToString(dstType),
+                           virDomainHostdevSubsysTypeToString(srcType));
+            return false;
+        }
     }
 
     if (!virDomainDeviceInfoCheckABIStability(src->info, dst->info))
