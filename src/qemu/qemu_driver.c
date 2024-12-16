@@ -16530,7 +16530,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     virDomainVirtType virttype;
     g_autoptr(virDomainCaps) domCaps = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES,
+                  NULL);
 
     if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
         return NULL;
@@ -16548,6 +16549,11 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
                                                        qemuCaps, machine,
                                                        arch, virttype)))
         return NULL;
+
+    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES) {
+        virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, virttype,
+                                               domCaps->cpu.hostModel);
+    }
 
     return virDomainCapsFormat(domCaps);
 }

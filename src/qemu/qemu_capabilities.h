@@ -764,6 +764,9 @@ int virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
                               virDomainVirtType virtType,
                               bool migratable,
                               char ***features);
+void virQEMUCapsUpdateCPUDeprecatedFeatures(virQEMUCaps *qemuCaps,
+                                            virDomainVirtType virtType,
+                                            virCPUDef *cpu);
 
 virDomainVirtType virQEMUCapsGetVirtType(virQEMUCaps *qemuCaps);
 

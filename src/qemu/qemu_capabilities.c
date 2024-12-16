@@ -3330,6 +3330,26 @@ virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsUpdateCPUDeprecatedFeatures(virQEMUCaps *qemuCaps,
+                                       virDomainVirtType virtType,
+                                       virCPUDef *cpu)
+{
+    qemuMonitorCPUModelInfo *modelInfo;
+    size_t i;
+
+    modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, virtType);
+
+    if (!modelInfo || !modelInfo->deprecated_props)
+        return;
+
+    for (i = 0; i < g_strv_length(modelInfo->deprecated_props); i++) {
+        virCPUDefUpdateFeature(cpu, modelInfo->deprecated_props[i],
+                               VIR_CPU_FEATURE_DISABLE);
+    }
+}
+
+
 struct tpmTypeToCaps {
     int type;
     virQEMUCapsFlags caps;
