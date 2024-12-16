@@ -887,6 +887,7 @@ qemuStateInitialize(bool privileged,
         .stateDir = cfg->stateDir,
         .callback = qemuAutostartDomain,
         .opaque = qemu_driver,
+        .delayMS = cfg->autoStartDelayMS,
     };
     virDomainDriverAutoStart(qemu_driver->domains, &autostartCfg);
 

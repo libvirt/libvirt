@@ -634,6 +634,11 @@
 #
 #auto_start_bypass_cache = 0
 
+# Delay in milliseconds between initiating the startup for
+# each VM, during autostart
+#
+#auto_start_delay = 0
+
 # If provided by the host and a hugetlbfs mount point is configured,
 # a guest may request huge page backing.  When this mount point is
 # unspecified here, determination of a host mount point in /proc/mounts

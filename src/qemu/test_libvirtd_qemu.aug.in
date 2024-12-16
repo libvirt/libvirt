@@ -75,6 +75,7 @@ module Test_libvirtd_qemu =
 { "auto_dump_path" = "/var/lib/libvirt/qemu/dump" }
 { "auto_dump_bypass_cache" = "0" }
 { "auto_start_bypass_cache" = "0" }
+{ "auto_start_delay" = "0" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
 { "bridge_helper" = "qemu-bridge-helper" }
 { "set_process_name" = "1" }

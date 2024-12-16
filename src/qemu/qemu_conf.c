@@ -638,6 +638,8 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
         return -1;
     if (virConfGetValueBool(conf, "auto_start_bypass_cache", &cfg->autoStartBypassCache) < 0)
         return -1;
+    if (virConfGetValueUInt(conf, "auto_start_delay", &cfg->autoStartDelayMS) < 0)
+        return -1;
 
     return 0;
 }

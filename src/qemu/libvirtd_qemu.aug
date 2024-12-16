@@ -97,6 +97,7 @@ module Libvirtd_qemu =
                  | str_entry "auto_dump_path"
                  | bool_entry "auto_dump_bypass_cache"
                  | bool_entry "auto_start_bypass_cache"
+                 | int_entry "auto_start_delay"
 
    let process_entry = str_entry "hugetlbfs_mount"
                  | str_entry "bridge_helper"
