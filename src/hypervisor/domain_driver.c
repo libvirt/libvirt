@@ -656,11 +656,16 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
     return ret;
 }
 
+typedef struct _virDomainDriverAutoStartState {
+    virDomainDriverAutoStartConfig *cfg;
+    bool first;
+} virDomainDriverAutoStartState;
+
 static int
 virDomainDriverAutoStartOne(virDomainObj *vm,
                             void *opaque)
 {
-    virDomainDriverAutoStartConfig *cfg = opaque;
+    virDomainDriverAutoStartState *state = opaque;
 
     virObjectLock(vm);
     virObjectRef(vm);
@@ -670,7 +675,15 @@ virDomainDriverAutoStartOne(virDomainObj *vm,
 
     if (vm->autostart && !virDomainObjIsActive(vm)) {
         virResetLastError();
-        cfg->callback(vm, cfg->opaque);
+        if (state->cfg->delayMS) {
+            if (!state->first) {
+                g_usleep(state->cfg->delayMS * 1000ull);
+            } else {
+                state->first = false;
+            }
+        }
+
+        state->cfg->callback(vm, state->cfg->opaque);
     }
 
     virDomainObjEndAPI(&vm);
@@ -683,6 +696,7 @@ void
 virDomainDriverAutoStart(virDomainObjList *domains,
                          virDomainDriverAutoStartConfig *cfg)
 {
+    virDomainDriverAutoStartState state = { .cfg = cfg, .first = true };
     bool autostart;
     VIR_DEBUG("Run autostart stateDir=%s", cfg->stateDir);
     if (virDriverShouldAutostart(cfg->stateDir, &autostart) < 0 ||
@@ -691,5 +705,5 @@ virDomainDriverAutoStart(virDomainObjList *domains,
         return;
     }
 
-    virDomainObjListForEach(domains, false, virDomainDriverAutoStartOne, cfg);
+    virDomainObjListForEach(domains, false, virDomainDriverAutoStartOne, &state);
 }
