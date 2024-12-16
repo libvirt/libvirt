@@ -707,7 +707,7 @@ libxlStateInitialize(bool privileged,
         goto error;
 
     libxl_driver->inhibitor = virInhibitorNew(
-        VIR_INHIBITOR_WHAT_NONE,
+        VIR_INHIBITOR_WHAT_SHUTDOWN,
         _("Libvirt Xen"),
         _("Xen virtual machines are running"),
         VIR_INHIBITOR_MODE_DELAY,

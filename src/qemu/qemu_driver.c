@@ -673,7 +673,7 @@ qemuStateInitialize(bool privileged,
     }
 
     qemu_driver->inhibitor = virInhibitorNew(
-        VIR_INHIBITOR_WHAT_NONE,
+        VIR_INHIBITOR_WHAT_SHUTDOWN,
         _("Libvirt QEMU"),
         _("QEMU/KVM virtual machines are running"),
         VIR_INHIBITOR_MODE_DELAY,

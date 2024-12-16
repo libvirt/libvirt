@@ -31,7 +31,6 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "virnetserver.h"
-#include "virgdbus.h"
 #include "virhash.h"
 #include "virprocess.h"
 #include "virsystemd.h"
@@ -80,7 +79,6 @@ struct _virNetDaemon {
     int autoShutdownTimerID;
     bool autoShutdownTimerActive;
     size_t autoShutdownInhibitions;
-    int autoShutdownInhibitFd;
 };
 
 
@@ -109,7 +107,6 @@ virNetDaemonDispose(void *obj)
         virEventRemoveHandle(dmn->sigwatch);
 #endif /* !WIN32 */
 
-    VIR_FORCE_CLOSE(dmn->autoShutdownInhibitFd);
     g_free(dmn->stateStopThread);
 
     g_clear_pointer(&dmn->servers, g_hash_table_unref);
@@ -150,7 +147,6 @@ virNetDaemonNew(void)
 #endif /* !WIN32 */
 
     dmn->privileged = geteuid() == 0;
-    dmn->autoShutdownInhibitFd = -1;
 
     virProcessActivateMaxFiles();
 
@@ -491,66 +487,6 @@ virNetDaemonAutoShutdown(virNetDaemon *dmn,
 }
 
 
-#ifdef G_OS_UNIX
-/* As per: https://www.freedesktop.org/wiki/Software/systemd/inhibit */
-static void
-virNetDaemonCallInhibit(virNetDaemon *dmn,
-                        const char *what,
-                        const char *who,
-                        const char *why,
-                        const char *mode)
-{
-    g_autoptr(GVariant) reply = NULL;
-    g_autoptr(GUnixFDList) replyFD = NULL;
-    g_autoptr(GVariant) message = NULL;
-    GDBusConnection *systemBus;
-    int fd;
-    int rc;
-
-    VIR_DEBUG("dmn=%p what=%s who=%s why=%s mode=%s",
-              dmn, NULLSTR(what), NULLSTR(who), NULLSTR(why), NULLSTR(mode));
-
-    if (virSystemdHasLogind() < 0)
-        return;
-
-    if (!(systemBus = virGDBusGetSystemBus()))
-        return;
-
-    message = g_variant_new("(ssss)", what, who, why, mode);
-
-    rc = virGDBusCallMethodWithFD(systemBus,
-                                  &reply,
-                                  G_VARIANT_TYPE("(h)"),
-                                  &replyFD,
-                                  NULL,
-                                  "org.freedesktop.login1",
-                                  "/org/freedesktop/login1",
-                                  "org.freedesktop.login1.Manager",
-                                  "Inhibit",
-                                  message,
-                                  NULL);
-
-    if (rc < 0)
-        return;
-
-    if (g_unix_fd_list_get_length(replyFD) <= 0)
-        return;
-
-    fd = g_unix_fd_list_get(replyFD, 0, NULL);
-    if (fd < 0)
-        return;
-
-    if (dmn->autoShutdownInhibitions) {
-        dmn->autoShutdownInhibitFd = fd;
-        VIR_DEBUG("Got inhibit FD %d", fd);
-    } else {
-        /* We stopped the last VM since we made the inhibit call */
-        VIR_DEBUG("Closing inhibit FD %d", fd);
-        VIR_FORCE_CLOSE(fd);
-    }
-}
-#endif
-
 void
 virNetDaemonAddShutdownInhibition(virNetDaemon *dmn)
 {
@@ -559,15 +495,6 @@ virNetDaemonAddShutdownInhibition(virNetDaemon *dmn)
     dmn->autoShutdownInhibitions++;
 
     VIR_DEBUG("dmn=%p inhibitions=%zu", dmn, dmn->autoShutdownInhibitions);
-
-#ifdef G_OS_UNIX
-    if (dmn->autoShutdownInhibitions == 1)
-        virNetDaemonCallInhibit(dmn,
-                                "shutdown",
-                                _("Libvirt"),
-                                _("Virtual machines need to be saved"),
-                                "delay");
-#endif
 }
 
 
@@ -579,11 +506,6 @@ virNetDaemonRemoveShutdownInhibition(virNetDaemon *dmn)
     dmn->autoShutdownInhibitions--;
 
     VIR_DEBUG("dmn=%p inhibitions=%zu", dmn, dmn->autoShutdownInhibitions);
-
-    if (dmn->autoShutdownInhibitions == 0) {
-        VIR_DEBUG("Closing inhibit FD %d", dmn->autoShutdownInhibitFd);
-        VIR_FORCE_CLOSE(dmn->autoShutdownInhibitFd);
-    }
 }
 
 

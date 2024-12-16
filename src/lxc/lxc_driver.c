@@ -1452,7 +1452,7 @@ lxcStateInitialize(bool privileged,
         goto cleanup;
 
     lxc_driver->inhibitor = virInhibitorNew(
-        VIR_INHIBITOR_WHAT_NONE,
+        VIR_INHIBITOR_WHAT_SHUTDOWN,
         _("Libvirt LXC"),
         _("LXC containers are running"),
         VIR_INHIBITOR_MODE_DELAY,
