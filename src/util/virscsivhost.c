@@ -193,7 +193,7 @@ virSCSIVHostDeviceListNew(void)
 }
 
 
-int
+void
 virSCSIVHostDeviceSetUsedBy(virSCSIVHostDevice *dev,
                             const char *drvname,
                             const char *domname)
@@ -202,8 +202,6 @@ virSCSIVHostDeviceSetUsedBy(virSCSIVHostDevice *dev,
     VIR_FREE(dev->used_by_domname);
     dev->used_by_drvname = g_strdup(drvname);
     dev->used_by_domname = g_strdup(domname);
-
-    return 0;
 }
 
 

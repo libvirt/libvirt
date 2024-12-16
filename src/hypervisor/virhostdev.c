@@ -1667,8 +1667,7 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManager *mgr,
         if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
             return -1;
 
-        if (virSCSIVHostDeviceSetUsedBy(host, drv_name, dom_name) < 0)
-            return -1;
+        virSCSIVHostDeviceSetUsedBy(host, drv_name, dom_name);
 
         if (virSCSIVHostDeviceListAdd(list, host) < 0)
             return -1;

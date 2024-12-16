@@ -50,9 +50,9 @@ void virSCSIVHostDeviceListDel(virSCSIVHostDeviceList *list,
                                virSCSIVHostDevice *dev);
 virSCSIVHostDeviceList *virSCSIVHostDeviceListNew(void);
 virSCSIVHostDevice *virSCSIVHostDeviceNew(const char *name);
-int virSCSIVHostDeviceSetUsedBy(virSCSIVHostDevice *dev,
-                                const char *drvname,
-                                const char *domname);
+void virSCSIVHostDeviceSetUsedBy(virSCSIVHostDevice *dev,
+                                 const char *drvname,
+                                 const char *domname);
 void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevice *dev,
                                  const char **drv_name,
                                  const char **dom_name);
