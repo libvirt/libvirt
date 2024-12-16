@@ -114,6 +114,10 @@ static const vshCmdOptDef opts_domcapabilities[] = {
      .type = VSH_OT_BOOL,
      .help = N_("wrap xpath results in an common root element"),
     },
+    {.name = "disable-deprecated-features",
+     .type = VSH_OT_BOOL,
+     .help = N_("report host CPU model with deprecated features disabled"),
+    },
     {.name = NULL}
 };
 
@@ -126,9 +130,12 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
     const char *arch = NULL;
     const char *machine = NULL;
     const char *xpath = NULL;
-    const unsigned int flags = 0; /* No flags so far */
+    unsigned int flags = 0;
     bool wrap = vshCommandOptBool(cmd, "wrap");
     virshControl *priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "disable-deprecated-features"))
+        flags |= VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES;
 
     if (vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
         vshCommandOptString(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
