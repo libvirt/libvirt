@@ -1150,6 +1150,7 @@ struct _qemuMonitorCPUModelInfo {
     char *name;
     size_t nprops;
     qemuMonitorCPUProperty *props;
+    GStrv deprecated_props;
     bool migratability;
 };
 

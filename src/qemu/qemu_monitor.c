@@ -3306,6 +3306,7 @@ qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfo *model_info)
             g_free(model_info->props[i].value.string);
     }
 
+    g_strfreev(model_info->deprecated_props);
     g_free(model_info->props);
     g_free(model_info->name);
     g_free(model_info);
@@ -3349,6 +3350,8 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
             break;
         }
     }
+
+    copy->deprecated_props = g_strdupv(orig->deprecated_props);
 
     return copy;
 }

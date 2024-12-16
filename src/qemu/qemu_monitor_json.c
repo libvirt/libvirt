@@ -5105,12 +5105,19 @@ qemuMonitorJSONParseCPUModelExpansionData(virJSONValue *data,
                                           bool fail_no_props,
                                           virJSONValue **cpu_model,
                                           virJSONValue **cpu_props,
+                                          virJSONValue **cpu_deprecated_props,
                                           const char **cpu_name)
 {
     if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-expansion",
                                          fail_no_props, cpu_model, cpu_props,
                                          cpu_name) < 0)
         return -1;
+
+    /*
+     * Unconditionally check for the deprecated-props array, as
+     * it is not a guarantee response even if QEMU supports it.
+     */
+    *cpu_deprecated_props = virJSONValueObjectGetArray(data, "deprecated-props");
 
     return 0;
 }
@@ -5119,12 +5126,19 @@ qemuMonitorJSONParseCPUModelExpansionData(virJSONValue *data,
 static int
 qemuMonitorJSONParseCPUModelExpansion(const char *cpu_name,
                                       virJSONValue *cpu_props,
+                                      virJSONValue *cpu_deprecated_props,
                                       qemuMonitorCPUModelInfo **model_info)
 {
     g_autoptr(qemuMonitorCPUModelInfo) expanded_model = NULL;
 
     if (qemuMonitorJSONParseCPUModel(cpu_name, cpu_props, &expanded_model) < 0)
         return -1;
+
+    if (cpu_deprecated_props &&
+        virJSONValueArraySize(cpu_deprecated_props) &&
+        (!(expanded_model->deprecated_props = virJSONValueArrayToStringList(cpu_deprecated_props)))) {
+        return -1;
+    }
 
     *model_info = g_steal_pointer(&expanded_model);
     return 0;
@@ -5190,6 +5204,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
     g_autoptr(virJSONValue) fullData = NULL;
     virJSONValue *cpu_model;
     virJSONValue *cpu_props = NULL;
+    virJSONValue *cpu_deprecated_props = NULL;
     const char *cpu_name = "";
     int rc;
 
@@ -5203,6 +5218,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
 
     if (qemuMonitorJSONParseCPUModelExpansionData(data, fail_no_props,
                                                   &cpu_model, &cpu_props,
+                                                  &cpu_deprecated_props,
                                                   &cpu_name) < 0)
         return -1;
 
@@ -5221,11 +5237,13 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
 
         if (qemuMonitorJSONParseCPUModelExpansionData(fullData, fail_no_props,
                                                       &cpu_model, &cpu_props,
+                                                      &cpu_deprecated_props,
                                                       &cpu_name) < 0)
             return -1;
     }
 
     return qemuMonitorJSONParseCPUModelExpansion(cpu_name, cpu_props,
+                                                 cpu_deprecated_props,
                                                  model_info);
 }
 

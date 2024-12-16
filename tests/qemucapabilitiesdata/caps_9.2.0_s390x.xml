@@ -196,6 +196,12 @@
     <property name='te' type='boolean' value='true'/>
     <property name='cmm' type='boolean' value='true'/>
     <property name='vxpdeh2' type='boolean' value='true'/>
+    <deprecatedFeatures>
+      <property name='bpb'/>
+      <property name='te'/>
+      <property name='cte'/>
+      <property name='csske'/>
+    </deprecatedFeatures>
   </hostCPU>
   <cpu type='kvm' name='z13' typename='z13-s390x-cpu' usable='yes'/>
   <cpu type='kvm' name='z990.3' typename='z990.3-s390x-cpu' usable='yes'/>
