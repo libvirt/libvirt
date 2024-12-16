@@ -5101,6 +5101,37 @@ qemuMonitorJSONParseCPUModel(const char *cpu_name,
 
 
 static int
+qemuMonitorJSONParseCPUModelExpansionData(virJSONValue *data,
+                                          bool fail_no_props,
+                                          virJSONValue **cpu_model,
+                                          virJSONValue **cpu_props,
+                                          const char **cpu_name)
+{
+    if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-expansion",
+                                         fail_no_props, cpu_model, cpu_props,
+                                         cpu_name) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuMonitorJSONParseCPUModelExpansion(const char *cpu_name,
+                                      virJSONValue *cpu_props,
+                                      qemuMonitorCPUModelInfo **model_info)
+{
+    g_autoptr(qemuMonitorCPUModelInfo) expanded_model = NULL;
+
+    if (qemuMonitorJSONParseCPUModel(cpu_name, cpu_props, &expanded_model) < 0)
+        return -1;
+
+    *model_info = g_steal_pointer(&expanded_model);
+    return 0;
+}
+
+
+static int
 qemuMonitorJSONQueryCPUModelExpansionOne(qemuMonitor *mon,
                                          qemuMonitorCPUModelExpansionType type,
                                          virJSONValue **model,
@@ -5170,9 +5201,9 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
     if ((rc = qemuMonitorJSONQueryCPUModelExpansionOne(mon, type, &model, &data)) <= 0)
         return rc;
 
-    if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-expansion",
-                                         fail_no_props, &cpu_model, &cpu_props,
-                                         &cpu_name) < 0)
+    if (qemuMonitorJSONParseCPUModelExpansionData(data, fail_no_props,
+                                                  &cpu_model, &cpu_props,
+                                                  &cpu_name) < 0)
         return -1;
 
     /* QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL requests "full" expansion
@@ -5188,13 +5219,14 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
         if ((rc = qemuMonitorJSONQueryCPUModelExpansionOne(mon, type, &fullModel, &fullData)) <= 0)
             return rc;
 
-        if (qemuMonitorJSONParseCPUModelData(fullData, "query-cpu-model-expansion",
-                                             fail_no_props, &cpu_model, &cpu_props,
-                                             &cpu_name) < 0)
+        if (qemuMonitorJSONParseCPUModelExpansionData(fullData, fail_no_props,
+                                                      &cpu_model, &cpu_props,
+                                                      &cpu_name) < 0)
             return -1;
     }
 
-    return qemuMonitorJSONParseCPUModel(cpu_name, cpu_props, model_info);
+    return qemuMonitorJSONParseCPUModelExpansion(cpu_name, cpu_props,
+                                                 model_info);
 }
 
 
