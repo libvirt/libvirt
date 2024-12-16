@@ -2049,7 +2049,7 @@ virPCIDeviceSetReprobe(virPCIDevice *dev, bool reprobe)
     dev->reprobe = reprobe;
 }
 
-int
+void
 virPCIDeviceSetUsedBy(virPCIDevice *dev,
                       const char *drv_name,
                       const char *dom_name)
@@ -2058,8 +2058,6 @@ virPCIDeviceSetUsedBy(virPCIDevice *dev,
     VIR_FREE(dev->used_by_domname);
     dev->used_by_drvname = g_strdup(drv_name);
     dev->used_by_domname = g_strdup(dom_name);
-
-    return 0;
 }
 
 void

@@ -136,9 +136,9 @@ void virPCIDeviceSetStubDriverName(virPCIDevice *dev,
                                    const char *driverName);
 const char *virPCIDeviceGetStubDriverName(virPCIDevice *dev);
 virPCIDeviceAddress *virPCIDeviceGetAddress(virPCIDevice *dev);
-int virPCIDeviceSetUsedBy(virPCIDevice *dev,
-                          const char *drv_name,
-                          const char *dom_name);
+void virPCIDeviceSetUsedBy(virPCIDevice *dev,
+                           const char *drv_name,
+                           const char *dom_name);
 void virPCIDeviceGetUsedBy(virPCIDevice *dev,
                            const char **drv_name,
                            const char **dom_name);

@@ -1131,8 +1131,7 @@ virHostdevUpdateActivePCIDevices(virHostdevManager *mgr,
         if (!actual)
             continue;
 
-        if (virPCIDeviceSetUsedBy(actual, drv_name, dom_name) < 0)
-            goto cleanup;
+        virPCIDeviceSetUsedBy(actual, drv_name, dom_name);
 
         /* Setup the original states for the PCI device */
         virPCIDeviceSetUnbindFromStub(actual, virBitmapIsBitSet(orig, VIR_DOMAIN_HOSTDEV_PCI_ORIGSTATE_UNBIND));
@@ -2480,8 +2479,7 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManager *hostdev_mgr,
 
         /* We must restore some attributes that were lost on daemon restart. */
         virPCIDeviceSetUnbindFromStub(actual, true);
-        if (virPCIDeviceSetUsedBy(actual, drv_name, dom_name) < 0)
-            goto rollback;
+        virPCIDeviceSetUsedBy(actual, drv_name, dom_name);
 
         if (virPCIDeviceListAddCopy(hostdev_mgr->activePCIHostdevs, actual) < 0)
             goto rollback;
