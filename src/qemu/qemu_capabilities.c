@@ -721,6 +721,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev-reconnect-miliseconds", /* QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS */
               "virtio-ccw.loadparm", /* QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM */
               "netdev-stream-reconnect-miliseconds", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS */
+              "query-cpu-model-expansion.deprecated-props", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS */
     );
 
 
@@ -1594,6 +1595,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "screendump/arg-type/device", QEMU_CAPS_SCREENDUMP_DEVICE },
     { "screendump/arg-type/format/^png", QEMU_CAPS_SCREENSHOT_FORMAT_PNG },
     { "set-numa-node/arg-type/+hmat-lb", QEMU_CAPS_NUMA_HMAT },
+    { "query-cpu-model-expansion/ret-type/deprecated-props", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
@@ -3150,6 +3152,38 @@ virQEMUCapsProbeHypervCapabilities(virQEMUCaps *qemuCaps,
 }
 
 
+/**
+ * virQEMUCapsProbeFullDeprecatedProperties
+ * @mon: QEMU monitor
+ * @cpu: CPU definition to be expanded
+ * @props: the array to be filled with deprecated features
+ *
+ * Performs a full CPU model expansion to retrieve an array of deprecated
+ * properties. If the expansion succeeds, then data previously stored in
+ * @props is freed.
+ *
+ * Returns: -1 if the expansion failed; otherwise 0.
+ */
+static int
+virQEMUCapsProbeFullDeprecatedProperties(qemuMonitor *mon,
+                                         virCPUDef *cpu,
+                                         GStrv *props)
+{
+    g_autoptr(qemuMonitorCPUModelInfo) propsInfo = NULL;
+
+    if (qemuMonitorGetCPUModelExpansion(mon, QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL,
+                                        cpu, true, false, false, &propsInfo) < 0)
+        return -1;
+
+    if (propsInfo && propsInfo->deprecated_props) {
+        g_free(*props);
+        *props = g_steal_pointer(&propsInfo->deprecated_props);
+    }
+
+    return 0;
+}
+
+
 static int
 virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
                            virQEMUCapsAccel *accel,
@@ -3230,6 +3264,10 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
 
         modelInfo->migratability = true;
     }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS) &&
+        virQEMUCapsProbeFullDeprecatedProperties(mon, cpu, &modelInfo->deprecated_props) < 0)
+        return -1;
 
     if (virQEMUCapsTypeIsAccelerated(virtType) &&
         (ARCH_IS_X86(qemuCaps->arch) || ARCH_IS_ARM(qemuCaps->arch))) {

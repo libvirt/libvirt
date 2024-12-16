@@ -133,6 +133,7 @@
   <flag name='virtio-sound'/>
   <flag name='netdev.user'/>
   <flag name='snapshot-internal-qmp'/>
+  <flag name='query-cpu-model-expansion.deprecated-props'/>
   <version>9001000</version>
   <microcodeVersion>39100246</microcodeVersion>
   <package>v9.1.0</package>
@@ -356,6 +357,12 @@
     <property name='msa3-base' type='boolean' value='true'/>
     <property name='msa5-base' type='boolean' value='true'/>
     <property name='tods' type='boolean' value='false'/>
+    <deprecatedFeatures>
+      <property name='bpb'/>
+      <property name='te'/>
+      <property name='cte'/>
+      <property name='csske'/>
+    </deprecatedFeatures>
   </hostCPU>
   <cpu type='tcg' name='z13' typename='z13-s390x-cpu' usable='no'>
     <blocker name='ppno-sha-512-drng'/>
