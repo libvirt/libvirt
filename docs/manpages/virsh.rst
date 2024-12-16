@@ -2434,14 +2434,15 @@ When selecting the *--state* group the following fields are returned:
 * ``vcpu.<num>.state`` - state of the virtual CPU <num>, as
   number from virVcpuState enum
 * ``vcpu.<num>.time`` - virtual cpu time spent by virtual
-  CPU <num> (in microseconds)
-* ``vcpu.<num>.wait`` - virtual cpu time spent by virtual
-  CPU <num> waiting on I/O (in microseconds)
+  CPU <num> (in nanoseconds)
+* ``vcpu.<num>.wait`` - time the vCPU <num> thread was waiting in the runqueue
+  as the scheduler has something else running ahead of it (in nanoseconds),
+  requires CONFIG_SCHED_INFO on Linux
 * ``vcpu.<num>.halted`` - virtual CPU <num> is halted: yes or
   no (may indicate the processor is idle or even disabled,
   depending on the architecture)
-* ``vcpu.<num>.delay`` - time the vCPU <num> thread was enqueued by the
-  host scheduler, but was waiting in the queue instead of running (in nanoseconds).
+* ``vcpu.<num>.delay`` - time the vCPU <num> thread was waiting in the runqueue
+  as the scheduler has something else running ahead of it (in nanoseconds).
   Exposed to the VM as a steal time.
 
 This group of statistics also reports additional hypervisor-originating per-vCPU
