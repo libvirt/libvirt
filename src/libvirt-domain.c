@@ -12166,7 +12166,7 @@ virDomainSetUserPassword(virDomainPtr dom,
  * @arch: domain architecture
  * @machine: machine type
  * @virttype: virtualization type
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: extra flags; bitwise-OR of virConnectGetDomainCapabilitiesFlags
  *
  * Prior creating a domain (for instance via virDomainCreateXML
  * or virDomainDefineXML) it may be suitable to know what the

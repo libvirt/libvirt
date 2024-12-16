@@ -1491,6 +1491,18 @@ int virDomainMigrateGetMaxSpeed(virDomainPtr domain,
 int virDomainMigrateStartPostCopy(virDomainPtr domain,
                                   unsigned int flags);
 
+/**
+ * virConnectGetDomainCapabilitiesFlags:
+ *
+ * Domain capabilities flags.
+ *
+ * Since: 11.0.0
+ */
+typedef enum {
+    /* Report host model with deprecated features disabled. (Since: 11.0.0) */
+    VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES = (1 << 0),
+} virConnectGetDomainCapabilitiesFlags;
+
 char * virConnectGetDomainCapabilities(virConnectPtr conn,
                                        const char *emulatorbin,
                                        const char *arch,
