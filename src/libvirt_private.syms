@@ -2608,6 +2608,13 @@ virIdentitySetUserName;
 virIdentitySetX509DName;
 
 
+# util/virinhibitor.h
+virInhibitorFree;
+virInhibitorHold;
+virInhibitorNew;
+virInhibitorRelease;
+
+
 # util/virinitctl.h
 virInitctlFifos;
 virInitctlSetRunLevel;

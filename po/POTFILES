@@ -293,6 +293,7 @@ src/util/virhostcpu.c
 src/util/virhostmem.c
 src/util/virhostuptime.c
 src/util/viridentity.c
+src/util/virinhibitor.c
 src/util/virinitctl.c
 src/util/viriscsi.c
 src/util/virjson.c
