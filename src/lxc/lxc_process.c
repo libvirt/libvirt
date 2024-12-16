@@ -1562,18 +1562,13 @@ int virLXCProcessStart(virLXCDriver * driver,
 }
 
 
-static int
+void
 virLXCProcessAutostartDomain(virDomainObj *vm,
                              void *opaque G_GNUC_UNUSED)
 {
-    VIR_LOCK_GUARD lock = virObjectLockGuard(vm);
     virLXCDomainObjPrivate *priv = vm->privateData;
     virObjectEvent *event;
     int rc = 0;
-
-    if (!vm->autostart ||
-        virDomainObjIsActive(vm))
-        return 0;
 
     rc = virLXCProcessStart(priv->driver, vm, 0, NULL, NULL, VIR_DOMAIN_RUNNING_BOOTED);
     virDomainAuditStart(vm, "booted", rc >= 0);
@@ -1582,22 +1577,13 @@ virLXCProcessAutostartDomain(virDomainObj *vm,
         VIR_ERROR(_("Failed to autostart VM '%1$s': %2$s"),
                   vm->def->name,
                   virGetLastErrorMessage());
-        return -1;
+        return;
     }
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STARTED,
                                               VIR_DOMAIN_EVENT_STARTED_BOOTED);
     virObjectEventStateQueue(priv->driver->domainEventState, event);
-
-    return 0;
-}
-
-
-void
-virLXCProcessAutostartAll(virLXCDriver *driver)
-{
-    virDomainObjListForEach(driver->domains, false, virLXCProcessAutostartDomain, NULL);
 }
 
 

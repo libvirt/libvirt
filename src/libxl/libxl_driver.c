@@ -315,36 +315,22 @@ libxlDomObjFromDomain(virDomainPtr dom)
     return vm;
 }
 
-static int
+static void
 libxlAutostartDomain(virDomainObj *vm,
                      void *opaque)
 {
     libxlDriverPrivate *driver = opaque;
-    int ret = -1;
-
-    virObjectRef(vm);
-    virObjectLock(vm);
-    virResetLastError();
 
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
-        goto cleanup;
+        return;
 
-    if (vm->autostart && !virDomainObjIsActive(vm) &&
-        libxlDomainStartNew(driver, vm, false) < 0) {
+    if (libxlDomainStartNew(driver, vm, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to autostart VM '%1$s': %2$s"),
                        vm->def->name, virGetLastErrorMessage());
-        goto endjob;
     }
 
-    ret = 0;
-
- endjob:
     virDomainObjEndJob(vm);
- cleanup:
-    virDomainObjEndAPI(&vm);
-
-    return ret;
 }
 
 
@@ -654,7 +640,7 @@ libxlStateInitialize(bool privileged,
 {
     libxlDriverConfig *cfg;
     g_autofree char *driverConf = NULL;
-    bool autostart = true;
+    virDomainDriverAutoStartConfig autostartCfg;
 
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -807,14 +793,12 @@ libxlStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto error;
 
-    if (virDriverShouldAutostart(cfg->stateDir, &autostart) < 0)
-        goto error;
-
-    if (autostart) {
-        virDomainObjListForEach(libxl_driver->domains, false,
-                                libxlAutostartDomain,
-                                libxl_driver);
-    }
+    autostartCfg = (virDomainDriverAutoStartConfig) {
+        .stateDir = cfg->stateDir,
+        .callback = libxlAutostartDomain,
+        .opaque = libxl_driver,
+    };
+    virDomainDriverAutoStart(libxl_driver->domains, &autostartCfg);
 
     virDomainObjListForEach(libxl_driver->domains, false,
                             libxlDomainManagedSaveLoad,

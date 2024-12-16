@@ -167,52 +167,29 @@ qemuDomObjFromSnapshot(virDomainSnapshotPtr snapshot)
 
 
 
-static int
+static void
 qemuAutostartDomain(virDomainObj *vm,
                     void *opaque)
 {
     virQEMUDriver *driver = opaque;
     int flags = 0;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int ret = -1;
 
     if (cfg->autoStartBypassCache)
         flags |= VIR_DOMAIN_START_BYPASS_CACHE;
 
-    virObjectLock(vm);
-    virObjectRef(vm);
-    virResetLastError();
-    if (vm->autostart &&
-        !virDomainObjIsActive(vm)) {
-        if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_START,
-                                flags) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to start job on VM '%1$s': %2$s"),
-                           vm->def->name, virGetLastErrorMessage());
-            goto cleanup;
-        }
+    if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_START,
+                            flags) < 0)
+        return;
 
-        if (qemuDomainObjStart(NULL, driver, vm, flags,
-                               VIR_ASYNC_JOB_START) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to autostart VM '%1$s': %2$s"),
+    if (qemuDomainObjStart(NULL, driver, vm, flags,
+                           VIR_ASYNC_JOB_START) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to autostart VM '%1$s': %2$s"),
                            vm->def->name, virGetLastErrorMessage());
-        }
-
-        qemuProcessEndJob(vm);
     }
 
-    ret = 0;
- cleanup:
-    virDomainObjEndAPI(&vm);
-    return ret;
-}
-
-
-static void
-qemuAutostartDomains(virQEMUDriver *driver)
-{
-    virDomainObjListForEach(driver->domains, false, qemuAutostartDomain, driver);
+    qemuProcessEndJob(vm);
 }
 
 
@@ -557,10 +534,10 @@ qemuStateInitialize(bool privileged,
     virQEMUDriverConfig *cfg;
     uid_t run_uid = -1;
     gid_t run_gid = -1;
-    bool autostart = true;
     size_t i;
     const char *defsecmodel = NULL;
     g_autoptr(virIdentity) identity = virIdentityGetCurrent();
+    virDomainDriverAutoStartConfig autostartCfg;
 
     qemu_driver = g_new0(virQEMUDriver, 1);
 
@@ -906,11 +883,12 @@ qemuStateInitialize(bool privileged,
 
     qemuProcessReconnectAll(qemu_driver);
 
-    if (virDriverShouldAutostart(cfg->stateDir, &autostart) < 0)
-        goto error;
-
-    if (autostart)
-        qemuAutostartDomains(qemu_driver);
+    autostartCfg = (virDomainDriverAutoStartConfig) {
+        .stateDir = cfg->stateDir,
+        .callback = qemuAutostartDomain,
+        .opaque = qemu_driver,
+    };
+    virDomainDriverAutoStart(qemu_driver->domains, &autostartCfg);
 
     return VIR_DRV_STATE_INIT_COMPLETE;
 

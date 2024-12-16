@@ -34,6 +34,8 @@ int virLXCProcessStop(virLXCDriver *driver,
                       unsigned int cleanupFlags);
 
 void virLXCProcessAutostartAll(virLXCDriver *driver);
+void virLXCProcessAutostartDomain(virDomainObj *vm,
+                                  void *opaque);
 int virLXCProcessReconnectAll(virLXCDriver *driver,
                               virDomainObjList *doms);
 
