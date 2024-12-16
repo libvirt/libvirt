@@ -44,7 +44,7 @@ test -f "$initconfdir"/libvirt-guests &&
     . "$initconfdir"/libvirt-guests
 
 LISTFILE="$localstatedir"/lib/libvirt/libvirt-guests
-VAR_SUBSYS_LIBVIRT_GUESTS="$localstatedir"/lock/subsys/libvirt-guests
+VAR_SUBSYS_LIBVIRT_GUESTS="$localstatedir"/lock/libvirt-guests
 
 RETVAL=0
 
