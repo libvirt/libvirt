@@ -8465,27 +8465,32 @@ Example: usage of external TPM emulator :since:`Since 9.0.0`
 
 ``profile``
    The ``profile`` node is used to set a profile for a TPM 2.0 given in the
-   source attribute. This profile will be set when the TPM is initially
-   created and after that cannot be changed anymore. Once a profile has been
-   set the name attribute will be updated with the name of the profile that
-   is running. If no profile is provided, then swtpm will use the latest
-   built-in 'default' profile or the default profile set in swtpm_setup.conf.
-   Otherwise swtpm_setup will search for a profile with the given name with
-   appended .json suffix in a configurable local and then in a distro
-   directory. If none could be found in either, it will fall back trying to
-   use a built-in one.
+   ``source`` attribute. This attribute describes the name of the file under
+   which the profile is stored, e.g. 'local:restricted' describes a locally
+   created profile with name 'restricted.json' that is found in the directory
+   pointed to by swtpm_setup.conf's local_profiles_dir. This profile will be set
+   when the TPM is initially created and after that the profile cannot be
+   changed anymore. Once a profile has been set, the ``name`` attribute will be
+   updated with the profile's name from its JSON description, for example
+   'custom:restricted'. If no profile is provided, then swtpm will use the
+   latest built-in 'default' profile or the default profile set in
+   swtpm_setup.conf. Otherwise swtpm_setup will search for a profile with the
+   given name with appended .json suffix in a configurable local and then in a
+   distro directory. If none could be found in either, it will fall back trying
+   to use a built-in one.
 
    The built-in 'null' profile provides backwards compatibility with
    libtpms v0.9 but also restricts the user to use only TPM features that were
-   available at the time of libtpms v0.9. The built-in 'custom' profile is the
-   only profile that a user can modify and where the ``removeDisabled``
+   available at the time of libtpms v0.9. The built-in 'custom' profile, or
+   those with the prefix 'custom:' in the name, are the
+   only profiles that a user can modify and where the ``removeDisabled``
    attribute has any effect. This attribute is particularly useful when a host
    is running in FIPS mode and therefore some crypto algorithms (camellia,
    tdes, unpadded RSA encryption, 1024-bit RSA keys, and others) are
    disabled. When it is set to ``check`` (recommended) then only those
    algorithms that are currently disabled will automatically be removed from
    the 'custom' profile, while when it is set to ``fips-host`` then all
-   potentially disabled algorithms will be removed. :since:`Since 10.??.0`
+   potentially disabled algorithms will be removed. :since:`Since 10.10.0`
 
    TPM profiles provided by a distro can be referenced with the 'distro:'
    prefix. Locally created TPM profiles can be referenced with the
