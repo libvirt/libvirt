@@ -29,8 +29,11 @@
 #include "viraccessapicheck.h"
 #include "datatypes.h"
 #include "driver.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
+
+VIR_LOG_INIT("hypervisor.domain_driver");
 
 char *
 virDomainDriverGenerateRootHash(const char *drivername,
@@ -651,4 +654,42 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
     }
 
     return ret;
+}
+
+static int
+virDomainDriverAutoStartOne(virDomainObj *vm,
+                            void *opaque)
+{
+    virDomainDriverAutoStartConfig *cfg = opaque;
+
+    virObjectLock(vm);
+    virObjectRef(vm);
+
+    VIR_DEBUG("Autostart %s: autostart=%d",
+              vm->def->name, vm->autostart);
+
+    if (vm->autostart && !virDomainObjIsActive(vm)) {
+        virResetLastError();
+        cfg->callback(vm, cfg->opaque);
+    }
+
+    virDomainObjEndAPI(&vm);
+    virResetLastError();
+
+    return 0;
+}
+
+void
+virDomainDriverAutoStart(virDomainObjList *domains,
+                         virDomainDriverAutoStartConfig *cfg)
+{
+    bool autostart;
+    VIR_DEBUG("Run autostart stateDir=%s", cfg->stateDir);
+    if (virDriverShouldAutostart(cfg->stateDir, &autostart) < 0 ||
+        !autostart) {
+        VIR_DEBUG("Autostart already processed");
+        return;
+    }
+
+    virDomainObjListForEach(domains, false, virDomainDriverAutoStartOne, cfg);
 }

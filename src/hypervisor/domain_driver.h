@@ -23,6 +23,7 @@
 #include "node_device_conf.h"
 #include "virhostdev.h"
 #include "virpci.h"
+#include "virdomainobjlist.h"
 
 char *
 virDomainDriverGenerateRootHash(const char *drivername,
@@ -71,3 +72,19 @@ int virDomainDriverDelIOThreadCheck(virDomainDef *def,
 int virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
                                       virDomainIOThreadInfoPtr **info,
                                       unsigned int bitmap_size);
+
+/*
+ * Will be called with 'vm' locked and ref count held,
+ * which will be released when this returns.
+ */
+typedef void (*virDomainDriverAutoStartCallback)(virDomainObj *vm,
+                                                 void *opaque);
+
+typedef struct _virDomainDriverAutoStartConfig {
+    const char *stateDir;
+    virDomainDriverAutoStartCallback callback;
+    void *opaque;
+} virDomainDriverAutoStartConfig;
+
+void virDomainDriverAutoStart(virDomainObjList *domains,
+                              virDomainDriverAutoStartConfig *cfg);

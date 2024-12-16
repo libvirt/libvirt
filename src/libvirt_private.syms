@@ -1647,6 +1647,7 @@ virDomainCgroupSetupVcpuBW;
 
 # hypervisor/domain_driver.h
 virDomainDriverAddIOThreadCheck;
+virDomainDriverAutoStart;
 virDomainDriverDelIOThreadCheck;
 virDomainDriverGenerateMachineName;
 virDomainDriverGenerateRootHash;
