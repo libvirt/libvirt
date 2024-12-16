@@ -437,8 +437,7 @@ libxlReconnectDomain(virDomainObj *vm,
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
 
-    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
+    virInhibitorHold(driver->inhibitor);
 
     /* Enable domain death events */
     libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
@@ -514,6 +513,7 @@ libxlStateCleanup(void)
 
     virObjectUnref(libxl_driver->domainEventState);
     virSysinfoDefFree(libxl_driver->hostsysinfo);
+    virInhibitorFree(libxl_driver->inhibitor);
 
     if (libxl_driver->lockFD != -1)
         virPidFileRelease(libxl_driver->config->stateDir, "driver", libxl_driver->lockFD);
@@ -675,9 +675,6 @@ libxlStateInitialize(bool privileged,
         return VIR_DRV_STATE_INIT_ERROR;
     }
 
-    libxl_driver->inhibitCallback = callback;
-    libxl_driver->inhibitOpaque = opaque;
-
     /* Allocate bitmap for vnc port reservation */
     if (!(libxl_driver->reservedGraphicsPorts =
           virPortAllocatorRangeNew(_("VNC"),
@@ -708,6 +705,14 @@ libxlStateInitialize(bool privileged,
 
     if (libxlDriverConfigLoadFile(cfg, driverConf) < 0)
         goto error;
+
+    libxl_driver->inhibitor = virInhibitorNew(
+        VIR_INHIBITOR_WHAT_NONE,
+        _("Libvirt Xen"),
+        _("Xen virtual machines are running"),
+        VIR_INHIBITOR_MODE_DELAY,
+        callback,
+        opaque);
 
     /* Register the callbacks providing access to libvirt's event loop */
     libxl_osevent_register_hooks(cfg->ctx, &libxl_osevent_callbacks, cfg->ctx);

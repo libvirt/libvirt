@@ -35,6 +35,7 @@
 #include "virfirmware.h"
 #include "libxl_capabilities.h"
 #include "libxl_logger.h"
+#include "virinhibitor.h"
 
 #define LIBXL_DRIVER_EXTERNAL_NAME "Xen"
 /*
@@ -117,12 +118,8 @@ struct _libxlDriverPrivate {
     /* pid file FD, ensures two copies of the driver can't use the same root */
     int lockFD;
 
-    /* Atomic inc/dec only */
-    unsigned int nactive;
-
-    /* Immutable pointers. Caller must provide locking */
-    virStateInhibitCallback inhibitCallback;
-    void *inhibitOpaque;
+    /* Immutable pointer, self-locking APIs */
+    virInhibitor *inhibitor;
 
     /* Immutable pointer, self-locking APIs */
     virDomainObjList *domains;

@@ -5809,8 +5809,7 @@ qemuProcessInit(virQEMUDriver *driver,
         qemuDomainSetFakeReboot(vm, false);
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
 
-        if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-            driver->inhibitCallback(true, driver->inhibitOpaque);
+        virInhibitorHold(driver->inhibitor);
 
         /* Run an early hook to set-up missing devices */
         if (qemuProcessStartHook(driver, vm,
@@ -8823,8 +8822,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     if (priv->eventThread)
         g_object_unref(g_steal_pointer(&priv->eventThread));
 
-    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
-        driver->inhibitCallback(false, driver->inhibitOpaque);
+    virInhibitorRelease(driver->inhibitor);
 
     /* Clear network bandwidth */
     virDomainClearNetBandwidth(vm->def);
@@ -9582,8 +9580,7 @@ qemuProcessReconnect(void *opaque)
             goto error;
     }
 
-    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
+    virInhibitorHold(driver->inhibitor);
 
  cleanup:
     if (jobStarted)

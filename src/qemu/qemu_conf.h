@@ -42,6 +42,7 @@
 #include "virfile.h"
 #include "virfilecache.h"
 #include "virfirmware.h"
+#include "virinhibitor.h"
 
 #define QEMU_DRIVER_NAME "QEMU"
 
@@ -257,16 +258,12 @@ struct _virQEMUDriver {
     /* Atomic increment only */
     int lastvmid;
 
-    /* Atomic inc/dec only */
-    unsigned int nactive;
-
     /* Immutable values */
     bool privileged;
     char *embeddedRoot;
 
-    /* Immutable pointers. Caller must provide locking */
-    virStateInhibitCallback inhibitCallback;
-    void *inhibitOpaque;
+    /* Immutable pointer, self-locking APIs */
+    virInhibitor *inhibitor;
 
     /* Immutable pointer, self-locking APIs */
     virDomainObjList *domains;

@@ -873,8 +873,7 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
         priv->deathW = NULL;
     }
 
-    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
-        driver->inhibitCallback(false, driver->inhibitOpaque);
+    virInhibitorRelease(driver->inhibitor);
 
     /* Release auto-allocated graphics ports */
     for (i = 0; i < vm->def->ngraphics; i++) {
@@ -1421,8 +1420,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
         return -1;
     }
 
-    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
+    virInhibitorHold(driver->inhibitor);
 
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
                                               restore_fd < 0 ?

@@ -27,6 +27,7 @@
 #include "virnetworkobj.h"
 #include "object_event.h"
 #include "virfirewall.h"
+#include "virinhibitor.h"
 
 typedef struct _virNetworkDriverConfig virNetworkDriverConfig;
 struct _virNetworkDriverConfig {
@@ -49,12 +50,8 @@ typedef struct _virNetworkDriverState virNetworkDriverState;
 struct _virNetworkDriverState {
     virMutex lock;
 
-    /* Atomic inc/dec only */
-    unsigned int nactive;
-
-    /* Immutable pointers. Caller must provide locking */
-    virStateInhibitCallback inhibitCallback;
-    void *inhibitOpaque;
+    /* Immutable pointer, self-locking APIs */
+    virInhibitor *inhibitor;
 
     /* Read-only */
     bool privileged;

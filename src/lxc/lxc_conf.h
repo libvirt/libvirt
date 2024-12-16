@@ -30,6 +30,7 @@
 #include "virsysinfo.h"
 #include "virclosecallbacks.h"
 #include "virhostdev.h"
+#include "virinhibitor.h"
 
 #define LXC_DRIVER_NAME "LXC"
 
@@ -75,12 +76,8 @@ struct _virLXCDriver {
     /* Immutable pointer, lockless APIs */
     virSysinfoDef *hostsysinfo;
 
-    /* Atomic inc/dec only */
-    unsigned int nactive;
-
-    /* Immutable pointers. Caller must provide locking */
-    virStateInhibitCallback inhibitCallback;
-    void *inhibitOpaque;
+    /* Immutable pointer, self-locking APIs */
+    virInhibitor *inhibitor;
 
     /* Immutable pointer, self-locking APIs */
     virDomainObjList *domains;

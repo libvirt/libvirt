@@ -203,8 +203,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     vm->pid = 0;
     vm->def->id = -1;
 
-    if (g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
-        driver->inhibitCallback(false, driver->inhibitOpaque);
+    virInhibitorRelease(driver->inhibitor);
 
     virLXCDomainReAttachHostDevices(driver, vm->def);
 
@@ -1466,8 +1465,7 @@ int virLXCProcessStart(virLXCDriver * driver,
     if (virCommandHandshakeNotify(cmd) < 0)
         goto cleanup;
 
-    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
+    virInhibitorHold(driver->inhibitor);
 
     /* The first synchronization point is when the controller creates CGroups. */
     if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
@@ -1665,8 +1663,7 @@ virLXCProcessReconnectDomain(virDomainObj *vm,
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
 
-        if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-            driver->inhibitCallback(true, driver->inhibitOpaque);
+        virInhibitorHold(driver->inhibitor);
 
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;

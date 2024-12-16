@@ -1398,8 +1398,8 @@ static virDrvStateInitResult
 lxcStateInitialize(bool privileged,
                    const char *root,
                    bool monolithic G_GNUC_UNUSED,
-                   virStateInhibitCallback callback G_GNUC_UNUSED,
-                   void *opaque G_GNUC_UNUSED)
+                   virStateInhibitCallback callback,
+                   void *opaque)
 {
     virLXCDriverConfig *cfg = NULL;
     bool autostart = true;
@@ -1450,6 +1450,14 @@ lxcStateInitialize(bool privileged,
     /* Call function to load lxc driver configuration information */
     if (virLXCLoadDriverConfig(cfg, SYSCONFDIR "/libvirt/lxc.conf") < 0)
         goto cleanup;
+
+    lxc_driver->inhibitor = virInhibitorNew(
+        VIR_INHIBITOR_WHAT_NONE,
+        _("Libvirt LXC"),
+        _("LXC containers are running"),
+        VIR_INHIBITOR_MODE_DELAY,
+        callback,
+        opaque);
 
     if (!(lxc_driver->securityManager = lxcSecurityInit(cfg)))
         goto cleanup;
@@ -1555,6 +1563,7 @@ static int lxcStateCleanup(void)
     virObjectUnref(lxc_driver->caps);
     virObjectUnref(lxc_driver->securityManager);
     virObjectUnref(lxc_driver->xmlopt);
+    virInhibitorFree(lxc_driver->inhibitor);
 
     if (lxc_driver->lockFD != -1)
         virPidFileRelease(lxc_driver->config->stateDir, "driver", lxc_driver->lockFD);

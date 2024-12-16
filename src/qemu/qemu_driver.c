@@ -573,9 +573,6 @@ qemuStateInitialize(bool privileged,
         return VIR_DRV_STATE_INIT_ERROR;
     }
 
-    qemu_driver->inhibitCallback = callback;
-    qemu_driver->inhibitOpaque = opaque;
-
     qemu_driver->privileged = privileged;
     qemu_driver->hostarch = virArchFromHost();
     if (root != NULL)
@@ -674,6 +671,14 @@ qemuStateInitialize(bool privileged,
                              cfg->dbusStateDir);
         goto error;
     }
+
+    qemu_driver->inhibitor = virInhibitorNew(
+        VIR_INHIBITOR_WHAT_NONE,
+        _("Libvirt QEMU"),
+        _("QEMU/KVM virtual machines are running"),
+        VIR_INHIBITOR_MODE_DELAY,
+        callback,
+        opaque);
 
     if ((qemu_driver->lockFD =
          virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
@@ -1065,6 +1070,7 @@ qemuStateCleanup(void)
     ebtablesContextFree(qemu_driver->ebtables);
     virObjectUnref(qemu_driver->domains);
     virObjectUnref(qemu_driver->nbdkitCapsCache);
+    virInhibitorFree(qemu_driver->inhibitor);
 
     if (qemu_driver->lockFD != -1)
         virPidFileRelease(qemu_driver->config->stateDir, "driver", qemu_driver->lockFD);
