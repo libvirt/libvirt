@@ -39,7 +39,7 @@ struct _virLogDaemonConfig {
 };
 
 
-int virLogDaemonConfigFilePath(bool privileged, char **configfile);
+void virLogDaemonConfigFilePath(bool privileged, char **configfile);
 virLogDaemonConfig *virLogDaemonConfigNew(bool privileged);
 void virLogDaemonConfigFree(virLogDaemonConfig *data);
 int virLogDaemonConfigLoadFile(virLogDaemonConfig *data,

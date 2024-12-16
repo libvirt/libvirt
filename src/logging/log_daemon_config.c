@@ -33,7 +33,7 @@
 VIR_LOG_INIT("logging.log_daemon_config");
 
 
-int
+void
 virLogDaemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
@@ -45,8 +45,6 @@ virLogDaemonConfigFilePath(bool privileged, char **configfile)
 
         *configfile = g_strdup_printf("%s/virtlogd.conf", configdir);
     }
-
-    return 0;
 }
 
 

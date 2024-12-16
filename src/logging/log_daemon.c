@@ -692,14 +692,10 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    /* No explicit config, so try and find a default one */
+    /* No explicit config, so find a default one */
     if (remote_config_file == NULL) {
         implicit_conf = true;
-        if (virLogDaemonConfigFilePath(privileged,
-                                       &remote_config_file) < 0) {
-            VIR_ERROR(_("Can't determine config path"));
-            exit(EXIT_FAILURE);
-        }
+        virLogDaemonConfigFilePath(privileged, &remote_config_file);
     }
 
     /* Read the config file if it exists */
