@@ -492,16 +492,14 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
     int autostart;
     g_autoptr(virDomainDef) oldDef = NULL;
 
-    if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
-        return NULL;
+    configFile = virDomainConfigFile(configDir, name);
     if (!(def = virDomainDefParseFile(configFile, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
         return NULL;
 
-    if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
-        return NULL;
+    autostartLink = virDomainConfigFile(autostartDir, name);
 
     autostart = virFileLinkPointsTo(autostartLink, configFile);
 
@@ -529,8 +527,7 @@ virDomainObjListLoadStatus(virDomainObjList *doms,
     virDomainObj *obj = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if ((statusFile = virDomainConfigFile(statusDir, name)) == NULL)
-        goto error;
+    statusFile = virDomainConfigFile(statusDir, name);
 
     if (!(obj = virDomainObjParseFile(statusFile, xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |

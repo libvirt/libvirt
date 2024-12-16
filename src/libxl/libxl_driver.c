@@ -4656,10 +4656,8 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
     autostart = (autostart != 0);
 
     if (vm->autostart != autostart) {
-        if (!(configFile = virDomainConfigFile(cfg->configDir, vm->def->name)))
-            goto endjob;
-        if (!(autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name)))
-            goto endjob;
+        configFile = virDomainConfigFile(cfg->configDir, vm->def->name);
+        autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name);
 
         if (autostart) {
             if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {

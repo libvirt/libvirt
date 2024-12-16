@@ -29002,8 +29002,7 @@ virDomainDefSaveXML(virDomainDef *def,
     if (!configDir)
         return 0;
 
-    if ((configFile = virDomainConfigFile(configDir, def->name)) == NULL)
-        return -1;
+    configFile = virDomainConfigFile(configDir, def->name);
 
     if (g_mkdir_with_parents(configDir, 0777) < 0) {
         virReportSystemError(errno,
@@ -29060,11 +29059,8 @@ virDomainDeleteConfig(const char *configDir,
     g_autofree char *configFile = NULL;
     g_autofree char *autostartLink = NULL;
 
-    if ((configFile = virDomainConfigFile(configDir, dom->def->name)) == NULL)
-        return -1;
-    if ((autostartLink = virDomainConfigFile(autostartDir,
-                                             dom->def->name)) == NULL)
-        return -1;
+    configFile = virDomainConfigFile(configDir, dom->def->name);
+    autostartLink = virDomainConfigFile(autostartDir, dom->def->name);
 
     /* Not fatal if this doesn't work */
     unlink(autostartLink);

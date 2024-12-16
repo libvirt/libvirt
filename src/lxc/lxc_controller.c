@@ -196,9 +196,7 @@ static virLXCController *virLXCControllerNew(const char *name)
     if (!(driver = virLXCControllerDriverNew()))
         goto error;
 
-    if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
-                                          ctrl->name)) == NULL)
-        goto error;
+    configFile = virDomainConfigFile(LXC_STATE_DIR, ctrl->name);
 
     if ((ctrl->vm = virDomainObjParseFile(configFile,
                                           driver->xmlopt,

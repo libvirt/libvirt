@@ -7790,12 +7790,8 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
         if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
             goto cleanup;
 
-        if (!(configFile = virDomainConfigFile(cfg->configDir, vm->def->name)))
-            goto endjob;
-
-        if (!(autostartLink = virDomainConfigFile(cfg->autostartDir,
-                                                  vm->def->name)))
-            goto endjob;
+        configFile = virDomainConfigFile(cfg->configDir, vm->def->name);
+        autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name);
 
         if (autostart) {
             if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
@@ -18345,21 +18341,15 @@ qemuDomainRenameCallback(virDomainObj *vm,
 
     new_dom_name = g_strdup(new_name);
 
-    if (!(new_dom_cfg_file = virDomainConfigFile(cfg->configDir,
-                                                 new_dom_name)) ||
-        !(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
-                                                 vm->def->name)))
-        return -1;
+    new_dom_cfg_file = virDomainConfigFile(cfg->configDir, new_dom_name);
+    old_dom_cfg_file = virDomainConfigFile(cfg->configDir, vm->def->name);
 
     if (qemuDomainNamePathsCleanup(cfg, new_name, false) < 0)
         goto cleanup;
 
     if (vm->autostart) {
-        if (!(new_dom_autostart_link = virDomainConfigFile(cfg->autostartDir,
-                                                          new_dom_name)) ||
-            !(old_dom_autostart_link = virDomainConfigFile(cfg->autostartDir,
-                                                          vm->def->name)))
-            return -1;
+        new_dom_autostart_link = virDomainConfigFile(cfg->autostartDir, new_dom_name);
+        old_dom_autostart_link = virDomainConfigFile(cfg->autostartDir, vm->def->name);
 
         if (symlink(new_dom_cfg_file, new_dom_autostart_link) < 0) {
             virReportSystemError(errno,

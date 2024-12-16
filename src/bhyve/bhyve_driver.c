@@ -364,10 +364,8 @@ bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
     autostart = (autostart != 0);
 
     if (vm->autostart != autostart) {
-        if ((configFile = virDomainConfigFile(BHYVE_CONFIG_DIR, vm->def->name)) == NULL)
-            goto cleanup;
-        if ((autostartLink = virDomainConfigFile(BHYVE_AUTOSTART_DIR, vm->def->name)) == NULL)
-            goto cleanup;
+        configFile = virDomainConfigFile(BHYVE_CONFIG_DIR, vm->def->name);
+        autostartLink = virDomainConfigFile(BHYVE_AUTOSTART_DIR, vm->def->name);
 
         if (autostart) {
             if (g_mkdir_with_parents(BHYVE_AUTOSTART_DIR, 0777) < 0) {

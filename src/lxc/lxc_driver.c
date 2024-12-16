@@ -2439,14 +2439,8 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
         goto endjob;
     }
 
-    configFile = virDomainConfigFile(cfg->configDir,
-                                     vm->def->name);
-    if (configFile == NULL)
-        goto endjob;
-    autostartLink = virDomainConfigFile(cfg->autostartDir,
-                                        vm->def->name);
-    if (autostartLink == NULL)
-        goto endjob;
+    configFile = virDomainConfigFile(cfg->configDir, vm->def->name);
+    autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name);
 
     if (autostart) {
         if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
