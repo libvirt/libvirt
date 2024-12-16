@@ -161,6 +161,7 @@ struct _virCPUDef {
     virCPUMaxPhysAddrDef *addr;
     virHostCPUTscInfo *tsc;
     virTristateSwitch migratable; /* for host-passthrough mode */
+    virTristateSwitch deprecated_feats;
 };
 
 virCPUDef *virCPUDefNew(void);

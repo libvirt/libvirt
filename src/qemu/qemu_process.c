@@ -6399,6 +6399,17 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
                                 &def->os.arch) < 0)
         return -1;
 
+    if (def->cpu->deprecated_feats &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("toggling deprecated features for CPU model is unsupported"));
+        return -1;
+    }
+
+    if (def->cpu->deprecated_feats == VIR_TRISTATE_SWITCH_OFF) {
+        virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, def->virtType, def->cpu);
+    }
+
     return 0;
 }
 

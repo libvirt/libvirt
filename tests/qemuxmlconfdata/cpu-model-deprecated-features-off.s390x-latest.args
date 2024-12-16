@@ -1,0 +1,32 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-guest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
+/usr/bin/qemu-system-s390x \
+-name guest=guest,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-guest/master-key.aes"}' \
+-machine s390-ccw-virtio,usb=off,dump-guest-core=off,memory-backend=s390.ram \
+-accel kvm \
+-cpu gen16a-base,nnpa=on,aen=on,cmmnt=on,vxpdeh=on,aefsi=on,diag318=on,csske=off,mepoch=on,msa9=on,msa8=on,msa7=on,msa6=on,msa5=on,msa4=on,msa3=on,msa2=on,msa1=on,sthyi=on,edat=on,ri=on,deflate=on,edat2=on,etoken=on,vx=on,ipter=on,pai=on,paie=on,mepochptff=on,ap=on,vxeh=on,vxpd=on,esop=on,msa9_pckmo=on,vxeh2=on,esort=on,appv=on,apqi=on,apft=on,els=on,iep=on,appvi=on,apqci=on,cte=off,ais=on,bpb=off,ctop=on,gs=on,ppa15=on,zpci=on,rdp=on,sea_esop2=on,beareh=on,te=off,cmm=on,vxpdeh2=on \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 22782664-6b93-46bf-9595-317220dd2d1c \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0000"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

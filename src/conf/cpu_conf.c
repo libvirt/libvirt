@@ -238,6 +238,7 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
     copy->mode = cpu->mode;
     copy->match = cpu->match;
     copy->check = cpu->check;
+    copy->deprecated_feats = cpu->deprecated_feats;
     copy->fallback = cpu->fallback;
     copy->sockets = cpu->sockets;
     copy->dies = cpu->dies;
@@ -449,6 +450,11 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 
         if (virXMLPropEnum(ctxt->node, "check", virCPUCheckTypeFromString,
                            VIR_XML_PROP_NONE, &def->check) < 0)
+            return -1;
+
+        if (virXMLPropTristateSwitch(ctxt->node, "deprecated_features",
+                                     VIR_XML_PROP_NONE,
+                                     &def->deprecated_feats) < 0)
             return -1;
     }
 
@@ -747,6 +753,11 @@ virCPUDefFormatBufFull(virBuffer *buf,
             def->migratable) {
             virBufferAsprintf(&attributeBuf, " migratable='%s'",
                               virTristateSwitchTypeToString(def->migratable));
+        }
+
+        if (def->deprecated_feats) {
+            virBufferAsprintf(&attributeBuf, " deprecated_features='%s'",
+                              virTristateSwitchTypeToString(def->deprecated_feats));
         }
     }
 

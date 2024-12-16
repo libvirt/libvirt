@@ -440,6 +440,11 @@
         <ref name="cpuCheck"/>
       </optional>
       <optional>
+        <attribute name="deprecated_features">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="migratable">
           <ref name="virOnOff"/>
         </attribute>

@@ -1,0 +1,25 @@
+<domain type='kvm'>
+  <name>guest</name>
+  <uuid>22782664-6b93-46bf-9595-317220dd2d1c</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='s390x' machine='s390-ccw-virtio-8.2'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='host-model' check='partial' deprecated_features='off'/>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
+    <controller type='pci' index='0' model='pci-root'/>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
+    </memballoon>
+    <panic model='s390'/>
+  </devices>
+</domain>
