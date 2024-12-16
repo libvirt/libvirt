@@ -243,7 +243,7 @@ virSCSIDeviceFree(virSCSIDevice *dev)
     g_free(dev);
 }
 
-int
+void
 virSCSIDeviceSetUsedBy(virSCSIDevice *dev,
                        const char *drvname,
                        const char *domname)
@@ -255,8 +255,6 @@ virSCSIDeviceSetUsedBy(virSCSIDevice *dev,
     copy->domname = g_strdup(domname);
 
     VIR_APPEND_ELEMENT(dev->used_by, dev->n_used_by, copy);
-
-    return 0;
 }
 
 bool

@@ -1212,11 +1212,10 @@ virHostdevUpdateActiveSCSIHostDevices(virHostdevManager *mgr,
         return -1;
 
     if ((tmp = virSCSIDeviceListFind(mgr->activeSCSIHostdevs, scsi))) {
-        if (virSCSIDeviceSetUsedBy(tmp, drv_name, dom_name) < 0)
-            return -1;
+        virSCSIDeviceSetUsedBy(tmp, drv_name, dom_name);
     } else {
-        if (virSCSIDeviceSetUsedBy(scsi, drv_name, dom_name) < 0 ||
-            virSCSIDeviceListAdd(mgr->activeSCSIHostdevs, scsi) < 0)
+        virSCSIDeviceSetUsedBy(scsi, drv_name, dom_name);
+        if (virSCSIDeviceListAdd(mgr->activeSCSIHostdevs, scsi) < 0)
             return -1;
         scsi = NULL;
     }
@@ -1597,11 +1596,9 @@ virHostdevPrepareSCSIDevices(virHostdevManager *mgr,
                 goto error;
             }
 
-            if (virSCSIDeviceSetUsedBy(tmp, drv_name, dom_name) < 0)
-                goto error;
+            virSCSIDeviceSetUsedBy(tmp, drv_name, dom_name);
         } else {
-            if (virSCSIDeviceSetUsedBy(scsi, drv_name, dom_name) < 0)
-                goto error;
+            virSCSIDeviceSetUsedBy(scsi, drv_name, dom_name);
 
             VIR_DEBUG("Adding %s to activeSCSIHostdevs", virSCSIDeviceGetName(scsi));
 

@@ -87,14 +87,12 @@ test2(const void *data G_GNUC_UNUSED)
     if (!virSCSIDeviceIsAvailable(dev))
         goto cleanup;
 
-    if (virSCSIDeviceSetUsedBy(dev, "QEMU", "fc18") < 0)
-        goto cleanup;
+    virSCSIDeviceSetUsedBy(dev, "QEMU", "fc18");
 
     if (virSCSIDeviceIsAvailable(dev))
         goto cleanup;
 
-    if (virSCSIDeviceSetUsedBy(dev, "QEMU", "fc20") < 0)
-        goto cleanup;
+    virSCSIDeviceSetUsedBy(dev, "QEMU", "fc20");
 
     if (virSCSIDeviceIsAvailable(dev))
         goto cleanup;
