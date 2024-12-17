@@ -2027,7 +2027,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
+%dir %{_datadir}/augeas/lenses
 %{_datadir}/augeas/lenses/libvirtd.aug
+%dir %{_datadir}/augeas/lenses/tests
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %{_mandir}/man8/libvirtd.8*
@@ -2433,15 +2435,17 @@ exit 0
 %{_libdir}/libvirt-lxc.so.*
 %{_libdir}/libvirt-admin.so.*
 %dir %{_datadir}/libvirt/
+%{_datadir}/libvirt/test-screenshot.png
 %dir %{_datadir}/libvirt/schemas/
+%{_datadir}/libvirt/schemas/*.rng
+%dir %{_datadir}/systemtap/tapset/
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
     %if %{with_qemu}
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
     %endif
-%{_datadir}/libvirt/schemas/*.rng
+%dir %{_datadir}/libvirt/cpu_map
 %{_datadir}/libvirt/cpu_map/*.xml
-%{_datadir}/libvirt/test-screenshot.png
 
     %if %{with_wireshark}
 %files wireshark
