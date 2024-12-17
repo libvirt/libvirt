@@ -90,3 +90,9 @@ typedef struct _virDomainDriverAutoStartConfig {
 
 void virDomainDriverAutoStart(virDomainObjList *domains,
                               virDomainDriverAutoStartConfig *cfg);
+
+typedef struct _virDomainDriverAutoShutdownConfig {
+    const char *uri;
+} virDomainDriverAutoShutdownConfig;
+
+void virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg);

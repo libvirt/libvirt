@@ -713,3 +713,51 @@ virDomainDriverAutoStart(virDomainObjList *domains,
 
     virDomainObjListForEach(domains, false, virDomainDriverAutoStartOne, &state);
 }
+
+
+void
+virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
+{
+    g_autoptr(virConnect) conn = NULL;
+    int numDomains = 0;
+    size_t i;
+    int state;
+    virDomainPtr *domains = NULL;
+    g_autofree unsigned int *flags = NULL;
+
+    if (!(conn = virConnectOpen(cfg->uri)))
+        goto cleanup;
+
+    if ((numDomains = virConnectListAllDomains(conn,
+                                               &domains,
+                                               VIR_CONNECT_LIST_DOMAINS_ACTIVE)) < 0)
+        goto cleanup;
+
+    flags = g_new0(unsigned int, numDomains);
+
+    /* First we pause all VMs to make them stop dirtying
+       pages, etc. We remember if any VMs were paused so
+       we can restore that on resume. */
+    for (i = 0; i < numDomains; i++) {
+        flags[i] = VIR_DOMAIN_SAVE_RUNNING;
+        if (virDomainGetState(domains[i], &state, NULL, 0) == 0) {
+            if (state == VIR_DOMAIN_PAUSED)
+                flags[i] = VIR_DOMAIN_SAVE_PAUSED;
+        }
+        virDomainSuspend(domains[i]);
+    }
+
+    /* Then we save the VMs to disk */
+    for (i = 0; i < numDomains; i++)
+        if (virDomainManagedSave(domains[i], flags[i]) < 0)
+            VIR_WARN("Unable to perform managed save of '%s': %s",
+                     virDomainGetName(domains[i]),
+                     virGetLastErrorMessage());
+
+ cleanup:
+    if (domains) {
+        for (i = 0; i < numDomains; i++)
+            virObjectUnref(domains[i]);
+        VIR_FREE(domains);
+    }
+}
