@@ -664,6 +664,48 @@
 #
 #auto_start_delay = 0
 
+# The settings for auto shutdown actions accept one of
+# four possible options:
+#
+# * "none" - do not try to save any running VMs
+# * "persistent" - only try to save persistent running VMs
+# * "transient" - only try to save transient running VMs
+# * "all" - try to save all running VMs
+
+# Whether to perform managed save of running VMs if a host OS
+# shutdown is requested (system/session daemons), or the desktop
+# session terminates (session daemon only).
+#
+# Defaults to "persistent" for session daemons and "none"
+# for system daemons. The values "all" and "transient" are
+# not permitted for this setting, since managed save is not
+# implemented for transient VMs.
+#
+# If 'libvirt-guests.service' is enabled, then this must be
+# set to 'none' for system daemons to avoid dueling actions
+#auto_shutdown_try_save = "persistent"
+
+# As above, but with a graceful shutdown action instead of
+# managed save. If managed save is enabled, shutdown will
+# be tried only on failure to perform managed save.
+#
+# Defaults to "none"
+#
+# If 'libvirt-guests.service' is enabled, then this must be
+# set to 'none' for system daemons to avoid dueling actions
+#auto_shutdown_try_shutdown = "none"
+
+# As above, but with a forced poweroff instead of managed
+# save. If managed save or graceful shutdown are enabled,
+# forced poweroff will be tried only on failure of the
+# other options.
+#
+# Defaults to "none"
+#
+# If 'libvirt-guests.service' is enabled, then this must be
+# set to 'none' for system daemons to avoid dueling actions
+#auto_shutdown_poweroff = "none"
+
 # If provided by the host and a hugetlbfs mount point is configured,
 # a guest may request huge page backing.  When this mount point is
 # unspecified here, determination of a host mount point in /proc/mounts

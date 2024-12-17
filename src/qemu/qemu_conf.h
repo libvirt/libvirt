@@ -43,6 +43,7 @@
 #include "virfilecache.h"
 #include "virfirmware.h"
 #include "virinhibitor.h"
+#include "domain_driver.h"
 
 #define QEMU_DRIVER_NAME "QEMU"
 
@@ -211,6 +212,9 @@ struct _virQEMUDriverConfig {
     bool autoDumpBypassCache;
     bool autoStartBypassCache;
     unsigned int autoStartDelayMS;
+    virDomainDriverAutoShutdownScope autoShutdownTrySave;
+    virDomainDriverAutoShutdownScope autoShutdownTryShutdown;
+    virDomainDriverAutoShutdownScope autoShutdownPoweroff;
 
     char *lockManagerName;
 

@@ -314,6 +314,21 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
     cfg->dumpGuestCore = true;
 #endif
 
+    if (privileged) {
+        /*
+         * Defer to libvirt-guests.service.
+         *
+         * XXX, or query if libvirt-guests.service is enabled perhaps ?
+         */
+        cfg->autoShutdownTrySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdownTryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+    } else {
+        cfg->autoShutdownTrySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT;
+        cfg->autoShutdownTryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+    }
+
     return g_steal_pointer(&cfg);
 }
 
@@ -659,6 +674,10 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
     g_autofree char *savestr = NULL;
     g_autofree char *dumpstr = NULL;
     g_autofree char *snapstr = NULL;
+    g_autofree char *autoShutdownTrySave = NULL;
+    g_autofree char *autoShutdownTryShutdown = NULL;
+    g_autofree char *autoShutdownPoweroff = NULL;
+    int autoShutdownVal;
 
     if (virConfGetValueString(conf, "save_image_format", &savestr) < 0)
         return -1;
@@ -695,6 +714,54 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
         return -1;
     if (virConfGetValueUInt(conf, "auto_start_delay", &cfg->autoStartDelayMS) < 0)
         return -1;
+    if (virConfGetValueString(conf, "auto_shutdown_try_save", &autoShutdownTrySave) < 0)
+        return -1;
+
+    if (autoShutdownTrySave != NULL) {
+        if ((autoShutdownVal =
+             virDomainDriverAutoShutdownScopeTypeFromString(autoShutdownTrySave)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown auto_shutdown_try_save '%1$s'"),
+                           autoShutdownTrySave);
+            return -1;
+        }
+        cfg->autoShutdownTrySave = autoShutdownVal;
+    }
+
+    if (cfg->autoShutdownTrySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL ||
+        cfg->autoShutdownTrySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("managed save cannot be requested for transient domains"));
+        return -1;
+    }
+
+    if (virConfGetValueString(conf, "auto_shutdown_try_shutdown", &autoShutdownTryShutdown) < 0)
+        return -1;
+
+    if (autoShutdownTryShutdown != NULL) {
+        if ((autoShutdownVal =
+             virDomainDriverAutoShutdownScopeTypeFromString(autoShutdownTryShutdown)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown auto_shutdown_try_shutdown '%1$s'"),
+                           autoShutdownTryShutdown);
+            return -1;
+        }
+        cfg->autoShutdownTryShutdown = autoShutdownVal;
+    }
+
+    if (virConfGetValueString(conf, "auto_shutdown_poweroff", &autoShutdownPoweroff) < 0)
+        return -1;
+
+    if (autoShutdownPoweroff != NULL) {
+        if ((autoShutdownVal =
+             virDomainDriverAutoShutdownScopeTypeFromString(autoShutdownPoweroff)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown auto_shutdown_poweroff '%1$s'"),
+                           autoShutdownPoweroff);
+            return -1;
+        }
+        cfg->autoShutdownPoweroff = autoShutdownVal;
+    }
 
     return 0;
 }
