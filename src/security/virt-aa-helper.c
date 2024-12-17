@@ -481,6 +481,7 @@ valid_path(const char *path, const bool readonly)
         "/usr/share/AAVMF/",
         "/usr/share/qemu-efi/",              /* for AAVMF images */
         "/usr/share/qemu-efi-aarch64/",
+        "/usr/share/qemu-efi-loongarch64/",
         "/usr/share/qemu-efi-riscv64/",
         "/usr/share/qemu/",                  /* SUSE path for OVMF and AAVMF images */
         "/usr/lib/u-boot/",
