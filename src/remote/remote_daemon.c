@@ -628,30 +628,32 @@ static void daemonRunStateInit(void *opaque)
                                      virStateShutdownPrepare,
                                      virStateShutdownWait);
 
-    /* Tie the non-privileged daemons to the session/shutdown lifecycle */
+    /* Signal for VM shutdown when desktop session is terminated, in
+     * unprivileged daemons */
     if (!virNetDaemonIsPrivileged(dmn)) {
-
         if (virGDBusHasSessionBus()) {
             sessionBus = virGDBusGetSessionBus();
             if (sessionBus != NULL)
                 g_dbus_connection_add_filter(sessionBus,
                                              handleSessionMessageFunc, dmn, NULL);
         }
+    }
 
-        if (virGDBusHasSystemBus()) {
-            systemBus = virGDBusGetSystemBus();
-            if (systemBus != NULL)
-                g_dbus_connection_signal_subscribe(systemBus,
-                                                   "org.freedesktop.login1",
-                                                   "org.freedesktop.login1.Manager",
-                                                   "PrepareForShutdown",
-                                                   NULL,
-                                                   NULL,
-                                                   G_DBUS_SIGNAL_FLAGS_NONE,
-                                                   handleSystemMessageFunc,
-                                                   dmn,
-                                                   NULL);
-        }
+    if (virGDBusHasSystemBus()) {
+        /* Signal for VM shutdown when host OS shutdown is requested, in
+         * both privileged and unprivileged daemons */
+        systemBus = virGDBusGetSystemBus();
+        if (systemBus != NULL)
+            g_dbus_connection_signal_subscribe(systemBus,
+                                               "org.freedesktop.login1",
+                                               "org.freedesktop.login1.Manager",
+                                               "PrepareForShutdown",
+                                               NULL,
+                                               NULL,
+                                               G_DBUS_SIGNAL_FLAGS_NONE,
+                                               handleSystemMessageFunc,
+                                               dmn,
+                                               NULL);
     }
 
     /* Only now accept clients from network */

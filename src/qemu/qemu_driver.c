@@ -968,7 +968,8 @@ qemuStateStop(void)
         .uri = cfg->uri,
     };
 
-    virDomainDriverAutoShutdown(&ascfg);
+    if (!qemu_driver->privileged)
+        virDomainDriverAutoShutdown(&ascfg);
 
     return 0;
 }
