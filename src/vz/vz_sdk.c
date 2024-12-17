@@ -2703,7 +2703,7 @@ static int prlsdkCheckVideoUnsupportedParams(virDomainDef *def)
             return 0;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Video adapters are not supported int containers."));
+                           _("Video adapters are not supported in containers."));
             return -1;
         }
     } else {

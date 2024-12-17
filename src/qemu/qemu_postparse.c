@@ -1643,7 +1643,7 @@ qemuDomainDefVcpusPostParse(virDomainDef *def)
             /* they can be ordered only at the beginning */
             if (prevvcpu->hotpluggable == VIR_TRISTATE_BOOL_YES) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"));
+                               _("online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"));
                 return -1;
             }
 

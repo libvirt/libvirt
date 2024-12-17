@@ -97,7 +97,7 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
 
             if (fwBackends[0] < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unrecognized 'firewall_backend = '%1$s' set in network driver config file %2$s"),
+                               _("unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"),
                                fwBackendStr, filename);
                 return -1;
             }

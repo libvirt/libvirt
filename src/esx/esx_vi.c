@@ -370,7 +370,7 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
          */
         if (*length > INT32_MAX / 2) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Download length it too large"));
+                           _("Download length is too large"));
             return -1;
         }
 

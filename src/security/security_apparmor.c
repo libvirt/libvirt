@@ -374,7 +374,7 @@ AppArmorGenSecurityLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 
     if (secdef->baselabel) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("Cannot set a base label with AppArmour"));
+                       "%s", _("Cannot set a base label with AppArmor"));
         return -1;
     }
 
