@@ -221,6 +221,9 @@
   <feature name='avx2'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00000020'/>
   </feature>
+  <feature name='fdp-excptn-only'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00000040'/>
+  </feature>
   <feature name='smep'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00000080'/>
   </feature>

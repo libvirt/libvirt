@@ -29,6 +29,7 @@
   <feature name='arat'/>
   <feature name='fsgsbase'/>
   <feature name='tsc_adjust'/>
+  <feature name='fdp-excptn-only'/>
   <feature name='smep'/>
   <feature name='erms'/>
   <feature name='cmt'/>

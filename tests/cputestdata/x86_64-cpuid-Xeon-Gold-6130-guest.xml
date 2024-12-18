@@ -19,6 +19,7 @@
   <feature policy='require' name='tm'/>
   <feature policy='require' name='pbe'/>
   <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='fdp-excptn-only'/>
   <feature policy='require' name='cmt'/>
   <feature policy='require' name='mpx'/>
   <feature policy='require' name='clflushopt'/>

@@ -21,6 +21,7 @@
   <feature name='tm'/>
   <feature name='pbe'/>
   <feature name='tsc_adjust'/>
+  <feature name='fdp-excptn-only'/>
   <feature name='cmt'/>
   <feature name='mpx'/>
   <feature name='clflushopt'/>
