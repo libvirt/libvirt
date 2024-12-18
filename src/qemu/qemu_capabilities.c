@@ -3176,7 +3176,7 @@ virQEMUCapsProbeFullDeprecatedProperties(qemuMonitor *mon,
         return -1;
 
     if (propsInfo && propsInfo->deprecated_props) {
-        g_free(*props);
+        g_strfreev(*props);
         *props = g_steal_pointer(&propsInfo->deprecated_props);
     }
 
