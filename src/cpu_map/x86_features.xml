@@ -489,6 +489,21 @@
   </feature>
 
   <!-- cpuid level 0x00000007, 0x0002 (edx) -->
+  <feature name='intel-psfd'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000001'/>
+  </feature>
+  <feature name='ipred-ctrl'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000002'/>
+  </feature>
+  <feature name='rrsba-ctrl'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000004'/>
+  </feature>
+  <feature name='ddpd-u'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000008'/>
+  </feature>
+  <feature name='bhi-ctrl'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000010'/>
+  </feature>
   <feature name='mcdt-no'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000002' edx='0x00000020'/>
   </feature>
@@ -792,8 +807,25 @@
   <feature name='auto-ibrs'>
     <cpuid eax_in='0x80000021' eax='0x00000100'/>
   </feature>
+  <feature name='eraps'>
+    <cpuid eax_in='0x80000021' eax='0x01000000'/>
+  </feature>
+  <feature name='sbpb'>
+    <cpuid eax_in='0x80000021' eax='0x08000000'/>
+  </feature>
   <feature name='ibpb-brtype'>
     <cpuid eax_in='0x80000021' eax='0x10000000'/>
+  </feature>
+  <feature name='srso-no'>
+    <cpuid eax_in='0x80000021' eax='0x20000000'/>
+  </feature>
+  <feature name='srso-user-kernel-no'>
+    <cpuid eax_in='0x80000021' eax='0x40000000'/>
+  </feature>
+
+  <!-- cpuid level 0x80000022 (eax) -->
+  <feature name='perfmon-v2'>
+    <cpuid eax_in='0x80000022' eax='0x00000001'/>
   </feature>
 
   <!-- msr 0x000000cf -->
@@ -1123,6 +1155,9 @@
   <feature name='vmx-exit-load-pkrs'>
     <msr index='0x0000048f' edx='0x00000000' eax='0x20000000'/>
   </feature>
+  <feature name='vmx-exit-secondary-ctls'>
+    <msr index='0x0000048f' edx='0x00000000' eax='0x80000000'/>
+  </feature>
 
   <!-- msr 0x00000490 -->
   <feature name='vmx-entry-noload-debugctl'>
@@ -1148,6 +1183,9 @@
   </feature>
   <feature name='vmx-entry-load-pkrs'>
     <msr index='0x00000490' edx='0x00000000' eax='0x00400000'/>
+  </feature>
+  <feature name='vmx-entry-load-fred'>
+    <msr index='0x00000490' edx='0x00000000' eax='0x00800000'/>
   </feature>
 
   <!-- msr 0x00000491 -->
