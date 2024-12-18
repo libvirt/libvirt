@@ -469,6 +469,9 @@
   <feature name='prefetchiti'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00004000'/>
   </feature>
+  <feature name='avx10'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00080000'/>
+  </feature>
 
   <!-- cpuid level 0x00000007, 0x0002 (edx) -->
   <feature name='mcdt-no'>
@@ -539,6 +542,17 @@
   <!-- cpuid level 0x00000014, 0x0000 (ecx) -->
   <feature name='intel-pt-lip'>
     <cpuid eax_in='0x00000014' ecx_in='0x00000000' ecx='0x80000000'/>
+  </feature>
+
+  <!-- cpuid level 0x00000024, 0x0000 (ebx) -->
+  <feature name='avx10-128'>
+    <cpuid eax_in='0x00000024' ecx_in='0x00000000' ebx='0x00010000'/>
+  </feature>
+  <feature name='avx10-256'>
+    <cpuid eax_in='0x00000024' ecx_in='0x00000000' ebx='0x00020000'/>
+  </feature>
+  <feature name='avx10-512'>
+    <cpuid eax_in='0x00000024' ecx_in='0x00000000' ebx='0x00040000'/>
   </feature>
 
   <!-- cpuid level 0x80000001 (ecx) -->
