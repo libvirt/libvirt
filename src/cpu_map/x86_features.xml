@@ -416,6 +416,15 @@
   </feature>
 
   <!-- cpuid level 0x00000007, 0x0001 (eax) -->
+  <feature name='sha512'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00000001'/>
+  </feature>
+  <feature name='sm3'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00000002'/>
+  </feature>
+  <feature name='sm4'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00000004'/>
+  </feature>
   <feature name='avx-vnni'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x00000010'/>
   </feature>
