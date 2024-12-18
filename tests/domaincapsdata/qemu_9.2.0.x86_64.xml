@@ -67,6 +67,7 @@
       <feature policy='require' name='svme-addr-chk'/>
       <feature policy='require' name='lfence-always-serializing'/>
       <feature policy='require' name='null-sel-clr-base'/>
+      <feature policy='require' name='ibpb-brtype'/>
       <feature policy='require' name='rdctl-no'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>
       <feature policy='require' name='mds-no'/>
