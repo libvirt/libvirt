@@ -23,6 +23,7 @@
   <feature name='tsc_adjust'/>
   <feature name='fdp-excptn-only'/>
   <feature name='cmt'/>
+  <feature name='zero-fcs-fds'/>
   <feature name='mpx'/>
   <feature name='clflushopt'/>
   <feature name='intel-pt'/>

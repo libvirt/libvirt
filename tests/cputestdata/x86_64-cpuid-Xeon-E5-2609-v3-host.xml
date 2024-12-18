@@ -26,6 +26,7 @@
   <feature name='arat'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
+  <feature name='zero-fcs-fds'/>
   <feature name='stibp'/>
   <feature name='xsaveopt'/>
   <feature name='abm'/>

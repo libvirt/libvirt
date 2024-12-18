@@ -243,6 +243,9 @@
     <alias name='cqm' source='linux'/>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00001000'/>
   </feature>
+  <feature name='zero-fcs-fds'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00002000'/>
+  </feature>
   <feature name='mpx'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ebx='0x00004000'/>
   </feature>

@@ -24,6 +24,7 @@
   <feature name='pbe'/>
   <feature name='arat'/>
   <feature name='tsc_adjust'/>
+  <feature name='zero-fcs-fds'/>
   <feature name='intel-pt'/>
   <feature name='xsaveopt'/>
   <feature name='abm'/>

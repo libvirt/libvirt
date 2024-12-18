@@ -37,6 +37,7 @@
   <feature name='bmi2'/>
   <feature name='erms'/>
   <feature name='invpcid'/>
+  <feature name='zero-fcs-fds'/>
   <feature name='xsaveopt'/>
   <feature name='abm'/>
   <feature name='pdpe1gb'/>

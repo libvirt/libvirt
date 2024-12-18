@@ -24,6 +24,7 @@
   <feature policy='require' name='arat'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='cmt'/>
+  <feature policy='require' name='zero-fcs-fds'/>
   <feature policy='require' name='xsaveopt'/>
   <feature policy='require' name='abm'/>
   <feature policy='require' name='pdpe1gb'/>

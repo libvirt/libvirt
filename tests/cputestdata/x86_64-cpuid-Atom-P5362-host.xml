@@ -33,6 +33,7 @@
   <feature name='smep'/>
   <feature name='erms'/>
   <feature name='cmt'/>
+  <feature name='zero-fcs-fds'/>
   <feature name='rdseed'/>
   <feature name='smap'/>
   <feature name='clflushopt'/>
