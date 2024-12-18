@@ -783,6 +783,15 @@ qemuDomainPstoreDefPostParse(virDomainPstoreDef *pstore,
 }
 
 
+static bool
+qemuDomainNeedsIOMMUWithEIM(const virDomainDef *def)
+{
+    return ARCH_IS_X86(def->os.arch) &&
+           virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM &&
+           qemuDomainIsQ35(def);
+}
+
+
 static int
 qemuDomainIOMMUDefPostParse(virDomainIOMMUDef *iommu,
                             const virDomainDef *def,
@@ -793,9 +802,7 @@ qemuDomainIOMMUDefPostParse(virDomainIOMMUDef *iommu,
      * (EIM) is not explicitly turned off, let's enable it. If we didn't then
      * guest will have troubles with interrupts. */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE &&
-        ARCH_IS_X86(def->os.arch) &&
-        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM &&
-        qemuDomainIsQ35(def) &&
+        qemuDomainNeedsIOMMUWithEIM(def) &&
         iommu && iommu->model == VIR_DOMAIN_IOMMU_MODEL_INTEL) {
 
         /* eim requires intremap. */
@@ -1548,9 +1555,13 @@ qemuDomainDefEnableDefaultFeatures(virDomainDef *def,
         def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
     }
 
-    /* IOMMU with intremap requires split I/O APIC */
+    /* IOMMU with intremap requires split I/O APIC. But it may happen that
+     * domain already has IOMMU without inremap. This will be fixed in
+     * qemuDomainIOMMUDefPostParse() but there domain definition can't be
+     * modified so change it now. */
     if (def->iommu &&
-        def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
+        (def->iommu->intremap == VIR_TRISTATE_SWITCH_ON ||
+         qemuDomainNeedsIOMMUWithEIM(def)) &&
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_DOMAIN_IOAPIC_NONE) {
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] = VIR_DOMAIN_IOAPIC_QEMU;
     }
