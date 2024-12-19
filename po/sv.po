@@ -10,13 +10,14 @@
 # Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021, 2022, 2023, 2024.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Weblate <noreply-mt-weblate@weblate.org>, 2024.
+# Anders Jonsson <anders.jonsson@norsjovallen.se>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-09 15:52+0000\n"
-"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"PO-Revision-Date: 2024-12-14 20:38+0000\n"
+"Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -127,8 +128,8 @@ msgstr ""
 "    Uttag:\n"
 "      %2$s/libvirt/virtlockd-sock\n"
 "\n"
-"    PID-fil:\n"
-"      %3$s/libvirt/virtlockd.pid\n"
+"    PID-fil (om inte åsidosatt med -p):\n"
+"      %3$s/virtlockd.pid\n"
 "\n"
 
 #, c-format
@@ -155,8 +156,8 @@ msgstr ""
 "    Uttag:\n"
 "      %2$s/libvirt/virtlogd-sock\n"
 "\n"
-"    PID-fil:\n"
-"      %3$s/libvirt/virtlogd.pid\n"
+"    PID-fil (om inte åsidosatt med -p):\n"
+"      %3$s/virtlogd.pid\n"
 "\n"
 
 msgid ""
@@ -193,7 +194,7 @@ msgid ""
 msgstr ""
 "\n"
 "%1$s [flaggor]… [<kommandosträng>]\n"
-"%2$s [flaggor]… <kommando> [argsument…]\n"
+"%2$s [flaggor]… <kommando> [argument…]\n"
 "\n"
 "  flaggor:\n"
 "    -c | --connect=URI      demonens administrativa anslutnings-URI\n"
@@ -203,8 +204,8 @@ msgstr ""
 "    -q | --quiet            tyst läge\n"
 "    -v                      kort version\n"
 "    -V                      lång version\n"
-"         --version[=TYP]    version, TYP är short eller long (standard "
-"short)\n"
+"         --version[=TYP]    version, TYP är short eller long (standard short)"
+"\n"
 "  kommandon (icke interaktivt läge):\n"
 "\n"
 
@@ -240,7 +241,7 @@ msgstr ""
 "  flaggor:\n"
 "    -c | --connect=URI      anslutnings-URI till hypervisor\n"
 "    -d | --debug=TAL        felsökningsnivå [0-4]\n"
-"    -e | --escape <tkn>     sätt utgångssekvens för konsolen\n"
+"    -e | --escape <tkn>     sätt kontrollsekvens för konsolen\n"
 "    -h | --help             denna hjälp\n"
 "    -k | --keepalive-interval=TAL\n"
 "                            intervall för att hålla vid liv i sekunder, 0 "
@@ -248,14 +249,14 @@ msgstr ""
 "    -K | --keepalive-count=ANTAL\n"
 "                            antal möjliga missade meddelande för "
 "livsuppehållning\n"
-"    -l | --log=FIL          mata utt loggning till fil\n"
+"    -l | --log=FIL          mata ut loggning till fil\n"
 "    -q | --quiet            tyst läge\n"
 "    -r | --readonly         anslut endast för läsning\n"
 "    -t | --timing           skriv ut tidsinformation\n"
 "    -v                      kort version\n"
 "    -V                      lång version\n"
-"         --version[=TYP]    version, TYP är short eller long (standard "
-"short)\n"
+"         --version[=TYP]    version, TYP är short eller long (standard short)"
+"\n"
 "  kommandon (icke-interaktivt läge):\n"
 "\n"
 
@@ -387,7 +388,7 @@ msgstr ""
 "  -t | --timeout <sek>   Avsluta efter en tidsperiod.\n"
 "  -f | --config <fil>    Konfigurationsfil.\n"
 "  -V | --version         Visa versionsinformation.\n"
-"  -p | --pid-file <fil>  Ändra manet på PID-filen.\n"
+"  -p | --pid-file <fil>  Ändra namnet på PID-filen.\n"
 "\n"
 "libvirts låshanteringsdemon:\n"
 
@@ -444,7 +445,7 @@ msgstr ""
 "\n"
 "  qemu:system/$domnamn\t\tför domäner under qemu:///system\n"
 "  qemu:session/$domnamn\t\tfor domäner under qemu:///session\n"
-"  qemu/$domnamn\t\t\tförsöker slå upp $domnamn under system- följst av "
+"  qemu/$domnamn\t\t\tförsöker slå upp $domnamn under system- följt av "
 "session-URI:n\n"
 
 #, c-format
@@ -534,10 +535,10 @@ msgid ""
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
 "possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"!!! SSH:S VÄRDNYCKELSVERIFIKATION MISSLYCKADES !!!: Identiteten för värden "
+"!!! SSH:S VÄRDNYCKELSVERIFIERING MISSLYCKADES !!!: Identiteten för värden "
 "”%1$s:%2$d” skiljer från den lagrade identiteten. Verifiera att den nya "
 "värdnyckeln ”%3$s” för att undvika en eventuell man-i-mitten-attack. Nyckeln "
-"är lagrade i ”%4$s”."
+"är lagrad i ”%4$s”."
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -796,7 +797,7 @@ msgstr "%1$s: %2$s"
 
 #, c-format
 msgid "%1$s: %2$s: unsupported auth %3$s"
-msgstr "%1$s: %2$s: ej stödd autenticering %3$s"
+msgstr "%1$s: %2$s: ej stödd autentisering %3$s"
 
 #, c-format
 msgid "%1$s: '%2$s' does not exist"
@@ -827,7 +828,7 @@ msgid ""
 "%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
 "in route definition"
 msgstr ""
-"%1$s: fel vid konverering av adressen ”%2$s” med nätmasken ”%3$s” till "
+"%1$s: fel vid konvertering av adressen ”%2$s” med nätmasken ”%3$s” till "
 "nätverksadress i ruttdefinitionen"
 
 #, c-format
@@ -835,7 +836,7 @@ msgid ""
 "%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
 "route definition"
 msgstr ""
-"%1$s: fel vid konverering av adressen ”%2$s” med prefixet ”%3$u” till "
+"%1$s: fel vid konvertering av adressen ”%2$s” med prefixet ”%3$u” till "
 "nätverksadress i ruttdefinitionen"
 
 #, c-format
@@ -873,11 +874,11 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Missing required address attribute in route definition"
-msgstr "%1$s: saknad nödvändigt adressattribut i ruttdefinitionen"
+msgstr "%1$s: saknar nödvändigt adressattribut i ruttdefinitionen"
 
 #, c-format
 msgid "%1$s: Missing required gateway attribute in route definition"
-msgstr "%1$s: saknad nödvändigt gateway-attribut i ruttdefinitionen"
+msgstr "%1$s: saknar nödvändigt gateway-attribut i ruttdefinitionen"
 
 #, c-format
 msgid ""
@@ -893,7 +894,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Route definition cannot have both a prefix and a netmask"
-msgstr "%1$s ruttdefinitionen kan inte ha både ett prefix och en nätmask"
+msgstr "%1$s: ruttdefinitionen kan inte ha både ett prefix och en nätmask"
 
 #, c-format
 msgid ""
@@ -944,7 +945,7 @@ msgstr "%1$s: fel: kan inte avgöra om demonen kör: %2$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for node device %3$s\n"
-msgstr "%1$s: händelse ”%2$s” för nodenheten %3$s\n"
+msgstr "%1$s: händelsen ”%2$s” för nodenheten %3$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for secret %3$s\n"
@@ -973,7 +974,7 @@ msgstr "%1$s: händelsen ”lifecycle” för lagringspoolen %2$s: %3$s\n"
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
-"%1$s-händelsen ”metadata-change” för nätverket %2$s typen %3$s, uri:n %4$s\n"
+"%1$s: händelsen ”metadata-change” för nätverket %2$s typen %3$s, uri:n %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -981,7 +982,7 @@ msgstr "%1$s: en bool förväntades till parametern ”%2$s”"
 
 #, c-format
 msgid "%1$s: expected a signed integer for '%2$s' parameter"
-msgstr "%1$s: en heltal med tecken förväntades till parametern ”%2$s”"
+msgstr "%1$s: ett heltal med tecken förväntades till parametern ”%2$s”"
 
 #, c-format
 msgid "%1$s: expected a string for '%2$s' parameter"
@@ -997,11 +998,11 @@ msgstr "%1$s: en sträng eller stränglista förväntades till parametern ”%2$
 
 #, c-format
 msgid "%1$s: expected an unsigned integer for '%2$s' parameter"
-msgstr "%1$s: en teckenlöst heltal förväntades till parametern ”%2$s”"
+msgstr "%1$s: ett teckenlöst heltal förväntades till parametern ”%2$s”"
 
 #, c-format
 msgid "%1$s: failed to communicate with bridge helper: %2$s"
-msgstr "%1$s: misslyckades att kommuniciera med brygghjälparen: %2$s"
+msgstr "%1$s: misslyckades att kommunicera med brygghjälparen: %2$s"
 
 #, c-format
 msgid "%1$s: failed to generate UNIX socket path"
@@ -1071,7 +1072,7 @@ msgstr "%1$s: genomgångsinmatningsenheten har ingen källa"
 msgid ""
 "%1$s: remote_display_port_max: port must be between the minimal port and %2$d"
 msgstr ""
-"%1$s: remote_display_port_max: porten måsta vara mellan minimiporten och %2$d"
+"%1$s: remote_display_port_max: porten måste vara mellan minimiporten och %2$d"
 
 #, c-format
 msgid ""
@@ -1083,14 +1084,15 @@ msgstr ""
 msgid ""
 "%1$s: remote_display_port_min: port must be greater than or equal to %2$d"
 msgstr ""
-"%1$s: remote_display_port_min: porten måste vara större eller lika med %2$d"
+"%1$s: remote_display_port_min: porten måste vara större än eller lika med "
+"%2$d"
 
 #, c-format
 msgid ""
 "%1$s: remote_websocket_port_max: port must be between the minimal port and "
 "%2$d"
 msgstr ""
-"%1$s: remote_websocket_port_max: porten måsta vara mellan minimiporten och "
+"%1$s: remote_websocket_port_max: porten måste vara mellan minimiporten och "
 "%2$d"
 
 #, c-format
@@ -1104,7 +1106,8 @@ msgstr ""
 msgid ""
 "%1$s: remote_websocket_port_min: port must be greater than or equal to %2$d"
 msgstr ""
-"%1$s: remote_websocket_port_min: porten måste vara större eller lika med %2$d"
+"%1$s: remote_websocket_port_min: porten måste vara större än eller lika med "
+"%2$d"
 
 #, c-format
 msgid ""
@@ -1242,7 +1245,7 @@ msgstr "”%1$s” är inte ett känt gränssnitt"
 
 #, c-format
 msgid "'%1$s' is not a suitable bridge helper"
-msgstr "”%1$s” är inte en användbara brygghjälpare"
+msgstr "”%1$s” är inte en användbar brygghjälpare"
 
 #, c-format
 msgid "'%1$s' is not a suitable dbus-daemon"
@@ -1250,7 +1253,7 @@ msgstr "”%1$s” är inte en användbar dbus-demon"
 
 #, c-format
 msgid "'%1$s' is not a suitable pr helper"
-msgstr "”%1$s” är inte en användbara pr-hjälpare"
+msgstr "”%1$s” är inte en användbar pr-hjälpare"
 
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
@@ -1266,7 +1269,7 @@ msgstr "”%1$s” saknas"
 
 #, c-format
 msgid "'%1$s' requires shared memory"
-msgstr "”%1$s” bahöver delat minne"
+msgstr "”%1$s” behöver delat minne"
 
 #, c-format
 msgid "'%1$s' scheduler bitmap '%2$s' is empty"
@@ -1314,10 +1317,10 @@ msgid "'block' nvram backing device '%1$s' doesn't exist"
 msgstr "”block” som nvrams bakomliggande enhet ”%1$s” finns inte"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr "”cache” refererar till en NUMA-nodcaceh som inte finns"
+msgstr "”cache” refererar till en NUMA-nodcache som inte finns"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr "”cmd_per_lun” stödj endast av styrenheten virtio-scsi"
+msgstr "”cmd_per_lun” stödjs endast av styrenheten virtio-scsi"
 
 msgid "'cow' storage format is not supported"
 msgstr "lagringsformatet ”cow” stödjs inte"
@@ -1343,7 +1346,7 @@ msgstr "”disk” saknas eller är inte en vektor i svaret på guest-get-fsinfo
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
-msgstr "'extended_l2' stödjs inte med kompatibilitetsnivå %1$s"
+msgstr "”extended_l2” stödjs inte med kompatibilitetsnivå %1$s"
 
 msgid "'gluster' command line tool not found"
 msgstr "kommandoradsverktyget ”gluster” finns inte"
@@ -1414,7 +1417,7 @@ msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr "”name” saknas i svaret på guest-get-fsinfo"
 
 msgid "'netns' namespace source can only be used with sharenet"
-msgstr "namnrymden ”netns” källa kan endaste användas med sharenet"
+msgstr "namnrymden ”netns” källa kan endast användas med sharenet"
 
 msgid "'network' attribute is required for listen type 'network'"
 msgstr "attributet ”network” krävs för lyssningstypen ”network”"
@@ -1529,10 +1532,10 @@ msgid "(CPU_definition)"
 msgstr "(CPU_definition)"
 
 msgid "(_migration_cookie)"
-msgstr "(_migrationskaka)"
+msgstr "(_migreringskaka)"
 
 msgid "(bridge interface definition)"
-msgstr "(brygggränssnittsdefinition)"
+msgstr "(bryggränssnittsdefinition)"
 
 msgid "(capabilities)"
 msgstr "(förmågor)"
@@ -1574,7 +1577,7 @@ msgid "(interface_definition)"
 msgstr "(gränssnittsdefinition)"
 
 msgid "(libxl_migration_cookie)"
-msgstr "(libxl_migrationskaka)"
+msgstr "(libxl_migreringskaka)"
 
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
@@ -1598,7 +1601,7 @@ msgid "(nwfilterbinding_status)"
 msgstr "(nwfilterbinding_status)"
 
 msgid "(qemu_migration_cookie)"
-msgstr "(qemu_migrationskaka)"
+msgstr "(qemu_migreringskaka)"
 
 msgid "(re)connect to hypervisor"
 msgstr "(åter)anslut till hypervisor"
@@ -1847,7 +1850,7 @@ msgid ""
 "dev, but not both (network '%2$s')"
 msgstr ""
 "Ett nätverk med vidarebefordransläge=”%1$s” kan ange ett bryggnamn eller en "
-"vidarebefordranenhet, men inte båda (nätver ”%2$s”)"
+"vidarebefordransenhet, men inte båda (nätverk ”%2$s”)"
 
 msgid "A node device driver is already registered"
 msgstr "En nodenhetsdrivrutin är redan registrerad"
@@ -1872,14 +1875,14 @@ msgid "ACPI index is not supported with this QEMU"
 msgstr "ACPI-index stödjs inte med denna QEMU"
 
 msgid "ACPI index is only supported for PCI devices"
-msgstr "ACPI-indes stödjs endast för PCI-enheter"
+msgstr "ACPI-index stödjs endast för PCI-enheter"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI kräver UEFI på denna arkitektur"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
-msgstr "AES256CBC-kryptering med feaktig keylen=%1$zu"
+msgstr "AES256CBC-kryptering med felaktig keylen=%1$zu"
 
 #, c-format
 msgid "AES256CBC initialization vector invalid len=%1$zu"
@@ -1948,7 +1951,7 @@ msgstr ""
 "Efter minnesdumpen, misslyckades att återuppta domän ”%1$d” med libxenlight"
 
 msgid "Agent authentication is not supported on this host"
-msgstr "Agentautenticering stödjs inte på denna värd"
+msgstr "Agentautentisering stödjs inte på denna värd"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr "Det har väl ingen hört talas om så många cache-nivåer"
@@ -1963,7 +1966,7 @@ msgstr ""
 "Alla tillhandahållna autentiseringsmetoder med kreditiv avvisades av servern"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
-msgstr "Allokera eller frigör några sidor i poolen för NUMA-cel."
+msgstr "Allokera eller frigör några sidor i poolen för NUMA-cell."
 
 msgid "Allocation"
 msgstr "Allokering"
@@ -1978,7 +1981,7 @@ msgstr ""
 msgid "Allows setting or modifying the description or title of a network."
 msgstr ""
 "Tillåter inställning eller ändring av beskrivningen eller titeln för ett "
-"nätver."
+"nätverk."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Ett fel inträffade, men orsaken är okänd"
@@ -2108,11 +2111,10 @@ msgid "Attempt to overwrite resctrlid='%1$s' with id='%2$s'"
 msgstr "Försök att skriva över resctrlid='%1$s' med id='%2$s'"
 
 msgid "Attempt to send a non-blocking message with a synchronous reply"
-msgstr ""
-"Försök att skicka ett icke blockerande meddelanden med ett synkront svar"
+msgstr "Försök att skicka ett icke blockerande meddelande med ett synkront svar"
 
 msgid "Attempt to send an asynchronous message with a synchronous reply"
-msgstr "Försök att skicka ett asynkront meddelanden med ett synkront svar"
+msgstr "Försök att skicka ett asynkront meddelande med ett synkront svar"
 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
@@ -2161,7 +2163,7 @@ msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
 "'virtproxyd'."
 msgstr ""
-"Tillgängliga servrar på en demon. För närvarande stödjs endast ”libvritd” "
+"Tillgängliga servrar på en demon. För närvarande stödjs endast ”libvirtd” "
 "eller ”virtproxyd”."
 
 msgid "Available:"
@@ -2589,7 +2591,7 @@ msgstr "Cache-nivå ”%1$u” är redan definierad"
 
 #, c-format
 msgid "Cache with id %1$u does not exists for level %2$d"
-msgstr "Cachen med i %1$u finns inte för nivå %2$d"
+msgstr "Cachen med id %1$u finns inte för nivå %2$d"
 
 msgid "Calculate a vm's memory dirty rate"
 msgstr "Beräkna en vm:s minnes smutsighetshastighet"
@@ -2620,7 +2622,7 @@ msgstr "Anrop av ”%1$s” returnerade en lista, precis en post förväntades"
 #, c-format
 msgid "Call to '%1$s' returned an empty result, expecting a non-empty result"
 msgstr ""
-"Anrop av ”%1$s” returnerade ett tomt resultat, en icke tomt resultat "
+"Anrop av ”%1$s” returnerade ett tomt resultat, ett icke tomt resultat "
 "förväntades"
 
 #, c-format
@@ -2637,7 +2639,7 @@ msgstr "Kan endast ändra diskkvot"
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %1$s"
 msgstr ""
-"Det går endast att öppna de grafiska bakänderna VNC, SPICE eller D-Bus p2p, "
+"Det går endast att öppna de grafiska bakändarna VNC, SPICE eller D-Bus p2p, "
 "inte %1$s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
@@ -2828,7 +2830,7 @@ msgstr ""
 
 msgid "Cannot add uninitialized CURL handle to a multi handle"
 msgstr ""
-"Det går inte att lägga till ett oinitierat CURL-handtag till en multihandtag"
+"Det går inte att lägga till ett oinitierat CURL-handtag till ett multihandtag"
 
 msgid "Cannot alter an existing mem_nodes set"
 msgstr "Det går inte att ändra en befintlig mem_nodes-mängd"
@@ -2836,7 +2838,7 @@ msgstr "Det går inte att ändra en befintlig mem_nodes-mängd"
 #, c-format
 msgid "Cannot alter an existing nmem_nodes distances set for node: %1$zu"
 msgstr ""
-"Det går inte att ändra ett befintlig nmem_nodes-avstånd sat för node: %1$zu"
+"Det går inte att ändra ett befintligt nmem_nodes-avstånd satt för node: %1$zu"
 
 msgid "Cannot attach disk until init PID is known"
 msgstr "Det går inte att ansluta en disk tills init-PID är känd"
@@ -2941,14 +2943,14 @@ msgstr "Det går inte att skapa uttaget ”%1$s”"
 
 #, c-format
 msgid "Cannot create socket directory '%1$s'"
-msgstr "Kan inte skapauttagskatalogen ”%1$s”"
+msgstr "Kan inte skapa uttagskatalogen ”%1$s”"
 
 #, c-format
 msgid "Cannot create user runtime directory '%1$s'"
 msgstr "Kan inte skapa användarkörtidskatalogen ”%1$s”"
 
 msgid "Cannot deactivate network autostart"
-msgstr "Kan inte avaktivera nätversautostarten"
+msgstr "Kan inte avaktivera nätverksautostarten"
 
 msgid "Cannot deactivate storage pool autostart"
 msgstr "Kan inte avaktivera lagringspoolsautostarten"
@@ -3055,7 +3057,7 @@ msgstr "Kan inte hitta program %1$d version %2$d"
 
 #, c-format
 msgid "Cannot find security driver '%1$s'"
-msgstr "Kan inte hitta sälerhetsdrivrutin ”%1$s”"
+msgstr "Kan inte hitta säkerhetsdrivrutin ”%1$s”"
 
 #, c-format
 msgid "Cannot find start time for pid %1$d"
@@ -3169,7 +3171,7 @@ msgstr "Det går inte att migrera tom eller endast läsbar disk %1$s"
 
 #, c-format
 msgid "Cannot mount filesystem type %1$s"
-msgstr "kan inte montera filsystemstypen %1$s"
+msgstr "Kan inte montera filsystemstypen %1$s"
 
 #, c-format
 msgid "Cannot move fd %1$d out of the way"
@@ -3197,7 +3199,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot open init control %1$s"
-msgstr "Kan inte initieringsstyrningen %1$s"
+msgstr "Kan inte öppna initieringsstyrningen %1$s"
 
 #, c-format
 msgid "Cannot open log file: '%1$s'"
@@ -3217,7 +3219,7 @@ msgid "Cannot parse 'memory.stat' cgroup file."
 msgstr "Kan inte tolka cgroup-filen ”memory.stat”."
 
 msgid "Cannot parse <HardDisk> 'format' attribute"
-msgstr "Kan inte tolka <HardDisk> ”port”-attribut"
+msgstr "Kan inte tolka <HardDisk> ”format”-attribut"
 
 msgid "Cannot parse <HardDisk> 'location' attribute"
 msgstr "Kan inte tolka <HardDisk> ”location”-attribut"
@@ -3232,7 +3234,7 @@ msgid "Cannot parse <Machine> 'lastStateChange' attribute"
 msgstr "Kan inte tolka <Machine>-attributet ”lastStateChange”"
 
 msgid "Cannot parse <Machine> 'name' attribute"
-msgstr "Kan inte tolka <address>-attributet ”name”"
+msgstr "Kan inte tolka <Machine>-attributet ”name”"
 
 msgid "Cannot parse <Machine> 'snapshotFolder' attribute"
 msgstr "Kan inte tolka <Machine>-attributet ”snapshotFolder”"
@@ -3340,7 +3342,7 @@ msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
 "floor=%3$llu would overcommit average=%4$llu on network '%5$s'"
 msgstr ""
-"Det går inte att plugga gränssnittet ”%1$s” i ”%2$s” eftersm det nya "
+"Det går inte att plugga gränssnittet ”%1$s” i ”%2$s” eftersom det nya "
 "kombinerade ingående golvet=%3$llu skulle överboka genomsnittet=%4$llu på "
 "nätverket ”%5$s”"
 
@@ -3349,7 +3351,7 @@ msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
 "floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
-"Det går inte att plugga gränssnittet ”%1$s” i ”%2$s” eftersm det nya "
+"Det går inte att plugga gränssnittet ”%1$s” i ”%2$s” eftersom det nya "
 "kombinerade ingående golvet=%3$llu skulle överboka toppen=%4$llu på "
 "nätverket ”%5$s”"
 
@@ -3362,7 +3364,7 @@ msgid "Cannot read %1$s '%2$s'"
 msgstr "Kan inte läsa %1$s ”%2$s”"
 
 msgid "Cannot read cputime for domain"
-msgstr "Kan inte läsa spu-tid för domänen"
+msgstr "Kan inte läsa cpu-tid för domänen"
 
 msgid "Cannot read host CPUID"
 msgstr "Kan inte läsa värd-CPUID"
@@ -3390,7 +3392,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot rename checkpoint %1$s to %2$s"
-msgstr "Kan inte byta namn på checkpunkten %1$s till %2$s"
+msgstr "Kan inte byta namn på kontrollpunkten %1$s till %2$s"
 
 #, c-format
 msgid "Cannot rename interface '%1$s' to '%2$s' on this platform"
@@ -3399,7 +3401,7 @@ msgstr ""
 "plattform"
 
 msgid "Cannot resize the max memory on an active domain"
-msgstr "Det går inte att ändra storlek på maximalt minnen på en aktiv domän"
+msgstr "Det går inte att ändra storlek på maximalt minne på en aktiv domän"
 
 #, c-format
 msgid "Cannot resolve %1$s address: %2$s"
@@ -3466,7 +3468,7 @@ msgstr "Kan inte sätta gränssnittsflaggor på ”%1$s”"
 
 #, c-format
 msgid "Cannot set interface vlanid to %1$d for ifname %2$s vf %3$d"
-msgstr "Kan inte sätta gränssnitts-vlanid til %1$d för ifname %2$s vf %3$d"
+msgstr "Kan inte sätta gränssnitts-vlanid till %1$d för ifname %2$s vf %3$d"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "Det går inte att sätta minnet högre än maximalt minne"
@@ -3493,7 +3495,7 @@ msgstr "Det går inte att dela ett oinitierat CURL-handtag"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%1$s"
 msgstr ""
-"Det går inte att ange en etikett om omettikettering är avslaget, modell=%1$s"
+"Det går inte att ange en etikett om ometikettering är avslaget, modell=%1$s"
 
 #, c-format
 msgid "Cannot specify relabel if label is missing. model=%1$s"
@@ -3966,7 +3968,7 @@ msgstr "Fastställande avbrutet"
 
 msgid "Commit changes from a snapshot down to its backing image."
 msgstr ""
-"Fastställ ändringar från en ögonblicksbild ner på dess bakomligande avbild."
+"Fastställ ändringar från en ögonblicksbild ner på dess bakomliggande avbild."
 
 msgid "Commit complete"
 msgstr "Fastställande klart"
@@ -4003,7 +4005,7 @@ msgid "Compressed pages:"
 msgstr "Komprimerade sidor:"
 
 msgid "Compression cache misses:"
-msgstr "Komprimerade cahce-missar:"
+msgstr "Komprimerade cache-missar:"
 
 msgid "Compression cache:"
 msgstr "Komprimerings-cache:"
@@ -4092,7 +4094,7 @@ msgid ""
 "Configuring the '%1$s' timer is not supported for virtType=%2$s arch=%3$s "
 "machine=%4$s guests"
 msgstr ""
-"Konfiguration at timern ”%1$s” stödjs inte för gäster virtType=%2$s "
+"Konfiguration av timern ”%1$s” stödjs inte för gäster virtType=%2$s "
 "arkitektur=%3$s maskin=%4$s"
 
 #, c-format
@@ -4103,7 +4105,7 @@ msgid "Connect the virtual serial console for the guest"
 msgstr "Anslut den virtuella seriekonsolen för gästen"
 
 msgid "Connect to a daemon's administrating server."
-msgstr "Anslut till en domins administrerande server."
+msgstr "Anslut till en demons administrerande server."
 
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
@@ -4143,7 +4145,7 @@ msgid "Control groups not supported on this platform"
 msgstr "Styrgrupper stödjs inte på denna plattform"
 
 msgid "Controllers must use the 'ccid' address type"
-msgstr "Styrenheten måste använda adresstypen ”ccid”"
+msgstr "Styrenheter måste använda adresstypen ”ccid”"
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr ""
@@ -4153,7 +4155,7 @@ msgid "Convert domain XML to native config"
 msgstr "Konvertera domän-XML till egen konfiguration"
 
 msgid "Convert native config to domain XML"
-msgstr "Konvertera egen konfiguration domän-XML"
+msgstr "Konvertera egen konfiguration till domän-XML"
 
 msgid "Convert native guest configuration format to domain XML format."
 msgstr "Konvertera eget gästkonfigurationsformat till domän-XML-format."
@@ -4420,7 +4422,7 @@ msgstr "Kunde inte hitta vport-kapabel enhet"
 
 #, c-format
 msgid "Could not find auto-added %1$s controller with index %2$zu"
-msgstr "Kunde inte hitta någon automattillagt %1$s-styrenhet med index %2$zu"
+msgstr "Kunde inte hitta någon automattillagd %1$s-styrenhet med index %2$zu"
 
 #, c-format
 msgid "Could not find compute resource specified in '%1$s'"
@@ -4435,7 +4437,7 @@ msgstr "Kunde inte hitta datacentret som anges i ”%1$s”"
 
 #, c-format
 msgid "Could not find datastore containing absolute path '%1$s'"
-msgstr "Kunde inte hitta dtalagring som innehåller absolutsökvägen ”%1$s”"
+msgstr "Kunde inte hitta datalagring som innehåller absolutsökvägen ”%1$s”"
 
 #, c-format
 msgid "Could not find datastore with name '%1$s'"
@@ -4582,7 +4584,7 @@ msgid "Could not get access to ACL tech driver '%1$s'"
 msgstr "Kunde inte få åtkomst till ACL-teknikdrivrutinen ”%1$s”"
 
 msgid "Could not get checkpoint name"
-msgstr "Kunde inte få tag i checkpunktsnamnet"
+msgstr "Kunde inte få tag i kontrollpunktsnamnet"
 
 msgid "Could not get current time"
 msgstr "Kunde inte ta reda på aktuell tid"
@@ -4591,7 +4593,7 @@ msgid "Could not get device port"
 msgstr "Kunde inte få tag i enhetsport"
 
 msgid "Could not get device slot"
-msgstr "Kunte inte få tag i enhetsfack"
+msgstr "Kunde inte få tag i enhetsfack"
 
 msgid "Could not get device type"
 msgstr "Kunde inte få tag i enhetstyp"
@@ -4711,10 +4713,10 @@ msgid "Could not get slaves of bond '%1$s'"
 msgstr "Kunde inte få tag i slavarna av bindningen ”%1$s”"
 
 msgid "Could not get snapshot id"
-msgstr "Kunde inte få tag i ögonblicsbilds-id"
+msgstr "Kunde inte få tag i ögonblicksbilds-id"
 
 msgid "Could not get snapshot name"
-msgstr "Kunde inte få tag i ögonblicsbildsnamn"
+msgstr "Kunde inte få tag i ögonblicksbildsnamn"
 
 msgid "Could not get storage controller bus"
 msgstr "Kan inte få tag i lagringsstyrenhetsbuss"
@@ -4731,7 +4733,7 @@ msgstr "Kunde inte få tag i temporär xml-dokumentsrot"
 
 #, c-format
 msgid "Could not get version information for host %1$s"
-msgstr "Kunde inte få versioninformation för värden %1$s"
+msgstr "Kunde inte få versionsinformation för värden %1$s"
 
 #, c-format
 msgid "Could not handle file name '%1$s'"
@@ -4859,7 +4861,7 @@ msgstr "Kunde inte öppna TPM-enheten %1$s"
 
 #, c-format
 msgid "Could not open TPM device's cancel path %1$s"
-msgstr "Kunde inte öppna TPM-enhetens annuleringssökväg %1$s"
+msgstr "Kunde inte öppna TPM-enhetens annulleringssökväg %1$s"
 
 #, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
@@ -5081,7 +5083,7 @@ msgid ""
 "Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
 "for details."
 msgstr ""
-"Kunde inte köra ”%1$s --reconfigure”: avslutsstatus: %2$d; granska felloggen "
+"Kunde inte köra ”%1$s --reconfigure”: slutstatus: %2$d; granska felloggen "
 "”%3$s” för detaljer."
 
 #, c-format
@@ -5089,14 +5091,14 @@ msgid ""
 "Could not run '%1$s' to create config files. exitstatus: %2$d;\n"
 "Error: %3$s"
 msgstr ""
-"Kunde inte köra ”%1$s” för att skapa konfigurationsfiler. slutstatus%2$d;\n"
+"Kunde inte köra ”%1$s” för att skapa konfigurationsfiler. slutstatus: %2$d;\n"
 "Fel: %3$s"
 
 #, c-format
 msgid ""
 "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
 msgstr ""
-"Kunde inte köra ”%1$s”: avslutsstatus: %2$d; granska felloggen ”%3$s” för "
+"Kunde inte köra ”%1$s”: slutstatus: %2$d; granska felloggen ”%3$s” för "
 "detaljer."
 
 #, c-format
@@ -5128,7 +5130,7 @@ msgid "Could not set memory to %1$lu kilobytes: %2$s"
 msgstr "Kunde inte ställa in minne till %1$lu kilobyte: %2$s"
 
 msgid "Could not set namespace address for xmlNodeParam"
-msgstr "Kunde inte sätta namnryndsadressen för xmlNodeParam"
+msgstr "Kunde inte sätta namnrymdsadressen för xmlNodeParam"
 
 msgid "Could not set number of vCPUs"
 msgstr "Kunde inte ställa in antalet vCPU:er"
@@ -5223,20 +5225,20 @@ msgid "Crashloaded"
 msgstr "Kraschlastad"
 
 msgid "Create a checkpoint from XML"
-msgstr "Skapa en checkpunkt från XML"
+msgstr "Skapa en kontrollpunkt från XML"
 
 msgid "Create a checkpoint from XML for use in future incremental backups"
 msgstr ""
-"Skapa en checkpunkt från XML för användning i framtida inkrementella "
+"Skapa en kontrollpunkt från XML för användning i framtida inkrementella "
 "säkerhetskopior"
 
 msgid "Create a checkpoint from a set of args"
-msgstr "Skapa en checkpunkt från en uppsättning argument"
+msgstr "Skapa en kontrollpunkt från en uppsättning argument"
 
 msgid ""
 "Create a checkpoint from arguments for use in future incremental backups"
 msgstr ""
-"Skapa en checkpunkt från argument för användning i framtida inkrementella "
+"Skapa en kontrollpunkt från argument för användning i framtida inkrementella "
 "säkerhetskopior"
 
 msgid ""
@@ -5416,8 +5418,8 @@ msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
 "a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
-"Definierar eller ändrar en varaktig enhet på noden som kan tilldelas till en "
-"domän. Enheten måste startas före den kan tilldelas till en domän."
+"Definierar eller ändrar en beständig enhet på noden som kan tilldelas till "
+"en domän. Enheten måste startas före den kan tilldelas till en domän."
 
 msgid "Delete a domain checkpoint"
 msgstr "Radera en domänkontrollpunkt"
@@ -5465,8 +5467,7 @@ msgid ""
 msgstr "Målet libvirt stödjer inte migration med utökningsbara parametrar"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
-msgstr ""
-"Målet libvirt stödjer inte migration migrationsprotokollet mellan motparter"
+msgstr "Målet libvirt stödjer inte migrationsprotokollet mellan motparter"
 
 msgid ""
 "Destroy a device on the node.  Note that this command destroys devices on "
@@ -5487,7 +5488,7 @@ msgstr "Avmontera enhet från en XML-fil"
 
 msgid "Detach device identified by the given alias from a domain"
 msgstr ""
-"Koppla ifrån enheten som idetifieras av det givna aliaset från en domän"
+"Koppla ifrån enheten som identifieras av det givna aliaset från en domän"
 
 msgid "Detach disk device."
 msgstr "Avmontera diskenhet."
@@ -5553,7 +5554,7 @@ msgstr "Enheten %1$s avmarkerad som autostartad\n"
 
 #, c-format
 msgid "Device '%1$s' already formatted using '%2$s'"
-msgstr "Enheten ”%1$s” är redan formaterade med ”%2$s”"
+msgstr "Enheten ”%1$s” är redan formaterad med ”%2$s”"
 
 #, c-format
 msgid "Device '%1$s' is not active"
@@ -5565,14 +5566,14 @@ msgstr "Enheten ”%1$s” känns inte igen, kräver ett bygge"
 
 #, c-format
 msgid "Device alias was not set for %1$s controller with index %2$d"
-msgstr "Enhetsalias sattes inte för styrneheten %1$s med index %2$d"
+msgstr "Enhetsalias sattes inte för styrenheten %1$s med index %2$d"
 
 #, c-format
 msgid ""
 "Device alias was not set for PCI controller with index '%1$u' required for "
 "device at address '%2$s'"
 msgstr ""
-"Enhetesalias sattes inte för PCI-styrenheten med index ”%1$u” som krävs för "
+"Enhetsalias sattes inte för PCI-styrenheten med index ”%1$u” som krävs för "
 "enheten på adressen ”%2$s”"
 
 msgid "Device attached successfully\n"
@@ -5610,7 +5611,7 @@ msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
 "TPM 1.2\n"
 msgstr ""
-"Skapade inte EK och certifikat eftersom detta kräver priviligierat läge för "
+"Skapade inte EK och certifikat eftersom detta kräver privilegierat läge för "
 "en TPM 1.2\n"
 
 #, c-format
@@ -5661,8 +5662,7 @@ msgstr "Frånkopplad från %1$s på grund av slut på filen"
 
 #, c-format
 msgid "Disconnected from %1$s due to keepalive timeout"
-msgstr ""
-"Frånkopplad från %1$s på grund av att tidsgränsen för att hålla vid liv"
+msgstr "Frånkopplad från %1$s på grund av tidsgränsen för att hålla vid liv"
 
 msgid "Disk"
 msgstr "Disk"
@@ -5689,11 +5689,11 @@ msgid "Disk device '%1$s' does not support snapshotting"
 msgstr "Diskenheten ”%1$s” stöder inte att ta ögonblicksbilder"
 
 msgid "Disk discard_no_unref is not supported by vz driver."
-msgstr "Diskens discard_no_unref stöjds inte av drivrutinen vz."
+msgstr "Diskens discard_no_unref stödjs inte av drivrutinen vz."
 
 #, c-format
 msgid "Disk iothread '%1$u' not defined in iothreadid"
-msgstr "Disk-io-tråd ”%1$u” är inte definerad i iothreadid"
+msgstr "Disk-io-tråd ”%1$u” är inte definierad i iothreadid"
 
 #, c-format
 msgid "Disk label already formatted using '%1$s'"
@@ -5841,7 +5841,7 @@ msgstr "Domänen ”%1$s” sövd\n"
 
 #, c-format
 msgid "Domain '%1$s' sysinfo are not available"
-msgstr "Domänen ”%1$s” sysinfo är inte tillgängligt"
+msgstr "Domänen ”%1$s” sysinfo är inte tillgänglig"
 
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted\n"
@@ -5995,7 +5995,7 @@ msgid "Domain is not suspended or powered off"
 msgstr "Domänen är inte sövd eller avstängd"
 
 msgid "Domain name contains invalid escape sequence"
-msgstr "Domännamnet innehåller en ogiltig flyktföljd"
+msgstr "Domännamnet innehåller en ogiltig kontrollsekvens"
 
 msgid "Domain not found"
 msgstr "Domän hittades inte"
@@ -6084,7 +6084,7 @@ msgid "Download length it too large"
 msgstr "Hämtningslängden är för stor"
 
 msgid "Download volume contents to a file"
-msgstr "Hämtningsvolymen innehåll till en fil"
+msgstr "Hämta volymens innehåll till en fil"
 
 msgid "Downtime w/o network:"
 msgstr "Nertid utan nätverk:"
@@ -6133,11 +6133,11 @@ msgstr "Dubblerad NUMA-cellsinformation för cell-id ”%1$u”"
 
 #, c-format
 msgid "Duplicate USB address bus %1$u port %2$s"
-msgstr "Dubberad USB-adress buss %1$u port %2$s"
+msgstr "Dubblerad USB-adress buss %1$u port %2$s"
 
 #, c-format
 msgid "Duplicate USB controllers with index %1$u"
-msgstr "Uubblerade USB-styrenheter med index %1$u"
+msgstr "Dubblerade USB-styrenheter med index %1$u"
 
 #, c-format
 msgid "Duplicate USB hub on bus %1$u port %2$s"
@@ -6160,7 +6160,7 @@ msgstr "Dubblerad information för NUMA-latenser"
 
 #, c-format
 msgid "Duplicate mapping for iothread '%1$u'"
-msgstr "Dubbel avbildning för iotrhead ”%1$u”"
+msgstr "Dubbel avbildning för iothread ”%1$u”"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -6207,7 +6207,7 @@ msgid "Edit the domain checkpoint XML for a named checkpoint"
 msgstr "Redigera domänkontrollpunkts-XML för en namngiven kontrollpunkt"
 
 msgid "Edit the domain snapshot XML for a named snapshot"
-msgstr "Redigera domänögonblicsbilds-XML för en namngiven ögonblicksbild"
+msgstr "Redigera domänögonblicksbilds-XML för en namngiven ögonblicksbild"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "Antingen ”name” eller ”parent” måste anges för adaptern ”scsi_host”"
@@ -6220,7 +6220,7 @@ msgid "Eject the media"
 msgstr "Mata ut mediumet"
 
 msgid "Element 'memnode' is invalid without any guest NUMA cells"
-msgstr "Elementet ”memnode” or ogiltigt utan några gäst-NUMA-celler"
+msgstr "Elementet ”memnode” är ogiltigt utan några gäst-NUMA-celler"
 
 msgid "Empty cpu list for pinning"
 msgstr "Tom cpu-lista för att fästa"
@@ -6331,7 +6331,7 @@ msgid "Error message:"
 msgstr "Felmeddelande:"
 
 msgid "Error notify callback must be supplied"
-msgstr "Fel notifieringsanrop måste ges"
+msgstr "Återanrop för felnotifiering måste ges"
 
 #, c-format
 msgid "Error opening file %1$s"
@@ -6389,7 +6389,7 @@ msgid "Ethernet controller index %1$d out of [0..%2$d] range"
 msgstr "Ethernet-styrenhetens index %1$d utanför intervallet [0..%2$d]"
 
 msgid "Event thread is already running"
-msgstr "Händelsetråden redan"
+msgstr "Händelsetråden körs redan"
 
 msgid "Event wakeup"
 msgstr "Uppväckt av händelse"
@@ -6407,7 +6407,7 @@ msgid "Exceeded max iface limit %1$d"
 msgstr "Överskriden max gränssnittsgräns %1$d"
 
 msgid "Executing new processes is not supported on Win32 platform"
-msgstr "Att köra nya processer stödjs inte på plattformem Win32"
+msgstr "Att köra nya processer stödjs inte på plattformen Win32"
 
 #, c-format
 msgid "Existing device %1$s has no type"
@@ -6466,11 +6466,11 @@ msgid ""
 "'pvscsi' but found '%2$s'"
 msgstr ""
 "VMX-post ”%1$s” förväntades vara ”buslogic” eller ”lsilogic” eller "
-"”lsias1068” eller ”pvscsi” men fann ”%2$s”"
+"”lsisas1068” eller ”pvscsi” men fann ”%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'cdrom-image' but found '%2$s'"
-msgstr "VMX-post ”%1$s” förväntades vara ”cdrom-imaage” men fann ”%2$s”"
+msgstr "VMX-post ”%1$s” förväntades vara ”cdrom-image” men fann ”%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'device' or 'file' but found '%2$s'"
@@ -6524,15 +6524,15 @@ msgid ""
 "Expecting VMX entry 'memsize' to be an unsigned integer (multiple of 4) but "
 "found %1$lld"
 msgstr ""
-"VMX-post ”memsize” förväntades vara ett teckenlöst heltal (mutipel av 4) men "
-"fann %1$lld"
+"VMX-post ”memsize” förväntades vara ett teckenlöst heltal (multipel av 4) "
+"men fann %1$lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'numvcpus' to be an unsigned integer greater than 0 but "
 "found %1$lld"
 msgstr ""
-"VMX-post ”numvcpus” förväntades vara ett teckenlöst heltal störren än 0 men "
+"VMX-post ”numvcpus” förväntades vara ett teckenlöst heltal större än 0 men "
 "fann %1$lld"
 
 #, c-format
@@ -6615,8 +6615,8 @@ msgid ""
 "Expecting domain XML attribute 'model' of entry 'controller' to be "
 "'buslogic' or 'lsilogic' or 'lsisas1068' or 'vmpvscsi' but found '%1$s'"
 msgstr ""
-"Domän-XM-attributet ”model” i posten ”controller” förväntades vara "
-"”buslogic” eller ”lsilogic” eller ”lsias1068” eller “vmpvscsi” men fann "
+"Domän-XML-attributet ”model” i posten ”controller” förväntades vara "
+"”buslogic” eller ”lsilogic” eller ”lsisas1068” eller ”vmpvscsi” men fann "
 "”%1$s”"
 
 #, c-format
@@ -6672,7 +6672,7 @@ msgid "Extra data in disabled network '%1$s'"
 msgstr "Extra data i avaktiverat nätverk ”%1$s”"
 
 msgid "Extract the checkpoint's parent, if any"
-msgstr "Extrahera kontropunktens förälder, om någon"
+msgstr "Extrahera kontrollpunktens förälder, om någon"
 
 msgid "Extract the snapshot's parent, if any"
 msgstr "Extrahera ögonblicksbildens förälder, om någon"
@@ -6682,7 +6682,7 @@ msgstr "MISSLYCKADES"
 
 #, c-format
 msgid "FDC bus index %1$d out of [0] range"
-msgstr "FDC-bussindex %1$d utnför intervallet [0]"
+msgstr "FDC-bussindex %1$d utanför intervallet [0]"
 
 #, c-format
 msgid "FDC controller index %1$d out of [0] range"
@@ -6708,7 +6708,7 @@ msgstr "Misslyckades att sätta nytt läge för målet ”%1$s”"
 
 #, c-format
 msgid "Failed set TLS x509 credentials: %1$s"
-msgstr "Misslyckades att sätta TLS 509-kreditiv: %1$s"
+msgstr "Misslyckades att sätta TLS x509-kreditiv: %1$s"
 
 #, c-format
 msgid "Failed testunitready: %1$s"
@@ -7026,11 +7026,11 @@ msgstr "Misslyckades att skapa %1$s"
 
 #, c-format
 msgid "Failed to create '%1$s': %2$s"
-msgstr "misslyckades med att skapa ”%1$s”: %2$s"
+msgstr "Misslyckades med att skapa ”%1$s”: %2$s"
 
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
-msgstr "Misslyckades att SASL-klientkontext: %1$d (%2$s)"
+msgstr "Misslyckades att skapa SASL-klientkontext: %1$d (%2$s)"
 
 #, c-format
 msgid "Failed to create SAVE dir %1$s"
@@ -7067,11 +7067,11 @@ msgstr "Misslyckades att skapa dbus-tillståndskatalogen %1$s"
 
 #, c-format
 msgid "Failed to create directory for '%1$s' dev '%2$s'"
-msgstr "Misslyckades att en katalog för ”%1$s” enheten ”%2$s”"
+msgstr "Misslyckades att skapa en katalog för ”%1$s” enheten ”%2$s”"
 
 #, c-format
 msgid "Failed to create directory for device %1$s"
-msgstr "Misslyckades att en katalog för enheten %1$s"
+msgstr "Misslyckades att skapa en katalog för enheten %1$s"
 
 msgid "Failed to create disk pool geometry"
 msgstr "Misslyckades att skapa diskpoolsgeometrin"
@@ -7249,7 +7249,7 @@ msgstr "Misslyckades att definiera nätverk från %1$s"
 
 #, c-format
 msgid "Failed to define new bridge interface %1$s"
-msgstr "Misslyckades med att definiera det nya brygggränssnittet %1$s"
+msgstr "Misslyckades med att definiera det nya bryggränssnittet %1$s"
 
 #, c-format
 msgid "Failed to define new interface %1$s"
@@ -7323,7 +7323,7 @@ msgstr "Misslyckades att radera volymen %1$s"
 
 #, c-format
 msgid "Failed to destroy bridge interface %1$s"
-msgstr "Misslyckades med att förstöra brygggränssnittet %1$s"
+msgstr "Misslyckades med att förstöra bryggränssnittet %1$s"
 
 #, c-format
 msgid "Failed to destroy domain '%1$d'"
@@ -7453,7 +7453,7 @@ msgid "Failed to find a secret storage driver: %1$s"
 msgstr "Misslyckades att hitta en lagringsenhet för hemligheter: %1$s"
 
 msgid "Failed to find a storage driver"
-msgstr "Misslyckades att lagringsdrivrutin"
+msgstr "Misslyckades att hitta lagringsdrivrutin"
 
 #, c-format
 msgid "Failed to find a storage driver: %1$s"
@@ -7469,7 +7469,7 @@ msgstr "Misslyckades att hitta fc_host för wwnn=”%1$s” och wwpn=”%2$s”"
 
 #, c-format
 msgid "Failed to find group record for gid '%1$u'"
-msgstr "Misslyckades att grupposten för gid ”%1$u”"
+msgstr "Misslyckades att hitta grupposten för gid ”%1$u”"
 
 #, c-format
 msgid "Failed to find module '%1$s'"
@@ -7547,7 +7547,7 @@ msgstr "Misslyckades att hämta VNC-porten. Använder domänen VNC?"
 
 #, c-format
 msgid "Failed to get block stats %1$s %2$s"
-msgstr "Misslyckades att hämta block statistik %1$sl %2$s"
+msgstr "Misslyckades att hämta blockstatistik %1$s %2$s"
 
 #, c-format
 msgid "Failed to get block stats for domain '%1$s' device '%2$s'"
@@ -7597,7 +7597,7 @@ msgid "Failed to get domain description xml"
 msgstr "Misslyckades att få domänbeskrivnings-xml"
 
 msgid "Failed to get domain persistence info"
-msgstr "misslyckades att få varaktighetsinformation för domänen"
+msgstr "Misslyckades att få varaktighetsinformation för domänen"
 
 msgid "Failed to get domain state"
 msgstr "Misslyckades att få domäntillstånd"
@@ -7610,7 +7610,7 @@ msgid "Failed to get host number for iSCSI session with path '%1$s'"
 msgstr "Misslyckades att få värdnummer för iSCSI-sessionen med sökväg ”%1$s”"
 
 msgid "Failed to get interface information"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades att få gränssnittsinformation"
 
 #, c-format
 msgid "Failed to get interface stats %1$s %2$s"
@@ -7662,7 +7662,7 @@ msgid "Failed to get snapshot count"
 msgstr "Misslyckades hämta antal ögonblicksbilder"
 
 msgid "Failed to get storage controller name"
-msgstr "Misslyckades at få tag i lagringsstyrenhetens namn"
+msgstr "Misslyckades att få tag i lagringsstyrenhetens namn"
 
 msgid "Failed to get the number of active networks"
 msgstr "Misslyckades att hämta antalet aktiva nätverk"
@@ -7687,7 +7687,7 @@ msgid "Failed to get valid client socket identity"
 msgstr "Misslyckades med att få en giltig klientuttagsidentitet"
 
 msgid "Failed to get valid client socket identity groups"
-msgstr "Misslyckades med att få giltig identitetsgrupper för klientuttag"
+msgstr "Misslyckades med att få giltiga identitetsgrupper för klientuttag"
 
 msgid "Failed to get version info from libxenlight"
 msgstr "Misslyckades med att få versionsinformation från libxenlight"
@@ -8043,7 +8043,7 @@ msgstr "Misslyckades med att tolka MAC-adressen från ”%1$s”"
 
 #, c-format
 msgid "Failed to parse PCI config address '%1$s'"
-msgstr "Missllyckades med att tolka PCI-konfigurationsadressen ”%1$s”"
+msgstr "Misslyckades med att tolka PCI-konfigurationsadressen ”%1$s”"
 
 msgid "Failed to parse arguments for bhyve command"
 msgstr "Misslyckades med att tolka argument för kommandot bhyve"
@@ -8131,7 +8131,7 @@ msgstr "Misslyckades att tolka roterat index från ”%1$s”"
 
 #, c-format
 msgid "Failed to parse snapshot XML from file '%1$s'"
-msgstr "Misslyckades tolka ögonblicsbilds-XML från filen ”%1$s”"
+msgstr "Misslyckades tolka ögonblicksbilds-XML från filen ”%1$s”"
 
 #, c-format
 msgid "Failed to parse target '%1$s'"
@@ -8292,7 +8292,7 @@ msgid "Failed to reboot domain '%1$s'"
 msgstr "Misslyckades att starta om domänen '%1$s'"
 
 msgid "Failed to reconnect to the admin server"
-msgstr "Misslyckades med att återanslutea ansluta till administrationsservern"
+msgstr "Misslyckades med att återansluta till administrationsservern"
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "Misslyckades att återansluta till hypervisorn"
@@ -8373,7 +8373,7 @@ msgstr "Misslyckades att återställa enheten %1$s"
 
 #, c-format
 msgid "Failed to reset domain '%1$s'"
-msgstr "Misslyckades att återställa domänen '%1$s'"
+msgstr "Misslyckades att återställa domänen ”%1$s”"
 
 #, c-format
 msgid "Failed to resize block device '%1$s'"
@@ -8576,7 +8576,7 @@ msgstr "Misslyckades med att sätta flaggan close-on-exec ”%1$s”"
 #, c-format
 msgid "Failed to set com port %1$s: does not start with '/dev/nmdm'."
 msgstr ""
-"Misslyckades med att säta com-porten %1$s: börjar inte med ”/dev/nmdm”."
+"Misslyckades med att sätta com-porten %1$s: börjar inte med ”/dev/nmdm”."
 
 #, c-format
 msgid "Failed to set credential: %1$s"
@@ -8753,11 +8753,11 @@ msgid "Failed to start slirp"
 msgstr "Misslyckades med att starta slirp"
 
 msgid "Failed to start the nwfilter driver"
-msgstr "Misslyckades med att startanwfilter-drivrutinen"
+msgstr "Misslyckades med att starta nwfilter-drivrutinen"
 
 #, c-format
 msgid "Failed to start the nwfilter driver: %1$s"
-msgstr "Misslyckades med att startanwfilter-drivrutinen: %1$s"
+msgstr "Misslyckades med att starta nwfilter-drivrutinen: %1$s"
 
 #, c-format
 msgid "Failed to stat %1$s"
@@ -8785,7 +8785,7 @@ msgstr "Misslyckades att söva domänen ”%1$s”"
 
 #, c-format
 msgid "Failed to symlink device %1$s to %2$s"
-msgstr "Misslyckades med att mjuklänka enheten %1$s till %2$s"
+msgstr "Misslyckades med att symlänka enheten %1$s till %2$s"
 
 #, c-format
 msgid "Failed to take snapshot: %1$s"
@@ -9021,7 +9021,7 @@ msgid ""
 "capabilities XML, or domain capabilities XML"
 msgstr ""
 "Filen ”%1$s” innehåller inte något <cpu>-element eller giltig domän-XML, "
-"värdförmåge-XML eller ddomänförmåge-XML"
+"värdförmåge-XML eller domänförmåge-XML"
 
 #, c-format
 msgid "File '%1$s' does not exist"
@@ -9139,8 +9139,8 @@ msgid ""
 "Flags 'VIR_NETWORK_UPDATE_AFFECT_LIVE' and "
 "'VIR_NETWORK_UPDATE_AFFECT_CONFIG' are mutually exclusive"
 msgstr ""
-"Flaggan ”VIR_NETWORK_UPDATE_LIVE” och ”VIR_NETWORK_UPDATE_CONFIG” är "
-"ömsesidigt uteslutande"
+"Flaggan ”VIR_NETWORK_UPDATE_AFFECT_LIVE” och "
+"”VIR_NETWORK_UPDATE_AFFECT_CONFIG” är ömsesidigt uteslutande"
 
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
@@ -9170,7 +9170,7 @@ msgid "Forcefully stop a given network."
 msgstr "Framtvinga stopp av ett givet nätverk."
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
-msgstr "Framtvinga stopp av en given poo. Rådata i poolen rörs inte"
+msgstr "Framtvinga stopp av en given pool. Rådata i poolen rörs inte"
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -9247,7 +9247,7 @@ msgid "Get information of domain's mounted filesystems."
 msgstr "Hämta information om domänens monterade filsystem."
 
 msgid "Get link state of a domain's virtual interface."
-msgstr "Hämta längstatus för en domäns virtuella gränssnitt."
+msgstr "Hämta länkstatus för en domäns virtuella gränssnitt."
 
 msgid ""
 "Get maximum tolerable downtime of a domain which is being live-migrated to "
@@ -9260,7 +9260,7 @@ msgid "Get memory statistics for a running domain."
 msgstr "Hämta minnesstatistik för en körande domän."
 
 msgid "Get network interface stats for a running domain."
-msgstr "Hämta statistik för nätverksgränssnitt för en köranade domän."
+msgstr "Hämta statistik för nätverksgränssnitt för en körande domän."
 
 msgid "Get network interfaces' addresses for a running domain"
 msgstr "Hämta nätverksgränssnittens adresser för en körande domän"
@@ -9275,7 +9275,7 @@ msgid "Get or set node memory parameters"
 msgstr "Hämta eller sätt nodminnesparametrar"
 
 msgid "Get or set numa parameters"
-msgstr "Visa eller sätt numa-parametrar"
+msgstr "Hämta eller sätt numa-parametrar"
 
 msgid "Get or set perf event"
 msgstr "Hämta eller sätt perf-händelse"
@@ -9384,7 +9384,7 @@ msgid "Guest agent not available for now"
 msgstr "Gästagenten är inte tillgänglig för tillfället"
 
 msgid "Guest networking is not supported by this version of ch"
-msgstr "Gästnätver stödjs inte av denna version av ch"
+msgstr "Gästnätverk stödjs inte av denna version av ch"
 
 msgid "HMAT is not supported with this QEMU"
 msgstr "HMAT stödjs inte med denna QEMU"
@@ -9422,7 +9422,7 @@ msgid "HTTP response code %1$d for upload to '%2$s'"
 msgstr "HTTP-svarskod %1$d vid skickande till ”%2$s”"
 
 msgid "Handshake is already complete"
-msgstr "Hndskakningen är redan klar"
+msgstr "Handskakningen är redan klar"
 
 msgid "Hard disk is null"
 msgstr "Hårddisken är null"
@@ -9514,7 +9514,7 @@ msgid "Hostname"
 msgstr "Värdnamn"
 
 msgid "Hostname is needed for host key verification"
-msgstr "Värdnamn behövs för värdnyckelverifikation"
+msgstr "Värdnamn behövs för värdnyckelverifiering"
 
 #, c-format
 msgid "Hostname of '%1$s' is unset"
@@ -9678,20 +9678,20 @@ msgstr "IP-adress"
 
 #, c-format
 msgid "IP address lookup for host '%1$s' failed: %2$s"
-msgstr "IP-adressupslagningen för värden ”%1$s” misslyckades: %2$s"
+msgstr "IP-adressuppslagningen för värden ”%1$s” misslyckades: %2$s"
 
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
 msgstr ""
 "IP-parametrar måste anges eftersom libvirt inte kompilerades med stöd för "
-"ätt lära sig IP-adresser"
+"att lära sig IP-adresser"
 
 msgid ""
 "IP parameter must be provided since snooping the IP address does not work "
 "possibly due to missing tools"
 msgstr ""
-"IP-parametrar måste anges eftersom att snoka up IP-adressen inte fungerar "
+"IP-parametrar måste anges eftersom att snoka upp IP-adressen inte fungerar "
 "kanske på grund av saknade verktyg"
 
 msgid "IPC namespace support is required"
@@ -9746,7 +9746,7 @@ msgid "Incoming cookie data had unexpected name %1$s vs %2$s"
 msgstr "Inkommande kakdata hade oväntat namn %1$s mot %2$s"
 
 msgid "Incoming migration"
-msgstr "Ingommande migrering"
+msgstr "Inkommande migrering"
 
 #, c-format
 msgid "Incomplete vnuma configuration for vnode %1$zu"
@@ -9824,7 +9824,7 @@ msgstr "Den installerade bhyve-binären stödjer inte att definiera CPU-topologi
 
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
-msgstr "Instantiering av regler misslyckades för gränssnittet ”%1$s”"
+msgstr "Instansiering av regler misslyckades för gränssnittet ”%1$s”"
 
 msgid "Integrity error in watchdog models"
 msgstr "Integritetsfel i vakthundsmodeller"
@@ -9842,7 +9842,7 @@ msgstr "Gränssnittet %1$s XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Interface %1$s defined from %2$s\n"
-msgstr "Nätverket %1$s definierad från %2$s\n"
+msgstr "Gränssnittet %1$s definierat från %2$s\n"
 
 #, c-format
 msgid "Interface %1$s destroyed\n"
@@ -10025,7 +10025,7 @@ msgstr "Felaktig PID %1$d för VM"
 #, c-format
 msgid "Invalid STP state value %1$d received for '%2$s'. Must be -1, 0, or 1."
 msgstr ""
-"Felaktigt STP-tillståndsvärde %1$d motaget för ”%2$s”. Måsta vara -1, 0 "
+"Felaktigt STP-tillståndsvärde %1$d mottaget för ”%2$s”. Måste vara -1, 0 "
 "eller 1."
 
 #, c-format
@@ -10052,7 +10052,7 @@ msgstr "Felaktig adress ”%1$s” i <ip>"
 
 #, c-format
 msgid "Invalid address '%1$s' in <portForward>"
-msgstr "Felaktig adress ”%1$s” o <portForward>"
+msgstr "Felaktig adress ”%1$s” i <portForward>"
 
 #, c-format
 msgid "Invalid address '%1$s' in network '%2$s'"
@@ -10104,7 +10104,7 @@ msgid ""
 "type 'ethernet'"
 msgstr ""
 "Felaktigt försök att sätta nätverksgränssnittets värdside-IP-rutt och/eller -"
-"adressinforomation på gränssnitt av typen ”%1$s”. Detta stödjs endast på "
+"adressinformation på gränssnitt av typen ”%1$s”. Detta stödjs endast på "
 "gränssnitt av typen ”ethernet”"
 
 msgid "Invalid attempt to set peer IP for guest"
@@ -10127,7 +10127,7 @@ msgstr "Felaktig bandbredd %1$u"
 
 #, c-format
 msgid "Invalid boolean value for field '%1$s'"
-msgstr "Felaktigt booleanskt värde för fältet ”%1$s”"
+msgstr "Felaktigt booleskt värde för fältet ”%1$s”"
 
 #, c-format
 msgid "Invalid bridge mac address '%1$s' in network '%2$s'"
@@ -10371,11 +10371,11 @@ msgstr "Felaktig hexadecimal sträng ”%1$s”"
 
 #, c-format
 msgid "Invalid hook name for #%1$d"
-msgstr "Felaktig kroknamn för nr. %1$d"
+msgstr "Felaktigt haknamn för nr. %1$d"
 
 #, c-format
 msgid "Invalid host key verification method: '%1$s'"
-msgstr "Felakig metod för värdnyckelverifikation: ”%1$s”"
+msgstr "Felaktig metod för värdnyckelverifiering: ”%1$s”"
 
 #, c-format
 msgid "Invalid hostdev protocol '%1$s'"
@@ -10457,7 +10457,7 @@ msgstr "Felaktigt lägesattribut: ”%1$s”"
 
 #, c-format
 msgid "Invalid mode setting '%1$s' in network port"
-msgstr "Felaktigt lägesinställning ”%1$s” i nätverksporten"
+msgstr "Felaktig lägesinställning ”%1$s” i nätverksporten"
 
 #, c-format
 msgid "Invalid mode: %1$s"
@@ -10473,7 +10473,7 @@ msgstr "Felaktig msr[%1$zu]"
 
 #, c-format
 msgid "Invalid mtu size '%1$s' in network '%2$s'"
-msgstr "Felaktig mtu-storlek ”%1$s” i näteverket ”%2$s”"
+msgstr "Felaktig mtu-storlek ”%1$s” i nätverket ”%2$s”"
 
 #, c-format
 msgid "Invalid multicast bridge mac address '%1$s' in network '%2$s'"
@@ -10557,7 +10557,7 @@ msgid "Invalid peer '%1$s' in <ip>"
 msgstr "Felaktig motpart ”%1$s” i <ip>"
 
 msgid "Invalid persistent_state value, either 'yes' or 'no'"
-msgstr "Felaktigt värde på\"persistent_state, antingen ”yes” eller ”no”"
+msgstr "Felaktigt värde på persistent_state, antingen ”yes” eller ”no”"
 
 #, c-format
 msgid "Invalid pool type '%1$s'"
@@ -10647,7 +10647,7 @@ msgstr "Felaktigt strömhål"
 
 #, c-format
 msgid "Invalid string '%1$s' for escape sequence"
-msgstr "Felaktig sträng ”%1$s” för specialsekvensen"
+msgstr "Felaktig sträng ”%1$s” för kontrollsekvensen"
 
 msgid "Invalid suspend target"
 msgstr "Felaktigt sovmål"
@@ -10905,7 +10905,7 @@ msgid "Kernel doesn't support user namespace"
 msgstr "Kärnan stödjer inte användarnamnrymder"
 
 msgid "Kernel image path in this domain is not defined"
-msgstr "Käravbildens sökväg i denna domän är inte definierad"
+msgstr "Kärnavbildens sökväg i denna domän är inte definierad"
 
 msgid "Key file path must be provided for private key authentication"
 msgstr "Nyckelfilens sökväg måste anges för autentisering med privat nyckel"
@@ -10917,7 +10917,7 @@ msgstr ""
 
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
-"Känt, men ett annorlunda etikettsformat finns, kräver build --overwrite"
+"Känt, men ett annorlunda etikettsformat finns, kräver --overwrite för bygge"
 
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC-gästs ingångsnamnrymd"
@@ -10946,7 +10946,7 @@ msgstr "Libvirt"
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
-msgstr "Livscykehändelsen ”%1$s” stöder inte åtgärden ”%2$s”"
+msgstr "Livscykelhändelsen ”%1$s” stöder inte åtgärden ”%2$s”"
 
 msgid "Link already defined"
 msgstr "Länken är redan definierad"
@@ -11011,7 +11011,7 @@ msgstr "Låsrymden för sökvägen %1$s finns inte"
 
 #, c-format
 msgid "Lockspace location %1$s exists, but is not a directory"
-msgstr "Lockrymdsplatsen %1$s finns, men är inte en katalog"
+msgstr "Låsrymdsplatsen %1$s finns, men är inte en katalog"
 
 #, c-format
 msgid "Lockspace path '%1$s' exceeded %2$d characters"
@@ -11150,7 +11150,7 @@ msgstr "Felformaterat filterformat ”%1$s”"
 
 #, c-format
 msgid "Malformed format for log output '%1$s'"
-msgstr "Felformaterat format för logutdata ”%1$s”"
+msgstr "Felformaterat format för loggutdata ”%1$s”"
 
 msgid "Malformed id field in JSON state document"
 msgstr "Felformaterat id-fält i JSON-tillståndsdokumentet"
@@ -11320,7 +11320,7 @@ msgstr ""
 "Minnesstorleken måste anges via <memory> eller i <numa>-konfigurationen"
 
 msgid "Memory size should be multiple of 1Mb."
-msgstr "Minnesstorleken skall vara en mutipel av 1 MB."
+msgstr "Minnesstorleken skall vara en multipel av 1 MB."
 
 msgid "Memory size:"
 msgstr "Minnesstorlek:"
@@ -11356,7 +11356,7 @@ msgstr ""
 "Migrerbara attribut för värdgenomgångs-CPU stödjs inte av denna QEMU-binär"
 
 msgid "Migrate domain to another host.  Add --live for live migration."
-msgstr "Migrera domän till en anna värd.  Lägg till --live för live-migrering."
+msgstr "Migrera domän till en annan värd.  Lägg till --live för live-migrering."
 
 msgid "Migrated"
 msgstr "Migrerad"
@@ -11458,7 +11458,7 @@ msgid "Missing '/' separator in cgroup mount '%1$s'"
 msgstr "Saknad separator ”/” i cgroup-monteringen ”%1$s”"
 
 msgid "Missing 'domname' in JSON document"
-msgstr "Saknat ”domainname” i JSON-dokumentet"
+msgstr "Saknat ”domname” i JSON-dokumentet"
 
 msgid "Missing 'domuuid' in JSON document"
 msgstr "Saknat ”domuuid” i JSON-dokumentet"
@@ -11518,7 +11518,7 @@ msgid "Missing <interface> element in hostdev net device"
 msgstr "Saknat element <interface> i hostdev-nätenheten"
 
 msgid "Missing <secret> element in auth"
-msgstr "Saknat element <secret> i autenticering"
+msgstr "Saknat element <secret> i autentisering"
 
 msgid "Missing <source> element in hostdev device"
 msgstr "Saknat element <source> i hostdev-enheten"
@@ -11709,7 +11709,7 @@ msgid "Missing listen element"
 msgstr "Saknat lyssningselement"
 
 msgid "Missing lock driver name in migration cookie"
-msgstr "Saknat låsdrivrutinsnamn i migrationskakan"
+msgstr "Saknat låsdrivrutinsnamn i migreringskakan"
 
 msgid "Missing lockspaces data from JSON file"
 msgstr "Saknade lockspace-data från JSON-filen"
@@ -11733,7 +11733,7 @@ msgid "Missing min_workers data in JSON document"
 msgstr "Saknade min_workers-data i JSON-dokumentet"
 
 msgid "Missing monitor reply object"
-msgstr "Saknat övervararsvarsobjekt"
+msgstr "Saknat övervakarsvarsobjekt"
 
 msgid "Missing name parameter for domain object"
 msgstr "Saknad name-parameter till domänobjektet"
@@ -11852,7 +11852,7 @@ msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr "Saknat eller felaktigt värde på scsi-adaptern:s ”unique_id”"
 
 msgid "Missing ownerId data in JSON document"
-msgstr "Saknade ownerid-data i JSON-dokumentet"
+msgstr "Saknade ownerId-data i JSON-dokumentet"
 
 msgid "Missing ownerName data in JSON document"
 msgstr "Saknade ownerName-data i JSON-dokumentet"
@@ -11864,7 +11864,7 @@ msgid "Missing ownerUUID data in JSON document"
 msgstr "Saknade ownerUUID-data i JSON-dokumentet"
 
 msgid "Missing path or lockspace for lease resource"
-msgstr "Saknad sökväg eller låsrymd får hyresresursen"
+msgstr "Saknad sökväg eller låsrymd för hyresresursen"
 
 msgid "Missing pid data in JSON document"
 msgstr "Saknade pid-data i JSON-dokumentet"
@@ -11950,7 +11950,7 @@ msgid "Missing restricted data in JSON document"
 msgstr "Saknade restricted-data i JSON-dokumentet"
 
 msgid "Missing scsi_host PCI address element"
-msgstr "Saknad PCI-adresselement till scsi_host"
+msgstr "Saknat PCI-adresselement till scsi_host"
 
 #, c-format
 msgid "Missing separator in sched info '%1$s'"
@@ -12246,7 +12246,7 @@ msgstr "Namnrymder stödjs inte på denna plattform"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
-msgstr "Nätverkset %1$s XML-konfiguration redigerad.\n"
+msgstr "Nätverket %1$s XML-konfiguration redigerad.\n"
 
 #, c-format
 msgid "Network %1$s XML configuration not changed.\n"
@@ -12258,7 +12258,7 @@ msgstr "Nätverk %1$s skapat från %2$s\n"
 
 #, c-format
 msgid "Network %1$s defined from %2$s\n"
-msgstr "Nätverk %1$s definierad från %2$s\n"
+msgstr "Nätverk %1$s definierat från %2$s\n"
 
 #, c-format
 msgid "Network %1$s destroyed\n"
@@ -12338,29 +12338,29 @@ msgstr "Nätverksfiltret %1$s XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Network filter %1$s defined from %2$s\n"
-msgstr "Nätverkfiltret %1$s definierat från %2$s\n"
+msgstr "Nätverksfiltret %1$s definierat från %2$s\n"
 
 #, c-format
 msgid "Network filter %1$s undefined\n"
 msgstr "Nätverksfiltret %1$s är odefinierat\n"
 
 msgid "Network filter binding not found"
-msgstr "Nätverkfiltersbindningen finns inte"
+msgstr "Nätverksfilterbindningen finns inte"
 
 #, c-format
 msgid "Network filter binding not found: %1$s"
-msgstr "Nätverkfiltersbindningen finns inte: %1$s"
+msgstr "Nätverksfilterbindningen finns inte: %1$s"
 
 #, c-format
 msgid "Network filter binding on %1$s created from %2$s\n"
-msgstr "Nätverkfiltersbindning av %1$s skapad från %2$s\n"
+msgstr "Nätverksfilterbindning av %1$s skapad från %2$s\n"
 
 #, c-format
 msgid "Network filter binding on %1$s deleted\n"
 msgstr "Nätverksfilterbindning av %1$s raderad\n"
 
 msgid "Network filter not found"
-msgstr "Nätverkfiltret finns inte"
+msgstr "Nätverksfiltret finns inte"
 
 #, c-format
 msgid "Network filter not found: %1$s"
@@ -12436,7 +12436,7 @@ msgstr "Inga DRM-renderingsnoder tillgängliga"
 
 #, c-format
 msgid "No FD available at slot %1$zu"
-msgstr "Ingen FD tillgänglig i fack %1$zu"
+msgstr "Ingen FB tillgänglig i fack %1$zu"
 
 msgid "No IOThreads found for the domain"
 msgstr "Ingen IOThreads hittad för domänen"
@@ -12524,7 +12524,7 @@ msgid "No data supplied for <initarg> element"
 msgstr "Inga data angivna för elementet <initarg>"
 
 msgid "No default server names provided"
-msgstr "Inget standardservernam gavs"
+msgstr "Inget standardservernamn gavs"
 
 #, c-format
 msgid "No description for domain: %1$s"
@@ -12550,7 +12550,7 @@ msgid "No disk with bus '%1$s' and target '%2$s'"
 msgstr "Ingen disk med bussen ”%1$s” och målet ”%2$s”"
 
 msgid "No dnsmasq options value specified"
-msgstr "Inga värde till dnsmasq-alternativ angivet"
+msgstr "Inga värden till dnsmasq-alternativ angivet"
 
 #, c-format
 msgid "No domain with ID %1$d"
@@ -12562,7 +12562,7 @@ msgstr "Ingen domän med UUID %1$s"
 
 #, c-format
 msgid "No domain with matching ID '%1$d'"
-msgstr "ingen domän med matchande ID ”%1$d”"
+msgstr "Ingen domän med matchande ID ”%1$d”"
 
 #, c-format
 msgid "No domain with matching id %1$d"
@@ -12588,7 +12588,7 @@ msgid "No emulator found for cloud-hypervisor"
 msgstr "Ingen emulator hittad för moln-hypervisorn"
 
 msgid "No error message from child failure"
-msgstr "Inget felmeddelande barn som misslyckades"
+msgstr "Inget felmeddelande från barn som misslyckades"
 
 msgid "No error message provided"
 msgstr "Inget felmeddelande gavs"
@@ -12653,7 +12653,7 @@ msgstr "Ingen huvud-USB-styrenhet angiven"
 
 #, c-format
 msgid "No matches for socket service '%1$s': %2$s"
-msgstr "Inga matchingar för uttagstjänsten ”%1$s”:%2$s"
+msgstr "Inga matchningar för uttagstjänsten ”%1$s”:%2$s"
 
 msgid "No memory balloon device configured, can not set the collection period"
 msgstr ""
@@ -12666,7 +12666,7 @@ msgid "No more available PCI slots"
 msgstr "Inga fler tillgängliga PCI-fack"
 
 msgid "No name supplied for <initenv> element"
-msgstr "Inget namn angivnet för elementet <initenv>"
+msgstr "Inget namn angivet för elementet <initenv>"
 
 #, c-format
 msgid "No net with mac '%1$s'"
@@ -12724,7 +12724,7 @@ msgstr "Ingen källenhet angiven vid formateringen av poolen ”%1$s”"
 
 #, c-format
 msgid "No storage volume with key or path '%1$s'"
-msgstr "ingen lagringsvolym nyckeln eller sökvägen ”%1$s”"
+msgstr "Ingen lagringsvolym med nyckeln eller sökvägen ”%1$s”"
 
 #, c-format
 msgid "No stub driver configured for PCI device %1$s"
@@ -12848,7 +12848,7 @@ msgid "Non-empty feature list specified without CPU model"
 msgstr "Icke-tom lista över funktioner angiven utan CPU-modell"
 
 msgid "Non-endpoint PCI devices cannot be assigned to guests"
-msgstr "Ändpunktslösa PCI-enheter får inte tilltelas till gäster"
+msgstr "Ändpunktslösa PCI-enheter får inte tilldelas till gäster"
 
 msgid "None"
 msgstr "Inget"
@@ -12931,7 +12931,7 @@ msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
-msgstr "Antalet domänstatusposter är%1$d, vilket överskrider maxgränsen: %2$d"
+msgstr "Antalet domänstatusposter är %1$d, vilket överskrider maxgränsen: %2$d"
 
 #, c-format
 msgid "Number of interfaces, %1$d exceeds the max limit: %2$d"
@@ -13064,7 +13064,7 @@ msgstr "Endast diskavbilder stödjs för storleksändring"
 msgid ""
 "Only emulated CPUs are available, performance will be significantly limited"
 msgstr ""
-"Endast emulierade CPU:er är tillgängliga, prestanda kommer att vara klart "
+"Endast emulerade CPU:er är tillgängliga, prestanda kommer att vara klart "
 "begränsad"
 
 #, c-format
@@ -13492,11 +13492,11 @@ msgstr "Förälder:"
 
 #, c-format
 msgid "Parsed JSON reply '%1$s' isn't an object"
-msgstr "Lolkat JSON-svar ”%1$s” är inte ett objekt"
+msgstr "Tolkat JSON-svar ”%1$s” är inte ett objekt"
 
 #, c-format
 msgid "Partition path '%1$s' must start with '/'"
-msgstr "Partitionssökvägen ”%1$s” måset inledas med ”/”"
+msgstr "Partitionssökvägen ”%1$s” måste inledas med ”/”"
 
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Att skicka ett hemligt värde som ett kommandoradsargument är osäkert!"
@@ -13606,7 +13606,7 @@ msgstr "Insticksmodulen %1$s är inte tillgänglig"
 
 #, c-format
 msgid "Policy kit denied action %1$s from <anonymous>"
-msgstr "Policy kit nekade ågärden %1$s från <anonym>"
+msgstr "Policy kit nekade åtgärden %1$s från <anonym>"
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr "Polkit-autentisering försökt, trots att polkit inte är tillgängligt"
@@ -13689,16 +13689,16 @@ msgid "Port reclaim not requested but plug type is not none"
 msgstr "Portåtervinning inte begärd men pluggtypen är inte none"
 
 msgid "Port reclaim requested but plug type is none"
-msgstr "Portåtervinning inte begärd men pluggtypen är none"
+msgstr "Portåtervinning begärd men pluggtypen är none"
 
 msgid "Post-copy"
-msgstr "Postkopiering"
+msgstr "Efterkopiering"
 
 msgid "Post-copy Error"
-msgstr "Postkopieringsfel"
+msgstr "Efterkopieringsfel"
 
 msgid "Postcopy requests:"
-msgstr "Postkopieringsbegäran:"
+msgstr "Efterkopieringsbegäran:"
 
 msgid "PowerPC pseries machines do not support floppy device"
 msgstr "PowerPC pseries-maskiner stödjer inte en floppyenhet"
@@ -13725,14 +13725,14 @@ msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr ""
-"Skriver ut global hjälp, kommmandospecifik hjälp eller hjälp för en\n"
+"Skriver ut global hjälp, kommandospecifik hjälp eller hjälp för en\n"
 "    grupp av relaterade kommandon"
 
 msgid ""
 "Prints global help, command specific help, or help for a group of related "
 "commands"
 msgstr ""
-"Skriver ut global hjälp, kommmandospecifik hjälp eller hjälp för en grupp av "
+"Skriver ut global hjälp, kommandospecifik hjälp eller hjälp för en grupp av "
 "relaterade kommandon"
 
 msgid "Prints memory stats of the node."
@@ -13779,7 +13779,7 @@ msgstr "Protokoll"
 
 #, c-format
 msgid "Protocol '%1$s' is not supported for tcp character device."
-msgstr "Protokollet ”%1$s” stödjs inte för tcp-teckenheter."
+msgstr "Protokollet ”%1$s” stödjs inte för tcp-teckenenheter."
 
 msgid "Pull aborted"
 msgstr "Hämtningen avbruten"
@@ -13796,7 +13796,7 @@ msgstr "QEMU ”%1$s” stödjer inte några CPU-modeller för virttypen ”%2$s
 
 #, c-format
 msgid "QEMU '%1$s' does not support reporting CPU model for virttype '%2$s'"
-msgstr "QEMU ”%1$s” stödjer inte att raportera CPU-modell för virttypen ”%2$s”"
+msgstr "QEMU ”%1$s” stödjer inte att rapportera CPU-modell för virttypen ”%2$s”"
 
 msgid "QEMU Attach"
 msgstr "QEMU-anslut"
@@ -13825,10 +13825,10 @@ msgstr "QEMU stödjer inte beräkning av hastigheten för smutsiga sidor"
 
 #, c-format
 msgid "QEMU does not support device assignment mode '%1$s'"
-msgstr "QEMU stödjer inte enhetstildelingsläget ”%1$s”"
+msgstr "QEMU stödjer inte enhetstilldelningsläget ”%1$s”"
 
 msgid "QEMU does not support dirty page rate calculation mode."
-msgstr "QEMU stödjer inte läget för hastighsetsberäkning av smutsiga sidor."
+msgstr "QEMU stödjer inte läget för hastighetsberäkning av smutsiga sidor."
 
 msgid "QEMU does not support multiple listens for one graphics device."
 msgstr "QEMU stödjer inte multipla lyssningar för en grafikenhet."
@@ -13914,8 +13914,8 @@ msgid ""
 "Query parameter 'proxy' has unexpected port value '%1$s' (should be "
 "[1..65535])"
 msgstr ""
-"Frågeparametern ”proxy” har oväntat portvärde ”%1$s” (skulle varit "
-"[1..65563])"
+"Frågeparametern ”proxy” har oväntat portvärde ”%1$s” (skulle varit [1.."
+"65535])"
 
 #, c-format
 msgid ""
@@ -13974,7 +13974,7 @@ msgstr "Rå I/O stödjs inte på denna plattform"
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
-msgstr "Läs/skriv, exklusiv åtkomst, diskr fanns, men inga hyror angavs"
+msgstr "Läs/skriv, exklusiv åtkomst, diskar fanns, men inga hyror angavs"
 
 msgid "Reading CPUID is not supported on this platform"
 msgstr "Att läsa CPUID stödjs inte på denna plattform"
@@ -14025,7 +14025,7 @@ msgid "Relative backing during copy not supported yet"
 msgstr "Relativ backning under kopiering stödjs inte ännu"
 
 msgid "Reload domain's graphics display certificates"
-msgstr "Ladda om domänens grafiskdisplaycertifikat"
+msgstr "Ladda om domänens grafikdisplaycertifikat"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
@@ -14139,7 +14139,7 @@ msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "Resctrl-övervakningssökvägen är redan satt till ”%1$s”"
 
 msgid "Reset node device before or after assigning to a domain."
-msgstr "Återställ nodenheten före eller efter tilldelning til en domän."
+msgstr "Återställ nodenheten före eller efter tilldelning till en domän."
 
 msgid "Reset the target domain as if by power button"
 msgstr "Återställ måldomänen som om med strömknappen"
@@ -14157,7 +14157,7 @@ msgstr ""
 "Se blockresize för live-storleksändring."
 
 msgid "Resolved device mapper name too long"
-msgstr "Det upplösta namnet flr enhetsavbildaren (device mapper) är för långt"
+msgstr "Det upplösta namnet för enhetsavbildaren (device mapper) är för långt"
 
 msgid "Resource control is not supported on this host"
 msgstr "Resursstyrning stödjs inte på denna värd"
@@ -14208,7 +14208,7 @@ msgid "Resuming guests on $uri URI..."
 msgstr "Återupptar gästen på URL:en $uri …"
 
 msgid "Retrieve identity details about <client> from <server>"
-msgstr "Hämta identetetsdetaljer om <klient> från <server>"
+msgstr "Hämta identitetsdetaljer om <klient> från <server>"
 
 msgid "Retrieve server's client-related configuration limits"
 msgstr "Hämta serverns klientrelaterade konfigurationsgränser"
@@ -14235,7 +14235,7 @@ msgid "Returns basic information about a snapshot."
 msgstr "Returnerar grundinformation om en ögonblicksbild."
 
 msgid "Returns basic information about the domain IOThreads."
-msgstr "Returnerar grundinformation om domänen-IOThreads."
+msgstr "Returnerar grundinformation om domänens IOThreads."
 
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Returnerar grundinformation om domänens virtuella CPU:er."
@@ -14247,7 +14247,7 @@ msgid "Returns basic information about the network"
 msgstr "Returnerar grundinformation om nätverket"
 
 msgid "Returns basic information about the node device"
-msgstr "Returnerar grundinformation om nodenenheten"
+msgstr "Returnerar grundinformation om nodenheten"
 
 msgid "Returns basic information about the node."
 msgstr "Returnerar grundinformation om noden."
@@ -14259,7 +14259,7 @@ msgid "Returns basic information about the storage vol."
 msgstr "Returnerar grundinformation om lagringsvolymen."
 
 msgid "Returns capabilities of emulator with respect to host and libvirt."
-msgstr "Returnerar förmågor hos emulatorn med hänsyn till värd och ilbvirt."
+msgstr "Returnerar förmågor hos emulatorn med hänsyn till värd och libvirt."
 
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Returnera kapabiliteter för hypervisor/drivrutin."
@@ -14388,7 +14388,7 @@ msgstr "SCHED_CORE stödjs inte av kärnan"
 
 #, c-format
 msgid "SCSI bus index %1$d out of [0] range"
-msgstr "SCSI-bussindex %1$d utnför intervallet [0]"
+msgstr "SCSI-bussindex %1$d utanför intervallet [0]"
 
 #, c-format
 msgid "SCSI controller index %1$d out of [0..3] range"
@@ -14474,7 +14474,7 @@ msgstr ""
 "SOAP-fel under %1$s: kod ”%2$s”, underkod ”%3$s”, orsak ”%4$s”, detalj ”%5$s”"
 
 msgid "SSH Agent did not provide any authentication identity"
-msgstr "SSH-agenten tillhandahöll inte någon autenticeringsidentitet"
+msgstr "SSH-agenten tillhandahöll inte någon autentiseringsidentitet"
 
 #, c-format
 msgid "SSH host key for '%1$s' (%2$s) was not accepted"
@@ -14525,7 +14525,7 @@ msgstr ""
 "    från detta sparade tillstånd."
 
 msgid "Save the RAM state of a running domain."
-msgstr "Spara RAM-tillståndet för en köranade domän."
+msgstr "Spara RAM-tillståndet för en körande domän."
 
 msgid "Saved"
 msgstr "Sparad"
@@ -14546,7 +14546,7 @@ msgid ""
 "Scaled numeric value '%1$s' for <--bandwidth> option is malformed or out of "
 "range"
 msgstr ""
-"Det skalade numeriska värdet ”%1$s” till alternativet <--bandwidth> är "
+"Det skalade numeriska värdet ”%1$s” till flaggan <--bandwidth> är "
 "felformaterat eller utanför intervallet"
 
 msgid "Scheduler"
@@ -14589,7 +14589,7 @@ msgid "Secret not found: %1$s"
 msgstr "Hemligheten finns inte: %1$s"
 
 msgid "Secret value set\n"
-msgstr "Hemlighethens värde satt\n"
+msgstr "Hemlighetens värde satt\n"
 
 msgid "Secure boot is not supported on Xen"
 msgstr "Säker start stödjs inte på Xen"
@@ -14639,10 +14639,10 @@ msgid "Security model:"
 msgstr "Säkerhetsmodell:"
 
 msgid "Security warning: VNC auth is not supported."
-msgstr "Säkerhetsvarning: VNC-autenticering stödjs inte."
+msgstr "Säkerhetsvarning: VNC-autentisering stödjs inte."
 
 msgid "Security warning: VNC is used without authentication."
-msgstr "Säkerhetsvarning: VNC används utan autenticering."
+msgstr "Säkerhetsvarning: VNC används utan autentisering."
 
 #, c-format
 msgid ""
@@ -14662,7 +14662,7 @@ msgid "Send signals to processes"
 msgstr "Skicka signaler till processer"
 
 msgid "Send signals to processes in the guest"
-msgstr "Skicka signaler till preocesser i gästen"
+msgstr "Skicka signaler till processer i gästen"
 
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Att skicka filbeskrivare stödjs inte på detta uttag"
@@ -14672,7 +14672,7 @@ msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
 msgstr ""
-"Sereienheter med måltypen ”%1$s” och målmodellen ”%2$s” är inte kompatibla "
+"Serieenheter med måltypen ”%1$s” och målmodellen ”%2$s” är inte kompatibla "
 "med gästarkitekturen eller maskintypen"
 
 msgid "Serial only works in UNIX/PTY modes"
@@ -14754,7 +14754,7 @@ msgid ""
 "Set the maximum migration bandwidth (in MiB/s) for a domain which is being "
 "migrated to another host."
 msgstr ""
-"Sätt den maximala migreringsbandbredden (i MiB/s) för en domä som migreras "
+"Sätt den maximala migreringsbandbredden (i MiB/s) för en domän som migreras "
 "till en annan värd."
 
 msgid "Set the number of seconds to wait for a response from the guest agent."
@@ -14878,7 +14878,7 @@ msgstr ""
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
-"Man skall definiera både master- och slave-sökvägsattribut för nmdmm-enheter"
+"Man skall definiera både master- och slave-sökvägsattribut för nmdm-enheter"
 
 msgid "Show block device errors"
 msgstr "Visa blockenhetsfel"
@@ -14924,7 +14924,7 @@ msgid "Shutting down guests on $uri URI..."
 msgstr "Stänger av gästen på URI:n $uri …"
 
 msgid "Signal handling not available on this platform"
-msgstr "Signalhantering är inte tillgängliget på denna plattform"
+msgstr "Signalhantering är inte tillgängligt på denna plattform"
 
 #, c-format
 msgid ""
@@ -14941,11 +14941,11 @@ msgstr ""
 
 #, c-format
 msgid "Size of volume '%1$s' successfully changed by %2$s\n"
-msgstr "Storleken på volumen ”%1$s” ändrad med %2$s\n"
+msgstr "Storleken på volymen ”%1$s” ändrad med %2$s\n"
 
 #, c-format
 msgid "Size of volume '%1$s' successfully changed to %2$s\n"
-msgstr "Storleken på volumen ”%1$s” ändrad till %2$s\n"
+msgstr "Storleken på volymen ”%1$s” ändrad till %2$s\n"
 
 msgid "Skipping is not supported with this stream"
 msgstr "Att hoppa över stödjs inte med denna ström"
@@ -14955,7 +14955,7 @@ msgstr "Ögonblicksbild"
 
 #, c-format
 msgid "Snapshot %1$s XML configuration not changed.\n"
-msgstr "Ögonblicsbilden %1$s XML-konfiguration inte ändrad.\n"
+msgstr "Ögonblicksbilden %1$s XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Snapshot %1$s cloned to %2$s.\n"
@@ -14980,13 +14980,13 @@ msgid "Snapshot Dump XML"
 msgstr "Ögonblicksbildsdump XML"
 
 msgid "Snapshot List"
-msgstr "Ögonblicsbildslista"
+msgstr "Ögonblicksbildslista"
 
 msgid "Snapshot delete"
 msgstr "Radera ögonblicksbild"
 
 msgid "Snapshot is Null"
-msgstr "Ögonblicsbilden är null"
+msgstr "Ögonblicksbilden är null"
 
 msgid "Snapshot revert"
 msgstr "Återställ ögonblicksbild"
@@ -15042,7 +15042,7 @@ msgid "Specified both --storage and --remove-all-storage"
 msgstr "Angav både --storage och --remove-all-storage"
 
 msgid "Specified character device source type is not supported by vz driver."
-msgstr "Den angivna teckenhetens källtyp stödjs inte av vz-drivrutinen."
+msgstr "Den angivna teckenenhetens källtyp stödjs inte av vz-drivrutinen."
 
 msgid "Specified character device target type is not supported by vz driver."
 msgstr "Den angivna teckenenhetens måltyp stödjs inte av vz-drivrutinen."
@@ -15383,7 +15383,7 @@ msgstr ""
 "detta förutsätter en gästagent konfigurerad och körandes i gäst-OS:et)."
 
 msgid "Switch running migration from pre-copy to post-copy"
-msgstr "Byt till att köra migreringen från förkopierng till efterkopiering"
+msgstr "Byt till att köra migreringen från förkopiering till efterkopiering"
 
 msgid ""
 "Switch running migration from pre-copy to post-copy. The migration must have "
@@ -15411,7 +15411,7 @@ msgstr "TCG-funktioner är inkompatibla med domäntypen ”%1$s”"
 
 #, c-format
 msgid "TLS handshake failed %1$s"
-msgstr "TLS-handskakningenmisslyckades %1$s"
+msgstr "TLS-handskakningen misslyckades %1$s"
 
 msgid "TLS migration is not supported with this QEMU binary"
 msgstr "TLS-migrering stödjs inte med denna QEMU-binär"
@@ -15614,7 +15614,7 @@ msgid ""
 "Target balloon autodeflate attribute value '%1$s' does not match source "
 "'%2$s'"
 msgstr ""
-"Attributvärdet för målets ballong-autodeflat ”%1$s” stämmer inte med källan "
+"Attributvärdet för målets ballong-autodeflate ”%1$s” stämmer inte med källan "
 "”%2$s”"
 
 #, c-format
@@ -15762,7 +15762,7 @@ msgstr "Måldiskens discard_granularity %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
-msgstr "Målnehetes logical_block_size %1$u stämmer inte med källan %2$u"
+msgstr "Målenhetens logical_block_size %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk model %1$s does not match source %2$s"
@@ -15770,7 +15770,7 @@ msgstr "Måldiskmodellen %1$s stämmer inte med källan %2$s"
 
 #, c-format
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
-msgstr "Målnehetes physical_block_size %1$u stämmer inte med källan %2$u"
+msgstr "Målenhetens physical_block_size %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
@@ -15778,7 +15778,7 @@ msgstr "Målenhetens diskköantal %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk queue size %1$u does not match source %2$u"
-msgstr "Målnehetes diskköstorlek %1$u stämmer inte med källan %2$u"
+msgstr "Målenhetens diskköstorlek %1$u stämmer inte med källan %2$u"
 
 #, c-format
 msgid "Target disk rotation rate %1$u RPM does not match source %2$u RPM"
@@ -15897,7 +15897,7 @@ msgstr "Måldomän-genid %1$s stämmer inte med källan %2$s"
 
 #, c-format
 msgid "Target domain host device count %1$zu does not match source %2$zu"
-msgstr "Måldomänens vardenhetsantal %1$zu stämmer inte med källan %2$zu"
+msgstr "Måldomänens värdenhetsantal %1$zu stämmer inte med källan %2$zu"
 
 #, c-format
 msgid "Target domain hub device count %1$zu does not match source %2$zu"
@@ -15944,7 +15944,7 @@ msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr "Måldomänens parallellportsantal %1$zu stämmer inte med källan %2$zu"
 
 msgid "Target domain pstore device count does not match source"
-msgstr "Måldomänens pstore-enhetantal matchar inte källan"
+msgstr "Måldomänens pstore-enhetsantal matchar inte källan"
 
 #, c-format
 msgid ""
@@ -15974,7 +15974,7 @@ msgid "Target domain sound card count %1$zu does not match source %2$zu"
 msgstr "Måldomänens ljudkortsantal %1$zu stämmer inte med källan %2$zu"
 
 msgid "Target domain timers do not match source"
-msgstr "Måldomänens tidtagara stämmer inte med källan"
+msgstr "Måldomänens tidtagare stämmer inte med källan"
 
 #, c-format
 msgid "Target domain uuid %1$s does not match source %2$s"
@@ -16054,7 +16054,7 @@ msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
 msgstr ""
-"Målminneshenhetens adress ”0x%1$llx” stämmer inte med källminnesenhetens "
+"Målminnesenhetens adress ”0x%1$llx” stämmer inte med källminnesenhetens "
 "adress ”0x%2$llx”"
 
 #, c-format
@@ -16101,8 +16101,8 @@ msgid ""
 "Target memoryBacking source '%1$s' doesn't match source memoryBacking "
 "source'%2$s'"
 msgstr ""
-"Målets memoryBacking-källa ”%1$s” stämmer inte med källans "
-"memoryBackingkälla ”%2$s”"
+"Målets memoryBacking-källa ”%1$s” stämmer inte med källans memoryBacking-"
+"källa ”%2$s”"
 
 #, c-format
 msgid "Target model '%1$s' requires target type '%2$s'"
@@ -16377,7 +16377,7 @@ msgid ""
 "The CPU provided by hypervisor on the host is a superset of CPU described in "
 "%1$s\n"
 msgstr ""
-"CPU:n som tillhandahålls av hypervisor:n på värden är en övermängd av CPU:n "
+"CPU:n som tillhandahålls av hypervisorn på värden är en övermängd av CPU:n "
 "som beskrivs i %1$s\n"
 
 #, c-format
@@ -16464,7 +16464,7 @@ msgid "The certificate has no peers"
 msgstr "Certifikatet har inga motparter"
 
 msgid "The certificate hasn't got a known issuer."
-msgstr "Certifkatet har inte fått någon känd utgivare."
+msgstr "Certifikatet har inte fått någon känd utgivare."
 
 msgid "The certificate is not trusted."
 msgstr "Certifikatet är inte betrott."
@@ -16595,7 +16595,7 @@ msgid ""
 "html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 "Maskinen kan inte agera som server. Se https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates om hur man regenerar %1$s"
+"html#issuing-server-certificates om hur man regenererar %1$s"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Maskinen har ingen ögonblicksbild och borde ha det"
@@ -16619,7 +16619,7 @@ msgid ""
 "clients waiting for authentication"
 msgstr ""
 "Det övergripande maximala antalet klienter får inte vara mindre än antalet "
-"klienter som väntarpå autentisering"
+"klienter som väntar på autentisering"
 
 msgid "The read only disk has no parent"
 msgstr "Den endast läsbara disken har ingen förälder"
@@ -16628,8 +16628,8 @@ msgid ""
 "The read only disk number must be greater or equal to the  read write disk "
 "number"
 msgstr ""
-"Numret på den endast läsbara disken måste vara större eller lika med numret "
-"på en läs-och-skrivbar disk"
+"Numret på den endast läsbara disken måste vara större än eller lika med "
+"numret på en läs-och-skrivbar disk"
 
 #, c-format
 msgid ""
@@ -16668,7 +16668,7 @@ msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
-"Servernyckeln %1$s får inte vara tillgänglig för opriviligierade användare. "
+"Servernyckeln %1$s får inte vara tillgänglig för oprivilegierade användare. "
 "Kör som root: chown root.root %2$s; chmod 0600 %3$s"
 
 #, c-format
@@ -16691,7 +16691,7 @@ msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
-"Systemets CA-katalog %1$s måste vara tillgängligt för alla användare. Som "
+"Systemets CA-katalog %1$s måste vara tillgänglig för alla användare. Som "
 "root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
@@ -16707,7 +16707,7 @@ msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
-"Systemets PKI-katalog %1$s måste vara tillgängligt för alla användare. Som "
+"Systemets PKI-katalog %1$s måste vara tillgänglig för alla användare. Som "
 "root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
@@ -16721,21 +16721,21 @@ msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
-"Systemets cert-katalog %1$s måste vara tillgängligt för alla användare. Som "
+"Systemets cert-katalog %1$s måste vara tillgänglig för alla användare. Som "
 "root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
 "The system key dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
-"Systemets yckelkatalog %1$s installeras vanligen som del av paketet libvirt"
+"Systemets nyckelkatalog %1$s installeras vanligen som del av paketet libvirt"
 
 #, c-format
 msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
-"Systemets nyckelkatalog %1$s måste vara tillgängligt för alla användare. Som "
+"Systemets nyckelkatalog %1$s måste vara tillgänglig för alla användare. Som "
 "root, kör: chown root.root; chmod 0755 %2$s"
 
 #, c-format
@@ -16839,7 +16839,7 @@ msgid "This host is not managed by a vCenter"
 msgstr "Denna värd hanteras inte av ett vCenter"
 
 msgid "This snapshot has children, please delete these snapshots before"
-msgstr "Denna ögonblicksbid har barn, radera dessa ögonblicksbilder först"
+msgstr "Denna ögonblicksbild har barn, radera dessa ögonblicksbilder först"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Denna typ av disk kan inte tas bort under drift"
@@ -17177,7 +17177,7 @@ msgstr "URI för namnrymden"
 
 #, c-format
 msgid "URI scheme '%1$s' for embedded driver is not valid"
-msgstr "URI-schemat ”%1$s” för en inbyggd drivruting är inte giltig"
+msgstr "URI-schemat ”%1$s” för en inbyggd drivrutin är inte giltig"
 
 msgid "URI to use for disks migration (overrides --disks-port)"
 msgstr "URI att använda för diskmigrering (åsidosätter --disks-port)"
@@ -17442,7 +17442,7 @@ msgid "Unable to change server workerpool parameters"
 msgstr "Kan inte ändra serverarbetspoolsparametrar"
 
 msgid "Unable to change server's client-related configuration limits"
-msgstr "Kan inte ändra serverns klienrelaterade konfigurationsgränser"
+msgstr "Kan inte ändra serverns klientrelaterade konfigurationsgränser"
 
 msgid "Unable to change target guest XML during migration"
 msgstr "Kan inte ändra målgäst-XML under migreringen"
@@ -17480,7 +17480,7 @@ msgid "Unable to clear thread local variable"
 msgstr "Kan inte tömma en trådlokal variabel"
 
 msgid "Unable to clone to check reboot support"
-msgstr "Kan inte klona för att kontroller stöd för omstart"
+msgstr "Kan inte klona för att kontrollera stöd för omstart"
 
 msgid "Unable to close"
 msgstr "Kan inte stänga"
@@ -17540,7 +17540,7 @@ msgid "Unable to create HardDisk"
 msgstr "Kan inte skapa HardDisk"
 
 msgid "Unable to create KVM VM for TSC probing"
-msgstr "Kan inte skap en KVM VM för TSC-avkänning"
+msgstr "Kan inte skapa en KVM VM för TSC-avkänning"
 
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "Kan inte skapa en KVM vCPU för TSC-avkänning"
@@ -17607,7 +17607,7 @@ msgid ""
 "Unable to create lockspace %1$s: parent directory does not exist or is not a "
 "directory"
 msgstr ""
-"Kan inte skapa låsrymden %1$s: förädrakatalogen finns inte eller är inte en "
+"Kan inte skapa låsrymden %1$s: föräldrakatalogen finns inte eller är inte en "
 "katalog"
 
 msgid "Unable to create media registry"
@@ -17625,7 +17625,7 @@ msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
 msgstr ""
-"Kan inte skapa flera fb:re för tap-enheten %1$s (kanske var den befintlige "
+"Kan inte skapa flera fb:re för tap-enheten %1$s (kanske var den befintliga "
 "enheten skapad utan flaggan multi_queue)"
 
 msgid "Unable to create pipes"
@@ -17650,7 +17650,7 @@ msgid "Unable to create tap device %1$s"
 msgstr "Kan inte skapa tap-enheten %1$s"
 
 msgid "Unable to create thread to process command's IO"
-msgstr "Kan inte skapa en tråd för att bearbeta kommandonts IO"
+msgstr "Kan inte skapa en tråd för att bearbeta kommandots IO"
 
 msgid "Unable to create tunnel migration thread"
 msgstr "Kan inte skapa en tunnelmigrationstråd"
@@ -17680,7 +17680,7 @@ msgstr "Kan inte avkoda antalet FB:are"
 
 #, c-format
 msgid "Unable to define mediated device: %1$s"
-msgstr "Kan inte defineria en medierad enhet: %1$s"
+msgstr "Kan inte definiera en medierad enhet: %1$s"
 
 #, c-format
 msgid "Unable to delete %1$s"
@@ -17691,7 +17691,7 @@ msgstr "Kan inte radera TAP-enheter på denna plattform"
 
 msgid "Unable to delete address from interface multicast list on this platform"
 msgstr ""
-"Kan inte radera enadress från ett gränssnitts multicast-lista på denna "
+"Kan inte radera en adress från ett gränssnitts multicast-lista på denna "
 "plattform"
 
 #, c-format
@@ -17729,7 +17729,7 @@ msgid "Unable to detect filesystem for %1$s"
 msgstr "Kan inte detektera filsystemet för %1$s"
 
 msgid "Unable to determine Partition Type, requires build --overwrite"
-msgstr "Kan inte avgöra partitionstyp, förutsätter bygge --overwrite"
+msgstr "Kan inte avgöra partitionstyp, förutsätter --overwrite för bygge"
 
 #, c-format
 msgid "Unable to determine current file inode: %1$s"
@@ -17841,7 +17841,7 @@ msgid "Unable to find a satisfying vhost-user-gpu"
 msgstr "Kan inte hitta en tillfredsställande vhost-user-gpu"
 
 msgid "Unable to find a satisfying virtiofsd"
-msgstr "Kan inte hitta en tillfredsställande vritiofsd"
+msgstr "Kan inte hitta en tillfredsställande virtiofsd"
 
 msgid "Unable to find a vCPU that is online"
 msgstr "Kan inte hitta en vCPU som är inkopplad"
@@ -18085,7 +18085,7 @@ msgstr "Kan inte hämta värdens uppstartstid"
 
 #, c-format
 msgid "Unable to get index for interface %1$s"
-msgstr "Kan inte hämt index för gränssnittet %1$s"
+msgstr "Kan inte hämta index för gränssnittet %1$s"
 
 #, c-format
 msgid "Unable to get interface index for %1$s"
@@ -18190,7 +18190,7 @@ msgid "Unable to get the parent disk"
 msgstr "Kan inte hämta föräldradisken"
 
 msgid "Unable to get the read write medium format"
-msgstr "Kan inte hämta formtet på läs/skriv-mediumet"
+msgstr "Kan inte hämta formatet på läs/skriv-mediumet"
 
 msgid "Unable to get the read write medium id"
 msgstr "Kan inte hämta id:t för läs/skriv-mediumet"
@@ -18212,7 +18212,7 @@ msgstr "Kan inte hämta virtuella funktioner på denna plattform"
 
 #, c-format
 msgid "Unable to import CA certificate list %1$s"
-msgstr "Kan inte importera CA-certfikatlistan %1$s"
+msgstr "Kan inte importera CA-certifikatlistan %1$s"
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -18220,10 +18220,10 @@ msgstr "Kan inte importera klientcertifikatet %1$s"
 
 #, c-format
 msgid "Unable to import server certificate %1$s"
-msgstr "Kan inte importera servercertfikatet %1$s"
+msgstr "Kan inte importera servercertifikatet %1$s"
 
 msgid "Unable to init device stream mutex"
-msgstr "kan inte initiera enhetsström-mutex"
+msgstr "Kan inte initiera enhetsström-mutex"
 
 msgid "Unable to initialize RW lock"
 msgstr "Kan inte initiera RW-lås"
@@ -18297,10 +18297,10 @@ msgstr "Kan inte lyssna på UNIX-uttaget med sökvägen ”%1$s”"
 
 #, c-format
 msgid "Unable to load %1$s: %2$s"
-msgstr "Kan inte ladda %1$s:%2$s"
+msgstr "Kan inte ladda %1$s: %2$s"
 
 msgid "Unable to load certificate"
-msgstr "Kan inte ladda certfikat"
+msgstr "Kan inte ladda certifikat"
 
 #, c-format
 msgid "Unable to load certificate, make sure it is in PEM format: %1$s\n"
@@ -18325,7 +18325,7 @@ msgstr "Kan inte markera slingenheten som autoclear"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$d"
-msgstr "Kan inte masstänga FB:are (första=%1$zd, sistal=%2$d"
+msgstr "Kan inte masstänga FB:are (första=%1$zd, sista=%2$d"
 
 #, c-format
 msgid "Unable to mass close FDs (first=%1$zd, last=%2$zd)"
@@ -18347,7 +18347,7 @@ msgstr "Kan inte övervaka katalogen: %1$s"
 
 #, c-format
 msgid "Unable to move %1$s mount to %2$s"
-msgstr "Kan inte flytta %1$s-monteringin till %2$s"
+msgstr "Kan inte flytta %1$s-monteringen till %2$s"
 
 msgid "Unable to notify child process"
 msgstr "Kan inte notifiera barnprocessen"
@@ -18454,7 +18454,7 @@ msgstr "Kan inte tolka ”%1$s” som ett heltal"
 
 #, c-format
 msgid "Unable to parse FD number '%1$s'"
-msgstr "Kan inte tolka FD-numret ”%1$s”"
+msgstr "Kan inte tolka FB-numret ”%1$s”"
 
 msgid "Unable to parse HPT maxpagesize setting"
 msgstr "Kan inte tolka HPT-maxpagesize-inställningen"
@@ -18578,7 +18578,7 @@ msgstr "Kan inte fråga om certifikatet %1$s grundbegränsning %2$s"
 
 #, c-format
 msgid "Unable to query certificate %1$s key purpose %2$s"
-msgstr "Kan inte fråga om certfikatet %1$s nyckeländamål %2$s"
+msgstr "Kan inte fråga om certifikatet %1$s nyckeländamål %2$s"
 
 #, c-format
 msgid "Unable to query certificate %1$s key usage %2$s"
@@ -18615,7 +18615,7 @@ msgid "Unable to query sector size %1$s: %2$s"
 msgstr "Kan inte fråga om sektorstorleken %1$s: %2$s"
 
 msgid "Unable to query tap interface name"
-msgstr "Kan inte fråga om tap-gränssnittest namn"
+msgstr "Kan inte fråga om tap-gränssnittets namn"
 
 msgid "Unable to re-encode message length"
 msgstr "Kan inte koda om meddelandelängden"
@@ -18678,7 +18678,7 @@ msgstr "Kan inte läsa konfigurationen av nätenheter på denna plattform"
 
 #, c-format
 msgid "Unable to read pidfile '%1$s'"
-msgstr "Kan inte läsa slirp-pid-filen ”%1$s”"
+msgstr "Kan inte läsa pid-filen ”%1$s”"
 
 #, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
@@ -18748,7 +18748,7 @@ msgstr "Kan inte ta bort metadata för %1$d ögonblicksbilder"
 
 #, c-format
 msgid "Unable to remove snapshot %1$s"
-msgstr "Kan int ta bort ögonblicksbilden %1$s"
+msgstr "Kan inte ta bort ögonblicksbilden %1$s"
 
 #, c-format
 msgid "Unable to remove stale socket path: %1$s"
@@ -18788,7 +18788,7 @@ msgstr "Kan inte återställa ingången på port %1$s: %2$s"
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
-msgstr "Kan inte slå upp adresset ”%1$s” tjänsten ”%2$s”: %3$s"
+msgstr "Kan inte slå upp adressen ”%1$s” tjänsten ”%2$s”: %3$s"
 
 #, c-format
 msgid "Unable to resolve device %1$s driver symlink %2$s"
@@ -18800,7 +18800,7 @@ msgstr "Kan inte slå upp enheten %1$s iommu_group-symlänken %2$s"
 
 #, c-format
 msgid "Unable to resolve device subsystem symlink %1$s"
-msgstr "Kan inte lösa upp enhetens subsystesmssymlänk %1$s"
+msgstr "Kan inte lösa upp enhetens subsystemssymlänk %1$s"
 
 #, c-format
 msgid "Unable to resolve link: %1$s"
@@ -18840,8 +18840,7 @@ msgstr ""
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr ""
-"Kan inte körra kommandot för att ställa in OVS-portsdata för gränssnittet "
-"%1$s"
+"Kan inte köra kommandot för att ställa in OVS-portsdata för gränssnittet %1$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
@@ -18889,7 +18888,7 @@ msgstr "Misslyckades att spara domän %1$s till %2$llu"
 
 #, c-format
 msgid "Unable to seek log file %1$s to %2$llu"
-msgstr "det gick inte att skapa loggfilen %1$s till %2$llu"
+msgstr "Det gick inte att skapa loggfilen %1$s till %2$llu"
 
 msgid "Unable to seek to EOF"
 msgstr "Kan inte söka till filslut"
@@ -18935,7 +18934,7 @@ msgstr "Kan inte sätta ACL:er på %1$s"
 
 #, c-format
 msgid "Unable to set FD %1$d blocking"
-msgstr "Kan inte sätta FD %1$d blockerande"
+msgstr "Kan inte sätta FB %1$d blockerande"
 
 msgid "Unable to set IPV6_V6ONLY flag"
 msgstr "Kan inte sätta flaggan IPV6_V6ONLY"
@@ -19091,11 +19090,11 @@ msgstr "Kan inte sätta x509 certifikatåterkallandelista: %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 key and certificate: %1$s, %2$s: %3$s"
-msgstr "Kan inte sätta x509-nyckel och -certfikat: %1$s, %2$s: %3$s"
+msgstr "Kan inte sätta x509-nyckel och -certifikat: %1$s, %2$s: %3$s"
 
 #, c-format
 msgid "Unable to split FD list '%1$s'"
-msgstr "Kan inte dela FD-listan ”%1$s”"
+msgstr "Kan inte dela FB-listan ”%1$s”"
 
 #, c-format
 msgid "Unable to start event thread: %1$s"
@@ -19149,7 +19148,7 @@ msgstr "Kan inte binda upp den virtuella porten %1$s från Midonet"
 
 #, c-format
 msgid "Unable to undefine mediated device: %1$s"
-msgstr "Kan inte avdefineria en medierad enhet: %1$s"
+msgstr "Kan inte avdefiniera en medierad enhet: %1$s"
 
 #, c-format
 msgid "Unable to unlink %1$s"
@@ -19196,7 +19195,7 @@ msgstr "Kan inte vänta på epoll"
 
 #, c-format
 msgid "Unable to wait on monitor condition (vm='%1$s')"
-msgstr "Kan inte vänta på övervarkarvillkoret (vm=”%1$s”)"
+msgstr "Kan inte vänta på övervakarvillkoret (vm=”%1$s”)"
 
 msgid "Unable to wait on parent process"
 msgstr "Kan inte vänta på föräldraprocessen"
@@ -19398,7 +19397,7 @@ msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
 msgstr "Oväntad längd på ”%1$s”, %2$u förväntades men fick %3$zu"
 
 msgid "Unexpected lock parameters for disk resource"
-msgstr "Ovändade låsparametrar för diskresursen"
+msgstr "Oväntade låsparametrar för diskresursen"
 
 #, c-format
 msgid "Unexpected message proc %1$d != %2$d"
@@ -19444,7 +19443,7 @@ msgid "Unexpected parameter %1$s for object"
 msgstr "Oväntad parameter %1$s till objektet"
 
 msgid "Unexpected parameters for disk resource"
-msgstr "Ovändade parametrar till diskresursen"
+msgstr "Oväntade parametrar till diskresursen"
 
 msgid "Unexpected product line"
 msgstr "Oväntad produktrad"
@@ -19477,7 +19476,7 @@ msgid "Unexpected state of feature '%1$s'"
 msgstr "Oväntat tillstånd på funktionen ”%1$s”"
 
 msgid "Unexpected stream hole"
-msgstr "Ovänta strömhål"
+msgstr "Oväntat strömhål"
 
 #, c-format
 msgid "Unexpected volume path format: %1$s"
@@ -19542,7 +19541,7 @@ msgid "Unknown PCI header type '%1$d' for device '%2$s'"
 msgstr "Okänd PCI-huvudtyp ”%1$d” för enheten ”%2$s”"
 
 msgid "Unknown Partition Type, requires build --overwrite"
-msgstr "Okänd partitionstyp, förutsätter bygge --overwrite"
+msgstr "Okänd partitionstyp, förutsätter --overwrite för bygge"
 
 #, c-format
 msgid "Unknown QEMU arch %1$s"
@@ -19602,7 +19601,7 @@ msgstr "Okänd teckenenhetstyp: %1$d"
 
 #, c-format
 msgid "Unknown compatibility mode %1$s"
-msgstr "Okänd kompatibilietsläge %1$s"
+msgstr "Okänt kompatibilitetsläge %1$s"
 
 #, c-format
 msgid "Unknown connection URI: '%1$s'"
@@ -19774,7 +19773,7 @@ msgid "Unknown source type: '%1$s'"
 msgstr "Okänd källtyp: ”%1$s”"
 
 msgid "Unknown state of the remote server SSH key"
-msgstr "Okänt tillstånd för fjärsserverns SSH-nyckel"
+msgstr "Okänt tillstånd för fjärrserverns SSH-nyckel"
 
 #, c-format
 msgid "Unknown stdio handler %1$s"
@@ -19822,7 +19821,7 @@ msgstr "Okänd leverantör %1$s refererad av CPU-modell %2$s"
 
 #, c-format
 msgid "Unknown virDomainControllerPCIModelName value: %1$d"
-msgstr "Okänd värde på virDomainControllerPCIModelName: %1$d"
+msgstr "Okänt värde på virDomainControllerPCIModelName: %1$d"
 
 #, c-format
 msgid "Unmanaged PCI device %1$s must be manually detached from the host"
@@ -19933,7 +19932,7 @@ msgstr "Ej stödd SCSI-styrenhetsmodell ”%1$d”"
 
 #, c-format
 msgid "Unsupported SMBIOS mode '%1$s'"
-msgstr "Ej stött SBMIOS-läge ”%1$s”"
+msgstr "Ej stött SMBIOS-läge ”%1$s”"
 
 #, c-format
 msgid "Unsupported URI scheme '%1$s'"
@@ -19956,7 +19955,7 @@ msgid "Unsupported address type '%1$s' with mediated device model '%2$s'"
 msgstr "Ej stödd adresstyp ”%1$s” med förmedlad enhetsmodell ”%2$s”"
 
 msgid "Unsupported address type for character device"
-msgstr "Ej stödd adrestyp för teckenenhet"
+msgstr "Ej stödd adresstyp för teckenenhet"
 
 #, c-format
 msgid "Unsupported algorithm '%1$s'"
@@ -19982,7 +19981,7 @@ msgid "Unsupported bus type '%1$s' for device type '%2$s'"
 msgstr "Ej stödd busstyp ”%1$s” för enhetstypen ”%2$s”"
 
 msgid "Unsupported capacity-to-allocation relation"
-msgstr "Ej stödd relation kapacetet-till-allokering"
+msgstr "Ej stödd relation kapacitet-till-allokering"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
@@ -20055,7 +20054,7 @@ msgstr "Diskbusstypen %1$s stödjs inte"
 
 #, c-format
 msgid "Unsupported disk device type '%1$s'"
-msgstr "Diskenhettypen ”%1$s” stödjs inte"
+msgstr "Diskenhetstypen ”%1$s” stödjs inte"
 
 msgid "Unsupported disk type"
 msgstr "Disktypen stödjs inte"
@@ -20070,7 +20069,7 @@ msgstr "Ej stött format på disken %1$s"
 
 #, c-format
 msgid "Unsupported forward mode '%1$s'"
-msgstr "Ej stött fidarebefordransläge ”%1$s”"
+msgstr "Ej stött vidarebefordransläge ”%1$s”"
 
 #, c-format
 msgid "Unsupported graphics type '%1$s'"
@@ -20217,7 +20216,7 @@ msgstr "Uppdaterade nätverket %1$s varaktighetskonfiguration"
 #, c-format
 msgid "Updated network %1$s persistent config and live state"
 msgstr ""
-"Uppdaterade nätverket %1$s varaktighetkonfiguration och aktivitetstillstånd"
+"Uppdaterade nätverket %1$s varaktighetskonfiguration och aktivitetstillstånd"
 
 #, c-format
 msgid "Updated node device %1$s live state"
@@ -20307,7 +20306,7 @@ msgstr ""
 "Validera TLS-certifikatkonfigurationen\n"
 "\n"
 "flaggor:\n"
-"  -s     | --system   validera systemcertifkat (standard)\n"
+"  -s     | --system   validera systemcertifikat (standard)\n"
 "  -u     | --user     validera användarcertifikat\n"
 "  -p KAT | --path KAT validera anpassad certifikatsökväg\n"
 "  -h     | --help     visa denna hjälp och avsluta\n"
@@ -20356,8 +20355,8 @@ msgstr ""
 
 msgid "Use the guest agent to query authorized SSH keys for given user"
 msgstr ""
-"Använd gästagenten för att fråga om auktoriserae SSH-nycklar för den angivna "
-"användaren"
+"Använd gästagenten för att fråga om auktoriserade SSH-nycklar för den "
+"angivna användaren"
 
 msgid ""
 "Use the guest agent to query or set cpu state from guest's point of view"
@@ -20436,7 +20435,7 @@ msgid "VFIO device assignment is not available on this platform"
 msgstr "VFIO-enhetstilldelning är inte tillgänglig på denna plattform"
 
 msgid "VM disk source and snapshot disk source are not the same"
-msgstr "VM-diskkälla och ögonblicsbildskälla är inte samma"
+msgstr "VM-diskkälla och ögonblicksbildskälla är inte samma"
 
 #, c-format
 msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
@@ -20463,7 +20462,7 @@ msgid "VMX entry 'firmware' has unknown value '%1$s'"
 msgstr "VMX-posten ”firmware” har ett okänt värde ”%1$s”"
 
 msgid "VMX entry 'name' contains invalid escape sequence"
-msgstr "VMX-posten ”name” innehåller en ogiltig flyktföljd"
+msgstr "VMX-posten ”name” innehåller en ogiltig kontrollsekvens"
 
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %1$d, this value is too large"
@@ -20474,7 +20473,7 @@ msgid "VNC"
 msgstr "VNC"
 
 msgid "VNC Password authentication not supported by bhyve"
-msgstr "VNC-lösenordsautenticering stödjs inte av bhyve"
+msgstr "VNC-lösenordsautentisering stödjs inte av bhyve"
 
 #, c-format
 msgid "VNC password is %1$zu characters long, only 8 permitted"
@@ -20519,7 +20518,7 @@ msgid "Virtual machines need to be saved"
 msgstr "Virtuella maskiner behöver sparas"
 
 msgid "Virtual network portgroups are not supported by vz driver."
-msgstr "Virtuella nätversportsgrupper stödjs inte av drivrutinen vz."
+msgstr "Virtuella nätverksportsgrupper stödjs inte av drivrutinen vz."
 
 msgid "Virtual port profile association not supported on this platform"
 msgstr "Virtuella portprofilassociationer stödjs inte på denna plattform"
@@ -20682,7 +20681,7 @@ msgstr "XBZRLE är aktivt, men ”pages”-data saknades"
 
 #, c-format
 msgid "XEN does not support device assignment mode '%1$s'"
-msgstr "XEN stödjer inte enhetstilldelingsläget ”%1$s”"
+msgstr "XEN stödjer inte enhetstilldelningsläget ”%1$s”"
 
 msgid "XML description is invalid or not well formed"
 msgstr "XML-beskrivningen är ogiltig eller inte rätt utformad"
@@ -20692,7 +20691,7 @@ msgstr "XML-dokumentet kunde inte validera mot schemat"
 
 #, c-format
 msgid "XML document failed to validate against schema: %1$s"
-msgstr "XML-dokumentet kunde inte validera mot schemat %1$s"
+msgstr "XML-dokumentet kunde inte validera mot schemat: %1$s"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML innehåller inte ett förväntat ”cpu”-element"
@@ -20713,11 +20712,11 @@ msgstr "XML-noden innehåller inte text, ett xsd:dateTime-värde förväntas"
 
 #, c-format
 msgid "XPath evaluation of response for call to '%1$s' failed"
-msgstr "XPath-evaluering av svaret för anroptet av ”%1$s” misslyckades"
+msgstr "XPath-evaluering av svaret för anropet av ”%1$s” misslyckades"
 
 #, c-format
 msgid "Xen migration stream version '%1$d' is not supported on this host"
-msgstr "Xen-miigreringsström version ”%1$d” stödjs inte på denna värd"
+msgstr "Xen-migreringsström version ”%1$d” stödjs inte på denna värd"
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr "Xen stödjer bara maskinerna ”xenpv”, ”xenpvh” och ”xenfv”"
@@ -20869,7 +20868,7 @@ msgid "add an IOThread to the guest domain"
 msgstr "lägg till en IOThread till gästdomänen"
 
 msgid "add backing chain information to block stats"
-msgstr "lägg till information om bakomliggade kedja till blockstatus"
+msgstr "lägg till information om bakomliggande kedja till blockstatus"
 
 msgid "additionally display the type and device value"
 msgstr "visa dessutom typen och enhetsvärdet"
@@ -20976,8 +20975,7 @@ msgid "alter live configuration of running domain"
 msgstr "ändra den verksamma konfigureringen av en körande domän"
 
 msgid "alter persistent configuration, effect observed on next boot"
-msgstr ""
-"ändra den varraktiga konfigurationen, effekten syns efter nästa uppstart"
+msgstr "ändra den varaktiga konfigurationen, effekten syns efter nästa uppstart"
 
 msgid "always display names and MACs of interfaces"
 msgstr "visa alltid namn och MAC:er för gränssnitt"
@@ -21089,7 +21087,8 @@ msgstr "asynkron nedrivning är inte tillgängligt med denna QEMU-binär"
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
 msgstr ""
-"åtminstone 1 server är i en bakomliggande JSON-definition för en glustervolym"
+"åtminstone 1 server behövs i en bakomliggande JSON-definition för en "
+"glustervolym"
 
 #, c-format
 msgid ""
@@ -21216,7 +21215,7 @@ msgid "auth username to be used for underlying storage"
 msgstr "autentiseringsanvändarnamn att användas för underliggande lagring"
 
 msgid "authentication cancelled"
-msgstr "autenticeringen avbröts"
+msgstr "autentiseringen avbröts"
 
 #, c-format
 msgid "authentication cancelled: %1$s"
@@ -21227,7 +21226,7 @@ msgstr "autentisering misslyckades"
 
 msgid "authentication failed, see test XML for the correct username/password"
 msgstr ""
-"autentiseringen misslyckades se test-XML för rätt användarnamn/lösenord"
+"autentiseringen misslyckades, se test-XML för rätt användarnamn/lösenord"
 
 #, c-format
 msgid "authentication failed: %1$s"
@@ -21259,7 +21258,7 @@ msgstr "förstör automatiskt gästen när virsh kopplar ifrån"
 
 msgid "automatically switch to post-copy migration after one pass of pre-copy"
 msgstr ""
-"byt automatiskt till postkopieringsmigrering efter ett pass av prekopiering"
+"byt automatiskt till efterkopieringsmigrering efter ett pass av förkopiering"
 
 msgid "autostart a defined node device"
 msgstr "autostarta en definierad nodenhet"
@@ -21367,7 +21366,7 @@ msgstr "ballongenheten kan inte avaktiveras"
 
 #, c-format
 msgid "bandwidth %1$llu cannot be represented in result"
-msgstr "bandbreden %1$llu kan inte representeras i resultatet"
+msgstr "bandbredden %1$llu kan inte representeras i resultatet"
 
 #, c-format
 msgid ""
@@ -21455,7 +21454,7 @@ msgstr ""
 
 #, c-format
 msgid "block I/O throttle limit value must be no more than %1$llu"
-msgstr "strypningsgränsen för block-I/O får inte var mer än %1$llu"
+msgstr "strypningsgränsen för block-I/O får inte vara mer än %1$llu"
 
 #, c-format
 msgid "block I/O throttling is not supported for disk '%1$s'"
@@ -21594,7 +21593,7 @@ msgid "bond interface miimon freq missing or invalid"
 msgstr "miimon freq för bindningsgränssnittet saknas eller är felaktigt"
 
 msgid "bond interface miimon updelay invalid"
-msgstr "miimon-yoofördröjning för bindningsgränssnittet är felaktigt"
+msgstr "miimon-uppfördröjning för bindningsgränssnittet är felaktigt"
 
 msgid "bond interface misses the bond element"
 msgstr "bindningsgränssnittet saknar bindningselementet"
@@ -21653,10 +21652,10 @@ msgid ""
 "mode, not in %1$s (network '%2$s')"
 msgstr ""
 "bryggflaggorna delay/std/zone är endast tillåtna i lägena open, route, nat "
-"ohc isolated, inte i %1$s (nätverket ”%2$s”)"
+"och isolated, inte i %1$s (nätverket ”%2$s”)"
 
 msgid "bridge interface misses the bridge element"
-msgstr "bryggsgränssnittet saknar bryggelementet"
+msgstr "bryggränssnittet saknar bryggelementet"
 
 #, c-format
 msgid "bridge interface stp should be on or off got %1$s"
@@ -21671,7 +21670,7 @@ msgstr ""
 
 #, c-format
 msgid "bridge name '%1$s' already in use."
-msgstr "bryggamnet ”%1$s” används redan."
+msgstr "bryggnamnet ”%1$s” används redan."
 
 #, c-format
 msgid "bridge name not allowed in %1$s mode (network '%2$s')"
@@ -21697,7 +21696,7 @@ msgid "build a pool"
 msgstr "bygg en pool"
 
 msgid "build the pool as normal"
-msgstr "bygg bolen normalt"
+msgstr "bygg poolen normalt"
 
 msgid "building"
 msgstr "bygger"
@@ -21718,7 +21717,7 @@ msgid "cache mode of disk device"
 msgstr "cache-läget för diskenheten"
 
 msgid "cachetune is only supported for KVM domains"
-msgstr "cachetune stödjs indast för KVM-domäner"
+msgstr "cachetune stödjs endast för KVM-domäner"
 
 msgid ""
 "calculate memory dirty rate within specified seconds, the supported value "
@@ -21792,11 +21791,11 @@ msgstr "kan inte hitta den skapade ögonblicksbilden"
 
 #, c-format
 msgid "can't identify pool in uri %1$s "
-msgstr "kan inte identifera poolen i uri %1$s "
+msgstr "kan inte identifiera poolen i uri %1$s "
 
 #, c-format
 msgid "can't identify volume in uri %1$s"
-msgstr "kan inte identifera volymen i uri %1$s"
+msgstr "kan inte identifiera volymen i uri %1$s"
 
 msgid "can't keep relative backing relationship"
 msgstr "kan inte hålla en relativ bakomliggande relation"
@@ -21996,8 +21995,8 @@ msgstr ""
 msgid ""
 "cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr ""
-"kan inte byta mellan uppkopplat och frånkopplat ögonblicsbildstillstånd i "
-"ögonblicsbilden %1$s"
+"kan inte byta mellan uppkopplat och frånkopplat ögonblicksbildstillstånd i "
+"ögonblicksbilden %1$s"
 
 #, c-format
 msgid "cannot change config of '%1$s' network interface type"
@@ -22249,7 +22248,7 @@ msgid "cannot determine filesystem for '%1$s'"
 msgstr "kan inte avgöra filsystemet för ”%1$s”"
 
 msgid "cannot do managed save for transient domain"
-msgstr "kan inte göra en hanterat sparande av en transient domän"
+msgstr "kan inte göra ett hanterat sparande av en transient domän"
 
 #, c-format
 msgid "cannot download from volume %1$s"
@@ -22339,7 +22338,7 @@ msgstr "kan inte hitta iscsiadm-sessionen: %1$s"
 
 #, c-format
 msgid "cannot find logical volume group name '%1$s'"
-msgstr "kan inte hitta de logiska volymgruppsnamnet ”%1$s”"
+msgstr "kan inte hitta det logiska volymgruppsnamnet ”%1$s”"
 
 #, c-format
 msgid "cannot find new IOThread '%1$u' in QEMU monitor."
@@ -22347,7 +22346,7 @@ msgstr "kan inte hitta en ny IOThread ”%1$u” i QEMU-monitorn."
 
 #, c-format
 msgid "cannot find newly created volume '%1$s'"
-msgstr "kan inte en nyss skapad volym ”%1$s”"
+msgstr "kan inte hitta en nyss skapad volym ”%1$s”"
 
 #, c-format
 msgid "cannot find parent '%1$s' definition"
@@ -22385,7 +22384,7 @@ msgid "cannot generate a random uuid for instanceid"
 msgstr "kan inte generera ett slumpmässigt uuid som instanceid"
 
 msgid "cannot generate a random uuid for interfaceid"
-msgstr "kan inte generera ett slumpmässigt uuid som iterfaceid"
+msgstr "kan inte generera ett slumpmässigt uuid som interfaceid"
 
 #, c-format
 msgid "cannot generate dac user and group id for domain %1$s"
@@ -22442,7 +22441,7 @@ msgid "cannot get host CPU capabilities"
 msgstr "kan inte hämta värd-CPU-förmågor"
 
 msgid "cannot get interface flags on macvtap tap"
-msgstr "kan inte hämta gärnssnittsflaggor för macvtap-tap"
+msgstr "kan inte hämta gränssnittsflaggor för macvtap-tap"
 
 #, c-format
 msgid "cannot get locked memory limit of process %1$lld"
@@ -22500,7 +22499,7 @@ msgid ""
 "%5$d - controller not found"
 msgstr ""
 "kan inte koppla ur %1$s-enheten från körande system med PCI-gästadressen "
-"%2$04x_%3$02x:%4$02x:%5$d – styrenheten finns inte"
+"%2$04x:%3$02x:%4$02x.%5$d – styrenheten finns inte"
 
 #, c-format
 msgid ""
@@ -22508,7 +22507,7 @@ msgid ""
 "%5$d - not allowed by controller"
 msgstr ""
 "kan inte koppla ur %1$s-enheten från körande system med PCI-gästadressen "
-"%2$04x_%3$02x:%4$02x:%5$d – tillåts inte av styrenheten"
+"%2$04x:%3$02x:%4$02x.%5$d – tillåts inte av styrenheten"
 
 #, c-format
 msgid ""
@@ -22516,20 +22515,20 @@ msgid ""
 "%3$02x:%4$02x.%5$d"
 msgstr ""
 "kan inte koppla ur %1$s-enheten från körande system med flerfunktions-PCI-"
-"gästadressen %2$04x_%3$02x:%4$02x:%5$d"
+"gästadressen %2$04x:%3$02x:%4$02x.%5$d"
 
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
 "kan inte koppla ur från ett körande system multifunktions-PCI-enheten: "
-"%1$04x:%2$02x:%3$02x:%4$d"
+"%1$04x:%2$02x:%3$02x.%4$d"
 
 msgid "cannot initialize agent condition"
 msgstr "kan inte initiera agentvillkoret"
 
 #, c-format
 msgid "cannot initialize cert object: %1$s"
-msgstr "kan inte initiera certifkatobjektet: %1$s"
+msgstr "kan inte initiera certifikatobjektet: %1$s"
 
 msgid "cannot initialize condition variable"
 msgstr "kan inte initiera villkorsvariabeln"
@@ -22590,7 +22589,7 @@ msgstr "kan inte ladda certifikatsdata från %1$s: %2$s"
 
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %1$d"
-msgstr "kan inte slå upp standard-selinux-etketten för tap fb %1$d"
+msgstr "kan inte slå upp standard-selinux-etiketten för tap fb %1$d"
 
 msgid "cannot migrate a domain with <hostdev mode='capabilities'>"
 msgstr "kan inte migrera en domän med <hostdev mode='capabilities'>"
@@ -22695,7 +22694,7 @@ msgid "cannot modify network device portgroup attribute"
 msgstr "det går inte att ändra nätverksenhetens attribut portgroup"
 
 msgid "cannot modify network device rom bar setting"
-msgstr "kan inte ändra nätverksenhetens \"rom bar\"-inställning"
+msgstr "kan inte ändra nätverksenhetens ”rom bar”-inställning"
 
 msgid "cannot modify network device rom enabled setting"
 msgstr "kan inte ändra nätverksenhetens rom-aktiveringsinställning"
@@ -22888,7 +22887,7 @@ msgstr "kan inte förhandsskapa lagring för disktypen ”%1$s”"
 
 #, c-format
 msgid "cannot probe backing volume format: %1$s"
-msgstr "kan inte känna av bakomligande volymens format: %1$s"
+msgstr "kan inte känna av bakomliggande volymens format: %1$s"
 
 #, c-format
 msgid "cannot query SASL ssf on connection %1$d (%2$s)"
@@ -23271,8 +23270,8 @@ msgid ""
 "cannot update lifecycle action because QEMU was started with incompatible -"
 "no-reboot setting"
 msgstr ""
-"kan inte uppdatera livscykelåtgärden eftersom QEMU startades med "
-"inställningen incompatible-no-reboot"
+"kan inte uppdatera livscykelåtgärden eftersom QEMU startades med den "
+"inkompatibla inställningen -no-reboot"
 
 #, c-format
 msgid "cannot upload to volume %1$s"
@@ -23612,7 +23611,7 @@ msgstr "kommaseparerad lista över diskar att migrera"
 msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
-"kommaspearerad lista över diskar att migrera med nolldetektering aktiverat"
+"kommaseparerad lista över diskar att migrera med nolldetektering aktiverat"
 
 msgid "command"
 msgstr "kommando"
@@ -23623,11 +23622,11 @@ msgstr "kommandot '%1$s' stöder inte flaggan --%2$s"
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
-msgstr "kommando '%1$s' kräver flaggan --%2$s"
+msgstr "kommandot '%1$s' kräver flaggan --%2$s"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
-msgstr "kommando '%1$s' kräver flaggan <%2$s>"
+msgstr "kommandot '%1$s' kräver flaggan <%2$s>"
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr "kommandogrupperna är NULL kör vshInit före omladdning"
@@ -23854,7 +23853,7 @@ msgid "copy of read-only disks is not supported"
 msgstr "kopiering av endast läsbara diskar stödjs inte"
 
 msgid "copy to a FD passed disk source is not yet supported"
-msgstr "kopiering av FB-skickad diskkällor stödjs inte ännu"
+msgstr "kopiering av FB-skickade diskkällor stödjs inte ännu"
 
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "kopiering-vid-skrivning-ploop-volymer stödjs inte ännu"
@@ -24004,7 +24003,7 @@ msgstr "kunde inte hämta aktuell ögonblicksbild av domänen %1$s"
 
 #, c-format
 msgid "could not get description of snapshot %1$s"
-msgstr "kunde inte hämta beskrivningen av ögonblicskbilden %1$s"
+msgstr "kunde inte hämta beskrivningen av ögonblicksbilden %1$s"
 
 msgid "could not get domain UUID"
 msgstr "kunde inte hämta domän-UUID"
@@ -24050,7 +24049,7 @@ msgid "could not get root snapshot for domain %1$s"
 msgstr "kunde inte hämta rotögonblicksbilden domänen %1$s"
 
 msgid "could not get snapshot UUID"
-msgstr "kunde inte få tag i ögonblicsbilds-UUID"
+msgstr "kunde inte få tag i ögonblicksbilds-UUID"
 
 msgid "could not get snapshot children"
 msgstr "kunde inte få ögonblicksbildsbarn"
@@ -24084,7 +24083,7 @@ msgid "could not parse XML"
 msgstr "kunde inte tolka XML"
 
 msgid "could not parse arguments"
-msgstr "kunde inte tolka argumenteten"
+msgstr "kunde inte tolka argumenten"
 
 #, c-format
 msgid "could not parse read bytes sec %1$s"
@@ -24122,7 +24121,7 @@ msgstr "kunde inte ta bort profilen för ”%1$s”"
 
 #, c-format
 msgid "could not restore snapshot for domain %1$s"
-msgstr "kunde inte återställa ögonblicskbilden för domänen %1$s"
+msgstr "kunde inte återställa ögonblicksbilden för domänen %1$s"
 
 msgid "could not set IFS"
 msgstr "kunde inte sätta IFS"
@@ -24159,7 +24158,7 @@ msgstr "kunde inte använda akten för Xens hypervisor"
 
 #, c-format
 msgid "could not use Xen hypervisor entry %1$s"
-msgstr "kunde inte använda akten för Xens hypervisor %1$s<"
+msgstr "kunde inte använda akten för Xens hypervisor %1$s"
 
 msgid "couldn't fetch array of leases"
 msgstr "kunde inte hämta vektorn av hyror"
@@ -24190,7 +24189,7 @@ msgstr "kunde inte hitta ett gränssnitt med namnet ”%1$s”"
 
 #, c-format
 msgid "couldn't find interface named '%1$s': %2$s%3$s%4$s"
-msgstr "lunde inte hitta ett gränssnitt med namnet ”%1$s” %2$s%3$s%4$s"
+msgstr "kunde inte hitta ett gränssnitt med namnet ”%1$s”: %2$s%3$s%4$s"
 
 #, c-format
 msgid "couldn't find interface with MAC address '%1$s'"
@@ -24225,16 +24224,16 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%1$s'\" "
 "\"name='%2$s'\" \"ip='%3$s'\" in network '%4$s'"
 msgstr ""
-"kunde inte hitta en befintlig dhcp host-post med ”mac=’%1$s’” ”name=’%2$s’” "
-"”ip=’%3$s’” i nätverket ”%4$s”"
+"kunde inte hitta en befintlig dhcp host-post med ”mac='%1$s'” ”name='%2$s'” "
+"”ip='%3$s'” i nätverket ”%4$s”"
 
 #, c-format
 msgid ""
 "couldn't register rollback command - command '%1$s' had no valid handle in "
 "output ('%2$s')"
 msgstr ""
-"kunde inte registrera kommando för att rulla tillbaka — komandot ”%1$s” hade "
-"inget giltigt handtag i utdaga (”%2$s”)"
+"kunde inte registrera kommando för att rulla tillbaka — kommandot ”%1$s” "
+"hade inget giltigt handtag i utdata (”%2$s”)"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %1$s"
@@ -24274,7 +24273,7 @@ msgid "cpu affinity is not supported"
 msgstr "cpu-affinitet stödjs inte"
 
 msgid "cpu count too large"
-msgstr "cpu-antalet är för stor"
+msgstr "cpu-antalet är för stort"
 
 msgid "cpu hotplug is not supported"
 msgstr "cpu-omkoppling i drift stödjs inte"
@@ -24310,13 +24309,13 @@ msgid "create a bridge device and attach an existing network device to it"
 msgstr "skapa en bryggenhet och anslut en befintlig nätverksenhet till den"
 
 msgid "create a device defined by an XML file on the node"
-msgstr "skapa en enhet definerad av en XML-fil på noden"
+msgstr "skapa en enhet definierad av en XML-fil på noden"
 
 msgid "create a domain from an XML file"
 msgstr "skapa en domän från en XML-fil"
 
 msgid "create a network filter binding from an XML file"
-msgstr "skapa ett nätverksfiltersbindning från en XML-fil"
+msgstr "skapa ett nätverksfilterbindning från en XML-fil"
 
 msgid "create a network from an XML file"
 msgstr "skapa ett nätverk från en XML-fil"
@@ -24368,7 +24367,7 @@ msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr "att skapa icke råa filavbilder stödjs inte utan qemu-img."
 
 msgid "creation of pid file requires daemonized command"
-msgstr "att skapa en pid-fil kräver daemonkommando"
+msgstr "att skapa en pid-fil kräver demonkommando"
 
 msgid "creation of qcow/qcow2 files supports only 'luks' encryption"
 msgstr "att skapa qcow/qcow2-filer stödjer bara ”luks”-kryptering"
@@ -24433,7 +24432,7 @@ msgid "current bridge device name"
 msgstr "aktuellt bryggenhetsnamn"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr "aktuellt jobb är inte utgående migrering i postkopieringsläge"
+msgstr "aktuellt jobb är inte utgående migrering i efterkopieringsläge"
 
 msgid "current vcpu count must equal maximum"
 msgstr "aktuellt vcpu-antal måste vara lika med maximum"
@@ -24445,10 +24444,10 @@ msgid "custom alias name of disk device"
 msgstr "anpassat aliasnamn för diskenheten"
 
 msgid "custom alias name of interface device"
-msgstr "anpassat aliasnnamn för gränssnittsenheten"
+msgstr "anpassat aliasnamn för gränssnittsenheten"
 
 msgid "custom configuration parameters specified"
-msgstr "anpassade konfigurationsparametrar anginva"
+msgstr "anpassade konfigurationsparametrar angivna"
 
 msgid "custom device configuration"
 msgstr "anpassad enhetskonfiguration"
@@ -24470,7 +24469,7 @@ msgstr "anslutnings-URI för demonens administrationsserver"
 
 #, c-format
 msgid "daemonized command cannot set working directory %1$s"
-msgstr "daemonkommando kan inte ange arbetskatalog %1$s"
+msgstr "demonkommando kan inte ange arbetskatalog %1$s"
 
 msgid "daemonized command cannot use virCommandRunAsync"
 msgstr "demonkommando kan inte använda virCommandRunAsync"
@@ -24490,21 +24489,21 @@ msgstr "dbus-demonen %1$s dök inte upp"
 
 #, c-format
 msgid "dbus-daemon %1$s died unexpectedly"
-msgstr "dbus-daemon %1$s dog oväntat"
+msgstr "dbus-demon %1$s dog oväntat"
 
 #, c-format
 msgid "dbus-daemon died and reported: %1$s"
-msgstr "dbus-daemon dog och rapporterade: %1$s"
+msgstr "dbus-demon dog och rapporterade: %1$s"
 
 msgid "default"
 msgstr "standard"
 
 #, c-format
 msgid "default_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "default_tls_x509_cert_dir directory ”%1$s” finns inte"
+msgstr "default_tls_x509_cert_dir-katalogen ”%1$s” finns inte"
 
 msgid "define (but don't start) a domain from an XML file"
-msgstr "definiera (men start inte) en domän från en XML-fil"
+msgstr "definiera (men starta inte) en domän från en XML-fil"
 
 msgid "define a pool from a set of args"
 msgstr "definiera en pool från ett antal argument"
@@ -24514,13 +24513,13 @@ msgid ""
 "persistent one from an XML file"
 msgstr ""
 "definiera ett inaktivt beständigt fysiskt värdgränssnitt eller modifiera ett "
-"befintiligt beständigt från en XML-fil"
+"befintligt beständigt från en XML-fil"
 
 msgid ""
 "define an inactive persistent storage pool or modify an existing persistent "
 "one from an XML file"
 msgstr ""
-"definiera ene inaktiv beständig lagringspool eller modifiera en befintlig "
+"definiera en inaktiv beständig lagringspool eller modifiera en befintlig "
 "beständig från en XML-fil"
 
 msgid ""
@@ -24534,7 +24533,7 @@ msgid "define or modify a secret from an XML file"
 msgstr "definiera eller modifiera en hemlighet från en XML-fil"
 
 msgid "define or update a network filter from an XML file"
-msgstr "definera eller uppdatera ett nätverksfilter från en XML-fil"
+msgstr "definiera eller uppdatera ett nätverksfilter från en XML-fil"
 
 #, c-format
 msgid "definition for checkpoint %1$s must use uuid %2$s"
@@ -24542,7 +24541,7 @@ msgstr "definitionen av kontrollpunkten %1$s måste använda uuid %2$s"
 
 #, c-format
 msgid "definition for snapshot %1$s must use uuid %2$s"
-msgstr "definitionen av ögonblicsbilden %1$s måste använda uuid %2$s"
+msgstr "definitionen av ögonblicksbilden %1$s måste använda uuid %2$s"
 
 msgid "deflate-on-oom is not supported by this QEMU binary"
 msgstr "deflate-on-oom stödjs inte av denna QEMU-binär"
@@ -24578,7 +24577,7 @@ msgid "delete files that were successfully committed"
 msgstr "radera filer som fastställdes"
 
 msgid "delete only libvirt metadata, leaving checkpoint contents behind"
-msgstr "radera endast libvrit-metadata, lämna kvar kontrollpunktsinnehållet"
+msgstr "radera endast libvirt-metadata, lämna kvar kontrollpunktsinnehållet"
 
 msgid "delete only libvirt metadata, leaving snapshot contents behind"
 msgstr "radera endast libvirt-metadata, lämna kvar ögonblicksbildsinnehållet"
@@ -24633,7 +24632,7 @@ msgstr "att radera externa diskögonblicksbilder med barn stödjs inte"
 
 #, c-format
 msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
-msgstr "radering av den interna ögonblicsbildsjobbet ”%1$s” misslyckades: %2$s"
+msgstr "radering av det interna ögonblicksbildsjobbet ”%1$s” misslyckades: %2$s"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -24677,13 +24676,13 @@ msgid "detach device from an XML file"
 msgstr "avmontera enhet från en XML-fil"
 
 msgid "detach device from an alias"
-msgstr "koppla less en enhet från ett alias"
+msgstr "koppla loss en enhet från ett alias"
 
 msgid "detach disk device"
 msgstr "avmontera diskenhet"
 
 msgid "detach network interface"
-msgstr "anslut nätverksgränssnitt"
+msgstr "koppla ifrån nätverksgränssnitt"
 
 msgid "detach node device from its device driver"
 msgstr "koppla ifrån en nodenhet från sin enhetsdrivrutin"
@@ -24698,8 +24697,8 @@ msgstr "att koppla ifrån en nätverksenhet från VM:en stödjs inte"
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
-"att koppla ifrån <console/> stödjs inte. Försök med motsvarande <serial/"
-">istället"
+"att koppla ifrån <console/> stödjs inte. Försök med motsvarande <serial/> "
+"istället"
 
 msgid "detaching serial console is not supported"
 msgstr "att koppla ifrån en seriekonsol stödjs inte"
@@ -24872,7 +24871,7 @@ msgid "disable"
 msgstr "avaktivera"
 
 msgid "disable autostarting"
-msgstr "inaktivera autostartning"
+msgstr "avaktivera autostartning"
 
 msgid "disable cpus specified by cpulist"
 msgstr "avaktivera cpu:er angivna av cpu-listan"
@@ -24941,7 +24940,7 @@ msgstr "disken ”%1$s” är tom eller endast läsbar"
 
 #, c-format
 msgid "disk '%1$s' must use snapshot mode '%2$s'"
-msgstr "disken ”%1$s” måste använda ögonblicsbildsläget ”%2$s”"
+msgstr "disken ”%1$s” måste använda ögonblicksbildsläget ”%2$s”"
 
 #, c-format
 msgid "disk '%1$s' not found"
@@ -25000,7 +24999,7 @@ msgid "disk device 'lun' doesn't support storage slice"
 msgstr "diskenhetens ”lun” stödjer inte lagringsskivor"
 
 msgid "disk device 'lun' must use 'raw' format"
-msgstr "diskenhetens ”lun” måsta använta formatet ”raw”"
+msgstr "diskenhetens ”lun” måste använda formatet ”raw”"
 
 #, c-format
 msgid "disk device type '%1$s' cannot be detached"
@@ -25008,18 +25007,18 @@ msgstr "diskenhetstypen ”%1$s” kan inte kopplas ifrån"
 
 #, c-format
 msgid "disk device type '%1$s' cannot be hotplugged"
-msgstr "diskenhetstypen ”%1$s” kan inte tas bort under drift"
+msgstr "diskenhetstypen ”%1$s” kan inte läggas till under drift"
 
 #, c-format
 msgid "disk device='lun' is not supported for bus='%1$s'"
-msgstr "diskebgeteb=”lun” stödjs inte för bussen=”%1$s”"
+msgstr "diskenheten=”lun” stödjs inte för bussen=”%1$s”"
 
 #, c-format
 msgid "disk device='lun' is not supported for protocol='%1$s'"
 msgstr "diskenheten=”lun” stödjs inte för protokollet=”%1$s”"
 
 msgid "disk device='lun' is not supported for usb bus"
-msgstr "diskenheten=”lun” stödjs ubte för usb-bussen"
+msgstr "diskenheten=”lun” stödjs inte för usb-bussen"
 
 msgid "disk device='lun' is only valid for block type disk source"
 msgstr "diskenheten=”lun” är endast giltig för diskkälla av blocktyp"
@@ -25119,7 +25118,7 @@ msgstr ""
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
 msgstr ""
-"diskens startupPolicy ”requsite” är endast tillåten för cdrom eller floppy"
+"diskens startupPolicy ”requisite” är endast tillåten för cdrom eller floppy"
 
 #, c-format
 msgid "disk target %1$s not found"
@@ -25248,7 +25247,7 @@ msgstr "domänen ”%1$s” håller redan på att startas"
 
 #, c-format
 msgid "domain '%1$s' is already defined with uuid %2$s"
-msgstr "domänen ”%1$s” är redan definierat med UUID %2$s"
+msgstr "domänen ”%1$s” är redan definierad med UUID %2$s"
 
 #, c-format
 msgid "domain '%1$s' is being migrated out"
@@ -25355,10 +25354,10 @@ msgid "domain has to be shutoff before renaming"
 msgstr "domänen måste vara avstängd innan namnet byts"
 
 msgid "domain id or name"
-msgstr "domännamn eller uuid"
+msgstr "domän-id eller namn"
 
 msgid "domain id or uuid"
-msgstr "domännamn eller uuid"
+msgstr "domän-id eller uuid"
 
 msgid "domain information"
 msgstr "domäninformation"
@@ -25370,7 +25369,7 @@ msgid "domain is already running"
 msgstr "domänen kör redan"
 
 msgid "domain is marked for auto destroy"
-msgstr "domänän är markerad att förstöras automatiskt"
+msgstr "domänen är markerad att förstöras automatiskt"
 
 msgid "domain is no longer running"
 msgstr "domänen kör inte längre"
@@ -25448,7 +25447,7 @@ msgid "domain type"
 msgstr "domäntyp"
 
 msgid "domain type is not defined"
-msgstr "domänens type är inte definierat"
+msgstr "domänens typ är inte definierad"
 
 msgid "domain vcpu counts"
 msgstr "domän-vcpu-antal"
@@ -25580,7 +25579,7 @@ msgid "duplicate key '%1$s'"
 msgstr "dubblerad nyckel ”%1$s”"
 
 msgid "duplicate native vlan setting"
-msgstr "dubblerad nativ vlan-inställning"
+msgstr "dubblerad inbyggd vlan-inställning"
 
 #, c-format
 msgid "duplicate vcpu order '%1$u'"
@@ -25639,7 +25638,7 @@ msgid "edit XML for a domain's managed save state file"
 msgstr "redigera XML:en för en domäns hanterade sparade tillståndsfil"
 
 msgid "edit XML for a domain's saved state file"
-msgstr "redigera XML:en en domäns sparad tillståndsfil"
+msgstr "redigera XML:en för en domäns sparade tillståndsfil"
 
 msgid "edit XML for a snapshot"
 msgstr "redigera XML:en för en ögonblicksbild"
@@ -25720,7 +25719,7 @@ msgstr "krypterade ploop-volymer stödjs inte med ploop init"
 
 #, c-format
 msgid "encryption format %1$d doesn't match expected format %2$d"
-msgstr "kryptieringsformatet %1$d stämmer inte med förväntat format %2$d"
+msgstr "krypteringsformatet %1$d stämmer inte med förväntat format %2$d"
 
 msgid "encryption format of inputvol must be LUKS"
 msgstr "krypteringsformatet på inputvol måste vara LUKS"
@@ -25729,7 +25728,7 @@ msgid "encryption is not supported with vhostuser disk"
 msgstr "kryptering stödjs inte med en vhostuser-disk"
 
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
-msgstr "kryptering stödjs bara med avbilsdsformaten ”raw” och ”qcow2”"
+msgstr "kryptering stödjs bara med avbildsformaten ”raw” och ”qcow2”"
 
 #, c-format
 msgid "end of range %1$s - %2$s in network %3$s/%4$d is the broadcast address"
@@ -25808,7 +25807,7 @@ msgid "error dumping %1$s (%2$d) interface"
 msgstr "fel när gränssnittet %1$s (%2$d) dumpades"
 
 msgid "error dumping neighbor table"
-msgstr "fel när grantabellen dumpades"
+msgstr "fel när granntabellen dumpades"
 
 #, c-format
 msgid "error during virtual port configuration of ifindex %1$d"
@@ -26072,7 +26071,7 @@ msgstr "händelsen ”tray-change” för domänen ”%1$s” disken %2$s: okän
 
 #, c-format
 msgid "event 'tunable' for domain '%1$s':\n"
-msgstr "händelsen 'tunable' fför domänen ”%1$s”:\n"
+msgstr "händelsen 'tunable' för domänen ”%1$s”:\n"
 
 #, c-format
 msgid "event 'watchdog' for domain '%1$s': debug\n"
@@ -26119,7 +26118,7 @@ msgstr "händelseåteranropet med id %1$d är inte registrerat"
 
 #, c-format
 msgid "event from unexpected fd %1$d!=%2$d / watch %3$d!=%4$d"
-msgstr "händelse från oväntat fb %1$d≠%2$d / ser %3$d≠%4$d"
+msgstr "händelse från oväntad fb %1$d≠%2$d / ser %3$d≠%4$d"
 
 #, c-format
 msgid "event from unexpected proc %1$ju!=%2$ju"
@@ -26159,7 +26158,7 @@ msgid "execute command without waiting for timeout"
 msgstr "kör kommandot utan att vänta på en tidsgräns"
 
 msgid "existing interface name"
-msgstr "befntligt gränssnittsnamn"
+msgstr "befintligt gränssnittsnamn"
 
 #, c-format
 msgid "exit status %1$d"
@@ -26208,7 +26207,7 @@ msgid "expecting JSON object"
 msgstr "ett JSON-objekt förväntas"
 
 msgid "expecting a name"
-msgstr "förväntar mig ett namn"
+msgstr "ett namn förväntas"
 
 msgid "expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."
 msgstr "en adress pci:0000.00.00.00 eller ccw:00.0.0000 förväntas."
@@ -26217,13 +26216,13 @@ msgid "expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."
 msgstr "en adress scsi:00.00.00 eller usb:00.00 eller sata:00.00.00 förväntas."
 
 msgid "expecting a separator"
-msgstr "förväntar mig en separator"
+msgstr "en separator förväntas"
 
 msgid "expecting a separator in list"
 msgstr "förväntar sig en separator i listan"
 
 msgid "expecting a value"
-msgstr "förväntar sig ett värde"
+msgstr "ett värde förväntas"
 
 #, c-format
 msgid "expecting a value for value of type %1$s"
@@ -26234,7 +26233,7 @@ msgid "expecting absolute path: %1$s"
 msgstr "absolut sökväg förväntas: %1$s"
 
 msgid "expecting an assignment"
-msgstr "förväntar mig en tilldelning"
+msgstr "en tilldelning förväntas"
 
 msgid "expecting an ide:00.00.00 address."
 msgstr "en adress ide:00.00.00 förväntas."
@@ -26286,7 +26285,7 @@ msgid ""
 "external snapshot file for disk %1$s already exists and is not a block "
 "device: %2$s"
 msgstr ""
-"en extern ögoblicksbildsfil för disken %1$s finns redan och är inte en "
+"en extern ögonblicksbildsfil för disken %1$s finns redan och är inte en "
 "blockenhet: %2$s"
 
 #, c-format
@@ -26502,7 +26501,7 @@ msgid "failed to create glfs object for '%1$s'"
 msgstr "misslyckades att skapa ett glfs-objekt för ”%1$s”"
 
 msgid "failed to create guest VM"
-msgstr "misslyckades att skapa ett gäst-VM"
+msgstr "misslyckades att skapa en gäst-VM"
 
 #, c-format
 msgid "failed to create image file '%1$s'"
@@ -26516,7 +26515,7 @@ msgstr "misslyckades att skapa json"
 
 #, c-format
 msgid "failed to create lib dir '%1$s'"
-msgstr "misslyckades att skapa bibliotekstekskatalogen ”%1$s”"
+msgstr "misslyckades att skapa bibliotekskatalogen ”%1$s”"
 
 #, c-format
 msgid "failed to create libssh channel: %1$s"
@@ -26559,7 +26558,7 @@ msgid "failed to create the RBD IoCTX. Does the pool '%1$s' exist?"
 msgstr "misslyckades att skapa RBD IoCTX. Finns poolen ”%1$s”?"
 
 msgid "failed to create udev context"
-msgstr "misslyckades att skapa ett udev-kontext"
+msgstr "misslyckades att skapa en udev-kontext"
 
 msgid "failed to create udev handler thread"
 msgstr "misslyckades att skapa en udev-hanterartråd"
@@ -26652,7 +26651,7 @@ msgstr "misslyckades att hitta föräldradiskkällan i bakomliggande kedja"
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%1$s'"
-msgstr "misslyckades att hita VID:n för VLAN-enheten ”%1$s”"
+msgstr "misslyckades att hitta VID:n för VLAN-enheten ”%1$s”"
 
 #, c-format
 msgid "failed to find the real device for the VLAN device '%1$s'"
@@ -26781,13 +26780,13 @@ msgstr "misslyckades att hämta nwfilter ”%1$s”"
 
 #, c-format
 msgid "failed to get nwfilter binding '%1$s'"
-msgstr "misslyckades att hämta nwfilterindningen ”%1$s”"
+msgstr "misslyckades att hämta nwfilter-bindningen ”%1$s”"
 
 msgid "failed to get parent pool"
 msgstr "misslyckats med hämta föräldrapoolen"
 
 msgid "failed to get persistent definition object"
-msgstr "misslyckades att hämta persistenta definitionsobjekt"
+msgstr "misslyckades att hämta beständiga definitionsobjekt"
 
 #, c-format
 msgid "failed to get pool '%1$s'"
@@ -26914,7 +26913,7 @@ msgid "failed to load cgroup BPF prog"
 msgstr "misslyckades att ladda cgroup-BPF-programmet"
 
 msgid "failed to lookup device in old map"
-msgstr "misslyckades att alå upp enheten i den gamla avbildningen"
+msgstr "misslyckades att slå upp enheten i den gamla avbildningen"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%1$s'"
@@ -26926,7 +26925,7 @@ msgstr "misslyckades att markera enheten %1$s som autostartad"
 
 #, c-format
 msgid "failed to mark network %1$s as autostarted"
-msgstr "Misslyckades att markera nätverk %1$s som autostartat"
+msgstr "misslyckades att markera nätverk %1$s som autostartat"
 
 #, c-format
 msgid "failed to mark pool %1$s as autostarted"
@@ -26934,7 +26933,7 @@ msgstr "misslyckades att markera poolen %1$s som autostartad"
 
 #, c-format
 msgid "failed to monitor nbdkit process %1$i"
-msgstr "misslyckades att övervaka nbdkit-prcess %1$i"
+msgstr "misslyckades att övervaka nbdkit-process %1$i"
 
 #, c-format
 msgid "failed to monitor qemu in-shutdown process %1$i"
@@ -27054,7 +27053,7 @@ msgstr "misslyckades att tolka json"
 
 #, c-format
 msgid "failed to parse multicast address from '%1$s'"
-msgstr "misslyckades att tolka mångsändningsadressen (broadcast) från ”%1$s”"
+msgstr "misslyckades att tolka utsändningsadressen (broadcast) från ”%1$s”"
 
 msgid "failed to parse node name index"
 msgstr "misslyckades att tolka nodnamnsindexet"
@@ -27070,7 +27069,7 @@ msgid "failed to parse pre-migration memlock limit"
 msgstr "misslyckades att tolka minneslåsgränsen före migrering"
 
 msgid "failed to parse qemu device list"
-msgstr "misslyckades att qemu-enhetslistan"
+msgstr "misslyckades att tolka qemu-enhetslistan"
 
 #, c-format
 msgid "failed to parse read_bps_device: '%1$s'"
@@ -27404,7 +27403,7 @@ msgstr "misslyckades att avmarkera enheten %1$s som autostartad"
 
 #, c-format
 msgid "failed to unmark network %1$s as autostarted"
-msgstr "Misslyckades att avmarkera nätverk %1$s som autostartat"
+msgstr "misslyckades att avmarkera nätverk %1$s som autostartat"
 
 #, c-format
 msgid "failed to unmark pool %1$s as autostarted"
@@ -27488,7 +27487,7 @@ msgstr "misslyckades att skriva huvuddata till ”%1$s”"
 
 #, c-format
 msgid "failed to write header to domain save file '%1$s'"
-msgstr "misslyckades att ett huvud till domänsparfilen ”%1$s”"
+msgstr "misslyckades att skriva ett huvud till domänsparfilen ”%1$s”"
 
 #, c-format
 msgid "failed to write known_host file '%1$s': %2$s"
@@ -27662,7 +27661,7 @@ msgid "filter binding has no owner name"
 msgstr "filterbindningen har inget ägarnamn"
 
 msgid "filter binding has no port dev name"
-msgstr "filterbindningern har inget portenhetsnamn"
+msgstr "filterbindningen har inget portenhetsnamn"
 
 msgid "filter binding status missing content"
 msgstr "filterbindningens status saknar innehåll"
@@ -27740,8 +27739,8 @@ msgstr "avslutningssteget ignorerade att migreringen avbröts"
 #, c-format
 msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
-"avslutningsblockjobbet misslyckades när disken ”%1$s” raderades "
-"ögonblicksbild: ”%2$s”"
+"avslutningsblockjobbet misslyckades när ögonblicksbild för disken ”%1$s” "
+"raderades: ”%2$s”"
 
 msgid ""
 "firewalld can't find the 'libvirt' zone that should have been installed with "
@@ -27763,7 +27762,7 @@ msgstr ""
 
 #, c-format
 msgid "firmware type '%1$s' does not support nvram"
-msgstr "fast programavara av typen ”%1$s” stödjer inte nvram"
+msgstr "fast programvara av typen ”%1$s” stödjer inte nvram"
 
 msgid "fixed audio settings requires mixing engine"
 msgstr "fasta audioinställningar kräver en mixermotor"
@@ -27819,7 +27818,7 @@ msgid ""
 "force guest disk writes to be synchronously written to the destination to "
 "improve storage migration convergence"
 msgstr ""
-"framtvinga att gästens diskskrivningar är skrivs synkront till målet för att "
+"framtvinga att gästens diskskrivningar skrivs synkront till målet för att "
 "förbättra konvergensen av lagringsmigrering"
 
 msgid "force media changing"
@@ -27863,12 +27862,12 @@ msgstr "format på målfilen"
 
 #, c-format
 msgid "formatter for %1$s %2$s reported error"
-msgstr "formatteraren för %1$s %2$s rapporterade fel"
+msgstr "formateraren för %1$s %2$s rapporterade fel"
 
 #, c-format
 msgid "forward dev not allowed for network '%1$s' with forward mode='%2$s'"
 msgstr ""
-"en vidarebefordranenhet är inte tillåtet för nätverket ”%1$s” med "
+"en vidarebefordransenhet är inte tillåtet för nätverket ”%1$s” med "
 "vidarebefordransläge=”%2$s”"
 
 msgid "forward interface entries cannot be modified, only added or deleted"
@@ -28020,7 +28019,7 @@ msgstr "fick en okänd HTTP-felkod %1$s"
 msgid ""
 "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr ""
-"fick fel antal IOTrhead-id:n från QEMU-övervakaren. fick %1$d, ville ha %2$d"
+"fick fel antal IOThread-id:n från QEMU-övervakaren. fick %1$d, ville ha %2$d"
 
 #, c-format
 msgid ""
@@ -28161,7 +28160,7 @@ msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset stödjs inte med denna version av QEMU"
 
 msgid "guestfwd channel does not define a target address"
-msgstr "guestfwd-kanalen definierar inte en mål adress"
+msgstr "guestfwd-kanalen definierar inte en måladress"
 
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd-kanalen stödjer endast IPv4-adresser"
@@ -28231,7 +28230,7 @@ msgid "host doesn't support passthrough of host PCI devices"
 msgstr "värden stödjer inte genomgång av värd-PCI-enheter"
 
 msgid "host isn't capable of IPv6"
-msgstr "värden är inte kababel till IPv6"
+msgstr "värden är inte kapabel till IPv6"
 
 msgid "host migration TLS directory not configured"
 msgstr "värdmigrering av TLS-kataloger är inte konfigurerat"
@@ -28241,7 +28240,7 @@ msgstr "värdnamnet för källan till diskenheten"
 
 #, c-format
 msgid "host pci device %1$04x:%2$02x:%3$02x.%4$d not found"
-msgstr "värd-pci-enhet %1$04x:%2$02x:%3$02x:%4$d finns inte"
+msgstr "värd-pci-enhet %1$04x:%2$02x:%3$02x.%4$d finns inte"
 
 #, c-format
 msgid "host pci device %1$s not found"
@@ -28391,7 +28390,7 @@ msgstr "hugepages: nod %1$zd finns inte"
 msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
 msgstr ""
 "filsystemet hugetlbfs är inte monterat eller avaktiverat via "
-"admininstratörskonfiguration"
+"administratörskonfiguration"
 
 msgid "hypervisor"
 msgstr "hypervisor"
@@ -28484,13 +28483,13 @@ msgstr ""
 
 msgid "implies --wait, abort if copy exceeds timeout (in seconds)"
 msgstr ""
-"implicerar --wait, avbryt om kopieringen översrkider tidsgränsen (i sekunder)"
+"implicerar --wait, avbryt om kopieringen överskrider tidsgränsen (i sekunder)"
 
 msgid "implies --wait, pivot when mirroring starts"
 msgstr "implicerar --wait, pivotera när speglingen börjar"
 
 msgid "implies --wait, quit when mirroring starts"
-msgstr "implicerar --wait, avsluta när spegleingen börjar"
+msgstr "implicerar --wait, avsluta när speglingen börjar"
 
 msgid "in shutdown"
 msgstr "stänger ner"
@@ -29045,7 +29044,7 @@ msgid ""
 "native vlan id"
 msgstr ""
 "felaktig konfiguration i <vlan> – ”trunk='no'” är inte tillåtet med ett "
-"nativt vlan-id"
+"inbyggt vlan-id"
 
 msgid "invalid connection pointer in"
 msgstr "ogiltig anslutningspekare i"
@@ -29107,7 +29106,7 @@ msgstr "felaktig drivrutinstyp för versionen upptäckt"
 
 #, c-format
 msgid "invalid failure action: '%1$s'\n"
-msgstr "feaktig åtgärd vid misslyckande: ”%1$s”\n"
+msgstr "felaktig åtgärd vid misslyckande: ”%1$s”\n"
 
 #, c-format
 msgid "invalid fd %1$d for %2$s"
@@ -29139,10 +29138,10 @@ msgid "invalid hostdev mode"
 msgstr "felaktigt hostdev-läge"
 
 msgid "invalid hostdev subsystem type"
-msgstr "felaktigt hostdev-undersystemtyp"
+msgstr "felaktig hostdev-undersystemtyp"
 
 msgid "invalid idmap start/target/count settings"
-msgstr "felaktig start-/mål-/antal-inställningar av idmap"
+msgstr "felaktiga start-/mål-/antal-inställningar av idmap"
 
 #, c-format
 msgid "invalid interface name %1$s"
@@ -29161,7 +29160,7 @@ msgstr "felaktigt iommuGroup-nummerattribut på ”%1$s”"
 
 #, c-format
 msgid "invalid iothreads count '%1$s'"
-msgstr "felaktigt iothreadsantal ”%1$s”"
+msgstr "felaktigt iothreads-antal ”%1$s”"
 
 msgid "invalid job statistics type"
 msgstr "felaktig jobbstatistiktyp"
@@ -29211,8 +29210,8 @@ msgid ""
 "invalid loadparm value '%1$s', expecting chars in set of [a-zA-Z0-9.] and "
 "blank spaces"
 msgstr ""
-"felaktigt loadparam-värde ”%1$s”, tecken från mängden [a-zA-Z0-9.] och "
-"blanka mellanrum föräntades"
+"felaktigt loadparm-värde ”%1$s”, tecken från mängden [a-zA-Z0-9.] och blanka "
+"mellanrum förväntades"
 
 #, c-format
 msgid ""
@@ -29241,7 +29240,7 @@ msgstr "felaktigt läge"
 
 #, c-format
 msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr "felaktig model på gränssnittet av typen ”%1$s”: ”%2$s”"
+msgstr "felaktig modell på gränssnittet av typen ”%1$s”: ”%2$s”"
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -29271,7 +29270,7 @@ msgstr "ogiltig nätverkspekare i %1$s"
 
 #, c-format
 msgid "invalid network type supplied for '%1$s'"
-msgstr "felaktig nätverkstuå govem för ”%1$s”"
+msgstr "felaktig nätverkstyp given för ”%1$s”"
 
 msgid "invalid node cpu active value"
 msgstr "felaktigt aktivitetsvärde på nod-cpu"
@@ -29446,7 +29445,7 @@ msgstr "felaktig transient"
 
 #, c-format
 msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
-msgstr "felaktig t yp ”%1$s” på parametern ”%2$s”, ”%3$s” förväntades"
+msgstr "felaktig typ ”%1$s” på parametern ”%2$s”, ”%3$s” förväntades"
 
 #, c-format
 msgid "invalid unique_id supplied for '%1$s'"
@@ -29475,7 +29474,7 @@ msgstr "felaktigt värde ”%1$s” på migreringsparametern ”%2$s”"
 
 #, c-format
 msgid "invalid value '%1$s' for parameter '%2$s' of device '%3$s'"
-msgstr "felaktigt värde ”%1$s” på paramentern ”%2$s” för enheten ”%3$s”"
+msgstr "felaktigt värde ”%1$s” på parametern ”%2$s” för enheten ”%3$s”"
 
 #, c-format
 msgid "invalid value '%1$s' of 'value' attribute of 'qemu:property'"
@@ -29483,8 +29482,8 @@ msgstr "felaktigt värde ”%1$s” på attributet ”value” på ”qemu:prope
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
-"felaktig värde på tidsgränsen för startmenyn, måste vara i intervallet "
-"[0,56635]"
+"felaktigt värde på tidsgränsen för startmenyn, måste vara i intervallet "
+"[0,65535]"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "felaktigt värde på rebootTimeout, måste vara i intervallet [-1,65535]"
@@ -29555,7 +29554,7 @@ msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: avbrottsomkoppling stödjs inte med denna QEMU-binär"
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
-msgstr "iommu: att uppdatera dma-överättningen stödjs inte av denna QEMU-binär"
+msgstr "iommu: att uppdatera dma-översättningen stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "iothread %1$d not found"
@@ -29572,7 +29571,7 @@ msgstr "iothread stödjs inte med vhostuser-diskar"
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
-msgstr "iothread till köavbildning moste ges för alla iothread:ar eller ingen"
+msgstr "iothread till köavbildning måste ges för alla iothread:ar eller ingen"
 
 msgid "iothread_id for the IOThread to delete"
 msgstr "iothread_id för IOThread att radera"
@@ -29597,7 +29596,7 @@ msgid "isa-debug serial type only valid on x86 architecture"
 msgstr "isa-debug-serietypen är endast giltig på x86-arkitekturen"
 
 msgid "iscsi pool only supports 'chap' auth type"
-msgstr "iscsi-poolen stödjer endast atuentiseringstypen ”chap”"
+msgstr "iscsi-poolen stödjer endast autentiseringstypen ”chap”"
 
 msgid "iscsi-direct pool only supports 'chap' auth type"
 msgstr "iscsi-direct-poolen stödjer endast autentiseringstypen ”chap”"
@@ -29640,7 +29639,7 @@ msgid "kdump-compressed format is not supported here"
 msgstr "formatet kdump-compressed stödjs inte här"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
-msgstr "formateet kdump-compressed stödjs endast med endast-minnes-dump"
+msgstr "formatet kdump-compressed stödjs endast med endast-minnes-dump"
 
 msgid "keep TPM state"
 msgstr "behåll TPM-tillståndet"
@@ -29742,11 +29741,11 @@ msgstr "libvirt-hanteringsdemonen:"
 
 #, c-format
 msgid "libvirt was built without the '%1$s' driver"
-msgstr "libvirt byggdes utan drivrutinen “%1$s“"
+msgstr "libvirt byggdes utan drivrutinen ”%1$s”"
 
 #, c-format
 msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
-msgstr "libvirt kompilerades inte med libpcap och “%1$s“ kräver det"
+msgstr "libvirt kompilerades inte med libpcap och ”%1$s” kräver det"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr "libvirt kommer automatiskt koppla loss/in enheten från/till värden"
@@ -29785,7 +29784,7 @@ msgstr "libxenlight misslyckades att koppla in en nätverksenhet"
 #, c-format
 msgid "libxenlight failed to attach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
-"libxenlight misslyckades att koppla in pci-enheten %1$04x:%2$02x:%3$02x:%4$d"
+"libxenlight misslyckades att koppla in pci-enheten %1$04x:%2$02x:%3$02x.%4$d"
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%1$3x, Devnum:%2$3x"
@@ -29820,8 +29819,8 @@ msgstr "libxenlight misslyckades att koppla ifrån nätverksenheten"
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
-"libxenlight misslyckades att koppla ifrån pci-enheten %1$04x:%2$02x:%3$02x:"
-"%4$d"
+"libxenlight misslyckades att koppla ifrån pci-enheten "
+"%1$04x:%2$02x:%3$02x.%4$d"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
@@ -29875,7 +29874,7 @@ msgstr "begränsningslista till barn till en given ögonblicksbild"
 
 #, c-format
 msgid "line %1$d corrupt ipaddr \"%2$s\""
-msgstr "rad %1$d har trasig ipaddr “%2$s“"
+msgstr "rad %1$d har trasig ipaddr ”%2$s”"
 
 msgid "list UUID of active pools only"
 msgstr "lista UUID:n endast för aktiva pooler"
@@ -29956,7 +29955,7 @@ msgid "list inactive & active devices"
 msgstr "lista inaktiva & aktiva enheter"
 
 msgid "list inactive & active domains"
-msgstr "lista inaktiva & aktiva domäner<"
+msgstr "lista inaktiva & aktiva domäner"
 
 msgid "list inactive & active interfaces"
 msgstr "lista inaktiva & aktiva gränssnitt"
@@ -29965,7 +29964,7 @@ msgid "list inactive & active networks"
 msgstr "lista inaktiva & aktiva nätverk"
 
 msgid "list inactive & active pools"
-msgstr "lista inaktiva & aktiva pooler<"
+msgstr "lista inaktiva & aktiva pooler"
 
 msgid "list inactive devices"
 msgstr "lista inaktiva enheter"
@@ -30144,11 +30143,11 @@ msgstr "lyssningsadress som målet skall binda till för inkommande migrering"
 
 #, c-format
 msgid "listen type 'none' is not available for graphics type '%1$s'"
-msgstr "lyssningstypen “none“ är inte tillgänglig för grafiktypen “%1$s“"
+msgstr "lyssningstypen ”none” är inte tillgänglig för grafiktypen ”%1$s”"
 
 #, c-format
 msgid "listen type 'socket' is not available for graphics type '%1$s'"
-msgstr "lyssningstypen “socket“ är inte tillgänglig för grafiktypen “%1$s“"
+msgstr "lyssningstypen ”socket” är inte tillgänglig för grafiktypen ”%1$s”"
 
 msgid "lists not allowed in VMX format"
 msgstr "listor är inte tillåtna i VMX-formatet"
@@ -30158,11 +30157,11 @@ msgstr "körande"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr "inkoppling under drift av enheten “%1$s“ stödjs inte"
+msgstr "inkoppling under drift av enheten ”%1$s” stödjs inte"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
-msgstr "frånkoppling under drift av enheten “%1$s“ stödjs inte"
+msgstr "frånkoppling under drift av enheten ”%1$s” stödjs inte"
 
 #, c-format
 msgid "live detach of interface type %1$s is not implemented yet"
@@ -30171,7 +30170,7 @@ msgstr ""
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
-msgstr "frånkoppling under drift av shmem-modellen “%1$s“ stödjs inte"
+msgstr "frånkoppling under drift av shmem-modellen ”%1$s” stödjs inte"
 
 msgid "live migration"
 msgstr "live-migrering"
@@ -30201,7 +30200,7 @@ msgid "lock owner details have not been registered"
 msgstr "låsägardetaljer har inte registrerats"
 
 msgid "locking options are not supported by this virtiofsd"
-msgstr "låstningsflaggor stödjs inte av denna virtiofsd"
+msgstr "låsningsflaggor stödjs inte av denna virtiofsd"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
@@ -30270,7 +30269,7 @@ msgid "make the copy share a backing chain"
 msgstr "låt kopian dela en bakomliggande kedja"
 
 msgid "malformed 'offset' property of 'raw' driver"
-msgstr "felformaterag egenskap ”offset” på drivrutinen ”raw”"
+msgstr "felformaterad egenskap ”offset” på drivrutinen ”raw”"
 
 msgid "malformed 'prefix' field"
 msgstr "felformaterat fält ”prefix”"
@@ -30458,7 +30457,7 @@ msgid "malformed/missing hotplugged in dimm memory info"
 msgstr "felformaterat/saknat hotplugged i dimm-minnesinformation"
 
 msgid "malformed/missing memaddr in sgx-epc memory info"
-msgstr "felformaterat/saknat mimaddr i sgx-epc-minnesinformation"
+msgstr "felformaterat/saknat memaddr i sgx-epc-minnesinformation"
 
 msgid "malformed/missing memaddr in virtio memory info"
 msgstr "felformaterat/saknat memaddr i virtio-minnesinformation"
@@ -30473,7 +30472,7 @@ msgid "malformed/missing slot in dimm memory info"
 msgstr "felformaterat/saknat slot i dimm-minnesinformation"
 
 msgid "managed save of a domain state"
-msgstr "haterat sparande av ett domäntillstånd"
+msgstr "hanterat sparande av ett domäntillstånd"
 
 msgid "managing externally launched configuration"
 msgstr "hantering av externt startad konfiguration"
@@ -30563,7 +30562,7 @@ msgid "maximum vCPU count must not be less than current vCPU count"
 msgstr "maximalt vCPU-antal får inte vara mindre än det aktuella vCPU-antalet"
 
 msgid "maximum vcpu count of a live domain can't be modified"
-msgstr "maximalt vcpu-antal för en aktiv tomän kan inte ändras"
+msgstr "maximalt vcpu-antal för en aktiv domän kan inte ändras"
 
 msgid "maximum vcpus count must be an integer"
 msgstr "maximalt antal vcpu:er måste vara ett heltal"
@@ -30643,7 +30642,7 @@ msgstr "minnesåtkomstläget ”%1$s” stödjs inte utan en gäst-numa-nod"
 
 #, c-format
 msgid "memory address must be aligned to %1$ld bytes"
-msgstr "minnesadressen måste var justerad till %1$ld byte"
+msgstr "minnesadressen måste vara justerad till %1$ld byte"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "minnesattribut: [file=]name[,snapshot=type]"
@@ -30714,7 +30713,7 @@ msgstr "minnet finns inte"
 
 #, c-format
 msgid "memory peek request too large for remote protocol, %1$zi > %2$d"
-msgstr "minnets toppbegäran är för stor för fjärrptotokollet, %1$zi > %2$d"
+msgstr "minnets toppbegäran är för stor för fjärrprotokollet, %1$zi > %2$d"
 
 msgid "memory size can't be changed unless domain is powered down"
 msgstr "minnesstorleken kan inte ändras om inte domänen är avstängd"
@@ -30777,7 +30776,7 @@ msgid "migrate uri is not set"
 msgstr "migrerings-uri:n är inte satt"
 
 msgid "migrate: Invalid downtime"
-msgstr "migrera: felaktig nertid"
+msgstr "migrering: felaktig nertid"
 
 msgid "migrate: Unexpected --timeout-* option without --timeout"
 msgstr "migrering: oväntad flagga --timeout-* utan --timeout"
@@ -30787,7 +30786,7 @@ msgstr "migrering: oväntat tidsgräns för frånkopplad migrering"
 
 #, c-format
 msgid "migrate_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "migrate_tls_x509_cert_dir katalogen ”%1$s” finns inte"
+msgstr "migrate_tls_x509_cert_dir-katalogen ”%1$s” finns inte"
 
 msgid "migrated"
 msgstr "migrerad"
@@ -30802,7 +30801,7 @@ msgid "migration URI is not supported by tunnelled migration"
 msgstr "migrations-URI:n stödjs inte av tunnlad migrering"
 
 msgid "migration URI, usually can be omitted"
-msgstr "migrerings-URI, kan oftas uteslutas"
+msgstr "migrerings-URI, kan oftast uteslutas"
 
 msgid "migration bandwidth limit in MiB/s"
 msgstr "bandbreddsgräns för migrering i MiB/s"
@@ -30920,7 +30919,7 @@ msgstr "spegling utan typ stödjs endast av kopieringsjobb"
 
 #, c-format
 msgid "mishandled storage format '%1$s'"
-msgstr "felhanterat lagringsfomat ”%1$s”"
+msgstr "felhanterat lagringsformat ”%1$s”"
 
 #, c-format
 msgid ""
@@ -30965,7 +30964,7 @@ msgstr "”config” saknas i svaret på informationsfrågan från cloud-hypervi
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%1$s'"
-msgstr "”content” saknar värde e selinux lxc-contexts-filen ”%1$s”"
+msgstr "”content” saknar värde i selinux lxc-contexts-filen ”%1$s”"
 
 #, c-format
 msgid ""
@@ -30981,7 +30980,7 @@ msgstr "”file” saknas i ”%1$s” från cloud-hypervisor"
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%1$s'"
-msgstr "”file” saknar värde e selinux lxc-contexts-filen ”%1$s”"
+msgstr "”file” saknar värde i selinux lxc-contexts-filen ”%1$s”"
 
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr "fältet ”filename” saknas i JSON-definitionen av bakomliggande volym"
@@ -31059,7 +31058,7 @@ msgstr ""
 "NFS-volym"
 
 msgid "missing 'value' attribute for 'qemu:property'"
-msgstr "ättributet ”value” saknas i ”qemu:property”"
+msgstr "attributet ”value” saknas i ”qemu:property”"
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
 msgstr "attributet ”value” saknas i HyperV-funktionen ”vendor_id”"
@@ -31107,7 +31106,7 @@ msgid "missing SCSI host capability type for '%1$s'"
 msgstr "SCSI-värdförmågetyp saknas för ”%1$s”"
 
 msgid "missing SEV certChain information in QEMU capabilities cache"
-msgstr "SEV certChain-informations saknas i QEMU-förmågecachen"
+msgstr "SEV certChain-information saknas i QEMU-förmågecachen"
 
 msgid "missing SEV pdh information in QEMU capabilities cache"
 msgstr "SEV pdh-information saknas i QEMU-förmågecachen"
@@ -31222,7 +31221,7 @@ msgstr "creationTime saknas från en befintlig ögonblicksbild"
 
 #, c-format
 msgid "missing cssid value for '%1$s'"
-msgstr "cssid-värdet skanas för ”%1$s”"
+msgstr "cssid-värdet saknas för ”%1$s”"
 
 msgid "missing data file store format"
 msgstr "saknat lagringsformat för datafil"
@@ -31337,7 +31336,7 @@ msgstr "värden saknas i migrerings-URI:n: %1$s"
 msgid ""
 "missing host specification of NBD server in JSON backing volume definition"
 msgstr ""
-"värdspecifikation saknas av NBD-servern i JSON-definitionen av bokomliggande "
+"värdspecifikation saknas av NBD-servern i JSON-definitionen av bakomliggande "
 "volym"
 
 msgid "missing host/server or path of SSH JSON backing volume definition"
@@ -31387,7 +31386,7 @@ msgid "missing iothread mapping for queue '%1$zd'"
 msgstr "iothread-avbildning saknas för kön ”%1$zd”"
 
 msgid "missing ivgen info name string"
-msgstr "namnsträngen saknas för ivgen-informatonen"
+msgstr "namnsträngen saknas för ivgen-informationen"
 
 msgid "missing job chain data"
 msgstr "jobbkedjedata saknas"
@@ -31557,7 +31556,8 @@ msgstr "beständig konfiguration saknas för disken ”%1$s”"
 
 msgid "missing pool or image name in ceph backing volume JSON specification"
 msgstr ""
-"pool- eller avbildsnamn saknas ceph:s bakomliggande volyms JSON-specifikation"
+"pool- eller avbildsnamn saknas i ceph:s bakomliggande volyms JSON-"
+"specifikation"
 
 msgid "missing pool source name element"
 msgstr "poolens källnamnselement saknas"
@@ -31663,7 +31663,7 @@ msgstr "uttagssökväg saknas till extern TPM-enhet"
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
 msgstr ""
-"uttagssäkväg saknas till bakomliggande udp-server i JSON-definitionen av "
+"uttagssökväg saknas till bakomliggande udp-server i JSON-definitionen av "
 "bakomliggande volym"
 
 msgid "missing source device"
@@ -31737,8 +31737,8 @@ msgstr "stödda dumpformat saknas"
 msgid ""
 "missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"
 msgstr ""
-"tag id saknas — varje <vlan> måste ha åtmistone ett underelement <tag id='n'/"
-">"
+"tag id saknas — varje <vlan> måste ha åtminstone ett underelement <tag "
+"id='n'/>"
 
 msgid "missing target information for device"
 msgstr "saknar målinformation för enhet"
@@ -31771,7 +31771,7 @@ msgid "missing type in redirdev"
 msgstr "typen saknas i redirdev"
 
 msgid "missing username for auth"
-msgstr "användarnamn saknas i autenticering"
+msgstr "användarnamn saknas i autentisering"
 
 msgid "missing username in /node/auth/user field"
 msgstr "användarnamn saknas i fältet /node/auth/user"
@@ -31812,10 +31812,10 @@ msgstr "vlan-taggdata saknas"
 #, c-format
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
-"saknad vmstat-sektion när en aktiv intern ögonblicksbild återställdes ”%1$s”"
+"saknad vmstate-sektion när en aktiv intern ögonblicksbild återställdes ”%1$s”"
 
 msgid "missing volume name and path for gluster volume"
-msgstr "volymnamn och sökväg sknas till gluster-volymen"
+msgstr "volymnamn och sökväg saknas till gluster-volymen"
 
 msgid "missing volume name element"
 msgstr "elementet volymnamn saknas"
@@ -31886,7 +31886,7 @@ msgid "modify/get current state configuration"
 msgstr "ändra/hämta aktuell tillståndskonfiguration"
 
 msgid "modify/get persistent configuration"
-msgstr "ändra/hämta beständig konfiguraton"
+msgstr "ändra/hämta beständig konfiguration"
 
 msgid "modify/get running state"
 msgstr "ändra/hämta körtillstånd"
@@ -31944,7 +31944,7 @@ msgid "mountpoint path to be thawed"
 msgstr "sökväg till monteringspunkten att töa"
 
 msgid "msi option is only supported with a server"
-msgstr "msi-flaggan stödj endast med en server"
+msgstr "msi-flaggan stödjs endast med en server"
 
 msgid "mtp is not supported with this QEMU binary"
 msgstr "mtp stödjs inte med denna QEMU-binär"
@@ -32048,7 +32048,7 @@ msgid "name of snapshot"
 msgstr "namn på ögonblicksbilden"
 
 msgid "name of the FD group"
-msgstr "namn på FD-gruppen"
+msgstr "namn på FB-gruppen"
 
 msgid "name of the inactive domain"
 msgstr "namn för den inaktiva domänen"
@@ -32124,7 +32124,7 @@ msgid "negotiation SSF %1$d was not strong enough"
 msgstr "förhandlad SSF %1$d var inte stark nog"
 
 msgid "nested JSON array to commandline conversion is not supported"
-msgstr "konvertering av nästade JSON-vetorer till kommandorad stödjs inte"
+msgstr "konvertering av nästade JSON-vektorer till kommandorad stödjs inte"
 
 msgid "net definition failed validation"
 msgstr "nätdefinitionen klarade inte valideringen"
@@ -32229,7 +32229,7 @@ msgstr ""
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
-msgstr "nätverket ”%1$s” har inget tillhörade gränssnitt eler brygga"
+msgstr "nätverket ”%1$s” har inget tillhörande gränssnitt eller brygga"
 
 #, c-format
 msgid "network '%1$s' has no bridge name defined"
@@ -32284,7 +32284,7 @@ msgstr ""
 
 #, c-format
 msgid "network device type '%1$s' is not supported by this hypervisor"
-msgstr "nätverksenhetstypen ”%1$s” städjs inte av denna hypervisor"
+msgstr "nätverksenhetstypen ”%1$s” stödjs inte av denna hypervisor"
 
 #, c-format
 msgid "network device with mac %1$s already exists"
@@ -32303,7 +32303,7 @@ msgstr "nätverksfiltrets bindningsportsenhet"
 #, c-format
 msgid "network filter config filename '%1$s' does not match name '%2$s'"
 msgstr ""
-"nätverkfiltrets konfigurationsfilnamn ”%1$s” matchar inte namnet ”%2$s”"
+"nätverksfiltrets konfigurationsfilnamn ”%1$s” matchar inte namnet ”%2$s”"
 
 msgid "network filter information in XML"
 msgstr "nätverksfilterinformation i XML"
@@ -33193,7 +33193,7 @@ msgid "object size %1$zu of %2$s is not larger than parent class %3$zu"
 msgstr "objektstorleken %1$zu av %2$s är inte större än föräldraklassen %3$zu"
 
 msgid "occupied"
-msgstr "uppdagen"
+msgstr "upptagen"
 
 msgid "offline"
 msgstr "oansluten"
@@ -33505,7 +33505,7 @@ msgid "option parsing failed: %1$s\n"
 msgstr "tolkning av flaggor misslyckades: %1$s\n"
 
 msgid "optional CPU features are not supported"
-msgstr "valrfira CPU-funktioner stödjs inte"
+msgstr "valfria CPU-funktioner stödjs inte"
 
 msgid "optional file of source xml to query for pools"
 msgstr "frivillig fil med käll-xml att fråga efter pooler"
@@ -33553,7 +33553,7 @@ msgid "outgoing RDMA migration is not supported with this QEMU binary"
 msgstr "utgående RDMA-migreringar stödjs inte med denna QEMU-binär"
 
 msgid "output an XML string for the hypervisor sysinfo, if available"
-msgstr "mata ut en XML-sträng till hypervisorn:s sysinfo, om tillgängligt"
+msgstr "mata ut en XML-sträng till hypervisorns sysinfo, om tillgängligt"
 
 msgid "output help for each command"
 msgstr "skriv ut hjälp för varje kommando"
@@ -33597,7 +33597,7 @@ msgid "packet %1$d bytes received from server too small, want %2$d"
 msgstr "paketets %1$d byte mottagna från servern är för litet, vill ha %2$d"
 
 msgid "page cache size for xbzrle compression"
-msgstr "sidcachesn storlek för xbzrle-komprimering"
+msgstr "sidcachens storlek för xbzrle-komprimering"
 
 msgid "page count"
 msgstr "sidantal"
@@ -33668,7 +33668,7 @@ msgstr "föräldern ”%1$s” är inte en fc_host för wwnn/wwpn"
 
 #, c-format
 msgid "parent '%1$s' is not properly formatted"
-msgstr "föräldern ”%1$s” är inte rätt formatterad"
+msgstr "föräldern ”%1$s” är inte rätt formaterad"
 
 #, c-format
 msgid "parent '%1$s' specified for vHBA does not exist"
@@ -33787,7 +33787,7 @@ msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr "pci-expander-bus-styrenheter stödjs inte med denna maskintyp"
 
 msgid "peeking is not supported for FD passed images"
-msgstr "att kika stödjs inte för FD-skickade avbilder"
+msgstr "att kika stödjs inte för FB-skickade avbilder"
 
 msgid "peeking is not supported for vhostuser disk"
 msgstr "att kika stödjs inte på en vhostuser-disk"
@@ -33824,14 +33824,15 @@ msgid ""
 "per-device read I/O limit per second, in the form of /path/to/device,"
 "read_iops_sec,..."
 msgstr ""
-"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,läs_op_s,…"
+"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
+"enhet,lästa_op_s,…"
 
 msgid ""
 "per-device write I/O limit per second, in the form of /path/to/device,"
 "write_iops_sec,..."
 msgstr ""
-"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,"
-"skriv_op_s,…"
+"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
+"enhet,skrivna_op_s,…"
 
 #, c-format
 msgid "perf event '%1$s' was already specified"
@@ -34004,7 +34005,7 @@ msgstr "efterkopieringens migrerings bandbreddsgräns i MiB/s"
 
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr ""
-"efterkopieringsmigrering stöjds inte med migrering inte under drift eller "
+"efterkopieringsmigrering stödjs inte med migrering inte under drift eller "
 "pausad"
 
 #, c-format
@@ -34015,7 +34016,7 @@ msgid "potentially unsafe disk format probing"
 msgstr "potentiellt osäker avkänning av diskformat"
 
 msgid "potentially unsafe use of host CPU passthrough"
-msgstr "potentiellt osäker användning av värd-CPU-geomgång"
+msgstr "potentiellt osäker användning av värd-CPU-genomgång"
 
 msgid "power-of-two granularity to use during the copy"
 msgstr "tvåpotensnoggrannheten att använda under kopieringen"
@@ -34139,16 +34140,16 @@ msgstr ""
 "starta jobbet"
 
 msgid "print the admin server URI"
-msgstr "skriv ut admininstrationsserverl-URI:n"
+msgstr "skriv ut administrationsserver-URI:n"
 
 msgid "print the current directory"
-msgstr "akriv ut aktuell katalog"
+msgstr "skriv ut aktuell katalog"
 
 msgid "print the domain's hostname"
 msgstr "skriv ut domänens värdnamn"
 
 msgid "print the hypervisor canonical URI"
-msgstr "skriv ut de canonical-URI för hypervisor"
+msgstr "skriv ut kanoniskt URI för hypervisor"
 
 msgid "print the hypervisor hostname"
 msgstr "skriv ut värdnamnet för hypervisor"
@@ -34275,7 +34276,7 @@ msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
 msgstr "qemu stödjer inte mer än en post till Typ 2 i SMBIOS-tabellen"
 
 msgid "qemu does not support the accel2d setting"
-msgstr "qemu stödjer inte inställningen acceld2"
+msgstr "qemu stödjer inte inställningen accel2d"
 
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr ""
@@ -34597,7 +34598,7 @@ msgid "read the secret from the terminal"
 msgstr "läs hemligheten från terminalen"
 
 msgid "read throughput limit, as scaled integer (default bytes)"
-msgstr "gräns på läsgenomströmnin, som ett skalat heltal (standard byte)"
+msgstr "gräns på läsgenomströmning, som ett skalat heltal (standard byte)"
 
 msgid "read-only connection"
 msgstr "anslutning skrivskyddad"
@@ -34630,7 +34631,7 @@ msgid "received hangup event on socket"
 msgstr "mottog en avringningshändelse på uttaget"
 
 msgid "received malformed monitor, check the XML definition"
-msgstr "mottog felformaterad övervakar, kontrollera XML-definitionen"
+msgstr "mottog felformaterad övervakare, kontrollera XML-definitionen"
 
 msgid "received unexpected cookie with P2P migration"
 msgstr "mottog oväntad kaka med P2P-migreringen"
@@ -34649,7 +34650,7 @@ msgid "recv on sock %1$d failed"
 msgstr "recv på uttag %1$d misslyckades"
 
 msgid "redefine metadata for existing checkpoint"
-msgstr "omdefiniera metdata för en befintlig kontrollpunkt"
+msgstr "omdefiniera metadata för en befintlig kontrollpunkt"
 
 msgid "redefine metadata for existing snapshot"
 msgstr "omdefiniera metadata för en befintlig ögonblicksbild"
@@ -34661,7 +34662,7 @@ msgid "redefine the XML for a domain's saved state file"
 msgstr "definiera om XML:en för en domäns spartillståndsfil"
 
 msgid "redefine the existing set of logging filters"
-msgstr "definiera om den beintliga uppsättningen loggningsfilter"
+msgstr "definiera om den befintliga uppsättningen loggningsfilter"
 
 msgid "redefine the existing set of logging outputs"
 msgstr "definiera om den befintliga uppsättningen loggningutmatningar"
@@ -34789,7 +34790,7 @@ msgid "reply data was missing 'option' name or parameters"
 msgstr "svarsdata saknade ”option”-namn eller -parametrar"
 
 msgid "reply was missing return data"
-msgstr "svret saknade returdata"
+msgstr "svaret saknade returdata"
 
 msgid "report active users"
 msgstr "rapportera aktiva användare"
@@ -34876,7 +34877,7 @@ msgstr "begärd brandväggsbakände ”%1$s” är inte tillgänglig"
 
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
-"den begärda storleken måste var ett heltal och mutipel av blockstorleken"
+"den begärda storleken måste vara ett heltal och multipel av blockstorleken"
 
 #, c-format
 msgid "requested size must be smaller than or equal to @size (%1$lluKiB)"
@@ -34888,7 +34889,7 @@ msgstr "den begärda storleken på cachen (i byte) som används för komprimerin
 
 #, c-format
 msgid "requested target '%1$s' does not match target '%2$s'"
-msgstr "det begärda målet ”%1$s” stämmer inte med målet “%2$s”"
+msgstr "det begärda målet ”%1$s” stämmer inte med målet ”%2$s”"
 
 #, c-format
 msgid "requested vcpu '%1$d' is not present in the domain"
@@ -35021,8 +35022,8 @@ msgstr "att återuppta efter ögonblicksbilden misslyckades"
 #, c-format
 msgid "resuming failed post-copy migration of domain %1$s already in progress"
 msgstr ""
-"återupptagandet av den misslyckades efterkopieringsmigrerigen av domänen "
-"%1$s pågår redan"
+"återupptagandet av den misslyckades efterkopieringsmigreringen av domänen %1$"
+"s pågår redan"
 
 msgid "resuming failed post-copy migration requires change protection"
 msgstr ""
@@ -35087,7 +35088,7 @@ msgstr "återställning kräver framtvingande"
 
 #, c-format
 msgid "revert requires force: %1$s"
-msgstr "återställning kräver framtvingand: %1$s"
+msgstr "återställning kräver framtvingande: %1$s"
 
 msgid "revert to current snapshot"
 msgstr "återgå till aktuell ögonblicksbild"
@@ -35116,7 +35117,7 @@ msgid ""
 "migration exceeds timeout (in seconds)"
 msgstr ""
 "kör åtgärden angiven av en flagga --timeout-* (viloläge som standard) om "
-"migreringen i drift överskrider disgränsen (i sekunder)"
+"migreringen i drift överskrider diskgränsen (i sekunder)"
 
 msgid "running"
 msgstr "kör"
@@ -35266,7 +35267,7 @@ msgid "security doi exceeds maximum: %1$zu"
 msgstr "säkerhets-doi:n överskrider maximum: %1$zu"
 
 msgid "security image label already defined for VM"
-msgstr "säkerhetsavbildsetiketten ärredan definierad för VM:en"
+msgstr "säkerhetsavbildsetiketten är redan definierad för VM:en"
 
 msgid "security imagelabel is missing"
 msgstr "säkerhetsavbildsetikett saknas"
@@ -35566,7 +35567,7 @@ msgstr "shmem-modellen ”%1$s” stödjs bara med serveralternativet avaktivera
 
 #, c-format
 msgid "shmem model '%1$s' is supported only with server option enabled"
-msgstr "shmem-modellen ”%1$s” stödjs endast mes serveralternativet aktiverat"
+msgstr "shmem-modellen ”%1$s” stödjs endast med serveralternativet aktiverat"
 
 #, c-format
 msgid "shmem name '%1$s' must not contain '/'"
@@ -35583,7 +35584,7 @@ msgstr "shmem-namnet kan inte innehålla tecknet ”/”"
 
 msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
 msgstr ""
-"shmem-storleken måste vara en potens av 2 och åtmistone 1 MiB (1024 KiB)"
+"shmem-storleken måste vara en potens av 2 och åtminstone 1 MiB (1024 KiB)"
 
 msgid "show all possible graphical displays"
 msgstr "visa alla möjliga grafiska displayer"
@@ -35598,7 +35599,7 @@ msgid "show free memory for all NUMA cells"
 msgstr "visa ledigt minne för alla NUMA-celler"
 
 msgid "show free pages for all NUMA cells"
-msgstr "visa ledigt sidor för alla NUMA-celler"
+msgstr "visa lediga sidor för alla NUMA-celler"
 
 msgid "show inactive defined XML"
 msgstr "visa inaktiv definierad XML"
@@ -36059,7 +36060,7 @@ msgid "stream already has a callback registered"
 msgstr "strömmen har redan ett återanrop registrerat"
 
 msgid "stream does not have a callback registered"
-msgstr "strömen har inte något återanrop registrerat"
+msgstr "strömmen har inte något återanrop registrerat"
 
 msgid "stream had I/O failure"
 msgstr "strömmen hade I/O-fel"
@@ -36240,7 +36241,7 @@ msgstr "mål för diskenhet"
 
 #, c-format
 msgid "target pci device %1$04x:%2$02x:%3$02x.%4$d already exists"
-msgstr "mål-pci-enheten %1$04x:%2$02x:%3$02x:%4$d finns redan"
+msgstr "mål-pci-enheten %1$04x:%2$02x:%3$02x.%4$d finns redan"
 
 #, c-format
 msgid "target port '%1$d' already allocated"
@@ -36254,14 +36255,14 @@ msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr "mål-vm-vcpu-noggrannheten tillåter inte det önskade vcpu-antalet"
 
 msgid "tb-cache size must be an integer multiple of MiB"
-msgstr "tb-cache-storleken måste vara en heltalsmutipel av MiB"
+msgstr "tb-cache-storleken måste vara en heltalsmultipel av MiB"
 
 msgid "tcp"
 msgstr "tcp"
 
 #, c-format
 msgid "tcp chardev protocol '%1$s' not supported"
-msgstr "tcp-teckenhenhetsprotokollet ”%1$s” stödjs inte"
+msgstr "tcp-teckenenhetsprotokollet ”%1$s” stödjs inte"
 
 msgid "teaming hostdev devices must have type='transient'"
 msgstr "teaming-hostdev-enheter måste ha type=”transient”"
@@ -36312,7 +36313,7 @@ msgstr "CPU:n är inkompatibel med värd-CPU:n"
 
 #, c-format
 msgid "the CPU is incompatible with host CPU: %1$s"
-msgstr "CPU:n är inkomatibel med värd-CPU:n: %1$s"
+msgstr "CPU:n är inkompatibel med värd-CPU:n: %1$s"
 
 #, c-format
 msgid "the MAC address '%1$s' matches multiple interfaces"
@@ -36442,7 +36443,7 @@ msgid ""
 "there is already at least one DNS SRV record matching all specified fields "
 "in network %1$s"
 msgstr ""
-"det finns redan åtminstone en DNS SRV-post med ett matchande fält i "
+"det finns redan åtminstone en DNS SRV-post som matchar alla angivna fält i "
 "nätverket %1$s"
 
 #, c-format
@@ -36721,7 +36722,7 @@ msgid ""
 "too many remote domain_snapshots: %1$d > %2$d,in parameter 'snapshots' for "
 "'virDomainListAllSnapshots'"
 msgstr ""
-"för många fjärrdomänkontrollpunkter %1$d > %2$d, i parametern ”snapshots” "
+"för många fjärrdomänögonblicksbilder %1$d > %2$d, i parametern ”snapshots” "
 "till ”virDomainListAllSnapshots”"
 
 #, c-format
@@ -36729,7 +36730,7 @@ msgid ""
 "too many remote domain_snapshots: %1$d > %2$d,in parameter 'snapshots' for "
 "'virDomainSnapshotListAllChildren'"
 msgstr ""
-"för många fjärrdomänkontrollpunkter %1$d > %2$d, i parametern ”snapshots” "
+"för många fjärrdomänögonblicksbilder %1$d > %2$d, i parametern ”snapshots” "
 "till ”virDomainSnapshotListAllChildren”"
 
 #, c-format
@@ -37050,7 +37051,7 @@ msgstr ""
 "behandla händelser som ett reguljäruttryck istället för litterala filter"
 
 msgid "treat event case-insensitively"
-msgstr "behanda händelser skiftlägesokänsligt"
+msgstr "behandla händelser skiftlägesokänsligt"
 
 msgid "trigger two-stage active commit of top file"
 msgstr "utlös tvåstegs aktivt fastställande av toppfilen"
@@ -37135,7 +37136,7 @@ msgstr "kan inte styra COW-flaggan på ”%1$s”"
 #, c-format
 msgid "unable create new SELinux label based on label '%1$s' and file '%2$s'"
 msgstr ""
-"kan inte skapa en ny SELinux-etikett paserat på etiketten ”%1$s” och filen "
+"kan inte skapa en ny SELinux-etikett baserat på etiketten ”%1$s” och filen "
 "”%2$s”"
 
 #, c-format
@@ -37319,7 +37320,7 @@ msgstr "kan inte få säkerhetskontexten för PID %1$d"
 
 #, c-format
 msgid "unable to get PID %1$d uid and gid via sysctl"
-msgstr "kan inte få aid och gid för PID %1$d visa sysctl"
+msgstr "kan inte få aid och gid för PID %1$d via sysctl"
 
 #, c-format
 msgid "unable to get SELinux context for '%1$s'"
@@ -37386,7 +37387,7 @@ msgid "unable to init mutex"
 msgstr "kan inte initiera mutex"
 
 msgid "unable to initialize VirtualBox driver API"
-msgstr "kan inte initiera VirtualBox-drvirutins-API:et"
+msgstr "kan inte initiera VirtualBox-drivrutins-API:et"
 
 #, c-format
 msgid "unable to load knownhosts file '%1$s': %2$s"
@@ -37441,7 +37442,7 @@ msgstr "kan inte tolka blkio-enheten ”%1$s” ”%2$s”"
 msgid ""
 "unable to parse contents of 'file' field in '%1$s' from cloud-hypervisor"
 msgstr ""
-"kan inte tolka innehållet i fältet ”file” i ”%1$s” från moln-hypervisor:n"
+"kan inte tolka innehållet i fältet ”file” i ”%1$s” från moln-hypervisorn"
 
 #, c-format
 msgid "unable to parse diskspec: %1$s"
@@ -37498,14 +37499,14 @@ msgid "unable to read child stdout"
 msgstr "kan inte läsa barnets standard ut"
 
 msgid "unable to read domain master key file"
-msgstr "kan inte läsa domänens huvdnyckelfil"
+msgstr "kan inte läsa domänens huvudnyckelfil"
 
 msgid "unable to read from pipe"
 msgstr "kan inte läsa från röret"
 
 #, c-format
 msgid "unable to read server cert %1$s"
-msgstr "kan inte läsa serverncertifikatet %1$s"
+msgstr "kan inte läsa servercertifikatet %1$s"
 
 msgid "unable to read vmware log file"
 msgstr "kan inte läsa vmware-loggfilen"
@@ -37547,7 +37548,7 @@ msgstr "kan inte söka till ett hål"
 
 #, c-format
 msgid "unable to set AppArmor profile '%1$s' for '%2$s'"
-msgstr "kan inte ställa in AppArmor-prfilen ”%1$s” för ”%2$s”"
+msgstr "kan inte ställa in AppArmor-profilen ”%1$s” för ”%2$s”"
 
 #, c-format
 msgid "unable to set SELinux security context '%1$s' for '%2$s'"
@@ -37659,10 +37660,10 @@ msgstr "kan inte vänta på dhcp-snoop-tråden"
 
 #, c-format
 msgid "unable to write data to '%1$s'"
-msgstr "kan inte skriva till ”%1$s”"
+msgstr "kan inte skriva data till ”%1$s”"
 
 msgid "unable to write to child input"
-msgstr "lan inte skriva till barnets indata"
+msgstr "kan inte skriva till barnets indata"
 
 #, c-format
 msgid "unable write to %1$s"
@@ -37800,7 +37801,7 @@ msgstr "oväntad teckenenhetstyp"
 
 #, c-format
 msgid "unexpected clock offset '%1$d'"
-msgstr "oväntad klockförskjuting ”%1$d”"
+msgstr "oväntad klockförskjutning ”%1$d”"
 
 msgid "unexpected code path"
 msgstr "oväntad kodväg"
@@ -37959,7 +37960,7 @@ msgstr "oväntat antal ögonblicksbilder > %1$u"
 
 #, c-format
 msgid "unexpected nwfilter URI path '%1$s', try nwfilter:///system"
-msgstr "oväntad nwfilter-URI-sökväg ”%1$s”, försk med nwfilter:///system"
+msgstr "oväntad nwfilter-URI-sökväg ”%1$s”, försök med nwfilter:///system"
 
 #, c-format
 msgid "unexpected pci hostdev driver name %1$d"
@@ -38006,7 +38007,7 @@ msgstr "oväntad ljudmodell %1$d"
 
 #, c-format
 msgid "unexpected source mode %1$d"
-msgstr "oväntade källäge %1$d"
+msgstr "oväntat källäge %1$d"
 
 #, c-format
 msgid "unexpected storage mode for '%1$s'"
@@ -38167,7 +38168,7 @@ msgstr "okänd bakändetyp ”%1$s” för egd"
 
 #, c-format
 msgid "unknown backup mode '%1$s'"
-msgstr "okändt säkerhetskopieringsläge ”%1$s”"
+msgstr "okänt säkerhetskopieringsläge ”%1$s”"
 
 msgid "unknown base name while formatting virtio device"
 msgstr "okänt basnamn vid formatering av virtio-enheten"
@@ -38209,7 +38210,7 @@ msgstr "okänd klockförskjutning ”%1$s”"
 
 #, c-format
 msgid "unknown codec type '%1$s'"
-msgstr "okänd omkodningtyp ”%1$s”"
+msgstr "okänd omkodartyp ”%1$s”"
 
 #, c-format
 msgid "unknown codeset: '%1$s'"
@@ -38277,7 +38278,7 @@ msgstr "okänd värd-CPU-modell"
 
 #, c-format
 msgid "unknown host device source address type '%1$s'"
-msgstr "okänd adresstyp till källan vär värdenheten ”%1$s”"
+msgstr "okänd adresstyp till källan för värdenheten ”%1$s”"
 
 #, c-format
 msgid "unknown hub device type '%1$s'"
@@ -38348,7 +38349,7 @@ msgstr "okänd spegeljobbstyp ”%1$s”"
 
 #, c-format
 msgid "unknown mirror ready state %1$s"
-msgstr "okänd redotillstånd för spegeln %1$s"
+msgstr "okänt redotillstånd för spegeln %1$s"
 
 #, c-format
 msgid "unknown network device feature '%1$s'"
@@ -38645,7 +38646,7 @@ msgstr "autentiseringstyp %1$d stödjs inte"
 
 #, c-format
 msgid "unsupported backend for pstore device: %1$s"
-msgstr "bakänden för pstore-enhenten stödjs inte: %1$s"
+msgstr "bakänden för pstore-enheten stödjs inte: %1$s"
 
 #, c-format
 msgid "unsupported balloon device model '%1$s'"
@@ -38664,11 +38665,11 @@ msgstr "klockjusteringen=”reset” stödjs inte"
 
 #, c-format
 msgid "unsupported clock offset '%1$s'"
-msgstr "klockförskutningen stödjs inte ”%1$s”"
+msgstr "klockförskjutningen stödjs inte ”%1$s”"
 
 #, c-format
 msgid "unsupported clock offset='%1$s'"
-msgstr "klockavståndet=”%1$s” stödjs inte"
+msgstr "klockförskjutning=”%1$s” stödjs inte"
 
 #, c-format
 msgid "unsupported config type %1$s"
@@ -39216,7 +39217,7 @@ msgstr "vcpu %1$d är utanför intervallet för antalet beständiga cpu:er %2$d"
 
 #, c-format
 msgid "vcpu %1$zd is not present in live config"
-msgstr "vcpu %1$zd finns inte in de aktiva konfigurationen"
+msgstr "vcpu %1$zd finns inte i den aktiva konfigurationen"
 
 #, c-format
 msgid "vcpu %1$zd is not present in persistent config"
@@ -39235,7 +39236,7 @@ msgid ""
 "vcpu '%1$zd' belongs to a larger hotpluggable entity, but siblings were not "
 "selected"
 msgstr ""
-"vcpu ”%1$zd” tillhär en större urkopplingsbar enhet, men syskonen valdes inte"
+"vcpu ”%1$zd” tillhör en större urkopplingsbar enhet, men syskonen valdes inte"
 
 #, c-format
 msgid "vcpu '%1$zd' can't be hotunplugged"
@@ -39310,7 +39311,7 @@ msgid "vcpu0 must be enabled first"
 msgstr "vcpu0 måste aktiveras först"
 
 msgid "vcpupin cpumask differs from default cpumask"
-msgstr "vcpupin cpumask skiler från standard cpumask"
+msgstr "vcpupin cpumask skiljer sig från standard cpumask"
 
 msgid "vcpupin: Missing vCPU number in pin mode."
 msgstr "vcpupin: saknat vCPU-nummer i pin-läge."
@@ -39666,7 +39667,7 @@ msgid "vlan interface misses name attribute"
 msgstr "vlan-gränssnittet saknar ett namnattribut"
 
 msgid "vlan interface misses the tag attribute"
-msgstr "vlan-gränssnittet skanar attributet tag"
+msgstr "vlan-gränssnittet saknar attributet tag"
 
 msgid "vlan interface misses the vlan element"
 msgstr "vlan-gränssnittet saknar elementet vlan"
@@ -39725,7 +39726,7 @@ msgid ""
 "vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
 "maxvcpus"
 msgstr ""
-"konfigurationen av bnuma innehåller %1$zu vcpu:er, vilket är större än %2$zu "
+"konfigurationen av vnuma innehåller %1$zu vcpu:er, vilket är större än %2$zu "
 "maxvcpu:er"
 
 #, c-format
@@ -39733,7 +39734,7 @@ msgid ""
 "vnuma pnode %1$d configured '%2$s' (count %3$zu) doesn't fit the number of "
 "specified vnodes %4$zu"
 msgstr ""
-"vnuma pnode %1$d som är konfigurerad ”%2$s” (antal %3$zu) passar inte md "
+"vnuma pnode %1$d som är konfigurerad ”%2$s” (antal %3$zu) passar inte med "
 "antalet angivna vnode:r %4$zu"
 
 #, c-format
@@ -39774,7 +39775,7 @@ msgstr "volymnyckel eller -sökväg"
 
 #, c-format
 msgid "volume name '%1$s' cannot contain '/'"
-msgstr "volymnamet ”%1$s” får inte innehålla ”/”"
+msgstr "volymnamnet ”%1$s” får inte innehålla ”/”"
 
 msgid "volume name or key"
 msgstr "volymnamn eller -nyckel"
@@ -39957,7 +39958,7 @@ msgid "with --wait, don't wait for cancel to finish"
 msgstr "med --wait, vänta inte på att avbrott skall avslutas"
 
 msgid "with redefine, set current snapshot"
-msgstr "med omdefinition, sätt den aktuella ögonblicksbillden"
+msgstr "med omdefinition, sätt den aktuella ögonblicksbilden"
 
 msgid "wrap xpath results in an common root element"
 msgstr "slå in xpath-resultat i ett gemensamt rotelement"
