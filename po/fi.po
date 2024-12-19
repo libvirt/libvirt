@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-19 15:04+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2024-12-19 18:03+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -36073,7 +36073,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr "Liitännän indeksia ei voi saada %1$s:lle"
+msgstr "liitännän indeksia ei voi saada %1$s:lle"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -37539,7 +37539,7 @@ msgstr "levytyyppi ei tuettu"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
-msgstr ""
+msgstr "ei tuettu grafiikkatyyppi %1$s"
 
 #, c-format
 msgid "unsupported guest information types '0x%1$x'"
