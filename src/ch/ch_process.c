@@ -29,6 +29,7 @@
 #include "ch_process.h"
 #include "domain_cgroup.h"
 #include "domain_interface.h"
+#include "domain_logcontext.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -49,12 +50,13 @@ VIR_LOG_INIT("ch.ch_process");
 
 static virCHMonitor *
 virCHProcessConnectMonitor(virCHDriver *driver,
-                           virDomainObj *vm)
+                           virDomainObj *vm,
+                           int logfile)
 {
     virCHMonitor *monitor = NULL;
     virCHDriverConfig *cfg = virCHDriverGetConfig(driver);
 
-    monitor = virCHMonitorNew(vm, cfg);
+    monitor = virCHMonitorNew(vm, cfg, logfile);
 
     virObjectUnref(cfg);
     return monitor;
@@ -890,6 +892,8 @@ virCHProcessStart(virCHDriver *driver,
     g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(priv->driver);
     g_autofree int *nicindexes = NULL;
     size_t nnicindexes = 0;
+    g_autoptr(domainLogContext) logCtxt = NULL;
+    int logfile = -1;
 
     if (virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -901,6 +905,16 @@ virCHProcessStart(virCHDriver *driver,
         return -1;
     }
 
+    VIR_DEBUG("Creating domain log file for %s domain", vm->def->name);
+    if (!(logCtxt = domainLogContextNew(cfg->stdioLogD, cfg->logDir,
+                                        CH_DRIVER_NAME,
+                                        vm, driver->privileged,
+                                        vm->def->name))) {
+        virLastErrorPrefixMessage("%s", _("can't connect to virtlogd"));
+        return -1;
+    }
+    logfile = domainLogContextGetWriteFD(logCtxt);
+
     if (virCHProcessPrepareDomain(vm) < 0) {
         return -1;
     }
@@ -910,7 +924,7 @@ virCHProcessStart(virCHDriver *driver,
 
     if (!priv->monitor) {
         /* And we can get the first monitor connection now too */
-        if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm))) {
+        if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm, logfile))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create connection to CH socket"));
             goto cleanup;
@@ -1047,10 +1061,22 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     size_t ntapfds = 0;
     size_t nnicindexes = 0;
     int ret = -1;
+    g_autoptr(domainLogContext) logCtxt = NULL;
+    int logfile = -1;
+
+    VIR_DEBUG("Creating domain log file for %s domain", vm->def->name);
+    if (!(logCtxt = domainLogContextNew(cfg->stdioLogD, cfg->logDir,
+                                        CH_DRIVER_NAME,
+                                        vm, driver->privileged,
+                                        vm->def->name))) {
+        virLastErrorPrefixMessage("%s", _("can't connect to virtlogd"));
+        return -1;
+    }
+    logfile = domainLogContextGetWriteFD(logCtxt);
 
     if (!priv->monitor) {
         /* Get the first monitor connection if not already */
-        if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm))) {
+        if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm, logfile))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create connection to CH socket"));
             goto cleanup;

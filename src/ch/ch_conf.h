@@ -45,6 +45,8 @@ struct _virCHDriverConfig {
 
     uid_t user;
     gid_t group;
+
+    bool stdioLogD;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHDriverConfig, virObjectUnref);

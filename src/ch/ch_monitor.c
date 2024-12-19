@@ -536,7 +536,7 @@ chMonitorCreateSocket(const char *socket_path)
 }
 
 virCHMonitor *
-virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg)
+virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
 {
     g_autoptr(virCHMonitor) mon = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -572,6 +572,9 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg)
     }
 
     cmd = virCommandNew(vm->def->emulator);
+    virCommandSetOutputFD(cmd, &logfile);
+    virCommandSetErrorFD(cmd, &logfile);
+    virCommandNonblockingFDs(cmd);
     virCommandSetUmask(cmd, 0x002);
     socket_fd = chMonitorCreateSocket(mon->socketpath);
     if (socket_fd < 0) {
