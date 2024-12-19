@@ -671,6 +671,28 @@ virCHMonitorCurlPerform(CURL *handle)
     return responseCode;
 }
 
+struct curl_data {
+    char *content;
+    size_t size;
+};
+
+static size_t
+curl_callback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t content_size = size * nmemb;
+    struct curl_data *data = userp;
+
+    if (content_size == 0)
+        return content_size;
+
+    data->content = g_realloc(data->content, data->size + content_size);
+
+    memcpy(&(data->content[data->size]), contents, content_size);
+    data->size += content_size;
+
+    return content_size;
+}
+
 int
 virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
 {
@@ -696,28 +718,6 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
         ret = 0;
 
     return ret;
-}
-
-struct curl_data {
-    char *content;
-    size_t size;
-};
-
-static size_t
-curl_callback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    size_t content_size = size * nmemb;
-    struct curl_data *data = userp;
-
-    if (content_size == 0)
-        return content_size;
-
-    data->content = g_realloc(data->content, data->size + content_size);
-
-    memcpy(&(data->content[data->size]), contents, content_size);
-    data->size += content_size;
-
-    return content_size;
 }
 
 static int
