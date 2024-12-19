@@ -125,6 +125,12 @@ else
   sym_files += 'libvirt_libssh2.syms'
 endif
 
+if conf.has('WITH_HYPERV')
+  used_sym_files += 'libvirt_hyperv.syms'
+else
+  sym_files += 'libvirt_hyperv.syms'
+endif
+
 # variables filled by subdirectories
 
 libvirt_libs = []

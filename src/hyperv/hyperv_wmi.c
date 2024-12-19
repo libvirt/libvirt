@@ -28,6 +28,7 @@
 #include <wsman-soap.h>
 #include <wsman-xml.h>
 #include <wsman-xml-binding.h>
+#include <u/syslog.h>
 
 #include "internal.h"
 #include "virerror.h"
@@ -46,6 +47,8 @@
 #define HYPERV_JOB_TIMEOUT_MS 300000
 
 VIR_LOG_INIT("hyperv.hyperv_wmi");
+
+int facility = LOG_DAEMON;
 
 int
 hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfo *wmiInfo,
