@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-11-30 22:38+0000\n"
+"PO-Revision-Date: 2024-12-09 15:52+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.8.4\n"
 
 msgid ""
 "\n"
@@ -1270,7 +1270,7 @@ msgstr "”%1$s” bahöver delat minne"
 
 #, c-format
 msgid "'%1$s' scheduler bitmap '%2$s' is empty"
-msgstr "schemaläggaren ”%1$s” bitkarta ”%2$s” är tom"
+msgstr "schemaläggaren ”%1$s” bitavbildning ”%2$s” är tom"
 
 #, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
@@ -1822,7 +1822,7 @@ msgid "? - print this help"
 msgstr "? - skriv ut denna hjälp"
 
 msgid "A close callback is already registered"
-msgstr "Ett närliggande återanrop är redan registrerat"
+msgstr "Ett stängningsåteranrop är redan registrerat"
 
 msgid "A different callback was requested"
 msgstr "Ett annat återanrop begärdes"
@@ -4278,7 +4278,7 @@ msgstr "Kunde inte skapa ett XML-dokument"
 
 #, c-format
 msgid "Could not create base storage, rc=%1$08x"
-msgstr "Kunde inte skapa baslagring, rc=%1$08x"
+msgstr "Kunde inte skapa baslagring, rk=%1$08x"
 
 #, c-format
 msgid "Could not create directory %1$s as %2$u:%3$d"
@@ -4289,7 +4289,7 @@ msgstr "Kunde inte skapa ett filter"
 
 #, c-format
 msgid "Could not create harddisk, rc=%1$08x"
-msgstr "Kunde inte skapa en hårddisk, rc=%1$08x"
+msgstr "Kunde inte skapa en hårddisk, rk=%1$08x"
 
 msgid "Could not create log directory"
 msgstr "Kunde inte skapa en loggkatalog"
@@ -5213,7 +5213,8 @@ msgstr "Kunde inte skriva till låsfilen för enheten ”%1$s” i sökvägen �
 #, c-format
 msgid "Cpu '%1$u' in node '%2$zu' is out of range of the provided bitmap"
 msgstr ""
-"Cpu ”%1$u” i noden ”%2$zu” är utanför intervallet för den givna bitkartan"
+"Cpu ”%1$u” i noden ”%2$zu” är utanför intervallet för den givna "
+"bitavbildningen"
 
 msgid "Crashed"
 msgstr "Kraschad"
@@ -8235,7 +8236,7 @@ msgstr "Misslyckades med att läsa PCI-konfigurationsutrymmet för %1$s"
 
 #, c-format
 msgid "Failed to read RDP port value, rc=%1$08x"
-msgstr "Misslyckades med att läsa RDP-portvärdet, rc=%1$08x"
+msgstr "Misslyckades med att läsa RDP-portvärdet, rk=%1$08x"
 
 #, c-format
 msgid "Failed to read checkpoint file %1$s"
@@ -13987,7 +13988,7 @@ msgstr ""
 
 #, c-format
 msgid "Received too many FDs %1$d, expected %2$d maximum"
-msgstr "Mottog för många FB:er %1$d, maximalt %2$d förväntades"
+msgstr "Mottog för många FB:are %1$d, maximalt %2$d förväntades"
 
 msgid "Receiving file descriptors is not supported on this socket"
 msgstr "Att ta emot filbeskrivare stödjs inte på detta uttag"
@@ -15227,7 +15228,7 @@ msgstr "Lagringspoolhändelser"
 
 #, c-format
 msgid "Storage pool '%1$s' for volume '%2$s' not found."
-msgstr "Lagringspool ”%1$s” för volymen ”%2$s” finns inte"
+msgstr "Lagringspool ”%1$s” för volymen ”%2$s” finns inte."
 
 msgid "Storage pool already built"
 msgstr "Lagringspoolen är redan byggd"
@@ -15700,7 +15701,7 @@ msgstr "Målenhetens ccid-adress %1$d:%2$d stämmer inte med källan %3$d:%4$d"
 
 #, c-format
 msgid "Target device dimm base address '%1$llx' does not match source '%2$llx'"
-msgstr "Målenhetens dimm-basadress ”%llu” stämmer inte med källan ”%llu”"
+msgstr "Målenhetens dimm-basadress ”%1$llx” stämmer inte med källan ”%2$llx”"
 
 #, c-format
 msgid "Target device dimm slot %1$u does not match source %2$u"
@@ -16912,7 +16913,7 @@ msgstr "För många CPU-modeller ”%1$d” för gränsen ”%2$d”"
 
 #, c-format
 msgid "Too many FDs to send %1$d, expected %2$d maximum"
-msgstr "För många FB:er att skicka %1$d, maximalt %2$d förväntades"
+msgstr "För många FB:are att skicka %1$d, maximalt %2$d förväntades"
 
 #, c-format
 msgid "Too many IOThreads in info: %1$d for limit %2$d"
@@ -17675,7 +17676,7 @@ msgid "Unable to decode message payload"
 msgstr "Kan inte avkoda meddelandelasten"
 
 msgid "Unable to decode number of FDs"
-msgstr "Kan inte avkoda antalet FB:ar"
+msgstr "Kan inte avkoda antalet FB:are"
 
 #, c-format
 msgid "Unable to define mediated device: %1$s"
@@ -17778,7 +17779,7 @@ msgid "Unable to encode message payload"
 msgstr "Kan inte koda meddelandelasten"
 
 msgid "Unable to encode number of FDs"
-msgstr "Kan inte koda antalet FB:ar"
+msgstr "Kan inte koda antalet FB:are"
 
 msgid "Unable to enter mount namespace"
 msgstr "Kan inte gå in i monteringsnamnrymden"
@@ -21419,12 +21420,14 @@ msgstr "bindningen ”%1$s” tas redan bort"
 
 #, c-format
 msgid "bitmap '%1$s' not found in backing chain of '%2$s'"
-msgstr "bitkartan ”%1$s” finns inte i den bakomliggande kedjan för ”%2$s”"
+msgstr ""
+"bitavbildningen ”%1$s” finns inte i den bakomliggande kedjan för ”%2$s”"
 
 #, c-format
 msgid "bitmap for disk '%1$s' must match checkpoint name '%2$s'"
 msgstr ""
-"bitkartan för disken ”%1$s” måste stämma med kontrollpunktsnamnet ”%2$s”"
+"bitavbildningen för disken ”%1$s” måste stämma med kontrollpunktsnamnet "
+"”%2$s”"
 
 msgid "blkio cgroup isn't mounted"
 msgstr "blkio-styrgruppen är inte monterad"
@@ -21504,7 +21507,7 @@ msgstr "blockjobbet ”%1$s” är inte redo att pivotera ännu"
 
 #, c-format
 msgid "block job on disk '%1$s' is still being ended"
-msgstr "blockjobbet på disken ”%1$s” avslutas fortfarande."
+msgstr "blockjobbet på disken ”%1$s” avslutas fortfarande"
 
 #, c-format
 msgid "block jobs are not supported on disk '%1$s' using bus 'sd'"
@@ -21520,7 +21523,7 @@ msgstr "blockjobb stödjs inte på vhostuser-disken ”%1$s”"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %1$zi > %2$d"
-msgstr "blockjobbsbegäranden är för stor för fjärrprotokollet, %1$z > %2$d"
+msgstr "blockjobbsbegäranden är för stor för fjärrprotokollet, %1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "blockstorleksändringen stödjs inte för vhostuser-diskar"
@@ -22761,7 +22764,7 @@ msgstr "kan inte tolka %1$s-CPU-data"
 
 #, c-format
 msgid "cannot parse %1$s version number in '%3$.*2$s'"
-msgstr "kan inte tolka %1$s-versionsnummer i ”%3$.*2s”"
+msgstr "kan inte tolka %1$s-versionsnummer i ”%3$.*2$s”"
 
 #, c-format
 msgid "cannot parse 'dspPolicy' value '%1$i'"
@@ -28588,7 +28591,7 @@ msgstr "inmatningsenheten på bussen ”%1$s” kan inte kopplas loss"
 
 #, c-format
 msgid "input device on bus '%1$s' cannot be hot plugged."
-msgstr "inmatningsenheten på bussen ”%1$s” kan inte tas bort under drift"
+msgstr "inmatningsenheten på bussen ”%1$s” kan inte tas bort under drift."
 
 msgid "input devices without vnc are not supported"
 msgstr "inmatningsenheter utan vnc stödjs inte"
@@ -39371,307 +39374,322 @@ msgid "vhost-user type '%1$s' not supported"
 msgstr "vhost-användartypen ”%1$s” stödjs inte"
 
 msgid "vhost-user-gpu failed to start"
-msgstr ""
+msgstr "vhost-user-gpu lyckades inte starta"
 
 msgid "vhostuser disk supports only virtio bus"
-msgstr ""
+msgstr "vhostuser disk stödjer endast bussen virtio"
 
 msgid "video resolution values must be greater than 0"
-msgstr ""
+msgstr "värdet på videoupplösningen måste vara större än 0"
 
 #, c-format
 msgid "video type %1$s is not supported by libxl"
-msgstr ""
+msgstr "videotypen %1$s stödjs inte av libxl"
 
 #, c-format
 msgid "video type '%1$s' does not support blob resources"
-msgstr ""
+msgstr "videotypen ”%1$s” stödjer inte blob-resurser"
 
 #, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
-msgstr ""
+msgstr "videotypen ”%1$s” stödjer inte multipla ”huvuden”"
 
 #, c-format
 msgid "video type '%1$s' is only valid as primary video device"
-msgstr ""
+msgstr "videotypen ”%1$s” är endast giltig som primär videoenhet"
 
 msgid "videoram must be at least 128MB for QXL"
-msgstr ""
+msgstr "videoram måste vara åtminstone 128 MB för QXL"
 
 msgid "videoram must be at least 16MB for VGA"
-msgstr ""
+msgstr "videoram måste vara åtminstone 16 MB för VGA"
 
 msgid "videoram must be at least 4MB for CIRRUS"
-msgstr ""
+msgstr "videoram måste vara åtminstone 4 MB för CIRRUS"
 
 msgid "videoram must be at least 8MB for CIRRUS"
-msgstr ""
+msgstr "videoram måste vara åtminstone 8 MB för CIRRUS"
 
 msgid "videoram must be at least 8MB for VGA"
-msgstr ""
+msgstr "videoram måste vara åtminstone 8 MB för VGA"
 
 msgid "view domain IOThreads"
-msgstr ""
+msgstr "visa domän-IOThreads"
 
 msgid "virDirCreate is not implemented for WIN32"
-msgstr ""
+msgstr "virDirCreate är inte implementerat för WIN32"
 
 msgid "virDomainCheckpointGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainCheckpointGetXMLDesc med säkerhetsflagga"
 
 msgid "virDomainGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainGetXMLDesc med säkerhetsflagga"
 
 msgid "virDomainManagedSaveGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainManagedSaveGetXMLDesc med säkerhetsflagga"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainSnapshotGetXMLDesc med säkerhetsflagga"
 
 msgid "virFileDiskCopy unsupported on this platform"
-msgstr ""
+msgstr "virFileDiskCopy stödjs inte på denna plattform"
 
 msgid "virFileOpenAs is not implemented for WIN32"
-msgstr ""
+msgstr "virFileOpenAs är inte implementerad för WIN32"
 
-#, fuzzy
 msgid "virFileWrapperFd unsupported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "virFileWrapperFd stödjs inte på denna plattform"
 
 msgid "virGetGroupID is not available"
-msgstr ""
+msgstr "virGetGroupID är inte tillgängligt"
 
 msgid "virGetGroupName is not available"
-msgstr ""
+msgstr "virGetGroupName är inte tillgängligt"
 
 msgid "virGetUserDirectory is not available"
-msgstr ""
+msgstr "virGetUserDirectory är inte tillgängligt"
 
 msgid "virGetUserID is not available"
-msgstr ""
+msgstr "virGetUserID är inte tillgängligt"
 
 msgid "virGetUserName is not available"
-msgstr ""
+msgstr "virGetUserName är inte tillgängligt"
 
 msgid "virGetUserShell is not available"
-msgstr ""
+msgstr "virGetUserShell är inte tillgängligt"
 
 msgid "virInterfaceDefFormat NULL def"
-msgstr ""
+msgstr "virInterfaceDefFormat NULL-definition"
 
 msgid "virInterfaceDefFormat missing interface name"
-msgstr ""
+msgstr "virInterfaceDefFormat saknar gränssnittsnamn"
 
 msgid "virInterfaceDefFormat unknown startmode"
-msgstr ""
+msgstr "virInterfaceDefFormat okänt startläge"
 
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%1$s\" key \"%2$s\""
 msgstr ""
+"virNWFilterDHCPSnoopReq ifname-avbildningen misslyckades på gränssnittet "
+"”%1$s” nyckeln ”%2$s”"
 
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
+"virNWFilterDHCPSnoopReq req add misslyckades på gränssnittet ”%1$s” ifkey "
+"”%2$s”"
 
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%1$s'"
 msgstr ""
+"virNWFilterDHCPSnoopReq virThreadCreate misslyckades på gränssnittet ”%1$s”"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %1$d corrupt"
-msgstr ""
+msgstr "virNWFilterSnoopLeaseFileLoad hyresfilrad %1$d är trasig"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad req add failed on interface \"%1$s\""
 msgstr ""
+"virNWFilterSnoopLeaseFileLoad req add misslyckades på gränssnittet ”%1$s”"
 
 msgid "virNWFilterSnoopListDel failed"
-msgstr ""
+msgstr "virNWFilterSnoopListDel misslyckades"
 
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%1$s\" (%2$zu)"
-msgstr ""
+msgstr "virNWFilterSnoopReqNew anropad med en felaktig nyckel ”%1$s” (%2$zu)"
 
 msgid "virSetUIDGID is not available"
-msgstr ""
+msgstr "virSetUIDGID är inte tillgängligt"
 
 msgid "virVMXContext has no formatFileName function set"
-msgstr ""
+msgstr "virVMXContext har ingen funktion formatFileName satt"
 
 msgid "virVMXContext has no parseFileName function set"
-msgstr ""
+msgstr "virVMXContext har ingen funktion parseFileName satt"
 
 #, c-format
 msgid "virt type '%1$s' is not supported"
-msgstr ""
+msgstr "virt-typen ”%1$s” stödjs inte"
 
 #, c-format
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr ""
+"virtio (icke-)transitionella modeller stödjs inte för adresser med type=%1$s"
 
 #, c-format
 msgid "virtio (non-)transitional models are not supported for input type=%1$s"
 msgstr ""
+"virtio (icke-)transitionella modeller stödjs inte för indata med type=%1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "virtio disk cannot have an address of type '%1$s'"
-msgstr "okänd adresstyp ”%1$s”"
+msgstr "virtio-diskar kan inte ha en adress av typen ”%1$s”"
 
-#, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "virtio icke-transitionella modeller stödjs inte av denna qemu"
 
 msgid "virtio rss hash report is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtio rss-hash-rapport stödjs inte med denna QEMU-binär"
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtio rss stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid "virtio rx_queue_size option %1$d is not same with tx_queue_size %2$d"
-msgstr ""
+msgstr "virtio flagga rx_queue_size %1$d är inte samma som tx_queue_size %2$d"
 
 #, c-format
 msgid "virtio serial controller %1$u does not have port %2$u"
-msgstr ""
+msgstr "virtio seriestyrenhet %1$u har inte port %2$u"
 
 #, c-format
 msgid "virtio serial controller %1$u is missing"
-msgstr ""
+msgstr "virtio seriestyrenhet %1$u saknas"
 
 #, c-format
 msgid ""
 "virtio serial controller with index %1$u already exists in the address set"
-msgstr ""
+msgstr "virtio seriestyrenhet med index %1$u finns redan i adressmängden"
 
 msgid "virtio serial device has invalid address type"
-msgstr ""
+msgstr "virtio serieenhet har felaktigt adresstyp"
 
 #, c-format
 msgid "virtio serial port %1$u on controller %2$u is already occupied"
-msgstr ""
+msgstr "virtio serieport %1$u på styrenhet %2$u är redan upptagen"
 
 msgid "virtio-mem device is missing <requested/>"
-msgstr ""
+msgstr "virtio-mem-enheten saknar <requested/>"
 
 msgid "virtio-mem does not support dynamicMemslots"
-msgstr ""
+msgstr "virtio-mem stödjer inte dynamicMemslots"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
-msgstr ""
+msgstr "virtio-mem stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
 "'%1$s'"
 msgstr ""
+"virtio-net teaming av beständiga gränssnitt måste vara <model type='virtio'/"
+">, inte ”%1$s”"
 
 #, c-format
 msgid ""
 "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr ""
+"virtio-net teaming av transienta gränssnitt måste vara av type='hostdev', "
+"inte ”%1$s”"
 
 msgid "virtio-pmem does not support NUMA nodes"
-msgstr ""
+msgstr "virtio-pmem stödjer inte NUMA-noder"
 
 msgid "virtio-pmem isn't supported by this QEMU binary"
-msgstr ""
+msgstr "virtio-pmem stödjs inte av denna QEMU-binär"
 
 msgid "virtio-s390 bus doesn't have an address"
-msgstr ""
+msgstr "bussen virtio-s390 har inte någon adress"
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
 "controllers"
 msgstr ""
+"virtio-scsi IOThreads är bara tillgängligt för styrenheter till virtio pci "
+"och virtio ccw"
 
 #, c-format
 msgid "virtio-serial controller %1$u not available"
-msgstr ""
+msgstr "virtio-serial-styrenhet %1$u är inte tillgänglig"
 
 msgid "virtio-sound controller is not supported in this QEMU binary"
-msgstr ""
+msgstr "styrenheten virtio-sound stödjs inte av denna QEMU-binär"
 
 msgid "virtiofs does not support fmode and dmode"
-msgstr ""
+msgstr "virtiofs stödjer inte fmode och dmode"
 
-#, fuzzy
 msgid "virtiofs does not support format"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "virtiofs stödjer inte formatet"
 
 msgid "virtiofs does not support model"
-msgstr ""
+msgstr "virtiofs stödjer inte modellen"
 
 msgid "virtiofs does not support multidevs"
-msgstr ""
+msgstr "virtiofs stödjer inte multidevs"
 
 msgid "virtiofs does not support read-only access"
-msgstr ""
+msgstr "virtiofs stödjer inte åtkomst endast för läsning"
 
 msgid "virtiofs does not support wrpolicy"
-msgstr ""
+msgstr "virtiofs stödjer inte wrpolicy"
 
 msgid "virtiofs does not yet support read-only mode"
-msgstr ""
+msgstr "virtiofs stödjer inte ännu läget endast läsning"
 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "virtiofs stödjs inte av denna QEMU-binär"
 
 msgid "virtiofs only supports passthrough accessmode"
-msgstr ""
+msgstr "virtiofs stödjer bara åtkomstläget genomgång"
 
 #, c-format
 msgid "virtiofsd binary '%1$s' is not executable"
-msgstr ""
+msgstr "virtiofsd-binären ”%1$s” är inte körbar"
 
 msgid "virtiofsd died unexpectedly"
-msgstr ""
+msgstr "virtiofsd dog oväntat"
 
 msgid "virtual FAT storage can't be accessed in read-write mode"
-msgstr ""
+msgstr "virtuell FAT-lagring kan inte kommas åt i läs-och-skriv-läge"
 
 msgid "virtualization type (/domain/@type)"
-msgstr ""
+msgstr "virtualiseringstyp (/domain/@type)"
 
 #, c-format
 msgid ""
 "virtualport type %1$s is currently not supported on interfaces of type "
 "hostdev"
 msgstr ""
+"virtualport typ %1$s stödjs inte för närvarande på gränssnitt av typen "
+"hostdev"
 
 #, c-format
 msgid "vlan can only be set for SR-IOV VFs, but %1$s is not a VF"
-msgstr ""
+msgstr "vlan kan endast sättas för SR-IOV VF:ar, men %1$s är inte en VF"
 
 msgid "vlan interface misses name attribute"
-msgstr ""
+msgstr "vlan-gränssnittet saknar ett namnattribut"
 
 msgid "vlan interface misses the tag attribute"
-msgstr ""
+msgstr "vlan-gränssnittet skanar attributet tag"
 
 msgid "vlan interface misses the vlan element"
-msgstr ""
+msgstr "vlan-gränssnittet saknar elementet vlan"
 
 msgid "vlan misses the tag name"
-msgstr ""
+msgstr "vlan saknar taggnamnet"
 
 #, c-format
 msgid "vlan tag id %1$u too large (maximum 4095)"
-msgstr ""
+msgstr "vlan tag-id %1$u är för stort (maximum 4095)"
 
 #, c-format
 msgid "vlan tag set for interface %1$s but caller requested it not be set"
 msgstr ""
+"vlan-tagg satt för gränssnittet %1$s men anroparen begärde att den inte "
+"skall vara satt"
 
 msgid "vlan trunking is not supported by SR-IOV network devices"
-msgstr ""
+msgstr "vlan-avhuggning stödjs inte av SR-IOV-nätverksenheter"
 
 #, c-format
 msgid "vlanid out of range: %1$d"
-msgstr ""
+msgstr "vlanid är utanför intervallet: %1$d"
 
 msgid "vmcoreinfo is not available with this QEMU binary"
 msgstr "vmcoreinfo är inte tillgängligt med denna QEMU-binär"
@@ -39680,177 +39698,182 @@ msgid ""
 "vmplayer does not support libvirt suspend/resume (vmware pause/unpause) "
 "operation "
 msgstr ""
+"vmplayer stödjer inte libvirt:s åtgärder vila/återuppta (vmware:s pausa/"
+"avpausa) "
 
 msgid "vmport feature requires the ps2 feature not to be disabled"
-msgstr ""
+msgstr "funktionen vmport förutsätter att funktionen ps2 inte är avaktiverad"
 
 msgid "vmport is not available with this QEMU binary"
 msgstr "vmport är inte tillgängligt med denna QEMU-binär"
 
-#, fuzzy
 msgid "vmrun utility is missing"
-msgstr "säkerhetsetikett saknas"
+msgstr "verktyget vmrun saknas"
 
 msgid "vnc display"
 msgstr "vnc-skärm"
 
 msgid "vnc port must be in range [5900,65535]"
-msgstr ""
+msgstr "vnc-porten måste ligga i intervallet [5900,65535]"
 
 #, c-format
 msgid "vnc_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "vnc_tls_x509_cert_dir-katalogen ”%1$s” finns inte"
 
 #, c-format
 msgid ""
 "vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
 "maxvcpus"
 msgstr ""
+"konfigurationen av bnuma innehåller %1$zu vcpu:er, vilket är större än %2$zu "
+"maxvcpu:er"
 
 #, c-format
 msgid ""
 "vnuma pnode %1$d configured '%2$s' (count %3$zu) doesn't fit the number of "
 "specified vnodes %4$zu"
 msgstr ""
+"vnuma pnode %1$d som är konfigurerad ”%2$s” (antal %3$zu) passar inte md "
+"antalet angivna vnode:r %4$zu"
 
 #, c-format
 msgid "vnuma sibling %1$zu missing vcpus set"
-msgstr ""
+msgstr "vnuma-syskon %1$zu saknar vcpus satt"
 
 #, c-format
 msgid "vnuma vnode %1$zu contains invalid pnode value '%2$s'"
-msgstr ""
+msgstr "vnuma vnode %1$zu innehåller ett felaktigt pnode-värde ”%2$s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "vnuma vnode invalid format '%1$s'"
-msgstr "Konfigurationsformatet stödjs inte ”%1$s”"
+msgstr "vnuma-vnode har ett felaktigt format ”%1$s”"
 
 msgid "vol information in XML"
 msgstr "volyminformation i XML"
 
 msgid "vol name, key or path"
-msgstr ""
+msgstr "vol-namn, -nyckel eller -sökväg"
 
 #, c-format
 msgid "volume '%1$s' is still being allocated."
 msgstr "volymen ”%1$s” allokeras fortfarande."
 
-#, fuzzy, c-format
+#, c-format
 msgid "volume '%1$s' is still in use."
-msgstr "volymen ”%1$s” allokeras fortfarande."
+msgstr "volymen ”%1$s” används fortfarande."
 
 msgid "volume capacity required for this storage pool"
-msgstr ""
+msgstr "volymkapaciteten behövs för denna lagringspool"
 
 #, c-format
 msgid "volume encryption unsupported with format %1$s"
-msgstr ""
+msgstr "volymkryptering stödjs inte med formatet %1$s"
 
 msgid "volume key or path"
-msgstr ""
+msgstr "volymnyckel eller -sökväg"
 
 #, c-format
 msgid "volume name '%1$s' cannot contain '/'"
-msgstr ""
+msgstr "volymnamet ”%1$s” får inte innehålla ”/”"
 
 msgid "volume name or key"
-msgstr ""
+msgstr "volymnamn eller -nyckel"
 
 msgid "volume name or path"
-msgstr ""
+msgstr "volymnamn eller -sökväg"
 
 msgid "volume offset to download from"
-msgstr ""
+msgstr "volymposition att hämta ifrån"
 
 msgid "volume offset to upload to"
-msgstr ""
+msgstr "volymposition att skicka till"
 
-#, fuzzy, c-format
+#, c-format
 msgid "volume target path '%1$s' already exists"
-msgstr "oväntad domän %1$s finns redan"
+msgstr "volymmålet ”%1$s” finns redan"
 
 #, c-format
 msgid "volume target path empty for source path '%1$s'"
-msgstr ""
+msgstr "volymens målsökväg är tom för källsökvägen ”%1$s”"
 
 msgid "volume usage specified, but volume path is missing"
-msgstr ""
+msgstr "volymanvändning angiven, men volymsökvägen saknas"
 
-#, fuzzy, c-format
+#, c-format
 msgid "vport operation '%1$s' is not supported for host%2$d"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "vport-åtgärden ”%1$s” stödjs inte för värd %2$d"
 
 msgid "vram64 attribute only supported for video type qxl"
-msgstr ""
+msgstr "vram64-attributet stödjs endast för videotypen qxl"
 
 msgid "vsock device is not supported with this QEMU binary"
-msgstr ""
+msgstr "vsock-enheter stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "vxhs_tls_x509_cert_dir-katalogen ”%1$s” finns inte"
 
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte exklusiv delningspolicy för VNC-grafik."
 
 msgid "vz driver doesn't support given action in case of password change."
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte den angivna åtgärden vid lösenordsändring."
 
 msgid "vz driver doesn't support more than one listening VNC server per domain"
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte mer än en lyssnande VNC-server per domän"
 
 msgid "vz driver doesn't support multihead video adapters."
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte videoadaptrar med multipla huvuden."
 
 msgid "vz driver doesn't support setting password expire time."
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte att sätta en utgångstid för lösenord."
 
 msgid "vz driver doesn't support setting video acceleration parameters."
 msgstr ""
+"vz-drivrutinen stödjer inte att ställa in parametrar för videoacceleration."
 
 msgid "vz driver doesn't support specified serial source type."
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte den angivna seriella källtypen."
 
 msgid "vz driver doesn't support websockets for VNC graphics."
-msgstr ""
+msgstr "vz-drivrutinen stödjer inte web-uttag (websocket) för VNC-grafik."
 
 msgid "vz driver supports only \"en-us\" keymap for VNC graphics."
-msgstr ""
+msgstr "vz-drivrutinen stödjer endast tangentkartan ”en-us” för VNC-grafik."
 
 msgid "vz driver supports only VGA video adapters."
-msgstr ""
+msgstr "vz-drivrutinen stödjer endast VGA-videoadaptrar."
 
 msgid "vz driver supports only VNC graphics"
-msgstr ""
+msgstr "vz-drivrutinen stödjer endast VNC-grafik"
 
 msgid "vz driver supports only VNC graphics."
-msgstr ""
+msgstr "vz-drivrutinen stödjer endast VNC-grafik."
 
 msgid "vz driver supports only address-based VNC listening"
-msgstr ""
+msgstr "vz-drivrutinen stödjer endast adressbaserat VNC-lyssnande"
 
 msgid "vz driver supports only one video adapter."
-msgstr ""
+msgstr "vz-drivrutinen stödjer endast en videoadapter."
 
-#, fuzzy
 msgid "vz state driver is not active"
-msgstr "nätverket %s är inte aktivt"
+msgstr "vz-tillståndsdrivrutinen är inte aktiv"
 
 msgid "wait for all events instead of just one type"
-msgstr ""
+msgstr "vänta på alla händelser istället för bara en typ"
 
 msgid "wait for job to complete (with --active, wait for job to sync)"
 msgstr ""
+"vänta på att jobbet avslutas (med --active, vänta på att jobbet synkar)"
 
 msgid "wait for job to finish"
-msgstr ""
+msgstr "vänta på att jobbet avslutar"
 
 msgid "wait for job to reach mirroring phase"
-msgstr ""
+msgstr "vänta på att jobbet når speglingsfasen"
 
-#, fuzzy
 msgid "wakeup a domain from pmsuspended state"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "väck upp en domän från tillståndet pmsuspended"
 
 msgid "warning"
 msgstr "varning"
@@ -39860,10 +39883,10 @@ msgstr "vakthund"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
-msgstr ""
+msgstr "vakthundar med olika åtgärder stödjs inte med denna QEMU-binär"
 
 msgid "webSocket"
-msgstr ""
+msgstr "web-uttag (webSocket)"
 
 msgid "weight for XEN_CREDIT"
 msgstr "vikt för XEN_CREDIT"
@@ -39871,20 +39894,24 @@ msgstr "vikt för XEN_CREDIT"
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
+"när en förälder wwnn='%1$s' tillhandahålls måste även wwpn tillhandahållas"
 
 #, c-format
 msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
 msgstr ""
+"när en förälder wwpn='%1$s' tillhandahålls måste även wwnn tillhandahållas"
 
 #, c-format
 msgid ""
 "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr ""
+"när parent_wwnn='%1$s' tillhandahålls måste även parent_wwpn tillhandahållas"
 
 #, c-format
 msgid ""
 "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr ""
+"när parent_wwpn='%1$s' tillhandahålls måste även parent_wwnn tillhandahållas"
 
 msgid "where to dump the core"
 msgstr "var kärnan ska sparas"
@@ -39892,121 +39919,121 @@ msgstr "var kärnan ska sparas"
 msgid "where to save the data"
 msgstr "var data ska sparas"
 
-#, fuzzy
 msgid "where to store the screenshot"
-msgstr "var data ska sparas"
+msgstr "var skärmbilden skall sparas"
 
 msgid "which event type to wait for"
-msgstr ""
+msgstr "vilken händelsetyp som skall väntas på"
 
 msgid "which mount point to trim"
-msgstr ""
+msgstr "vilken monteringspunkt som skall trimmas"
 
 msgid "which parent object to search through"
-msgstr ""
+msgstr "vilket föräldraobjekt som skall sökas igenom"
 
 msgid "which section of network configuration to update"
-msgstr ""
+msgstr "vilket avsnitt av nätverkskonfigurationen som skall uppdateras"
 
 msgid "wipe a vol"
-msgstr ""
+msgstr "rensa en volym"
 
 msgid "wipe data on the removed volumes"
-msgstr ""
+msgstr "rensa data på de borttagna volymerna"
 
 #, c-format
 msgid "wiping algorithm %1$d not supported"
-msgstr ""
+msgstr "rensningsalgoritm %1$d stödjs inte"
 
 msgid "with --from, list all descendants"
-msgstr ""
+msgstr "med --from, lista alla avkommor"
 
 msgid "with --wait, abort if pull exceeds timeout (in seconds)"
-msgstr ""
+msgstr "med --wait, avbryt om hämtandet överskrider tidsgränsen (i sekunder)"
 
 msgid "with --wait, display the progress"
-msgstr ""
+msgstr "med --wait, visa förloppet"
 
 msgid "with --wait, don't wait for cancel to finish"
-msgstr ""
+msgstr "med --wait, vänta inte på att avbrott skall avslutas"
 
 msgid "with redefine, set current snapshot"
-msgstr ""
+msgstr "med omdefinition, sätt den aktuella ögonblicksbillden"
 
 msgid "wrap xpath results in an common root element"
-msgstr ""
+msgstr "slå in xpath-resultat i ett gemensamt rotelement"
 
 msgid "write I/O operations limit per second"
-msgstr ""
+msgstr "gräns för skriv-I/O-åtgärder per sekund"
 
 msgid "write I/O operations max"
-msgstr ""
+msgstr "max skriv-I/O-åtgärder"
 
 #, c-format
 msgid "write failed: %1$s"
 msgstr "skrivningen misslyckades: %1$s"
 
 msgid "write max, as scaled integer (default bytes)"
-msgstr ""
+msgstr "skrivmaximum, som ett skalat heltal (standard byte)"
 
 msgid "write throughput limit, as scaled integer (default bytes)"
-msgstr ""
+msgstr "gräns för skrivgenomströmning, som ett skalat heltal (standard byte)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "write: %1$s: failed to write to temporary file: %2$s"
-msgstr "%1$s: misslyckades att skriva loggfilen: %2$s"
+msgstr "skriv: %1$s: misslyckades att skriva till temporärfilen: %2$s"
 
 #, c-format
 msgid "writing %1$llu bytes failed on RBD image %2$s at offset %3$llu"
 msgstr ""
+"att skriva %1$llu byte misslyckades på RBD-avbilden %2$s på positionen %3$llu"
 
 #, c-format
 msgid "wrong format of 'cookie' field in backing store definition '%1$s'"
 msgstr ""
+"fel format på fältet ”cookie” i definitionen av bakomliggande lagring ”%1$s”"
 
 msgid "wrong nlmsg len"
-msgstr ""
+msgstr "fel nlmsg-längd"
 
 msgid "wwn is not supported with vhostuser disk"
-msgstr ""
+msgstr "wwn stödjs inte med vhostuser-diskar"
 
-#, fuzzy
 msgid "wwn of disk device"
-msgstr "drivrutin för diskenhet"
+msgstr "wwn för diskenheten"
 
 #, c-format
 msgid "xen bus does not support %1$s input device"
-msgstr ""
+msgstr "xen-bussen stödjer inte %1$s-inmatningsenheter"
 
 msgid "xml data file to export from"
-msgstr ""
+msgstr "xml-datafil att exportera ifrån"
 
 msgid "xml modification unsupported"
-msgstr ""
+msgstr "xml-ändringar stödjs inte"
 
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "xpath-uttryck för att filtrera XML-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "xsd:dateTime value '%1$s' has unexpected format"
-msgstr "HostCpuIdInfo-register ”%1$s” har ett oväntat format"
+msgstr "värdet på xsd:dateTime ”%1$s” har ett oväntat format"
 
 msgid "y - yes, start editor again"
-msgstr ""
+msgstr "y — ja, starta redigeraren igen"
 
 msgid "yes"
 msgstr "ja"
 
 #, c-format
 msgid "zPCI %1$s %2$o is already reserved"
-msgstr ""
+msgstr "zPCI %1$s %2$o är redan reserverat"
 
 msgid "zero-copy is only available for parallel migration"
-msgstr ""
+msgstr "nollkopiering är endast tillgängligt för parallell migrering"
 
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
-msgstr ""
+msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
 
 #, c-format
 #~ msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
