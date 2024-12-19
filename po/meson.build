@@ -14,6 +14,7 @@ i18n.gettext(
     '--package-version=@0@'.format(meson.project_version()),
     '--sort-output',
   ],
+  data_dirs: meson.current_source_dir()
 )
 
 potfiles_dep = [
