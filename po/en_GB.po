@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-11-02 12:30+0000\n"
+"PO-Revision-Date: 2024-12-05 09:39+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.8.4\n"
 
 msgid ""
 "\n"
@@ -586,7 +586,7 @@ msgstr "%1$s disk is not supported with this QEMU binary"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s does not support file storage"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -1291,7 +1291,7 @@ msgstr "'blob' support for virtio-gpu devices requires a memfd memory backend"
 
 #, c-format
 msgid "'block' nvram backing device '%1$s' doesn't exist"
-msgstr ""
+msgstr "'block' nvram backing device '%1$s' doesn't exist"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' refers to a non-existent NUMA node cache"
@@ -1712,7 +1712,7 @@ msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "<config> element is currently supported only with 'rbd' disks"
 
 msgid "<dataStore> feature available only with qcow2 images"
-msgstr ""
+msgstr "<dataStore> feature available only with qcow2 images"
 
 msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> must specify TCP port for now"
@@ -1731,7 +1731,7 @@ msgstr "<iotune> is not supported with bus='sd'"
 
 #, c-format
 msgid "<profile/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<profile/> requires TPM version '%1$s'"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> allowed only for LUN devices"
@@ -2293,7 +2293,7 @@ msgstr "CCW addresses are not supported by machine type '%1$s'"
 
 #, c-format
 msgid "CH does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "CH does not support device assignment mode '%1$s'"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2543,7 +2543,7 @@ msgstr "Cache level %1$d does not support tuning"
 msgid "Cache level %1$d does not support tuning for scope type '%2$s'"
 msgstr "Cache level %1$d does not support tuning for scope type '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"
 msgstr "Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"
 
@@ -2553,7 +2553,7 @@ msgstr "Cache level '%1$u' already defined"
 
 #, c-format
 msgid "Cache with id %1$u does not exists for level %2$d"
-msgstr ""
+msgstr "Cache with id %1$u does not exists for level %2$d"
 
 msgid "Calculate a vm's memory dirty rate"
 msgstr ""
@@ -3167,9 +3167,8 @@ msgstr "Cannot open %s"
 msgid "Cannot parse '%1$s' stat '%2$s'"
 msgstr "Cannot parse sys stat '%s'"
 
-#, fuzzy
 msgid "Cannot parse 'memory.stat' cgroup file."
-msgstr "Cannot parse <master> 'startport' attribute"
+msgstr "Cannot parse 'memory.stat' cgroup file."
 
 #, fuzzy
 msgid "Cannot parse <HardDisk> 'format' attribute"
@@ -3592,16 +3591,15 @@ msgstr "Certificate %1$s usage does not permit key encipherment"
 msgid "Certificate failed validation: %1$s"
 msgstr "Certificate failed validation: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cgroup backend '%1$s' already registered."
-msgstr "A close callback is already registered"
+msgstr "Cgroup backend '%1$s' already registered."
 
 msgid "Chain name contains invalid characters"
 msgstr "Chain name contains invalid characters"
 
-#, fuzzy
 msgid "Change bottom limit to number of workers."
-msgstr "cannot limit number of open files to %u"
+msgstr "Change bottom limit to number of workers."
 
 #, fuzzy
 msgid "Change lifecycle actions for the guest domain."
@@ -3623,9 +3621,8 @@ msgstr "Change the current directory."
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Change the current memory allocation in the guest domain."
 
-#, fuzzy
 msgid "Change the current number of priority workers"
-msgstr "Change the current directory."
+msgstr "Change the current number of priority workers"
 
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Change the maximum memory allocation limit in the guest domain."
@@ -3656,9 +3653,8 @@ msgstr ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
 
-#, fuzzy
 msgid "Changing fs access mode is not supported by vz driver."
-msgstr "SASL mechanism %s not supported by server"
+msgstr "Changing fs access mode is not supported by vz driver."
 
 #, fuzzy
 msgid "Changing fs write policy is not supported by vz driver."
@@ -40067,9 +40063,9 @@ msgstr "y - yes, start editor again"
 msgid "yes"
 msgstr "yes"
 
-#, fuzzy, c-format
+#, c-format
 msgid "zPCI %1$s %2$o is already reserved"
-msgstr "A close callback is already registered"
+msgstr "zPCI %1$s %2$o is already reserved"
 
 msgid "zero-copy is only available for parallel migration"
 msgstr "zero-copy is only available for parallel migration"
