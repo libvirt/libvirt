@@ -721,9 +721,25 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
     g_autoptr(virConnect) conn = NULL;
     int numDomains = 0;
     size_t i;
-    int state;
     virDomainPtr *domains = NULL;
-    g_autofree unsigned int *flags = NULL;
+
+    VIR_DEBUG("Run autoshutdown uri=%s trySave=%d tryShutdown=%d poweroff=%d waitShutdownSecs=%u",
+              cfg->uri, cfg->trySave, cfg->tryShutdown, cfg->poweroff,
+              cfg->waitShutdownSecs);
+
+    /*
+     * Ideally guests will shutdown in a few seconds, but it would
+     * not be unsual for it to take a while longer, especially under
+     * load, or if the guest OS has inhibitors slowing down shutdown.
+     *
+     * If we wait too long, then guests which ignore the shutdown
+     * request will significantly delay host shutdown.
+     *
+     * Pick 30 seconds as a moderately safe default, assuming that
+     * most guests are well behaved.
+     */
+    if (cfg->waitShutdownSecs <= 0)
+        cfg->waitShutdownSecs = 30;
 
     if (!(conn = virConnectOpen(cfg->uri)))
         goto cleanup;
@@ -733,31 +749,107 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
                                                VIR_CONNECT_LIST_DOMAINS_ACTIVE)) < 0)
         goto cleanup;
 
-    flags = g_new0(unsigned int, numDomains);
-
-    /* First we pause all VMs to make them stop dirtying
-       pages, etc. We remember if any VMs were paused so
-       we can restore that on resume. */
-    for (i = 0; i < numDomains; i++) {
-        flags[i] = VIR_DOMAIN_SAVE_RUNNING;
-        if (virDomainGetState(domains[i], &state, NULL, 0) == 0) {
-            if (state == VIR_DOMAIN_PAUSED)
-                flags[i] = VIR_DOMAIN_SAVE_PAUSED;
+    VIR_DEBUG("Auto shutdown with %d running domains", numDomains);
+    if (cfg->trySave) {
+        g_autofree unsigned int *flags = g_new0(unsigned int, numDomains);
+        for (i = 0; i < numDomains; i++) {
+            int state;
+            /*
+             * Pause all VMs to make them stop dirtying pages,
+             * so save is quicker. We remember if any VMs were
+             * paused so we can restore that on resume.
+             */
+            flags[i] = VIR_DOMAIN_SAVE_RUNNING;
+            if (virDomainGetState(domains[i], &state, NULL, 0) == 0) {
+                if (state == VIR_DOMAIN_PAUSED)
+                    flags[i] = VIR_DOMAIN_SAVE_PAUSED;
+            }
+            if (flags[i] & VIR_DOMAIN_SAVE_RUNNING)
+                virDomainSuspend(domains[i]);
         }
-        virDomainSuspend(domains[i]);
+
+        for (i = 0; i < numDomains; i++) {
+            if (virDomainManagedSave(domains[i], flags[i]) < 0) {
+                VIR_WARN("auto-shutdown: unable to perform managed save of '%s': %s",
+                         domains[i]->name,
+                         virGetLastErrorMessage());
+                if (flags[i] & VIR_DOMAIN_SAVE_RUNNING)
+                    virDomainResume(domains[i]);
+                continue;
+            }
+            virObjectUnref(domains[i]);
+            domains[i] = NULL;
+        }
     }
 
-    /* Then we save the VMs to disk */
-    for (i = 0; i < numDomains; i++)
-        if (virDomainManagedSave(domains[i], flags[i]) < 0)
-            VIR_WARN("Unable to perform managed save of '%s': %s",
-                     virDomainGetName(domains[i]),
-                     virGetLastErrorMessage());
+    if (cfg->tryShutdown) {
+        GTimer *timer = NULL;
+        for (i = 0; i < numDomains; i++) {
+            if (domains[i] == NULL)
+                continue;
+            if (virDomainShutdown(domains[i]) < 0) {
+                VIR_WARN("auto-shutdown: unable to request graceful shutdown of '%s': %s",
+                         domains[i]->name,
+                         virGetLastErrorMessage());
+                break;
+            }
+        }
+
+        timer = g_timer_new();
+        while (1) {
+            bool anyRunning = false;
+            for (i = 0; i < numDomains; i++) {
+                if (!domains[i])
+                    continue;
+
+                if (virDomainIsActive(domains[i]) == 1) {
+                    anyRunning = true;
+                } else {
+                    virObjectUnref(domains[i]);
+                    domains[i] = NULL;
+                }
+            }
+
+            if (!anyRunning)
+                break;
+            if (g_timer_elapsed(timer, NULL) > cfg->waitShutdownSecs)
+                break;
+            g_usleep(1000*500);
+        }
+        g_timer_destroy(timer);
+    }
+
+    if (cfg->poweroff) {
+        for (i = 0; i < numDomains; i++) {
+            if (domains[i] == NULL)
+                continue;
+            /*
+             * NB might fail if we gave up on waiting for
+             * virDomainShutdown, but it then completed anyway,
+             * hence we're not checking for failure
+             */
+            virDomainDestroy(domains[i]);
+
+            virObjectUnref(domains[i]);
+            domains[i] = NULL;
+        }
+    }
 
  cleanup:
     if (domains) {
-        for (i = 0; i < numDomains; i++)
+        /* Anything non-NULL in this list indicates none of
+         * the configured ations were successful in processing
+         * the domain. There's not much we can do about that
+         * as the host is powering off, logging at least lets
+         * admins know
+         */
+        for (i = 0; i < numDomains; i++) {
+            if (domains[i] == NULL)
+                continue;
+            VIR_WARN("auto-shutdown: domain '%s' not successfully shut off by any action",
+                     domains[i]->name);
             virObjectUnref(domains[i]);
+        }
         VIR_FREE(domains);
     }
 }

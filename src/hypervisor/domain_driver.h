@@ -93,6 +93,13 @@ void virDomainDriverAutoStart(virDomainObjList *domains,
 
 typedef struct _virDomainDriverAutoShutdownConfig {
     const char *uri;
+    bool trySave;
+    bool tryShutdown;
+    bool poweroff;
+    unsigned int waitShutdownSecs; /* Seconds to wait for VM to shutdown
+                                    * before moving onto next action.
+                                    * If 0 a default is used (currently 30 secs)
+                                    */
 } virDomainDriverAutoShutdownConfig;
 
 void virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg);
