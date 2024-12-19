@@ -17,6 +17,7 @@ access_gen_headers = []
 access_gen_sources = []
 access_gen_sym = []
 access_gen_xml = []
+access_generated = []
 
 foreach name : [ 'remote', 'qemu', 'lxc' ]
   if name == 'remote'
@@ -66,17 +67,28 @@ if conf.has('WITH_POLKIT')
   access_sources += access_polkit_sources
 
   if conf.has('WITH_LIBVIRTD')
-    custom_target(
-      'org.libvirt.api.policy',
+    polgen = custom_target(
+      'org.libvirt.api.policy.in',
       input: access_perm_h,
-      output: 'org.libvirt.api.policy',
+      output: 'org.libvirt.api.policy.in',
       command: [ meson_python_prog, python3_prog, genpolkit_prog, '@INPUT@' ],
       capture: true,
+      build_by_default: true,
+    )
+    access_generated += polgen
+
+    i18n.merge_file(
+      input: polgen,
+      output: 'org.libvirt.api.policy',
+      po_dir: po_dir,
+      data_dirs: [po_dir],
       install: true,
       install_dir: polkitactionsdir,
     )
   endif
 endif
+
+access_generated += access_gen_sources
 
 virt_access_lib = static_library(
   'virt_access',

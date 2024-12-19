@@ -15,6 +15,10 @@ if meson.version().version_compare('>=0.64.0')
   fs = import('fs')
 endif
 
+i18n = import('i18n')
+
+po_dir = meson.source_root() / 'po'
+
 # figure out if we are building from git
 
 git = run_command('test', '-e', '.git', check: false).returncode() == 0

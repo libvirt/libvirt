@@ -1273,9 +1273,10 @@ po_file ?= $(top_srcdir)/po/POTFILES
 # This is all generated files for RPC code.
 generated_files = \
   $(top_builddir)/src/*.[ch] \
-  $(top_builddir)/src/*/*.[ch]
+  $(top_builddir)/src/*/*.[ch] \
+  $(top_builddir)/src/*/*.policy.in
 
-_gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
+_gl_translatable_string_re ?= (^<policyconfig>|\b(N?_|gettext *)\([^)"]*("|$$))
 
 # sc_po_check can fail if generated files are not built first
 sc_po_check:

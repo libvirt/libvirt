@@ -1,6 +1,7 @@
 src/access/viraccessapicheck.c
 src/access/viraccessapichecklxc.c
 src/access/viraccessapicheckqemu.c
+src/access/org.libvirt.api.policy.in
 src/admin/admin_client.h
 src/admin/admin_server_dispatch_stubs.h
 src/remote/remote_client_bodies.h
@@ -201,6 +202,7 @@ src/qemu/qemu_validate.c
 src/qemu/qemu_vhost_user.c
 src/qemu/qemu_vhost_user_gpu.c
 src/qemu/qemu_virtiofs.c
+src/remote/libvirtd.policy.in
 src/remote/remote_daemon.c
 src/remote/remote_daemon_config.c
 src/remote/remote_daemon_dispatch.c
