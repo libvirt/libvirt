@@ -83,6 +83,7 @@ module Test_libvirtd_qemu =
 { "auto_shutdown_try_save" = "persistent" }
 { "auto_shutdown_try_shutdown" = "all" }
 { "auto_shutdown_poweroff" = "all" }
+{ "auto_shutdown_wait" = "30" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
 { "bridge_helper" = "qemu-bridge-helper" }
 { "set_process_name" = "1" }

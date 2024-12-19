@@ -215,6 +215,7 @@ struct _virQEMUDriverConfig {
     virDomainDriverAutoShutdownScope autoShutdownTrySave;
     virDomainDriverAutoShutdownScope autoShutdownTryShutdown;
     virDomainDriverAutoShutdownScope autoShutdownPoweroff;
+    unsigned int autoShutdownWait;
 
     char *lockManagerName;
 
