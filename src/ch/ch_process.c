@@ -964,7 +964,7 @@ virCHProcessStart(virCHDriver *driver,
     if (virDomainInterfaceStartDevices(vm->def) < 0)
         return -1;
 
-    if (virCHMonitorBootVM(priv->monitor) < 0) {
+    if (virCHMonitorBootVM(priv->monitor, logCtxt) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to boot guest VM"));
         goto cleanup;

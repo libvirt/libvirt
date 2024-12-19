@@ -56,7 +56,8 @@ static int virCHMonitorOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virCHMonitor);
 
 int virCHMonitorShutdownVMM(virCHMonitor *mon);
-int virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint);
+int virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint,
+                             domainLogContext *logCtxt);
 
 static int
 virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
@@ -694,12 +695,15 @@ curl_callback(void *contents, size_t size, size_t nmemb, void *userp)
 }
 
 int
-virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
+virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint,
+                         domainLogContext *logCtxt)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mon);
     g_autofree char *url = NULL;
     int responseCode = 0;
     int ret = -1;
+    struct curl_data data = {0};
+    struct curl_slist *headers = NULL;
 
     url = g_strdup_printf("%s/%s", URL_ROOT, endpoint);
 
@@ -712,7 +716,20 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
     curl_easy_setopt(mon->handle, CURLOPT_HTTPHEADER, NULL);
     curl_easy_setopt(mon->handle, CURLOPT_INFILESIZE, 0L);
 
+    headers = curl_slist_append(headers, "Accept: application/json");
+    curl_easy_setopt(mon->handle, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(mon->handle, CURLOPT_WRITEFUNCTION, curl_callback);
+    curl_easy_setopt(mon->handle, CURLOPT_WRITEDATA, (void *)&data);
+
     responseCode = virCHMonitorCurlPerform(mon->handle);
+
+    if (logCtxt && data.size) {
+        /* Do this to append a NULL char at the end of data */
+        data.content = g_realloc(data.content, data.size + 1);
+        data.content[data.size] = 0;
+        domainLogContextWrite(logCtxt, "HTTP response code from CH: %d\n", responseCode);
+        domainLogContextWrite(logCtxt, "Response = %s\n", data.content);
+    }
 
     if (responseCode == 200 || responseCode == 204)
         ret = 0;
@@ -863,7 +880,7 @@ virCHMonitorGetThreadInfo(virCHMonitor *mon,
 int
 virCHMonitorShutdownVMM(virCHMonitor *mon)
 {
-    return virCHMonitorPutNoContent(mon, URL_VMM_SHUTDOWN);
+    return virCHMonitorPutNoContent(mon, URL_VMM_SHUTDOWN, NULL);
 }
 
 int
@@ -903,33 +920,33 @@ virCHMonitorCreateVM(virCHDriver *driver, virCHMonitor *mon)
 }
 
 int
-virCHMonitorBootVM(virCHMonitor *mon)
+virCHMonitorBootVM(virCHMonitor *mon, domainLogContext *logCtxt)
 {
-    return virCHMonitorPutNoContent(mon, URL_VM_BOOT);
+    return virCHMonitorPutNoContent(mon, URL_VM_BOOT, logCtxt);
 }
 
 int
 virCHMonitorShutdownVM(virCHMonitor *mon)
 {
-    return virCHMonitorPutNoContent(mon, URL_VM_SHUTDOWN);
+    return virCHMonitorPutNoContent(mon, URL_VM_SHUTDOWN, NULL);
 }
 
 int
 virCHMonitorRebootVM(virCHMonitor *mon)
 {
-    return virCHMonitorPutNoContent(mon, URL_VM_REBOOT);
+    return virCHMonitorPutNoContent(mon, URL_VM_REBOOT, NULL);
 }
 
 int
 virCHMonitorSuspendVM(virCHMonitor *mon)
 {
-    return virCHMonitorPutNoContent(mon, URL_VM_Suspend);
+    return virCHMonitorPutNoContent(mon, URL_VM_Suspend, NULL);
 }
 
 int
 virCHMonitorResumeVM(virCHMonitor *mon)
 {
-    return virCHMonitorPutNoContent(mon, URL_VM_RESUME);
+    return virCHMonitorPutNoContent(mon, URL_VM_RESUME, NULL);
 }
 
 int
