@@ -9,13 +9,14 @@
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
 # Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021, 2024.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022, 2023.
+# Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
 "PO-Revision-Date: 2024-12-19 15:04+0000\n"
-"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -6646,7 +6647,7 @@ msgstr "SASL-asiakasympäristön luominen epäonnistui: %1$d (%2$s)"
 
 #, c-format
 msgid "Failed to create SAVE dir %1$s"
-msgstr ""
+msgstr "save-hakemiston '%1$s' luominen epäonnistui"
 
 msgid "Failed to create XML"
 msgstr "XML:n luonti epäonnistui"
@@ -36072,7 +36073,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr ""
+msgstr "Liitännän indeksia ei voi saada %1$s:lle"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
