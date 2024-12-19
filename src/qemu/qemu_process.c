@@ -1840,7 +1840,7 @@ qemuProcessMonitorReportLogError(qemuMonitor *mon,
 static void
 qemuProcessMonitorLogFree(void *opaque)
 {
-    qemuLogContext *logCtxt = opaque;
+    domainLogContext *logCtxt = opaque;
     g_clear_object(&logCtxt);
 }
 
@@ -1866,7 +1866,7 @@ static int
 qemuConnectMonitor(virQEMUDriver *driver,
                    virDomainObj *vm,
                    int asyncJob,
-                   qemuLogContext *logCtxt,
+                   domainLogContext *logCtxt,
                    bool reconnect)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -1918,13 +1918,13 @@ qemuConnectMonitor(virQEMUDriver *driver,
 
 
 static int
-qemuProcessReportLogError(qemuLogContext *logCtxt,
+qemuProcessReportLogError(domainLogContext *logCtxt,
                           const char *msgprefix)
 {
     g_autofree char *logmsg = NULL;
 
     /* assume that 1024 chars of qemu log is the right balance */
-    if (qemuLogContextReadFiltered(logCtxt, &logmsg, 1024) < 0)
+    if (domainLogContextReadFiltered(logCtxt, &logmsg, 1024) < 0)
         return -1;
 
     virResetLastError();
@@ -1943,7 +1943,7 @@ qemuProcessMonitorReportLogError(qemuMonitor *mon G_GNUC_UNUSED,
                                  const char *msg,
                                  void *opaque)
 {
-    qemuLogContext *logCtxt = opaque;
+    domainLogContext *logCtxt = opaque;
     qemuProcessReportLogError(logCtxt, msg);
 }
 
@@ -2244,7 +2244,7 @@ static int
 qemuProcessWaitForMonitor(virQEMUDriver *driver,
                           virDomainObj *vm,
                           int asyncJob,
-                          qemuLogContext *logCtxt)
+                          domainLogContext *logCtxt)
 {
     int ret = -1;
     g_autoptr(GHashTable) info = NULL;
@@ -4740,7 +4740,7 @@ static void
 qemuLogOperation(virDomainObj *vm,
                  const char *msg,
                  virCommand *cmd,
-                 qemuLogContext *logCtxt)
+                 domainLogContext *logCtxt)
 {
     g_autofree char *timestamp = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -4754,20 +4754,20 @@ qemuLogOperation(virDomainObj *vm,
     if ((timestamp = virTimeStringNow()) == NULL)
         return;
 
-    if (qemuLogContextWrite(logCtxt,
-                            "%s: %s %s, qemu version: %d.%d.%d%s, kernel: %s, hostname: %s\n",
-                            timestamp, msg, VIR_LOG_VERSION_STRING,
-                            (qemuVersion / 1000000) % 1000,
-                            (qemuVersion / 1000) % 1000,
-                            qemuVersion % 1000,
-                            NULLSTR_EMPTY(package),
-                            uts.release,
-                            NULLSTR_EMPTY(hostname)) < 0)
+    if (domainLogContextWrite(logCtxt,
+                              "%s: %s %s, qemu version: %d.%d.%d%s, kernel: %s, hostname: %s\n",
+                              timestamp, msg, VIR_LOG_VERSION_STRING,
+                              (qemuVersion / 1000000) % 1000,
+                              (qemuVersion / 1000) % 1000,
+                              qemuVersion % 1000,
+                              NULLSTR_EMPTY(package),
+                              uts.release,
+                              NULLSTR_EMPTY(hostname)) < 0)
         return;
 
     if (cmd) {
         g_autofree char *args = virCommandToString(cmd, true);
-        qemuLogContextWrite(logCtxt, "%s\n", args);
+        domainLogContextWrite(logCtxt, "%s\n", args);
     }
 }
 
@@ -7775,7 +7775,7 @@ qemuProcessLaunch(virConnectPtr conn,
     int ret = -1;
     int rv;
     int logfile = -1;
-    g_autoptr(qemuLogContext) logCtxt = NULL;
+    g_autoptr(domainLogContext) logCtxt = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCommand) cmd = NULL;
     struct qemuProcessHookData hookData;
@@ -7825,11 +7825,14 @@ qemuProcessLaunch(virConnectPtr conn,
     hookData.cfg = cfg;
 
     VIR_DEBUG("Creating domain log file");
-    if (!(logCtxt = qemuLogContextNew(driver, vm, vm->def->name))) {
+    if (!(logCtxt = domainLogContextNew(cfg->stdioLogD, cfg->logDir,
+                                        QEMU_DRIVER_NAME,
+                                        vm, driver->privileged,
+                                        vm->def->name))) {
         virLastErrorPrefixMessage("%s", _("can't connect to virtlogd"));
         goto cleanup;
     }
-    logfile = qemuLogContextGetWriteFD(logCtxt);
+    logfile = domainLogContextGetWriteFD(logCtxt);
 
     if (qemuProcessGenID(vm, flags) < 0)
         goto cleanup;
@@ -7865,7 +7868,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainObjCheckTaint(driver, vm, logCtxt, incoming != NULL);
 
-    qemuLogContextMarkPosition(logCtxt);
+    domainLogContextMarkPosition(logCtxt);
 
     if (qemuProcessEnableDomainNamespaces(driver, vm) < 0)
         goto cleanup;

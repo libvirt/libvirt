@@ -1177,6 +1177,7 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
                        virQEMUDriver *driver)
 {
     g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int rc;
     int exitstatus = 0;
     g_autofree char *errbuf = NULL;
@@ -1185,7 +1186,7 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     g_autofree char *uristring = NULL;
     g_autofree char *basename = g_strdup_printf("%s-nbdkit-%i", vm->def->name, proc->source->id);
     int logfd = -1;
-    g_autoptr(qemuLogContext) logContext = NULL;
+    g_autoptr(domainLogContext) logContext = NULL;
 #if WITH_NBDKIT
     struct nbd_handle *nbd = NULL;
 #endif
@@ -1200,12 +1201,15 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     if (!(cmd = qemuNbdkitProcessBuildCommand(proc)))
         return -1;
 
-    if (!(logContext = qemuLogContextNew(driver, vm, basename))) {
+    if (!(logContext = domainLogContextNew(cfg->stdioLogD, cfg->logDir,
+                                           QEMU_DRIVER_NAME,
+                                           vm, driver->privileged,
+                                           basename))) {
         virLastErrorPrefixMessage("%s", _("can't connect to virtlogd"));
         return -1;
     }
 
-    logfd = qemuLogContextGetWriteFD(logContext);
+    logfd = domainLogContextGetWriteFD(logContext);
 
     VIR_DEBUG("starting nbdkit process for %s", qemuBlockStorageSourceGetStorageNodename(proc->source));
     virCommandSetErrorFD(cmd, &logfd);
@@ -1283,7 +1287,7 @@ qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
     if ((uri = qemuBlockStorageSourceGetURI(proc->source)))
         uristring = virURIFormat(uri);
 
-    if (qemuLogContextReadFiltered(logContext, &errbuf, 1024) < 0)
+    if (domainLogContextReadFiltered(logContext, &errbuf, 1024) < 0)
         VIR_WARN("Unable to read from nbdkit log");
 
     virReportError(VIR_ERR_OPERATION_FAILED,

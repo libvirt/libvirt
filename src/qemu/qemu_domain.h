@@ -26,13 +26,13 @@
 #include "virperf.h"
 #include "domain_addr.h"
 #include "domain_conf.h"
+#include "domain_logcontext.h"
 #include "qemu_monitor.h"
 #include "qemu_agent.h"
 #include "qemu_blockjob.h"
 #include "qemu_domainjob.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
-#include "qemu_logcontext.h"
 #include "qemu_migration_params.h"
 #include "qemu_nbdkit.h"
 #include "qemu_slirp.h"
@@ -641,24 +641,24 @@ char *qemuDomainDefFormatLive(virQEMUDriver *driver,
 void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainObj *obj,
                         virDomainTaintFlags taint,
-                        qemuLogContext *logCtxt);
+                        domainLogContext *logCtxt);
 
 void qemuDomainObjCheckTaint(virQEMUDriver *driver,
                              virDomainObj *obj,
-                             qemuLogContext *logCtxt,
+                             domainLogContext *logCtxt,
                              bool incomingMigration);
 void qemuDomainObjCheckDiskTaint(virQEMUDriver *driver,
                                  virDomainObj *obj,
                                  virDomainDiskDef *disk,
-                                 qemuLogContext *logCtxt);
+                                 domainLogContext *logCtxt);
 void qemuDomainObjCheckHostdevTaint(virQEMUDriver *driver,
                                     virDomainObj *obj,
                                     virDomainHostdevDef *disk,
-                                    qemuLogContext *logCtxt);
+                                    domainLogContext *logCtxt);
 void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
                                 virDomainObj *obj,
                                 virDomainNetDef *net,
-                                qemuLogContext *logCtxt);
+                                domainLogContext *logCtxt);
 
 int qemuDomainLogAppendMessage(virQEMUDriver *driver,
                                virDomainObj *vm,

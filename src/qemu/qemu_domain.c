@@ -5399,7 +5399,7 @@ static void G_GNUC_PRINTF(5, 6)
 qemuDomainObjTaintMsg(virQEMUDriver *driver,
                       virDomainObj *obj,
                       virDomainTaintFlags taint,
-                      qemuLogContext *logCtxt,
+                      domainLogContext *logCtxt,
                       const char *fmt, ...)
 {
     virErrorPtr orig_err = NULL;
@@ -5452,12 +5452,12 @@ qemuDomainObjTaintMsg(virQEMUDriver *driver,
         goto cleanup;
 
     if (logCtxt) {
-        rc = qemuLogContextWrite(logCtxt,
-                                 "%s: Domain id=%d is tainted: %s%s%s%s\n",
-                                 timestamp,
-                                 obj->def->id,
-                                 virDomainTaintTypeToString(taint),
-                                 extraprefix, extramsg, extrasuffix);
+        rc = domainLogContextWrite(logCtxt,
+                                   "%s: Domain id=%d is tainted: %s%s%s%s\n",
+                                   timestamp,
+                                   obj->def->id,
+                                   virDomainTaintTypeToString(taint),
+                                   extraprefix, extramsg, extrasuffix);
     } else {
         rc = qemuDomainLogAppendMessage(driver, obj,
                                         "%s: Domain id=%d is tainted: %s%s%s%s\n",
@@ -5478,7 +5478,7 @@ qemuDomainObjTaintMsg(virQEMUDriver *driver,
 void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainObj *obj,
                         virDomainTaintFlags taint,
-                        qemuLogContext *logCtxt)
+                        domainLogContext *logCtxt)
 {
     qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
     qemuDomainSaveStatus(obj);
@@ -5487,7 +5487,7 @@ void qemuDomainObjTaint(virQEMUDriver *driver,
 static void
 qemuDomainObjCheckMachineTaint(virQEMUDriver *driver,
                                virDomainObj *obj,
-                               qemuLogContext *logCtxt)
+                               domainLogContext *logCtxt)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
@@ -5505,7 +5505,7 @@ qemuDomainObjCheckMachineTaint(virQEMUDriver *driver,
 static void
 qemuDomainObjCheckCPUTaint(virQEMUDriver *driver,
                            virDomainObj *obj,
-                           qemuLogContext *logCtxt,
+                           domainLogContext *logCtxt,
                            bool incomingMigration)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
@@ -5537,7 +5537,7 @@ qemuDomainObjCheckCPUTaint(virQEMUDriver *driver,
 
 void qemuDomainObjCheckTaint(virQEMUDriver *driver,
                              virDomainObj *obj,
-                             qemuLogContext *logCtxt,
+                             domainLogContext *logCtxt,
                              bool incomingMigration)
 {
     size_t i;
@@ -5593,7 +5593,7 @@ void qemuDomainObjCheckTaint(virQEMUDriver *driver,
 void qemuDomainObjCheckDiskTaint(virQEMUDriver *driver,
                                  virDomainObj *obj,
                                  virDomainDiskDef *disk,
-                                 qemuLogContext *logCtxt)
+                                 domainLogContext *logCtxt)
 {
     if (disk->rawio == VIR_TRISTATE_BOOL_YES)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
@@ -5610,7 +5610,7 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriver *driver,
 void qemuDomainObjCheckHostdevTaint(virQEMUDriver *driver,
                                     virDomainObj *obj,
                                     virDomainHostdevDef *hostdev,
-                                    qemuLogContext *logCtxt)
+                                    domainLogContext *logCtxt)
 {
     if (!virHostdevIsSCSIDevice(hostdev))
         return;
@@ -5623,7 +5623,7 @@ void qemuDomainObjCheckHostdevTaint(virQEMUDriver *driver,
 void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
                                 virDomainObj *obj,
                                 virDomainNetDef *net,
-                                qemuLogContext *logCtxt)
+                                domainLogContext *logCtxt)
 {
     /* script is only useful for NET_TYPE_ETHERNET (qemu) and
      * NET_TYPE_BRIDGE (xen), but could be (incorrectly) specified for

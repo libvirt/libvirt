@@ -2,6 +2,7 @@ hypervisor_sources = [
   'domain_cgroup.c',
   'domain_driver.c',
   'domain_interface.c',
+  'domain_logcontext.c',
   'virclosecallbacks.c',
   'virhostdev.c',
 ]

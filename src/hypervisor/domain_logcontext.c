@@ -1,5 +1,5 @@
 /*
- * qemu_logcontext.c: QEMU log context
+ * domain_logcontext.c: Domain log context
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,20 +18,22 @@
 
 #include <config.h>
 
-#include "qemu_logcontext.h"
+#include "domain_logcontext.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virfile.h"
+#include "virerror.h"
 
 #include <fcntl.h>
 
-#define VIR_FROM_THIS VIR_FROM_QEMU
+#define VIR_FROM_THIS VIR_FROM_DOMAIN
 
-VIR_LOG_INIT("qemu.qemu_logcontext");
+VIR_LOG_INIT("domain.domain_logcontext");
 
 
-struct _qemuLogContext {
+struct _domainLogContext {
     GObject parent;
 
     int writefd;
@@ -42,62 +44,64 @@ struct _qemuLogContext {
     virLogManager *manager;
 };
 
-G_DEFINE_TYPE(qemuLogContext, qemu_log_context, G_TYPE_OBJECT);
+G_DEFINE_TYPE(domainLogContext, domain_log_context, G_TYPE_OBJECT);
 
 static void
-qemuLogContextFinalize(GObject *obj);
+domainLogContextFinalize(GObject *obj);
 
 
 static void
-qemu_log_context_init(qemuLogContext *logctxt G_GNUC_UNUSED)
+domain_log_context_init(domainLogContext *logctxt G_GNUC_UNUSED)
 {
 }
 
 
 static void
-qemu_log_context_class_init(qemuLogContextClass *klass)
+domain_log_context_class_init(domainLogContextClass *klass)
 {
     GObjectClass *obj = G_OBJECT_CLASS(klass);
 
-    obj->finalize = qemuLogContextFinalize;
+    obj->finalize = domainLogContextFinalize;
 }
 
 
 static void
-qemuLogContextFinalize(GObject *object)
+domainLogContextFinalize(GObject *object)
 {
-    qemuLogContext *ctxt = QEMU_LOG_CONTEXT(object);
+    domainLogContext *ctxt = DOMAIN_LOG_CONTEXT(object);
     VIR_DEBUG("ctxt=%p", ctxt);
 
     virLogManagerFree(ctxt->manager);
     VIR_FREE(ctxt->path);
     VIR_FORCE_CLOSE(ctxt->writefd);
     VIR_FORCE_CLOSE(ctxt->readfd);
-    G_OBJECT_CLASS(qemu_log_context_parent_class)->finalize(object);
+    G_OBJECT_CLASS(domain_log_context_parent_class)->finalize(object);
 }
 
 
-qemuLogContext *
-qemuLogContextNew(virQEMUDriver *driver,
-                  virDomainObj *vm,
-                  const char *basename)
+domainLogContext *
+domainLogContextNew(bool stdioLogD,
+                    char *logDir,
+                    const char *driver_name,
+                    virDomainObj *vm,
+                    bool privileged,
+                    const char *basename)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuLogContext *ctxt = QEMU_LOG_CONTEXT(g_object_new(QEMU_TYPE_LOG_CONTEXT, NULL));
+    domainLogContext *ctxt = DOMAIN_LOG_CONTEXT(g_object_new(DOMAIN_TYPE_LOG_CONTEXT, NULL));
 
-    VIR_DEBUG("Context new %p stdioLogD=%d", ctxt, cfg->stdioLogD);
+    VIR_DEBUG("Context new %p stdioLogD=%d", ctxt, stdioLogD);
     ctxt->writefd = -1;
     ctxt->readfd = -1;
 
-    ctxt->path = g_strdup_printf("%s/%s.log", cfg->logDir, basename);
+    ctxt->path = g_strdup_printf("%s/%s.log", logDir, basename);
 
-    if (cfg->stdioLogD) {
-        ctxt->manager = virLogManagerNew(driver->privileged);
+    if (stdioLogD) {
+        ctxt->manager = virLogManagerNew(privileged);
         if (!ctxt->manager)
             goto error;
 
         ctxt->writefd = virLogManagerDomainOpenLogFile(ctxt->manager,
-                                                       "qemu",
+                                                       driver_name,
                                                        vm->def->uuid,
                                                        vm->def->name,
                                                        ctxt->path,
@@ -121,7 +125,7 @@ qemuLogContextNew(virQEMUDriver *driver,
         /* For unprivileged startup we must truncate the file since
          * we can't rely on logrotate. We don't use O_TRUNC since
          * it is better for SELinux policy if we truncate afterwards */
-        if (!driver->privileged &&
+        if (!privileged &&
             ftruncate(ctxt->writefd, 0) < 0) {
             virReportSystemError(errno, _("failed to truncate %1$s"),
                                  ctxt->path);
@@ -155,8 +159,8 @@ qemuLogContextNew(virQEMUDriver *driver,
 
 
 int
-qemuLogContextWrite(qemuLogContext *ctxt,
-                    const char *fmt, ...)
+domainLogContextWrite(domainLogContext *ctxt,
+                      const char *fmt, ...)
 {
     va_list argptr;
     g_autofree char *message = NULL;
@@ -186,8 +190,8 @@ qemuLogContextWrite(qemuLogContext *ctxt,
 
 
 ssize_t
-qemuLogContextRead(qemuLogContext *ctxt,
-                   char **msg)
+domainLogContextRead(domainLogContext *ctxt,
+                     char **msg)
 {
     char *buf;
     size_t buflen;
@@ -238,7 +242,7 @@ qemuLogContextRead(qemuLogContext *ctxt,
 
 
 /**
- * qemuLogContextFilter: Read and filter log for relevant messages
+ * domainLogContextFilter: Read and filter log for relevant messages
  * @ctxt: the domain log context
  * @msg: pointer to buffer to store the read messages in
  * @max: maximum length of the message returned in @msg after filtering
@@ -249,9 +253,9 @@ qemuLogContextRead(qemuLogContext *ctxt,
  * after a new line if possible.
  */
 int
-qemuLogContextReadFiltered(qemuLogContext *ctxt,
-                           char **msg,
-                           size_t max)
+domainLogContextReadFiltered(domainLogContext *ctxt,
+                             char **msg,
+                             size_t max)
 {
     char *buf;
     char *eol;
@@ -259,7 +263,7 @@ qemuLogContextReadFiltered(qemuLogContext *ctxt,
     size_t skip;
     ssize_t got;
 
-    if ((got = qemuLogContextRead(ctxt, &buf)) < 0)
+    if ((got = domainLogContextRead(ctxt, &buf)) < 0)
         return -1;
 
     /* Filter out debug messages from intermediate libvirt process */
@@ -302,14 +306,14 @@ qemuLogContextReadFiltered(qemuLogContext *ctxt,
 
 
 int
-qemuLogContextGetWriteFD(qemuLogContext *ctxt)
+domainLogContextGetWriteFD(domainLogContext *ctxt)
 {
     return ctxt->writefd;
 }
 
 
 void
-qemuLogContextMarkPosition(qemuLogContext *ctxt)
+domainLogContextMarkPosition(domainLogContext *ctxt)
 {
     if (ctxt->manager)
         virLogManagerDomainGetLogFilePosition(ctxt->manager,
@@ -323,7 +327,7 @@ qemuLogContextMarkPosition(qemuLogContext *ctxt)
 
 
 virLogManager *
-qemuLogContextGetManager(qemuLogContext *ctxt)
+domainLogContextGetManager(domainLogContext *ctxt)
 {
     return ctxt->manager;
 }
