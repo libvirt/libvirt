@@ -689,22 +689,24 @@
 # managed save. If managed save is enabled, shutdown will
 # be tried only on failure to perform managed save.
 #
-# Defaults to "none"
+# Defaults to "all" for session daemons and "none" for
+# system daemons
 #
 # If 'libvirt-guests.service' is enabled, then this must be
 # set to 'none' for system daemons to avoid dueling actions
-#auto_shutdown_try_shutdown = "none"
+#auto_shutdown_try_shutdown = "all"
 
 # As above, but with a forced poweroff instead of managed
 # save. If managed save or graceful shutdown are enabled,
 # forced poweroff will be tried only on failure of the
 # other options.
 #
-# Defaults to "none"
+# Defaults to "all" for session daemons and "none" for
+# system daemons.
 #
 # If 'libvirt-guests.service' is enabled, then this must be
 # set to 'none' for system daemons to avoid dueling actions
-#auto_shutdown_poweroff = "none"
+#auto_shutdown_poweroff = "all"
 
 # If provided by the host and a hugetlbfs mount point is configured,
 # a guest may request huge page backing.  When this mount point is

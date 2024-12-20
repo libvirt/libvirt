@@ -325,8 +325,8 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
     } else {
         cfg->autoShutdownTrySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT;
-        cfg->autoShutdownTryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
-        cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdownTryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL;
+        cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL;
     }
 
     return g_steal_pointer(&cfg);
