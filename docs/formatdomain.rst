@@ -1993,7 +1993,10 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
        <vendor_id state='on' value='KVM Hv'/>
        <frequencies state='on'/>
        <reenlightenment state='on'/>
-       <tlbflush state='on'/>
+       <tlbflush state='on'>
+         <direct state='on'/>
+         <extended state='on'/>
+       </tlbflush>
        <ipi state='on'/>
        <evmcs state='on'/>
        <emsr_bitmap state='on'/>
@@ -2068,9 +2071,9 @@ are:
    Enable various features improving behavior of guests running Microsoft
    Windows.
 
-   =============== ====================================================================== ============================================ =======================================================
+   =============== ====================================================================== ============================================ ========================================================================
    Feature         Description                                                            Value                                        Since
-   =============== ====================================================================== ============================================ =======================================================
+   =============== ====================================================================== ============================================ ========================================================================
    relaxed         Relax constraints on timers                                            on, off                                      :since:`1.0.0 (QEMU 2.0)`
    vapic           Enable virtual APIC                                                    on, off                                      :since:`1.1.0 (QEMU 2.0)`
    spinlocks       Enable spinlock support                                                on, off; retries - at least 4095             :since:`1.1.0 (QEMU 2.0)`
@@ -2082,13 +2085,13 @@ are:
    vendor_id       Set hypervisor vendor id                                               on, off; value - string, up to 12 characters :since:`1.3.3 (QEMU 2.5)`
    frequencies     Expose frequency MSRs                                                  on, off                                      :since:`4.7.0 (QEMU 2.12)`
    reenlightenment Enable re-enlightenment notification on migration                      on, off                                      :since:`4.7.0 (QEMU 3.0)`
-   tlbflush        Enable PV TLB flush support                                            on, off                                      :since:`4.7.0 (QEMU 3.0)`
+   tlbflush        Enable PV TLB flush support                                            on, off; direct - on,off; extended - on,off  :since:`4.7.0 (QEMU 3.0), direct and extended modes 11.0.0 (QEMU 7.1.0)`
    ipi             Enable PV IPI support                                                  on, off                                      :since:`4.10.0 (QEMU 3.1)`
    evmcs           Enable Enlightened VMCS                                                on, off                                      :since:`4.10.0 (QEMU 3.1)`
    avic            Enable use Hyper-V SynIC with hardware APICv/AVIC                      on, off                                      :since:`8.10.0 (QEMU 6.2)`
    emsr_bitmap     Avoid unnecessary updates to L2 MSR Bitmap upon vmexits.               on, off                                      :since:`10.7.0 (QEMU 7.1)`
    xmm_input       Enable XMM Fast Hypercall Input                                        on, off                                      :since:`10.7.0 (QEMU 7.1)`
-   =============== ====================================================================== ============================================ =======================================================
+   =============== ====================================================================== ============================================ ========================================================================
 
    :since:`Since 8.0.0`, the hypervisor can be configured further by setting
    the ``mode`` attribute to one of the following values:

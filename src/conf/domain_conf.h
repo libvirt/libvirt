@@ -3101,6 +3101,8 @@ struct _virDomainDef {
     virDomainXenPassthroughMode xen_passthrough_mode;
     unsigned int hyperv_spinlocks;
     virTristateSwitch hyperv_stimer_direct;
+    virTristateSwitch hyperv_tlbflush_direct;
+    virTristateSwitch hyperv_tlbflush_extended;
     virGICVersion gic_version;
     virDomainHPTResizing hpt_resizing;
     unsigned long long hpt_maxpagesize; /* Stored in KiB */

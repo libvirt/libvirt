@@ -16672,12 +16672,36 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
         case VIR_DOMAIN_HYPERV_RESET:
         case VIR_DOMAIN_HYPERV_FREQUENCIES:
         case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-        case VIR_DOMAIN_HYPERV_TLBFLUSH:
         case VIR_DOMAIN_HYPERV_IPI:
         case VIR_DOMAIN_HYPERV_EVMCS:
         case VIR_DOMAIN_HYPERV_AVIC:
         case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
         case VIR_DOMAIN_HYPERV_XMM_INPUT:
+            break;
+
+        case VIR_DOMAIN_HYPERV_TLBFLUSH:
+            if (value != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            child = xmlFirstElementChild(node);
+            while (child) {
+                if (STREQ((const char *)child->name, "direct")) {
+                    if (virXMLPropTristateSwitch(child, "state", VIR_XML_PROP_REQUIRED,
+                                                 &def->hyperv_tlbflush_direct) < 0)
+                        return -1;
+                } else if (STREQ((const char *)child->name, "extended")) {
+                    if (virXMLPropTristateSwitch(child, "state", VIR_XML_PROP_REQUIRED,
+                                                 &def->hyperv_tlbflush_extended) < 0)
+                        return -1;
+                } else {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unsupported Hyper-V tlbflush feature: %1$s"),
+                                   child->name);
+                    return -1;
+                }
+
+                child = xmlNextElementSibling(child);
+            }
             break;
 
         case VIR_DOMAIN_HYPERV_STIMER:

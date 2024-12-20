@@ -60,6 +60,8 @@ struct _virCPUx86MSR {
 #define VIR_CPU_x86_HV_FREQUENCIES "hv-frequencies"
 #define VIR_CPU_x86_HV_REENLIGHTENMENT "hv-reenlightenment"
 #define VIR_CPU_x86_HV_TLBFLUSH  "hv-tlbflush"
+#define VIR_CPU_x86_HV_TLBFLUSH_EXT "hv-tlbflush-ext"
+#define VIR_CPU_x86_HV_TLBFLUSH_DIRECT "hv-tlbflush-direct"
 #define VIR_CPU_x86_HV_IPI       "hv-ipi"
 #define VIR_CPU_x86_HV_EVMCS     "hv-evmcs"
 #define VIR_CPU_x86_HV_AVIC      "hv-avic"
