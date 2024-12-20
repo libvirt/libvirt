@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-19 18:03+0000\n"
+"PO-Revision-Date: 2024-12-20 15:23+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -1299,10 +1299,10 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr ""
+msgstr "'manuaalista' muistin tilannevedostilaa ei tueta"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
-msgstr ""
+msgstr "Testiajuri ei tue manuaalista tilannevedostilaa"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr ""
@@ -1513,7 +1513,7 @@ msgid "(save cookie)"
 msgstr ""
 
 msgid "(snapshot_tree)"
-msgstr ""
+msgstr "(tilannevedoksen_puu)"
 
 msgid "(storage_pool_definition)"
 msgstr ""
@@ -5619,7 +5619,7 @@ msgid ""
 msgstr ""
 
 msgid "Domain has no current snapshot"
-msgstr ""
+msgstr "Toimialueella ei ole nykyistä tilannevedosta"
 
 msgid "Domain has no managed save image"
 msgstr ""
@@ -5706,7 +5706,7 @@ msgstr "Toimialueella tulisi olla vähintään yksi levy määritelty"
 
 #, c-format
 msgid "Domain snapshot %1$s children deleted\n"
-msgstr ""
+msgstr "Toimialueen tilannevedoksen %1$s lapsi poistettu\n"
 
 #, c-format
 msgid "Domain snapshot %1$s created"
@@ -5714,15 +5714,15 @@ msgstr "Toimialueen tilannevedos %1$s luotu"
 
 #, c-format
 msgid "Domain snapshot %1$s created from '%2$s'"
-msgstr "Toimialueen tilannevedos %1$s luotu tiedostosta %2$s"
+msgstr "Toimialueen tilannevedos %1$s luotu %2$s:sta"
 
 #, c-format
 msgid "Domain snapshot %1$s deleted\n"
-msgstr "Toimialueen tilannevedos %1$s tuhottu\n"
+msgstr "Toimialueen tilannevedos %1$s poistettu\n"
 
 #, c-format
 msgid "Domain snapshot %1$s reverted\n"
-msgstr ""
+msgstr "Toimialueen tilannevedos %1$s palautettu\n"
 
 msgid "Domain snapshot not found"
 msgstr "Toimialueen tilannevedosta ei löytynyt"
@@ -5781,7 +5781,7 @@ msgid "Dump XML for a domain checkpoint"
 msgstr ""
 
 msgid "Dump XML for a domain snapshot"
-msgstr ""
+msgstr "Vedä XML toimialueen tilannevedokselle"
 
 msgid "Dump XML for an ongoing domain block backup job"
 msgstr ""
@@ -5881,6 +5881,7 @@ msgstr ""
 
 msgid "Edit the domain snapshot XML for a named snapshot"
 msgstr ""
+"Muokkaa toimialueen tilannevedoksen XML:a nimettyä tilannevedosta varten"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr ""
@@ -6297,7 +6298,7 @@ msgid "Extract the checkpoint's parent, if any"
 msgstr ""
 
 msgid "Extract the snapshot's parent, if any"
-msgstr ""
+msgstr "Pura tilannevedoksen vanhempi, jos sellainen on"
 
 msgid "FAIL"
 msgstr ""
@@ -6772,7 +6773,7 @@ msgstr "slirp state-hakemiston '%1$s' luominen epäonnistui"
 
 #, c-format
 msgid "Failed to create snapshot dir %1$s"
-msgstr "snapshot hakemiston '%1$s' luominen epäonnistui"
+msgstr "Hakemiston '%1$s' luominen tilannevedokselle epäonnistui"
 
 msgid "Failed to create socket"
 msgstr "Pistokkeen luominen epäonnistui"
@@ -8057,7 +8058,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to revert snapshot %1$s"
-msgstr ""
+msgstr "Tilannevedoksen %1$s palauttaminen epäonnistui"
 
 msgid "Failed to rollback network config change transaction"
 msgstr "Verkkokokoonpanon muutostapahtuman palautus ennalleen epäonnistui"
@@ -8836,7 +8837,7 @@ msgid "Get or set the current perf events for a guest domain."
 msgstr ""
 
 msgid "Get or set the current snapshot"
-msgstr ""
+msgstr "Hae tai määritä nykyinen tilannevedos"
 
 msgid "Get persistent config failed"
 msgstr "Pysyvän määrityksen hankkiminen epäonnistui"
@@ -8860,7 +8861,7 @@ msgid "Get the name of the parent of a checkpoint"
 msgstr ""
 
 msgid "Get the name of the parent of a snapshot"
-msgstr ""
+msgstr "Hae tilannevedoksen vanhemman nimi"
 
 msgid "Get the summary of block devices for a domain."
 msgstr "Hae laitelohkojen yhteenveto toimialueelle."
@@ -10100,7 +10101,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
-msgstr ""
+msgstr "Virheellinen tila '%1$s' toimialueen tilannevedoksen XML:ssa"
 
 msgid "Invalid state for this operation"
 msgstr ""
@@ -13541,9 +13542,8 @@ msgstr "Palauttaa SEV-perustietoja solmusta."
 msgid "Returns basic information about a checkpoint."
 msgstr "Palauttaa perustietoja toimialueesta."
 
-#, fuzzy
 msgid "Returns basic information about a snapshot."
-msgstr "Palauttaa perustietoja solmusta."
+msgstr "Palauttaa perustietoja tilannevedoksesta."
 
 msgid "Returns basic information about the domain IOThreads."
 msgstr "Palauttaa perustietoja toimialueesta IOThreads."
@@ -13627,13 +13627,11 @@ msgstr "Palauttaa perustietoja toimialueesta."
 msgid "Returns the number of virtual CPUs used by the domain."
 msgstr "Palauttaa toimialueen käyttämien virtuaalisten suorittimien määrän."
 
-#, fuzzy
 msgid "Revert a domain to a snapshot"
-msgstr "siirrä toimialue toiseen koneeseen"
+msgstr "Palauta toimialue tilannevedokseen"
 
-#, fuzzy
 msgid "Revert domain to snapshot"
-msgstr "siirrä toimialue toiseen koneeseen"
+msgstr "Palauta toimialue tilannevedokseen"
 
 #, c-format
 msgid "Route address '%1$s' conflicts with IP address for '%2$s'"
@@ -14245,15 +14243,15 @@ msgstr "Tilannevedoksen %1$s XML-kokoonpanoa ei muutettu.\n"
 
 #, c-format
 msgid "Snapshot %1$s cloned to %2$s.\n"
-msgstr ""
+msgstr "Tilannevedos %1$s kloonattiin %2$s:een.\n"
 
 #, c-format
 msgid "Snapshot %1$s edited.\n"
-msgstr ""
+msgstr "Tilannevedos %1$s muokattu.\n"
 
 #, c-format
 msgid "Snapshot %1$s set as current"
-msgstr ""
+msgstr "Tilannevedos %1$s asetettu nykyiseksi"
 
 #, c-format
 msgid "Snapshot '%1$s' already exists"
@@ -38647,7 +38645,7 @@ msgid "with --wait, don't wait for cancel to finish"
 msgstr ""
 
 msgid "with redefine, set current snapshot"
-msgstr ""
+msgstr "määrittämällä uudelleen, aseta nykyinen tilannevedos"
 
 msgid "wrap xpath results in an common root element"
 msgstr ""
