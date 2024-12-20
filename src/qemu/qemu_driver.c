@@ -7795,6 +7795,101 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainGetAutostartOnce(virDomainPtr dom,
+                           int *autostart)
+{
+    virDomainObj *vm;
+    int ret = -1;
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetAutostartOnceEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    *autostart = vm->autostartOnce;
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+qemuDomainSetAutostartOnce(virDomainPtr dom,
+                           int autostart)
+{
+    virQEMUDriver *driver = dom->conn->privateData;
+    virDomainObj *vm;
+    g_autofree char *configFile = NULL;
+    g_autofree char *autostartLink = NULL;
+    g_autofree char *autostartOnceLink = NULL;
+    int ret = -1;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainSetAutostartOnceEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cannot set autostart for transient domain"));
+        goto cleanup;
+    }
+
+    autostart = (autostart != 0);
+
+    if (vm->autostartOnce != autostart) {
+        if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+            goto cleanup;
+
+        configFile = virDomainConfigFile(cfg->configDir, vm->def->name);
+        autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name);
+        autostartOnceLink = g_strdup_printf("%s.once", autostartLink);
+
+        if (autostart) {
+            if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot create autostart directory %1$s"),
+                                     cfg->autostartDir);
+                goto endjob;
+            }
+
+            if (symlink(configFile, autostartOnceLink) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to create symlink '%1$s' to '%2$s'"),
+                                     autostartOnceLink, configFile);
+                goto endjob;
+            }
+        } else {
+            if (unlink(autostartOnceLink) < 0 &&
+                errno != ENOENT &&
+                errno != ENOTDIR) {
+                virReportSystemError(errno,
+                                     _("Failed to delete symlink '%1$s'"),
+                                     autostartOnceLink);
+                goto endjob;
+            }
+        }
+
+        vm->autostartOnce = autostart;
+
+ endjob:
+        virDomainObjEndJob(vm);
+    }
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static char *qemuDomainGetSchedulerType(virDomainPtr dom,
                                         int *nparams)
 {
@@ -20187,6 +20282,8 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSetLaunchSecurityState = qemuDomainSetLaunchSecurityState, /* 8.0.0 */
     .domainFDAssociate = qemuDomainFDAssociate, /* 9.0.0 */
     .domainGraphicsReload = qemuDomainGraphicsReload, /* 10.2.0 */
+    .domainGetAutostartOnce = qemuDomainGetAutostartOnce, /* 11.2.0 */
+    .domainSetAutostartOnce = qemuDomainSetAutostartOnce, /* 11.2.0 */
 };
 
 
