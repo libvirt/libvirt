@@ -2429,6 +2429,10 @@ int                     virDomainGetAutostart   (virDomainPtr domain,
                                                  int *autostart);
 int                     virDomainSetAutostart   (virDomainPtr domain,
                                                  int autostart);
+int                     virDomainGetAutostartOnce(virDomainPtr domain,
+                                                  int *autostart);
+int                     virDomainSetAutostartOnce(virDomainPtr domain,
+                                                  int autostart);
 
 /**
  * virVcpuState:

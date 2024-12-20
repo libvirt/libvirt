@@ -1157,6 +1157,10 @@ static const vshCmdOptDef opts_autostart[] = {
      .type = VSH_OT_BOOL,
      .help = N_("disable autostarting")
     },
+    {.name = "once",
+     .type = VSH_OT_BOOL,
+     .help = N_("control next boot state")
+    },
     {.name = NULL}
 };
 
@@ -1166,24 +1170,41 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     const char *name;
     int autostart;
+    int once;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
     autostart = !vshCommandOptBool(cmd, "disable");
+    once = vshCommandOptBool(cmd, "once");
 
-    if (virDomainSetAutostart(dom, autostart) < 0) {
+    if (once) {
+        if (virDomainSetAutostartOnce(dom, autostart) < 0) {
+            if (autostart)
+                vshError(ctl, _("Failed to mark domain '%1$s' as autostarted on next boot"), name);
+            else
+                vshError(ctl, _("Failed to unmark domain '%1$s' as autostarted on next boot"), name);
+            return false;
+        }
+
         if (autostart)
-            vshError(ctl, _("Failed to mark domain '%1$s' as autostarted"), name);
+            vshPrintExtra(ctl, _("Domain '%1$s' marked as autostarted on next boot\n"), name);
         else
-            vshError(ctl, _("Failed to unmark domain '%1$s' as autostarted"), name);
-        return false;
-    }
+            vshPrintExtra(ctl, _("Domain '%1$s' unmarked as autostarted on next boot\n"), name);
+    } else {
+        if (virDomainSetAutostart(dom, autostart) < 0) {
+            if (autostart)
+                vshError(ctl, _("Failed to mark domain '%1$s' as autostarted"), name);
+            else
+                vshError(ctl, _("Failed to unmark domain '%1$s' as autostarted"), name);
+            return false;
+        }
 
-    if (autostart)
-        vshPrintExtra(ctl, _("Domain '%1$s' marked as autostarted\n"), name);
-    else
-        vshPrintExtra(ctl, _("Domain '%1$s' unmarked as autostarted\n"), name);
+        if (autostart)
+            vshPrintExtra(ctl, _("Domain '%1$s' marked as autostarted\n"), name);
+        else
+            vshPrintExtra(ctl, _("Domain '%1$s' unmarked as autostarted\n"), name);
+    }
 
     return true;
 }

@@ -478,6 +478,14 @@ typedef int
 (*virDrvDomainSetAutostart)(virDomainPtr domain,
                             int autostart);
 
+typedef int
+(*virDrvDomainGetAutostartOnce)(virDomainPtr domain,
+                                int *autostart);
+
+typedef int
+(*virDrvDomainSetAutostartOnce)(virDomainPtr domain,
+                                int autostart);
+
 typedef char *
 (*virDrvDomainGetSchedulerType)(virDomainPtr domain,
                                 int *nparams);
@@ -1564,6 +1572,8 @@ struct _virHypervisorDriver {
     virDrvDomainDetachDeviceAlias domainDetachDeviceAlias;
     virDrvDomainGetAutostart domainGetAutostart;
     virDrvDomainSetAutostart domainSetAutostart;
+    virDrvDomainGetAutostartOnce domainGetAutostartOnce;
+    virDrvDomainSetAutostartOnce domainSetAutostartOnce;
     virDrvDomainGetSchedulerType domainGetSchedulerType;
     virDrvDomainGetSchedulerParameters domainGetSchedulerParameters;
     virDrvDomainGetSchedulerParametersFlags domainGetSchedulerParametersFlags;

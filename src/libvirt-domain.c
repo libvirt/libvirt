@@ -7345,6 +7345,93 @@ virDomainSetAutostart(virDomainPtr domain,
 
 
 /**
+ * virDomainGetAutostartOnce:
+ * @domain: a domain object
+ * @autostart: the value returned
+ *
+ * Provides a boolean value indicating whether the domain
+ * is configured to be automatically started the next time
+ * the host machine boots only.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ *
+ * Since: 11.2.0
+ */
+int
+virDomainGetAutostartOnce(virDomainPtr domain,
+                          int *autostart)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "autostart=%p", autostart);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckNonNullArgGoto(autostart, error);
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetAutostartOnce) {
+        int ret;
+        ret = conn->driver->domainGetAutostartOnce(domain, autostart);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainSetAutostartOnce:
+ * @domain: a domain object
+ * @autostart: whether the domain should be automatically started 0 or 1
+ *
+ * Configure the domain to be automatically started
+ * the next time the host machine boots only.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ *
+ * Since: 11.2.0
+ */
+int
+virDomainSetAutostartOnce(virDomainPtr domain,
+                          int autostart)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "autostart=%d", autostart);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainSetAutostartOnce) {
+        int ret;
+        ret = conn->driver->domainSetAutostartOnce(domain, autostart);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainInjectNMI:
  * @domain: pointer to domain object, or NULL for Domain0
  * @flags: extra flags; not used yet, so callers should always pass 0

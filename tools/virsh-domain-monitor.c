@@ -1236,6 +1236,13 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"),
                  autostart ? _("enable") : _("disable"));
     }
+    /* Check and display whether the domain autostarts next boot or not */
+    if (!virDomainGetAutostartOnce(dom, &autostart)) {
+        vshPrint(ctl, "%-15s %s\n", _("Autostart Once:"),
+                 autostart ? _("enable") : _("disable"));
+    } else {
+        vshResetLibvirtError();
+    }
 
     has_managed_save = virDomainHasManagedSaveImage(dom, 0);
     if (has_managed_save < 0)

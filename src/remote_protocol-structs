@@ -3306,6 +3306,16 @@ struct remote_domain_fd_associate_args {
         remote_nonnull_string      name;
         u_int                      flags;
 };
+struct remote_domain_get_autostart_once_args {
+        remote_nonnull_domain      dom;
+};
+struct remote_domain_get_autostart_once_ret {
+        int                        autostart;
+};
+struct remote_domain_set_autostart_once_args {
+        remote_nonnull_domain      dom;
+        int                        autostart;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3755,4 +3765,6 @@ enum remote_procedure {
         REMOTE_PROC_NETWORK_EVENT_CALLBACK_METADATA_CHANGE = 446,
         REMOTE_PROC_NODE_DEVICE_UPDATE = 447,
         REMOTE_PROC_DOMAIN_GRAPHICS_RELOAD = 448,
+        REMOTE_PROC_DOMAIN_GET_AUTOSTART_ONCE = 449,
+        REMOTE_PROC_DOMAIN_SET_AUTOSTART_ONCE = 450,
 };

@@ -3973,6 +3973,20 @@ struct remote_domain_fd_associate_args {
     remote_nonnull_string name;
     unsigned int flags;
 };
+
+struct remote_domain_get_autostart_once_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_get_autostart_once_ret {
+    int autostart;
+};
+
+struct remote_domain_set_autostart_once_args {
+    remote_nonnull_domain dom;
+    int autostart;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -7048,5 +7062,19 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_GRAPHICS_RELOAD = 448
+    REMOTE_PROC_DOMAIN_GRAPHICS_RELOAD = 448,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_AUTOSTART_ONCE = 449,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_AUTOSTART_ONCE = 450
 };

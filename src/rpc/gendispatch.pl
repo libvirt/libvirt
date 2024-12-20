@@ -839,7 +839,7 @@ elsif ($mode eq "server") {
                     push(@ret_list, "ret->$1 = $1;");
                     $single_ret_var = $1;
 
-                    if ($call->{ProcName} =~ m/GetAutostart$/) {
+                    if ($call->{ProcName} =~ m/GetAutostart(Once)?$/) {
                         $single_ret_by_ref = 1;
                     } else {
                         $single_ret_by_ref = 0;
@@ -1650,7 +1650,7 @@ elsif ($mode eq "client") {
                 } elsif ($ret_member =~ m/^int (\S+);/) {
                     my $arg_name = $1;
 
-                    if ($call->{ProcName} =~ m/GetAutostart$/) {
+                    if ($call->{ProcName} =~ m/GetAutostart(Once)?$/) {
                         push(@args_list, "int *$arg_name");
                         push(@ret_list, "if ($arg_name) *$arg_name = ret.$arg_name;");
                         push(@ret_list, "rv = 0;");
