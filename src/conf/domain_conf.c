@@ -4170,6 +4170,7 @@ static void virDomainObjDispose(void *obj)
     virDomainCheckpointObjListFree(dom->checkpoints);
     virDomainJobObjFree(dom->job);
     virObjectUnref(dom->closecallbacks);
+    g_free(dom->autostartOnceLink);
 }
 
 virDomainObj *
@@ -29159,13 +29160,17 @@ virDomainDeleteConfig(const char *configDir,
 {
     g_autofree char *configFile = NULL;
     g_autofree char *autostartLink = NULL;
+    g_autofree char *autostartOnceLink = NULL;
 
     configFile = virDomainConfigFile(configDir, dom->def->name);
     autostartLink = virDomainConfigFile(autostartDir, dom->def->name);
+    autostartOnceLink = g_strdup_printf("%s.once", autostartLink);
 
-    /* Not fatal if this doesn't work */
+    /* Not fatal if these don't work */
     unlink(autostartLink);
+    unlink(autostartOnceLink);
     dom->autostart = 0;
+    dom->autostartOnce = 0;
 
     if (unlink(configFile) < 0 &&
         errno != ENOENT) {

@@ -3328,9 +3328,11 @@ struct _virDomainObj {
     virDomainStateReason state;
 
     unsigned int autostart : 1;
+    unsigned int autostartOnce : 1;
     unsigned int persistent : 1;
     unsigned int updated : 1;
     unsigned int removing : 1;
+    char *autostartOnceLink;
 
     virDomainDef *def; /* The current definition */
     virDomainDef *newDef; /* New definition to activate at shutdown */

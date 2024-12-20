@@ -683,10 +683,12 @@ virDomainDriverAutoStartOne(virDomainObj *vm,
     virObjectLock(vm);
     virObjectRef(vm);
 
-    VIR_DEBUG("Autostart %s: autostart=%d",
-              vm->def->name, vm->autostart);
+    VIR_DEBUG("Autostart %s: autostart=%d autostartOnce=%d autostartOnceLink=%s",
+              vm->def->name, vm->autostart, vm->autostartOnce,
+              NULLSTR(vm->autostartOnceLink));
 
-    if (vm->autostart && !virDomainObjIsActive(vm)) {
+    if ((vm->autostart || vm->autostartOnce) &&
+        !virDomainObjIsActive(vm)) {
         virResetLastError();
         if (state->cfg->delayMS) {
             if (!state->first) {
@@ -697,6 +699,12 @@ virDomainDriverAutoStartOne(virDomainObj *vm,
         }
 
         state->cfg->callback(vm, state->cfg->opaque);
+        vm->autostartOnce = 0;
+    }
+
+    if (vm->autostartOnceLink) {
+        unlink(vm->autostartOnceLink);
+        g_clear_pointer(&vm->autostartOnceLink, g_free);
     }
 
     virDomainObjEndAPI(&vm);
