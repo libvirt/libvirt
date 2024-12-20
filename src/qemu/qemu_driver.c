@@ -966,9 +966,9 @@ qemuStateStop(void)
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(qemu_driver);
     virDomainDriverAutoShutdownConfig ascfg = {
         .uri = cfg->uri,
-        .trySave = true,
-        .tryShutdown = false,
-        .poweroff = false,
+        .trySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT,
+        .tryShutdown =  VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE,
+        .poweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE
     };
 
     if (!qemu_driver->privileged)

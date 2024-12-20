@@ -35,6 +35,13 @@
 
 VIR_LOG_INIT("hypervisor.domain_driver");
 
+VIR_ENUM_IMPL(virDomainDriverAutoShutdownScope,
+              VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_LAST,
+              "none",
+              "persistent",
+              "transient",
+              "all");
+
 char *
 virDomainDriverGenerateRootHash(const char *drivername,
                                 const char *root)
@@ -722,9 +729,13 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
     int numDomains = 0;
     size_t i;
     virDomainPtr *domains = NULL;
+    g_autofree bool *transient = NULL;
 
-    VIR_DEBUG("Run autoshutdown uri=%s trySave=%d tryShutdown=%d poweroff=%d waitShutdownSecs=%u",
-              cfg->uri, cfg->trySave, cfg->tryShutdown, cfg->poweroff,
+    VIR_DEBUG("Run autoshutdown uri=%s trySave=%s tryShutdown=%s poweroff=%s waitShutdownSecs=%u",
+              cfg->uri,
+              virDomainDriverAutoShutdownScopeTypeToString(cfg->trySave),
+              virDomainDriverAutoShutdownScopeTypeToString(cfg->tryShutdown),
+              virDomainDriverAutoShutdownScopeTypeToString(cfg->poweroff),
               cfg->waitShutdownSecs);
 
     /*
@@ -741,6 +752,25 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
     if (cfg->waitShutdownSecs <= 0)
         cfg->waitShutdownSecs = 30;
 
+    /* We expect the hypervisor driver to enforce this when loading
+     * their config file, but in case some bad setting gets through,
+     * disabling saving of transient VMs since it is a guaranteed
+     * error scenario...
+     */
+    if (cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL ||
+        cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT) {
+        VIR_WARN("auto-shutdown: managed save not supported for transient VMs");
+        cfg->trySave = (cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL ?
+                        VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT :
+                        VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE);
+    }
+
+    /* Short-circuit if all actions are disabled */
+    if (cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE &&
+        cfg->tryShutdown == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE &&
+        cfg->poweroff == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE)
+        return;
+
     if (!(conn = virConnectOpen(cfg->uri)))
         goto cleanup;
 
@@ -750,10 +780,22 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
         goto cleanup;
 
     VIR_DEBUG("Auto shutdown with %d running domains", numDomains);
-    if (cfg->trySave) {
+
+    transient = g_new0(bool, numDomains);
+    for (i = 0; i < numDomains; i++) {
+        if (virDomainIsPersistent(domains[i]) == 0)
+            transient[i] = true;
+    }
+
+    if (cfg->trySave != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE) {
         g_autofree unsigned int *flags = g_new0(unsigned int, numDomains);
         for (i = 0; i < numDomains; i++) {
             int state;
+
+            if ((transient[i] && cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT) ||
+                (!transient[i] && cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT))
+                continue;
+
             /*
              * Pause all VMs to make them stop dirtying pages,
              * so save is quicker. We remember if any VMs were
@@ -782,11 +824,16 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
         }
     }
 
-    if (cfg->tryShutdown) {
+    if (cfg->tryShutdown != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE) {
         GTimer *timer = NULL;
         for (i = 0; i < numDomains; i++) {
             if (domains[i] == NULL)
                 continue;
+
+            if ((transient[i] && cfg->tryShutdown == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT) ||
+                (!transient[i] && cfg->tryShutdown == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT))
+                continue;
+
             if (virDomainShutdown(domains[i]) < 0) {
                 VIR_WARN("auto-shutdown: unable to request graceful shutdown of '%s': %s",
                          domains[i]->name,
@@ -800,6 +847,10 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
             bool anyRunning = false;
             for (i = 0; i < numDomains; i++) {
                 if (!domains[i])
+                    continue;
+
+                if ((transient[i] && cfg->tryShutdown == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT) ||
+                    (!transient[i] && cfg->tryShutdown == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT))
                     continue;
 
                 if (virDomainIsActive(domains[i]) == 1) {
@@ -819,10 +870,15 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
         g_timer_destroy(timer);
     }
 
-    if (cfg->poweroff) {
+    if (cfg->poweroff != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE) {
         for (i = 0; i < numDomains; i++) {
             if (domains[i] == NULL)
                 continue;
+
+            if ((transient[i] && cfg->poweroff == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT) ||
+                (!transient[i] && cfg->poweroff == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT))
+                continue;
+
             /*
              * NB might fail if we gave up on waiting for
              * virDomainShutdown, but it then completed anyway,
