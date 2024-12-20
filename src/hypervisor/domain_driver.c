@@ -739,12 +739,12 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
     virDomainPtr *domains = NULL;
     g_autofree bool *transient = NULL;
 
-    VIR_DEBUG("Run autoshutdown uri=%s trySave=%s tryShutdown=%s poweroff=%s waitShutdownSecs=%u saveBypassCache=%d",
+    VIR_DEBUG("Run autoshutdown uri=%s trySave=%s tryShutdown=%s poweroff=%s waitShutdownSecs=%u saveBypassCache=%d autoRestore=%d",
               cfg->uri,
               virDomainDriverAutoShutdownScopeTypeToString(cfg->trySave),
               virDomainDriverAutoShutdownScopeTypeToString(cfg->tryShutdown),
               virDomainDriverAutoShutdownScopeTypeToString(cfg->poweroff),
-              cfg->waitShutdownSecs, cfg->saveBypassCache);
+              cfg->waitShutdownSecs, cfg->saveBypassCache, cfg->autoRestore);
 
     /*
      * Ideally guests will shutdown in a few seconds, but it would
@@ -793,6 +793,21 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
     for (i = 0; i < numDomains; i++) {
         if (virDomainIsPersistent(domains[i]) == 0)
             transient[i] = true;
+
+        if (cfg->autoRestore) {
+            if (transient[i]) {
+                VIR_DEBUG("Cannot auto-restore transient VM %s",
+                          virDomainGetName(domains[i]));
+            } else {
+                VIR_DEBUG("Mark %s for autostart on next boot",
+                          virDomainGetName(domains[i]));
+                if (virDomainSetAutostartOnce(domains[i], 1) < 0) {
+                    VIR_WARN("Unable to mark domain '%s' for auto restore: %s",
+                             virDomainGetName(domains[i]),
+                             virGetLastErrorMessage());
+                }
+            }
+        }
     }
 
     if (cfg->trySave != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE) {

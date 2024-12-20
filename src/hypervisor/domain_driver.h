@@ -113,6 +113,7 @@ typedef struct _virDomainDriverAutoShutdownConfig {
                                     * If 0 a default is used (currently 30 secs)
                                     */
     bool saveBypassCache;
+    bool autoRestore;
 } virDomainDriverAutoShutdownConfig;
 
 void virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg);
