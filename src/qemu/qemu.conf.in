@@ -714,6 +714,10 @@
 # is currently 30 secs)
 #auto_shutdown_wait = 30
 
+# Whether VMs that are automatically powered off or saved during
+# host shutdown, should be set to restore on next boot
+#auto_shutdown_restore = 1
+
 # When a domain is configured to be auto-saved on shutdown, enabling
 # this flag has the same effect as using the VIR_DOMAIN_SAVE_BYPASS_CACHE
 # flag with the virDomainManagedSave API.  That is, the system will
