@@ -4281,6 +4281,30 @@ qemuProcessVerifyHypervFeatures(virDomainDef *def,
                                "direct");
                 return -1;
             }
+            if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
+                if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON) {
+                    rc = virCPUDataCheckFeature(cpu, VIR_CPU_x86_HV_TLBFLUSH_DIRECT);
+                    if (rc < 0)
+                        return -1;
+                    if (rc == 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("host doesn't support hyperv tlbflush '%1$s' feature"),
+                                       "direct");
+                        return -1;
+                    }
+                }
+                if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON) {
+                    rc = virCPUDataCheckFeature(cpu, VIR_CPU_x86_HV_TLBFLUSH_EXT);
+                    if (rc < 0)
+                        return -1;
+                    if (rc == 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("host doesn't support hyperv tlbflush '%1$s' feature"),
+                                       "extended");
+                        return -1;
+                    }
+                }
+            }
             continue;
         }
 

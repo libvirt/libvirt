@@ -6350,6 +6350,12 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                 if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
                     (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
                     virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_STIMER_DIRECT);
+                if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
+                    if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
+                        virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_DIRECT);
+                    if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
+                        virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_EXT);
+                }
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
