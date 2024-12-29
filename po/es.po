@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-28 13:38+0000\n"
+"PO-Revision-Date: 2024-12-29 18:47+0000\n"
 "Last-Translator: Nicolas Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -34,7 +34,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.9.1\n"
 
 msgid ""
 "\n"
@@ -561,9 +561,9 @@ msgstr "%1$s no posee la propiedad 'type'"
 msgid "%1$s is not an executable"
 msgstr "Binario QEMU %1$s no es ejecutable"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s is not supported by this QEMU binary"
-msgstr "Binario QEMU no admite descarte"
+msgstr "%1$s no es admitido por este binario de QEMU"
 
 #, c-format
 msgid "%1$s length greater than maximum: %2$d > %3$d"
@@ -603,13 +603,13 @@ msgstr ""
 msgid "%1$s module is not loaded, "
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s namespace is not available"
-msgstr "Sistema no está disponible"
+msgstr "Espacio de nombres %1$s no disponible"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s not found in %2$s"
-msgstr "no se encuentra el disco %s"
+msgstr "%1$s no se encuentra en %2$s"
 
 #, c-format
 msgid "%1$s not implemented on Win32"
@@ -635,17 +635,17 @@ msgstr "Objeto %1$s tiene un tipo dinámico inválido"
 msgid "%1$s object is missing the required '%2$s' property"
 msgstr "Al objeto %1$s le falta propiedad '%2$s' requerida"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s reply data was missing 'model'"
-msgstr "A los datos de qom-list les faltaba 'name'"
+msgstr "Falta 'model' en los datos de respuesta de %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s reply data was missing 'name'"
-msgstr "A los datos de qom-list les faltaba 'name'"
+msgstr "Falta 'name' en los datos de respuesta de %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s reply data was missing 'props'"
-msgstr "A los datos de qom-list les faltaba 'name'"
+msgstr "Falta 'props' en losa datos de respuesta de %1$s"
 
 #, c-format
 msgid ""
@@ -675,13 +675,13 @@ msgstr ""
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: %2$s: unsupported auth %3$s"
-msgstr "Funcionalidad %s no tiene soporte"
+msgstr "%1$s: %2$s: autentificación %3$s no admitida"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: '%2$s' does not exist"
-msgstr "no existe '%s'"
+msgstr "%1$s: '%2$s' no existe"
 
 #, c-format
 msgid "%1$s: Address '%2$s' in route definition is not a network address"
@@ -689,35 +689,32 @@ msgstr ""
 "%1$s: La dirección '%2$s' en la definición de la ruta no es una dirección de "
 "red"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Bad gateway address '%2$s' in route definition"
 msgstr ""
-"Red '%s' tiene una máscara de red o dirección IP inválida en definición de "
+"%1$s: Dirección de puerta de enlace '%2$s' incorrecta en la definición de la "
 "ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Bad netmask address '%2$s' in route definition"
 msgstr ""
-"Red '%s' tiene una máscara de red o dirección IP inválida en definición de "
-"ruta"
+"%1$s: Dirección de máscara '%2$s' incorrecta en la definición de la ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Bad network address '%2$s' in route definition"
-msgstr ""
-"Red '%s' tiene una máscara de red o dirección IP inválida en definición de "
-"ruta"
+msgstr "%1$s: Dirección de red '%2$s' incorrecta en la definición de la ruta"
 
 #, c-format
 msgid "%1$s: Cannot request read and write flags together"
 msgstr "%1$s: No se pueden leer o escribir indicadores juntos"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
 "in route definition"
 msgstr ""
-"Red '%s' tiene una máscara de red o dirección IP inválida en definición de "
-"ruta"
+"%1$s: Error al convertir la dirección '%2$s' con máscara de red '%3$s' en "
+"network-address en la definición de la ruta"
 
 #, c-format
 msgid ""
@@ -729,15 +726,19 @@ msgstr ""
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
-msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
+msgstr ""
+"%1$s: Se especificó una familia IPv4 para la dirección '%2$s' que no es IPv4 "
+"en la definición de la ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
-msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
+msgstr ""
+"%1$s: Se especificó una familia IPv4 para la puerta de enlace '%2$s' que no "
+"es IPv4 en la definición de la ruta"
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -758,19 +759,25 @@ msgstr ""
 msgid "%1$s: Missing required address attribute in route definition"
 msgstr "Falta el atributo de dirección requerida en red '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Missing required gateway attribute in route definition"
-msgstr "Falta el nombre del atributo requerido en portgroup"
+msgstr ""
+"%1$s: Falta atributo requerido de puerta de enlace en la definición de la "
+"ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
-msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
+msgstr ""
+"%1$s: No se ha especificado una familia para la dirección no-IPv4 '%2$s' en "
+"la definición de la ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
-msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
+msgstr ""
+"%1$s: No se ha especificado una familia para la puerta de enlace no-IPv4 '%2$"
+"s' en la definición de la ruta"
 
 #, fuzzy, c-format
 msgid "%1$s: Route definition cannot have both a prefix and a netmask"
@@ -778,20 +785,20 @@ msgstr ""
 "La dirección IP de red '%1$s' no puede tener prefijo y máscara de red a la "
 "vez"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: Specifying netmask invalid for IPv6 address '%2$s' in route definition"
 msgstr ""
-"Red '%s' tiene una máscara de red o dirección IP inválida en definición de "
-"ruta"
+"%1$s: La especificación de máscara de red no es válida para la dirección "
+"IPv6 '%2$s' en la definición de la ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: Starting external device: %2$s\n"
 "%3$s\n"
 msgstr ""
 "%1$s: Iniciando dispositivo externo: %2$s\n"
-"%3$\n"
+"%3$s\n"
 
 #, fuzzy, c-format
 msgid "%1$s: Unrecognized family '%2$s' in route definition"
@@ -826,9 +833,9 @@ msgid "%1$s: error: unable to determine if daemon is running: %2$s\n"
 msgstr ""
 "%1$s: error: No es posible determinar si el demonio está en ejecución: %2$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: event '%2$s' for node device %3$s\n"
-msgstr "Se ha destruido el dispositivo de nodo '%s'\n"
+msgstr "%1$s: evento '%2$s' para dispositivo de nodo %3$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for secret %3$s\n"
@@ -858,17 +865,17 @@ msgstr ""
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
-msgstr "modo de almacenamiento no esperado para '%s'"
+msgstr "%1$s: se esperaba valor booleano para el argumento '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a signed integer for '%2$s' parameter"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: expected a string for '%2$s' parameter"
-msgstr "modo de almacenamiento no esperado para '%s'"
+msgstr "%1$s: se esperaba valor de cadena para el argumento '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string list for '%2$s' parameter"
@@ -898,9 +905,9 @@ msgstr "%1$s: falló al leer archivo temporal: %2$s"
 msgid "%1$s: failed to write log file: %2$s"
 msgstr "%1$s: falló al escribir en el archivo de registro: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: failure with %2$s: %3$s"
-msgstr "%s: falló al escribir en el archivo de registro: %s"
+msgstr "%1$s: fallo con %2$s:%3$s"
 
 #, c-format
 msgid "%1$s: initialization failed"
@@ -910,10 +917,12 @@ msgstr "%1$s: Fallo durante la inicialización"
 msgid "%1$s: initialization failed\n"
 msgstr "%1$s: Falló la inicialización\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"
-msgstr "familia %s especificada para dirección non-IPv4 '%s' en red '%s'"
+msgstr ""
+"%1$s: Se especificó una familia IPv6 para la dirección no-IPv6 '%2$s' en la "
+"definición de la ruta"
 
 #, fuzzy, c-format
 msgid ""
@@ -932,9 +941,9 @@ msgid ""
 msgstr ""
 "%1$s: remote_display_port_max: puerto debe estar entre puerto mínimo y %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: migration_port_min: port must be greater than 0"
-msgstr "%s: remote_display_port_min: puerto debe ser mayor o igual a %d"
+msgstr "%1$s: migration_port_min: el puerto debe ser mayor que 0"
 
 #, c-format
 msgid "%1$s: must be run as root\n"
@@ -944,10 +953,9 @@ msgstr ""
 msgid "%1$s: must not be run setuid root\n"
 msgstr "%1$s: no debe ser ejecutado setuid root\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: passthrough input device has no source"
-msgstr ""
-"El BUS de dispositivo de entrada elegido %s no coincide con la fuente %s"
+msgstr "%1$s: No hay fuente para el dispositivo de entrada 'passthrough'"
 
 #, c-format
 msgid ""
@@ -1029,9 +1037,10 @@ msgid "%1$s: value for '%2$s' parameter must be in range %3$d:%4$d"
 msgstr ""
 "%1$s: el valor para el parámetro '%2$s' debe estar en el rango %3$d:%4$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range %3$lld:%4$lld"
-msgstr "valor de '%s' está fuera de rango [%lld, %lld]"
+msgstr ""
+"%1$s: el valor del argumento '%2$s' debería estar en el rango %3$lld:%4$lld"
 
 #, c-format
 msgid "%1$s: value for '%2$s' parameter must be in range %3$zd:%4$zd"
@@ -1078,9 +1087,9 @@ msgstr ""
 msgid "'%1$s' D-Bus address is not handled"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' architecture is not supported by CPU driver"
-msgstr "Esta libvirt no soporta filtraje"
+msgstr "El controlador de CPU no admite la arquitectura '%1$s'"
 
 #, c-format
 msgid "'%1$s' attributes '%2$s' must not overlap"
@@ -1094,9 +1103,9 @@ msgstr "El controlador '%1$s' no puede conectarse en caliente."
 msgid "'%1$s' controller cannot be hot unplugged."
 msgstr "El controlador '%1$s' no puede desconectarse en caliente."
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' controller only supports up to '%2$u' ports"
-msgstr "El controlador SCSI solo soporta 1 bus"
+msgstr "El controlador '%1$s' solo admite hasta '%2$u' puertos"
 
 #, c-format
 msgid "'%1$s' denied access"
@@ -2326,11 +2335,13 @@ msgid ""
 "architecture"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "CPU mode '%1$s' for %2$s %3$s domain on %4$s host is not supported by "
 "hypervisor"
-msgstr "Modelo de CPU %s no está soportado por el hipervisor"
+msgstr ""
+"El modo de CPU '%1$s' para el dominio %2$s%3$s en el anfitrión %4$s no es "
+"admitido por el hipervisor"
 
 #, c-format
 msgid "CPU model %1$s already defined"
@@ -2450,18 +2461,18 @@ msgid ""
 "allocation %2$llu"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %1$d does not support tuning"
-msgstr ""
-"El dispositivo de disco '%s' no tiene soporte para capturas instantáneas"
+msgstr "Nivel de caché %1$d no admite ajustes"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %1$d does not support tuning for scope type '%2$s'"
-msgstr "El ejecutable de QEMU %s no soporta tipo de segundo plano %s"
+msgstr "Nivel de caché %1$d no admite ajustes para tipo de ámbito '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"
-msgstr "El ejecutable de QEMU %s no soporta tipo de segundo plano %s"
+msgstr ""
+"Nivel de caché %1$d id %2$u no admite ajustes para tipo de ámbito '%3$s'"
 
 #, c-format
 msgid "Cache level '%1$u' already defined"
@@ -2551,9 +2562,9 @@ msgstr "Falló obtención de estado de dominio"
 msgid "Can't connect to $uri. Skipping."
 msgstr "No se puede conectar a $uri. Omitiendo."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't create %1$s container: %2$s"
-msgstr "No es posible crear directorio de inicio automático %s"
+msgstr "No es posible crear el contenedor %1$s: %2$s"
 
 msgid "Can't create initial configuration"
 msgstr "No se puede crear configuración inicial"
@@ -2583,18 +2594,21 @@ msgstr "No se pueden determinar rutas de sockets"
 msgid "Can't find boot device of type: %1$d, device index: %2$d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find boot device of type: %1$s, index: %2$d"
-msgstr "tipo de dispositivo de arranque %d no esperado"
+msgstr ""
+"No es posible encontrar el dispositivo de arranque del tipo: %1$s, índice: "
+"%2$d"
 
 #, c-format
 msgid "Can't find disk '%1$s' in domain definition"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find network boot device for index: %1$d"
 msgstr ""
-"No se puede modificar parámetro de índice de arranque de dispositivo de red"
+"No es posible encontrar un dispositivo de arranque desde red para el índice: "
+"%1$d"
 
 #, c-format
 msgid ""
@@ -2612,13 +2626,13 @@ msgstr "No se puede cargar el archivo config: %1$s: %2$s"
 msgid "Can't modify device type '%1$s'"
 msgstr "No se puede modificar tipo de dispositivo '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't parse barrier from vzlist output '%1$s'"
-msgstr "No se puede leer salida prlctl"
+msgstr "No se puede analizar la barrera a partir de la salida de vzlist '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't parse limit from vzlist output '%1$s'"
-msgstr "No se puede leer salida prlctl"
+msgstr "No se puede analizar el límite a partir de la salida de vzlist '%1$s'"
 
 msgid "Can't parse prlctl output"
 msgstr "No se puede leer salida prlctl"
