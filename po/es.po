@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-29 18:47+0000\n"
+"PO-Revision-Date: 2024-12-30 21:26+0000\n"
 "Last-Translator: Nicolas Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -1002,7 +1002,7 @@ msgid ""
 "characters (is $TMPDIR wrong?)"
 msgstr ""
 "%1$s: el nombre del archivo temporal contiene metadatos de consola o algún "
-"otro tipo de caracteres no aceptables (¿$TMPDIR estará mal?)."
+"otro tipo de caracteres no aceptables (¿$TMPDIR estará mal?)"
 
 #, c-format
 msgid "%1$s: too many command line arguments\n"
@@ -1127,9 +1127,9 @@ msgstr ""
 msgid "'%1$s' is not a VF device"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' is not a known interface"
-msgstr "ruta inválida, '%1$s' no es una interfaz conocida"
+msgstr "'%1$s' no es una interfaz conocida"
 
 #, c-format
 msgid "'%1$s' is not a suitable bridge helper"
@@ -1177,7 +1177,7 @@ msgid "':' not allowed in RBD source volume name '%1$s'"
 msgstr "':' no se permite en nombre de volumen de fuente RBD '%1$s'"
 
 msgid "'<local>' element missing for 'udp' socket interface"
-msgstr ""
+msgstr "Falta el elemento '<local>' para la interfaz de socket 'udp'"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
@@ -1312,11 +1312,8 @@ msgstr ""
 msgid "'network' attribute is required for listen type 'network'"
 msgstr ""
 
-#, fuzzy
 msgid "'network' attribute is valid only for listen type 'network'"
-msgstr ""
-"No existe <source> atributo 'network' especificado con <interface "
-"type='network'/>"
+msgstr "El atributo 'network' solo es válido para tipo de escucha 'network'"
 
 msgid "'nfs' host must use TCP protocol"
 msgstr ""
@@ -1832,9 +1829,8 @@ msgstr "Activar:"
 msgid "Actual interface '%1$s' hostdev was not a PCI device"
 msgstr "el dispositivo %1$s no es un dispositivo PCI"
 
-#, fuzzy
 msgid "Add an IOThread to the guest domain."
-msgstr "Inyectar NMI al dominio de huésped"
+msgstr "Inyectar NMI al dominio de huésped."
 
 msgid "Add or remove vcpus"
 msgstr ""
@@ -1879,9 +1875,9 @@ msgstr "Alojamiento"
 msgid "Allocation:"
 msgstr "Ubicación:"
 
-#, fuzzy
 msgid "Allows setting or modifying the description or title of a domain."
-msgstr "no es posible modificar la configuración persistente de un dominio"
+msgstr ""
+"Permite establecer o modificar la descripción o el título de un dominio."
 
 msgid "Allows setting or modifying the description or title of a network."
 msgstr ""
@@ -2069,9 +2065,9 @@ msgstr "Descargar XML de captura instantánea"
 msgid "Backup started\n"
 msgstr "Copia de bloque iniciada\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Bad $%1$s value."
-msgstr "No se puede leer valor %1$s"
+msgstr "Valor %1$s incorrecto."
 
 #, c-format
 msgid "Bad ipv4 end address '%1$s' in <nat> in <forward> in network '%2$s'"
@@ -2515,7 +2511,7 @@ msgstr ""
 #, c-format
 msgid "Call to '%1$s' returned something, expecting an empty result"
 msgstr ""
-"La llamada a '%1$s' ha devuelto algo, cuando se esperaba un resultado vacío."
+"La llamada a '%1$s' ha devuelto algo, cuando se esperaba un resultado vacío"
 
 #, c-format
 msgid "Calling %1$s from '%2$s' failed"
@@ -2554,9 +2550,8 @@ msgstr ""
 msgid "Can't change domain configuration in managed save state"
 msgstr "Marcar dominios inactivos con estado de almacenamiento administrado"
 
-#, fuzzy
 msgid "Can't change domain state."
-msgstr "Falló obtención de estado de dominio"
+msgstr "No se puede cambiar el estado del dominio."
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
@@ -2582,7 +2577,7 @@ msgid "Can't determine page size"
 msgstr "No se puede determinar tamaño de páginaCan't determine page size"
 
 msgid "Can't determine pid file path."
-msgstr "No se puede determinar ruta de archivo PID"
+msgstr "No se puede determinar la ruta del archivo PID."
 
 msgid "Can't determine restart state file path"
 msgstr "No se puede determinar ruta de archivo PID"
@@ -3540,16 +3535,15 @@ msgstr "El uso del certificado %1$s no permite codificación de llave"
 msgid "Certificate failed validation: %1$s"
 msgstr "No se pudo validar certificado: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cgroup backend '%1$s' already registered."
-msgstr "Un close callback ya está registrado"
+msgstr "Backend de cgroup '%1$s' ya se encontraba registrado."
 
 msgid "Chain name contains invalid characters"
 msgstr "Nombre de cadena contiene caracteres inválidos"
 
-#, fuzzy
 msgid "Change bottom limit to number of workers."
-msgstr "No se puede limitar número de archivos abiertos a %u"
+msgstr "Cambiar el límite inferior al número de trabajadores."
 
 #, fuzzy
 msgid "Change lifecycle actions for the guest domain."
@@ -3559,7 +3553,7 @@ msgid "Change media of CD or floppy drive"
 msgstr "Cambiar medio de CD o controlador de disco blando"
 
 msgid "Change media of CD or floppy drive."
-msgstr "Cambiar medio de CD o controlador de disco blando"
+msgstr "Cambiar medio de CD o unidad de disquete."
 
 #, fuzzy
 msgid "Change name of PID file"
@@ -3571,9 +3565,8 @@ msgstr "Modificar el directorio actual."
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Modifica el alojamiento actual de la memoria en el dominio huésped."
 
-#, fuzzy
 msgid "Change the current number of priority workers"
-msgstr "Modificar el directorio actual."
+msgstr "Cambiar el número actual de trabajadores prioritarios"
 
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
@@ -3605,13 +3598,11 @@ msgstr ""
 "El cambio de dispositivo a spicevmc o desde spicevmc cambiaría el nombre de "
 "canal de destino predeterminado"
 
-#, fuzzy
 msgid "Changing fs access mode is not supported by vz driver."
-msgstr "El mecanismo SASL %s no está soportado por el servidor"
+msgstr "El controlador vz no admite el cambio de modo de acceso fs."
 
-#, fuzzy
 msgid "Changing fs write policy is not supported by vz driver."
-msgstr "esta función no está soportada por el controlador de conexión"
+msgstr "El controlador vz no admite el cambio de directiva de escritura fs."
 
 msgid ""
 "Check /dev/kvm is world writable or you are in a group that is allowed to "
@@ -3967,7 +3958,7 @@ msgstr "Configura un dominio para ser iniciado automáticamente en el inicio."
 
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
-"Configurar una red para que sea iniciada automáticamente en el arranque"
+"Configurar una red para que sea iniciada automáticamente en el arranque."
 
 msgid "Configure a node device to be automatically started at boot."
 msgstr ""
@@ -5179,9 +5170,8 @@ msgstr "Crear una red."
 msgid "Create a network."
 msgstr "Crear una red."
 
-#, fuzzy
 msgid "Create a new network filter binding."
-msgstr "Quitar la definición de un filtro de red determinado"
+msgstr "Crear un nuevo enlace de filtro de red."
 
 msgid "Create a pool."
 msgstr "Crea un grupo."
@@ -5315,7 +5305,7 @@ msgid "Define a new network filter or update an existing one."
 msgstr "Define un nuevo filtro de red, o actualiza uno existente."
 
 msgid "Define a pool."
-msgstr "Define un grupo"
+msgstr "Defina un grupo."
 
 msgid "Define or modify a device by an xml file on a node"
 msgstr ""
@@ -5335,9 +5325,8 @@ msgstr "Define o modifica un secreto."
 msgid "Define or modify a secret."
 msgstr "Define o modifica un secreto."
 
-#, fuzzy
 msgid "Defined"
-msgstr "Define un dominio."
+msgstr "Definido"
 
 msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
@@ -5351,9 +5340,8 @@ msgstr "Elimina una captura instantánea de dominio"
 msgid "Delete a domain snapshot"
 msgstr "Elimina una captura instantánea de dominio"
 
-#, fuzzy
 msgid "Delete a given network filter binding."
-msgstr "Quitar la definición de un filtro de red determinado"
+msgstr "Borrar un enlace de filtro de red provisto."
 
 msgid "Delete a given pool."
 msgstr "Elimina un grupo determinado."
@@ -5361,9 +5349,8 @@ msgstr "Elimina un grupo determinado."
 msgid "Delete a given vol."
 msgstr "Elimina un volumen determinado."
 
-#, fuzzy
 msgid "Delete an IOThread from the guest domain."
-msgstr "Inyectar NMI al dominio de huésped"
+msgstr "Borrar un IOThread del dominio huésped."
 
 msgid "Delete the specified network port."
 msgstr ""
@@ -5441,7 +5428,7 @@ msgstr "Dispositivo %1$s desconectado\n"
 
 #, c-format
 msgid "Device %1$s is already in use"
-msgstr "el nombre del puente '%1$s' ya está siendo utilizado."
+msgstr "El dispositivo %1$s ya se encuentra en uso"
 
 #, c-format
 msgid "Device %1$s is behind a switch lacking ACS and cannot be assigned"
@@ -5482,9 +5469,9 @@ msgstr "El dispositivo %1$s está desconectado del puente %2$s\n"
 msgid "Device %1$s unmarked as autostarted\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device '%1$s' already formatted using '%2$s'"
-msgstr "el nombre del puente '%s' ya está siendo utilizado."
+msgstr "El dispositivo '%1$s' ya se encontraba formateado usando '%2$s'"
 
 #, c-format
 msgid "Device '%1$s' is not active"
@@ -5557,11 +5544,12 @@ msgstr "No se encontró bus de dispositivo USB:%1$u device:%2$u"
 msgid "Did not get all free page data for node %1$d"
 msgstr ""
 
-#, fuzzy
 msgid ""
 "Different bind and connect parameters for udp character device is not "
 "supported."
-msgstr "Ancho de banda de entrada y salida diferentes no tienen soporte"
+msgstr ""
+"No se admiten parámetros diferentes de conexión y enlace para dispositivos "
+"de caracteres udp."
 
 msgid "Different inbound and outbound bandwidth is unsupported"
 msgstr "Ancho de banda de entrada y salida diferentes no tienen soporte"
@@ -5608,9 +5596,8 @@ msgstr "El disco ha sido asociado exitosamente\n"
 msgid "Disk cache mode %1$s is not supported"
 msgstr "Modo cache de disco %1$s no tiene soporte"
 
-#, fuzzy
 msgid "Disk copy_on_read is not supported by vz driver."
-msgstr "esta función no está soportada por el controlador de conexión"
+msgstr "El controlador vz no admite copy_on_read de disco."
 
 msgid "Disk detached successfully\n"
 msgstr "El disco ha sido desmontado exitosamente\n"
@@ -5660,9 +5647,8 @@ msgstr "Muestra información acerca de la versión del sistema."
 msgid "Display the system version information."
 msgstr "Muestra información acerca de la versión del sistema."
 
-#, fuzzy
 msgid "Display version information"
-msgstr "Muestra información acerca de la versión del sistema."
+msgstr "Mostrar información de la versión"
 
 msgid ""
 "Displays the node's total number of CPUs, the number of online CPUs and the "
@@ -5897,8 +5883,8 @@ msgstr "No se encuentra dispositivo de arranque"
 #, fuzzy
 msgid "Domain information of managed save state file in XML"
 msgstr ""
-"Vaciar XML de información de dominio para un archivo de estado guardado para "
-"stdout."
+"Información de dominio de archivo administrado de estado de guardado en el "
+"XML"
 
 msgid "Domain interface"
 msgstr "Interfas de dominio"
@@ -6013,9 +5999,8 @@ msgstr "El título del dominio se actualizó con éxito"
 msgid "Domain-0 cannot be migrated"
 msgstr "Domain-0 no puede ser migrado"
 
-#, fuzzy
 msgid "Domain-0 does not support requested operation"
-msgstr "el grupo de almacenamiento no tiene soporte para creación de volumen."
+msgstr "Domain-0 no admite la operación requerida"
 
 msgid "Domain:"
 msgstr "Dominio:"
@@ -6819,9 +6804,8 @@ msgstr "No se pudo vincular socket a '%1$s'"
 msgid "Failed to build net json"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to build pidfile path"
-msgstr "Falló al construir la ruta pidfile."
+msgstr "Fallo al construir la ruta pidfile"
 
 msgid "Failed to build pidfile path."
 msgstr "Falló al construir la ruta pidfile."
@@ -7191,9 +7175,8 @@ msgstr "Falló al crearse el volumen %1$s"
 msgid "Failed to create v2 cgroup '%1$s'"
 msgstr "Falló al crearse el volumen %1$s"
 
-#, fuzzy
 msgid "Failed to create vbox driver object."
-msgstr "No se pudo crear objeto config XML"
+msgstr "Fallo al crear el objeto de controlador vbox."
 
 #, c-format
 msgid "Failed to create vol %1$s"
@@ -7359,7 +7342,9 @@ msgstr "No se pudo abrir el volumen de almacenamiento con ruta '%1$s'"
 
 #, sh-format
 msgid "Failed to determine state of guest: $guest. Not tracking it anymore."
-msgstr "Falló al determinar estado de huésped:$guest. No rastrea a ninguno"
+msgstr ""
+"Fallo al determinar el estado del huésped: $guest. Ya no se lo está "
+"rastreando."
 
 #, fuzzy, c-format
 msgid "Failed to disconnect client '%1$llu' from server %2$s"
@@ -7679,9 +7664,8 @@ msgstr "falló al intentar tomar una instantánea: %1$s"
 msgid "Failed to initialize TLS session: %1$s"
 msgstr "No se pudo inicializar sesión TLS: %1$s"
 
-#, fuzzy
 msgid "Failed to initialize cgroup backend."
-msgstr "Falló al inicializar mutex"
+msgstr "Fallo al inicializar el backend de cgroup."
 
 msgid "Failed to initialize host cpu features"
 msgstr ""
@@ -8014,9 +7998,9 @@ msgstr ""
 msgid "Failed to open tty %1$s"
 msgstr "Falló al abrir tty %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse %1$s: only com1 and com2 supported."
-msgstr "Falló la lectura del valor del componente de URI %1$s"
+msgstr "Fallo al leer %1$s: solo se admiten com1 y com2."
 
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
@@ -8145,13 +8129,13 @@ msgstr "Falló la lectura de usuario '%1$s'"
 msgid "Failed to parse users from '%1$s'"
 msgstr "Falló la lectura de usuario '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value '%1$s' as number."
-msgstr "Falló la lectura de usuario '%1$s'"
+msgstr "Fallo al leer el valor '%1$s' como número."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value '%1$s' from cpu.max."
-msgstr "Falló la lectura de usuario '%1$s'"
+msgstr "Fallo al leer el valor '%1$s' de cpu.max."
 
 #, c-format
 msgid "Failed to parse value of URI component %1$s"
@@ -9010,9 +8994,9 @@ msgstr ""
 msgid "File '%1$s' has unknown type"
 msgstr "El archivo '%1$s' posee un tipo desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "File '%1$s/%2$s/%3$s' does not exist."
-msgstr "No existe el archivo %s"
+msgstr "No existe el archivo '%1$s%2$s%3$s'"
 
 #, fuzzy
 msgid "File bandwidth:"
@@ -9046,9 +9030,8 @@ msgstr "Archivo procesado:"
 msgid "File remaining:"
 msgstr "Archivo restante:"
 
-#, fuzzy
 msgid "File streams are not supported on this platform"
-msgstr "Sockets de UNIX no tienen soporte en esta plataforma."
+msgstr "No se admiten flujos de archivo en esta plataforma"
 
 msgid "File total:"
 msgstr "Archivo total:"
@@ -9150,8 +9133,8 @@ msgstr "Detiene a la fuerza una red determinada."
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr ""
-"Detiene a la fuerza un grupo determinado. Datos crudos en el grupos están "
-"sin modificar."
+"Detener a la fuerza un grupo determinado. Los datos en bruto del grupo no se "
+"modifican"
 
 #, fuzzy, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
@@ -9220,9 +9203,9 @@ msgid ""
 "Get device block stats for a running domain. See man page or use --human for "
 "explanation of fields"
 msgstr ""
-"Obtenga las estadísticas de bloques de dispositivo para un dominio en "
-"ejecución. Vea la página de manual o use --human para obtener una "
-"explicación de los campos."
+"Obtener estadísticas del bloque de dispositivo para un dominio en ejecución. "
+"Vea la página de manual o use --human para obtener una explicación de los "
+"campos."
 
 msgid "Get domain launch security info"
 msgstr ""
@@ -9250,11 +9233,10 @@ msgstr ""
 "Obtiene estadísticas de interfaz de red para un dominio que se encuentre en "
 "ejecución."
 
-#, fuzzy
 msgid "Get network interfaces' addresses for a running domain"
 msgstr ""
-"Obtiene estadísticas de interfaz de red para un dominio que se encuentre en "
-"ejecución."
+"Obtener las direcciones de interfaz de red para un dominio que se encuentre "
+"en ejecución"
 
 msgid "Get or set blkio parameters"
 msgstr "Obtener o establecer parámetro blkio"
@@ -9547,9 +9529,9 @@ msgstr ""
 msgid "HyperV vendor_id value is invalid"
 msgstr "ID de proveedor no es válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "HyperV vendor_id value must not be more than %1$d characters."
-msgstr "vendor_id debe tener %1$d caracteres"
+msgstr "El valor vendor_id de HyperV no debe tener más de %1$d caracteres."
 
 #, fuzzy, c-format
 msgid ""
@@ -9793,11 +9775,10 @@ msgid "Inject NMI to the guest"
 msgstr "Inyectar NMI al huésped"
 
 msgid "Inject NMI to the guest domain."
-msgstr "Inyectar NMI al dominio de huésped"
+msgstr "Inyectar NMI al dominio de huésped."
 
-#, fuzzy
 msgid "Input devices are not supported by this virtualization driver."
-msgstr "Dispositivos Multiqueue no tienen soporte en este sistema"
+msgstr "Este controlador de virtualización no admite dispositivos de entrada."
 
 #, fuzzy
 msgid "Input secret value is missing"
@@ -9866,9 +9847,8 @@ msgstr "No se encontró interfaz (mac: %1$s)."
 msgid "Interface attached successfully\n"
 msgstr "La interfaz ha sido asociada exitosamente\n"
 
-#, fuzzy
 msgid "Interface backend parameters are not supported by vz driver."
-msgstr "Dispositivos paralelos no están soportados por libxl"
+msgstr "El controlador vz no admite argumentos del backend de la interfaz."
 
 msgid "Interface detached successfully\n"
 msgstr "La interfaz ha sido desmontada exitosamente\n"
@@ -9908,9 +9888,8 @@ msgstr "Atributo de modo inválido '%s'"
 msgid "Invalid %1$s image format specified in configuration file"
 msgstr "Falló al analizar archivo de configuración"
 
-#, fuzzy
 msgid "Invalid 'cpu.max' data."
-msgstr "cpuNum en %s es inválido"
+msgstr "Datos 'cpu.max' no válidos."
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
@@ -10900,9 +10879,8 @@ msgstr ""
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
 
-#, fuzzy
 msgid "LXC Guest Enter Namespace"
-msgstr "Espacio de Nombres de entrada del invitado LXC"
+msgstr "Entrar al Espacio de Nombres del huésped LXC"
 
 #, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
@@ -14338,7 +14316,7 @@ msgstr "Error al reanudar luego de un volcado"
 
 #, sh-format
 msgid "Resuming guest $name: "
-msgstr "Reanudando el invitado $name: "
+msgstr "Reanudando el huésped $name: "
 
 #, sh-format
 msgid "Resuming guests on $uri URI..."
@@ -14486,7 +14464,7 @@ msgstr "Ejecutar el demonio con: %1$d.%2$d.%3$d\n"
 
 #, sh-format
 msgid "Running guests on $uri URI: "
-msgstr "Ejecutando invitado en URI $uri: "
+msgstr "Ejecutando el huésped en URI $uri: "
 
 #, c-format
 msgid "Running hypervisor: %1$s %2$d.%3$d.%4$d\n"
@@ -15102,7 +15080,7 @@ msgstr "Apagado"
 
 #, sh-format
 msgid "Shutdown of guest $name complete."
-msgstr "Apagado del invitado $name completo."
+msgstr "Apagado del huésped $name completo."
 
 #, sh-format
 msgid "Shutdown of guest $name failed to complete in time."
@@ -15312,7 +15290,7 @@ msgstr "Iniciado"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
-msgstr "Iniciando apagado del invitado: $name"
+msgstr "Iniciando apagado del huésped: $name"
 
 msgid "Starts an inactive node device that was previously defined"
 msgstr ""
