@@ -20,13 +20,15 @@
 # Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
 # Emilio Herrera <ehespinosa57@gmail.com>, 2022.
 # Nicolas Gal <nialegal@yandex.com>, 2024.
+# Nicolas Gal <snowcrash79@users.noreply.translate.fedoraproject.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-30 21:26+0000\n"
-"Last-Translator: Nicolas Gal <nialegal@yandex.com>\n"
+"PO-Revision-Date: 2025-01-01 15:38+0000\n"
+"Last-Translator: Nicolas Gal "
+"<snowcrash79@users.noreply.translate.fedoraproject.org>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -34,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.1\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -2849,9 +2851,9 @@ msgstr "No se puede borrar el directorio '%1$s'"
 msgid "Cannot delete file '%1$s'"
 msgstr "No se puede borrar el archivo '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot detach %1$s device with no alias"
-msgstr "no es posible extraer arrenadamientos de dispositivo"
+msgstr "No es posible desconectar el dispositivo %1$s sin un alias"
 
 msgid "Cannot detach platform device"
 msgstr ""
@@ -2902,9 +2904,9 @@ msgstr "No se encontró '%1$s' en ruta"
 msgid "Cannot find '%1$s' in path"
 msgstr "No se encontró '%1$s' en ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find 'iothread' : %1$u"
-msgstr "No se puede iniciar tiempo en %s"
+msgstr "No se pudo encontrar 'iothread': %1$u"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%1$03llx"
@@ -2929,7 +2931,9 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
-msgstr "no es posible encontrar estadísticas para el dispositivo '%s'"
+msgstr ""
+"No se pudieron encontrar estadísticas del byte '%1$s' para el dispositivo de "
+"bloque '%2$s'"
 
 #, fuzzy, c-format
 msgid "Cannot find byte stats for block device '%1$s'"
@@ -2985,9 +2989,9 @@ msgstr "No se puede obtener interfaz MTU en '%1$s'"
 msgid "Cannot get interface flags on '%1$s'"
 msgstr "No se pueden obtener los indicadores en '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot get interface name for index '%1$i'"
-msgstr "No se pueden obtener los indicadores en '%s'"
+msgstr "No se pudo obtener el nombre de la interfaz para el índice '%1$i'"
 
 msgid "Cannot get max allocation from resctrl memory info"
 msgstr ""
@@ -3109,7 +3113,7 @@ msgstr "No se puede abrir %s"
 
 #, fuzzy, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
-msgstr "No se puede analizar el estado del sistema '%s'"
+msgstr "No se pudo leer el estado '%2$s' de '%1$s'"
 
 msgid "Cannot parse 'memory.stat' cgroup file."
 msgstr "No es posible analizar <master> atributo 'startport'."
@@ -3201,7 +3205,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
-msgstr "No se puede analizar el estado del sistema '%s'"
+msgstr "No se pudo leer el estado '%2$s' del byte '%1$s'"
 
 #, c-format
 msgid "Cannot parse category in %1$s"
@@ -3254,7 +3258,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot print data type %1$x"
-msgstr "No se pueden escribir datos"
+msgstr "No se puede mostrar el tipo de datos %1$x"
 
 #, c-format
 msgid "Cannot read %1$s '%2$s'"
@@ -3370,9 +3374,10 @@ msgid "Cannot set memory higher than max memory"
 msgstr ""
 "No es posible establecer que la memoria sea mayor que la memoria máxima"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set scheduler parameters for pid %1$lld"
-msgstr "muestra/define parámetros de planificación"
+msgstr ""
+"No se pudieron establecer parámetros del planificador para el pid %1$lld"
 
 msgid "Cannot setup CPU affinity until process is started"
 msgstr ""
