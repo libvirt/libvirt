@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2025-01-01 15:38+0000\n"
+"PO-Revision-Date: 2025-01-02 12:51+0000\n"
 "Last-Translator: Nicolas Gal "
 "<snowcrash79@users.noreply.translate.fedoraproject.org>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3980,7 +3980,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
+msgstr "Este binario de QEMU no admite configurar el temporizador '%1$s'"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Conectar la consola virtual serial del huésped."
@@ -4126,13 +4126,13 @@ msgstr "No se pudieron cambiar parámetros de memoria: %1$s"
 msgid "Could not change scheduler parameters: %1$s"
 msgstr "No se pudieron cambiar parámetros de programador: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not chown on swtpm logfile %1$s"
-msgstr "No se puede cerrar logfile"
+msgstr "No se pudo aplicar chown en el archivo de registro swtpm %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not complete transfer: %1$s (%2$d)"
-msgstr "No se pudo crear toma de pantalla: %s"
+msgstr "No se pudo completar la transferencia: %1$s (%2$d)"
 
 msgid "Could not configure network"
 msgstr "No se ha podido configurar la red"
@@ -4174,9 +4174,9 @@ msgstr "No se puede crear volumen: %s"
 msgid "Could not create base storage, rc=%1$08x"
 msgstr "no se pudo eliminar dominio, rc=%1$08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create directory %1$s as %2$u:%3$d"
-msgstr "No se puede crear directorio %s"
+msgstr "No se pudo crear el directorio %1$s como %2$u:%3$d"
 
 msgid "Could not create filter"
 msgstr "No se pudo crear filitro"
@@ -4317,9 +4317,9 @@ msgstr ""
 msgid "Could not find any vport capable device"
 msgstr "No se pudo encontrar un dispositivo coincidente"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find auto-added %1$s controller with index %2$zu"
-msgstr "No se pudo hallar grupo de almacenamiento con nombre: %s"
+msgstr "No se pudo encontrar el controlador auto-añadido %1$s con índice %2$zu"
 
 #, c-format
 msgid "Could not find compute resource specified in '%1$s'"
@@ -4446,9 +4446,10 @@ msgstr "No se pudieron liberar datos deserializados"
 msgid "Could not generate eth name for container"
 msgstr "No se pudo generar nombre eth para el contenedor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not generate medium name for the disk at: port:%1$d, slot:%2$d"
-msgstr "No se pudo generar nombre eth para el contenedor"
+msgstr ""
+"No se pudo generar nombre de medio para el disco en: puerto:%1$d, ranura:%2$d"
 
 msgid "Could not generate next class ID"
 msgstr "No se pudo generar siguiente ID de clase"
@@ -5093,9 +5094,9 @@ msgstr "No se pudo iniciar dominio: %1$s"
 msgid "Could not suspend domain: %1$s"
 msgstr "No se puede interrumpir el dominio: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not transfer data: %1$s (%2$d)"
-msgstr "No se pudo iniciar dominio: %s"
+msgstr "No se pudieron tranferir los datos: %1$s (%2$d)"
 
 #, fuzzy
 msgid "Could not translate keycode"
@@ -5104,9 +5105,9 @@ msgstr "No se pudo asignar memoria"
 msgid "Could not verify disk address"
 msgstr "No se pudo verificar la dirección de disco"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not wait for transfer: %1$s (%2$d)"
-msgstr "No se pudo leer la configuración del contenedor %d"
+msgstr "No se pudo esperar la transferencia: %1$s (%2$d)"
 
 #, c-format
 msgid "Could not wipe volume: %1$s"
@@ -5533,13 +5534,14 @@ msgid ""
 "TPM 1.2\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Did not find USB device %1$04x:%2$04x"
-msgstr "No se encontró bus de dispositivo USB:%u device:%u"
+msgstr "No se encontró el dispositivo USB %1$04x:%2$04x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Did not find USB device %1$04x:%2$04x bus:%3$u device:%4$u"
-msgstr "No se encontró bus de dispositivo USB:%u device:%u"
+msgstr ""
+"No se encontró el dispositivo USB %1$04x:%2$04x bus:%3$u dispositivo:%4$u"
 
 #, c-format
 msgid "Did not find USB device bus:%1$u device:%2$u"
@@ -5567,15 +5569,15 @@ msgstr "Deshabilitado"
 
 #, fuzzy, c-format
 msgid "Disallowing client %1$lld with uid %2$lld"
-msgstr "Desautorizando cliente %llu con UID %llu"
+msgstr "Cancelando permisos al cliente %1$lld con uid %2$lld"
 
 #, c-format
 msgid "Disallowing client %1$llu with uid %2$llu"
 msgstr "Desautorizando cliente %1$llu con UID %2$llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Disconnected from %1$s due to I/O error"
-msgstr "Falló debido a error de E/S"
+msgstr "Desconectado de %1$s debido a un error de E/S"
 
 #, c-format
 msgid "Disconnected from %1$s due to end of file"
@@ -6174,21 +6176,21 @@ msgstr ""
 msgid "Empty response during %1$s"
 msgstr "Respuesta vacía durante %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%1$s' does not support arch '%2$s'"
-msgstr "El emulador qemu '%s' no tiene soporte para xen"
+msgstr "El emulador '%1$s' no admite la arquitectura '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%1$s' does not support machine type '%2$s'"
-msgstr "El emulador qemu '%s' no tiene soporte para xen"
+msgstr "El emulador '%1$s' no admite el tipo de máquina '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%1$s' does not support os type '%2$s'"
-msgstr "El emulador qemu '%s' no tiene soporte para xen"
+msgstr "El emulador '%1$s' no no admite el tipo de SO '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%1$s' does not support virt type '%2$s'"
-msgstr "El emulador qemu '%s' no tiene soporte para xen"
+msgstr "El emulador '%1$s' no admite el tipo de virtualizción '%2$s'"
 
 msgid "Enabled"
 msgstr "Habilitado"
@@ -6280,9 +6282,9 @@ msgstr "Error abriendo el archivo %1$s"
 msgid "Error reading secret: %1$s"
 msgstr "Error leyendo secreto: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Error removing IP address from %1$s"
-msgstr "Formateo de dirección IP para host '%s' falló: %s"
+msgstr "Error al quitar la dirección IP de %1$s"
 
 msgid "Error while building firewall"
 msgstr "Error al construir el cortafuegos"
@@ -6291,13 +6293,13 @@ msgstr "Error al construir el cortafuegos"
 msgid "Error while building firewall: %1$s"
 msgstr "Error al construir el cortafuegos: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Error while closing medium, rc=%1$08x"
-msgstr "Error al procesar monitor de E/S"
+msgstr "Error al cerrar el medio, rc=%1$08x"
 
 #, fuzzy, c-format
 msgid "Error while creating diff storage, rc=%1$08x"
-msgstr "Error al leer el nombre del dominio"
+msgstr "Error al crear almacenamiento diff, rc=%1$08x"
 
 #, fuzzy
 msgid "Error while processing agent IO"
@@ -6364,9 +6366,9 @@ msgstr "No se pudo completar dentro de un período de tiempo de espera"
 msgid "Expected a /dev path for '%1$s'"
 msgstr "modo de almacenamiento no esperado para '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expected an interface of type 'network' not '%1$s'"
-msgstr "Tipo de interfaz %d no esperada"
+msgstr "Se esperaba una interfaz del tipo 'network', no '%1$s'"
 
 msgid "Expected at least one file descriptor"
 msgstr "Se esperaba al menos un descriptor"
@@ -6385,11 +6387,11 @@ msgstr "Se esperaba exactamente 1 host para el grupo de almacenaje"
 msgid "Expecting %1$d FD names but got %2$u"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expecting '%1$s' to be a %2$s host but found a %3$s host"
 msgstr ""
-"Se esperaba que la entrada VMX '%s' sea una dirección MAC, pero se ha "
-"encontrado '%s'"
+"Se esperaba que '%1$s' fuera un anfitrión %2$s pero se encontró un anfitrión "
+"%3$s"
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
@@ -6520,7 +6522,9 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Expecting domain XML CPU mode 'custom' but found '%1$s'"
-msgstr "Se esperaba que el tipo virt sea '%s', pero se ha encontrado '%s'"
+msgstr ""
+"Se esperaba el modo de CPU 'custom' en el XML del dominio pero se encontró "
+"'%1$s'"
 
 #, fuzzy, c-format
 msgid "Expecting domain XML CPU sockets per core as %1$d but found %2$d"
