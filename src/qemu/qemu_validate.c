@@ -4540,11 +4540,6 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
 
     case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
         if (!fs->sock) {
-            if (fs->readonly) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtiofs does not yet support read-only mode"));
-                return -1;
-            }
             if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("virtiofs only supports passthrough accessmode"));
@@ -4555,12 +4550,6 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                                _("virtiofs does not support wrpolicy"));
                 return -1;
             }
-        }
-
-        if (fs->readonly) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs does not support read-only access"));
-            return -1;
         }
 
         if (fs->model != VIR_DOMAIN_FS_MODEL_DEFAULT) {

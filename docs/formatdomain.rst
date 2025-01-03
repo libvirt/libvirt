@@ -3824,8 +3824,8 @@ A directory on the host that can be accessed directly from the guest.
    :since:`Since 10.0.0`
 ``readonly``
    Enables exporting filesystem as a readonly mount for guest, by default
-   read-write access is given (currently only works for QEMU/KVM driver; not
-   with virtiofs).
+   read-write access is given (works for QEMU/KVM driver, :since:`Since 11.0.0,
+   requires virtiofs 1.13.0` ).
 ``space_hard_limit``
    Maximum space available to this guest's filesystem. :since:`Since 0.9.13`
    Only supported by the OpenVZ driver.

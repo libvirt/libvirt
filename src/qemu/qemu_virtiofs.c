@@ -228,6 +228,9 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
                                fs->idmap.gidmap[i].count);
     }
 
+    if (fs->readonly)
+        virCommandAddArg(cmd, "--readonly");
+
     return g_steal_pointer(&cmd);
 }
 
