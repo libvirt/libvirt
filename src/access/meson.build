@@ -73,7 +73,7 @@ if conf.has('WITH_POLKIT')
       command: [ meson_python_prog, python3_prog, genpolkit_prog, '@INPUT@' ],
       capture: true,
       install: true,
-      install_dir: datadir / 'polkit-1' / 'actions',
+      install_dir: polkitactionsdir,
     )
   endif
 endif

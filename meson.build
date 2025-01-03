@@ -114,6 +114,8 @@ localedir = prefix / get_option('localedir')
 mandir = prefix / get_option('mandir')
 sbindir = prefix / get_option('sbindir')
 sharedstatedir = prefix / get_option('sharedstatedir')
+polkitactionsdir = datadir / 'polkit-1' / 'actions'
+polkitrulesdir = datadir / 'polkit-1' / 'rules.d'
 
 docdir = get_option('docdir')
 if docdir == ''

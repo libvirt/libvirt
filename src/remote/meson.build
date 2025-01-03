@@ -294,15 +294,14 @@ if conf.has('WITH_REMOTE')
     endif
 
     if conf.has('WITH_POLKIT')
-      polkitdir = datadir / 'polkit-1'
       install_data(
         'libvirtd.policy',
-        install_dir: polkitdir / 'actions',
+        install_dir: polkitactionsdir,
         rename: [ 'org.libvirt.unix.policy' ],
       )
       install_data(
         'libvirtd.rules',
-        install_dir: polkitdir / 'rules.d',
+        install_dir: polkitrulesdir,
         rename: [ '50-libvirt.rules' ],
       )
     endif
