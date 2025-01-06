@@ -27974,7 +27974,6 @@ virDomainDefFormatFeatures(virBuffer *buf,
                 case VIR_DOMAIN_HYPERV_RESET:
                 case VIR_DOMAIN_HYPERV_FREQUENCIES:
                 case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-                case VIR_DOMAIN_HYPERV_TLBFLUSH:
                 case VIR_DOMAIN_HYPERV_IPI:
                 case VIR_DOMAIN_HYPERV_EVMCS:
                 case VIR_DOMAIN_HYPERV_AVIC:
@@ -28002,6 +28001,16 @@ virDomainDefFormatFeatures(virBuffer *buf,
                         virBufferEscapeString(&hypervAttrBuf, " value='%s'",
                                               def->hyperv_vendor_id);
                     }
+                    break;
+
+                case VIR_DOMAIN_HYPERV_TLBFLUSH:
+                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                        break;
+
+                    if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
+                        virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
+                    if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
+                        virBufferAddLit(&hypervChildBuf, "<extended state='on'/>\n");
                     break;
 
                 case VIR_DOMAIN_HYPERV_LAST:
