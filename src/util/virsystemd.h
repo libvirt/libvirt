@@ -44,7 +44,11 @@ int virSystemdCreateMachine(const char *name,
 
 int virSystemdTerminateMachine(const char *name);
 
-void virSystemdNotifyStartup(void);
+void virSystemdNotifyReady(void);
+void virSystemdNotifyReload(void);
+void virSystemdNotifyStopping(void);
+void virSystemdNotifyExtendTimeout(int secs);
+void virSystemdNotifyStatus(const char *fmt, ...) G_GNUC_PRINTF(1, 2);
 
 int virSystemdHasMachined(void);
 

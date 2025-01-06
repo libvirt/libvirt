@@ -753,7 +753,7 @@ virNetDaemonRun(virNetDaemon *dmn)
 
     /* We are accepting connections now. Notify systemd
      * so it can start dependent services. */
-    virSystemdNotifyStartup();
+    virSystemdNotifyReady();
 
     VIR_DEBUG("dmn=%p quit=%d", dmn, dmn->quit);
     while (!dmn->finished) {

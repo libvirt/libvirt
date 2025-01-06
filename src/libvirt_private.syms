@@ -3531,7 +3531,11 @@ virSystemdHasResolved;
 virSystemdHasResolvedResetCachedValue;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;
-virSystemdNotifyStartup;
+virSystemdNotifyExtendTimeout;
+virSystemdNotifyReady;
+virSystemdNotifyReload;
+virSystemdNotifyStatus;
+virSystemdNotifyStopping;
 virSystemdResolvedRegisterNameServer;
 virSystemdTerminateMachine;
 

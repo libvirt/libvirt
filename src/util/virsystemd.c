@@ -624,12 +624,11 @@ int virSystemdTerminateMachine(const char *name)
     return 0;
 }
 
-void
-virSystemdNotifyStartup(void)
+static void
+virSystemdNotify(const char *msg)
 {
 #ifndef WIN32
     const char *path;
-    const char *msg = "READY=1";
     int fd;
     struct sockaddr_un un = {
         .sun_family = AF_UNIX,
@@ -643,6 +642,8 @@ virSystemdNotifyStartup(void)
         .msg_iov = &iov,
         .msg_iovlen = 1,
     };
+
+    VIR_DEBUG("Notify '%s'", msg);
 
     if (!(path = getenv("NOTIFY_SOCKET"))) {
         VIR_DEBUG("Skipping systemd notify, not requested");
@@ -672,6 +673,43 @@ virSystemdNotifyStartup(void)
 
     VIR_FORCE_CLOSE(fd);
 #endif /* !WIN32 */
+}
+
+void virSystemdNotifyReady(void)
+{
+    virSystemdNotify("READY=1");
+}
+
+void virSystemdNotifyReload(void)
+{
+    gint64 now = g_get_monotonic_time();
+    g_autofree char *msg = g_strdup_printf(
+        "RELOADING=1\nMONOTONIC_USEC=%lld", (long long int)now);
+    virSystemdNotify(msg);
+}
+
+void virSystemdNotifyStopping(void)
+{
+    virSystemdNotify("STOPPING=1");
+}
+
+void virSystemdNotifyExtendTimeout(int secs)
+{
+    g_autofree char *msg = g_strdup_printf("EXTEND_TIMEOUT_USEC=%llu",
+                                           secs * 1000ull * 1000ull);
+    virSystemdNotify(msg);
+}
+
+void virSystemdNotifyStatus(const char *fmt, ...)
+{
+    g_autofree char *msg1 = NULL;
+    g_autofree char *msg2 = NULL;
+    va_list ap;
+    va_start(ap, fmt);
+    msg1 = g_strdup_vprintf(fmt, ap);
+    va_end(ap);
+    msg2 = g_strdup_printf("STATUS=%s", msg1);
+    virSystemdNotify(msg2);
 }
 
 static int
