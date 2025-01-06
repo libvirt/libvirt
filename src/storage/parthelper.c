@@ -31,7 +31,6 @@
 #include <config.h>
 
 #include <parted/parted.h>
-#include <libdevmapper.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

@@ -1793,11 +1793,11 @@ if conf.has('WITH_LIBVIRTD')
     conf.set('WITH_STORAGE_DIR', 1)
   endif
 
-  if not get_option('storage_disk').disabled() and devmapper_dep.found() and libparted_dep.found()
+  if not get_option('storage_disk').disabled() and libparted_dep.found()
     use_storage = true
     conf.set('WITH_STORAGE_DISK', 1)
   elif get_option('storage_disk').enabled()
-    error('You must install libparted and libdevmapper to compile libvirt with disk storage driver')
+    error('You must install libparted to compile libvirt with disk storage driver')
   endif
 
   if not get_option('storage_fs').disabled()
