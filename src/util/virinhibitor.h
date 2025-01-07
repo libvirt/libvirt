@@ -26,13 +26,13 @@ typedef struct _virInhibitor virInhibitor;
 
 typedef enum {
     VIR_INHIBITOR_WHAT_NONE          = 0,
-    VIR_INHIBITOR_WHAT_SLEEP         = (1 << 1),
-    VIR_INHIBITOR_WHAT_SHUTDOWN      = (1 << 2),
-    VIR_INHIBITOR_WHAT_IDLE          = (1 << 3),
-    VIR_INHIBITOR_WHAT_POWER_KEY     = (1 << 4),
-    VIR_INHIBITOR_WHAT_SUSPEND_KEY   = (1 << 5),
-    VIR_INHIBITOR_WHAT_HIBERNATE_KEY = (1 << 6),
-    VIR_INHIBITOR_WHAT_LID_SWITCH    = (1 << 7),
+    VIR_INHIBITOR_WHAT_SLEEP         = (1 << 0),
+    VIR_INHIBITOR_WHAT_SHUTDOWN      = (1 << 1),
+    VIR_INHIBITOR_WHAT_IDLE          = (1 << 2),
+    VIR_INHIBITOR_WHAT_POWER_KEY     = (1 << 3),
+    VIR_INHIBITOR_WHAT_SUSPEND_KEY   = (1 << 4),
+    VIR_INHIBITOR_WHAT_HIBERNATE_KEY = (1 << 5),
+    VIR_INHIBITOR_WHAT_LID_SWITCH    = (1 << 6),
 } virInhibitorWhat;
 
 typedef enum {
