@@ -65,6 +65,7 @@ struct _virNetDaemon {
     GHashTable *servers;
     virJSONValue *srvObject;
 
+    virNetDaemonLifecycleCallback stopCb;
     virNetDaemonLifecycleCallback shutdownPrepareCb;
     virNetDaemonLifecycleCallback shutdownWaitCb;
     virThread *stateStopThread;
@@ -793,8 +794,10 @@ virNetDaemonRun(virNetDaemon *dmn)
         }
     }
 
+    VIR_DEBUG("Main loop exited");
     if (dmn->graceful) {
         virThreadJoin(&shutdownThread);
+        VIR_DEBUG("Graceful shutdown complete");
     } else {
         VIR_WARN("Make forcefull daemon shutdown");
         exit(EXIT_FAILURE);
@@ -802,17 +805,6 @@ virNetDaemonRun(virNetDaemon *dmn)
 
  cleanup:
     virObjectUnlock(dmn);
-}
-
-
-void
-virNetDaemonSetStateStopWorkerThread(virNetDaemon *dmn,
-                                     virThread **thr)
-{
-    VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
-
-    VIR_DEBUG("Setting state stop worker thread on dmn=%p to thr=%p", dmn, thr);
-    dmn->stateStopThread = g_steal_pointer(thr);
 }
 
 
@@ -834,6 +826,44 @@ virNetDaemonQuitExecRestart(virNetDaemon *dmn)
     VIR_DEBUG("Exec-restart requested %p", dmn);
     dmn->quit = true;
     dmn->execRestart = true;
+}
+
+
+static void
+virNetDaemonStopWorker(void *opaque)
+{
+    virNetDaemon *dmn = opaque;
+
+    VIR_DEBUG("Begin stop dmn=%p", dmn);
+
+    dmn->stopCb();
+
+    VIR_DEBUG("Completed stop dmn=%p", dmn);
+
+    virNetDaemonQuit(dmn);
+    virObjectUnref(dmn);
+}
+
+
+void
+virNetDaemonStop(virNetDaemon *dmn)
+{
+    VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
+
+    if (!dmn->stopCb ||
+        dmn->stateStopThread)
+        return;
+
+    virObjectRef(dmn);
+    dmn->stateStopThread = g_new0(virThread, 1);
+
+    if (virThreadCreateFull(dmn->stateStopThread, true,
+                            virNetDaemonStopWorker,
+                            "daemon-stop", false, dmn) < 0) {
+        virObjectUnref(dmn);
+        g_clear_pointer(&dmn->stateStopThread, g_free);
+        return;
+    }
 }
 
 
@@ -874,11 +904,20 @@ virNetDaemonHasClients(virNetDaemon *dmn)
 
 void
 virNetDaemonSetLifecycleCallbacks(virNetDaemon *dmn,
+                                  virNetDaemonLifecycleCallback stopCb,
                                   virNetDaemonLifecycleCallback prepareCb,
                                   virNetDaemonLifecycleCallback waitCb)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
 
+    VIR_DEBUG("Lifecycle callbacks stop=%p prepare=%p wait=%p",
+              stopCb, prepareCb, waitCb);
+
+    /* Immutable once set */
+    if (dmn->stopCb || dmn->shutdownPrepareCb || dmn->shutdownWaitCb)
+        return;
+
+    dmn->stopCb = stopCb;
     dmn->shutdownPrepareCb = prepareCb;
     dmn->shutdownWaitCb = waitCb;
 }

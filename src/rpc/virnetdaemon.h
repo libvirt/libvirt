@@ -66,13 +66,11 @@ int virNetDaemonAddSignalHandler(virNetDaemon *dmn,
 void virNetDaemonUpdateServices(virNetDaemon *dmn,
                                 bool enabled);
 
-void virNetDaemonSetStateStopWorkerThread(virNetDaemon *dmn,
-                                          virThread **thr);
-
 void virNetDaemonRun(virNetDaemon *dmn);
 
 void virNetDaemonQuit(virNetDaemon *dmn);
 void virNetDaemonQuitExecRestart(virNetDaemon *dmn);
+void virNetDaemonStop(virNetDaemon *dmn);
 
 bool virNetDaemonHasClients(virNetDaemon *dmn);
 
@@ -84,6 +82,29 @@ bool virNetDaemonHasServer(virNetDaemon *dmn,
 
 typedef int (*virNetDaemonLifecycleCallback)(void);
 
+/*
+ * @stopCb: preserves any active state on host shutdown / session exit
+ * @prepareCb: start shutting down daemon
+ * @waitCb: wait for shutdown completion
+ *
+ * This method may only be invoked once, the callbacks are immutable
+ * once set.
+ *
+ * On host shutdown (privileged) or session exit (unprivileged)
+ * the @stopCb will be invoked first.
+ *
+ * When the daemon shuts down, the sequence of operations is
+ * as follows
+ *
+ * - Listener stops accepting new clients
+ * - Existing clients are closed
+ * - Delay until @stopCb is complete (if still running)
+ * - @prepareCb invoked
+ * - Server worker pool is drained in background
+ * - @waitCb is invoked in background
+ * - Main loop terminates
+ */
 void virNetDaemonSetLifecycleCallbacks(virNetDaemon *dmn,
+                                       virNetDaemonLifecycleCallback stopCb,
                                        virNetDaemonLifecycleCallback prepareCb,
                                        virNetDaemonLifecycleCallback waitCb);
