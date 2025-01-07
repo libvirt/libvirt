@@ -1,5 +1,8 @@
 #include <tunables/global>
 
+@{hextet}=[0-9a-f][0-9a-f][0-9a-f][0-9a-f]
+@{UUID}=@{hextet}@{hextet}-@{hextet}-@{hextet}-@{hextet}-@{hextet}@{hextet}@{hextet}
+
 profile virt-aa-helper @libexecdir@/virt-aa-helper {
   #include <abstractions/base>
   #include <abstractions/openssl>
@@ -44,7 +47,7 @@ profile virt-aa-helper @libexecdir@/virt-aa-helper {
   /{usr/,}{s,}bin/apparmor_parser Ux,
 
   @sysconfdir@/apparmor.d/libvirt/* r,
-  @sysconfdir@/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
+  @sysconfdir@/apparmor.d/libvirt/libvirt-@{UUID}* rw,
 
   # for backingstore -- allow access to non-hidden files in @{HOME} as well
   # as storage pools
