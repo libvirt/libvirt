@@ -840,7 +840,6 @@ virNetDaemonStopWorker(void *opaque)
 
     VIR_DEBUG("Completed stop dmn=%p", dmn);
 
-    virNetDaemonQuit(dmn);
     virObjectUnref(dmn);
 }
 
