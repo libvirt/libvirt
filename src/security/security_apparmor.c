@@ -1109,8 +1109,8 @@ AppArmorSetFDLabel(virSecurityManager *mgr,
                    virDomainDef *def,
                    int fd)
 {
-    char *proc = NULL;
-    char *fd_path = NULL;
+    g_autofree char *proc = NULL;
+    g_autofree char *fd_path = NULL;
 
     virSecurityLabelDef *secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
