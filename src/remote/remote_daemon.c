@@ -452,9 +452,11 @@ static void daemonReloadHandlerThread(void *opaque G_GNUC_UNUSED)
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                 VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL, NULL);
 
+    virSystemdNotifyReload();
     if (virStateReload() < 0) {
         VIR_WARN("Error while reloading drivers");
     }
+    virSystemdNotifyReady();
 
     /* Drivers are initialized again. */
     g_atomic_int_set(&driversInitialized, 1);

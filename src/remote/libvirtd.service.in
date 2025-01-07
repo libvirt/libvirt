@@ -26,7 +26,7 @@ After=xencommons.service
 Conflicts=xendomains.service
 
 [Service]
-Type=notify
+Type=notify-reload
 Environment=LIBVIRTD_ARGS="--timeout 120"
 EnvironmentFile=-@initconfdir@/libvirtd
 ExecStart=@sbindir@/libvirtd $LIBVIRTD_ARGS

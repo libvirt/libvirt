@@ -15,7 +15,7 @@ After=dbus.service
 After=apparmor.service
 
 [Service]
-Type=notify
+Type=notify-reload
 Environment=@SERVICE@_ARGS="--timeout 120"
 EnvironmentFile=-@initconfdir@/@service@
 ExecStart=@sbindir@/@service@ $@SERVICE@_ARGS
