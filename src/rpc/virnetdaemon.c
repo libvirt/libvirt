@@ -84,6 +84,7 @@ struct _virNetDaemon {
     virNetDaemonLifecycleCallback shutdownPrepareCb;
     virNetDaemonLifecycleCallback shutdownWaitCb;
     virThread *stateStopThread;
+    int stopTimer;
     int quitTimer;
     virNetDaemonQuitPhase quit;
     bool graceful;
@@ -98,6 +99,25 @@ struct _virNetDaemon {
 
 
 static virClass *virNetDaemonClass;
+
+/*
+ * When running state stop operation which can be slow...
+ *
+ * How frequently we tell systemd to extend our stop time,
+ * and how much we ask for each time. The latter should
+ * exceed the former with a decent tolerance for high load
+ * scenarios
+ */
+#define VIR_NET_DAEMON_STOP_EXTEND_INTERVAL_MSEC (5 * 1000)
+#define VIR_NET_DAEMON_STOP_EXTRA_TIME_SEC 10
+
+/*
+ * When running daemon shutdown synchronization which
+ * ought to be moderately fast
+ */
+#define VIR_NET_DAEMON_SHUTDOWN_TIMEOUT_SEC 30
+#define VIR_NET_DAEMON_SHUTDOWN_TIMEOUT_MSEC (VIR_NET_DAEMON_SHUTDOWN_TIMEOUT_SEC * 1000)
+
 
 static int
 daemonServerClose(void *payload,
@@ -168,6 +188,7 @@ virNetDaemonNew(void)
     if (virEventRegisterDefaultImpl() < 0)
         goto error;
 
+    dmn->stopTimer = -1;
     dmn->autoShutdownTimerID = -1;
 
 #ifndef WIN32
@@ -738,6 +759,23 @@ daemonShutdownWait(void *opaque)
 }
 
 static void
+virNetDaemonStopTimer(int timerid G_GNUC_UNUSED,
+                      void *opaque)
+{
+    virNetDaemon *dmn = opaque;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
+
+    if (dmn->quit != VIR_NET_DAEMON_QUIT_STOPPING)
+        return;
+
+    VIR_DEBUG("Extending stop timeout %u",
+              VIR_NET_DAEMON_STOP_EXTRA_TIME_SEC);
+
+    virSystemdNotifyExtendTimeout(VIR_NET_DAEMON_STOP_EXTRA_TIME_SEC);
+}
+
+
+static void
 virNetDaemonQuitTimer(int timerid G_GNUC_UNUSED,
                       void *opaque)
 {
@@ -791,11 +829,19 @@ virNetDaemonRun(virNetDaemon *dmn)
 
         if (dmn->quit == VIR_NET_DAEMON_QUIT_REQUESTED) {
             VIR_DEBUG("Process quit request");
+            virSystemdNotifyStopping();
             virHashForEach(dmn->servers, daemonServerClose, NULL);
 
             if (dmn->stateStopThread) {
                 VIR_DEBUG("State stop thread running");
                 dmn->quit = VIR_NET_DAEMON_QUIT_STOPPING;
+                virSystemdNotifyExtendTimeout(VIR_NET_DAEMON_STOP_EXTRA_TIME_SEC);
+                if ((dmn->stopTimer = virEventAddTimeout(VIR_NET_DAEMON_STOP_EXTEND_INTERVAL_MSEC,
+                                                         virNetDaemonStopTimer,
+                                                         dmn, NULL)) < 0) {
+                    VIR_WARN("Failed to register stop timer");
+                    /* hope for the best */
+                }
             } else {
                 VIR_DEBUG("Ready to shutdown");
                 dmn->quit = VIR_NET_DAEMON_QUIT_READY;
@@ -807,7 +853,8 @@ virNetDaemonRun(virNetDaemon *dmn)
             if (dmn->shutdownPrepareCb && dmn->shutdownPrepareCb() < 0)
                 break;
 
-            if ((dmn->quitTimer = virEventAddTimeout(30 * 1000,
+            virSystemdNotifyExtendTimeout(VIR_NET_DAEMON_SHUTDOWN_TIMEOUT_SEC);
+            if ((dmn->quitTimer = virEventAddTimeout(VIR_NET_DAEMON_SHUTDOWN_TIMEOUT_MSEC,
                                                      virNetDaemonQuitTimer,
                                                      dmn, NULL)) < 0) {
                 VIR_WARN("Failed to register finish timer.");
@@ -879,6 +926,10 @@ virNetDaemonStopWorker(void *opaque)
             dmn->quit = VIR_NET_DAEMON_QUIT_READY;
         }
         g_clear_pointer(&dmn->stateStopThread, g_free);
+        if (dmn->stopTimer != -1) {
+            virEventRemoveTimeout(dmn->stopTimer);
+            dmn->stopTimer = -1;
+        }
     }
 
     VIR_DEBUG("End stop dmn=%p", dmn);
