@@ -326,6 +326,19 @@ Sets the daemon timeout to the value of '--timeout' argument. Use ``--timeout 0`
 to disable auto-shutdown of the daemon.
 
 
+daemon-shutdown
+---------------
+
+**Syntax:**
+
+::
+
+   daemon-shutdown [--preserve]
+
+Instruct the daemon to exit gracefully. If the ``--preserve`` flag is given,
+it will save state in the same manner that would be done on a host OS shutdown
+(privileged daemons) or a login session quit (unprivileged daemons).
+
 SERVER COMMANDS
 ===============
 

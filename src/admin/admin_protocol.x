@@ -219,6 +219,10 @@ struct admin_connect_set_daemon_timeout_args {
     unsigned int flags;
 };
 
+struct admin_connect_daemon_shutdown_args {
+    unsigned int flags;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -334,5 +338,10 @@ enum admin_procedure {
     /**
      * @generate: both
      */
-    ADMIN_PROC_CONNECT_SET_DAEMON_TIMEOUT = 19
+    ADMIN_PROC_CONNECT_SET_DAEMON_TIMEOUT = 19,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_CONNECT_DAEMON_SHUTDOWN = 20
 };

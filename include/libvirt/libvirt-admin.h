@@ -484,6 +484,19 @@ int virAdmConnectSetDaemonTimeout(virAdmConnectPtr conn,
                                   unsigned int timeout,
                                   unsigned int flags);
 
+/**
+ * virAdmConnectDaemonShutdownFlags:
+ *
+ * Since: 11.2.0
+ */
+typedef enum {
+    /* Preserve state before shutting down daemon (Since: 11.2.0) */
+    VIR_DAEMON_SHUTDOWN_PRESERVE = (1 << 0),
+} virAdmConnectDaemonShutdownFlags;
+
+int virAdmConnectDaemonShutdown(virAdmConnectPtr conn,
+                                unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

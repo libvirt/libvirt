@@ -53,3 +53,8 @@ LIBVIRT_ADMIN_8.6.0 {
     global:
         virAdmConnectSetDaemonTimeout;
 } LIBVIRT_ADMIN_3.0.0;
+
+LIBVIRT_ADMIN_11.2.0 {
+    global:
+        virAdmConnectDaemonShutdown;
+} LIBVIRT_ADMIN_8.6.0;

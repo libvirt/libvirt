@@ -474,6 +474,19 @@ adminConnectSetDaemonTimeout(virNetDaemon *dmn,
     return virNetDaemonAutoShutdown(dmn, timeout);
 }
 
+static int
+adminConnectDaemonShutdown(virNetDaemon *dmn,
+                           unsigned int flags)
+{
+    virCheckFlags(VIR_DAEMON_SHUTDOWN_PRESERVE, -1);
+
+    if (flags & VIR_DAEMON_SHUTDOWN_PRESERVE)
+        virNetDaemonStop(dmn);
+
+    virNetDaemonQuit(dmn);
+
+    return 0;
+}
 
 static int
 adminDispatchConnectGetLoggingOutputs(virNetServer *server G_GNUC_UNUSED,

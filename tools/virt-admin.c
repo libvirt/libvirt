@@ -1077,6 +1077,41 @@ cmdDaemonTimeout(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/* --------------------------
+ * Command daemon-shutdown
+ * --------------------------
+ */
+static const vshCmdInfo info_daemon_shutdown = {
+    .help = N_("stop the daemon"),
+    .desc = N_("stop the daemon"),
+};
+
+static const vshCmdOptDef opts_daemon_shutdown[] = {
+    {.name = "preserve",
+     .type = VSH_OT_BOOL,
+     .required = false,
+     .positional = false,
+     .help = N_("preserve state before shutting down"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDaemonShutdown(vshControl *ctl, const vshCmd *cmd)
+{
+    vshAdmControl *priv = ctl->privData;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "preserve"))
+        flags |= VIR_DAEMON_SHUTDOWN_PRESERVE;
+
+    if (virAdmConnectDaemonShutdown(priv->conn, flags) < 0)
+        return false;
+
+    return true;
+}
+
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -1467,6 +1502,12 @@ static const vshCmdDef managementCmds[] = {
      .handler = cmdDaemonTimeout,
      .opts = opts_daemon_timeout,
      .info = &info_daemon_timeout,
+     .flags = 0
+    },
+    {.name = "daemon-shutdown",
+     .handler = cmdDaemonShutdown,
+     .opts = opts_daemon_shutdown,
+     .info = &info_daemon_shutdown,
      .flags = 0
     },
     {.name = NULL}
