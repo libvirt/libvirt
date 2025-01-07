@@ -1005,41 +1005,6 @@ static const vshCmdInfo info_daemon_log_outputs = {
                 "daemon."),
 };
 
-static const vshCmdOptDef opts_daemon_timeout[] = {
-    {.name = "timeout",
-     .type = VSH_OT_INT,
-     .required = true,
-     .positional = true,
-     .help = N_("number of seconds the daemon will run without any active connection"),
-    },
-    {.name = NULL}
-};
-
-static bool
-cmdDaemonTimeout(vshControl *ctl, const vshCmd *cmd)
-{
-    vshAdmControl *priv = ctl->privData;
-    unsigned int timeout = 0;
-
-    if (vshCommandOptUInt(ctl, cmd, "timeout", &timeout) < 0)
-        return false;
-
-    if (virAdmConnectSetDaemonTimeout(priv->conn, timeout, 0) < 0)
-        return false;
-
-    return true;
-}
-
-
-/* --------------------------
- * Command daemon-timeout
- * --------------------------
- */
-static const vshCmdInfo info_daemon_timeout = {
-    .help = N_("set the auto shutdown timeout of the daemon"),
-    .desc = N_("set the auto shutdown timeout of the daemon"),
-};
-
 static const vshCmdOptDef opts_daemon_log_outputs[] = {
     {.name = "outputs",
      .type = VSH_OT_STRING,
@@ -1075,6 +1040,42 @@ cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
 
     return true;
 }
+
+
+/* --------------------------
+ * Command daemon-timeout
+ * --------------------------
+ */
+static const vshCmdInfo info_daemon_timeout = {
+    .help = N_("set the auto shutdown timeout of the daemon"),
+    .desc = N_("set the auto shutdown timeout of the daemon"),
+};
+
+static const vshCmdOptDef opts_daemon_timeout[] = {
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .required = true,
+     .positional = true,
+     .help = N_("number of seconds the daemon will run without any active connection"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDaemonTimeout(vshControl *ctl, const vshCmd *cmd)
+{
+    vshAdmControl *priv = ctl->privData;
+    unsigned int timeout = 0;
+
+    if (vshCommandOptUInt(ctl, cmd, "timeout", &timeout) < 0)
+        return false;
+
+    if (virAdmConnectSetDaemonTimeout(priv->conn, timeout, 0) < 0)
+        return false;
+
+    return true;
+}
+
 
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
