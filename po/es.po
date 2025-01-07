@@ -19,16 +19,15 @@
 # Javier Blanco <javi.deb@gmail.com>, 2018
 # Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
 # Emilio Herrera <ehespinosa57@gmail.com>, 2022.
-# Nicolas Gal <nialegal@yandex.com>, 2024.
+# Nicolas Gal <nialegal@yandex.com>, 2024, 2025.
 # Nicolas Gal <snowcrash79@users.noreply.translate.fedoraproject.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2025-01-02 12:51+0000\n"
-"Last-Translator: Nicolas Gal "
-"<snowcrash79@users.noreply.translate.fedoraproject.org>\n"
+"PO-Revision-Date: 2025-01-07 17:44+0000\n"
+"Last-Translator: Nicolas Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -1702,7 +1701,7 @@ msgid ""
 "<virtualport> element unsupported for type='%1$s' in interface's <actual> "
 "element"
 msgstr ""
-"elemento <virtualport> no está soportado para tipo ='%1$s' en elemento "
+"elemento <virtualport> no está admitido para tipo ='%1$s' en elemento "
 "<actual> de interfaz"
 
 #, c-format
@@ -2022,7 +2021,7 @@ msgstr "El modo de atributo solo es permitido para la CPU del huésped"
 
 #, fuzzy
 msgid "Audit is not supported by the kernel"
-msgstr "unpriv_sgio no está soportado por este kernel"
+msgstr "unpriv_sgio no está admitido por este kernel"
 
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
@@ -2309,7 +2308,7 @@ msgstr "orden de arranque '%1$s' se utiliza más que una de dispositivo"
 
 #, fuzzy, c-format
 msgid "CPU features not supported by hypervisor for %1$s architecture"
-msgstr "Modelo de CPU %1$s no está soportado por el hipervisor"
+msgstr "Modelo de CPU %1$s no está admitido por el hipervisor"
 
 #, c-format
 msgid "CPU flags requested but can't determine default CPU for arch %1$s"
@@ -2347,7 +2346,7 @@ msgstr "Modelo de CPU %1$s ya está definido"
 
 #, c-format
 msgid "CPU model %1$s is not supported by hypervisor"
-msgstr "Modelo de CPU %1$s no está soportado por el hipervisor"
+msgstr "Modelo de CPU %1$s no está admitido por el hipervisor"
 
 #, c-format
 msgid "CPU model %1$s too long for destination"
@@ -3983,7 +3982,7 @@ msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "Este binario de QEMU no admite configurar el temporizador '%1$s'"
 
 msgid "Connect the virtual serial console for the guest"
-msgstr "Conectar la consola virtual serial del huésped."
+msgstr "Conectar la consola virtual serial del huésped"
 
 msgid "Connect to a daemon's administrating server."
 msgstr ""
@@ -6272,7 +6271,7 @@ msgid "Error message:"
 msgstr "Mensaje de error:"
 
 msgid "Error notify callback must be supplied"
-msgstr "Error notificar retrollamada debe proporcionarse"
+msgstr "Error notificar callback debe proporcionarse"
 
 #, c-format
 msgid "Error opening file %1$s"
@@ -9005,7 +9004,7 @@ msgstr "El archivo '%1$s' posee un tipo desconocido"
 
 #, c-format
 msgid "File '%1$s/%2$s/%3$s' does not exist."
-msgstr "No existe el archivo '%1$s%2$s%3$s'"
+msgstr "No existe el archivo '%1$s%2$s%3$s'."
 
 #, fuzzy
 msgid "File bandwidth:"
@@ -9115,7 +9114,7 @@ msgstr ""
 #, c-format
 msgid "Floppy '%1$s' has unsupported type '%2$s', expecting '%3$s' or '%4$s'"
 msgstr ""
-"El floppy '%1$s' posee un tipo '%2$s' no soportado, se esperaba '%3$s' o "
+"El floppy '%1$s' posee un tipo '%2$s' no admitido, se esperaba '%3$s' o "
 "'%4$s'"
 
 #, c-format
@@ -9214,7 +9213,7 @@ msgid ""
 msgstr ""
 "Obtener estadísticas del bloque de dispositivo para un dominio en ejecución. "
 "Vea la página de manual o use --human para obtener una explicación de los "
-"campos."
+"campos"
 
 msgid "Get domain launch security info"
 msgstr ""
@@ -9712,7 +9711,7 @@ msgstr "Ignorando huéspedes en URI $uri"
 msgid ""
 "Image file for %1$s %2$s '%3$s' has unsupported suffix, expecting '%4$s'"
 msgstr ""
-"El nombre del volumen '%s' posee un sufijo no soportado, se esperaba '.vmdk'"
+"El nombre del volumen '%s' posee un sufijo no admitido, se esperaba '.vmdk'"
 
 msgid "In use"
 msgstr "En uso"
@@ -10375,9 +10374,9 @@ msgstr "Valor de periodo de colección '%d' no es válido"
 msgid "Invalid lifecycle action '%1$s'."
 msgstr "Acción lifecycle no válida: '%1$s'."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid lifecycle type '%1$s'."
-msgstr "Tipo de secreto '%1$s'es nulo"
+msgstr "El tipo de ciclo de vida '%1$s' no es válido."
 
 #, c-format
 msgid "Invalid log destination '%1$s' for log output '%2$s'"
@@ -11274,7 +11273,7 @@ msgstr "ya se ha definido una etiqueta de seguridad para VM"
 msgid ""
 "Memory balloon device type '%1$s' is not supported by this version of qemu"
 msgstr ""
-"El tipo de dispositivo %1$s de globo de memoria no está soportado por esta "
+"El tipo de dispositivo %1$s de globo de memoria no está admitido por esta "
 "versión de qemu"
 
 #, fuzzy
@@ -11290,7 +11289,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Memory parameter is not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 msgid "Memory processed:"
 msgstr "Memoria procesada:"
@@ -11366,9 +11365,8 @@ msgstr ""
 msgid "Migration capabilities can only be set by a migration job"
 msgstr ""
 
-#, fuzzy
 msgid "Migration cookie parameters are not provided."
-msgstr "Migración de cookies no fue terminada NULL"
+msgstr "No se proveyeron argumentos de 'cookie' de migración."
 
 msgid "Migration cookie was not NULL terminated"
 msgstr "Migración de cookies no fue terminada NULL"
@@ -11621,9 +11619,8 @@ msgstr ""
 msgid "Missing auth field in JSON state document"
 msgstr "Falta campo auth en documento JSON"
 
-#, fuzzy
 msgid "Missing authentication callback"
-msgstr "No se ha suministrado una retrollamada de autenticación."
+msgstr "Falta la callback de autenticación"
 
 #, fuzzy
 msgid "Missing authentication credentials"
@@ -12040,9 +12037,8 @@ msgstr "El modelo %1$s es demasiado grande para el destino"
 msgid "Model name contains invalid characters"
 msgstr "El nombre del modelo contiene caracteres inválidos"
 
-#, fuzzy
 msgid "Modifies an existing IOThread of the guest domain."
-msgstr "Inyectar NMI al dominio de huésped"
+msgstr "Modifica un IOThread existente del dominio huésped."
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -12124,7 +12120,7 @@ msgstr "Múltiples controladors  '%s' con índice '%d'"
 
 #, fuzzy
 msgid "Multiple serial devices are not supported by xen-xm"
-msgstr "Dispositivos paralelos no están soportados por libxl"
+msgstr "Dispositivos paralelos no están admitidos por libxl"
 
 msgid "Multiqueue devices are not supported on this system"
 msgstr "Dispositivos Multiqueue no tienen soporte en este sistema"
@@ -12144,11 +12140,11 @@ msgstr ""
 
 #, fuzzy
 msgid "NIC model 'e1000' is not supported by given bhyve binary"
-msgstr "Modelo de CPU %s no está soportado por el hipervisor"
+msgstr "Modelo de CPU %s no está admitido por el hipervisor"
 
 #, fuzzy
 msgid "NIC model is not supported"
-msgstr "el modo '%s' de dispositivo de host no está soportado"
+msgstr "el modo '%s' de dispositivo de host no está admitido"
 
 msgid "NOTE"
 msgstr "NOTA"
@@ -12278,9 +12274,8 @@ msgstr "El nombre de la cadena no tiene más de %1$u caracteres"
 msgid "Name:"
 msgstr "Nombre:"
 
-#, fuzzy
 msgid "Namespaces are not supported on this platform"
-msgstr "Sockets de UNIX no tienen soporte en esta plataforma."
+msgstr "Los espacios de nombres no son compatibles con esta plataforma"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -12460,7 +12455,7 @@ msgstr ""
 
 #, c-format
 msgid "Network type %1$d is not supported"
-msgstr "El tipo de red %1$d no es soportado"
+msgstr "El tipo de red %1$d no es admitido"
 
 #, fuzzy
 msgid "New disk media source was not specified"
@@ -12528,7 +12523,7 @@ msgid "No addresses to bind to"
 msgstr "No se encontraron  direcciones de socket  para  '%s'"
 
 msgid "No authentication callback available"
-msgstr "No se ha suministrado una retrollamada de autenticación."
+msgstr "No se ha suministrado un callback de autenticación"
 
 msgid "No authentication methods and credentials provided"
 msgstr "No se han provisto métodos de autenticación  y  credenciales"
@@ -12837,13 +12832,12 @@ msgstr "No se encontraron  direcciones de socket  para  '%s'"
 msgid "No usable vsock found"
 msgstr ""
 
-#, fuzzy
 msgid ""
 "No user interaction callback provided: Can't get input from keyboard "
 "interactive authentication"
 msgstr ""
-"No se proporcionó llamada de interacción de usuario. No  puede verificar la "
-"llave de host de sesión."
+"No se proporcionó un callback de interacción del usuario: No se puede "
+"recibir la entrada de la autenticación interactiva de teclado"
 
 msgid ""
 "No user interaction callback provided: Can't retrieve private key passphrase"
@@ -12854,8 +12848,8 @@ msgstr ""
 msgid ""
 "No user interaction callback provided: Can't verify the session host key"
 msgstr ""
-"No se proporcionó llamada de interacción de usuario. No  puede verificar la "
-"llave de host de sesión."
+"No se proporcionó un callback de interacción: No es posible verificar la "
+"clave de host de la sesión"
 
 #, c-format
 msgid "No valid cgroup for machine %1$s"
@@ -12926,7 +12920,7 @@ msgstr "Ninguno"
 msgid ""
 "None of the requested authentication methods are supported by the server"
 msgstr ""
-"Ninguno de los métodos de autenticación solicitados están soportados por el  "
+"Ninguno de los métodos de autenticación solicitados están admitidos por el  "
 "servidor"
 
 msgid "Normal data:"
@@ -12984,7 +12978,7 @@ msgid "Not supported"
 msgstr "Sin soporte"
 
 msgid "Not supported on this platform"
-msgstr "No está soportado en  esta plataforma"
+msgstr "No está admitido en  esta plataforma"
 
 #, sh-format
 msgid "Not suspending transient guests on URI: $uri: "
@@ -13110,7 +13104,7 @@ msgid "Only PCI device addresses with function=0 are supported"
 msgstr "Solo existe soporte para direcciones de dispositivos PCI con función=0"
 
 msgid "Only PTY console types are supported"
-msgstr "Sólo tipos de consola PTY son soportadas"
+msgstr "Sólo tipos de consola PTY son admitidas"
 
 #, fuzzy
 msgid "Only VNC supported"
@@ -13134,9 +13128,10 @@ msgstr ""
 msgid "Only bridged veth devices can be detached"
 msgstr "Solamente dispositivos veth en puente pueden ser retirados"
 
-#, fuzzy
 msgid "Only disk and block storage types are supported by vz driver."
-msgstr "Only PTY console types are supported"
+msgstr ""
+"El controlador vz solo admite los tipos de almacenamiento en disco y en "
+"bloque."
 
 #, fuzzy
 msgid "Only disk image supported for resize"
@@ -13171,9 +13166,8 @@ msgstr "Operación no tiene soporte para dispositivo: %s"
 msgid "Only mac option can be specified for virt-net"
 msgstr ""
 
-#, fuzzy
 msgid "Only native iomode is supported by vz driver."
-msgstr "Sólo un dispositivo serial es soportado por libxl"
+msgstr "El controlador vz solo admite el modo iomode nativo."
 
 #, c-format
 msgid ""
@@ -13239,13 +13233,11 @@ msgstr ""
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
-#, fuzzy
 msgid "Only ploop fs driver is supported by vz driver."
-msgstr "Sólo un dispositivo serial es soportado por libxl"
+msgstr "El controlador vz sólo admite el controlador ploop fs."
 
-#, fuzzy
 msgid "Only read-only pflash is supported."
-msgstr "Hay soporte para sólo un sistema de archivos"
+msgstr "Solamente se admite pflash de solo lectura."
 
 #, fuzzy
 msgid "Only scsi disk supports vendor and product"
@@ -13279,7 +13271,7 @@ msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Solo existe soporte para las URI de migraciones vpxmigr://"
 
 msgid "Only x509 certificates are supported"
-msgstr "Solo los certificados x509 están soportados"
+msgstr "Solo los certificados x509 están admitidos"
 
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
@@ -13381,7 +13373,7 @@ msgid "Output attributes of a secret as an XML dump to stdout."
 msgstr "Muestra los atributos de un secreto como una descarga XML en stdout."
 
 msgid "Output the IP address and port number for the VNC display."
-msgstr "Muestra el puerto y la dirección IP para el monitor VNC"
+msgstr "Mostrar la dirección IP y el número de puerto para la pantalla VNC."
 
 msgid "Output the IP address and port number for the graphical display."
 msgstr "Salida de dirección IP y número de puerto para pantalla gráfica."
@@ -13543,7 +13535,7 @@ msgid "Panicked"
 msgstr "en pánico"
 
 msgid "Parallel devices are not supported by libxl"
-msgstr "Dispositivos paralelos no están soportados por libxl"
+msgstr "Dispositivos paralelos no están admitidos por libxl"
 
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
@@ -13555,11 +13547,10 @@ msgstr "El parámetro '%1$s' no es una cadena"
 
 #, c-format
 msgid "Parameter '%1$s' is not supported by this kernel"
-msgstr "Parámetro '%1$s' no está soportado por este kernel"
+msgstr "Parámetro '%1$s' no está admitido por este kernel"
 
-#, fuzzy
 msgid "Parameter 'min_guarantee' not supported by QEMU."
-msgstr "El parámetro '%s'  no tiene soporte"
+msgstr "El parámetro 'min_guarantee' no es compatible con QEMU."
 
 msgid "Parent"
 msgstr "Padre"
@@ -13666,15 +13657,13 @@ msgstr ""
 "la pregunta es '%1$s', las respuestas posibles son %2$s, pero no ha sido "
 "especificada alguna predeterminada"
 
-#, fuzzy
 msgid "Per-node binding is not compatible with automatic NUMA placement."
 msgstr ""
-"El reetiquetamiento de recursos no es compatible con el tipo de etiqueta "
-"'none'"
+"La vinculación por nodo no es compatible con la ubicación automática de NUMA."
 
 #, fuzzy
 msgid "Perf not supported on this platform"
-msgstr "No está soportado en  esta plataforma"
+msgstr "No está admitido en  esta plataforma"
 
 msgid "Persistent"
 msgstr "Persistente"
@@ -13813,9 +13802,8 @@ msgstr "Los controladores IDE primarios deben tener una dirección PCI 0:0:1.1"
 msgid "Primary SATA controller must have PCI address 0:0:1f.2"
 msgstr "Los controladores IDE primarios deben tener una dirección PCI 0:0:1.1"
 
-#, fuzzy
 msgid "Print lease info for a given network"
-msgstr "Detiene a la fuerza una red determinada."
+msgstr "Mostrar información de la concesión para una red determinada"
 
 msgid "Print the current directory."
 msgstr "Imprimir el directorio actual."
@@ -13838,7 +13826,7 @@ msgstr ""
 "comandos relacionados"
 
 msgid "Prints memory stats of the node."
-msgstr "Imprime estadística de memoria del nodo"
+msgstr "Imprimir estadísticas de memoria del nodo."
 
 #, c-format
 msgid "Priority '%1$d' is outside valid range of [%2$d,%3$d]"
@@ -13849,18 +13837,18 @@ msgid "Probing TSC is not supported on this platform"
 msgstr "E/S cruda no tiene soporte en esta plataforma"
 
 msgid "Process CPU affinity is not supported on this platform"
-msgstr "El proceso de afinidad del CPU no está soportado en esta plataforma"
+msgstr "El proceso de afinidad del CPU no está admitido en esta plataforma"
 
 #, fuzzy
 msgid "Process CPU scheduling is not supported on this platform"
-msgstr "El proceso de afinidad del CPU no está soportado en esta plataforma"
+msgstr "El proceso de afinidad del CPU no está admitido en esta plataforma"
 
 msgid "Process exited prior to exec"
 msgstr ""
 
 #, fuzzy
 msgid "Process spawning is not supported on this platform"
-msgstr "El proceso de afinidad del CPU no está soportado en esta plataforma"
+msgstr "El proceso de afinidad del CPU no está admitido en esta plataforma"
 
 #, fuzzy, c-format
 msgid "Processes %1$d refused to die"
@@ -13882,9 +13870,10 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Protocol '%1$s' is not supported for tcp character device."
-msgstr "Operación vport '%s' no se admite para host%d"
+msgstr ""
+"El protocolo '%1$s' no es compatible con el dispositivo de caracteres TCP."
 
 msgid "Pull aborted"
 msgstr "Extracción abortó"
@@ -13935,7 +13924,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "QEMU does not support device assignment mode '%1$s'"
-msgstr "Tipo de dispositivo '%1$s' no soportado"
+msgstr "Tipo de dispositivo '%1$s' no admitido"
 
 msgid "QEMU does not support dirty page rate calculation mode."
 msgstr ""
@@ -14111,7 +14100,7 @@ msgstr "Se recibieron demasiados FD %1$d, se espera un máximo de %2$d"
 
 #, fuzzy
 msgid "Receiving file descriptors is not supported on this socket"
-msgstr "Recibir descriptores de archivo no está soportado en este socket"
+msgstr "Recibir descriptores de archivo no está admitido en este socket"
 
 #, fuzzy
 msgid "Reconnected to the admin server"
@@ -14122,7 +14111,7 @@ msgstr "Reconectado con el hipervisor"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
-msgstr "Bus de redirección %1$s no está soportado por QEMU"
+msgstr "Bus de redirección %1$s no está admitido por QEMU"
 
 msgid "Refresh a given pool."
 msgstr "Actualiza un grupo determinado."
@@ -14312,7 +14301,7 @@ msgid "Restoring of leases failed on interface '%1$s'"
 msgstr "Falló la restauración de arriendos en interfaz '%1$s'"
 
 msgid "Resume a previously suspended domain."
-msgstr "Reanudar un dominio previamente suspendido"
+msgstr "Reanudar un dominio previamente suspendido."
 
 msgid "Resume operation failed"
 msgstr "Falló al reanudarse la operación"
@@ -14329,7 +14318,7 @@ msgstr "Reanudando el huésped $name: "
 
 #, sh-format
 msgid "Resuming guests on $uri URI..."
-msgstr "Reanudando huéspedes en URI $uri"
+msgstr "Reanudando huéspedes en URI $uri..."
 
 msgid "Retrieve identity details about <client> from <server>"
 msgstr ""
@@ -14344,20 +14333,19 @@ msgid "Return pool info in bytes"
 msgstr ""
 
 msgid "Returns XML <sources> document."
-msgstr "Retorna documento <sources> XML."
+msgstr "Devuelve documento <sources> XML."
 
 msgid "Returns a list of secrets"
-msgstr "Muestra una lista de secretos."
+msgstr "Muestra una lista de secretos"
 
 msgid "Returns basic SEV information about the node."
 msgstr ""
 
-#, fuzzy
 msgid "Returns basic information about a checkpoint."
-msgstr "Retorna información básica sobre una instantánea"
+msgstr "Devuelve información básica sobre un punto de control."
 
 msgid "Returns basic information about a snapshot."
-msgstr "Retorna información básica sobre una instantánea"
+msgstr "Devuelve información básica sobre una instantánea."
 
 #, fuzzy
 msgid "Returns basic information about the domain IOThreads."
@@ -14370,7 +14358,7 @@ msgid "Returns basic information about the domain."
 msgstr "Ofrece información básica acerca del dominio."
 
 msgid "Returns basic information about the network"
-msgstr "Retorna información básica sobre la red"
+msgstr "Devuelve información básica sobre la red"
 
 msgid "Returns basic information about the node device"
 msgstr ""
@@ -14437,7 +14425,7 @@ msgid "Returns state of a control interface to the domain."
 msgstr "Devuelve el estado de interfaz de control al dominio"
 
 msgid "Returns the number of virtual CPUs used by the domain."
-msgstr "Retorna el número de CPU virtuales utilizadas por dominio."
+msgstr "Devuelve el número de CPU virtuales utilizadas por dominio."
 
 msgid "Revert a domain to a snapshot"
 msgstr "Revierte el dominio a una captura instantánea"
@@ -14498,7 +14486,7 @@ msgstr "Longitud de datos de SASL %1$zu demasiado extensa, máx %2$zu"
 
 #, c-format
 msgid "SASL mechanism %1$s not supported by server"
-msgstr "El mecanismo SASL %1$s no está soportado por el servidor"
+msgstr "El mecanismo SASL %1$s no está admitido por el servidor"
 
 #, c-format
 msgid "SASL negotiation data too long: %1$zu bytes"
@@ -14905,8 +14893,7 @@ msgstr "No existe soporte para SATA con este binario QEMU"
 #, fuzzy
 msgid ""
 "Setting device info for character devices is not supported by vz driver."
-msgstr ""
-"La configuración de proveedor o producto no está soportado por este QEMU"
+msgstr "La configuración de proveedor o producto no está admitido por este QEMU"
 
 #, fuzzy
 msgid "Setting device info for network devices is not supported by vz driver."
@@ -15193,11 +15180,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Some parameters are not supported by migration protocol 2"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 #, fuzzy
 msgid "Some parameters are not supported by migration protocol 3"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 msgid "Some processes refused to die"
 msgstr "Algunos procesos se negaron a morir"
@@ -15237,7 +15224,7 @@ msgstr "tipo de red de dispositivo no tiene soporte"
 
 #, fuzzy
 msgid "Specified disk bus is not supported by vz driver."
-msgstr "El mecanismo SASL %s no está soportado por el servidor"
+msgstr "El mecanismo SASL %s no está admitido por el servidor"
 
 #, fuzzy
 msgid "Specified network adapter model is not supported by vz driver."
@@ -15387,7 +15374,7 @@ msgstr "Estadística %1$s es demasiado grande para el destino"
 
 #, fuzzy, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 #, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon or QEMU"
@@ -15461,7 +15448,7 @@ msgstr ""
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr ""
-"El borrado del volumen de almacenamiento está soportado  solamente en los "
+"El borrado del volumen de almacenamiento está admitido  solamente en los "
 "dominios detenidos."
 
 msgid "Storage volume not found"
@@ -17435,7 +17422,7 @@ msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "Esta versión de QEMU no admite filtros de redirección USB"
 
 msgid "USB redirection is not supported by this version of QEMU"
-msgstr "Redirección USB no está soportada por esta versión de QEMU"
+msgstr "Redirección USB no está admitida por esta versión de QEMU"
 
 #, c-format
 msgid "USB source %1$s was not a character device"
@@ -18981,10 +18968,10 @@ msgid "Unable to register Machine"
 msgstr ""
 
 msgid "Unable to register async IO callback"
-msgstr "No se puede registrar retrollamada de ES async"
+msgstr "No se puede registrar callback de ES async"
 
 msgid "Unable to register disconnect callback"
-msgstr "No se  puede registrar retrollamada disconnect"
+msgstr "No se  puede registrar callback disconnect"
 
 #, fuzzy
 msgid "Unable to register process kevent"
@@ -20223,7 +20210,7 @@ msgstr "Modo '%1$s' de ubicación de CPU sin soporte"
 
 #, c-format
 msgid "Unsupported NUMA memory tuning mode '%1$s'"
-msgstr "Modo '%1$s' de sintonización de memoria NUMA no soportado"
+msgstr "Modo '%1$s' de sintonización de memoria NUMA no admitido"
 
 #, c-format
 msgid "Unsupported Network type %1$d"
@@ -20279,7 +20266,7 @@ msgstr "tipo de dirección '%1$s' no tiene soporte en red %2$s"
 
 #, fuzzy
 msgid "Unsupported address type for character device"
-msgstr "Tipo de dispositivo de caracteres '%s' no soportado"
+msgstr "Tipo de dispositivo de caracteres '%s' no admitido"
 
 #, c-format
 msgid "Unsupported algorithm '%1$s'"
@@ -20287,34 +20274,34 @@ msgstr "Algoritmo no admitido «%1$s»"
 
 #, fuzzy, c-format
 msgid "Unsupported boot device type: '%1$s'"
-msgstr "Tipo de dispositivo '%1$s' no soportado"
+msgstr "Tipo de dispositivo '%1$s' no admitido"
 
 #, fuzzy
 msgid "Unsupported boot order configuration"
-msgstr "configuración no soportada"
+msgstr "configuración no admitida"
 
 #, c-format
 msgid "Unsupported bus type '%1$s'"
-msgstr "Tipo de bus '%1$s' no soportado"
+msgstr "Tipo de bus '%1$s' no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported bus type '%1$s' for %2$s"
-msgstr "Tipo de bus '%s' no soportado "
+msgstr "Tipo de bus %1$s no admitido para %2$s"
 
 #, c-format
 msgid "Unsupported bus type '%1$s' for device type '%2$s'"
-msgstr "Tipo de bus '%1$s' no soportado para el tipo de dispositivo '%2$s'"
+msgstr "Tipo de bus '%1$s' no admitido para el tipo de dispositivo '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "No existe soporte para la relación capacidad-alojamiento"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
-msgstr "Tipo de dispositivo de caracteres '%1$s' no soportado"
+msgstr "Tipo de dispositivo de caracteres '%1$s' no admitido"
 
 #, fuzzy, c-format
 msgid "Unsupported codeset '%1$d'"
-msgstr "Tipo de dispositivo '%s' no soportado"
+msgstr "Tipo de dispositivo '%s' no admitido"
 
 #, fuzzy, c-format
 msgid "Unsupported compression method '%1$s'"
@@ -20322,15 +20309,15 @@ msgstr "Algoritmo no admitido «%1$s»"
 
 #, c-format
 msgid "Unsupported config format '%1$s'"
-msgstr "Formato '%1$s' de configuración no soportado"
+msgstr "Formato '%1$s' de configuración no admitido"
 
 #, c-format
 msgid "Unsupported config type %1$s"
-msgstr "Tipo de configuración no soportado %1$s"
+msgstr "Tipo de configuración no admitido %1$s"
 
 #, fuzzy
 msgid "Unsupported configuration"
-msgstr "configuración no soportada"
+msgstr "configuración no admitida"
 
 #, c-format
 msgid "Unsupported controller model: %1$s"
@@ -20352,11 +20339,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported device type %1$d"
-msgstr "Tipo de dispositivo '%s' no soportado"
+msgstr "Tipo de dispositivo '%s' no admitido"
 
 #, c-format
 msgid "Unsupported device type '%1$s'"
-msgstr "Tipo de dispositivo '%1$s' no soportado"
+msgstr "Tipo de dispositivo '%1$s' no admitido"
 
 #, c-format
 msgid "Unsupported device-mapper version. Expected %1$d got %2$d"
@@ -20367,25 +20354,25 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported disk address type '%1$s'"
-msgstr "Tipo de dirección de disco '%1$s' no soportado "
+msgstr "Tipo de dirección de disco '%1$s' no admitido"
 
 msgid "Unsupported disk bus"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported disk bus type %1$s"
-msgstr "tipo de disco %1$s no soportado "
+msgstr "Tipo de bus de disco %1$s no admitido"
 
 #, c-format
 msgid "Unsupported disk device type '%1$s'"
-msgstr "Tipo de dispositivo de disco '%1$s' no soportado "
+msgstr "Tipo de dispositivo de disco '%1$s' no admitido"
 
 msgid "Unsupported disk type"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported disk type %1$d"
-msgstr "tipo de disco %s no soportado "
+msgstr "tipo de disco %s no admitido"
 
 #, fuzzy, c-format
 msgid "Unsupported format of disk %1$s"
@@ -20397,7 +20384,7 @@ msgstr "Modo adelantar no tiene soporte '%1$s'"
 
 #, c-format
 msgid "Unsupported graphics type '%1$s'"
-msgstr "Tipo de gráficos '%1$s' no soportado "
+msgstr "Tipo de gráficos '%1$s' no admitido"
 
 #, c-format
 msgid "Unsupported host device mode %1$s"
@@ -20429,11 +20416,11 @@ msgstr "Funcionalidad de migración de cookies no tiene soporte %1$s  "
 
 #, fuzzy, c-format
 msgid "Unsupported net type %1$s"
-msgstr "Tipo de red '%1$s' no soportado"
+msgstr "Tipo de red '%1$s' no admitido"
 
 #, c-format
 msgid "Unsupported net type '%1$s'"
-msgstr "Tipo de red '%1$s' no soportado"
+msgstr "Tipo de red '%1$s' no admitido"
 
 #, fuzzy, c-format
 msgid "Unsupported network block protocol '%1$s'"
@@ -20451,7 +20438,7 @@ msgstr "Elemento <ip> no tiene soporte en red %1$s con forward mode='%2$s'"
 
 #, fuzzy
 msgid "Unsupported null storage bus"
-msgstr "Bus de entrada '%s' no soportado"
+msgstr "Bus de entrada '%s' no admitido"
 
 #, fuzzy, c-format
 msgid "Unsupported numatune mode '%1$d'"
@@ -20475,7 +20462,7 @@ msgstr "Tipo de objeto %1$d sin soporte"
 
 #, fuzzy
 msgid "Unsupported resctrl monitor type"
-msgstr "tipo de monitor '%s' no soportado"
+msgstr "tipo de monitor '%s' no admitido"
 
 #, c-format
 msgid "Unsupported root filesystem type %1$s"
@@ -20491,7 +20478,7 @@ msgstr "Nombre de destino de spicevmc sin soporte '%1$s'"
 
 #, fuzzy, c-format
 msgid "Unsupported storage type %1$s, the only supported type is %2$s"
-msgstr "Tipo de bus '%1$s' no soportado para el tipo de dispositivo '%2$s'"
+msgstr "Tipo de bus '%1$s' no admitido para el tipo de dispositivo '%2$s'"
 
 #, fuzzy, c-format
 msgid "Unsupported vbox device type: %1$d"
@@ -20506,7 +20493,7 @@ msgstr "Tipo virt no tiene soporte"
 
 #, fuzzy, c-format
 msgid "Unsupported volume format '%1$s'"
-msgstr "Formato '%1$s' de configuración no soportado"
+msgstr "Formato '%1$s' de configuración no admitido"
 
 msgid "Unused"
 msgstr "Sin utilizar"
@@ -20854,8 +20841,7 @@ msgstr ""
 #, c-format
 msgid "Volume name '%1$s' has unsupported suffix, expecting '.vmdk'"
 msgstr ""
-"El nombre del volumen '%1$s' posee un sufijo no soportado, se esperaba '."
-"vmdk'"
+"El nombre del volumen '%1$s' posee un sufijo no admitido, se esperaba '.vmdk'"
 
 #, c-format
 msgid "Volume path '%1$s' did not start with parent pool source device name."
@@ -21312,7 +21298,7 @@ msgstr ""
 
 #, fuzzy
 msgid "any configuration"
-msgstr "configuración no soportada"
+msgstr "configuración no admitida"
 
 #, c-format
 msgid "ap-domain value '%1$s' is out of range for '%2$s'"
@@ -21729,7 +21715,7 @@ msgstr ""
 
 #, fuzzy
 msgid "blkio parameters are not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 msgid "blkio weight is valid only for bfq or cfq scheduler"
 msgstr ""
@@ -21990,7 +21976,7 @@ msgid "bus must be 0 for sata controller"
 msgstr ""
 
 msgid "bypass cache unsupported by this system"
-msgstr "Cache de derivación no está soportado por este sistema"
+msgstr "Cache de derivación no está admitido por este sistema"
 
 msgid "bytes"
 msgstr ""
@@ -23725,7 +23711,7 @@ msgstr "No está montado el controlador de memoria cgroup"
 
 #, fuzzy
 msgid "cgroups v2 BPF devices not supported with this kernel"
-msgstr "unpriv_sgio no está soportado por este kernel"
+msgstr "unpriv_sgio no está admitido por este kernel"
 
 #, fuzzy
 msgid "change lifecycle actions"
@@ -23759,7 +23745,7 @@ msgstr ""
 
 #, fuzzy
 msgid "changing OS parameters is not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 #, fuzzy
 msgid "changing OS type is not supported by vz driver"
@@ -23767,15 +23753,15 @@ msgstr "El filtraje mediante --type no tiene soporte por este libvirt"
 
 #, fuzzy
 msgid "changing balloon parameters is not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 #, fuzzy
 msgid "changing clock parameters is not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 #, fuzzy
 msgid "changing cpu placement mode is not supported by vz driver"
-msgstr "esta función no está soportada por el controlador de conexión"
+msgstr "esta función no está admitida por el controlador de conexión"
 
 msgid "changing device 'acpi index' is not allowed"
 msgstr ""
@@ -23787,15 +23773,15 @@ msgstr ""
 
 #, fuzzy
 msgid "changing devices parameters is not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 #, fuzzy
 msgid "changing emulator is not supported by vz driver"
-msgstr "El mecanismo SASL %s no está soportado por el servidor"
+msgstr "El mecanismo SASL %s no está admitido por el servidor"
 
 #, fuzzy
 msgid "changing features is not supported by vz driver"
-msgstr "El mecanismo SASL %s no está soportado por el servidor"
+msgstr "El mecanismo SASL %s no está admitido por el servidor"
 
 #, c-format
 msgid "channel %1$s is not using a UNIX socket"
@@ -23937,7 +23923,7 @@ msgid "client socket is closed"
 msgstr "El socket del cliente está cerrado"
 
 msgid "client tried invalid PolicyKit init request"
-msgstr "El cliente intentó una petición de inicio de PolicyKit no soportada"
+msgstr "El cliente intentó una petición de inicio de PolicyKit no admitida"
 
 msgid "client tried invalid SASL init request"
 msgstr "El cliente ha intentado una petición de inicialización SASL inválida"
@@ -25122,7 +25108,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "device API '%1$s' not supported yet"
-msgstr "el modo '%1$s' de dispositivo de host no está soportado"
+msgstr "el modo '%1$s' de dispositivo de host no está admitido"
 
 #, fuzzy
 msgid "device alias"
@@ -25198,7 +25184,7 @@ msgstr "devices cgroup no está montado "
 
 #, c-format
 msgid "dhcp is supported only for a single %1$s address on each network"
-msgstr "dhcp soportado sólo para una dirección %1$s en cada red"
+msgstr "dhcp admitido sólo para una dirección %1$s en cada red"
 
 msgid "dhcp ranges cannot be modified, only added or deleted"
 msgstr "Rangos dhcp no se pueden modificar, solamente adicionar o borrar"
@@ -25440,7 +25426,7 @@ msgid "disk image format not supported: %1$s"
 msgstr "El formato de disco %1$s no tiene soporte"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
-msgstr "el modo disk ioeventfd es soportado solamente para bus virtio"
+msgstr "el modo disk ioeventfd es admitido solamente para bus virtio"
 
 #, c-format
 msgid "disk iothread queue '%1$u' is already assigned"
@@ -26503,7 +26489,7 @@ msgstr "rellamada de evento ya rastreada"
 
 #, fuzzy, c-format
 msgid "event callback function %1$p not registered"
-msgstr "No se registro flujo de retrollamada"
+msgstr "No se registro flujo de callback"
 
 #, fuzzy, c-format
 msgid "event callback id %1$d not registered"
@@ -27718,8 +27704,7 @@ msgid "failed to retrieve decision to accept host key"
 msgstr "Falló la recuperación de decisión para aceptar clave de host"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
-msgstr ""
-"Falló la recuperación de frase de paso de llave privada: falló retrollamada"
+msgstr "Falló la recuperación de frase de paso de llave privada: falló callback"
 
 msgid "failed to retrieve user response for authentication callback"
 msgstr ""
@@ -27982,7 +27967,7 @@ msgstr ""
 
 #, fuzzy
 msgid "fd passing is not supported by this connection"
-msgstr "esta función no está soportada por el controlador de conexión"
+msgstr "esta función no está admitida por el controlador de conexión"
 
 #, c-format
 msgid "fdset '%1$u' is already in use by qemu"
@@ -28764,11 +28749,11 @@ msgstr "Tipo de secreto '%1$s'es nulo"
 
 #, c-format
 msgid "hostdev mode '%1$s' not supported"
-msgstr "el modo '%1$s' de dispositivo de host no está soportado"
+msgstr "el modo '%1$s' de dispositivo de host no está admitido"
 
 #, fuzzy, c-format
 msgid "hostdev mode 'capabilities' is not supported in %1$s"
-msgstr "el modo '%1$s' de dispositivo de host no está soportado"
+msgstr "el modo '%1$s' de dispositivo de host no está admitido"
 
 #, c-format
 msgid ""
@@ -28778,7 +28763,7 @@ msgstr ""
 
 #, c-format
 msgid "hostdev subsys type '%1$s' not supported"
-msgstr "el tipo '%1$s' de subsistema de dispositivo de host no está soportado"
+msgstr "el tipo '%1$s' de subsistema de dispositivo de host no está admitido"
 
 #, fuzzy
 msgid "hostname must be specified for gluster sources"
@@ -28921,7 +28906,7 @@ msgstr ""
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
-msgstr "la versión de la imagen no está soportada (%1$d > %2$d)"
+msgstr "la versión de la imagen no está admitida (%1$d > %2$d)"
 
 msgid "implies --abort; conclude and pivot a copy or commit job"
 msgstr ""
@@ -29093,7 +29078,7 @@ msgid ""
 "interface %1$s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%2$s'"
 msgstr ""
-"la interface %1$s - <port isolated='yes'/> no es soportada por interfaces de "
+"la interface %1$s - <port isolated='yes'/> no es admitida por interfaces de "
 "red del tipo='%2$s'"
 
 #, c-format
@@ -29138,7 +29123,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "interface %1$s - vlan tag not supported for this connection type"
-msgstr "esta función no está soportada por el controlador de conexión"
+msgstr "esta función no está admitida por el controlador de conexión"
 
 #, c-format
 msgid "interface '%1$s' can only be listed once in network %2$s"
@@ -29164,7 +29149,7 @@ msgstr "la interfaz no tiene nombre"
 
 #, c-format
 msgid "interface has unsupported type '%1$s'"
-msgstr "el tipo de interfaz '%1$s' no es soportado"
+msgstr "el tipo de interfaz '%1$s' no es admitido"
 
 #, fuzzy
 msgid "interface host IP"
@@ -32534,9 +32519,8 @@ msgstr ""
 "Se encontraron varios registros DNS SRV coincidentes con todos los campos "
 "especificados en red %1$s"
 
-#, fuzzy
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr "No están soportadas múltiples retrollamadas de flujo"
+msgstr "No están admitidas múltiples callbacks de flujo"
 
 #, fuzzy, c-format
 msgid "multiple devices matching MAC address %1$s found"
@@ -32548,7 +32532,7 @@ msgid ""
 "supported"
 msgstr ""
 "se han especificado múltiples interfaces de reenvío para la red '%1$s', pero "
-"sólo una es soportada"
+"sólo una es admitida"
 
 msgid "multiple interfaces with matching MAC address"
 msgstr "la dirección MAC se corresponde con múltiples interfaces"
@@ -32579,7 +32563,7 @@ msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
 
 msgid "multiple stream callbacks not supported"
-msgstr "No están soportadas múltiples retrollamadas de flujo"
+msgstr "No están admitidas múltiples callbacks de flujo"
 
 msgid "mutex initialization failed"
 msgstr "falló la inicialización mutex"
@@ -33486,7 +33470,7 @@ msgstr ""
 "no existe un volumen de almacenamiento que corresponda con el ruta  '%s'"
 
 msgid "no stream callback registered"
-msgstr "No se registro flujo de retrollamada"
+msgstr "No se registro flujo de callback"
 
 msgid "no such screen ID"
 msgstr ""
@@ -33699,7 +33683,7 @@ msgstr "nparams demasiado extensos"
 
 #, fuzzy
 msgid "numa parameters are not supported by vz driver"
-msgstr "Parámetro '%s' no está soportado por este kernel"
+msgstr "Parámetro '%s' no está admitido por este kernel"
 
 msgid "numad is not available on this host"
 msgstr "numad no está disponible en este host"
@@ -33885,7 +33869,7 @@ msgstr ""
 
 #, fuzzy
 msgid "only RAW volumes are supported by this storage pool"
-msgstr "Cache de derivación no está soportado por este sistema"
+msgstr "Cache de derivación no está admitido por este sistema"
 
 msgid "only S390 guests support panic device of model 's390'"
 msgstr ""
@@ -33947,7 +33931,7 @@ msgid "only can suspend running domain"
 msgstr ""
 
 msgid "only connect if safe console handling is supported"
-msgstr "sólo conectar si el manejo seguro de consola es soportado"
+msgstr "sólo conectar si el manejo seguro de consola es admitido"
 
 #, c-format
 msgid ""
@@ -33963,7 +33947,7 @@ msgstr "lista únicamente tipo(s) especificado(s) de grupo (si tienen soporte)"
 #, fuzzy
 msgid "only model 'netfront' is supported for Xen PV(H) domains"
 msgstr ""
-"El borrado del volumen de almacenamiento está soportado  solamente en los "
+"El borrado del volumen de almacenamiento está admitido  solamente en los "
 "dominios detenidos."
 
 #, fuzzy
@@ -34063,7 +34047,7 @@ msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
 
 msgid "only two serial ports are supported"
-msgstr "solo por puertos seriales están soportados"
+msgstr "solo por puertos seriales están admitidos"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -34271,14 +34255,14 @@ msgstr ""
 
 #, fuzzy
 msgid "panic is supported only with ISA address type"
-msgstr "Tipo de dirección de disco '%s' no soportado "
+msgstr "Tipo de dirección de disco '%s' no admitido"
 
 msgid "panicked"
 msgstr "en pánico"
 
 #, fuzzy
 msgid "parallel ports are not supported"
-msgstr "Dispositivos paralelos no están soportados por libxl"
+msgstr "Dispositivos paralelos no están admitidos por libxl"
 
 #, fuzzy, c-format
 msgid "parallels bus does not support %1$s input device"
@@ -34499,7 +34483,7 @@ msgid "perf events which will be enabled"
 msgstr ""
 
 msgid "perform a live core dump if supported"
-msgstr "si es soportado, realiza una descarga de núcleo viva"
+msgstr "si es admitido, realiza una descarga de núcleo viva"
 
 msgid "perform selected wiping algorithm"
 msgstr "realizar algoritmo wiping seleccionado"
@@ -34515,7 +34499,7 @@ msgid "persistent attach of device '%1$s' is not supported"
 msgstr "La anexión persistente del dispositivo '%1$s'  no tiene soporte"
 
 msgid "persistent attach of device is not supported"
-msgstr "Conexión persistente al dispositivo no está soportada"
+msgstr "Conexión persistente al dispositivo no está admitida"
 
 #, c-format
 msgid "persistent detach of device '%1$s' is not supported"
@@ -34561,9 +34545,8 @@ msgstr ""
 msgid "pmsuspended"
 msgstr "pmsuspended"
 
-#, fuzzy
 msgid "polkit text authentication agent unavailable"
-msgstr "No se ha suministrado una retrollamada de autenticación."
+msgstr "No se ha suministrado un callback de autenticación."
 
 #, fuzzy
 msgid "poll failed in libxlTunnel3MigrationSrcFunc"
@@ -35446,7 +35429,7 @@ msgid "rename a domain"
 msgstr "reinicia un dominio"
 
 msgid "rename to new name during migration (if supported)"
-msgstr "modificarle nombre durante la migración (si es soportado)"
+msgstr "modificarle nombre durante la migración (si es admitido)"
 
 #, c-format
 msgid "rename(\"%1$s\", \"%2$s\")"
@@ -36132,7 +36115,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
-msgstr "El tipo de red %d no es soportado"
+msgstr "El tipo de red %d no es admitido"
 
 msgid "setting a launch secret is only supported in SEV-enabled domains"
 msgstr ""
@@ -36770,10 +36753,10 @@ msgid "stream aborted with unexpected status %1$d"
 msgstr "La secuencia ha sido abortada con un estado %1$d no esperado "
 
 msgid "stream already has a callback registered"
-msgstr "la secuencia ya tiene registrada una retrollamada"
+msgstr "la secuencia ya tiene registrada un callback"
 
 msgid "stream does not have a callback registered"
-msgstr "la secuencia no tiene registrada una retrollamada"
+msgstr "la secuencia no tiene registrada un callback"
 
 msgid "stream had I/O failure"
 msgstr "La secuencia  tiene una falla de E/S"
@@ -37085,9 +37068,8 @@ msgstr ""
 msgid "the default lockspace already exists"
 msgstr "El lockspace predeterminado ya existe"
 
-#, fuzzy
 msgid "the domain already has a vsock device"
-msgstr "la secuencia ya tiene registrada una retrollamada"
+msgstr "la secuencia ya tiene registrada un callback"
 
 msgid "the domain does not have a current snapshot"
 msgstr "el dominio no tiene una captura instantánea actual"
@@ -37361,7 +37343,7 @@ msgstr "Dispositivo de host SCSI no soporta modo administrado"
 
 #, fuzzy, c-format
 msgid "timer %1$s doesn't support setting of timer tickpolicy"
-msgstr "tickpolicy '%1$s' de temporizador rtc no soportado"
+msgstr "tickpolicy '%1$s' de temporizador rtc no admitido"
 
 #, fuzzy, c-format
 msgid "timer %1$s doesn't support setting of timer track"
@@ -38516,7 +38498,7 @@ msgstr "tipo de dispositivo de caracteres no esperado"
 
 #, fuzzy, c-format
 msgid "unexpected clock offset '%1$d'"
-msgstr "offset de reloj '%s' no soportado "
+msgstr "offset de reloj '%s' no admitido"
 
 msgid "unexpected code path"
 msgstr "Ruta de código inesperada"
@@ -39372,7 +39354,7 @@ msgstr ""
 
 #, c-format
 msgid "unsupported authentication type %1$d"
-msgstr "tipo de autenticación %1$d no soportado"
+msgstr "tipo de autenticación %1$d no admitido"
 
 #, c-format
 msgid "unsupported backend for pstore device: %1$s"
@@ -39388,14 +39370,14 @@ msgstr "chardev sin soporte '%1$s'"
 
 #, c-format
 msgid "unsupported chr device type '%1$s'"
-msgstr "tipo de dispositivo chr no soportado: '%1$s'"
+msgstr "tipo de dispositivo chr no admitido: '%1$s'"
 
 msgid "unsupported clock adjustment='reset'"
 msgstr "Ajuste de reloj sin soporte='reset'"
 
 #, c-format
 msgid "unsupported clock offset '%1$s'"
-msgstr "offset de reloj '%1$s' no soportado "
+msgstr "offset de reloj '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported clock offset='%1$s'"
@@ -39403,26 +39385,26 @@ msgstr "Desplazamiento de reloj sin soporte='%1$s'"
 
 #, c-format
 msgid "unsupported config type %1$s"
-msgstr "tipo de configuración %1$s no soportado"
+msgstr "tipo de configuración %1$s no admitido"
 
 msgid "unsupported configuration"
-msgstr "configuración no soportada"
+msgstr "configuración no admitida"
 
 #, c-format
 msgid "unsupported configuration: %1$s"
-msgstr "configuración no soportada: %1$s "
+msgstr "configuración no admitida: %1$s"
 
 #, c-format
 msgid "unsupported connection mode for <reservations/>: %1$s"
-msgstr "modo de conexión no soportado para <reservations/>: %1$s"
+msgstr "modo de conexión no admitido para <reservations/>: %1$s"
 
 #, c-format
 msgid "unsupported connection type for <reservations/>: %1$s"
-msgstr "tipo de conexión no soportado para <reservations/>: %1$s"
+msgstr "tipo de conexión no admitido para <reservations/>: %1$s"
 
 #, c-format
 msgid "unsupported console target type %1$s"
-msgstr "tipo de consola de destino %1$s no soportado"
+msgstr "tipo de consola de destino %1$s no admitido"
 
 msgid "unsupported controller device"
 msgstr ""
@@ -39433,11 +39415,11 @@ msgstr "Funcionalidad %1$s no tiene soporte"
 
 #, c-format
 msgid "unsupported data type '%1$c' for arg '%2$s'"
-msgstr "tipo de datos '%1$c' para el argumento '%2$s' no soportado"
+msgstr "tipo de datos '%1$c' para el argumento '%2$s' no admitido"
 
 #, fuzzy, c-format
 msgid "unsupported device type %1$s 0%2$o"
-msgstr "Tipo de dispositivo '%s' no soportado"
+msgstr "Tipo de dispositivo '%s' no admitido"
 
 #, c-format
 msgid "unsupported device type in network %1$s interface pool"
@@ -39445,38 +39427,38 @@ msgstr "Tipo de dispositivo sin soporte en grupo de interfaz de red %1$s"
 
 #, fuzzy, c-format
 msgid "unsupported disk backup type '%1$s'"
-msgstr "tipo de disco %1$s no soportado "
+msgstr "tipo de disco %1$s no admitido"
 
 #, c-format
 msgid "unsupported disk bus '%1$s' with device setup"
 msgstr ""
-"tipo de bus de disco '%1$s' no soportado con la configuración de dispositivo"
+"tipo de bus de disco '%1$s' no admitido con la configuración de dispositivo"
 
 msgid "unsupported disk device"
-msgstr "dispositivo de almacenamiento no soportado"
+msgstr "dispositivo de almacenamiento no admitido"
 
 #, fuzzy, c-format
 msgid "unsupported disk driver %1$s"
-msgstr "tipo de disco %1$s no soportado "
+msgstr "tipo de disco %1$s no admitido"
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
 msgstr ""
 
 msgid "unsupported disk type"
-msgstr "tipo de disco no soportado"
+msgstr "tipo de disco no admitido"
 
 #, c-format
 msgid "unsupported disk type %1$s"
-msgstr "tipo de disco %1$s no soportado "
+msgstr "tipo de disco %1$s no admitido"
 
 #, fuzzy, c-format
 msgid "unsupported driver name '%1$s'"
-msgstr "tipo de temporizador (name) '%1$s' no soportado "
+msgstr "tipo de temporizador (name) '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported driver name '%1$s' for disk '%2$s'"
-msgstr "Nombre de driver '%1$s' no soportado para el disco '%2$s'"
+msgstr "Nombre de driver '%1$s' no admitido para el disco '%2$s'"
 
 #, fuzzy, c-format
 msgid "unsupported dumpformat '%1$s' for this QEMU binary"
@@ -39488,7 +39470,7 @@ msgstr "Elemento '%1$s' de 'origstates' no tiene soporte"
 
 #, c-format
 msgid "unsupported event ID %1$d"
-msgstr "ID de evento %1$d no soportado"
+msgstr "ID de evento %1$d no admitido"
 
 #, c-format
 msgid "unsupported failure action: '%1$s'\n"
@@ -39528,7 +39510,7 @@ msgstr "Funcionalidad %1$s no tiene soporte"
 
 #, fuzzy
 msgid "unsupported gluster lookup"
-msgstr "tipo de disco %s no soportado "
+msgstr "tipo de disco %s no admitido"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
@@ -39536,15 +39518,15 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported guest information types '0x%1$x'"
-msgstr "tipo de autenticación %d no soportado"
+msgstr "tipo de autenticación %d no admitido"
 
 #, c-format
 msgid "unsupported input bus %1$s"
-msgstr "Bus de entrada '%1$s' no soportado"
+msgstr "Bus de entrada '%1$s' no admitido"
 
 #, fuzzy
 msgid "unsupported input device configuration"
-msgstr "configuración no soportada"
+msgstr "configuración no admitida"
 
 #, fuzzy, c-format
 msgid "unsupported input storage vol type %1$d"
@@ -39560,7 +39542,7 @@ msgstr "unsupported chr device type '%1$s'"
 
 #, c-format
 msgid "unsupported monitor type '%1$s'"
-msgstr "tipo de monitor '%1$s' no soportado"
+msgstr "tipo de monitor '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported nested HVM setting for %1$s machine on this Xen version"
@@ -39568,11 +39550,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported network event ID %1$d"
-msgstr "ID de evento %1$d no soportado"
+msgstr "ID de evento %1$d no admitido"
 
 #, fuzzy, c-format
 msgid "unsupported node device event ID %1$d"
-msgstr "ID de evento %1$d no soportado"
+msgstr "ID de evento %1$d no admitido"
 
 #, fuzzy, c-format
 msgid "unsupported numatune mode: '%1$d'"
@@ -39591,15 +39573,15 @@ msgstr "opción '%1$s' no tiene soporte . Ver --help."
 
 #, c-format
 msgid "unsupported option '-%1$c'. See --help."
-msgstr "opción no soportada '-%1$c'. Consulte --help."
+msgstr "opción no admitida '-%1$c'. Consulte --help."
 
 #, c-format
 msgid "unsupported pit tickpolicy '%1$s'"
-msgstr "tickpolicy '%1$s' de pit no soportado"
+msgstr "tickpolicy '%1$s' de pit no admitido"
 
 #, c-format
 msgid "unsupported protocol family '%1$s'"
-msgstr "familia de protocolo '%1$s' no soportada"
+msgstr "familia de protocolo '%1$s' no admitida"
 
 #, c-format
 msgid "unsupported protocol type %1$s"
@@ -39610,23 +39592,23 @@ msgstr ""
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%1$s'"
-msgstr "tickpolicy '%1$s' de temporizador rtc no soportado"
+msgstr "tickpolicy '%1$s' de temporizador rtc no admitido"
 
 #, c-format
 msgid "unsupported rtc timer track '%1$s'"
-msgstr "trazado '%1$s' de temporizador rtc no soportada"
+msgstr "trazado '%1$s' de temporizador rtc no admitida"
 
 #, fuzzy, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
-msgstr "configuración no soportada: %s "
+msgstr "configuración no admitida: %s"
 
 #, fuzzy, c-format
 msgid "unsupported secret event ID %1$d"
-msgstr "ID de evento %1$d no soportado"
+msgstr "ID de evento %1$d no admitido"
 
 #, fuzzy, c-format
 msgid "unsupported source type '%1$s'"
-msgstr "tipo de monitor '%1$s' no soportado"
+msgstr "tipo de monitor '%1$s' no admitido"
 
 #, fuzzy
 msgid "unsupported state value"
@@ -39634,26 +39616,26 @@ msgstr "Funcionalidad %s no tiene soporte"
 
 #, fuzzy, c-format
 msgid "unsupported storage pool event ID %1$d"
-msgstr "ID de evento %1$d no soportado"
+msgstr "ID de evento %1$d no admitido"
 
 msgid "unsupported storage type for this code path"
 msgstr ""
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
-msgstr "tipo de temporizador (name) '%1$s' no soportado "
+msgstr "tipo de temporizador (name) '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported type '%1$s' in interface's <actual> element"
-msgstr "tipo '%1$s' no soportado en el elemento <actual> de la interfaz"
+msgstr "tipo '%1$s' no admitido en el elemento <actual> de la interfaz"
 
 #, fuzzy, c-format
 msgid "unsupported type='%1$s' to model 'none'"
-msgstr "tipo de datos '%c' para el argumento '%s' no soportado"
+msgstr "tipo de datos '%c' para el argumento '%s' no admitido"
 
 #, fuzzy
 msgid "unsupported usb model"
-msgstr "dispositivo de almacenamiento no soportado"
+msgstr "dispositivo de almacenamiento no admitido"
 
 #, c-format
 msgid "unsupported use of long flags in function %1$s"
@@ -39665,7 +39647,7 @@ msgstr "Funcionalidad %s no tiene soporte"
 
 #, c-format
 msgid "unsupported volume encryption format %1$d"
-msgstr "formato %1$d de cifrado de volumen no soportado"
+msgstr "formato %1$d de cifrado de volumen no admitido"
 
 msgid "unterminated number"
 msgstr "número indeterminado"
@@ -39719,7 +39701,7 @@ msgid "usb-audio controller is not supported by this QEMU binary"
 msgstr "Binario QEMU no admite descarte"
 
 msgid "usb-hub not supported by QEMU binary"
-msgstr "usb-hub no está soportado por binario QEMU"
+msgstr "usb-hub no está admitido por binario QEMU"
 
 msgid "usb-serial requires address of usb type"
 msgstr "usb-serial requiere dirección de tipo usb"
@@ -39781,7 +39763,7 @@ msgstr "Usuario"
 
 #, fuzzy
 msgid "user cancelled authentication process"
-msgstr "tipo de autenticación %d no soportado"
+msgstr "tipo de autenticación %d no admitido"
 
 msgid "user to list authorized keys for"
 msgstr ""
@@ -40094,7 +40076,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "vhost-user type '%1$s' not supported"
-msgstr "el tipo '%1$s' de subsistema de dispositivo de host no está soportado"
+msgstr "el tipo '%1$s' de subsistema de dispositivo de host no está admitido"
 
 #, fuzzy
 msgid "vhost-user-gpu failed to start"
@@ -40108,7 +40090,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "video type %1$s is not supported by libxl"
-msgstr "El tipo de red %d no es soportado"
+msgstr "El tipo de red %d no es admitido"
 
 #, c-format
 msgid "video type '%1$s' does not support blob resources"
@@ -40251,7 +40233,7 @@ msgstr "elemento <virtualport> no tiene soporte para <interface type='%1$s'>"
 
 #, fuzzy, c-format
 msgid "virtio disk cannot have an address of type '%1$s'"
-msgstr "Tipo de dirección de disco '%1$s' no soportado "
+msgstr "Tipo de dirección de disco '%1$s' no admitido"
 
 #, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
@@ -40469,7 +40451,7 @@ msgstr "Nombre de dominio contiene secuencia de escape inválida"
 
 #, fuzzy, c-format
 msgid "vnuma vnode invalid format '%1$s'"
-msgstr "Formato '%1$s' de configuración no soportado"
+msgstr "Formato '%1$s' de configuración no admitido"
 
 msgid "vol information in XML"
 msgstr "información del volumen en XML"
