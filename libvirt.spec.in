@@ -133,6 +133,7 @@
     %define with_libxl 0
     %define with_hyperv 0
     %define with_lxc 0
+    %define with_ch 0
 %endif
 
 %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
