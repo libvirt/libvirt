@@ -562,6 +562,10 @@ virNetDaemonSignalEvent(int watch,
             virNetDaemonSignalFunc func = dmn->signals[i]->func;
             void *funcopaque = dmn->signals[i]->opaque;
             virObjectUnlock(dmn);
+            VIR_DEBUG("Dispatch signal num=%d errno=%d code=%d pid=%lld uid=%llu status=%d",
+                      siginfo.si_signo, siginfo.si_errno, siginfo.si_code,
+                      (long long)siginfo.si_pid, (unsigned long long)siginfo.si_uid,
+                      siginfo.si_status);
             func(dmn, &siginfo, funcopaque);
             return;
         }
