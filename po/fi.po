@@ -7,7 +7,7 @@
 # Jiri Grönroos <jiri.gronroos@iki.fi>, 2017
 # Toni Rantala <trantalafilo@gmail.com>, 2017
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
-# Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021, 2024.
+# Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021, 2024, 2025.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022, 2023.
 # Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2024-12-20 15:23+0000\n"
+"PO-Revision-Date: 2025-01-08 12:58+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.1\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -9324,7 +9324,7 @@ msgid "Insert the media"
 msgstr ""
 
 msgid "Installed bhyve binary does not support UEFI loader"
-msgstr ""
+msgstr "Asennettu bhyve-binääri ei tue UEFI-latainta"
 
 msgid "Installed bhyve binary does not support UTC clock"
 msgstr ""
@@ -16264,7 +16264,7 @@ msgid "Type='%1$s' unsupported for <interface type='vhostuser'>"
 msgstr ""
 
 msgid "UEFI requires ACPI on this architecture"
-msgstr ""
+msgstr "UEFI vaatii ACPI:n tässä arkkitehtuurissa"
 
 msgid "UNIX disks URI does not include path"
 msgstr ""
