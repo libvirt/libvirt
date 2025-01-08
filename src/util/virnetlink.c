@@ -702,6 +702,72 @@ virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback)
 }
 
 /**
+ * virNetlinkBridgeVlanFilterSet:
+ *
+ * @ifname: name of the link
+ * @cmd:    netlink command, either RTM_SETLINK or RTM_DELLINK
+ * @flags:  flags to use when adding the vlan filter
+ * @vid:    vlan id to add or remove
+ * @error:  netlink error code
+ *
+ * Add or remove a vlan filter from an interface associated with a
+ * bridge.
+ *
+ * Returns 0 on success, -1 on error. Additionally, if the @error is
+ * non-zero, then a netlink failure occurred, but no error message
+ * is generated leaving it up to the caller to handle the condition.
+ */
+int
+virNetlinkBridgeVlanFilterSet(const char *ifname,
+                              int cmd,
+                              const unsigned short flags,
+                              const short vid,
+                              int *error)
+{
+    struct ifinfomsg ifm = { .ifi_family = PF_BRIDGE };
+    struct bridge_vlan_info vinfo = { .flags = flags, .vid = vid };
+    struct nlattr *afspec = NULL;
+    g_autoptr(virNetlinkMsg) nl_msg = NULL;
+    g_autofree struct nlmsghdr *resp = NULL;
+    unsigned int resp_len = 0;
+
+    *error = 0;
+
+    if (vid < 1 || vid > 4095) {
+        virReportError(ERANGE, _("vlanid out of range: %1$d"), vid);
+        return -1;
+    }
+
+    if (!(cmd == RTM_SETLINK || cmd == RTM_DELLINK)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid vlan filter command %1$d"), cmd);
+        return -1;
+    }
+
+    if (virNetDevGetIndex(ifname, &ifm.ifi_index) < 0)
+        return -1;
+
+    nl_msg = virNetlinkMsgNew(cmd, NLM_F_REQUEST);
+
+    NETLINK_MSG_APPEND(nl_msg, sizeof(ifm), &ifm);
+
+    NETLINK_MSG_NEST_START(nl_msg, afspec, IFLA_AF_SPEC);
+    NETLINK_MSG_PUT(nl_msg, IFLA_BRIDGE_VLAN_INFO, sizeof(vinfo), &vinfo);
+    NETLINK_MSG_NEST_END(nl_msg, afspec);
+
+    if (virNetlinkTalk(ifname, nl_msg, 0, 0, &resp, &resp_len, error, NULL) < 0)
+        return -1;
+
+    if (resp->nlmsg_type != NLMSG_ERROR && resp->nlmsg_type != NLMSG_DONE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed netlink response message"));
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
  * virNetlinkGetNeighbor:
  *
  * @nlData:  Gets a pointer to the raw data from netlink.

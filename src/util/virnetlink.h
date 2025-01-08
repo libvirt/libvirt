@@ -25,6 +25,7 @@
 #if defined(WITH_LIBNL)
 
 # include <netlink/msg.h>
+# include <linux/if_bridge.h>
 
 typedef struct nl_msg virNetlinkMsg;
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkMsg, nlmsg_free);
@@ -75,6 +76,12 @@ int virNetlinkNewLink(const char *ifname,
 typedef int (*virNetlinkTalkFallback)(const char *ifname);
 
 int virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback);
+
+int virNetlinkBridgeVlanFilterSet(const char *ifname,
+                                  int cmd,
+                                  const unsigned short flags,
+                                  const short vid,
+                                  int *error);
 
 int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
 
