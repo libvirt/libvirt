@@ -9,14 +9,14 @@
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
 # Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021, 2024, 2025.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022, 2023.
-# Weblate <noreply-mt-weblate@weblate.org>, 2024.
+# Weblate <noreply-mt-weblate@weblate.org>, 2024, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2024-11-26 14:19+0000\n"
-"PO-Revision-Date: 2025-01-08 12:58+0000\n"
-"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
+"PO-Revision-Date: 2025-01-08 17:39+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -468,7 +468,7 @@ msgstr " %1$s (ohjeen avainsana '%2$s'):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <merkkijono>..."
 
 msgid " Hypervisors:"
 msgstr " Hypervisor:"
@@ -484,7 +484,7 @@ msgstr " Tallennustila:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " --%1$s <merkkijono>..."
 
 #, c-format
 msgid ""
