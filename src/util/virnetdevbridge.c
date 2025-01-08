@@ -313,6 +313,66 @@ virNetDevBridgePortSetIsolated(const char *brname,
     return virNetDevBridgePortSet(brname, ifname, "isolated", enable ? 1 : 0);
 }
 
+static int
+virNetDevBridgeSetupVlans(const char *ifname, const virNetDevVlan *virtVlan)
+{
+    int error = 0;
+    unsigned short flags;
+
+    if (!virtVlan || !virtVlan->nTags)
+        return 0;
+
+    // The interface will have been automatically added to vlan 1, so remove it
+    if (virNetlinkBridgeVlanFilterSet(ifname, RTM_DELLINK, 0, 1, &error) < 0) {
+        if (error != 0) {
+            virReportSystemError(-error,
+                                 _("error removing vlan filter from interface %1$s"),
+                                 ifname);
+        }
+        return -1;
+    }
+
+    // If trunk mode, add the native VLAN then add the others, if any
+    if (virtVlan->trunk) {
+        size_t i;
+
+        if (virtVlan->nativeTag) {
+            flags = BRIDGE_VLAN_INFO_PVID;
+            if (virtVlan->nativeMode == VIR_NATIVE_VLAN_MODE_UNTAGGED ||
+                virtVlan->nativeMode == VIR_NATIVE_VLAN_MODE_DEFAULT) {
+                flags |= BRIDGE_VLAN_INFO_UNTAGGED;
+            }
+
+            if (virNetlinkBridgeVlanFilterSet(ifname, RTM_SETLINK, flags,
+                                              virtVlan->nativeTag, &error) < 0) {
+                goto error;
+            }
+        }
+
+        for (i = 0; i < virtVlan->nTags; i++) {
+            if (virtVlan->tag[i] != virtVlan->nativeTag)
+                if (virNetlinkBridgeVlanFilterSet(ifname, RTM_SETLINK, 0,
+                                                  virtVlan->tag[i], &error) < 0) {
+                    goto error;
+                }
+        }
+    } else {
+        // In native mode, add the single VLAN as pvid untagged
+        flags = BRIDGE_VLAN_INFO_PVID | BRIDGE_VLAN_INFO_UNTAGGED;
+        if (virNetlinkBridgeVlanFilterSet(ifname, RTM_SETLINK, flags,
+                                          virtVlan->tag[0], &error) < 0) {
+            goto error;
+        }
+    }
+
+    return 0;
+
+ error:
+    if (error != 0)
+        virReportSystemError(-error, _("error adding vlan filter to interface %1$s"), ifname);
+    return -1;
+}
+
 
 #else
 int
@@ -593,7 +653,8 @@ int virNetDevBridgeDelete(const char *brname G_GNUC_UNUSED)
  */
 #if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRADDIF)
 int virNetDevBridgeAddPort(const char *brname,
-                           const char *ifname)
+                           const char *ifname,
+                           const virNetDevVlan *virtVlan)
 {
     struct ifreq ifr;
     VIR_AUTOCLOSE fd = -1;
@@ -613,13 +674,19 @@ int virNetDevBridgeAddPort(const char *brname,
         return -1;
     }
 
-    return 0;
+    return virNetDevBridgeSetupVlans(ifname, virtVlan);
 }
 #elif defined(WITH_BSD_BRIDGE_MGMT)
 int virNetDevBridgeAddPort(const char *brname,
-                           const char *ifname)
+                           const char *ifname,
+                           const virNetDevVlan *virtVlan)
 {
     struct ifbreq req = { 0 };
+
+    if (virtVlan) {
+        virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+        return -1;
+    }
 
     if (virStrcpyStatic(req.ifbr_ifsname, ifname) < 0) {
         virReportSystemError(ERANGE,
@@ -638,7 +705,8 @@ int virNetDevBridgeAddPort(const char *brname,
 }
 #else
 int virNetDevBridgeAddPort(const char *brname,
-                           const char *ifname)
+                           const char *ifname,
+                           const virNetDevVlan *virtVlan G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to add bridge %1$s port %2$s"), brname, ifname);

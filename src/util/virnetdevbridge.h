@@ -20,6 +20,7 @@
 
 #include "internal.h"
 #include "virmacaddr.h"
+#include "virnetdevvlan.h"
 
 int virNetDevBridgeCreate(const char *brname,
                           const virMacAddr *mac)
@@ -28,7 +29,8 @@ int virNetDevBridgeDelete(const char *brname)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevBridgeAddPort(const char *brname,
-                           const char *ifname)
+                           const char *ifname,
+                           const virNetDevVlan *virtVlan)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevBridgeRemovePort(const char *brname,
