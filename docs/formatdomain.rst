@@ -6047,28 +6047,29 @@ VLAN tags to apply to the guest's network traffic :since:`Since 0.10.0`.
 
 Network connections that support guest-transparent VLAN tagging include
 ``type='bridge'`` interfaces connected to an Open vSwitch bridge, SRIOV
-Virtual Functions (VF) used via ``type='hostdev'`` (direct device assignment)
-and, :since:`since 1.3.5`, SRIOV VFs used via ``type='direct'`` with
-``mode='passthrough'`` (macvtap "passthru" mode). All other
-connection types, including standard linux bridges and libvirt's own virtual
+Virtual Functions (VF) used via ``type='hostdev'`` (direct device assignment),
+:since:`since 1.3.5`, SRIOV VFs used via ``type='direct'`` with
+``mode='passthrough'`` (macvtap "passthru" mode) and, :since:`since 11.0.0`
+standard linux bridges. Other connection types, including libvirt's own virtual
 networks, **do not** support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
 provide their own way (outside of libvirt) to tag guest traffic onto a specific
 VLAN. Each tag is given in a separate ``<tag>`` subelement of ``<vlan>`` (for
 example: ``<tag id='42'/>``). For VLAN trunking of multiple tags (which is
-supported only on Open vSwitch connections), multiple ``<tag>`` subelements can
-be specified, which implies that the user wants to do VLAN trunking on the
-interface for all the specified tags. In the case that VLAN trunking of a single
-tag is desired, the optional attribute ``trunk='yes'`` can be added to the
-toplevel ``<vlan>`` element to differentiate trunking of a single tag from
-normal tagging.
+supported on Open vSwitch connections and standard linux bridges), multiple
+``<tag>`` subelements can be specified, which implies that the user wants to do
+VLAN trunking on the interface for all the specified tags. In the case that VLAN
+trunking of a single tag is desired, the optional attribute ``trunk='yes'`` can
+be added to the toplevel ``<vlan>`` element to differentiate trunking of a
+single tag from normal tagging.
 
-For network connections using Open vSwitch it is also possible to configure
-'native-tagged' and 'native-untagged' VLAN modes :since:`Since 1.1.0`. This is
-done with the optional ``nativeMode`` attribute on the ``<tag>`` subelement:
-``nativeMode`` may be set to 'tagged' or 'untagged'. The ``id`` attribute of the
-``<tag>`` subelement containing ``nativeMode`` sets which VLAN is considered to
-be the "native" VLAN for this interface, and the ``nativeMode`` attribute
-determines whether or not traffic for that VLAN will be tagged.
+For network connections using Open vSwitch and standard linux bridges it is also
+possible to configure 'native-tagged' and 'native-untagged' VLAN modes
+:since:`Since 1.1.0`. This is done with the optional ``nativeMode`` attribute on
+the ``<tag>`` subelement: ``nativeMode`` may be set to 'tagged' or 'untagged'.
+The ``id`` attribute of the ``<tag>`` subelement containing ``nativeMode`` sets
+which VLAN is considered to be the "native" VLAN for this interface, and the
+``nativeMode`` attribute determines whether or not traffic for that VLAN will be
+tagged.
 
 
 Isolating guests' network traffic from each other
