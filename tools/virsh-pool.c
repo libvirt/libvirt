@@ -1270,11 +1270,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         }
     }
 
-    /* If the --details option wasn't selected, we output the pool
-     * info using the fixed string format from previous versions to
-     * maintain backward compatibility.
-     */
-
     /* Output basic info then return if --details option not selected */
     if (!details) {
         if (uuid || name) {
@@ -1287,7 +1282,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
                 if (name) {
                     const char *name_str =
                         virStoragePoolGetName(list->pools[i]);
-                    vshPrint(ctl, "%-20s\n", name_str);
+                    vshPrint(ctl, "%s\n", name_str);
                 }
             }
             ret = true;
