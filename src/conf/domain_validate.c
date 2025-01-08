@@ -2077,7 +2077,8 @@ virDomainActualNetDefValidate(const virDomainNetDef *net)
               (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
                virDomainNetGetActualDirectMode(net) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
               (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-               vport  && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
+               vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) ||
+              (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE && !vport))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("interface %1$s - vlan tag not supported for this connection type"),
                            macstr);

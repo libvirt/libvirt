@@ -289,7 +289,7 @@ virLXCProcessSetupInterfaceTap(virDomainDef *vm,
                                             vport, virDomainNetGetActualVlan(net)) < 0)
                 return NULL;
         } else {
-            if (virNetDevBridgeAddPort(brname, parentVeth, NULL) < 0)
+            if (virNetDevBridgeAddPort(brname, parentVeth, virDomainNetGetActualVlan(net)) < 0)
                 return NULL;
 
             if (virDomainNetGetActualPortOptionsIsolated(net) == VIR_TRISTATE_BOOL_YES &&

@@ -2999,7 +2999,8 @@ networkValidate(virNetworkDriverState *driver,
 
     /* The only type of networks that currently support transparent
      * vlan configuration are those using hostdev sr-iov devices from
-     * a pool, and those using an Open vSwitch bridge.
+     * a pool, those using an Open vSwitch bridge, and standard linux
+     * bridges.
      */
 
     vlanAllowed = (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV ||
@@ -3007,15 +3008,17 @@ networkValidate(virNetworkDriverState *driver,
                    (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
                     def->virtPortProfile &&
                     def->virtPortProfile->virtPortType
-                    == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH));
+                    == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) ||
+                   (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
+                    !def->virtPortProfile));
 
     vlanUsed = def->vlan.nTags > 0;
     for (i = 0; i < def->nPortGroups; i++) {
         if (vlanUsed || def->portGroups[i].vlan.nTags > 0) {
             /* anyone using this portgroup will get a vlan tag. Verify
-             * that they will also be using an openvswitch connection,
-             * as that is the only type of network that currently
-             * supports a vlan tag.
+             * that they will also be using an openvswitch connection
+             * or a standard linux bridge as they are the only types of
+             * network that currently support a vlan tag.
              */
             if (def->portGroups[i].virtPortProfile) {
                 if (def->forward.type != VIR_NETWORK_FORWARD_BRIDGE ||

@@ -483,7 +483,7 @@ virNetDevTapAttachBridge(const char *tapname,
                 return -1;
         }
     } else {
-        if (virNetDevBridgeAddPort(brname, tapname, NULL) < 0)
+        if (virNetDevBridgeAddPort(brname, tapname, virtVlan) < 0)
             return -1;
 
         if (isolatedPort == VIR_TRISTATE_BOOL_YES &&
