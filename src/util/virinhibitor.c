@@ -152,7 +152,7 @@ virInhibitor *virInhibitorNew(virInhibitorWhat what,
     virInhibitor *inhibitor = g_new0(virInhibitor, 1);
 
     inhibitor->fd = -1;
-    inhibitor->what = virInhibitorWhatFormat(what);
+    inhibitor->what = what ? virInhibitorWhatFormat(what) : NULL;
     inhibitor->who = g_strdup(who);
     inhibitor->why = g_strdup(why);
     inhibitor->mode = virInhibitorModeTypeToString(mode);
@@ -171,7 +171,8 @@ void virInhibitorHold(virInhibitor *inhibitor)
             inhibitor->action(true, inhibitor->actionData);
         }
 #ifdef G_OS_UNIX
-        if (virInhibitorAcquire(
+        if (inhibitor->what &&
+            virInhibitorAcquire(
                 inhibitor->what, inhibitor->who, inhibitor->why,
                 inhibitor->mode, &inhibitor->fd) < 0) {
             VIR_ERROR(_("Failed to acquire inhibitor: %1$s"),
