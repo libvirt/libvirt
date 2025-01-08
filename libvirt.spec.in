@@ -35,6 +35,7 @@
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
+%define with_ch            0%{!?_without_ch:1}
 
 %ifarch %{arches_qemu_kvm}
     %define with_qemu_kvm      %{with_qemu}
@@ -316,6 +317,9 @@ Obsoletes: libvirt-daemon-driver-uml <= 5.0.0
 Obsoletes: libvirt-daemon-uml <= 5.0.0
 %if %{with_vbox}
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
+%endif
+%if %{with_ch}
+Requires: libvirt-daemon-driver-ch = %{version}-%{release}
 %endif
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
@@ -1026,6 +1030,20 @@ Server side daemon and driver required to manage the virtualization
 capabilities of VirtualBox
     %endif
 
+    %if %{with_ch}
+%package daemon-driver-ch
+Summary: Cloud-Hypervisor driver plugin for libvirtd daemon
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
+Requires: libvirt-libs = %{version}-%{release}
+
+%description daemon-driver-ch
+The ch driver plugin for the libvirtd daemon, providing
+an implementation of the hypervisor driver APIs by
+Cloud-Hypervisor
+    %endif
+
+
 %package client
 Summary: Client side utilities of the libvirt library
 Requires: libvirt-libs = %{version}-%{release}
@@ -1188,9 +1206,15 @@ exit 1
 %endif
 
 %if %{with_esx}
-    %define arg_esx -Ddriver_esx=enabled -Dcurl=enabled
+    %define arg_esx -Ddriver_esx=enabled
 %else
-    %define arg_esx -Ddriver_esx=disabled -Dcurl=disabled
+    %define arg_esx -Ddriver_esx=disabled
+%endif
+
+%if %{with_esx} || %{with_ch}
+    %define arg_curl -Dcurl=enabled
+%else
+    %define arg_curl -Dcurl=disabled
 %endif
 
 %if %{with_hyperv}
@@ -1203,6 +1227,12 @@ exit 1
     %define arg_vmware -Ddriver_vmware=enabled
 %else
     %define arg_vmware -Ddriver_vmware=disabled
+%endif
+
+%if %{with_ch}
+    %define arg_ch -Ddriver_ch=enabled
+%else
+    %define arg_ch -Ddriver_ch=disabled
 %endif
 
 %if %{with_storage_rbd}
@@ -1335,11 +1365,12 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Ddriver_remote=enabled \
            -Ddriver_test=enabled \
            %{?arg_esx} \
+           %{?arg_curl} \
            %{?arg_hyperv} \
            %{?arg_vmware} \
+           %{?arg_ch} \
            -Ddriver_vz=disabled \
            -Ddriver_bhyve=disabled \
-           -Ddriver_ch=disabled \
            %{?arg_remote_mode} \
            -Ddriver_interface=enabled \
            -Ddriver_network=enabled \
@@ -1540,6 +1571,10 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libxl.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.libxl
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_libxl.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
+    %endif
+    %if ! %{with_ch}
+rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_ch.aug
+rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_ch.aug
     %endif
 
 # Copied into libvirt-docs subpackage eventually
@@ -1938,6 +1973,19 @@ exit 0
 
 %preun daemon-driver-libxl
 %libvirt_systemd_unix_preun virtxend
+    %endif
+
+    %if %{with_ch}
+%pre daemon-driver-ch
+%libvirt_sysconfig_pre virtchd
+%libvirt_systemd_unix_pre virtchd
+
+%posttrans daemon-driver-ch
+%libvirt_sysconfig_posttrans virtchd
+%libvirt_systemd_unix_posttrans virtchd
+
+%preun daemon-driver-ch
+%libvirt_systemd_unix_preun virtchd
     %endif
 
 %pre daemon-config-network
@@ -2403,6 +2451,19 @@ exit 0
 %{_sbindir}/virt-sanlock-cleanup
 %{_mandir}/man8/virt-sanlock-cleanup.8*
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
+    %endif
+
+    %if %{with_ch}
+%files daemon-driver-ch
+%attr(0755, root, root) %{_sbindir}/virtchd
+%config(noreplace) %{_sysconfdir}/libvirt/virtchd.conf
+%{_datadir}/augeas/lenses/virtchd.aug
+%{_datadir}/augeas/lenses/tests/test_virtchd.aug
+%{_unitdir}/virtchd-admin.socket
+%{_unitdir}/virtchd-ro.socket
+%{_unitdir}/virtchd.service
+%{_unitdir}/virtchd.socket
+%{_libdir}/libvirt/connection-driver/libvirt_driver_ch.so
     %endif
 
 %files client
