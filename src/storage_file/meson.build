@@ -3,9 +3,6 @@ storage_file_sources = [
   'storage_source_backingstore.c',
   'storage_file_backend.c',
   'storage_file_probe.c',
-]
-
-stoarge_file_fs_sources = [
   'storage_file_backend_fs.c',
 ]
 
@@ -29,19 +26,6 @@ virt_storage_file_lib = static_library(
 )
 
 libvirt_libs += virt_storage_file_lib
-
-if conf.has('WITH_STORAGE')
-  virt_modules += {
-    'name': 'virt_storage_file_fs',
-    'sources': [
-      files(stoarge_file_fs_sources),
-    ],
-    'include': [
-      storage_inc_dir,
-    ],
-    'install_dir': storage_file_install_dir,
-  }
-endif
 
 if conf.has('WITH_STORAGE_GLUSTER')
   virt_modules += {

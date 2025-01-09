@@ -26,6 +26,7 @@
 #include "virerror.h"
 #include "internal.h"
 #include "storage_file_backend.h"
+#include "storage_file_backend_fs.h"
 #include "virlog.h"
 #include "virmodule.h"
 #include "virfile.h"
@@ -40,7 +41,7 @@ VIR_LOG_INIT("storage.storage_source_backend");
 static virStorageFileBackend *virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageFileBackendsCount;
 
-#if WITH_STORAGE_DIR || WITH_STORAGE_FS || WITH_STORAGE_GLUSTER
+#if WITH_STORAGE_GLUSTER
 
 # define STORAGE_FILE_MODULE_DIR LIBDIR "/libvirt/storage-file"
 
@@ -64,14 +65,14 @@ virStorageFileLoadBackendModule(const char *name,
 
     return ret;
 }
-#endif /* WITH_STORAGE_DIR || WITH_STORAGE_FS || WITH_STORAGE_GLUSTER */
+#endif /* WITH_STORAGE_GLUSTER */
 
 static int virStorageFileBackendOnceInit(void)
 {
-#if WITH_STORAGE_DIR || WITH_STORAGE_FS
-    if (virStorageFileLoadBackendModule("fs", "virStorageFileFsRegister", false) < 0)
+    /* The backend for local files is compiled in */
+    if (virStorageFileFsRegister() < 0)
         return -1;
-#endif /* WITH_STORAGE_DIR || WITH_STORAGE_FS */
+
 #if WITH_STORAGE_GLUSTER
     if (virStorageFileLoadBackendModule("gluster", "virStorageFileGlusterRegister", false) < 0)
         return -1;
