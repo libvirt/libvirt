@@ -11,6 +11,15 @@ For a more fine-grained view, use the `git log`_.
 v11.1.0 (unreleased)
 ====================
 
+* **Packaging changes**
+
+  * De-modularize the 'fs' storage file backend
+
+    The storage file backend for local files uses only code which we compile
+    into the internal libraries anyways so there's no point in having it
+    as a loadable module. The ``storage-file/libvirt_storage_file_fs.so`` module
+    no longer exists and its functionality is embedded directly.
+
 * **Security**
 
 * **Removed features**
