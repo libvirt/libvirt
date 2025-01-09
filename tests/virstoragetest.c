@@ -494,6 +494,11 @@ mymain(void)
                abs_srcdir "/virstoragetestdata/images/qcow2datafile-datafile.qcow2",
                VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
+    /* broken qcow2 with a 'data_file' which is an empty string */
+    TEST_CHAIN("qcow2-datafile-broken",
+               abs_srcdir "/virstoragetestdata/images/datafile-emptystr.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
+
     /* Test various combinations of qcow2 images with missing 'backing_format' */
     TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_qcow2-auto",
                abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-qcow2_qcow2-auto.qcow2",
