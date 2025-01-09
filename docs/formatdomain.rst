@@ -1482,38 +1482,46 @@ In case no restrictions need to be put on CPU model and its features, a simpler
       presented to the guest. This is the default when no ``mode`` attribute is
       specified. This mode makes it so that a persistent guest will see the same
       hardware no matter what host the guest is booted on.
+
    ``host-model``
-      The ``host-model`` mode is essentially a shortcut to copying host CPU
-      definition from capabilities XML into domain XML. Since the CPU definition
-      is copied just before starting a domain, exactly the same XML can be used
-      on different hosts while still providing the best guest CPU each host
-      supports. The ``match`` attribute can't be used in this mode. Specifying
-      CPU model is not supported either, but ``model``'s ``fallback`` attribute
-      may still be used. Using the ``feature`` element, specific flags may be
-      enabled or disabled specifically in addition to the host model. This may
-      be used to fine tune features that can be emulated. :since:`(Since 1.1.1)`
-      . Libvirt does not model every aspect of each CPU so the guest CPU will
-      not match the host CPU exactly. On the other hand, the ABI provided to the
+      The ``host-model`` mode is essentially a shortcut to copying host-model
+      CPU definition from `domain capabilities XML
+      <formatdomaincaps.html#cpu-configuration>`__ into domain XML. Since the
+      CPU definition is copied just before starting a domain, exactly the same
+      XML can be used on different hosts while still providing the best guest
+      CPU each host supports. The ``match`` attribute can't be used in this
+      mode. Specifying CPU model is not supported either, but ``model``'s
+      ``fallback`` attribute may still be used. Using the ``feature`` element,
+      specific flags may be enabled or disabled specifically in addition to the
+      host model. This may be used to fine tune features that can be emulated.
+      :since:`(Since 1.1.1)`
+
+      Libvirt does not model every aspect of each CPU so the guest CPU will not
+      match the host CPU exactly. On the other hand, the ABI provided to the
       guest is reproducible. During migration, complete CPU model definition is
-      transferred to the destination host so the migrated guest will see exactly
-      the same CPU model for the running instance of the guest, even if the
-      destination host contains more capable CPUs or newer kernel; but shutting
-      down and restarting the guest may present different hardware to the guest
-      according to the capabilities of the new host. Prior to libvirt 3.2.0 and
-      QEMU 2.9.0 detection of the host CPU model via QEMU is not supported. Thus
-      the CPU configuration created using ``host-model`` may not work as
-      expected. :since:`Since 3.2.0 and QEMU 2.9.0` this mode works the way it
-      was designed and it is indicated by the ``fallback`` attribute set to
-      ``forbid`` in the host-model CPU definition advertised in `domain
-      capabilities XML <formatdomaincaps.html#cpu-configuration>`__. When
-      ``fallback`` attribute is set to ``allow`` in the domain capabilities
-      XML, it is recommended to use ``custom`` mode with just the CPU model
-      from the host capabilities XML. :since:`Since 1.2.11` PowerISA allows
-      processors to run VMs in binary compatibility mode supporting an older
-      version of ISA.  Libvirt on PowerPC architecture uses the ``host-model``
-      to signify a guest mode CPU running in binary compatibility mode.
-      Example: When a user needs a power7 VM to run in compatibility mode on a
-      Power8 host, this can be described in XML as follows :
+      transferred to the destination host so the migrated guest will see
+      exactly the same CPU model for the running instance of the guest, even if
+      the destination host contains more capable CPUs or newer kernel; but
+      shutting down and restarting the guest may present different hardware to
+      the guest according to the capabilities of the new host.
+
+      Prior to libvirt 3.2.0 and QEMU 2.9.0 detection of the host CPU model via
+      QEMU is not supported. Thus the CPU configuration created using
+      ``host-model`` may not work as expected. :since:`Since 3.2.0 and QEMU
+      2.9.0` this mode works the way it was designed and it is indicated by the
+      ``fallback`` attribute set to ``forbid`` in the host-model CPU definition
+      advertised in `domain capabilities XML
+      <formatdomaincaps.html#cpu-configuration>`__. When ``fallback`` attribute
+      is set to ``allow`` in the domain capabilities XML, it is recommended to
+      use ``custom`` mode with just the CPU model from the host capabilities
+      XML.
+
+      :since:`Since 1.2.11` PowerISA allows processors to run VMs in binary
+      compatibility mode supporting an older version of ISA.  Libvirt on
+      PowerPC architecture uses the ``host-model`` to signify a guest mode CPU
+      running in binary compatibility mode. Example: When a user needs a power7
+      VM to run in compatibility mode on a Power8 host, this can be described
+      in XML as follows:
 
       ::
 
