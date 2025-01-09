@@ -63,19 +63,22 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
   )
 endforeach
 
+# Generated outside the WITH_POLKIT / WITH_LIBVIRTD condition
+# because syntax-check/po_check requires this to exist
+polgen = custom_target(
+  'org.libvirt.api.policy.in',
+  input: access_perm_h,
+  output: 'org.libvirt.api.policy.in',
+  command: [ meson_python_prog, python3_prog, genpolkit_prog, '@INPUT@' ],
+  capture: true,
+  build_by_default: true,
+)
+access_generated += polgen
+
 if conf.has('WITH_POLKIT')
   access_sources += access_polkit_sources
 
   if conf.has('WITH_LIBVIRTD')
-    polgen = custom_target(
-      'org.libvirt.api.policy.in',
-      input: access_perm_h,
-      output: 'org.libvirt.api.policy.in',
-      command: [ meson_python_prog, python3_prog, genpolkit_prog, '@INPUT@' ],
-      capture: true,
-      build_by_default: true,
-    )
-    access_generated += polgen
 
     i18n.merge_file(
       input: polgen,
