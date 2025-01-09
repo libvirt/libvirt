@@ -3144,6 +3144,8 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
             return -1;
         }
 
+        data->parentSnap = qemuSnapshotFindParentSnapForDisk(snap, data->snapDisk);
+
         if (data->merge) {
             virStorageSource *snapDiskSrc = NULL;
 
@@ -3184,8 +3186,6 @@ qemuSnapshotDeleteExternalPrepareData(virDomainObj *vm,
 
                 qemuSnapshotGetDisksWithBackingStore(vm, snap, data);
             }
-
-            data->parentSnap = qemuSnapshotFindParentSnapForDisk(snap, data->snapDisk);
 
             if (data->parentSnap && !virDomainSnapshotIsExternal(data->parentSnap)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3642,10 +3642,12 @@ qemuSnapshotDiscardExternal(virDomainObj *vm,
             if (!data->job)
                 goto error;
         } else {
-            if (virStorageSourceInit(data->parentDomDisk->src) < 0 ||
-                virStorageSourceUnlink(data->parentDomDisk->src) < 0) {
-                VIR_WARN("Failed to remove snapshot image '%s'",
-                         data->snapDisk->name);
+            if (data->parentSnap && virDomainSnapshotIsExternal(data->parentSnap)) {
+                if (virStorageSourceInit(data->parentDomDisk->src) < 0 ||
+                    virStorageSourceUnlink(data->parentDomDisk->src) < 0) {
+                    VIR_WARN("Failed to remove snapshot image '%s'",
+                             data->snapDisk->name);
+                }
             }
         }
     }
