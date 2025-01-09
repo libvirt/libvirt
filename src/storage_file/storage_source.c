@@ -557,6 +557,16 @@ virStorageSourceNewFromDataFile(virStorageSource *parent)
     g_autoptr(virStorageSource) dataFile = NULL;
     int rc;
 
+    /* 'qemu-img' records an empty string as 'data_file' field in certain buggy
+     * cases. Note that it can't happen for 'backing store' as absence of the
+     * string equals to no backing store. */
+    if (STREQ(parent->dataFileRaw, "")) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("invalid empty data-file definition in '%1$s'"),
+                       NULLSTR(parent->path));
+        return NULL;
+    }
+
     if ((rc = virStorageSourceNewFromChild(parent,
                                            parent->dataFileRaw,
                                            &dataFile)) < 0)
