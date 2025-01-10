@@ -1872,11 +1872,11 @@ qemuMigrationUpdateJobType(virDomainJobData *jobData)
 
     switch ((qemuMonitorMigrationStatus) priv->stats.mig.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
-    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
         jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER_SETUP:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
         jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY_RECOVER;
         break;
 
