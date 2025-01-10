@@ -16643,6 +16643,9 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
 
     def->features[VIR_DOMAIN_FEATURE_HYPERV] = mode;
 
+    if (mode == VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH)
+        return 0;
+
     node = xmlFirstElementChild(node);
     while (node != NULL) {
         int feature;
