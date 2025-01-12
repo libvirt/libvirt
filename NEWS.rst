@@ -16,6 +16,7 @@ v11.0.0 (unreleased)
 * **Removed features**
 
 * **New features**
+
   * network/qemu/lxc: support vlans on standard Linux host bridges
 
     The network, qemu, and lxc drivers now support (using the
@@ -43,6 +44,14 @@ v11.0.0 (unreleased)
 
     The ``<filesystem/>`` with `virtiofsd` backend can now use ``<readonly/>``
     tag to export underlying filesystem in read only mode.
+
+  * qemu: allow migration of vGPU from mdev device <-> SRIOV VF device
+
+    Some GPU vendors are switching from using vGPUs creating using
+    mdev and identified with a uuid, to vGPUs created as SRIOV VFs and
+    identified by their PCI address, and want to support live
+    migration from a host using one type of vGPU to the other
+    type. This is now possible.
 
 * **Bug fixes**
 
