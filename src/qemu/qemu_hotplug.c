@@ -4144,8 +4144,13 @@ qemuDomainChangeNet(virQEMUDriver *driver,
      * they don't apply to a particular type.
      */
 
-    if (!virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
-                             virDomainNetGetActualVlan(newdev))) {
+    /* since attaching to a new bridge will re-do the vlan setup,
+     * we don't need to separately do that in the case that we're
+     * already switching to a different bridge
+     */
+    if (!(needBridgeChange ||
+          virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
+                             virDomainNetGetActualVlan(newdev)))) {
         needVlanUpdate = true;
     }
 
@@ -4215,6 +4220,23 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         needReplaceDevDef = true;
     }
 
+    if (needVlanUpdate) {
+        if (virDomainNetDefIsOvsport(olddev) && virDomainNetDefIsOvsport(newdev)) {
+            /* optimization if we're attached to an OVS bridge. This
+             * will redo vlan setup without needing to re-attach the
+             * tap device to the bridge
+             */
+            if (virNetDevOpenvswitchUpdateVlan(newdev->ifname, &newdev->vlan) < 0)
+                goto cleanup;
+        } else {
+             /* vlan setup is done as a part of reconnecting the tap
+              * device to a new bridge (either OVS or Linux host bridge).
+              */
+            needBridgeChange = true;
+        }
+        needReplaceDevDef = true;
+    }
+
     if (needBridgeChange) {
         if (qemuDomainChangeNetBridge(vm, olddev, newdev) < 0)
             goto cleanup;
@@ -4264,12 +4286,6 @@ qemuDomainChangeNet(virQEMUDriver *driver,
     if (needLinkStateChange &&
         qemuDomainChangeNetLinkState(vm, olddev, newdev->linkstate) < 0) {
         goto cleanup;
-    }
-
-    if (needVlanUpdate) {
-        if (virNetDevOpenvswitchUpdateVlan(newdev->ifname, &newdev->vlan) < 0)
-            goto cleanup;
-        needReplaceDevDef = true;
     }
 
     if (needReplaceDevDef) {
