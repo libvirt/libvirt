@@ -16,6 +16,11 @@ v11.0.0 (unreleased)
 * **Removed features**
 
 * **New features**
+  * network/qemu/lxc: support vlans on standard Linux host bridges
+
+    The network, qemu, and lxc drivers now support (using the
+    ``<vlan>`` subelement) vlan tagging and trunking on network
+    interfaces connected to a standard Linux host bridge.
 
   * qemu: Add support for direct and extended tlbflush features
 
