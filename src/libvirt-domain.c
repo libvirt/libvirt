@@ -7998,8 +7998,8 @@ virDomainPinEmulator(virDomainPtr domain, unsigned char *cpumap,
  *     Must not be VIR_DOMAIN_AFFECT_LIVE and
  *     VIR_DOMAIN_AFFECT_CONFIG concurrently.
  *
- * Query the CPU affinity setting of all emulator threads of domain, store
- * it in cpumap.
+ * Query the CPU pinning setting of all emulator threads from the domain XML,
+ * store it in @cpumap.
  *
  * Returns 1 in case of success,
  * 0 in case of no emulator threads are pined to pcpus,
