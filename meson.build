@@ -17,7 +17,7 @@ endif
 
 i18n = import('i18n')
 
-po_dir = meson.source_root() / 'po'
+po_dir = meson.project_source_root() / 'po'
 
 # figure out if we are building from git
 
