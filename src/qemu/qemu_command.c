@@ -959,6 +959,23 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
             break;
         }
 
+        case VIR_DOMAIN_DEVICE_MEMORY:
+            switch (device->data.memory->model) {
+            case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+                *baseName = "virtio-pmem";
+                break;
+            case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+                *baseName = "virtio-mem";
+                break;
+            case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+            case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            case VIR_DOMAIN_MEMORY_MODEL_NONE:
+            case VIR_DOMAIN_MEMORY_MODEL_LAST:
+                break;
+            }
+            break;
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_WATCHDOG:
         case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -971,7 +988,6 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
         case VIR_DOMAIN_DEVICE_SHMEM:
         case VIR_DOMAIN_DEVICE_TPM:
         case VIR_DOMAIN_DEVICE_PANIC:
-        case VIR_DOMAIN_DEVICE_MEMORY:
         case VIR_DOMAIN_DEVICE_IOMMU:
         case VIR_DOMAIN_DEVICE_AUDIO:
         case VIR_DOMAIN_DEVICE_PSTORE:
@@ -3486,12 +3502,16 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        device = "virtio-pmem-pci";
+        /* Deliberately not setting @device. */
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_MEMORY, mem, priv->qemuCaps)))
+            return NULL;
         address = mem->target.virtio_pmem.address;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        device = "virtio-mem-pci";
+        /* Deliberately not setting @device. */
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_MEMORY, mem, priv->qemuCaps)))
+            return NULL;
 
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC) &&
             qemuBuildMemoryGetPagesize(cfg, def, mem, NULL, NULL, NULL, &prealloc) < 0)
@@ -3513,7 +3533,7 @@ qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
     }
 
     if (virJSONValueObjectAdd(&props,
-                              "s:driver", device,
+                              "S:driver", device,
                               "k:node", mem->targetNode,
                               "P:label-size", labelsize * 1024,
                               "P:block-size", blocksize * 1024,
