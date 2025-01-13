@@ -10,7 +10,7 @@
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
 # Kim InSoo <simmon@nplob.com>, 2022.
-# 김인수 <simmon@nplob.com>, 2022, 2023, 2024.
+# 김인수 <simmon@nplob.com>, 2022, 2023, 2024, 2025.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2024-11-28 09:29+0000\n"
+"PO-Revision-Date: 2025-01-09 14:36+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -1885,67 +1885,67 @@ msgstr ""
 "를 위해)?"
 
 msgid "Access connection"
-msgstr ""
+msgstr "접속 연결"
 
 msgid "Access denied"
 msgstr "접근 거부됨"
 
 msgid "Access domain"
-msgstr ""
+msgstr "접속 도메인"
 
 msgid "Access interface"
-msgstr ""
+msgstr "접속 연결장치"
 
 msgid "Access network"
-msgstr ""
+msgstr "접속 네트워크"
 
 msgid "Access network filter"
-msgstr ""
+msgstr "접속 네트워크 필터"
 
 msgid "Access network port"
-msgstr ""
+msgstr "접속 네트워크 포트"
 
 msgid "Access node device"
-msgstr ""
+msgstr "접속 노드 장치"
 
 msgid "Access secret"
-msgstr ""
+msgstr "접속 보안"
 
 msgid "Access storage pool"
-msgstr ""
+msgstr "접속 저장소 풀"
 
 msgid "Access storage volume"
-msgstr ""
+msgstr "접속 저장소 볼륨"
 
 msgid "Accessing interface requires authorization"
-msgstr ""
+msgstr "연결장치에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing network filter requires authorization"
-msgstr ""
+msgstr "네트워크 필터에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing network port requires authorization"
-msgstr ""
+msgstr "네트워크 포트에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing network requires authorization"
-msgstr ""
+msgstr "네트워크에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing node device requires authorization"
-msgstr ""
+msgstr "노드 장치에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing secret requires authorization"
-msgstr ""
+msgstr "보안에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing storage pool requires authorization"
-msgstr ""
+msgstr "저장소 풀에 접속하려면 권한이 필요합니다"
 
 msgid "Accessing storage volume requires authorization"
-msgstr ""
+msgstr "저장소 볼륨에 접속하기는 권한이 필요합니다"
 
 msgid "Accessing the connection requires authorization"
-msgstr ""
+msgstr "연결에 접속하기는 권한이 필요합니다"
 
 msgid "Accessing the domain requires authorization"
-msgstr ""
+msgstr "도메인에 접속하기는 권한이 필요합니다"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -3439,7 +3439,7 @@ msgstr ""
 "없습니다"
 
 msgid "Cannot set a base label with AppArmor"
-msgstr ""
+msgstr "AppArmor와 함께 기본 이름표로 설정 할 수 없습니다"
 
 msgid "Cannot set an empty mem_nodes set"
 msgstr "빈 mem_nodes 세트를 설정할 수 없습니다"
@@ -3884,10 +3884,10 @@ msgid "Checkpoint List"
 msgstr "체크포인트 목록"
 
 msgid "Checkpoint domain"
-msgstr ""
+msgstr "도메인 점검점"
 
 msgid "Checkpointing domain requires authorization"
-msgstr ""
+msgstr "도메인 점검점 중에는 권한이 필요합니다"
 
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
@@ -4149,7 +4149,7 @@ msgid "Controllers must use the 'ccid' address type"
 msgstr "컨트롤러는 'ccid' 주소 유형을 사용해야 합니다"
 
 msgid "Controlling domain init process requires authorization"
-msgstr ""
+msgstr "도메인 초기 처리를 제어하기는 권한이 필요합니다"
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr "도메인 XML 설정을 네이티브 게스트 설정 형식으로 변환합니다."
@@ -5273,13 +5273,13 @@ msgid "Create a vol."
 msgstr "볼륨을 생성합니다."
 
 msgid "Create network filter binding"
-msgstr ""
+msgstr "네트워크 필터 바인딩을 생성합니다"
 
 msgid "Create network port"
-msgstr ""
+msgstr "네트워크 포트를 생성합니다"
 
 msgid "Create storage volume"
-msgstr ""
+msgstr "저장소 볼륨을 생성합니다"
 
 #, c-format
 msgid "Create the dir %1$s"
@@ -5293,16 +5293,16 @@ msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "부착된 장치 %1$s 와 함께 브릿지 %2$s 을 생성합니다\n"
 
 msgid "Creating network filter binding requires authorization"
-msgstr ""
+msgstr "네트워크 필터 바인딩을 생성하기는 권한이 필요합니다"
 
 msgid "Creating network port configuration requires authorization"
-msgstr ""
+msgstr "네트워크 포트 구성을 생성하기는 권한이 필요합니다"
 
 msgid "Creating non-file volumes is not supported"
-msgstr "비파일 볼륨 생성이 지원되지 않음"
+msgstr "비-파일 볼륨 생성하기는 지원되지 않음"
 
 msgid "Creating storage volume requires authorization"
-msgstr ""
+msgstr "저장소 볼륨을 생성하기는 권한이 필요합니다"
 
 msgid "Creation Time"
 msgstr "생성 시간"
@@ -5445,34 +5445,34 @@ msgid "Delete an IOThread from the guest domain."
 msgstr "게스트 도메인에서 IOThread를 삭제합니다."
 
 msgid "Delete domain"
-msgstr ""
+msgstr "도메인을 삭제합니다"
 
 msgid "Delete interface"
-msgstr ""
+msgstr "연결장치를 삭제합니다"
 
 msgid "Delete network"
-msgstr ""
+msgstr "네트워크를 삭제합니다"
 
 msgid "Delete network filter"
-msgstr ""
+msgstr "네트워크 필터를 삭제합니다"
 
 msgid "Delete network filter binding"
-msgstr ""
+msgstr "네트워크 필터 바인딩을 삭제합니다"
 
 msgid "Delete network port"
-msgstr ""
+msgstr "네트워크 포트를 삭제합니다"
 
 msgid "Delete node device"
-msgstr ""
+msgstr "노드 장치를 삭제합니다"
 
 msgid "Delete secret"
-msgstr ""
+msgstr "비밀을 삭제합니다"
 
 msgid "Delete storage pool"
-msgstr ""
+msgstr "저장소 풀을 삭제합니다"
 
 msgid "Delete storage volume"
-msgstr ""
+msgstr "저장소 볼륨을 삭제합니다"
 
 msgid "Delete the specified network port."
 msgstr "지정된 네트워크 포트를 삭제하십시오."
@@ -5481,34 +5481,34 @@ msgid "Deleted"
 msgstr "삭제"
 
 msgid "Deleting domain configuration requires authorization"
-msgstr ""
+msgstr "도메인 구성 삭제는 인증이 필요합니다"
 
 msgid "Deleting interface configuration requires authorization"
-msgstr ""
+msgstr "연결장치 구성 삭제는 권한이 필요합니다"
 
 msgid "Deleting network configuration requires authorization"
-msgstr ""
+msgstr "네트워크 구성 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting network filter binding requires authorization"
-msgstr ""
+msgstr "네트워크 필터 바인딩 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting network filter configuration requires authorization"
-msgstr ""
+msgstr "네트워크 필터 구성 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting network port configuration requires authorization"
-msgstr ""
+msgstr "네트워크 포트 구성 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting node device driver requires authorization"
-msgstr ""
+msgstr "노드 장치 드라이버 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting secret configuration requires authorization"
-msgstr ""
+msgstr "비밀 구성 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting storage pool configuration requires authorization"
-msgstr ""
+msgstr "저장소 풀 구성 삭제하기는 권한이 필요합니다"
 
 msgid "Deleting storage volume requires authorization"
-msgstr ""
+msgstr "저장소 볼륨 삭제하기는 권한이 필요합니다"
 
 msgid ""
 "Depending on whether run with or without options, the command fetches or "
@@ -5561,19 +5561,19 @@ msgid "Detach network interface."
 msgstr "네트워크 인터페이스 분리."
 
 msgid "Detach node device"
-msgstr ""
+msgstr "노드 장치를 분리합니다"
 
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr "도메인에 할당하기 전에 이 장치 드라이버에서 노드 장치를 분리하세요."
 
 msgid "Detaching node device driver requires authorization"
-msgstr ""
+msgstr "노드 장치 드라이버 분리하기는 권한이 필요합니다"
 
 msgid "Detect storage pools"
-msgstr ""
+msgstr "저장소 풀을 탐지합니다"
 
 msgid "Detecting storage pools requires authorization"
-msgstr ""
+msgstr "저장소 풀 탐지하기는 권한이 필요합니다"
 
 msgid "Device"
 msgstr "장치"
@@ -6028,7 +6028,7 @@ msgid "Domain information of managed save state file in XML"
 msgstr "XML로 된 관리 저장 상태 파일의 도메인 정보"
 
 msgid "Domain init control"
-msgstr ""
+msgstr "도메인 초기 제어"
 
 msgid "Domain interface"
 msgstr "도메인 인터페이스"
@@ -6156,7 +6156,7 @@ msgid "Done.\n"
 msgstr "완료되었습니다.\n"
 
 msgid "Download length is too large"
-msgstr ""
+msgstr "내려받기 길이가 너무 큽니다"
 
 msgid "Download volume contents to a file"
 msgstr "파일에 볼륨 내용을 내려받기 함"
@@ -6198,13 +6198,13 @@ msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr "저장된 상태 파일에 대한 도메인 정보의 XML을 stdout에 덤프합니다."
 
 msgid "Dump domain"
-msgstr ""
+msgstr "도메인 덤프"
 
 msgid "Dump failed"
 msgstr "덤프 실패"
 
 msgid "Dumping domain corefile requires authorization"
-msgstr ""
+msgstr "도메인 코어파일 덤프하기는 권한이 필요합니다"
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
@@ -6368,7 +6368,7 @@ msgid "Enter username for %1$s [%2$s]"
 msgstr "%1$s[%2$s]에 대한 사용자명을 입력하십시오"
 
 msgid "Ephemeral secrets are loaded"
-msgstr ""
+msgstr "임시 비밀이 적재되었습니다"
 
 #, c-format
 msgid "Error adding route to %1$s"
