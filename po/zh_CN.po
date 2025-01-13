@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-11-26 14:19+0000\n"
+"POT-Creation-Date: 2025-01-09 09:28+0000\n"
 "PO-Revision-Date: 2024-11-19 09:21+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1839,8 +1839,68 @@ msgstr "忽略目前正在运行的域任务"
 msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr "是否接受哈希 '%1$s' 作为主机 '%2$s:%3$d' (%4$s/%5$s) 的 SSH 主机密钥？"
 
+msgid "Access connection"
+msgstr ""
+
 msgid "Access denied"
 msgstr "访问被拒绝"
+
+msgid "Access domain"
+msgstr ""
+
+msgid "Access interface"
+msgstr ""
+
+msgid "Access network"
+msgstr ""
+
+msgid "Access network filter"
+msgstr ""
+
+msgid "Access network port"
+msgstr ""
+
+msgid "Access node device"
+msgstr ""
+
+msgid "Access secret"
+msgstr ""
+
+msgid "Access storage pool"
+msgstr ""
+
+msgid "Access storage volume"
+msgstr ""
+
+msgid "Accessing interface requires authorization"
+msgstr ""
+
+msgid "Accessing network filter requires authorization"
+msgstr ""
+
+msgid "Accessing network port requires authorization"
+msgstr ""
+
+msgid "Accessing network requires authorization"
+msgstr ""
+
+msgid "Accessing node device requires authorization"
+msgstr ""
+
+msgid "Accessing secret requires authorization"
+msgstr ""
+
+msgid "Accessing storage pool requires authorization"
+msgstr ""
+
+msgid "Accessing storage volume requires authorization"
+msgstr ""
+
+msgid "Accessing the connection requires authorization"
+msgstr ""
+
+msgid "Accessing the domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -3272,8 +3332,8 @@ msgid ""
 "alias of '%3$s'"
 msgstr ""
 
-msgid "Cannot set a base label with AppArmour"
-msgstr "无法使用 AppArmour 设定基础标签"
+msgid "Cannot set a base label with AppArmor"
+msgstr ""
 
 msgid "Cannot set an empty mem_nodes set"
 msgstr "无法设置空的 mem_nodes 集合"
@@ -3730,6 +3790,12 @@ msgstr "检查点转储 XML"
 msgid "Checkpoint List"
 msgstr "检查点列表"
 
+msgid "Checkpoint domain"
+msgstr ""
+
+msgid "Checkpointing domain requires authorization"
+msgstr ""
+
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
 msgstr "域 %1$s 的检查点关系不一致"
@@ -3984,6 +4050,9 @@ msgstr "这个平台不支持控制组"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "控制器无法使用 ‘ccid’ 地址类型"
+
+msgid "Controlling domain init process requires authorization"
+msgstr ""
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr "将域 XML 配置转换为原始虚拟机配置格式"
@@ -5089,6 +5158,15 @@ msgstr "为现有卷生成卷"
 msgid "Create a vol."
 msgstr "创建一个卷。"
 
+msgid "Create network filter binding"
+msgstr ""
+
+msgid "Create network port"
+msgstr ""
+
+msgid "Create storage volume"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Create the dir %1$s"
 msgstr "创建目录 %1$s"
@@ -5100,8 +5178,17 @@ msgstr "创建"
 msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "使用附加设备 %1$s 生成桥接 %2$s 失败\n"
 
+msgid "Creating network filter binding requires authorization"
+msgstr ""
+
+msgid "Creating network port configuration requires authorization"
+msgstr ""
+
 msgid "Creating non-file volumes is not supported"
 msgstr "不支持生成非文件卷"
+
+msgid "Creating storage volume requires authorization"
+msgstr ""
 
 msgid "Creation Time"
 msgstr "生成时间"
@@ -5242,11 +5329,71 @@ msgstr "删除一个给定的卷。"
 msgid "Delete an IOThread from the guest domain."
 msgstr "从 guest 域中删除 IOThread。"
 
+msgid "Delete domain"
+msgstr ""
+
+msgid "Delete interface"
+msgstr ""
+
+msgid "Delete network"
+msgstr ""
+
+msgid "Delete network filter"
+msgstr ""
+
+msgid "Delete network filter binding"
+msgstr ""
+
+msgid "Delete network port"
+msgstr ""
+
+msgid "Delete node device"
+msgstr ""
+
+msgid "Delete secret"
+msgstr ""
+
+msgid "Delete storage pool"
+msgstr ""
+
+msgid "Delete storage volume"
+msgstr ""
+
 msgid "Delete the specified network port."
 msgstr "删除指定的网络端口。"
 
 msgid "Deleted"
 msgstr "已删除"
+
+msgid "Deleting domain configuration requires authorization"
+msgstr ""
+
+msgid "Deleting interface configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network filter binding requires authorization"
+msgstr ""
+
+msgid "Deleting network filter configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network port configuration requires authorization"
+msgstr ""
+
+msgid "Deleting node device driver requires authorization"
+msgstr ""
+
+msgid "Deleting secret configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage volume requires authorization"
+msgstr ""
 
 msgid ""
 "Depending on whether run with or without options, the command fetches or "
@@ -5296,8 +5443,20 @@ msgstr "分离磁盘设备。"
 msgid "Detach network interface."
 msgstr "分离网络界面。"
 
+msgid "Detach node device"
+msgstr ""
+
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr "在分配到某个域之前将节点设备与其设备驱动程序分离。"
+
+msgid "Detaching node device driver requires authorization"
+msgstr ""
+
+msgid "Detect storage pools"
+msgstr ""
+
+msgid "Detecting storage pools requires authorization"
+msgstr ""
 
 msgid "Device"
 msgstr "Device"
@@ -5738,6 +5897,9 @@ msgstr "缺少 hostdev 设备"
 msgid "Domain information of managed save state file in XML"
 msgstr "XML 中受管保存状态文件的域信息"
 
+msgid "Domain init control"
+msgstr ""
+
 msgid "Domain interface"
 msgstr "域接口"
 
@@ -5862,8 +6024,8 @@ msgstr "域："
 msgid "Done.\n"
 msgstr "完成。\n"
 
-msgid "Download length it too large"
-msgstr "下载时间太长"
+msgid "Download length is too large"
+msgstr ""
 
 msgid "Download volume contents to a file"
 msgstr "将卷内容下载到文件中"
@@ -5902,8 +6064,14 @@ msgstr "将受管保存状态文件的域信息的 XML 转储到 stdout。"
 msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr "为保存的状态文件将域信息 XML 转储到 stdout。"
 
+msgid "Dump domain"
+msgstr ""
+
 msgid "Dump failed"
 msgstr "转储失败"
+
+msgid "Dumping domain corefile requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
@@ -6065,6 +6233,9 @@ msgstr "为 %1$s 输入用户名"
 #, c-format
 msgid "Enter username for %1$s [%2$s]"
 msgstr "为 %1$s [%2$s] 输入用户名"
+
+msgid "Ephemeral secrets are loaded"
+msgstr ""
 
 #, c-format
 msgid "Error adding route to %1$s"
@@ -6464,6 +6635,10 @@ msgstr "接受迁移连接失败"
 #, c-format
 msgid "Failed to access '%1$s'"
 msgstr "访问 '%1$s' 失败"
+
+#, c-format
+msgid "Failed to acquire inhibitor: %1$s"
+msgstr ""
 
 msgid "Failed to acquire lock"
 msgstr "请求锁失败"
@@ -8856,9 +9031,21 @@ msgid ""
 "overwrite is necessary"
 msgstr "设备 '%1$s' 的格式与预期的格式 '%2$s' 不匹配，需要强制覆盖"
 
+msgid "Format storage pool"
+msgstr ""
+
+msgid "Format storage volume"
+msgstr ""
+
 #, c-format
 msgid "Formatting IP address for host '%1$s' failed: %2$s"
 msgstr "为主机 '%1$s' 格式化 IP 地址失败：%2$s"
+
+msgid "Formatting storage pool data requires authorization"
+msgstr ""
+
+msgid "Formatting storage volume data requires authorization"
+msgstr ""
 
 msgid "Found additional probes to run, probing may be incorrect"
 msgstr "找到要运行的其他探测，探测可能不正确"
@@ -8879,8 +9066,14 @@ msgstr "在 '%1$s' 中找到无效设备链接 '%2$s'"
 msgid "Found unexpected controller model '%1$s' for disk '%2$s'"
 msgstr "为磁盘 '%1$s' 找到意外的控制器型号 '%2$s'"
 
+msgid "Freeze and thaw domain filesystems"
+msgstr ""
+
 msgid "Freeze domain's mounted filesystems."
 msgstr "冻结域的挂载的文件系统。"
+
+msgid "Freezing and thawing domain filesystems requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Froze %1$d filesystem(s)\n"
@@ -9096,6 +9289,9 @@ msgstr "握手过程已完成"
 
 msgid "Hard disk is null"
 msgstr "硬盘为 null"
+
+msgid "Hibernate domain"
+msgstr ""
 
 msgid "Holes are not supported with this stream"
 msgstr "此流不支持孔"
@@ -9452,6 +9648,12 @@ msgstr "在虚拟机中输入 NMI"
 msgid "Inject NMI to the guest domain."
 msgstr "在虚拟机域中输入 NMI"
 
+msgid "Inject domain NMI"
+msgstr ""
+
+msgid "Injecting interrupt requires authorization"
+msgstr ""
+
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "这个虚拟化驱动程序不支持输入设备。"
 
@@ -9541,6 +9743,9 @@ msgstr "未找到接口"
 #, c-format
 msgid "Interface not found: %1$s"
 msgstr "未找到接口：%1$s"
+
+msgid "Interface transactions"
+msgstr ""
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10432,6 +10637,10 @@ msgid "Invalid virNetSSHSession *"
 msgstr "无效的 virNetSSHSession *"
 
 #, c-format
+msgid "Invalid vlan filter command %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
 msgstr "vnode %1$zu 的无效的 vnuma 配置"
 
@@ -10513,6 +10722,9 @@ msgstr "已知，但存在不同的标签格式，需要 build --overwrite"
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC 虚拟机进入名称空间"
 
+msgid "LXC containers are running"
+msgstr ""
+
 #, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
 msgstr "锁空间 %1$s 中租赁 %2$s 已存在"
@@ -10532,8 +10744,20 @@ msgstr "库 '%1$s' 不存在"
 msgid "Library function returned error but did not set virError"
 msgstr "库功能返回出错信息但没有数值 virError"
 
-msgid "Libvirt"
-msgstr "Libvirt"
+msgid "Libvirt LXC"
+msgstr ""
+
+msgid "Libvirt Network"
+msgstr ""
+
+msgid "Libvirt QEMU"
+msgstr ""
+
+msgid "Libvirt Secret"
+msgstr ""
+
+msgid "Libvirt Xen"
+msgstr ""
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
@@ -10551,6 +10775,9 @@ msgstr "显示守护进程中可管理的server列表"
 msgid "List checkpoints for a domain"
 msgstr "列出域的检查点"
 
+msgid "List domains"
+msgstr ""
+
 msgid "List event types, or wait for domain events to occur"
 msgstr "列出事件类型，或等待域事件发生"
 
@@ -10566,14 +10793,71 @@ msgstr "列出事件类型，或等待 secret 事件发生"
 msgid "List event types, or wait for storage pool events to occur"
 msgstr "列出事件类型，或等待存储池事件发生"
 
+msgid "List interfaces"
+msgstr ""
+
+msgid "List network filter bindings"
+msgstr ""
+
+msgid "List network filters"
+msgstr ""
+
+msgid "List network ports"
+msgstr ""
+
+msgid "List networks"
+msgstr ""
+
+msgid "List node devices"
+msgstr ""
+
+msgid "List secrets"
+msgstr ""
+
 msgid "List snapshots for a domain"
 msgstr "为域列出快照"
+
+msgid "List storage pool volumes"
+msgstr ""
+
+msgid "List storage pools"
+msgstr ""
 
 msgid "Listen for QEMU Monitor Events"
 msgstr "侦听 QEMU 监控事件"
 
 msgid "Listen for TCP/IP connections"
 msgstr "侦听 TCP/IP 连接"
+
+msgid "Listing domains or using domain events requires authorization"
+msgstr ""
+
+msgid "Listing interfaces requires authorization"
+msgstr ""
+
+msgid "Listing network filter bindings requires authorization"
+msgstr ""
+
+msgid "Listing network filters requires authorization"
+msgstr ""
+
+msgid "Listing network ports requires authorization"
+msgstr ""
+
+msgid "Listing networks or using network events requires authorization"
+msgstr ""
+
+msgid "Listing node devices requires authorization"
+msgstr ""
+
+msgid "Listing secrets requires authorization"
+msgstr ""
+
+msgid "Listing storage pool volumes requires authorization"
+msgstr ""
+
+msgid "Listing storage pools requires authorization"
+msgstr ""
 
 msgid "Load kvm_hv for better performance"
 msgstr "加载 kvm_hv 以获得更好的性能"
@@ -10791,6 +11075,9 @@ msgstr "格式错误的 wwn：%1$s"
 msgid "Manage active block operations"
 msgstr "管理活跃块操作"
 
+msgid "Manage local virtualized systems"
+msgstr ""
+
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
 msgstr "域 '%1$s' XML 配置的受管保存镜像已编辑。\n"
@@ -10932,11 +11219,17 @@ msgid ""
 "binary"
 msgstr "此 QEMU 二进制文件不支持 host-passthrough CPU 的可迁移属性"
 
+msgid "Migrate domain"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "将域迁移到另一个主机中。热迁移时添加 --live。"
 
 msgid "Migrated"
 msgstr "已迁移"
+
+msgid "Migrating domain requires authorization"
+msgstr ""
 
 msgid "Migration"
 msgstr "迁移"
@@ -11569,6 +11862,9 @@ msgstr "模块名称中含有无效字符"
 
 msgid "Modifies an existing IOThread of the guest domain."
 msgstr "修改 guest 域的现有 IO 线程。"
+
+msgid "Monitor local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -12722,6 +13018,15 @@ msgstr "只支持 vpxmigr:// migration URI"
 msgid "Only x509 certificates are supported"
 msgstr "只支持 x509 证书"
 
+msgid "Open domain device"
+msgstr ""
+
+msgid "Open domain graphics"
+msgstr ""
+
+msgid "Open domain namespace"
+msgstr ""
+
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr "OpenRemoteSession/LaunchVMProcess 失败，无法启用域。"
 
@@ -12730,6 +13035,15 @@ msgstr "OpenVZ 控制的文件 /proc/vz 不存在"
 
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "OpenVZ 控制的文件 /proc/vz 无法访问"
+
+msgid "Opening domain devices requires authorization"
+msgstr ""
+
+msgid "Opening domain graphics console requires authorization"
+msgstr ""
+
+msgid "Opening domain namespaces requires authorization"
+msgstr ""
 
 msgid "Operation cancelled by client"
 msgstr "操作被客户端取消"
@@ -13375,6 +13689,9 @@ msgstr "QEMU 意外关闭了监视器 （vm='%1$s'）"
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
 msgstr "QEMU 版本 >= %1$d.%2$d.%3$d 是必需的，但找到了 %4$d %5$d.%6$d"
 
+msgid "QEMU/KVM virtual machines are running"
+msgstr ""
+
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
 msgstr "QOM 对象 '%1$s' 没有属性 'ram_size'"
@@ -13466,6 +13783,54 @@ msgstr "速率字符串 '%1$s' 包含太多字段"
 msgid "Raw I/O is not supported on this platform"
 msgstr "这个平台不支持原始 I/O"
 
+msgid "Read domain"
+msgstr ""
+
+msgid "Read domain block"
+msgstr ""
+
+msgid "Read domain memory"
+msgstr ""
+
+msgid "Read host"
+msgstr ""
+
+msgid "Read interface"
+msgstr ""
+
+msgid "Read network"
+msgstr ""
+
+msgid "Read network filter"
+msgstr ""
+
+msgid "Read network filter binding"
+msgstr ""
+
+msgid "Read network port"
+msgstr ""
+
+msgid "Read node device"
+msgstr ""
+
+msgid "Read secret"
+msgstr ""
+
+msgid "Read secure domain"
+msgstr ""
+
+msgid "Read secure secret"
+msgstr ""
+
+msgid "Read storage pool"
+msgstr ""
+
+msgid "Read storage volume"
+msgstr ""
+
+msgid "Read storage volume data"
+msgstr ""
+
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr "读/写，独家访问，显示磁盘，但没有指定租赁。"
@@ -13475,6 +13840,51 @@ msgstr "这个平台上不支持读取 CPUID"
 
 msgid "Reading MSRs is not supported on this platform"
 msgstr "这个平台上不支持读取 MSR"
+
+msgid "Reading domain block devices requires authorization"
+msgstr ""
+
+msgid "Reading domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading domain memory requires authorization"
+msgstr ""
+
+msgid "Reading interface configuration requires authorization"
+msgstr ""
+
+msgid "Reading network configuration requires authorization"
+msgstr ""
+
+msgid "Reading network filter configuration requires authorization"
+msgstr ""
+
+msgid "Reading network port configuration requires authorization"
+msgstr ""
+
+msgid "Reading node device configuration requires authorization"
+msgstr ""
+
+msgid "Reading secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume data requires authorization"
+msgstr ""
+
+msgid "Reading the host configuration requires authorization"
+msgstr ""
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr "当从该域中释放后重新将节点设备附加到他的设备驱动程序中。"
@@ -13498,6 +13908,12 @@ msgstr "QEMU 不支持重新定向总线 %1$s"
 
 msgid "Refresh a given pool."
 msgstr "刷新给定的池。"
+
+msgid "Refresh storage pool"
+msgstr ""
+
+msgid "Refreshing storage pool volumes requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
@@ -13623,14 +14039,23 @@ msgstr "Resctrl 分配路径已被设为 '%1$s'"
 msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "Resctrl 监控路径已被设为 '%1$s'"
 
+msgid "Reset domain"
+msgstr ""
+
 msgid "Reset node device before or after assigning to a domain."
 msgstr "在分配到某个域之前或者之后重置节点设备。"
 
 msgid "Reset the target domain as if by power button"
 msgstr "如同使用电源按钮重新设定目标域"
 
+msgid "Resetting the domain requires authorization"
+msgstr ""
+
 msgid "Resize block device of domain."
 msgstr "创新定义域块设备大小"
+
+msgid "Resize storage volume"
+msgstr ""
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
@@ -13640,6 +14065,9 @@ msgstr ""
 "重新调整存储卷大小。这只适用于不被活跃的客户机使用的存储卷。有关实时调整大"
 "小。\n"
 "请参阅 blockresize 。"
+
+msgid "Resizing storage volume requires authorization"
+msgstr ""
 
 msgid "Resolved device mapper name too long"
 msgstr "已解析的设备映射器名称太长"
@@ -14010,6 +14438,27 @@ msgstr ""
 "    命令是该域要运行的第二个命令时，看以这个\n"
 "    保存的状态自动重启。"
 
+msgid "Save domain"
+msgstr ""
+
+msgid "Save interface"
+msgstr ""
+
+msgid "Save network"
+msgstr ""
+
+msgid "Save network filter"
+msgstr ""
+
+msgid "Save node device"
+msgstr ""
+
+msgid "Save secret"
+msgstr ""
+
+msgid "Save storage pool"
+msgstr ""
+
 msgid "Save the RAM state of a running domain."
 msgstr "保存运行中的域 的 RAM 状态"
 
@@ -14019,6 +14468,30 @@ msgstr "已保存"
 #, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "未更改保存的映像 %1$s XML 配置。\n"
+
+msgid "Saving domain configuration requires authorization"
+msgstr ""
+
+msgid "Saving domain state requires authorization"
+msgstr ""
+
+msgid "Saving interface configuration requires authorization"
+msgstr ""
+
+msgid "Saving network configuration requires authorization"
+msgstr ""
+
+msgid "Saving network filter configuration requires authorization"
+msgstr ""
+
+msgid "Saving node device driver requires authorization"
+msgstr ""
+
+msgid "Saving secret configuration requires authorization"
+msgstr ""
+
+msgid "Saving storage pool configuration requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14136,6 +14609,12 @@ msgstr ""
 "可以在网站 %1$s 中查看相关信息\n"
 "\n"
 
+msgid "Send domain input"
+msgstr ""
+
+msgid "Send domain signal"
+msgstr ""
+
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "向虚拟机发送序列号 (整数或者符号名称)"
 
@@ -14150,6 +14629,12 @@ msgstr "向虚拟机中的进程发送信号"
 
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "这个插槽不支持发送文件描述符"
+
+msgid "Sending input events to domain requires authorization"
+msgstr ""
+
+msgid "Sending signals to processes in domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14223,6 +14708,9 @@ msgstr "设定或者查询块设备 I/O 调节参数。"
 
 msgid "Set or query disk I/O parameters such as block throttling."
 msgstr "设定或者查询块设备 I/O 调节参数，比如块节流。"
+
+msgid "Set password of the domain's account"
+msgstr ""
 
 msgid "Set the guest agent timeout"
 msgstr "设置客户机代理超时"
@@ -14313,6 +14801,12 @@ msgstr "只允许为 USB 设备设置启动策略"
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
 msgstr "机器 '%1$s' 不支持设置 64 位 PCI 孔大小"
+
+msgid "Setting the domain accounts' password requires authorization"
+msgstr ""
+
+msgid "Setting the domain time requires authorization"
+msgstr ""
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
 msgstr "vz 驱动程序不支持设置磁盘丢弃参数。"
@@ -14453,6 +14947,9 @@ msgstr "快照列表"
 msgid "Snapshot delete"
 msgstr "快照删除"
 
+msgid "Snapshot domain"
+msgstr ""
+
 msgid "Snapshot is Null"
 msgstr "快照为 Null"
 
@@ -14465,6 +14962,9 @@ msgstr "'pool' 卷尚不支持快照"
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
 msgstr "域 %1$s 有不连贯的关系"
+
+msgid "Snapshotting domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
@@ -14566,15 +15066,45 @@ msgstr "启动一个池。"
 msgid "Start an inactive node device"
 msgstr "启动一个停用的节点设备"
 
+msgid "Start domain"
+msgstr ""
+
+msgid "Start interface"
+msgstr ""
+
+msgid "Start network"
+msgstr ""
+
+msgid "Start node device"
+msgstr ""
+
+msgid "Start storage pool"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr "开始成功地计算域内存脏率。\n"
 
 msgid "Started"
 msgstr "启动"
 
+msgid "Starting interface requires authorization"
+msgstr ""
+
+msgid "Starting network requires authorization"
+msgstr ""
+
+msgid "Starting node device requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Starting shutdown on guest: $name"
 msgstr "在 guest: $name 中启动关机"
+
+msgid "Starting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Starting the domain requires authorization"
+msgstr ""
 
 msgid "Starts an inactive node device that was previously defined"
 msgstr "启动之前定义的停用的节点设备"
@@ -14669,8 +15199,38 @@ msgstr "这个守护进程或 QEMU 不支持统计类型位 0x%1$x"
 msgid "Status is unknown"
 msgstr "未知状态"
 
+msgid "Stop domain"
+msgstr ""
+
+msgid "Stop interface"
+msgstr ""
+
+msgid "Stop network"
+msgstr ""
+
+msgid "Stop node device"
+msgstr ""
+
+msgid "Stop storage pool"
+msgstr ""
+
 msgid "Stopped"
 msgstr "已停止"
+
+msgid "Stopping interface requires authorization"
+msgstr ""
+
+msgid "Stopping network requires authorization"
+msgstr ""
+
+msgid "Stopping node device requires authorization"
+msgstr ""
+
+msgid "Stopping storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Stopping the domain requires authorization"
+msgstr ""
 
 msgid "Storage Pool Events"
 msgstr "存储池事件"
@@ -14783,6 +15343,9 @@ msgstr "只支持一个 IPv6 默认网关"
 msgid "Suspend a running domain."
 msgstr "挂起一个运行的域。"
 
+msgid "Suspend domain"
+msgstr ""
+
 msgid "Suspend duration in seconds, at least 60"
 msgstr "挂起时间，单位秒，最小值为 60。"
 
@@ -14814,6 +15377,9 @@ msgstr "已挂起"
 msgid "Suspending $name: "
 msgstr "挂起 $name: "
 
+msgid "Suspending domain CPUs requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Suspending guests on $uri URI..."
 msgstr "在 $uri URI 中挂起虚拟机"
@@ -14840,8 +15406,11 @@ msgstr "系统使用中"
 msgid "System is not available"
 msgstr "系统不可用"
 
-msgid "System lacks NETNS support"
-msgstr "系统缺少 NETNS 支持"
+msgid "System policy prevents management of local virtualized systems"
+msgstr ""
+
+msgid "System policy prevents monitoring of local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "System token in %1$s was corrupt"
@@ -14890,6 +15459,12 @@ msgstr "不支持 TPM 版本 '%1$s'"
 
 msgid "Table row cannot be empty"
 msgstr "表的行不能为空"
+
+msgid "Take domain screenshot"
+msgstr ""
+
+msgid "Taking domain screenshots requires authorization"
+msgstr ""
 
 msgid "Target"
 msgstr "目标"
@@ -15434,8 +16009,10 @@ msgid "Target host device mode %1$s does not match source %2$s"
 msgstr "目标主机设备型号 %1$s 与源 %2$s 不匹配"
 
 #, c-format
-msgid "Target host device subsystem %1$s does not match source %2$s"
-msgstr "目标主机设备子系统 %1$s 与源 %2$s 不匹配"
+msgid ""
+"Target host device subsystem type %1$s is not compatible with source "
+"subsystem type %2$s"
+msgstr ""
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
@@ -16394,6 +16971,12 @@ msgstr "%1$s 过程中的传输错误：%2$s（%3$d）"
 
 msgid "Tried to write socket in error state"
 msgstr "尝试使用 error 状态写入插槽"
+
+msgid "Trim domain filesystems"
+msgstr ""
+
+msgid "Trimming domain filesystems requires authorization"
+msgstr ""
 
 msgid "Try again?"
 msgstr "再次尝试?"
@@ -19615,6 +20198,12 @@ msgid ""
 "optionally creating a checkpoint"
 msgstr "使用 XML 来开始实时域的全或增量磁盘备份，可选择创建检查点"
 
+msgid "Use domain power management"
+msgstr ""
+
+msgid "Use host power management"
+msgstr ""
+
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr "使用 'parentaddr' 元素需要使用适配器 'type'"
 
@@ -19650,6 +20239,15 @@ msgstr "用户名请求失败"
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "使用的 API: %1$s %2$d.%3$d.%4$d\n"
+
+msgid "Using domain power management requires authorization"
+msgstr ""
+
+msgid "Using host power management requires authorization"
+msgstr ""
+
+msgid "Using interface transactions requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
@@ -19765,8 +20363,8 @@ msgstr "变量值包含无效字符"
 msgid "Verbose messages"
 msgstr "详细消息"
 
-msgid "Video adapters are not supported int containers."
-msgstr "int 容器不支持视频适配器。"
+msgid "Video adapters are not supported in containers."
+msgstr ""
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
@@ -19776,11 +20374,11 @@ msgstr "这是 %1$s 版本libvirt的命令行工具virsh\n"
 msgid "Virt-admin command line tool of libvirt %1$s\n"
 msgstr "这是 %1$s 版本libvirt的命令行工具virt-admin\n"
 
-msgid "Virtual machines need to be saved"
-msgstr "需要保存的虚拟机"
-
 msgid "Virtual network portgroups are not supported by vz driver."
 msgstr "vz 驱动程序不支持虚拟网络端口组。"
+
+msgid "Virtual networks are active"
+msgstr ""
 
 msgid "Virtual port profile association not supported on this platform"
 msgstr "在这个平台中部支持虚拟端口侧写关联"
@@ -19892,17 +20490,83 @@ msgstr ""
 msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "擦除卷 '%1$s'(%2$s) ... "
 
+msgid "Write domain"
+msgstr ""
+
+msgid "Write domain block"
+msgstr ""
+
+msgid "Write domain time"
+msgstr ""
+
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
 msgstr "qemu 不支持对 PCI 设备配置空间的写过滤"
+
+msgid "Write host"
+msgstr ""
+
+msgid "Write interface"
+msgstr ""
+
+msgid "Write network"
+msgstr ""
+
+msgid "Write network filter"
+msgstr ""
+
+msgid "Write node device"
+msgstr ""
 
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
 msgstr "在创建/删除 vport 过程中将 '%1$s' 写入 '%2$s' 失败"
 
+msgid "Write secret"
+msgstr ""
+
+msgid "Write storage pool"
+msgstr ""
+
+msgid "Write storage volume data"
+msgstr ""
+
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
 msgstr "写入 '%1$s' 激活主机扫描失败"
+
+msgid "Writing domain block devices requires authorization"
+msgstr ""
+
+msgid "Writing domain configuration requires authorization"
+msgstr ""
+
+msgid "Writing interface configuration requires authorization"
+msgstr ""
+
+msgid "Writing network configuration requires authorization"
+msgstr ""
+
+msgid "Writing network filter configuration requires authorization"
+msgstr ""
+
+msgid "Writing network port configuration requires authorization"
+msgstr ""
+
+msgid "Writing node device configuration requires authorization"
+msgstr ""
+
+msgid "Writing secret configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage volume data requires authorization"
+msgstr ""
+
+msgid "Writing the host configuration requires authorization"
+msgstr ""
 
 msgid "Wrong MAC address"
 msgstr "错误 MAC 地址"
@@ -19980,6 +20644,9 @@ msgstr "此主机上不支持 Xen 迁移流版本 '%1$d'"
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr "Xen 仅支持 'xenpv'、'xenpvh' 和 'xenfv' 机器"
+
+msgid "Xen virtual machines are running"
+msgstr ""
 
 msgid "You are trying to remove a snapshot which does not exists"
 msgstr "您试图删除不存在的快照"
@@ -21773,15 +22440,15 @@ msgstr "无法将字符 I/O 与异步命令混合"
 msgid "cannot mix string I/O with daemon"
 msgstr "无法将字符 I/O 与守护进程混合"
 
+msgid "cannot modify '<iothreads>' configuration of the disk"
+msgstr ""
+
 msgid "cannot modify MTU"
 msgstr "无法修改 MTU"
 
 #, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "无法修改磁盘的 '%1$s' 字段"
-
-msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
-msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -24819,6 +25486,10 @@ msgstr "接口 %1$d (%2$s) 中端口配置设定链接过程出错 %3$d"
 msgid "error adding fdb entry for %1$s"
 msgstr "为 %1$s 添加 fdb 条目时出错"
 
+#, c-format
+msgid "error adding vlan filter to interface %1$s"
+msgstr ""
+
 msgid "error calling aa_change_profile()"
 msgstr "调用 aa_change_profile() 时出错"
 
@@ -24900,6 +25571,10 @@ msgstr "解析 lldpad 的 pid 时出错"
 
 msgid "error receiving signal from container"
 msgstr "从容器接收信号时出错"
+
+#, c-format
+msgid "error removing vlan filter from interface %1$s"
+msgstr ""
 
 msgid "error sending continue signal to daemon"
 msgstr "向守护进程发送连续信号时出错"
@@ -27192,6 +27867,10 @@ msgstr "主机不支持 hyperv '%1$s' 功能"
 #, c-format
 msgid "host doesn't support hyperv stimer '%1$s' feature"
 msgstr "主机不支持 hyperv stimer '%1$s' 功能"
+
+#, c-format
+msgid "host doesn't support hyperv tlbflush '%1$s' feature"
+msgstr ""
 
 msgid "host doesn't support invariant TSC"
 msgstr "主机不支持变种 TSC"
@@ -29856,6 +30535,11 @@ msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "中介设备的 <type> 元素缺少 'id' 属性"
 
 msgid ""
+"missing 'name' attribute for a host CPU model deprecated property in QEMU "
+"capabilities cache"
+msgstr ""
+
+msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr "QEMU 功能缓存中缺少主机 CPU model 属性的 'name' 属性"
@@ -32015,8 +32699,8 @@ msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr "在线非可插拔 vcpu 必须按升序排序"
 
 msgid ""
-"online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
-msgstr "在线非可插拔 vcpu 需要排在可插拔 vcpu 之前"
+"online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
+msgstr ""
 
 msgid "only 'connect' mode is supported for external TPM device"
 msgstr "对于外部 TPM 设备，只支持 'connect' 模式"
@@ -33560,6 +34244,9 @@ msgstr "如果 CPU 不兼容，则报告错误"
 
 msgid "report filesystem information"
 msgstr "报告文件系统信息"
+
+msgid "report host CPU model with deprecated features disabled"
+msgstr ""
 
 msgid "report hostname"
 msgstr "报告主机名"
@@ -35281,6 +35968,9 @@ msgstr "vz 驱动程序不支持标题"
 
 msgid "tls"
 msgstr "tls"
+
+msgid "toggling deprecated features for CPU model is unsupported"
+msgstr ""
 
 #, c-format
 msgid "too many NUMA cells: %1$d > %2$d"
@@ -37146,16 +37836,14 @@ msgstr "大小为 %1$lld 的未处理孔已在队列中"
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr "为网络 '%1$s' 指定的无法到达的静态路由网关 '%2$s'"
 
-#, fuzzy, c-format
-msgid ""
-"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
-"%2$s"
-msgstr ""
-"无法识别在网络驱动程序配置文件 %2$s 中的 'firewall_backend = '%1$s' 设置"
-
 #, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "无法识别的命令名称 '%1$s'"
+
+#, c-format
+msgid ""
+"unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
+msgstr ""
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -37187,6 +37875,10 @@ msgstr "不支持的 CPU 类型：%1$s"
 #, c-format
 msgid "unsupported Hyper-V stimer feature: %1$s"
 msgstr "不支持的 Hyper-V stimer 功能：%1$s"
+
+#, c-format
+msgid "unsupported Hyper-V tlbflush feature: %1$s"
+msgstr ""
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
@@ -38192,15 +38884,8 @@ msgstr "virtiofs 不支持 model"
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs 不支持 multidevs"
 
-#, fuzzy
-msgid "virtiofs does not support read-only access"
-msgstr "virtiofs 不支持只读访问"
-
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs 不支持 wrpolicy"
-
-msgid "virtiofs does not yet support read-only mode"
-msgstr "virtiofs 尚不支持只读模式"
 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 virtiofs"
@@ -38587,6 +39272,47 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "Cannot set a base label with AppArmour"
+#~ msgstr "无法使用 AppArmour 设定基础标签"
+
+#~ msgid "Download length it too large"
+#~ msgstr "下载时间太长"
+
+#~ msgid "Libvirt"
+#~ msgstr "Libvirt"
+
+#~ msgid "System lacks NETNS support"
+#~ msgstr "系统缺少 NETNS 支持"
+
+#, c-format
+#~ msgid "Target host device subsystem %1$s does not match source %2$s"
+#~ msgstr "目标主机设备子系统 %1$s 与源 %2$s 不匹配"
+
+#~ msgid "Video adapters are not supported int containers."
+#~ msgstr "int 容器不支持视频适配器。"
+
+#~ msgid "Virtual machines need to be saved"
+#~ msgstr "需要保存的虚拟机"
+
+#~ msgid ""
+#~ "online non-hotpluggable vcpus need to be ordered prior to hotplugable "
+#~ "vcpus"
+#~ msgstr "在线非可插拔 vcpu 需要排在可插拔 vcpu 之前"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+#~ "%2$s"
+#~ msgstr ""
+#~ "无法识别在网络驱动程序配置文件 %2$s 中的 'firewall_backend = '%1$s' 设置"
+
+#, fuzzy
+#~ msgid "virtiofs does not support read-only access"
+#~ msgstr "virtiofs 不支持只读访问"
+
+#~ msgid "virtiofs does not yet support read-only mode"
+#~ msgstr "virtiofs 尚不支持只读模式"
 
 #, c-format
 #~ msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"

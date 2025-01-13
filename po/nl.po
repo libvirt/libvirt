@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-11-26 14:19+0000\n"
+"POT-Creation-Date: 2025-01-09 09:28+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -1654,7 +1654,67 @@ msgstr "Breekt de momenteel draaiende taak af"
 msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr ""
 
+msgid "Access connection"
+msgstr ""
+
 msgid "Access denied"
+msgstr ""
+
+msgid "Access domain"
+msgstr ""
+
+msgid "Access interface"
+msgstr ""
+
+msgid "Access network"
+msgstr ""
+
+msgid "Access network filter"
+msgstr ""
+
+msgid "Access network port"
+msgstr ""
+
+msgid "Access node device"
+msgstr ""
+
+msgid "Access secret"
+msgstr ""
+
+msgid "Access storage pool"
+msgstr ""
+
+msgid "Access storage volume"
+msgstr ""
+
+msgid "Accessing interface requires authorization"
+msgstr ""
+
+msgid "Accessing network filter requires authorization"
+msgstr ""
+
+msgid "Accessing network port requires authorization"
+msgstr ""
+
+msgid "Accessing network requires authorization"
+msgstr ""
+
+msgid "Accessing node device requires authorization"
+msgstr ""
+
+msgid "Accessing secret requires authorization"
+msgstr ""
+
+msgid "Accessing storage pool requires authorization"
+msgstr ""
+
+msgid "Accessing storage volume requires authorization"
+msgstr ""
+
+msgid "Accessing the connection requires authorization"
+msgstr ""
+
+msgid "Accessing the domain requires authorization"
 msgstr ""
 
 #, c-format
@@ -3154,7 +3214,7 @@ msgid ""
 "alias of '%3$s'"
 msgstr ""
 
-msgid "Cannot set a base label with AppArmour"
+msgid "Cannot set a base label with AppArmor"
 msgstr ""
 
 #, fuzzy
@@ -3600,6 +3660,12 @@ msgstr "Snapshot dump XML"
 msgid "Checkpoint List"
 msgstr ""
 
+msgid "Checkpoint domain"
+msgstr ""
+
+msgid "Checkpointing domain requires authorization"
+msgstr ""
+
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
 msgstr ""
@@ -3870,6 +3936,9 @@ msgstr "Host sysinfo extractie wordt op dit platform niet ondersteund"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "Controllers moeten het 'ccid' adres type gebruiken"
+
+msgid "Controlling domain init process requires authorization"
+msgstr ""
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr ""
@@ -5039,6 +5108,15 @@ msgstr "Maak een volume aan van een bestaande volume."
 msgid "Create a vol."
 msgstr "Maak een volume aan."
 
+msgid "Create network filter binding"
+msgstr ""
+
+msgid "Create network port"
+msgstr ""
+
+msgid "Create storage volume"
+msgstr ""
+
 #, c-format
 msgid "Create the dir %1$s"
 msgstr ""
@@ -5051,8 +5129,17 @@ msgstr "Een domein aanmaken"
 msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "Vastkoppelen van het apparaat %s mislukte"
 
+msgid "Creating network filter binding requires authorization"
+msgstr ""
+
+msgid "Creating network port configuration requires authorization"
+msgstr ""
+
 msgid "Creating non-file volumes is not supported"
 msgstr "Aanmaken van niet-bestand volumes wordt niet ondersteund"
+
+msgid "Creating storage volume requires authorization"
+msgstr ""
 
 msgid "Creation Time"
 msgstr "Aanmaak tijd"
@@ -5193,10 +5280,70 @@ msgstr "Verwijder een bepaalde volume."
 msgid "Delete an IOThread from the guest domain."
 msgstr ""
 
+msgid "Delete domain"
+msgstr ""
+
+msgid "Delete interface"
+msgstr ""
+
+msgid "Delete network"
+msgstr ""
+
+msgid "Delete network filter"
+msgstr ""
+
+msgid "Delete network filter binding"
+msgstr ""
+
+msgid "Delete network port"
+msgstr ""
+
+msgid "Delete node device"
+msgstr ""
+
+msgid "Delete secret"
+msgstr ""
+
+msgid "Delete storage pool"
+msgstr ""
+
+msgid "Delete storage volume"
+msgstr ""
+
 msgid "Delete the specified network port."
 msgstr ""
 
 msgid "Deleted"
+msgstr ""
+
+msgid "Deleting domain configuration requires authorization"
+msgstr ""
+
+msgid "Deleting interface configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network filter binding requires authorization"
+msgstr ""
+
+msgid "Deleting network filter configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network port configuration requires authorization"
+msgstr ""
+
+msgid "Deleting node device driver requires authorization"
+msgstr ""
+
+msgid "Deleting secret configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage volume requires authorization"
 msgstr ""
 
 msgid ""
@@ -5249,11 +5396,23 @@ msgstr "Schijf apparaat loskoppelen."
 msgid "Detach network interface."
 msgstr "Koppel netwerk interface los."
 
+msgid "Detach node device"
+msgstr ""
+
 #, fuzzy
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr ""
 "Koppel node apparaat vast aan zijn apparaat driver zodra deze vrijgegeven "
 "wordt door het domein."
+
+msgid "Detaching node device driver requires authorization"
+msgstr ""
+
+msgid "Detect storage pools"
+msgstr ""
+
+msgid "Detecting storage pools requires authorization"
+msgstr ""
 
 #, fuzzy
 msgid "Device"
@@ -5715,6 +5874,9 @@ msgid "Domain information of managed save state file in XML"
 msgstr ""
 "Verwijder een bestaande beheerde opslag toestand bestand uit een domein"
 
+msgid "Domain init control"
+msgstr ""
+
 #, fuzzy
 msgid "Domain interface"
 msgstr "Domein is niet ingeschakeld"
@@ -5844,7 +6006,7 @@ msgstr ""
 msgid "Done.\n"
 msgstr ""
 
-msgid "Download length it too large"
+msgid "Download length is too large"
 msgstr ""
 
 #, fuzzy
@@ -5891,8 +6053,14 @@ msgstr "Output de domein informatie als een XML dump naar stdout."
 msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr "Output de domein informatie als een XML dump naar stdout."
 
+msgid "Dump domain"
+msgstr ""
+
 msgid "Dump failed"
 msgstr "Dump mislukte"
+
+msgid "Dumping domain corefile requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
@@ -6061,6 +6229,9 @@ msgstr "Vul gebruikersnaam in voor %1$s"
 #, c-format
 msgid "Enter username for %1$s [%2$s]"
 msgstr "Vul gebruikersnaam in voor %1$s [%2$s]"
+
+msgid "Ephemeral secrets are loaded"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Error adding route to %1$s"
@@ -6494,6 +6665,10 @@ msgstr "wachten op conditie mislukte"
 #, fuzzy, c-format
 msgid "Failed to access '%1$s'"
 msgstr "Openen van '%1$s' mislukte"
+
+#, c-format
+msgid "Failed to acquire inhibitor: %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to acquire lock"
@@ -9006,9 +9181,21 @@ msgid ""
 "overwrite is necessary"
 msgstr ""
 
+msgid "Format storage pool"
+msgstr ""
+
+msgid "Format storage volume"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Formatting IP address for host '%1$s' failed: %2$s"
 msgstr "IP adres opzoeken voor host '%1$s' mislukte: %2$s"
+
+msgid "Formatting storage pool data requires authorization"
+msgstr ""
+
+msgid "Formatting storage volume data requires authorization"
+msgstr ""
 
 msgid "Found additional probes to run, probing may be incorrect"
 msgstr ""
@@ -9027,7 +9214,13 @@ msgstr "ongeldige node apparaat aanwijzer in %s"
 msgid "Found unexpected controller model '%1$s' for disk '%2$s'"
 msgstr "Vond onverwacht controller model '%1$s' voor schijf '%2$s'"
 
+msgid "Freeze and thaw domain filesystems"
+msgstr ""
+
 msgid "Freeze domain's mounted filesystems."
+msgstr ""
+
+msgid "Freezing and thawing domain filesystems requires authorization"
 msgstr ""
 
 #, c-format
@@ -9262,6 +9455,9 @@ msgid "Handshake is already complete"
 msgstr "Domein is al actief"
 
 msgid "Hard disk is null"
+msgstr ""
+
+msgid "Hibernate domain"
 msgstr ""
 
 #, fuzzy
@@ -9634,6 +9830,12 @@ msgstr "verbindt met de gast console"
 msgid "Inject NMI to the guest domain."
 msgstr "verbindt met de gast console"
 
+msgid "Inject domain NMI"
+msgstr ""
+
+msgid "Injecting interrupt requires authorization"
+msgstr ""
+
 #, fuzzy
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "deze functie wordt niet ondersteund door de verbinding driver"
@@ -9727,6 +9929,9 @@ msgstr "Interface niet gevonden"
 #, c-format
 msgid "Interface not found: %1$s"
 msgstr "Interface niet gevonden: %1$s"
+
+msgid "Interface transactions"
+msgstr ""
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10637,6 +10842,10 @@ msgstr ""
 msgid "Invalid virNetSSHSession *"
 msgstr ""
 
+#, c-format
+msgid "Invalid vlan filter command %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
 msgstr "lezen van configuratie bestand %s mislukte"
@@ -10724,6 +10933,9 @@ msgstr ""
 msgid "LXC Guest Enter Namespace"
 msgstr ""
 
+msgid "LXC containers are running"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
 msgstr "doel %s:%d bestaat al"
@@ -10743,7 +10955,19 @@ msgstr "'%1$s' bestaat niet"
 msgid "Library function returned error but did not set virError"
 msgstr ""
 
-msgid "Libvirt"
+msgid "Libvirt LXC"
+msgstr ""
+
+msgid "Libvirt Network"
+msgstr ""
+
+msgid "Libvirt QEMU"
+msgstr ""
+
+msgid "Libvirt Secret"
+msgstr ""
+
+msgid "Libvirt Xen"
 msgstr ""
 
 #, fuzzy, c-format
@@ -10763,6 +10987,9 @@ msgstr ""
 msgid "List checkpoints for a domain"
 msgstr "Laat lijst van snapshots voor een domein zien"
 
+msgid "List domains"
+msgstr ""
+
 msgid "List event types, or wait for domain events to occur"
 msgstr ""
 
@@ -10778,13 +11005,70 @@ msgstr ""
 msgid "List event types, or wait for storage pool events to occur"
 msgstr ""
 
+msgid "List interfaces"
+msgstr ""
+
+msgid "List network filter bindings"
+msgstr ""
+
+msgid "List network filters"
+msgstr ""
+
+msgid "List network ports"
+msgstr ""
+
+msgid "List networks"
+msgstr ""
+
+msgid "List node devices"
+msgstr ""
+
+msgid "List secrets"
+msgstr ""
+
 msgid "List snapshots for a domain"
 msgstr "Laat lijst van snapshots voor een domein zien"
+
+msgid "List storage pool volumes"
+msgstr ""
+
+msgid "List storage pools"
+msgstr ""
 
 msgid "Listen for QEMU Monitor Events"
 msgstr ""
 
 msgid "Listen for TCP/IP connections"
+msgstr ""
+
+msgid "Listing domains or using domain events requires authorization"
+msgstr ""
+
+msgid "Listing interfaces requires authorization"
+msgstr ""
+
+msgid "Listing network filter bindings requires authorization"
+msgstr ""
+
+msgid "Listing network filters requires authorization"
+msgstr ""
+
+msgid "Listing network ports requires authorization"
+msgstr ""
+
+msgid "Listing networks or using network events requires authorization"
+msgstr ""
+
+msgid "Listing node devices requires authorization"
+msgstr ""
+
+msgid "Listing secrets requires authorization"
+msgstr ""
+
+msgid "Listing storage pool volumes requires authorization"
+msgstr ""
+
+msgid "Listing storage pools requires authorization"
 msgstr ""
 
 msgid "Load kvm_hv for better performance"
@@ -11019,6 +11303,9 @@ msgstr "Ongeldige grootte %1$s"
 msgid "Manage active block operations"
 msgstr ""
 
+msgid "Manage local virtualized systems"
+msgstr ""
+
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
 msgstr ""
@@ -11168,11 +11455,17 @@ msgid ""
 "binary"
 msgstr ""
 
+msgid "Migrate domain"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "Migreer domein naar een andere host. Voeg --live toe voor live migratie."
 
 msgid "Migrated"
+msgstr ""
+
+msgid "Migrating domain requires authorization"
 msgstr ""
 
 #, fuzzy
@@ -11843,6 +12136,9 @@ msgid "Model name contains invalid characters"
 msgstr "Model naam bevat ongeldige karakters"
 
 msgid "Modifies an existing IOThread of the guest domain."
+msgstr ""
+
+msgid "Monitor local virtualized systems"
 msgstr ""
 
 #, c-format
@@ -13042,6 +13338,15 @@ msgstr "Alleen vpxmigr:// migratie URI's worden ondersteund"
 msgid "Only x509 certificates are supported"
 msgstr "Alleen x509 certificaten worden ondersteund"
 
+msgid "Open domain device"
+msgstr ""
+
+msgid "Open domain graphics"
+msgstr ""
+
+msgid "Open domain namespace"
+msgstr ""
+
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
 "OpenRemoteSession/LaunchVMProcess mislukte, domein kan niet gestart worden"
@@ -13051,6 +13356,15 @@ msgstr "OpenVZ controle bestand /proc/vz bestaat niet"
 
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "Kan geen toegang krijgen tot OpenVZ controle bestand /proc/vz"
+
+msgid "Opening domain devices requires authorization"
+msgstr ""
+
+msgid "Opening domain graphics console requires authorization"
+msgstr ""
+
+msgid "Opening domain namespaces requires authorization"
+msgstr ""
 
 #, fuzzy
 msgid "Operation cancelled by client"
@@ -13725,6 +14039,9 @@ msgstr ""
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
 msgstr ""
 
+msgid "QEMU/KVM virtual machines are running"
+msgstr ""
+
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
 msgstr ""
@@ -13830,6 +14147,54 @@ msgstr ""
 msgid "Raw I/O is not supported on this platform"
 msgstr "Proces CPU affiniteit wordt op dit platform niet ondersteund"
 
+msgid "Read domain"
+msgstr ""
+
+msgid "Read domain block"
+msgstr ""
+
+msgid "Read domain memory"
+msgstr ""
+
+msgid "Read host"
+msgstr ""
+
+msgid "Read interface"
+msgstr ""
+
+msgid "Read network"
+msgstr ""
+
+msgid "Read network filter"
+msgstr ""
+
+msgid "Read network filter binding"
+msgstr ""
+
+msgid "Read network port"
+msgstr ""
+
+msgid "Read node device"
+msgstr ""
+
+msgid "Read secret"
+msgstr ""
+
+msgid "Read secure domain"
+msgstr ""
+
+msgid "Read secure secret"
+msgstr ""
+
+msgid "Read storage pool"
+msgstr ""
+
+msgid "Read storage volume"
+msgstr ""
+
+msgid "Read storage volume data"
+msgstr ""
+
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr ""
@@ -13840,6 +14205,51 @@ msgstr ""
 #, fuzzy
 msgid "Reading MSRs is not supported on this platform"
 msgstr "Proces CPU affiniteit wordt op dit platform niet ondersteund"
+
+msgid "Reading domain block devices requires authorization"
+msgstr ""
+
+msgid "Reading domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading domain memory requires authorization"
+msgstr ""
+
+msgid "Reading interface configuration requires authorization"
+msgstr ""
+
+msgid "Reading network configuration requires authorization"
+msgstr ""
+
+msgid "Reading network filter configuration requires authorization"
+msgstr ""
+
+msgid "Reading network port configuration requires authorization"
+msgstr ""
+
+msgid "Reading node device configuration requires authorization"
+msgstr ""
+
+msgid "Reading secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume data requires authorization"
+msgstr ""
+
+msgid "Reading the host configuration requires authorization"
+msgstr ""
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr ""
@@ -13867,6 +14277,12 @@ msgstr "Aanmaken van %1$s volumes wordt niet ondersteund"
 
 msgid "Refresh a given pool."
 msgstr "Ververs een bepaalde pool."
+
+msgid "Refresh storage pool"
+msgstr ""
+
+msgid "Refreshing storage pool volumes requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
@@ -13994,20 +14410,32 @@ msgstr ""
 msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "netwerk is al actief als '%1$s'"
 
+msgid "Reset domain"
+msgstr ""
+
 msgid "Reset node device before or after assigning to a domain."
 msgstr "Herstel node apparaat voor of na het toeken aan een domein."
 
 msgid "Reset the target domain as if by power button"
 msgstr ""
 
+msgid "Resetting the domain requires authorization"
+msgstr ""
+
 #, fuzzy
 msgid "Resize block device of domain."
 msgstr "Blok apparaat grootte info verkrijgen voor een domein"
+
+msgid "Resize storage volume"
+msgstr ""
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
 "by an active guest.\n"
 "See blockresize for live resizing."
+msgstr ""
+
+msgid "Resizing storage volume requires authorization"
 msgstr ""
 
 msgid "Resolved device mapper name too long"
@@ -14386,6 +14814,27 @@ msgstr ""
 "    commando de volgende keer voor het domein gedraaid wordt, zal het\n"
 "    automatisch opstarten met deze opgeslagen toestand."
 
+msgid "Save domain"
+msgstr ""
+
+msgid "Save interface"
+msgstr ""
+
+msgid "Save network"
+msgstr ""
+
+msgid "Save network filter"
+msgstr ""
+
+msgid "Save node device"
+msgstr ""
+
+msgid "Save secret"
+msgstr ""
+
+msgid "Save storage pool"
+msgstr ""
+
 #, fuzzy
 msgid "Save the RAM state of a running domain."
 msgstr "Netwerk interface stats verkrijgen voor een draaiend domein."
@@ -14396,6 +14845,30 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "Domein %1$s XML configuratie niet gewijzigd.\n"
+
+msgid "Saving domain configuration requires authorization"
+msgstr ""
+
+msgid "Saving domain state requires authorization"
+msgstr ""
+
+msgid "Saving interface configuration requires authorization"
+msgstr ""
+
+msgid "Saving network configuration requires authorization"
+msgstr ""
+
+msgid "Saving network filter configuration requires authorization"
+msgstr ""
+
+msgid "Saving node device driver requires authorization"
+msgstr ""
+
+msgid "Saving secret configuration requires authorization"
+msgstr ""
+
+msgid "Saving storage pool configuration requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14514,6 +14987,12 @@ msgstr ""
 "Zie website op %1$s\n"
 "\n"
 
+msgid "Send domain input"
+msgstr ""
+
+msgid "Send domain signal"
+msgstr ""
+
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr ""
 
@@ -14529,6 +15008,12 @@ msgstr ""
 #, fuzzy
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Proces CPU affiniteit wordt op dit platform niet ondersteund"
+
+msgid "Sending input events to domain requires authorization"
+msgstr ""
+
+msgid "Sending signals to processes in domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14604,6 +15089,9 @@ msgid "Set or query a block device I/O tuning parameters."
 msgstr ""
 
 msgid "Set or query disk I/O parameters such as block throttling."
+msgstr ""
+
+msgid "Set password of the domain's account"
 msgstr ""
 
 msgid "Set the guest agent timeout"
@@ -14711,6 +15199,12 @@ msgstr ""
 
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
+msgstr ""
+
+msgid "Setting the domain accounts' password requires authorization"
+msgstr ""
+
+msgid "Setting the domain time requires authorization"
 msgstr ""
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
@@ -14863,6 +15357,9 @@ msgstr "Snapshot lijst"
 msgid "Snapshot delete"
 msgstr ""
 
+msgid "Snapshot domain"
+msgstr ""
+
 #, fuzzy
 msgid "Snapshot is Null"
 msgstr "Snapshot lijst"
@@ -14876,6 +15373,9 @@ msgstr ""
 
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
+msgstr ""
+
+msgid "Snapshotting domain requires authorization"
 msgstr ""
 
 #, fuzzy, c-format
@@ -14986,6 +15486,21 @@ msgstr "Start een pool."
 msgid "Start an inactive node device"
 msgstr ""
 
+msgid "Start domain"
+msgstr ""
+
+msgid "Start interface"
+msgstr ""
+
+msgid "Start network"
+msgstr ""
+
+msgid "Start node device"
+msgstr ""
+
+msgid "Start storage pool"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
 
@@ -14993,8 +15508,23 @@ msgstr ""
 msgid "Started"
 msgstr "gestart"
 
+msgid "Starting interface requires authorization"
+msgstr ""
+
+msgid "Starting network requires authorization"
+msgstr ""
+
+msgid "Starting node device requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Starting shutdown on guest: $name"
+msgstr ""
+
+msgid "Starting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Starting the domain requires authorization"
 msgstr ""
 
 msgid "Starts an inactive node device that was previously defined"
@@ -15088,7 +15618,37 @@ msgstr ""
 msgid "Status is unknown"
 msgstr ""
 
+msgid "Stop domain"
+msgstr ""
+
+msgid "Stop interface"
+msgstr ""
+
+msgid "Stop network"
+msgstr ""
+
+msgid "Stop node device"
+msgstr ""
+
+msgid "Stop storage pool"
+msgstr ""
+
 msgid "Stopped"
+msgstr ""
+
+msgid "Stopping interface requires authorization"
+msgstr ""
+
+msgid "Stopping network requires authorization"
+msgstr ""
+
+msgid "Stopping node device requires authorization"
+msgstr ""
+
+msgid "Stopping storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Stopping the domain requires authorization"
 msgstr ""
 
 #, fuzzy
@@ -15208,6 +15768,9 @@ msgstr ""
 msgid "Suspend a running domain."
 msgstr "Een actief domein opschorten."
 
+msgid "Suspend domain"
+msgstr ""
+
 msgid "Suspend duration in seconds, at least 60"
 msgstr ""
 
@@ -15241,6 +15804,9 @@ msgstr "Gebonden"
 msgid "Suspending $name: "
 msgstr "Opschorten van $name: "
 
+msgid "Suspending domain CPUs requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Suspending guests on $uri URI..."
 msgstr "Opschorten van gasten op $uri URI..."
@@ -15266,8 +15832,11 @@ msgstr "nwfilter is in gebruik"
 msgid "System is not available"
 msgstr "virGetUserName is niet beschikbaar"
 
-msgid "System lacks NETNS support"
-msgstr "Systeem ontbreekt NETNS ondersteuning"
+msgid "System policy prevents management of local virtualized systems"
+msgstr ""
+
+msgid "System policy prevents monitoring of local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "System token in %1$s was corrupt"
@@ -15317,6 +15886,12 @@ msgid "TPM version '%1$s' is not supported"
 msgstr ""
 
 msgid "Table row cannot be empty"
+msgstr ""
+
+msgid "Take domain screenshot"
+msgstr ""
+
+msgid "Taking domain screenshots requires authorization"
 msgstr ""
 
 msgid "Target"
@@ -15895,7 +16470,9 @@ msgstr ""
 "'%2$s'"
 
 #, c-format
-msgid "Target host device subsystem %1$s does not match source %2$s"
+msgid ""
+"Target host device subsystem type %1$s is not compatible with source "
+"subsystem type %2$s"
 msgstr ""
 
 #, c-format
@@ -16864,6 +17441,12 @@ msgid "Transport error during %1$s: %2$s (%3$d)"
 msgstr ""
 
 msgid "Tried to write socket in error state"
+msgstr ""
+
+msgid "Trim domain filesystems"
+msgstr ""
+
+msgid "Trimming domain filesystems requires authorization"
 msgstr ""
 
 msgid "Try again?"
@@ -20311,6 +20894,12 @@ msgid ""
 "optionally creating a checkpoint"
 msgstr ""
 
+msgid "Use domain power management"
+msgstr ""
+
+msgid "Use host power management"
+msgstr ""
+
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr ""
 
@@ -20346,6 +20935,15 @@ msgstr "Gebruikersnaam verzoek faalde"
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "Gebruikte API: %1$s %2$d.%3$d.%4$d\n"
+
+msgid "Using domain power management requires authorization"
+msgstr ""
+
+msgid "Using host power management requires authorization"
+msgstr ""
+
+msgid "Using interface transactions requires authorization"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
@@ -20475,9 +21073,8 @@ msgstr "Model naam bevat ongeldige karakters"
 msgid "Verbose messages"
 msgstr ""
 
-#, fuzzy
-msgid "Video adapters are not supported int containers."
-msgstr "spice graphics wordt niet ondersteund met deze QEMU"
+msgid "Video adapters are not supported in containers."
+msgstr ""
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
@@ -20487,10 +21084,10 @@ msgstr "Virsh commando-regel gereedschap voor libvirt %1$s\n"
 msgid "Virt-admin command line tool of libvirt %1$s\n"
 msgstr "Virsh commando-regel gereedschap voor libvirt %1$s\n"
 
-msgid "Virtual machines need to be saved"
+msgid "Virtual network portgroups are not supported by vz driver."
 msgstr ""
 
-msgid "Virtual network portgroups are not supported by vz driver."
+msgid "Virtual networks are active"
 msgstr ""
 
 #, fuzzy
@@ -20607,8 +21204,32 @@ msgstr ""
 msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr ""
 
+msgid "Write domain"
+msgstr ""
+
+msgid "Write domain block"
+msgstr ""
+
+msgid "Write domain time"
+msgstr ""
+
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
+
+msgid "Write host"
+msgstr ""
+
+msgid "Write interface"
+msgstr ""
+
+msgid "Write network"
+msgstr ""
+
+msgid "Write network filter"
+msgstr ""
+
+msgid "Write node device"
 msgstr ""
 
 #, c-format
@@ -20616,9 +21237,51 @@ msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
 msgstr ""
 "Schrijven van '%1$s' naar '%2$s' tijdens vport aanmaken/verwijderen mislukte"
 
+msgid "Write secret"
+msgstr ""
+
+msgid "Write storage pool"
+msgstr ""
+
+msgid "Write storage volume data"
+msgstr ""
+
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
 msgstr "Schrijven naar '%1$s' om host scan te activeren mislukte"
+
+msgid "Writing domain block devices requires authorization"
+msgstr ""
+
+msgid "Writing domain configuration requires authorization"
+msgstr ""
+
+msgid "Writing interface configuration requires authorization"
+msgstr ""
+
+msgid "Writing network configuration requires authorization"
+msgstr ""
+
+msgid "Writing network filter configuration requires authorization"
+msgstr ""
+
+msgid "Writing network port configuration requires authorization"
+msgstr ""
+
+msgid "Writing node device configuration requires authorization"
+msgstr ""
+
+msgid "Writing secret configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage volume data requires authorization"
+msgstr ""
+
+msgid "Writing the host configuration requires authorization"
+msgstr ""
 
 msgid "Wrong MAC address"
 msgstr "Verkeerd MAC adres"
@@ -20699,6 +21362,9 @@ msgid "Xen migration stream version '%1$d' is not supported on this host"
 msgstr "image verzie wordt niet ondersteund (%d > %d)"
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
+msgstr ""
+
+msgid "Xen virtual machines are running"
 msgstr ""
 
 msgid "You are trying to remove a snapshot which does not exists"
@@ -22576,15 +23242,15 @@ msgstr "kan tekenreeks I/O niet mixen met asynchroon commando"
 msgid "cannot mix string I/O with daemon"
 msgstr "kan tekenreeks I/O niet mixen met daemon"
 
+msgid "cannot modify '<iothreads>' configuration of the disk"
+msgstr ""
+
 msgid "cannot modify MTU"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "Kan '%1$s' niet vinden in pad"
-
-msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
-msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -25776,6 +26442,10 @@ msgstr "fout %1$d tijdens poort-profiel setlink op interface %2$s (%3$d)"
 msgid "error adding fdb entry for %1$s"
 msgstr "Fout bij lezen van geheim: %1$s"
 
+#, c-format
+msgid "error adding vlan filter to interface %1$s"
+msgstr ""
+
 msgid "error calling aa_change_profile()"
 msgstr "fout bij aanroepen van aa_change_profile()"
 
@@ -25864,6 +26534,10 @@ msgstr "fout bij ontleden van pid van lldpad"
 #, fuzzy
 msgid "error receiving signal from container"
 msgstr "Fout bij aanmaken initiële configuratie"
+
+#, c-format
+msgid "error removing vlan filter from interface %1$s"
+msgstr ""
 
 msgid "error sending continue signal to daemon"
 msgstr ""
@@ -28261,6 +28935,10 @@ msgstr ""
 
 #, c-format
 msgid "host doesn't support hyperv stimer '%1$s' feature"
+msgstr ""
+
+#, c-format
+msgid "host doesn't support hyperv tlbflush '%1$s' feature"
 msgstr ""
 
 msgid "host doesn't support invariant TSC"
@@ -31109,6 +31787,11 @@ msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr ""
 
 msgid ""
+"missing 'name' attribute for a host CPU model deprecated property in QEMU "
+"capabilities cache"
+msgstr ""
+
+msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
@@ -33417,7 +34100,7 @@ msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr ""
 
 msgid ""
-"online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
+"online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
 msgstr ""
 
 msgid "only 'connect' mode is supported for external TPM device"
@@ -35040,6 +35723,9 @@ msgstr "CPU's zijn incompatibel"
 #, fuzzy
 msgid "report filesystem information"
 msgstr "netwerk filter informatie in XML"
+
+msgid "report host CPU model with deprecated features disabled"
+msgstr ""
 
 #, fuzzy
 msgid "report hostname"
@@ -36845,6 +37531,9 @@ msgid "titles are not supported by vz driver"
 msgstr "SASL mechanisme %s wordt door server niet ondersteund"
 
 msgid "tls"
+msgstr ""
+
+msgid "toggling deprecated features for CPU model is unsupported"
 msgstr ""
 
 #, c-format
@@ -38724,15 +39413,14 @@ msgstr ""
 msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr ""
 
-#, c-format
-msgid ""
-"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
-"%2$s"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "onbekend commando: '%1$s'"
+
+#, c-format
+msgid ""
+"unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
+msgstr ""
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -38762,6 +39450,10 @@ msgstr "niet-ondersteund schijf type %1$s"
 #, fuzzy, c-format
 msgid "unsupported Hyper-V stimer feature: %1$s"
 msgstr "niet-ondersteunde rtc timer track '%1$s'"
+
+#, c-format
+msgid "unsupported Hyper-V tlbflush feature: %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
@@ -39791,15 +40483,8 @@ msgstr "pool ondersteunt geen pool verwijdering"
 msgid "virtiofs does not support multidevs"
 msgstr "ps2 bus ondersteunt %s input apparaat niet"
 
-msgid "virtiofs does not support read-only access"
-msgstr ""
-
 #, fuzzy
 msgid "virtiofs does not support wrpolicy"
-msgstr "pool ondersteunt geen pool verwijdering"
-
-#, fuzzy
-msgid "virtiofs does not yet support read-only mode"
 msgstr "pool ondersteunt geen pool verwijdering"
 
 #, fuzzy
@@ -40202,6 +40887,17 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "System lacks NETNS support"
+#~ msgstr "Systeem ontbreekt NETNS ondersteuning"
+
+#, fuzzy
+#~ msgid "Video adapters are not supported int containers."
+#~ msgstr "spice graphics wordt niet ondersteund met deze QEMU"
+
+#, fuzzy
+#~ msgid "virtiofs does not yet support read-only mode"
+#~ msgstr "pool ondersteunt geen pool verwijdering"
 
 #, fuzzy
 #~ msgid "Unable to create JSON formatter"

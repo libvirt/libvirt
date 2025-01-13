@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-11-26 14:19+0000\n"
+"POT-Creation-Date: 2025-01-09 09:28+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1910,8 +1910,68 @@ msgstr ""
 "ハッシュ '%1$s' を持つ SSH ホスト鍵をホスト '%2$s:%3$d' (%4$s/%5$s) に対して"
 "受け取りますか?"
 
+msgid "Access connection"
+msgstr ""
+
 msgid "Access denied"
 msgstr "アクセスが拒否されました"
+
+msgid "Access domain"
+msgstr ""
+
+msgid "Access interface"
+msgstr ""
+
+msgid "Access network"
+msgstr ""
+
+msgid "Access network filter"
+msgstr ""
+
+msgid "Access network port"
+msgstr ""
+
+msgid "Access node device"
+msgstr ""
+
+msgid "Access secret"
+msgstr ""
+
+msgid "Access storage pool"
+msgstr ""
+
+msgid "Access storage volume"
+msgstr ""
+
+msgid "Accessing interface requires authorization"
+msgstr ""
+
+msgid "Accessing network filter requires authorization"
+msgstr ""
+
+msgid "Accessing network port requires authorization"
+msgstr ""
+
+msgid "Accessing network requires authorization"
+msgstr ""
+
+msgid "Accessing node device requires authorization"
+msgstr ""
+
+msgid "Accessing secret requires authorization"
+msgstr ""
+
+msgid "Accessing storage pool requires authorization"
+msgstr ""
+
+msgid "Accessing storage volume requires authorization"
+msgstr ""
+
+msgid "Accessing the connection requires authorization"
+msgstr ""
+
+msgid "Accessing the domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -3421,8 +3481,8 @@ msgid ""
 "alias of '%3$s'"
 msgstr ""
 
-msgid "Cannot set a base label with AppArmour"
-msgstr "AppArmour を用いてベースラベルを設定できません"
+msgid "Cannot set a base label with AppArmor"
+msgstr ""
 
 msgid "Cannot set an empty mem_nodes set"
 msgstr "空の mem_nodes セットを設定できません"
@@ -3860,6 +3920,12 @@ msgstr "チェックポイントダンプ XML"
 msgid "Checkpoint List"
 msgstr "チェックポイントのリスト"
 
+msgid "Checkpoint domain"
+msgstr ""
+
+msgid "Checkpointing domain requires authorization"
+msgstr ""
+
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
 msgstr "ドメイン %1$s に対するチェックポイントの関係は一貫性がありません"
@@ -4126,6 +4192,9 @@ msgstr "Control groups がこのプラットフォームにおいてサポート
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "コントローターは 'ccid' アドレスタイプを使用しなければいけません"
+
+msgid "Controlling domain init process requires authorization"
+msgstr ""
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr "ドメイン XML 設定をネイティブのゲスト設定形式に変換します。"
@@ -5261,6 +5330,15 @@ msgstr "既存のボリュームからボリュームを作成します。"
 msgid "Create a vol."
 msgstr "ボリュームを作成します。"
 
+msgid "Create network filter binding"
+msgstr ""
+
+msgid "Create network port"
+msgstr ""
+
+msgid "Create storage volume"
+msgstr ""
+
 #, c-format
 msgid "Create the dir %1$s"
 msgstr ""
@@ -5272,8 +5350,17 @@ msgstr "作成日"
 msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "ブリッジ %1$s を作成して、デバイス %2$s に接続しました\n"
 
+msgid "Creating network filter binding requires authorization"
+msgstr ""
+
+msgid "Creating network port configuration requires authorization"
+msgstr ""
+
 msgid "Creating non-file volumes is not supported"
 msgstr "ファイル以外のボリューム作成はサポートされません"
+
+msgid "Creating storage volume requires authorization"
+msgstr ""
 
 msgid "Creation Time"
 msgstr "作成時間"
@@ -5414,11 +5501,71 @@ msgstr "任意のボリュームを削除します。"
 msgid "Delete an IOThread from the guest domain."
 msgstr "ゲストドメインから IOThread を削除します。"
 
+msgid "Delete domain"
+msgstr ""
+
+msgid "Delete interface"
+msgstr ""
+
+msgid "Delete network"
+msgstr ""
+
+msgid "Delete network filter"
+msgstr ""
+
+msgid "Delete network filter binding"
+msgstr ""
+
+msgid "Delete network port"
+msgstr ""
+
+msgid "Delete node device"
+msgstr ""
+
+msgid "Delete secret"
+msgstr ""
+
+msgid "Delete storage pool"
+msgstr ""
+
+msgid "Delete storage volume"
+msgstr ""
+
 msgid "Delete the specified network port."
 msgstr "指定したネットワークポートを削除します。"
 
 msgid "Deleted"
 msgstr "削除済み"
+
+msgid "Deleting domain configuration requires authorization"
+msgstr ""
+
+msgid "Deleting interface configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network filter binding requires authorization"
+msgstr ""
+
+msgid "Deleting network filter configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network port configuration requires authorization"
+msgstr ""
+
+msgid "Deleting node device driver requires authorization"
+msgstr ""
+
+msgid "Deleting secret configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage volume requires authorization"
+msgstr ""
 
 msgid ""
 "Depending on whether run with or without options, the command fetches or "
@@ -5473,9 +5620,21 @@ msgstr "ディスクデバイスを切断します。"
 msgid "Detach network interface."
 msgstr "ネットワークインターフェイスを切断します。"
 
+msgid "Detach node device"
+msgstr ""
+
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr ""
 "ドメインに割り当てる前にデバイスドライバーからノードデバイスを切断します。"
+
+msgid "Detaching node device driver requires authorization"
+msgstr ""
+
+msgid "Detect storage pools"
+msgstr ""
+
+msgid "Detecting storage pools requires authorization"
+msgstr ""
 
 msgid "Device"
 msgstr "デバイス"
@@ -5939,6 +6098,9 @@ msgstr "ドメイン hostdev デバイス"
 msgid "Domain information of managed save state file in XML"
 msgstr "XML での管理保存状態ファイルのドメイン情報"
 
+msgid "Domain init control"
+msgstr ""
+
 msgid "Domain interface"
 msgstr "ドメインインターフェイス"
 
@@ -6061,8 +6223,8 @@ msgstr "ドメイン:"
 msgid "Done.\n"
 msgstr "完了。\n"
 
-msgid "Download length it too large"
-msgstr "ダウンロード長が大きすぎます"
+msgid "Download length is too large"
+msgstr ""
 
 msgid "Download volume contents to a file"
 msgstr "ボリュームの内容をファイルにダウンロードします"
@@ -6102,8 +6264,14 @@ msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr ""
 "状態ファイルを保存するためにドメイン情報の XML を標準出力にダンプします。"
 
+msgid "Dump domain"
+msgstr ""
+
 msgid "Dump failed"
 msgstr "ダンプが失敗しました"
+
+msgid "Dumping domain corefile requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
@@ -6267,6 +6435,9 @@ msgstr "%1$s のユーザー名を入力してください"
 #, c-format
 msgid "Enter username for %1$s [%2$s]"
 msgstr "%1$s [%2$s] のユーザー名を入力してください"
+
+msgid "Ephemeral secrets are loaded"
+msgstr ""
 
 #, c-format
 msgid "Error adding route to %1$s"
@@ -6720,6 +6891,10 @@ msgstr "マイグレーション接続を受け入れることができません
 #, c-format
 msgid "Failed to access '%1$s'"
 msgstr "'%1$s' へのアクセスに失敗しました"
+
+#, c-format
+msgid "Failed to acquire inhibitor: %1$s"
+msgstr ""
 
 msgid "Failed to acquire lock"
 msgstr "ロックの獲得に失敗しました"
@@ -9170,9 +9345,21 @@ msgstr ""
 "デバイス '%1$s' の形式は、予想される形式 '%2$s' と一致しません、強制上書きが"
 "必要です"
 
+msgid "Format storage pool"
+msgstr ""
+
+msgid "Format storage volume"
+msgstr ""
+
 #, c-format
 msgid "Formatting IP address for host '%1$s' failed: %2$s"
 msgstr "ホスト '%1$s' の IP アドレスのフォーマットに失敗しました: %2$s"
+
+msgid "Formatting storage pool data requires authorization"
+msgstr ""
+
+msgid "Formatting storage volume data requires authorization"
+msgstr ""
 
 msgid "Found additional probes to run, probing may be incorrect"
 msgstr ""
@@ -9196,8 +9383,14 @@ msgstr ""
 "サポートされないコントローラーのモデル '%1$s' がディスク '%2$s' に対して見つ"
 "かりました"
 
+msgid "Freeze and thaw domain filesystems"
+msgstr ""
+
 msgid "Freeze domain's mounted filesystems."
 msgstr "ドメインのマウントされたファイルシステムをフリーズします。"
+
+msgid "Freezing and thawing domain filesystems requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Froze %1$d filesystem(s)\n"
@@ -9417,6 +9610,9 @@ msgstr "ハンドシェイクがすでに完了しています"
 
 msgid "Hard disk is null"
 msgstr "ハードディスクが null です"
+
+msgid "Hibernate domain"
+msgstr ""
 
 msgid "Holes are not supported with this stream"
 msgstr "このストリームでは、ホールはサポートされません"
@@ -9795,6 +9991,12 @@ msgstr "ゲストへの NMI の送信"
 msgid "Inject NMI to the guest domain."
 msgstr "ゲストドメインに NMI を送信します。"
 
+msgid "Inject domain NMI"
+msgstr ""
+
+msgid "Injecting interrupt requires authorization"
+msgstr ""
+
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "この仮想化ドライバーでは、入力デバイスはサポートされません。"
 
@@ -9889,6 +10091,9 @@ msgstr "インターフェイスが見つかりません"
 #, c-format
 msgid "Interface not found: %1$s"
 msgstr "インターフェイスが見つかりません: %1$s"
+
+msgid "Interface transactions"
+msgstr ""
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10837,6 +11042,10 @@ msgid "Invalid virNetSSHSession *"
 msgstr "無効な virNetSSHSession *"
 
 #, c-format
+msgid "Invalid vlan filter command %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
 msgstr "vnode %1$zu の 無効な vnuma 設定"
 
@@ -10922,6 +11131,9 @@ msgstr ""
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC ゲストの参加名前空間"
 
+msgid "LXC containers are running"
+msgstr ""
+
 #, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
 msgstr "リース %1$s がロック空間 %2$s にすでに存在します"
@@ -10941,8 +11153,20 @@ msgstr "ライブラリ '%1$s' が存在しません"
 msgid "Library function returned error but did not set virError"
 msgstr "ライブラリー関数がエラーを返しましたが virError を設定しませんでした"
 
-msgid "Libvirt"
-msgstr "libvirt"
+msgid "Libvirt LXC"
+msgstr ""
+
+msgid "Libvirt Network"
+msgstr ""
+
+msgid "Libvirt QEMU"
+msgstr ""
+
+msgid "Libvirt Secret"
+msgstr ""
+
+msgid "Libvirt Xen"
+msgstr ""
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
@@ -10961,6 +11185,9 @@ msgstr "デーモン上のすべての管理可能なサーバーを一覧表示
 
 msgid "List checkpoints for a domain"
 msgstr "ドメインのチェックポイントを一覧表示します"
+
+msgid "List domains"
+msgstr ""
 
 msgid "List event types, or wait for domain events to occur"
 msgstr "イベントタイプを一覧表示するか、ドメインイベントが発生するのを待ちます"
@@ -10982,14 +11209,71 @@ msgstr ""
 "イベントタイプを一覧表示するか、ストレージプールイベントが発生するのを待ちま"
 "す"
 
+msgid "List interfaces"
+msgstr ""
+
+msgid "List network filter bindings"
+msgstr ""
+
+msgid "List network filters"
+msgstr ""
+
+msgid "List network ports"
+msgstr ""
+
+msgid "List networks"
+msgstr ""
+
+msgid "List node devices"
+msgstr ""
+
+msgid "List secrets"
+msgstr ""
+
 msgid "List snapshots for a domain"
 msgstr "ドメインのスナップショットの一覧表示"
+
+msgid "List storage pool volumes"
+msgstr ""
+
+msgid "List storage pools"
+msgstr ""
 
 msgid "Listen for QEMU Monitor Events"
 msgstr "QEMU モニターイベントをリッスンします"
 
 msgid "Listen for TCP/IP connections"
 msgstr "TCP/IP 接続をリッスンします"
+
+msgid "Listing domains or using domain events requires authorization"
+msgstr ""
+
+msgid "Listing interfaces requires authorization"
+msgstr ""
+
+msgid "Listing network filter bindings requires authorization"
+msgstr ""
+
+msgid "Listing network filters requires authorization"
+msgstr ""
+
+msgid "Listing network ports requires authorization"
+msgstr ""
+
+msgid "Listing networks or using network events requires authorization"
+msgstr ""
+
+msgid "Listing node devices requires authorization"
+msgstr ""
+
+msgid "Listing secrets requires authorization"
+msgstr ""
+
+msgid "Listing storage pool volumes requires authorization"
+msgstr ""
+
+msgid "Listing storage pools requires authorization"
+msgstr ""
 
 msgid "Load kvm_hv for better performance"
 msgstr "パフォーマンスを向上させるために kvm_hv をロードします"
@@ -11215,6 +11499,9 @@ msgstr "不正な形式の WWN: %1$s"
 msgid "Manage active block operations"
 msgstr "実行中のブロック操作の管理"
 
+msgid "Manage local virtualized systems"
+msgstr ""
+
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
 msgstr "ドメイン '%1$s' XML 設定の管理保存イメージが編集されました。\n"
@@ -11364,6 +11651,9 @@ msgstr ""
 "この QEMU バイナリーでは、ホストパススルー CPU の移行可能な属性はサポートされ"
 "ません"
 
+msgid "Migrate domain"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "ドメインを他のホストにマイグレーションします。ライブマイグレーションは --"
@@ -11371,6 +11661,9 @@ msgstr ""
 
 msgid "Migrated"
 msgstr "マイグレーション済み"
+
+msgid "Migrating domain requires authorization"
+msgstr ""
 
 msgid "Migration"
 msgstr "マイグレーション"
@@ -12029,6 +12322,9 @@ msgstr "モデル名は無効な文字を含んでいます"
 
 msgid "Modifies an existing IOThread of the guest domain."
 msgstr "ゲストドメインの既存の IOThread を変更します。"
+
+msgid "Monitor local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -13216,6 +13512,15 @@ msgstr "vpxmigr:// マイグレーション URI のみがサポートされま�
 msgid "Only x509 certificates are supported"
 msgstr "X.509 証明書のみがサポートされます"
 
+msgid "Open domain device"
+msgstr ""
+
+msgid "Open domain graphics"
+msgstr ""
+
+msgid "Open domain namespace"
+msgstr ""
+
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
 "OpenRemoteSession/LaunchVMProcess に失敗しました、ドメインを開始できません"
@@ -13225,6 +13530,15 @@ msgstr "OpenVZ 制御ファイル /proc/vz は存在しません"
 
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "OpenVZ 制御ファイル /proc/vz はアクセスできません"
+
+msgid "Opening domain devices requires authorization"
+msgstr ""
+
+msgid "Opening domain graphics console requires authorization"
+msgstr ""
+
+msgid "Opening domain namespaces requires authorization"
+msgstr ""
 
 msgid "Operation cancelled by client"
 msgstr "クライアントによって操作がキャンセルされました"
@@ -13913,6 +14227,9 @@ msgstr ""
 "QEMU バージョン >= %1$d.%2$d.%3$d が必要ですが、%4$d.%5$d.%6$d が見つかりまし"
 "た"
 
+msgid "QEMU/KVM virtual machines are running"
+msgstr ""
+
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
 msgstr "QOM オブジェクト '%1$s' にはプロパティー 'ram_size' がありません"
@@ -14017,6 +14334,54 @@ msgstr "レート文字列 '%1$s' にはフィールドが多すぎます"
 msgid "Raw I/O is not supported on this platform"
 msgstr "ロー I/O はこのプラットフォームにおいてサポートされません"
 
+msgid "Read domain"
+msgstr ""
+
+msgid "Read domain block"
+msgstr ""
+
+msgid "Read domain memory"
+msgstr ""
+
+msgid "Read host"
+msgstr ""
+
+msgid "Read interface"
+msgstr ""
+
+msgid "Read network"
+msgstr ""
+
+msgid "Read network filter"
+msgstr ""
+
+msgid "Read network filter binding"
+msgstr ""
+
+msgid "Read network port"
+msgstr ""
+
+msgid "Read node device"
+msgstr ""
+
+msgid "Read secret"
+msgstr ""
+
+msgid "Read secure domain"
+msgstr ""
+
+msgid "Read secure secret"
+msgstr ""
+
+msgid "Read storage pool"
+msgstr ""
+
+msgid "Read storage volume"
+msgstr ""
+
+msgid "Read storage volume data"
+msgstr ""
+
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr ""
@@ -14027,6 +14392,51 @@ msgstr "このプラットフォームでは、CPUID の読み取りはサポー
 
 msgid "Reading MSRs is not supported on this platform"
 msgstr "このプラットフォームでは、MSR の読み取りはサポートされません"
+
+msgid "Reading domain block devices requires authorization"
+msgstr ""
+
+msgid "Reading domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading domain memory requires authorization"
+msgstr ""
+
+msgid "Reading interface configuration requires authorization"
+msgstr ""
+
+msgid "Reading network configuration requires authorization"
+msgstr ""
+
+msgid "Reading network filter configuration requires authorization"
+msgstr ""
+
+msgid "Reading network port configuration requires authorization"
+msgstr ""
+
+msgid "Reading node device configuration requires authorization"
+msgstr ""
+
+msgid "Reading secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume data requires authorization"
+msgstr ""
+
+msgid "Reading the host configuration requires authorization"
+msgstr ""
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr ""
@@ -14051,6 +14461,12 @@ msgstr "リダイレクトバス %1$s は QEMU によりサポートされませ
 
 msgid "Refresh a given pool."
 msgstr "任意のプールをリフレッシュします。"
+
+msgid "Refresh storage pool"
+msgstr ""
+
+msgid "Refreshing storage pool volumes requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
@@ -14185,14 +14601,23 @@ msgstr "resctrl 割り当てパスはすでに '%1$s' に設定されていま�
 msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "resctrl モニターパスはすでに '%1$s' に設定されています"
 
+msgid "Reset domain"
+msgstr ""
+
 msgid "Reset node device before or after assigning to a domain."
 msgstr "ドメインに割り当てる前または後にノードデイバスをリセットします。"
 
 msgid "Reset the target domain as if by power button"
 msgstr "電源ボタンが押されたかのように対象ドメインをリセットします"
 
+msgid "Resetting the domain requires authorization"
+msgstr ""
+
 msgid "Resize block device of domain."
 msgstr "ドメインのブロックデバイスの容量変更"
+
+msgid "Resize storage volume"
+msgstr ""
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
@@ -14202,6 +14627,9 @@ msgstr ""
 "ストレージボリュームのサイズを変更します。これは、アクティブなゲストが使用し"
 "ていないストレージボリュームに対してのみ安全です。\n"
 "ライブのサイズ変更については、blockresize を参照してください。"
+
+msgid "Resizing storage volume requires authorization"
+msgstr ""
 
 msgid "Resolved device mapper name too long"
 msgstr "解決されたデバイスマッパー名が長すぎます"
@@ -14580,6 +15008,27 @@ msgstr ""
 "    virsh 'start' コマンドが次回ドメインを実行するとき、\n"
 "  自動的にこの管理された状態から起動されます。"
 
+msgid "Save domain"
+msgstr ""
+
+msgid "Save interface"
+msgstr ""
+
+msgid "Save network"
+msgstr ""
+
+msgid "Save network filter"
+msgstr ""
+
+msgid "Save node device"
+msgstr ""
+
+msgid "Save secret"
+msgstr ""
+
+msgid "Save storage pool"
+msgstr ""
+
 msgid "Save the RAM state of a running domain."
 msgstr "実行中のドメインの RAM 状態を保存します。"
 
@@ -14589,6 +15038,30 @@ msgstr "保存済み"
 #, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "保存済みイメージの %1$s XML 設定は変更されていません。\n"
+
+msgid "Saving domain configuration requires authorization"
+msgstr ""
+
+msgid "Saving domain state requires authorization"
+msgstr ""
+
+msgid "Saving interface configuration requires authorization"
+msgstr ""
+
+msgid "Saving network configuration requires authorization"
+msgstr ""
+
+msgid "Saving network filter configuration requires authorization"
+msgstr ""
+
+msgid "Saving node device driver requires authorization"
+msgstr ""
+
+msgid "Saving secret configuration requires authorization"
+msgstr ""
+
+msgid "Saving storage pool configuration requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14710,6 +15183,12 @@ msgstr ""
 "%1$s にある Web サイトを参照してください\n"
 "\n"
 
+msgid "Send domain input"
+msgstr ""
+
+msgid "Send domain signal"
+msgstr ""
+
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "ゲストにキーコード (数値またはシンボル名) を送信します"
 
@@ -14724,6 +15203,12 @@ msgstr "仮想マシンにおいてシグナルをプロセスに送信する"
 
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "ファイルディスクリプターの送信はこのソケットにおいてサポートされません"
+
+msgid "Sending input events to domain requires authorization"
+msgstr ""
+
+msgid "Sending signals to processes in domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14804,6 +15289,9 @@ msgid "Set or query disk I/O parameters such as block throttling."
 msgstr ""
 "ブロックスロットリングのようなディスク I/O パラメーターを設定またはクエリーし"
 "ます。"
+
+msgid "Set password of the domain's account"
+msgstr ""
 
 msgid "Set the guest agent timeout"
 msgstr "ゲストエージェントのタイムアウトを設定します"
@@ -14909,6 +15397,12 @@ msgstr "スタートアップポリシーの設定は USB デバイスに対し�
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
 msgstr ""
 "マシン '%1$s' では、64 ビット PCI ホールサイズの設定はサポートされません"
+
+msgid "Setting the domain accounts' password requires authorization"
+msgstr ""
+
+msgid "Setting the domain time requires authorization"
+msgstr ""
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
 msgstr ""
@@ -15055,6 +15549,9 @@ msgstr "スナップショット一覧"
 msgid "Snapshot delete"
 msgstr "スナップショットの削除"
 
+msgid "Snapshot domain"
+msgstr ""
+
 msgid "Snapshot is Null"
 msgstr "スナップショットが Null です"
 
@@ -15067,6 +15564,9 @@ msgstr "スナップショットは 'pool' ボリュームではまだサポー�
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
 msgstr "ドメイン %1$s のスナップショットが一貫性のある関係にありません"
+
+msgid "Snapshotting domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
@@ -15179,15 +15679,45 @@ msgstr "プールを起動します。"
 msgid "Start an inactive node device"
 msgstr "非アクティブなノードデバイスを起動します"
 
+msgid "Start domain"
+msgstr ""
+
+msgid "Start interface"
+msgstr ""
+
+msgid "Start network"
+msgstr ""
+
+msgid "Start node device"
+msgstr ""
+
+msgid "Start storage pool"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr "ドメインのメモリーダーティーレートの計算を正常に開始します。\n"
 
 msgid "Started"
 msgstr "開始済み"
 
+msgid "Starting interface requires authorization"
+msgstr ""
+
+msgid "Starting network requires authorization"
+msgstr ""
+
+msgid "Starting node device requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Starting shutdown on guest: $name"
 msgstr "次のゲストにおいてシャットダウンを開始します: $name"
+
+msgid "Starting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Starting the domain requires authorization"
+msgstr ""
 
 msgid "Starts an inactive node device that was previously defined"
 msgstr "以前に定義された非アクティブなノードデバイスを開始します"
@@ -15293,8 +15823,38 @@ msgstr ""
 msgid "Status is unknown"
 msgstr "ステータスが不明です"
 
+msgid "Stop domain"
+msgstr ""
+
+msgid "Stop interface"
+msgstr ""
+
+msgid "Stop network"
+msgstr ""
+
+msgid "Stop node device"
+msgstr ""
+
+msgid "Stop storage pool"
+msgstr ""
+
 msgid "Stopped"
 msgstr "停止中"
+
+msgid "Stopping interface requires authorization"
+msgstr ""
+
+msgid "Stopping network requires authorization"
+msgstr ""
+
+msgid "Stopping node device requires authorization"
+msgstr ""
+
+msgid "Stopping storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Stopping the domain requires authorization"
+msgstr ""
 
 msgid "Storage Pool Events"
 msgstr "ストレージプールイベント"
@@ -15413,6 +15973,9 @@ msgstr "IPv6 デフォルトゲートウェイを 1 つだけサポートしま�
 msgid "Suspend a running domain."
 msgstr "実行中のドメインを一時停止状態にします。"
 
+msgid "Suspend domain"
+msgstr ""
+
 msgid "Suspend duration in seconds, at least 60"
 msgstr "秒単位の一時停止間隔、最低 60"
 
@@ -15444,6 +16007,9 @@ msgstr "一時停止中"
 msgid "Suspending $name: "
 msgstr "$name の一時停止中: "
 
+msgid "Suspending domain CPUs requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Suspending guests on $uri URI..."
 msgstr "URI $uri においてゲストの休止中..."
@@ -15472,8 +16038,11 @@ msgstr "システムは使用中です"
 msgid "System is not available"
 msgstr "システムが利用可能ではありません"
 
-msgid "System lacks NETNS support"
-msgstr "システムに NETNS サポートが欠けています"
+msgid "System policy prevents management of local virtualized systems"
+msgstr ""
+
+msgid "System policy prevents monitoring of local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "System token in %1$s was corrupt"
@@ -15522,6 +16091,12 @@ msgstr "TPM バージョン '%1$s' はサポートされません"
 
 msgid "Table row cannot be empty"
 msgstr "テーブル行を空にすることはできません"
+
+msgid "Take domain screenshot"
+msgstr ""
+
+msgid "Taking domain screenshots requires authorization"
+msgstr ""
 
 msgid "Target"
 msgstr "ターゲット"
@@ -16133,9 +16708,10 @@ msgid "Target host device mode %1$s does not match source %2$s"
 msgstr "ターゲットホストのデバイスモード %1$s がソース %2$s と一致しません"
 
 #, c-format
-msgid "Target host device subsystem %1$s does not match source %2$s"
+msgid ""
+"Target host device subsystem type %1$s is not compatible with source "
+"subsystem type %2$s"
 msgstr ""
-"ターゲットホストのデバイスサブシステム %1$s がソースの %2$s と一致しません"
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
@@ -17150,6 +17726,12 @@ msgstr "%1$s 中に転送エラーが発生しました: %2$s (%3$d)"
 
 msgid "Tried to write socket in error state"
 msgstr "エラー状態にあるソケットに書き込みを試行します"
+
+msgid "Trim domain filesystems"
+msgstr ""
+
+msgid "Trimming domain filesystems requires authorization"
+msgstr ""
 
 msgid "Try again?"
 msgstr "再試行しますか?"
@@ -20434,6 +21016,12 @@ msgstr ""
 "XML を使用して、ライブドメインのフルディスクバックアップまたはインクリメンタ"
 "ルディスクバックアップを開始し、オプションでチェックポイントを作成します"
 
+msgid "Use domain power management"
+msgstr ""
+
+msgid "Use host power management"
+msgstr ""
+
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr ""
 "'parentaddr' 要素を使用するには、アダプター 'type' を使用する必要があります"
@@ -20477,6 +21065,15 @@ msgstr "ユーザー名の要求が失敗しました"
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "使用中の API: %1$s %2$d.%3$d.%4$d\n"
+
+msgid "Using domain power management requires authorization"
+msgstr ""
+
+msgid "Using host power management requires authorization"
+msgstr ""
+
+msgid "Using interface transactions requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
@@ -20602,8 +21199,8 @@ msgstr "変数の値が無効な文字を含みます"
 msgid "Verbose messages"
 msgstr "冗長なメッセージ"
 
-msgid "Video adapters are not supported int containers."
-msgstr "ビデオアダプターはサポートされる int コンテナーではありません。"
+msgid "Video adapters are not supported in containers."
+msgstr ""
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
@@ -20613,12 +21210,12 @@ msgstr "libvirt の virsh コマンドラインツール %1$s\n"
 msgid "Virt-admin command line tool of libvirt %1$s\n"
 msgstr "libvirt %1$s の Virt-admin コマンドラインツール\n"
 
-msgid "Virtual machines need to be saved"
-msgstr "仮想マシンを保存する必要があります"
-
 msgid "Virtual network portgroups are not supported by vz driver."
 msgstr ""
 "仮想ネットワークポートグループは、vz ドライバーではサポートされていません。"
+
+msgid "Virtual networks are active"
+msgstr ""
 
 msgid "Virtual port profile association not supported on this platform"
 msgstr ""
@@ -20735,19 +21332,85 @@ msgstr ""
 msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "ボリューム '%1$s'(%2$s) の完全削除中 ... "
 
+msgid "Write domain"
+msgstr ""
+
+msgid "Write domain block"
+msgstr ""
+
+msgid "Write domain time"
+msgstr ""
+
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
 msgstr ""
 "qemu では、PCI デバイス設定スペースの書き込みフィルタリングはサポートされませ"
 "ん"
 
+msgid "Write host"
+msgstr ""
+
+msgid "Write interface"
+msgstr ""
+
+msgid "Write network"
+msgstr ""
+
+msgid "Write network filter"
+msgstr ""
+
+msgid "Write node device"
+msgstr ""
+
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
 msgstr "vport の作成/削除の間に'%1$s' の '%2$s' への書き込みに失敗です"
 
+msgid "Write secret"
+msgstr ""
+
+msgid "Write storage pool"
+msgstr ""
+
+msgid "Write storage volume data"
+msgstr ""
+
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
 msgstr "ホストスキャンを引き起こす為の '%1$s' への書き込み失敗"
+
+msgid "Writing domain block devices requires authorization"
+msgstr ""
+
+msgid "Writing domain configuration requires authorization"
+msgstr ""
+
+msgid "Writing interface configuration requires authorization"
+msgstr ""
+
+msgid "Writing network configuration requires authorization"
+msgstr ""
+
+msgid "Writing network filter configuration requires authorization"
+msgstr ""
+
+msgid "Writing network port configuration requires authorization"
+msgstr ""
+
+msgid "Writing node device configuration requires authorization"
+msgstr ""
+
+msgid "Writing secret configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage volume data requires authorization"
+msgstr ""
+
+msgid "Writing the host configuration requires authorization"
+msgstr ""
 
 msgid "Wrong MAC address"
 msgstr "MAC アドレスが違います"
@@ -20827,6 +21490,9 @@ msgstr ""
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr "Xen は、'xenpv'、'xenpvh' および 'xenfv' マシンのみをサポートします"
+
+msgid "Xen virtual machines are running"
+msgstr ""
 
 msgid "You are trying to remove a snapshot which does not exists"
 msgstr "存在しないスナップショットを削除しようとしています"
@@ -22708,15 +23374,15 @@ msgstr "文字列 I/O と非同期コマンドを混在できません"
 msgid "cannot mix string I/O with daemon"
 msgstr "文字列 I/O とデーモンを混在できません"
 
+msgid "cannot modify '<iothreads>' configuration of the disk"
+msgstr ""
+
 msgid "cannot modify MTU"
 msgstr "MTU を変更できません"
 
 #, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "ディスクのフィールド '%1$s' を変更できません"
-
-msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
-msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -25866,6 +26532,10 @@ msgstr ""
 msgid "error adding fdb entry for %1$s"
 msgstr "%1$s の fdb エントリーを追加するエラー"
 
+#, c-format
+msgid "error adding vlan filter to interface %1$s"
+msgstr ""
+
 msgid "error calling aa_change_profile()"
 msgstr "aa_change_profile() の呼び出し中にエラーが発生しました"
 
@@ -25948,6 +26618,10 @@ msgstr "lldpad の pid を解析中にエラーが発生しました"
 
 msgid "error receiving signal from container"
 msgstr "コンテナーからシグナルを受信中にエラーが発生しました"
+
+#, c-format
+msgid "error removing vlan filter from interface %1$s"
+msgstr ""
 
 msgid "error sending continue signal to daemon"
 msgstr "デーモンに継続シグナルを送信中にエラーが発生しました"
@@ -28313,6 +28987,10 @@ msgstr "ホストは hyperv '%1$s' 機能をサポートしていません"
 #, c-format
 msgid "host doesn't support hyperv stimer '%1$s' feature"
 msgstr "ホストは hyperv stimer '%1$s' 機能をサポートしていません"
+
+#, c-format
+msgid "host doesn't support hyperv tlbflush '%1$s' feature"
+msgstr ""
 
 msgid "host doesn't support invariant TSC"
 msgstr "ホストは不変 TSC をサポートしていません"
@@ -31097,6 +31775,11 @@ msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "仲介デバイスの <type> 要素の 'id' 属性がありません"
 
 msgid ""
+"missing 'name' attribute for a host CPU model deprecated property in QEMU "
+"capabilities cache"
+msgstr ""
+
+msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
@@ -33363,10 +34046,8 @@ msgstr ""
 "オンラインのホットプラグ不可能な vcpus は、昇順で順序付ける必要があります"
 
 msgid ""
-"online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
+"online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
 msgstr ""
-"オンラインのホットプラグ不可能な vcpus は、ホットプラグ可能な vcpus の前に順"
-"序付ける必要があります"
 
 msgid "only 'connect' mode is supported for external TPM device"
 msgstr "外部 TPM デバイスでサポートされるのは 'connect' モードのみです"
@@ -34976,6 +35657,9 @@ msgstr "CPU に互換性がない場合はエラーを報告します"
 
 msgid "report filesystem information"
 msgstr "レポートファイルシステム情報"
+
+msgid "report host CPU model with deprecated features disabled"
+msgstr ""
 
 msgid "report hostname"
 msgstr "ホスト名を報告します"
@@ -36804,6 +37488,9 @@ msgstr "タイトルは vz ドライバーではサポートされません"
 
 msgid "tls"
 msgstr "tls"
+
+msgid "toggling deprecated features for CPU model is unsupported"
+msgstr ""
 
 #, c-format
 msgid "too many NUMA cells: %1$d > %2$d"
@@ -38707,14 +39394,13 @@ msgstr ""
 "対して指定されています"
 
 #, c-format
-msgid ""
-"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
-"%2$s"
-msgstr ""
-
-#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "認識できないコマンド名 '%1$s'"
+
+#, c-format
+msgid ""
+"unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
+msgstr ""
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -38746,6 +39432,10 @@ msgstr "サポートされない CPU タイプ: %1$s"
 #, c-format
 msgid "unsupported Hyper-V stimer feature: %1$s"
 msgstr "サポートされない Hyper-V stimer 機能: %1$s"
+
+#, c-format
+msgid "unsupported Hyper-V tlbflush feature: %1$s"
+msgstr ""
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
@@ -39788,14 +40478,8 @@ msgstr "virtiofs はモデルをサポートしません"
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs は multidevs をサポートしません"
 
-msgid "virtiofs does not support read-only access"
-msgstr ""
-
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs は wrpolicy をサポートしません"
-
-msgid "virtiofs does not yet support read-only mode"
-msgstr "virtiofs は読み取り専用モードをまだサポートしていません"
 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "この QEMU バイナリーでは、virtiofs はサポートされません"
@@ -40216,6 +40900,39 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#~ msgid "Cannot set a base label with AppArmour"
+#~ msgstr "AppArmour を用いてベースラベルを設定できません"
+
+#~ msgid "Download length it too large"
+#~ msgstr "ダウンロード長が大きすぎます"
+
+#~ msgid "Libvirt"
+#~ msgstr "libvirt"
+
+#~ msgid "System lacks NETNS support"
+#~ msgstr "システムに NETNS サポートが欠けています"
+
+#, c-format
+#~ msgid "Target host device subsystem %1$s does not match source %2$s"
+#~ msgstr ""
+#~ "ターゲットホストのデバイスサブシステム %1$s がソースの %2$s と一致しません"
+
+#~ msgid "Video adapters are not supported int containers."
+#~ msgstr "ビデオアダプターはサポートされる int コンテナーではありません。"
+
+#~ msgid "Virtual machines need to be saved"
+#~ msgstr "仮想マシンを保存する必要があります"
+
+#~ msgid ""
+#~ "online non-hotpluggable vcpus need to be ordered prior to hotplugable "
+#~ "vcpus"
+#~ msgstr ""
+#~ "オンラインのホットプラグ不可能な vcpus は、ホットプラグ可能な vcpus の前に"
+#~ "順序付ける必要があります"
+
+#~ msgid "virtiofs does not yet support read-only mode"
+#~ msgstr "virtiofs は読み取り専用モードをまだサポートしていません"
 
 #~ msgid "resetting of nvram is not supported with network backed nvram"
 #~ msgstr ""

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-11-26 14:19+0000\n"
+"POT-Creation-Date: 2025-01-09 09:28+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1770,8 +1770,68 @@ msgstr ""
 "'%1$s' ಹ್ಯಾಶ್‌ನೊಂದಿಗೆ SSH ಆತಿಥೇಯ ಕೀಲಿಯನ್ನು ಅಂಗೀಕರಿಸಬೇಕು ('%2$s:%3$d' "
 "ಆತಿಥೇಯಕ್ಕಾಗಿ) (%4$s/%5$s)?"
 
+msgid "Access connection"
+msgstr ""
+
 msgid "Access denied"
 msgstr "ಅನುಮತಿಯನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ"
+
+msgid "Access domain"
+msgstr ""
+
+msgid "Access interface"
+msgstr ""
+
+msgid "Access network"
+msgstr ""
+
+msgid "Access network filter"
+msgstr ""
+
+msgid "Access network port"
+msgstr ""
+
+msgid "Access node device"
+msgstr ""
+
+msgid "Access secret"
+msgstr ""
+
+msgid "Access storage pool"
+msgstr ""
+
+msgid "Access storage volume"
+msgstr ""
+
+msgid "Accessing interface requires authorization"
+msgstr ""
+
+msgid "Accessing network filter requires authorization"
+msgstr ""
+
+msgid "Accessing network port requires authorization"
+msgstr ""
+
+msgid "Accessing network requires authorization"
+msgstr ""
+
+msgid "Accessing node device requires authorization"
+msgstr ""
+
+msgid "Accessing secret requires authorization"
+msgstr ""
+
+msgid "Accessing storage pool requires authorization"
+msgstr ""
+
+msgid "Accessing storage volume requires authorization"
+msgstr ""
+
+msgid "Accessing the connection requires authorization"
+msgstr ""
+
+msgid "Accessing the domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -3293,8 +3353,8 @@ msgid ""
 "alias of '%3$s'"
 msgstr ""
 
-msgid "Cannot set a base label with AppArmour"
-msgstr "AppArmour ನೊಂದಿಗೆ ಮೂಲ ಲೇಬಲ್ ಅನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+msgid "Cannot set a base label with AppArmor"
+msgstr ""
 
 #, fuzzy
 msgid "Cannot set an empty mem_nodes set"
@@ -3740,6 +3800,12 @@ msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಡಂಪ್ XML"
 msgid "Checkpoint List"
 msgstr ""
 
+msgid "Checkpoint domain"
+msgstr ""
+
+msgid "Checkpointing domain requires authorization"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
 msgstr "%1$s ಡೊಮೇನ್‌ಗಾಗಿ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳು ಅಸ್ಥಿರವಾದ ಸಂಬಂಧಗಳನ್ನು ಹೊಂದಿವೆ"
@@ -4002,6 +4068,9 @@ msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಗುಂಪ�
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "ನಿಯಂತ್ರಕಗಳು 'ccid' ವಿಳಾಸದ ಬಗೆಯನ್ನು ಹೊಂದಿರಬೇಕು"
+
+msgid "Controlling domain init process requires authorization"
+msgstr ""
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr "ಡೊಮೈನ್ XML ಸಂರಚನೆಯನ್ನು ಒಂದು ಸ್ಥಳೀಯ ಅತಿಥಿ ಸಂರಚನಾ ಬಗೆಯಾಗಿ ಬದಲಾಯಿಸಿ."
@@ -5159,6 +5228,15 @@ msgstr "ಈಗಿರುವ ಒಂದು ಪರಿಮಾಣದಿಂದ ಇನ್
 msgid "Create a vol."
 msgstr "ಒಂದು ಪರಿಮಾಣವನ್ನು ನಿರ್ಮಿಸು."
 
+msgid "Create network filter binding"
+msgstr ""
+
+msgid "Create network port"
+msgstr ""
+
+msgid "Create storage volume"
+msgstr ""
+
 #, c-format
 msgid "Create the dir %1$s"
 msgstr ""
@@ -5171,8 +5249,17 @@ msgstr "ವರ್ಗಾವಣೆಗೊಂಡಿದೆ"
 msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "%1$s ಬ್ರಿಡ್ಜನ್ನು ರಚಿಸಲಾಗಿದೆ (ಲಗತ್ತಿಸಲಾದ %2$s ಸಾಧನದೊಂದಿಗೆ)\n"
 
+msgid "Creating network filter binding requires authorization"
+msgstr ""
+
+msgid "Creating network port configuration requires authorization"
+msgstr ""
+
 msgid "Creating non-file volumes is not supported"
 msgstr "ಕಡತವಲ್ಲದ ಪರಿಮಾಣಗಳನ್ನು ನಿರ್ಮಿಸಲು ಬೆಂಬಲವಿರುವುದಿಲ್ಲ."
+
+msgid "Creating storage volume requires authorization"
+msgstr ""
 
 msgid "Creation Time"
 msgstr "ನಿರ್ಮಾಣದ ಸಮಯ"
@@ -5316,10 +5403,70 @@ msgstr "ಒದಗಿಸಲಾದ ಒಂದು ಪರಿಮಾಣವನ್ನು 
 msgid "Delete an IOThread from the guest domain."
 msgstr "ಅತಿಥಿ ಡೊಮೇನ್‌ಗೆ NMI ಅನ್ನು ಸೇರಿಸು"
 
+msgid "Delete domain"
+msgstr ""
+
+msgid "Delete interface"
+msgstr ""
+
+msgid "Delete network"
+msgstr ""
+
+msgid "Delete network filter"
+msgstr ""
+
+msgid "Delete network filter binding"
+msgstr ""
+
+msgid "Delete network port"
+msgstr ""
+
+msgid "Delete node device"
+msgstr ""
+
+msgid "Delete secret"
+msgstr ""
+
+msgid "Delete storage pool"
+msgstr ""
+
+msgid "Delete storage volume"
+msgstr ""
+
 msgid "Delete the specified network port."
 msgstr ""
 
 msgid "Deleted"
+msgstr ""
+
+msgid "Deleting domain configuration requires authorization"
+msgstr ""
+
+msgid "Deleting interface configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network filter binding requires authorization"
+msgstr ""
+
+msgid "Deleting network filter configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network port configuration requires authorization"
+msgstr ""
+
+msgid "Deleting node device driver requires authorization"
+msgstr ""
+
+msgid "Deleting secret configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage volume requires authorization"
 msgstr ""
 
 msgid ""
@@ -5370,8 +5517,20 @@ msgstr "ಡಿಸ್ಕ್‍ ಸಾಧನವನ್ನು ಗಣಕದಿಂದ 
 msgid "Detach network interface."
 msgstr "ಜಾಲಬಂಧ ಸಂಪರ್ಕಸಾಧನವನ್ನು ಕಳಚಿ."
 
+msgid "Detach node device"
+msgstr ""
+
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr "ಒಂದು ಡೊಮೇನ್‌ಗೆ ನಿಯೋಜಿಸುವ ಮೊದಲು ನೋಡ್ ಸಾಧನವನ್ನು ಅದರ ಸಾಧನ ಚಾಲಕದಿಂದ ಕಳಚಿ."
+
+msgid "Detaching node device driver requires authorization"
+msgstr ""
+
+msgid "Detect storage pools"
+msgstr ""
+
+msgid "Detecting storage pools requires authorization"
+msgstr ""
 
 msgid "Device"
 msgstr "ಸಾಧನ"
@@ -5835,6 +5994,9 @@ msgstr "ಬೂಟ್‌ ಸಾಧನವು ಕಾಣಿಸುತ್ತಿಲ್�
 msgid "Domain information of managed save state file in XML"
 msgstr "ಉಳಿಸಲಾದ ಕಡತದ ಸ್ಥಿತಿಗಾಗಿನ ಡೊಮೇನ್‌ನ XMLನ ಮಾಹಿತಿಯನ್ನು stdout ಗೆ ಡಂಪ್ ಮಾಡು ."
 
+msgid "Domain init control"
+msgstr ""
+
 #, fuzzy
 msgid "Domain interface"
 msgstr "ಡೊಮೇನ್‌ ಸಕ್ರಿಯವಾಗಿಲ್ಲ"
@@ -5963,8 +6125,8 @@ msgstr "ಡೊಮೈನ್:"
 msgid "Done.\n"
 msgstr "ಆಯಿತು.\n"
 
-msgid "Download length it too large"
-msgstr "ಇಳಿಕೆಯ ಉದ್ದವು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
+msgid "Download length is too large"
+msgstr ""
 
 msgid "Download volume contents to a file"
 msgstr "ಒಂದು ಪರಿಮಾಣದಲ್ಲಿರುವುದನ್ನು ಒಂದು ಕಡತಕ್ಕೆ ಇಳಿಸಿ"
@@ -6008,8 +6170,14 @@ msgstr "ಉಳಿಸಲಾದ ಕಡತದ ಸ್ಥಿತಿಗಾಗಿನ ಡ
 msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr "ಉಳಿಸಲಾದ ಕಡತದ ಸ್ಥಿತಿಗಾಗಿನ ಡೊಮೇನ್‌ನ XMLನ ಮಾಹಿತಿಯನ್ನು stdout ಗೆ ಡಂಪ್ ಮಾಡು ."
 
+msgid "Dump domain"
+msgstr ""
+
 msgid "Dump failed"
 msgstr "ಡಂಪ್ ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "Dumping domain corefile requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
@@ -6179,6 +6347,9 @@ msgstr "%1$s ಗಾಗಿ ಬಳಕೆದಾರ ಹೆಸರನ್ನು ನಮ�
 #, c-format
 msgid "Enter username for %1$s [%2$s]"
 msgstr "%1$s ಗಾಗಿ ಬಳಕೆದಾರ ಹೆಸರನ್ನು ನಮೂದಿಸಿ [%2$s]"
+
+msgid "Ephemeral secrets are loaded"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Error adding route to %1$s"
@@ -6628,6 +6799,10 @@ msgstr "ವರ್ಗಾವಣೆ ಟನಲ್‌ನಲ್ಲಿ ಎಚ್ಚರ�
 #, fuzzy, c-format
 msgid "Failed to access '%1$s'"
 msgstr "'%1$s' ಅನ್ನು ತೆರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, c-format
+msgid "Failed to acquire inhibitor: %1$s"
+msgstr ""
 
 msgid "Failed to acquire lock"
 msgstr "ಲಾಕ್‌ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -9098,9 +9273,21 @@ msgid ""
 "overwrite is necessary"
 msgstr ""
 
+msgid "Format storage pool"
+msgstr ""
+
+msgid "Format storage volume"
+msgstr ""
+
 #, c-format
 msgid "Formatting IP address for host '%1$s' failed: %2$s"
 msgstr "'%1$s' ಆತಿಥೇಯಕ್ಕಾಗಿ IP ವಿಳಾಸವನ್ನು ಫಾರ್ಮ್ಯಾಟ್‌ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %2$s"
+
+msgid "Formatting storage pool data requires authorization"
+msgstr ""
+
+msgid "Formatting storage volume data requires authorization"
+msgstr ""
 
 msgid "Found additional probes to run, probing may be incorrect"
 msgstr ""
@@ -9119,9 +9306,15 @@ msgstr "ಅಮಾನ್ಯವಾದ ಸಾಧನದ ಕೊಂಡಿ '%1$s' ಕ�
 msgid "Found unexpected controller model '%1$s' for disk '%2$s'"
 msgstr "ಅನಿರೀಕ್ಷಿತವಾದ '%1$s' ಎಂಬ ನಿಯಂತ್ರಕ ಮಾದರಿಯು ಕಂಡುಬಂದಿದೆ ('%2$s' ಡಿಸ್ಕಿಗಾಗಿ)"
 
+msgid "Freeze and thaw domain filesystems"
+msgstr ""
+
 #, fuzzy
 msgid "Freeze domain's mounted filesystems."
 msgstr "ಡೊಮೈನ್ ಏರಿಸಲಾದ ಕಡತವ್ಯವಸ್ಥೆಗಳಲ್ಲಿ fstrim ಅನ್ನು ರದ್ದುಗೊಳಿಸು."
+
+msgid "Freezing and thawing domain filesystems requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Froze %1$d filesystem(s)\n"
@@ -9345,6 +9538,9 @@ msgid "Handshake is already complete"
 msgstr "ಹ್ಯಾಂಡ್‌ಶೇಕ್ ಈಗಾಗಲೆ ಪೂರ್ಣಗೊಂಡಿದೆ"
 
 msgid "Hard disk is null"
+msgstr ""
+
+msgid "Hibernate domain"
 msgstr ""
 
 #, fuzzy
@@ -9718,6 +9914,12 @@ msgstr "ಅತಿಥಿಗೆ NMI ಅನ್ನು ಸೇರಿಸು"
 msgid "Inject NMI to the guest domain."
 msgstr "ಅತಿಥಿ ಡೊಮೇನ್‌ಗೆ NMI ಅನ್ನು ಸೇರಿಸು"
 
+msgid "Inject domain NMI"
+msgstr ""
+
+msgid "Injecting interrupt requires authorization"
+msgstr ""
+
 #, fuzzy
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "ಈ ವ್ಯವಸ್ಥೆಯಲ್ಲಿ ಬಹಸರತಿ ಸಾಧನಗಳಿಗೆ ಬೆಂಬಲವಿಲ್ಲ"
@@ -9814,6 +10016,9 @@ msgstr "ಸಂಪರ್ಕಸಾಧನವು ಕಂಡುಬಂದಿಲ್ಲ"
 #, c-format
 msgid "Interface not found: %1$s"
 msgstr "ಸಂಪರ್ಕಸಾಧನವು ಕಂಡುಬಂದಿಲ್ಲ: %1$s"
+
+msgid "Interface transactions"
+msgstr ""
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10726,6 +10931,10 @@ msgstr ""
 msgid "Invalid virNetSSHSession *"
 msgstr ""
 
+#, c-format
+msgid "Invalid vlan filter command %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
 msgstr "ಸಂರಚನಾ ಕಡತ %s ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -10815,6 +11024,9 @@ msgstr ""
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC ಗೆಸ್ಟ್ ಎಂಟರ್ ನೇಮ್‌ಸ್ಪೇಸ್"
 
+msgid "LXC containers are running"
+msgstr ""
+
 #, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
 msgstr "ಲೀಸ್ %1$s ಈಗಾಗಲೆ ಲಾಕ್‌ಸ್ಪೇಸ್‌ %2$s ನಲ್ಲಿ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ"
@@ -10834,8 +11046,20 @@ msgstr "'%1$s' ಲೈಬ್ರರಿ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ�
 msgid "Library function returned error but did not set virError"
 msgstr "ಲೈಬ್ರರಿ ಕ್ರಿಯೆಯು ದೋಷವನ್ನು ಮರಳಿಸಿದೆ ಆದರೆ virError ಅನ್ನು ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
 
-msgid "Libvirt"
-msgstr "Libvirt"
+msgid "Libvirt LXC"
+msgstr ""
+
+msgid "Libvirt Network"
+msgstr ""
+
+msgid "Libvirt QEMU"
+msgstr ""
+
+msgid "Libvirt Secret"
+msgstr ""
+
+msgid "Libvirt Xen"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
@@ -10854,6 +11078,9 @@ msgstr ""
 msgid "List checkpoints for a domain"
 msgstr "ಒಂದು ಡೊಮೇನ್‌ಗಾಗಿ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿಯನ್ನು ಪಟ್ಟಿ ಮಾಡುತ್ತದೆ"
 
+msgid "List domains"
+msgstr ""
+
 msgid "List event types, or wait for domain events to occur"
 msgstr ""
 
@@ -10869,13 +11096,70 @@ msgstr ""
 msgid "List event types, or wait for storage pool events to occur"
 msgstr ""
 
+msgid "List interfaces"
+msgstr ""
+
+msgid "List network filter bindings"
+msgstr ""
+
+msgid "List network filters"
+msgstr ""
+
+msgid "List network ports"
+msgstr ""
+
+msgid "List networks"
+msgstr ""
+
+msgid "List node devices"
+msgstr ""
+
+msgid "List secrets"
+msgstr ""
+
 msgid "List snapshots for a domain"
 msgstr "ಒಂದು ಡೊಮೇನ್‌ಗಾಗಿ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿಯನ್ನು ಪಟ್ಟಿ ಮಾಡುತ್ತದೆ"
+
+msgid "List storage pool volumes"
+msgstr ""
+
+msgid "List storage pools"
+msgstr ""
 
 msgid "Listen for QEMU Monitor Events"
 msgstr ""
 
 msgid "Listen for TCP/IP connections"
+msgstr ""
+
+msgid "Listing domains or using domain events requires authorization"
+msgstr ""
+
+msgid "Listing interfaces requires authorization"
+msgstr ""
+
+msgid "Listing network filter bindings requires authorization"
+msgstr ""
+
+msgid "Listing network filters requires authorization"
+msgstr ""
+
+msgid "Listing network ports requires authorization"
+msgstr ""
+
+msgid "Listing networks or using network events requires authorization"
+msgstr ""
+
+msgid "Listing node devices requires authorization"
+msgstr ""
+
+msgid "Listing secrets requires authorization"
+msgstr ""
+
+msgid "Listing storage pool volumes requires authorization"
+msgstr ""
+
+msgid "Listing storage pools requires authorization"
 msgstr ""
 
 msgid "Load kvm_hv for better performance"
@@ -11117,6 +11401,9 @@ msgstr "ತಪ್ಪು wwn: %1$s"
 msgid "Manage active block operations"
 msgstr "ಸಕ್ರಿಯ ಬ್ಲಾಕ್‌ ಕಾರ್ಯಾಚರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸು"
 
+msgid "Manage local virtualized systems"
+msgstr ""
+
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
 msgstr ""
@@ -11267,6 +11554,9 @@ msgid ""
 "binary"
 msgstr ""
 
+msgid "Migrate domain"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "ಡೊಮೇನ್‌ ಅನ್ನು ಇನ್ನೊಂದು ಆತಿಥೇಯಕ್ಕೆ ವರ್ಗಾಯಿಸು. ಲೈವ್ ವರ್ಗಾವಣೆಗಾಗಿ --live ಎಂದು ಸೇರಿಸಿ."
@@ -11274,6 +11564,9 @@ msgstr ""
 #, fuzzy
 msgid "Migrated"
 msgstr "ವರ್ಗಾವಣೆಗೊಂಡಿದೆ"
+
+msgid "Migrating domain requires authorization"
+msgstr ""
 
 msgid "Migration"
 msgstr "ವರ್ಗಾವಣೆ"
@@ -11954,6 +12247,9 @@ msgstr "ಮಾದರಿ ಹೆಸರು ಅಮಾನ್ಯವಾದ ಅಕ್ಷ
 #, fuzzy
 msgid "Modifies an existing IOThread of the guest domain."
 msgstr "ಅತಿಥಿ ಡೊಮೇನ್‌ಗೆ NMI ಅನ್ನು ಸೇರಿಸು"
+
+msgid "Monitor local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -13177,6 +13473,15 @@ msgstr "ಕೇವಲ vpxmigr:// ವರ್ಗಾವಣೆಗಳು URI ಗಳು 
 msgid "Only x509 certificates are supported"
 msgstr "x509 ಪ್ರಮಾಣಪತ್ರಗಳಿಗೆ ಮಾತ್ರ ಬೆಂಬಲವಿರುತ್ತದೆ"
 
+msgid "Open domain device"
+msgstr ""
+
+msgid "Open domain graphics"
+msgstr ""
+
+msgid "Open domain namespace"
+msgstr ""
+
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr "OpenRemoteSession/LaunchVMProcess ವಿಫಲಗೊಂಡಿದೆ, ಡೊಮೇನ್ ಅನ್ನು ಆರಂಭಿಸಲಾಗಿಲ್ಲ"
 
@@ -13185,6 +13490,15 @@ msgstr "OpenVZ ನಿಯಂತ್ರಣ ಕಡತ /proc/vz ಅಸ್ತಿತ್
 
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "OpenVZ ನಿಯಂತ್ರಣ ಕಡತ /proc/vz ಅನ್ನು ನಿಲುಕಿಸಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಿಲ್ಲ"
+
+msgid "Opening domain devices requires authorization"
+msgstr ""
+
+msgid "Opening domain graphics console requires authorization"
+msgstr ""
+
+msgid "Opening domain namespaces requires authorization"
+msgstr ""
 
 #, fuzzy
 msgid "Operation cancelled by client"
@@ -13869,6 +14183,9 @@ msgstr ""
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
 msgstr ""
 
+msgid "QEMU/KVM virtual machines are running"
+msgstr ""
+
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
 msgstr ""
@@ -13976,6 +14293,54 @@ msgstr ""
 msgid "Raw I/O is not supported on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಕಚ್ಛಾ I/O ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
+msgid "Read domain"
+msgstr ""
+
+msgid "Read domain block"
+msgstr ""
+
+msgid "Read domain memory"
+msgstr ""
+
+msgid "Read host"
+msgstr ""
+
+msgid "Read interface"
+msgstr ""
+
+msgid "Read network"
+msgstr ""
+
+msgid "Read network filter"
+msgstr ""
+
+msgid "Read network filter binding"
+msgstr ""
+
+msgid "Read network port"
+msgstr ""
+
+msgid "Read node device"
+msgstr ""
+
+msgid "Read secret"
+msgstr ""
+
+msgid "Read secure domain"
+msgstr ""
+
+msgid "Read secure secret"
+msgstr ""
+
+msgid "Read storage pool"
+msgstr ""
+
+msgid "Read storage volume"
+msgstr ""
+
+msgid "Read storage volume data"
+msgstr ""
+
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr ""
@@ -13988,6 +14353,51 @@ msgstr ""
 #, fuzzy
 msgid "Reading MSRs is not supported on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ಕಚ್ಛಾ I/O ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
+
+msgid "Reading domain block devices requires authorization"
+msgstr ""
+
+msgid "Reading domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading domain memory requires authorization"
+msgstr ""
+
+msgid "Reading interface configuration requires authorization"
+msgstr ""
+
+msgid "Reading network configuration requires authorization"
+msgstr ""
+
+msgid "Reading network filter configuration requires authorization"
+msgstr ""
+
+msgid "Reading network port configuration requires authorization"
+msgstr ""
+
+msgid "Reading node device configuration requires authorization"
+msgstr ""
+
+msgid "Reading secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume data requires authorization"
+msgstr ""
+
+msgid "Reading the host configuration requires authorization"
+msgstr ""
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr "ಒಂದು ಡೊಮೇನ್‌ನಿಂದ ಈ ಮೊದಲು ಕಳಚಲಾದ ನೋಡ್ ಸಾಧನವನ್ನು ಅದಕ್ಕೆ ಮರಳಿ ಜೋಡಿಸಿ."
@@ -14014,6 +14424,12 @@ msgstr "ಮರುನಿರ್ದೇಶನ ಬಸ್ %1$s ಎಂಬುದಕ್�
 
 msgid "Refresh a given pool."
 msgstr "ಒದಗಿಸಲಾದ ಒಂದು ಪೂಲ್ ಅನ್ನು ಪುನಶ್ಚೇತನಗೊಳಿಸು."
+
+msgid "Refresh storage pool"
+msgstr ""
+
+msgid "Refreshing storage pool volumes requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
@@ -14143,19 +14559,31 @@ msgstr ""
 msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "%1$s ಮಾರ್ಗಕ್ಕಾಗಿನ ಲಾಕ್‌ಸ್ಪೇಸ್ ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ"
 
+msgid "Reset domain"
+msgstr ""
+
 msgid "Reset node device before or after assigning to a domain."
 msgstr "ಒಂದು ಡೊಮೇನ್‌ಗೆ ನಿಯೋಜಿಸುವ ಮೊದಲು ಅಥವ ನಂತರ ನೋಡ್ ಸಾಧನವನ್ನು ಮರು ಹೊಂದಿಸು."
 
 msgid "Reset the target domain as if by power button"
 msgstr "ಸ್ಥಗಿತಗೊಳಿಸುವ ಗುಂಡಿಯಂತೆ ಡೊಮೇನ್ ಗುರಿಯನ್ನು ಮರಳಿ ಹೊಂದಿಸು"
 
+msgid "Resetting the domain requires authorization"
+msgstr ""
+
 msgid "Resize block device of domain."
 msgstr "ಡೊಮೇನ್‌ನ ಬ್ಲಾಕ್‌ ಸಾಧನವನ್ನು ಮರುಗಾತ್ರಿಸು."
+
+msgid "Resize storage volume"
+msgstr ""
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
 "by an active guest.\n"
 "See blockresize for live resizing."
+msgstr ""
+
+msgid "Resizing storage volume requires authorization"
 msgstr ""
 
 msgid "Resolved device mapper name too long"
@@ -14536,6 +14964,27 @@ msgstr ""
 "    ಆದೇಶವನ್ನು ಡೊಮೇನ್‌ಗಾಗಿ ಮುಂದೆ ಚಲಾಯಿಸಿದಾಗ, ಅದನ್ನು ಈ ಉಳಿಸಲಾದ\n"
 "    ಸ್ಥಿತಿಯಿಂದ ಮರಳಿ ಆರಂಭಿಸಲಾಗುತ್ತದೆ."
 
+msgid "Save domain"
+msgstr ""
+
+msgid "Save interface"
+msgstr ""
+
+msgid "Save network"
+msgstr ""
+
+msgid "Save network filter"
+msgstr ""
+
+msgid "Save node device"
+msgstr ""
+
+msgid "Save secret"
+msgstr ""
+
+msgid "Save storage pool"
+msgstr ""
+
 msgid "Save the RAM state of a running domain."
 msgstr "ಚಾಲನೆಯಲ್ಲಿರುವ ಒಂದು ಡೊಮೈನ್‌ನ RAM ಸ್ಥಿತಿಯನ್ನು ಉಳಿಸು"
 
@@ -14546,6 +14995,30 @@ msgstr "ಉಳಿಸು"
 #, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "ಉಳಿಸಲಾದ ಚಿತ್ರಿಕೆ %1$s XML ಸಂರಚನೆಯನ್ನು ಬದಲಾಯಿಸಲಾಗಿಲ್ಲ.\n"
+
+msgid "Saving domain configuration requires authorization"
+msgstr ""
+
+msgid "Saving domain state requires authorization"
+msgstr ""
+
+msgid "Saving interface configuration requires authorization"
+msgstr ""
+
+msgid "Saving network configuration requires authorization"
+msgstr ""
+
+msgid "Saving network filter configuration requires authorization"
+msgstr ""
+
+msgid "Saving node device driver requires authorization"
+msgstr ""
+
+msgid "Saving secret configuration requires authorization"
+msgstr ""
+
+msgid "Saving storage pool configuration requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14665,6 +15138,12 @@ msgstr ""
 "%1$s ಇಲ್ಲಿ ಜಾಲತಾಣವನ್ನು ನೋಡಿ\n"
 "\n"
 
+msgid "Send domain input"
+msgstr ""
+
+msgid "Send domain signal"
+msgstr ""
+
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "ಕೀಕೋಡ್‌ಗಳನ್ನು (ಪೂರ್ಣಾಂಕಗಳು ಅಥವ ಸಾಂಕೇತಿಕ ಹೆಸರುಗಳು) ಅತಿಥಿಗೆ ಕಳುಹಿಸು"
 
@@ -14680,6 +15159,12 @@ msgstr "ಅತಿಥಿಯಲ್ಲಿನ ಪ್ರಕ್ರಿಯೆಗಾಗ�
 msgid "Sending file descriptors is not supported on this socket"
 msgstr ""
 "ಕಡತದ ವಿವರಣೆಗಾರಗಳನ್ನು (ಡಿಸ್ಕ್ರಿಪ್ಟರ್) ಕಳುಹಿಸುವುದನ್ನು ಈ ಸಾಕೆಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
+
+msgid "Sending input events to domain requires authorization"
+msgstr ""
+
+msgid "Sending signals to processes in domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14759,6 +15244,9 @@ msgstr "ಖಂಡ ಸಾಧನ I/O ಟ್ಯೂನ್‌ ಮಾಡುವ ನಿ�
 msgid "Set or query disk I/O parameters such as block throttling."
 msgstr ""
 "ಬ್ಯಾಕ್ ತ್ರಾಟಲಿಂಗ್‌ನಂತಹ ಡಿಸ್ಕ್ I/O ನಿಯತಾಂಕಗಳನ್ನು ಹೊಂದಿಸಲು ಅಥವ ಪ್ರಶ್ನಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
+
+msgid "Set password of the domain's account"
+msgstr ""
 
 #, fuzzy
 msgid "Set the guest agent timeout"
@@ -14871,6 +15359,12 @@ msgstr "USB ಸಾಧನಗಳಿಗಾಗಿ startupPolicy ಅನ್ನು ಸ�
 
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
+msgstr ""
+
+msgid "Setting the domain accounts' password requires authorization"
+msgstr ""
+
+msgid "Setting the domain time requires authorization"
 msgstr ""
 
 #, fuzzy
@@ -15019,6 +15513,9 @@ msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿ"
 msgid "Snapshot delete"
 msgstr ""
 
+msgid "Snapshot domain"
+msgstr ""
+
 #, fuzzy
 msgid "Snapshot is Null"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿ"
@@ -15034,6 +15531,9 @@ msgstr "vnc ಗ್ರಾಫಿಕ್ಸುಗಳು ಈ QEMU ಇಂದ ಬೆಂ
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
 msgstr "%1$s ಡೊಮೇನ್‌ಗಾಗಿ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳು ಅಸ್ಥಿರವಾದ ಸಂಬಂಧಗಳನ್ನು ಹೊಂದಿವೆ"
+
+msgid "Snapshotting domain requires authorization"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Socket path %1$s too big for destination"
@@ -15147,6 +15647,21 @@ msgstr "ಒಂದು ಪೂಲ್‌ ಅನ್ನು ಆರಂಭಿಸು."
 msgid "Start an inactive node device"
 msgstr ""
 
+msgid "Start domain"
+msgstr ""
+
+msgid "Start interface"
+msgstr ""
+
+msgid "Start network"
+msgstr ""
+
+msgid "Start node device"
+msgstr ""
+
+msgid "Start storage pool"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
 
@@ -15154,9 +15669,24 @@ msgstr ""
 msgid "Started"
 msgstr "ಪ್ರಾರಂಭಗೊಂಡಿದೆ"
 
+msgid "Starting interface requires authorization"
+msgstr ""
+
+msgid "Starting network requires authorization"
+msgstr ""
+
+msgid "Starting node device requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Starting shutdown on guest: $name"
 msgstr "ಅತಿಥಿಯ ಮೇಲೆ ಮುಚ್ಚುವಿಕೆಯನ್ನು ಆರಂಭಿಸಲಾಗುತ್ತಿದೆ: $name"
+
+msgid "Starting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Starting the domain requires authorization"
+msgstr ""
 
 msgid "Starts an inactive node device that was previously defined"
 msgstr ""
@@ -15253,7 +15783,37 @@ msgstr ""
 msgid "Status is unknown"
 msgstr "ಸ್ಥಿತಿ ತಿಳಿದಿಲ್ಲ"
 
+msgid "Stop domain"
+msgstr ""
+
+msgid "Stop interface"
+msgstr ""
+
+msgid "Stop network"
+msgstr ""
+
+msgid "Stop node device"
+msgstr ""
+
+msgid "Stop storage pool"
+msgstr ""
+
 msgid "Stopped"
+msgstr ""
+
+msgid "Stopping interface requires authorization"
+msgstr ""
+
+msgid "Stopping network requires authorization"
+msgstr ""
+
+msgid "Stopping node device requires authorization"
+msgstr ""
+
+msgid "Stopping storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Stopping the domain requires authorization"
 msgstr ""
 
 #, fuzzy
@@ -15381,6 +15941,9 @@ msgstr ""
 msgid "Suspend a running domain."
 msgstr "ಚಾಲನೆಯಲ್ಲಿರುವ ಒಂದು ಡೊಮೇನ್‌ ಅನ್ನು ತಾತ್ಕಾಲಿಕ ತಡೆ ಹಿಡಿ."
 
+msgid "Suspend domain"
+msgstr ""
+
 msgid "Suspend duration in seconds, at least 60"
 msgstr "ಸ್ಥಗಿತಗೊಳಿಸುವ ಕಾಲಾವಧಿ ಸೆಕೆಂಡುಗಳಲ್ಲಿ, ಕನಿಷ್ಟ 60"
 
@@ -15415,6 +15978,9 @@ msgstr "pmsuspended"
 msgid "Suspending $name: "
 msgstr "$name ಅನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲಾಗುತ್ತಿದೆ: "
 
+msgid "Suspending domain CPUs requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Suspending guests on $uri URI..."
 msgstr "$uri URI ನಲ್ಲಿನ ಅತಿಥಿಗಳನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲಾಗುತ್ತಿದೆ..."
@@ -15441,8 +16007,11 @@ msgstr "ವ್ಯವಸ್ಥೆಯು ಬಳಕೆಯಲ್ಲಿದೆ"
 msgid "System is not available"
 msgstr "ವ್ಯವಸ್ಥೆಯು ಲಭ್ಯವಿಲ್ಲ"
 
-msgid "System lacks NETNS support"
-msgstr "ವ್ಯವಸ್ತೆಯಲ್ಲಿ NETNS ಬೆಂಬಲದ ಕೊರತೆಯಿದೆ"
+msgid "System policy prevents management of local virtualized systems"
+msgstr ""
+
+msgid "System policy prevents monitoring of local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "System token in %1$s was corrupt"
@@ -15494,6 +16063,12 @@ msgstr ""
 #, fuzzy
 msgid "Table row cannot be empty"
 msgstr "%s ಖಾಲಿ ಇರುವಂತಿಲ್ಲ"
+
+msgid "Take domain screenshot"
+msgstr ""
+
+msgid "Taking domain screenshots requires authorization"
+msgstr ""
 
 msgid "Target"
 msgstr "ಗುರಿ"
@@ -16080,9 +16655,10 @@ msgid "Target host device mode %1$s does not match source %2$s"
 msgstr "ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಕ್ರಮ %1$s ಎಂಬುದು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
-msgid "Target host device subsystem %1$s does not match source %2$s"
+msgid ""
+"Target host device subsystem type %1$s is not compatible with source "
+"subsystem type %2$s"
 msgstr ""
-"ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಉಪವ್ಯವಸ್ಥೆ %1$s ಎಂಬುದು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
@@ -17050,6 +17626,12 @@ msgstr "%1$s ಸಮಯದಲ್ಲಿ ವರ್ಗಾವಣೆ ದೋಷ: %2$s (
 
 msgid "Tried to write socket in error state"
 msgstr "ಸಾಕೆಟ್ ಅನ್ನು ದೋಷದ ಸ್ಥಿತಿಯಲ್ಲಿ ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ"
+
+msgid "Trim domain filesystems"
+msgstr ""
+
+msgid "Trimming domain filesystems requires authorization"
+msgstr ""
 
 msgid "Try again?"
 msgstr ""
@@ -20401,6 +20983,12 @@ msgid ""
 "optionally creating a checkpoint"
 msgstr ""
 
+msgid "Use domain power management"
+msgstr ""
+
+msgid "Use host power management"
+msgstr ""
+
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr ""
 
@@ -20436,6 +21024,15 @@ msgstr "ಬಳಕೆದಾರ ಮನವಿಯು ವಿಫಲಗೊಂಡಿದ�
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "API ಅನ್ನು ಬಳಸಿಕೊಂಡು: %1$s %2$d.%3$d.%4$d\n"
+
+msgid "Using domain power management requires authorization"
+msgstr ""
+
+msgid "Using host power management requires authorization"
+msgstr ""
+
+msgid "Using interface transactions requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
@@ -20557,9 +21154,8 @@ msgstr "ವೇರಿಯೇಬಲ್ ಮೌಲ್ಯವು ಮಾನ್ಯವಾ�
 msgid "Verbose messages"
 msgstr "ಸಂದೇಶ"
 
-#, fuzzy
-msgid "Video adapters are not supported int containers."
-msgstr "ಸ್ಪೈಸ್ ಗ್ರಾಫಿಕ್ಸುಗಳು ಈ QEMU ಇಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+msgid "Video adapters are not supported in containers."
+msgstr ""
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
@@ -20569,10 +21165,10 @@ msgstr "libvirt %1$s ನ Virsh ಆಜ್ಞಾಸಾಲಿನ ಉಪಕರಣ\n"
 msgid "Virt-admin command line tool of libvirt %1$s\n"
 msgstr "libvirt %1$s ನ Virsh ಆಜ್ಞಾಸಾಲಿನ ಉಪಕರಣ\n"
 
-msgid "Virtual machines need to be saved"
-msgstr "ವರ್ಚುವಲ್‌ ಗಣಕವನ್ನು ಉಳಿಸಬೇಕಾಗುತ್ತದೆ"
-
 msgid "Virtual network portgroups are not supported by vz driver."
+msgstr ""
+
+msgid "Virtual networks are active"
 msgstr ""
 
 msgid "Virtual port profile association not supported on this platform"
@@ -20689,8 +21285,32 @@ msgstr ""
 msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "'%1$s'(%2$s) ಪರಿಮಾಣವನ್ನು ಅಳಿಸಲಾಗುತ್ತಿದೆ ... "
 
+msgid "Write domain"
+msgstr ""
+
+msgid "Write domain block"
+msgstr ""
+
+msgid "Write domain time"
+msgstr ""
+
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
+
+msgid "Write host"
+msgstr ""
+
+msgid "Write interface"
+msgstr ""
+
+msgid "Write network"
+msgstr ""
+
+msgid "Write network filter"
+msgstr ""
+
+msgid "Write node device"
 msgstr ""
 
 #, c-format
@@ -20698,9 +21318,51 @@ msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
 msgstr ""
 "vport ರಚಿಸುವ/ಅಳಿಸುವ ಸಮಯದಲ್ಲಿ '%1$s' ಅನ್ನು '%2$s' ಗೆ ಬರೆಯುವಿಕೆಯು ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "Write secret"
+msgstr ""
+
+msgid "Write storage pool"
+msgstr ""
+
+msgid "Write storage volume data"
+msgstr ""
+
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
 msgstr "ಆತಿಥೇಯದ ಶೋಧನೆಯನ್ನು ಆರಂಭಿಸುವ ಸಲುವಾಗಿ '%1$s' ಗೆ ಬರೆಯುವಿಕೆಯು ವಿಫಲಗೊಂಡಿದೆ"
+
+msgid "Writing domain block devices requires authorization"
+msgstr ""
+
+msgid "Writing domain configuration requires authorization"
+msgstr ""
+
+msgid "Writing interface configuration requires authorization"
+msgstr ""
+
+msgid "Writing network configuration requires authorization"
+msgstr ""
+
+msgid "Writing network filter configuration requires authorization"
+msgstr ""
+
+msgid "Writing network port configuration requires authorization"
+msgstr ""
+
+msgid "Writing node device configuration requires authorization"
+msgstr ""
+
+msgid "Writing secret configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage volume data requires authorization"
+msgstr ""
+
+msgid "Writing the host configuration requires authorization"
+msgstr ""
 
 msgid "Wrong MAC address"
 msgstr "ತಪ್ಪಾದ MAC ವಿಳಾಸ"
@@ -20777,6 +21439,9 @@ msgstr ""
 "ಕಡತದ ವಿವರಣೆಗಾರಗಳನ್ನು (ಡಿಸ್ಕ್ರಿಪ್ಟರ್) ಕಳುಹಿಸುವುದನ್ನು ಈ ಸಾಕೆಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
+msgstr ""
+
+msgid "Xen virtual machines are running"
 msgstr ""
 
 msgid "You are trying to remove a snapshot which does not exists"
@@ -22674,15 +23339,15 @@ msgstr "ವಾಕ್ಯಾಂಶ I/O ಅನ್ನು ಮೇಳೈಕೆಯಾಗ
 msgid "cannot mix string I/O with daemon"
 msgstr "ವಾಕ್ಯಾಂಶ I/O ಅನ್ನು ಡೆಮನ್‌ನೊಂದಿಗೆ ಮಿಶ್ರಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+msgid "cannot modify '<iothreads>' configuration of the disk"
+msgstr ""
+
 msgid "cannot modify MTU"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "fd %d ಅನ್ನು ಮಾರ್ಗದಿಂದ ಹೊರಹಾಕಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
-msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
-msgstr ""
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -25862,6 +26527,10 @@ msgstr "ಸಂಪರ್ಕಸ್ಥಾನ-ಪ್ರೊಫೈಲ್ ಸೆಟ್�
 msgid "error adding fdb entry for %1$s"
 msgstr "ಸೀಕ್ರೆಟ್‌ ಅನ್ನು ಓದುವಲ್ಲಿ ದೋಷ: %1$s"
 
+#, c-format
+msgid "error adding vlan filter to interface %1$s"
+msgstr ""
+
 msgid "error calling aa_change_profile()"
 msgstr "aa_change_profile() ಅನ್ನು ಕರೆಯುವಲ್ಲಿ ದೋಷ"
 
@@ -25946,6 +26615,10 @@ msgstr "lldpad ಯ pid ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್�
 
 msgid "error receiving signal from container"
 msgstr "ಕಂಟೇನರಿನಿಂದ ಸಂಜ್ಞೆಯನ್ನು ಸ್ವೀಕರಿಸುವಲ್ಲಿ ದೋಷ ಉಂಟಾಗಿದೆ"
+
+#, c-format
+msgid "error removing vlan filter from interface %1$s"
+msgstr ""
 
 msgid "error sending continue signal to daemon"
 msgstr "ನಿರಂತರ ಸಂಜ್ಞೆಯನ್ನು ಡೀಮನ್‌ಗೆ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -28350,6 +29023,10 @@ msgstr "ಈ ಡಿಸ್ಕ್ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಬೆ�
 
 #, c-format
 msgid "host doesn't support hyperv stimer '%1$s' feature"
+msgstr ""
+
+#, c-format
+msgid "host doesn't support hyperv tlbflush '%1$s' feature"
 msgstr ""
 
 #, fuzzy
@@ -31161,6 +31838,11 @@ msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "ಸಂಪರ್ಕಸಾಧನದ <actual> ಘಟಕದಲ್ಲಿ ಬಗೆಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 msgid ""
+"missing 'name' attribute for a host CPU model deprecated property in QEMU "
+"capabilities cache"
+msgstr ""
+
+msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
@@ -33480,7 +34162,7 @@ msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr ""
 
 msgid ""
-"online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
+"online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
 msgstr ""
 
 msgid "only 'connect' mode is supported for external TPM device"
@@ -35122,6 +35804,9 @@ msgstr "CPUಗಳು ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 #, fuzzy
 msgid "report filesystem information"
 msgstr "XML ನಲ್ಲಿ ಜಾಲಬಂಧ ಫಿಲ್ಟರ್ ಮಾಹಿತಿ"
+
+msgid "report host CPU model with deprecated features disabled"
+msgstr ""
 
 #, fuzzy
 msgid "report hostname"
@@ -36953,6 +37638,9 @@ msgid "titles are not supported by vz driver"
 msgstr "ಈ libvirt ನಿಂದ ಫಿಲ್ಟರ್ ಮಾಡುವಿಕೆಯು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
 msgid "tls"
+msgstr ""
+
+msgid "toggling deprecated features for CPU model is unsupported"
 msgstr ""
 
 #, c-format
@@ -38829,14 +39517,13 @@ msgstr ""
 "ಸೂಚಿಸಲಾಗಿದೆ"
 
 #, c-format
-msgid ""
-"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
-"%2$s"
-msgstr ""
-
-#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "ಗುರುತಿಸದೆ ಇರುವ ಆದೇಶದ ಹೆಸರು '%1$s'"
+
+#, c-format
+msgid ""
+"unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
+msgstr ""
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -38866,6 +39553,10 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ OS ಬಗೆ: %1$s"
 #, fuzzy, c-format
 msgid "unsupported Hyper-V stimer feature: %1$s"
 msgstr "ಬೆಂಬಲವಿರದ HyperV ಎನ್‌ಲೈಟನ್ಮೆಂಟ್ ಸೌಲಭ್ಯ: %1$s"
+
+#, c-format
+msgid "unsupported Hyper-V tlbflush feature: %1$s"
+msgstr ""
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
@@ -39899,15 +40590,8 @@ msgstr "ಪೂಲ್ ಅಳಿಸುವಿಕೆಯನ್ನು ಪೂಲ್ ಬ
 msgid "virtiofs does not support multidevs"
 msgstr "ಖಾಸಗಿ devpts ಗೆ ಕರ್ನಲ್ ಬೆಂಬಲವನ್ನು ಒದಗಿಸುವುದಿಲ್ಲ"
 
-msgid "virtiofs does not support read-only access"
-msgstr ""
-
 #, fuzzy
 msgid "virtiofs does not support wrpolicy"
-msgstr "ಪೂಲ್ ಅಳಿಸುವಿಕೆಯನ್ನು ಪೂಲ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
-
-#, fuzzy
-msgid "virtiofs does not yet support read-only mode"
 msgstr "ಪೂಲ್ ಅಳಿಸುವಿಕೆಯನ್ನು ಪೂಲ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
 #, fuzzy
@@ -40314,6 +40998,34 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Cannot set a base label with AppArmour"
+#~ msgstr "AppArmour ನೊಂದಿಗೆ ಮೂಲ ಲೇಬಲ್ ಅನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#~ msgid "Download length it too large"
+#~ msgstr "ಇಳಿಕೆಯ ಉದ್ದವು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
+
+#~ msgid "Libvirt"
+#~ msgstr "Libvirt"
+
+#~ msgid "System lacks NETNS support"
+#~ msgstr "ವ್ಯವಸ್ತೆಯಲ್ಲಿ NETNS ಬೆಂಬಲದ ಕೊರತೆಯಿದೆ"
+
+#, c-format
+#~ msgid "Target host device subsystem %1$s does not match source %2$s"
+#~ msgstr ""
+#~ "ಗುರಿ ಆತಿಥೇಯ ಸಾಧನ ಉಪವ್ಯವಸ್ಥೆ %1$s ಎಂಬುದು %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "Video adapters are not supported int containers."
+#~ msgstr "ಸ್ಪೈಸ್ ಗ್ರಾಫಿಕ್ಸುಗಳು ಈ QEMU ಇಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
+
+#~ msgid "Virtual machines need to be saved"
+#~ msgstr "ವರ್ಚುವಲ್‌ ಗಣಕವನ್ನು ಉಳಿಸಬೇಕಾಗುತ್ತದೆ"
+
+#, fuzzy
+#~ msgid "virtiofs does not yet support read-only mode"
+#~ msgstr "ಪೂಲ್ ಅಳಿಸುವಿಕೆಯನ್ನು ಪೂಲ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
 #~ msgid "Unable to create JSON formatter"
 #~ msgstr "JSON ಫಾರ್ಮ್ಯಾಟರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"

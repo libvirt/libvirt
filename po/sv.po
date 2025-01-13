@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2024-11-26 14:19+0000\n"
+"POT-Creation-Date: 2025-01-09 09:28+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -204,8 +204,8 @@ msgstr ""
 "    -q | --quiet            tyst läge\n"
 "    -v                      kort version\n"
 "    -V                      lång version\n"
-"         --version[=TYP]    version, TYP är short eller long (standard short)"
-"\n"
+"         --version[=TYP]    version, TYP är short eller long (standard "
+"short)\n"
 "  kommandon (icke interaktivt läge):\n"
 "\n"
 
@@ -255,8 +255,8 @@ msgstr ""
 "    -t | --timing           skriv ut tidsinformation\n"
 "    -v                      kort version\n"
 "    -V                      lång version\n"
-"         --version[=TYP]    version, TYP är short eller long (standard short)"
-"\n"
+"         --version[=TYP]    version, TYP är short eller long (standard "
+"short)\n"
 "  kommandon (icke-interaktivt läge):\n"
 "\n"
 
@@ -1900,8 +1900,68 @@ msgstr ""
 "Acceptera SSH-värdnyckel med hashen ”%1$s” för värden ”%2$s:%3$d” (%4$s/"
 "%5$s)?"
 
+msgid "Access connection"
+msgstr ""
+
 msgid "Access denied"
 msgstr "Åtkomst nekas"
+
+msgid "Access domain"
+msgstr ""
+
+msgid "Access interface"
+msgstr ""
+
+msgid "Access network"
+msgstr ""
+
+msgid "Access network filter"
+msgstr ""
+
+msgid "Access network port"
+msgstr ""
+
+msgid "Access node device"
+msgstr ""
+
+msgid "Access secret"
+msgstr ""
+
+msgid "Access storage pool"
+msgstr ""
+
+msgid "Access storage volume"
+msgstr ""
+
+msgid "Accessing interface requires authorization"
+msgstr ""
+
+msgid "Accessing network filter requires authorization"
+msgstr ""
+
+msgid "Accessing network port requires authorization"
+msgstr ""
+
+msgid "Accessing network requires authorization"
+msgstr ""
+
+msgid "Accessing node device requires authorization"
+msgstr ""
+
+msgid "Accessing secret requires authorization"
+msgstr ""
+
+msgid "Accessing storage pool requires authorization"
+msgstr ""
+
+msgid "Accessing storage volume requires authorization"
+msgstr ""
+
+msgid "Accessing the connection requires authorization"
+msgstr ""
+
+msgid "Accessing the domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -2111,7 +2171,8 @@ msgid "Attempt to overwrite resctrlid='%1$s' with id='%2$s'"
 msgstr "Försök att skriva över resctrlid='%1$s' med id='%2$s'"
 
 msgid "Attempt to send a non-blocking message with a synchronous reply"
-msgstr "Försök att skicka ett icke blockerande meddelande med ett synkront svar"
+msgstr ""
+"Försök att skicka ett icke blockerande meddelande med ett synkront svar"
 
 msgid "Attempt to send an asynchronous message with a synchronous reply"
 msgstr "Försök att skicka ett asynkront meddelande med ett synkront svar"
@@ -3418,8 +3479,8 @@ msgstr ""
 "Kan inte sätta CPU-modellen ”%1$s” som kanoniskt namn på ”%2$s” när det "
 "redan är ett alias för ”%3$s”"
 
-msgid "Cannot set a base label with AppArmour"
-msgstr "Kan inte sätta en basetikett för AppArmour"
+msgid "Cannot set a base label with AppArmor"
+msgstr ""
 
 msgid "Cannot set an empty mem_nodes set"
 msgstr "Det går inte att sätta en tom mängd mem_nodes"
@@ -3876,6 +3937,12 @@ msgstr "Kontrollpunkt dumpa XML"
 msgid "Checkpoint List"
 msgstr "Kontrollpunkt lista"
 
+msgid "Checkpoint domain"
+msgstr ""
+
+msgid "Checkpointing domain requires authorization"
+msgstr ""
+
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
 msgstr "Kontrollpunkter har inkonsekventa relationer för domänen %1$s"
@@ -4146,6 +4213,9 @@ msgstr "Styrgrupper stödjs inte på denna plattform"
 
 msgid "Controllers must use the 'ccid' address type"
 msgstr "Styrenheter måste använda adresstypen ”ccid”"
+
+msgid "Controlling domain init process requires authorization"
+msgstr ""
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr ""
@@ -5284,6 +5354,15 @@ msgstr "Skapa en volym från en befintlig volym."
 msgid "Create a vol."
 msgstr "Skapa en volym."
 
+msgid "Create network filter binding"
+msgstr ""
+
+msgid "Create network port"
+msgstr ""
+
+msgid "Create storage volume"
+msgstr ""
+
 #, c-format
 msgid "Create the dir %1$s"
 msgstr "Skapa katalogen %1$s"
@@ -5295,8 +5374,17 @@ msgstr "Skapad"
 msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "Skapade bryggan %1$s med en ansluten enhet %2$s\n"
 
+msgid "Creating network filter binding requires authorization"
+msgstr ""
+
+msgid "Creating network port configuration requires authorization"
+msgstr ""
+
 msgid "Creating non-file volumes is not supported"
 msgstr "Att skapa volymer från annat än filer stödjs inte"
+
+msgid "Creating storage volume requires authorization"
+msgstr ""
 
 msgid "Creation Time"
 msgstr "Skapandetidpunkt"
@@ -5439,11 +5527,71 @@ msgstr "Radera en angiven volym."
 msgid "Delete an IOThread from the guest domain."
 msgstr "Radera en IOThread från gästdomänen."
 
+msgid "Delete domain"
+msgstr ""
+
+msgid "Delete interface"
+msgstr ""
+
+msgid "Delete network"
+msgstr ""
+
+msgid "Delete network filter"
+msgstr ""
+
+msgid "Delete network filter binding"
+msgstr ""
+
+msgid "Delete network port"
+msgstr ""
+
+msgid "Delete node device"
+msgstr ""
+
+msgid "Delete secret"
+msgstr ""
+
+msgid "Delete storage pool"
+msgstr ""
+
+msgid "Delete storage volume"
+msgstr ""
+
 msgid "Delete the specified network port."
 msgstr "Radera den angivna nätverksporten."
 
 msgid "Deleted"
 msgstr "Raderad"
+
+msgid "Deleting domain configuration requires authorization"
+msgstr ""
+
+msgid "Deleting interface configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network filter binding requires authorization"
+msgstr ""
+
+msgid "Deleting network filter configuration requires authorization"
+msgstr ""
+
+msgid "Deleting network port configuration requires authorization"
+msgstr ""
+
+msgid "Deleting node device driver requires authorization"
+msgstr ""
+
+msgid "Deleting secret configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Deleting storage volume requires authorization"
+msgstr ""
 
 msgid ""
 "Depending on whether run with or without options, the command fetches or "
@@ -5496,10 +5644,22 @@ msgstr "Avmontera diskenhet."
 msgid "Detach network interface."
 msgstr "Avmontera nätverksgränssnitt."
 
+msgid "Detach node device"
+msgstr ""
+
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr ""
 "Koppla ifrån en nodenhet från sin enhetsdrivrutin före den tilldelas till en "
 "domän."
+
+msgid "Detaching node device driver requires authorization"
+msgstr ""
+
+msgid "Detect storage pools"
+msgstr ""
+
+msgid "Detecting storage pools requires authorization"
+msgstr ""
 
 msgid "Device"
 msgstr "Enhet"
@@ -5955,6 +6115,9 @@ msgstr "Domän hostdev-enhet"
 msgid "Domain information of managed save state file in XML"
 msgstr "Domäninformation om hanterad sparad tillståndsfil i XML"
 
+msgid "Domain init control"
+msgstr ""
+
 msgid "Domain interface"
 msgstr "Domängränssnitt"
 
@@ -6080,8 +6243,8 @@ msgstr "Domän:"
 msgid "Done.\n"
 msgstr "Klart.\n"
 
-msgid "Download length it too large"
-msgstr "Hämtningslängden är för stor"
+msgid "Download length is too large"
+msgstr ""
 
 msgid "Download volume contents to a file"
 msgstr "Hämta volymens innehåll till en fil"
@@ -6124,8 +6287,14 @@ msgstr ""
 "Dumpa XML över domäninformationen för en sparad tillståndsfil till standard "
 "ut."
 
+msgid "Dump domain"
+msgstr ""
+
 msgid "Dump failed"
 msgstr "Dumpen misslyckades"
+
+msgid "Dumping domain corefile requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
@@ -6290,6 +6459,9 @@ msgstr "Ange användarnamn för %1$s"
 #, c-format
 msgid "Enter username for %1$s [%2$s]"
 msgstr "Ange användarnamn för %1$s [%2$s]"
+
+msgid "Ephemeral secrets are loaded"
+msgstr ""
 
 #, c-format
 msgid "Error adding route to %1$s"
@@ -6720,6 +6892,10 @@ msgstr "Misslyckades att acceptera migrationsanslutningen"
 #, c-format
 msgid "Failed to access '%1$s'"
 msgstr "Misslyckades med att komma åt ”%1$s”"
+
+#, c-format
+msgid "Failed to acquire inhibitor: %1$s"
+msgstr ""
 
 msgid "Failed to acquire lock"
 msgstr "Misslyckades att få låset"
@@ -9184,9 +9360,21 @@ msgstr ""
 "Formatet på enheten ”%1$s” matchar inte det förväntade formatet ”%2$s”, "
 "tvingad överskrivning är nödvändigt"
 
+msgid "Format storage pool"
+msgstr ""
+
+msgid "Format storage volume"
+msgstr ""
+
 #, c-format
 msgid "Formatting IP address for host '%1$s' failed: %2$s"
 msgstr "Att formatera IP-adressen för värden ”%1$s” misslyckades: %2$s"
+
+msgid "Formatting storage pool data requires authorization"
+msgstr ""
+
+msgid "Formatting storage volume data requires authorization"
+msgstr ""
 
 msgid "Found additional probes to run, probing may be incorrect"
 msgstr "Hittade ytterligare prober att köra, avkänningen kan vara felaktig"
@@ -9207,8 +9395,14 @@ msgstr "Hittade felaktig enhetslänk ”%1$s” i ”%2$s”"
 msgid "Found unexpected controller model '%1$s' for disk '%2$s'"
 msgstr "Hittade oväntad styrenhetsmodell ”%1$s” för disken ”%2$s”"
 
+msgid "Freeze and thaw domain filesystems"
+msgstr ""
+
 msgid "Freeze domain's mounted filesystems."
 msgstr "Frys domänens monterade filsystem."
+
+msgid "Freezing and thawing domain filesystems requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Froze %1$d filesystem(s)\n"
@@ -9426,6 +9620,9 @@ msgstr "Handskakningen är redan klar"
 
 msgid "Hard disk is null"
 msgstr "Hårddisken är null"
+
+msgid "Hibernate domain"
+msgstr ""
 
 msgid "Holes are not supported with this stream"
 msgstr "Hål stödjs inte med denna ström"
@@ -9801,6 +9998,12 @@ msgstr "Skjut in NMI till gästen"
 msgid "Inject NMI to the guest domain."
 msgstr "Skjut in NMI till gästdomänen."
 
+msgid "Inject domain NMI"
+msgstr ""
+
+msgid "Injecting interrupt requires authorization"
+msgstr ""
+
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "Inmatningsenheter stödjs inte av denna virtualiseringsdrivrutin."
 
@@ -9891,6 +10094,9 @@ msgstr "Gränssnittet finns inte"
 #, c-format
 msgid "Interface not found: %1$s"
 msgstr "Gränssnittet finns inte: %1$s"
+
+msgid "Interface transactions"
+msgstr ""
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10835,6 +11041,10 @@ msgid "Invalid virNetSSHSession *"
 msgstr "Felaktig virNetSSHSession *"
 
 #, c-format
+msgid "Invalid vlan filter command %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
 msgstr "Felaktig vnuma-konfiguration för vnode %1$zu"
 
@@ -10922,6 +11132,9 @@ msgstr ""
 msgid "LXC Guest Enter Namespace"
 msgstr "LXC-gästs ingångsnamnrymd"
 
+msgid "LXC containers are running"
+msgstr ""
+
 #, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
 msgstr "Hyra %1$s i låsrymden %2$s finns redan"
@@ -10941,8 +11154,20 @@ msgstr "Biblioteket ”%1$s” finns inte"
 msgid "Library function returned error but did not set virError"
 msgstr "Biblioteksfunktionen returnerade fel men satte inte virError"
 
-msgid "Libvirt"
-msgstr "Libvirt"
+msgid "Libvirt LXC"
+msgstr ""
+
+msgid "Libvirt Network"
+msgstr ""
+
+msgid "Libvirt QEMU"
+msgstr ""
+
+msgid "Libvirt Secret"
+msgstr ""
+
+msgid "Libvirt Xen"
+msgstr ""
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
@@ -10960,6 +11185,9 @@ msgstr "Lista alla hanterbara servrar på en demon."
 msgid "List checkpoints for a domain"
 msgstr "Lista kontrollpunkter för en domän"
 
+msgid "List domains"
+msgstr ""
+
 msgid "List event types, or wait for domain events to occur"
 msgstr "Lista händelsetyper, eller vänta på att domänhändelser inträffar"
 
@@ -10976,14 +11204,71 @@ msgid "List event types, or wait for storage pool events to occur"
 msgstr ""
 "Lista händelsetyper, eller vänta på att lagringspoolshändelser inträffar"
 
+msgid "List interfaces"
+msgstr ""
+
+msgid "List network filter bindings"
+msgstr ""
+
+msgid "List network filters"
+msgstr ""
+
+msgid "List network ports"
+msgstr ""
+
+msgid "List networks"
+msgstr ""
+
+msgid "List node devices"
+msgstr ""
+
+msgid "List secrets"
+msgstr ""
+
 msgid "List snapshots for a domain"
 msgstr "Lista ögonblicksbilder för en domän"
+
+msgid "List storage pool volumes"
+msgstr ""
+
+msgid "List storage pools"
+msgstr ""
 
 msgid "Listen for QEMU Monitor Events"
 msgstr "Lyssna efter QEMU-monitorhändelser"
 
 msgid "Listen for TCP/IP connections"
 msgstr "Lyssna efter TCP/IP-anslutningar"
+
+msgid "Listing domains or using domain events requires authorization"
+msgstr ""
+
+msgid "Listing interfaces requires authorization"
+msgstr ""
+
+msgid "Listing network filter bindings requires authorization"
+msgstr ""
+
+msgid "Listing network filters requires authorization"
+msgstr ""
+
+msgid "Listing network ports requires authorization"
+msgstr ""
+
+msgid "Listing networks or using network events requires authorization"
+msgstr ""
+
+msgid "Listing node devices requires authorization"
+msgstr ""
+
+msgid "Listing secrets requires authorization"
+msgstr ""
+
+msgid "Listing storage pool volumes requires authorization"
+msgstr ""
+
+msgid "Listing storage pools requires authorization"
+msgstr ""
 
 msgid "Load kvm_hv for better performance"
 msgstr "Ladda kvm_hv för bättre prestanda"
@@ -11206,6 +11491,9 @@ msgstr "Felformaterad wwn: %1$s"
 msgid "Manage active block operations"
 msgstr "Hantera aktiva blockåtgärder"
 
+msgid "Manage local virtualized systems"
+msgstr ""
+
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
 msgstr ""
@@ -11355,11 +11643,18 @@ msgid ""
 msgstr ""
 "Migrerbara attribut för värdgenomgångs-CPU stödjs inte av denna QEMU-binär"
 
+msgid "Migrate domain"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
-msgstr "Migrera domän till en annan värd.  Lägg till --live för live-migrering."
+msgstr ""
+"Migrera domän till en annan värd.  Lägg till --live för live-migrering."
 
 msgid "Migrated"
 msgstr "Migrerad"
+
+msgid "Migrating domain requires authorization"
+msgstr ""
 
 msgid "Migration"
 msgstr "Migrering"
@@ -12013,6 +12308,9 @@ msgstr "Modellnamnet innehåller ogiltiga tecken"
 
 msgid "Modifies an existing IOThread of the guest domain."
 msgstr "Ändrar en befintlig IOThread för gästdomänen."
+
+msgid "Monitor local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -13189,6 +13487,15 @@ msgstr "Endast vpxmigr://-migrerings-URI:er stödjs"
 msgid "Only x509 certificates are supported"
 msgstr "Endast x509-certifikat stödjs"
 
+msgid "Open domain device"
+msgstr ""
+
+msgid "Open domain graphics"
+msgstr ""
+
+msgid "Open domain namespace"
+msgstr ""
+
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
 "OpenRemoteSession/LaunchVMProcess misslyckades, domänen kan inte startas"
@@ -13198,6 +13505,15 @@ msgstr "OpenVZ-styrfilen /proc/vz finns inte"
 
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "OpenVZ-styrfilen /proc/vz är inte åtkomlig"
+
+msgid "Opening domain devices requires authorization"
+msgstr ""
+
+msgid "Opening domain graphics console requires authorization"
+msgstr ""
+
+msgid "Opening domain namespaces requires authorization"
+msgstr ""
 
 msgid "Operation cancelled by client"
 msgstr "Åtgärden avbruten av klienten"
@@ -13796,7 +14112,8 @@ msgstr "QEMU ”%1$s” stödjer inte några CPU-modeller för virttypen ”%2$s
 
 #, c-format
 msgid "QEMU '%1$s' does not support reporting CPU model for virttype '%2$s'"
-msgstr "QEMU ”%1$s” stödjer inte att rapportera CPU-modell för virttypen ”%2$s”"
+msgstr ""
+"QEMU ”%1$s” stödjer inte att rapportera CPU-modell för virttypen ”%2$s”"
 
 msgid "QEMU Attach"
 msgstr "QEMU-anslut"
@@ -13869,6 +14186,9 @@ msgstr "QEMU stängde oväntat monitorn (vm='%1$s')"
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
 msgstr "QEMU-versionen ≥ %1$d.%2$d.%3$d krävs, men %4$d.%5$d.%6$d finns"
 
+msgid "QEMU/KVM virtual machines are running"
+msgstr ""
+
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
 msgstr "QOM-objektet ”%1$s” har ingen egenskap ”ram_size”"
@@ -13914,8 +14234,8 @@ msgid ""
 "Query parameter 'proxy' has unexpected port value '%1$s' (should be "
 "[1..65535])"
 msgstr ""
-"Frågeparametern ”proxy” har oväntat portvärde ”%1$s” (skulle varit [1.."
-"65535])"
+"Frågeparametern ”proxy” har oväntat portvärde ”%1$s” (skulle varit "
+"[1..65535])"
 
 #, c-format
 msgid ""
@@ -13972,6 +14292,54 @@ msgstr "Hastighetssträngen ”%1$s” har för många fält"
 msgid "Raw I/O is not supported on this platform"
 msgstr "Rå I/O stödjs inte på denna plattform"
 
+msgid "Read domain"
+msgstr ""
+
+msgid "Read domain block"
+msgstr ""
+
+msgid "Read domain memory"
+msgstr ""
+
+msgid "Read host"
+msgstr ""
+
+msgid "Read interface"
+msgstr ""
+
+msgid "Read network"
+msgstr ""
+
+msgid "Read network filter"
+msgstr ""
+
+msgid "Read network filter binding"
+msgstr ""
+
+msgid "Read network port"
+msgstr ""
+
+msgid "Read node device"
+msgstr ""
+
+msgid "Read secret"
+msgstr ""
+
+msgid "Read secure domain"
+msgstr ""
+
+msgid "Read secure secret"
+msgstr ""
+
+msgid "Read storage pool"
+msgstr ""
+
+msgid "Read storage volume"
+msgstr ""
+
+msgid "Read storage volume data"
+msgstr ""
+
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr "Läs/skriv, exklusiv åtkomst, diskar fanns, men inga hyror angavs"
@@ -13981,6 +14349,51 @@ msgstr "Att läsa CPUID stödjs inte på denna plattform"
 
 msgid "Reading MSRs is not supported on this platform"
 msgstr "Att läsa MSR:er stödjs inte på denna plattform"
+
+msgid "Reading domain block devices requires authorization"
+msgstr ""
+
+msgid "Reading domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading domain memory requires authorization"
+msgstr ""
+
+msgid "Reading interface configuration requires authorization"
+msgstr ""
+
+msgid "Reading network configuration requires authorization"
+msgstr ""
+
+msgid "Reading network filter configuration requires authorization"
+msgstr ""
+
+msgid "Reading network port configuration requires authorization"
+msgstr ""
+
+msgid "Reading node device configuration requires authorization"
+msgstr ""
+
+msgid "Reading secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure domain configuration requires authorization"
+msgstr ""
+
+msgid "Reading secure secret configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume configuration requires authorization"
+msgstr ""
+
+msgid "Reading storage volume data requires authorization"
+msgstr ""
+
+msgid "Reading the host configuration requires authorization"
+msgstr ""
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr ""
@@ -14005,6 +14418,12 @@ msgstr "Omdirigering av bussen %1$s stödjs inte av QEMU"
 
 msgid "Refresh a given pool."
 msgstr "Uppdatera en given pool."
+
+msgid "Refresh storage pool"
+msgstr ""
+
+msgid "Refreshing storage pool volumes requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
@@ -14138,14 +14557,23 @@ msgstr "Resctrl-allokeringssökvägen är redan satt till ”%1$s”"
 msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "Resctrl-övervakningssökvägen är redan satt till ”%1$s”"
 
+msgid "Reset domain"
+msgstr ""
+
 msgid "Reset node device before or after assigning to a domain."
 msgstr "Återställ nodenheten före eller efter tilldelning till en domän."
 
 msgid "Reset the target domain as if by power button"
 msgstr "Återställ måldomänen som om med strömknappen"
 
+msgid "Resetting the domain requires authorization"
+msgstr ""
+
 msgid "Resize block device of domain."
 msgstr "Ändra storlek på blockenheten i domänen."
+
+msgid "Resize storage volume"
+msgstr ""
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
@@ -14155,6 +14583,9 @@ msgstr ""
 "Ändrar storlek på en lagringsvolym. Detta är endast säkert för "
 "lagringsvolymer som inte används av en aktiv gäst.\n"
 "Se blockresize för live-storleksändring."
+
+msgid "Resizing storage volume requires authorization"
+msgstr ""
 
 msgid "Resolved device mapper name too long"
 msgstr "Det upplösta namnet för enhetsavbildaren (device mapper) är för långt"
@@ -14524,6 +14955,27 @@ msgstr ""
 "    körs nästa gång för domänen kommer den automatiskt att startas\n"
 "    från detta sparade tillstånd."
 
+msgid "Save domain"
+msgstr ""
+
+msgid "Save interface"
+msgstr ""
+
+msgid "Save network"
+msgstr ""
+
+msgid "Save network filter"
+msgstr ""
+
+msgid "Save node device"
+msgstr ""
+
+msgid "Save secret"
+msgstr ""
+
+msgid "Save storage pool"
+msgstr ""
+
 msgid "Save the RAM state of a running domain."
 msgstr "Spara RAM-tillståndet för en körande domän."
 
@@ -14533,6 +14985,30 @@ msgstr "Sparad"
 #, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "Den sparade avbilden %1$s XML-konfiguration inte ändrad.\n"
+
+msgid "Saving domain configuration requires authorization"
+msgstr ""
+
+msgid "Saving domain state requires authorization"
+msgstr ""
+
+msgid "Saving interface configuration requires authorization"
+msgstr ""
+
+msgid "Saving network configuration requires authorization"
+msgstr ""
+
+msgid "Saving network filter configuration requires authorization"
+msgstr ""
+
+msgid "Saving node device driver requires authorization"
+msgstr ""
+
+msgid "Saving secret configuration requires authorization"
+msgstr ""
+
+msgid "Saving storage pool configuration requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14652,6 +15128,12 @@ msgstr ""
 "Se webbsajten på %1$s\n"
 "\n"
 
+msgid "Send domain input"
+msgstr ""
+
+msgid "Send domain signal"
+msgstr ""
+
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "Skicka tangentkoder (heltal eller symboliska namn) till gästen"
 
@@ -14666,6 +15148,12 @@ msgstr "Skicka signaler till processer i gästen"
 
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Att skicka filbeskrivare stödjs inte på detta uttag"
+
+msgid "Sending input events to domain requires authorization"
+msgstr ""
+
+msgid "Sending signals to processes in domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14743,6 +15231,9 @@ msgstr "Sätt eller fråga en blockenhets I/O-trimningsparametrar."
 
 msgid "Set or query disk I/O parameters such as block throttling."
 msgstr "Sätt eller fråga disk-I/O-parametrar såsom blockstrypning."
+
+msgid "Set password of the domain's account"
+msgstr ""
 
 msgid "Set the guest agent timeout"
 msgstr "Sätt tidsgränsen för gästagenten"
@@ -14840,6 +15331,12 @@ msgstr "Att sätta startupPolicy är endast tillåtet för USB-enheter"
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
 msgstr "Att sätta 64-bitars PCI-hålsstorlek stödjs inte för maskinen ”%1$s”"
+
+msgid "Setting the domain accounts' password requires authorization"
+msgstr ""
+
+msgid "Setting the domain time requires authorization"
+msgstr ""
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
 msgstr "Att sätta diskens discard-parameter stödjs inte av vz-drivrutinen."
@@ -14985,6 +15482,9 @@ msgstr "Ögonblicksbildslista"
 msgid "Snapshot delete"
 msgstr "Radera ögonblicksbild"
 
+msgid "Snapshot domain"
+msgstr ""
+
 msgid "Snapshot is Null"
 msgstr "Ögonblicksbilden är null"
 
@@ -14997,6 +15497,9 @@ msgstr "Ögonblicksbilder stödjs inte ännu med ”pool”-volymer"
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
 msgstr "Ögonblicksbilder har inkonsekventa relationer för domänen %1$s"
+
+msgid "Snapshotting domain requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
@@ -15098,15 +15601,45 @@ msgstr "Starta en pool."
 msgid "Start an inactive node device"
 msgstr "Starta en inaktiv nodenhet"
 
+msgid "Start domain"
+msgstr ""
+
+msgid "Start interface"
+msgstr ""
+
+msgid "Start network"
+msgstr ""
+
+msgid "Start node device"
+msgstr ""
+
+msgid "Start storage pool"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr "Starta beräkningen av en domäns minnes nedsmutsningshastighet.\n"
 
 msgid "Started"
 msgstr "Startad"
 
+msgid "Starting interface requires authorization"
+msgstr ""
+
+msgid "Starting network requires authorization"
+msgstr ""
+
+msgid "Starting node device requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Starting shutdown on guest: $name"
 msgstr "Startar avstängningen av gästen: $name"
+
+msgid "Starting storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Starting the domain requires authorization"
+msgstr ""
 
 msgid "Starts an inactive node device that was previously defined"
 msgstr "Startar en inaktiv nodenhet som definierades tidigare"
@@ -15220,8 +15753,38 @@ msgstr "Stats-typbitar 0x%1$x stödjs inte av denna demon eller QEMU"
 msgid "Status is unknown"
 msgstr "Okänd status"
 
+msgid "Stop domain"
+msgstr ""
+
+msgid "Stop interface"
+msgstr ""
+
+msgid "Stop network"
+msgstr ""
+
+msgid "Stop node device"
+msgstr ""
+
+msgid "Stop storage pool"
+msgstr ""
+
 msgid "Stopped"
 msgstr "Stoppad"
+
+msgid "Stopping interface requires authorization"
+msgstr ""
+
+msgid "Stopping network requires authorization"
+msgstr ""
+
+msgid "Stopping node device requires authorization"
+msgstr ""
+
+msgid "Stopping storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Stopping the domain requires authorization"
+msgstr ""
 
 msgid "Storage Pool Events"
 msgstr "Lagringspoolhändelser"
@@ -15339,6 +15902,9 @@ msgstr "Stödj endast en IPv6-standard-gateway"
 msgid "Suspend a running domain."
 msgstr "Suspendera en körande domän."
 
+msgid "Suspend domain"
+msgstr ""
+
 msgid "Suspend duration in seconds, at least 60"
 msgstr "Sovlängd i sekunder, åtminstone 60"
 
@@ -15371,6 +15937,9 @@ msgstr "Sövd"
 msgid "Suspending $name: "
 msgstr "Söver $name: "
 
+msgid "Suspending domain CPUs requires authorization"
+msgstr ""
+
 #, sh-format
 msgid "Suspending guests on $uri URI..."
 msgstr "Söv gäster på URI:n $uri …"
@@ -15398,8 +15967,11 @@ msgstr "Systemet används"
 msgid "System is not available"
 msgstr "Systemet är inte tillgängligt"
 
-msgid "System lacks NETNS support"
-msgstr "Systemet saknar stöd för NETNS"
+msgid "System policy prevents management of local virtualized systems"
+msgstr ""
+
+msgid "System policy prevents monitoring of local virtualized systems"
+msgstr ""
 
 #, c-format
 msgid "System token in %1$s was corrupt"
@@ -15448,6 +16020,12 @@ msgstr "TPM-version ”%1$s” stödjs inte"
 
 msgid "Table row cannot be empty"
 msgstr "Tabellrader kan inte vara tomma"
+
+msgid "Take domain screenshot"
+msgstr ""
+
+msgid "Taking domain screenshots requires authorization"
+msgstr ""
 
 msgid "Target"
 msgstr "Mål"
@@ -16018,8 +16596,10 @@ msgid "Target host device mode %1$s does not match source %2$s"
 msgstr "Målvärdenhetsläget %1$s stämmer inte med källan %2$s"
 
 #, c-format
-msgid "Target host device subsystem %1$s does not match source %2$s"
-msgstr "Målvärdenhetssubsystemet %1$s stämmer inte med källan %2$s"
+msgid ""
+"Target host device subsystem type %1$s is not compatible with source "
+"subsystem type %2$s"
+msgstr ""
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
@@ -17061,6 +17641,12 @@ msgstr "Transportfel under %1$s: %2$s (%3$d)"
 
 msgid "Tried to write socket in error state"
 msgstr "Försökte skriva till uttag i feltillstånd"
+
+msgid "Trim domain filesystems"
+msgstr ""
+
+msgid "Trimming domain filesystems requires authorization"
+msgstr ""
 
 msgid "Try again?"
 msgstr "Försök igen?"
@@ -20342,6 +20928,12 @@ msgstr ""
 "disksäkerhetskopia av en aktiv domän, eventuellt genom att skapa en "
 "kontrollpunkt"
 
+msgid "Use domain power management"
+msgstr ""
+
+msgid "Use host power management"
+msgstr ""
+
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr ""
 "Användning av elementet ”parentaddr” kräver användningen av adaptern ”type”"
@@ -20386,6 +20978,15 @@ msgstr "Användarnamnsbegäran misslyckades"
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "Använder API: %1$s %2$d.%3$d.%4$d\n"
+
+msgid "Using domain power management requires authorization"
+msgstr ""
+
+msgid "Using host power management requires authorization"
+msgstr ""
+
+msgid "Using interface transactions requires authorization"
+msgstr ""
 
 #, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
@@ -20503,8 +21104,8 @@ msgstr "Variabelvärdet innehåller ogiltiga tecken"
 msgid "Verbose messages"
 msgstr "Utförliga meddelanden"
 
-msgid "Video adapters are not supported int containers."
-msgstr "Videoadaptrar stödjs inte i behållare."
+msgid "Video adapters are not supported in containers."
+msgstr ""
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
@@ -20514,11 +21115,11 @@ msgstr "Kommandoradsverktyget virsh från libvirt %1$s\n"
 msgid "Virt-admin command line tool of libvirt %1$s\n"
 msgstr "Kommandoradsverktyget virt-admin från libvirt %1$s\n"
 
-msgid "Virtual machines need to be saved"
-msgstr "Virtuella maskiner behöver sparas"
-
 msgid "Virtual network portgroups are not supported by vz driver."
 msgstr "Virtuella nätverksportsgrupper stödjs inte av drivrutinen vz."
+
+msgid "Virtual networks are active"
+msgstr ""
 
 msgid "Virtual port profile association not supported on this platform"
 msgstr "Virtuella portprofilassociationer stödjs inte på denna plattform"
@@ -20631,18 +21232,84 @@ msgstr ""
 msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "Stryker volymen ”%1$s” (%2$s) … "
 
+msgid "Write domain"
+msgstr ""
+
+msgid "Write domain block"
+msgstr ""
+
+msgid "Write domain time"
+msgstr ""
+
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
 msgstr "Skrivfiltrering av PCI-enhetskonfigurationsutrymme stödjs inte av qemu"
+
+msgid "Write host"
+msgstr ""
+
+msgid "Write interface"
+msgstr ""
+
+msgid "Write network"
+msgstr ""
+
+msgid "Write network filter"
+msgstr ""
+
+msgid "Write node device"
+msgstr ""
 
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
 msgstr ""
 "Att skriva ”%1$s” till ”%2$s” när vport skapades/raderades misslyckades"
 
+msgid "Write secret"
+msgstr ""
+
+msgid "Write storage pool"
+msgstr ""
+
+msgid "Write storage volume data"
+msgstr ""
+
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
 msgstr "Att skriva till ”%1$s” för att utlösa en värdskanning misslyckades"
+
+msgid "Writing domain block devices requires authorization"
+msgstr ""
+
+msgid "Writing domain configuration requires authorization"
+msgstr ""
+
+msgid "Writing interface configuration requires authorization"
+msgstr ""
+
+msgid "Writing network configuration requires authorization"
+msgstr ""
+
+msgid "Writing network filter configuration requires authorization"
+msgstr ""
+
+msgid "Writing network port configuration requires authorization"
+msgstr ""
+
+msgid "Writing node device configuration requires authorization"
+msgstr ""
+
+msgid "Writing secret configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage pool configuration requires authorization"
+msgstr ""
+
+msgid "Writing storage volume data requires authorization"
+msgstr ""
+
+msgid "Writing the host configuration requires authorization"
+msgstr ""
 
 msgid "Wrong MAC address"
 msgstr "Fel MAC-adress"
@@ -20720,6 +21387,9 @@ msgstr "Xen-migreringsström version ”%1$d” stödjs inte på denna värd"
 
 msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr "Xen stödjer bara maskinerna ”xenpv”, ”xenpvh” och ”xenfv”"
+
+msgid "Xen virtual machines are running"
+msgstr ""
 
 msgid "You are trying to remove a snapshot which does not exists"
 msgstr "Du försöker ta bort en ögonblicksbild som inte finns"
@@ -20975,7 +21645,8 @@ msgid "alter live configuration of running domain"
 msgstr "ändra den verksamma konfigureringen av en körande domän"
 
 msgid "alter persistent configuration, effect observed on next boot"
-msgstr "ändra den varaktiga konfigurationen, effekten syns efter nästa uppstart"
+msgstr ""
+"ändra den varaktiga konfigurationen, effekten syns efter nästa uppstart"
 
 msgid "always display names and MACs of interfaces"
 msgstr "visa alltid namn och MAC:er för gränssnitt"
@@ -22625,15 +23296,15 @@ msgstr "kan inte blanda sträng-I/O med asynkront kommando"
 msgid "cannot mix string I/O with daemon"
 msgstr "kan inte blanda sträng-I/O med en demon"
 
+msgid "cannot modify '<iothreads>' configuration of the disk"
+msgstr ""
+
 msgid "cannot modify MTU"
 msgstr "kan inte modifiera MTU"
 
 #, c-format
 msgid "cannot modify field '%1$s' of the disk"
 msgstr "kan inte modifiera fältet ”%1$s” av disken"
-
-msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
-msgstr "kan inte ändra fältet ”<iothreads>” (eller dess delar) på disken"
 
 #, c-format
 msgid "cannot modify memory access from '%1$s' to '%2$s'"
@@ -24632,7 +25303,8 @@ msgstr "att radera externa diskögonblicksbilder med barn stödjs inte"
 
 #, c-format
 msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
-msgstr "radering av det interna ögonblicksbildsjobbet ”%1$s” misslyckades: %2$s"
+msgstr ""
+"radering av det interna ögonblicksbildsjobbet ”%1$s” misslyckades: %2$s"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
@@ -25768,6 +26440,10 @@ msgstr "fel %1$d vid port-profile setlink på gränssnittet %2$s (%3$d)"
 msgid "error adding fdb entry for %1$s"
 msgstr "fel när fdb-post lades till för %1$s"
 
+#, c-format
+msgid "error adding vlan filter to interface %1$s"
+msgstr ""
+
 msgid "error calling aa_change_profile()"
 msgstr "fel vid anrop av aa_change_profile()"
 
@@ -25849,6 +26525,10 @@ msgstr "fel vid tolkning av pid för lldpad"
 
 msgid "error receiving signal from container"
 msgstr "fel när en signal togs emot från behållaren"
+
+#, c-format
+msgid "error removing vlan filter from interface %1$s"
+msgstr ""
 
 msgid "error sending continue signal to daemon"
 msgstr "fel när en fortsättningssignal skickades till demonen"
@@ -28217,6 +28897,10 @@ msgstr "värden stödjer inte hyperv-funktionen ”%1$s”"
 msgid "host doesn't support hyperv stimer '%1$s' feature"
 msgstr "värden stödjer inte hyperv stimer-funktionen ”%1$s”"
 
+#, c-format
+msgid "host doesn't support hyperv tlbflush '%1$s' feature"
+msgstr ""
+
 msgid "host doesn't support invariant TSC"
 msgstr "värden stödjer inte invariant TSC"
 
@@ -29554,7 +30238,8 @@ msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr "iommu: avbrottsomkoppling stödjs inte med denna QEMU-binär"
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
-msgstr "iommu: att uppdatera dma-översättningen stödjs inte av denna QEMU-binär"
+msgstr ""
+"iommu: att uppdatera dma-översättningen stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "iothread %1$d not found"
@@ -29819,8 +30504,8 @@ msgstr "libxenlight misslyckades att koppla ifrån nätverksenheten"
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
-"libxenlight misslyckades att koppla ifrån pci-enheten "
-"%1$04x:%2$02x:%3$02x.%4$d"
+"libxenlight misslyckades att koppla ifrån pci-enheten %1$04x:%2$02x:%3$02x."
+"%4$d"
 
 #, c-format
 msgid "libxenlight failed to parse UUID '%1$s'"
@@ -30990,6 +31675,11 @@ msgstr "attributet ”guid” saknas"
 
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr "attributet ”id” saknas i den förmedlade enhetens element <type>"
+
+msgid ""
+"missing 'name' attribute for a host CPU model deprecated property in QEMU "
+"capabilities cache"
+msgstr ""
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -33235,10 +33925,8 @@ msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr "uppkopplade ej urkopplingsbara vcpu:er måste ordnas i stigande ordning"
 
 msgid ""
-"online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
+"online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
 msgstr ""
-"uppkopplade ej urkopplingsbara vcpu:er behöver ordnas före urkopplingsbara "
-"vcpu:er"
 
 msgid "only 'connect' mode is supported for external TPM device"
 msgstr "endast läget ”connect” stödjs för en extern TPM-enhet"
@@ -33824,15 +34512,15 @@ msgid ""
 "per-device read I/O limit per second, in the form of /path/to/device,"
 "read_iops_sec,..."
 msgstr ""
-"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
-"enhet,lästa_op_s,…"
+"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,"
+"lästa_op_s,…"
 
 msgid ""
 "per-device write I/O limit per second, in the form of /path/to/device,"
 "write_iops_sec,..."
 msgstr ""
-"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
-"enhet,skrivna_op_s,…"
+"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,"
+"skrivna_op_s,…"
 
 #, c-format
 msgid "perf event '%1$s' was already specified"
@@ -34837,6 +35525,9 @@ msgstr "rapportera fel om CPU:er är inkompatibla"
 msgid "report filesystem information"
 msgstr "rapportera filsystemsinformation"
 
+msgid "report host CPU model with deprecated features disabled"
+msgstr ""
+
 msgid "report hostname"
 msgstr "rapportera värdnamn"
 
@@ -35022,8 +35713,8 @@ msgstr "att återuppta efter ögonblicksbilden misslyckades"
 #, c-format
 msgid "resuming failed post-copy migration of domain %1$s already in progress"
 msgstr ""
-"återupptagandet av den misslyckades efterkopieringsmigreringen av domänen %1$"
-"s pågår redan"
+"återupptagandet av den misslyckades efterkopieringsmigreringen av domänen "
+"%1$s pågår redan"
 
 msgid "resuming failed post-copy migration requires change protection"
 msgstr ""
@@ -36647,6 +37338,9 @@ msgstr "titlar stödjs inte av vz-drivrutinen"
 
 msgid "tls"
 msgstr "tls"
+
+msgid "toggling deprecated features for CPU model is unsupported"
+msgstr ""
 
 #, c-format
 msgid "too many NUMA cells: %1$d > %2$d"
@@ -38543,16 +39237,13 @@ msgid "unreachable static route gateway '%1$s' specified for network '%2$s'"
 msgstr "onåbar gateway med statisk rutt ”%1$s” angiven för nätverket ”%2$s”"
 
 #, c-format
-msgid ""
-"unrecognized 'firewall_backend = '%1$s' set in network driver config file "
-"%2$s"
-msgstr ""
-"okänd ”firewall_backend = %1$s” angiven i nätverksdrivrutinens "
-"konfigurationsfil %2$s"
-
-#, c-format
 msgid "unrecognized command name '%1$s'"
 msgstr "okänt kommandonamn ”%1$s”"
+
+#, c-format
+msgid ""
+"unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
+msgstr ""
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -38584,6 +39275,10 @@ msgstr "CPU-typen stödjs inte: %1$s"
 #, c-format
 msgid "unsupported Hyper-V stimer feature: %1$s"
 msgstr "ej stödd Hyper-V stimer-funktion: %1$s"
+
+#, c-format
+msgid "unsupported Hyper-V tlbflush feature: %1$s"
+msgstr ""
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
@@ -39623,14 +40318,8 @@ msgstr "virtiofs stödjer inte modellen"
 msgid "virtiofs does not support multidevs"
 msgstr "virtiofs stödjer inte multidevs"
 
-msgid "virtiofs does not support read-only access"
-msgstr "virtiofs stödjer inte åtkomst endast för läsning"
-
 msgid "virtiofs does not support wrpolicy"
 msgstr "virtiofs stödjer inte wrpolicy"
-
-msgid "virtiofs does not yet support read-only mode"
-msgstr "virtiofs stödjer inte ännu läget endast läsning"
 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "virtiofs stödjs inte av denna QEMU-binär"
@@ -40035,6 +40724,52 @@ msgstr "nollkopiering är endast tillgängligt för parallell migrering"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
+
+#~ msgid "Cannot set a base label with AppArmour"
+#~ msgstr "Kan inte sätta en basetikett för AppArmour"
+
+#~ msgid "Download length it too large"
+#~ msgstr "Hämtningslängden är för stor"
+
+#~ msgid "Libvirt"
+#~ msgstr "Libvirt"
+
+#~ msgid "System lacks NETNS support"
+#~ msgstr "Systemet saknar stöd för NETNS"
+
+#, c-format
+#~ msgid "Target host device subsystem %1$s does not match source %2$s"
+#~ msgstr "Målvärdenhetssubsystemet %1$s stämmer inte med källan %2$s"
+
+#~ msgid "Video adapters are not supported int containers."
+#~ msgstr "Videoadaptrar stödjs inte i behållare."
+
+#~ msgid "Virtual machines need to be saved"
+#~ msgstr "Virtuella maskiner behöver sparas"
+
+#~ msgid "cannot modify field '<iothreads>' (or it's parts) of the disk"
+#~ msgstr "kan inte ändra fältet ”<iothreads>” (eller dess delar) på disken"
+
+#~ msgid ""
+#~ "online non-hotpluggable vcpus need to be ordered prior to hotplugable "
+#~ "vcpus"
+#~ msgstr ""
+#~ "uppkopplade ej urkopplingsbara vcpu:er behöver ordnas före "
+#~ "urkopplingsbara vcpu:er"
+
+#, c-format
+#~ msgid ""
+#~ "unrecognized 'firewall_backend = '%1$s' set in network driver config file "
+#~ "%2$s"
+#~ msgstr ""
+#~ "okänd ”firewall_backend = %1$s” angiven i nätverksdrivrutinens "
+#~ "konfigurationsfil %2$s"
+
+#~ msgid "virtiofs does not support read-only access"
+#~ msgstr "virtiofs stödjer inte åtkomst endast för läsning"
+
+#~ msgid "virtiofs does not yet support read-only mode"
+#~ msgstr "virtiofs stödjer inte ännu läget endast läsning"
 
 #, c-format
 #~ msgid "Format mismatch: loader.format='%1$s' nvram.format='%2$s'"
