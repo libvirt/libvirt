@@ -45,6 +45,7 @@ VIR_ENUM_IMPL(qemuSaveFormat,
               "xz",
               "lzop",
               "zstd",
+              "sparse",
 );
 
 static inline void

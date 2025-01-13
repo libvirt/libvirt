@@ -613,11 +613,18 @@
 # disk space when saving large memory guests. Various compression formats are
 # available for specifying a save image compressed by the named algorithm.
 # Supported compression formats are "zstd", "lzop", "gzip", "bzip2", and "xz".
+# The "sparse" format uses QEMU's mapped-ram stream format to write guest memory
+# blocks at fixed offsets in the save image file.
 
 # save_image_format can be used to select the desired save format. "raw" is
 # the traditional format used by libvirt and is also the default. The
 # compression formats can be used to save disk space, although this typically
-# results in longer save and restore times.
+# results in longer save and restore times. The "sparse" format results in a
+# save image file that is roughly the logical size of the guest's memory,
+# although on-disk size is a function of guest memory usage. The "sparse"
+# format is useful when a predictable maximum save image file size is
+# needed. The other formats can result in a save image file much larger
+# than guest memory if the guest runs a memory intensive workload.
 #
 # save_image_format is used with 'virsh save' or 'virsh managedsave'. It is
 # an error if the specified save_image_format is not valid, or cannot be
