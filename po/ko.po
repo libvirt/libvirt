@@ -12,14 +12,14 @@
 # Kim InSoo <simmon@nplob.com>, 2022.
 # 김인수 <simmon@nplob.com>, 2022, 2023, 2024, 2025.
 # Jan Tomko <jtomko@redhat.com>, 2022.
-# Weblate <noreply-mt-weblate@weblate.org>, 2024.
+# Weblate <noreply-mt-weblate@weblate.org>, 2024, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-01-09 14:36+0000\n"
-"Last-Translator: 김인수 <simmon@nplob.com>\n"
+"PO-Revision-Date: 2025-01-12 15:19+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -11016,7 +11016,7 @@ msgid "List checkpoints for a domain"
 msgstr "도메인에 대한 체크포인트 나열"
 
 msgid "List domains"
-msgstr ""
+msgstr "도메인 목록"
 
 msgid "List event types, or wait for domain events to occur"
 msgstr "이벤트 유형을 나열하거나 도메인 이벤트가 발생할 때까지 기다립니다"
@@ -11037,22 +11037,22 @@ msgid "List interfaces"
 msgstr ""
 
 msgid "List network filter bindings"
-msgstr ""
+msgstr "네트워크 필터 바인딩 나열"
 
 msgid "List network filters"
-msgstr ""
+msgstr "네트워크 필터 나열"
 
 msgid "List network ports"
-msgstr ""
+msgstr "네트워크 포트 나열"
 
 msgid "List networks"
-msgstr ""
+msgstr "네트워크 목록"
 
 msgid "List node devices"
 msgstr ""
 
 msgid "List secrets"
-msgstr ""
+msgstr "비밀정보 목록 나열"
 
 msgid "List snapshots for a domain"
 msgstr "도메인을 위한 순간찍기 목록"
@@ -15398,7 +15398,7 @@ msgid "Start interface"
 msgstr ""
 
 msgid "Start network"
-msgstr ""
+msgstr "네트워크 시작"
 
 msgid "Start node device"
 msgstr ""
@@ -15536,7 +15536,7 @@ msgid "Stop interface"
 msgstr ""
 
 msgid "Stop network"
-msgstr ""
+msgstr "네트워크 중단"
 
 msgid "Stop node device"
 msgstr ""
