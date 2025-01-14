@@ -19,6 +19,22 @@ v11.0.0 (unreleased)
 
 * **Improvements**
 
+  * ch: Enable user aliases
+
+    User can now specify custom aliases for devices in domain XML
+
+  * qemu: Grab a QUERY job when formatting domain XML
+
+    Under some specific conditions it might have happened that domain XML did
+    not contain runtime information or returned an XML that's in process of
+    changing (e.g. by a thread that's hotplugging a device). Formatting domain
+    XML now serializes properly with other threads.
+
+  * virtiofs: Allow read only mode
+
+    The ``<filesystem/>`` with `virtiofsd` backend can now use ``<readonly/>``
+    tag to export underlying filesystem in read only mode.
+
 * **Bug fixes**
 
   * qemu: tpm: do not update profile name for transient domains
