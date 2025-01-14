@@ -61,6 +61,19 @@ v11.0.0 (unreleased)
     schema.  This is now fixed by not parsing any specified features when the
     passthrough mode is used.
 
+  * qemu: Fix a crash when starting a domain with ovs bridge and QOS
+
+  * cpu: Add missing -v1 variants for CPU models
+
+    Some CPU models (mostly old ones) were missed when versioned CPU model
+    names were introduced in the previous release.
+
+  * qemu: Fix false error when recovering failed post-copy migration
+
+    In some cases libvirt would report a failure to recover post-copy migration
+    even though the recovery started just fine and migration would eventually
+    successfully finish.
+
 
 v10.10.0 (2024-12-02)
 =====================
