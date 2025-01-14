@@ -5904,26 +5904,26 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
         if (ddomain) {
             VIR_ERROR(_("finish step ignored that migration was cancelled"));
         } else {
-            /* If Finish reported a useful error, use it instead of the
-             * original "migration unexpectedly failed" error.
+            virErrorPtr err = virGetLastError();
+            /* When both Confirm and Finish reported an error in QEMU driver,
+             * we don't really know which error is the root cause. Let's report
+             * both errors to the user.
              *
              * This is ugly but we can't do better with the APIs we have. We
              * only replace the error if Finish was called with cancelled == 1
              * and reported a real error (old libvirt would report an error
-             * from RPC instead of MIGRATE_FINISH_OK), which only happens when
-             * the domain died on destination. To further reduce a possibility
-             * of false positives we also check that Perform returned
-             * VIR_ERR_OPERATION_FAILED.
+             * from RPC instead of MIGRATE_FINISH_OK).
              */
             if (orig_err &&
                 orig_err->domain == VIR_FROM_QEMU &&
-                orig_err->code == VIR_ERR_OPERATION_FAILED) {
-                virErrorPtr err = virGetLastError();
-                if (err &&
-                    err->domain == VIR_FROM_QEMU &&
-                    err->code != VIR_ERR_MIGRATE_FINISH_OK) {
-                    g_clear_pointer(&orig_err, virFreeError);
-                }
+                orig_err->code == VIR_ERR_OPERATION_FAILED &&
+                err &&
+                err->domain == VIR_FROM_QEMU &&
+                err->code != VIR_ERR_MIGRATE_FINISH_OK) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("migration failed. Message from the source host: %1$s. Message from the destination host: %2$s"),
+                               orig_err->message, err->message);
+                g_clear_pointer(&orig_err, virFreeError);
             }
         }
     }
