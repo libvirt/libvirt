@@ -32,6 +32,25 @@
 
 G_STATIC_ASSERT(sizeof(QEMU_SAVE_MAGIC) == sizeof(QEMU_SAVE_PARTIAL));
 
+typedef enum {
+    QEMU_SAVE_FORMAT_RAW = 0,
+    QEMU_SAVE_FORMAT_GZIP = 1,
+    QEMU_SAVE_FORMAT_BZIP2 = 2,
+    /*
+     * Deprecated by xz and never used as part of a release
+     * QEMU_SAVE_FORMAT_LZMA
+     */
+    QEMU_SAVE_FORMAT_XZ = 3,
+    QEMU_SAVE_FORMAT_LZOP = 4,
+    QEMU_SAVE_FORMAT_ZSTD = 5,
+    /* Note: add new members only at the end.
+       These values are used in the on-disk format.
+       Do not change or re-use numbers. */
+
+    QEMU_SAVE_FORMAT_LAST
+} virQEMUSaveFormat;
+VIR_ENUM_DECL(qemuSaveFormat);
+
 typedef struct _virQEMUSaveHeader virQEMUSaveHeader;
 struct _virQEMUSaveHeader {
     char magic[sizeof(QEMU_SAVE_MAGIC)-1];
