@@ -430,6 +430,7 @@ qemuSaveImageCreateFd(virQEMUDriver *driver,
                       virDomainObj *vm,
                       const char *path,
                       virFileWrapperFd **wrapperFd,
+                      bool sparse,
                       bool *needUnlink,
                       unsigned int flags)
 {
@@ -439,7 +440,7 @@ qemuSaveImageCreateFd(virQEMUDriver *driver,
     int directFlag = 0;
     unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
-    if (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) {
+    if (!sparse && flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) {
         wrapperFlags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
         directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
@@ -459,7 +460,7 @@ qemuSaveImageCreateFd(virQEMUDriver *driver,
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         return -1;
 
-    if (!(*wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
+    if (!sparse && !(*wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
         return -1;
 
     ret = fd;
@@ -478,6 +479,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
                     const char *path,
                     virQEMUSaveData *data,
                     virCommand *compressor,
+                    qemuMigrationParams *saveParams,
                     unsigned int flags,
                     virDomainAsyncJob asyncJob)
 {
@@ -486,9 +488,10 @@ qemuSaveImageCreate(virQEMUDriver *driver,
     int ret = -1;
     int fd = -1;
     virFileWrapperFd *wrapperFd = NULL;
+    bool sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
 
     /* Obtain the file handle.  */
-    fd = qemuSaveImageCreateFd(driver, vm, path, &wrapperFd, &needUnlink, flags);
+    fd = qemuSaveImageCreateFd(driver, vm, path, &wrapperFd, sparse, &needUnlink, flags);
 
     if (fd < 0)
         goto cleanup;
@@ -497,7 +500,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
         goto cleanup;
 
     /* Perform the migration */
-    if (qemuMigrationSrcToFile(driver, vm, fd, compressor, asyncJob) < 0)
+    if (qemuMigrationSrcToFile(driver, vm, &fd, compressor, saveParams, flags, asyncJob) < 0)
         goto cleanup;
 
     /* Touch up file header to mark image complete. */
@@ -505,14 +508,18 @@ qemuSaveImageCreate(virQEMUDriver *driver,
     /* Reopen the file to touch up the header, since we aren't set
      * up to seek backwards on wrapperFd.  The reopened fd will
      * trigger a single page of file system cache pollution, but
-     * that's acceptable.  */
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("unable to close %1$s"), path);
-        goto cleanup;
-    }
+     * that's acceptable.
+     * If using mapped-ram, the fd was passed to qemu, so no need
+     * to close it.  */
+    if (!sparse) {
+        if (VIR_CLOSE(fd) < 0) {
+            virReportSystemError(errno, _("unable to close %1$s"), path);
+            goto cleanup;
+        }
 
-    if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
-        goto cleanup;
+        if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
+            goto cleanup;
+    }
 
     if ((fd = qemuDomainOpenFile(cfg, vm->def, path, O_WRONLY, NULL)) < 0 ||
         virQEMUSaveDataFinish(data, &fd, path) < 0)
@@ -552,7 +559,7 @@ qemuSaveImageGetCompressionProgram(int format,
 
     *compressor = NULL;
 
-    if (format == QEMU_SAVE_FORMAT_RAW)
+    if (format == QEMU_SAVE_FORMAT_RAW || format == QEMU_SAVE_FORMAT_SPARSE)
         return 0;
 
     if (!(prog = virFindFileInPath(imageFormat))) {

@@ -2588,6 +2588,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUSaveData *data = NULL;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
+    g_autoptr(qemuMigrationParams) saveParams = NULL;
 
     if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SAVE,
                                   VIR_DOMAIN_JOB_OPERATION_SAVE, flags) < 0)
@@ -2595,6 +2596,14 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
 
     if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_SAVE, 0))
         goto endjob;
+
+    if (format == QEMU_SAVE_FORMAT_SPARSE &&
+        !qemuMigrationCapsGet(vm, QEMU_MIGRATION_CAP_MAPPED_RAM)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("save image format %1$s is not supported by this QEMU binary"),
+                       qemuSaveFormatTypeToString(format));
+        goto endjob;
+    }
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2659,8 +2668,11 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto endjob;
     xml = NULL;
 
+    if (!(saveParams = qemuMigrationParamsForSave(format == QEMU_SAVE_FORMAT_SPARSE)))
+        goto endjob;
+
     ret = qemuSaveImageCreate(driver, vm, path, data, compressor,
-                              flags, VIR_ASYNC_JOB_SAVE);
+                              saveParams, flags, VIR_ASYNC_JOB_SAVE);
     if (ret < 0)
         goto endjob;
 
@@ -3092,6 +3104,8 @@ doCoreDump(virQEMUDriver *driver,
                          memory_dump_format) < 0)
             goto cleanup;
     } else {
+        g_autoptr(qemuMigrationParams) dump_params = NULL;
+
         if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("kdump-compressed format is only supported with memory-only dump"));
@@ -3101,8 +3115,11 @@ doCoreDump(virQEMUDriver *driver,
         if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_DUMP, 0))
             goto cleanup;
 
-        if (qemuMigrationSrcToFile(driver, vm, fd, compressor,
-                                   VIR_ASYNC_JOB_DUMP) < 0)
+        if (!(dump_params = qemuMigrationParamsNew()))
+            goto cleanup;
+
+        if (qemuMigrationSrcToFile(driver, vm, &fd, compressor,
+                                   dump_params, dump_flags, VIR_ASYNC_JOB_DUMP) < 0)
             goto cleanup;
     }
 

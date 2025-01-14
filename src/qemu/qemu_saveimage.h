@@ -136,6 +136,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
                     const char *path,
                     virQEMUSaveData *data,
                     virCommand *compressor,
+                    qemuMigrationParams *saveParams,
                     unsigned int flags,
                     virDomainAsyncJob asyncJob);
 

@@ -2231,6 +2231,40 @@ qemuMonitorMigrateToFd(qemuMonitor *mon,
 
 
 int
+qemuMonitorMigrateToFdSet(virDomainObj *vm,
+                          unsigned int flags,
+                          int *fd)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuMonitor *mon = priv->mon;
+    off_t offset;
+    g_autoptr(qemuFDPass) fdPassMigrate = NULL;
+    g_autofree char *uri = NULL;
+    int ret;
+
+    VIR_DEBUG("fd=%d flags=0x%x", *fd, flags);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    if ((offset = lseek(*fd, 0, SEEK_CUR)) == -1) {
+        virReportSystemError(errno,
+                             "%s", _("failed to seek on file descriptor"));
+        return -1;
+    }
+
+    fdPassMigrate = qemuFDPassNew("libvirt-outgoing-migrate", priv);
+    qemuFDPassAddFD(fdPassMigrate, fd, "-fd");
+    qemuFDPassTransferMonitor(fdPassMigrate, mon);
+
+    uri = g_strdup_printf("file:%s,offset=%#lx",
+                          qemuFDPassGetPath(fdPassMigrate), offset);
+    ret = qemuMonitorJSONMigrate(mon, flags, uri);
+
+    return ret;
+}
+
+
+int
 qemuMonitorMigrateToHost(qemuMonitor *mon,
                          unsigned int flags,
                          const char *protocol,

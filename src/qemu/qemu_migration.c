@@ -7113,46 +7113,17 @@ qemuMigrationProcessUnattended(virQEMUDriver *driver,
 }
 
 
-/* Helper function called while vm is active.  */
-int
-qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
-                       int fd,
-                       virCommand *compressor,
-                       virDomainAsyncJob asyncJob)
+static int
+qemuMigrationSrcToLegacyFile(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             int fd,
+                             virCommand *compressor,
+                             virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int rc;
     int ret = -1;
     int pipeFD[2] = { -1, -1 };
-    unsigned long saveMigBandwidth = priv->migMaxBandwidth;
     char *errbuf = NULL;
-    virErrorPtr orig_err = NULL;
-    g_autoptr(qemuMigrationParams) migParams = NULL;
-
-    if (qemuMigrationSetDBusVMState(driver, vm) < 0)
-        return -1;
-
-    /* Increase migration bandwidth to unlimited since target is a file.
-     * Failure to change migration speed is not fatal. */
-    if (!(migParams = qemuMigrationParamsForSave(false)))
-        return -1;
-
-    if (qemuMigrationParamsSetULL(migParams,
-                                  QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
-                                  QEMU_DOMAIN_MIG_BANDWIDTH_MAX * 1024 * 1024) < 0)
-        return -1;
-
-    if (qemuMigrationParamsApply(vm, asyncJob, migParams, 0) < 0)
-        return -1;
-
-    priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("guest unexpectedly quit"));
-        /* nothing to tear down */
-        return -1;
-    }
 
     if (compressor && virPipe(pipeFD) < 0)
         return -1;
@@ -7169,7 +7140,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         goto cleanup;
 
     if (!compressor) {
-        rc = qemuMonitorMigrateToFd(priv->mon, 0, fd);
+        ret = qemuMonitorMigrateToFd(priv->mon, 0, fd);
     } else {
         virCommandSetInputFD(compressor, pipeFD[0]);
         virCommandSetOutputFD(compressor, &fd);
@@ -7185,12 +7156,98 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
             qemuDomainObjExitMonitor(vm);
             goto cleanup;
         }
-        rc = qemuMonitorMigrateToFd(priv->mon, 0, pipeFD[1]);
+        ret = qemuMonitorMigrateToFd(priv->mon, 0, pipeFD[1]);
         if (VIR_CLOSE(pipeFD[0]) < 0 ||
             VIR_CLOSE(pipeFD[1]) < 0)
             VIR_WARN("failed to close intermediate pipe");
     }
     qemuDomainObjExitMonitor(vm);
+
+ cleanup:
+    VIR_FORCE_CLOSE(pipeFD[0]);
+    VIR_FORCE_CLOSE(pipeFD[1]);
+
+    if (errbuf) {
+        VIR_DEBUG("Compression binary stderr: %s", NULLSTR(errbuf));
+        VIR_FREE(errbuf);
+    }
+
+    return ret;
+}
+
+
+static int
+qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             int *fd,
+                             unsigned int flags,
+                             virDomainAsyncJob asyncJob)
+{
+    int ret;
+
+    /* mapped-ram does not support directIO */
+    if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("bypass cache unsupported by this system"));
+        return -1;
+    }
+
+    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, *fd) < 0)
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorMigrateToFdSet(vm, 0, fd);
+    qemuDomainObjExitMonitor(vm);
+    return ret;
+}
+
+
+/* Helper function called while vm is active.  */
+int
+qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
+                       int *fd,
+                       virCommand *compressor,
+                       qemuMigrationParams *migParams,
+                       unsigned int flags,
+                       virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int rc;
+    int ret = -1;
+    unsigned long saveMigBandwidth = priv->migMaxBandwidth;
+    virErrorPtr orig_err = NULL;
+
+    if (qemuMigrationSetDBusVMState(driver, vm) < 0)
+        return -1;
+
+    /* Increase migration bandwidth to unlimited since target is a file.
+     * Failure to change migration speed is not fatal. */
+    if (migParams &&
+        qemuMigrationParamsSetULL(migParams,
+                                  QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
+                                  QEMU_DOMAIN_MIG_BANDWIDTH_MAX * 1024 * 1024) < 0)
+        return -1;
+
+    if (qemuMigrationParamsApply(vm, asyncJob, migParams, 0) < 0)
+        return -1;
+
+    priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest unexpectedly quit"));
+        /* nothing to tear down */
+        return -1;
+    }
+
+    if (migParams &&
+        qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM))
+        rc = qemuMigrationSrcToSparseFile(driver, vm, fd, flags, asyncJob);
+    else
+        rc = qemuMigrationSrcToLegacyFile(driver, vm, *fd, compressor, asyncJob);
+
     if (rc < 0)
         goto cleanup;
 
@@ -7216,21 +7273,23 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
     if (ret < 0 && !orig_err)
         virErrorPreserveLast(&orig_err);
 
-    /* Restore max migration bandwidth */
+    /* Remove fdset passed to qemu and restore max migration bandwidth */
     if (qemuDomainObjIsActive(vm)) {
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
+            qemuFDPass *fdPass =
+                qemuFDPassNewFromMonitor("libvirt-outgoing-migrate", priv->mon);
+
+            if (fdPass)
+                qemuFDPassTransferMonitorRollback(fdPass, priv->mon);
+            qemuDomainObjExitMonitor(vm);
+        }
+
         if (qemuMigrationParamsSetULL(migParams,
                                       QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
                                       saveMigBandwidth * 1024 * 1024) == 0)
             ignore_value(qemuMigrationParamsApply(vm, asyncJob,
                                                   migParams, 0));
         priv->migMaxBandwidth = saveMigBandwidth;
-    }
-
-    VIR_FORCE_CLOSE(pipeFD[0]);
-    VIR_FORCE_CLOSE(pipeFD[1]);
-    if (errbuf) {
-        VIR_DEBUG("Compression binary stderr: %s", NULLSTR(errbuf));
-        VIR_FREE(errbuf);
     }
 
     virErrorRestore(&orig_err);
