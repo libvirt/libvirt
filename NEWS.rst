@@ -42,6 +42,13 @@ v11.0.0 (unreleased)
     Fix a possible crash when starting a transient domain which was
     introduced in the previous release.
 
+  * qemu: Fix snapshot to not delete disk image with internal snapshot
+
+    When a VM has internal snapshot that is parent to external snapshot and user
+    reverts to the internal snapshot and deletes the external snapshot libvirt
+    would delete the disk image containing the internal snapshot. This would
+    result in data loss.
+
 
 v10.10.0 (2024-12-02)
 =====================
