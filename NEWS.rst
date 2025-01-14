@@ -17,6 +17,10 @@ v11.0.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for direct and extended tlbflush features
+
+    Domains can now utilise more tlbflush hyperv features.
+
 * **Improvements**
 
   * ch: Enable user aliases
@@ -48,6 +52,14 @@ v11.0.0 (unreleased)
     reverts to the internal snapshot and deletes the external snapshot libvirt
     would delete the disk image containing the internal snapshot. This would
     result in data loss.
+
+  * qemu: Do not format invalid XML with hyperv features in passthrough mode
+
+    When hyperv features were specified together with ``mode="passthrough"``
+    libvirt parsed and formatted such features in the domain XML even though
+    they were not used at all, resulting in XML that is not valid based on our
+    schema.  This is now fixed by not parsing any specified features when the
+    passthrough mode is used.
 
 
 v10.10.0 (2024-12-02)
