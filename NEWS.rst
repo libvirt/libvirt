@@ -21,6 +21,11 @@ v11.0.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: tpm: do not update profile name for transient domains
+
+    Fix a possible crash when starting a transient domain which was
+    introduced in the previous release.
+
 
 v10.10.0 (2024-12-02)
 =====================
