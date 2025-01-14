@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-01-07 17:44+0000\n"
+"PO-Revision-Date: 2025-01-14 14:38+0000\n"
 "Last-Translator: Nicolas Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -6697,9 +6697,11 @@ msgstr ""
 "Se esperaba el modo de CPU 'custom' en el XML del dominio pero se encontró "
 "'%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expecting domain XML CPU sockets per core as %1$d but found %2$d"
-msgstr "Se esperaba que el tipo virt sea '%s', pero se ha encontrado '%s'"
+msgstr ""
+"Se esperaba que el valor de sockets por núcleo de la CPU en el XML del "
+"dominio fuera %1$d pero se encontró %2$d"
 
 #, c-format
 msgid ""
@@ -6747,13 +6749,14 @@ msgstr ""
 "XML, fuera 'buslogic', 'lsilogic', 'lsisas1068', o 'vmpvscsi', pero se ha "
 "encontrado '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Expecting domain XML entry 'devices/interface/model' to be 'vlance' or "
 "'vmxnet' or 'vmxnet2' or 'vmxnet3' or 'e1000' or 'e1000e' but found '%1$s'"
 msgstr ""
-"Se esperaba que la entrada VMX '%s' fuera 'device', o 'file', o 'pipe', pero "
-"se ha encontrado '%s'"
+"Se esperaba que la entrada 'devices/interface/model' en el XML del dominio "
+"fuera 'vlance', 'vmxnet', 'vmxnet2', 'vmxnet3', 'e1000' o 'e1000e' pero se "
+"encontró '%1$s'"
 
 msgid "Expecting domain XML entry 'vcpu' to be greater than 0"
 msgstr ""
@@ -6832,9 +6835,9 @@ msgstr "Falló"
 msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed new node mode for target '%1$s'"
-msgstr "No se pudo actualizar '%s' de modo de nodo para destino '%s'"
+msgstr "Error en el modo de nuevo nodo para el destino '%1$s'"
 
 #, c-format
 msgid "Failed set TLS x509 credentials: %1$s"
@@ -6859,17 +6862,17 @@ msgstr ""
 msgid "Failed to acquire lock"
 msgstr "Falló al adquirir cerrojo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to acquire lock: %1$s"
-msgstr "Falló al adquirir cerrojo"
+msgstr "Error al conseguir el bloqueo: %1$s"
 
 #, c-format
 msgid "Failed to acquire pid file '%1$s'"
 msgstr "Falló al adquirir archivo PID '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add %1$s controller type definition"
-msgstr "No se pudo desconectar del hipervisor"
+msgstr "Error al agregar la definición del tipo de controlador %1$s"
 
 #, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
@@ -6877,18 +6880,17 @@ msgstr ""
 "No se pudo añadir dirección IP %1$s para cache de dirección IP para interfaz "
 "%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add IP address %1$s/%2$d%3$s%4$s%5$s%6$s to %7$s"
-msgstr ""
-"No se pudo añadir dirección IP %s para cache de dirección IP para interfaz %s"
+msgstr "Error al agregar la dirección IP %1$s/%2$d%3$s%4$s%5$s%6$s a %7$s"
 
 #, c-format
 msgid "Failed to add PCI device %1$s to the inactive list"
 msgstr "Fallo al desvincular el dispositivo PCI %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add capability %1$s: %2$d"
-msgstr "Falló al aplicar capacidades: %d"
+msgstr "Error al añadir la prestación %1$s: %2$d"
 
 #, c-format
 msgid ""
@@ -6965,13 +6967,13 @@ msgstr "Falló al reiniciar el dominio %s"
 msgid "Failed to begin network config change transaction"
 msgstr "Falló al iniciar transacción de cambio de network config"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %1$s on to %2$s"
-msgstr "No se pudo vincular socket a '%s'"
+msgstr "Error al vincular %1$s a %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %1$s to new root %2$s"
-msgstr "No se pudo vincular socket a '%s'"
+msgstr "Error al vincular %1$s al nuevo root %2$s"
 
 #, c-format
 msgid "Failed to bind cgroup '%1$s' on '%2$s'"
@@ -7006,17 +7008,17 @@ msgstr "No se pudo cambiar propietario de %1$s a %2$u:%3$u"
 msgid "Failed to change ownership of '%1$s' to %2$d:%3$d"
 msgstr "Falló al cambiar pertenencia '%1$s' como %2$d:%3$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change ownership of tty %1$s"
-msgstr "Falló al cambiar pertenencia '%s' como %d:%d"
+msgstr "Error al cambiar el propietario de tty %1$s."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change size of volume '%1$s' by %2$s"
-msgstr "Falló al cambiar pertenencia '%s' como %d:%d"
+msgstr "Error al cambiar el tamaño del volumen '%1$s' en %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change size of volume '%1$s' to %2$s"
-msgstr "Falló al cambiar pertenencia '%s' como %d:%d"
+msgstr "Error al cambiar el tamaño del volumen '%1$s' a %2$s"
 
 msgid "Failed to change storage controller model"
 msgstr ""
@@ -7129,9 +7131,9 @@ msgstr "Falló al convertir '%1$s' en int no firmado"
 msgid "Failed to convert '%1$s' to unsigned long long"
 msgstr "Falló al intentar convertir '%1$s' en long long no firmado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to convert interface index %1$d to a name"
-msgstr "Falló al obtener información de interfaz"
+msgstr "Error al convertir el índice %1$d de la interfaz a un nombre"
 
 #, fuzzy, c-format
 msgid "Failed to convert loadparm '%1$s' to upper case"
@@ -39991,62 +39993,62 @@ msgstr "Funcionalidad HyperV Enlightenment no tiene soporte: %1$s"
 
 #, c-format
 msgid "unsupported Hyper-V tlbflush feature: %1$s"
-msgstr ""
+msgstr "Característica tlbflush de Hyper-V no admitida: %1$s"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
-msgstr "Funcionalidad HyperV Enlightenment no tiene soporte: %1$s"
+msgstr "Característica HyperV Enlightenment no admitida: %1$s"
 
 #, c-format
 msgid "unsupported IPv6 address prefix='%1$u' - must be 64"
-msgstr ""
+msgstr "prefijo de dirección IPv6 no admitido='%1$u' - debería ser 64"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported KVM feature: %1$s"
-msgstr "Funcionalidad %1$s no tiene soporte"
+msgstr "característica de KVM no admitida: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported Namespace feature: %1$s"
-msgstr "Funcionalidad %1$s no tiene soporte"
+msgstr "característica de espacio de nombres no admitida: %1$s"
 
-#, fuzzy
 msgid "unsupported OS parameters"
-msgstr "Tipo de sistema operativo sin soporte: %s"
+msgstr "parámetros del SO no admitidos"
 
-#, fuzzy
 msgid "unsupported PCI controller model: only PCI root supported"
-msgstr "Modelo de controlador no tiene soporte: %s"
+msgstr "Modelo de controlador PCI no admitido: solo se admite PCI raíz"
 
 msgid "unsupported SSH key type"
-msgstr "Tipo de clave SSH no tiene soporte"
+msgstr "Tipo de clave SSH no admitida"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported Xen feature: %1$s"
-msgstr "Funcionalidad %1$s no tiene soporte"
+msgstr "Característica de Xen no admitida: %1$s"
 
 #, c-format
 msgid "unsupported address family for range %1$s - %2$s, must be ipv4 or ipv6"
 msgstr ""
+"familia de direcciones no admitida para el rango %1$s - %2$s, debería ser "
+"ipv4 o ipv6"
 
 #, c-format
 msgid "unsupported address type '%1$s' in network %2$s"
-msgstr "tipo de dirección '%1$s' no tiene soporte en red %2$s"
+msgstr "tipo de dirección '%1$s' no admitida en la red %2$s"
 
 #, c-format
 msgid "unsupported algorithm %1$d"
-msgstr "Algoritmo no tiene soporte %1$d"
+msgstr "algoritmo %1$d no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported architecture: %1$s"
-msgstr "Funcionalidad %1$s no tiene soporte"
+msgstr "arquitectura no admitida: %1$s"
 
 #, c-format
 msgid "unsupported audio backend '%1$s'"
-msgstr ""
+msgstr "backend de audio '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported audio model %1$s"
-msgstr ""
+msgstr "modelo de audio %1$s no admitido"
 
 #, c-format
 msgid "unsupported authentication type %1$d"
@@ -40054,22 +40056,22 @@ msgstr "tipo de autenticación %1$d no admitido"
 
 #, c-format
 msgid "unsupported backend for pstore device: %1$s"
-msgstr ""
+msgstr "backend no admitido para el dispositivo pstore: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported balloon device model '%1$s'"
-msgstr "Modo de hostdev %1$s  no tiene soporte"
+msgstr "modelo '%1$s' de dispositivo balloon no admitido"
 
 #, c-format
 msgid "unsupported chardev '%1$s'"
-msgstr "chardev sin soporte '%1$s'"
+msgstr "chardev '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported chr device type '%1$s'"
 msgstr "tipo de dispositivo chr no admitido: '%1$s'"
 
 msgid "unsupported clock adjustment='reset'"
-msgstr "Ajuste de reloj sin soporte='reset'"
+msgstr "clock adjustment='reset' no admitido"
 
 #, c-format
 msgid "unsupported clock offset '%1$s'"
@@ -40077,7 +40079,7 @@ msgstr "offset de reloj '%1$s' no admitido"
 
 #, c-format
 msgid "unsupported clock offset='%1$s'"
-msgstr "Desplazamiento de reloj sin soporte='%1$s'"
+msgstr "clock offset='%1$s' no admitido"
 
 #, c-format
 msgid "unsupported config type %1$s"
