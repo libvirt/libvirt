@@ -836,6 +836,11 @@ virSecretLoadValue(virSecretObj *obj)
         goto cleanup;
     }
 
+    if (st.st_size < 1) {
+        ret = 0;
+        goto cleanup;
+    }
+
     contents = g_new0(char, st.st_size + 1);
 
     if (saferead(fd, contents, st.st_size) != st.st_size) {
