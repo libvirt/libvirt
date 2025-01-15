@@ -2715,6 +2715,7 @@ mymain(void)
      * virDomainMemoryDefCheckConflict() works for NVDIMMs which are special
      * than other memory devices because of how they handle <labelsize/> */
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-overlap");
+    DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-virtio-mem-pci-s390x", "s390x");
 
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-caps", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("machine-aeskeywrap-on-cap", "s390x");
