@@ -726,6 +726,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 470 */
               "migrate-incoming.exit-on-error", /* QEMU_CAPS_MIGRATE_INCOMING_EXIT_ON_ERROR */
               "machine.virt.aia", /* QEMU_CAPS_MACHINE_VIRT_AIA */
+              "virtio-mem-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW */
     );
 
 
@@ -1414,6 +1415,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-sound-device", QEMU_CAPS_DEVICE_VIRTIO_SOUND },
     { "sev-snp-guest", QEMU_CAPS_SEV_SNP_GUEST },
     { "acpi-erst", QEMU_CAPS_DEVICE_ACPI_ERST },
+    { "virtio-mem-ccw", QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW },
 };
 
 
