@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libvirt package.
-# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023, 2025.
 # Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>, 2023, 2024.
 # Weblate <noreply-mt-weblate@weblate.org>, 2023, 2024, 2025.
 msgid ""
@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
 "PO-Revision-Date: 2025-01-15 15:56+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
 "Language: ka\n"
@@ -5242,7 +5242,7 @@ msgid "Delete interface"
 msgstr ""
 
 msgid "Delete network"
-msgstr ""
+msgstr "ქსელის წაშლა"
 
 msgid "Delete network filter"
 msgstr ""
