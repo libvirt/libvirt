@@ -5224,7 +5224,8 @@ qemuValidateDomainDeviceDefHub(virDomainHubDef *hub,
 
 
 static int
-qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
+qemuValidateDomainDeviceDefMemory(const virDomainMemoryDef *mem,
+                                  const virDomainDef *def,
                                   virQEMUCaps *qemuCaps)
 {
     virSGXCapability *sgxCaps;
@@ -5263,10 +5264,38 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI)) {
+        if ((mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI)) ||
+            (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio-mem isn't supported by this QEMU binary"));
             return -1;
+        }
+
+        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            /* virtio-mem-ccw has a few differences compared to virtio-mem-pci:
+             *
+             * 1) corresponding memory-backing-* object can't have a different
+             *    page size than the boot memory (see s390_machine_device_plug()
+             *    in qemu sources).
+             * 2) Since its commit v2.12.0-rc0~41^2~6 QEMU doesn't allow NUMA
+             *    for s390.
+             */
+
+            if (mem->source.virtio_mem.pagesize != 0 &&
+                def->mem.nhugepages &&
+                mem->source.virtio_mem.pagesize != def->mem.hugepages[0].size) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("virtio-mem-ccw can't use different page size than the boot memory"));
+                return -1;
+            }
+
+            if (mem->targetNode != 0 && mem->targetNode != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("NUMA nodes are not supported for virtio-mem-ccw"));
+                return -1;
+            }
         }
 
         if (mem->target.virtio_mem.dynamicMemslots == VIR_TRISTATE_BOOL_YES &&
@@ -5455,7 +5484,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         return qemuValidateDomainDeviceDefSound(dev->data.sound, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        return qemuValidateDomainDeviceDefMemory(dev->data.memory, qemuCaps);
+        return qemuValidateDomainDeviceDefMemory(dev->data.memory, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_SHMEM:
         return qemuValidateDomainDeviceDefShmem(dev->data.shmem, qemuCaps);
