@@ -241,6 +241,11 @@ qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
         reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED)
         return;
 
+    if (reason == VIR_DOMAIN_PAUSED_IOERROR) {
+        VIR_DEBUG("Domain is paused due to I/O error, skipping resume");
+        return;
+    }
+
     VIR_DEBUG("Restoring pre-migration state due to migration error");
 
     /* we got here through some sort of failure; start the domain again */
