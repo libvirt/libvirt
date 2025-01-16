@@ -2836,15 +2836,63 @@ cpuidSet(uint32_t base, virCPUData *data)
 }
 
 
+static size_t
+virCPUx86ListMSRs(virCPUx86Map *map,
+                  unsigned long **msrs)
+{
+    size_t n = 0;
+    size_t i;
+
+    /* These three nested loops look horrible, but data->len is always 1 here
+     * and thanks to grouping features in the CPU map by their MSR index the
+     * third loop will run more than one iteration only once for each distinct
+     * index.
+     */
+    for (i = 0; i < map->nfeatures; i++) {
+        virCPUx86Data *data = &map->features[i]->data;
+        size_t j;
+
+        for (j = 0; j < data->len; j++) {
+            virCPUx86DataItem *item = &data->items[j];
+            bool found = false;
+            unsigned long msr;
+            size_t k;
+
+            if (item->type != VIR_CPU_X86_DATA_MSR)
+                continue;
+
+            msr = item->data.msr.index;
+
+            for (k = n; k > 0; k--) {
+                if ((*msrs)[k - 1] == msr) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                VIR_APPEND_ELEMENT(*msrs, n, msr);
+        }
+    }
+
+    return n;
+}
+
+
 static int
 virCPUx86GetHost(virCPUDef *cpu,
                  virDomainCapsCPUModels *models)
 {
     g_autoptr(virCPUData) cpuData = NULL;
     unsigned int addrsz;
+    virCPUx86Map *map;
+    g_autofree unsigned long *msrs = NULL;
+    size_t nmsrs;
+    uint64_t msr;
+    size_t i;
     int ret;
 
-    if (virCPUx86DriverInitialize() < 0)
+    if (!(map = virCPUx86GetMap()))
         return -1;
 
     if (!(cpuData = virCPUDataNew(archs[0])))
@@ -2854,18 +2902,16 @@ virCPUx86GetHost(virCPUDef *cpu,
         cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
         return -1;
 
-    /* Read the IA32_ARCH_CAPABILITIES MSR (0x10a) if supported.
-     * This is best effort since there might be no way to read the MSR
-     * when we are not running as root. */
-    if (virCPUx86DataCheckFeature(cpuData, "arch-capabilities") == 1) {
-        uint64_t msr;
-        unsigned long index = 0x10a;
+    nmsrs = virCPUx86ListMSRs(map, &msrs);
 
-        if (virHostCPUGetMSR(index, &msr) == 0) {
+    /* This is best effort since there might be no way to read the MSR
+     * when we are not running as root. */
+    for (i = 0; i < nmsrs; i++) {
+        if (virHostCPUGetMSR(msrs[i], &msr) == 0) {
             virCPUx86DataItem item = {
                 .type = VIR_CPU_X86_DATA_MSR,
                 .data.msr = {
-                    .index = index,
+                    .index = msrs[i],
                     .eax = msr & 0xffffffff,
                     .edx = msr >> 32,
                 },
