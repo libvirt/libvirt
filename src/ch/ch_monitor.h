@@ -97,6 +97,10 @@ struct _virCHMonitor {
     char *socketpath;
 
     char *eventmonitorpath;
+    int eventmonitorfd;
+
+    virThread event_handler_thread;
+    int event_handler_stop;
 
     pid_t pid;
 

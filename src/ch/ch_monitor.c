@@ -20,12 +20,14 @@
 
 #include <config.h>
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <curl/curl.h>
 
 #include "datatypes.h"
 #include "ch_conf.h"
+#include "ch_events.h"
 #include "ch_interface.h"
 #include "ch_monitor.h"
 #include "domain_interface.h"
@@ -542,12 +544,16 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
     g_autoptr(virCHMonitor) mon = NULL;
     g_autoptr(virCommand) cmd = NULL;
     int socket_fd = 0;
+    int event_monitor_fd;
 
     if (virCHMonitorInitialize() < 0)
         return NULL;
 
     if (!(mon = virObjectLockableNew(virCHMonitorClass)))
         return NULL;
+
+    /* avoid VIR_FORCE_CLOSE()-ing garbage fd value in virCHMonitorClose */
+    mon->eventmonitorfd = -1;
 
     if (!vm->def) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -557,8 +563,6 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
 
     /* prepare to launch Cloud-Hypervisor socket */
     mon->socketpath = g_strdup_printf("%s/%s-socket", cfg->stateDir, vm->def->name);
-    mon->eventmonitorpath = g_strdup_printf("%s/%s-event-monitor",
-                                            cfg->stateDir, vm->def->name);
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Cannot create socket directory '%1$s'"),
@@ -570,6 +574,27 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
         virReportSystemError(errno,
                              _("Cannot create save directory '%1$s'"),
                              cfg->saveDir);
+        return NULL;
+    }
+
+    /* Event monitor file to listen for VM state changes */
+    mon->eventmonitorpath = g_strdup_printf("%s/%s-event-monitor-fifo",
+                                            cfg->stateDir, vm->def->name);
+    if (virFileExists(mon->eventmonitorpath)) {
+        VIR_WARN("Monitor file (%s) already exists, trying to delete!",
+                  mon->eventmonitorpath);
+        if (virFileRemove(mon->eventmonitorpath, -1, -1) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to remove the file: %1$s"),
+                           mon->eventmonitorpath);
+            return NULL;
+        }
+    }
+
+    if (mkfifo(mon->eventmonitorpath, S_IWUSR | S_IRUSR) < 0 &&
+            errno != EEXIST) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot create monitor FIFO"));
         return NULL;
     }
 
@@ -597,11 +622,34 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
     if (virCommandRunAsync(cmd, &mon->pid) < 0)
         return NULL;
 
-    /* get a curl handle */
-    mon->handle = curl_easy_init();
+    /* open the reader end of fifo before start Event Handler */
+    while ((event_monitor_fd = open(mon->eventmonitorpath, O_RDONLY)) < 0) {
+        if (errno == EINTR) {
+            /* 100 milli seconds */
+            g_usleep(100000);
+            continue;
+        }
+        /* Any other error should be a BUG(kernel/libc/libvirtd)
+         * (ENOMEM can happen on exceeding per-user limits)
+         */
+        VIR_ERROR(_("%1$s: Failed to open the event monitor FIFO(%2$s) read end!"),
+                  vm->def->name, mon->eventmonitorpath);
+        /* CH process(Writer) is blocked at this point as EventHandler(Reader)
+         * fails to open the FIFO.
+         */
+        return NULL;
+    }
+    mon->eventmonitorfd = event_monitor_fd;
+    VIR_DEBUG("%s: Opened the event monitor FIFO(%s)", vm->def->name, mon->eventmonitorpath);
 
     /* now has its own reference */
     mon->vm = virObjectRef(vm);
+
+    if (virCHStartEventHandler(mon) < 0)
+        return NULL;
+
+    /* get a curl handle */
+    mon->handle = curl_easy_init();
 
     return g_steal_pointer(&mon);
 }
@@ -638,6 +686,10 @@ void virCHMonitorClose(virCHMonitor *mon)
         g_clear_pointer(&mon->socketpath, g_free);
     }
 
+    virCHStopEventHandler(mon);
+    if (mon->eventmonitorfd >= 0) {
+        VIR_FORCE_CLOSE(mon->eventmonitorfd);
+    }
     if (mon->eventmonitorpath) {
         if (virFileRemove(mon->eventmonitorpath, -1, -1) < 0) {
             VIR_WARN("Unable to remove CH event monitor file '%s'",
