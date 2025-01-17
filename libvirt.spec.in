@@ -29,6 +29,7 @@
 %define arches_zfs              %{arches_x86} %{power64} %{arm}
 %define arches_numactl          %{arches_x86} %{power64} aarch64 s390x
 %define arches_numad            %{arches_x86} %{power64} aarch64
+%define arches_ch               x86_64 aarch64
 
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
@@ -123,6 +124,9 @@
 %endif
 %ifnarch %{arches_ceph}
     %define with_storage_rbd 0
+%endif
+%ifnarch %{arches_ch}
+    %define with_ch 0
 %endif
 
 # RHEL doesn't ship many hypervisor drivers
