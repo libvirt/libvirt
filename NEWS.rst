@@ -26,6 +26,13 @@ v11.1.0 (unreleased)
 
 * **New features**
 
+  * ch: Support handling events from cloud-hypervisor
+
+    The ch driver now supports handling events from the cloud-hypervisor.
+    Events include VM lifecyle operations such as  shutdown, pause, resume,
+    etc. Libvirt will now read these events and take actions such as
+    updating domain state, etc.
+
 * **Improvements**
 
 * **Bug fixes**
