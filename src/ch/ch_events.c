@@ -28,6 +28,103 @@
 
 VIR_LOG_INIT("ch.ch_events");
 
+VIR_ENUM_IMPL(virCHEvent,
+              VIR_CH_EVENT_LAST,
+              "vmm:starting",
+              "vmm:shutdown",
+              "vm:booting",
+              "vm:booted",
+              "vm:rebooting",
+              "vm:rebooted",
+              "vm:shutdown",
+              "vm:deleted",
+              "vm:pausing",
+              "vm:paused",
+              "vm:resuming",
+              "vm:resumed",
+              "vm:snapshotting",
+              "vm:snapshotted",
+              "vm:restoring",
+              "vm:restored",
+);
+
+static int
+virCHEventStopProcess(virDomainObj *vm,
+                      virDomainShutoffReason reason)
+{
+    virCHDriver *driver =  ((virCHDomainObjPrivate *)vm->privateData)->driver;
+
+    virObjectLock(vm);
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY))
+        return -1;
+    virCHProcessStop(driver, vm, reason);
+    virDomainObjEndJob(vm);
+    virObjectUnlock(vm);
+
+    return 0;
+}
+
+static int
+virCHProcessEvent(virCHMonitor *mon,
+                  virJSONValue *eventJSON)
+{
+    const char *event;
+    const char *source;
+    virCHEvent ev;
+    g_autofree char *timestamp = NULL;
+    g_autofree char *full_event = NULL;
+    virDomainObj *vm = mon->vm;
+    int ret = 0;
+
+    if (virJSONValueObjectHasKey(eventJSON, "source") == 0) {
+        VIR_WARN("%s: Invalid JSON from monitor, no source key", vm->def->name);
+        return -1;
+    }
+    if (virJSONValueObjectHasKey(eventJSON, "event") == 0) {
+        VIR_WARN("%s: Invalid JSON from monitor, no event key", vm->def->name);
+        return -1;
+    }
+    source = virJSONValueObjectGetString(eventJSON, "source");
+    event = virJSONValueObjectGetString(eventJSON, "event");
+    full_event = g_strdup_printf("%s:%s", source, event);
+    ev = virCHEventTypeFromString(full_event);
+    VIR_DEBUG("%s: Source: %s, Event: %s, ev: %d", vm->def->name, source, event, ev);
+
+    switch (ev) {
+    case VIR_CH_EVENT_VMM_STARTING:
+    case VIR_CH_EVENT_VM_BOOTING:
+    case VIR_CH_EVENT_VM_BOOTED:
+    case VIR_CH_EVENT_VM_REBOOTING:
+    case VIR_CH_EVENT_VM_REBOOTED:
+    case VIR_CH_EVENT_VM_PAUSING:
+    case VIR_CH_EVENT_VM_PAUSED:
+    case VIR_CH_EVENT_VM_RESUMING:
+    case VIR_CH_EVENT_VM_RESUMED:
+    case VIR_CH_EVENT_VM_SNAPSHOTTING:
+    case VIR_CH_EVENT_VM_SNAPSHOTTED:
+    case VIR_CH_EVENT_VM_RESTORING:
+    case VIR_CH_EVENT_VM_RESTORED:
+    case VIR_CH_EVENT_VM_DELETED:
+        break;
+    case VIR_CH_EVENT_VMM_SHUTDOWN:
+        if (virCHEventStopProcess(vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN)) {
+            VIR_WARN("Failed to mark the VM(%s) as SHUTDOWN!",
+                     vm->def->name);
+            ret = -1;
+        }
+        break;
+    case VIR_CH_EVENT_VM_SHUTDOWN:
+        virObjectLock(vm);
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        virObjectUnlock(vm);
+        break;
+    case VIR_CH_EVENT_LAST:
+    default:
+        VIR_WARN("%s: Unknown event: %s", vm->def->name, full_event);
+    }
+
+    return ret;
+}
 
 /**
  * virCHProcessEvents:
@@ -78,7 +175,11 @@ virCHProcessEvents(virCHMonitor *mon)
                 json_start = buf + start_index;
 
                 if ((obj = virJSONValueFromString(json_start))) {
-                    /* Process the event string (obj) here */
+                    if (virCHProcessEvent(mon, obj) < 0) {
+                        VIR_ERROR(_("%1$s: Failed to process JSON event doc: %2$s"),
+                                  vm->def->name, json_start);
+                        return -1;
+                    }
                     virJSONValueFree(obj);
                 } else {
                     VIR_ERROR(_("%1$s: Invalid JSON event doc: %2$s"),
