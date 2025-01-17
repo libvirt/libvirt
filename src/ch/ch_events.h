@@ -22,5 +22,7 @@
 
 #include "ch_monitor.h"
 
+#define CH_EVENT_BUFFER_SZ  PIPE_BUF
+
 int virCHStartEventHandler(virCHMonitor *mon);
 void virCHStopEventHandler(virCHMonitor *mon);
