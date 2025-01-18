@@ -263,7 +263,7 @@ findLeases(const char *file,
     enum json_tokener_error jerr;
     int jsonflags = JSON_TOKENER_STRICT | JSON_TOKENER_VALIDATE_UTF8;
     char line[1024];
-    ssize_t nreadTotal = 0;
+    size_t nreadTotal = 0;
     int rv;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
@@ -290,12 +290,17 @@ findLeases(const char *file,
         jerr = json_tokener_get_error(tok);
     } while (jerr == json_tokener_continue);
 
+    if (nreadTotal == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (jerr == json_tokener_continue) {
         ERROR("Cannot parse %s: incomplete json found", file);
         goto cleanup;
     }
 
-    if (nreadTotal > 0 && jerr != json_tokener_success) {
+    if (jerr != json_tokener_success) {
         ERROR("Cannot parse %s: %s", file, json_tokener_error_desc(jerr));
         goto cleanup;
     }

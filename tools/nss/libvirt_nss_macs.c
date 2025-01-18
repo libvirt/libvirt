@@ -124,7 +124,7 @@ findMACs(const char *file,
     json_tokener *tok = NULL;
     enum json_tokener_error jerr;
     int jsonflags = JSON_TOKENER_STRICT | JSON_TOKENER_VALIDATE_UTF8;
-    ssize_t nreadTotal = 0;
+    size_t nreadTotal = 0;
     int rv;
     size_t i;
 
@@ -152,12 +152,17 @@ findMACs(const char *file,
         jerr = json_tokener_get_error(tok);
     } while (jerr == json_tokener_continue);
 
+    if (nreadTotal == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (jerr == json_tokener_continue) {
         ERROR("Cannot parse %s: incomplete json found", file);
         goto cleanup;
     }
 
-    if (nreadTotal > 0 && jerr != json_tokener_success) {
+    if (jerr != json_tokener_success) {
         ERROR("Cannot parse %s: %s", file, json_tokener_error_desc(jerr));
         goto cleanup;
     }
