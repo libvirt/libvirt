@@ -1621,9 +1621,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-scsi-disk-wwn");
     DO_TEST_CAPS_LATEST("disk-scsi-disk-vpd");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-disk-vpd-build-error");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-product-length");
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST_CAPS_LATEST("controller-scsi-auto");
     DO_TEST_CAPS_LATEST("disk-sata-device");
+    DO_TEST_CAPS_LATEST("disk-sata-product");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-target-overflow");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");

@@ -603,8 +603,8 @@ virDomainDiskDefValidateSource(const virStorageSource *src)
 
 
 #define VENDOR_LEN  8
-#define PRODUCT_LEN 16
-
+#define PRODUCT_SCSI_LEN 16
+#define PRODUCT_ATA_SATA_LEN 40
 
 /**
  * virDomainDiskDefSourceLUNValidate:
@@ -874,16 +874,21 @@ virDomainDiskDefValidate(const virDomainDef *def,
     }
 
     if (disk->product) {
+        size_t len = PRODUCT_ATA_SATA_LEN;
+
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)
+            len = PRODUCT_SCSI_LEN;
+
         if (!virStringIsPrintable(disk->product)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("disk product is not printable string"));
             return -1;
         }
 
-        if (strlen(disk->product) > PRODUCT_LEN) {
+        if (strlen(disk->product) > len) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk product is more than %1$d characters"),
-                           PRODUCT_LEN);
+                           _("disk product is more than %1$zu characters"),
+                           len);
             return -1;
         }
     }

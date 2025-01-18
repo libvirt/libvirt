@@ -2962,10 +2962,20 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         }
     }
 
-    if (disk->vendor || disk->product) {
+    if (disk->vendor) {
         if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only scsi disk supports vendor and product"));
+                           _("Only scsi disk supports 'vendor'"));
+            return -1;
+        }
+    }
+
+    if (disk->product) {
+        if ((disk->bus != VIR_DOMAIN_DISK_BUS_IDE) &&
+            (disk->bus != VIR_DOMAIN_DISK_BUS_SATA) &&
+            (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only ide, sata and scsi disk supports 'product'"));
             return -1;
         }
     }

@@ -3570,12 +3570,13 @@ paravirtualized driver is specified via the ``disk`` element.
    :since:`Since 0.10.1`
 ``vendor``
    If present, this element specifies the vendor of a virtual hard disk or
-   CD-ROM device. It must not be longer than 8 printable characters.
-   :since:`Since 1.0.1`
+   CD-ROM device. It must not be longer than 8 printable characters. Only for
+   'scsi' ``bus``.:since:`Since 1.0.1`
 ``product``
    If present, this element specifies the product of a virtual hard disk or
-   CD-ROM device. It must not be longer than 16 printable characters.
-   :since:`Since 1.0.1`
+   CD-ROM device. It must not be longer than 16 printable characters for 'scsi'
+   (:since:`Since 1.0.1`). For 'sata' or 'ide' not longer than 40 printable
+   characters (:since:`Since 11.1.0`). Other ``bus`` is not supported.
 ``address``
    If present, the ``address`` element ties the disk to a given slot of a
    controller (the actual ``<controller>`` device can often be inferred by

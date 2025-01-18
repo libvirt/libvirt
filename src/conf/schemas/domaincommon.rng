@@ -1669,7 +1669,7 @@
         <element name="product">
           <data type="string">
             <!-- All printable characters -->
-            <param name="pattern">[&#x20;-&#x7E;]{0,16}</param>
+            <param name="pattern">[&#x20;-&#x7E;]{0,40}</param>
           </data>
         </element>
       </optional>

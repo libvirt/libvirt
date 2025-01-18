@@ -1619,6 +1619,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     const char *biosCHSTrans = NULL;
     const char *wpolicy = NULL;
     const char *rpolicy = NULL;
+    const char *model = NULL;
+    const char *product = NULL;
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
@@ -1627,6 +1629,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
             driver = "ide-cd";
         else
             driver = "ide-hd";
+
+        model = disk->product;
 
         break;
 
@@ -1653,6 +1657,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                     return NULL;
             }
         }
+
+        product = disk->product;
 
         break;
 
@@ -1803,7 +1809,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "A:wwn", &wwn,
                               "p:rotation_rate", disk->rotation_rate,
                               "S:vendor", disk->vendor,
-                              "S:product", disk->product,
+                              "S:product", product,
+                              "S:model", model,
                               "T:removable", removable,
                               "S:write-cache", qemuOnOffAuto(writeCache),
                               "p:cyls", disk->geometry.cylinders,
