@@ -2098,7 +2098,6 @@ exit 0
 %dir %attr(0755, root, root) %{_libdir}/libvirt/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
-%dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
@@ -2293,6 +2292,7 @@ exit 0
     %if %{with_storage_gluster}
 %files daemon-driver-storage-gluster
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_gluster.so
+%dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
 %{_libdir}/libvirt/storage-file/libvirt_storage_file_gluster.so
     %endif
 
