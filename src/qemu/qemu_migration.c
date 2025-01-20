@@ -2169,6 +2169,13 @@ qemuMigrationSrcWaitForCompletion(virDomainObj *vm,
 
     ignore_value(qemuMigrationAnyFetchStats(vm, asyncJob, jobData, NULL));
 
+    /* We need to recheck migration status here as it might have changed while
+     * we were fetching statistics. For example, the migration might have been
+     * canceled.
+     */
+    if ((rv = qemuMigrationAnyCompleted(vm, asyncJob, dconn, flags)) < 0)
+        return rv;
+
     qemuDomainJobDataUpdateTime(jobData);
     qemuDomainJobDataUpdateDowntime(jobData);
     g_clear_pointer(&vm->job->completed, virDomainJobDataFree);
