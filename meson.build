@@ -1582,8 +1582,15 @@ elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
 endif
 
-if not get_option('driver_ch').disabled() and host_machine.system() == 'linux' and (host_machine.cpu_family() == 'x86_64' or host_machine.cpu_family() == 'aarch64')
-  use_ch = true
+if not get_option('driver_ch').disabled()
+  if host_machine.system() == 'linux' and (host_machine.cpu_family() == 'x86_64' or host_machine.cpu_family() == 'aarch64')
+    use_ch = true
+  else
+    use_ch = false
+    if get_option('driver_ch').enabled()
+      error('linux on x86_64 or aarch64 is required to build Cloud-Hypervisor driver')
+    endif
+  endif
 
   if not conf.has('WITH_LIBVIRTD')
     use_ch = false
