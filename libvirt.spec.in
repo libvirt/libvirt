@@ -1455,6 +1455,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dblkid=disabled \
   -Dcapng=disabled \
   -Ddriver_bhyve=disabled \
+  -Ddriver_ch=disabled \
   -Ddriver_hyperv=disabled \
   -Ddriver_interface=disabled \
   -Ddriver_libvirtd=disabled \
