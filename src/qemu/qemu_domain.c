@@ -7761,7 +7761,8 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
         return 0;
     }
 
-    if (!ARCH_IS_PPC64(def->os.arch)) {
+    if (!ARCH_IS_PPC64(def->os.arch) &&
+        !ARCH_IS_S390(def->os.arch)) {
         /* due to guest support, qemu would silently enable NUMA with one node
          * once the memory hotplug backend is enabled. To avoid possible
          * confusion we will enforce user originated numa configuration along

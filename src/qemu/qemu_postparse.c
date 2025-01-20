@@ -1805,6 +1805,7 @@ qemuDomainDefNumaAutoAdd(virDomainDef *def,
 
     if (!abiUpdate ||
         !virDomainDefHasMemoryHotplug(def) ||
+        qemuDomainIsS390CCW(def) ||
         virDomainNumaGetNodeCount(def->numa) > 0) {
         return 0;
     }
