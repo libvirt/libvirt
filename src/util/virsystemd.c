@@ -56,7 +56,7 @@ struct _virSystemdActivationEntry {
 static void virSystemdEscapeName(virBuffer *buf,
                                  const char *name)
 {
-    static const char hextable[16] = "0123456789abcdef";
+    static const char hextable[] = "0123456789abcdef";
 
 #define ESCAPE(c) \
     do { \
