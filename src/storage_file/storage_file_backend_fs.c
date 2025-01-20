@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "virerror.h"
 #include "storage_file_backend.h"
@@ -134,6 +135,7 @@ virStorageFileBackendFileAccess(virStorageSource *src,
 }
 
 
+#ifndef WIN32
 static int
 virStorageFileBackendFileChown(const virStorageSource *src,
                                uid_t uid,
@@ -141,6 +143,7 @@ virStorageFileBackendFileChown(const virStorageSource *src,
 {
     return chown(src->path, uid, gid);
 }
+#endif
 
 
 virStorageFileBackend virStorageFileBackendFile = {
@@ -154,7 +157,9 @@ virStorageFileBackend virStorageFileBackendFile = {
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileRead = virStorageFileBackendFileRead,
     .storageFileAccess = virStorageFileBackendFileAccess,
+#ifndef WIN32
     .storageFileChown = virStorageFileBackendFileChown,
+#endif
 };
 
 
@@ -167,7 +172,9 @@ virStorageFileBackend virStorageFileBackendBlock = {
     .storageFileStat = virStorageFileBackendFileStat,
     .storageFileRead = virStorageFileBackendFileRead,
     .storageFileAccess = virStorageFileBackendFileAccess,
+#ifndef WIN32
     .storageFileChown = virStorageFileBackendFileChown,
+#endif
 };
 
 
@@ -178,7 +185,9 @@ virStorageFileBackend virStorageFileBackendDir = {
     .backendDeinit = virStorageFileBackendFileDeinit,
 
     .storageFileAccess = virStorageFileBackendFileAccess,
+#ifndef WIN32
     .storageFileChown = virStorageFileBackendFileChown,
+#endif
 };
 
 
