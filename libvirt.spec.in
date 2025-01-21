@@ -563,6 +563,7 @@ resources
 %package daemon-plugin-lockd
 Summary: lockd client plugin for virtlockd
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 
 %description daemon-plugin-lockd
@@ -1116,6 +1117,7 @@ Requires: sanlock >= 2.4
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Obsoletes: libvirt-lock-sanlock < 9.1.0
 Provides: libvirt-lock-sanlock = %{version}-%{release}
 
