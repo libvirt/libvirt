@@ -59,8 +59,6 @@ storage_backend_zfs_sources = [
   'storage_backend_zfs.c',
 ]
 
-storage_backend_install_dir = libdir / 'libvirt' / 'storage-backend'
-
 if conf.has('WITH_STORAGE')
   storage_driver_impl_lib = static_library(
     'virt_storage_driver_impl',

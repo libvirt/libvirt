@@ -10,8 +10,6 @@ storage_file_gluster_sources = [
   'storage_file_backend_gluster.c',
 ]
 
-storage_file_install_dir = libdir / 'libvirt' / 'storage-file'
-
 virt_storage_file_lib = static_library(
   'virt_storage_file',
   [

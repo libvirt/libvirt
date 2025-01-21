@@ -134,6 +134,11 @@ if sshconfdir == ''
   sshconfdir = sysconfdir / 'ssh' / 'ssh_config.d'
 endif
 
+connection_driver_install_dir = libdir / 'libvirt' / 'connection-driver'
+storage_backend_install_dir = libdir / 'libvirt' / 'storage-backend'
+storage_file_install_dir = libdir / 'libvirt' / 'storage-file'
+lock_driver_install_dir = libdir / 'libvirt' / 'lock-driver'
+
 
 # generate configmake.h header
 

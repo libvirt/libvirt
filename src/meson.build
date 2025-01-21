@@ -145,7 +145,7 @@ libvirt_libs = []
 #   * link_with - static libraries to link with (optional, default [])
 #   * link_whole - static libraries to include (optional, default [])
 #   * link_args - arguments for linker (optional, default [])
-#   * install_dir - installation directory (optional, default libdir / 'libvirt' / 'connection-driver'
+#   * install_dir - installation directory (optional, default connection_driver_install_dir)
 virt_modules = []
 
 # virt_daemons:
@@ -611,7 +611,7 @@ foreach module : virt_modules
       module.get('link_args', []),
     ],
     install: true,
-    install_dir: module.get('install_dir', libdir / 'libvirt' / 'connection-driver'),
+    install_dir: module.get('install_dir', connection_driver_install_dir),
     install_rpath: libvirt_rpath,
   )
   set_variable('@0@_module'.format(module['name'].underscorify()), mod)
@@ -954,6 +954,15 @@ virt_install_dirs += [
   localstatedir / 'lib' / 'libvirt' / 'filesystems',
   localstatedir / 'lib' / 'libvirt' / 'boot',
 ]
+
+if conf.has('WITH_LIBVIRTD')
+  virt_install_dirs += [
+    connection_driver_install_dir,
+    storage_backend_install_dir,
+    storage_file_install_dir,
+    lock_driver_install_dir,
+  ]
+endif
 
 meson.add_install_script(
   meson_python_prog.full_path(), python3_prog.full_path(), meson_install_dirs_prog.full_path(),

@@ -99,8 +99,6 @@ if conf.has('WITH_LIBVIRTD')
     'lib': lockd_lib_impl,
   }
 
-  lockdriver_dir = libdir / 'libvirt' / 'lock-driver'
-
   virt_modules += {
     'name': 'lockd',
     'name_prefix': '',
@@ -113,7 +111,7 @@ if conf.has('WITH_LIBVIRTD')
     'link_args': [
       libvirt_no_undefined,
     ],
-    'install_dir': lockdriver_dir,
+    'install_dir': lock_driver_install_dir,
   }
 
   if conf.has('WITH_SANLOCK')
@@ -129,7 +127,7 @@ if conf.has('WITH_LIBVIRTD')
       'link_args': [
         libvirt_no_undefined,
       ],
-      'install_dir': lockdriver_dir,
+      'install_dir': lock_driver_install_dir,
     }
   endif
 
