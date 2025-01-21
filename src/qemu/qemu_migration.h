@@ -283,7 +283,10 @@ qemuMigrationDstGetURI(const char *migrateFrom,
 int
 qemuMigrationDstRun(virDomainObj *vm,
                     const char *uri,
-                    virDomainAsyncJob asyncJob);
+                    virDomainAsyncJob asyncJob,
+                    qemuMigrationParams *migParams,
+                    unsigned int flags);
+
 
 void
 qemuMigrationSrcPostcopyFailed(virDomainObj *vm);

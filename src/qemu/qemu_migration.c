@@ -2428,13 +2428,20 @@ qemuMigrationDstGetURI(const char *migrateFrom,
 int
 qemuMigrationDstRun(virDomainObj *vm,
                     const char *uri,
-                    virDomainAsyncJob asyncJob)
+                    virDomainAsyncJob asyncJob,
+                    qemuMigrationParams *migParams,
+                    unsigned int flags)
+
 {
     virTristateBool exitOnError = VIR_TRISTATE_BOOL_ABSENT;
     qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     VIR_DEBUG("Setting up incoming migration with URI %s", uri);
+
+    if (migParams && qemuMigrationParamsApply(vm, asyncJob,
+                                              migParams, flags) < 0)
+        return -1;
 
     /* Ask QEMU not to exit on failure during incoming migration (if supported)
      * so that we can properly check and report error during Finish phase.
@@ -3366,10 +3373,6 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
             goto error;
     }
 
-    if (qemuMigrationParamsApply(vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                                 migParams, flags) < 0)
-        goto error;
-
     if (mig->nbd &&
         flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         const char *nbdTLSAlias = NULL;
@@ -3401,7 +3404,8 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
     }
 
     if (qemuMigrationDstRun(vm, incoming->uri,
-                            VIR_ASYNC_JOB_MIGRATION_IN) < 0)
+                            VIR_ASYNC_JOB_MIGRATION_IN,
+                            migParams, flags) < 0)
         goto error;
 
     if (qemuProcessFinishStartup(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,

@@ -8478,7 +8478,7 @@ qemuProcessStart(virConnectPtr conn,
     relabel = true;
 
     if (incoming) {
-        if (qemuMigrationDstRun(vm, incoming->uri, asyncJob) < 0)
+        if (qemuMigrationDstRun(vm, incoming->uri, asyncJob, NULL, 0) < 0)
             goto stop;
     } else {
         /* Refresh state of devices from QEMU. During migration this happens
