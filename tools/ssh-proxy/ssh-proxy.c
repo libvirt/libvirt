@@ -194,7 +194,10 @@ lookupDomainAndFetchCID(const char *uri,
         if (virStrToLong_i(domname, NULL, 10, &id) >= 0)
             dom = virDomainLookupByID(conn, id);
     }
-    if (!dom)
+
+    /* If no domain is found, return an error. Similarly, inactive domain may
+     * contain CID of another (running) domain, yielding misleading results. */
+    if (!dom || virDomainIsActive(dom) <= 0)
         return -1;
 
     return extractCID(dom, cid);
