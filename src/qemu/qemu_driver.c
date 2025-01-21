@@ -15368,6 +15368,14 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
             goto endjob;
 
+        /* qemu won't return block IO throttle settings for an empty cd-rom drive */
+        if (virStorageSourceIsEmpty(disk->src)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("disk '%1$s' does not currently have a source assigned"),
+                           path);
+            goto endjob;
+        }
+
         qemuDomainObjEnterMonitor(vm);
         rc = qemuMonitorGetBlockIoThrottle(priv->mon, QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName, &reply);
         qemuDomainObjExitMonitor(vm);
