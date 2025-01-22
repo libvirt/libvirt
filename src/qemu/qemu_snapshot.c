@@ -3492,7 +3492,7 @@ qemuSnapshotDeleteBlockJobIsRunning(qemuBlockjobState state)
 
 /* When finishing or aborting qemu blockjob we only need to know if the
  * job is still active or not. */
-static int
+static bool
 qemuSnapshotDeleteBlockJobIsActive(qemuBlockjobState state)
 {
     switch (state) {
@@ -3502,7 +3502,7 @@ qemuSnapshotDeleteBlockJobIsActive(qemuBlockjobState state)
     case QEMU_BLOCKJOB_STATE_ABORTING:
     case QEMU_BLOCKJOB_STATE_PENDING:
     case QEMU_BLOCKJOB_STATE_PIVOTING:
-        return 1;
+        return true;
 
     case QEMU_BLOCKJOB_STATE_COMPLETED:
     case QEMU_BLOCKJOB_STATE_FAILED:
@@ -3512,7 +3512,7 @@ qemuSnapshotDeleteBlockJobIsActive(qemuBlockjobState state)
         break;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -3540,17 +3540,13 @@ static int
 qemuSnapshotDeleteBlockJobFinishing(virDomainObj *vm,
                                     qemuBlockJobData *job)
 {
-    int rc;
     qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
 
-    while ((rc = qemuSnapshotDeleteBlockJobIsActive(job->state)) > 0) {
+    while (qemuSnapshotDeleteBlockJobIsActive(job->state)) {
         if (qemuDomainObjWait(vm) < 0)
             return -1;
         qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_SNAPSHOT);
     }
-
-    if (rc < 0)
-        return -1;
 
     return 0;
 }
