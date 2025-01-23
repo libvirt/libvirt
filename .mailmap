@@ -48,6 +48,7 @@
 <shi_lei@massclouds.com> <shilei.massclouds@gmx.com>
 <adrian.brzezinski@eo.pl> <redhat@adrb.pl>
 <matt@datto.com> <mcoleman@datto.com>
+<dbarboza@ventanamicro.com> <danielhb413@gmail.com>
 
 # Name consolidation:
 # Preferred author spelling <preferred email>
@@ -70,6 +71,7 @@ Wang Yufei (James) <james.wangyufei@huawei.com>
 Deepak C Shetty <dpkshetty@gmail.com>
 Dave Allan <dallan@redhat.com>
 Richard W.M. Jones <rjones@redhat.com>
+Daniel Henrique Barboza <dbarboza@ventanamicro.com>
 
 # Non-trivial consolidation:
 # see git documentation for information about the format
