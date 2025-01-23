@@ -1207,6 +1207,24 @@ typedef enum {
 # define VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY "bandwidth.postcopy"
 
 /**
+ * VIR_MIGRATE_PARAM_BANDWIDTH_AVAIL_SWITCHOVER:
+ *
+ * virDomainMigrate* params field: the bandwidth (in MiB/s) available for the
+ * final phase of (pre-copy) migration during which CPUs are stopped and all
+ * the remaining memory and device state is transferred. Knowing this bandwidth
+ * is important for accurate estimation of the domain downtime and deciding
+ * the right moment for switching over. Normally this would be estimated based
+ * on the bandwidth used by migration, but this could be lower than the actual
+ * available bandwidth. Using this parameter to override the computed value may
+ * help with migration convergence when the migration would keep iterating over
+ * and over thinking there's not enough bandwidth to comply with the configured
+ * maximum downtime.
+ *
+ * Since: 11.1.0
+ */
+# define VIR_MIGRATE_PARAM_BANDWIDTH_AVAIL_SWITCHOVER "bandwidth.avail.switchover"
+
+/**
  * VIR_MIGRATE_PARAM_GRAPHICS_URI:
  *
  * virDomainMigrate* params field: URI to use for migrating client's connection
