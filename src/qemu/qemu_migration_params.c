@@ -128,6 +128,7 @@ VIR_ENUM_IMPL(qemuMigrationParam,
               "multifd-compression",
               "multifd-zlib-level",
               "multifd-zstd-level",
+              "avail-switchover-bandwidth",
 );
 
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
@@ -266,6 +267,11 @@ static const qemuMigrationParamsTPMapItem qemuMigrationParamsTPMap[] = {
     {.typedParam = VIR_MIGRATE_PARAM_TLS_DESTINATION,
      .param = QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
      .party = QEMU_MIGRATION_SOURCE},
+
+    {.typedParam = VIR_MIGRATE_PARAM_BANDWIDTH_AVAIL_SWITCHOVER,
+     .unit = 1024 * 1024, /* MiB/s */
+     .param = QEMU_MIGRATION_PARAM_AVAIL_SWITCHOVER_BANDWIDTH,
+     .party = QEMU_MIGRATION_SOURCE},
 };
 
 static const qemuMigrationParamInfoItem qemuMigrationParamInfo[] = {
@@ -317,6 +323,9 @@ static const qemuMigrationParamInfoItem qemuMigrationParamInfo[] = {
     },
     [QEMU_MIGRATION_PARAM_MULTIFD_ZSTD_LEVEL] = {
         .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_AVAIL_SWITCHOVER_BANDWIDTH] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
     },
 };
 G_STATIC_ASSERT(G_N_ELEMENTS(qemuMigrationParamInfo) == QEMU_MIGRATION_PARAM_LAST);
