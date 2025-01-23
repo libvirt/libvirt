@@ -3407,6 +3407,7 @@ migrate
       [--parallel [--parallel-connections connections]]
       [--bandwidth bandwidth] [--tls-destination hostname]
       [--disks-uri URI] [--copy-storage-synchronous-writes]
+      [--available-switchover-bandwidth bandwidth]
 
 Migrate domain to another host.  Add *--live* for live migration; <--p2p>
 for peer-2-peer migration; *--direct* for direct migration; or *--tunnelled*
@@ -3662,6 +3663,17 @@ the source is accessible to libvirtd/QEMU for connection.  Libvirt cannot change
 the context of the existing socket because it is different from the file
 representation of the socket and the context is chosen by its creator (usually
 by using *setsockcreatecon{,_raw}()* functions).
+
+Optional *--available-switchover-bandwidth* overrides the automatically
+computed bandwidth (in MiB/s) available for the final phase of (pre-copy)
+migration during which CPUs are stopped and all the remaining memory and device
+state is transferred. Knowing this bandwidth is important for accurate
+estimation of the domain downtime and deciding the right moment for switching
+over. Normally this would be estimated based on the bandwidth used by
+migration, but this could be lower than the actual available bandwidth. Using
+this option may help with migration convergence when the migration would keep
+iterating over and over thinking there's not enough bandwidth to comply with
+the configured maximum downtime.
 
 
 migrate-compcache

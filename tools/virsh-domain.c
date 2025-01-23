@@ -10788,6 +10788,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("compress level for zstd compression")
     },
+    {.name = "available-switchover-bandwidth",
+     .type = VSH_OT_INT,
+     .help = N_("bandwidth (in MiB/s) available for the final phase of migration")
+    },
     {.name = NULL}
 };
 
@@ -11101,6 +11105,15 @@ doMigrate(void *opaque)
         virTypedParamsAddString(&params, &nparams, &maxparams,
                                 VIR_MIGRATE_PARAM_TLS_DESTINATION, opt) < 0)
         goto save_error;
+
+    if ((rv = vshCommandOptULongLong(ctl, cmd, "available-switchover-bandwidth", &ullOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_BANDWIDTH_AVAIL_SWITCHOVER,
+                                    ullOpt) < 0)
+            goto save_error;
+    }
 
     if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
