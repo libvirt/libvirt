@@ -837,22 +837,26 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     const char *eventPath = "";
     const char *eventAlias = "";
     const char *eventReason = "";
-    virDomainDiskDef *disk;
+    virDomainDiskDef *disk = NULL;
+    virStorageSource *src = NULL;
 
     virObjectLock(vm);
     priv = QEMU_DOMAIN_PRIVATE(vm);
 
-    if (device)
-        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, device, NULL);
-    else if (nodename)
-        disk = qemuDomainDiskLookupByNodename(vm->def, NULL, nodename, NULL);
-    else
-        disk = NULL;
+    if (nodename)
+        disk = qemuDomainDiskLookupByNodename(vm->def, priv->backup, nodename, &src);
 
-    if (disk) {
-        eventPath = virDomainDiskGetSource(disk);
+    if (!disk)
+        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, device, NULL);
+
+    if (!src && disk)
+        src = disk->src;
+
+    if (disk)
         eventAlias = disk->info.alias;
-    }
+
+    if (src && src->path)
+        eventPath = src->path;
 
     if (nospace)
         eventReason = "enospc";
