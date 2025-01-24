@@ -829,7 +829,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          int action,
                          const char *reason)
 {
-    virQEMUDriver *driver;
+    qemuDomainObjPrivate *priv;
     virObjectEvent *ioErrorEvent = NULL;
     virObjectEvent *ioErrorEvent2 = NULL;
     virObjectEvent *lifecycleEvent = NULL;
@@ -838,7 +838,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virDomainDiskDef *disk;
 
     virObjectLock(vm);
-    driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
+    priv = QEMU_DOMAIN_PRIVATE(vm);
 
     if (*diskAlias == '\0')
         diskAlias = NULL;
@@ -863,7 +863,6 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        qemuDomainObjPrivate *priv = vm->privateData;
         VIR_WARN("Transitioned guest %s to paused state due to IO error", vm->def->name);
 
         if (priv->signalIOError)
@@ -875,7 +874,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_IOERROR);
 
         VIR_FREE(priv->lockState);
-        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        if (virDomainLockProcessPause(priv->driver->lockManager, vm, &priv->lockState) < 0)
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
@@ -883,9 +882,9 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     }
     virObjectUnlock(vm);
 
-    virObjectEventStateQueue(driver->domainEventState, ioErrorEvent);
-    virObjectEventStateQueue(driver->domainEventState, ioErrorEvent2);
-    virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
+    virObjectEventStateQueue(priv->driver->domainEventState, ioErrorEvent);
+    virObjectEventStateQueue(priv->driver->domainEventState, ioErrorEvent2);
+    virObjectEventStateQueue(priv->driver->domainEventState, lifecycleEvent);
 }
 
 
