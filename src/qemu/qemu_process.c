@@ -829,7 +829,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          const char *nodename,
                          int action,
                          bool nospace,
-                         const char *reason G_GNUC_UNUSED)
+                         const char *reason)
 {
     qemuDomainObjPrivate *priv;
     virObjectEvent *ioErrorEvent = NULL;
@@ -867,6 +867,9 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, eventPath, eventAlias, action, eventReason);
 
     if ((timestamp = virTimeStringNow()) != NULL) {
+        qemuDomainLogAppendMessage(priv->driver, vm, "%s: IO error device='%s' node-name='%s' reason='%s'\n",
+                                   timestamp, NULLSTR(eventAlias), NULLSTR(nodename), NULLSTR(reason));
+
         if (src) {
             g_free(src->ioerror_timestamp);
             g_free(src->ioerror_message);
