@@ -862,6 +862,8 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
 
     if (nospace)
         eventReason = "enospc";
+    else if (reason)
+        eventReason = "message";
 
     ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, eventPath, eventAlias, action);
     ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, eventPath, eventAlias, action, eventReason);

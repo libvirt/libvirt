@@ -4812,6 +4812,10 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
  * - "enospc": The I/O error is known to be caused by an ENOSPC condition in
  *             the host. Resizing the disk source to be larger will allow the
  *             guest to be resumed as if nothing happened.
+ * - "message": The hypervisor reported a string description of the
+ *              I/O error. The errors are usually logged into the
+ *              domain log file or the last instance of the error
+ *              string can be queried via virDomainGetMessages().
  *
  * Since: 0.8.1
  */
