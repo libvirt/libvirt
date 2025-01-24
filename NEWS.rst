@@ -38,6 +38,11 @@ v11.1.0 (unreleased)
     etc. Libvirt will now read these events and take actions such as
     updating domain state, etc.
 
+  * Introduce virtio-mem ``<memory/>`` model for s390 guests
+
+    The virtio-mem model of ``<memory/>`` device can now be used with s390
+    guests.
+
 * **Improvements**
 
 * **Bug fixes**
