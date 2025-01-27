@@ -827,7 +827,8 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          const char *device,
                          const char *nodename,
                          int action,
-                         const char *reason)
+                         bool nospace,
+                         const char *reason G_GNUC_UNUSED)
 {
     qemuDomainObjPrivate *priv;
     virObjectEvent *ioErrorEvent = NULL;
@@ -835,6 +836,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEvent *lifecycleEvent = NULL;
     const char *eventPath = "";
     const char *eventAlias = "";
+    const char *eventReason = "";
     virDomainDiskDef *disk;
 
     virObjectLock(vm);
@@ -852,8 +854,11 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
         eventAlias = disk->info.alias;
     }
 
+    if (nospace)
+        eventReason = "enospc";
+
     ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, eventPath, eventAlias, action);
-    ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, eventPath, eventAlias, action, reason);
+    ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, eventPath, eventAlias, action, eventReason);
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {

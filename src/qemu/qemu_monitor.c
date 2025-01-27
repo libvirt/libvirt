@@ -1130,12 +1130,13 @@ qemuMonitorEmitIOError(qemuMonitor *mon,
                        const char *device,
                        const char *nodename,
                        int action,
+                       bool nospace,
                        const char *reason)
 {
     VIR_DEBUG("mon=%p", mon);
 
     QEMU_MONITOR_CALLBACK(mon, domainIOError, mon->vm,
-                          device, nodename, action, reason);
+                          device, nodename, action, nospace, reason);
 }
 
 
