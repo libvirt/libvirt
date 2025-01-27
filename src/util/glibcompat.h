@@ -42,24 +42,6 @@
 
 #endif /* GLib < 2.67.0 */
 
-
-gint vir_g_fsync(gint fd);
-char *vir_g_strdup_printf(const char *msg, ...)
-    G_GNUC_PRINTF(1, 2);
-char *vir_g_strdup_vprintf(const char *msg, va_list args)
-    G_GNUC_PRINTF(1, 0);
-
-#if !GLIB_CHECK_VERSION(2, 64, 0)
-# define g_strdup_printf vir_g_strdup_printf
-# define g_strdup_vprintf vir_g_strdup_vprintf
-#endif
-
-#undef g_fsync
-#define g_fsync vir_g_fsync
-
-void vir_g_source_unref(GSource *src, GMainContext *ctx);
-
-
 /* Drop once we require glib-2.68 at minimum */
 guint
 vir_g_string_replace(GString *string,

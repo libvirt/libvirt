@@ -1009,7 +1009,7 @@ else
   endif
 endif
 
-glib_version = '2.58.0'
+glib_version = '2.66.0'
 glib_dep = dependency('glib-2.0', version: '>=' + glib_version)
 gobject_dep = dependency('gobject-2.0', version: '>=' + glib_version)
 if host_machine.system() == 'windows'

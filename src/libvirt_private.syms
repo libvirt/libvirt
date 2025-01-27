@@ -1879,10 +1879,6 @@ virStorageSourceUpdatePhysicalSize;
 
 
 # util/glibcompat.h
-vir_g_fsync;
-vir_g_source_unref;
-vir_g_strdup_printf;
-vir_g_strdup_vprintf;
 vir_g_string_replace;
 
 
