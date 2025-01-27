@@ -840,6 +840,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     const char *eventReason = "";
     virDomainDiskDef *disk = NULL;
     virStorageSource *src = NULL;
+    g_autofree char *timestamp = NULL;
 
     virObjectLock(vm);
     priv = QEMU_DOMAIN_PRIVATE(vm);
@@ -864,6 +865,15 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
 
     ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, eventPath, eventAlias, action);
     ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, eventPath, eventAlias, action, eventReason);
+
+    if ((timestamp = virTimeStringNow()) != NULL) {
+        if (src) {
+            g_free(src->ioerror_timestamp);
+            g_free(src->ioerror_message);
+            src->ioerror_timestamp = g_steal_pointer(&timestamp);
+            src->ioerror_message = g_strdup(reason);
+        }
+    }
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
