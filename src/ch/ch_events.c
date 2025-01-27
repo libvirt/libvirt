@@ -20,6 +20,8 @@
 
 #include <config.h>
 
+#include <unistd.h>
+
 #include "ch_domain.h"
 #include "ch_events.h"
 #include "ch_process.h"
