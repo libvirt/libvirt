@@ -708,8 +708,15 @@ qemuMonitorJSONHandleIOError(qemuMonitor *mon, virJSONValue *data)
         action = "ignore";
     }
 
-    if ((device = virJSONValueObjectGetString(data, "device")) == NULL)
+    if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
         VIR_WARN("missing device in disk io error event");
+    } else {
+        /* 'device' was documented as mandatory in the qemu event, but later became
+         * optional, in which case an empty string is sent by qemu. Convert it back
+         * to NULL */
+        if (*device == '\0')
+            device = NULL;
+    }
 
     nodename = virJSONValueObjectGetString(data, "node-name");
 

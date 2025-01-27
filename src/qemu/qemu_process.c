@@ -840,9 +840,6 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectLock(vm);
     priv = QEMU_DOMAIN_PRIVATE(vm);
 
-    if (*diskAlias == '\0')
-        diskAlias = NULL;
-
     if (diskAlias)
         disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
     else if (nodename)
