@@ -4588,9 +4588,9 @@ bool
 virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
 
-int
+void
 virDomainObjGetMessages(virDomainObj *vm,
-                        char ***msgs,
+                        GPtrArray *m,
                         unsigned int flags);
 
 bool

@@ -19834,6 +19834,7 @@ qemuDomainGetMessages(virDomainPtr dom,
                       char ***msgs,
                       unsigned int flags)
 {
+    g_autoptr(GPtrArray) m = g_ptr_array_new_with_free_func(g_free);
     virDomainObj *vm = NULL;
     int rv = -1;
 
@@ -19846,7 +19847,13 @@ qemuDomainGetMessages(virDomainPtr dom,
     if (virDomainGetMessagesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    rv = virDomainObjGetMessages(vm, msgs, flags);
+    virDomainObjGetMessages(vm, m, flags);
+
+    rv = m->len;
+    if (m->len > 0) {
+        g_ptr_array_add(m, NULL);
+        *msgs = (char **) g_ptr_array_steal(m, NULL);
+    }
 
  cleanup:
     virDomainObjEndAPI(&vm);

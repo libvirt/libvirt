@@ -31685,53 +31685,31 @@ virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 /**
  * virDomainObjGetMessages:
  * @vm: domain object
- * @msgs: pointer to a variable to store messages
+ * @m: GPtrArray to be filled with messages
  * @flags: zero or more virDomainMessageType flags
- *
- * Returns number of messages stored in @msgs, -1 otherwise.
  */
-int
+void
 virDomainObjGetMessages(virDomainObj *vm,
-                        char ***msgs,
+                        GPtrArray *m,
                         unsigned int flags)
 {
     size_t i = 0;
-    size_t n = 0;
-    int nmsgs = 0;
-    int rv = -1;
-
-    *msgs = NULL;
 
     if (!flags || (flags & VIR_DOMAIN_MESSAGE_TAINTING)) {
-        nmsgs += __builtin_popcount(vm->taint);
-        *msgs = g_renew(char *, *msgs, nmsgs+1);
-
         for (i = 0; i < VIR_DOMAIN_TAINT_LAST; i++) {
             if (vm->taint & (1 << i)) {
-                (*msgs)[n++] = g_strdup_printf(
-                    _("tainted: %1$s"),
-                    _(virDomainTaintMessageTypeToString(i)));
+                g_ptr_array_add(m, g_strdup_printf(_("tainted: %1$s"),
+                                                   _(virDomainTaintMessageTypeToString(i))));
             }
         }
     }
 
     if (!flags || (flags & VIR_DOMAIN_MESSAGE_DEPRECATION)) {
-        nmsgs += vm->ndeprecations;
-        *msgs = g_renew(char *, *msgs, nmsgs+1);
-
         for (i = 0; i < vm->ndeprecations; i++) {
-            (*msgs)[n++] = g_strdup_printf(
-                _("deprecated configuration: %1$s"),
-                vm->deprecations[i]);
+            g_ptr_array_add(m, g_strdup_printf(_("deprecated configuration: %1$s"),
+                                               vm->deprecations[i]));
         }
     }
-
-    if (*msgs)
-        (*msgs)[nmsgs] = NULL;
-
-    rv = nmsgs;
-
-    return rv;
 }
 
 bool
