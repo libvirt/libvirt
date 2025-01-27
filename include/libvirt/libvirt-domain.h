@@ -4805,11 +4805,13 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON with virConnectDomainEventRegisterAny()
  *
- * If the I/O error is known to be caused by an ENOSPC condition in
- * the host (where resizing the disk to be larger will allow the guest
- * to be resumed as if nothing happened), @reason will be "enospc".
- * Otherwise, @reason will be "", although future strings may be added
- * if determination of other error types becomes possible.
+ * Although @reason is a string, it is considered to be an enumeration of the
+ * following values:
+ *
+ * - "" (empty string): unknown I/O error reason
+ * - "enospc": The I/O error is known to be caused by an ENOSPC condition in
+ *             the host. Resizing the disk source to be larger will allow the
+ *             guest to be resumed as if nothing happened.
  *
  * Since: 0.8.1
  */
