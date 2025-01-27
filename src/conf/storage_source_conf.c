@@ -917,6 +917,8 @@ virStorageSourceCopy(const virStorageSource *src,
     def->nfs_uid = src->nfs_uid;
     def->nfs_gid = src->nfs_gid;
 
+    /* 'ioerror_timestamp' and 'ioerror_message' are deliberately not copied */
+
     return g_steal_pointer(&def);
 }
 
@@ -1202,6 +1204,9 @@ virStorageSourceClear(virStorageSource *def)
     virStorageSourceInitiatorClear(&def->initiator);
 
     g_clear_pointer(&def->fdtuple, g_object_unref);
+
+    VIR_FREE(def->ioerror_timestamp);
+    VIR_FREE(def->ioerror_message);
 
     /* clear everything except the class header as the object APIs
      * will break otherwise */

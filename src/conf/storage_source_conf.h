@@ -445,6 +445,12 @@ struct _virStorageSource {
      * to do this decision.
      */
     bool seclabelSkipRemember;
+
+    /* Last instance of hypervisor originated I/O error message and timestamp.
+     * The error stored here is not designed to be stable. The message
+     * is also not copied via virStorageSourceCopy */
+    char *ioerror_timestamp;
+    char *ioerror_message;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);
