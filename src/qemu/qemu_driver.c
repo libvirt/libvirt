@@ -19837,9 +19837,11 @@ qemuDomainGetMessages(virDomainPtr dom,
     g_autoptr(GPtrArray) m = g_ptr_array_new_with_free_func(g_free);
     virDomainObj *vm = NULL;
     int rv = -1;
+    qemuDomainObjPrivate *priv;
 
     virCheckFlags(VIR_DOMAIN_MESSAGE_DEPRECATION |
-                  VIR_DOMAIN_MESSAGE_TAINTING, -1);
+                  VIR_DOMAIN_MESSAGE_TAINTING |
+                  VIR_DOMAIN_MESSAGE_IOERRORS, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
@@ -19847,7 +19849,19 @@ qemuDomainGetMessages(virDomainPtr dom,
     if (virDomainGetMessagesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    priv = vm->privateData;
+
     virDomainObjGetMessages(vm, m, flags);
+
+    if (priv->backup &&
+        (!flags || (flags & VIR_DOMAIN_MESSAGE_IOERRORS))) {
+        size_t i;
+
+        for (i = 0; i < priv->backup->ndisks; i++)
+            virDomainObjGetMessagesIOErrorsChain(priv->backup->disks[i].store,
+                                                 priv->backup->disks[i].name,
+                                                 m);
+    }
 
     rv = m->len;
     if (m->len > 0) {

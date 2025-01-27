@@ -31682,6 +31682,47 @@ virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 }
 
 
+static void
+virDomainObjGetMessagesIOErrorsSrc(virStorageSource *src,
+                                   const char *diskdst,
+                                   GPtrArray *m)
+{
+    if (!src ||
+        !src->ioerror_message)
+        return;
+
+    g_ptr_array_add(m, g_strdup_printf(_("I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', message='%5$s'"),
+                                       NULLSTR_MINUS(diskdst),
+                                       src->id,
+                                       NULLSTR_MINUS(src->path),
+                                       src->ioerror_timestamp,
+                                       src->ioerror_message));
+}
+
+
+void
+virDomainObjGetMessagesIOErrorsChain(virStorageSource *src,
+                                     const char *diskdst,
+                                     GPtrArray *m)
+{
+    virStorageSource *n;
+
+    for (n = src; n; n = n->backingStore) {
+        virDomainObjGetMessagesIOErrorsSrc(n, diskdst, m);
+        virDomainObjGetMessagesIOErrorsSrc(n->dataFileStore, diskdst, m);
+    }
+}
+
+
+static void
+virDomainObjGetMessagesIOErrorsDisk(virDomainDiskDef *disk,
+                                    GPtrArray *m)
+{
+    virDomainObjGetMessagesIOErrorsChain(disk->src, disk->dst, m);
+    virDomainObjGetMessagesIOErrorsChain(disk->mirror, disk->dst, m);
+}
+
+
 /**
  * virDomainObjGetMessages:
  * @vm: domain object
@@ -31710,6 +31751,15 @@ virDomainObjGetMessages(virDomainObj *vm,
                                                vm->deprecations[i]));
         }
     }
+
+    if (!flags || (flags & VIR_DOMAIN_MESSAGE_IOERRORS)) {
+        if (vm->def->os.loader)
+            virDomainObjGetMessagesIOErrorsChain(vm->def->os.loader->nvram, NULL, m);
+
+        for (i = 0; i < vm->def->ndisks; i++)
+            virDomainObjGetMessagesIOErrorsDisk(vm->def->disks[i], m);
+    }
+
 }
 
 bool

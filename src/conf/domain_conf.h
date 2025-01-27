@@ -4589,6 +4589,11 @@ virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
 
 void
+virDomainObjGetMessagesIOErrorsChain(virStorageSource *src,
+                                     const char *diskdst,
+                                     GPtrArray *m);
+
+void
 virDomainObjGetMessages(virDomainObj *vm,
                         GPtrArray *m,
                         unsigned int flags);

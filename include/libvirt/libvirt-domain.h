@@ -6520,6 +6520,9 @@ int virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
 typedef enum {
     VIR_DOMAIN_MESSAGE_DEPRECATION = (1 << 0), /* (Since: 7.1.0) */
     VIR_DOMAIN_MESSAGE_TAINTING = (1 << 1), /* (Since: 7.1.0) */
+    VIR_DOMAIN_MESSAGE_IOERRORS = (1 << 2), /* Report available stored I/O
+                                               errors messages for disk images
+                                               (Since: 11.1.0) */
 } virDomainMessageType;
 
 int virDomainGetMessages(virDomainPtr domain,
