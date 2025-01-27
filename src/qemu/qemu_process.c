@@ -833,8 +833,8 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEvent *ioErrorEvent = NULL;
     virObjectEvent *ioErrorEvent2 = NULL;
     virObjectEvent *lifecycleEvent = NULL;
-    const char *srcPath;
-    const char *devAlias;
+    const char *eventPath = "";
+    const char *eventAlias = "";
     virDomainDiskDef *disk;
 
     virObjectLock(vm);
@@ -848,15 +848,12 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
         disk = NULL;
 
     if (disk) {
-        srcPath = virDomainDiskGetSource(disk);
-        devAlias = disk->info.alias;
-    } else {
-        srcPath = "";
-        devAlias = "";
+        eventPath = virDomainDiskGetSource(disk);
+        eventAlias = disk->info.alias;
     }
 
-    ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, srcPath, devAlias, action);
-    ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, srcPath, devAlias, action, reason);
+    ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, eventPath, eventAlias, action);
+    ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, eventPath, eventAlias, action, reason);
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
