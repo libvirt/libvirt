@@ -206,7 +206,7 @@ typedef void (*qemuMonitorDomainWatchdogCallback)(qemuMonitor *mon,
                                                   int action);
 typedef void (*qemuMonitorDomainIOErrorCallback)(qemuMonitor *mon,
                                                  virDomainObj *vm,
-                                                 const char *diskAlias,
+                                                 const char *device,
                                                  const char *nodename,
                                                  int action,
                                                  const char *reason);
@@ -450,7 +450,7 @@ void qemuMonitorEmitResume(qemuMonitor *mon);
 void qemuMonitorEmitRTCChange(qemuMonitor *mon, long long offset);
 void qemuMonitorEmitWatchdog(qemuMonitor *mon, int action);
 void qemuMonitorEmitIOError(qemuMonitor *mon,
-                            const char *diskAlias,
+                            const char *device,
                             const char *nodename,
                             int action,
                             const char *reason);

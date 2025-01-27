@@ -824,7 +824,7 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          virDomainObj *vm,
-                         const char *diskAlias,
+                         const char *device,
                          const char *nodename,
                          int action,
                          const char *reason)
@@ -840,8 +840,8 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectLock(vm);
     priv = QEMU_DOMAIN_PRIVATE(vm);
 
-    if (diskAlias)
-        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
+    if (device)
+        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, device, NULL);
     else if (nodename)
         disk = qemuDomainDiskLookupByNodename(vm->def, NULL, nodename, NULL);
     else
