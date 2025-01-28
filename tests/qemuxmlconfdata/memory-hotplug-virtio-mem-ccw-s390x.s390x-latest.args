@@ -1,0 +1,39 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-s390x \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine s390-ccw-virtio,usb=off,dump-guest-core=off \
+-accel kvm \
+-cpu gen16a-base \
+-m size=2095104k,maxmem=1099511627776k \
+-overcommit mem-lock=off \
+-smp 2,sockets=2,cores=1,threads=1 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":2145386496}' \
+-numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-object '{"qom-type":"memory-backend-ram","id":"memvirtiomem0","reserve":false,"size":1073741824}' \
+-device '{"driver":"virtio-mem-ccw","node":0,"block-size":2097152,"requested-size":536870912,"memdev":"memvirtiomem0","id":"virtiomem0","devno":"fe.0.0002"}' \
+-object '{"qom-type":"memory-backend-file","id":"memvirtiomem1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","reserve":false,"size":2147483648,"host-nodes":[1,2,3],"policy":"bind"}' \
+-device '{"driver":"virtio-mem-ccw","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem1","prealloc":true,"memaddr":5637144576,"dynamic-memslots":true,"id":"virtiomem1","devno":"fe.0.0003"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-ccw","devno":"fe.0.0000","drive":"libvirt-1-storage","id":"virtio-disk0","bootindex":1}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0001"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
