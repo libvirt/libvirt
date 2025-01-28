@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-01-12 15:19+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-01-23 20:28+0000\n"
+"Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -6805,7 +6805,7 @@ msgstr "'%1$s' 접근에 실패하였습니다"
 
 #, c-format
 msgid "Failed to acquire inhibitor: %1$s"
-msgstr ""
+msgstr "억제자를 가져오는 데 실패함: %1$s"
 
 msgid "Failed to acquire lock"
 msgstr "잠금을 취득하는데 실패했습니다"
@@ -9220,20 +9220,20 @@ msgstr ""
 "요합니다"
 
 msgid "Format storage pool"
-msgstr ""
+msgstr "저장소 풀을 초기화"
 
 msgid "Format storage volume"
-msgstr ""
+msgstr "저장소 볼륨을 초기화"
 
 #, c-format
 msgid "Formatting IP address for host '%1$s' failed: %2$s"
 msgstr "호스트 '%1$s'의 IP 주소 포맷을 실패했습니다: %2$s"
 
 msgid "Formatting storage pool data requires authorization"
-msgstr ""
+msgstr "저장소 풀 자료 초기화는 권한이 필요합니다"
 
 msgid "Formatting storage volume data requires authorization"
-msgstr ""
+msgstr "저장소 볼륨 자료 초기화는 권한이 필요합니다"
 
 msgid "Found additional probes to run, probing may be incorrect"
 msgstr "실행할 추가 프로브를 찾았습니다. 프로브가 잘못되었을 수 있습니다"
@@ -9255,13 +9255,13 @@ msgid "Found unexpected controller model '%1$s' for disk '%2$s'"
 msgstr "디스크 '%1$s'의 예상치 않은 컨트롤러 모델 '%2$s' 발견"
 
 msgid "Freeze and thaw domain filesystems"
-msgstr ""
+msgstr "도메인 파일시스템 동결 및 해제"
 
 msgid "Freeze domain's mounted filesystems."
 msgstr "도메인 적재된 파일 시스템을 동결합니다."
 
 msgid "Freezing and thawing domain filesystems requires authorization"
-msgstr ""
+msgstr "도메인 파일시스템 동결하기 및 해제하기는 권한이 필요합니다"
 
 #, c-format
 msgid "Froze %1$d filesystem(s)\n"
@@ -9479,7 +9479,7 @@ msgid "Hard disk is null"
 msgstr "하드 디스크가 비어있습니다"
 
 msgid "Hibernate domain"
-msgstr ""
+msgstr "도메인 휴면"
 
 msgid "Holes are not supported with this stream"
 msgstr "홀은 이 스트림에서 지원하지 않습니다"
@@ -9851,10 +9851,10 @@ msgid "Inject NMI to the guest domain."
 msgstr "NMI를 게스트 도메인에 주입합니다."
 
 msgid "Inject domain NMI"
-msgstr ""
+msgstr "도메인 NMI 주입"
 
 msgid "Injecting interrupt requires authorization"
-msgstr ""
+msgstr "인터럽트 주입하기는 권한이 필요합니다"
 
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "입력 장치는 가상 드라이버에서 지원하지 않습니다."
@@ -9946,7 +9946,7 @@ msgid "Interface not found: %1$s"
 msgstr "연결장치를 찾을 수 없음: %1$s"
 
 msgid "Interface transactions"
-msgstr ""
+msgstr "연결장치 연결"
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10876,7 +10876,7 @@ msgstr "잘못된 virNetSSHSession *"
 
 #, c-format
 msgid "Invalid vlan filter command %1$d"
-msgstr ""
+msgstr "잘못된 vlan 필터 명령 %1$d"
 
 #, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
@@ -10963,7 +10963,7 @@ msgid "LXC Guest Enter Namespace"
 msgstr "LXC 게스트 네임스페이스 입력"
 
 msgid "LXC containers are running"
-msgstr ""
+msgstr "LXC 콘테이너가 동작 중입니다"
 
 #, c-format
 msgid "Lease %1$s in lockspace %2$s already exists"
@@ -10985,19 +10985,19 @@ msgid "Library function returned error but did not set virError"
 msgstr "라이브러리 함수가 오류를 반환했지만 virError를 설정하지 않았습니다"
 
 msgid "Libvirt LXC"
-msgstr ""
+msgstr "Libvirt LXC"
 
 msgid "Libvirt Network"
-msgstr ""
+msgstr "Libvirt 네트워크"
 
 msgid "Libvirt QEMU"
-msgstr ""
+msgstr "Libvirt QEMU"
 
 msgid "Libvirt Secret"
-msgstr ""
+msgstr "Libvirt 비밀"
 
 msgid "Libvirt Xen"
-msgstr ""
+msgstr "Libvirt Xen"
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
@@ -11034,7 +11034,7 @@ msgid "List event types, or wait for storage pool events to occur"
 msgstr "이벤트 유형을 나열하거나 저장소 풀 이벤트가 발생 할 때까지 대기합니다"
 
 msgid "List interfaces"
-msgstr ""
+msgstr "연결장치 목록"
 
 msgid "List network filter bindings"
 msgstr "네트워크 필터 바인딩 나열"
@@ -11049,7 +11049,7 @@ msgid "List networks"
 msgstr "네트워크 목록"
 
 msgid "List node devices"
-msgstr ""
+msgstr "노드 장치 목록"
 
 msgid "List secrets"
 msgstr "비밀정보 목록 나열"
@@ -11058,10 +11058,10 @@ msgid "List snapshots for a domain"
 msgstr "도메인을 위한 순간찍기 목록"
 
 msgid "List storage pool volumes"
-msgstr ""
+msgstr "저장소 풀 볼륨 목록"
 
 msgid "List storage pools"
-msgstr ""
+msgstr "저장소 풀 목록"
 
 msgid "Listen for QEMU Monitor Events"
 msgstr "QEMU 모니터 이벤트 수신 대기"
@@ -11070,34 +11070,34 @@ msgid "Listen for TCP/IP connections"
 msgstr "TCP/IP 연결 수신 대기"
 
 msgid "Listing domains or using domain events requires authorization"
-msgstr ""
+msgstr "도메인 나열하기 또는 도메인 이벤트 사용하기는 권한이 필요합니다"
 
 msgid "Listing interfaces requires authorization"
-msgstr ""
+msgstr "연결장치 나열하기는 권한이 필요합니다"
 
 msgid "Listing network filter bindings requires authorization"
-msgstr ""
+msgstr "네트워크 필터 바인딩 나열하기는 권한이 필요합니다"
 
 msgid "Listing network filters requires authorization"
-msgstr ""
+msgstr "네트워크 필터 나열하기는 권한이 필요합니다"
 
 msgid "Listing network ports requires authorization"
-msgstr ""
+msgstr "네트워크 포트 나열하기는 권한이 필요합니다"
 
 msgid "Listing networks or using network events requires authorization"
-msgstr ""
+msgstr "네트워크 나열하기 또는 네트워크 이벤트 사용하기는 권한이 필요합니다"
 
 msgid "Listing node devices requires authorization"
-msgstr ""
+msgstr "노드 장치 나열하기는 권한이 필요합니다"
 
 msgid "Listing secrets requires authorization"
-msgstr ""
+msgstr "비밀 나열하기는 권한이 필요합니다"
 
 msgid "Listing storage pool volumes requires authorization"
-msgstr ""
+msgstr "저장소 풀 볼륨 나열하기는 권한이 필요합니다"
 
 msgid "Listing storage pools requires authorization"
-msgstr ""
+msgstr "저장소 풀 나열하기는 권한이 필요합니다"
 
 msgid "Load kvm_hv for better performance"
 msgstr "더 나은 성능을 위해 kvm_hv 로드"
@@ -11320,7 +11320,7 @@ msgid "Manage active block operations"
 msgstr "활성 블록 작업 관리"
 
 msgid "Manage local virtualized systems"
-msgstr ""
+msgstr "로컬 가상화 시스템을 관리합니다"
 
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
@@ -11466,7 +11466,7 @@ msgstr ""
 "하지 않습니다"
 
 msgid "Migrate domain"
-msgstr ""
+msgstr "도메인 이전"
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "다른 호스트로 도메인 이전. 실시간 이전일 경우 --live 추가."
@@ -11475,7 +11475,7 @@ msgid "Migrated"
 msgstr "이전됨"
 
 msgid "Migrating domain requires authorization"
-msgstr ""
+msgstr "도메인 이전하기는 권한이 필요합니다"
 
 msgid "Migration"
 msgstr "이전"
@@ -12124,7 +12124,7 @@ msgid "Modifies an existing IOThread of the guest domain."
 msgstr "게스트 도메인의 기존 IOThread를 수정합니다."
 
 msgid "Monitor local virtualized systems"
-msgstr ""
+msgstr "로컬 가상화된 시스템 감시"
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -13293,13 +13293,13 @@ msgid "Only x509 certificates are supported"
 msgstr "x509 인증서만 지원됩니다"
 
 msgid "Open domain device"
-msgstr ""
+msgstr "도메인 장치 열기"
 
 msgid "Open domain graphics"
-msgstr ""
+msgstr "도메인 그래픽 열기"
 
 msgid "Open domain namespace"
-msgstr ""
+msgstr "도메인 이름공간 열기"
 
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
@@ -13312,13 +13312,13 @@ msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "OpenVZ 컨트롤 파일 /proc/vz를 억세스할 수 없습니다"
 
 msgid "Opening domain devices requires authorization"
-msgstr ""
+msgstr "도메인 장치 열어보기는 권한이 필요합니다"
 
 msgid "Opening domain graphics console requires authorization"
-msgstr ""
+msgstr "도메인 그래픽 콘솔 열어보기는 권한이 필요합니다"
 
 msgid "Opening domain namespaces requires authorization"
-msgstr ""
+msgstr "도메인 이름공간 열어보기는 권한이 필요합니다"
 
 msgid "Operation cancelled by client"
 msgstr "클라이언트가 작업을 취소했습니다"
@@ -13985,7 +13985,7 @@ msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
 msgstr "QEMU 버전 >= %1$d.%2$d.%3$d가 필요하지만 %4$d.%5$d.%6$d를 찾았습니다"
 
 msgid "QEMU/KVM virtual machines are running"
-msgstr ""
+msgstr "QEMU/KVM 장비가 동작 중입니다"
 
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
@@ -14093,52 +14093,52 @@ msgid "Raw I/O is not supported on this platform"
 msgstr "단순 I/O는 이와 같은 기술환경에서 지원되지 않습니다"
 
 msgid "Read domain"
-msgstr ""
+msgstr "도메인 읽기"
 
 msgid "Read domain block"
-msgstr ""
+msgstr "도메인 블록 읽기"
 
 msgid "Read domain memory"
-msgstr ""
+msgstr "도메인 메모리 읽기"
 
 msgid "Read host"
-msgstr ""
+msgstr "호스트 읽기"
 
 msgid "Read interface"
-msgstr ""
+msgstr "연결장치 읽기"
 
 msgid "Read network"
-msgstr ""
+msgstr "네트워크 읽기"
 
 msgid "Read network filter"
-msgstr ""
+msgstr "네트워크 필터 읽기"
 
 msgid "Read network filter binding"
-msgstr ""
+msgstr "네트워크 필터 바인딩 읽기"
 
 msgid "Read network port"
-msgstr ""
+msgstr "네트워크 포트 읽기"
 
 msgid "Read node device"
-msgstr ""
+msgstr "노드 장치 읽기"
 
 msgid "Read secret"
-msgstr ""
+msgstr "비밀 읽기"
 
 msgid "Read secure domain"
-msgstr ""
+msgstr "보안 도메인 읽기"
 
 msgid "Read secure secret"
-msgstr ""
+msgstr "보안 비밀 읽기"
 
 msgid "Read storage pool"
-msgstr ""
+msgstr "저장소 풀 읽기"
 
 msgid "Read storage volume"
-msgstr ""
+msgstr "저장소 볼륨 읽기"
 
 msgid "Read storage volume data"
-msgstr ""
+msgstr "저장소 볼륨 자료 읽기"
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
@@ -14151,49 +14151,49 @@ msgid "Reading MSRs is not supported on this platform"
 msgstr "이 기술환경에서는 MSR 읽기가 지원되지 않습니다"
 
 msgid "Reading domain block devices requires authorization"
-msgstr ""
+msgstr "도메인 블록 읽어오기는 권한이 필요합니다"
 
 msgid "Reading domain configuration requires authorization"
-msgstr ""
+msgstr "도메인 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading domain memory requires authorization"
-msgstr ""
+msgstr "도메인 메모리 읽어오기는 권한이 필요합니다"
 
 msgid "Reading interface configuration requires authorization"
-msgstr ""
+msgstr "연결장치 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading network configuration requires authorization"
-msgstr ""
+msgstr "네트워크 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading network filter configuration requires authorization"
-msgstr ""
+msgstr "네트워크 필터 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading network port configuration requires authorization"
-msgstr ""
+msgstr "네트워크 포트 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading node device configuration requires authorization"
-msgstr ""
+msgstr "노드 장치 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading secret configuration requires authorization"
-msgstr ""
+msgstr "비밀 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading secure domain configuration requires authorization"
-msgstr ""
+msgstr "보안 도메인 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading secure secret configuration requires authorization"
-msgstr ""
+msgstr "보안 비밀 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading storage pool configuration requires authorization"
-msgstr ""
+msgstr "저장소 풀 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading storage volume configuration requires authorization"
-msgstr ""
+msgstr "저장소 볼륨 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reading storage volume data requires authorization"
-msgstr ""
+msgstr "저장소 볼륨 자료 읽어오기는 권한이 필요합니다"
 
 msgid "Reading the host configuration requires authorization"
-msgstr ""
+msgstr "호스트 구성 읽어오기는 권한이 필요합니다"
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr "도메인에 의해 한번 해제된 장치 드라이버에 노드 장치를 재부착."
@@ -14219,10 +14219,10 @@ msgid "Refresh a given pool."
 msgstr "주어진 풀을 새로 고침."
 
 msgid "Refresh storage pool"
-msgstr ""
+msgstr "저장소 풀 갱신"
 
 msgid "Refreshing storage pool volumes requires authorization"
-msgstr ""
+msgstr "저장소 풀 볼륨 갱신하기는 권한이 필요합니다"
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
@@ -14354,7 +14354,7 @@ msgid "Resctrl monitor path is already set to '%1$s'"
 msgstr "resctl 관리 경로는'%1$s'에 이미 설정되어있습니다"
 
 msgid "Reset domain"
-msgstr ""
+msgstr "도메인 재설정"
 
 msgid "Reset node device before or after assigning to a domain."
 msgstr "도메인에 할당하기 전 또는 한 후 노드 장치를 리셋."
@@ -14363,13 +14363,13 @@ msgid "Reset the target domain as if by power button"
 msgstr "전원 버튼으로 대상 도메인 재설정"
 
 msgid "Resetting the domain requires authorization"
-msgstr ""
+msgstr "도메인 재설정하기는 권한이 필요합니다"
 
 msgid "Resize block device of domain."
 msgstr "도메인 블록 장치 크기를 조정합니다."
 
 msgid "Resize storage volume"
-msgstr ""
+msgstr "저장소 볼륨 크기 재지정"
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
@@ -14381,7 +14381,7 @@ msgstr ""
 "실시간 크기 조정은 블록크기를 참조하세요."
 
 msgid "Resizing storage volume requires authorization"
-msgstr ""
+msgstr "저장소 볼륨 재지정하기는 권한이 필요합니다"
 
 msgid "Resolved device mapper name too long"
 msgstr "해결된 장치 매퍼 이름이 너무 깁니다"
@@ -14756,25 +14756,25 @@ msgstr ""
 "    이 저장된 상태에서 시작됩니다."
 
 msgid "Save domain"
-msgstr ""
+msgstr "도메인 저장"
 
 msgid "Save interface"
-msgstr ""
+msgstr "연결장치 저장"
 
 msgid "Save network"
-msgstr ""
+msgstr "네트워크 저장"
 
 msgid "Save network filter"
-msgstr ""
+msgstr "네트워크 필터 저장"
 
 msgid "Save node device"
-msgstr ""
+msgstr "노드 장치 저장"
 
 msgid "Save secret"
-msgstr ""
+msgstr "비밀 저장"
 
 msgid "Save storage pool"
-msgstr ""
+msgstr "저장소 풀 저장"
 
 msgid "Save the RAM state of a running domain."
 msgstr "실행 중인 도메인의 메모리 상태를 저장합니다."
@@ -14787,28 +14787,28 @@ msgid "Saved image %1$s XML configuration not changed.\n"
 msgstr "저장된 이미지 %1$s XML 구성이 변경되지 않았습니다.\n"
 
 msgid "Saving domain configuration requires authorization"
-msgstr ""
+msgstr "도메인 구성 저장하기는 권한이 필요합니다"
 
 msgid "Saving domain state requires authorization"
-msgstr ""
+msgstr "도메인 상태 저장하기는 권한이 필요합니다"
 
 msgid "Saving interface configuration requires authorization"
-msgstr ""
+msgstr "연결장치 구성 저장하기는 권한이 필요합니다"
 
 msgid "Saving network configuration requires authorization"
-msgstr ""
+msgstr "네트워크 구성 저장하기는 권한이 필요합니다"
 
 msgid "Saving network filter configuration requires authorization"
-msgstr ""
+msgstr "네트워크 필터 구성 저장하기는 권한이 필요합니다"
 
 msgid "Saving node device driver requires authorization"
-msgstr ""
+msgstr "노드 장치 드라이버 저장하기는 권한이 필요합니다"
 
 msgid "Saving secret configuration requires authorization"
-msgstr ""
+msgstr "비밀 구성 저장하기는 권한이 필요합니다"
 
 msgid "Saving storage pool configuration requires authorization"
-msgstr ""
+msgstr "저장소 풀 구성 저장하기는 권한이 필요합니다"
 
 #, c-format
 msgid ""
@@ -14929,10 +14929,10 @@ msgstr ""
 "\n"
 
 msgid "Send domain input"
-msgstr ""
+msgstr "도메인 입력 전송"
 
 msgid "Send domain signal"
-msgstr ""
+msgstr "도메인 신호 전송"
 
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "게스트에게 키코드(정수 또는 기호 이름) 보내기"
@@ -14950,10 +14950,10 @@ msgid "Sending file descriptors is not supported on this socket"
 msgstr "파일 설명자 전송하기는 이 소켓에서 지원되지 않습니다"
 
 msgid "Sending input events to domain requires authorization"
-msgstr ""
+msgstr "도메인에 입력 이벤트 전송하기는 권한이 필요합니다"
 
 msgid "Sending signals to processes in domain requires authorization"
-msgstr ""
+msgstr "신호를 도메인의 처리에 전송하기는 권한이 필요합니다"
 
 #, c-format
 msgid ""
@@ -15032,7 +15032,7 @@ msgid "Set or query disk I/O parameters such as block throttling."
 msgstr "블록 조절과 같은 디스크 I/O 매개변수를 설정하거나 쿼리합니다."
 
 msgid "Set password of the domain's account"
-msgstr ""
+msgstr "도메인 계정의 비밀번호를 설정합니다"
 
 msgid "Set the guest agent timeout"
 msgstr "게스트 에이전트 시간 초과 설정"
@@ -15129,10 +15129,10 @@ msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
 msgstr "64비트 PCI 구멍 크기 설정은 시스템 '%1$s'에 대해 지원되지 않습니다"
 
 msgid "Setting the domain accounts' password requires authorization"
-msgstr ""
+msgstr "도메인 계정의 비밀번호 설정하기는 권한이 필요합니다"
 
 msgid "Setting the domain time requires authorization"
-msgstr ""
+msgstr "도메인 시간의 설정하기는 권한이 필요합니다"
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
 msgstr "디스크 폐기 매개변수 설정은 vz 드라이버에서 지원되지 않습니다."
@@ -15273,7 +15273,7 @@ msgid "Snapshot delete"
 msgstr "순간찍기 삭제"
 
 msgid "Snapshot domain"
-msgstr ""
+msgstr "도메인 순간찍기"
 
 msgid "Snapshot is Null"
 msgstr "순간찍기가 없습니다"
@@ -15289,7 +15289,7 @@ msgid "Snapshots have inconsistent relations for domain %1$s"
 msgstr "순간찍기는 도메인 %1$s를 위한 관계가 일치하지 않습니다"
 
 msgid "Snapshotting domain requires authorization"
-msgstr ""
+msgstr "도메인 순간찍기는 권한이 필요합니다"
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
@@ -15392,19 +15392,19 @@ msgid "Start an inactive node device"
 msgstr "비활성 노드 장치 시작"
 
 msgid "Start domain"
-msgstr ""
+msgstr "도메인 시작"
 
 msgid "Start interface"
-msgstr ""
+msgstr "연결장치 시작"
 
 msgid "Start network"
 msgstr "네트워크 시작"
 
 msgid "Start node device"
-msgstr ""
+msgstr "노드 장치 시작"
 
 msgid "Start storage pool"
-msgstr ""
+msgstr "저장소 풀 시작"
 
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr "도메인의 메모리 더티 비율을 성공적으로 계산하기 시작합니다.\n"
@@ -15413,23 +15413,23 @@ msgid "Started"
 msgstr "시작됨"
 
 msgid "Starting interface requires authorization"
-msgstr ""
+msgstr "연결장치 시작하기는 권한이 필요합니다"
 
 msgid "Starting network requires authorization"
-msgstr ""
+msgstr "네트워크 시작하기는 권한이 필요합니다"
 
 msgid "Starting node device requires authorization"
-msgstr ""
+msgstr "노드 장치 시작하기는 권한이 필요합니다"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
 msgstr "게스트 종료 시작: $name"
 
 msgid "Starting storage pool configuration requires authorization"
-msgstr ""
+msgstr "노드 풀 구성 시작하기는 권한이 필요합니다"
 
 msgid "Starting the domain requires authorization"
-msgstr ""
+msgstr "도메인 시작하기는 권한이 필요합니다"
 
 msgid "Starts an inactive node device that was previously defined"
 msgstr "이전에 정의된 비활성 노드 장치를 시작합니다"
@@ -15530,37 +15530,37 @@ msgid "Status is unknown"
 msgstr "상태를 알 수 없음"
 
 msgid "Stop domain"
-msgstr ""
+msgstr "도메인 멈춤"
 
 msgid "Stop interface"
-msgstr ""
+msgstr "연결장치 멈춤"
 
 msgid "Stop network"
 msgstr "네트워크 중단"
 
 msgid "Stop node device"
-msgstr ""
+msgstr "노드 장치 멈춤"
 
 msgid "Stop storage pool"
-msgstr ""
+msgstr "저장소 풀 멈춤"
 
 msgid "Stopped"
 msgstr "정지됨"
 
 msgid "Stopping interface requires authorization"
-msgstr ""
+msgstr "연결장치 멈추기는 권한이 필요합니다"
 
 msgid "Stopping network requires authorization"
-msgstr ""
+msgstr "네트워크 멈추기는 권한이 필요합니다"
 
 msgid "Stopping node device requires authorization"
-msgstr ""
+msgstr "노드 장치 멈추기는 권한이 필요합니다"
 
 msgid "Stopping storage pool configuration requires authorization"
-msgstr ""
+msgstr "저장소 풀 구성 멈추기는 권한이 필요합니다"
 
 msgid "Stopping the domain requires authorization"
-msgstr ""
+msgstr "도메인 멈추기는 권한이 필요합니다"
 
 msgid "Storage Pool Events"
 msgstr "저장소 풀 이벤트"
@@ -15679,7 +15679,7 @@ msgid "Suspend a running domain."
 msgstr "실행중인 도메인 중지."
 
 msgid "Suspend domain"
-msgstr ""
+msgstr "도메인 일시 중지"
 
 msgid "Suspend duration in seconds, at least 60"
 msgstr "정지 지속 시간(초), 최소 60"
@@ -15714,7 +15714,7 @@ msgid "Suspending $name: "
 msgstr "$name 를일시정지합니다: "
 
 msgid "Suspending domain CPUs requires authorization"
-msgstr ""
+msgstr "도메인 CPU의 일시 중지하기는 권한이 필요합니다"
 
 #, sh-format
 msgid "Suspending guests on $uri URI..."
@@ -15744,10 +15744,10 @@ msgid "System is not available"
 msgstr "시스템이 사용 불가능합니다"
 
 msgid "System policy prevents management of local virtualized systems"
-msgstr ""
+msgstr "시스템 정책이 로컬 가상화 시스템의 관리를 방해합니다"
 
 msgid "System policy prevents monitoring of local virtualized systems"
-msgstr ""
+msgstr "시스템 정책이 로컬 가상화 시스템의 감시하기를 방해합니다"
 
 #, c-format
 msgid "System token in %1$s was corrupt"
@@ -15798,10 +15798,10 @@ msgid "Table row cannot be empty"
 msgstr "테이블 행은 비워 둘 수 없습니다"
 
 msgid "Take domain screenshot"
-msgstr ""
+msgstr "도메인 순간찍기 진행"
 
 msgid "Taking domain screenshots requires authorization"
-msgstr ""
+msgstr "도메인 순간찍기 진행하기는 권한이 필요합니다"
 
 msgid "Target"
 msgstr "대상"
@@ -16371,7 +16371,8 @@ msgstr "대상 호스트 장치 모드 %1$s가 소스 %2$s와 일치하지 않�
 msgid ""
 "Target host device subsystem type %1$s is not compatible with source "
 "subsystem type %2$s"
-msgstr ""
+msgstr "대상 호스트 장치 하위시스템 유형 %1$s은 원천 하위시스템 유형 %2$s과 호환되지 "
+"않습니다"
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
@@ -17406,10 +17407,10 @@ msgid "Tried to write socket in error state"
 msgstr "오류 상태에서 소켓을 쓰려고 했습니다"
 
 msgid "Trim domain filesystems"
-msgstr ""
+msgstr "도메인 파일시스템 정돈"
 
 msgid "Trimming domain filesystems requires authorization"
-msgstr ""
+msgstr "도메인 파일시스템 정돈하기는 권한이 필요합니다"
 
 msgid "Try again?"
 msgstr "다시 시도?"
@@ -20680,10 +20681,10 @@ msgstr ""
 "크포인트 생성"
 
 msgid "Use domain power management"
-msgstr ""
+msgstr "도메인 전원 관리를 사용합니다"
 
 msgid "Use host power management"
-msgstr ""
+msgstr "호스트 전원 관리를 사용합니다"
 
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr "'parentaddr' 요소를 사용하려면 'type' 어댑터를 사용해야 합니다"
@@ -20724,13 +20725,13 @@ msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "사용중인 API: %1$s %2$d.%3$d.%4$d\n"
 
 msgid "Using domain power management requires authorization"
-msgstr ""
+msgstr "도메인 전원 관리 사용하기는 권한이 필요합니다"
 
 msgid "Using host power management requires authorization"
-msgstr ""
+msgstr "호스트 전원 관리 사용하기는 권한이 필요합니다"
 
 msgid "Using interface transactions requires authorization"
-msgstr ""
+msgstr "연결장치 연결 사용하기는 권한이 필요합니다"
 
 #, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
@@ -20849,7 +20850,7 @@ msgid "Verbose messages"
 msgstr "장황한 메시지"
 
 msgid "Video adapters are not supported in containers."
-msgstr ""
+msgstr "비디오 어댑터는 콘테이너에서 지원되지 않습니다."
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
@@ -20863,7 +20864,7 @@ msgid "Virtual network portgroups are not supported by vz driver."
 msgstr "가상 네트워크 포트 그룹은 vz 드라이버에서 지원되지 않습니다."
 
 msgid "Virtual networks are active"
-msgstr ""
+msgstr "가상 네트워크가 활성화되어 있습니다"
 
 msgid "Virtual port profile association not supported on this platform"
 msgstr "이 기술환경에서 지원되지 않는 가상 포트 프로파일 연결"
@@ -20976,82 +20977,82 @@ msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "볼륨 '%1$s'(%2$s) 지우는 중... "
 
 msgid "Write domain"
-msgstr ""
+msgstr "도메인 쓰기"
 
 msgid "Write domain block"
-msgstr ""
+msgstr "도메인 블럭 쓰기"
 
 msgid "Write domain time"
-msgstr ""
+msgstr "도메인 시간 쓰기"
 
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
 msgstr "PCI 장치 구성 공간의 쓰기 필터링은 qemu에서 지원되지 않습니다"
 
 msgid "Write host"
-msgstr ""
+msgstr "호스트 쓰기"
 
 msgid "Write interface"
-msgstr ""
+msgstr "연결장치 쓰기"
 
 msgid "Write network"
-msgstr ""
+msgstr "네트워크 쓰기"
 
 msgid "Write network filter"
-msgstr ""
+msgstr "네트워크 필터 쓰기"
 
 msgid "Write node device"
-msgstr ""
+msgstr "노드 장치 쓰기"
 
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
 msgstr "vport 생성/삭제 중 '%1$s'를 '%2$s'에 쓰기가 실패했습니다"
 
 msgid "Write secret"
-msgstr ""
+msgstr "비밀 쓰기"
 
 msgid "Write storage pool"
-msgstr ""
+msgstr "저장소 풀 쓰기"
 
 msgid "Write storage volume data"
-msgstr ""
+msgstr "저장소 볼륨 자료 쓰기"
 
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
 msgstr "호스트 스캔을 시작하게 하려고 '%1$s'를 쓰는 것에 실패했습니다"
 
 msgid "Writing domain block devices requires authorization"
-msgstr ""
+msgstr "도메인 블럭 장치 쓰기는 권한이 필요합니다"
 
 msgid "Writing domain configuration requires authorization"
-msgstr ""
+msgstr "도메인 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing interface configuration requires authorization"
-msgstr ""
+msgstr "연결장치 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing network configuration requires authorization"
-msgstr ""
+msgstr "네트워크 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing network filter configuration requires authorization"
-msgstr ""
+msgstr "네트워크 필터 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing network port configuration requires authorization"
-msgstr ""
+msgstr "네트워크 포트 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing node device configuration requires authorization"
-msgstr ""
+msgstr "노드 장치 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing secret configuration requires authorization"
-msgstr ""
+msgstr "비밀 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing storage pool configuration requires authorization"
-msgstr ""
+msgstr "저장소 풀 구성 쓰기는 권한이 필요합니다"
 
 msgid "Writing storage volume data requires authorization"
-msgstr ""
+msgstr "저장소 볼륨 자료 쓰기는 권한이 필요합니다"
 
 msgid "Writing the host configuration requires authorization"
-msgstr ""
+msgstr "호스트 구성 쓰기는 권한이 필요합니다"
 
 msgid "Wrong MAC address"
 msgstr "잘못된 MAC 주소"
@@ -21131,7 +21132,7 @@ msgid "Xen only supports 'xenpv', 'xenpvh' and 'xenfv' machines"
 msgstr "Xen은 'xenpv', 'xenpvh' 및 'xenfv' 시스템만 지원합니다"
 
 msgid "Xen virtual machines are running"
-msgstr ""
+msgstr "Xen 가상 장비가 동작하고 있습니다"
 
 msgid "You are trying to remove a snapshot which does not exists"
 msgstr "존재하지 않는 순간찍기를 제거하려고 합니다"
@@ -22983,7 +22984,7 @@ msgid "cannot mix string I/O with daemon"
 msgstr "데몬과 문자열 I/O를 혼합할 수 없습니다"
 
 msgid "cannot modify '<iothreads>' configuration of the disk"
-msgstr ""
+msgstr "디스크의 '<iothreads>' 구성을 수정 할 수 없습니다"
 
 msgid "cannot modify MTU"
 msgstr "MTU를 수정할 수 없습니다"
@@ -26086,7 +26087,7 @@ msgstr "%1$s에 대한 fdb 항목을 추가하는 동안 오류가 발생했습�
 
 #, c-format
 msgid "error adding vlan filter to interface %1$s"
-msgstr ""
+msgstr "연결장치 %1$s로 vlan 필터를 추가 중 오류"
 
 msgid "error calling aa_change_profile()"
 msgstr "aa_change_profile() 호출하는 중 오류"
@@ -26173,7 +26174,7 @@ msgstr "컨테이너에서 신호 수신 오류"
 
 #, c-format
 msgid "error removing vlan filter from interface %1$s"
-msgstr ""
+msgstr "연결장치 %1$s에서 vlan 필터 제거 중 오류"
 
 msgid "error sending continue signal to daemon"
 msgstr "데몬에 계속 신호를 보내는 동안 오류가 발생했습니다"
@@ -28514,7 +28515,7 @@ msgstr "호스트가 hyperv stimer '%1$s' 기능을 지원하지 않습니다"
 
 #, c-format
 msgid "host doesn't support hyperv tlbflush '%1$s' feature"
-msgstr ""
+msgstr "호스트는 hyperv tlbflush '%1$s' 기능을 지원하지 않습니다"
 
 msgid "host doesn't support invariant TSC"
 msgstr "호스트가 고정 TSC를 지원하지 않습니다"
@@ -31246,7 +31247,8 @@ msgstr "미디에이션된 기기의 <type> 요소에 대한 'id' 속성이 없�
 msgid ""
 "missing 'name' attribute for a host CPU model deprecated property in QEMU "
 "capabilities cache"
-msgstr ""
+msgstr "호스트 CPU 모델을 위한 누락된 'name' 속성은 QEMU 기능 캐쉬의 속성에서 "
+"폐기되었습니다"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -33454,7 +33456,7 @@ msgstr "핫플러그가 불가능한 온라인 vcpus는 오름차순으로 주�
 
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
-msgstr ""
+msgstr "온라인 비-핫플러그형 vcpu는 핫플러그형 vcpu 보다 우선하여 주문하여야 합니다"
 
 msgid "only 'connect' mode is supported for external TPM device"
 msgstr "'connect' 방식만이 외부 TPM을 지원합니다"
@@ -35019,7 +35021,7 @@ msgid "report filesystem information"
 msgstr "파일 시스템 정보 보고"
 
 msgid "report host CPU model with deprecated features disabled"
-msgstr ""
+msgstr "폐기된 기능이 비활성화된 호스트 CPU 모델을 보고합니다"
 
 msgid "report hostname"
 msgstr "호스트 이름 보고"
@@ -36790,7 +36792,7 @@ msgid "tls"
 msgstr "TLS"
 
 msgid "toggling deprecated features for CPU model is unsupported"
-msgstr ""
+msgstr "CPU 모델을 위해 폐기된 기능 전환하기는 지원되지 않습니다"
 
 #, c-format
 msgid "too many NUMA cells: %1$d > %2$d"
@@ -38693,7 +38695,8 @@ msgstr "인식할 수 없는 명령 이름 '%1$s'"
 #, c-format
 msgid ""
 "unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
-msgstr ""
+msgstr "인식 못하는 firewall_backend = '%1$s' 는 네트워크 드라이버 config 파일 %2$"
+"s에서 설정합니다"
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -38728,7 +38731,7 @@ msgstr "지원되지 않는 Hyper-V 스티머 기능: %1$s"
 
 #, c-format
 msgid "unsupported Hyper-V tlbflush feature: %1$s"
-msgstr ""
+msgstr "미지원 Hyper-V tlbflush 기능: %1$s"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %1$s"
