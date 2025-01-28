@@ -24,6 +24,11 @@ v11.1.0 (unreleased)
 
 * **Removed features**
 
+  * vbox: removed support for version 6.1 APIs
+
+    Libvirt no longer supports use of VirtualBox 6.1 since this version reached
+    its end of life on 2024/01.
+
 * **New features**
 
   * ch: Support handling events from cloud-hypervisor
