@@ -45,6 +45,12 @@ v11.1.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: I/O error messages can be queried via ``virDomainGetMessages()``
+
+    The qemu hypervisor driver now preserves the last I/O error message along
+    with the timestamp when it was recorded and preserves it to be queried via
+    ``virDomainGetMessages()``.
+
 * **Bug fixes**
 
 
