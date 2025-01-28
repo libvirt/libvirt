@@ -11,13 +11,14 @@
 # Pino Toscano <toscano.pino@tiscali.it>, 2020.
 # Milo Casagrande <milo@milo.name>, 2020.
 # Nathan <nathan95@live.it>, 2021.
+# Salvatore Cocuzza <info@salvatorecocuzza.it>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2021-06-28 06:04+0000\n"
-"Last-Translator: Nathan <nathan95@live.it>\n"
+"PO-Revision-Date: 2025-01-19 21:18+0000\n"
+"Last-Translator: Salvatore Cocuzza <info@salvatorecocuzza.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/it/>\n"
 "Language: it\n"
@@ -25,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -256,18 +257,24 @@ msgid ""
 "\n"
 "Domain '%1$s' dumped to %2$s\n"
 msgstr ""
+"\n"
+"Dominio '%1$s' scaricato su %2$s\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%1$s' saved to %2$s\n"
 msgstr ""
+"\n"
+"Dominio '%1$s' salvato in %2$s\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%1$s' state saved by libvirt\n"
 msgstr ""
+"\n"
+"Stato del dominio '%1$s' salvato da libvirt\n"
 
 #, c-format
 msgid ""
@@ -401,6 +408,10 @@ msgid ""
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
 "possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
+"!!! VERIFICA CHIAVE HOST SSH NON FALLITA!!!: l'identità dell'host '%1$s:%2$"
+"d' è diversa dall'identità archiviata. Verifica la nuova chiave host '%3$s' "
+"per evitare possibili attacchi man in the middle. La chiave è memorizzata in "
+"'%4$s'."
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -414,21 +425,23 @@ msgstr "%1$s\n"
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
-msgstr "l'interfaccia presenta una tipologia '%s' non supportata"
+msgstr "%1$s %2$s '%3$s' ha un tipo '%4$s' non supportato"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr ""
-"Il nome del volume '%s' presenta un suffisso non supportato, previsto '.vmdk'"
+"%1$s %2$s '%3$s' ha un tipo '%4$s' non supportato, è previsto '%5$s' o '%6$s'"
 
 #, c-format
 msgid ""
 "%1$s (on destination side) does not support the --migration option needed "
 "for migration with shared storage"
 msgstr ""
+"%1$s (sul lato di destinazione) non supporta l'opzione --migration "
+"necessaria per la migrazione con spazio di archiviazione condiviso"
 
 #, c-format
 msgid "%1$s (out of %2$d)"
@@ -440,31 +453,35 @@ msgstr "%1$s non può essere vuoto"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s non può essere impostato su un valore superiore a %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s cannot parse GID '%2$s'"
-msgstr "impossibile analizzare il bus %s"
+msgstr "%1$s non può analizzare il GID '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s cannot parse UID '%2$s'"
-msgstr "impossibile analizzare il bus %s"
+msgstr "%1$s non può analizzare l'UID '%2$s'"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "Il disco %1$s non è supportato con questo binario QEMU"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s non supporta l'archiviazione di file"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
 msgstr ""
+"%1$s non supporta il passaggio di una passphrase utilizzando un descrittore "
+"di file"
 
 #, c-format
 msgid "%1$s does not support passing passphrase via file descriptor"
 msgstr ""
+"%1$s non supporta il passaggio della passphrase tramite il descrittore di "
+"file"
 
 #, c-format
 msgid "%1$s expects UID and GID parameters"
@@ -473,23 +490,28 @@ msgstr "%1$s richiede i parametri di UID e GID"
 #, c-format
 msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
 msgstr ""
+"%1$s non ha superato la nuova modalità per la destinazione '%2$s' con stato "
+"'%3$d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
-msgstr "Errore nel parsing dell'indirizzo MAC '%s' della rete '%s'"
+msgstr ""
+"Famiglia %1$s specificata per l'indirizzo non IPv4 '%2$s' nella rete '%3$s'"
 
 #, c-format
 msgid ""
 "%1$s forwarding requested, but no IP address provided for network '%2$s'"
 msgstr ""
+"È stato richiesto l'inoltro di %1$s, ma nessun indirizzo IP fornito per la "
+"rete '%2$s'"
 
 #, c-format
 msgid "%1$s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "La grafica di %1$s non è supportata con questo QEMU"
 
 #, c-format
 msgid "%1$s harddisk '%2$s' has unsupported cache mode '%3$s'"
-msgstr ""
+msgstr "Il disco rigido %1$s '%2$s' ha la modalità cache '%3$s' non supportata"
 
 #, c-format
 msgid "%1$s has illegal value %2$s"
@@ -546,10 +568,13 @@ msgstr "Il modello %1$s di watchdog può essere usato solo su un bus PCI"
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
 msgstr ""
+"Il modello di watchdog %1$s non può essere utilizzato con questo tipo di "
+"macchina"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
 msgstr ""
+"Il modello di watchdog di %1$s non supporta la configurazione dell'indirizzo"
 
 #, c-format
 msgid "%1$s model of watchdog is allowed for s390 and s390x only"
@@ -557,13 +582,15 @@ msgstr "Il modello %1$s di watchdog può essere usato solo su s390 e s390x"
 
 #, c-format
 msgid "%1$s model of watchdog is only part of q35 machine"
-msgstr ""
+msgstr "Il modello di watchdog %1$s è solo una parte della macchina q35"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "%1$s model of watchdog is part of the machine and cannot have any address "
 "set."
 msgstr ""
+"Il modello di watchdog di %1$ fa parte della macchina e non può avere alcun "
+"indirizzo impostato."
 
 #, c-format
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
@@ -572,11 +599,11 @@ msgstr ""
 
 #, c-format
 msgid "%1$s module is not loaded, "
-msgstr ""
+msgstr "Il modulo %1$s non è caricato, "
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s namespace is not available"
-msgstr "le informazioni SMBIOS dell'host non sono disponibili"
+msgstr "Lo spazio dei nomi %1$s non è disponibile"
 
 #, c-format
 msgid "%1$s not found in %2$s"
@@ -588,11 +615,11 @@ msgstr "%1$s non implementato su Win32"
 
 #, c-format
 msgid "%1$s not matched against 'allowed_users' in %2$s"
-msgstr ""
+msgstr "%1$s non corrisponde a 'allowed_users' in %2$s"
 
 #, c-format
 msgid "%1$s not parseable"
-msgstr ""
+msgstr "%1$s non analizzabile"
 
 #, c-format
 msgid "%1$s not supported in this QEMU binary"
@@ -608,37 +635,44 @@ msgstr "L'oggetto '%1$s' non ha la proprietà richiesta '%2$s'"
 
 #, c-format
 msgid "%1$s reply data was missing 'model'"
-msgstr ""
+msgstr "Nei dati della risposta di %1$s mancava il \"modello\""
 
 #, c-format
 msgid "%1$s reply data was missing 'name'"
-msgstr ""
+msgstr "Nei dati della risposta di %1$s mancava il 'nome'"
 
 #, c-format
 msgid "%1$s reply data was missing 'props'"
-msgstr ""
+msgstr "Nei dati della risposta di %1$s mancavano \"oggetti di scena\""
 
 #, c-format
 msgid ""
 "%1$s rule with port specification requires protocol specification with "
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 msgstr ""
+"La regola %1$s con la specifica della porta richiede la specifica del "
+"protocollo con protocollo che sia uno tra tcp(6), udp(17), dccp(33) o "
+"sctp(132)"
 
 #, c-format
 msgid "%1$s uri uuid action\n"
-msgstr ""
+msgstr "%1$s azione uri uuid\n"
 
 #, c-format
 msgid ""
 "%1$s with index %2$d is configured for a NUMA node (%3$d) not present in the "
 "domain's <cpu><numa> array (%4$zu)"
 msgstr ""
+"%1$s con indice %2$d è configurato per un nodo NUMA (%3$d) non presente "
+"nell'array <cpu><numa> del dominio (%4$zu)"
 
 #, c-format
 msgid ""
 "%1$s:\n"
 "%2$s%3$c"
 msgstr ""
+"%1$s:\n"
+"%2$s%3$c"
 
 #, c-format
 msgid "%1$s: %2$s"
@@ -652,91 +686,121 @@ msgstr "%1$s: %2$s: autenticazione non supportata '%3$s'"
 msgid "%1$s: '%2$s' does not exist"
 msgstr "%1$s: '%2$s' non esiste"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Address '%2$s' in route definition is not a network address"
-msgstr "Indirizzo IP mancante nella definizione host statico per la rete '%s'"
+msgstr ""
+"%1$s: l'indirizzo '%2$s' nella definizione del percorso non è un indirizzo "
+"di rete"
 
 #, c-format
 msgid "%1$s: Bad gateway address '%2$s' in route definition"
 msgstr ""
+"%1$s: indirizzo gateway '%2$s' non valido nella definizione del percorso"
 
 #, c-format
 msgid "%1$s: Bad netmask address '%2$s' in route definition"
 msgstr ""
+"%1$s: indirizzo della maschera di rete '%2$s' errato nella definizione del "
+"percorso"
 
 #, c-format
 msgid "%1$s: Bad network address '%2$s' in route definition"
-msgstr ""
+msgstr "%1$s: indirizzo di rete '%2$s' errato nella definizione del percorso"
 
 #, c-format
 msgid "%1$s: Cannot request read and write flags together"
-msgstr ""
+msgstr "%1$s: impossibile richiedere flag di lettura e scrittura insieme"
 
 #, c-format
 msgid ""
 "%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address "
 "in route definition"
 msgstr ""
+"%1$s: errore durante la conversione dell'indirizzo '%2$s' con la maschera di "
+"rete '%3$s' nell'indirizzo di rete nella definizione del percorso"
 
 #, c-format
 msgid ""
 "%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
 "route definition"
 msgstr ""
+"%1$s: errore durante la conversione dell'indirizzo '%2$s' con prefisso %3$u "
+"nell'indirizzo di rete nella definizione del percorso"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
-msgstr ""
+msgstr "%1$s: il file '%2$s' è troppo grande\n"
 
 #, c-format
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 address '%2$s' in route definition"
 msgstr ""
+"%1$s: famiglia IPv4 specificata per l'indirizzo non IPv4 '%2$s' nella "
+"definizione del percorso"
 
 #, c-format
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr ""
+"%1$s: famiglia IPv4 specificata per il gateway non IPv4 '%2$s' nella "
+"definizione del percorso"
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 msgstr ""
+"%1$s: maschera di rete '%2$s' non valida per l'indirizzo '%3$s' (entrambi "
+"devono essere IPv4)"
 
 #, c-format
 msgid ""
 "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
+"%1$s: prefisso non valido %2$u specificato nella definizione del percorso, "
+"deve essere compreso tra 0 e 128"
 
 #, c-format
 msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 32"
 msgstr ""
+"%1$s: prefisso non valido %2$u specificato nella definizione del percorso, "
+"deve essere compreso tra 0 e 32"
 
 #, c-format
 msgid "%1$s: Missing required address attribute in route definition"
 msgstr ""
+"%1$s: attributo dell'indirizzo richiesto mancante nella definizione del "
+"percorso"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Missing required gateway attribute in route definition"
-msgstr "Attributo percorso sorgente mancante per il dispositivo a caratteri"
+msgstr ""
+"%1$s: attributo gateway richiesto mancante nella definizione del percorso"
 
 #, c-format
 msgid ""
 "%1$s: No family specified for non-IPv4 address '%2$s' in route definition"
 msgstr ""
+"%1$s: nessuna famiglia specificata per l'indirizzo non IPv4 '%2$s' nella "
+"definizione del percorso"
 
 #, c-format
 msgid ""
 "%1$s: No family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr ""
+"%1$s: nessuna famiglia specificata per il gateway non IPv4 '%2$s' nella "
+"definizione del percorso"
 
 #, c-format
 msgid "%1$s: Route definition cannot have both a prefix and a netmask"
 msgstr ""
+"%1$s: la definizione del percorso non può avere sia un prefisso che una "
+"maschera di rete"
 
 #, c-format
 msgid ""
 "%1$s: Specifying netmask invalid for IPv6 address '%2$s' in route definition"
 msgstr ""
+"%1$s: specifica della maschera di rete non valida per l'indirizzo IPv6 '%2$"
+"s' nella definizione del percorso"
 
 #, c-format
 msgid ""
@@ -748,11 +812,11 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Unrecognized family '%2$s' in route definition"
-msgstr ""
+msgstr "%1$s: famiglia '%2$s' non riconosciuta nella definizione del percorso"
 
 #, c-format
 msgid "%1$s: cannot connect to '%2$s': %3$s\n"
-msgstr ""
+msgstr "%1$s: impossibile connettersi a '%2$s': %3$s\n"
 
 #, c-format
 msgid "%1$s: cannot parse URI transport '%2$s': %3$s\n"
