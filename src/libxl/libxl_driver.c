@@ -6578,7 +6578,8 @@ libxlDomainGetMessages(virDomainPtr dom,
     virDomainObj *vm = NULL;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_MESSAGE_DEPRECATION |
+                  VIR_DOMAIN_MESSAGE_TAINTING, -1);
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         return -1;
