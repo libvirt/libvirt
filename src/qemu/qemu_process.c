@@ -825,6 +825,7 @@ static void
 qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          virDomainObj *vm,
                          const char *device,
+                         const char *qompath,
                          const char *nodename,
                          int action,
                          bool nospace,
@@ -847,7 +848,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
         disk = qemuDomainDiskLookupByNodename(vm->def, priv->backup, nodename, &src);
 
     if (!disk)
-        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, device, NULL);
+        disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, device, qompath);
 
     if (!src && disk)
         src = disk->src;

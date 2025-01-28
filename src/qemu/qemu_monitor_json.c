@@ -693,6 +693,7 @@ static void
 qemuMonitorJSONHandleIOError(qemuMonitor *mon, virJSONValue *data)
 {
     const char *device;
+    const char *qompath;
     const char *nodename;
     const char *action;
     const char *reason;
@@ -718,6 +719,7 @@ qemuMonitorJSONHandleIOError(qemuMonitor *mon, virJSONValue *data)
             device = NULL;
     }
 
+    qompath = virJSONValueObjectGetString(data, "qom-path");
     nodename = virJSONValueObjectGetString(data, "node-name");
     reason = virJSONValueObjectGetString(data, "reason");
     /* 'nospace' flag is relevant only when true */
@@ -728,7 +730,7 @@ qemuMonitorJSONHandleIOError(qemuMonitor *mon, virJSONValue *data)
         actionID = VIR_DOMAIN_EVENT_IO_ERROR_NONE;
     }
 
-    qemuMonitorEmitIOError(mon, device, nodename, actionID, nospace, reason);
+    qemuMonitorEmitIOError(mon, device, qompath, nodename, actionID, nospace, reason);
 }
 
 

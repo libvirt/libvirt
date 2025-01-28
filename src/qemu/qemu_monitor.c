@@ -1128,6 +1128,7 @@ qemuMonitorEmitWatchdog(qemuMonitor *mon, int action)
 void
 qemuMonitorEmitIOError(qemuMonitor *mon,
                        const char *device,
+                       const char *qompath,
                        const char *nodename,
                        int action,
                        bool nospace,
@@ -1136,7 +1137,7 @@ qemuMonitorEmitIOError(qemuMonitor *mon,
     VIR_DEBUG("mon=%p", mon);
 
     QEMU_MONITOR_CALLBACK(mon, domainIOError, mon->vm,
-                          device, nodename, action, nospace, reason);
+                          device, qompath, nodename, action, nospace, reason);
 }
 
 
