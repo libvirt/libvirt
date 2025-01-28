@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libvirt package.
-# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023, 2024.
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023, 2024, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2024-11-05 07:47+0000\n"
+"PO-Revision-Date: 2025-01-28 11:08+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -6292,90 +6292,96 @@ msgid "Domain is not powered off"
 msgstr "Domeniul nu este deconectat"
 
 msgid "Domain is not powered on"
-msgstr ""
+msgstr "Domeniul nu este conectat"
 
 msgid "Domain is not running"
-msgstr ""
+msgstr "Domeniul nu rulează"
 
 msgid "Domain is not suspended"
-msgstr ""
+msgstr "Domeniul nu este suspendat"
 
 msgid "Domain is not suspended or powered off"
-msgstr ""
+msgstr "Domeniul nu este suspendat sau deconectat"
 
 msgid "Domain name contains invalid escape sequence"
-msgstr ""
+msgstr "Numele de domeniu conține o secvență de eludare nevalidă"
 
 msgid "Domain not found"
-msgstr ""
+msgstr "Domeniul nu a fost găsit"
 
 #, c-format
 msgid "Domain not found: %1$s"
-msgstr ""
+msgstr "Domeniul nu a fost găsit: %1$s"
 
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
 "modules."
 msgstr ""
+"Domeniul necesită KVM, dar acesta nu este disponibil. Verificați dacă "
+"virtualizarea este activată în BIOS-ul gazdei, iar configurația gazdei este "
+"configurată pentru a încărca modulele kvm."
 
 msgid ""
 "Domain requires MSHV device, but it is not available. Check that "
 "virtualization is enabled in the host BIOS, and host configuration is setup "
 "to load the mshv modules."
 msgstr ""
+"Domeniul necesită un dispozitiv MSHV, dar acesta nu este disponibil. "
+"Verificați dacă virtualizarea este activată în BIOS-ul gazdei, iar "
+"configurația gazdei este configurată pentru a încărca modulele mshv."
 
 msgid "Domain requires at least 1 vCPU"
-msgstr ""
+msgstr "Domeniul necesită cel puțin 1 vCPU"
 
 #, c-format
 msgid "Domain restored from %1$s\n"
-msgstr ""
+msgstr "Domeniu restaurat din %1$s\n"
 
 msgid "Domain should have at least one disk defined"
-msgstr ""
+msgstr "Domeniul trebuie să aibă cel puțin un disc definit"
 
 #, c-format
 msgid "Domain snapshot %1$s children deleted\n"
-msgstr ""
+msgstr "Instantanee de domeniu %1$s copii șterși\n"
 
 #, c-format
 msgid "Domain snapshot %1$s created"
-msgstr ""
+msgstr "Instantanee de domeniu %1$s creată"
 
 #, c-format
 msgid "Domain snapshot %1$s created from '%2$s'"
-msgstr ""
+msgstr "Instantanee de domeniu %1$s creată din „%2$s”"
 
 #, c-format
 msgid "Domain snapshot %1$s deleted\n"
-msgstr ""
+msgstr "Instantanee de domeniu %1$s ștearsă\n"
 
 #, c-format
 msgid "Domain snapshot %1$s reverted\n"
-msgstr ""
+msgstr "Instantanee de domeniu %1$s restaurată\n"
 
 msgid "Domain snapshot not found"
-msgstr ""
+msgstr "Instantanea domeniului nu a fost găsită"
 
 #, c-format
 msgid "Domain snapshot not found: %1$s"
-msgstr ""
+msgstr "Instantanea domeniului nu a fost găsită: %1$s"
 
 msgid "Domain title can't contain newlines"
-msgstr ""
+msgstr "Titlul domeniului nu poate conține linii noi"
 
 msgid "Domain title not changed\n"
-msgstr ""
+msgstr "Titlul domeniului nu a fost modificat\n"
 
 msgid "Domain title updated successfully"
-msgstr ""
+msgstr "Titlul domeniului a fost actualizat cu succes"
 
 msgid "Domain-0 cannot be migrated"
-msgstr ""
+msgstr "Domeniul-0 nu poate fi migrat"
 
 msgid "Domain-0 does not support requested operation"
-msgstr ""
+msgstr "Domeniul-0 nu acceptă operația solicitată"
 
 msgid "Domain:"
 msgstr "Domeniu:"
@@ -6387,23 +6393,23 @@ msgid "Download length is too large"
 msgstr ""
 
 msgid "Download volume contents to a file"
-msgstr ""
+msgstr "Descarcă conținutul volumului într-un fișier"
 
 msgid "Downtime w/o network:"
-msgstr ""
+msgstr "Timp de nefuncționare fără rețea:"
 
 #, c-format
 msgid "Driver %1$s cannot be used in embedded mode"
-msgstr ""
+msgstr "Controlorul %1$s nu poate fi utilizat în modul încorporat"
 
 msgid "Driver does not support embedded mode"
-msgstr ""
+msgstr "Controlorul nu acceptă modul încorporat"
 
 msgid "Driver does not support setting multiple IP addresses"
-msgstr ""
+msgstr "Controlorul nu acceptă definirea mai multor adrese IP"
 
 msgid "Driver state initialization failed"
-msgstr ""
+msgstr "Inițializarea stării controlorului a eșuat"
 
 msgid "Dump"
 msgstr "Transferă"
@@ -6524,7 +6530,7 @@ msgid "Eject the media"
 msgstr ""
 
 msgid "Element 'memnode' is invalid without any guest NUMA cells"
-msgstr ""
+msgstr "Elementul „memnode” nu este valid fără celule NUMA invitate"
 
 msgid "Empty cpu list for pinning"
 msgstr ""
@@ -6537,7 +6543,7 @@ msgstr ""
 
 #, c-format
 msgid "Empty response during %1$s"
-msgstr ""
+msgstr "Răspuns gol în timpul %1$s"
 
 #, c-format
 msgid "Emulator '%1$s' does not support arch '%2$s'"
