@@ -310,6 +310,13 @@ if conf.has('WITH_REMOTE')
       )
     endif
 
+    # Install the sysuser config for the daemon polkit rules
+    install_data(
+      'libvirt.sysusers.conf',
+      install_dir: sysusersdir,
+      rename: [ 'libvirt.conf' ],
+    )
+
     virt_helpers += {
       'name': 'virt-ssh-helper',
       'sources': [
