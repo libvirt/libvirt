@@ -1095,6 +1095,8 @@ Wireshark dissector plugin for better analysis of libvirt RPC traffic.
 %package login-shell
 Summary: Login shell for connecting users to an LXC container
 Requires: libvirt-libs = %{version}-%{release}
+# For uid creation during pre
+Requires(pre): shadow-utils
 
 %description login-shell
 Provides the set-uid virt-login-shell binary that is used to
@@ -2533,6 +2535,7 @@ exit 0
 %attr(4750, root, virtlogin) %{_bindir}/virt-login-shell
 %{_libexecdir}/virt-login-shell-helper
 %config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
+%{_sysusersdir}/libvirt-login-shell.conf
 %{_mandir}/man1/virt-login-shell.1*
     %endif
 

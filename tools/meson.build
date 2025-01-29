@@ -123,6 +123,13 @@ if conf.has('WITH_LOGIN_SHELL')
   )
 
   install_data('virt-login-shell.conf', install_dir: sysconfdir / 'libvirt')
+
+  # Install the sysuser config for the setgid binary
+  install_data(
+    'libvirt-login-shell.sysusers.conf',
+    install_dir: sysusersdir,
+    rename: [ 'libvirt-login-shell.conf' ],
+  )
 endif
 
 if host_machine.system() == 'windows'
