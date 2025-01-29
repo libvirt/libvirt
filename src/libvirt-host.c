@@ -612,7 +612,7 @@ virNodeGetCPUStats(virConnectPtr conn,
  *       if ((params = malloc(sizeof(virNodeMemoryStats) * nparams)) == NULL)
  *           goto error;
  *       memset(params, cellNum, 0, sizeof(virNodeMemoryStats) * nparams);
- *       if (virNodeGetMemoryStats(conn, params, &nparams, 0))
+ *       if (virNodeGetMemoryStats(conn, cellNum, params, &nparams, 0))
  *           goto error;
  *   }
  *
