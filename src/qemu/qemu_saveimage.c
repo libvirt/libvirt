@@ -520,6 +520,35 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
     return -1;
 }
 
+/**
+ * qemuSaveImageIsCorrupt:
+ * @driver: qemu driver data
+ * @path: path of the save image
+ *
+ * Returns true if the save image file identified by @path does not exist or
+ * has a corrupt header. Returns false otherwise.
+ */
+
+bool
+qemuSaveImageIsCorrupt(virQEMUDriver *driver, const char *path)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOCLOSE fd = -1;
+    virQEMUSaveHeader header;
+
+    if ((fd = qemuDomainOpenFile(cfg, NULL, path, O_RDONLY, NULL)) < 0)
+        return true;
+
+    if (saferead(fd, &header, sizeof(header)) != sizeof(header))
+        return true;
+
+    if (memcmp(header.magic, QEMU_SAVE_MAGIC, sizeof(header.magic)) != 0 ||
+        memcmp(header.magic, QEMU_SAVE_PARTIAL, sizeof(header.magic)) == 0)
+        return true;
+
+    return false;
+}
+
 
 /**
  * qemuSaveImageOpen:
@@ -531,11 +560,10 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
  * @bypass_cache: bypass cache when opening the file
  * @wrapperFd: returns the file wrapper structure
  * @open_write: open the file for writing (for updates)
- * @unlink_corrupt: remove the image file if it is corrupted
  *
  * Returns the opened fd of the save image file and fills the appropriate fields
- * on success. On error returns -1 on most failures, -3 if corrupt image was
- * unlinked (no error raised).
+ * on success. On error returns -1 on most failures, -3 if a corrupt image was
+ * detected.
  */
 int
 qemuSaveImageOpen(virQEMUDriver *driver,
@@ -545,8 +573,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
                   virQEMUSaveData **ret_data,
                   bool bypass_cache,
                   virFileWrapperFd **wrapperFd,
-                  bool open_write,
-                  bool unlink_corrupt)
+                  bool open_write)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOCLOSE fd = -1;
@@ -580,17 +607,6 @@ qemuSaveImageOpen(virQEMUDriver *driver,
 
     header = &data->header;
     if (saferead(fd, header, sizeof(*header)) != sizeof(*header)) {
-        if (unlink_corrupt) {
-            if (unlink(path) < 0) {
-                virReportSystemError(errno,
-                                     _("cannot remove corrupt file: %1$s"),
-                                     path);
-                return -1;
-            } else {
-                return -3;
-            }
-        }
-
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("failed to read qemu header"));
         return -1;
@@ -598,17 +614,6 @@ qemuSaveImageOpen(virQEMUDriver *driver,
 
     if (memcmp(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic)) != 0) {
         if (memcmp(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic)) == 0) {
-            if (unlink_corrupt) {
-                if (unlink(path) < 0) {
-                    virReportSystemError(errno,
-                                         _("cannot remove corrupt file: %1$s"),
-                                         path);
-                    return -1;
-                } else {
-                    return -3;
-                }
-            }
-
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("save image is incomplete"));
             return -1;

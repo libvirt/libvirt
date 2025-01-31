@@ -5777,7 +5777,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
 
     fd = qemuSaveImageOpen(driver, NULL, path, &def, &data,
                            (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                           &wrapperFd, false, false);
+                           &wrapperFd, false);
     if (fd < 0)
         goto cleanup;
 
@@ -5912,7 +5912,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
 
     fd = qemuSaveImageOpen(driver, NULL, path, &def, &data,
-                           false, NULL, false, false);
+                           false, NULL, false);
 
     if (fd < 0)
         goto cleanup;
@@ -5949,7 +5949,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         state = 0;
 
     fd = qemuSaveImageOpen(driver, NULL, path, &def, &data,
-                           false, NULL, true, false);
+                           false, NULL, true);
 
     if (fd < 0)
         goto cleanup;
@@ -6030,7 +6030,7 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
     }
 
     if ((fd = qemuSaveImageOpen(driver, priv->qemuCaps, path, &def, &data,
-                                false, NULL, false, false)) < 0)
+                                false, NULL, false)) < 0)
         goto cleanup;
 
     ret = qemuDomainDefFormatXML(driver, priv->qemuCaps, def, flags);
@@ -6094,10 +6094,19 @@ qemuDomainObjRestore(virConnectPtr conn,
     virFileWrapperFd *wrapperFd = NULL;
 
     fd = qemuSaveImageOpen(driver, NULL, path, &def, &data,
-                           bypass_cache, &wrapperFd, false, true);
+                           bypass_cache, &wrapperFd, false);
     if (fd < 0) {
-        if (fd == -3)
-            ret = 1;
+        if (qemuSaveImageIsCorrupt(driver, path)) {
+            if (unlink(path) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot remove corrupt file: %1$s"),
+                                     path);
+                ret = -1;
+            } else {
+                virResetLastError();
+                ret = 1;
+            }
+        }
         goto cleanup;
     }
 

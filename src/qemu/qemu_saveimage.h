@@ -69,6 +69,11 @@ qemuSaveImageStartVM(virConnectPtr conn,
                      virDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 
+bool
+qemuSaveImageIsCorrupt(virQEMUDriver *driver,
+                       const char *path)
+    ATTRIBUTE_NONNULL(2);
+
 int
 qemuSaveImageOpen(virQEMUDriver *driver,
                   virQEMUCaps *qemuCaps,
@@ -77,8 +82,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
                   virQEMUSaveData **ret_data,
                   bool bypass_cache,
                   virFileWrapperFd **wrapperFd,
-                  bool open_write,
-                  bool unlink_corrupt)
+                  bool open_write)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 int
