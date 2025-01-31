@@ -75,15 +75,20 @@ qemuSaveImageIsCorrupt(virQEMUDriver *driver,
     ATTRIBUTE_NONNULL(2);
 
 int
+qemuSaveImageGetMetadata(virQEMUDriver *driver,
+                         virQEMUCaps *qemuCaps,
+                         const char *path,
+                         virDomainDef **ret_def,
+                         virQEMUSaveData **ret_data)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+
+int
 qemuSaveImageOpen(virQEMUDriver *driver,
-                  virQEMUCaps *qemuCaps,
                   const char *path,
-                  virDomainDef **ret_def,
-                  virQEMUSaveData **ret_data,
                   bool bypass_cache,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int
 qemuSaveImageGetCompressionProgram(const char *imageFormat,

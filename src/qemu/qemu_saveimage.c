@@ -249,6 +249,84 @@ qemuSaveImageGetCompressionCommand(virQEMUSaveFormat format)
 }
 
 
+static int
+qemuSaveImageReadHeader(int fd, virQEMUSaveData **ret_data)
+{
+    g_autoptr(virQEMUSaveData) data = NULL;
+    virQEMUSaveHeader *header;
+    size_t xml_len;
+    size_t cookie_len;
+
+    data = g_new0(virQEMUSaveData, 1);
+    header = &data->header;
+    if (saferead(fd, header, sizeof(*header)) != sizeof(*header)) {
+         virReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("failed to read qemu header"));
+         return -1;
+    }
+
+    if (memcmp(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic)) != 0) {
+        if (memcmp(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic)) == 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("save image is incomplete"));
+            return -1;
+        }
+
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("image magic is incorrect"));
+        return -1;
+    }
+
+    if (header->version > QEMU_SAVE_VERSION) {
+        /* convert endianness and try again */
+        qemuSaveImageBswapHeader(header);
+    }
+
+    if (header->version > QEMU_SAVE_VERSION) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("image version is not supported (%1$d > %2$d)"),
+                       header->version, QEMU_SAVE_VERSION);
+        return -1;
+    }
+
+    if (header->data_len <= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("invalid header data length: %1$d"), header->data_len);
+        return -1;
+    }
+
+    if (header->cookieOffset)
+        xml_len = header->cookieOffset;
+    else
+        xml_len = header->data_len;
+
+    cookie_len = header->data_len - xml_len;
+
+    data->xml = g_new0(char, xml_len);
+
+    if (saferead(fd, data->xml, xml_len) != xml_len) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("failed to read domain XML"));
+        return -1;
+    }
+
+    if (cookie_len > 0) {
+        data->cookie = g_new0(char, cookie_len);
+
+        if (saferead(fd, data->cookie, cookie_len) != cookie_len) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("failed to read cookie"));
+            return -1;
+        }
+    }
+
+    if (ret_data)
+        *ret_data = g_steal_pointer(&data);
+
+    return 0;
+}
+
+
 /**
  * qemuSaveImageDecompressionStart:
  * @data: data from memory state file
@@ -520,6 +598,7 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
     return -1;
 }
 
+
 /**
  * qemuSaveImageIsCorrupt:
  * @driver: qemu driver data
@@ -551,26 +630,61 @@ qemuSaveImageIsCorrupt(virQEMUDriver *driver, const char *path)
 
 
 /**
- * qemuSaveImageOpen:
+ * qemuSaveImageGetMetadata:
  * @driver: qemu driver data
  * @qemuCaps: pointer to qemuCaps if the domain is running or NULL
  * @path: path of the save image
  * @ret_def: returns domain definition created from the XML stored in the image
  * @ret_data: returns structure filled with data from the image header
+ *
+ * Open the save image file, read libvirt's save image metadata, and populate
+ * the @ret_def and @ret_data structures. Returns 0 on success and -1 on failure.
+ */
+int
+qemuSaveImageGetMetadata(virQEMUDriver *driver,
+                         virQEMUCaps *qemuCaps,
+                         const char *path,
+                         virDomainDef **ret_def,
+                         virQEMUSaveData **ret_data)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOCLOSE fd = -1;
+    virQEMUSaveData *data;
+    g_autoptr(virDomainDef) def = NULL;
+    int rc;
+
+    if ((fd = qemuDomainOpenFile(cfg, NULL, path, O_RDONLY, NULL)) < 0)
+        return -1;
+
+    if ((rc = qemuSaveImageReadHeader(fd, ret_data)) < 0)
+        return rc;
+
+    data = *ret_data;
+    /* Create a domain from this XML */
+    if (!(def = virDomainDefParseString(data->xml, driver->xmlopt, qemuCaps,
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+        return -1;
+
+    *ret_def = g_steal_pointer(&def);
+
+    return 0;
+}
+
+
+/**
+ * qemuSaveImageOpen:
+ * @driver: qemu driver data
+ * @path: path of the save image
  * @bypass_cache: bypass cache when opening the file
  * @wrapperFd: returns the file wrapper structure
  * @open_write: open the file for writing (for updates)
  *
- * Returns the opened fd of the save image file and fills the appropriate fields
- * on success. On error returns -1 on most failures, -3 if a corrupt image was
- * detected.
+ * Returns the opened fd of the save image file on success, -1 on failure.
  */
 int
 qemuSaveImageOpen(virQEMUDriver *driver,
-                  virQEMUCaps *qemuCaps,
                   const char *path,
-                  virDomainDef **ret_def,
-                  virQEMUSaveData **ret_data,
                   bool bypass_cache,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
@@ -578,12 +692,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOCLOSE fd = -1;
     int ret = -1;
-    g_autoptr(virQEMUSaveData) data = NULL;
-    virQEMUSaveHeader *header;
-    g_autoptr(virDomainDef) def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
-    size_t xml_len;
-    size_t cookie_len;
 
     if (bypass_cache) {
         int directFlag = virFileDirectFdFlag();
@@ -603,78 +712,10 @@ qemuSaveImageOpen(virQEMUDriver *driver,
                                            VIR_FILE_WRAPPER_BYPASS_CACHE)))
         return -1;
 
-    data = g_new0(virQEMUSaveData, 1);
-
-    header = &data->header;
-    if (saferead(fd, header, sizeof(*header)) != sizeof(*header)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("failed to read qemu header"));
+    /* Read the header to position the file pointer for QEMU. Unfortunately we
+     * can't use lseek with virFileWrapperFD. */
+    if (qemuSaveImageReadHeader(fd, NULL) < 0)
         return -1;
-    }
-
-    if (memcmp(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic)) != 0) {
-        if (memcmp(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic)) == 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("save image is incomplete"));
-            return -1;
-        }
-
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("image magic is incorrect"));
-        return -1;
-    }
-
-    if (header->version > QEMU_SAVE_VERSION) {
-        /* convert endianness and try again */
-        qemuSaveImageBswapHeader(header);
-    }
-
-    if (header->version > QEMU_SAVE_VERSION) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("image version is not supported (%1$d > %2$d)"),
-                       header->version, QEMU_SAVE_VERSION);
-        return -1;
-    }
-
-    if (header->data_len <= 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid header data length: %1$d"), header->data_len);
-        return -1;
-    }
-
-    if (header->cookieOffset)
-        xml_len = header->cookieOffset;
-    else
-        xml_len = header->data_len;
-
-    cookie_len = header->data_len - xml_len;
-
-    data->xml = g_new0(char, xml_len);
-
-    if (saferead(fd, data->xml, xml_len) != xml_len) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("failed to read domain XML"));
-        return -1;
-    }
-
-    if (cookie_len > 0) {
-        data->cookie = g_new0(char, cookie_len);
-
-        if (saferead(fd, data->cookie, cookie_len) != cookie_len) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("failed to read cookie"));
-            return -1;
-        }
-    }
-
-    /* Create a domain from this XML */
-    if (!(def = virDomainDefParseString(data->xml, driver->xmlopt, qemuCaps,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
-        return -1;
-
-    *ret_def = g_steal_pointer(&def);
-    *ret_data = g_steal_pointer(&data);
 
     ret = fd;
     fd = -1;
