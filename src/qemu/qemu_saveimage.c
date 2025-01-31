@@ -289,6 +289,12 @@ qemuSaveImageReadHeader(int fd, virQEMUSaveData **ret_data)
         return -1;
     }
 
+    if (header->format >= QEMU_SAVE_FORMAT_LAST) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("unsupported save image format: %1$d"), header->format);
+        return -1;
+    }
+
     if (header->data_len <= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("invalid header data length: %1$d"), header->data_len);
