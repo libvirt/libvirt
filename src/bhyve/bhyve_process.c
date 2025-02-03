@@ -270,13 +270,12 @@ bhyveProcessPrepareDomain(bhyveConn *driver,
 }
 
 int
-virBhyveProcessStart(virConnectPtr conn,
+virBhyveProcessStart(bhyveConn *driver,
+                     virConnectPtr conn,
                      virDomainObj *vm,
                      virDomainRunningReason reason,
                      unsigned int flags)
 {
-    struct _bhyveConn *driver = conn->privateData;
-
     /* Run an early hook to setup missing devices. */
     if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
         return -1;

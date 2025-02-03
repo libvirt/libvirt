@@ -79,7 +79,7 @@ bhyveAutostartDomain(virDomainObj *vm, void *opaque)
 
     if (vm->autostart && !virDomainObjIsActive(vm)) {
         virResetLastError();
-        ret = virBhyveProcessStart(data->conn, vm,
+        ret = virBhyveProcessStart(data->driver, data->conn, vm,
                                    VIR_DOMAIN_RUNNING_BOOTED, 0);
         if (ret < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -834,7 +834,7 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = virBhyveProcessStart(dom->conn, vm,
+    ret = virBhyveProcessStart(privconn, dom->conn, vm,
                                VIR_DOMAIN_RUNNING_BOOTED,
                                start_flags);
 
@@ -892,7 +892,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE, NULL)))
         goto cleanup;
 
-    if (virBhyveProcessStart(conn, vm,
+    if (virBhyveProcessStart(privconn, conn, vm,
                              VIR_DOMAIN_RUNNING_BOOTED,
                              start_flags) < 0) {
         /* If domain is not persistent, remove its data */

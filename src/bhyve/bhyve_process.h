@@ -28,7 +28,8 @@ bhyveProcessPrepareDomain(bhyveConn *driver,
                           virDomainObj *vm,
                           unsigned int flags);
 
-int virBhyveProcessStart(virConnect *conn,
+int virBhyveProcessStart(bhyveConn *driver,
+                         virConnectPtr conn,
                          virDomainObj *vm,
                          virDomainRunningReason reason,
                          unsigned int flags);
