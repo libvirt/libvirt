@@ -22,13 +22,14 @@
 # Jiri Denemark <jdenemar@redhat.com>, 2023.
 # jianqing yan <yanjianqing@kylinos.cn>, 2024.
 # zk dc <zkdc2345@qq.com>, 2024.
+# "Daniel P. Berrange" <berrange@redhat.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2024-11-19 09:21+0000\n"
-"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
+"PO-Revision-Date: 2025-01-30 11:38+0000\n"
+"Last-Translator: \"Daniel P. Berrange\" <berrange@redhat.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -36,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -11076,7 +11077,7 @@ msgid "Manage active block operations"
 msgstr "管理活跃块操作"
 
 msgid "Manage local virtualized systems"
-msgstr ""
+msgstr "管理本地虚拟化系统"
 
 #, c-format
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
@@ -11864,7 +11865,7 @@ msgid "Modifies an existing IOThread of the guest domain."
 msgstr "修改 guest 域的现有 IO 线程。"
 
 msgid "Monitor local virtualized systems"
-msgstr ""
+msgstr "监控本地虚拟化系统"
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
@@ -15407,10 +15408,10 @@ msgid "System is not available"
 msgstr "系统不可用"
 
 msgid "System policy prevents management of local virtualized systems"
-msgstr ""
+msgstr "系统策略禁止管理本地虚拟化系统"
 
 msgid "System policy prevents monitoring of local virtualized systems"
-msgstr ""
+msgstr "系统策略禁止监控本地虚拟化系统"
 
 #, c-format
 msgid "System token in %1$s was corrupt"
