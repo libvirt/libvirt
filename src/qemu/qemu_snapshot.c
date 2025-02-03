@@ -269,6 +269,7 @@ qemuSnapshotForEachQcow2One(virStorageSource *src,
 /**
  * qemuSnapshotForEachQcow2:
  *
+ * @driver: qemu driver configuration
  * @def: domain definition
  * @snap: snapshot object
  * @op: 'qemu-img snapshot' operation flag, one of "-c", "-d", "-a"
@@ -282,7 +283,8 @@ qemuSnapshotForEachQcow2One(virStorageSource *src,
  * permissive modes.
  */
 static int
-qemuSnapshotForEachQcow2(virDomainDef *def,
+qemuSnapshotForEachQcow2(virQEMUDriver *driver,
+                         virDomainDef *def,
                          virDomainMomentObj *snap,
                          const char *op)
 {
@@ -352,6 +354,16 @@ qemuSnapshotForEachQcow2(virDomainDef *def,
 
         if (virStorageSourceIsLocalStorage(nvram) &&
             nvram->format == VIR_STORAGE_FILE_QCOW2) {
+            if (create) {
+                /* Ensure that the NVRAM image exists; e.g. when snapshotting
+                 * a VM directly after defining it */
+                if (qemuPrepareNVRAM(driver, def, false) < 0) {
+                    nrollback = def->ndisks;
+                    virErrorPreserveLast(&orig_err);
+                    goto rollback;
+                }
+            }
+
             if (qemuSnapshotForEachQcow2One(nvram, op, snap->def->name) < 0) {
                 if (create) {
                     nrollback = def->ndisks;
@@ -392,7 +404,8 @@ static int
 qemuSnapshotCreateInactiveInternal(virDomainObj *vm,
                                    virDomainMomentObj *snap)
 {
-    return qemuSnapshotForEachQcow2(vm->def, snap, "-c");
+    return qemuSnapshotForEachQcow2(QEMU_DOMAIN_PRIVATE(vm)->driver,
+                                    vm->def, snap, "-c");
 }
 
 
@@ -2697,7 +2710,8 @@ qemuSnapshotInternalRevertInactive(virDomainObj *vm,
     }
 
     /* Try all disks, but report failure if we skipped any.  */
-    if (qemuSnapshotForEachQcow2(def, snap, "-a") != 0)
+    if (qemuSnapshotForEachQcow2(QEMU_DOMAIN_PRIVATE(vm)->driver,
+                                 def, snap, "-a") != 0)
         return -1;
 
     return 0;
@@ -4064,7 +4078,8 @@ qemuSnapshotDiscardImpl(virDomainObj *vm,
                 if (qemuSnapshotDiscardExternal(vm, snap, externalData) < 0)
                     return -1;
             } else {
-                if (qemuSnapshotForEachQcow2(def, snap, "-d") < 0)
+                if (qemuSnapshotForEachQcow2(QEMU_DOMAIN_PRIVATE(vm)->driver,
+                                             def, snap, "-d") < 0)
                     return -1;
             }
         } else {
