@@ -39,6 +39,7 @@
 #include "domain_audit.h"
 #include "locking/domain_lock.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virdomaincheckpointobjlist.h"
 #include "virqemu.h"
 #include "storage_source.h"
 
@@ -1078,6 +1079,23 @@ qemuSnapshotPrepare(virDomainObj *vm,
             return -1;
         }
 
+    }
+
+    /* Handle interlocking with 'checkpoints':
+     * - if the VM is online use qemuDomainSupportsCheckpointsBlockjobs
+     * - if the VM is offline disallow external snapshots as the support for
+     *   propagating bitmaps into the would-be-created overlay is not yet implemented
+     */
+    if (!active) {
+        if (external &&
+            virDomainListCheckpoints(vm->checkpoints, NULL, NULL, NULL, 0) > 0) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("support for offline external snapshots while checkpoint exists was not yet implemented"));
+            return -1;
+        }
+    } else {
+        if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
+            return -1;
     }
 
     /* Alter flags to let later users know what we learned.  */
@@ -2146,9 +2164,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_SNAPSHOT_CREATE_LIVE,
                             VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
                             NULL);
-
-    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        return NULL;
 
     if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
