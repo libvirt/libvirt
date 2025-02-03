@@ -290,7 +290,7 @@ qemuSnapshotForEachQcow2(virDomainDef *def,
     size_t i;
     bool skipped = false;
     bool create = STREQ(op, "-c");
-    size_t nrollback = -1;
+    size_t nrollback;
     virErrorPtr orig_err;
 
     /* pre-checks */
