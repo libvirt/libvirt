@@ -66,8 +66,3 @@ struct _bhyveConn {
 };
 
 typedef struct _bhyveConn bhyveConn;
-
-struct bhyveAutostartData {
-    struct _bhyveConn *driver;
-    virConnectPtr conn;
-};

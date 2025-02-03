@@ -73,13 +73,13 @@ struct _bhyveConn *bhyve_driver = NULL;
 static int
 bhyveAutostartDomain(virDomainObj *vm, void *opaque)
 {
-    const struct bhyveAutostartData *data = opaque;
+    bhyveConn *driver = opaque;
     int ret = 0;
     VIR_LOCK_GUARD lock = virObjectLockGuard(vm);
 
     if (vm->autostart && !virDomainObjIsActive(vm)) {
         virResetLastError();
-        ret = virBhyveProcessStart(data->driver, data->conn, vm,
+        ret = virBhyveProcessStart(driver, NULL, vm,
                                    VIR_DOMAIN_RUNNING_BOOTED, 0);
         if (ret < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -93,19 +93,7 @@ bhyveAutostartDomain(virDomainObj *vm, void *opaque)
 static void
 bhyveAutostartDomains(struct _bhyveConn *driver)
 {
-    /* XXX: Figure out a better way todo this. The domain
-     * startup code needs a connection handle in order
-     * to lookup the bridge associated with a virtual
-     * network
-     */
-    virConnectPtr conn = virConnectOpen("bhyve:///system");
-    /* Ignoring NULL conn which is mostly harmless here */
-
-    struct bhyveAutostartData data = { driver, conn };
-
-    virDomainObjListForEach(driver->domains, false, bhyveAutostartDomain, &data);
-
-    virObjectUnref(conn);
+    virDomainObjListForEach(driver->domains, false, bhyveAutostartDomain, driver);
 }
 
 /**
