@@ -258,3 +258,7 @@ int qemuProcessSetupEmulator(virDomainObj *vm);
 
 void qemuProcessHandleNbdkitExit(qemuNbdkitProcess *nbdkit,
                                  virDomainObj *vm);
+
+int qemuPrepareNVRAM(virQEMUDriver *driver,
+                     virDomainDef *def,
+                     bool reset_nvram);

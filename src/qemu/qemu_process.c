@@ -4627,10 +4627,9 @@ qemuPrepareNVRAMHelper(int dstFD,
 
 
 static int
-qemuPrepareNVRAMBlock(virDomainObj *vm,
+qemuPrepareNVRAMBlock(virDomainLoaderDef *loader,
                       bool reset_nvram)
 {
-    virDomainLoaderDef *loader = vm->def->os.loader;
     g_autoptr(virCommand) qemuimg = NULL;
     const char *templateFormatStr = "raw";
 
@@ -4691,13 +4690,12 @@ qemuPrepareNVRAMBlock(virDomainObj *vm,
 
 
 static int
-qemuPrepareNVRAMFile(virDomainObj *vm,
+qemuPrepareNVRAMFile(virQEMUDriver *driver,
+                     virDomainLoaderDef *loader,
                      bool reset_nvram)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOCLOSE srcFD = -1;
-    virDomainLoaderDef *loader = vm->def->os.loader;
     struct qemuPrepareNVRAMHelperData data;
 
     if (virFileExists(loader->nvram->path) && !reset_nvram)
@@ -4739,21 +4737,24 @@ qemuPrepareNVRAMFile(virDomainObj *vm,
 }
 
 
-static int
-qemuPrepareNVRAM(virDomainObj *vm,
+int
+qemuPrepareNVRAM(virQEMUDriver *driver,
+                 virDomainDef *def,
                  bool reset_nvram)
 {
-    virDomainLoaderDef *loader = vm->def->os.loader;
+    virDomainLoaderDef *loader = def->os.loader;
 
     if (!loader || !loader->nvram)
         return 0;
 
+    VIR_DEBUG("nvram='%s'", NULLSTR(loader->nvram->path));
+
     switch (virStorageSourceGetActualType(loader->nvram)) {
     case VIR_STORAGE_TYPE_FILE:
-        return qemuPrepareNVRAMFile(vm, reset_nvram);
+        return qemuPrepareNVRAMFile(driver, loader, reset_nvram);
 
     case VIR_STORAGE_TYPE_BLOCK:
-        return qemuPrepareNVRAMBlock(vm, reset_nvram);
+        return qemuPrepareNVRAMBlock(loader, reset_nvram);
 
     case VIR_STORAGE_TYPE_DIR:
     case VIR_STORAGE_TYPE_NETWORK:
@@ -7418,7 +7419,8 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         return -1;
 
-    if (qemuPrepareNVRAM(vm, !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM)) < 0)
+    if (qemuPrepareNVRAM(driver, vm->def,
+                         !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM)) < 0)
         return -1;
 
     if (vm->def->vsock) {
