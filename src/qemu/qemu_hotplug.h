@@ -125,3 +125,11 @@ qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
 int
 qemuHotplugRemoveDBusVMState(virDomainObj *vm,
                              virDomainAsyncJob asyncJob);
+
+int
+qemuHotplugAttachManagedPR(virDomainObj *vm,
+                           virStorageSource *src,
+                           virDomainAsyncJob asyncJob);
+int
+qemuHotplugRemoveManagedPR(virDomainObj *vm,
+                           virDomainAsyncJob asyncJob);

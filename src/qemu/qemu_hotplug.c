@@ -419,7 +419,7 @@ qemuHotplugRemoveDBusVMState(virDomainObj *vm,
  *
  * Returns: 0 on success, -1 on error.
  */
-static int
+int
 qemuHotplugAttachManagedPR(virDomainObj *vm,
                            virStorageSource *src,
                            virDomainAsyncJob asyncJob)
@@ -469,7 +469,7 @@ qemuHotplugAttachManagedPR(virDomainObj *vm,
  * Removes the managed PR object from @vm if the configuration does not require
  * it any more.
  */
-static int
+int
 qemuHotplugRemoveManagedPR(virDomainObj *vm,
                            virDomainAsyncJob asyncJob)
 {
