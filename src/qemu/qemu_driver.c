@@ -14389,6 +14389,9 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
             goto endjob;
     }
 
+    if (qemuHotplugAttachManagedPR(vm, mirror, VIR_ASYNC_JOB_NONE) < 0)
+        goto endjob;
+
     if (data) {
         qemuDomainObjEnterMonitor(vm);
         rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
@@ -14445,6 +14448,8 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         }
         if (need_revoke)
             qemuDomainStorageSourceChainAccessRevoke(driver, vm, mirror);
+
+        ignore_value(qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE));
     }
     if (need_unlink && virStorageSourceUnlink(mirror) < 0)
         VIR_WARN("%s", _("unable to remove just-created copy target"));
