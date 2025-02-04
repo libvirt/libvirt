@@ -637,20 +637,12 @@ virCCWDeviceAddressFormat(virBuffer *buf,
 
 
 static void
-virNodeDeviceCapCCWDefFormat(virBuffer *buf,
-                             const virNodeDevCapData *data)
-{
-    virCCWDeviceAddressFormat(buf, data->ccw_dev.dev_addr);
-}
-
-
-static void
 virNodeDeviceCapCSSDefFormat(virBuffer *buf,
                              const virNodeDevCapData *data)
 {
     virNodeDevCapCCW ccw_dev = data->ccw_dev;
 
-    virNodeDeviceCapCCWDefFormat(buf, data);
+    virCCWDeviceAddressFormat(buf, ccw_dev.dev_addr);
 
     if (ccw_dev.channel_dev_addr) {
         virBufferAddLit(buf, "<channel_dev_addr>\n");
@@ -758,7 +750,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
                 const char *state = virNodeDevCCWStateTypeToString(data->ccw_dev.state);
                 virBufferEscapeString(&buf, "<state>%s</state>\n", state);
             }
-            virNodeDeviceCapCCWDefFormat(&buf, data);
+            virCCWDeviceAddressFormat(&buf, data->ccw_dev.dev_addr);
             break;
         case VIR_NODE_DEV_CAP_CSS_DEV:
             virNodeDeviceCapCSSDefFormat(&buf, data);
