@@ -624,6 +624,19 @@ virNodeDeviceCapVDPADefFormat(virBuffer *buf,
 
 
 static void
+virCCWDeviceAddressFormat(virBuffer *buf,
+                          const virCCWDeviceAddress *ccw_address)
+{
+    virBufferAsprintf(buf, "<cssid>0x%x</cssid>\n",
+                      ccw_address->cssid);
+    virBufferAsprintf(buf, "<ssid>0x%x</ssid>\n",
+                      ccw_address->ssid);
+    virBufferAsprintf(buf, "<devno>0x%04x</devno>\n",
+                      ccw_address->devno);
+}
+
+
+static void
 virNodeDeviceCapCCWDefFormat(virBuffer *buf,
                              const virNodeDevCapData *data)
 {
@@ -645,12 +658,9 @@ virNodeDeviceCapCSSDefFormat(virBuffer *buf,
     virNodeDeviceCapCCWDefFormat(buf, data);
 
     if (ccw_dev.channel_dev_addr) {
-        virCCWDeviceAddress *ccw = ccw_dev.channel_dev_addr;
         virBufferAddLit(buf, "<channel_dev_addr>\n");
         virBufferAdjustIndent(buf, 2);
-        virBufferAsprintf(buf, "<cssid>0x%x</cssid>\n", ccw->cssid);
-        virBufferAsprintf(buf, "<ssid>0x%x</ssid>\n", ccw->ssid);
-        virBufferAsprintf(buf, "<devno>0x%04x</devno>\n", ccw->devno);
+        virCCWDeviceAddressFormat(buf, ccw_dev.channel_dev_addr);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</channel_dev_addr>\n");
     }
