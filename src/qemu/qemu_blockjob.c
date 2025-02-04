@@ -28,6 +28,7 @@
 #include "qemu_domain.h"
 #include "qemu_alias.h"
 #include "qemu_backup.h"
+#include "qemu_hotplug.h"
 
 #include "conf/domain_conf.h"
 #include "conf/domain_event.h"
@@ -707,6 +708,8 @@ qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriver *driver,
     qemuDomainObjExitMonitor(vm);
 
     qemuDomainStorageSourceChainAccessRevoke(driver, vm, chain);
+
+    ignore_value(qemuHotplugRemoveManagedPR(vm, asyncJob));
 }
 
 
