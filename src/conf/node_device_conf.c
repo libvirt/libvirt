@@ -659,6 +659,18 @@ virNodeDeviceCapCSSDefFormat(virBuffer *buf,
 }
 
 
+static void
+virNodeDeviceCapCCWStateTypeFormat(virBuffer *buf,
+                                   const virNodeDevCCWStateType state_type)
+{
+    if (state_type != VIR_NODE_DEV_CCW_STATE_LAST) {
+        const char *state = virNodeDevCCWStateTypeToString(state_type);
+
+        virBufferEscapeString(buf, "<state>%s</state>\n", state);
+    }
+}
+
+
 char *
 virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
 {
@@ -746,10 +758,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
             virNodeDeviceCapMdevDefFormat(&buf, data, inactive_state);
             break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
-            if (data->ccw_dev.state != VIR_NODE_DEV_CCW_STATE_LAST) {
-                const char *state = virNodeDevCCWStateTypeToString(data->ccw_dev.state);
-                virBufferEscapeString(&buf, "<state>%s</state>\n", state);
-            }
+            virNodeDeviceCapCCWStateTypeFormat(&buf, data->ccw_dev.state);
             virCCWDeviceAddressFormat(&buf, data->ccw_dev.dev_addr);
             break;
         case VIR_NODE_DEV_CAP_CSS_DEV:
