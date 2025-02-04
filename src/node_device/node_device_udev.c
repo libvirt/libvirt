@@ -1410,6 +1410,8 @@ udevProcessCCWGroup(struct udev_device *device,
 
     switch (data->ccwgroup_dev.type) {
     case VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC:
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER2:
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER3:
         {
             virCCWGroupTypeQeth *qeth = &data->ccwgroup_dev.qeth;
             /* process qeth device information */
@@ -1487,7 +1489,9 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_AP_CARD;
         else if (STREQ(devtype, "ap_queue"))
             *type = VIR_NODE_DEV_CAP_AP_QUEUE;
-        else if (STREQ(devtype, "qeth_generic"))
+        else if (STREQ(devtype, "qeth_generic") ||
+                 STREQ(devtype, "qeth_layer2") ||
+                 STREQ(devtype, "qeth_layer3"))
             *type = VIR_NODE_DEV_CAP_CCWGROUP_DEV;
     } else {
         /* PCI devices don't set the DEVTYPE property. */

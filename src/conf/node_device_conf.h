@@ -80,6 +80,8 @@ typedef enum {
 typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
     VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC,     /* s390 CCWGROUP QETH generic device */
+    VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER2,      /* s390 CCWGROUP QETH layer 2 device */
+    VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER3,      /* s390 CCWGROUP QETH layer 3 device */
     VIR_NODE_DEV_CAP_CCWGROUP_LAST
 } virNodeDevCCWGroupCapType;
 

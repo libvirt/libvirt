@@ -78,6 +78,8 @@ VIR_ENUM_IMPL(virNodeDevCap,
 VIR_ENUM_IMPL(virNodeDevCCWGroupCap,
               VIR_NODE_DEV_CAP_CCWGROUP_LAST,
               "qeth_generic",
+              "qeth_layer2",
+              "qeth_layer3",
 );
 
 VIR_ENUM_IMPL(virNodeDevNetCap,
@@ -732,6 +734,8 @@ virNodeDeviceCapCCWGroupDefFormat(virBuffer *buf,
     virBufferAdjustIndent(buf, 2);
     switch (ccwgroup_dev.type) {
     case VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC:
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER2:
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER3:
         virNodeDeviceCapCCWGroupQethFormat(buf, &ccwgroup_dev.qeth);
         break;
     case VIR_NODE_DEV_CAP_CCWGROUP_LAST:
@@ -1510,6 +1514,8 @@ virNodeDevCapCCWGroupParseXML(xmlXPathContextPtr ctxt,
 
     switch (ccwgroup_dev->type) {
     case VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC:
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER2:
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER3:
         if (virNodeDevCapCCWGroupQethParseXML(ctxt, cap_node, &ccwgroup_dev->qeth) < 0)
             return -1;
         break;
@@ -2866,6 +2872,8 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->ccwgroup_dev.members);
         switch (data->ccwgroup_dev.type) {
         case VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC:
+        case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER2:
+        case VIR_NODE_DEV_CAP_CCWGROUP_QETH_LAYER3:
             virCCWGroupTypeQethFree(&data->ccwgroup_dev.qeth);
             break;
         case VIR_NODE_DEV_CAP_CCWGROUP_LAST:

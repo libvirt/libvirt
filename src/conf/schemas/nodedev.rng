@@ -672,7 +672,11 @@
 
   <define name="capccwgrouptypeqeth">
     <attribute name="type">
-      <value>qeth_generic</value>
+      <choice>
+        <value>qeth_generic</value>
+        <value>qeth_layer2</value>
+        <value>qeth_layer3</value>
+      </choice>
     </attribute>
     <interleave>
       <element name="card_type"><text/></element>
