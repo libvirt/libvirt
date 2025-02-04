@@ -1745,6 +1745,12 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     bool hasIPv6 = false;
     size_t i;
 
+    if (net->guestIP.nroutes) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Invalid attempt to set network interface guest-side IP route, not supported by QEMU"));
+        return -1;
+    }
+
     if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
         virDomainCapsDeviceNet netCaps = { };
 
@@ -1755,12 +1761,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("the '%1$s' network backend is not supported with this QEMU binary"),
                            virDomainNetBackendTypeToString(net->backend.type));
-            return -1;
-        }
-
-        if (net->guestIP.nroutes) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid attempt to set network interface guest-side IP route, not supported by QEMU"));
             return -1;
         }
 
@@ -1811,7 +1811,13 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                 }
             }
         }
-    } else if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
+    } else if (net->guestIP.nips) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Invalid attempt to set network interface guest-side IP address info, not supported by QEMU"));
+        return -1;
+    }
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_VHOST_VDPA)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("vDPA devices are not supported with this QEMU binary"));
@@ -1825,10 +1831,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                            virDomainNetModelTypeToString(net->model));
             return -1;
         }
-    } else if (net->guestIP.nroutes || net->guestIP.nips) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Invalid attempt to set network interface guest-side IP route and/or address info, not supported by QEMU"));
-        return -1;
     }
 
     if (virDomainNetIsVirtioModel(net)) {
