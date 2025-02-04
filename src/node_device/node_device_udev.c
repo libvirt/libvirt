@@ -1205,7 +1205,7 @@ udevGetCCWAddress(const char *sysfs_path,
 
 static int
 udevCCWGetState(struct udev_device *device,
-                virNodeDevCapData *data)
+                virNodeDevCCWStateType *state)
 {
     int online = 0;
 
@@ -1215,10 +1215,10 @@ udevCCWGetState(struct udev_device *device,
     switch (online) {
     case VIR_NODE_DEV_CCW_STATE_OFFLINE:
     case VIR_NODE_DEV_CCW_STATE_ONLINE:
-        data->ccw_dev.state = online;
+        *state = online;
         break;
     default:
-        data->ccw_dev.state = VIR_NODE_DEV_CCW_STATE_LAST;
+        *state = VIR_NODE_DEV_CCW_STATE_LAST;
         break;
     }
 
@@ -1231,7 +1231,7 @@ udevProcessCCW(struct udev_device *device,
                virNodeDeviceDef *def)
 {
     /* process only online devices to keep the list sane */
-    if (udevCCWGetState(device, &def->caps->data) < 0)
+    if (udevCCWGetState(device, &def->caps->data.ccw_dev.state) < 0)
         return -1;
 
     if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)
