@@ -71,4 +71,7 @@ int virCCWGroupDeviceGetMembers(const char *sysfs_path,
 
 void virCCWGroupTypeQethFree(virCCWGroupTypeQeth *qeth);
 
+char* virCCWDeviceGetGroupDev(const char *sysfs_path)
+    ATTRIBUTE_NONNULL(1);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCCWGroupMemberType, virCCWGroupMemberTypeFree);

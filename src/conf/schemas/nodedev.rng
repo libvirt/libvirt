@@ -712,6 +712,17 @@
     </element>
   </define>
 
+  <define name="capccwgroupmember">
+    <optional>
+      <element name="capability">
+        <attribute name="type">
+          <value>ccwgroup_member</value>
+        </attribute>
+        <element name="group_device"><text/></element>
+      </element>
+    </optional>
+  </define>
+
   <define name="capccwdev">
     <attribute name="type">
       <value>ccw</value>
@@ -725,6 +736,7 @@
       </element>
     </optional>
     <ref name="capccwaddress"/>
+    <ref name="capccwgroupmember"/>
   </define>
 
   <define name="capcssdev">

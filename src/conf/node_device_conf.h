@@ -72,6 +72,7 @@ typedef enum {
     VIR_NODE_DEV_CAP_AP_MATRIX,         /* s390 AP Matrix device */
     VIR_NODE_DEV_CAP_VPD,               /* Device provides VPD */
     VIR_NODE_DEV_CAP_CCWGROUP_DEV,      /* s390 CCWGROUP device */
+    VIR_NODE_DEV_CAP_CCWGROUP_MEMBER,   /* s390 CCW device is member of CCWGROUP */
 
     VIR_NODE_DEV_CAP_LAST
 } virNodeDevCapType;
@@ -118,6 +119,7 @@ typedef enum {
 
 typedef enum {
     VIR_NODE_DEV_CAP_FLAG_CSS_MDEV                  = (1 << 0),
+    VIR_NODE_DEV_CAP_FLAG_CCW_CCWGROUP_MEMBER       = (2 << 0),
 } virNodeDevCCWCapFlags;
 
 typedef enum {
@@ -295,6 +297,7 @@ struct _virNodeDevCapCCW {
     size_t nmdev_types;
     virCCWDeviceAddress *channel_dev_addr;
     virNodeDevCCWStateType state;
+    char *group_dev;
 };
 
 typedef struct _virNodeDevCapVDPA virNodeDevCapVDPA;
@@ -457,7 +460,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNodeDevCapsDef, virNodeDevCapsDefFree);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPD           | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCWGROUP_DEV)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCWGROUP_DEV  | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCWGROUP_MEMBER)
 
 #define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_ACTIVE \
     VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE | \
@@ -494,6 +498,10 @@ virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath,
 int
 virNodeDeviceGetMdevParentDynamicCaps(const char *sysfsPath,
                                       virNodeDevCapMdevParent *mdev_parent);
+
+int
+virNodeDeviceGetCCWDynamicCaps(const char *sysfsPath,
+                               virNodeDevCapCCW *ccw_dev);
 
 int
 virNodeDeviceGetCCWGroupDynamicCaps(const char *sysfsPath,

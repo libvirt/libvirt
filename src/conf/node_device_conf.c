@@ -72,6 +72,7 @@ VIR_ENUM_IMPL(virNodeDevCap,
               "ap_matrix",
               "vpd",
               "ccwgroup",
+              "ccwgroup_member",
 );
 
 VIR_ENUM_IMPL(virNodeDevCCWGroupCap,
@@ -643,6 +644,23 @@ virCCWDeviceAddressFormat(virBuffer *buf,
 
 
 static void
+virNodeDeviceCapCCWGroupMemberDefFormat(virBuffer *buf,
+                             const virNodeDevCapData *data)
+{
+    virNodeDevCapCCW ccw_dev = data->ccw_dev;
+
+    if (ccw_dev.group_dev) {
+        virBufferAddLit(buf, "<capability type='ccwgroup_member'>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<group_device>%s</group_device>\n",
+                              ccw_dev.group_dev);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</capability>\n");
+    }
+}
+
+
+static void
 virNodeDeviceCapCSSDefFormat(virBuffer *buf,
                              const virNodeDevCapData *data)
 {
@@ -813,6 +831,8 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
         case VIR_NODE_DEV_CAP_CCW_DEV:
             virNodeDeviceCapCCWStateTypeFormat(&buf, data->ccw_dev.state);
             virCCWDeviceAddressFormat(&buf, data->ccw_dev.dev_addr);
+            if (data->ccw_dev.flags & VIR_NODE_DEV_CAP_FLAG_CCW_CCWGROUP_MEMBER)
+                virNodeDeviceCapCCWGroupMemberDefFormat(&buf, data);
             break;
         case VIR_NODE_DEV_CAP_CSS_DEV:
             virNodeDeviceCapCSSDefFormat(&buf, data);
@@ -844,6 +864,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def, unsigned int flags)
         case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
             virNodeDeviceCapCCWGroupDefFormat(&buf, data);
             break;
+        case VIR_NODE_DEV_CAP_CCWGROUP_MEMBER:
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_VPD:
@@ -1254,6 +1275,33 @@ virNodeDevCCWDeviceAddressParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virNodeDevCCWCapabilityParseXML(xmlXPathContextPtr ctxt,
+                                xmlNodePtr node,
+                                const char *dev_name,
+                                virNodeDevCapCCW *ccw_dev)
+{
+    g_autofree char *type = virXMLPropString(node, "type");
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
+
+    if (!type)
+        return 0; /* optional */
+
+    if (STREQ(type, "ccwgroup_member")) {
+        if (!(ccw_dev->group_dev = virXPathString("string(./group_device[1])", ctxt))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("missing group_device value for '%1$s'"), dev_name);
+            return -1;
+        }
+        ccw_dev->flags |= VIR_NODE_DEV_CAP_FLAG_CCW_CCWGROUP_MEMBER;
+    }
+
+    return 0;
+}
+
+
+static int
 virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
                          virNodeDeviceDef *def,
                          xmlNodePtr node,
@@ -1261,7 +1309,10 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree virCCWDeviceAddress *ccw_addr = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *state = NULL;
+    int n = 0;
+    size_t i = 0;
     int val;
 
     ctxt->node = node;
@@ -1284,6 +1335,15 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
         return -1;
 
     ccw_dev->dev_addr = g_steal_pointer(&ccw_addr);
+
+    /* capabilities are optional */
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        if (virNodeDevCCWCapabilityParseXML(ctxt, nodes[i], def->name, ccw_dev) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -2505,6 +2565,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapCCWGroupParseXML(ctxt, def, node,
                                             &caps->data.ccwgroup_dev);
         break;
+    case VIR_NODE_DEV_CAP_CCWGROUP_MEMBER:
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
@@ -2796,6 +2857,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         break;
     case VIR_NODE_DEV_CAP_CCW_DEV:
         g_free(data->ccw_dev.dev_addr);
+        g_free(data->ccw_dev.group_dev);
         break;
     case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
         g_free(data->ccwgroup_dev.address);
@@ -2810,6 +2872,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
             break;
         }
         break;
+    case VIR_NODE_DEV_CAP_CCWGROUP_MEMBER:
     case VIR_NODE_DEV_CAP_DRM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
@@ -2869,6 +2932,12 @@ virNodeDeviceUpdateCaps(virNodeDeviceDef *def)
                                                       &cap->data.mdev_parent) < 0)
                 return -1;
             break;
+        case VIR_NODE_DEV_CAP_CCW_DEV:
+        case VIR_NODE_DEV_CAP_CCWGROUP_MEMBER:
+            if (virNodeDeviceGetCCWDynamicCaps(def->sysfs_path,
+                                               &cap->data.ccw_dev) < 0)
+                return -1;
+            break;
         case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
             if (virNodeDeviceGetCCWGroupDynamicCaps(def->sysfs_path,
                                                     &cap->data.ccwgroup_dev) < 0)
@@ -2888,7 +2957,6 @@ virNodeDeviceUpdateCaps(virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_SCSI_GENERIC:
         case VIR_NODE_DEV_CAP_MDEV:
-        case VIR_NODE_DEV_CAP_CCW_DEV:
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_AP_CARD:
         case VIR_NODE_DEV_CAP_AP_QUEUE:
@@ -2984,6 +3052,15 @@ virNodeDeviceCapsListExport(virNodeDeviceDef *def,
 
             if (flags & VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV) {
                 MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
+                ncaps++;
+            }
+        }
+
+        if (caps->data.type == VIR_NODE_DEV_CAP_CCW_DEV) {
+            flags = caps->data.ccw_dev.flags;
+
+            if (flags & VIR_NODE_DEV_CAP_FLAG_CCW_CCWGROUP_MEMBER) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_CCWGROUP_MEMBER);
                 ncaps++;
             }
         }
@@ -3336,6 +3413,25 @@ virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath,
     return 0;
 }
 
+/* virNodeDeviceGetCCWDynamicCaps() get info that is stored in sysfs
+ * about devices related to this device, i.e. things that can change
+ * without this device itself changing. These must be refreshed
+ * anytime full XML of the device is requested, because they can
+ * change with no corresponding notification from the kernel/udev.
+ */
+int
+virNodeDeviceGetCCWDynamicCaps(const char *sysfsPath,
+                               virNodeDevCapCCW *ccw_dev)
+{
+    g_free(ccw_dev->group_dev);
+    ccw_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_CCW_CCWGROUP_MEMBER;
+
+    if ((ccw_dev->group_dev = virCCWDeviceGetGroupDev(sysfsPath)))
+        ccw_dev->flags |= VIR_NODE_DEV_CAP_FLAG_CCW_CCWGROUP_MEMBER;
+
+    return 0;
+}
+
 /* virNodeDeviceGetAPMatrixDynamicCaps() get info that is stored in sysfs
  * about devices related to this device, i.e. things that can change
  * without this device itself changing. These must be refreshed
@@ -3424,6 +3520,13 @@ int virNodeDeviceGetSCSITargetCaps(const char *sysfsPath G_GNUC_UNUSED,
 
 int
 virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
+                               virNodeDevCapCCW *ccw_dev G_GNUC_UNUSED)
+{
+    return -1;
+}
+
+int
+virNodeDeviceGetCCWDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
                                virNodeDevCapCCW *ccw_dev G_GNUC_UNUSED)
 {
     return -1;

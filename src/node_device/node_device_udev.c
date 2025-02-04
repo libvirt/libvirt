@@ -1239,6 +1239,9 @@ udevProcessCCW(struct udev_device *device,
 
     udevGenerateDeviceName(device, def, NULL);
 
+    if (virNodeDeviceGetCCWDynamicCaps(def->sysfs_path, &def->caps->data.ccw_dev) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -1575,6 +1578,7 @@ udevGetDeviceDetails(virNodeDeviceDriverState *driver_state,
         return udevProcessMdevParent(device, def);
     case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
         return udevProcessCCWGroup(device, def);
+    case VIR_NODE_DEV_CAP_CCWGROUP_MEMBER:
     case VIR_NODE_DEV_CAP_VPD:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:

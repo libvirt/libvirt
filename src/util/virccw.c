@@ -203,3 +203,26 @@ virCCWGroupTypeQethFree(virCCWGroupTypeQeth *qeth)
     VIR_FREE(qeth->card_type);
     VIR_FREE(qeth->chpid);
 }
+
+char *
+virCCWDeviceGetGroupDev(const char *sysfs_path)
+{
+    g_autofree char *ccwgroup_path = NULL;
+    g_autofree char *group_dev_path = NULL;
+
+    group_dev_path = g_build_filename(sysfs_path, "group_device", NULL);
+
+    if (!virFileExists(group_dev_path))
+        return NULL;
+
+    if (virFileIsLink(group_dev_path) != 1)
+        return NULL;
+
+    if (virFileResolveLink(group_dev_path, &ccwgroup_path) < 0)
+        return NULL;
+
+    if (!virFileExists(ccwgroup_path))
+        return NULL;
+
+    return virCCWGroupDeviceDevNodeName("ccwgroup", ccwgroup_path);
+}

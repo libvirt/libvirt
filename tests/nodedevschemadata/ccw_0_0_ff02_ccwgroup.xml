@@ -1,0 +1,13 @@
+<device>
+  <name>ccw_0_0_ff02</name>
+  <path>/sys/devices/css0/0.0.0070/0.0.ff02</path>
+  <parent>css_0_0_0070</parent>
+  <capability type='ccw'>
+    <cssid>0x0</cssid>
+    <ssid>0x0</ssid>
+    <devno>0xff02</devno>
+    <capability type='ccwgroup_member'>
+      <group_device>ccwgroup_0_0_ff00</group_device>
+    </capability>
+  </capability>
+</device>
