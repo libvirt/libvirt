@@ -1,0 +1,20 @@
+<device>
+  <name>ccwgroup_0_0_bd00</name>
+  <path>/sys/devices/qeth/0.0.bd00</path>
+  <parent>computer</parent>
+  <capability type='ccwgroup'>
+    <state>online</state>
+    <cssid>0x0</cssid>
+    <ssid>0x0</ssid>
+    <devno>0xbd00</devno>
+    <members>
+      <ccw_device ref='cdev1'>ccw_0_0_bd01</ccw_device>
+      <ccw_device ref='cdev2'>ccw_0_0_bd02</ccw_device>
+      <ccw_device ref='cdev0'>ccw_0_0_bd00</ccw_device>
+    </members>
+    <capability type='qeth_generic'>
+      <card_type>OSD_10GIG</card_type>
+      <chpid>BD</chpid>
+    </capability>
+  </capability>
+</device>

@@ -19,9 +19,15 @@
  */
 
 #include <config.h>
+
 #include "virccw.h"
+
+#include <dirent.h>
+
 #include "virerror.h"
+#include "virfile.h"
 #include "virstring.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -100,4 +106,100 @@ virCCWDeviceAddressParseFromString(const char *address,
     }
 
     return 0;
+}
+
+void
+virCCWGroupMemberTypeFree(virCCWGroupMemberType *member)
+{
+    if (!member)
+        return;
+
+    VIR_FREE(member->ref);
+    VIR_FREE(member->device);
+    VIR_FREE(member);
+}
+
+static char *
+virCCWGroupDeviceDevNodeName(const char *nodedev_prefix,
+                             const char *sysfs_path)
+{
+    g_autofree char *node_name = NULL;
+    size_t i;
+
+    node_name = g_path_get_basename(sysfs_path);
+
+    for (i = 0; i < strlen(node_name); i++) {
+        if (!(g_ascii_isalnum(*(node_name + i))))
+            *(node_name + i) = '_';
+    }
+
+    return g_strdup_printf("%s_%s", nodedev_prefix, node_name);
+}
+
+/**
+ * virCCWGroupDeviceGetMembers:
+ * @sysfs_path: sysfs path to a group device
+ * @members:    Where to add the found group members
+ * @nmembers:   Number of found group members
+ *
+ * The sysfs path is searched for links with a name prefix "cdev".
+ * These links point the ccw device sysfs entry which is a member
+ * of the ccw group.
+ *
+ * Returns: -1 on error (invalid sysfs_path or group has no members)
+ *           0 on success
+ */
+int
+virCCWGroupDeviceGetMembers(const char *sysfs_path,
+                            virCCWGroupMemberType ***members,
+                            size_t *nmembers)
+{
+    virCCWGroupMemberType *member = NULL;
+    g_autofree char *ccwdevpath = NULL;
+    g_autoptr(DIR) dir = NULL;
+    struct dirent *entry;
+    int direrr;
+
+    if (virDirOpenIfExists(&dir, sysfs_path) <= 0)
+        return -1;
+
+    while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
+        if (g_str_has_prefix(entry->d_name, "cdev")) {
+            /* found a cdev reference */
+            g_autofree char *cdevpath = NULL;
+            cdevpath = g_build_filename(sysfs_path, entry->d_name, NULL);
+
+            if (virFileIsLink(cdevpath) != 1)
+                continue;
+
+            if (virFileResolveLink(cdevpath, &ccwdevpath) < 0)
+                continue;
+
+            if (!virFileExists(ccwdevpath))
+                continue;
+
+            member = g_new0(virCCWGroupMemberType, 1);
+
+            member->ref = g_strdup(entry->d_name);
+            member->device = virCCWGroupDeviceDevNodeName("ccw", ccwdevpath);
+
+            VIR_APPEND_ELEMENT(*members, *nmembers, member);
+        }
+    }
+
+    /* Groups without a member must not exist */
+    if (*nmembers == 0)
+        return -1;
+
+    return 0;
+}
+
+void
+virCCWGroupTypeQethFree(virCCWGroupTypeQeth *qeth)
+{
+    if (!qeth)
+        return;
+
+    VIR_FREE(qeth->card_type);
+    VIR_FREE(qeth->chpid);
 }

@@ -90,6 +90,7 @@ typedef enum {
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      = 1 << 19, /* s390 AP Queue (Since: 7.0.0) */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     = 1 << 20, /* s390 AP Matrix (Since: 7.0.0) */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPD           = 1 << 21, /* Device with VPD (Since: 7.9.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCWGROUP_DEV  = 1 << 22, /* s390 CCWGROUP device (Since: 11.1.0) */
 
     VIR_CONNECT_LIST_NODE_DEVICES_PERSISTENT        = 1 << 28, /* Persisted devices (Since: 10.1.0) */
     VIR_CONNECT_LIST_NODE_DEVICES_TRANSIENT         = 1 << 29, /* Transient devices (Since: 10.1.0) */

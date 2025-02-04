@@ -892,12 +892,15 @@ virNetDevIPRouteParseXML;
 virNodeDevCapsDefFree;
 virNodeDevCapTypeFromString;
 virNodeDevCapTypeToString;
+virNodeDevCCWGroupCapTypeFromString;
+virNodeDevCCWGroupCapTypeToString;
 virNodeDeviceCapsListExport;
 virNodeDeviceDefFormat;
 virNodeDeviceDefFree;
 virNodeDeviceDefParse;
 virNodeDeviceDefParseXML;
 virNodeDeviceGetAPMatrixDynamicCaps;
+virNodeDeviceGetCCWGroupDynamicCaps;
 virNodeDeviceGetCSSDynamicCaps;
 virNodeDeviceGetMdevParentDynamicCaps;
 virNodeDeviceGetPCIDynamicCaps;
@@ -2029,6 +2032,9 @@ virCCWDeviceAddressFromString;
 virCCWDeviceAddressIncrement;
 virCCWDeviceAddressIsValid;
 virCCWDeviceAddressParseFromString;
+virCCWGroupDeviceGetMembers;
+virCCWGroupMemberTypeFree;
+virCCWGroupTypeQethFree;
 
 
 # util/vircgroup.h

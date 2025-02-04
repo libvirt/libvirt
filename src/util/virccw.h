@@ -35,6 +35,18 @@ struct _virCCWDeviceAddress {
     bool         assigned;
 };
 
+typedef struct _virCCWGroupMemberType virCCWGroupMemberType;
+struct _virCCWGroupMemberType {
+    char *ref;  /* cdev reference */
+    char *device;
+};
+
+typedef struct _virCCWGroupTypeQeth virCCWGroupTypeQeth;
+struct _virCCWGroupTypeQeth {
+    char *card_type;
+    char *chpid;
+};
+
 bool virCCWDeviceAddressIsValid(virCCWDeviceAddress *addr);
 bool virCCWDeviceAddressEqual(virCCWDeviceAddress *addr1,
                               virCCWDeviceAddress *addr2);
@@ -50,3 +62,13 @@ int virCCWDeviceAddressParseFromString(const char *address,
                                        unsigned int *cssid,
                                        unsigned int *ssid,
                                        unsigned int *devno);
+
+void virCCWGroupMemberTypeFree(virCCWGroupMemberType *member);
+
+int virCCWGroupDeviceGetMembers(const char *sysfs_path,
+                                virCCWGroupMemberType ***members,
+                                size_t *nmembers);
+
+void virCCWGroupTypeQethFree(virCCWGroupTypeQeth *qeth);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCCWGroupMemberType, virCCWGroupMemberTypeFree);

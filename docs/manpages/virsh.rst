@@ -5533,9 +5533,9 @@ List all of the devices available on the node that are known by libvirt.
 separated by comma, e.g. --cap pci,scsi. Valid capability types include
 'system', 'pci', 'usb_device', 'usb', 'net', 'scsi_host', 'scsi_target',
 'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic', 'drm', 'mdev',
-'mdev_types', 'ccw', 'css', 'ap_card', 'ap_queue', 'ap_matrix'. By default,
-only active devices are listed. *--inactive* is used to list only inactive
-devices, and *--all* is used to list both active and inactive devices.
+'mdev_types', 'ccw', 'ccwgroup', 'css', 'ap_card', 'ap_queue', 'ap_matrix'.
+By default, only active devices are listed. *--inactive* is used to list only
+inactive devices, and *--all* is used to list both active and inactive devices.
 *--persistent* is used to list only persistent devices, and *--transient* is
 used to list only transient devices. Not providing *--persistent* or
 *--transient* will list all devices unless filtered otherwise. *--transient*

@@ -1390,6 +1390,43 @@ udevProcessAPMatrix(struct udev_device *device,
 
 
 static int
+udevProcessCCWGroup(struct udev_device *device,
+                    virNodeDeviceDef *def)
+{
+    const char *devtype = udev_device_get_devtype(device);
+    virNodeDevCapData *data = &def->caps->data;
+
+    data->ccwgroup_dev.address = virCCWDeviceAddressFromString(udev_device_get_sysname(device));
+
+    udevCCWGetState(device, &data->ccwgroup_dev.state);
+
+    udevGenerateDeviceName(device, def, NULL);
+
+    if ((data->ccwgroup_dev.type = virNodeDevCCWGroupCapTypeFromString(devtype)) < 0)
+        return -1;
+
+    switch (data->ccwgroup_dev.type) {
+    case VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC:
+        {
+            virCCWGroupTypeQeth *qeth = &data->ccwgroup_dev.qeth;
+            /* process qeth device information */
+            udevGetStringSysfsAttr(device, "card_type", &qeth->card_type);
+            udevGetStringSysfsAttr(device, "chpid", &qeth->chpid);
+        }
+        break;
+    case VIR_NODE_DEV_CAP_CCWGROUP_LAST:
+        return -1;
+    }
+
+    if (virNodeDeviceGetCCWGroupDynamicCaps(def->sysfs_path,
+                                            &data->ccwgroup_dev) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 udevGetDeviceNodes(struct udev_device *device,
                    virNodeDeviceDef *def)
 {
@@ -1447,6 +1484,8 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_AP_CARD;
         else if (STREQ(devtype, "ap_queue"))
             *type = VIR_NODE_DEV_CAP_AP_QUEUE;
+        else if (STREQ(devtype, "qeth_generic"))
+            *type = VIR_NODE_DEV_CAP_CCWGROUP_DEV;
     } else {
         /* PCI devices don't set the DEVTYPE property. */
         if (udevHasDeviceProperty(device, "PCI_CLASS"))
@@ -1534,6 +1573,8 @@ udevGetDeviceDetails(virNodeDeviceDriverState *driver_state,
         return udevProcessAPMatrix(device, def);
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
         return udevProcessMdevParent(device, def);
+    case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
+        return udevProcessCCWGroup(device, def);
     case VIR_NODE_DEV_CAP_VPD:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:

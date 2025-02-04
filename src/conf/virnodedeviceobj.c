@@ -741,6 +741,7 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
         case VIR_NODE_DEV_CAP_AP_CARD:
         case VIR_NODE_DEV_CAP_AP_QUEUE:
         case VIR_NODE_DEV_CAP_VPD:
+        case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -899,7 +900,8 @@ virNodeDeviceObjMatch(virNodeDeviceObj *obj,
               MATCH_CAP(AP_CARD)       ||
               MATCH_CAP(AP_QUEUE)      ||
               MATCH_CAP(AP_MATRIX)     ||
-              MATCH_CAP(VPD)))
+              MATCH_CAP(VPD)           ||
+              MATCH_CAP(CCWGROUP_DEV)))
             return false;
     }
 

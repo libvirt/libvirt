@@ -501,6 +501,9 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         case VIR_NODE_DEV_CAP_AP_MATRIX:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX;
             break;
+        case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCWGROUP_DEV;
+            break;
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

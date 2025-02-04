@@ -695,6 +695,10 @@ nodeDeviceObjFormatAddress(virNodeDeviceObj *obj)
             addr = g_strdup(caps->data.mdev_parent.address);
             break;
 
+        case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
+            addr = virCCWDeviceAddressAsString(caps->data.ccwgroup_dev.address);
+            break;
+
         case VIR_NODE_DEV_CAP_SYSTEM:
         case VIR_NODE_DEV_CAP_USB_DEV:
         case VIR_NODE_DEV_CAP_USB_INTERFACE:
@@ -2189,6 +2193,7 @@ int nodeDeviceDefValidate(virNodeDeviceDef *def,
             case VIR_NODE_DEV_CAP_AP_QUEUE:
             case VIR_NODE_DEV_CAP_AP_MATRIX:
             case VIR_NODE_DEV_CAP_VPD:
+            case VIR_NODE_DEV_CAP_CCWGROUP_DEV:
             case VIR_NODE_DEV_CAP_LAST:
                 break;
         }
