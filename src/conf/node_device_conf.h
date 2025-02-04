@@ -281,9 +281,7 @@ struct _virNodeDevCapDRM {
 
 typedef struct _virNodeDevCapCCW virNodeDevCapCCW;
 struct _virNodeDevCapCCW {
-    unsigned int cssid;
-    unsigned int ssid;
-    unsigned int devno;
+    virCCWDeviceAddress *dev_addr;
     unsigned int flags; /* enum virNodeDevCCWCapFlags */
     virMediatedDeviceType **mdev_types;
     size_t nmdev_types;

@@ -640,12 +640,7 @@ static void
 virNodeDeviceCapCCWDefFormat(virBuffer *buf,
                              const virNodeDevCapData *data)
 {
-    virBufferAsprintf(buf, "<cssid>0x%x</cssid>\n",
-                      data->ccw_dev.cssid);
-    virBufferAsprintf(buf, "<ssid>0x%x</ssid>\n",
-                      data->ccw_dev.ssid);
-    virBufferAsprintf(buf, "<devno>0x%04x</devno>\n",
-                      data->ccw_dev.devno);
+    virCCWDeviceAddressFormat(buf, data->ccw_dev.dev_addr);
 }
 
 
@@ -1231,9 +1226,7 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
     if (virNodeDevCCWDeviceAddressParseXML(ctxt, node, def->name, ccw_addr) < 0)
         return -1;
 
-    ccw_dev->cssid = ccw_addr->cssid;
-    ccw_dev->ssid = ccw_addr->ssid;
-    ccw_dev->devno = ccw_addr->devno;
+    ccw_dev->dev_addr = g_steal_pointer(&ccw_addr);
 
     return 0;
 }
@@ -2621,6 +2614,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->mdev.parent_addr);
         break;
     case VIR_NODE_DEV_CAP_CSS_DEV:
+        g_free(data->ccw_dev.dev_addr);
         for (i = 0; i < data->ccw_dev.nmdev_types; i++)
             virMediatedDeviceTypeFree(data->ccw_dev.mdev_types[i]);
         g_free(data->ccw_dev.mdev_types);
@@ -2638,10 +2632,12 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->mdev_parent.mdev_types);
         g_free(data->mdev_parent.address);
         break;
+    case VIR_NODE_DEV_CAP_CCW_DEV:
+        g_free(data->ccw_dev.dev_addr);
+        break;
     case VIR_NODE_DEV_CAP_DRM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
-    case VIR_NODE_DEV_CAP_CCW_DEV:
     case VIR_NODE_DEV_CAP_VDPA:
     case VIR_NODE_DEV_CAP_AP_CARD:
     case VIR_NODE_DEV_CAP_AP_QUEUE:

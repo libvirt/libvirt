@@ -683,16 +683,9 @@ nodeDeviceObjFormatAddress(virNodeDeviceObj *obj)
             break;
             }
 
-        case VIR_NODE_DEV_CAP_CSS_DEV: {
-            virCCWDeviceAddress ccw_addr = {
-                .cssid = caps->data.ccw_dev.cssid,
-                .ssid = caps->data.ccw_dev.ssid,
-                .devno = caps->data.ccw_dev.devno
-            };
-
-            addr = virCCWDeviceAddressAsString(&ccw_addr);
+        case VIR_NODE_DEV_CAP_CSS_DEV:
+            addr = virCCWDeviceAddressAsString(caps->data.ccw_dev.dev_addr);
             break;
-            }
 
         case VIR_NODE_DEV_CAP_AP_MATRIX:
             addr = g_strdup(caps->data.ap_matrix.addr);

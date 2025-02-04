@@ -435,9 +435,10 @@ fakeCSSDevice(void)
 
     def->caps->data.type = VIR_NODE_DEV_CAP_CSS_DEV;
     css_dev = &def->caps->data.ccw_dev;
-    css_dev->cssid = 0;
-    css_dev->ssid = 0;
-    css_dev->devno = 82;
+    css_dev->dev_addr = g_new0(virCCWDeviceAddress, 1);
+    css_dev->dev_addr->cssid = 0;
+    css_dev->dev_addr->ssid = 0;
+    css_dev->dev_addr->devno = 82;
 
     return def;
 }

@@ -1184,17 +1184,20 @@ udevGetCCWAddress(const char *sysfs_path,
                   virNodeDevCapData *data)
 {
     char *p;
+    g_autofree virCCWDeviceAddress *ccw_addr = g_new0(virCCWDeviceAddress, 1);
 
     if ((p = strrchr(sysfs_path, '/')) == NULL ||
         virCCWDeviceAddressParseFromString(p + 1,
-                                           &data->ccw_dev.cssid,
-                                           &data->ccw_dev.ssid,
-                                           &data->ccw_dev.devno) < 0) {
+                                           &ccw_addr->cssid,
+                                           &ccw_addr->ssid,
+                                           &ccw_addr->devno) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse the CCW address from sysfs path: '%1$s'"),
                        sysfs_path);
         return -1;
     }
+
+    data->ccw_dev.dev_addr = g_steal_pointer(&ccw_addr);
 
     return 0;
 }
