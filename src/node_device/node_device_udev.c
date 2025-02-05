@@ -1398,6 +1398,7 @@ udevProcessCCWGroup(struct udev_device *device,
 {
     const char *devtype = udev_device_get_devtype(device);
     virNodeDevCapData *data = &def->caps->data;
+    int tmp;
 
     data->ccwgroup_dev.address = virCCWDeviceAddressFromString(udev_device_get_sysname(device));
 
@@ -1405,8 +1406,10 @@ udevProcessCCWGroup(struct udev_device *device,
 
     udevGenerateDeviceName(device, def, NULL);
 
-    if ((data->ccwgroup_dev.type = virNodeDevCCWGroupCapTypeFromString(devtype)) < 0)
+    if ((tmp = virNodeDevCCWGroupCapTypeFromString(devtype)) < 0)
         return -1;
+
+    data->ccwgroup_dev.type = tmp;
 
     switch (data->ccwgroup_dev.type) {
     case VIR_NODE_DEV_CAP_CCWGROUP_QETH_GENERIC:
