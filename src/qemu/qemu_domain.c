@@ -9661,6 +9661,9 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     /* qemuBlockStorageSourceSetStorageNodename steals 'nodestorage' */
     qemuBlockStorageSourceSetStorageNodename(src, nodestorage);
 
+    if (qemuDomainPrepareStorageSourceFDs(src, priv) < 0)
+        return -1;
+
     if (qemuBlockStorageSourceNeedsFormatLayer(src, priv->qemuCaps)) {
         char *nodeformat = g_strdup_printf("%s-format", nodenameprefix);
 
@@ -9699,9 +9702,6 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
         return -1;
 
     if (qemuDomainPrepareStorageSourceNFS(src) < 0)
-        return -1;
-
-    if (qemuDomainPrepareStorageSourceFDs(src, priv) < 0)
         return -1;
 
     return 0;
