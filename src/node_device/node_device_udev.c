@@ -1415,8 +1415,12 @@ udevProcessCCWGroup(struct udev_device *device,
 
     udevGenerateDeviceName(device, def, NULL);
 
-    if ((tmp = virNodeDevCCWGroupCapTypeFromString(devtype)) < 0)
+    if ((tmp = virNodeDevCCWGroupCapTypeFromString(devtype)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to find a supported CCW group capability type '%1$s'"),
+                       devtype);
         return -1;
+    }
 
     data->ccwgroup_dev.type = tmp;
 
