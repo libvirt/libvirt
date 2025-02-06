@@ -704,11 +704,13 @@ testQemuInfoSetArgs(testQemuInfo *info,
             virStorageSourceFDTuple *new = virStorageSourceFDTupleNew();
             const char *fdname = va_arg(argptr, char *);
             VIR_AUTOCLOSE fakefd = open("/dev/zero", O_RDWR);
+            bool writable = va_arg(argptr, int);
             size_t i;
 
             new->nfds = va_arg(argptr, unsigned int);
             new->fds = g_new0(int, new->nfds);
             new->testfds = g_new0(int, new->nfds);
+            new->writable = writable;
 
             for (i = 0; i < new->nfds; i++) {
                 new->testfds[i] = va_arg(argptr, unsigned int);

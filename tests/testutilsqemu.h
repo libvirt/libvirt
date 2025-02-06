@@ -49,7 +49,7 @@ typedef enum {
     ARG_CAPS_VER,
     ARG_CAPS_VARIANT,
     ARG_CAPS_HOST_CPU_MODEL,
-    ARG_FD_GROUP, /* name, nfds, fd[0], ... fd[n-1] */
+    ARG_FD_GROUP, /* name, writable, nfds, fd[0], ... fd[n-1] */
     ARG_VDPA_FD, /* vdpadev, fd */
     ARG_NBDKIT_CAPS,
     ARG_END,

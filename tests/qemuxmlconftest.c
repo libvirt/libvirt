@@ -1655,9 +1655,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
     DO_TEST_CAPS_LATEST("disk-qcow2-datafile-store");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-source-fd", "x86_64",
-                                  ARG_FD_GROUP, "testgroup2", 2, 200, 205,
-                                  ARG_FD_GROUP, "testgroup5", 1, 204,
-                                  ARG_FD_GROUP, "testgroup6", 2, 247, 248);
+                                  ARG_FD_GROUP, "testgroup2", false, 2, 200, 205,
+                                  ARG_FD_GROUP, "testgroup5", false, 1, 204,
+                                  ARG_FD_GROUP, "testgroup6", false, 2, 247, 248);
 
     DO_TEST_CAPS_LATEST("disk-slices");
     DO_TEST_CAPS_LATEST("disk-rotation");
