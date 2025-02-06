@@ -19,6 +19,18 @@
       <source file='/path/to/blah' fdgroup='testgroup2'/>
       <target dev='vde' bus='virtio'/>
     </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/path/to/cdimage-ro' fdgroup='cdimage-ro'/>
+      <readonly/>
+      <target dev='hda' bus='ide'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/path/to/cdimage-rw' fdgroup='cdimage-rw'/>
+      <readonly/>
+      <target dev='hdb' bus='ide'/>
+    </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/rhel7.1484071880' fdgroup='testgroup5'/>
@@ -26,8 +38,8 @@
         <format type='qcow2'/>
         <source file='/var/lib/libvirt/images/rhel7.1484071877' fdgroup='testgroup6'/>
         <backingStore type='file'>
-          <format type='qcow2'/>
-          <source file='/var/lib/libvirt/images/rhel7.1484071876'/>
+          <format type='raw'/>
+          <source file='/var/lib/libvirt/images/rhel7.1484071876' fdgroup='raw-rw-base'/>
           <backingStore/>
         </backingStore>
       </backingStore>

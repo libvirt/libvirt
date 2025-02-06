@@ -1657,6 +1657,9 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-source-fd", "x86_64",
                                   ARG_FD_GROUP, "testgroup2", false, 2, 200, 205,
                                   ARG_FD_GROUP, "testgroup5", false, 1, 204,
+                                  ARG_FD_GROUP, "cdimage-ro", false, 1, 207,
+                                  ARG_FD_GROUP, "cdimage-rw", true, 1, 208,
+                                  ARG_FD_GROUP, "raw-rw-base", true, 1, 209,
                                   ARG_FD_GROUP, "testgroup6", false, 2, 247, 248);
 
     DO_TEST_CAPS_LATEST("disk-slices");
