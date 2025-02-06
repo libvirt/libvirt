@@ -116,6 +116,52 @@ qemuFDPassNewPassed(unsigned int fdSetID)
 
 
 /**
+ * qemuFDPassNewFromMonitor:
+ * @prefix: Prefix of an FDset which was already passed to qemu
+ * @mon: monitor object
+ *
+ * Query the monitor for already passed FDsets and return a new qemuFDPass
+ * object if one is found to contain an fd with associated @prefix. Returns
+ * NULL on failure or if no matching FDset is found. Similar to
+ * qemuFDPassNewPassed, this is useful along with qemuFDPassTransferMonitorRollback
+ * when only knowing the qemuFDPass prefix.
+ */
+qemuFDPass *
+qemuFDPassNewFromMonitor(const char *prefix, qemuMonitor *mon)
+{
+    g_autoptr(qemuMonitorFdsets) fdsets = NULL;
+    qemuFDPass *fdpass = NULL;
+    size_t i;
+
+    VIR_DEBUG("prefix = %s", prefix);
+
+    if (qemuMonitorQueryFdsets(mon, &fdsets) < 0)
+        return NULL;
+
+    for (i = 0; i < fdsets->nfdsets; i++) {
+        qemuMonitorFdsetInfo fdset = fdsets->fdsets[i];
+        size_t j;
+
+        for (j = 0; j < fdset.nfds; j++) {
+            qemuMonitorFdsetFdInfo fdinfo = fdset.fds[j];
+
+            VIR_DEBUG("fdinfo opaque = %s", fdinfo.opaque);
+            if (STRPREFIX(prefix, fdinfo.opaque)) {
+                fdpass = g_new0(qemuFDPass, 1);
+
+                fdpass->fdSetID = fdset.id;
+                fdpass->prefix = g_strdup(prefix);
+                fdpass->path = g_strdup_printf("/dev/fdset/%u", fdset.id);
+                fdpass->passed = true;
+            }
+        }
+    }
+
+    return fdpass;
+}
+
+
+/**
  * qemuFDPassIsPassed:
  * @fdpass: The fd passing helper struct
  * @id: when non-NULL filled with the fdset ID

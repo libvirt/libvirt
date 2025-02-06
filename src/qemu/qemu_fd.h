@@ -34,6 +34,10 @@ qemuFDPassNew(const char *prefix,
 qemuFDPass *
 qemuFDPassNewPassed(unsigned int fdSetID);
 
+qemuFDPass *
+qemuFDPassNewFromMonitor(const char *prefix, qemuMonitor *mon)
+    ATTRIBUTE_NONNULL(1);
+
 bool
 qemuFDPassIsPassed(qemuFDPass *fdpass,
                    unsigned *id);
