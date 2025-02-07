@@ -430,7 +430,6 @@ udevProcessPCI(virNodeDeviceDriverState *driver_state,
     g_autofree char *linkpath = NULL;
     int ret = -1;
     char *p;
-    bool privileged = false;
 
     linkpath = g_strdup_printf("%s/config", udev_device_get_syspath(device));
     if (virFileWaitForExists(linkpath, 10, 100) < 0) {
@@ -438,10 +437,6 @@ udevProcessPCI(virNodeDeviceDriverState *driver_state,
                              _("failed to wait for file '%1$s' to appear"),
                              linkpath);
         goto cleanup;
-    }
-
-    VIR_WITH_MUTEX_LOCK_GUARD(&driver_state->lock) {
-        privileged = driver_state->privileged;
     }
 
     pci_dev->klass = -1;
@@ -491,7 +486,7 @@ udevProcessPCI(virNodeDeviceDriverState *driver_state,
         goto cleanup;
 
     /* We need to be root to read PCI device configs */
-    if (privileged) {
+    if (driver_state->privileged) {
         if (virPCIGetHeaderType(pciDev, &pci_dev->hdrType) < 0)
             goto cleanup;
 
