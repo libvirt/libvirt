@@ -100,7 +100,8 @@ qemuDomainDeviceNetDefPostParse(virDomainNetDef *net,
                                 const virDomainDef *def,
                                 virQEMUCaps *qemuCaps)
 {
-    if (net->type == VIR_DOMAIN_NET_TYPE_VDPA &&
+    if ((net->type == VIR_DOMAIN_NET_TYPE_VDPA ||
+         net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) &&
         !virDomainNetGetModelString(net)) {
         net->model = VIR_DOMAIN_NET_MODEL_VIRTIO;
     } else if (net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
