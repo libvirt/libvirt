@@ -2186,12 +2186,6 @@ virDomainNetDefValidate(const virDomainNetDef *net)
 
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (!virDomainNetIsVirtioModel(net)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Wrong or no <model> 'type' attribute specified with <interface type='vhostuser'/>. vhostuser requires the virtio-net* frontend"));
-            return -1;
-        }
-
         if (net->data.vhostuser->data.nix.listen &&
             net->data.vhostuser->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

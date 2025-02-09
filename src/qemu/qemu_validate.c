@@ -1823,17 +1823,18 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                            _("vDPA devices are not supported with this QEMU binary"));
             return -1;
         }
+    }
 
-        if (net->model != VIR_DOMAIN_NET_MODEL_VIRTIO) {
+    if (!virDomainNetIsVirtioModel(net)) {
+        if (net->type == VIR_DOMAIN_NET_TYPE_VDPA ||
+            net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid model for interface of type '%1$s': '%2$s'"),
+                           _("invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"),
                            virDomainNetTypeToString(net->type),
                            virDomainNetModelTypeToString(net->model));
             return -1;
         }
-    }
-
-    if (virDomainNetIsVirtioModel(net)) {
+    } else {
         if (net->driver.virtio.rx_queue_size) {
             if (!VIR_IS_POW2(net->driver.virtio.rx_queue_size)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
