@@ -2185,15 +2185,6 @@ virDomainNetDefValidate(const virDomainNetDef *net)
     }
 
     switch (net->type) {
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        if (net->data.vhostuser->data.nix.listen &&
-            net->data.vhostuser->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'reconnect' attribute unsupported 'server' mode for <interface type='vhostuser'>"));
-            return -1;
-        }
-        break;
-
     case VIR_DOMAIN_NET_TYPE_USER:
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
             size_t p;
@@ -2217,6 +2208,7 @@ virDomainNetDefValidate(const virDomainNetDef *net)
         }
         break;
 
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
