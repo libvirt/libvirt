@@ -1825,12 +1825,20 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
         }
     }
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
-        net->data.vhostuser->data.nix.listen &&
-        net->data.vhostuser->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'reconnect' attribute is not supported when source mode='server' for <interface type='vhostuser'>"));
-        return -1;
+    if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        if (!net->data.vhostuser->data.nix.path) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing required attribute '%1$s' in element '%2$s'"),
+                           "path", "source");
+            return -1;
+        }
+
+        if (net->data.vhostuser->data.nix.listen &&
+            net->data.vhostuser->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'reconnect' attribute is not supported when source mode='server' for <interface type='vhostuser'>"));
+            return -1;
+        }
     }
 
     if (!virDomainNetIsVirtioModel(net)) {

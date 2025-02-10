@@ -9776,50 +9776,38 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         g_autofree char *vhostuser_type = NULL;
         virDomainNetVhostuserMode vhostuser_mode;
 
-        if (virDomainNetDefParseXMLRequireSource(def, source_node) < 0)
-            return NULL;
-
-        if (!(vhostuser_type = virXMLPropStringRequired(source_node, "type")))
-            return NULL;
-
-        if (STRNEQ_NULLABLE(vhostuser_type, "unix")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Type='%1$s' unsupported for <interface type='vhostuser'>"),
-                           vhostuser_type);
-            return NULL;
-        }
-
         if (!(def->data.vhostuser = virDomainChrSourceDefNew(xmlopt)))
             return NULL;
 
+        /* Default (and only valid) value of type is "unix".
+         * Everything else's default value is 0/NULL.
+         */
         def->data.vhostuser->type = VIR_DOMAIN_CHR_TYPE_UNIX;
 
-        if (!(def->data.vhostuser->data.nix.path = virXMLPropStringRequired(source_node, "path")))
-            return NULL;
+        if (source_node) {
+            if ((vhostuser_type = virXMLPropString(source_node, "type"))) {
+                if (STRNEQ(vhostuser_type, "unix")) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Type='%1$s' unsupported for <interface type='vhostuser'>"),
+                                   vhostuser_type);
+                    return NULL;
+                }
+            }
 
-        if (virXMLPropEnum(source_node, "mode",
-                           virDomainNetVhostuserModeTypeFromString,
-                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
-                           &vhostuser_mode) < 0)
-            return NULL;
+            def->data.vhostuser->data.nix.path = virXMLPropString(source_node, "path");
 
-        switch (vhostuser_mode) {
-        case VIR_DOMAIN_NET_VHOSTUSER_MODE_CLIENT:
-            def->data.vhostuser->data.nix.listen = false;
-            break;
+            if (virXMLPropEnum(source_node, "mode", virDomainNetVhostuserModeTypeFromString,
+                               VIR_XML_PROP_NONZERO, &vhostuser_mode) < 0) {
+                return NULL;
+            }
 
-        case VIR_DOMAIN_NET_VHOSTUSER_MODE_SERVER:
-            def->data.vhostuser->data.nix.listen = true;
-            break;
+            if (vhostuser_mode == VIR_DOMAIN_NET_VHOSTUSER_MODE_SERVER)
+                def->data.vhostuser->data.nix.listen = true;
 
-        case VIR_DOMAIN_NET_VHOSTUSER_MODE_NONE:
-        case VIR_DOMAIN_NET_VHOSTUSER_MODE_LAST:
-            break;
+            if (virDomainChrSourceReconnectDefParseXML(&def->data.vhostuser->data.nix.reconnect,
+                                                       source_node, ctxt) < 0)
+                return NULL;
         }
-
-        if (virDomainChrSourceReconnectDefParseXML(&def->data.vhostuser->data.nix.reconnect,
-                                                   source_node, ctxt) < 0)
-            return NULL;
     }
         break;
 

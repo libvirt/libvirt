@@ -3485,7 +3485,9 @@
             <value>vhostuser</value>
           </attribute>
           <interleave>
-            <ref name="unixSocketSource"/>
+            <optional>
+              <ref name="unixSocketSource"/>
+            </optional>
             <ref name="interface-options"/>
           </interleave>
         </group>
