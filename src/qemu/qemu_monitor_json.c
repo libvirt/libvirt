@@ -8883,3 +8883,24 @@ qemuMonitorJSONSnapshotDelete(qemuMonitor *mon,
 
     return qemuMonitorJSONCheckError(cmd, reply);
 }
+
+
+int
+qemuMonitorJSONBlockdevSetActive(qemuMonitor *mon,
+                                 const char *nodename,
+                                 bool active)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("blockdev-set-active",
+                                           "S:node-name", nodename,
+                                           "b:active", active,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    return qemuMonitorJSONCheckError(cmd, reply);
+}

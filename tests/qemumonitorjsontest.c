@@ -1249,6 +1249,36 @@ testQemuMonitorJSONqemuMonitorJSONSnapshot(const void *opaque)
 }
 
 
+static int
+testQemuMonitorJSONqemuMonitorJSONBlockdevSetActive(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    g_autoptr(qemuMonitorTest) test = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "blockdev-set-active",
+                               "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "blockdev-set-active",
+                               "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorJSONBlockdevSetActive(qemuMonitorTestGetMonitor(test),
+                                         NULL, true) < 0)
+        return -1;
+
+    if (qemuMonitorJSONBlockdevSetActive(qemuMonitorTestGetMonitor(test),
+                                         "testnode", false) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static bool
 testQemuMonitorJSONqemuMonitorJSONQueryCPUsEqual(struct qemuMonitorQueryCpusEntry *a,
                                                  struct qemuMonitorQueryCpusEntry *b)
@@ -2989,6 +3019,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONSendKeyHoldtime);
     DO_TEST(qemuMonitorJSONNBDServerStart);
     DO_TEST(qemuMonitorJSONSnapshot);
+    DO_TEST(qemuMonitorJSONBlockdevSetActive);
 
     DO_TEST_CPU_DATA("host");
     DO_TEST_CPU_DATA("full");

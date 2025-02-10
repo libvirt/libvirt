@@ -817,3 +817,8 @@ qemuMonitorJSONSnapshotDelete(qemuMonitor *mon,
                               const char *jobname,
                               const char *snapshotname,
                               const char **disks);
+
+int
+qemuMonitorJSONBlockdevSetActive(qemuMonitor *mon,
+                                 const char *nodename,
+                                 bool active);

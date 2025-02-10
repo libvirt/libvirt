@@ -4552,3 +4552,24 @@ qemuMonitorDisplayReload(qemuMonitor *mon,
 
     return qemuMonitorJSONDisplayReload(mon, type, tlsCerts);
 }
+
+
+/**
+ * qemuMonitorBlockdevSetActive:
+ * @mon: monitor object
+ * @nodename: optional nodename to (de)activate
+ * @active: requested state
+ *
+ * Activate or deactivate @nodename based on @active. If @nodename is NULL,
+ * qemu will act on all block nodes.
+ */
+int
+qemuMonitorBlockdevSetActive(qemuMonitor *mon,
+                             const char *nodename,
+                             bool active)
+{
+    QEMU_CHECK_MONITOR(mon);
+    VIR_DEBUG("nodename='%s', active='%d'", NULLSTR(nodename), active);
+
+    return qemuMonitorJSONBlockdevSetActive(mon, nodename, active);
+}

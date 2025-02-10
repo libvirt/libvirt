@@ -1651,3 +1651,8 @@ qemuMonitorSnapshotDelete(qemuMonitor *mon,
                           const char *jobname,
                           const char *snapshotname,
                           const char **disks);
+
+int
+qemuMonitorBlockdevSetActive(qemuMonitor *mon,
+                             const char *nodename,
+                             bool active);
