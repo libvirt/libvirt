@@ -336,6 +336,10 @@ def dump_qmp_probe_strings_iter(name, cur, trace, schema):
             membpath = "%s/%s" % (cur, memb['name'])
             print(membpath)
 
+            # object members can be queried for optionality by '*'
+            if 'default' in memb:
+                print("%s/*%s" % (cur, memb['name']))
+
             for f in memb.get('features', []):
                 print('%s/$%s' % (membpath, f))
 
