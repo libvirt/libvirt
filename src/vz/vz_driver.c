@@ -219,15 +219,8 @@ vzDomainDefAddDefaultInputDevices(virDomainDef *def)
     if (def->ngraphics == 0)
         return 0;
 
-    if (virDomainDefMaybeAddInput(def,
-                                  VIR_DOMAIN_INPUT_TYPE_MOUSE,
-                                  bus) < 0)
-        return -1;
-
-    if (virDomainDefMaybeAddInput(def,
-                                  VIR_DOMAIN_INPUT_TYPE_KBD,
-                                  bus) < 0)
-        return -1;
+    virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_MOUSE, bus);
+    virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_KBD, bus);
 
     return 0;
 }

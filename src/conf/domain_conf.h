@@ -4377,7 +4377,7 @@ virDomainDefMaybeAddController(virDomainDef *def,
                                virDomainControllerType type,
                                int idx,
                                int model);
-int
+void
 virDomainDefMaybeAddInput(virDomainDef *def,
                           int type,
                           int bus);

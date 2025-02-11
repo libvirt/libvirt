@@ -1096,15 +1096,8 @@ qemuDomainDefAddImplicitInputDevice(virDomainDef *def,
 {
     if (virQEMUCapsSupportsI8042(qemuCaps, def) &&
         def->features[VIR_DOMAIN_FEATURE_PS2] != VIR_TRISTATE_SWITCH_OFF) {
-        if (virDomainDefMaybeAddInput(def,
-                                      VIR_DOMAIN_INPUT_TYPE_MOUSE,
-                                      VIR_DOMAIN_INPUT_BUS_PS2) < 0)
-            return -1;
-
-        if (virDomainDefMaybeAddInput(def,
-                                      VIR_DOMAIN_INPUT_TYPE_KBD,
-                                      VIR_DOMAIN_INPUT_BUS_PS2) < 0)
-            return -1;
+        virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_MOUSE, VIR_DOMAIN_INPUT_BUS_PS2);
+        virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_KBD, VIR_DOMAIN_INPUT_BUS_PS2);
     }
 
     return 0;
@@ -1420,19 +1413,11 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
             addDefaultUSBMouse = false;
     }
 
-    if (addDefaultUSBKBD &&
-        def->ngraphics > 0 &&
-        virDomainDefMaybeAddInput(def,
-                                  VIR_DOMAIN_INPUT_TYPE_KBD,
-                                  VIR_DOMAIN_INPUT_BUS_USB) < 0)
-        return -1;
+    if (addDefaultUSBKBD && def->ngraphics > 0)
+        virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_KBD, VIR_DOMAIN_INPUT_BUS_USB);
 
-    if (addDefaultUSBMouse &&
-        def->ngraphics > 0 &&
-        virDomainDefMaybeAddInput(def,
-                                  VIR_DOMAIN_INPUT_TYPE_MOUSE,
-                                  VIR_DOMAIN_INPUT_BUS_USB) < 0)
-        return -1;
+    if (addDefaultUSBMouse && def->ngraphics > 0)
+        virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_MOUSE, VIR_DOMAIN_INPUT_BUS_USB);
 
     if (addPanicDevice) {
         virDomainPanicModel defaultModel = qemuDomainDefaultPanicModel(def);

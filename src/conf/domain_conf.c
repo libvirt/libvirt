@@ -16561,7 +16561,7 @@ virDomainDefMaybeAddController(virDomainDef *def,
 }
 
 
-int
+void
 virDomainDefMaybeAddInput(virDomainDef *def,
                           int type,
                           int bus)
@@ -16572,7 +16572,7 @@ virDomainDefMaybeAddInput(virDomainDef *def,
     for (i = 0; i < def->ninputs; i++) {
         if (def->inputs[i]->type == type &&
             def->inputs[i]->bus == bus)
-            return 0;
+            return;
     }
 
     input = g_new0(virDomainInputDef, 1);
@@ -16581,8 +16581,6 @@ virDomainDefMaybeAddInput(virDomainDef *def,
     input->bus = bus;
 
     VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input);
-
-    return 0;
 }
 
 
