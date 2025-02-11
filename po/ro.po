@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-01-28 11:08+0000\n"
+"PO-Revision-Date: 2025-02-09 15:46+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
@@ -591,7 +591,7 @@ msgstr "Discul %1$s nu este acceptat cu acest binar QEMU"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s nu acceptă stocarea fișierelor"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -769,7 +769,7 @@ msgid ""
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 msgstr ""
 "Regula %1$s cu specificarea portului necesită specificarea protocolului, "
-"protocolul trebuind să fie fie unul dintre tcp(6), udp(17), dccp(33) sau "
+"protocolul trebuind să fie unul dintre tcp(6), udp(17), dccp(33) sau "
 "sctp(132)"
 
 #, c-format
@@ -1312,7 +1312,7 @@ msgstr "Lipsește elementul „<local>” pentru interfața de soclu „udp”"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
-"Numele „adaptorului” trebuie să fie specificat pentru sursa scsi hostdev"
+"numele „adaptorului” trebuie să fie specificat pentru sursa scsi hostdev"
 
 msgid "'address' is not supported for 'ramfb' video devices"
 msgstr "„address” nu este acceptată pentru dispozitivele video „ramfb”"
@@ -1327,17 +1327,17 @@ msgstr ""
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
-"Elementul „arch” nu poate fi utilizat în interiorul elementului „cpu” cu "
+"elementul „arch” nu poate fi utilizat în interiorul elementului „cpu” cu "
 "atributul „match”"
 
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
-"Suportul „blob” pentru dispozitivele virtio-gpu necesită un controlor (modul "
+"suportul „blob” pentru dispozitivele virtio-gpu necesită un controlor (modul "
 "de nucleu) de memorie memfd"
 
 #, c-format
 msgid "'block' nvram backing device '%1$s' doesn't exist"
-msgstr ""
+msgstr "Dispozitivul de suport nvram „block” „%1$s” nu există"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
@@ -1778,7 +1778,7 @@ msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "Elementul <config> este acceptat în prezent numai cu discurile „rbd”"
 
 msgid "<dataStore> feature available only with qcow2 images"
-msgstr ""
+msgstr "Caracteristica <dataStore> este disponibilă numai cu imaginile qcow2"
 
 msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> trebuie să specifice portul TCP pentru moment"
@@ -1798,10 +1798,10 @@ msgstr "<iotune> nu este acceptat cu bus='sd'"
 
 #, c-format
 msgid "<profile/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<profile/> necesită versiunea TPM „%1$s”"
 
 msgid "<reservations/> allowed only for lun devices"
-msgstr "Elementul <rezervations/> este permis numai pentru dispozitivele lun"
+msgstr "Elementul <reservations/> este permis numai pentru dispozitivele lun"
 
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "Elementul <snapshot> este acceptat în prezent numai cu discurile „rbd”"
@@ -1945,67 +1945,67 @@ msgstr ""
 "%5$s)?"
 
 msgid "Access connection"
-msgstr ""
+msgstr "Acces conexiune"
 
 msgid "Access denied"
 msgstr "Acces refuzat"
 
 msgid "Access domain"
-msgstr ""
+msgstr "Domeniu de acces"
 
 msgid "Access interface"
-msgstr ""
+msgstr "Acces interfață"
 
 msgid "Access network"
-msgstr ""
+msgstr "Acces rețea"
 
 msgid "Access network filter"
-msgstr ""
+msgstr "Acces filtru de rețea"
 
 msgid "Access network port"
-msgstr ""
+msgstr "Acces port de rețea"
 
 msgid "Access node device"
-msgstr ""
+msgstr "Acces dispozitiv nod"
 
 msgid "Access secret"
-msgstr ""
+msgstr "Acces secret"
 
 msgid "Access storage pool"
-msgstr ""
+msgstr "Acces fond de stocare"
 
 msgid "Access storage volume"
-msgstr ""
+msgstr "Acces volum de stocare"
 
 msgid "Accessing interface requires authorization"
-msgstr ""
+msgstr "Accesarea interfeței necesită autorizare"
 
 msgid "Accessing network filter requires authorization"
-msgstr ""
+msgstr "Accesarea filtrului de rețea necesită autorizare"
 
 msgid "Accessing network port requires authorization"
-msgstr ""
+msgstr "Accesarea portului de rețea necesită autorizare"
 
 msgid "Accessing network requires authorization"
-msgstr ""
+msgstr "Accesarea rețelei necesită autorizare"
 
 msgid "Accessing node device requires authorization"
-msgstr ""
+msgstr "Accesarea dispozitivului nodului necesită autorizare"
 
 msgid "Accessing secret requires authorization"
-msgstr ""
+msgstr "Accesarea secretului necesită autorizare"
 
 msgid "Accessing storage pool requires authorization"
-msgstr ""
+msgstr "Accesarea fondului de stocare necesită autorizare"
 
 msgid "Accessing storage volume requires authorization"
-msgstr ""
+msgstr "Accesarea volumului de stocare necesită autorizare"
 
 msgid "Accessing the connection requires authorization"
-msgstr ""
+msgstr "Accesarea conexiunii necesită autorizare"
 
 msgid "Accessing the domain requires authorization"
-msgstr ""
+msgstr "Accesarea domeniului necesită autorizare"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -2231,7 +2231,7 @@ msgid "Attempted double use of PCI Address %1$s"
 msgstr "Încercare de utilizare dublă a adresei PCI %1$s"
 
 msgid "Attempting to start nbdkit twice"
-msgstr "Attempting to start nbdkit twice"
+msgstr "Se încearcă pornirea lui nbdkit de două ori"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
@@ -2448,7 +2448,7 @@ msgstr "Adresele CCW nu sunt acceptate de tipul de mașină „%1$s”"
 
 #, c-format
 msgid "CH does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "CH nu acceptă modul de atribuire a dispozitivelor „%1$s”"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2907,7 +2907,7 @@ msgid "Can't set soft limit without hard limit"
 msgstr "Nu se poate defini o limită flexibilă fără o limită strictă"
 
 msgid "Can't setup disk for non-block device"
-msgstr "Nu se poate configura discul pentru un dispozitiv non-block"
+msgstr "Nu se poate configura discul pentru un dispozitiv ce nu este de blocuri"
 
 msgid "Can't setup disk without media"
 msgstr "Nu se poate configura discul fără suportul media"
@@ -3037,7 +3037,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot create %1$s"
-msgstr "Cannot create %1$s"
+msgstr "Nu se poate crea %1$s"
 
 msgid "Cannot create /dev"
 msgstr "Nu se poate crea „/dev”"
@@ -3109,7 +3109,7 @@ msgid "Cannot detach %1$s device with no alias"
 msgstr "Nu se poate detașa dispozitivul %1$s fără alias"
 
 msgid "Cannot detach platform device"
-msgstr ""
+msgstr "Nu se poate detașa dispozitivul platformei"
 
 msgid "Cannot determine balloon device path"
 msgstr ""
@@ -3298,7 +3298,7 @@ msgid "Cannot get storage controller name"
 msgstr "Nu se poate obține numele controlorului de stocare"
 
 msgid "Cannot hotplug platform device"
-msgstr ""
+msgstr "Nu se poate conecta la cald dispozitivul platformei"
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "Nu se poate inițializa firul local pentru identitatea curentă"
@@ -3560,9 +3560,11 @@ msgid ""
 "Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
 "alias of '%3$s'"
 msgstr ""
+"Nu se poate defini modelul CPU „%1$s” ca nume canonic al „%2$s” care este "
+"deja un alias al „%3$s”"
 
 msgid "Cannot set a base label with AppArmor"
-msgstr ""
+msgstr "Nu se poate defini o etichetă de bază cu AppArmor"
 
 msgid "Cannot set an empty mem_nodes set"
 msgstr "Nu se poate defini un set mem_nodes gol"
@@ -4033,10 +4035,10 @@ msgid "Checkpoint List"
 msgstr "Lista punctelor de control"
 
 msgid "Checkpoint domain"
-msgstr ""
+msgstr "Domeniul punctului de control"
 
 msgid "Checkpointing domain requires authorization"
-msgstr ""
+msgstr "Crearea punctului de control al domeniului necesită autorizare"
 
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
@@ -4319,7 +4321,7 @@ msgid "Controllers must use the 'ccid' address type"
 msgstr "Controlorii trebuie să utilizeze tipul de adresă „ccid”"
 
 msgid "Controlling domain init process requires authorization"
-msgstr ""
+msgstr "Controlul procesului de inițiere a domeniului necesită autorizare"
 
 msgid "Convert domain XML config to a native guest configuration format."
 msgstr ""
@@ -4327,7 +4329,7 @@ msgstr ""
 "configurare a invitaților."
 
 msgid "Convert domain XML to native config"
-msgstr "Convert domain XML to native config"
+msgstr "Conversia domeniului XML în configurație nativă"
 
 msgid "Convert native config to domain XML"
 msgstr "Convertește configurația nativă în XML de domeniu"
@@ -4349,7 +4351,7 @@ msgid "Copy failed"
 msgstr "Copierea a eșuat"
 
 msgid "Core dump a domain."
-msgstr "Creează un fișier cu imaginea din memorie a domeniului"
+msgstr "Creează un fișier cu imaginea din memorie a domeniului."
 
 msgid "Core(s) per socket:"
 msgstr "Nuclee pe soclu:"
@@ -4727,8 +4729,8 @@ msgstr "Nu s-a putut genera numele eth pentru container"
 #, c-format
 msgid "Could not generate medium name for the disk at: port:%1$d, slot:%2$d"
 msgstr ""
-"Nu s-a putut genera numele suportului pentru discul de la: port:%1$d, slot:"
-"%2$d"
+"Nu s-a putut genera numele suportului pentru discul de la: portul:%1$d, "
+"slotul:%2$d"
 
 msgid "Could not generate next class ID"
 msgstr "Nu s-a putut genera ID-ul clasei următoare"
@@ -4811,7 +4813,7 @@ msgstr "Nu s-a putut obține lista de interfețe"
 
 #, c-format
 msgid "Could not get interface list for '%1$s'"
-msgstr "Could not get interface list for '%1$s'"
+msgstr "Nu s-a putut obține lista de interfețe pentru „%1$s”"
 
 #, c-format
 msgid "Could not get iterator index for (internal) iterator ID %1$u"
@@ -5261,13 +5263,15 @@ msgstr "Nu s-a putut reveni la instantaneea „%1$s”: %2$s"
 #, c-format
 msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
 msgstr ""
+"Nu s-a putut executa «%1$s --print-info». Starea de ieșire: %2$d; stderr: "
+"%3$s"
 
 #, c-format
 msgid ""
 "Could not run '%1$s --reconfigure'. exitstatus: %2$d; Check error log '%3$s' "
 "for details."
 msgstr ""
-"Nu s-a putut executa „%1$s --reconfigure”. Starea de ieșire: %2$d; "
+"Nu s-a putut executa «%1$s --reconfigure». Starea de ieșire: %2$d; "
 "verificați jurnalul de erori „%3$s” pentru detalii."
 
 #, c-format
@@ -5275,7 +5279,7 @@ msgid ""
 "Could not run '%1$s' to create config files. exitstatus: %2$d;\n"
 "Error: %3$s"
 msgstr ""
-"Nu s-a putut executa „%1$s” pentru a crea fișierele de configurare. Starea "
+"Nu s-a putut executa «%1$s» pentru a crea fișierele de configurare. Starea "
 "de ieșire: %2$d;\n"
 "eroare: %3$s"
 
@@ -5283,7 +5287,7 @@ msgstr ""
 msgid ""
 "Could not run '%1$s'. exitstatus: %2$d; Check error log '%3$s' for details."
 msgstr ""
-"Nu s-a putut executa „%1$s”. Starea de ieșire: %2$d; verificați jurnalul de "
+"Nu s-a putut executa «%1$s». Starea de ieșire: %2$d; verificați jurnalul de "
 "erori „%3$s” pentru detalii."
 
 #, c-format
@@ -5294,7 +5298,7 @@ msgid "Could not set UUID"
 msgstr "Nu s-a putut defini UUID-ul"
 
 msgid "Could not set disk quota"
-msgstr "Could not set disk quota"
+msgstr "Nu s-a putut stabili cota de disc"
 
 #, c-format
 msgid ""
@@ -5474,13 +5478,13 @@ msgid "Create a vol."
 msgstr "Creează un volum."
 
 msgid "Create network filter binding"
-msgstr ""
+msgstr "Creează legătura filtrului de rețea"
 
 msgid "Create network port"
-msgstr ""
+msgstr "Creează portul de rețea"
 
 msgid "Create storage volume"
-msgstr ""
+msgstr "Creează volumul de stocare"
 
 #, c-format
 msgid "Create the dir %1$s"
@@ -5494,16 +5498,16 @@ msgid "Created bridge %1$s with attached device %2$s\n"
 msgstr "S-a creat puntea de acces %1$s cu dispozitivul atașat %2$s\n"
 
 msgid "Creating network filter binding requires authorization"
-msgstr ""
+msgstr "Crearea legăturii filtrului de rețea necesită autorizare"
 
 msgid "Creating network port configuration requires authorization"
-msgstr ""
+msgstr "Crearea configurației portului de rețea necesită autorizare"
 
 msgid "Creating non-file volumes is not supported"
 msgstr "Crearea volumelor care nu sunt fișiere nu este acceptată"
 
 msgid "Creating storage volume requires authorization"
-msgstr ""
+msgstr "Crearea volumului de stocare necesită autorizare"
 
 msgid "Creation Time"
 msgstr "Data creării"
@@ -5651,34 +5655,34 @@ msgid "Delete an IOThread from the guest domain."
 msgstr "Șterge un IOThread din domeniul invitat."
 
 msgid "Delete domain"
-msgstr ""
+msgstr "Șterge domeniul"
 
 msgid "Delete interface"
-msgstr ""
+msgstr "Șterge interfața"
 
 msgid "Delete network"
-msgstr ""
+msgstr "Șterge rețeaua"
 
 msgid "Delete network filter"
-msgstr ""
+msgstr "Șterge filtrul de rețea"
 
 msgid "Delete network filter binding"
-msgstr ""
+msgstr "Șterge legătura filtrului de rețea"
 
 msgid "Delete network port"
-msgstr ""
+msgstr "Șterge portul de rețea"
 
 msgid "Delete node device"
-msgstr ""
+msgstr "Șterge dispozitivul nodului"
 
 msgid "Delete secret"
-msgstr ""
+msgstr "Șterge secretul"
 
 msgid "Delete storage pool"
-msgstr ""
+msgstr "Șterge fondul de stocare"
 
 msgid "Delete storage volume"
-msgstr ""
+msgstr "Șterge volumul de stocare"
 
 msgid "Delete the specified network port."
 msgstr "Șterge portul de rețea specificat."
@@ -5687,34 +5691,34 @@ msgid "Deleted"
 msgstr "Șters"
 
 msgid "Deleting domain configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației domeniului necesită autorizare"
 
 msgid "Deleting interface configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației interfeței necesită autorizare"
 
 msgid "Deleting network configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației de rețea necesită autorizare"
 
 msgid "Deleting network filter binding requires authorization"
-msgstr ""
+msgstr "Ștergerea legăturii filtrului de rețea necesită autorizare"
 
 msgid "Deleting network filter configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației filtrului de rețea necesită autorizare"
 
 msgid "Deleting network port configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației portului de rețea necesită autorizare"
 
 msgid "Deleting node device driver requires authorization"
-msgstr ""
+msgstr "Ștergerea controlorului de dispozitiv al nodului necesită autorizare"
 
 msgid "Deleting secret configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației secrete necesită autorizare"
 
 msgid "Deleting storage pool configuration requires authorization"
-msgstr ""
+msgstr "Ștergerea configurației fondului de stocare necesită autorizare"
 
 msgid "Deleting storage volume requires authorization"
-msgstr ""
+msgstr "Ștergerea volumului de stocare necesită autorizare"
 
 msgid ""
 "Depending on whether run with or without options, the command fetches or "
@@ -5769,7 +5773,7 @@ msgid "Detach network interface."
 msgstr "Detașează interfața de rețea."
 
 msgid "Detach node device"
-msgstr ""
+msgstr "Detașează dispozitivul nodului"
 
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr ""
@@ -5777,13 +5781,13 @@ msgstr ""
 "l atribui unui domeniu."
 
 msgid "Detaching node device driver requires authorization"
-msgstr ""
+msgstr "Detașarea controlorului de dispozitiv al nodului necesită autorizare"
 
 msgid "Detect storage pools"
-msgstr ""
+msgstr "Detectează fondurile de stocare"
 
 msgid "Detecting storage pools requires authorization"
-msgstr ""
+msgstr "Detectarea fondurilor de stocare necesită autorizare"
 
 msgid "Device"
 msgstr "Dispozitiv"
@@ -5861,8 +5865,8 @@ msgid ""
 "Device alias was not set for PCI controller with index '%1$u' required for "
 "device at address '%2$s'"
 msgstr ""
-"Device alias was not set for PCI controller with index '%1$u' required for "
-"device at address '%2$s'"
+"Numele-alias al dispozitivului nu a fost definit pentru controlorul PCI cu "
+"indicele „%1$u” necesar pentru dispozitivul de la adresa „%2$s”"
 
 msgid "Device attached successfully\n"
 msgstr "Dispozitiv atașat cu succes\n"
@@ -6262,7 +6266,7 @@ msgstr ""
 "Informații de domeniu ale fișierului de stare de salvare gestionate în XML"
 
 msgid "Domain init control"
-msgstr ""
+msgstr "Controlul inițializării domeniului"
 
 msgid "Domain interface"
 msgstr "Interfața domeniului"
@@ -6390,7 +6394,7 @@ msgid "Done.\n"
 msgstr "Gata.\n"
 
 msgid "Download length is too large"
-msgstr ""
+msgstr "Lungimea descărcării este prea mare"
 
 msgid "Download volume contents to a file"
 msgstr "Descarcă conținutul volumului într-un fișier"
@@ -6415,131 +6419,143 @@ msgid "Dump"
 msgstr "Transferă"
 
 msgid "Dump XML for a domain checkpoint"
-msgstr ""
+msgstr "Transferă XML pentru un punct de control al domeniului"
 
 msgid "Dump XML for a domain snapshot"
-msgstr ""
+msgstr "Transferă XML pentru o imagine instantanee a domeniului"
 
 msgid "Dump XML for an ongoing domain block backup job"
 msgstr ""
+"Transferă XML pentru o operație de copie de rezervă a blocului de domeniu în "
+"curs"
 
 msgid "Dump XML of domain information for a managed save state file to stdout."
 msgstr ""
+"Transferă XML de informații despre domeniu pentru un fișier de stare de "
+"salvare gestionat către ieșirea standard."
 
 msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr ""
+"Transferă XML de informații de domeniu pentru un fișier de stare salvat "
+"către ieșirea standard."
 
 msgid "Dump domain"
-msgstr ""
+msgstr "Transferă domeniul"
 
 msgid "Dump failed"
-msgstr ""
+msgstr "Transferarea a eșuat"
 
 msgid "Dumping domain corefile requires authorization"
-msgstr ""
+msgstr "Transferarea fișierului de bază al domeniului necesită autorizare"
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%1$u'"
-msgstr ""
+msgstr "Informații de celulă NUMA duplicate pentru celula cu id-ul „%1$u”"
 
 #, c-format
 msgid "Duplicate USB address bus %1$u port %2$s"
-msgstr ""
+msgstr "Adresă USB duplicată magistrală %1$u port %2$s"
 
 #, c-format
 msgid "Duplicate USB controllers with index %1$u"
-msgstr ""
+msgstr "Controlori USB duplicați cu indexul %1$u"
 
 #, c-format
 msgid "Duplicate USB hub on bus %1$u port %2$s"
-msgstr ""
+msgstr "Hub USB duplicat pe magistrala %1$u port %2$s"
 
 #, c-format
 msgid "Duplicate block info for '%1$s'"
-msgstr ""
+msgstr "Informații duplicate pentru blocul „%1$s”"
 
 #, c-format
 msgid "Duplicate cache type in resctrl for level %1$u"
-msgstr ""
+msgstr "Tip de cache duplicat în resctrl pentru nivelul %1$u"
 
 #, c-format
 msgid "Duplicate hash table key '%1$s'"
-msgstr ""
+msgstr "Cheie duplicată a tabelului de sume de control (hash) „%1$s"
 
 msgid "Duplicate info for NUMA latencies"
-msgstr ""
+msgstr "Informații duplicate pentru latențele NUMA"
 
 #, c-format
 msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
+msgstr "Cartografiere duplicată pentru fluxul iothread „%1$u”"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
-msgstr ""
+msgstr "Controlor de securitate duplicat %1$s"
 
 msgid "Duration not supported. Use 0 for now"
-msgstr ""
+msgstr "Durata nu este acceptată. Utilizați 0 pentru moment"
 
 msgid "EOF notify callback must be supplied"
-msgstr ""
+msgstr "Trebuie furnizată reapelarea de notificare EOF"
 
 msgid "EOF on stdin"
-msgstr ""
+msgstr "EOF la stdin"
 
 msgid "EOF on stdout"
-msgstr ""
+msgstr "EOF la stdout"
 
 msgid "Echo back arguments, possibly with quoting. Used for internal testing."
 msgstr ""
+"Redă argumentele, eventual cu punerea lor între ghilimele. Utilizat pentru "
+"teste interne."
 
 msgid "Edit the XML configuration for a domain."
-msgstr ""
+msgstr "Editează configurația XML pentru un domeniu."
 
 msgid "Edit the XML configuration for a network filter."
-msgstr ""
+msgstr "Editează configurația XML pentru un filtru de rețea."
 
 msgid "Edit the XML configuration for a network."
-msgstr ""
+msgstr "Editează configurația XML pentru o rețea."
 
 msgid "Edit the XML configuration for a physical host interface."
-msgstr ""
+msgstr "Editează configurația XML pentru o interfață de gazdă fizică."
 
 msgid "Edit the XML configuration for a storage pool."
-msgstr ""
+msgstr "Editează configurația XML pentru un fond de stocare."
 
 msgid "Edit the domain XML associated with a saved state file"
-msgstr ""
+msgstr "Editează XML de domeniu asociat cu un fișier de stare salvat"
 
 msgid "Edit the domain XML associated with the managed save state file"
 msgstr ""
+"Editează XML de domeniu asociat cu fișierul de stare de salvare gestionat"
 
 msgid "Edit the domain checkpoint XML for a named checkpoint"
 msgstr ""
+"Editează XML-ul punctului de control al domeniului pentru un punct de "
+"control numit"
 
 msgid "Edit the domain snapshot XML for a named snapshot"
-msgstr ""
+msgstr "Editează XML-ul instantaneei de domeniu pentru o instantanee numită"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr ""
+"Fie „name”, fie „parent” trebuie specificate pentru adaptorul „scsi_host"
 
 #, c-format
 msgid "Either --%1$s or --%2$s must be provided"
-msgstr ""
+msgstr "Trebuie furnizate fie „--%1$s”, fie „--%2$s”"
 
 msgid "Eject the media"
-msgstr ""
+msgstr "Ejectează suportul media"
 
 msgid "Element 'memnode' is invalid without any guest NUMA cells"
 msgstr "Elementul „memnode” nu este valid fără celule NUMA invitate"
 
 msgid "Empty cpu list for pinning"
-msgstr ""
+msgstr "Listă de CPU goală pentru fixare"
 
 msgid "Empty iothread cpumap list for pinning"
-msgstr ""
+msgstr "Listă de cpumap iothread goală pentru fixare"
 
 msgid "Empty prefix name for resctrl monitor"
-msgstr ""
+msgstr "Nume de prefix gol pentru monitorul resctrl"
 
 #, c-format
 msgid "Empty response during %1$s"
@@ -6547,158 +6563,169 @@ msgstr "Răspuns gol în timpul %1$s"
 
 #, c-format
 msgid "Emulator '%1$s' does not support arch '%2$s'"
-msgstr ""
+msgstr "Emulatorul „%1$s” nu acceptă arhitectura „%2$s”"
 
 #, c-format
 msgid "Emulator '%1$s' does not support machine type '%2$s'"
-msgstr ""
+msgstr "Emulatorul „%1$s” nu acceptă tipul de mașină „%2$s”"
 
 #, c-format
 msgid "Emulator '%1$s' does not support os type '%2$s'"
-msgstr ""
+msgstr "Emulatorul „%1$s” nu acceptă tipul de SO „%2$s”"
 
 #, c-format
 msgid "Emulator '%1$s' does not support virt type '%2$s'"
-msgstr ""
+msgstr "Emulatorul „%1$s” nu acceptă tipul de virtualizare „%2$s”"
 
 msgid "Enabled"
 msgstr "Activat"
 
 msgid "End of file from agent socket"
-msgstr ""
+msgstr "Sfârșit de fișier de la soclul agentului"
 
 #, c-format
 msgid "End of file from qemu monitor (vm='%1$s')"
-msgstr ""
+msgstr "Sfârșit de fișier din monitorul qemu (vm='%1$s')"
 
 msgid "End of file while reading data"
-msgstr ""
+msgstr "Sfârșit de fișier în timpul citirii datelor"
 
 #, c-format
 msgid "End of file while reading data: %1$s"
-msgstr ""
+msgstr "Sfârșit de fișier în timpul citirii datelor: %1$s"
 
 msgid "End of file while writing data"
-msgstr ""
+msgstr "Sfârșit de fișier în timpul scrierii datelor"
 
 msgid "Ensure data previously on a volume is not accessible to future reads"
 msgstr ""
+"Se asigură că datele aflate anterior pe un volum nu sunt accesibile "
+"citirilor viitoare"
 
 #, c-format
 msgid "Enter %1$s's password for %2$s"
-msgstr ""
+msgstr "Introduceți parola lui %1$s pentru %2$s"
 
 msgid "Enter new value for secret:"
-msgstr ""
+msgstr "Introduceți noua valoare pentru secret:"
 
 #, c-format
 msgid "Enter username for %1$s"
-msgstr ""
+msgstr "Introduceți numele de utilizator pentru %1$s"
 
 #, c-format
 msgid "Enter username for %1$s [%2$s]"
-msgstr ""
+msgstr "Introduceți numele de utilizator pentru %1$s [%2$s]"
 
 msgid "Ephemeral secrets are loaded"
-msgstr ""
+msgstr "Secretele efemere sunt încărcate"
 
 #, c-format
 msgid "Error adding route to %1$s"
-msgstr ""
+msgstr "Eroare la adăugarea rutei către %1$s"
 
 msgid "Error checking for disk label, failed to get disk partition information"
 msgstr ""
+"Eroare la verificarea etichetei discului, nu s-a reușit să se obțină "
+"informații despre partiția discului"
 
 msgid "Error creating initial configuration"
-msgstr ""
+msgstr "Eroare la crearea configurației inițiale"
 
 #, c-format
 msgid "Error from child process creating '%1$s'"
-msgstr ""
+msgstr "Eroare de la procesul copil care creează „%1$s”"
 
 #, c-format
 msgid "Error from child process opening '%1$s'"
-msgstr ""
+msgstr "Eroare de la procesul copil care deschide „%1$s”"
 
 msgid "Error getting 'total-bytes' in reply of guest-get-fsinfo"
 msgstr ""
+"Eroare în obținerea „total-bytes” (numărul total de octeți) în răspunsul "
+"guest-get-fsinfo"
 
 msgid "Error getting 'used-bytes' in reply of guest-get-fsinfo"
 msgstr ""
+"Eroare în obținerea „used-bytes” (numărul de octeți utilizați) în răspunsul "
+"guest-get-fsinfo"
 
 #, c-format
 msgid "Error getting physical function's '%1$s' virtual_functions"
-msgstr ""
+msgstr "Eroare în obținerea funcției fizice „%1$s” virtual_functions"
 
 msgid "Error in xmlAddPrevSibling"
-msgstr ""
+msgstr "Eroare în xmlAddPrevSibling"
 
 msgid "Error in xmlNewProp"
-msgstr ""
+msgstr "Eroare în xmlNewProp"
 
 msgid "Error message:"
-msgstr ""
+msgstr "Mesaj de eroare:"
 
 msgid "Error notify callback must be supplied"
-msgstr ""
+msgstr "Reapelarea de notificare a erorii trebuie să fie furnizată"
 
 #, c-format
 msgid "Error opening file %1$s"
-msgstr ""
+msgstr "Eroare la deschiderea fișierului %1$s"
 
 #, c-format
 msgid "Error reading secret: %1$s"
-msgstr ""
+msgstr "Eroare la citirea secretului: %1$s"
 
 #, c-format
 msgid "Error removing IP address from %1$s"
-msgstr ""
+msgstr "Eroare la eliminarea adresei IP din %1$s"
 
 msgid "Error while building firewall"
-msgstr ""
+msgstr "Eroare în timpul construirii paravanului de protecție"
 
 #, c-format
 msgid "Error while building firewall: %1$s"
-msgstr ""
+msgstr "Eroare în timpul construirii paravanului de protecție: %1$s"
 
 #, c-format
 msgid "Error while closing medium, rc=%1$08x"
-msgstr ""
+msgstr "Eroare la închiderea mediului, rc=%1$08x"
 
 #, c-format
 msgid "Error while creating diff storage, rc=%1$08x"
-msgstr ""
+msgstr "Eroare în timpul creării stocării diff, rc=%1$08x"
 
 msgid "Error while processing agent IO"
-msgstr ""
+msgstr "Eroare în timpul procesării agentului de In/Ieș"
 
 msgid "Error while processing command's IO"
-msgstr ""
+msgstr "Eroare în timpul procesării In/Ieș comenzii"
 
 #, c-format
 msgid "Error while processing monitor IO (vm='%1$s')"
-msgstr ""
+msgstr "Eroare în timpul procesării In/Ieș monitorului (vm='%1$s')"
 
 msgid "Error while reading /proc/cgroups"
-msgstr ""
+msgstr "Eroare în timpul citirii „/proc/cgroups”"
 
 msgid "Error while reading the domain name"
-msgstr ""
+msgstr "Eroare la citirea numelui de domeniu"
 
 #, c-format
 msgid "Error while removing hostonly network interface, rc=%1$08x"
 msgstr ""
+"Eroare la eliminarea interfeței de rețea exclusiv gazdă „ hostonly”, "
+"rc=%1$08x"
 
 #, c-format
 msgid "Escape character is %1$s"
-msgstr ""
+msgstr "Caracterul de eludare este %1$s"
 
 #, c-format
 msgid "Ethernet controller index %1$d out of [0..%2$d] range"
 msgstr ""
+"Indicele controlorului Ethernet %1$d este în afara intervalului [0..%2$d]"
 
 msgid "Event thread is already running"
-msgstr ""
+msgstr "Firul evenimentului rulează deja"
 
 msgid "Event wakeup"
 msgstr "Eveniment de trezire"
@@ -6707,1571 +6734,1677 @@ msgid ""
 "Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous "
 "ranges or ranges not starting from 0 are not allowed"
 msgstr ""
+"Este permis exact un element „cell” per celula NUMA invitată, nu sunt "
+"permise intervale necontigue sau intervale care nu încep de la 0"
 
 #, c-format
 msgid "Exceeded max iface limit %1$d"
-msgstr ""
+msgstr "S-a depășit limita maximă de iface %1$d"
 
 msgid "Executing new processes is not supported on Win32 platform"
-msgstr ""
+msgstr "Executarea proceselor noi nu este acceptată pe platforma Win32"
 
 #, c-format
 msgid "Existing device %1$s has no type"
-msgstr ""
+msgstr "Dispozitivul existent %1$s nu are niciun tip"
 
 #, c-format
 msgid "Existing device %1$s is already a bridge"
-msgstr ""
+msgstr "Dispozitivul existent %1$s este deja o punte"
 
 msgid "Exit after timeout period"
-msgstr ""
+msgstr "Ieșire după perioada de așteptare"
 
 #, c-format
 msgid "Expected a /dev path for '%1$s'"
-msgstr ""
+msgstr "Se aștepta o rută „/dev” pentru „%1$s”"
 
 #, c-format
 msgid "Expected an interface of type 'network' not '%1$s'"
-msgstr ""
+msgstr "Se aștepta o interfață de tip „rețea” nu „%1$s”"
 
 msgid "Expected at least one file descriptor"
-msgstr ""
+msgstr "Se aștepta cel puțin un descriptor de fișier"
 
 #, c-format
 msgid "Expected caps for '%1$s' but saw '%2$s'"
-msgstr ""
+msgstr "Se așteptau capacități pentru „%1$s”, dar s-au găsit „%2$s”"
 
 msgid "Expected downtime:"
-msgstr ""
+msgstr "Timpul de inactivitate preconizat:"
 
 msgid "Expected exactly 1 host for the storage pool"
-msgstr ""
+msgstr "Se așteaptă exact O gazdă pentru grupul de stocare"
 
 #, c-format
 msgid "Expecting %1$d FD names but got %2$u"
-msgstr ""
+msgstr "Se așteptau %1$d nume FD, dar s-au primit %2$u"
 
 #, c-format
 msgid "Expecting '%1$s' to be a %2$s host but found a %3$s host"
-msgstr ""
+msgstr "Se aștepta ca „%1$s” să fie o gazdă %2$s, dar s-a găsit o gazdă %3$s"
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
 msgstr ""
+"Se aștepta tipul API VI „HostAgent” sau „VirtualCenter”, dar s-a găsit „%1$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „ata-hardDisk” sau „disk”, dar s-a "
+"găsit „%2$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'buslogic' or 'lsilogic' or 'lsisas1068' or "
 "'pvscsi' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „buslogic” sau „lsilogic” sau "
+"„lsisas1068” sau „pvscsi”, dar s-a găsit „%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'cdrom-image' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „cdrom-image”, dar s-a găsit „%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'device' or 'file' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „device” sau „file”, dar s-a găsit "
+"„%2$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'device', 'file' or 'pipe' or 'network' but "
 "found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „device”, „file” sau „pipe”, sau "
+"„network”, dar s-a găsit „%2$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'generated' or 'static' or 'vpx' but found "
 "'%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „generated” sau „static” sau „vpx”, "
+"dar s-a găsit „%2$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „scsi-hardDisk” sau „disk”, dar s-a "
+"găsit „%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be 'server' or 'client' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „server” sau „client”, dar s-a "
+"găsit „%2$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or "
 "'e1000' or 'e1000e' but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie „vlance” sau „vmxnet”, sau „vmxnet3”"
+", sau „e1000”, sau „e1000e”, dar s-a găsit „%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry '%1$s' to be MAC address but found '%2$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „%1$s” să fie adresa MAC, dar s-a găsit „%2$s”"
 
 #, c-format
 msgid "Expecting VMX entry 'config.version' to be 8 but found %1$lld"
 msgstr ""
+"Se aștepta ca intrarea VMX „config.version” să fie 8, dar s-a găsit %1$lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'memsize' to be an unsigned integer (multiple of 4) but "
 "found %1$lld"
 msgstr ""
+"Se aștepta ca intrarea VMX „memsize” să fie un număr întreg fără semn ("
+"multiplu de 4), dar s-a găsit %1$lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'numvcpus' to be an unsigned integer greater than 0 but "
 "found %1$lld"
 msgstr ""
+"Se aștepta ca intrarea VMX „numvcpus” să fie un număr întreg fără semn mai "
+"mare decât 0, dar s-a găsit %1$lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%1$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „sched.cpu.affinity” să fie o listă de numere "
+"întregi fără semn separate prin virgule, dar s-a găsit „%1$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
 "as 'numvcpus' (%1$lld) but found only %2$u value(s)"
 msgstr ""
+"Se aștepta ca intrarea VMX „sched.cpu.affinity” să conțină cel puțin la fel "
+"de multe valori ca „numvcpus” (%1$lld), dar s-a(u) găsit doar %2$u "
+"valoare(valori)"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.shares' to be an unsigned integer or 'low', "
 "'normal' or 'high' but found '%1$s'"
 msgstr ""
+"Se aștepta ca intrarea VMX „sched.cpu.shares” să fie un număr întreg fără "
+"semn sau „low”, „normal” sau „high”, dar s-a găsit „%1$s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'virtualHW.version' to be 4 or higher but found %1$lld"
 msgstr ""
+"Se așteaptă ca intrarea VMX „virtualHW.version” să fie 4 sau mai mare, dar s-"
+"a găsit %1$lld"
 
 #, c-format
 msgid "Expecting domain XML CPU mode 'custom' but found '%1$s'"
-msgstr ""
+msgstr "Se aștepta modul CPU XML al domeniului „custom”, dar s-a găsit „%1$s”"
 
 #, c-format
 msgid "Expecting domain XML CPU sockets per core as %1$d but found %2$d"
 msgstr ""
+"Se aștepta ca numărul de socluri CPU per nucleu din domeniul XML să fie %1$"
+"d, dar s-a găsit %2$d"
 
 #, c-format
 msgid ""
 "Expecting domain XML attribute 'arch' of entry 'os/type' to be 'i686' or "
 "'x86_64' but found '%1$s'"
 msgstr ""
+"Se aștepta ca atributul „arch” al intrării „os/type” din domeniu XML să fie "
+"„i686” sau „x86_64”, dar s-a găsit „%1$s”"
 
 #, c-format
 msgid ""
 "Expecting domain XML attribute 'cpuset' of entry 'vcpu' to contain at least "
 "%1$d CPU(s)"
 msgstr ""
+"Se aștepta ca atributul „cpuset” al intrării „vcpu” din domeniul XML să "
+"conțină cel puțin %1$d CPU(s)"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
 "with 'fd'"
 msgstr ""
+"Se așteaptă ca atributul „dev” din intrarea „devices/disk/target” al "
+"domeniului XML să înceapă cu „fd”"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
 "with 'hd'"
 msgstr ""
+"Se așteaptă ca atributul „dev” din intrarea „devices/disk/target” al "
+"domeniului XML să înceapă cu „hd”"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
 "with 'sd'"
 msgstr ""
+"Se așteaptă ca atributul „dev” din intrarea „devices/disk/target” al "
+"domeniului XML să înceapă cu „sd”"
 
 #, c-format
 msgid ""
 "Expecting domain XML attribute 'model' of entry 'controller' to be "
 "'buslogic' or 'lsilogic' or 'lsisas1068' or 'vmpvscsi' but found '%1$s'"
 msgstr ""
+"Se aștepta ca atributul „model” al intrării „controller” al domeniului XML "
+"să fie „buslogic” sau „lsilogic” sau „lsisas1068” sau „vmpvscsi”, dar s-a "
+"găsit „%1$s”"
 
 #, c-format
 msgid ""
 "Expecting domain XML entry 'devices/interface/model' to be 'vlance' or "
 "'vmxnet' or 'vmxnet2' or 'vmxnet3' or 'e1000' or 'e1000e' but found '%1$s'"
 msgstr ""
+"Se aștepta ca intrarea„devices/interface/model” a domeniului în XML să fie "
+"„vlance” sau „vmxnet” sau „vmxnet2” sau „vmxnet3” sau „e1000” sau „e1000e”, "
+"dar s-a găsit „%1$s”"
 
 msgid "Expecting domain XML entry 'vcpu' to be greater than 0"
 msgstr ""
+"Se aștepta ca intrarea „vcpu” din domeniul în XML să fie mai mare decât 0"
 
 #, c-format
 msgid ""
 "Expecting product 'gsx' or 'esx' or 'embeddedEsx' or 'vpx' but found '%1$s'"
 msgstr ""
+"Se aștepta produsul „gsx” sau „esx” sau „embeddedEsx” sau „vpx”, dar s-a "
+"găsit „%1$s”"
 
 #, c-format
 msgid "Expecting source '%1$s' of first file-based harddisk to be a VMDK image"
 msgstr ""
+"Se aștepta ca sursa „%1$s” a primului disc dur bazat pe fișiere să fie o "
+"imagine VMDK"
 
 #, c-format
 msgid "Expecting type '%1$s' but found '%2$s'"
-msgstr ""
+msgstr "Se aștepta tipul „%1$s”, dar s-a găsit „%2$s”"
 
 #, c-format
 msgid "Expecting type to begin with 'ArrayOf' but found '%1$s'"
-msgstr ""
+msgstr "Se aștepta ca tipul să înceapă cu „ArrayOf”, dar s-a găsit „%1$s”"
 
 #, c-format
 msgid "Expecting virt type to be '%1$s' but found '%2$s'"
-msgstr ""
+msgstr "Se aștepta ca tipul de virtualizare să fie „%1$s”, dar s-a găsit „%2$s”"
 
 msgid "Expiry Time"
-msgstr ""
+msgstr "Data expirării"
 
 msgid ""
 "Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
+"Numele explicit al gazdei de destinație este necesar pentru migrarea TLS pe "
+"soclu UNIX"
 
 msgid "Extended attributes are not supported on this system"
-msgstr ""
+msgstr "Atributele extinse nu sunt acceptate pe acest sistem"
 
 #, c-format
 msgid "Extra data in disabled network '%1$s'"
-msgstr ""
+msgstr "Date suplimentare în rețeaua dezactivată „%1$s”"
 
 msgid "Extract the checkpoint's parent, if any"
-msgstr ""
+msgstr "Extrage părintele punctului de control, dacă există"
 
 msgid "Extract the snapshot's parent, if any"
-msgstr ""
+msgstr "Extrageți părintele instantaneei, dacă există"
 
 msgid "FAIL"
-msgstr ""
+msgstr "EȘEC"
 
 #, c-format
 msgid "FDC bus index %1$d out of [0] range"
-msgstr ""
+msgstr "Indicele magistralei FDC %1$d este în afara intervalului [0]"
 
 #, c-format
 msgid "FDC controller index %1$d out of [0] range"
-msgstr ""
+msgstr "Indicele controlorului FDC %1$d este în afara intervalului [0]"
 
 #, c-format
 msgid "FDC unit index %1$d out of [0..1] range"
-msgstr ""
+msgstr "Indicele unității FDC %1$d este în afara intervalului [0..1]"
 
 msgid "Fail to create socket for incoming migration"
-msgstr ""
+msgstr "Eșec la crearea soclului pentru migrarea recepționată"
 
 msgid "Failed"
-msgstr ""
+msgstr "Eșuare"
 
 msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
+"Propagarea dezactivării montării din sistemul de fișiere rădăcină a eșuat"
 
 #, c-format
 msgid "Failed new node mode for target '%1$s'"
-msgstr ""
+msgstr "Modul nod nou pentru ținta „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed set TLS x509 credentials: %1$s"
-msgstr ""
+msgstr "Definirea acreditărilor TLS x509 a eșuat: %1$s"
 
 #, c-format
 msgid "Failed testunitready: %1$s"
-msgstr ""
+msgstr "testunitready eșuat: %1$s"
 
 msgid "Failed to accept migration connection"
-msgstr ""
+msgstr "Acceptarea conexiunii de migrare a eșuat"
 
 #, c-format
 msgid "Failed to access '%1$s'"
-msgstr ""
+msgstr "Accesul la „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to acquire inhibitor: %1$s"
-msgstr ""
+msgstr "Preluarea inhibitorului a eșuat: %1$s"
 
 msgid "Failed to acquire lock"
-msgstr ""
+msgstr "Obținerea blocării a eșuat"
 
 #, c-format
 msgid "Failed to acquire lock: %1$s"
-msgstr ""
+msgstr "Obținerea blocării a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to acquire pid file '%1$s'"
-msgstr ""
+msgstr "Obținerea fișierului pid „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to add %1$s controller type definition"
-msgstr ""
+msgstr "Adăugarea definiției tipului de controlor %1$s a eșuat"
 
 #, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
 msgstr ""
+"Adăugarea adresei IP %1$s în memoria cache de adrese IP pentru interfața %2$"
+"s a eșuat"
 
 #, c-format
 msgid "Failed to add IP address %1$s/%2$d%3$s%4$s%5$s%6$s to %7$s"
-msgstr ""
+msgstr "Adăugarea adresei IP %1$s/%2$d%3$s%4$s%5$s%6$s la %7$s a eșuat"
 
 #, c-format
 msgid "Failed to add PCI device %1$s to the inactive list"
 msgstr ""
+"Adăugarea dispozitivului PCI %1$s la lista de dispozitive inactive a eșuat"
 
 #, c-format
 msgid "Failed to add capability %1$s: %2$d"
-msgstr ""
+msgstr "Adăugarea capabilității %1$s a eșuat: %2$d"
 
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
 msgstr ""
+"Adăugarea controlorului „%1$s” la interfața driver_override a dispozitivului "
+"PCI „%2$s” a eșuat"
 
 msgid "Failed to add netlink event handle watch"
-msgstr ""
+msgstr "Adăugarea monitorului de gestionare a evenimentului netlink a eșuat"
 
 msgid "Failed to add signal handle watch"
-msgstr ""
+msgstr "Adăugarea monitorului de gestionare a semnalului a eșuat"
 
 #, c-format
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
 msgstr ""
+"Adăugarea controlorului de stocare a eșuat (nume: %1$s, tip de magistrală: "
+"%2$d)"
 
 msgid "Failed to allocate AF_VSOCK socket"
-msgstr ""
+msgstr "Alocarea soclului AF_VSOCK a eșuat"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %1$s"
-msgstr ""
+msgstr "Alocarea listei de dispozitive PCI a eșuat: %1$s"
 
 msgid "Failed to allocate XML buffer"
-msgstr ""
+msgstr "Alocarea memoriei tampon pentru XML a eșuat"
 
 #, c-format
 msgid "Failed to allocate slirp for '%1$s'"
-msgstr ""
+msgstr "Alocarea slirp pentru „%1$s” a eșuat"
 
 msgid "Failed to allocate tty"
-msgstr ""
+msgstr "Alocarea terminalului tty a eșuat"
 
 #, c-format
 msgid "Failed to apply capabilities: %1$d"
-msgstr ""
+msgstr "Aplicarea capacităților a eșuat: %1$d"
 
 #, c-format
 msgid "Failed to apply firewall command '%1$s': %2$s"
-msgstr ""
+msgstr "Aplicarea comenzii paravanului de protecție „%1$s” a eșuat: %2$s"
 
 #, c-format
 msgid "Failed to attach device from %1$s"
-msgstr ""
+msgstr "Atașarea dispozitivului de la %1$s a eșuat"
 
 msgid "Failed to attach disk"
-msgstr ""
+msgstr "Atașarea discului a eșuat"
 
 msgid "Failed to attach interface"
-msgstr ""
+msgstr "Atașarea interfeței a eșuat"
 
 #, c-format
 msgid "Failed to attach to pid %1$u"
-msgstr ""
+msgstr "Atașarea la pid %1$u a eșuat"
 
 #, c-format
 msgid "Failed to authenticate as 'none': %1$s"
-msgstr ""
+msgstr "Autentificarea ca „none” a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to autostart VM '%1$s': %2$s"
-msgstr ""
+msgstr "Autopornirea MV „%1$s” a eșuat: %2$s"
 
 #, c-format
 msgid "Failed to autostart storage pool '%1$s': %2$s"
-msgstr ""
+msgstr "Autopornirea fondului de stocare „%1$s” a eșuat: %2$s"
 
 msgid "Failed to balloon domain0 memory"
-msgstr ""
+msgstr "Mărirea memoriei domeniului0 a eșuat"
 
 msgid "Failed to begin network config change transaction"
-msgstr ""
+msgstr "Inițierea tranzacției de modificare a configurației rețelei a eșuat"
 
 #, c-format
 msgid "Failed to bind %1$s on to %2$s"
-msgstr ""
+msgstr "Nu s-a reușit asocierea %1$s la %2$s"
 
 #, c-format
 msgid "Failed to bind %1$s to new root %2$s"
-msgstr ""
+msgstr "Asocierea %1$s la noua rădăcină %2$s a eșuat"
 
 #, c-format
 msgid "Failed to bind cgroup '%1$s' on '%2$s'"
-msgstr ""
+msgstr "Asocierea cgroup „%1$s” la „%2$s” a eșuat"
 
 #, c-format
 msgid "Failed to bind mount directory %1$s to %2$s"
-msgstr ""
+msgstr "Asocierea directorului de montare %1$s cu %2$s a eșuat"
 
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
-msgstr ""
+msgstr "Asocierea soclului la „%1$s” a eșuat"
 
 msgid "Failed to build net json"
-msgstr ""
+msgstr "Construirea net json a eșuat"
 
 msgid "Failed to build pidfile path"
-msgstr ""
+msgstr "Construirea rutei fișierului pid a eșuat"
 
 msgid "Failed to build pidfile path."
-msgstr ""
+msgstr "Construirea rutei fișierului pid a eșuat."
 
 #, c-format
 msgid "Failed to build pool %1$s"
-msgstr ""
+msgstr "Construirea fondului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to change owner of %1$s to %2$u:%3$u"
-msgstr ""
+msgstr "Schimbarea proprietarului %1$s la %2$u a eșuat:%3$u"
 
 #, c-format
 msgid "Failed to change ownership of '%1$s' to %2$d:%3$d"
-msgstr ""
+msgstr "Schimbarea dreptului de proprietate a „%1$s” la %2$d:%3$d"
 
 #, c-format
 msgid "Failed to change ownership of tty %1$s"
-msgstr ""
+msgstr "Schimbarea dreptului de proprietate a tty %1$s a eșuat"
 
 #, c-format
 msgid "Failed to change size of volume '%1$s' by %2$s"
-msgstr ""
+msgstr "Schimbarea dimensiunii volumului „%1$s” prin %2$s a eșuat"
 
 #, c-format
 msgid "Failed to change size of volume '%1$s' to %2$s"
-msgstr ""
+msgstr "Schimbarea dimensiunii volumului „%1$s” la %2$s a eșuat"
 
 msgid "Failed to change storage controller model"
-msgstr ""
+msgstr "Schimbarea modelului controlorului de stocare a eșuat"
 
 #, c-format
 msgid "Failed to chdir into %1$s"
-msgstr ""
+msgstr "Executarea comenzii «chdir» în %1$s a eșuat"
 
 msgid "Failed to check for domain managed save image"
-msgstr ""
+msgstr "Verificarea imaginii de salvare gestionată de domeniu a eșuat"
 
 msgid "Failed to check for managed save image"
-msgstr ""
+msgstr "Verificarea imaginii de salvare gestionate a eșuat"
 
 #, c-format
 msgid "Failed to check system token '%1$s'"
-msgstr ""
+msgstr "Verificarea simbolului(token) de sistem „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to chown device %1$s"
-msgstr ""
+msgstr "Executarea comenzii «chown» asupra dispozitivului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to clean up %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se curețe %1$s"
 
 #, c-format
 msgid "Failed to cleanup stale managed save dir '%1$s'"
-msgstr ""
+msgstr "Curățarea vechiului director de salvare gestionat „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to clear security context for agent for %1$s"
-msgstr ""
+msgstr "Ștergerea contextului de securitate pentru agentul %1$s a eșuat"
 
 #, c-format
 msgid "Failed to clear security context for monitor for %1$s"
 msgstr ""
+"Ștergerea contextului de securitate pentru monitorul pentru %1$s a eșuat"
 
 #, c-format
 msgid "Failed to clone vol from %1$s"
-msgstr ""
+msgstr "Clonarea volumului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to close bind target %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se închidă ținta de legătură %1$s"
 
 msgid "Failed to collect auth credentials"
-msgstr ""
+msgstr "Colectarea acreditărilor de autentificare a eșuat"
 
 msgid "Failed to commit network config change transaction"
-msgstr ""
+msgstr "Efectuarea tranzacției de modificare a configurației rețelei a eșuat"
 
 #, c-format
 msgid "Failed to compare host CPU with %1$s"
-msgstr ""
+msgstr "Compararea CPU-ului gazdei cu %1$s a eșuat"
 
 #, c-format
 msgid "Failed to compare hypervisor CPU with %1$s"
-msgstr ""
+msgstr "Compararea procesorului hipervizorului cu %1$s a eșuat"
 
 #, c-format
 msgid "Failed to compile regex %1$s"
-msgstr ""
+msgstr "Compilarea expresiei regulate %1$s a eșuat"
 
 #, c-format
 msgid "Failed to complete action %1$s on media"
-msgstr ""
+msgstr "Finalizarea acțiunii %1$s pe suportul media a eșuat"
 
 msgid "Failed to complete tree listing"
-msgstr ""
+msgstr "Finalizarea listării arborescente a eșuat"
 
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
-msgstr ""
+msgstr "Conectarea soclului la „%1$s” a eșuat"
 
 msgid "Failed to connect to mon socket"
-msgstr ""
+msgstr "Conectarea la soclul monitorului a eșuat"
 
 #, c-format
 msgid "Failed to connect to nbdkit for '%1$s': %2$s"
-msgstr ""
+msgstr "Conectarea la nbdkit pentru „%1$s” a eșuat: %2$s"
 
 msgid "Failed to connect to ssh agent"
-msgstr ""
+msgstr "Conectarea la agentul ssh a eșuat"
 
 msgid "Failed to connect to the admin server"
-msgstr ""
+msgstr "Conectarea la serverul de administrare a eșuat"
 
 #, c-format
 msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
-msgstr ""
+msgstr "Conectarea la vsock a eșuat (cid=%1$llu port=%2$u)"
 
 #, c-format
 msgid "Failed to connect: %1$s"
-msgstr ""
+msgstr "Conectarea a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to convert '%1$s' to int"
-msgstr ""
+msgstr "Conversia lui „%1$s” în int a eșuat"
 
 #, c-format
 msgid "Failed to convert '%1$s' to unsigned int"
-msgstr ""
+msgstr "Conversia lui „%1$s” în int fără semn a eșuat"
 
 #, c-format
 msgid "Failed to convert '%1$s' to unsigned long long"
-msgstr ""
+msgstr "Conversia lui „%1$s” în long long fără semn a eșuat"
 
 #, c-format
 msgid "Failed to convert interface index %1$d to a name"
-msgstr ""
+msgstr "Conversia indexului interfeței %1$d într-un nume a eșuat"
 
 #, c-format
 msgid "Failed to convert loadparm '%1$s' to upper case"
-msgstr ""
+msgstr "Conversia a loadparm „%1$s” în majuscule a eșuat"
 
 msgid "Failed to convert the command string to argv-lists"
-msgstr ""
+msgstr "Conversia șirului de comenzi în listă de argv a eșuat"
 
 msgid "Failed to copy XML node"
-msgstr ""
+msgstr "Copierea nodului XML a eșuat"
 
 #, c-format
 msgid "Failed to core dump domain '%1$s' to %2$s"
-msgstr ""
+msgstr "Descărcarea datelor din memorie pentru domeniul „%1$s” în %2$s a eșuat"
 
 msgid "Failed to count network filters"
-msgstr ""
+msgstr "Numărarea filtrelor de rețea a eșuat"
 
 msgid "Failed to count node devices"
-msgstr ""
+msgstr "Numărarea dispozitivelor nodului a eșuat"
 
 msgid "Failed to count secrets"
-msgstr ""
+msgstr "Numărarea secretelor a eșuat"
 
 #, c-format
 msgid "Failed to create %1$s"
-msgstr ""
+msgstr "Crearea %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create '%1$s': %2$s"
-msgstr ""
+msgstr "Crearea „%1$s” a eșuat: %2$s"
 
 #, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
-msgstr ""
+msgstr "Crearea contextului clientului SASL a eșuat: %1$d (%2$s)"
 
 #, c-format
 msgid "Failed to create SAVE dir %1$s"
-msgstr ""
+msgstr "A eșuat crearea directorului SAVE %1$s"
 
 msgid "Failed to create XML"
-msgstr ""
+msgstr "Crearea XML a eșuat"
 
 msgid "Failed to create XML config object"
-msgstr ""
+msgstr "Crearea obiectului de configurare XML a eșuat"
 
 #, c-format
 msgid "Failed to create bind target %1$s"
-msgstr ""
+msgstr "Crearea țintei de legătură %1$s a eșuat"
 
 msgid "Failed to create bridge node in xml document"
-msgstr ""
+msgstr "Crearea nodului punte în documentul xml a eșuat"
 
 #, c-format
 msgid "Failed to create cache dir %1$s"
-msgstr ""
+msgstr "Crearea directorului cache %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create channel target dir %1$s"
-msgstr ""
+msgstr "Crearea directorului țintă al canalului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create checkpoint dir %1$s"
-msgstr ""
+msgstr "Crearea directorului punctului de control %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create dbus state dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de stare dbus %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create directory for '%1$s' dev '%2$s'"
-msgstr ""
+msgstr "Crearea directorului pentru „%1$s” dispozitivul „%2$s” a eșuat"
 
 #, c-format
 msgid "Failed to create directory for device %1$s"
-msgstr ""
+msgstr "Crearea directorului pentru dispozitivul %1$sa eșuat"
 
 msgid "Failed to create disk pool geometry"
-msgstr ""
+msgstr "Crearea geometriei grupului de discuri a eșuat"
 
 #, c-format
 msgid "Failed to create domain from %1$s"
-msgstr ""
+msgstr "Crearea domeniului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create domain save file '%1$s'"
-msgstr ""
+msgstr "Crearea fișierului de salvare a domeniului „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to create dump dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de descărcare %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create file '%1$s'"
-msgstr ""
+msgstr "Crearea fișierului „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to create file '%1$s': couldn't determine fs type"
 msgstr ""
+"Crearea fișierului „%1$s” a eșuat: nu s-a putut determina tipul de sistem de "
+"fișiere"
 
 #, c-format
 msgid "Failed to create filesystem probe for device %1$s"
-msgstr ""
+msgstr "Crearea sondării sistemului de fișiere pentru dispozitivul %1$s a eșuat"
 
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
+"Crearea nodului de interfață sub nodul de punte în documentul xml nu a reușit"
 
 #, c-format
 msgid "Failed to create iscsi context for %1$s"
-msgstr ""
+msgstr "Crearea contextului iscsi pentru %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create lib dir %1$s"
-msgstr ""
+msgstr "Crearea directorului bibliotecii %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create memory backing dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de suport al memoriei %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create network filter from %1$s"
-msgstr ""
+msgstr "Crearea filtrului de rețea din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create network from %1$s"
-msgstr ""
+msgstr "Crearea rețelei din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create node device from %1$s"
-msgstr ""
+msgstr "Crearea dispozitivului nodului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create nvram dir %1$s"
-msgstr ""
+msgstr "Crearea directorului nvram %1$s a eșuat"
 
 msgid "Failed to create or modify the state XML attribute"
-msgstr ""
+msgstr "Crearea sau modificarea atributului XML de stare a eșuat"
 
 #, c-format
 msgid "Failed to create passt state dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de stare passt %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create pool %1$s"
-msgstr ""
+msgstr "Crearea fondului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create pool from %1$s"
-msgstr ""
+msgstr "Crearea fondului din %1$s a eșuat"
 
 msgid "Failed to create reboot thread, killing domain"
-msgstr ""
+msgstr "Crearea firului de repornire a eșuat, se omoară domeniul"
 
 #, c-format
 msgid "Failed to create save dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de salvare %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create slirp state dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de stare slirp %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create snapshot dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de instantanee %1$s a eșuat"
 
 msgid "Failed to create socket"
 msgstr "Nu s-a putut crea soclul"
 
 #, c-format
 msgid "Failed to create state dir %1$s"
-msgstr ""
+msgstr "Crearea directorului de stare %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create state dir '%1$s'"
-msgstr ""
+msgstr "Crearea directorului de stare „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to create symlink '%1$s' to '%2$s'"
-msgstr ""
+msgstr "Crearea legăturii simbolice „%1$s” la „%2$s” a eșuat"
 
 msgid "Failed to create thread"
-msgstr ""
+msgstr "Crearea firului a eșuat"
 
 msgid "Failed to create thread for receiving migration data"
-msgstr ""
+msgstr "Crearea firului pentru primirea datelor de migrare a eșuat"
 
 msgid "Failed to create thread to handle daemon restart"
-msgstr ""
+msgstr "Crearea unui fir pentru a gestiona repornirea demonului a eșuat"
 
 msgid "Failed to create thread to handle domain death"
-msgstr ""
+msgstr "Crearea firului pentru gestionarea morții domeniului a eșuat"
 
 msgid "Failed to create thread to handle domain shutdown"
-msgstr ""
+msgstr "Crearea firului pentru a gestiona închiderea domeniului a eșuat"
 
 msgid "Failed to create thread to handle firewall reload/restart"
 msgstr ""
+"Crearea firului pentru a gestiona reîncărcarea/ repornirea paravanului de "
+"protecție a eșuat"
 
 msgid "Failed to create thread to handle pool refresh"
-msgstr ""
+msgstr "Crearea firului pentru gestionarea actualizării fondului a eșuat"
 
 msgid "Failed to create thread to suspend the host"
-msgstr ""
+msgstr "Crearea firului pentru suspendarea gazdei a eșuat"
 
 #, c-format
 msgid "Failed to create unique directory with template '%1$s' for probing QEMU"
 msgstr ""
+"Crearea unui director unic cu șablonul „%1$s” pentru testarea QEMU a eșuat"
 
 #, c-format
 msgid "Failed to create v1 controller %1$s for group"
-msgstr ""
+msgstr "Crearea controlerului v1 %1$s pentru grup a eșuat"
 
 #, c-format
 msgid "Failed to create v2 cgroup '%1$s'"
-msgstr ""
+msgstr "Crearea cgroup v2 „%1$s” a eșuat"
 
 msgid "Failed to create vbox driver object."
-msgstr ""
+msgstr "Crearea obiectului controlor vbox a eșuat."
 
 #, c-format
 msgid "Failed to create vol %1$s"
-msgstr ""
+msgstr "Crearea volumului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create vol from %1$s"
-msgstr ""
+msgstr "Crearea volumului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to create/open domain save xml file '%1$s'"
 msgstr ""
+"Crearea/deschiderea fișierului xml de salvare a domeniului „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to define domain from %1$s"
-msgstr ""
+msgstr "Definirea domeniului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define interface from %1$s"
-msgstr ""
+msgstr "Definirea interfeței din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define network filter from %1$s"
-msgstr ""
+msgstr "Definirea filtrului de rețea din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define network from %1$s"
-msgstr ""
+msgstr "Definirea rețelei din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define new bridge interface %1$s"
-msgstr ""
+msgstr "Definirea noii interfețe punte %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define new interface %1$s"
-msgstr ""
+msgstr "Definirea noii interfețe %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define node device from '%1$s'"
-msgstr ""
+msgstr "Definirea dispozitivului nodului din „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to define pool %1$s"
-msgstr ""
+msgstr "Definirea fondului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to define pool from %1$s"
-msgstr ""
+msgstr "Definirea fondului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete DiskDescriptor.xml of volume '%1$s'"
-msgstr ""
+msgstr "Ștergerea DiskDescriptor.xml a volumului „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to delete autostart link '%1$s': %2$s"
-msgstr ""
+msgstr "Ștergerea legăturii de auto-pornire „%1$s” a eșuat: %2$s"
 
 #, c-format
 msgid "Failed to delete checkpoint %1$s"
-msgstr ""
+msgstr "Ștergerea punctului de control %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete network filter binding on %1$s"
-msgstr ""
+msgstr "Ștergerea legăturii filtrului de rețea pe %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete network port %1$s"
-msgstr ""
+msgstr "Ștergerea portului de rețea %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete overlay file '%1$s' for transient disk '%2$s'"
 msgstr ""
+"Ștergerea fișierului de suprapunere „%1$s” pentru discul tranzitoriu „%2$s” "
+"a eșuat"
 
 #, c-format
 msgid "Failed to delete pool %1$s"
-msgstr ""
+msgstr "Ștergerea fondului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete secret %1$s"
-msgstr ""
+msgstr "Ștergerea secretului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete snapshot %1$s"
-msgstr ""
+msgstr "Ștergerea instantaneei %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete snapshot: %1$s"
-msgstr ""
+msgstr "Ștergerea instantaneei: %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
-msgstr ""
+msgstr "Ștergerea legăturii simbolice „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to delete veth device %1$s"
-msgstr ""
+msgstr "Ștergerea dispozitivului veth %1$s a eșuat"
 
 #, c-format
 msgid "Failed to delete vol %1$s"
-msgstr ""
+msgstr "Ștergerea volumului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to destroy bridge interface %1$s"
-msgstr ""
+msgstr "Distrugerea interfeței de punte %1$s a eșuat"
 
 #, c-format
 msgid "Failed to destroy domain '%1$d'"
-msgstr ""
+msgstr "Distrugerea domeniului „%1$d” a eșuat"
 
 #, c-format
 msgid "Failed to destroy domain '%1$s'"
-msgstr ""
+msgstr "Distrugerea domeniului „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to destroy interface %1$s"
-msgstr ""
+msgstr "Distrugerea interfeței %1$s a eșuat"
 
 #, c-format
 msgid "Failed to destroy network %1$s"
-msgstr ""
+msgstr "Distrugerea rețelei %1$s a eșuat"
 
 #, c-format
 msgid "Failed to destroy node device '%1$s'"
-msgstr ""
+msgstr "Distrugerea dispozitivului de nod „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to destroy pool %1$s"
-msgstr ""
+msgstr "Distrugerea fondului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to detach device %1$s"
-msgstr ""
+msgstr "Detașarea dispozitivului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to detach device from %1$s"
-msgstr ""
+msgstr "Detașarea dispozitivului din %1$s a eșuat"
 
 #, c-format
 msgid "Failed to detach device with alias %1$s"
-msgstr ""
+msgstr "Detașarea dispozitivului cu numele alias %1$s a eșuat"
 
 msgid "Failed to detach disk"
-msgstr ""
+msgstr "Detașarea discului a eșuat"
 
 msgid "Failed to detach interface"
-msgstr ""
+msgstr "Detașarea interfeței a eșuat"
 
 #, c-format
 msgid "Failed to determine broadcast address for '%1$s/%2$d'"
-msgstr ""
+msgstr "Determinarea adresei de difuzare pentru „%1$s/%2$d” a eșuat"
 
 #, c-format
 msgid "Failed to determine if %1$u:%2$u:%3$u:%4$u is a Direct-Access LUN"
 msgstr ""
+"Nu s-a putut determina dacă %1$u:%2$u:%3$u:%4$u este un LUN cu acces direct"
 
 #, c-format
 msgid "Failed to determine prefix for IP address '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut determina prefixul pentru adresa IP „%1$s”"
 
 #, c-format
 msgid "Failed to determine prefix for route with destination '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut determina prefixul pentru ruta cu destinația „%1$s”"
 
 #, sh-format
 msgid "Failed to determine state of guest: $guest. Not tracking it anymore."
 msgstr ""
+"Nu s-a reușit determinarea stării oaspetelui: $guest. Nu se mai urmărește."
 
 #, c-format
 msgid "Failed to disconnect client '%1$llu' from server %2$s"
-msgstr ""
+msgstr "Deconectarea clientului „%1$llu” de la serverul %2$s a eșuat"
 
 msgid "Failed to disconnect from the admin server"
-msgstr ""
+msgstr "Deconectarea de la serverul de administrare a eșuat"
 
 msgid "Failed to disconnect from the hypervisor"
-msgstr ""
+msgstr "Deconectarea de la hipervizor a eșuat"
 
 #, c-format
 msgid "Failed to disconnect: %1$s"
-msgstr ""
+msgstr "Deconectarea a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to discover session: %1$s"
-msgstr ""
+msgstr "Detectarea sesiunii a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to dump core of domain '%1$d' with libxenlight"
 msgstr ""
+"Descărcarea conținutului memoriei pentru domeniul „%1$d” cu libxenlight a "
+"eșuat"
 
 #, c-format
 msgid "Failed to enable controller '%1$s' for '%2$s'"
-msgstr ""
+msgstr "Activarea controlorului „%1$s” pentru „%2$s” a eșuat"
 
 msgid "Failed to escape password for XML"
-msgstr ""
+msgstr "Eludarea parolei pentru XML a eșuat"
 
 #, c-format
 msgid "Failed to execute symbol '%1$s' in module '%2$s'"
-msgstr ""
+msgstr "Executarea simbolului „%1$s” în modulul „%2$s” a eșuat"
 
 msgid "Failed to extract interface information"
-msgstr ""
+msgstr "Extragerea informațiilor de interfață a eșuat"
 
 msgid "Failed to extract interface information or no interfaces found"
 msgstr ""
+"Eșec la extragerea informațiilor despre interfață sau nu s-au găsit interfețe"
 
 #, c-format
 msgid "Failed to find QOM Object path for device '%1$s'"
 msgstr ""
+"Nu s-a reușit să se găsească ruta obiectului QOM pentru dispozitivul „%1$s”"
 
 #, c-format
 msgid "Failed to find SCSI host with wwnn='%1$s', wwpn='%2$s'"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească gazda SCSI cu wwnn='%1$s', wwpn='%2$s'"
 
 msgid "Failed to find a node driver"
-msgstr ""
+msgstr "Nu s-a putut găsi un controlor de nod"
 
 #, c-format
 msgid "Failed to find a node driver: %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi un controlor de nod: %1$s"
 
 msgid "Failed to find a secret storage driver"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească un controlor de stocare secret"
 
 #, c-format
 msgid "Failed to find a secret storage driver: %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească un controlor de stocare secret: %1$s"
 
 msgid "Failed to find a storage driver"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească un controlor de stocare"
 
 #, c-format
 msgid "Failed to find a storage driver: %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească un controlor de stocare: %1$s"
 
 #, c-format
 msgid "Failed to find any %1$s pool sources"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească nicio sursă de fonduri %1$s"
 
 #, c-format
 msgid "Failed to find fc_host for wwnn='%1$s' and wwpn='%2$s'"
-msgstr ""
+msgstr "Nu s-a putut găsi fc_host pentru wwnn='%1$s' și wwpn='%2$s'"
 
 #, c-format
 msgid "Failed to find group record for gid '%1$u'"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească înregistrarea grupului pentru gid „%1$u”"
 
 #, c-format
 msgid "Failed to find module '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut găsi modulul „%1$s”"
 
 #, c-format
 msgid "Failed to find parent device for %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească dispozitivul părinte pentru %1$s"
 
 #, c-format
 msgid "Failed to find scsi_host using PCI '%1$s' and unique_id='%2$u'"
 msgstr ""
+"Nu s-a reușit să se găsească scsi_host folosind PCI „%1$s” și "
+"unique_id='%2$u'"
 
 #, c-format
 msgid "Failed to find symbol '%1$s' in module '%2$s': %3$s"
-msgstr ""
+msgstr "Nu s-a putut găsi simbolul „%1$s” în modulul „%2$s”: %3$s"
 
 msgid "Failed to find the interface"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească interfața"
 
 #, c-format
 msgid "Failed to find the interface: %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se găsească interfața: %1$s"
 
 msgid "Failed to find the network"
-msgstr ""
+msgstr "Nu s-a putut găsi rețeaua"
 
 #, c-format
 msgid "Failed to find the network: %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi rețeaua: %1$s"
 
 #, c-format
 msgid "Failed to find user record for uid '%1$u'"
 msgstr ""
+"Nu s-a reușit să se găsească înregistrarea utilizatorului pentru uid „%1$u”"
 
 #, c-format
 msgid "Failed to fork as daemon: %1$s"
-msgstr ""
+msgstr "Bifurcarea ca demon a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to format new xml document for bridge %1$s"
-msgstr ""
+msgstr "Nu s-a reușit formatarea noului document xml pentru puntea %1$s"
 
 #, c-format
 msgid "Failed to format new xml document for detached interface %1$s"
 msgstr ""
+"Nu s-a reușit formatarea noului document xml pentru interfața detașată %1$s"
 
 #, c-format
 msgid "Failed to fully read directory %1$s"
-msgstr ""
+msgstr "Citirea completă a directorului %1$s a eșuat"
 
 msgid "Failed to generate UUID"
-msgstr ""
+msgstr "Eșec la generarea UUID"
 
 msgid "Failed to generate genid"
-msgstr ""
+msgstr "Eșec la generarea genid-ului"
 
 #, c-format
 msgid "Failed to get %1$s minor number"
-msgstr ""
+msgstr "Nu s-a putut obține numărul minor %1$s"
 
 #, c-format
 msgid "Failed to get SRIOV function from device link '%1$s'"
-msgstr ""
+msgstr "Obținerea funcției SRIOV de la dispozitivul de legătură „%1$s” a eșuat"
 
 msgid "Failed to get UUID of created secret"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină UUID-ul secretului creat"
 
 msgid "Failed to get VNC port. Is this domain using VNC?"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină portul VNC. Acest domeniu utilizează VNC?"
 
 #, c-format
 msgid "Failed to get block stats %1$s %2$s"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină statisticile blocului %1$s %2$s"
 
 #, c-format
 msgid "Failed to get block stats for domain '%1$s' device '%2$s'"
 msgstr ""
+"Obținerea statisticilor de blocuri pentru domeniul „%1$s” dispozitivul „%2$s”"
+" a eșuat"
 
 msgid "Failed to get capabilities from libxenlight"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină capacitățile de la libxenlight"
 
 msgid "Failed to get capability names of the device"
-msgstr ""
+msgstr "Obținerea numelor capacităților dispozitivului a eșuat"
 
 msgid "Failed to get capability numbers of the device"
-msgstr ""
+msgstr "Obținerea numerelor de capacitate ale dispozitivului a eșuat"
 
 #, c-format
 msgid "Failed to get capacity of lun: %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină capacitatea LUN-ului: %1$s"
 
 #, c-format
 msgid "Failed to get certificate %1$s distinguished name: %2$s"
-msgstr ""
+msgstr "Obținerea certificatului %1$s cu nume distinct a eșuat: %2$s"
 
 msgid "Failed to get checkpoint count"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină numărul punctelor de control"
 
 msgid "Failed to get client socket PID"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină PID-ul soclului clientului"
 
 msgid "Failed to get client socket identity"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină identitatea soclului clientului"
 
 #, c-format
 msgid "Failed to get current process capabilities: %1$d"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină capacitățile procesului curent: %1$d"
 
 msgid "Failed to get disk information"
-msgstr ""
+msgstr "Obținerea informațiilor despre disc a eșuat"
 
 #, c-format
 msgid "Failed to get distinguished name: %1$s\n"
-msgstr ""
+msgstr "Obținerea numelui distinct a eșuat: %1$s\n"
 
 msgid "Failed to get domain autostart state"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină starea pornirii automate a domeniului"
 
 msgid "Failed to get domain description xml"
-msgstr ""
+msgstr "Obținerea în xml a descrierii domeniului a eșuat"
 
 msgid "Failed to get domain persistence info"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină informațiile privind persistența domeniului"
 
 msgid "Failed to get domain state"
-msgstr ""
+msgstr "Obținerea stării domeniului a eșuat"
 
 msgid "Failed to get domain's UUID"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină UUID-ul domeniului"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%1$s'"
 msgstr ""
+"Nu s-a reușit să se obțină numărul gazdei pentru sesiunea iSCSI cu ruta "
+"„%1$s”"
 
 msgid "Failed to get interface information"
-msgstr ""
+msgstr "Obținerea informațiilor despre interfață a eșuat"
 
 #, c-format
 msgid "Failed to get interface stats %1$s %2$s"
-msgstr ""
+msgstr "Obținerea stării interfaței %1$s %2$s a eșuat"
 
 #, c-format
 msgid "Failed to get leases info for %1$s"
 msgstr ""
+"Nu s-a reușit să se obțină informațiile privind închirierile pentru %1$s"
 
 #, c-format
 msgid "Failed to get memory statistics for domain %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină statisticile de memorie pentru domeniul %1$s"
 
 msgid "Failed to get network autostart state"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină starea pornirii automate a rețelei"
 
 msgid "Failed to get network description xml"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină descrierea rețelei în xml"
 
 msgid "Failed to get network persistence info"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină informațiile privind persistența rețelei"
 
 msgid "Failed to get network's UUID"
-msgstr ""
+msgstr "Obținerea UUID-ului rețelei a eșuat"
 
 msgid "Failed to get node physical info from libxenlight"
-msgstr ""
+msgstr "Obținerea informațiilor fizice ale nodului din libxenlight a eșuat"
 
 #, c-format
 msgid "Failed to get option '%1$s': %2$s"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină opțiunea „%1$s”: %2$s"
 
 msgid "Failed to get pool autostart state"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină starea pornirii automate a fondului"
 
 msgid "Failed to get pool persistence info"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină informațiile privind persistența fondului"
 
 #, c-format
 msgid "Failed to get scheduler id for domain '%1$d' with libxenlight"
 msgstr ""
+"Nu s-a reușit să se obțină id-ul planificatorului pentru domeniul „%1$d” cu "
+"libxenlight"
 
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%1$d' with libxenlight"
 msgstr ""
+"Nu s-a reușit să se obțină parametrii planificatorului pentru domeniul „%1$d”"
+" cu libxenlight"
 
 msgid "Failed to get snapshot count"
-msgstr ""
+msgstr "Obținerea numărului de instantanee a eșuat"
 
 msgid "Failed to get storage controller name"
-msgstr ""
+msgstr "Obținerea numelui controlorului de stocare a eșuat"
 
 msgid "Failed to get the number of active networks"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină numărul de rețele active"
 
 msgid "Failed to get the number of active pools "
-msgstr ""
+msgstr "Nu s-a reușit să se obțină numărul de fonduri active "
 
 msgid "Failed to get the number of inactive networks"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină numărul de rețele inactive"
 
 msgid "Failed to get the number of inactive pools"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină numărul de fonduri inactive"
 
 #, c-format
 msgid "Failed to get udev device for syspath '%1$s'"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină dispozitivul udev pentru syspath „%1$s”"
 
 msgid "Failed to get uuid of secret"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină uuid-ul secretului"
 
 msgid "Failed to get valid client socket identity"
-msgstr ""
+msgstr "Nu s-a reușit să se obțină o identitate validă a soclului clientului"
 
 msgid "Failed to get valid client socket identity groups"
 msgstr ""
+"Nu s-a reușit să se obțină grupuri de identitate valide pentru soclul "
+"clientului"
 
 msgid "Failed to get version info from libxenlight"
 msgstr ""
+"Nu s-a reușit să se obțină informațiile despre versiune de la libxenlight"
 
 #, c-format
 msgid "Failed to init transport: %1$s"
-msgstr ""
+msgstr "Inițierea transportului a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to initialize TLS session: %1$s"
-msgstr ""
+msgstr "Inițializarea sesiunii TLS a eșuat: %1$s"
 
 msgid "Failed to initialize cgroup backend."
-msgstr ""
+msgstr "Inițializarea modulului cgroup a eșuat."
 
 msgid "Failed to initialize host cpu features"
-msgstr ""
+msgstr "Inițializarea funcțiilor cpu ale gazdei a eșuat"
 
 msgid "Failed to initialize libpciaccess"
-msgstr ""
+msgstr "Inițializarea bibliotecii libpciaccess a eșuat"
 
 msgid "Failed to initialize libssh session"
-msgstr ""
+msgstr "Inițializarea sesiunii libssh a eșuat"
 
 msgid "Failed to initialize libssh2 agent handle"
-msgstr ""
+msgstr "Inițializarea agentului libssh2 a eșuat"
 
 msgid "Failed to initialize libssh2 known hosts table"
-msgstr ""
+msgstr "Inițializarea tabelului de gazde cunoscute libssh2 a eșuat"
 
 msgid "Failed to initialize libssh2 session"
-msgstr ""
+msgstr "Inițializarea sesiunii libssh2 a eșuat"
 
 msgid "Failed to initialize libvirt"
-msgstr ""
+msgstr "Inițializarea bibliotecii libvirt a eșuat"
 
 #, c-format
 msgid "Failed to initialize libvirt error handling"
-msgstr ""
+msgstr "Inițializarea gestionării erorilor bibliotecii libvirt a eșuat"
 
 msgid "Failed to initialize mutex"
-msgstr ""
+msgstr "Inițializarea mutex-ului a eșuat"
 
 msgid "Failed to initialize security drivers"
-msgstr ""
+msgstr "Inițializarea controlorilor de securitate a eșuat"
 
 #, c-format
 msgid "Failed to initialize storage pool '%1$s': %2$s"
-msgstr ""
+msgstr "Inițializarea fondului de stocare „%1$s” a eșuat: %2$s"
 
 msgid "Failed to inquire lock"
-msgstr ""
+msgstr "Nu s-a putut stabilii starea blocării"
 
 #, c-format
 msgid "Failed to inquire lock: %1$s"
-msgstr ""
+msgstr "Nu s-a putut stabilii starea blocării %1$s"
 
 #, c-format
 msgid "Failed to kill process %1$lld"
-msgstr ""
+msgstr "Omorârea procesului %1$lld a eșuat"
 
 msgid "Failed to list active domains"
-msgstr ""
+msgstr "Listarea domeniilor active a eșuat"
 
 msgid "Failed to list active interfaces"
-msgstr ""
+msgstr "Listarea interfețelor active a eșuat"
 
 msgid "Failed to list active networks"
-msgstr ""
+msgstr "Listarea rețelelor active a eșuat"
 
 msgid "Failed to list active pools"
-msgstr ""
+msgstr "Listarea fondurilor active a eșuat"
 
 msgid "Failed to list domains"
-msgstr ""
+msgstr "Listarea domeniilor a eșuat"
 
 msgid "Failed to list inactive domains"
-msgstr ""
+msgstr "Listarea domeniilor inactive a eșuat"
 
 msgid "Failed to list inactive interfaces"
-msgstr ""
+msgstr "Listarea interfețelor inactive a eșuat"
 
 msgid "Failed to list inactive networks"
-msgstr ""
+msgstr "Listarea rețelelor inactive a eșuat"
 
 msgid "Failed to list inactive pools"
-msgstr ""
+msgstr "Listarea fondurilor inactive a eșuat"
 
 msgid "Failed to list interfaces"
-msgstr ""
+msgstr "Listarea interfețelor a eșuat"
 
 msgid "Failed to list network filter bindings"
-msgstr ""
+msgstr "Listarea legăturilor filtrului de rețea a eșuat"
 
 msgid "Failed to list network filters"
-msgstr ""
+msgstr "Listarea filtrelor de rețea a eșuat"
 
 msgid "Failed to list networks"
-msgstr ""
+msgstr "Listarea rețelelor a eșuat"
 
 msgid "Failed to list node devices"
-msgstr ""
+msgstr "Listarea dispozitivelor nodului a eșuat"
 
 msgid "Failed to list node secrets"
-msgstr ""
+msgstr "Listarea secretelor nodului a eșuat"
 
 #, sh-format
 msgid "Failed to list persistent guests on $uri"
-msgstr ""
+msgstr "Listarea invitaților permanenți pe $uri a eșuat"
 
 msgid "Failed to list pools"
-msgstr ""
+msgstr "Listarea fondurilor a eșuat"
 
 msgid "Failed to list secrets"
-msgstr ""
+msgstr "Listarea secretelor a eșuat"
 
 msgid "Failed to list ssh agent identities"
-msgstr ""
+msgstr "Listarea identităților agentului ssh a eșuat"
 
 msgid "Failed to list storage volumes"
-msgstr ""
+msgstr "Listarea volumelor de stocare a eșuat"
 
 msgid "Failed to list transient guests"
-msgstr ""
+msgstr "Listarea invitaților tranzitorii a eșuat"
 
 #, c-format
 msgid "Failed to list vcpus for domain '%1$d' with libxenlight"
-msgstr ""
+msgstr "Nu s-a reușit listarea vcpus pentru domeniul „%1$d” cu libxenlight"
 
 msgid "Failed to list volumes"
-msgstr ""
+msgstr "Listarea volumelor a eșuat"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: %2$s"
-msgstr ""
+msgstr "Încărcarea modulului controlorului PCI %1$s a eșuat: %2$s"
 
 #, c-format
 msgid "Failed to load PCI driver module %1$s: administratively prohibited"
 msgstr ""
+"Încărcarea modulului controlorului PCI %1$s a eșuat: interzis administrativ"
 
 #, c-format
 msgid "Failed to load config for binding '%1$s'"
-msgstr ""
+msgstr "Încărcarea configurației pentru legătura „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to load config for domain '%1$s'"
-msgstr ""
+msgstr "Încărcarea configurației pentru domeniul „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to load module '%1$s': %2$s"
-msgstr ""
+msgstr "Încărcarea modulului „%1$s” a eșuat: %2$s"
 
 msgid "Failed to load nbd module"
 msgstr "Eșec la încărcarea modulului „nbd”"
 
 msgid "Failed to load nbd module: administratively prohibited"
-msgstr ""
+msgstr "Eșec la încărcarea modulului „nbd”: interzis administrativ"
 
 #, c-format
 msgid "Failed to load plugin %1$s: %2$s"
-msgstr ""
+msgstr "Încărcarea modulului %1$s a eșuat: %2$s"
 
 #, c-format
 msgid "Failed to locate parent device with ID '%1$s'"
-msgstr ""
+msgstr "Nu s-a reușit localizarea dispozitivului părinte cu ID-ul „%1$s”"
 
 #, c-format
 msgid "Failed to lock system token '%1$s'"
-msgstr ""
+msgstr "Blocarea simbolului de sistem „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to login: %1$s"
-msgstr ""
+msgstr "Autentificarea a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to logout: %1$s"
-msgstr ""
+msgstr "Ieșirea din sesiune a eșuat: %1$s"
 
 msgid "Failed to make auth credentials"
-msgstr ""
+msgstr "Crearea acreditărilor de autentificare a eșuat"
 
 #, c-format
 msgid "Failed to make device %1$s"
-msgstr ""
+msgstr "Crearea dispozitivului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to make directory %1$s readonly"
-msgstr ""
+msgstr "Nu s-a putut face directorul %1$s doar-pentru-citire"
 
 #, c-format
 msgid "Failed to make dnsmasq (PID: %1$d) reload config files."
 msgstr ""
+"Nu s-a reușit reîncărcarea fișierelor de configurare ale dnsmasq (PID: %1$d)."
 
 msgid "Failed to make domain persistent after migration"
-msgstr ""
+msgstr "Nu s-a reușit să se facă domeniul persistent după migrare"
 
 #, c-format
 msgid "Failed to make domain persistent after migration: %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se facă domeniul persistent după migrare: %1$s"
 
 #, c-format
 msgid "Failed to make mount %1$s readonly"
-msgstr ""
+msgstr "Nu s-a putut face montarea %1$s doar-pentru-citire"
 
 #, c-format
 msgid "Failed to make new root %1$s readonly"
-msgstr ""
+msgstr "Nu s-a putut face noua rădăcină %1$s doar-pentru-citire"
 
 #, c-format
 msgid "Failed to make path %1$s"
-msgstr ""
+msgstr "Nu s-a putut crea ruta %1$s"
 
 msgid "Failed to make root private"
-msgstr ""
+msgstr "Nu s-a reușit să se convertească rădăcina în privată"
 
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
-msgstr ""
+msgstr "Nu s-a reușit marcarea domeniului „%1$s” ca pornit automat"
 
 #, c-format
 msgid "Failed to mkdir %1$s"
-msgstr ""
+msgstr "Nu s-a putut crea directorul %1$s"
 
 #, c-format
 msgid "Failed to mount %1$s on %2$s type %3$s"
-msgstr ""
+msgstr "Nu s-a reușit montarea %1$s pe %2$s tip %3$s"
 
 #, c-format
 msgid "Failed to mount %1$s on %2$s type %3$s flags=0x%4$x"
-msgstr ""
+msgstr "Nu s-a reușit montarea %1$s pe %2$s tip %3$s fanioane=0x%4$x"
 
 #, c-format
 msgid "Failed to mount %1$s on /dev"
-msgstr ""
+msgstr "Nu s-a putut monta %1$s în /dev"
 
 #, c-format
 msgid "Failed to mount %1$s on /dev/pts"
-msgstr ""
+msgstr "Nu s-a putut monta %1$s în /dev/pts"
 
 #, c-format
 msgid "Failed to mount %1$s on /proc/meminfo"
-msgstr ""
+msgstr "Nu s-a putut monta %1$s în /proc/meminfo"
 
 #, c-format
 msgid "Failed to mount devfs on %1$s type %2$s (%3$s)"
-msgstr ""
+msgstr "Nu s-a putut monta devfs pe %1$s tip %2$s (%3$s)"
 
 #, c-format
 msgid "Failed to mount device %1$s to %2$s"
-msgstr ""
+msgstr "Nu s-a putut monta dispozitivul %1$s la %2$s"
 
 #, c-format
 msgid "Failed to mount device %1$s to %2$s as %3$s"
-msgstr ""
+msgstr "Nu s-a putut monta dispozitivul %1$s la %2$s ca %3$s"
 
 #, c-format
 msgid "Failed to mount device %1$s to %2$s, unable to detect filesystem"
 msgstr ""
+"Montarea dispozitivului %1$s la %2$s a eșuat, nu s-a putut detecta sistemul "
+"de fișiere"
 
 #, c-format
 msgid "Failed to mount devpts on %1$s"
-msgstr ""
+msgstr "Nu s-a putut monta devpts pe %1$s"
 
 #, c-format
 msgid "Failed to mount directory %1$s as tmpfs"
-msgstr ""
+msgstr "Eșec la montarea directorului %1$s ca tmpfs"
 
 #, c-format
 msgid "Failed to mount empty tmpfs at %1$s"
-msgstr ""
+msgstr "Eșec la montarea tmpfs gol la %1$s"
 
 #, c-format
 msgid "Failed to move '%1$s' element in xml document"
-msgstr ""
+msgstr "Eșec la mutarea elementului „%1$s” în documentul xml"
 
 #, c-format
 msgid "Failed to open %1$s"
-msgstr ""
+msgstr "Nu s-a reușit să se deschidă %1$s"
 
 #, c-format
 msgid "Failed to open '%1$s'"
-msgstr ""
+msgstr "Nu s-a reușit să se deschidă „%1$s”"
 
 msgid "Failed to open a UNIX socket"
-msgstr ""
+msgstr "Deschiderea unui soclu UNIX a eșuat"
 
 #, c-format
 msgid "Failed to open config space file '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut deschide fișierul de configurare a spațiului „%1$s”"
 
 #, c-format
 msgid "Failed to open cpuinfo file '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut deschide fișierul cpuinfo „%1$s”"
 
 #, c-format
 msgid "Failed to open domain image file '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut deschide fișierul de imagine al domeniului „%1$s”"
 
 #, c-format
 msgid "Failed to open domain save file '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut deschide fișierul de salvare a domeniului „%1$s”"
 
 #, c-format
 msgid "Failed to open file '%1$s'"
-msgstr ""
+msgstr "Deschiderea fișierului „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to open file '%1$s': couldn't determine fs type"
 msgstr ""
+"Deschiderea fișierului „%1$s” a eșuat: nu s-a putut determina tipul de "
+"sistem de fișiere"
 
 #, c-format
 msgid "Failed to open pid file '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut deschide fișierul pid „%1$s”"
 
 msgid "Failed to open socket to sanlock daemon"
-msgstr ""
+msgstr "Deschiderea soclului către demonul sanlock a eșuat"
 
 #, c-format
 msgid "Failed to open socket to sanlock daemon: %1$s"
-msgstr ""
+msgstr "Deschiderea soclului către demonul sanlock a eșuat: %1$s"
 
 #, c-format
 msgid "Failed to open storage volume with path '%1$s'"
-msgstr ""
+msgstr "Eșec la deschiderea volumului de stocare cu ruta „%1$s”"
 
 #, c-format
 msgid "Failed to open the following disk/dvd/floppy to the machine: %1$s"
-msgstr ""
+msgstr "Eșec la deschiderea următorului disc/dvd/dischetă pe mașina: %1$s"
 
 #, c-format
 msgid "Failed to open tty %1$s"
-msgstr ""
+msgstr "Eșec la deschiderea tty %1$s"
 
 #, c-format
 msgid "Failed to parse %1$s: only com1 and com2 supported."
-msgstr ""
+msgstr "Analizarea %1$s a eșuat: sunt acceptate doar com1 și com2."
 
 #, c-format
 msgid "Failed to parse CCW address '%1$s'"
-msgstr ""
+msgstr "Nu s-a reușit analizarea adresei CCW „%1$s"
 
 msgid "Failed to parse HTTP response code"
-msgstr ""
+msgstr "Analizarea codului de răspuns HTTP a eșuat"
 
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
@@ -35097,7 +35230,7 @@ msgid "shut off"
 msgstr ""
 
 msgid "shutdown"
-msgstr "shutdown"
+msgstr "închidere"
 
 msgid "shutdown mode: acpi|agent|initctl|signal|paravirt"
 msgstr ""
