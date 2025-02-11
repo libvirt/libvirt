@@ -729,6 +729,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-mem-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW */
               "blockdev-set-active", /* QEMU_CAPS_BLOCKDEV_SET_ACTIVE */
               "shim", /* QEMU_CAPS_MACHINE_SHIM */
+
+              /* 475 */
+              "virtio-scsi.iothread-mapping", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD_MAPPING */
     );
 
 
@@ -1478,6 +1481,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSpaprPCIHostBrid
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
+    { "iothread-vq-mapping", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD_MAPPING, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
