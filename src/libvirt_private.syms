@@ -3464,6 +3464,7 @@ virSkipToDigit;
 virStrcpy;
 virStringBufferIsPrintable;
 virStringFilterChars;
+virStringFormatHex;
 virStringHasCaseSuffix;
 virStringHasChars;
 virStringHasControlChars;

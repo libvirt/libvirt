@@ -1092,3 +1092,23 @@ virStringListRemoveDuplicates(char ***list)
     g_free(*list);
     *list = g_renew(char *, unique, n + 1);
 }
+
+/**
+ * virStringFormatHex:
+ * @buf: buffer to format
+ * @len: length of the buffer
+ *
+ * Format a byte array into a hexadecimal string and return it. It's caller's
+ * responsibility to free returned string.
+ */
+char *
+virStringFormatHex(const unsigned char *buf, size_t len)
+{
+    char *hex = g_new0(char, len * 2 + 1);
+    size_t i;
+
+    for (i = 0; i < len; i++)
+        g_snprintf(hex + i * 2, 3, "%02x", buf[i]);
+
+    return g_steal_pointer(&hex);
+}
