@@ -6682,7 +6682,6 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
                              virDomainXMLOption *xmlopt)
 {
     virDomainDiskDef *disk;
-    virDomainNetDef *net;
     virDomainSoundDef *sound;
     virDomainHostdevDef *hostdev;
     virDomainLeaseDef *lease;
@@ -6709,10 +6708,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        net = dev->data.net;
-        if (virDomainNetInsert(vmdef, net))
-            return -1;
-        dev->data.net = NULL;
+        virDomainNetInsert(vmdef, g_steal_pointer(&dev->data.net));
         break;
 
     case VIR_DOMAIN_DEVICE_SOUND:

@@ -3508,7 +3508,6 @@ static int
 libxlDomainAttachDeviceConfig(virDomainDef *vmdef, virDomainDeviceDef *dev)
 {
     virDomainDiskDef *disk;
-    virDomainNetDef *net;
     virDomainHostdevDef *hostdev;
     virDomainControllerDef *controller;
     virDomainHostdevDef *found;
@@ -3542,16 +3541,13 @@ libxlDomainAttachDeviceConfig(virDomainDef *vmdef, virDomainDeviceDef *dev)
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
-            net = dev->data.net;
-            if (virDomainHasNet(vmdef, net)) {
+            if (virDomainHasNet(vmdef, dev->data.net)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("network device with mac %1$s already exists"),
-                               virMacAddrFormat(&net->mac, mac));
+                               virMacAddrFormat(&dev->data.net->mac, mac));
                 return -1;
             }
-            if (virDomainNetInsert(vmdef, net))
-                return -1;
-            dev->data.net = NULL;
+            virDomainNetInsert(vmdef, g_steal_pointer(&dev->data.net));
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:

@@ -3991,7 +3991,7 @@ int virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net);
 virDomainNetDef *virDomainNetFind(virDomainDef *def, const char *device);
 virDomainNetDef *virDomainNetFindByName(virDomainDef *def, const char *ifname);
 bool virDomainHasNet(virDomainDef *def, virDomainNetDef *net);
-int virDomainNetInsert(virDomainDef *def, virDomainNetDef *net);
+void virDomainNetInsert(virDomainDef *def, virDomainNetDef *net);
 void virDomainNetUpdate(virDomainDef *def, size_t netidx, virDomainNetDef *newnet);
 bool virDomainNetBackendIsEqual(virDomainNetBackend *src,
                                 virDomainNetBackend *dst);

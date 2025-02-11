@@ -14894,14 +14894,14 @@ virDomainDiskRemoveByName(virDomainDef *def, const char *name)
     return virDomainDiskRemove(def, idx);
 }
 
-int virDomainNetInsert(virDomainDef *def, virDomainNetDef *net)
+void
+virDomainNetInsert(virDomainDef *def, virDomainNetDef *net)
 {
     /* hostdev net devices must also exist in the hostdevs array */
     if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
         virDomainHostdevInsert(def, &net->data.hostdev.def);
 
     VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
-    return 0;
 }
 
 /**

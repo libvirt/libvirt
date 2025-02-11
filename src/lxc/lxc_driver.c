@@ -2961,7 +2961,6 @@ lxcDomainAttachDeviceConfig(virDomainDef *vmdef,
 {
     int ret = -1;
     virDomainDiskDef *disk;
-    virDomainNetDef *net;
     virDomainHostdevDef *hostdev;
 
     switch (dev->type) {
@@ -2979,10 +2978,7 @@ lxcDomainAttachDeviceConfig(virDomainDef *vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        net = dev->data.net;
-        if (virDomainNetInsert(vmdef, net) < 0)
-            return -1;
-        dev->data.net = NULL;
+        virDomainNetInsert(vmdef, g_steal_pointer(&dev->data.net));
         ret = 0;
         break;
 
