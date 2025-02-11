@@ -1014,10 +1014,7 @@ libxlNetworkPrepareDevices(virDomainDef *def)
             /* Each type='hostdev' network device must also have a
              * corresponding entry in the hostdevs array.
              */
-            virDomainHostdevDef *hostdev = virDomainNetGetActualHostdev(net);
-
-            if (virDomainHostdevInsert(def, hostdev) < 0)
-                return -1;
+            virDomainHostdevInsert(def, virDomainNetGetActualHostdev(net));
         }
     }
 

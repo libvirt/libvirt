@@ -5928,8 +5928,7 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
             if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
                 return -1;
 
-            if (virDomainHostdevInsert(def, hostdev) < 0)
-                return -1;
+            virDomainHostdevInsert(def, hostdev);
         }
     }
     return 0;

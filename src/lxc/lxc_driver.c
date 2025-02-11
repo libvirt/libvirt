@@ -2993,8 +2993,7 @@ lxcDomainAttachDeviceConfig(virDomainDef *vmdef,
                            _("device is already in the domain configuration"));
             return -1;
         }
-        if (virDomainHostdevInsert(vmdef, hostdev) < 0)
-            return -1;
+        virDomainHostdevInsert(vmdef, hostdev);
         dev->data.hostdev = NULL;
         ret = 0;
         break;

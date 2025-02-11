@@ -14465,12 +14465,10 @@ virDomainChrTargetTypeToString(int deviceType,
     return type;
 }
 
-int
+void
 virDomainHostdevInsert(virDomainDef *def, virDomainHostdevDef *hostdev)
 {
     VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
-
-    return 0;
 }
 
 virDomainHostdevDef *
@@ -14886,9 +14884,8 @@ virDomainDiskRemoveByName(virDomainDef *def, const char *name)
 int virDomainNetInsert(virDomainDef *def, virDomainNetDef *net)
 {
     /* hostdev net devices must also exist in the hostdevs array */
-    if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        virDomainHostdevInsert(def, &net->data.hostdev.def) < 0)
-        return -1;
+    if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+        virDomainHostdevInsert(def, &net->data.hostdev.def);
 
     VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
     return 0;
@@ -19281,10 +19278,8 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
          * where the actual network type is already known to be
          * hostdev) must also be in the hostdevs array.
          */
-        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-            virDomainHostdevInsert(def, virDomainNetGetActualHostdev(net)) < 0) {
-            return NULL;
-        }
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+            virDomainHostdevInsert(def, virDomainNetGetActualHostdev(net));
     }
     VIR_FREE(nodes);
 

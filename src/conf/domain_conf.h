@@ -3994,7 +3994,7 @@ virDomainNetDef *virDomainNetRemove(virDomainDef *def, size_t i);
 virDomainNetDef *virDomainNetRemoveByObj(virDomainDef *def, virDomainNetDef *net);
 void virDomainNetRemoveHostdev(virDomainDef *def, virDomainNetDef *net);
 
-int virDomainHostdevInsert(virDomainDef *def, virDomainHostdevDef *hostdev);
+void virDomainHostdevInsert(virDomainDef *def, virDomainHostdevDef *hostdev);
 virDomainHostdevDef *
 virDomainHostdevRemove(virDomainDef *def, size_t i);
 int virDomainHostdevFind(virDomainDef *def, virDomainHostdevDef *match,
