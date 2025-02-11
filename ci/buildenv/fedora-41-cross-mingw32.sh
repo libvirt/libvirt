@@ -8,7 +8,7 @@ function install_buildenv() {
     dnf update -y
     dnf install -y \
         augeas \
-        bash-completion \
+        bash-completion-devel \
         ca-certificates \
         ccache \
         codespell \

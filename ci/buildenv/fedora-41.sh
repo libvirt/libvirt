@@ -9,7 +9,7 @@ function install_buildenv() {
     dnf install -y \
         audit-libs-devel \
         augeas \
-        bash-completion \
+        bash-completion-devel \
         ca-certificates \
         ccache \
         clang \
@@ -82,6 +82,7 @@ function install_buildenv() {
         systemd-devel \
         systemd-rpm-macros \
         systemtap-sdt-devel \
+        systemtap-sdt-dtrace \
         wireshark-devel \
         xen-devel
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED

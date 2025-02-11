@@ -83,7 +83,7 @@ function install_buildenv() {
             libsanlock-dev:i386 \
             libsasl2-dev:i386 \
             libselinux1-dev:i386 \
-            libssh-gcrypt-dev:i386 \
+            libssh-dev:i386 \
             libssh2-1-dev:i386 \
             libtirpc-dev:i386 \
             libudev-dev:i386 \

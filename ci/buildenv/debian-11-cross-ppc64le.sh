@@ -82,7 +82,7 @@ function install_buildenv() {
             libsanlock-dev:ppc64el \
             libsasl2-dev:ppc64el \
             libselinux1-dev:ppc64el \
-            libssh-gcrypt-dev:ppc64el \
+            libssh-dev:ppc64el \
             libssh2-1-dev:ppc64el \
             libtirpc-dev:ppc64el \
             libudev-dev:ppc64el \

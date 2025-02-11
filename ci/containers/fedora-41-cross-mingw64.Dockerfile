@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM registry.fedoraproject.org/fedora:40
+FROM registry.fedoraproject.org/fedora:41
 
 RUN dnf install -y nosync && \
     printf '#!/bin/sh\n\
@@ -19,7 +19,7 @@ exec "$@"\n' > /usr/bin/nosync && \
     nosync dnf update -y && \
     nosync dnf install -y \
                augeas \
-               bash-completion \
+               bash-completion-devel \
                ca-certificates \
                ccache \
                codespell \

@@ -82,7 +82,7 @@ function install_buildenv() {
             libsanlock-dev:mipsel \
             libsasl2-dev:mipsel \
             libselinux1-dev:mipsel \
-            libssh-gcrypt-dev:mipsel \
+            libssh-dev:mipsel \
             libssh2-1-dev:mipsel \
             libtirpc-dev:mipsel \
             libudev-dev:mipsel \

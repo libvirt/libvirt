@@ -94,7 +94,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libsanlock-dev:armhf \
                       libsasl2-dev:armhf \
                       libselinux1-dev:armhf \
-                      libssh-gcrypt-dev:armhf \
+                      libssh-dev:armhf \
                       libssh2-1-dev:armhf \
                       libtirpc-dev:armhf \
                       libudev-dev:armhf \

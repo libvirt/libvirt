@@ -59,7 +59,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libsanlock-dev \
                       libsasl2-dev \
                       libselinux1-dev \
-                      libssh-gcrypt-dev \
+                      libssh-dev \
                       libssh2-1-dev \
                       libtirpc-dev \
                       libudev-dev \

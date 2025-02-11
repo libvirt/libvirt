@@ -127,21 +127,6 @@ x86_64-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-x86_64-fedora-39:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-fedora-39-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: fedora-39
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:39
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-
 x86_64-fedora-40:
   extends: .native_build_job
   needs:
@@ -151,6 +136,21 @@ x86_64-fedora-40:
   variables:
     NAME: fedora-40
     TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:40
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+
+x86_64-fedora-41:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-fedora-41-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-41
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:41
   artifacts:
     expire_in: 1 day
     paths:
@@ -544,29 +544,29 @@ s390x-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-mingw32-fedora-40:
+mingw32-fedora-41:
   extends: .cross_build_job
   needs:
-    - job: mingw32-fedora-40-container
+    - job: mingw32-fedora-41-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw32
     JOB_OPTIONAL: 1
-    NAME: fedora-40
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:40
+    NAME: fedora-41
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:41
 
 
-mingw64-fedora-40:
+mingw64-fedora-41:
   extends: .cross_build_job
   needs:
-    - job: mingw64-fedora-40-container
+    - job: mingw64-fedora-41-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw64
-    NAME: fedora-40
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:40
+    NAME: fedora-41
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:41
 
 
 mingw32-fedora-rawhide:
@@ -602,7 +602,7 @@ x86_64-freebsd-13:
   allow_failure:
     exit_codes: 3
   variables:
-    CIRRUS_VM_IMAGE_NAME: freebsd-13-3
+    CIRRUS_VM_IMAGE_NAME: freebsd-13-4
     CIRRUS_VM_IMAGE_SELECTOR: image_family
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
     INSTALL_COMMAND: pkg install -y
@@ -617,7 +617,7 @@ x86_64-freebsd-14:
   allow_failure:
     exit_codes: 3
   variables:
-    CIRRUS_VM_IMAGE_NAME: freebsd-14-1
+    CIRRUS_VM_IMAGE_NAME: freebsd-14-2
     CIRRUS_VM_IMAGE_SELECTOR: image_family
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
     INSTALL_COMMAND: pkg install -y

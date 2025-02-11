@@ -93,7 +93,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libsanlock-dev:s390x \
                       libsasl2-dev:s390x \
                       libselinux1-dev:s390x \
-                      libssh-gcrypt-dev:s390x \
+                      libssh-dev:s390x \
                       libssh2-1-dev:s390x \
                       libtirpc-dev:s390x \
                       libudev-dev:s390x \

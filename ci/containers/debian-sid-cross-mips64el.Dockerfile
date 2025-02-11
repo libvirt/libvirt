@@ -94,7 +94,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libsanlock-dev:mips64el \
                       libsasl2-dev:mips64el \
                       libselinux1-dev:mips64el \
-                      libssh-gcrypt-dev:mips64el \
+                      libssh-dev:mips64el \
                       libssh2-1-dev:mips64el \
                       libtirpc-dev:mips64el \
                       libudev-dev:mips64el \
