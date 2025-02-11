@@ -2830,7 +2830,7 @@ qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
     }
 
     if (disk->iothreads) {
-        virDomainDiskIothreadDef *first_ioth = disk->iothreads->data;
+        virDomainIothreadMappingDef *first_ioth = disk->iothreads->data;
         g_autoptr(virBitmap) queueMap = NULL;
         g_autoptr(GHashTable) iothreads = virHashNew(NULL);
         ssize_t unused;
@@ -2856,7 +2856,7 @@ qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
          *    - queue must be assigned only once
          */
         for (n = disk->iothreads; n; n = n->next) {
-            virDomainDiskIothreadDef *ioth = n->data;
+            virDomainIothreadMappingDef *ioth = n->data;
             g_autofree char *alias = g_strdup_printf("iothread%u", ioth->id);
             size_t i;
 

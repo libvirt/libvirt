@@ -6644,8 +6644,8 @@ qemuDomainDiskChangeSupportedIothreads(virDomainDiskDef *disk,
     GSList *new = disk->iothreads;
 
     while (true) {
-        virDomainDiskIothreadDef *old_def;
-        virDomainDiskIothreadDef *new_def;
+        virDomainIothreadMappingDef *old_def;
+        virDomainIothreadMappingDef *new_def;
         size_t i;
 
         /* match - both empty or both at the end */

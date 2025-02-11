@@ -562,7 +562,7 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
         bool inuse = false;
 
         for (n = def->disks[i]->iothreads; n; n = n->next) {
-            virDomainDiskIothreadDef *iothread = n->data;
+            virDomainIothreadMappingDef *iothread = n->data;
 
             if (iothread->id == iothread_id) {
                 inuse = true;

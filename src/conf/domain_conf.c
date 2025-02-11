@@ -2368,7 +2368,7 @@ virDomainDefGetVcpusTopology(const virDomainDef *def,
 
 
 void
-virDomainDiskIothreadDefFree(virDomainDiskIothreadDef *def)
+virDomainIothreadMappingDefFree(virDomainIothreadMappingDef *def)
 {
     if (!def)
         return;
@@ -2426,7 +2426,7 @@ virDomainDiskDefFree(virDomainDiskDef *def)
     g_free(def->virtio);
     virDomainDeviceInfoClear(&def->info);
     virObjectUnref(def->privateData);
-    g_slist_free_full(def->iothreads, (GDestroyNotify) virDomainDiskIothreadDefFree);
+    g_slist_free_full(def->iothreads, (GDestroyNotify) virDomainIothreadMappingDefFree);
 
     g_free(def);
 }
@@ -7991,7 +7991,7 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
         return -1;
 
     if ((iothreadsNode = virXMLNodeGetSubelement(cur, "iothreads"))) {
-        g_autoslist(virDomainDiskIothreadDef) ioth = NULL;
+        g_autoslist(virDomainIothreadMappingDef) ioth = NULL;
         g_autoptr(GPtrArray) iothreadNodes = NULL;
 
         if ((iothreadNodes = virXMLNodeGetSubelementList(iothreadsNode, "iothread"))) {
@@ -7999,7 +7999,7 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
 
             for (i = 0; i < iothreadNodes->len; i++) {
                 xmlNodePtr iothNode = g_ptr_array_index(iothreadNodes, i);
-                g_autoptr(virDomainDiskIothreadDef) iothdef = g_new0(virDomainDiskIothreadDef, 1);
+                g_autoptr(virDomainIothreadMappingDef) iothdef = g_new0(virDomainIothreadMappingDef, 1);
                 g_autoptr(GPtrArray) queueNodes = NULL;
 
                 if (virXMLPropUInt(iothNode, "id", 10, VIR_XML_PROP_REQUIRED,
@@ -23231,7 +23231,7 @@ virDomainDiskDefFormatDriver(virBuffer *buf,
         GSList *n;
 
         for (n = disk->iothreads; n; n = n->next) {
-            virDomainDiskIothreadDef *iothDef = n->data;
+            virDomainIothreadMappingDef *iothDef = n->data;
             g_auto(virBuffer) iothreadAttrBuf = VIR_BUFFER_INITIALIZER;
             g_auto(virBuffer) iothreadChildBuf = VIR_BUFFER_INIT_CHILD(&iothreadsChildBuf);
 

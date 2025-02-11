@@ -1580,7 +1580,7 @@ qemuBuildDiskDeviceIothreadMappingProps(GSList *iothreads)
     GSList *n;
 
     for (n = iothreads; n; n = n->next) {
-        virDomainDiskIothreadDef *ioth = n->data;
+        virDomainIothreadMappingDef *ioth = n->data;
         g_autoptr(virJSONValue) props = NULL;
         g_autoptr(virJSONValue) queues = NULL;
         g_autofree char *alias = g_strdup_printf("iothread%u", ioth->id);

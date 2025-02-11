@@ -507,7 +507,7 @@ typedef enum {
 VIR_ENUM_DECL(virDomainSnapshotLocation);
 
 
-struct _virDomainDiskIothreadDef {
+struct _virDomainIothreadMappingDef {
     unsigned int id;
 
     /* optional list of virtqueues the iothread should handle */
@@ -515,9 +515,9 @@ struct _virDomainDiskIothreadDef {
     size_t nqueues;
 };
 
-typedef struct _virDomainDiskIothreadDef virDomainDiskIothreadDef;
-void virDomainDiskIothreadDefFree(virDomainDiskIothreadDef *def);
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDiskIothreadDef, virDomainDiskIothreadDefFree);
+typedef struct _virDomainIothreadMappingDef virDomainIothreadMappingDef;
+void virDomainIothreadMappingDefFree(virDomainIothreadMappingDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainIothreadMappingDef, virDomainIothreadMappingDefFree);
 
 
 /* Stores the virtual disk configuration */
@@ -574,7 +574,7 @@ struct _virDomainDiskDef {
     virDomainDeviceSGIO sgio;
     virDomainDiskDiscard discard;
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
-    GSList *iothreads; /* List of virDomainDiskIothreadsDef */
+    GSList *iothreads; /* List of virDomainIothreadMappingDef */
     virDomainDiskDetectZeroes detect_zeroes;
     virTristateSwitch discard_no_unref;
     char *domain_name; /* backend domain name */
