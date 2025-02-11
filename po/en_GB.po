@@ -7,13 +7,13 @@
 # Bastien Nocera <hadess@hadess.net>, 2007
 # Daniel <veillard@redhat.com>, 2011
 # readmanr <robert_readman@hotmail.com>, 2013
-# Andi Chandler <andi@gowling.com>, 2024.
+# Andi Chandler <andi@gowling.com>, 2024, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2024-12-05 09:39+0000\n"
+"PO-Revision-Date: 2025-02-10 17:38+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.4\n"
+"X-Generator: Weblate 5.9.2\n"
 
 msgid ""
 "\n"
@@ -1874,28 +1874,28 @@ msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 
 msgid "Access connection"
-msgstr ""
+msgstr "Access connection"
 
 msgid "Access denied"
 msgstr "Access denied"
 
 msgid "Access domain"
-msgstr ""
+msgstr "Access domain"
 
 msgid "Access interface"
-msgstr ""
+msgstr "Access interface"
 
 msgid "Access network"
-msgstr ""
+msgstr "Access network"
 
 msgid "Access network filter"
-msgstr ""
+msgstr "Access network filter"
 
 msgid "Access network port"
-msgstr ""
+msgstr "Access network port"
 
 msgid "Access node device"
-msgstr ""
+msgstr "Access node device"
 
 msgid "Access secret"
 msgstr ""
