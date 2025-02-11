@@ -15981,13 +15981,11 @@ virDomainRedirdevDefRemove(virDomainDef *def, size_t idx)
 }
 
 
-int
+void
 virDomainShmemDefInsert(virDomainDef *def,
                         virDomainShmemDef *shmem)
 {
     VIR_APPEND_ELEMENT(def->shmems, def->nshmems, shmem);
-
-    return 0;
 }
 
 

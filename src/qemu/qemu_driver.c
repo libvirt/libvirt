@@ -6806,8 +6806,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
                            _("device is already in the domain configuration"));
             return -1;
         }
-        if (virDomainShmemDefInsert(vmdef, shmem) < 0)
-            return -1;
+        virDomainShmemDefInsert(vmdef, shmem);
         dev->data.shmem = NULL;
         break;
 
