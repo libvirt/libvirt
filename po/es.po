@@ -27,7 +27,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-02-06 12:58+0000\n"
+"PO-Revision-Date: 2025-02-11 12:00+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -204,6 +204,22 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%1$s [opciones]... [<cadena_de_commandos>]\n"
+"%2$s [opciones]... <comando> [argumentos...]\n"
+"\n"
+"  opciones\n"
+"    -c | --connect=URI      URI de conexión del administrador del demonio\n"
+"    -d | --debug=NUM        nivel de depuración [0-4]\n"
+"    -h | --help             esta ayuda\n"
+"    -l | --log=FILE         salida del registro a archivo\n"
+"    -q | --quiet            modo silencioso\n"
+"    -v                      versión corta\n"
+"    -V                      versión larga\n"
+"         --version[=TIPO]   versión, TIPO es short o long (short es el valor "
+"predeterminado)\n"
+"  comandos (modo no interactivo):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -230,6 +246,30 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%1$s [opciones]... [<cadena_de_comandos>]\n"
+"%2$s [opciones]... <comando> [argumentos...]\n"
+"\n"
+"  opciones:\n"
+"    -c | --connect=URI      URI de conexión del hipervisor\n"
+"    -d | --debug=NUM        nivel de depuración [0-4]\n"
+"    -e | --escape <char>    establecer secuencia de escape para la consola\n"
+"    -h | --help             esta ayuda\n"
+"    -k | --keepalive-interval=NUM\n"
+"                            intervalo de keepalive en segundos, 0 para "
+"deshabilitar\n"
+"    -K | --keepalive-count=NUM\n"
+"                            número de posibles mensajes keepalive perdidos\n"
+"    -l | --log=FILE         salida del registro a archivo\n"
+"    -q | --quiet            modo silencioso\n"
+"    -r | --readonly         conectarse como readonly\n"
+"    -t | --timing           imprimir información de timing\n"
+"    -v                      versión corta\n"
+"    -V                      versión larga\n"
+"         --version[=TIPO]   versión, TIPO es short o long (short es el valor "
+"predeterminado)\n"
+"  comandos (modo no interactivo):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -252,6 +292,25 @@ msgid ""
 "    -F | --append-file <file>      append file to an existing profile\n"
 "\n"
 msgstr ""
+"\n"
+"%1$s modo [opciones] [archivo adicional] [< def.xml]\n"
+"\n"
+"  Modos:\n"
+"    -a | --add                     cargar un perfil\n"
+"    -c | --create                  crear un perfil desde una plantilla\n"
+"    -D | --delete                  descargar el perfil y borrar las reglas "
+"generadas\n"
+"    -r | --replace                 recargar el perfil\n"
+"    -R | --remove                  descargar el perfil\n"
+"  Opciones:\n"
+"    -d | --dryrun                  simular la ejecución del comando\n"
+"    -u | --uuid <uuid>             uuid (nombre del perfil)\n"
+"    -h | --help                    esta ayuda\n"
+"  Archivo adicional:\n"
+"    -f | --add-file <file>         agregar un archivo a un perfil generado a "
+"partir de XML\n"
+"    -F | --append-file <file>      agregar un archivo a un perfil existente\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -268,18 +327,24 @@ msgid ""
 "\n"
 "Domain '%1$s' dumped to %2$s\n"
 msgstr ""
+"\n"
+"Dominio '%1$s' volcado en %2$s\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%1$s' saved to %2$s\n"
 msgstr ""
+"\n"
+"Domino '%1$s' guardado en %2$s\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%1$s' state saved by libvirt\n"
 msgstr ""
+"\n"
+"Estado del domino '%1$s' guardado por libvirt\n"
 
 #, c-format
 msgid ""
@@ -322,6 +387,20 @@ msgid ""
 "\n"
 "libvirt lock management daemon:\n"
 msgstr ""
+"\n"
+"Uso:\n"
+"  %1$s [opciones]\n"
+"\n"
+"Opciones:\n"
+"  -h | --help                Muestra la ayuda del programa:\n"
+"  -v | --verbose             Mensajes detallados.\n"
+"  -d | --daemon              Ejecutar como demonio y escribir archivo PID.\n"
+"  -t | --timeout <segundos>  Salir luego del período de espera.\n"
+"  -f | --config <archivo>    Archivo de configuración.\n"
+"  -V | --version             Mostrar información de la versión.\n"
+"  -p | --pid-file <archivo>  Cambiar el nombre del archivo PID.\n"
+"\n"
+"demonio de gestión de bloqueo de libvirt:\n"
 
 #, c-format
 msgid ""
@@ -340,6 +419,20 @@ msgid ""
 "\n"
 "libvirt log management daemon:\n"
 msgstr ""
+"\n"
+"Uso:\n"
+"  %1$s [opciones]\n"
+"\n"
+"Opciones:\n"
+"  -h | --help                Mostrar la ayuda del programa:\n"
+"  -v | --verbose             Mensajes detallados.\n"
+"  -d | --daemon              Ejecutar como demonio y escribir archivo PID.\n"
+"  -t | --timeout <segundos>  Salir luego del período de espera.\n"
+"  -f | --config <archivo>    Archivo de configuración.\n"
+"  -V | --version             Mostrar información de la versión.\n"
+"  -p | --pid-file <archivo>  Cambiar el nombre del archivo PID.\n"
+"\n"
+"demonio de gestión de registros de libvirt:\n"
 
 #, c-format
 msgid ""
@@ -354,6 +447,16 @@ msgid ""
 "  qemu/$domname\t\t\ttries looking up $domname under system followed by "
 "session URI\n"
 msgstr ""
+"\n"
+"Uso:\n"
+"%1$s host puerto\n"
+"\n"
+"host debería tener uno de los siguientes formatos:\n"
+"\n"
+"  qemu:system/$nombredominio\t\tpara dominios bajo qemu:///system\n"
+"  qemu:session/$nombredominio\t\tpara dominios bajo qemu:///session\n"
+"  qemu/$nombredominio\t\t\t\ttrata de encontrar $nombredominio bajo system "
+"seguido de URI en session\n"
 
 #, c-format
 msgid ""
@@ -373,10 +476,25 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"sintaxis: %1$s [OPCIONES] [TIPODEHV]\n"
+"\n"
+" Tipos de hipervisor:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"   - ch\n"
+"\n"
+" Opciones:\n"
+"   -h, --help     Mostrar ayuda de la línea de comandos\n"
+"   -v, --version  Mostrar versión del comando\n"
+"   -q, --quiet    No mostrar información de progreso\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %1$llu bytes/s (%2$-.3lf %3$s/s)"
-msgstr ""
+msgstr "    Límite de ancho de banda: %1$llu bytes/s (%2$-.3lf %3$s/s)"
 
 msgid "  NAME\n"
 msgstr "  NOMBRE\n"
@@ -391,7 +509,7 @@ msgstr " %1$s (palabra clave de ayuda «%2$s»):\n"
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <cadena>..."
 
 msgid " Hypervisors:"
 msgstr " Hipervisores:"
@@ -407,7 +525,7 @@ msgstr " Almacenamiento:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <cadena>]..."
 
 #, c-format
 msgid ""
@@ -416,6 +534,10 @@ msgid ""
 " cur=%3$llu\n"
 " end=%4$llu\n"
 msgstr ""
+" type=%1$s\n"
+" bandwidth=%2$lu\n"
+" cur=%3$llu\n"
+" end=%4$llu\n"
 
 #, c-format
 msgid ""
@@ -436,9 +558,9 @@ msgstr "El valor de $%1$s debe estar entre 0 y %2$d"
 msgid "%1$s\n"
 msgstr "%1$s\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%1$s %2$s"
-msgstr ""
+msgstr "%1$s %2$s"
 
 #, c-format
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
@@ -456,6 +578,8 @@ msgid ""
 "%1$s (on destination side) does not support the --migration option needed "
 "for migration with shared storage"
 msgstr ""
+"%1$s (en el lado del destino) no admite la opción --migration necesaria para "
+"la migración con almacenamientos compartidos"
 
 #, c-format
 msgid "%1$s (out of %2$d)"
@@ -467,7 +591,7 @@ msgstr "%1$s no puede quedar vacío"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s no se puede establecer por encima de %2$s"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -479,11 +603,11 @@ msgstr "%1$s no puede analizar el UID «%2$s»"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "el disco %1$s no es compatible con este binario de QEMU"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s no admite el almacenamiento de archivos"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -494,14 +618,17 @@ msgstr ""
 #, c-format
 msgid "%1$s does not support passing passphrase via file descriptor"
 msgstr ""
+"%1$s no admite pasar una frase de contraseña a través un descriptor de "
+"archivo"
 
 #, c-format
 msgid "%1$s expects UID and GID parameters"
-msgstr ""
+msgstr "%1$s esperaba los parámetros UID y GID"
 
 #, c-format
 msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
 msgstr ""
+"%1$s: error en nuevo modo para el objetivo '%2$s'. Estado devuelto: '%3$d'"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -516,7 +643,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "los gráficos %1$s no son compatibles con este binario de QEMU"
 
 #, c-format
 msgid "%1$s harddisk '%2$s' has unsupported cache mode '%3$s'"
@@ -573,37 +700,40 @@ msgstr "Longitud %1$s mayor que el máxima: %2$d > %3$d"
 
 #, c-format
 msgid "%1$s model of watchdog can go only on PCI bus"
-msgstr ""
+msgstr "el modelo de watchdog %1$s solo puede pertenecer a un bus PCI"
 
 #, c-format
 msgid "%1$s model of watchdog cannot be used with this machine type"
-msgstr ""
+msgstr "el modelo de watchdog %1$s no se puede usar con este tipo de máquina"
 
 #, c-format
 msgid "%1$s model of watchdog does not support configuring the address"
-msgstr ""
+msgstr "el modelo de watchdog %1$s no admite configurar la dirección"
 
 #, c-format
 msgid "%1$s model of watchdog is allowed for s390 and s390x only"
-msgstr ""
+msgstr "el modelo de watchdog %1$s solo está permitido para s390 y s390X"
 
 #, c-format
 msgid "%1$s model of watchdog is only part of q35 machine"
-msgstr ""
+msgstr "El modelo de watchdog %1$s solo es parte de una máquina q35"
 
 #, c-format
 msgid ""
 "%1$s model of watchdog is part of the machine and cannot have any address "
 "set."
 msgstr ""
+"el modelo de watchdog %1$s es parte de la máquina y no se le puede "
+"establecer ninguna dirección."
 
 #, c-format
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
 msgstr ""
+"el modelo de watchdog %1$s es virtual y no puede pertenecer a ningún bus."
 
 #, c-format
 msgid "%1$s module is not loaded, "
-msgstr ""
+msgstr "el módulo %1$s no se encuentra cargado, "
 
 #, c-format
 msgid "%1$s namespace is not available"
@@ -619,7 +749,7 @@ msgstr "%1$s no implementado en Win32"
 
 #, c-format
 msgid "%1$s not matched against 'allowed_users' in %2$s"
-msgstr ""
+msgstr "%1$s no coincide con 'allowed_users' en %2$s"
 
 #, c-format
 msgid "%1$s not parseable"
@@ -654,6 +784,8 @@ msgid ""
 "%1$s rule with port specification requires protocol specification with "
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 msgstr ""
+"la regla %1$s con especificación de puerto requiere que la especificación "
+"del protocolo sea tcp(6), udp(17), dccp(33) o sctp(132)"
 
 #, c-format
 msgid "%1$s uri uuid action\n"
@@ -664,6 +796,8 @@ msgid ""
 "%1$s with index %2$d is configured for a NUMA node (%3$d) not present in the "
 "domain's <cpu><numa> array (%4$zu)"
 msgstr ""
+"%1$s con índice %2$d está configurado para un nodo NUMA (%3$d) que no está "
+"presente en el array <cpu><numa> del dominio (%4$zu)"
 
 #, c-format
 msgid ""
@@ -723,10 +857,12 @@ msgid ""
 "%1$s: Error converting address '%2$s' with prefix %3$u to network-address in "
 "route definition"
 msgstr ""
+"%1$s: Error en la definición de la ruta (route) al convertir la dirección "
+"'%2$s' con prefijo %3$u en dirección de red"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
-msgstr ""
+msgstr "%1$s: El archivo '%2$s' es demasiado grande\n"
 
 #, c-format
 msgid ""
@@ -752,10 +888,14 @@ msgstr ""
 msgid ""
 "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 128"
 msgstr ""
+"%1$s: prefijo %2$u no válido especificado en la definición de la ruta (route)"
+", debería ser 0 - 128"
 
 #, c-format
 msgid "%1$s: Invalid prefix %2$u specified in route definition, must be 0 - 32"
 msgstr ""
+"%1$s: prefijo %2$u no válido especificado en la definición de la ruta (route)"
+", debería ser 0 - 128"
 
 #, fuzzy, c-format
 msgid "%1$s: Missing required address attribute in route definition"
@@ -808,15 +948,15 @@ msgstr "Familia '%1$s' desconocida en red '%2$s'"
 
 #, c-format
 msgid "%1$s: cannot connect to '%2$s': %3$s\n"
-msgstr ""
+msgstr "%1$s: no es posible conectarse a '%2$s': %3$s\n"
 
 #, c-format
 msgid "%1$s: cannot parse URI transport '%2$s': %3$s\n"
-msgstr ""
+msgstr "%1$s: no se pudo procesar transporte de URI '%2$s': %3$s\n"
 
 #, c-format
 msgid "%1$s: could not proxy traffic: %2$s\n"
-msgstr ""
+msgstr "%1$s: no se pudo redirigir el tráfico: %2$s\n"
 
 #, c-format
 msgid "%1$s: error: %2$s%3$c"
@@ -841,31 +981,32 @@ msgstr "%1$s: evento '%2$s' para dispositivo de nodo %3$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for secret %3$s\n"
-msgstr ""
+msgstr "%1$s: evento '%2$s' para el secreto %3$s\n"
 
 #, c-format
 msgid "%1$s: event '%2$s' for storage pool %3$s\n"
-msgstr ""
+msgstr "%1$s: evento '%2$s' para el grupo de almacenamiento %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for network %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: evento 'lifecycle' para la red %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for node device %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: evento 'lifecycle' para el dispositivo de nodos %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for secret %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: evento 'lifecycle' para el secreto %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'lifecycle' for storage pool %2$s: %3$s\n"
-msgstr ""
+msgstr "%1$s: evento 'lifecycle' para el grupo de almacenamiento %2$s: %3$s\n"
 
 #, c-format
 msgid "%1$s: event 'metadata-change' for network %2$s: type %3$s, uri %4$s\n"
 msgstr ""
+"%1$s: evento 'metadata-change' para la red %2$s: del tipo %3$s, uri %4$s\n"
 
 #, c-format
 msgid "%1$s: expected a bool for '%2$s' parameter"
@@ -873,7 +1014,7 @@ msgstr "%1$s: se esperaba valor booleano para el argumento '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a signed integer for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: se esperaba un entero con signo para el parámetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string for '%2$s' parameter"
@@ -881,23 +1022,24 @@ msgstr "%1$s: se esperaba valor de cadena para el argumento '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string list for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: se esperaba una lista de cadenas para el parámetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string or string list for '%2$s' parameter"
 msgstr ""
+"%1$s: se esperaba una cadena o lista de cadenas para el parámetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected an unsigned integer for '%2$s' parameter"
-msgstr ""
+msgstr "%1$s: se esperaba un entero sin signo para el parámetro '%2$s'"
 
 #, c-format
 msgid "%1$s: failed to communicate with bridge helper: %2$s"
-msgstr ""
+msgstr "%1$s: error en la comunicación con el asistente de puentes: %2$s"
 
 #, c-format
 msgid "%1$s: failed to generate UNIX socket path"
-msgstr ""
+msgstr "%1$s: error al generar ruta de socket UNIX"
 
 #, c-format
 msgid "%1$s: failed to read temporary file: %2$s"
@@ -949,7 +1091,7 @@ msgstr "%1$s: migration_port_min: el puerto debe ser mayor que 0"
 
 #, c-format
 msgid "%1$s: must be run as root\n"
-msgstr ""
+msgstr "%1$s: debe ser ejecutado como root\n"
 
 #, fuzzy, c-format
 msgid "%1$s: must not be run setuid root\n"
@@ -1020,11 +1162,11 @@ msgstr "%1$s: pruebe con --help para más detalles\n"
 
 #, c-format
 msgid "%1$s: unexpected URI transport '%2$s'\n"
-msgstr ""
+msgstr "%1$s: no se esperaba transporte de URI '%2$s'\n"
 
 #, c-format
 msgid "%1$s: unknown remote mode '%2$s'"
-msgstr ""
+msgstr "%1$s: modo remoto '%2$s' desconocido"
 
 #, c-format
 msgid "%1$s: unsupported hypervisor name %2$s\n"
@@ -1075,19 +1217,19 @@ msgstr ""
 
 #, c-format
 msgid "%1$s_DEBUG not set with a valid numeric value"
-msgstr ""
+msgstr "%1$s_DEBUG no configurado con un valor numérico válido"
 
 #, c-format
 msgid "'%1$s'"
-msgstr ""
+msgstr "'%1$s'"
 
 #, c-format
 msgid "'%1$s' 'index' value '%2$s' malformed"
-msgstr ""
+msgstr "'%1$s' valor '%2$s' de 'index' malformado"
 
 #, c-format
 msgid "'%1$s' D-Bus address is not handled"
-msgstr ""
+msgstr "La dirección D-Bus '%1$s' no está siendo gestionada"
 
 #, c-format
 msgid "'%1$s' architecture is not supported by CPU driver"
@@ -1095,7 +1237,7 @@ msgstr "El controlador de CPU no admite la arquitectura '%1$s'"
 
 #, c-format
 msgid "'%1$s' attributes '%2$s' must not overlap"
-msgstr ""
+msgstr "los atributos '%2$s' de '%1$s' no deberían superponerse"
 
 #, c-format
 msgid "'%1$s' controller cannot be hot plugged."
@@ -1111,7 +1253,7 @@ msgstr "El controlador '%1$s' solo admite hasta '%2$u' puertos"
 
 #, c-format
 msgid "'%1$s' denied access"
-msgstr ""
+msgstr "'%1$s': acceso denegado"
 
 #, c-format
 msgid "'%1$s' does not exist"
@@ -1123,11 +1265,11 @@ msgstr "el archivo '%1$s' no cabe en la memoria"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "'%1$s' no es actualmente compatible con el motor de cifrado de QEMU"
 
 #, c-format
 msgid "'%1$s' is not a VF device"
-msgstr ""
+msgstr "'%1$s' no es un dispositivo VF"
 
 #, c-format
 msgid "'%1$s' is not a known interface"
@@ -1135,11 +1277,11 @@ msgstr "'%1$s' no es una interfaz conocida"
 
 #, c-format
 msgid "'%1$s' is not a suitable bridge helper"
-msgstr ""
+msgstr "'%1$s' no es un ayudante de puente adecuado"
 
 #, c-format
 msgid "'%1$s' is not a suitable dbus-daemon"
-msgstr ""
+msgstr "'%1$s' no es un dbus-daemon adecuado"
 
 #, fuzzy, c-format
 msgid "'%1$s' is not a suitable pr helper"
@@ -1151,23 +1293,23 @@ msgstr "%1$s no tiene soporte en este binario de QEMU"
 
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "seguridad de inicio '%1$s' no es compatible con este binario de QEMU"
 
 #, c-format
 msgid "'%1$s' missing"
-msgstr ""
+msgstr "falta '%1$s'"
 
 #, c-format
 msgid "'%1$s' requires shared memory"
-msgstr ""
+msgstr "'%1$s' requiere memoria compartida"
 
 #, c-format
 msgid "'%1$s' scheduler bitmap '%2$s' is empty"
-msgstr ""
+msgstr "el bitmap '%2$s' del planificador '%1$s' está vacío"
 
 #, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
-msgstr ""
+msgstr "'%1$s' a partir de %2$llu solo tiene %3$zd bytes disponibles"
 
 #, fuzzy
 msgid ""
@@ -1183,29 +1325,34 @@ msgstr "Falta el elemento '<local>' para la interfaz de socket 'udp'"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
+"debe especificarse un nombre de 'adapter' para la fuente de hostdev scsi"
 
 msgid "'address' is not supported for 'ramfb' video devices"
-msgstr ""
+msgstr "'address' no es compatible con dispositivos de video 'ramfb'"
 
 msgid "'address' must be specified for scsi hostdev source"
-msgstr ""
+msgstr "debe especificarse un valor 'address' para la fuente de hostdev scsi"
 
 msgid "'aes-key-wrap'/'dea-key-wrap' is not available on this architecture"
-msgstr ""
+msgstr "'aes-key-wrap'/'dea-key-wrap' no están disponibles en esta arquitectura"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
+"el elemento 'arch' no se puede usar dentro del elemento 'cpu' con el "
+"atributo 'match'"
 
 msgid "'blob' support for virtio-gpu devices requires a memfd memory backend"
 msgstr ""
+"el soporte para 'blob' en dispositivos virtio-gpu requiere un backend de "
+"memoria memfd"
 
 #, c-format
 msgid "'block' nvram backing device '%1$s' doesn't exist"
-msgstr ""
+msgstr "el dispositivo de respaldo nvram '%1$s' del tipo 'block' no existe"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
+msgstr "'cache' hace referencia a una caché de nodo NUMA inexistente"
 
 #, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
@@ -1219,22 +1366,24 @@ msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
 "type instead"
 msgstr ""
+"el formato de almacenamiento 'directory' no es directamente compatible con "
+"QEMU, use el tipo de disco 'dir' en su lugar"
 
 msgid "'discard_no_unref' is not compatible with read-only disk"
-msgstr ""
+msgstr "'discard_no_unref' no es compatible con discos de solo lectura"
 
 msgid "'discard_no_unref' is not supported by this QEMU binary"
-msgstr ""
+msgstr "'discard_no_unref' no es compatible con este binario de QEMU"
 
 msgid "'discard_no_unref' only works with qcow2 disk format"
-msgstr ""
+msgstr "'discard_no_unref' solo funciona con formatos de disco qcow2"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "falta 'disk' o este no es un array en la respuesta de guest-get-fsinfo"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
-msgstr ""
+msgstr "'extended_l2' no es compatible con compat level %1$s"
 
 msgid "'gluster' command line tool not found"
 msgstr "No se encontró la herramienta de línea de órdenes «gluster»"
@@ -1248,9 +1397,11 @@ msgid ""
 "'incremental' backup mode of disk '%1$s' requires setting 'incremental' "
 "field for disk or backup"
 msgstr ""
+"el modo de respaldo 'incremental' del disco '%1$s' requiere establecer un "
+"campo 'incremental' para el disco o la copia de seguridad"
 
 msgid "'initiator' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "'initiator' hace referencia a un nodo NUMA inexistente"
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1266,6 +1417,8 @@ msgstr "El controlador virtio-scsi solo admite 'queues'"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
+"la asignación del dispositivo 'legacy KVM' ya no es compatible con este "
+"sistema"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
@@ -1275,10 +1428,11 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr ""
+msgstr "el modo de instantánea de memoria 'manual' no es compatible"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
 msgstr ""
+"el modo de instantánea 'manual' no es compatible con el controlador de prueba"
 
 #, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
@@ -1292,17 +1446,19 @@ msgid ""
 "'mode' of Xen passthrough feature differs: source: '%1$s', destination: "
 "'%2$s'"
 msgstr ""
+"el valor de 'mode' en la característica passthrough de Xen difiere: fuente: "
+"'%1$s', destino: '%2$s'"
 
 #, c-format
 msgid "'model' attribute in <hostdev> is only supported when type='%1$s'"
-msgstr ""
+msgstr "el atributo 'model' en <hostdev> solo se admite cuando type= '%1$s'"
 
 #, fuzzy
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
 msgstr "'online' falta en respuesta de guest-get-vcpus"
 
 msgid "'name' missing in reply of guest-get-disks"
-msgstr ""
+msgstr "falta 'name' en la respuesta de guest-get-disks"
 
 #, fuzzy
 msgid "'name' missing in reply of guest-get-fsinfo"
@@ -1310,18 +1466,20 @@ msgstr "'online' falta en respuesta de guest-get-vcpus"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr ""
+"el espacio de nombres source (fuente ) de 'netns' solo se puede usar con "
+"sharenet"
 
 msgid "'network' attribute is required for listen type 'network'"
-msgstr ""
+msgstr "se requiere el atributo 'network' para el tipo de escucha 'network'"
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "El atributo 'network' solo es válido para tipo de escucha 'network'"
 
 msgid "'nfs' host must use TCP protocol"
-msgstr ""
+msgstr "el host 'nfs' debe usar el protocolo TCP"
 
 msgid "'nfs' protocol requires the usage of exactly one host"
-msgstr ""
+msgstr "el protocolo 'nfs' requiere el uso de un único host"
 
 #, fuzzy
 msgid "'offset' missing in reply of guest-get-timezone"
@@ -1336,10 +1494,10 @@ msgstr ""
 "host"
 
 msgid "'partition' missing in reply of guest-get-disks"
-msgstr ""
+msgstr "falta 'partition' en la respuesta de guest-get-disks"
 
 msgid "'pci-controller' missing"
-msgstr ""
+msgstr "falta 'pci-controller'"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "«peak» y «burst» requieren el atributo «average»"
@@ -1356,6 +1514,8 @@ msgid ""
 "'reconnect' attribute unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
+"modo 'server' no compatible en el atributo 'reconnect' para <interface "
+"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
