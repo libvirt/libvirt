@@ -5887,7 +5887,6 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
-        virDomainNetType actualType;
 
         /* If appropriate, grab a physical device from the configured
          * network's pool of devices, or resolve bridge device name
@@ -5900,36 +5899,56 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
                 return -1;
         }
 
-        actualType = virDomainNetGetActualType(net);
-        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-            net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            /* Each type='hostdev' network device must also have a
-             * corresponding entry in the hostdevs array. For netdevs
-             * that are hardcoded as type='hostdev', this is already
-             * done by the parser, but for those allocated from a
-             * network / determined at runtime, we need to do it
-             * separately.
-             */
-            virDomainHostdevDef *hostdev = virDomainNetGetActualHostdev(net);
-            virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
+        switch (virDomainNetGetActualType(net)) {
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+                /* Each type='hostdev' network device must also have a
+                 * corresponding entry in the hostdevs array. For netdevs
+                 * that are hardcoded as type='hostdev', this is already
+                 * done by the parser, but for those allocated from a
+                 * network / determined at runtime, we need to do it
+                 * separately.
+                 */
+                virDomainHostdevDef *hostdev = virDomainNetGetActualHostdev(net);
+                virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
 
-            if (virDomainHostdevFind(def, hostdev, NULL) >= 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by domain %6$s"),
-                               pcisrc->addr.domain, pcisrc->addr.bus,
-                               pcisrc->addr.slot, pcisrc->addr.function,
-                               net->data.network.name, def->name);
-                return -1;
+                if (virDomainHostdevFind(def, hostdev, NULL) >= 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already in use by domain %6$s"),
+                                   pcisrc->addr.domain, pcisrc->addr.bus,
+                                   pcisrc->addr.slot, pcisrc->addr.function,
+                                   net->data.network.name, def->name);
+                    return -1;
+                }
+
+                /* For hostdev present in qemuProcessPrepareDomain() phase this was
+                 * done already, but this code runs after that, so we have to call
+                 * it ourselves. */
+                if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
+                    return -1;
+
+                virDomainHostdevInsert(def, hostdev);
             }
+            break;
 
-            /* For hostdev present in qemuProcessPrepareDomain() phase this was
-             * done already, but this code runs after that, so we have to call
-             * it ourselves. */
-            if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
-                return -1;
-
-            virDomainHostdevInsert(def, hostdev);
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_NULL:
+        case VIR_DOMAIN_NET_TYPE_VDS:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
         }
+
     }
     return 0;
 }
