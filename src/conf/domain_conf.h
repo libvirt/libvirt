@@ -4130,7 +4130,7 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDef *disk,
 
 virDomainFSDef *virDomainGetFilesystemForTarget(virDomainDef *def,
                                                   const char *target);
-int virDomainFSInsert(virDomainDef *def, virDomainFSDef *fs);
+void virDomainFSInsert(virDomainDef *def, virDomainFSDef *fs);
 int virDomainFSIndexByName(virDomainDef *def, const char *name);
 virDomainFSDef *virDomainFSRemove(virDomainDef *def, size_t i);
 ssize_t virDomainFSDefFind(virDomainDef *def,

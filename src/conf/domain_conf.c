@@ -29200,12 +29200,10 @@ virDiskNameToBusDeviceIndex(virDomainDiskDef *disk,
     return 0;
 }
 
-int
+void
 virDomainFSInsert(virDomainDef *def, virDomainFSDef *fs)
 {
     VIR_APPEND_ELEMENT(def->fss, def->nfss, fs);
-
-    return 0;
 }
 
 virDomainFSDef *

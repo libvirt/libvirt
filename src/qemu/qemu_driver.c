@@ -6772,8 +6772,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
             return -1;
         }
 
-        if (virDomainFSInsert(vmdef, fs) < 0)
-            return -1;
+        virDomainFSInsert(vmdef, fs);
         dev->data.fs = NULL;
         break;
 

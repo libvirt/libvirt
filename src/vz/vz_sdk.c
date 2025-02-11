@@ -801,8 +801,7 @@ prlsdkAddDomainHardDisksInfo(struct _vzDriver *driver, PRL_HANDLE sdkdom, virDom
             if (prlsdkGetFSInfo(hdd, fs) < 0)
                 goto error;
 
-            if (virDomainFSInsert(def, fs) < 0)
-                goto error;
+            virDomainFSInsert(def, fs);
 
             fs = NULL;
             PrlHandle_Free(hdd);
