@@ -1090,7 +1090,7 @@ qemuDomainDefBootPostParse(virDomainDef *def,
 }
 
 
-static int
+static void
 qemuDomainDefAddImplicitInputDevice(virDomainDef *def,
                                     virQEMUCaps *qemuCaps)
 {
@@ -1099,8 +1099,6 @@ qemuDomainDefAddImplicitInputDevice(virDomainDef *def,
         virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_MOUSE, VIR_DOMAIN_INPUT_BUS_PS2);
         virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_KBD, VIR_DOMAIN_INPUT_BUS_PS2);
     }
-
-    return 0;
 }
 
 
@@ -1195,8 +1193,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     bool addIOMMU = false;
 
     /* add implicit input devices */
-    if (qemuDomainDefAddImplicitInputDevice(def, qemuCaps) < 0)
-        return -1;
+    qemuDomainDefAddImplicitInputDevice(def, qemuCaps);
 
     /* Add implicit PCI root controller if the machine has one */
     switch (def->os.arch) {
