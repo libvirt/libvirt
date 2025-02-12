@@ -22248,7 +22248,7 @@ virDomainDefCheckABIStability(virDomainDef *src,
 }
 
 
-static int
+static void
 virDomainDefAddDiskControllersForType(virDomainDef *def,
                                       virDomainControllerType controllerType,
                                       int diskBus)
@@ -22268,12 +22268,10 @@ virDomainDefAddDiskControllersForType(virDomainDef *def,
     }
 
     if (maxController == -1)
-        return 0;
+        return;
 
     for (i = 0; i <= maxController; i++)
         virDomainDefMaybeAddController(def, controllerType, i, -1);
-
-    return 0;
 }
 
 
@@ -22355,25 +22353,14 @@ virDomainDefMaybeAddSmartcardController(virDomainDef *def)
 static int
 virDomainDefAddImplicitControllers(virDomainDef *def)
 {
-    if (virDomainDefAddDiskControllersForType(def,
-                                              VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                              VIR_DOMAIN_DISK_BUS_SCSI) < 0)
-        return -1;
-
-    if (virDomainDefAddDiskControllersForType(def,
-                                              VIR_DOMAIN_CONTROLLER_TYPE_FDC,
-                                              VIR_DOMAIN_DISK_BUS_FDC) < 0)
-        return -1;
-
-    if (virDomainDefAddDiskControllersForType(def,
-                                              VIR_DOMAIN_CONTROLLER_TYPE_IDE,
-                                              VIR_DOMAIN_DISK_BUS_IDE) < 0)
-        return -1;
-
-    if (virDomainDefAddDiskControllersForType(def,
-                                              VIR_DOMAIN_CONTROLLER_TYPE_SATA,
-                                              VIR_DOMAIN_DISK_BUS_SATA) < 0)
-        return -1;
+    virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                          VIR_DOMAIN_DISK_BUS_SCSI);
+    virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_FDC,
+                                          VIR_DOMAIN_DISK_BUS_FDC);
+    virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+                                          VIR_DOMAIN_DISK_BUS_IDE);
+    virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                                          VIR_DOMAIN_DISK_BUS_SATA);
 
     if (virDomainDefMaybeAddVirtioSerialController(def) < 0)
         return -1;
