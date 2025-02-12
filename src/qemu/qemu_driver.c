@@ -5949,7 +5949,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     if (qemuSaveImageGetMetadata(driver, NULL, path, &def, &data) < 0)
         goto cleanup;
 
-    fd = qemuSaveImageOpen(driver, path, 0, NULL, false);
+    fd = qemuSaveImageOpen(driver, path, false, NULL, true);
     if (fd < 0)
         goto cleanup;
 
