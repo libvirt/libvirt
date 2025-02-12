@@ -22275,7 +22275,7 @@ virDomainDefAddDiskControllersForType(virDomainDef *def,
 }
 
 
-static int
+static void
 virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
 {
     /* Look for any virtio serial or virtio console devs */
@@ -22304,8 +22304,6 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
             virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1);
         }
     }
-
-    return 0;
 }
 
 
@@ -22362,8 +22360,7 @@ virDomainDefAddImplicitControllers(virDomainDef *def)
     virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
                                           VIR_DOMAIN_DISK_BUS_SATA);
 
-    if (virDomainDefMaybeAddVirtioSerialController(def) < 0)
-        return -1;
+    virDomainDefMaybeAddVirtioSerialController(def);
 
     if (virDomainDefMaybeAddSmartcardController(def) < 0)
         return -1;
