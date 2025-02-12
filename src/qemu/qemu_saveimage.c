@@ -508,38 +508,26 @@ qemuSaveImageCreate(virQEMUDriver *driver,
 
 
 /* qemuSaveImageGetCompressionProgram:
- * @imageFormat: String representation from qemu.conf of the image format
- *               being used (dump, save, or snapshot).
+ * @format: Integer representation of the image format being used
+ *          (dump, save, or snapshot).
  * @compresspath: Pointer to a character string to store the fully qualified
  *                path from virFindFileInPath.
  * @styleFormat: String representing the style of format (dump, save, snapshot)
  *
- * On success, returns an integer representation of the save image format to be
- * used for a particular style (e.g. dump, save, or snapshot). Returns -1 on
- * failure.
+ * Returns -1 on failure, 0 on success.
  */
 int
-qemuSaveImageGetCompressionProgram(const char *imageFormat,
+qemuSaveImageGetCompressionProgram(int format,
                                    virCommand **compressor,
                                    const char *styleFormat)
 {
-    int ret;
+    const char *imageFormat = qemuSaveFormatTypeToString(format);
     const char *prog;
 
     *compressor = NULL;
 
-    if (!imageFormat)
-        return QEMU_SAVE_FORMAT_RAW;
-
-    if ((ret = qemuSaveFormatTypeFromString(imageFormat)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Invalid %1$s image format specified in configuration file"),
-                       styleFormat);
-        return -1;
-    }
-
-    if (ret == QEMU_SAVE_FORMAT_RAW)
-        return QEMU_SAVE_FORMAT_RAW;
+    if (format == QEMU_SAVE_FORMAT_RAW)
+        return 0;
 
     if (!(prog = virFindFileInPath(imageFormat))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -550,10 +538,10 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
 
     *compressor = virCommandNew(prog);
     virCommandAddArg(*compressor, "-c");
-    if (ret == QEMU_SAVE_FORMAT_XZ)
+    if (format == QEMU_SAVE_FORMAT_XZ)
         virCommandAddArg(*compressor, "-3");
 
-    return ret;
+    return 0;
 }
 
 

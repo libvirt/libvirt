@@ -110,7 +110,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int
-qemuSaveImageGetCompressionProgram(const char *imageFormat,
+qemuSaveImageGetCompressionProgram(int format,
                                    virCommand **compressor,
                                    const char *styleFormat)
     ATTRIBUTE_NONNULL(2);

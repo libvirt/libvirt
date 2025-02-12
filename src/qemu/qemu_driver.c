@@ -2731,7 +2731,7 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(virCommand) compressor = NULL;
     g_autofree char *path = NULL;
-    int format;
+    int format = QEMU_SAVE_FORMAT_RAW;
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -2743,8 +2743,11 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     }
 
     cfg = virQEMUDriverGetConfig(driver);
-    if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                     &compressor, "save")) < 0)
+    if (cfg->saveImageFormat &&
+        (format = qemuSaveFormatTypeFromString(cfg->saveImageFormat)) < 0)
+        return -1;
+
+    if (qemuSaveImageGetCompressionProgram(format, &compressor, "save") < 0)
         return -1;
 
     path = qemuDomainManagedSavePath(driver, vm);
@@ -2765,7 +2768,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
-    int format;
+    int format = QEMU_SAVE_FORMAT_RAW;
     g_autoptr(virCommand) compressor = NULL;
     int ret = -1;
     virDomainObj *vm = NULL;
@@ -2776,8 +2779,11 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
-    if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                     &compressor, "save")) < 0)
+    if (cfg->saveImageFormat &&
+        (format = qemuSaveFormatTypeFromString(cfg->saveImageFormat)) < 0)
+        goto cleanup;
+
+    if (qemuSaveImageGetCompressionProgram(format, &compressor, "save") < 0)
         goto cleanup;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
@@ -2815,7 +2821,7 @@ qemuDomainSaveParams(virDomainPtr dom,
     g_autoptr(virCommand) compressor = NULL;
     const char *to = NULL;
     const char *dxml = NULL;
-    int format;
+    int format = QEMU_SAVE_FORMAT_RAW;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -2849,8 +2855,11 @@ qemuDomainSaveParams(virDomainPtr dom,
     }
 
     cfg = virQEMUDriverGetConfig(driver);
-    if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                     &compressor, "save")) < 0)
+    if (cfg->saveImageFormat &&
+        (format = qemuSaveFormatTypeFromString(cfg->saveImageFormat)) < 0)
+        goto cleanup;
+
+    if (qemuSaveImageGetCompressionProgram(format, &compressor, "save") < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -3060,9 +3069,14 @@ doCoreDump(virQEMUDriver *driver,
     const char *memory_dump_format = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) compressor = NULL;
+    int format = QEMU_SAVE_FORMAT_RAW;
 
-    if (qemuSaveImageGetCompressionProgram(cfg->dumpImageFormat,
-                                           &compressor, "dump") < 0)
+    if (cfg->dumpImageFormat) {
+        if ((format = qemuSaveFormatTypeFromString(cfg->dumpImageFormat)) < 0)
+            goto cleanup;
+    }
+
+    if (qemuSaveImageGetCompressionProgram(format, &compressor, "dump") < 0)
         goto cleanup;
 
     /* Create an empty file with appropriate ownership.  */
