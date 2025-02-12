@@ -37,6 +37,9 @@ GDBusConnection *
 virGDBusGetSessionBus(void);
 
 bool
+virGDBusHasSessionBus(void);
+
+bool
 virGDBusHasSystemBus(void);
 
 void

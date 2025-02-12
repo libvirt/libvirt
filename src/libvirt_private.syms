@@ -2496,6 +2496,7 @@ virGDBusCloseSystemBus;
 virGDBusErrorIsUnknownMethod;
 virGDBusGetSessionBus;
 virGDBusGetSystemBus;
+virGDBusHasSessionBus;
 virGDBusHasSystemBus;
 virGDBusIsServiceEnabled;
 virGDBusIsServiceRegistered;

@@ -113,8 +113,8 @@ virGDBusSessionBusInit(void)
 }
 
 
-GDBusConnection *
-virGDBusGetSessionBus(void)
+static GDBusConnection *
+virGDBusGetSessionBusInternal(void)
 {
     if (virOnce(&sessionOnce, virGDBusSessionBusInit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -122,14 +122,56 @@ virGDBusGetSessionBus(void)
         return NULL;
     }
 
-    if (!sessionBus) {
+    return sessionBus;
+}
+
+
+GDBusConnection *
+virGDBusGetSessionBus(void)
+{
+    GDBusConnection *bus = virGDBusGetSessionBusInternal();
+
+    if (!bus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to get session bus connection: %1$s"),
                        sessionError->message);
         return NULL;
     }
 
-    return sessionBus;
+    return bus;
+}
+
+
+/**
+ * virGDBusHasSessionBus:
+ *
+ * Check if DBus session bus is running. This does not imply that we have
+ * a connection. DBus might be running and refusing connections due to its
+ * client limit. The latter must be treated as a fatal error.
+ *
+ * Return false if dbus is not available, true if probably available.
+ */
+bool
+virGDBusHasSessionBus(void)
+{
+    g_autofree char *name = NULL;
+
+    if (virGDBusGetSessionBusInternal())
+        return true;
+
+    if (!g_dbus_error_is_remote_error(sessionError))
+        return false;
+
+    name = g_dbus_error_get_remote_error(sessionError);
+
+    if (name &&
+        (STREQ(name, "org.freedesktop.DBus.Error.FileNotFound") ||
+         STREQ(name, "org.freedesktop.DBus.Error.NoServer"))) {
+        VIR_DEBUG("System bus not available: %s", NULLSTR(sessionError->message));
+        return false;
+    }
+
+    return true;
 }
 
 
