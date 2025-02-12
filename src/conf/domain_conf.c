@@ -16529,7 +16529,7 @@ virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
 }
 
 
-int
+bool
 virDomainDefMaybeAddController(virDomainDef *def,
                                virDomainControllerType type,
                                int idx,
@@ -16539,10 +16539,10 @@ virDomainDefMaybeAddController(virDomainDef *def,
      * in use for that type of controller
      */
     if (idx >= 0 && virDomainControllerFind(def, type, idx) >= 0)
-        return 0;
+        return false;
 
     virDomainDefAddController(def, type, idx, model);
-    return 1;
+    return true;
 }
 
 
@@ -17240,11 +17240,8 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
     if (maxController == -1)
         return 0;
 
-    for (i = 0; i <= maxController; i++) {
-        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                           i, newModel) < 0)
-            return -1;
-    }
+    for (i = 0; i <= maxController; i++)
+        virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI, i, newModel);
 
     return 0;
 }
@@ -22276,10 +22273,8 @@ virDomainDefAddDiskControllersForType(virDomainDef *def,
     if (maxController == -1)
         return 0;
 
-    for (i = 0; i <= maxController; i++) {
-        if (virDomainDefMaybeAddController(def, controllerType, i, -1) < 0)
-            return -1;
-    }
+    for (i = 0; i <= maxController; i++)
+        virDomainDefMaybeAddController(def, controllerType, i, -1);
 
     return 0;
 }
@@ -22299,10 +22294,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
             if (channel->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
                 idx = channel->info.addr.vioserial.controller;
 
-            if (virDomainDefMaybeAddController(def,
-                                               VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
-                                               idx, -1) < 0)
-                return -1;
+            virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1);
         }
     }
 
@@ -22314,10 +22306,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
             if (console->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
                 idx = console->info.addr.vioserial.controller;
 
-            if (virDomainDefMaybeAddController(def,
-                                               VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
-                                               idx, -1) < 0)
-                return -1;
+            virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1);
         }
     }
 
@@ -22354,10 +22343,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDef *def)
             smartcard->info.addr.ccid.slot = max + 1;
         }
 
-        if (virDomainDefMaybeAddController(def,
-                                           VIR_DOMAIN_CONTROLLER_TYPE_CCID,
-                                           idx, -1) < 0)
-            return -1;
+        virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_CCID, idx, -1);
     }
 
     return 0;

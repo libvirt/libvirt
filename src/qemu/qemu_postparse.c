@@ -1335,10 +1335,8 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     if (addDefaultUSB && virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0) < 0)
         virDomainDefAddUSBController(def, 0, usbModel);
 
-    if (addImplicitSATA &&
-        virDomainDefMaybeAddController(
-            def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1) < 0)
-        return -1;
+    if (addImplicitSATA)
+        virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1);
 
     pciRoot = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
 

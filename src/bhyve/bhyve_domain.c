@@ -94,14 +94,13 @@ bhyveDomainDefPostParse(virDomainDef *def,
         return -1;
 
     /* Add an implicit PCI root controller */
-    if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
-                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
-        return -1;
+    virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+                                   VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT);
 
-    if (bhyveDomainDefNeedsISAController(def))
-        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_ISA, 0,
-                                           VIR_DOMAIN_CONTROLLER_MODEL_ISA_DEFAULT) < 0)
-            return -1;
+    if (bhyveDomainDefNeedsISAController(def)) {
+        virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_ISA, 0,
+                                       VIR_DOMAIN_CONTROLLER_MODEL_ISA_DEFAULT);
+    }
 
     return 0;
 }

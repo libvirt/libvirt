@@ -2620,7 +2620,6 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
     int max_idx = -1;
     int nbuses = 0;
     size_t i;
-    int rv;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDef *cont = def->controllers[i];
@@ -2737,12 +2736,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
             int contIndex;
             virDomainPCIAddressBus *bus = &addrs->buses[i];
 
-            if ((rv = virDomainDefMaybeAddController(
-                     def, VIR_DOMAIN_CONTROLLER_TYPE_PCI,
-                     i, bus->model)) < 0)
-                goto cleanup;
-
-            if (rv == 0)
+            if (!virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, i, bus->model))
                 continue; /* no new controller added */
 
             /* We did add a new controller, so we will need one more

@@ -1625,11 +1625,7 @@ virDomainVirtioSerialAddrSetAutoaddController(virDomainDef *def,
 {
     int contidx;
 
-    if (virDomainDefMaybeAddController(def,
-                                       VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
-                                       idx, -1) < 0)
-        return -1;
-
+    virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1);
     contidx = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx);
 
     if (virDomainVirtioSerialAddrSetAddController(addrs, def->controllers[contidx]) < 0)
