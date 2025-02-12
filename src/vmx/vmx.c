@@ -1756,9 +1756,8 @@ virVMXParseConfig(virVMXContext *ctx,
     if (def->ndisks != 0) {
         virDomainDeviceInfo *info = &def->disks[def->ndisks - 1]->info;
         for (controller = 0; controller <= info->addr.drive.controller; controller++) {
-            if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                           controller, scsi_virtualDev[controller]))
-                goto cleanup;
+            virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                      controller, scsi_virtualDev[controller]);
         }
         saved_ndisks = def->ndisks;
     }
@@ -1799,11 +1798,8 @@ virVMXParseConfig(virVMXContext *ctx,
      * currently used by a disk */
     if (def->ndisks - saved_ndisks != 0) {
         virDomainDeviceInfo *info = &def->disks[def->ndisks - 1]->info;
-        for (controller = 0; controller <= info->addr.drive.controller; controller++) {
-            if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
-                                           controller, -1))
-                goto cleanup;
-        }
+        for (controller = 0; controller <= info->addr.drive.controller; controller++)
+            virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, controller, -1);
     }
 
     /* def:disks (ide) */

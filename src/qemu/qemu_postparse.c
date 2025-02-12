@@ -1355,9 +1355,9 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
                                virDomainControllerModelPCITypeToString(def->controllers[pciRoot]->model));
                 return -1;
             }
-        } else if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
-                                              VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)) {
-            return -1;
+        } else {
+            virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+                                      VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT);
         }
     }
 
@@ -1376,9 +1376,9 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
                                virDomainControllerModelPCITypeToString(def->controllers[pciRoot]->model));
                 return -1;
             }
-        } else if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
-                                             VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
-            return -1;
+        } else {
+            virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+                                      VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT);
         }
     }
 

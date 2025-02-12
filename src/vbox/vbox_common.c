@@ -3220,17 +3220,8 @@ vboxDumpStorageControllers(virDomainDef *def, IMachine *machine)
             goto cleanup;
         }
 
-        if (type != VIR_DOMAIN_CONTROLLER_TYPE_LAST) {
-            virDomainControllerDef *cont;
-
-            cont = virDomainDefAddController(def, type, -1, model);
-            if (!cont) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to add %1$s controller type definition"),
-                               virDomainControllerTypeToString(type));
-                goto cleanup;
-            }
-        }
+        if (type != VIR_DOMAIN_CONTROLLER_TYPE_LAST)
+            virDomainDefAddController(def, type, -1, model);
     }
 
     ret = 0;

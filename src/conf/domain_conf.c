@@ -16503,10 +16503,7 @@ virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
 {
     virDomainControllerDef *cont; /* this is a *copy* of the virDomainControllerDef */
 
-    cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
-                                     idx, model);
-    if (!cont)
-        return -1;
+    cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, idx, model);
 
     if (model != VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1)
         return 0;
@@ -16517,21 +16514,18 @@ virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
 
     idx = cont->idx; /* in case original request was "-1" */
 
-    if (!(cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
-                                           idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1)))
-        return -1;
+    cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                     idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1);
     cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
     cont->info.master.usb.startport = 0;
 
-    if (!(cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
-                                           idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2)))
-        return -1;
+    cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                     idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2);
     cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
     cont->info.master.usb.startport = 2;
 
-    if (!(cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
-                                           idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3)))
-        return -1;
+    cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                     idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3);
     cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
     cont->info.master.usb.startport = 4;
 
@@ -16551,9 +16545,8 @@ virDomainDefMaybeAddController(virDomainDef *def,
     if (idx >= 0 && virDomainControllerFind(def, type, idx) >= 0)
         return 0;
 
-    if (virDomainDefAddController(def, type, idx, model))
-        return 1;
-    return -1;
+    virDomainDefAddController(def, type, idx, model);
+    return 1;
 }
 
 
