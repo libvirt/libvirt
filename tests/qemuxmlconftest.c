@@ -1793,6 +1793,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-user-passt");
     DO_TEST_CAPS_VER("net-user-passt", "7.2.0");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("net-user-slirp-portforward");
+    DO_TEST_CAPS_LATEST("net-vhostuser-passt");
     DO_TEST_CAPS_LATEST("net-virtio");
     DO_TEST_CAPS_LATEST("net-virtio-device");
     DO_TEST_CAPS_LATEST("net-virtio-disable-offloads");

@@ -1751,7 +1751,9 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
         return -1;
     }
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
+    if (net->type == VIR_DOMAIN_NET_TYPE_USER ||
+        (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+         net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)) {
         virDomainCapsDeviceNet netCaps = { };
 
         virQEMUCapsFillDomainDeviceNetCaps(qemuCaps, &netCaps);
@@ -1826,7 +1828,8 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     }
 
     if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-        if (!net->data.vhostuser->data.nix.path) {
+        if (!net->data.vhostuser->data.nix.path &&
+            net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Missing required attribute '%1$s' in element '%2$s'"),
                            "path", "source");

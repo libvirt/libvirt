@@ -1262,10 +1262,23 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         if (!(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
             goto cleanup;
 
-        if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
-                                                   net->data.vhostuser->data.nix.listen,
-                                                   &net->ifname) < 0)
-            goto cleanup;
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+
+            /* vhostuser needs socket path in this location, and when
+             * backend is passt, the path is derived from other info,
+             * not taken from config.
+             */
+            g_free(net->data.vhostuser->data.nix.path);
+            net->data.vhostuser->data.nix.path = qemuPasstCreateSocketPath(vm, net);
+
+            if (qemuPasstStart(vm, net) < 0)
+                goto cleanup;
+        } else {
+            if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
+                                                       net->data.vhostuser->data.nix.listen,
+                                                       &net->ifname) < 0)
+                goto cleanup;
+        }
 
         if (qemuSecuritySetNetdevLabel(driver, vm, net) < 0)
             goto cleanup;

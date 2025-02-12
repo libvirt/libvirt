@@ -8649,11 +8649,12 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         if (qemuInterfaceVhostuserConnect(cmd, net, qemuCaps) < 0)
             goto cleanup;
 
-        if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
+        if (net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST &&
+            virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
                                                    net->data.vhostuser->data.nix.listen,
-                                                   &net->ifname) < 0)
+                                                   &net->ifname) < 0) {
             goto cleanup;
-
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:

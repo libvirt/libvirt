@@ -1,1 +1,1 @@
-unsupported configuration: The <portForward> element can only be used with <interface type='user'> and its 'passt' backend
+unsupported configuration: The <portForward> element can only be used with the 'passt' backend of interface type='user' or type='vhostuser'

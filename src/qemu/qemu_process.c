@@ -64,6 +64,7 @@
 #include "qemu_backup.h"
 #include "qemu_dbus.h"
 #include "qemu_snapshot.h"
+#include "qemu_passt.h"
 
 #include "cpu/cpu.h"
 #include "cpu/cpu_x86.h"
@@ -5931,12 +5932,23 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
             }
             break;
 
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+            if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+                /* when using the passt backend, the path of the
+                 * unix socket is always derived from other info
+                 * *not* manually given in the config, but all the
+                 * vhostuser code looks for it there.
+                 */
+                g_free(net->data.vhostuser->data.nix.path);
+                net->data.vhostuser->data.nix.path = qemuPasstCreateSocketPath(vm, net);
+            }
+            break;
+
         case VIR_DOMAIN_NET_TYPE_DIRECT:
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
         case VIR_DOMAIN_NET_TYPE_USER:
-        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:
         case VIR_DOMAIN_NET_TYPE_MCAST:
@@ -5948,7 +5960,6 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;
         }
-
     }
     return 0;
 }

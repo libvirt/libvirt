@@ -180,6 +180,9 @@ qemuPasstStart(virDomainObj *vm,
 
     virCommandClearCaps(cmd);
 
+    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
+        virCommandAddArg(cmd, "--vhost-user");
+
     virCommandAddArgList(cmd,
                          "--one-off",
                          "--socket", passtSocketName,

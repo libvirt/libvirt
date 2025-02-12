@@ -212,13 +212,15 @@ qemuExtDevicesStart(virQEMUDriver *driver,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
 
-        if (net->type != VIR_DOMAIN_NET_TYPE_USER)
+        if (net->type != VIR_DOMAIN_NET_TYPE_USER &&
+            net->type != VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
             continue;
+        }
 
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
             if (qemuPasstStart(vm, net) < 0)
                 return -1;
-        } else {
+        } else if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
             if (qemuSlirpStart(vm, net, incomingMigration) < 0)
                 return -1;
         }

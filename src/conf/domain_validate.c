@@ -2163,67 +2163,46 @@ virDomainNetDefValidate(const virDomainNetDef *net)
         return -1;
     }
 
-    if (net->type != VIR_DOMAIN_NET_TYPE_USER) {
+    if (net->type != VIR_DOMAIN_NET_TYPE_USER &&
+        net->type != VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("The 'passt' backend can only be used with interface type='user'"));
+                           _("The 'passt' backend can only be used with interface type='user' or type='vhostuser'"));
             return -1;
         }
     }
 
-    if (net->nPortForwards > 0 &&
-        (net->type != VIR_DOMAIN_NET_TYPE_USER ||
-         (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-          net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("The <portForward> element can only be used with <interface type='user'> and its 'passt' backend"));
-        return -1;
+    if (net->nPortForwards > 0) {
+        size_t p;
+
+        if ((net->type != VIR_DOMAIN_NET_TYPE_USER &&
+            net->type != VIR_DOMAIN_NET_TYPE_VHOSTUSER) ||
+            net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The <portForward> element can only be used with the 'passt' backend of interface type='user' or type='vhostuser'"));
+            return -1;
+        }
+
+        for (p = 0; p < net->nPortForwards; p++) {
+            size_t r;
+            virDomainNetPortForward *pf = net->portForwards[p];
+
+            for (r = 0; r < pf->nRanges; r++) {
+                virDomainNetPortForwardRange *range = pf->ranges[r];
+
+                if (!range->start
+                    && (range->end || range->to
+                        || range->exclude != VIR_TRISTATE_BOOL_ABSENT)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or 'exclude' is specified"));
+                    return -1;
+                }
+            }
+        }
     }
 
     if (!virNetDevBandwidthValidate(net->bandwidth)) {
         return -1;
-    }
-
-    switch (net->type) {
-    case VIR_DOMAIN_NET_TYPE_USER:
-        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
-            size_t p;
-
-            for (p = 0; p < net->nPortForwards; p++) {
-                size_t r;
-                virDomainNetPortForward *pf = net->portForwards[p];
-
-                for (r = 0; r < pf->nRanges; r++) {
-                    virDomainNetPortForwardRange *range = pf->ranges[r];
-
-                    if (!range->start
-                        && (range->end || range->to
-                            || range->exclude != VIR_TRISTATE_BOOL_ABSENT)) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or 'exclude' is specified"));
-                        return -1;
-                    }
-                }
-            }
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-    case VIR_DOMAIN_NET_TYPE_VDPA:
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-    case VIR_DOMAIN_NET_TYPE_UDP:
-    case VIR_DOMAIN_NET_TYPE_INTERNAL:
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-    case VIR_DOMAIN_NET_TYPE_VDS:
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-    case VIR_DOMAIN_NET_TYPE_NULL:
-    case VIR_DOMAIN_NET_TYPE_LAST:
-        break;
     }
 
     return 0;

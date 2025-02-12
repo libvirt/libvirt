@@ -9457,9 +9457,25 @@ virDomainNetBackendParseXML(xmlNodePtr node,
     g_autofree char *tap = virXMLPropString(node, "tap");
     g_autofree char *vhost = virXMLPropString(node, "vhost");
 
-    /* The VIR_DOMAIN_NET_BACKEND_DEFAULT really means 'use hypervisor's
-     * builtin SLIRP'. It's reported in domain caps and thus we need to accept
-     * it. Hence VIR_XML_PROP_NONE instead of VIR_XML_PROP_NONZERO. */
+    /* In the case of NET_TYPE_USER, backend type can be unspecified
+     * (i.e. VIR_DOMAIN_NET_BACKEND_DEFAULT) and that means 'use
+     * hypervisor's builtin SLIRP (or if that isn't available, use
+     * passt)'. Similarly, it can also be left unspecified in the case
+     * of NET_TYPE_VHOSTUSER, and then it means "use the traditional
+     * vhost-user backend (which auto-detects between connecting to a
+     * socket created by OVS, or connecting to a standalone socket
+     * used (mostly in testing) to connect the vhost-user interface of
+     * one guest directly to the vhost-user interface of another
+     * guest.
+     *
+     * If backend type is set to 'passt', then in both cases a passt
+     * process will be started, and libvirt will connect that to the
+     * guest interface (either communicating everything over the
+     * socket created by passt using a specific-to-passt protocol
+     * (interface type='user'>), or by using the socket for control
+     * plane messages and shared memory for data using the vhost-user
+     * protocol (<interface type='vhostuser'>)).
+     */
     if (virXMLPropEnum(node, "type", virDomainNetBackendTypeFromString,
                        VIR_XML_PROP_NONE, &def->backend.type) < 0) {
         return -1;
@@ -24616,7 +24632,11 @@ virDomainNetDefFormat(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-            if (def->data.vhostuser->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+            if (def->data.vhostuser->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+                def->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+                /* in the case of BACKEND_PASST, the values of all of these are either
+                 * fixed (type, mode, reconnect), or derived from elsewhere (path)
+                 */
                 virBufferAddLit(&sourceAttrBuf, " type='unix'");
                 virBufferEscapeString(&sourceAttrBuf, " path='%s'",
                                       def->data.vhostuser->data.nix.path);
@@ -24627,7 +24647,6 @@ virDomainNetDefFormat(virBuffer *buf,
                     virDomainChrSourceReconnectDefFormat(&sourceChildBuf,
                                                          &def->data.vhostuser->data.nix.reconnect);
                 }
-
             }
             break;
 
@@ -24689,14 +24708,13 @@ virDomainNetDefFormat(virBuffer *buf,
         }
 
         case VIR_DOMAIN_NET_TYPE_USER:
-            if (def->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
-                virBufferEscapeString(&sourceAttrBuf, " dev='%s'", def->sourceDev);
-            break;
-
         case VIR_DOMAIN_NET_TYPE_NULL:
         case VIR_DOMAIN_NET_TYPE_LAST:
             break;
         }
+
+        if (def->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
+            virBufferEscapeString(&sourceAttrBuf, " dev='%s'", def->sourceDev);
 
         if (def->hostIP.nips || def->hostIP.nroutes) {
             if (virDomainNetIPInfoFormat(&sourceChildBuf, &def->hostIP) < 0)
