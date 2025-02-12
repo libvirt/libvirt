@@ -17211,7 +17211,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
 }
 
 
-static int
+static void
 virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
 {
     /* Look for any hostdev scsi dev */
@@ -17238,12 +17238,10 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
     }
 
     if (maxController == -1)
-        return 0;
+        return;
 
     for (i = 0; i <= maxController; i++)
         virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI, i, newModel);
-
-    return 0;
 }
 
 
@@ -19500,8 +19498,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
          * post processing) because that will result in the failure to
          * load the controller during hostdev hotplug.
          */
-        if (virDomainDefMaybeAddHostdevSCSIcontroller(def) < 0)
-            return NULL;
+        virDomainDefMaybeAddHostdevSCSIcontroller(def);
     }
     VIR_FREE(nodes);
 
@@ -22384,8 +22381,7 @@ virDomainDefAddImplicitControllers(virDomainDef *def)
     if (virDomainDefMaybeAddSmartcardController(def) < 0)
         return -1;
 
-    if (virDomainDefMaybeAddHostdevSCSIcontroller(def) < 0)
-        return -1;
+    virDomainDefMaybeAddHostdevSCSIcontroller(def);
 
     return 0;
 }
