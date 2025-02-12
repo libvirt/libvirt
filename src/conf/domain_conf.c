@@ -22307,7 +22307,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDef *def)
 }
 
 
-static int
+static void
 virDomainDefMaybeAddSmartcardController(virDomainDef *def)
 {
     /* Look for any smartcard devs */
@@ -22338,8 +22338,6 @@ virDomainDefMaybeAddSmartcardController(virDomainDef *def)
 
         virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_CCID, idx, -1);
     }
-
-    return 0;
 }
 
 /*
@@ -22361,10 +22359,7 @@ virDomainDefAddImplicitControllers(virDomainDef *def)
                                           VIR_DOMAIN_DISK_BUS_SATA);
 
     virDomainDefMaybeAddVirtioSerialController(def);
-
-    if (virDomainDefMaybeAddSmartcardController(def) < 0)
-        return -1;
-
+    virDomainDefMaybeAddSmartcardController(def);
     virDomainDefMaybeAddHostdevSCSIcontroller(def);
 
     return 0;
