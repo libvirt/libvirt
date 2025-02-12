@@ -2102,9 +2102,7 @@ libxlMakeDefaultUSBControllers(virDomainDef *def,
     x_controllers = g_new0(libxl_device_usbctrl, ncontrollers);
 
     for (i = 0; i < ncontrollers; i++) {
-        if (!(l_controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
-            goto error;
-
+        l_controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB);
         l_controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
         l_controller->idx = i;
         l_controller->opts.usbopts.ports = 8;

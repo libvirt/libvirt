@@ -3205,10 +3205,7 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivate *driver,
 
     if (ports <= usbdevs) {
         /* no free ports, we will create a new usb controller */
-        virDomainControllerDef *controller;
-
-        if (!(controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
-            goto cleanup;
+        virDomainControllerDef *controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB);
 
         controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
         controller->idx = -1;

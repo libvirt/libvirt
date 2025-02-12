@@ -861,9 +861,7 @@ xenParseXLUSBController(virConf *conf, virDomainDef *def)
             else
                 usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
 
-            if (!(controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
-                return -1;
-
+            controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB);
             controller->type = VIR_DOMAIN_CONTROLLER_TYPE_USB;
             controller->model = usbctrl_type;
             controller->opts.usbopts.ports = usbctrl_ports;

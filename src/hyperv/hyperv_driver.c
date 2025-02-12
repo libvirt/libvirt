@@ -1174,13 +1174,9 @@ hypervDomainDefAppendController(virDomainDef *def,
                                 int idx,
                                 virDomainControllerType controllerType)
 {
-    virDomainControllerDef *controller = NULL;
-
-    if (!(controller = virDomainControllerDefNew(controllerType)))
-        return -1;
+    virDomainControllerDef *controller = virDomainControllerDefNew(controllerType);
 
     controller->idx = idx;
-
     VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, controller);
 
     return 0;

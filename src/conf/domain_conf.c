@@ -8581,8 +8581,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                        VIR_XML_PROP_NONE, &type) < 0)
         return NULL;
 
-    if (!(def = virDomainControllerDefNew(type)))
-        return NULL;
+    def = virDomainControllerDefNew(type);
 
     if ((model = virXMLPropString(node, "model"))) {
         if ((def->model = virDomainControllerModelTypeFromString(def, model)) < 0) {
@@ -16472,10 +16471,7 @@ virDomainDefAddController(virDomainDef *def,
                           int idx,
                           int model)
 {
-    virDomainControllerDef *cont;
-
-    if (!(cont = virDomainControllerDefNew(type)))
-        return NULL;
+    virDomainControllerDef *cont = virDomainControllerDefNew(type);
 
     if (idx < 0)
         idx = virDomainControllerFindUnusedIndex(def, type);
