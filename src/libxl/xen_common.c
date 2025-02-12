@@ -2388,7 +2388,7 @@ xenFormatConfigCommon(virConf *conf,
 }
 
 
-int
+void
 xenDomainDefAddImplicitInputDevice(virDomainDef *def)
 {
     virDomainInputBus implicitInputBus = VIR_DOMAIN_INPUT_BUS_XEN;
@@ -2398,6 +2398,4 @@ xenDomainDefAddImplicitInputDevice(virDomainDef *def)
 
     virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_MOUSE, implicitInputBus);
     virDomainDefMaybeAddInput(def, VIR_DOMAIN_INPUT_TYPE_KBD, implicitInputBus);
-
-    return 0;
 }

@@ -65,4 +65,4 @@ int xenFormatConfigCommon(virConf *conf,
 
 char *xenMakeIPList(virNetDevIPInfo *guestIP);
 
-int xenDomainDefAddImplicitInputDevice(virDomainDef *def);
+void xenDomainDefAddImplicitInputDevice(virDomainDef *def);

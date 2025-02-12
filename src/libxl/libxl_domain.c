@@ -266,8 +266,7 @@ libxlDomainDefPostParse(virDomainDef *def,
     }
 
     /* add implicit input devices */
-    if (xenDomainDefAddImplicitInputDevice(def) < 0)
-        return -1;
+    xenDomainDefAddImplicitInputDevice(def);
 
     /* For x86_64 HVM */
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
