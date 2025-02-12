@@ -22346,7 +22346,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDef *def)
  * in the XML. This is for compat with existing apps which will
  * not know/care about <controller> info in the XML
  */
-static int
+static void
 virDomainDefAddImplicitControllers(virDomainDef *def)
 {
     virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
@@ -22361,8 +22361,6 @@ virDomainDefAddImplicitControllers(virDomainDef *def)
     virDomainDefMaybeAddVirtioSerialController(def);
     virDomainDefMaybeAddSmartcardController(def);
     virDomainDefMaybeAddHostdevSCSIcontroller(def);
-
-    return 0;
 }
 
 static int
@@ -22389,8 +22387,7 @@ virDomainDefAddImplicitDevices(virDomainDef *def, virDomainXMLOption *xmlopt)
         if (virDomainDefAddConsoleCompat(def) < 0)
             return -1;
     }
-    if (virDomainDefAddImplicitControllers(def) < 0)
-        return -1;
+    virDomainDefAddImplicitControllers(def);
 
     if (virDomainDefAddImplicitVideo(def, xmlopt) < 0)
         return -1;
