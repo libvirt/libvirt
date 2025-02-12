@@ -54,7 +54,7 @@ qemuPasstCreatePidFilename(virDomainObj *vm,
 }
 
 
-static char *
+char *
 qemuPasstCreateSocketPath(virDomainObj *vm,
                           virDomainNetDef *net)
 {

@@ -36,3 +36,6 @@ void qemuPasstStop(virDomainObj *vm,
 int qemuPasstSetupCgroup(virDomainObj *vm,
                          virDomainNetDef *net,
                          virCgroup *cgroup);
+
+char *qemuPasstCreateSocketPath(virDomainObj *vm,
+                                virDomainNetDef *net);
