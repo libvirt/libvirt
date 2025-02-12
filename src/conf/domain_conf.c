@@ -16495,10 +16495,8 @@ virDomainDefAddController(virDomainDef *def,
  * current machinetype if model == -1). If model is ich9-usb-ehci,
  * also add companion uhci1, uhci2, and uhci3 controllers at the same
  * index.
- *
- * Returns 0 on success, -1 on failure.
  */
-int
+void
 virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
 {
     virDomainControllerDef *cont; /* this is a *copy* of the virDomainControllerDef */
@@ -16506,7 +16504,7 @@ virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
     cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, idx, model);
 
     if (model != VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1)
-        return 0;
+        return;
 
     /* When the initial controller is ich9-usb-ehci, also add the
      * companion controllers
@@ -16528,8 +16526,6 @@ virDomainDefAddUSBController(virDomainDef *def, int idx, int model)
                                      idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3);
     cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
     cont->info.master.usb.startport = 4;
-
-    return 0;
 }
 
 

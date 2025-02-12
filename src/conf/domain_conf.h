@@ -4370,7 +4370,7 @@ virDomainDefAddController(virDomainDef *def,
                           virDomainControllerType type,
                           int idx,
                           int model);
-int
+void
 virDomainDefAddUSBController(virDomainDef *def, int idx, int model);
 int
 virDomainDefMaybeAddController(virDomainDef *def,
