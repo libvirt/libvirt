@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-02-10 17:38+0000\n"
+"PO-Revision-Date: 2025-02-13 08:08+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -1898,43 +1898,43 @@ msgid "Access node device"
 msgstr "Access node device"
 
 msgid "Access secret"
-msgstr ""
+msgstr "Access secret"
 
 msgid "Access storage pool"
-msgstr ""
+msgstr "Access storage pool"
 
 msgid "Access storage volume"
-msgstr ""
+msgstr "Access storage volume"
 
 msgid "Accessing interface requires authorization"
-msgstr ""
+msgstr "Accessing interface requires authorisation"
 
 msgid "Accessing network filter requires authorization"
-msgstr ""
+msgstr "Accessing network filter requires authorisation"
 
 msgid "Accessing network port requires authorization"
-msgstr ""
+msgstr "Accessing network port requires authorisation"
 
 msgid "Accessing network requires authorization"
-msgstr ""
+msgstr "Accessing network requires authorisation"
 
 msgid "Accessing node device requires authorization"
-msgstr ""
+msgstr "Accessing node device requires authorisation"
 
 msgid "Accessing secret requires authorization"
-msgstr ""
+msgstr "Accessing secret requires authorisation"
 
 msgid "Accessing storage pool requires authorization"
-msgstr ""
+msgstr "Accessing storage pool requires authorisation"
 
 msgid "Accessing storage volume requires authorization"
-msgstr ""
+msgstr "Accessing storage volume requires authorisation"
 
 msgid "Accessing the connection requires authorization"
-msgstr ""
+msgstr "Accessing the connection requires authorisation"
 
 msgid "Accessing the domain requires authorization"
-msgstr ""
+msgstr "Accessing the domain requires authorisation"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -2616,7 +2616,7 @@ msgid "Cache with id %1$u does not exists for level %2$d"
 msgstr "Cache with id %1$u does not exists for level %2$d"
 
 msgid "Calculate a vm's memory dirty rate"
-msgstr ""
+msgstr "Calculate a VM's memory dirty rate"
 
 msgid ""
 "Calculate memory dirty rate of a domain in order to decide whether it's "
@@ -2624,6 +2624,10 @@ msgid ""
 "The calculated dirty rate information is available by calling 'domstats --"
 "dirtyrate'."
 msgstr ""
+"Calculate memory dirty rate of a domain in order to decide whether it's "
+"proper to be migrated out or not.\n"
+"The calculated dirty rate information is available by calling 'domstats "
+"--dirtyrate'."
 
 #, c-format
 msgid "Call to %1$s for unexpected type '%2$s'"
@@ -2654,7 +2658,7 @@ msgstr "Can only modify disk quota"
 
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %1$s"
-msgstr ""
+msgstr "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %1$s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "Can't add USB hub: USB is disabled for this domain"
