@@ -31,6 +31,17 @@ v11.1.0 (unreleased)
 
 * **New features**
 
+  * nodedev: Support ccwgroup based qeth devices
+
+    CCW group devices are devices that use multiple subchannels on the
+    mainframe's channel subsystem. A qeth group device maps to subchannels and
+    their corresponding device numbers and device bus-IDs. The ``ccwgroup``
+    device nodes are placed besides the subchannel nodes under computer and list
+    the group members within a new ``ccwgroup`` capability. A new capability
+    ``ccwgroup_member`` is added into capability ``ccw`` to represent a device
+    membership to a ccwgroup. Filters are added to find ccwgroups as well as
+    ccwgroup members.
+
   * ch: Support handling events from cloud-hypervisor
 
     The ch driver now supports handling events from the cloud-hypervisor.
