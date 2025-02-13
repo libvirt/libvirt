@@ -3823,10 +3823,13 @@ virFileIsSharedFSOverride(const char *path,
     if (!path || path[0] != '/' || !overrides)
         return false;
 
-    if (g_strv_contains((const char *const *) overrides, path))
-        return true;
+    /* Overrides have been canonicalized ahead of time, so we need to
+     * do the same for the provided path or we'll never be able to
+     * find a match if symlinks are involved */
+    dirpath = virFileCanonicalizePath(path);
 
-    dirpath = g_strdup(path);
+    if (g_strv_contains((const char *const *) overrides, dirpath))
+        return true;
 
     /* Continue until we've scanned the entire path */
     while (p != dirpath) {
