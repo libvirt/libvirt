@@ -4168,6 +4168,45 @@ An optional sub-element ``driver`` can specify the driver specific options:
    If a specific IOThread is desired for a specific SCSI ``disk``, then multiple
    controllers must be defined each having a specific ``iothread`` value. The
    ``iothread`` value must be within the range 1 to the domain iothreads value.
+``iothreads``
+   Supported for ``virtio-scsi`` controllers using ``address`` types ``pci`` and
+   ``ccw``. :since:`since 11.2.0 (QEMU 10.0).` Mutually exclusive with ``iothread``.
+
+   The optional ``iothreads`` sub-element allows specifying multiple IOThreads
+   via the ``iothread`` sub-element with attribute ``id``  the ``virtio-scsi``
+   controller will use for I/O operations. The virt queues (see ``queues``
+   attribute of ``driver``) are automatically distributed among the configured
+   iothreads.
+
+   Optionally the ``iothread`` element can have multiple ``queue``
+   subelements with mandatory ``id`` atribute specifying that the iothread
+   should be used to handle given virt queue. If queue mapping is present
+   the ``queues`` attribute of  ``driver`` must be configured and all
+   configured virt queues must be included in the mapping. The
+   ``virtio-scsi`` device exposes request virt queues ``0`` to ``N-1`` where
+   N is the number of queues configured for the device.
+
+      Example::
+
+        <driver queues='4>
+          <iothreads>
+            <iothread id='2'/>
+            <iothread id='3'/>
+          </iothreads>
+        </driver>
+
+        <driver queues='3'>
+          <iothreads>
+            <iothread id='2'>
+              <queue id='1'/>
+            </iothread>
+            <iothread id='3'>
+              <queue id='0'/>
+              <queue id='2'/>
+            </iothread>
+          </iothreads>
+        </driver>
+
 virtio options
    For virtio controllers, `Virtio-related options`_ can
    also be set. ( :since:`Since 3.5.0` )

@@ -3064,6 +3064,9 @@
             <optional>
               <ref name="driverIOThread"/>
             </optional>
+            <optional>
+              <ref name="iothreadMapping"/>
+            </optional>
             <ref name="virtioOptions"/>
           </element>
         </optional>

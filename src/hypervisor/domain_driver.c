@@ -585,7 +585,8 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
     }
 
     for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->iothread == iothread_id) {
+        if (virDomainIothreadMappingDefHasIothread(def->controllers[i]->iothreads, iothread_id) ||
+            def->controllers[i]->iothread == iothread_id) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("cannot remove IOThread '%1$u' since it is being used by controller"),
                            iothread_id);

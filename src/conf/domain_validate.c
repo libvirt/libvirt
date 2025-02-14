@@ -1267,13 +1267,21 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         }
     }
 
-    if (controller->iothread != 0) {
+    if (controller->iothread != 0 || controller->iothreads) {
         if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI ||
             !(controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
               controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL ||
               controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("iothreads are supported only by 'virtio-scsi' controllers"));
+            return -1;
+        }
+
+        /* configuring both <driver iothread='n'> and it's <iothreads> sub-element
+         * isn't supported */
+        if (controller->iothread && controller->iothreads) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("controller driver 'iothread' attribute can't be used together with 'iothreads' subelement"));
             return -1;
         }
     }

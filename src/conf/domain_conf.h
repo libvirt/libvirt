@@ -764,6 +764,7 @@ struct _virDomainControllerDef {
     unsigned int max_sectors;
     virTristateSwitch ioeventfd;
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
+    GSList *iothreads; /* List of virDomainIothreadMappingDef */
     union {
         virDomainVirtioSerialOpts vioserial;
         virDomainPCIControllerOpts pciopts;

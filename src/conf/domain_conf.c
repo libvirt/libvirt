@@ -2567,6 +2567,8 @@ void virDomainControllerDefFree(virDomainControllerDef *def)
     if (!def)
         return;
 
+    g_slist_free_full(def->iothreads, (GDestroyNotify) virDomainIothreadMappingDefFree);
+
     virDomainDeviceInfoClear(&def->info);
     g_free(def->virtio);
 
@@ -8639,6 +8641,9 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
 
         if (virXMLPropUInt(driver, "iothread", 10, VIR_XML_PROP_NONE,
                            &def->iothread) < 0)
+            return NULL;
+
+        if (virDomainIothreadMappingDefParse(driver, &def->iothreads) < 0)
             return NULL;
 
         if (virDomainVirtioOptionsParseXML(driver, &def->virtio) < 0)
@@ -23496,6 +23501,7 @@ virDomainControllerDriverFormat(virBuffer *buf,
                                 virDomainControllerDef *def)
 {
     g_auto(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) driverChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (def->queues)
         virBufferAsprintf(&driverBuf, " queues='%u'", def->queues);
@@ -23514,9 +23520,11 @@ virDomainControllerDriverFormat(virBuffer *buf,
     if (def->iothread)
         virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
 
+    virDomainIothreadMappingDefFormat(&driverChildBuf, def->iothreads);
+
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
-    virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+    virXMLFormatElement(buf, "driver", &driverBuf, &driverChildBuf);
 }
 
 
