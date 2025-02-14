@@ -2794,6 +2794,102 @@ qemuValidateDomainDeviceDefDiskSerial(const char *value)
 
 
 static int
+qemuDomainValidateIothreadMapping(const virDomainDef *def,
+                                  GSList *iothreads,
+                                  size_t queues)
+{
+    virDomainIothreadMappingDef *first_ioth;
+    g_autoptr(virBitmap) queueMap = NULL;
+    g_autoptr(GHashTable) iothreadMap = virHashNew(NULL);
+    ssize_t unused;
+    GSList *n;
+
+    if (!iothreads)
+        return 0;
+
+    first_ioth = iothreads->data;
+
+    if (first_ioth->queues) {
+        if (queues == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'queue' count must be configured for explicit iothread to queue mapping"));
+            return -1;
+        }
+
+        queueMap = virBitmapNew(queues);
+    }
+
+    /* we are validating that:
+     * - there are no duplicate iothreads
+     * - there are only valid iothreads
+     * - if queue mapping is provided
+     *    - queue is in range
+     *    - it must be provided for all assigned iothreads
+     *    - it must be provided for all queues
+     *    - queue must be assigned only once
+     */
+    for (n = iothreads; n; n = n->next) {
+        virDomainIothreadMappingDef *ioth = n->data;
+        g_autofree char *alias = g_strdup_printf("iothread%u", ioth->id);
+        size_t i;
+
+        if (g_hash_table_contains(iothreadMap, alias)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("duplicate mapping for iothread '%1$u'"), ioth->id);
+            return -1;
+        }
+
+        g_hash_table_insert(iothreadMap, g_steal_pointer(&alias), NULL);
+
+        if (!virDomainIOThreadIDFind(def, ioth->id)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("iothread '%1$u' not defined in iothreadid"),
+                           ioth->id);
+            return -1;
+        }
+
+        if (!!queueMap != !!ioth->queues) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iothread to queue mapping must be provided for all iothreads or for none"));
+            return -1;
+        }
+
+        for (i = 0; i < ioth->nqueues; i++) {
+            bool hasMapping;
+
+            if (virBitmapGetBit(queueMap, ioth->queues[i], &hasMapping) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("iothread queue '%1$u' mapping out of range"),
+                               ioth->queues[i]);
+                return -1;
+            }
+
+            if (hasMapping) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("iothread queue '%1$u' is already assigned"),
+                               ioth->queues[i]);
+                return -1;
+            }
+
+            ignore_value(virBitmapSetBit(queueMap, ioth->queues[i]));
+
+        }
+    }
+
+    if (queueMap) {
+        if ((unused = virBitmapNextClearBit(queueMap, -1)) >= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("missing iothread mapping for queue '%1$zd'"),
+                           unused);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
                                          const virDomainDiskDef *disk,
                                          virQEMUCaps *qemuCaps)
@@ -2829,95 +2925,15 @@ qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
         return -1;
     }
 
-    if (disk->iothreads) {
-        virDomainIothreadMappingDef *first_ioth = disk->iothreads->data;
-        g_autoptr(virBitmap) queueMap = NULL;
-        g_autoptr(GHashTable) iothreads = virHashNew(NULL);
-        ssize_t unused;
-        GSList *n;
+    if (qemuDomainValidateIothreadMapping(def, disk->iothreads, disk->queues) < 0)
+        return -1;
 
-        if (first_ioth->queues) {
-            if (disk->queues == 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disk 'queue' count must be configured for explicit iothread to queue mapping"));
-                return -1;
-            }
-
-            queueMap = virBitmapNew(disk->queues);
-        }
-
-        /* we are validating that:
-         * - there are no duplicate iothreads
-         * - there are only valid iothreads
-         * - if queue mapping is provided
-         *    - queue is in range
-         *    - it must be provided for all assigned iothreads
-         *    - it must be provided for all queues
-         *    - queue must be assigned only once
-         */
-        for (n = disk->iothreads; n; n = n->next) {
-            virDomainIothreadMappingDef *ioth = n->data;
-            g_autofree char *alias = g_strdup_printf("iothread%u", ioth->id);
-            size_t i;
-
-            if (g_hash_table_contains(iothreads, alias)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Duplicate mapping for iothread '%1$u'"), ioth->id);
-                return -1;
-            }
-
-            g_hash_table_insert(iothreads, g_steal_pointer(&alias), NULL);
-
-            if (!virDomainIOThreadIDFind(def, ioth->id)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Disk iothread '%1$u' not defined in iothreadid"),
-                               ioth->id);
-                return -1;
-            }
-
-            if (!!queueMap != !!ioth->queues) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("iothread to queue mapping must be provided for all iothreads or for none"));
-                return -1;
-            }
-
-            for (i = 0; i < ioth->nqueues; i++) {
-                bool hasMapping;
-
-                if (virBitmapGetBit(queueMap, ioth->queues[i], &hasMapping) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("disk iothread queue '%1$u' mapping out of range"),
-                                   ioth->queues[i]);
-                    return -1;
-                }
-
-                if (hasMapping) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("disk iothread queue '%1$u' is already assigned"),
-                                   ioth->queues[i]);
-                    return -1;
-                }
-
-                ignore_value(virBitmapSetBit(queueMap, ioth->queues[i]));
-
-            }
-        }
-
-        if (queueMap) {
-            if ((unused = virBitmapNextClearBit(queueMap, -1)) >= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("missing iothread mapping for queue '%1$zd'"),
-                               unused);
-                return -1;
-            }
-        }
-    } else {
-        if (!virDomainIOThreadIDFind(def, disk->iothread)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Disk iothread '%1$u' not defined in iothreadid"),
-                           disk->iothread);
-            return -1;
-        }
+    if (disk->iothread != 0 &&
+        !virDomainIOThreadIDFind(def, disk->iothread)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disk iothread '%1$u' not defined in iothreadid"),
+                       disk->iothread);
+        return -1;
     }
 
     return 0;
