@@ -1739,6 +1739,7 @@ qemuValidateDomainDefVhostUserRequireSharedMemory(const virDomainDef *def,
 
 static int
 qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
+                                   const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
     bool hasIPv4 = false;
@@ -1817,6 +1818,12 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Invalid attempt to set network interface guest-side IP address info, not supported by QEMU"));
         return -1;
+    }
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+        net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "interface type=\"vhostuser\" backend type=\"passt\"") < 0)
+            return -1;
     }
 
     if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
@@ -5443,7 +5450,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
-        return qemuValidateDomainDeviceDefNetwork(dev->data.net, qemuCaps);
+        return qemuValidateDomainDeviceDefNetwork(dev->data.net, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_CHR:
         return qemuValidateDomainChrDef(dev->data.chr, def, qemuCaps);
