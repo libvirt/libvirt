@@ -537,6 +537,23 @@ virDomainDriverAddIOThreadCheck(virDomainDef *def,
     return 0;
 }
 
+
+static bool
+virDomainIothreadMappingDefHasIothread(GSList *iothreads,
+                                       unsigned int iothread_id)
+{
+    GSList *n;
+
+    for (n = iothreads; n; n = n->next) {
+        virDomainIothreadMappingDef *iothread = n->data;
+
+        if (iothread->id == iothread_id)
+            return true;
+    }
+
+    return false;
+}
+
 /**
  * virDomainDriverDelIOThreadCheck:
  * @def: domain definition
@@ -558,19 +575,7 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
     }
 
     for (i = 0; i < def->ndisks; i++) {
-        GSList *n;
-        bool inuse = false;
-
-        for (n = def->disks[i]->iothreads; n; n = n->next) {
-            virDomainIothreadMappingDef *iothread = n->data;
-
-            if (iothread->id == iothread_id) {
-                inuse = true;
-                break;
-            }
-        }
-
-        if (inuse ||
+        if (virDomainIothreadMappingDefHasIothread(def->disks[i]->iothreads, iothread_id) ||
             def->disks[i]->iothread == iothread_id) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("cannot remove IOThread %1$u since it is being used by disk '%2$s'"),
