@@ -1260,6 +1260,17 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         }
     }
 
+    if (controller->iothread != 0) {
+        if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI ||
+            !(controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
+              controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL ||
+              controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iothreads are supported only by 'virtio-scsi' controllers"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

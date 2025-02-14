@@ -2824,6 +2824,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-options-rng-packed");
     DO_TEST_CAPS_LATEST("virtio-options-video-packed");
 
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("controller-virtio-serial-iothread");
+
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology2");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology3");
