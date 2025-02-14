@@ -3628,19 +3628,19 @@ qemuValidateDomainDeviceDefControllerIDE(const virDomainControllerDef *controlle
  * Returns true if either supported or there are no iothreads for controller;
  * otherwise, returns false if configuration is not quite right.
  */
-static bool
+static int
 qemuValidateCheckSCSIControllerIOThreads(const virDomainControllerDef *controller,
                                          const virDomainDef *def)
 {
     if (!controller->iothread)
-        return true;
+        return 0;
 
     if (controller->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         controller->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
         controller->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("virtio-scsi IOThreads only available for virtio pci and virtio ccw controllers"));
-       return false;
+       return -1;
     }
 
     /* Can we find the controller iothread in the iothreadid list? */
@@ -3648,10 +3648,10 @@ qemuValidateCheckSCSIControllerIOThreads(const virDomainControllerDef *controlle
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("controller iothread '%1$u' not defined in iothreadid"),
                        controller->iothread);
-        return false;
+        return -1;
     }
 
-    return true;
+    return 0;
 }
 
 
@@ -3663,7 +3663,7 @@ qemuValidateDomainDeviceDefControllerSCSI(const virDomainControllerDef *controll
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
-            if (!qemuValidateCheckSCSIControllerIOThreads(controller, def))
+            if (qemuValidateCheckSCSIControllerIOThreads(controller, def) < 0)
                 return -1;
             break;
 
