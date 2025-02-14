@@ -1010,6 +1010,9 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
  * If VIR_DOMAIN_SAVE_PARAM_FILE is not provided then a managed save is
  * performed (see virDomainManagedSave).
  *
+ * See VIR_DOMAIN_SAVE_PARAM_* for detailed description of accepted save
+ * parameters.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  *
  * Since: 8.4.0

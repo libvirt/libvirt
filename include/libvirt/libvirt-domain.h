@@ -1700,6 +1700,19 @@ int                     virDomainRestoreParams  (virConnectPtr conn,
  */
 # define VIR_DOMAIN_SAVE_PARAM_DXML             "dxml"
 
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT:
+ *
+ * an optional parameter used to specify the format of the save image.
+ * Valid formats are raw, zstd, lzop, gzip, bzip2, and xz. If not
+ * specified, the save_image_format setting in qemu.conf is used, which
+ * defaults to raw. As VIR_TYPED_PARAM_STRING.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT     "image_format"
+
+
 /* See below for virDomainSaveImageXMLFlags */
 char *          virDomainSaveImageGetXMLDesc    (virConnectPtr conn,
                                                  const char *file,
