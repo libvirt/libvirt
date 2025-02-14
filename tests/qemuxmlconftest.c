@@ -2188,6 +2188,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
     DO_TEST_CAPS_LATEST("iothreads-disk");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
+    DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-mapping");
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
 
     DO_TEST_CAPS_LATEST("cpu-topology1");
