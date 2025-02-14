@@ -2498,6 +2498,7 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
                                 virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) iothreadsMapping = NULL;
     g_autofree char *iothread = NULL;
     const char *driver = NULL;
 
@@ -2509,6 +2510,10 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
                                               qemuCaps)))
             return NULL;
 
+        if (def->iothreads &&
+            !(iothreadsMapping = qemuBuildIothreadMappingProps(def->iothreads)))
+            return NULL;
+
         if (def->iothread > 0)
             iothread = g_strdup_printf("iothread%u", def->iothread);
 
@@ -2516,6 +2521,7 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
                                   "S:iothread", iothread,
                                   "s:id", def->info.alias,
                                   "p:num_queues", def->queues,
+                                  "A:iothread-vq-mapping", &iothreadsMapping,
                                   "p:cmd_per_lun", def->cmd_per_lun,
                                   "p:max_sectors", def->max_sectors,
                                   "T:ioeventfd", def->ioeventfd,

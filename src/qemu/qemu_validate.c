@@ -3657,9 +3657,10 @@ qemuValidateDomainDeviceDefControllerIDE(const virDomainControllerDef *controlle
  */
 static int
 qemuValidateCheckSCSIControllerIOThreads(const virDomainControllerDef *controller,
-                                         const virDomainDef *def)
+                                         const virDomainDef *def,
+                                         virQEMUCaps *qemuCaps)
 {
-    if (!controller->iothread)
+    if (controller->iothread == 0 && !controller->iothreads)
         return 0;
 
     if (controller->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -3670,8 +3671,20 @@ qemuValidateCheckSCSIControllerIOThreads(const virDomainControllerDef *controlle
        return -1;
     }
 
-    /* Can we find the controller iothread in the iothreadid list? */
-    if (!virDomainIOThreadIDFind(def, controller->iothread)) {
+    if (controller->iothreads) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI_IOTHREAD_MAPPING)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("IOThread mapping for virtio-scsi controllers is not available with this QEMU binary"));
+            return -1;
+        }
+
+        if (qemuDomainValidateIothreadMapping(def, controller->iothreads,
+                                              controller->queues) < 0)
+            return -1;
+    }
+
+    if (controller->iothread > 0 &&
+        !virDomainIOThreadIDFind(def, controller->iothread)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("controller iothread '%1$u' not defined in iothreadid"),
                        controller->iothread);
@@ -3684,13 +3697,15 @@ qemuValidateCheckSCSIControllerIOThreads(const virDomainControllerDef *controlle
 
 static int
 qemuValidateDomainDeviceDefControllerSCSI(const virDomainControllerDef *controller,
-                                          const virDomainDef *def)
+                                          const virDomainDef *def,
+                                          virQEMUCaps *qemuCaps)
 {
     switch ((virDomainControllerModelSCSI) controller->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
-            if (qemuValidateCheckSCSIControllerIOThreads(controller, def) < 0)
+            if (qemuValidateCheckSCSIControllerIOThreads(controller, def,
+                                                         qemuCaps) < 0)
                 return -1;
             break;
 
@@ -4364,7 +4379,8 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        ret = qemuValidateDomainDeviceDefControllerSCSI(controller, def);
+        ret = qemuValidateDomainDeviceDefControllerSCSI(controller, def,
+                                                        qemuCaps);
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
