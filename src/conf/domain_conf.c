@@ -7939,11 +7939,56 @@ virDomainDiskDefGeometryParse(virDomainDiskDef *def,
 
 
 static int
+virDomainIothreadMappingDefParse(xmlNodePtr driverNode,
+                                 GSList **iothreads)
+{
+    xmlNodePtr iothreadsNode;
+    g_autoslist(virDomainIothreadMappingDef) ioth = NULL;
+    g_autoptr(GPtrArray) iothreadNodes = NULL;
+    size_t i;
+
+    if (!(iothreadsNode = virXMLNodeGetSubelement(driverNode, "iothreads")))
+        return 0;
+
+    if (!(iothreadNodes = virXMLNodeGetSubelementList(iothreadsNode, "iothread")))
+        return 0;
+
+    for (i = 0; i < iothreadNodes->len; i++) {
+        xmlNodePtr iothNode = g_ptr_array_index(iothreadNodes, i);
+        g_autoptr(virDomainIothreadMappingDef) iothdef = g_new0(virDomainIothreadMappingDef, 1);
+        g_autoptr(GPtrArray) queueNodes = NULL;
+
+        if (virXMLPropUInt(iothNode, "id", 10, VIR_XML_PROP_REQUIRED,
+                           &iothdef->id) < 0)
+            return -1;
+
+        if ((queueNodes = virXMLNodeGetSubelementList(iothNode, "queue"))) {
+            size_t q;
+
+            iothdef->queues = g_new0(unsigned int, queueNodes->len);
+            iothdef->nqueues = queueNodes->len;
+
+            for (q = 0; q < queueNodes->len; q++) {
+                xmlNodePtr queueNode = g_ptr_array_index(queueNodes, q);
+
+                if (virXMLPropUInt(queueNode, "id", 10, VIR_XML_PROP_REQUIRED,
+                                   &(iothdef->queues[q])) < 0)
+                    return -1;
+            }
+        }
+
+        ioth = g_slist_prepend(ioth, g_steal_pointer(&iothdef));
+    }
+
+    *iothreads = g_slist_reverse(g_steal_pointer(&ioth));
+    return 0;
+}
+
+
+static int
 virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                                xmlNodePtr cur)
 {
-    xmlNodePtr iothreadsNode;
-
     def->driverName = virXMLPropString(cur, "name");
 
     if (virXMLPropEnum(cur, "cache", virDomainDiskCacheTypeFromString,
@@ -7990,43 +8035,8 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     if (virXMLPropUInt(cur, "iothread", 10, VIR_XML_PROP_NONZERO, &def->iothread) < 0)
         return -1;
 
-    if ((iothreadsNode = virXMLNodeGetSubelement(cur, "iothreads"))) {
-        g_autoslist(virDomainIothreadMappingDef) ioth = NULL;
-        g_autoptr(GPtrArray) iothreadNodes = NULL;
-
-        if ((iothreadNodes = virXMLNodeGetSubelementList(iothreadsNode, "iothread"))) {
-            size_t i;
-
-            for (i = 0; i < iothreadNodes->len; i++) {
-                xmlNodePtr iothNode = g_ptr_array_index(iothreadNodes, i);
-                g_autoptr(virDomainIothreadMappingDef) iothdef = g_new0(virDomainIothreadMappingDef, 1);
-                g_autoptr(GPtrArray) queueNodes = NULL;
-
-                if (virXMLPropUInt(iothNode, "id", 10, VIR_XML_PROP_REQUIRED,
-                                   &iothdef->id) < 0)
-                    return -1;
-
-                if ((queueNodes = virXMLNodeGetSubelementList(iothNode, "queue"))) {
-                    size_t q;
-
-                    iothdef->queues = g_new0(unsigned int, queueNodes->len);
-                    iothdef->nqueues = queueNodes->len;
-
-                    for (q = 0; q < queueNodes->len; q++) {
-                        xmlNodePtr queueNode = g_ptr_array_index(queueNodes, q);
-
-                        if (virXMLPropUInt(queueNode, "id", 10, VIR_XML_PROP_REQUIRED,
-                                           &(iothdef->queues[q])) < 0)
-                            return -1;
-                    }
-                }
-
-                ioth = g_slist_prepend(ioth, g_steal_pointer(&iothdef));
-            }
-
-            def->iothreads = g_slist_reverse(g_steal_pointer(&ioth));
-        }
-    }
+    if (virDomainIothreadMappingDefParse(cur, &def->iothreads) < 0)
+        return -1;
 
     if (virXMLPropEnum(cur, "detect_zeroes",
                        virDomainDiskDetectZeroesTypeFromString,
@@ -23153,6 +23163,37 @@ virDomainDiskDefFormatIotune(virBuffer *buf,
 
 
 static void
+virDomainIothreadMappingDefFormat(virBuffer *buf,
+                                  GSList *iothreads)
+{
+    g_auto(virBuffer) iothreadsChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    GSList *n;
+
+    if (!iothreads)
+        return;
+
+    for (n = iothreads; n; n = n->next) {
+        virDomainIothreadMappingDef *iothDef = n->data;
+        g_auto(virBuffer) iothreadAttrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) iothreadChildBuf = VIR_BUFFER_INIT_CHILD(&iothreadsChildBuf);
+
+        virBufferAsprintf(&iothreadAttrBuf, " id='%u'", iothDef->id);
+
+        if (iothDef->queues) {
+            size_t q;
+
+            for (q = 0; q < iothDef->nqueues; q++)
+                virBufferAsprintf(&iothreadChildBuf, "<queue id='%u'/>\n", iothDef->queues[q]);
+        }
+
+        virXMLFormatElement(&iothreadsChildBuf, "iothread", &iothreadAttrBuf, &iothreadChildBuf);
+    }
+
+    virXMLFormatElement(buf, "iothreads", NULL, &iothreadsChildBuf);
+}
+
+
+static void
 virDomainDiskDefFormatDriver(virBuffer *buf,
                              virDomainDiskDef *disk)
 {
@@ -23226,29 +23267,7 @@ virDomainDiskDefFormatDriver(virBuffer *buf,
         virXMLFormatElement(&childBuf, "metadata_cache", NULL, &metadataCacheChildBuf);
     }
 
-    if (disk->iothreads) {
-        g_auto(virBuffer) iothreadsChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
-        GSList *n;
-
-        for (n = disk->iothreads; n; n = n->next) {
-            virDomainIothreadMappingDef *iothDef = n->data;
-            g_auto(virBuffer) iothreadAttrBuf = VIR_BUFFER_INITIALIZER;
-            g_auto(virBuffer) iothreadChildBuf = VIR_BUFFER_INIT_CHILD(&iothreadsChildBuf);
-
-            virBufferAsprintf(&iothreadAttrBuf, " id='%u'", iothDef->id);
-
-            if (iothDef->queues) {
-                size_t q;
-
-                for (q = 0; q < iothDef->nqueues; q++)
-                    virBufferAsprintf(&iothreadChildBuf, "<queue id='%u'/>\n", iothDef->queues[q]);
-            }
-
-            virXMLFormatElement(&iothreadsChildBuf, "iothread", &iothreadAttrBuf, &iothreadChildBuf);
-        }
-
-        virXMLFormatElement(&childBuf, "iothreads", NULL, &iothreadsChildBuf);
-    }
+    virDomainIothreadMappingDefFormat(&childBuf, disk->iothreads);
 
     virXMLFormatElement(buf, "driver", &attrBuf, &childBuf);
 }
