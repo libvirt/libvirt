@@ -2606,7 +2606,7 @@
     </element>
   </define>
 
-  <define name="diskDriverIothreads">
+  <define name="iothreadMapping">
     <element name="iothreads">
       <oneOrMore>
         <element name="iothread">
@@ -2687,7 +2687,7 @@
           </element>
         </optional>
         <optional>
-          <ref name="diskDriverIothreads"/>
+          <ref name="iothreadMapping"/>
         </optional>
       </interleave>
     </element>
