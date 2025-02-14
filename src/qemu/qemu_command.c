@@ -1574,7 +1574,7 @@ qemuBuildDriveStr(virDomainDiskDef *disk)
 
 
 static virJSONValue *
-qemuBuildDiskDeviceIothreadMappingProps(GSList *iothreads)
+qemuBuildIothreadMappingProps(GSList *iothreads)
 {
     g_autoptr(virJSONValue) ret = virJSONValueNewArray();
     GSList *n;
@@ -1687,7 +1687,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
             iothread = g_strdup_printf("iothread%u", disk->iothread);
 
         if (disk->iothreads &&
-            !(iothreadMapping = qemuBuildDiskDeviceIothreadMappingProps(disk->iothreads)))
+            !(iothreadMapping = qemuBuildIothreadMappingProps(disk->iothreads)))
             return NULL;
 
         if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_VHOST_USER &&
