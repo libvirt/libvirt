@@ -54,6 +54,14 @@ v11.1.0 (unreleased)
     The virtio-mem model of ``<memory/>`` device can now be used with s390
     guests.
 
+  * Support using passt as the backend for interface type='vhostuser'
+
+    The combination of vhostuser transport with passt as the backend
+    provides high performance, fully featured networking without the
+    need for libvirt or QEMU to have any elevated privileges or
+    capabilities. Configuration and features are identical to the
+    configuration for type='user' with the passt backend.
+
 * **Improvements**
 
   * qemu: I/O error messages can be queried via ``virDomainGetMessages()``
