@@ -5148,6 +5148,15 @@ destined for the host toward the guest instead), and a socket between
 passt and QEMU forwards that traffic on to the guest (and back out,
 of course).
 
+*(:since:`Since 11.1.0 (QEMU and KVM only)` you may prefer to use the
+passt backend with the more efficient and performant type='vhostuser'
+rather than type='user'. All the options related to passt in the
+paragraphs below here also apply when using the passt backend with
+type='vhostuser'; any other details specific to vhostuser are
+described* `here
+<formatdomain.html#vhost-user-connection-with-passt-backend>`__.)
+
+
 Similar to SLIRP, passt has an internal DHCP server that provides a
 requesting guest with one ipv4 and one ipv6 address. There are default
 values for both of these, or you can use the ``<ip>`` element
@@ -5840,7 +5849,7 @@ following attributes are available for the ``virtio`` NIC driver:
    The optional ``queues`` attribute controls the number of queues to be used
    for either `Multiqueue
    virtio-net <https://www.linux-kvm.org/page/Multiqueue>`__ or vhost-user (See
-   `vhost-user interface`_) network interfaces. Use of multiple packet
+   `vhost-user connection`_) network interfaces. Use of multiple packet
    processing queues requires the interface having the
    ``<model type='virtio'/>`` element. Each queue will potentially be handled by
    a different processor, resulting in much higher throughput.
@@ -6285,8 +6294,8 @@ similarly named elements used to configure the guest side of the interface
 (described above).
 
 
-vhost-user interface
-^^^^^^^^^^^^^^^^^^^^
+vhost-user connection
+^^^^^^^^^^^^^^^^^^^^^
 
 :since:`Since 1.2.7` the vhost-user enables the communication between a QEMU
 virtual machine and other userspace process using the Virtio transport protocol.
@@ -6313,15 +6322,57 @@ plane is based on shared memory.
    </devices>
    ...
 
-The ``<source>`` element has to be specified along with the type of char device.
-Currently, only type='unix' is supported, where the path (the directory path of
-the socket) and mode attributes are required. Both ``mode='server'`` and
-``mode='client'`` are supported. vhost-user requires the virtio model type, thus
-the ``<model>`` element is mandatory. :since:`Since 4.1.0` the element has an
-optional child element ``reconnect`` which configures reconnect timeout if the
-connection is lost. It has two attributes ``enabled`` (which accepts ``yes`` and
-``no``) and ``timeout`` which specifies the amount of seconds after which
+The ``<source>`` element has to be specified along with the type of
+char device.  Currently, only type='unix' is supported, where the path
+(the directory path of the socket) and mode attributes are
+required. Both ``mode='server'`` and ``mode='client'`` are
+supported. (:since:`Since 11.1.0` the default source type for
+vhostuser interfaces is 'unix' and default mode is 'client', so those
+two attributes are now optional).
+
+The vhost-user protocol only works with the virtio guest driver, so
+the ``<model>`` element ``type`` attribute is mandatory (:since:`Since
+11.1.0` the default model type for vhostuser interfaces is now
+'virtio' so ``<model>`` is no longer mandatory). :since:`Since 4.1.0`
+the ``<source>`` element has an optional child element ``reconnect``
+which configures reconnect timeout if the connection is lost. It has
+two attributes ``enabled`` (which accepts ``yes`` and ``no``) and
+``timeout`` which specifies the amount of seconds after which
 hypervisor tries to reconnect.
+
+
+vhost-user connection with passt backend
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:since:`Since 11.1.0 (QEMU and KVM only)` passt can be used as the
+other end of the vhost-user connection. This is a compelling
+alternative, because passt provides all of its network connectivity
+without requiring any elevated privileges or capabilities, and
+vhost-user uses shared memory to make this unprivileged connection
+very high performance as well. You can set a type='vhostuser'
+interface to use passt as the backend by adding ``<backend
+type='passt'/>``. When passt is the backend, only a single driver
+queue is supported, and the ``<source>`` path/type/mode are all
+implied to be "matching the passt process" so **must not** be
+specified. All of the passt options `described here
+<formatdomain.html#userspace-connection-using-passt>`__, are also
+supported for ``type='vhostuser'`` with the passt backend, e.g.
+setting guest-side IP addresses with ``<ip>`` and port forwarding with
+``<portForward``.
+
+::
+
+   ...
+   <devices>
+     <interface type='vhostuser'>
+       <backend type='passt'/>
+       <mac address='52:54:00:3b:83:1a'/>
+       <source dev='enp1s0'/>
+       <ip address='10.30.0.5 prefix='24'/>
+     </interface>
+   </devices>
+   ...
+
 
 Traffic filtering with NWFilter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
