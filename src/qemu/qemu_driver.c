@@ -2806,11 +2806,13 @@ qemuDomainSaveParams(virDomainPtr dom,
                      unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainObj *vm = NULL;
     g_autoptr(virCommand) compressor = NULL;
     const char *to = NULL;
     const char *dxml = NULL;
+    const char *formatstr = NULL;
+    int format = cfg->saveImageFormat;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -2822,6 +2824,8 @@ qemuDomainSaveParams(virDomainPtr dom,
                                VIR_TYPED_PARAM_STRING,
                                VIR_DOMAIN_SAVE_PARAM_DXML,
                                VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT,
+                               VIR_TYPED_PARAM_STRING,
                                NULL) < 0)
         return -1;
 
@@ -2830,6 +2834,9 @@ qemuDomainSaveParams(virDomainPtr dom,
         return -1;
     if (virTypedParamsGetString(params, nparams,
                                 VIR_DOMAIN_SAVE_PARAM_DXML, &dxml) < 0)
+        return -1;
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT, &formatstr) < 0)
         return -1;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
@@ -2843,14 +2850,19 @@ qemuDomainSaveParams(virDomainPtr dom,
         return qemuDomainManagedSaveHelper(driver, vm, dxml, flags);
     }
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (qemuSaveImageGetCompressionProgram(cfg->saveImageFormat, &compressor, "save") < 0)
+    if (formatstr && (format = qemuSaveFormatTypeFromString(formatstr)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Invalid image_format '%1$s'"), formatstr);
+        goto cleanup;
+    }
+
+    if (qemuSaveImageGetCompressionProgram(format, &compressor, "save") < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    ret = qemuDomainSaveInternal(driver, vm, to, cfg->saveImageFormat,
+    ret = qemuDomainSaveInternal(driver, vm, to, format,
                                  compressor, dxml, flags);
 
  cleanup:
