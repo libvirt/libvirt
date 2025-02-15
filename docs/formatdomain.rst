@@ -5089,25 +5089,34 @@ to the interface.
    </devices>
    ...
 
-Userspace (SLIRP or passt) connection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Userspace connection using SLIRP
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``user`` type connects the guest interface to the outside via a
+The ``user`` interface type connects the guest interface to the outside via a
 transparent userspace proxy that doesn't require any special system
 privileges, making it usable in cases when libvirt itself is running
 with no privileges (e.g. libvirt's "session mode" daemon, or when
 libvirt is run inside an unprivileged container).
 
-By default, this user proxy is done with QEMU's internal SLIRP driver
-which has DHCP & DNS services that give the guest IP addresses
-starting from ``10.0.2.15``, a default route of ``10.0.2.2`` and DNS
-server of ``10.0.2.3``. :since:`Since 3.8.0` it is possible to override
-the default network address by including an ``ip`` element specifying
-an IPv4 address in its one mandatory attribute,
-``address``. Optionally, a second ``ip`` element with a ``family``
-attribute set to "ipv6" can be specified to add an IPv6 address to the
-interface. ``address``. Optionally, address ``prefix`` can be
-specified.
+By default, this user proxy is done with QEMU's SLIRP driver, a
+userspace proxy built into QEMU that has DHCP & DNS services that give
+the guest an IP address of ``10.0.2.15``, a default route of
+``10.0.2.2`` and DNS server at ``10.0.2.3``.
+
+:since:`Since 3.8.0` it is possible to override the guest's default
+network address by including an ``ip`` element specifying an IPv4
+address in its one mandatory attribute, ``address``. Optionally, a
+second ``ip`` element with a ``family`` attribute set to "ipv6" can be
+specified to add an IPv6 address to the interface. ``address``.
+Optionally, an address ``prefix`` can be specified. These settings are
+surprisingly **not** used by SLIRP to set the exact IP address;
+instead they are used to determine what network/subnet the guest's IP
+address should be on, and the guest will be given an address in that
+subnet, but the host portion of the address will still be "2.15". In
+the example below, for example, the guest will be given the IP address
+172.17.2.15 (**note that the '1.1' in the host portion of the address
+has been ignored**), default route of 172.17.2.2, and DNS server
+172.17.2.3.
 
 ::
 
@@ -5117,34 +5126,65 @@ specified.
      ...
      <interface type='user'>
        <mac address="00:11:22:33:44:55"/>
-       <ip family='ipv4' address='172.17.2.0' prefix='24'/>
-       <ip family='ipv6' address='2001:db8:ac10:fd01::' prefix='64'/>
+       <ip family='ipv4' address='172.17.1.1' prefix='16'/>
+       <ip family='ipv6' address='2001:db8:ac10:fd01::1' prefix='64'/>
      </interface>
    </devices>
    ...
 
-:since:`Since 9.0.0` an alternate backend implementation of the
-``user`` interface type can be selected by setting the interface's
-``<backend>`` subelement ``type`` attribute to ``passt``. In this
-case, the passt transport (https://passt.top) is used. Similar to
-SLIRP, passt has an internal DHCP server that provides a requesting
-guest with one ipv4 and one ipv6 address; it then uses userspace
-proxies and a separate network namespace to provide outgoing
-UDP/TCP/ICMP sessions, and optionally redirect incoming traffic
-destined for the host toward the guest instead.
+Userspace connection using passt
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When the passt backend is used, the ``<backend>`` attribute
-``logFile`` can be used to tell the passt process for this interface
-where to write its message log, and the ``<source>`` attribute ``dev``
-can tell it to use a particular host interface to derive the routes
-given to the guest for forwarding traffic upstream.  Due to the design
-decisions of passt, if using SELinux, the log file is recommended to
-reside in the runtime directory of a user under which the passt
-process will run, most probably ``/run/user/$UID`` where ``$UID`` is
-the UID of the user, e.g. ``qemu``.  Beware that libvirt does not
-create this directory if it does not already exist to avoid possible,
-however unlikely, issues, especially since this logfile attribute is
-meant mostly for debugging.
+:since:`Since 9.0.0 (QEMU and KVM only)` an alternate backend
+implementation of the ``user`` interface type can be selected by
+setting the interface's ``<backend>`` subelement ``type`` attribute to
+``passt``. In this case, the passt transport `(details here)
+<https://passt.top>`__ is used. passt is run as a separate process
+from QEMU - the passt process handles the details of forwarding
+network traffic back and forth to the physical network (using
+userspace proxies and a separate network namespace to provide outgoing
+UDP/TCP/ICMP sessions, and optionally redirecting incoming traffic
+destined for the host toward the guest instead), and a socket between
+passt and QEMU forwards that traffic on to the guest (and back out,
+of course).
+
+Similar to SLIRP, passt has an internal DHCP server that provides a
+requesting guest with one ipv4 and one ipv6 address. There are default
+values for both of these, or you can use the ``<ip>`` element
+(described above, with behavioral differences as outlined below) to
+configure one IPv4 and one IPv6 address that passt's DHCP server can
+provide to the guest.
+
+Unlike SLIRP, when no `<ip>`` address is specified, passt will by
+default provide the guest with an IP address, DNS server, etc. that
+are identical to those settings on the host itself (through the magic
+of the proxies and a separate network namespace, this doesn't create
+any conflict).
+
+Also different from SLIRP's behavior: if you do specify IP
+address(es), the exact address and netmask/prefix you specify will be
+provided to the guest (i.e. passt doesn't interpret the <ip> settings
+as a network address like SLIRP does, but as a host address). In
+example given above, the guest IP would be set to exactly 172.17.1.1.
+
+Just as with SLIRP, though, once traffic from the guest leaves the
+host towards the rest of the network, it will always appear as if it
+came from the host's IP.
+
+There are a few other options that are configurable only for the passt
+backend.  For example, the ``<backend>`` attribute ``logFile`` can be
+used to tell the passt process for this interface where to write its
+message log, and the ``<source>`` attribute ``dev`` can tell it a
+particular host interface to use when deriving the routes given to the
+guest for forwarding traffic upstream.  Due to the design decisions of
+passt, when using SELinux on the host, it is recommended that the log
+file reside in the runtime directory of the user under which the passt
+process will run, most probably ``/run/user/$UID`` (where ``$UID`` is
+the UID of that user), e.g. ``/run/user/1000``. Be aware that libvirt
+does not create this directory if it does not already exist to avoid
+possible, however unlikely, issues with orphaned directories or
+permissions, etc. The logfile attribute is meant mostly for debugging,
+so it shouldn't be set under normal circumstances.
 
 Additionally, when passt is used, multiple ``<portForward>`` elements
 can be added to forward incoming network traffic for the host to this
@@ -5181,7 +5221,7 @@ ports **with the exception of some subset**.
        <backend type='passt' logFile='/run/user/$UID/passt-domain.log'/>
        <mac address="00:11:22:33:44:55"/>
        <source dev='eth0'/>
-       <ip family='ipv4' address='172.17.2.4' prefix='24'/>
+       <ip family='ipv4' address='172.17.5.4' prefix='24'/>
        <ip family='ipv6' address='2001:db8:ac10:fd01::20'/>
        <portForward proto='tcp'>
          <range start='2022' to='22'/>
