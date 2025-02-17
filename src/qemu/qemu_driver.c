@@ -17531,22 +17531,21 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
                            unsigned int privflags)
 {
     size_t i;
-    qemuMonitorIOThreadInfo **iothreads = NULL;
+    g_autofree qemuMonitorIOThreadInfo **iothreads = NULL;
     int niothreads = 0;
-    int ret = -1;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
         return 0;
 
-    if (qemuDomainGetIOThreadsMon(dom, &iothreads, &niothreads) < 0)
-        return -1;
+    if (qemuDomainGetIOThreadsMon(dom, &iothreads, &niothreads) < 0) {
+        virResetLastError();
+        return 0;
+    }
 
     /* qemuDomainGetIOThreadsMon returns a NULL-terminated list, so we must free
      * it even if it returns 0 */
-    if (niothreads == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (niothreads == 0)
+        return 0;
 
     virTypedParamListAddUInt(params, niothreads, "iothread.count");
 
@@ -17564,14 +17563,10 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
         }
     }
 
-    ret = 0;
-
- cleanup:
     for (i = 0; i < niothreads; i++)
         VIR_FREE(iothreads[i]);
-    VIR_FREE(iothreads);
 
-    return ret;
+    return 0;
 }
 
 
