@@ -3903,8 +3903,7 @@ prlsdkDoApplyConfig(struct _vzDriver *driver,
     pret = PrlVmCfg_SetCpuCount(sdkdom, virDomainDefGetVcpus(def));
     prlsdkCheckRetGoto(pret, error);
 
-    if (!(mask = virBitmapFormat(def->cpumask)))
-        goto error;
+    mask = virBitmapFormat(def->cpumask);
 
     pret = PrlVmCfg_SetCpuMask(sdkdom, mask);
     prlsdkCheckRetGoto(pret, error);

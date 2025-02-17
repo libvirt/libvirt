@@ -410,8 +410,7 @@ virDomainCgroupRestoreCgroupState(virDomainObj *vm,
     if (!(all_nodes = virNumaGetHostMemoryNodeset()))
         goto error;
 
-    if (!(mem_mask = virBitmapFormat(all_nodes)))
-        goto error;
+    mem_mask = virBitmapFormat(all_nodes);
 
     if (virCgroupHasEmptyTasks(cgroup, VIR_CGROUP_CONTROLLER_CPUSET) <= 0)
         goto error;
@@ -648,8 +647,7 @@ virDomainCgroupEmulatorAllNodesAllow(virCgroup *cgroup,
     if (!(all_nodes = virNumaGetHostMemoryNodeset()))
         goto cleanup;
 
-    if (!(all_nodes_str = virBitmapFormat(all_nodes)))
-        goto cleanup;
+    all_nodes_str = virBitmapFormat(all_nodes);
 
     data = g_new0(virCgroupEmulatorAllNodesData, 1);
 

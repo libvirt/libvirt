@@ -7498,8 +7498,7 @@ qemuBuildNumaCPUs(virBuffer *buf,
     if (!cpu)
         return 0;
 
-    if (!(cpumask = virBitmapFormat(cpu)))
-        return -1;
+    cpumask = virBitmapFormat(cpu);
 
     for (tmpmask = cpumask; tmpmask; tmpmask = next) {
         if ((next = strchr(tmpmask, ',')))

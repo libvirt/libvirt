@@ -5051,8 +5051,7 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
                 }
             }
 
-            if (!(nodeset = virBitmapFormat(nodes)))
-                goto cleanup;
+            nodeset = virBitmapFormat(nodes);
 
             if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)

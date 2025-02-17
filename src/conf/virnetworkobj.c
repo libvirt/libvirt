@@ -799,9 +799,6 @@ virNetworkObjFormat(virNetworkObj *obj,
     char *classIdStr = virBitmapFormat(obj->classIdMap);
     size_t i;
 
-    if (!classIdStr)
-        return NULL;
-
     virBufferAddLit(&buf, "<networkstatus>\n");
     virBufferAdjustIndent(&buf, 2);
     virBufferAsprintf(&buf, "<class_id bitmap='%s'/>\n", classIdStr);

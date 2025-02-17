@@ -273,7 +273,6 @@ virDomainNumatuneFormatXML(virBuffer *buf,
                            virDomainNuma *numatune)
 {
     const char *tmp = NULL;
-    char *nodeset = NULL;
     bool nodesetSpecified = false;
     size_t i = 0;
 
@@ -298,10 +297,9 @@ virDomainNumatuneFormatXML(virBuffer *buf,
         virBufferAsprintf(buf, "<memory mode='%s' ", tmp);
 
         if (numatune->memory.placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC) {
-            if (!(nodeset = virBitmapFormat(numatune->memory.nodeset)))
-                return -1;
+            g_autofree char *nodeset = virBitmapFormat(numatune->memory.nodeset);
+
             virBufferAsprintf(buf, "nodeset='%s'/>\n", nodeset);
-            VIR_FREE(nodeset);
         } else if (numatune->memory.placement) {
             tmp = virDomainNumatunePlacementTypeToString(numatune->memory.placement);
             virBufferAsprintf(buf, "placement='%s'/>\n", tmp);
@@ -310,19 +308,18 @@ virDomainNumatuneFormatXML(virBuffer *buf,
 
     for (i = 0; i < numatune->nmem_nodes; i++) {
         virDomainNumaNode *mem_node = &numatune->mem_nodes[i];
+        g_autofree char *nodeset = NULL;
 
         if (!mem_node->nodeset)
             continue;
 
-        if (!(nodeset = virBitmapFormat(mem_node->nodeset)))
-            return -1;
+        nodeset = virBitmapFormat(mem_node->nodeset);
 
         virBufferAsprintf(buf,
                           "<memnode cellid='%zu' mode='%s' nodeset='%s'/>\n",
                           i,
                           virDomainNumatuneMemModeTypeToString(mem_node->mode),
                           nodeset);
-        VIR_FREE(nodeset);
     }
 
     virBufferAdjustIndent(buf, -2);
@@ -461,9 +458,8 @@ virDomainNumatuneMaybeFormatNodeset(virDomainNuma *numatune,
                                          cellid) < 0)
         return -1;
 
-    if (nodeset &&
-        !(*mask = virBitmapFormat(nodeset)))
-        return -1;
+    if (nodeset)
+        *mask = virBitmapFormat(nodeset);
 
     return 0;
 }
@@ -1010,8 +1006,6 @@ virDomainNumaDefFormatXML(virBuffer *buf,
         if (cpumask) {
             g_autofree char *cpustr = virBitmapFormat(cpumask);
 
-            if (!cpustr)
-                return -1;
             virBufferAsprintf(&attrBuf, " cpus='%s'", cpustr);
         }
         virBufferAsprintf(&attrBuf, " memory='%llu'",

@@ -2306,13 +2306,11 @@ qemuDomainObjPrivateXMLFormatAutomaticPlacement(virBuffer *buf,
     if (!priv->autoNodeset && !priv->autoCpuset)
         return 0;
 
-    if (priv->autoNodeset &&
-        !((nodeset = virBitmapFormat(priv->autoNodeset))))
-        return -1;
+    if (priv->autoNodeset)
+        nodeset = virBitmapFormat(priv->autoNodeset);
 
-    if (priv->autoCpuset &&
-        !((cpuset = virBitmapFormat(priv->autoCpuset))))
-        return -1;
+    if (priv->autoCpuset)
+        cpuset = virBitmapFormat(priv->autoCpuset);
 
     virBufferAddLit(buf, "<numad");
     virBufferEscapeString(buf, " nodeset='%s'", nodeset);

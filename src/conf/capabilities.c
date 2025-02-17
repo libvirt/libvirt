@@ -816,8 +816,7 @@ virCapsHostNUMACellCPUFormat(virBuffer *buf,
         if (cpus[j].siblings) {
             g_autofree char *siblings = NULL;
 
-            if (!(siblings = virBitmapFormat(cpus[j].siblings)))
-                return -1;
+            siblings = virBitmapFormat(cpus[j].siblings);
 
             virBufferAsprintf(&childBuf,
                               " socket_id='%d' die_id='%d' cluster_id='%d' core_id='%d' siblings='%s'",
@@ -954,9 +953,6 @@ virCapabilitiesFormatCaches(virBuffer *buf,
         const char *unit = NULL;
         unsigned long long short_size = virFormatIntPretty(bank->size, &unit);
 
-        if (!cpus_str)
-            return -1;
-
         /*
          * Let's just *hope* the size is aligned to KiBs so that it does not
          * bite is back in the future
@@ -1037,9 +1033,6 @@ virCapabilitiesFormatMemoryBandwidth(virBuffer *buf,
         virCapsHostMemBWNode *node = memBW->nodes[i];
         virResctrlInfoMemBWPerNode *control = &node->control;
         g_autofree char *cpus_str = virBitmapFormat(node->cpus);
-
-        if (!cpus_str)
-            return -1;
 
         virBufferAsprintf(&attrBuf,
                           " id='%u' cpus='%s'",

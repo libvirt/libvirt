@@ -18223,8 +18223,6 @@ virDomainResctrlNew(xmlNodePtr node,
     /* We need to format it back because we need to be consistent in the naming
      * even when users specify some "sub-optimal" string there. */
     vcpus_str = virBitmapFormat(vcpus);
-    if (!vcpus_str)
-        return NULL;
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
         alloc_id = virXMLPropString(node, "id");
@@ -25881,8 +25879,7 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
     switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         if (def->source.dimm.nodes) {
-            if (!(bitmap = virBitmapFormat(def->source.dimm.nodes)))
-                return -1;
+            bitmap = virBitmapFormat(def->source.dimm.nodes);
 
             virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
         }
@@ -25893,8 +25890,7 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
         if (def->source.virtio_mem.nodes) {
-            if (!(bitmap = virBitmapFormat(def->source.virtio_mem.nodes)))
-                return -1;
+            bitmap = virBitmapFormat(def->source.virtio_mem.nodes);
 
             virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
         }
@@ -25921,8 +25917,7 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         if (def->source.sgx_epc.nodes) {
-            if (!(bitmap = virBitmapFormat(def->source.sgx_epc.nodes)))
-                return -1;
+            bitmap = virBitmapFormat(def->source.sgx_epc.nodes);
 
             virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
         }
@@ -26992,9 +26987,8 @@ virDomainHugepagesFormatBuf(virBuffer *buf,
                       hugepage->size);
 
     if (hugepage->nodemask) {
-        g_autofree char *nodeset = NULL;
-        if (!(nodeset = virBitmapFormat(hugepage->nodemask)))
-            return -1;
+        g_autofree char *nodeset = virBitmapFormat(hugepage->nodemask);
+
         virBufferAsprintf(buf, " nodeset='%s'", nodeset);
     }
 
@@ -27321,8 +27315,6 @@ virDomainResctrlMonDefFormatHelper(virDomainResctrlMonDef *domresmon,
     }
 
     vcpus = virBitmapFormat(domresmon->vcpus);
-    if (!vcpus)
-        return -1;
 
     virBufferAsprintf(buf, "vcpus='%s'/>\n", vcpus);
 
@@ -27356,8 +27348,6 @@ virDomainCachetuneDefFormat(virBuffer *buf,
         return 0;
 
     vcpus = virBitmapFormat(resctrl->vcpus);
-    if (!vcpus)
-        return -1;
 
     virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
@@ -27415,8 +27405,6 @@ virDomainMemorytuneDefFormat(virBuffer *buf,
         return 0;
 
     vcpus = virBitmapFormat(resctrl->vcpus);
-    if (!vcpus)
-        return -1;
 
     virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
@@ -27545,15 +27533,14 @@ virDomainCpuDefFormat(virBuffer *buf,
 {
     virDomainVcpuDef *vcpu;
     size_t i;
-    g_autofree char *cpumask = NULL;
 
     virBufferAddLit(buf, "<vcpu");
     virBufferAsprintf(buf, " placement='%s'",
                       virDomainCpuPlacementModeTypeToString(def->placement_mode));
 
     if (def->cpumask && !virBitmapIsAllSet(def->cpumask)) {
-        if ((cpumask = virBitmapFormat(def->cpumask)) == NULL)
-            return -1;
+        g_autofree char *cpumask = virBitmapFormat(def->cpumask);
+
         virBufferAsprintf(buf, " cpuset='%s'", cpumask);
     }
     if (virDomainDefHasVcpusOffline(def))

@@ -4300,9 +4300,7 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
     }
 
     tmpmap = virBitmapNewCopy(cpumap);
-
-    if (!(str = virBitmapFormat(cpumap)))
-        goto cleanup;
+    str = virBitmapFormat(cpumap);
 
     if (vcpuinfo->online) {
         /* Configure the corresponding cpuset cgroup before set affinity. */
@@ -8233,9 +8231,7 @@ qemuDomainSetNumaParamsLive(virDomainObj *vm,
     if (!virNumaNodesetIsAvailable(nodeset))
         return -1;
 
-    /* Ensure the cpuset string is formatted before passing to cgroup */
-    if (!(nodeset_str = virBitmapFormat(nodeset)))
-        return -1;
+    nodeset_str = virBitmapFormat(nodeset);
 
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_thread) < 0 ||
@@ -16682,9 +16678,7 @@ qemuDomainGetResctrlMonData(virQEMUDriver *driver,
              * res.vcpus is assigned with an memory space holding it,
              * let this newly allocated memory buffer to be freed along with
              * the free of 'res' */
-            if (!(res->vcpus = virBitmapFormat(domresmon->vcpus)))
-                goto error;
-
+            res->vcpus = virBitmapFormat(domresmon->vcpus);
             res->name = g_strdup(virResctrlMonitorGetID(monitor));
 
             if (virResctrlMonitorGetStats(monitor, (const char **)features,
@@ -18451,9 +18445,7 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
 
 #define ADD_BITMAP(name) \
     do { \
-        g_autofree char *tmp = NULL; \
-        if (!(tmp = virBitmapFormat(name))) \
-            goto cleanup; \
+        g_autofree char *tmp = virBitmapFormat(name); \
         if (virTypedParamsAddString(&par, &npar, &maxpar, #name, tmp) < 0) \
             goto cleanup; \
     } while (0)
@@ -18583,10 +18575,9 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
     }
 
     if (!virBitmapIsAllClear(map)) {
-        char *tmp = virBitmapFormat(map);
+        g_autofree char *tmp = virBitmapFormat(map);
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("guest is missing vCPUs '%1$s'"), NULLSTR(tmp));
-        VIR_FREE(tmp);
+                       _("guest is missing vCPUs '%1$s'"), tmp);
         goto endjob;
     }
 

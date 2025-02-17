@@ -2030,10 +2030,8 @@ xenFormatCPUAllocation(virConf *conf, virDomainDef *def)
     if (xenConfigSetInt(conf, "vcpus", virDomainDefGetVcpus(def)) < 0)
         return -1;
 
-    if ((def->cpumask != NULL) &&
-        ((cpus = virBitmapFormat(def->cpumask)) == NULL)) {
-        return -1;
-    }
+    if (def->cpumask != NULL)
+        cpus = virBitmapFormat(def->cpumask);
 
     if (cpus &&
         xenConfigSetString(conf, "cpus", cpus) < 0)

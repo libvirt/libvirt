@@ -2083,8 +2083,7 @@ chDomainSetNumaParamsLive(virDomainObj *vm,
         return -1;
 
     /* Ensure the cpuset string is formatted before passing to cgroup */
-    if (!(nodeset_str = virBitmapFormat(nodeset)))
-        return -1;
+    nodeset_str = virBitmapFormat(nodeset);
 
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_temp) < 0 ||
