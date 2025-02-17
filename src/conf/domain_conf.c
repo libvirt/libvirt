@@ -1457,6 +1457,11 @@ VIR_ENUM_IMPL(virDomainOsDefFirmwareFeature,
               "secure-boot",
 );
 
+VIR_ENUM_IMPL(virDomainOsACPITable,
+              VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST,
+              "slic",
+);
+
 VIR_ENUM_IMPL(virDomainCFPC,
               VIR_DOMAIN_CFPC_LAST,
               "none",
@@ -3899,6 +3904,15 @@ virDomainSecDefFree(virDomainSecDef *def)
     g_free(def);
 }
 
+void virDomainOSACPITableDefFree(virDomainOSACPITableDef *def)
+{
+    if (!def)
+        return;
+    g_free(def->path);
+    g_free(def);
+}
+
+
 static void
 virDomainOSDefClear(virDomainOSDef *os)
 {
@@ -3924,7 +3938,9 @@ virDomainOSDefClear(virDomainOSDef *os)
     g_free(os->cmdline);
     g_free(os->dtb);
     g_free(os->root);
-    g_free(os->slic_table);
+    for (i = 0; i < os->nacpiTables; i++)
+        virDomainOSACPITableDefFree(os->acpiTables[i]);
+    g_free(os->acpiTables);
     virDomainLoaderDefFree(os->loader);
     g_free(os->bootloader);
     g_free(os->bootloaderArgs);
@@ -17858,40 +17874,57 @@ virDomainDefParseBootAcpiOptions(virDomainDef *def,
     int n;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
+    size_t ntables = 0;
+    virDomainOSACPITableDef **tables = NULL;
+    size_t i;
 
     if ((n = virXPathNodeSet("./os/acpi/table", ctxt, &nodes)) < 0)
         return -1;
 
-    if (n > 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Only one acpi table is supported"));
-        return -1;
-    }
+    if (n == 0)
+        return 0;
 
-    if (n == 1) {
-        tmp = virXMLPropString(nodes[0], "type");
+    tables = g_new0(virDomainOSACPITableDef *, n);
+    for (i = 0; i < n; i++) {
+        g_autofree char *path = virXMLNodeContentString(nodes[i]);
+        virDomainOsACPITable type;
+        size_t j;
 
-        if (!tmp) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing acpi table type"));
-            return -1;
+        if (!path)
+            goto error;
+
+        if (virXMLPropEnum(nodes[i], "type",
+                           virDomainOsACPITableTypeFromString,
+                           VIR_XML_PROP_REQUIRED,
+                           &type) < 0)
+            goto error;
+
+        for (j = 0; j < i; j++) {
+            if (tables[j]->type == type) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("ACPI table type '%1$s' may only appear once"),
+                               virDomainOsACPITableTypeToString(type));
+                goto error;
+            }
         }
 
-        if (STREQ_NULLABLE(tmp, "slic")) {
-            VIR_FREE(tmp);
-            if (!(tmp = virXMLNodeContentString(nodes[0])))
-                return -1;
-
-            def->os.slic_table = virFileSanitizePath(tmp);
-        } else {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Unknown acpi table type: %1$s"),
-                           tmp);
-            return -1;
-        }
+        tables[ntables] = g_new0(virDomainOSACPITableDef, 1);
+        tables[ntables]->type = type;
+        tables[ntables]->path = virFileSanitizePath(path);
+        ntables++;
     }
+
+    def->os.nacpiTables = ntables;
+    def->os.acpiTables = tables;
 
     return 0;
+
+ error:
+    for (i = 0; i < ntables; i++) {
+        virDomainOSACPITableDefFree(tables[i]);
+    }
+    g_free(tables);
+    return -1;
 }
 
 
@@ -28418,11 +28451,16 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
                           def->os.dtb);
     virBufferEscapeString(buf, "<root>%s</root>\n",
                           def->os.root);
-    if (def->os.slic_table) {
+
+    if (def->os.nacpiTables) {
         virBufferAddLit(buf, "<acpi>\n");
         virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<table type='slic'>%s</table>\n",
-                              def->os.slic_table);
+        for (i = 0; i < def->os.nacpiTables; i++) {
+            virBufferAsprintf(buf, "<table type='%s'>",
+                              virDomainOsACPITableTypeToString(def->os.acpiTables[i]->type));
+            virBufferEscapeString(buf, "%s</table>\n",
+                                  def->os.acpiTables[i]->path);
+        }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</acpi>\n");
     }

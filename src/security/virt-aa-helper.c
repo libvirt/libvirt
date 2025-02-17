@@ -974,9 +974,10 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->os.dtb, "r") != 0)
             goto cleanup;
 
-    if (ctl->def->os.slic_table)
-        if (vah_add_file(&buf, ctl->def->os.slic_table, "r") != 0)
+    for (i = 0; i < ctl->def->os.nacpiTables; i++) {
+        if (vah_add_file(&buf, ctl->def->os.acpiTables[i]->path, "r") != 0)
             goto cleanup;
+    }
 
     if (ctl->def->pstore)
         if (vah_add_file(&buf, ctl->def->pstore->path, "rw") != 0)

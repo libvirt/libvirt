@@ -127,6 +127,11 @@ VIR_ENUM_IMPL(qemuNumaPolicy,
               "restrictive",
 );
 
+VIR_ENUM_DECL(qemuACPITableSIG);
+VIR_ENUM_IMPL(qemuACPITableSIG,
+              VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST,
+              "SLIC");
+
 
 const char *
 qemuAudioDriverTypeToString(virDomainAudioType type)
@@ -5995,6 +6000,7 @@ qemuBuildBootCommandLine(virCommand *cmd,
 {
     g_auto(virBuffer) boot_buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *boot_opts_str = NULL;
+    size_t i;
 
     if (def->os.bootmenu) {
         if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
@@ -6028,11 +6034,12 @@ qemuBuildBootCommandLine(virCommand *cmd,
         virCommandAddArgList(cmd, "-append", def->os.cmdline, NULL);
     if (def->os.dtb)
         virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
-    if (def->os.slic_table) {
+    for (i = 0; i < def->os.nacpiTables; i++) {
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virCommandAddArg(cmd, "-acpitable");
-        virBufferAddLit(&buf, "sig=SLIC,file=");
-        virQEMUBuildBufferEscapeComma(&buf, def->os.slic_table);
+        virBufferAsprintf(&buf, "sig=%s,file=",
+                          qemuACPITableSIGTypeToString(def->os.acpiTables[i]->type));
+        virQEMUBuildBufferEscapeComma(&buf, def->os.acpiTables[i]->path);
         virCommandAddArgBuffer(cmd, &buf);
     }
 

@@ -582,8 +582,9 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                           VIR_TRISTATE_SWITCH_ON);
 #endif
 
-        /* copy SLIC table path to acpi_firmware */
-        b_info->u.hvm.acpi_firmware = g_strdup(def->os.slic_table);
+        /* copy the table path to acpi_firmware */
+        if (def->os.nacpiTables)
+            b_info->u.hvm.acpi_firmware = g_strdup(def->os.acpiTables[0]->path);
 
         if (def->nsounds > 0) {
             /*

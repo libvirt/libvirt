@@ -106,6 +106,7 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
         g_autofree char *bios = NULL;
         g_autofree char *bios_path = NULL;
         g_autofree char *boot = NULL;
+        g_autofree char *slic = NULL;
         int val = 0;
 
         if (xenConfigGetString(conf, "bios", &bios, NULL) < 0)
@@ -133,8 +134,15 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
             }
         }
 
-        if (xenConfigCopyStringOpt(conf, "acpi_firmware", &def->os.slic_table) < 0)
+        if (xenConfigCopyStringOpt(conf, "acpi_firmware", &slic) < 0)
             return -1;
+        if (slic != NULL) {
+            def->os.nacpiTables = 1;
+            def->os.acpiTables = g_new0(virDomainOSACPITableDef *, 1);
+            def->os.acpiTables[0] = g_new0(virDomainOSACPITableDef, 1);
+            def->os.acpiTables[0]->type = VIR_DOMAIN_OS_ACPI_TABLE_TYPE_SLIC;
+            def->os.acpiTables[0]->path = g_steal_pointer(&slic);
+        }
 
         if (xenConfigCopyStringOpt(conf, "kernel", &def->os.kernel) < 0)
             return -1;
@@ -1130,8 +1138,9 @@ xenFormatXLOS(virConf *conf, virDomainDef *def)
                 return -1;
         }
 
-        if (def->os.slic_table &&
-            xenConfigSetString(conf, "acpi_firmware", def->os.slic_table) < 0)
+        if (def->os.nacpiTables &&
+            xenConfigSetString(conf, "acpi_firmware",
+                               def->os.acpiTables[0]->path) < 0)
             return -1;
 
         if (def->os.kernel &&

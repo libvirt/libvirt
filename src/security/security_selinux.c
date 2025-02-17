@@ -3013,9 +3013,10 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
         virSecuritySELinuxRestoreFileLabel(mgr, def->os.dtb, true) < 0)
         rc = -1;
 
-    if (def->os.slic_table &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.slic_table, true) < 0)
-        rc = -1;
+    for (i = 0; i < def->os.nacpiTables; i++) {
+        if (virSecuritySELinuxRestoreFileLabel(mgr, def->os.acpiTables[i]->path, true) < 0)
+            rc = -1;
+    }
 
     if (def->pstore &&
         virSecuritySELinuxRestoreFileLabel(mgr, def->pstore->path, true) < 0)
@@ -3443,10 +3444,11 @@ virSecuritySELinuxSetAllLabel(virSecurityManager *mgr,
                                      data->content_context, true) < 0)
         return -1;
 
-    if (def->os.slic_table &&
-        virSecuritySELinuxSetFilecon(mgr, def->os.slic_table,
-                                     data->content_context, true) < 0)
-        return -1;
+    for (i = 0; i < def->os.nacpiTables; i++) {
+        if (virSecuritySELinuxSetFilecon(mgr, def->os.acpiTables[i]->path,
+                                         data->content_context, true) < 0)
+            return -1;
+    }
 
     if (def->pstore &&
         virSecuritySELinuxSetFilecon(mgr, def->pstore->path,

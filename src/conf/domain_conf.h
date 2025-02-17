@@ -2481,6 +2481,24 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainOsDefFirmwareFeature);
 
+typedef enum {
+    VIR_DOMAIN_OS_ACPI_TABLE_TYPE_SLIC,
+
+    VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST
+} virDomainOsACPITable;
+
+VIR_ENUM_DECL(virDomainOsACPITable);
+
+struct _virDomainOSACPITableDef {
+    virDomainOsACPITable type;
+    char *path;
+};
+
+typedef struct _virDomainOSACPITableDef virDomainOSACPITableDef;
+void virDomainOSACPITableDefFree(virDomainOSACPITableDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainOSACPITableDef, virDomainOSACPITableDefFree);
+
+
 struct _virDomainOSDef {
     int type;
     virDomainOsDefFirmware firmware;
@@ -2503,7 +2521,8 @@ struct _virDomainOSDef {
     char *cmdline;
     char *dtb;
     char *root;
-    char *slic_table;
+    size_t nacpiTables;
+    virDomainOSACPITableDef **acpiTables;
     virDomainLoaderDef *loader;
     char *bootloader;
     char *bootloaderArgs;

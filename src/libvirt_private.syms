@@ -611,6 +611,8 @@ virDomainObjTaint;
 virDomainObjUpdateModificationImpact;
 virDomainObjWait;
 virDomainObjWaitUntil;
+virDomainOsACPITableTypeFromString;
+virDomainOsACPITableTypeToString;
 virDomainOsDefFirmwareTypeFromString;
 virDomainOsDefFirmwareTypeToString;
 virDomainOSTypeFromString;
