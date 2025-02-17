@@ -17581,9 +17581,13 @@ qemuDomainGetStatsPerfOneEvent(virPerf *perf,
                                virTypedParamList *params)
 {
     uint64_t value = 0;
+    int rv;
 
-    if (virPerfReadEvent(perf, type, &value) < 0)
+    if ((rv = virPerfReadEvent(perf, type, &value)) < 0) {
+        virReportSystemError(-rv, "%s",
+                             _("Unable to read cache data"));
         return -1;
+    }
 
     virTypedParamListAddULLong(params, value, "perf.%s", virPerfEventTypeToString(type));
 
