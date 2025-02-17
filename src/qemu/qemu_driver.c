@@ -16556,7 +16556,7 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 }
 
 
-static int
+static void
 qemuDomainGetStatsState(virQEMUDriver *driver G_GNUC_UNUSED,
                         virDomainObj *dom,
                         virTypedParamList *params,
@@ -16564,8 +16564,6 @@ qemuDomainGetStatsState(virQEMUDriver *driver G_GNUC_UNUSED,
 {
     virTypedParamListAddInt(params, dom->state.state, "state.state");
     virTypedParamListAddInt(params, dom->state.reason, "state.reason");
-
-    return 0;
 }
 
 
@@ -16939,7 +16937,7 @@ qemuDomainGetStatsCpuHaltPollTime(virDomainObj *dom,
     return;
 }
 
-static int
+static void
 qemuDomainGetStatsCpu(virQEMUDriver *driver,
                       virDomainObj *dom,
                       virTypedParamList *params,
@@ -16956,12 +16954,10 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
     qemuDomainGetStatsCpuCache(driver, dom, params);
 
     qemuDomainGetStatsCpuHaltPollTime(dom, params, privflags);
-
-    return 0;
 }
 
 
-static int
+static void
 qemuDomainGetStatsMemory(virQEMUDriver *driver,
                          virDomainObj *dom,
                          virTypedParamList *params,
@@ -16969,11 +16965,10 @@ qemuDomainGetStatsMemory(virQEMUDriver *driver,
 
 {
     qemuDomainGetStatsMemoryBandwidth(driver, dom, params);
-    return 0;
 }
 
 
-static int
+static void
 qemuDomainGetStatsBalloon(virQEMUDriver *driver G_GNUC_UNUSED,
                           virDomainObj *dom,
                           virTypedParamList *params,
@@ -16994,12 +16989,12 @@ qemuDomainGetStatsBalloon(virQEMUDriver *driver G_GNUC_UNUSED,
     virTypedParamListAddULLong(params, virDomainDefGetMemoryTotal(dom->def), "balloon.maximum");
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     nr_stats = qemuDomainMemoryStatsInternal(dom, stats,
                                              VIR_DOMAIN_MEMORY_STAT_NR);
     if (nr_stats < 0)
-        return 0;
+        return;
 
 #define STORE_MEM_RECORD(TAG, NAME) \
     if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG) \
@@ -17021,8 +17016,6 @@ qemuDomainGetStatsBalloon(virQEMUDriver *driver G_GNUC_UNUSED,
     }
 
 #undef STORE_MEM_RECORD
-
-    return 0;
 }
 
 
@@ -17085,7 +17078,7 @@ qemuDomainAddStatsFromHashTable(GHashTable *stats,
 }
 
 
-static int
+static void
 qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
                        virDomainObj *dom,
                        virTypedParamList *params,
@@ -17118,7 +17111,7 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
                                  virDomainDefGetVcpus(dom->def),
                                  NULL, 0) < 0) {
         virResetLastError();
-        return 0;
+        return;
     }
 
     if (HAVE_JOB(privflags) && qemuDomainRefreshStatsSchema(dom) == 0) {
@@ -17163,15 +17156,13 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
 
         qemuDomainAddStatsFromHashTable(stats, priv->statsSchema, prefix, params);
     }
-
-    return 0;
 }
 
 #define QEMU_ADD_NET_PARAM(params, num, name, value) \
     if (value >= 0)\
         virTypedParamListAddULLong((params), (value), "net.%zu.%s", (num), (name));
 
-static int
+static void
 qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
                             virDomainObj *dom,
                             virTypedParamList *params,
@@ -17180,7 +17171,7 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
     size_t i;
 
     if (!virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     virTypedParamListAddUInt(params, dom->def->nnets, "net.count");
 
@@ -17219,8 +17210,6 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
         QEMU_ADD_NET_PARAM(params, i, "tx.errs", tmp.tx_errs);
         QEMU_ADD_NET_PARAM(params, i, "tx.drop", tmp.tx_drop);
     }
-
-    return 0;
 }
 
 #undef QEMU_ADD_NET_PARAM
@@ -17481,7 +17470,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 }
 
 
-static int
+static void
 qemuDomainGetStatsBlock(virQEMUDriver *driver,
                         virDomainObj *dom,
                         virTypedParamList *params,
@@ -17518,12 +17507,10 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
 
     virTypedParamListAddUInt(params, visited, "block.count");
     virTypedParamListConcat(params, &blockparams);
-
-    return 0;
 }
 
 
-static int
+static void
 qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
                            virDomainObj *dom,
                            virTypedParamList *params,
@@ -17534,17 +17521,17 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
     int niothreads = 0;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     if (qemuDomainGetIOThreadsMon(dom, &iothreads, &niothreads) < 0) {
         virResetLastError();
-        return 0;
+        return;
     }
 
     /* qemuDomainGetIOThreadsMon returns a NULL-terminated list, so we must free
      * it even if it returns 0 */
     if (niothreads == 0)
-        return 0;
+        return;
 
     virTypedParamListAddUInt(params, niothreads, "iothread.count");
 
@@ -17564,8 +17551,6 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
 
     for (i = 0; i < niothreads; i++)
         VIR_FREE(iothreads[i]);
-
-    return 0;
 }
 
 
@@ -17582,7 +17567,7 @@ qemuDomainGetStatsPerfOneEvent(virPerf *perf,
     virTypedParamListAddULLong(params, value, "perf.%s", virPerfEventTypeToString(type));
 }
 
-static int
+static void
 qemuDomainGetStatsPerf(virQEMUDriver *driver G_GNUC_UNUSED,
                        virDomainObj *dom,
                        virTypedParamList *params,
@@ -17597,12 +17582,10 @@ qemuDomainGetStatsPerf(virQEMUDriver *driver G_GNUC_UNUSED,
 
         qemuDomainGetStatsPerfOneEvent(priv->perf, i, params);
     }
-
-    return 0;
 }
 
 
-static int
+static void
 qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
                             virDomainObj *dom,
                             virTypedParamList *params,
@@ -17613,7 +17596,7 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
     int rv;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     qemuDomainObjEnterMonitor(dom);
     rv = qemuMonitorQueryDirtyRate(priv->mon, &info);
@@ -17621,7 +17604,7 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
 
     if (rv < 0) {
         virResetLastError();
-        return 0;
+        return;
     }
 
     virTypedParamListAddInt(params, info.status, "dirtyrate.calc_status");
@@ -17642,12 +17625,10 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
             }
         }
     }
-
-    return 0;
 }
 
 
-static int
+static void
 qemuDomainGetStatsVm(virQEMUDriver *driver G_GNUC_UNUSED,
                      virDomainObj *dom,
                      virTypedParamList *params,
@@ -17659,10 +17640,10 @@ qemuDomainGetStatsVm(virQEMUDriver *driver G_GNUC_UNUSED,
     virJSONValue *stats_obj = NULL;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     if (qemuDomainRefreshStatsSchema(dom) < 0)
-        return 0;
+        return;
 
     qemuDomainObjEnterMonitor(dom);
     queried_stats = qemuMonitorQueryStats(priv->mon,
@@ -17671,17 +17652,15 @@ qemuDomainGetStatsVm(virQEMUDriver *driver G_GNUC_UNUSED,
     qemuDomainObjExitMonitor(dom);
 
     if (!queried_stats || virJSONValueArraySize(queried_stats) != 1)
-        return 0;
+        return;
 
     stats_obj = virJSONValueArrayGet(queried_stats, 0);
     stats = qemuMonitorExtractQueryStats(stats_obj);
 
     qemuDomainAddStatsFromHashTable(stats, priv->statsSchema, "vm", params);
-
-    return 0;
 }
 
-typedef int
+typedef void
 (*qemuDomainGetStatsFunc)(virQEMUDriver *driver,
                           virDomainObj *dom,
                           virTypedParamList *list,
@@ -17795,9 +17774,7 @@ qemuDomainGetStats(virConnectPtr conn,
 
     for (i = 0; qemuDomainGetStatsWorkers[i].func; i++) {
         if (stats & qemuDomainGetStatsWorkers[i].stats) {
-            if (qemuDomainGetStatsWorkers[i].func(conn->privateData, dom, params,
-                                                  flags) < 0)
-                return -1;
+            qemuDomainGetStatsWorkers[i].func(conn->privateData, dom, params, flags);
         }
     }
 
