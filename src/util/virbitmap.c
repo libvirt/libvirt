@@ -327,8 +327,8 @@ virBitmapToString(virBitmap *bitmap)
  *
  * If bitmap is NULL or it has no bits set, an empty string is returned.
  *
- * Returns the string on success or NULL otherwise. Caller should call
- * VIR_FREE to free the string.
+ * Returns the formatted string. Caller is responsible for freeing the returned
+ * string.
  */
 char *
 virBitmapFormat(virBitmap *bitmap)
@@ -337,11 +337,8 @@ virBitmapFormat(virBitmap *bitmap)
     bool first = true;
     int start, cur, prev;
 
-    if (!bitmap || (cur = virBitmapNextSetBit(bitmap, -1)) < 0) {
-        char *ret;
-        ret = g_strdup("");
-        return ret;
-    }
+    if (!bitmap || (cur = virBitmapNextSetBit(bitmap, -1)) < 0)
+        return g_strdup("");
 
     start = prev = cur;
     while (prev >= 0) {
