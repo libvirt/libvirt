@@ -17332,7 +17332,7 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
 }
 
 
-static int
+static void
 qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                       GHashTable *stats,
                                       size_t idx,
@@ -17344,7 +17344,7 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
      * trying to refresh the stats from the disk. Inability to provide stats is
      * usually caused by blocked storage so this would make libvirtd hang */
     if (!stats || !frontendname || !(en = virHashLookup(stats, frontendname)))
-        return 0;
+        return;
 
     virTypedParamListAddULLong(par, en->rd_req, "block.%zu.rd.reqs", idx);
     virTypedParamListAddULLong(par, en->rd_bytes, "block.%zu.rd.bytes", idx);
@@ -17354,8 +17354,6 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
     virTypedParamListAddULLong(par, en->wr_total_times, "block.%zu.wr.times", idx);
     virTypedParamListAddULLong(par, en->flush_req, "block.%zu.fl.reqs", idx);
     virTypedParamListAddULLong(par, en->flush_total_times, "block.%zu.fl.times", idx);
-
-    return 0;
 }
 
 
@@ -17441,9 +17439,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         /* The following stats make sense only for the frontend device */
         if (n == disk->src) {
-            if (qemuDomainGetStatsBlockExportFrontend(frontendalias, stats, *recordnr,
-                                                      params) < 0)
-                return -1;
+            qemuDomainGetStatsBlockExportFrontend(frontendalias, stats, *recordnr,
+                                                  params);
         }
 
         if (qemuDomainGetStatsOneBlock(cfg, dom, params,
