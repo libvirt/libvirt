@@ -16697,28 +16697,30 @@ qemuDomainGetResctrlMonData(virQEMUDriver *driver,
 }
 
 
-static int
+static void
 qemuDomainGetStatsMemoryBandwidth(virQEMUDriver *driver,
                                   virDomainObj *dom,
                                   virTypedParamList *params)
 {
-    virQEMUResctrlMonData **resdata = NULL;
+    g_autofree virQEMUResctrlMonData **resdata = NULL;
     char **features = NULL;
     size_t nresdata = 0;
     size_t i = 0;
     size_t j = 0;
     size_t k = 0;
-    int ret = -1;
 
     if (!virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     if (qemuDomainGetResctrlMonData(driver, dom, &resdata, &nresdata,
-                                    VIR_RESCTRL_MONITOR_TYPE_MEMBW) < 0)
-        goto cleanup;
+                                    VIR_RESCTRL_MONITOR_TYPE_MEMBW) < 0) {
+        /* don't return cache stats if we can't fetch them */
+        virResetLastError();
+        return;
+    }
 
     if (nresdata == 0)
-        return 0;
+        return;
 
     virTypedParamListAddUInt(params, nresdata, "memory.bandwidth.monitor.count");
 
@@ -16751,12 +16753,8 @@ qemuDomainGetStatsMemoryBandwidth(virQEMUDriver *driver,
         }
     }
 
-    ret = 0;
- cleanup:
     for (i = 0; i < nresdata; i++)
         qemuDomainFreeResctrlMonData(resdata[i]);
-    VIR_FREE(resdata);
-    return ret;
 }
 
 
@@ -16970,7 +16968,8 @@ qemuDomainGetStatsMemory(virQEMUDriver *driver,
                          unsigned int privflags G_GNUC_UNUSED)
 
 {
-    return qemuDomainGetStatsMemoryBandwidth(driver, dom, params);
+    qemuDomainGetStatsMemoryBandwidth(driver, dom, params);
+    return 0;
 }
 
 
