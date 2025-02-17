@@ -16760,7 +16760,7 @@ qemuDomainGetStatsMemoryBandwidth(virQEMUDriver *driver,
 }
 
 
-static int
+static void
 qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
                            virDomainObj *dom,
                            virTypedParamList *params)
@@ -16769,14 +16769,16 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
     size_t nresdata = 0;
     size_t i = 0;
     size_t j = 0;
-    int ret = -1;
 
     if (!virDomainObjIsActive(dom))
-        return 0;
+        return;
 
     if (qemuDomainGetResctrlMonData(driver, dom, &resdata, &nresdata,
-                                    VIR_RESCTRL_MONITOR_TYPE_CACHE) < 0)
-        goto cleanup;
+                                    VIR_RESCTRL_MONITOR_TYPE_CACHE) < 0) {
+        /* don't return cache stats if we can't fetch them */
+        virResetLastError();
+        return;
+    }
 
     virTypedParamListAddUInt(params, nresdata, "cpu.cache.monitor.count");
 
@@ -16803,12 +16805,9 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
         }
     }
 
-    ret = 0;
- cleanup:
     for (i = 0; i < nresdata; i++)
         qemuDomainFreeResctrlMonData(resdata[i]);
     VIR_FREE(resdata);
-    return ret;
 }
 
 
@@ -16956,8 +16955,7 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
         qemuDomainGetStatsCpuProc(dom, params);
     }
 
-    if (qemuDomainGetStatsCpuCache(driver, dom, params) < 0)
-        return -1;
+    qemuDomainGetStatsCpuCache(driver, dom, params);
 
     qemuDomainGetStatsCpuHaltPollTime(dom, params, privflags);
 
