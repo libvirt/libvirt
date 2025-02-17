@@ -16,7 +16,7 @@ The libvirt project:
    `QEMU <drvqemu.html>`__,
    `Xen <drvxen.html>`__,
    `Virtuozzo <drvvirtuozzo.html>`__,
-   `VMWare ESX <drvesx.html>`__,
+   `VMware ESX <drvesx.html>`__,
    `LXC <drvlxc.html>`__,
    `BHyve <drvbhyve.html>`__ and
    `more <drivers.html>`__
