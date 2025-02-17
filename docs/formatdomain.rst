@@ -283,13 +283,19 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    :since:`Since 8.5.0`,  it's possible for the element to have ``type`` attribute
    (accepts values ``file``, ``block`` and ``network``) in that case the NVRAM
    storage is described by a ``<source>`` sub-element with the same syntax as
-   ``disk``'s source. See `Hard drives, floppy disks, CDROMs`_.
+   ``disk``'s source. See `Hard drives, floppy disks, CDROMs`_. For ``block``
+   backed NVRAM images it may be necessary to ensure that the block device
+   has the correct guest visible size based on hypervisor expectations. This
+   may require use of non ``raw`` format image that allows arbitrary disk
+   size.
 
    **Note:** ``network`` backed NVRAM the variables are not instantiated from
    the ``template`` and it's user's responsibility to provide a valid NVRAM image.
 
    This element supports a ``format`` attribute, which specifies the format
-   of the NVRAM image. :since:`Since 9.2.0 (QEMU only)`
+   of the NVRAM image. :since:`Since 9.2.0 (QEMU only)` Note that hypervisors
+   may not support automatic population of the nvram if ``format`` differs from
+   ``templateFormat`` or may support only a specific ``format``.
 
    It is not valid to provide this element if the loader is marked as
    stateless.
