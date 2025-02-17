@@ -7184,6 +7184,7 @@
               <value>raw</value>
               <value>rawset</value>
               <value>slic</value>
+              <value>msdm</value>
             </choice>
           </attribute>
           <ref name="absFilePath"/>

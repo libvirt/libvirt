@@ -503,6 +503,10 @@ These options apply to any form of booting of the guest OS.
      software licensing information. The ACPI table signature in the
      header will be forced to ``SLIC`` (:since:`Since 1.3.5 (QEMU)`,
      mis-interpreted as ``rawset`` :since:`Since 5.9.0 (Xen)`).
+   * ``msdm``: a single ACPI table with header and data, providing
+     Microsoft Data Management information. The ACPI table signature
+     in the header will be forced to ``MSDM``
+     (:since:`Since 11.2.0`).
 
    Each type may be used only once, except for ``raw`` which can
    appear multiple times.

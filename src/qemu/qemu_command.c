@@ -132,7 +132,8 @@ VIR_ENUM_IMPL(qemuACPITableSIG,
               VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST,
               "", /* raw */
               "", /* rawset */
-              "SLIC");
+              "SLIC",
+              "");
 
 
 const char *

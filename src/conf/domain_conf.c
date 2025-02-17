@@ -1462,6 +1462,7 @@ VIR_ENUM_IMPL(virDomainOsACPITable,
               "raw",
               "rawset",
               "slic",
+              "msdm",
 );
 
 VIR_ENUM_IMPL(virDomainCFPC,
