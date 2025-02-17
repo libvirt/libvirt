@@ -17575,23 +17575,17 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuDomainGetStatsPerfOneEvent(virPerf *perf,
                                virPerfEventType type,
                                virTypedParamList *params)
 {
     uint64_t value = 0;
-    int rv;
 
-    if ((rv = virPerfReadEvent(perf, type, &value)) < 0) {
-        virReportSystemError(-rv, "%s",
-                             _("Unable to read cache data"));
-        return -1;
-    }
+    if (virPerfReadEvent(perf, type, &value) < 0)
+        return;
 
     virTypedParamListAddULLong(params, value, "perf.%s", virPerfEventTypeToString(type));
-
-    return 0;
 }
 
 static int
@@ -17607,8 +17601,7 @@ qemuDomainGetStatsPerf(virQEMUDriver *driver G_GNUC_UNUSED,
         if (!virPerfEventIsEnabled(priv->perf, i))
              continue;
 
-        if (qemuDomainGetStatsPerfOneEvent(priv->perf, i, params) < 0)
-            return -1;
+        qemuDomainGetStatsPerfOneEvent(priv->perf, i, params);
     }
 
     return 0;
