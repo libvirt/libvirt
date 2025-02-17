@@ -17314,7 +17314,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
 }
 
 
-static int
+static void
 qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
                                             GHashTable *stats,
                                             size_t recordnr,
@@ -17323,12 +17323,10 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
     qemuBlockStats *entry;
 
     if (!stats || !entryname || !(entry = virHashLookup(stats, entryname)))
-        return 0;
+        return;
 
     if (entry->write_threshold)
         virTypedParamListAddULLong(params, entry->write_threshold, "block.%zu.threshold", recordnr);
-
-    return 0;
 }
 
 
@@ -17448,10 +17446,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                        stats) < 0)
             return -1;
 
-        if (qemuDomainGetStatsBlockExportBackendStorage(backendstoragealias,
-                                                        stats, *recordnr,
-                                                        params) < 0)
-            return -1;
+        qemuDomainGetStatsBlockExportBackendStorage(backendstoragealias,
+                                                    stats, *recordnr, params);
 
         (*recordnr)++;
 
@@ -17476,10 +17472,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                            stats) < 0)
                 return -1;
 
-            if (qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(disk->mirror),
-                                                            stats, *recordnr,
-                                                            params) < 0)
-                return -1;
+            qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(disk->mirror),
+                                                        stats, *recordnr, params);
 
             (*recordnr)++;
         }
@@ -17504,10 +17498,9 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                                    stats) < 0)
                         return -1;
 
-                    if (qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(backupdisk->store),
-                                                                    stats, *recordnr,
-                                                                    params) < 0)
-                        return -1;
+                    qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(backupdisk->store),
+                                                                stats, *recordnr,
+                                                                params);
 
                     (*recordnr)++;
                 }
