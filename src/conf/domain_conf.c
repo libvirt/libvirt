@@ -18144,8 +18144,6 @@ virDomainResctrlMonDefParse(virDomainDef *def,
     int rv = -1;
     int ret = -1;
     g_autofree xmlNodePtr *nodes = NULL;
-    g_autofree char *tmp = NULL;
-    g_autofree char *id = NULL;
 
     ctxt->node = node;
 
@@ -18153,6 +18151,8 @@ virDomainResctrlMonDefParse(virDomainDef *def,
         goto cleanup;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *id = NULL;
+
         domresmon = g_new0(virDomainResctrlMonDef, 1);
 
         domresmon->tag = tag;
@@ -18188,12 +18188,9 @@ virDomainResctrlMonDefParse(virDomainDef *def,
          * associated allocation, set monitor's id to the same value
          * as the allocation. */
         if (rv == 1) {
-            const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
-
-            id = g_strdup(alloc_id);
+            id = g_strdup(virResctrlAllocGetID(resctrl->alloc));
         } else {
-            if (!(tmp = virBitmapFormat(domresmon->vcpus)))
-                goto cleanup;
+            g_autofree char *tmp = virBitmapFormat(domresmon->vcpus);
 
             id = g_strdup_printf("vcpus_%s", tmp);
         }
@@ -18204,9 +18201,6 @@ virDomainResctrlMonDefParse(virDomainDef *def,
             goto cleanup;
 
         VIR_APPEND_ELEMENT(resctrl->monitors, resctrl->nmonitors, domresmon);
-
-        VIR_FREE(id);
-        VIR_FREE(tmp);
     }
 
     ret = 0;
