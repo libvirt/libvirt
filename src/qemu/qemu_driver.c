@@ -17269,7 +17269,7 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverConfig *cfg,
 }
 
 
-static int
+static void
 qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
                            virDomainObj *dom,
                            virTypedParamList *params,
@@ -17284,14 +17284,14 @@ qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
      * ourselves */
     if (!virDomainObjIsActive(dom)) {
         qemuDomainGetStatsOneBlockFallback(cfg, dom, params, src, block_idx);
-        return 0;
+        return;
     }
 
     /* In case where qemu didn't provide the stats we stop here rather than
      * trying to refresh the stats from the disk. Inability to provide stats is
      * usually caused by blocked storage so this would make libvirtd hang */
     if (!stats || !entryname || !(entry = virHashLookup(stats, entryname)))
-        return 0;
+        return;
 
     virTypedParamListAddULLong(params, entry->wr_highest_offset, "block.%zu.allocation", block_idx);
 
@@ -17305,8 +17305,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
             virTypedParamListAddULLong(params, src->physical, "block.%zu.physical", block_idx);
         }
     }
-
-    return 0;
 }
 
 
@@ -17437,10 +17435,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                                   params);
         }
 
-        if (qemuDomainGetStatsOneBlock(cfg, dom, params,
-                                       backendalias, n, *recordnr,
-                                       stats) < 0)
-            return -1;
+        qemuDomainGetStatsOneBlock(cfg, dom, params,
+                                   backendalias, n, *recordnr, stats);
 
         qemuDomainGetStatsBlockExportBackendStorage(backendstoragealias,
                                                     stats, *recordnr, params);
@@ -17461,12 +17457,9 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
             disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
             qemuDomainGetStatsBlockExportHeader(disk, disk->mirror, *recordnr, params);
 
-            if (qemuDomainGetStatsOneBlock(cfg, dom, params,
-                                           qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
-                                           disk->mirror,
-                                           *recordnr,
-                                           stats) < 0)
-                return -1;
+            qemuDomainGetStatsOneBlock(cfg, dom, params,
+                                       qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
+                                       disk->mirror, *recordnr, stats);
 
             qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(disk->mirror),
                                                         stats, *recordnr, params);
@@ -17487,12 +17480,9 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                     qemuDomainGetStatsBlockExportHeader(disk, backupdisk->store,
                                                         *recordnr, params);
 
-                    if (qemuDomainGetStatsOneBlock(cfg, dom, params,
-                                                   qemuBlockStorageSourceGetEffectiveNodename(backupdisk->store),
-                                                   backupdisk->store,
-                                                   *recordnr,
-                                                   stats) < 0)
-                        return -1;
+                    qemuDomainGetStatsOneBlock(cfg, dom, params,
+                                               qemuBlockStorageSourceGetEffectiveNodename(backupdisk->store),
+                                               backupdisk->store, *recordnr, stats);
 
                     qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(backupdisk->store),
                                                                 stats, *recordnr,
