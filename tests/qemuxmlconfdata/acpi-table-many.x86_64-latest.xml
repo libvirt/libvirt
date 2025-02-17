@@ -11,6 +11,7 @@
       <table type='raw'>/var/lib/libvirt/acpi/exm2.dat</table>
       <table type='raw'>/var/lib/libvirt/acpi/exm3.dat</table>
       <table type='slic'>/var/lib/libvirt/acpi/slic.dat</table>
+      <table type='msdm'>/var/lib/libvirt/acpi/msdm.dat</table>
     </acpi>
     <boot dev='hd'/>
   </os>

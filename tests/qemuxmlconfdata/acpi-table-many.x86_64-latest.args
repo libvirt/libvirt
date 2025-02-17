@@ -30,6 +30,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -acpitable file=/var/lib/libvirt/acpi/exm2.dat \
 -acpitable file=/var/lib/libvirt/acpi/exm3.dat \
 -acpitable sig=SLIC,file=/var/lib/libvirt/acpi/slic.dat \
+-acpitable sig=MSDM,file=/var/lib/libvirt/acpi/msdm.dat \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

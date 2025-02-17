@@ -506,7 +506,7 @@ These options apply to any form of booting of the guest OS.
    * ``msdm``: a single ACPI table with header and data, providing
      Microsoft Data Management information. The ACPI table signature
      in the header will be forced to ``MSDM``
-     (:since:`Since 11.2.0`).
+     (:since:`Since 11.2.0 (QEMU)`).
 
    Each type may be used only once, except for ``raw`` which can
    appear multiple times.

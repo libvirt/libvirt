@@ -133,7 +133,7 @@ VIR_ENUM_IMPL(qemuACPITableSIG,
               "", /* raw */
               "", /* rawset */
               "SLIC",
-              "");
+              "MSDM");
 
 
 const char *
