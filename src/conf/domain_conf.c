@@ -27479,47 +27479,35 @@ virDomainCputuneDefFormat(virBuffer *buf,
                           def->cputune.iothread_quota);
 
     for (i = 0; i < def->maxvcpus; i++) {
-        char *cpumask;
+        g_autofree char *cpumask = NULL;
         virDomainVcpuDef *vcpu = def->vcpus[i];
 
         if (!vcpu->cpumask)
             continue;
 
-        if (!(cpumask = virBitmapFormat(vcpu->cpumask)))
-            return -1;
+        cpumask = virBitmapFormat(vcpu->cpumask);
 
         virBufferAsprintf(&childrenBuf,
                           "<vcpupin vcpu='%zu' cpuset='%s'/>\n", i, cpumask);
-
-        VIR_FREE(cpumask);
     }
 
     if (def->cputune.emulatorpin) {
-        char *cpumask;
-        virBufferAddLit(&childrenBuf, "<emulatorpin ");
+        g_autofree char *cpumask = virBitmapFormat(def->cputune.emulatorpin);
 
-        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin)))
-            return -1;
-
-        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
-        VIR_FREE(cpumask);
+        virBufferAsprintf(&childrenBuf, "<emulatorpin cpuset='%s'/>\n", cpumask);
     }
 
     for (i = 0; i < def->niothreadids; i++) {
-        char *cpumask;
+        g_autofree char *cpumask = NULL;
 
         /* Ignore iothreadids with no cpumask */
         if (!def->iothreadids[i]->cpumask)
             continue;
 
-        virBufferAsprintf(&childrenBuf, "<iothreadpin iothread='%u' ",
-                          def->iothreadids[i]->iothread_id);
+        cpumask = virBitmapFormat(def->iothreadids[i]->cpumask);
 
-        if (!(cpumask = virBitmapFormat(def->iothreadids[i]->cpumask)))
-            return -1;
-
-        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
-        VIR_FREE(cpumask);
+        virBufferAsprintf(&childrenBuf, "<iothreadpin iothread='%u' cpuset='%s'/>\n",
+                          def->iothreadids[i]->iothread_id, cpumask);
     }
 
     if (def->cputune.emulatorsched) {
