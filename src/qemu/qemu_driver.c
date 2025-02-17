@@ -16834,7 +16834,7 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
 }
 
 
-static int
+static void
 qemuDomainGetStatsCpuProc(virDomainObj *vm,
                           virTypedParamList *params)
 {
@@ -16845,14 +16845,12 @@ qemuDomainGetStatsCpuProc(virDomainObj *vm,
     if (virProcessGetStatInfo(&cpuTime, &userTime, &sysTime,
                               NULL, NULL, vm->pid, 0) < 0) {
         /* ignore error */
-        return 0;
+        return;
     }
 
     virTypedParamListAddULLong(params, cpuTime, "cpu.time");
     virTypedParamListAddULLong(params, userTime, "cpu.user");
     virTypedParamListAddULLong(params, sysTime, "cpu.system");
-
-    return 0;
 }
 
 
@@ -16955,8 +16953,7 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
     if (priv->cgroup) {
         qemuDomainGetStatsCpuCgroup(dom, params);
     } else {
-        if (qemuDomainGetStatsCpuProc(dom, params) < 0)
-            return -1;
+        qemuDomainGetStatsCpuProc(dom, params);
     }
 
     if (qemuDomainGetStatsCpuCache(driver, dom, params) < 0)
