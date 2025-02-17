@@ -6346,6 +6346,11 @@ two attributes ``enabled`` (which accepts ``yes`` and ``no``) and
 ``timeout`` which specifies the amount of seconds after which
 hypervisor tries to reconnect.
 
+Note that when ``mode='server'`` is used, the hypervisor will wait for the
+incoming connection to be established prior to actually running the VM. This is
+not possible when hotplugging an interface with such config so the VM will
+continue to run even when no connection is made. It's advised to use
+``mode='client'`` instead.
 
 vhost-user connection with passt backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
