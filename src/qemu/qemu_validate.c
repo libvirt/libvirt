@@ -701,6 +701,8 @@ static int
 qemuValidateDomainDefBoot(const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
+    size_t i;
+
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
@@ -738,6 +740,19 @@ qemuValidateDomainDefBoot(const virDomainDef *def,
 
         if (qemuValidateDomainDefNvram(def, qemuCaps) < 0)
             return -1;
+    }
+
+    for (i = 0; i < def->os.nacpiTables; i++) {
+        switch (def->os.acpiTables[i]->type) {
+        case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_SLIC:
+            break;
+
+        default:
+        case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST:
+            virReportEnumRangeError(virDomainOsACPITable,
+                                    def->os.acpiTables[i]->type);
+            return -1;
+        }
     }
 
     return 0;

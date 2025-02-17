@@ -304,6 +304,7 @@ libxlDomainDefValidate(const virDomainDef *def,
     libxlDriverPrivate *driver = opaque;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     bool reqSecureBoot = false;
+    size_t i;
 
     if (!virCapabilitiesDomainSupported(cfg->caps, def->os.type,
                                         def->os.arch,
@@ -325,6 +326,24 @@ libxlDomainDefValidate(const virDomainDef *def,
     if (reqSecureBoot) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Secure boot is not supported on Xen"));
+        return -1;
+    }
+
+    for (i = 0; i < def->os.nacpiTables; i++) {
+        switch (def->os.acpiTables[i]->type) {
+        case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_SLIC:
+            break;
+
+        default:
+        case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST:
+            virReportEnumRangeError(virDomainOsACPITable,
+                                    def->os.acpiTables[i]->type);
+            return -1;
+        }
+    }
+    if (def->os.nacpiTables > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only a single ACPI table is supported"));
         return -1;
     }
 
