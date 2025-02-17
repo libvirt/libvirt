@@ -17359,7 +17359,7 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
 }
 
 
-static int
+static void
 qemuDomainGetStatsBlockExportHeader(virDomainDiskDef *disk,
                                     virStorageSource *src,
                                     size_t recordnr,
@@ -17372,8 +17372,6 @@ qemuDomainGetStatsBlockExportHeader(virDomainDiskDef *disk,
 
     if (src->id)
         virTypedParamListAddUInt(params, src->id, "block.%zu.backingIndex", recordnr);
-
-    return 0;
 }
 
 
@@ -17399,10 +17397,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
         VIR_INFO("optional disk '%s' source file is missing, "
                  "skip getting stats", disk->dst);
 
-        if (qemuDomainGetStatsBlockExportHeader(disk, disk->src, *recordnr,
-                                                params) < 0) {
-            return -1;
-        }
+        qemuDomainGetStatsBlockExportHeader(disk, disk->src, *recordnr, params);
 
         (*recordnr)++;
 
@@ -17411,10 +17406,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
     /* vhost-user disk doesn't support getting block stats */
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
-        if (qemuDomainGetStatsBlockExportHeader(disk, disk->src, *recordnr,
-                                                params) < 0) {
-            return -1;
-        }
+        qemuDomainGetStatsBlockExportHeader(disk, disk->src, *recordnr, params);
 
         (*recordnr)++;
 
@@ -17445,8 +17437,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
             backendstoragealias = alias;
         }
 
-        if (qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr, params) < 0)
-            return -1;
+        qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr, params);
 
         /* The following stats make sense only for the frontend device */
         if (n == disk->src) {
@@ -17479,8 +17470,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         if (disk->mirror &&
             disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-            if (qemuDomainGetStatsBlockExportHeader(disk, disk->mirror, *recordnr, params) < 0)
-                return -1;
+            qemuDomainGetStatsBlockExportHeader(disk, disk->mirror, *recordnr, params);
 
             if (qemuDomainGetStatsOneBlock(cfg, dom, params,
                                            qemuBlockStorageSourceGetEffectiveNodename(disk->mirror),
@@ -17507,9 +17497,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                     continue;
 
                 if (backupdisk->store) {
-                    if (qemuDomainGetStatsBlockExportHeader(disk, backupdisk->store,
-                                                            *recordnr, params) < 0)
-                        return -1;
+                    qemuDomainGetStatsBlockExportHeader(disk, backupdisk->store,
+                                                        *recordnr, params);
 
                     if (qemuDomainGetStatsOneBlock(cfg, dom, params,
                                                    qemuBlockStorageSourceGetEffectiveNodename(backupdisk->store),
