@@ -17601,19 +17601,6 @@ qemuDomainGetStatsPerf(virQEMUDriver *driver G_GNUC_UNUSED,
     return 0;
 }
 
-static int
-qemuDomainGetStatsDirtyRateMon(virDomainObj *vm,
-                               qemuMonitorDirtyRateInfo *info)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    int ret;
-
-    qemuDomainObjEnterMonitor(vm);
-    ret = qemuMonitorQueryDirtyRate(priv->mon, info);
-    qemuDomainObjExitMonitor(vm);
-
-    return ret;
-}
 
 static int
 qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
@@ -17621,13 +17608,21 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
                             virTypedParamList *params,
                             unsigned int privflags)
 {
+    qemuDomainObjPrivate *priv = dom->privateData;
     qemuMonitorDirtyRateInfo info;
+    int rv;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
         return 0;
 
-    if (qemuDomainGetStatsDirtyRateMon(dom, &info) < 0)
-        return -1;
+    qemuDomainObjEnterMonitor(dom);
+    rv = qemuMonitorQueryDirtyRate(priv->mon, &info);
+    qemuDomainObjExitMonitor(dom);
+
+    if (rv < 0) {
+        virResetLastError();
+        return 0;
+    }
 
     virTypedParamListAddInt(params, info.status, "dirtyrate.calc_status");
     virTypedParamListAddLLong(params, info.startTime, "dirtyrate.calc_start_time");
