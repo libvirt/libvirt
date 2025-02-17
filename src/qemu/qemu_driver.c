@@ -17242,22 +17242,20 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
 #undef QEMU_ADD_NET_PARAM
 
 /* refresh information by opening images on the disk */
-static int
+static void
 qemuDomainGetStatsOneBlockFallback(virQEMUDriverConfig *cfg,
                                    virDomainObj *dom,
                                    virTypedParamList *params,
                                    virStorageSource *src,
                                    size_t block_idx)
 {
-    if (virStorageSourceIsEmpty(src))
-        return 0;
-
-    if (virStorageSourceIsFD(src))
-        return 0;
+    if (virStorageSourceIsEmpty(src) ||
+        virStorageSourceIsFD(src))
+        return;
 
     if (qemuStorageLimitsRefresh(cfg, dom, src, true) <= 0) {
         virResetLastError();
-        return 0;
+        return;
     }
 
     if (src->allocation)
@@ -17268,8 +17266,6 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverConfig *cfg,
 
     if (src->physical)
         virTypedParamListAddULLong(params, src->physical, "block.%zu.physical", block_idx);
-
-    return 0;
 }
 
 
@@ -17287,8 +17283,8 @@ qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
     /* the VM is offline so we have to go and load the stast from the disk by
      * ourselves */
     if (!virDomainObjIsActive(dom)) {
-        return qemuDomainGetStatsOneBlockFallback(cfg, dom, params,
-                                                  src, block_idx);
+        qemuDomainGetStatsOneBlockFallback(cfg, dom, params, src, block_idx);
+        return 0;
     }
 
     /* In case where qemu didn't provide the stats we stop here rather than
