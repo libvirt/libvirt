@@ -2332,9 +2332,8 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
     g_autofree char *devicename = NULL;
     virJSONValue *backing;
 
-    if (dev_name &&
-        !(devicename = qemuDomainStorageAlias(dev_name, depth)))
-        return -1;
+    if (dev_name)
+        devicename = qemuDomainStorageAlias(dev_name, depth);
 
     qdevname = virJSONValueObjectGetString(dev, "qdev");
     nodename = virJSONValueObjectGetString(dev, "node-name");

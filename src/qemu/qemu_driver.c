@@ -17415,9 +17415,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
             backendstoragealias = qemuBlockStorageSourceGetStorageNodename(n);
         } else {
             /* alias may be NULL if the VM is not running */
-            if (disk->info.alias &&
-                !(alias = qemuDomainStorageAlias(disk->info.alias, n->id)))
-                return -1;
+            if (disk->info.alias)
+                alias = qemuDomainStorageAlias(disk->info.alias, n->id);
 
             /* for 'sd' disks we won't be displaying stats for the backing chain
              * as we don't update the stats correctly */
