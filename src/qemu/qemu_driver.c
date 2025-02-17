@@ -16812,7 +16812,7 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
 }
 
 
-static int
+static void
 qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
                             virTypedParamList *params)
 {
@@ -16822,7 +16822,7 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
     unsigned long long sys_time = 0;
 
     if (!priv->cgroup)
-        return 0;
+        return;
 
     if (virCgroupGetCpuacctUsage(priv->cgroup, &cpu_time) == 0)
         virTypedParamListAddULLong(params, cpu_time, "cpu.time");
@@ -16831,8 +16831,6 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
         virTypedParamListAddULLong(params, user_time, "cpu.user");
         virTypedParamListAddULLong(params, sys_time, "cpu.system");
     }
-
-    return 0;
 }
 
 
@@ -16955,8 +16953,7 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = dom->privateData;
 
     if (priv->cgroup) {
-        if (qemuDomainGetStatsCpuCgroup(dom, params) < 0)
-            return -1;
+        qemuDomainGetStatsCpuCgroup(dom, params);
     } else {
         if (qemuDomainGetStatsCpuProc(dom, params) < 0)
             return -1;
