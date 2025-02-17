@@ -17365,7 +17365,7 @@ qemuDomainGetStatsBlockExportHeader(virDomainDiskDef *disk,
 }
 
 
-static int
+static void
 qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                   GHashTable *stats,
                                   virTypedParamList *params,
@@ -17391,7 +17391,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         (*recordnr)++;
 
-        return 0;
+        return;
     }
 
     /* vhost-user disk doesn't support getting block stats */
@@ -17400,7 +17400,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         (*recordnr)++;
 
-        return 0;
+        return;
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
@@ -17494,8 +17494,6 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
             }
         }
     }
-
-    return 0;
 }
 
 
@@ -17530,10 +17528,8 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
     }
 
     for (i = 0; i < dom->def->ndisks; i++) {
-        if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats,
-                                              blockparams, &visited,
-                                              visitBacking, cfg, dom) < 0)
-            return -1;
+        qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats, blockparams,
+                                          &visited, visitBacking, cfg, dom);
     }
 
     virTypedParamListAddUInt(params, visited, "block.count");
