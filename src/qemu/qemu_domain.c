@@ -11430,6 +11430,7 @@ qemuDomainCheckCPU(virArch arch,
     /* Force compat check if the CPU model is not found in qemuCaps or
      * we don't have host CPU data from QEMU */
     if (!cpu->model ||
+        !hypervisorCPU ||
         hypervisorCPU->fallback != VIR_CPU_FALLBACK_FORBID ||
         virQEMUCapsGetCPUBlockers(qemuCaps, virtType,
                                   cpu->model, &blockers) < 0)
