@@ -754,11 +754,21 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     if (!(ret = virGetNWFilterBinding(conn, def->portdevname, def->filter)))
         goto cleanup;
 
-    VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
-        if (virNWFilterInstantiateFilter(driver, def) < 0) {
-            virNWFilterBindingObjListRemove(driver->bindings, obj);
-            g_clear_pointer(&ret, virObjectUnref);
-            goto cleanup;
+    /*
+     * XXX: holding 'driverMutex' here is a very bad thing for
+     * concurrency but we have no choice. The instantiate process
+     * will acquire locks on multiple filters in arbitrary order.
+     * Unless we serialize on 'driverMutex', this risks deadlock
+     * with other APIs (eg list all filters) which also acquire
+     * locks on mutliple filters in arbitrarily different order.
+     */
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
+            if (virNWFilterInstantiateFilter(driver, def) < 0) {
+                virNWFilterBindingObjListRemove(driver->bindings, obj);
+                g_clear_pointer(&ret, virObjectUnref);
+                goto cleanup;
+            }
         }
     }
 
@@ -783,6 +793,9 @@ nwfilterBindingCreateXML(virConnectPtr conn,
 static int
 nwfilterBindingDelete(virNWFilterBindingPtr binding)
 {
+    /* XXX: holding driverMutex is very bad for concurrency
+     * see nwfilterBindingCreate comment for more info */
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driverMutex);
     virNWFilterBindingObj *obj;
     virNWFilterBindingDef *def;
     int ret = -1;
