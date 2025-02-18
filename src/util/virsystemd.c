@@ -624,10 +624,15 @@ int virSystemdTerminateMachine(const char *name)
     return 0;
 }
 
+#ifdef WIN32
+static void
+virSystemdNotify(const char *msg G_GNUC_UNUSED)
+{
+}
+#else
 static void
 virSystemdNotify(const char *msg)
 {
-#ifndef WIN32
     const char *path;
     int fd;
     struct sockaddr_un un = {
@@ -672,8 +677,8 @@ virSystemdNotify(const char *msg)
         VIR_WARN("Failed to notify systemd");
 
     VIR_FORCE_CLOSE(fd);
-#endif /* !WIN32 */
 }
+#endif /* !WIN32 */
 
 void virSystemdNotifyReady(void)
 {
