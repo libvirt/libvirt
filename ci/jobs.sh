@@ -124,6 +124,9 @@ run_integration() {
         DAEMONS="virtinterfaced virtlockd virtlogd virtnetworkd virtnodedevd virtnwfilterd virtproxyd virtqemud virtsecretd virtstoraged"
     fi
 
+    # Force libvirt to use iptables to make sure libvirt-tck tests don't fail
+    run_cmd_quiet sudo augtool set /files/etc/libvirt/network.conf/firewall_backend "'iptables'"
+
     echo "DAEMONS=$DAEMONS"
     for daemon in $DAEMONS
     do
