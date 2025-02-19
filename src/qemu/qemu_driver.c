@@ -14914,6 +14914,12 @@ qemuDomainDiskBlockIoTuneIsSupported(virDomainDiskDef *disk)
         return false;
     }
 
+    if (disk->throttlefilters) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"), disk->dst);
+        return false;
+    }
+
     return true;
 }
 

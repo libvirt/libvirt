@@ -693,10 +693,54 @@ virDomainDiskDefValidateStartupPolicy(const virDomainDiskDef *disk)
 
 
 static int
+virDomainDiskIoTuneValidate(const virDomainBlockIoTuneInfo blkdeviotune)
+{
+    if ((blkdeviotune.total_bytes_sec &&
+         blkdeviotune.read_bytes_sec) ||
+        (blkdeviotune.total_bytes_sec &&
+         blkdeviotune.write_bytes_sec)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write bytes_sec cannot be set at the same time"));
+        return -1;
+    }
+
+    if ((blkdeviotune.total_iops_sec &&
+         blkdeviotune.read_iops_sec) ||
+        (blkdeviotune.total_iops_sec &&
+         blkdeviotune.write_iops_sec)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write iops_sec cannot be set at the same time"));
+        return -1;
+    }
+
+    if ((blkdeviotune.total_bytes_sec_max &&
+         blkdeviotune.read_bytes_sec_max) ||
+        (blkdeviotune.total_bytes_sec_max &&
+         blkdeviotune.write_bytes_sec_max)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write bytes_sec_max cannot be set at the same time"));
+        return -1;
+    }
+
+    if ((blkdeviotune.total_iops_sec_max &&
+         blkdeviotune.read_iops_sec_max) ||
+        (blkdeviotune.total_iops_sec_max &&
+         blkdeviotune.write_iops_sec_max)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write iops_sec_max cannot be set at the same time"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDiskDefValidate(const virDomainDef *def,
                          const virDomainDiskDef *disk)
 {
     virStorageSource *next;
+    size_t i;
 
     /* disk target is used widely in other code so it must be validated first */
     if (!disk->dst) {
@@ -746,41 +790,8 @@ virDomainDiskDefValidate(const virDomainDef *def,
     }
 
     /* Validate IotuneParse */
-    if ((disk->blkdeviotune.total_bytes_sec &&
-         disk->blkdeviotune.read_bytes_sec) ||
-        (disk->blkdeviotune.total_bytes_sec &&
-         disk->blkdeviotune.write_bytes_sec)) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("total and read/write bytes_sec cannot be set at the same time"));
+    if (virDomainDiskIoTuneValidate(disk->blkdeviotune) < 0)
         return -1;
-    }
-
-    if ((disk->blkdeviotune.total_iops_sec &&
-         disk->blkdeviotune.read_iops_sec) ||
-        (disk->blkdeviotune.total_iops_sec &&
-         disk->blkdeviotune.write_iops_sec)) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("total and read/write iops_sec cannot be set at the same time"));
-        return -1;
-    }
-
-    if ((disk->blkdeviotune.total_bytes_sec_max &&
-         disk->blkdeviotune.read_bytes_sec_max) ||
-        (disk->blkdeviotune.total_bytes_sec_max &&
-         disk->blkdeviotune.write_bytes_sec_max)) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("total and read/write bytes_sec_max cannot be set at the same time"));
-        return -1;
-    }
-
-    if ((disk->blkdeviotune.total_iops_sec_max &&
-         disk->blkdeviotune.read_iops_sec_max) ||
-        (disk->blkdeviotune.total_iops_sec_max &&
-         disk->blkdeviotune.write_iops_sec_max)) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("total and read/write iops_sec_max cannot be set at the same time"));
-        return -1;
-    }
 
     /* Reject disks with a bus type that is not compatible with the
      * given address type. The function considers only buses that are
@@ -979,6 +990,32 @@ virDomainDiskDefValidate(const virDomainDef *def,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("disk driver 'iothread' attribute can't be used together with 'iothreads' subelement"));
         return -1;
+    }
+
+    if (disk->nthrottlefilters > 0) {
+        if (disk->blkdeviotune.group_name ||
+            virDomainBlockIoTuneInfoHasAny(&disk->blkdeviotune)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"),
+                           disk->dst);
+            return -1;
+        }
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("cdrom device with throttle filters isn't supported"));
+            return -1;
+        }
+
+        for (i = 0; i < disk->nthrottlefilters; i++) {
+            virDomainThrottleFilterDef *filter = disk->throttlefilters[i];
+            if (!virDomainThrottleGroupByName(def, filter->group_name)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("throttle group '%1$s' not found"),
+                               filter->group_name);
+                return -1;
+            }
+        }
     }
 
     return 0;
@@ -1907,6 +1944,22 @@ virDomainDefLaunchSecurityValidate(const virDomainDef *def)
 #undef CHECK_BASE64_LEN
 
 static int
+virDomainDefValidateThrottleGroups(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nthrottlegroups; i++) {
+        virDomainThrottleGroupDef *throttleGroup = def->throttlegroups[i];
+
+        if (virDomainDiskIoTuneValidate(*throttleGroup) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOption *xmlopt)
 {
@@ -1962,6 +2015,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
         return -1;
 
     if (virDomainDefLaunchSecurityValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefValidateThrottleGroups(def) < 0)
         return -1;
 
     return 0;
