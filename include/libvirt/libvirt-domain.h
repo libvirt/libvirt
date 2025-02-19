@@ -8281,4 +8281,18 @@ virDomainGraphicsReload(virDomainPtr domain,
                         unsigned int type,
                         unsigned int flags);
 
+
+int
+virDomainSetThrottleGroup(virDomainPtr dom,
+                          const char *group,
+                          virTypedParameterPtr params,
+                          int nparams,
+                          unsigned int flags);
+
+int
+virDomainDelThrottleGroup(virDomainPtr dom,
+                          const char *group,
+                          unsigned int flags);
+
+
 #endif /* LIBVIRT_DOMAIN_H */

@@ -1475,6 +1475,19 @@ struct remote_domain_get_block_io_tune_ret {
     int nparams;
 };
 
+struct remote_domain_set_throttle_group_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string group;
+    remote_typed_param params<REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_del_throttle_group_args {
+    remote_nonnull_domain dom;
+    remote_string group;
+    unsigned int flags;
+};
+
 struct remote_domain_get_cpu_stats_args {
     remote_nonnull_domain dom;
     unsigned int nparams;
@@ -7076,5 +7089,21 @@ enum remote_procedure {
      * @priority: high
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_SET_AUTOSTART_ONCE = 450
+    REMOTE_PROC_DOMAIN_SET_AUTOSTART_ONCE = 450,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_SET_THROTTLE_GROUP = 451,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_DEL_THROTTLE_GROUP = 452
 };

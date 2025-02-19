@@ -1050,6 +1050,20 @@ struct remote_domain_get_block_io_tune_ret {
         } params;
         int                        nparams;
 };
+struct remote_domain_set_throttle_group_args {
+	remote_nonnull_domain      dom;
+	remote_nonnull_string      group;
+	struct {
+		u_int              params_len;
+		remote_typed_param * params_val;
+	} params;
+	u_int                      flags;
+};
+struct remote_domain_del_throttle_group_args {
+        remote_nonnull_domain      dom;
+        remote_string              group;
+        u_int                      flags;
+};
 struct remote_domain_get_cpu_stats_args {
         remote_nonnull_domain      dom;
         u_int                      nparams;
@@ -3767,4 +3781,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GRAPHICS_RELOAD = 448,
         REMOTE_PROC_DOMAIN_GET_AUTOSTART_ONCE = 449,
         REMOTE_PROC_DOMAIN_SET_AUTOSTART_ONCE = 450,
+        REMOTE_PROC_DOMAIN_SET_THROTTLE_GROUP = 451,
+        REMOTE_PROC_DOMAIN_DEL_THROTTLE_GROUP = 452,
 };

@@ -14072,3 +14072,125 @@ virDomainGraphicsReload(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainSetThrottleGroup:
+ * @dom: pointer to domain object
+ * @group: throttle group name
+ * @params: Pointer to blkio parameter objects
+ * @nparams: Number of blkio parameters (this value can be the same or
+ *           less than the number of parameters supported)
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Add throttlegroup or change all of the throttlegroup options
+ * within specific domain
+ *
+ * The @group parameter is the name for new or existing throttlegroup,
+ * it cannot be NULL, detailed throttlegroup info is included in @params,
+ * it either creates new throttlegroup with @params or updates existing
+ * throttlegroup with @params, throttlegroup can be referenced by throttle
+ * filter in attached disk to do limits, the difference from iotune is that
+ * multiple throttlegroups can be referenced within attached disk
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ *
+ * Since: 11.2.0
+ */
+int
+virDomainSetThrottleGroup(virDomainPtr dom,
+                          const char *group,
+                          virTypedParameterPtr params,
+                          int nparams,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "params=%p, group='%s', nparams=%d, flags=0x%x",
+                     params, group, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    conn = dom->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(group, error);
+    virCheckPositiveArgGoto(nparams, error);
+    virCheckNonNullArgGoto(params, error);
+
+    if (virTypedParameterValidateSet(dom->conn, params, nparams) < 0)
+        goto error;
+
+    if (conn->driver->domainSetThrottleGroup) {
+        int ret;
+        ret = conn->driver->domainSetThrottleGroup(dom, group, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainDelThrottleGroup:
+ * @dom: pointer to domain object
+ * @group: throttle group name
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Delete an throttlegroup from the domain. @group cannot be NULL,
+ * and the @group to be deleted must not have a throttlefilter associated with
+ * it and can be any of the current valid group.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set.
+ * If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+ * and may fail if domain is not alive.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified (that is,
+ * @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+ * persistent setup, while an active domain is hypervisor-dependent on whether
+ * just live or both live and persistent state is changed.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ *
+ * Since: 11.2.0
+ */
+int
+virDomainDelThrottleGroup(virDomainPtr dom,
+                          const char *group,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "group='%s', flags=0x%x",
+                     group, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckNonNullArgGoto(group, error);
+
+    conn = dom->conn;
+
+    if (conn->driver->domainDelThrottleGroup) {
+        int ret;
+        ret = conn->driver->domainDelThrottleGroup(dom, group, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
