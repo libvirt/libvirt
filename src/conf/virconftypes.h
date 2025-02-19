@@ -80,6 +80,8 @@ typedef struct _virDomainBlkiotune virDomainBlkiotune;
 
 typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
 
+typedef struct _virDomainBlockIoTuneInfo  virDomainThrottleGroupDef;
+
 typedef struct _virDomainCheckpointDef virDomainCheckpointDef;
 
 typedef struct _virDomainCheckpointObj virDomainCheckpointObj;

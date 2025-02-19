@@ -3113,6 +3113,9 @@ struct _virDomainDef {
 
     virDomainDefaultIOThreadDef *defaultIOThread;
 
+    size_t nthrottlegroups;
+    virDomainThrottleGroupDef **throttlegroups;
+
     virDomainCputune cputune;
 
     virDomainResctrlDef **resctrls;
@@ -4636,3 +4639,27 @@ virDomainObjGetMessages(virDomainObj *vm,
 
 bool
 virDomainDefHasGraphics(const virDomainDef *def, virDomainGraphicsType type);
+
+void
+virDomainThrottleGroupDefFree(virDomainThrottleGroupDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainThrottleGroupDef, virDomainThrottleGroupDefFree);
+
+virDomainThrottleGroupDef *
+virDomainThrottleGroupAdd(virDomainDef *def,
+                          virDomainThrottleGroupDef *throttle_group);
+
+void
+virDomainThrottleGroupUpdate(virDomainDef *def,
+                             virDomainThrottleGroupDef *info);
+
+void
+virDomainThrottleGroupDel(virDomainDef *def,
+                          const char *name);
+
+virDomainThrottleGroupDef *
+virDomainThrottleGroupByName(const virDomainDef *def,
+                             const char *name);
+
+void
+virDomainThrottleGroupDefCopy(const virDomainThrottleGroupDef *src,
+                              virDomainThrottleGroupDef *dst);

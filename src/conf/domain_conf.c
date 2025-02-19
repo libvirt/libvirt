@@ -3812,6 +3812,32 @@ virDomainIOThreadIDDefArrayInit(virDomainDef *def,
 
 
 void
+virDomainThrottleGroupDefFree(virDomainThrottleGroupDef *def)
+{
+    if (!def)
+        return;
+    g_free(def->group_name);
+    g_free(def);
+}
+
+
+static void
+virDomainThrottleGroupDefArrayFree(virDomainThrottleGroupDef **def,
+                                   int nthrottlegroups)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    for (i = 0; i < nthrottlegroups; i++)
+        virDomainThrottleGroupDefFree(def[i]);
+
+    g_free(def);
+}
+
+
+void
 virDomainResourceDefFree(virDomainResourceDef *resource)
 {
     if (!resource)
@@ -4109,6 +4135,8 @@ void virDomainDefFree(virDomainDef *def)
     virCPUDefFree(def->cpu);
 
     virDomainIOThreadIDDefArrayFree(def->iothreadids, def->niothreadids);
+
+    virDomainThrottleGroupDefArrayFree(def->throttlegroups, def->nthrottlegroups);
 
     g_free(def->defaultIOThread);
 
@@ -7854,6 +7882,123 @@ virDomainDiskDefIotuneParse(virDomainDiskDef *def,
     return 0;
 }
 #undef PARSE_IOTUNE
+
+/* the field changes must also be applied to the other function that formats
+ * the <disk> throttling definition virDomainThrottleGroupFormat. */
+#define PARSE_THROTTLEGROUP(val) \
+    if (virXPathULongLong("string(./" #val ")", \
+                          ctxt, &group->val) == -2) { \
+        virReportError(VIR_ERR_XML_ERROR, \
+                       _("throttle group field '%1$s' must be an integer"), #val); \
+        return NULL; \
+    }
+
+
+static virDomainThrottleGroupDef *
+virDomainThrottleGroupDefParseXML(xmlNodePtr node,
+                                  xmlXPathContextPtr ctxt)
+{
+    g_autoptr(virDomainThrottleGroupDef) group = g_new0(virDomainThrottleGroupDef, 1);
+
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    ctxt->node = node;
+
+    PARSE_THROTTLEGROUP(total_bytes_sec);
+    PARSE_THROTTLEGROUP(read_bytes_sec);
+    PARSE_THROTTLEGROUP(write_bytes_sec);
+    PARSE_THROTTLEGROUP(total_iops_sec);
+    PARSE_THROTTLEGROUP(read_iops_sec);
+    PARSE_THROTTLEGROUP(write_iops_sec);
+
+    PARSE_THROTTLEGROUP(total_bytes_sec_max);
+    PARSE_THROTTLEGROUP(read_bytes_sec_max);
+    PARSE_THROTTLEGROUP(write_bytes_sec_max);
+    PARSE_THROTTLEGROUP(total_iops_sec_max);
+    PARSE_THROTTLEGROUP(read_iops_sec_max);
+    PARSE_THROTTLEGROUP(write_iops_sec_max);
+
+    PARSE_THROTTLEGROUP(size_iops_sec);
+
+    PARSE_THROTTLEGROUP(total_bytes_sec_max_length);
+    PARSE_THROTTLEGROUP(read_bytes_sec_max_length);
+    PARSE_THROTTLEGROUP(write_bytes_sec_max_length);
+    PARSE_THROTTLEGROUP(total_iops_sec_max_length);
+    PARSE_THROTTLEGROUP(read_iops_sec_max_length);
+    PARSE_THROTTLEGROUP(write_iops_sec_max_length);
+
+    /* group_name is required */
+    if (!(group->group_name = virXPathString("string(./group_name)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing group name"));
+        return NULL;
+    }
+
+   return g_steal_pointer(&group);
+}
+#undef PARSE_THROTTLEGROUP
+
+
+/**
+ * virDomainThrottleGroupByName:
+ * @def: domain definition
+ * @name: throttle group name
+ *
+ * search throttle group within domain definition
+ * by @name
+ *
+ * Returns a pointer to throttle group found.
+ */
+virDomainThrottleGroupDef *
+virDomainThrottleGroupByName(const virDomainDef *def,
+                             const char *name)
+{
+    size_t i;
+
+    if (!def->throttlegroups || def->nthrottlegroups == 0)
+        return NULL;
+
+    for (i = 0; i < def->nthrottlegroups; i++) {
+        if (STREQ(def->throttlegroups[i]->group_name, name))
+            return def->throttlegroups[i];
+    }
+
+    return NULL;
+}
+
+
+static int
+virDomainDefThrottleGroupsParse(virDomainDef *def,
+                                xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    int n = 0;
+    g_autofree xmlNodePtr *nodes = NULL;
+
+    if ((n = virXPathNodeSet("./throttlegroups/throttlegroup", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    def->throttlegroups = g_new0(virDomainThrottleGroupDef *, n);
+
+    for (i = 0; i < n; i++) {
+        g_autoptr(virDomainThrottleGroupDef) group = NULL;
+
+        if (!(group = virDomainThrottleGroupDefParseXML(nodes[i], ctxt))) {
+            return -1;
+        }
+
+        if (virDomainThrottleGroupByName(def, group->group_name)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("duplicate group name '%1$s' found"),
+                           group->group_name);
+            return -1;
+        }
+        def->throttlegroups[def->nthrottlegroups++] = g_steal_pointer(&group);
+    }
+    return 0;
+}
 
 
 static int
@@ -19246,6 +19391,9 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     if (virDomainDefParseBootOptions(def, ctxt, xmlopt, flags) < 0)
         return NULL;
 
+    if (virDomainDefThrottleGroupsParse(def, ctxt) < 0)
+        return NULL;
+
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
         return NULL;
@@ -22503,6 +22651,94 @@ virDomainIOThreadIDDel(virDomainDef *def,
             virDomainIOThreadIDDefFree(def->iothreadids[i]);
             VIR_DELETE_ELEMENT(def->iothreadids, i, def->niothreadids);
 
+            return;
+        }
+    }
+}
+
+
+/**
+ * virDomainThrottleGroupDefCopy:
+ * @src: throttle group to be copied from
+ * @dst: throttle group to be copied to
+ *
+ * copy throttle group content from @src to @dst,
+ * this function does not allocate memory for @dst - the caller must ensure
+ * @dst is already allocated before calling this function.
+ */
+void
+virDomainThrottleGroupDefCopy(const virDomainThrottleGroupDef *src,
+                              virDomainThrottleGroupDef *dst)
+{
+    *dst = *src;
+    dst->group_name = g_strdup(src->group_name);
+}
+
+
+/**
+ * virDomainThrottleGroupAdd:
+ * @def: domain definition
+ * @throttle_group: throttle group definition within domain
+ *
+ * add new throttle group into @def
+ *
+ * return a pointer to throttle group added
+ */
+virDomainThrottleGroupDef *
+virDomainThrottleGroupAdd(virDomainDef *def,
+                          virDomainThrottleGroupDef *throttle_group)
+{
+    virDomainThrottleGroupDef *new_group = g_new0(virDomainThrottleGroupDef, 1);
+    virDomainThrottleGroupDefCopy(throttle_group, new_group);
+    VIR_APPEND_ELEMENT_COPY(def->throttlegroups, def->nthrottlegroups, new_group);
+    return new_group;
+}
+
+
+/**
+ * virDomainThrottleGroupUpdate:
+ * @def: domain definition
+ * @info: throttle group definition within domain
+ *
+ * Update corresponding throttle group in @def using new config @info. If a
+ * throttle group with given name doesn't exist this function does nothing.
+ */
+void
+virDomainThrottleGroupUpdate(virDomainDef *def,
+                             virDomainThrottleGroupDef *info)
+{
+    size_t i;
+
+    if (!info->group_name)
+        return;
+
+    for (i = 0; i < def->nthrottlegroups; i++) {
+        virDomainThrottleGroupDef *t = def->throttlegroups[i];
+
+        if (STREQ_NULLABLE(t->group_name, info->group_name)) {
+            VIR_FREE(t->group_name);
+            virDomainThrottleGroupDefCopy(info, t);
+        }
+    }
+}
+
+
+/**
+ * virDomainThrottleGroupDel:
+ * @def: domain definition
+ * @name: throttle group name
+ *
+ * Delete throttle group @name in @def
+ */
+void
+virDomainThrottleGroupDel(virDomainDef *def,
+                          const char *name)
+{
+    size_t i;
+    for (i = 0; i < def->nthrottlegroups; i++) {
+        if (STREQ_NULLABLE(def->throttlegroups[i]->group_name, name)) {
+            virDomainThrottleGroupDefFree(def->throttlegroups[i]);
+            VIR_DELETE_ELEMENT(def->throttlegroups, i, def->nthrottlegroups);
             return;
         }
     }
@@ -27709,6 +27945,68 @@ virDomainDefIOThreadsFormat(virBuffer *buf,
     virDomainDefaultIOThreadDefFormat(buf, def);
 }
 
+/*
+ * the field changes must also be applied to the other function that parses
+ * the <disk> throttling definition virDomainThrottleGroupDefParseXML
+ */
+#define FORMAT_THROTTLE_GROUP(val) \
+        if (group->val > 0) { \
+            virBufferAsprintf(&childBuf, "<" #val ">%llu</" #val ">\n", \
+                              group->val); \
+        }
+
+
+static void
+virDomainThrottleGroupFormat(virBuffer *buf,
+                             virDomainThrottleGroupDef *group)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    FORMAT_THROTTLE_GROUP(total_bytes_sec);
+    FORMAT_THROTTLE_GROUP(read_bytes_sec);
+    FORMAT_THROTTLE_GROUP(write_bytes_sec);
+    FORMAT_THROTTLE_GROUP(total_iops_sec);
+    FORMAT_THROTTLE_GROUP(read_iops_sec);
+    FORMAT_THROTTLE_GROUP(write_iops_sec);
+
+    FORMAT_THROTTLE_GROUP(total_bytes_sec_max);
+    FORMAT_THROTTLE_GROUP(read_bytes_sec_max);
+    FORMAT_THROTTLE_GROUP(write_bytes_sec_max);
+    FORMAT_THROTTLE_GROUP(total_iops_sec_max);
+    FORMAT_THROTTLE_GROUP(read_iops_sec_max);
+    FORMAT_THROTTLE_GROUP(write_iops_sec_max);
+
+    FORMAT_THROTTLE_GROUP(size_iops_sec);
+
+    FORMAT_THROTTLE_GROUP(total_bytes_sec_max_length);
+    FORMAT_THROTTLE_GROUP(read_bytes_sec_max_length);
+    FORMAT_THROTTLE_GROUP(write_bytes_sec_max_length);
+    FORMAT_THROTTLE_GROUP(total_iops_sec_max_length);
+    FORMAT_THROTTLE_GROUP(read_iops_sec_max_length);
+    FORMAT_THROTTLE_GROUP(write_iops_sec_max_length);
+
+    virBufferEscapeString(&childBuf, "<group_name>%s</group_name>\n",
+                          group->group_name);
+
+    virXMLFormatElement(buf, "throttlegroup", NULL, &childBuf);
+}
+
+#undef FORMAT_THROTTLE_GROUP
+
+static void
+virDomainDefThrottleGroupsFormat(virBuffer *buf,
+                                 const virDomainDef *def)
+{
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t n;
+
+    for (n = 0; n < def->nthrottlegroups; n++) {
+        virDomainThrottleGroupFormat(&childrenBuf, def->throttlegroups[n]);
+    }
+
+    virXMLFormatElement(buf, "throttlegroups", NULL, &childrenBuf);
+}
+
 
 static void
 virDomainIOMMUDefFormat(virBuffer *buf,
@@ -28410,6 +28708,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         return -1;
 
     virDomainDefIOThreadsFormat(buf, def);
+
+    virDomainDefThrottleGroupsFormat(buf, def);
 
     if (virDomainCputuneDefFormat(buf, def, flags) < 0)
         return -1;
