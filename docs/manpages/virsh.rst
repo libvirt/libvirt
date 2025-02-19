@@ -954,15 +954,22 @@ provide on the host. (This is different from ``cpu-compare`` which compares the
 CPU definition with the host CPU without considering any specific hypervisor
 and its abilities.)
 
-The XML *FILE* may contain either a host or guest CPU definition. The host CPU
-definition is the <cpu> element and its contents as printed by the
-``capabilities`` command. The guest CPU definition is the <cpu> element and its
-contents from the domain XML definition or the CPU definition created from the
-host CPU model found in the domain capabilities XML (printed by the
-``domcapabilities`` command). In addition to the <cpu> element itself, this
-command accepts full domain XML, capabilities XML, or domain capabilities XML
-containing the CPU definition. For more information on guest CPU definition
-see: `https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#cpu-model-and-topology>`__.
+The XML *FILE* should contain a guest CPU definition: either the ``<cpu>``
+element and its contents from a domain XML definition or a CPU definition
+created from the host CPU model found in the ``<mode name="host-model">``
+element in the domain capabilities XML (printed by the ``domcapabilities``
+command). The ``<mode name="host-model">`` element itself or even its
+``<cpu>`` parent element found in domain capabilities XML is not accepted.
+The element has to be transformed into an actual CPU definition. For more
+information on guest CPU definition see:
+`https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#cpu-model-and-topology>`__.
+
+Alternatively this command will automatically extract the CPU definition when
+provided with a full domain or domain capabilities XML.
+
+For historical reasons the XML *FILE* may also contain a host CPU definition,
+but such usage is strongly discouraged as it will most likely provide incorrect
+results.
 
 The *virttype* option specifies the virtualization type (usable in the 'type'
 attribute of the <domain> top level element from the domain XML). *emulator*
