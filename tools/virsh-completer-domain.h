@@ -51,6 +51,11 @@ virshDomainThrottleGroupCompleter(vshControl *ctl,
                                   unsigned int flags);
 
 char **
+virshDomainThrottleGroupsCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   unsigned int flags);
+
+char **
 virshDomainInterfaceStateCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags);

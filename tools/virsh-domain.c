@@ -522,6 +522,11 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .help = N_("host socket for source of disk device")
     },
+    {.name = "throttle-groups",
+     .type = VSH_OT_STRING,
+     .completer = virshDomainThrottleGroupsCompleter,
+     .help = N_("comma separated list of throttle groups to be applied")
+    },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
@@ -611,6 +616,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *host_name = NULL;
     const char *host_transport = NULL;
     const char *host_socket = NULL;
+    const char *throttle_groups_str = NULL;
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
@@ -665,7 +671,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptString(ctl, cmd, "source-protocol", &source_protocol) < 0 ||
         vshCommandOptString(ctl, cmd, "source-host-name", &host_name) < 0 ||
         vshCommandOptString(ctl, cmd, "source-host-transport", &host_transport) < 0 ||
-        vshCommandOptString(ctl, cmd, "source-host-socket", &host_socket) < 0)
+        vshCommandOptString(ctl, cmd, "source-host-socket", &host_socket) < 0 ||
+        vshCommandOptString(ctl, cmd, "throttle-groups", &throttle_groups_str) < 0)
         return false;
 
     if (stype &&
@@ -755,6 +762,18 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (targetbus)
         virBufferAsprintf(&diskChildBuf, " bus='%s'", targetbus);
     virBufferAddLit(&diskChildBuf, "/>\n");
+
+    if (throttle_groups_str) {
+        g_auto(GStrv) throttle_groups = g_strsplit(throttle_groups_str, ",", 0);
+        g_auto(virBuffer) throttleChildBuf = VIR_BUFFER_INIT_CHILD(&diskChildBuf);
+        char **iter;
+        for (iter = throttle_groups; *iter != NULL; iter++) {
+            g_auto(virBuffer) throttleAttrBuf = VIR_BUFFER_INITIALIZER;
+            virBufferAsprintf(&throttleAttrBuf, " group='%s'", *iter);
+            virXMLFormatElement(&throttleChildBuf, "throttlefilter", &throttleAttrBuf, NULL);
+        }
+        virXMLFormatElement(&diskChildBuf, "throttlefilters", NULL, &throttleChildBuf);
+    }
 
     if (mode)
         virBufferAsprintf(&diskChildBuf, "<%s/>\n", mode);

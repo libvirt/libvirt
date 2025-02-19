@@ -5071,7 +5071,7 @@ attach-disk
       [--source-protocol protocol] [--source-host-name hostname:port]
       [--source-host-transport transport] [--source-host-socket socket]
       [--serial serial] [--wwn wwn] [--rawio] [--address address]
-      [--multifunction] [--print-xml]
+      [--multifunction] [--print-xml] [--throttle-groups groups]
 
 Attach a new disk device to the domain.
 *source* is path for the files and devices unless *--source-protocol*
@@ -5111,6 +5111,7 @@ ide:controller.bus.unit, usb:bus.port, sata:controller.bus.unit or
 ccw:cssid.ssid.devno. Virtio-ccw devices must have their cssid set to 0xfe.
 *multifunction* indicates specified pci address is a multifunction pci device
 address.
+*throttle-groups* is comma separated list of throttle groups to be applied.
 
 There is also support for using a network disk. As specified, the user can
 provide a *--source-protocol* in which case the *source* parameter will

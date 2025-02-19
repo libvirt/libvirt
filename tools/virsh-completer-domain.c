@@ -294,6 +294,24 @@ virshDomainThrottleGroupCompleter(vshControl *ctl,
 
 
 char **
+virshDomainThrottleGroupsCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   unsigned int completeflags G_GNUC_UNUSED)
+{
+    const char *curval = NULL;
+    g_auto(GStrv) groups = virshDomainThrottleGroupCompleter(ctl, cmd, 0);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "throttle-groups", &curval) < 0)
+        return NULL;
+
+    if (!groups)
+        return NULL;
+
+    return virshCommaStringListComplete(curval, (const char **) groups);
+}
+
+
+char **
 virshDomainUndefineStorageDisksCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int completeflags G_GNUC_UNUSED)
