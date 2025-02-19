@@ -1630,7 +1630,10 @@
         <ref name="encryption"/>
       </optional>
       <optional>
-        <ref name="diskIoTune"/>
+        <choice>
+          <ref name="throttlefilters"/>
+          <ref name="diskIoTune"/>
+        </choice>
       </optional>
       <optional>
         <ref name="alias"/>
@@ -6887,6 +6890,20 @@
         </zeroOrMore>
       </element>
     </optional>
+  </define>
+  <!--
+      A set of throttlefilters to reference throttlegroups
+    -->
+  <define name="throttlefilters">
+    <element name="throttlefilters">
+      <zeroOrMore>
+        <element name="throttlefilter">
+          <attribute name="group">
+            <data type="string"/>
+          </attribute>
+        </element>
+      </zeroOrMore>
+    </element>
   </define>
   <!--
       A set of optional features: PAE, APIC, ACPI, GIC, TCG,

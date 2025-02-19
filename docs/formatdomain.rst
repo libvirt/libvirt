@@ -2819,6 +2819,15 @@ paravirtualized driver is specified via the ``disk`` element.
        </backingStore>
        <target dev='vdh' bus='virtio'/>
      </disk>
+     <disk type='file' device='disk'>
+       <driver name='qemu' type='qcow2' />
+       <source file='/var/lib/libvirt/images/disk.qcow2'/>
+       <target dev='vdh' bus='virtio'/>
+       <throttlefilters>
+         <throttlefilter group='limit2'/>
+         <throttlefilter group='limit012'/>
+       </throttlefilters>
+     </disk>
    </devices>
    ...
 
@@ -3321,6 +3330,18 @@ paravirtualized driver is specified via the ``disk`` element.
    :since:`since after 0.4.4`; "sata" attribute value :since:`since 0.9.7`;
    "removable" attribute value :since:`since 1.1.3`;
    "rotation_rate" attribute value :since:`since 7.3.0`
+``throttlefilters``
+   The optional ``throttlefilters`` element provides the ability to provide additional
+   per-device throttle chain :since:`Since 11.2.0`
+   For example, if we have four different disks and we want to limit I/O for each one
+   and we also want to limit combined I/O of all four disks, we can leverage
+   ``throttlefilters`` to achieve this goal by setting two ``throttlefilter`` for
+   each disk: disk's own filter(e.g. limit2) and combined filter(e.g. limit012).
+   The order of such ``throttlefilter`` doesn't matter within ``throttlefilters``.
+   ``throttlefilters`` and ``iotune`` should be used exclusively.
+
+   ``throttlefilter``
+      The optional ``throttlefilter`` element is to reference defined throttle group.
 ``iotune``
    The optional ``iotune`` element provides the ability to provide additional
    per-device I/O tuning, with values that can vary for each device (contrast
