@@ -1164,6 +1164,140 @@ given, but *--current* is exclusive. For querying only one of *--live*,
 is different depending on hypervisor.
 
 
+domthrottlegroupset
+-------------------
+
+**Syntax:**
+
+::
+
+   domthrottlegroupset domain group-name [[--config] [--live] | [--current]]
+      [[total-bytes-sec] | [read-bytes-sec] [write-bytes-sec]]
+      [[total-iops-sec] | [read-iops-sec] [write-iops-sec]]
+      [[total-bytes-sec-max] | [read-bytes-sec-max] [write-bytes-sec-max]]
+      [[total-iops-sec-max] | [read-iops-sec-max] [write-iops-sec-max]]
+      [[total-bytes-sec-max-length] |
+       [read-bytes-sec-max-length] [write-bytes-sec-max-length]]
+      [[total-iops-sec-max-length] |
+       [read-iops-sec-max-length] [write-iops-sec-max-length]]
+      [size-iops-sec]
+
+Add or update a throttle group against specific *domain*.
+*group-name* specifies a unique throttle group name, which defines limit, and
+will be referenced by drives.
+
+If no limit is specified, default them as all zeros, which will fail,
+Otherwise, set limits with these flags:
+*--total-bytes-sec* specifies total throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--read-bytes-sec* specifies read throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--write-bytes-sec* specifies write throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--total-iops-sec* specifies total I/O operations limit per second.
+*--read-iops-sec* specifies read I/O operations limit per second.
+*--write-iops-sec* specifies write I/O operations limit per second.
+*--total-bytes-sec-max* specifies maximum total throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified
+*--read-bytes-sec-max* specifies maximum read throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+*--write-bytes-sec-max* specifies maximum write throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+*--total-iops-sec-max* specifies maximum total I/O operations limit per second.
+*--read-iops-sec-max* specifies maximum read I/O operations limit per second.
+*--write-iops-sec-max* specifies maximum write I/O operations limit per second.
+*--total-bytes-sec-max-length* specifies duration in seconds to allow maximum
+total throughput limit.
+*--read-bytes-sec-max-length* specifies duration in seconds to allow maximum
+read throughput limit.
+*--write-bytes-sec-max-length* specifies duration in seconds to allow maximum
+write throughput limit.
+*--total-iops-sec-max-length* specifies duration in seconds to allow maximum
+total I/O operations limit.
+*--read-iops-sec-max-length* specifies duration in seconds to allow maximum
+read I/O operations limit.
+*--write-iops-sec-max-length* specifies duration in seconds to allow maximum
+write I/O operations limit.
+*--size-iops-sec* specifies size I/O operations limit per second.
+
+Bytes and iops values are independent, but setting only one value (such
+as --read-bytes-sec) resets the other two in that category to unlimited.
+An explicit 0 also clears any limit.  A non-zero value for a given total
+cannot be mixed with non-zero values for read or write.
+
+It is up to the hypervisor to determine how to handle the length values.
+For the QEMU hypervisor, if an I/O limit value or maximum value is set,
+then the default value of 1 second will be displayed. Supplying a 0 will
+reset the value back to the default.
+
+If *--live* is specified, affect a running guest.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+When setting the disk io parameters both *--live* and *--config*
+are specified, both live configuration and config are updated while setting
+the description, but *--current* is exclusive. If no flag is specified, behavior
+is different depending on hypervisor.
+
+
+domthrottlegroupdel
+-------------------
+
+**Syntax:**
+
+::
+
+   domthrottlegroupdel domain group-name [[--config] [--live] | [--current]]
+
+Delete a Throttlegroup from the domain using the specified *group-name*.
+If an Throttlegroup is currently referenced by a disk resource, then the attempt
+to remove the Throttlegroup will fail.
+If the *group-name* does not exist an error will occur.
+
+If *--live* is specified, affect a running guest. If the guest is not
+running an error is returned.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+
+
+domthrottlegroupinfo
+--------------------
+
+**Syntax:**
+
+::
+
+   domthrottlegroupinfo domain group-name [[--config] [--live] | [--current]]
+
+Display domain Throttlegroup information including I/O limits setting.
+
+If *--live* is specified, get the Throttlegroup data from the running guest. If
+the guest is not running, an error is returned.
+If *--config* is specified, get the Throttlegroup data from the next start of
+a persistent guest.
+If *--current* is specified or *--live* and *--config* are not specified,
+then get the Throttlegroup data based on the current guest state, which can
+either be live or offline.
+If both *--live* and *--config* are specified, the *--config* option takes
+precedence on getting the current description.
+
+
+domthrottlegrouplist
+--------------------
+
+**Syntax:**
+
+::
+
+   domthrottlegrouplist domain [--inactive]
+
+Print a table showing names of all throttle groups
+associated with *domain*. If *--inactive* is specified, query the
+Throttlegroup data that will be used on the next boot, rather than those
+currently in use by a running domain.
+
+
 blkiotune
 ---------
 

@@ -1395,7 +1395,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
     {.name = NULL}
 };
-#undef VSH_OPTS_IOTUNE
+
 
 static bool
 cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
@@ -1532,6 +1532,348 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     vshError(ctl, "%s", _("Unable to parse integer parameter"));
     goto cleanup;
 }
+
+
+/*
+ * "domthrottlegrouplist" command
+ */
+static const vshCmdInfo info_domthrottlegrouplist = {
+    .help = N_("list all domain throttlegroups."),
+    .desc = N_("Get the summary of throttle groups for a domain."),
+};
+
+
+static const vshCmdOptDef opts_domthrottlegrouplist[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .help = N_("get inactive rather than running configuration")
+    },
+    {.name = NULL}
+};
+
+
+static bool
+cmdThrottleGroupList(vshControl *ctl,
+                     const vshCmd *cmd)
+{
+    unsigned int flags = 0;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_auto(GStrv) groupNames = NULL;
+    char **n;
+    g_autoptr(vshTable) table = NULL;
+
+    if (vshCommandOptBool(cmd, "inactive"))
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
+        return false;
+
+    if (!(table = vshTableNew(_("Name"), NULL)))
+        return false;
+
+    if (!(groupNames = virshGetThrottleGroupNames(ctxt)))
+        return false;
+
+    for (n = groupNames; *n; n++) {
+        if (vshTableRowAppend(table, *n, NULL) < 0)
+            return false;
+    }
+
+    vshTablePrintToStdout(table, ctl);
+
+    return true;
+}
+
+
+/*
+ * "domthrottlegroupset" command
+ */
+static const vshCmdInfo info_domthrottlegroupset = {
+    .help = N_("Add or update a throttling group."),
+    .desc = N_("Add or updte a throttling group."),
+};
+
+
+static const vshCmdOptDef opts_domthrottlegroupset[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "group-name",
+     .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
+     .completer = virshDomainThrottleGroupCompleter,
+     .help = N_("throttle group name")
+    },
+    VSH_OPTS_IOTUNE,
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = NULL}
+};
+#undef VSH_OPTS_IOTUNE
+
+
+static bool
+cmdThrottleGroupSet(vshControl *ctl,
+                    const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    const char *group_name = NULL;
+    unsigned long long value;
+    int nparams = 0;
+    int maxparams = 0;
+    virTypedParameterPtr params = NULL;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    int rv = 0;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool ret = false;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+
+#define VSH_SET_THROTTLE_GROUP_SCALED(PARAM, CONST) \
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, #PARAM, &value, \
+                                     1, ULLONG_MAX)) < 0) { \
+        goto interror; \
+    } else if (rv > 0) { \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams, \
+                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST, \
+                                    value) < 0) \
+            goto save_error; \
+    }
+
+    VSH_SET_THROTTLE_GROUP_SCALED(total-bytes-sec, TOTAL_BYTES_SEC);
+    VSH_SET_THROTTLE_GROUP_SCALED(read-bytes-sec, READ_BYTES_SEC);
+    VSH_SET_THROTTLE_GROUP_SCALED(write-bytes-sec, WRITE_BYTES_SEC);
+    VSH_SET_THROTTLE_GROUP_SCALED(total-bytes-sec-max, TOTAL_BYTES_SEC_MAX);
+    VSH_SET_THROTTLE_GROUP_SCALED(read-bytes-sec-max, READ_BYTES_SEC_MAX);
+    VSH_SET_THROTTLE_GROUP_SCALED(write-bytes-sec-max, WRITE_BYTES_SEC_MAX);
+#undef VSH_SET_THROTTLE_GROUP_SCALED
+
+#define VSH_SET_THROTTLE_GROUP(PARAM, CONST) \
+    if ((rv = vshCommandOptULongLong(ctl, cmd, #PARAM, &value)) < 0) { \
+        goto interror; \
+    } else if (rv > 0) { \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams, \
+                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST, \
+                                    value) < 0) \
+            goto save_error; \
+    }
+
+    VSH_SET_THROTTLE_GROUP(total-iops-sec, TOTAL_IOPS_SEC);
+    VSH_SET_THROTTLE_GROUP(read-iops-sec, READ_IOPS_SEC);
+    VSH_SET_THROTTLE_GROUP(write-iops-sec, WRITE_IOPS_SEC);
+    VSH_SET_THROTTLE_GROUP(total-iops-sec-max, TOTAL_IOPS_SEC_MAX);
+    VSH_SET_THROTTLE_GROUP(read-iops-sec-max, READ_IOPS_SEC_MAX);
+    VSH_SET_THROTTLE_GROUP(write-iops-sec-max, WRITE_IOPS_SEC_MAX);
+    VSH_SET_THROTTLE_GROUP(size-iops-sec, SIZE_IOPS_SEC);
+
+    VSH_SET_THROTTLE_GROUP(total-bytes-sec-max-length, TOTAL_BYTES_SEC_MAX_LENGTH);
+    VSH_SET_THROTTLE_GROUP(read-bytes-sec-max-length, READ_BYTES_SEC_MAX_LENGTH);
+    VSH_SET_THROTTLE_GROUP(write-bytes-sec-max-length, WRITE_BYTES_SEC_MAX_LENGTH);
+    VSH_SET_THROTTLE_GROUP(total-iops-sec-max-length, TOTAL_IOPS_SEC_MAX_LENGTH);
+    VSH_SET_THROTTLE_GROUP(read-iops-sec-max-length, READ_IOPS_SEC_MAX_LENGTH);
+    VSH_SET_THROTTLE_GROUP(write-iops-sec-max-length, WRITE_IOPS_SEC_MAX_LENGTH);
+#undef VSH_SET_THROTTLE_GROUP
+
+    if (vshCommandOptString(ctl, cmd, "group-name", &group_name) < 0) {
+        goto cleanup;
+    }
+
+    if (group_name) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
+                                    group_name) < 0)
+            goto save_error;
+    }
+
+    if (virDomainSetThrottleGroup(dom, group_name, params, nparams, flags) < 0)
+        goto error;
+    vshPrintExtra(ctl, "%s", _("Throttle group set successfully\n"));
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    return ret;
+
+ save_error:
+    vshSaveLibvirtError();
+ error:
+    vshError(ctl, "%s", _("Unable to set throttle group"));
+    goto cleanup;
+
+ interror:
+    vshError(ctl, "%s", _("Unable to parse integer parameter"));
+    goto cleanup;
+}
+
+
+/*
+ * "domthrottlegroupdel" command
+ */
+static const vshCmdInfo info_domthrottlegroupdel = {
+    .help = N_("Delete a throttling group."),
+    .desc = N_("Delete a throttling group."),
+};
+
+
+static const vshCmdOptDef opts_domthrottlegroupdel[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "group-name",
+     .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
+     .completer = virshDomainThrottleGroupCompleter,
+     .help = N_("throttle group name")
+    },
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = NULL}
+};
+
+
+static bool
+cmdThrottleGroupDel(vshControl *ctl,
+                    const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    const char *group_name = NULL;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString(ctl, cmd, "group-name", &group_name) < 0) {
+        return false;
+    }
+
+    if (virDomainDelThrottleGroup(dom, group_name, flags) < 0)
+        return false;
+    vshPrintExtra(ctl, "%s", _("Throttle group deleted successfully\n"));
+
+    return true;
+}
+
+
+/*
+ * "domthrottlegroupinfo" command
+ */
+static const vshCmdInfo info_domthrottlegroupinfo = {
+    .help = N_("Get a throttling group."),
+    .desc = N_("Get a throttling group."),
+};
+
+
+static const vshCmdOptDef opts_domthrottlegroupinfo[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "group-name",
+     .type = VSH_OT_STRING,
+     .positional = true,
+     .required = true,
+     .completer = virshDomainThrottleGroupCompleter,
+     .help = N_("throttle group name")
+    },
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .help = N_("get inactive rather than running configuration")
+    },
+    {.name = NULL}
+};
+
+
+#define PARSE_THROTTLE_GROUP(val) \
+    do { \
+        g_autofree char *str = virXPathString("string(./" #val ")", ctxt); \
+        if (str) \
+            vshPrint(ctl, "%-15s: %s\n", #val, str); \
+    } while (false)
+
+static bool
+cmdThrottleGroupInfo(vshControl *ctl,
+                     const vshCmd *cmd)
+{
+    const char *group_name = NULL;
+    unsigned int flags = 0;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree xmlNodePtr *node = NULL;
+    int n = 0;
+    size_t i;
+
+    if (vshCommandOptBool(cmd, "inactive"))
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (vshCommandOptString(ctl, cmd, "group-name", &group_name) < 0)
+        return false;
+
+    if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
+        return false;
+
+    if ((n = virXPathNodeSet("/domain/throttlegroups/throttlegroup", ctxt, &node)) < 0)
+        return false;
+
+    for (i = 0; i < n; i++) {
+        g_autofree char *name = NULL;
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+        ctxt->node = node[i];
+
+        name = virXPathString("string(./group_name)", ctxt);
+
+        if (STRNEQ_NULLABLE(group_name, name))
+            continue;
+
+        PARSE_THROTTLE_GROUP(total_bytes_sec);
+        PARSE_THROTTLE_GROUP(read_bytes_sec);
+        PARSE_THROTTLE_GROUP(write_bytes_sec);
+        PARSE_THROTTLE_GROUP(total_iops_sec);
+        PARSE_THROTTLE_GROUP(read_iops_sec);
+        PARSE_THROTTLE_GROUP(write_iops_sec);
+
+        PARSE_THROTTLE_GROUP(total_bytes_sec_max);
+        PARSE_THROTTLE_GROUP(read_bytes_sec_max);
+        PARSE_THROTTLE_GROUP(write_bytes_sec_max);
+        PARSE_THROTTLE_GROUP(total_iops_sec_max);
+        PARSE_THROTTLE_GROUP(read_iops_sec_max);
+        PARSE_THROTTLE_GROUP(write_iops_sec_max);
+
+        PARSE_THROTTLE_GROUP(size_iops_sec);
+
+        PARSE_THROTTLE_GROUP(total_bytes_sec_max_length);
+        PARSE_THROTTLE_GROUP(read_bytes_sec_max_length);
+        PARSE_THROTTLE_GROUP(write_bytes_sec_max_length);
+        PARSE_THROTTLE_GROUP(total_iops_sec_max_length);
+        PARSE_THROTTLE_GROUP(read_iops_sec_max_length);
+        PARSE_THROTTLE_GROUP(write_iops_sec_max_length);
+    }
+
+    return true;
+}
+#undef PARSE_THROTTLE_GROUP
 
 /*
  * "blkiotune" command
@@ -13461,6 +13803,30 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdBlkdeviotune,
      .opts = opts_blkdeviotune,
      .info = &info_blkdeviotune,
+     .flags = 0
+    },
+    {.name = "domthrottlegroupset",
+     .handler = cmdThrottleGroupSet,
+     .opts = opts_domthrottlegroupset,
+     .info = &info_domthrottlegroupset,
+     .flags = 0
+    },
+    {.name = "domthrottlegroupdel",
+     .handler = cmdThrottleGroupDel,
+     .opts = opts_domthrottlegroupdel,
+     .info = &info_domthrottlegroupdel,
+     .flags = 0
+    },
+    {.name = "domthrottlegroupinfo",
+     .handler = cmdThrottleGroupInfo,
+     .opts = opts_domthrottlegroupinfo,
+     .info = &info_domthrottlegroupinfo,
+     .flags = 0
+    },
+    {.name = "domthrottlegrouplist",
+     .handler = cmdThrottleGroupList,
+     .opts = opts_domthrottlegrouplist,
+     .info = &info_domthrottlegrouplist,
      .flags = 0
     },
     {.name = "blkiotune",

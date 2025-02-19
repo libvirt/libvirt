@@ -21,6 +21,7 @@
 #pragma once
 
 #include "vsh.h"
+#include <libxml/xpath.h>
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
@@ -40,6 +41,14 @@ char **
 virshDomainDiskTargetCompleter(vshControl *ctl,
                                const vshCmd *cmd,
                                unsigned int flags);
+
+char **
+virshGetThrottleGroupNames(xmlXPathContext *ctxt);
+
+char **
+virshDomainThrottleGroupCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags);
 
 char **
 virshDomainInterfaceStateCompleter(vshControl *ctl,

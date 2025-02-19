@@ -249,6 +249,51 @@ virshDomainMigrateDisksCompleter(vshControl *ctl,
 
 
 char **
+virshGetThrottleGroupNames(xmlXPathContext *ctxt)
+{
+    g_auto(GStrv) groupNames = NULL;
+    g_autofree xmlNodePtr *groups = NULL;
+    int ngroups;
+    size_t i;
+
+    if ((ngroups = virXPathNodeSet("./throttlegroups/throttlegroup", ctxt, &groups)) < 0)
+        return NULL;
+
+    groupNames = g_new0(char *, ngroups + 1);
+
+    for (i = 0; i < ngroups; i++) {
+        ctxt->node = groups[i];
+
+        if (!(groupNames[i] = virXPathString("string(./group_name)", ctxt)))
+            return NULL;
+    }
+
+    return g_steal_pointer(&groupNames);
+}
+
+
+char **
+virshDomainThrottleGroupCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags)
+{
+    virshControl *priv = ctl->privData;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
+        return NULL;
+
+    return virshGetThrottleGroupNames(ctxt);
+}
+
+
+char **
 virshDomainUndefineStorageDisksCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int completeflags G_GNUC_UNUSED)
