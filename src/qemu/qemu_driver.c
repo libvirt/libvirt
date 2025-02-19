@@ -20087,6 +20087,234 @@ qemuDomainGraphicsReload(virDomainPtr domain,
     return ret;
 }
 
+
+static int
+qemuDomainSetThrottleGroup(virDomainPtr dom,
+                           const char *groupname,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    virQEMUDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    virDomainDef *def = NULL;
+    virDomainDef *persistentDef = NULL;
+    virDomainThrottleGroupDef info = { 0 };
+    virDomainThrottleGroupDef conf_info = { 0 };
+    int ret = -1;
+    qemuBlockIoTuneSetFlags set_fields = 0;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    virObjectEvent *event = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
+    virDomainThrottleGroupDef *cur_info;
+    virDomainThrottleGroupDef *conf_cur_info;
+    int rc = 0;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) limits = virJSONValueNewObject();
+    /* prefix group name with "throttle-" in QOM */
+    g_autofree char *prefixed_group_name = g_strdup_printf("throttle-%s", groupname);
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (qemuDomainValidateBlockIoTune(params, nparams) < 0)
+        return -1;
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainSetThrottleGroupEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
+
+    if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
+                                VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME, groupname) < 0)
+        goto endjob;
+
+    if (qemuDomainSetBlockIoTuneFields(&info,
+                                       params,
+                                       nparams,
+                                       &set_fields,
+                                       &eventParams,
+                                       &eventNparams,
+                                       &eventMaxparams) < 0)
+        goto endjob;
+
+    if (qemuDomainCheckBlockIoTuneMutualExclusion(&info) < 0)
+        goto endjob;
+
+    virDomainThrottleGroupDefCopy(&info, &conf_info);
+
+    if (def) {
+        if (qemuDomainCheckBlockIoTuneMax(&info) < 0)
+            goto endjob;
+
+        cur_info = virDomainThrottleGroupByName(def, groupname);
+        /* Update existing group.  */
+        if (cur_info != NULL) {
+            if (qemuDomainSetBlockIoTuneDefaults(&info, cur_info, set_fields) < 0)
+                goto endjob;
+            qemuDomainObjEnterMonitor(vm);
+            rc = qemuMonitorUpdateThrottleGroup(qemuDomainGetMonitor(vm),
+                                                prefixed_group_name,
+                                                &info);
+            qemuDomainObjExitMonitor(vm);
+            if (rc < 0)
+                goto endjob;
+            virDomainThrottleGroupUpdate(def, &info);
+        } else {
+            if (qemuMonitorThrottleGroupLimits(limits, &info)<0)
+                goto endjob;
+            if (qemuMonitorCreateObjectProps(&props,
+                                             "throttle-group", prefixed_group_name,
+                                             "a:limits", &limits,
+                                             NULL) < 0)
+                goto endjob;
+            qemuDomainObjEnterMonitor(vm);
+            rc = qemuMonitorAddObject(qemuDomainGetMonitor(vm), &props, NULL);
+            qemuDomainObjExitMonitor(vm);
+            if (rc < 0)
+                goto endjob;
+            virDomainThrottleGroupAdd(def, &info);
+        }
+
+        qemuDomainSaveStatus(vm);
+
+        if (eventNparams) {
+            event = virDomainEventTunableNewFromDom(dom, &eventParams, eventNparams);
+            virObjectEventStateQueue(driver->domainEventState, event);
+        }
+    }
+
+    if (persistentDef) {
+        conf_cur_info = virDomainThrottleGroupByName(persistentDef, groupname);
+
+        if (conf_cur_info != NULL) {
+            if (qemuDomainSetBlockIoTuneDefaults(&conf_info, conf_cur_info,
+                                                 set_fields) < 0)
+                goto endjob;
+            virDomainThrottleGroupUpdate(persistentDef, &conf_info);
+        } else {
+            virDomainThrottleGroupAdd(persistentDef, &conf_info);
+        }
+
+
+        if (virDomainDefSave(persistentDef, driver->xmlopt,
+                             cfg->configDir) < 0)
+            goto endjob;
+    }
+
+    ret = 0;
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    virTypedParamsFree(eventParams, eventNparams);
+    return ret;
+}
+
+
+static int
+qemuDomainCheckThrottleGroupRef(virDomainDef *def,
+                                const char *group_name)
+{
+    size_t i;
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        if (virDomainThrottleFilterFind(disk, group_name)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                            _("throttle group '%1$s' is still being used by disk %2$s"),
+                            group_name, disk->dst);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+static int
+qemuDomainDelThrottleGroup(virDomainPtr dom,
+                           const char *groupname,
+                           unsigned int flags)
+{
+    virQEMUDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    virDomainDef *def = NULL;
+    virDomainDef *persistentDef = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainDelThrottleGroupEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
+
+    /* check if this group is still being used by disks, catch errors upfront and
+     * avoid a partial success with error reported */
+    if (def) {
+        if (qemuDomainCheckThrottleGroupRef(def, groupname) < 0)
+            goto endjob;
+    }
+    if (persistentDef) {
+        if (qemuDomainCheckThrottleGroupRef(persistentDef, groupname) < 0)
+            goto endjob;
+    }
+
+    if (def) {
+        int rc = 0;
+        /* prefix group name with "throttle-" in QOM */
+        g_autofree char *prefixed_group_name = g_strdup_printf("throttle-%s", groupname);
+
+        qemuDomainObjEnterMonitor(vm);
+        rc = qemuMonitorDelObject(qemuDomainGetMonitor(vm), prefixed_group_name, true);
+        qemuDomainObjExitMonitor(vm);
+
+        if (rc < 0)
+            goto endjob;
+
+        virDomainThrottleGroupDel(def, groupname);
+        qemuDomainSaveStatus(vm);
+    }
+
+    if (persistentDef) {
+        cfg = virQEMUDriverGetConfig(driver);
+        virDomainThrottleGroupDel(persistentDef, groupname);
+        if (virDomainDefSave(persistentDef, driver->xmlopt,
+                             cfg->configDir) < 0)
+            goto endjob;
+    }
+
+    ret = 0;
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -20339,6 +20567,8 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGraphicsReload = qemuDomainGraphicsReload, /* 10.2.0 */
     .domainGetAutostartOnce = qemuDomainGetAutostartOnce, /* 11.2.0 */
     .domainSetAutostartOnce = qemuDomainSetAutostartOnce, /* 11.2.0 */
+    .domainSetThrottleGroup = qemuDomainSetThrottleGroup, /* 11.2.0 */
+    .domainDelThrottleGroup = qemuDomainDelThrottleGroup, /* 11.2.0 */
 };
 
 
