@@ -3013,6 +3013,27 @@ qemuMonitorGetBlockIoThrottle(qemuMonitor *mon,
 
 
 int
+qemuMonitorThrottleGroupLimits(virJSONValue *limits,
+                               const virDomainThrottleGroupDef *group)
+{
+    return qemuMonitorMakeThrottleGroupLimits(limits, group);
+}
+
+
+int
+qemuMonitorUpdateThrottleGroup(qemuMonitor *mon,
+                               const char *qomid,
+                               virDomainBlockIoTuneInfo *info)
+{
+    VIR_DEBUG("qomid=%s, info=%p", qomid, info);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONUpdateThrottleGroup(mon, qomid, info);
+}
+
+
+int
 qemuMonitorVMStatusToPausedReason(const char *status)
 {
     int st;

@@ -377,6 +377,15 @@ qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                                   virDomainBlockIoTuneInfo *info);
 
 int
+qemuMonitorMakeThrottleGroupLimits(virJSONValue *limits,
+                                   const virDomainThrottleGroupDef *group);
+
+int
+qemuMonitorJSONUpdateThrottleGroup(qemuMonitor *mon,
+                                   const char *qomid,
+                                   virDomainBlockIoTuneInfo *info);
+
+int
 qemuMonitorJSONGetBlockIoThrottle(qemuMonitor *mon,
                                   const char *qdevid,
                                   virDomainBlockIoTuneInfo *reply);

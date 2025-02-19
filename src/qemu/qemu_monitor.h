@@ -1075,6 +1075,15 @@ int qemuMonitorGetBlockIoThrottle(qemuMonitor *mon,
                                   const char *qdevid,
                                   virDomainBlockIoTuneInfo *reply);
 
+int
+qemuMonitorThrottleGroupLimits(virJSONValue *limits,
+                               const virDomainThrottleGroupDef *group);
+
+int
+qemuMonitorUpdateThrottleGroup(qemuMonitor *mon,
+                               const char *qomid,
+                               virDomainBlockIoTuneInfo *info);
+
 int qemuMonitorSystemWakeup(qemuMonitor *mon);
 
 int qemuMonitorGetVersion(qemuMonitor *mon,
