@@ -15041,35 +15041,9 @@ qemuDomainCheckBlockIoTuneReset(virDomainDiskDef *disk,
 
 
 static int
-qemuDomainSetBlockIoTune(virDomainPtr dom,
-                         const char *path,
-                         virTypedParameterPtr params,
-                         int nparams,
-                         unsigned int flags)
+qemuDomainValidateBlockIoTune(virTypedParameterPtr params,
+                              int nparams)
 {
-    virQEMUDriver *driver = dom->conn->privateData;
-    virDomainObj *vm = NULL;
-    qemuDomainObjPrivate *priv;
-    virDomainDef *def = NULL;
-    virDomainDef *persistentDef = NULL;
-    virDomainBlockIoTuneInfo info = { 0 };
-    virDomainBlockIoTuneInfo conf_info = { 0 };
-    int ret = -1;
-    size_t i;
-    virDomainDiskDef *conf_disk = NULL;
-    virDomainDiskDef *disk;
-    qemuBlockIoTuneSetFlags set_fields = 0;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    virObjectEvent *event = NULL;
-    virTypedParameterPtr eventParams = NULL;
-    int eventNparams = 0;
-    int eventMaxparams = 0;
-    virDomainBlockIoTuneInfo *cur_info;
-    virDomainBlockIoTuneInfo *conf_cur_info;
-
-
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, -1);
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
                                VIR_TYPED_PARAM_ULLONG,
@@ -15114,35 +15088,30 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomainObjFromDomain(dom)))
-        return -1;
+    return 0;
+}
 
-    if (virDomainSetBlockIoTuneEnsureACL(dom->conn, vm->def, flags) < 0)
-        goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
-
-    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
-        goto cleanup;
-
-    priv = vm->privateData;
-
-    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
-        goto endjob;
-
-    if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
-                                VIR_DOMAIN_TUNABLE_BLKDEV_DISK, path) < 0)
-        goto endjob;
+static int
+qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               qemuBlockIoTuneSetFlags *set_fields,
+                               virTypedParameterPtr *eventParams,
+                               int *eventNparams,
+                               int *eventMaxparams)
+{
+    size_t i;
 
 #define SET_IOTUNE_FIELD(FIELD, BOOL, CONST) \
     if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_##CONST)) { \
-        info.FIELD = param->value.ul; \
-        set_fields |= QEMU_BLOCK_IOTUNE_SET_##BOOL; \
-        if (virTypedParamsAddULLong(&eventParams, &eventNparams, \
-                                    &eventMaxparams, \
+        info->FIELD = param->value.ul; \
+        *set_fields |= QEMU_BLOCK_IOTUNE_SET_##BOOL; \
+        if (virTypedParamsAddULLong(eventParams, eventNparams, \
+                                    eventMaxparams, \
                                     VIR_DOMAIN_TUNABLE_BLKDEV_##CONST, \
                                     param->value.ul) < 0) \
-            goto endjob; \
+            return -1; \
         continue; \
     }
 
@@ -15153,7 +15122,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("block I/O throttle limit value must be no more than %1$llu"),
                            QEMU_BLOCK_IOTUNE_MAX);
-            goto endjob;
+            return -1;
         }
 
         SET_IOTUNE_FIELD(total_bytes_sec, BYTES, TOTAL_BYTES_SEC);
@@ -15179,13 +15148,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         /* NB: Cannot use macro since this is a value.s not a value.ul */
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME)) {
-            info.group_name = g_strdup(param->value.s);
-            set_fields |= QEMU_BLOCK_IOTUNE_SET_GROUP_NAME;
-            if (virTypedParamsAddString(&eventParams, &eventNparams,
-                                        &eventMaxparams,
+            info->group_name = g_strdup(param->value.s);
+            *set_fields |= QEMU_BLOCK_IOTUNE_SET_GROUP_NAME;
+            if (virTypedParamsAddString(eventParams, eventNparams,
+                                        eventMaxparams,
                                         VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME,
                                         param->value.s) < 0)
-                goto endjob;
+                return -1;
             continue;
         }
 
@@ -15205,56 +15174,53 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
 #undef SET_IOTUNE_FIELD
 
-    if ((info.total_bytes_sec && info.read_bytes_sec) ||
-        (info.total_bytes_sec && info.write_bytes_sec)) {
+    return 0;
+}
+
+
+static int
+qemuDomainCheckBlockIoTuneMutualExclusion(virDomainBlockIoTuneInfo *info)
+{
+    if ((info->total_bytes_sec && info->read_bytes_sec) ||
+        (info->total_bytes_sec && info->write_bytes_sec)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("total and read/write of bytes_sec cannot be set at the same time"));
-        goto endjob;
+        return -1;
     }
 
-    if ((info.total_iops_sec && info.read_iops_sec) ||
-        (info.total_iops_sec && info.write_iops_sec)) {
+    if ((info->total_iops_sec && info->read_iops_sec) ||
+        (info->total_iops_sec && info->write_iops_sec)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("total and read/write of iops_sec cannot be set at the same time"));
-        goto endjob;
+        return -1;
     }
 
-    if ((info.total_bytes_sec_max && info.read_bytes_sec_max) ||
-        (info.total_bytes_sec_max && info.write_bytes_sec_max)) {
+    if ((info->total_bytes_sec_max && info->read_bytes_sec_max) ||
+        (info->total_bytes_sec_max && info->write_bytes_sec_max)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("total and read/write of bytes_sec_max cannot be set at the same time"));
-        goto endjob;
+        return -1;
     }
 
-    if ((info.total_iops_sec_max && info.read_iops_sec_max) ||
-        (info.total_iops_sec_max && info.write_iops_sec_max)) {
+    if ((info->total_iops_sec_max && info->read_iops_sec_max) ||
+        (info->total_iops_sec_max && info->write_iops_sec_max)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("total and read/write of iops_sec_max cannot be set at the same time"));
-        goto endjob;
+        return -1;
     }
 
-    virDomainBlockIoTuneInfoCopy(&info, &conf_info);
+    return 0;
+}
 
-    if (def) {
-        if (!(disk = qemuDomainDiskByName(def, path)))
-            goto endjob;
 
-        if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
-            goto endjob;
-
-        cur_info = qemuDomainFindGroupBlockIoTune(def, disk, &info);
-
-        if (qemuDomainSetBlockIoTuneDefaults(&info, cur_info,
-                                             set_fields) < 0)
-            goto endjob;
-
-        if (qemuDomainCheckBlockIoTuneReset(disk, &info) < 0)
-            goto endjob;
+static int
+qemuDomainCheckBlockIoTuneMax(virDomainBlockIoTuneInfo *info)
+{
 
 #define CHECK_MAX(val, _bool) \
         do { \
-            if (info.val##_max) { \
-                if (!info.val) { \
+            if (info->val##_max) { \
+                if (!info->val) { \
                     if (QEMU_BLOCK_IOTUNE_SET_##_bool) { \
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
                                        _("cannot reset '%1$s' when '%2$s' is set"), \
@@ -15264,13 +15230,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                        _("value '%1$s' cannot be set if '%2$s' is not set"), \
                                        #val "_max", #val); \
                     } \
-                    goto endjob; \
+                    return -1; \
                 } \
-                if (info.val##_max < info.val) { \
+                if (info->val##_max < info->val) { \
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
                                    _("value '%1$s' cannot be smaller than '%2$s'"), \
                                    #val "_max", #val); \
-                    goto endjob; \
+                    return -1; \
                 } \
             } \
         } while (false)
@@ -15283,6 +15249,94 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         CHECK_MAX(write_iops_sec, IOPS);
 
 #undef CHECK_MAX
+
+    return 0;
+}
+
+
+static int
+qemuDomainSetBlockIoTune(virDomainPtr dom,
+                         const char *path,
+                         virTypedParameterPtr params,
+                         int nparams,
+                         unsigned int flags)
+{
+    virQEMUDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    qemuDomainObjPrivate *priv;
+    virDomainDef *def = NULL;
+    virDomainDef *persistentDef = NULL;
+    virDomainBlockIoTuneInfo info = { 0 };
+    virDomainBlockIoTuneInfo conf_info = { 0 };
+    int ret = -1;
+    virDomainDiskDef *conf_disk = NULL;
+    virDomainDiskDef *disk;
+    qemuBlockIoTuneSetFlags set_fields = 0;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    virObjectEvent *event = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
+    virDomainBlockIoTuneInfo *cur_info;
+    virDomainBlockIoTuneInfo *conf_cur_info;
+
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+    if (qemuDomainValidateBlockIoTune(params, nparams) < 0)
+        return -1;
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainSetBlockIoTuneEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
+
+    if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
+                                VIR_DOMAIN_TUNABLE_BLKDEV_DISK, path) < 0)
+        goto endjob;
+
+    if (qemuDomainSetBlockIoTuneFields(&info,
+                                       params,
+                                       nparams,
+                                       &set_fields,
+                                       &eventParams,
+                                       &eventNparams,
+                                       &eventMaxparams) < 0)
+        goto endjob;
+
+    if (qemuDomainCheckBlockIoTuneMutualExclusion(&info) < 0)
+        goto endjob;
+
+    virDomainBlockIoTuneInfoCopy(&info, &conf_info);
+
+    if (def) {
+        if (!(disk = qemuDomainDiskByName(def, path)))
+            goto endjob;
+
+        if (!qemuDomainDiskBlockIoTuneIsSupported(disk))
+            goto endjob;
+
+        cur_info = qemuDomainFindGroupBlockIoTune(def, disk, &info);
+
+        if (qemuDomainSetBlockIoTuneDefaults(&info, cur_info, set_fields) < 0)
+            goto endjob;
+
+        if (qemuDomainCheckBlockIoTuneReset(disk, &info) < 0)
+            goto endjob;
+
+        if (qemuDomainCheckBlockIoTuneMax(&info) < 0)
+            goto endjob;
 
         /* blockdev-based qemu doesn't want to set the throttling when a cdrom
          * is empty. Skip the monitor call here since we will set the throttling
