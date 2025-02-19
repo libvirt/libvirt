@@ -701,6 +701,7 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
                             virDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockThrottleFiltersData) filterData = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virJSONValue) devprops = NULL;
     bool extensionDeviceAttached = false;
@@ -738,6 +739,15 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
 
         if (rc < 0)
             goto rollback;
+
+        if ((filterData = qemuBuildThrottleFiltersAttachPrepareBlockdev(disk))) {
+            if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+                return -1;
+            rc = qemuBlockThrottleFiltersAttach(priv->mon, filterData);
+            qemuDomainObjExitMonitor(vm);
+            if (rc < 0)
+                goto rollback;
+        }
 
         if (disk->transient) {
             g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
@@ -809,6 +819,8 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
 
     if (extensionDeviceAttached)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &disk->info));
+
+    qemuBlockThrottleFiltersDetach(priv->mon, filterData);
 
     qemuBlockStorageSourceChainDetach(priv->mon, data);
 
@@ -4727,6 +4739,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
 {
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     g_autoptr(qemuBlockStorageSourceChainData) diskBackend = NULL;
+    g_autoptr(qemuBlockThrottleFiltersData) filterData = NULL;
     size_t i;
     qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
@@ -4766,6 +4779,9 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     }
 
     qemuDomainObjEnterMonitor(vm);
+
+    if ((filterData = qemuBuildThrottleFiltersDetachPrepareBlockdev(disk)))
+        qemuBlockThrottleFiltersDetach(priv->mon, filterData);
 
     if (diskBackend)
         qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);

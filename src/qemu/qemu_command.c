@@ -2033,6 +2033,90 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommand *cmd,
 }
 
 
+static inline bool
+qemuDiskConfigThrottleGroupEnabled(const virDomainThrottleGroupDef *group)
+{
+    return !!group->group_name &&
+           virDomainBlockIoTuneInfoHasAny(group);
+}
+
+
+/**
+ * qemuBuildThrottleGroupCommandLine:
+ * @cmd: the command to modify
+ * @def: domain definition
+ *
+ * build throttle group object in json format
+ */
+static int
+qemuBuildThrottleGroupCommandLine(virCommand *cmd,
+                                  const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nthrottlegroups; i++) {
+        g_autoptr(virJSONValue) props = NULL;
+        g_autoptr(virJSONValue) limits = virJSONValueNewObject();
+        virDomainThrottleGroupDef *group = def->throttlegroups[i];
+        /* prefix group name with "throttle-" in QOM */
+        g_autofree char *prefixed_group_name = g_strdup_printf("throttle-%s", group->group_name);
+
+        if (!qemuDiskConfigThrottleGroupEnabled(group))
+            continue;
+
+        if (qemuMonitorThrottleGroupLimits(limits, group) < 0)
+            return -1;
+
+        if (qemuMonitorCreateObjectProps(&props, "throttle-group", prefixed_group_name,
+                                         "a:limits", &limits,
+                                         NULL) < 0)
+            return -1;
+
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildBlockThrottleFilterCommandline(virCommand *cmd,
+                                        qemuBlockThrottleFilterAttachData *data)
+{
+    if (data->filterProps) {
+        g_autofree char *tmp = NULL;
+        if (!(tmp = virJSONValueToString(data->filterProps, false)))
+            return -1;
+
+        virCommandAddArgList(cmd, "-blockdev", tmp, NULL);
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildDiskThrottleFiltersCommandLine(virCommand *cmd,
+                                        virDomainDiskDef *disk)
+{
+    g_autoptr(qemuBlockThrottleFiltersData) data = NULL;
+    size_t i;
+
+    data = qemuBuildThrottleFiltersAttachPrepareBlockdev(disk);
+    if (!data)
+        return -1;
+
+    for (i = 0; i < data->nfilterdata; i++) {
+        if (qemuBuildBlockThrottleFilterCommandline(cmd,
+                                                    data->filterdata[i]) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuBuildDiskSourceCommandLine(virCommand *cmd,
                                virDomainDiskDef *disk,
@@ -2088,6 +2172,9 @@ qemuBuildDiskCommandLine(virCommand *cmd,
     g_autoptr(virJSONValue) devprops = NULL;
 
     if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
+        return -1;
+
+    if (qemuBuildDiskThrottleFiltersCommandLine(cmd, disk) < 0)
         return -1;
 
     /* SD cards are currently instantiated via -drive if=sd, so the -device
@@ -10461,6 +10548,9 @@ qemuBuildCommandLine(virDomainObj *vm,
         return NULL;
 
     if (qemuBuildIOThreadCommandLine(cmd, def) < 0)
+        return NULL;
+
+    if (qemuBuildThrottleGroupCommandLine(cmd, def) < 0)
         return NULL;
 
     if (virDomainNumaGetNodeCount(def->numa) &&
