@@ -2337,6 +2337,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("blkdeviotune-max");
     DO_TEST_CAPS_LATEST("blkdeviotune-group-num");
     DO_TEST_CAPS_LATEST("blkdeviotune-max-length");
+    DO_TEST_CAPS_LATEST("throttlefilter");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("throttlefilter-invalid");
 
     DO_TEST_CAPS_LATEST("multifunction-pci-device");
 

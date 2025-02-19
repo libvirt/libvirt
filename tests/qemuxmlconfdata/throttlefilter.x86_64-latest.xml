@@ -1,0 +1,105 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <throttlegroups>
+    <throttlegroup>
+      <total_bytes_sec>4000</total_bytes_sec>
+      <total_iops_sec>4000</total_iops_sec>
+      <group_name>limit0</group_name>
+    </throttlegroup>
+    <throttlegroup>
+      <read_bytes_sec>5000</read_bytes_sec>
+      <write_bytes_sec>5000</write_bytes_sec>
+      <total_iops_sec>5000</total_iops_sec>
+      <group_name>limit1</group_name>
+    </throttlegroup>
+    <throttlegroup>
+      <read_bytes_sec>6000</read_bytes_sec>
+      <write_bytes_sec>6000</write_bytes_sec>
+      <total_iops_sec>6000</total_iops_sec>
+      <group_name>limit2</group_name>
+    </throttlegroup>
+    <throttlegroup>
+      <read_bytes_sec>7000</read_bytes_sec>
+      <write_bytes_sec>7000</write_bytes_sec>
+      <total_iops_sec>7000</total_iops_sec>
+      <group_name>limit12</group_name>
+    </throttlegroup>
+    <throttlegroup>
+      <read_bytes_sec>8000</read_bytes_sec>
+      <write_bytes_sec>8000</write_bytes_sec>
+      <total_iops_sec>8000</total_iops_sec>
+      <group_name>limit3</group_name>
+    </throttlegroup>
+  </throttlegroups>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='vda' bus='virtio'/>
+      <throttlefilters>
+        <throttlefilter group='limit0'/>
+      </throttlefilters>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='vdb' bus='virtio'/>
+      <throttlefilters>
+        <throttlefilter group='limit1'/>
+        <throttlefilter group='limit12'/>
+      </throttlefilters>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none' copy_on_read='on'/>
+      <source dev='/dev/HostVG/QEMUGuest3'/>
+      <target dev='vdc' bus='virtio'/>
+      <throttlefilters>
+        <throttlefilter group='limit2'/>
+        <throttlefilter group='limit12'/>
+      </throttlefilters>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest4'/>
+      <target dev='vdd' bus='virtio'/>
+      <iotune>
+        <total_bytes_sec>10000000</total_bytes_sec>
+        <read_iops_sec>400000</read_iops_sec>
+        <write_iops_sec>100000</write_iops_sec>
+      </iotune>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+    <controller type='usb' index='0' model='piix3-uhci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

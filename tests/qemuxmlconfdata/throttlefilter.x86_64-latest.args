@@ -1,0 +1,56 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-object '{"qom-type":"throttle-group","id":"throttle-limit0","limits":{"bps-total":4000,"bps-read":0,"bps-write":0,"iops-total":4000,"iops-read":0,"iops-write":0,"bps-total-max":0,"bps-read-max":0,"bps-write-max":0,"iops-total-max":0,"iops-read-max":0,"iops-write-max":0,"iops-size":0}}' \
+-object '{"qom-type":"throttle-group","id":"throttle-limit1","limits":{"bps-total":0,"bps-read":5000,"bps-write":5000,"iops-total":5000,"iops-read":0,"iops-write":0,"bps-total-max":0,"bps-read-max":0,"bps-write-max":0,"iops-total-max":0,"iops-read-max":0,"iops-write-max":0,"iops-size":0}}' \
+-object '{"qom-type":"throttle-group","id":"throttle-limit2","limits":{"bps-total":0,"bps-read":6000,"bps-write":6000,"iops-total":6000,"iops-read":0,"iops-write":0,"bps-total-max":0,"bps-read-max":0,"bps-write-max":0,"iops-total-max":0,"iops-read-max":0,"iops-write-max":0,"iops-size":0}}' \
+-object '{"qom-type":"throttle-group","id":"throttle-limit12","limits":{"bps-total":0,"bps-read":7000,"bps-write":7000,"iops-total":7000,"iops-read":0,"iops-write":0,"bps-total-max":0,"bps-read-max":0,"bps-write-max":0,"iops-total-max":0,"iops-read-max":0,"iops-write-max":0,"iops-size":0}}' \
+-object '{"qom-type":"throttle-group","id":"throttle-limit3","limits":{"bps-total":0,"bps-read":8000,"bps-write":8000,"iops-total":8000,"iops-read":0,"iops-write":0,"bps-total-max":0,"bps-read-max":0,"bps-write-max":0,"iops-total-max":0,"iops-read-max":0,"iops-write-max":0,"iops-size":0}}' \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-8-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
+-blockdev '{"node-name":"libvirt-8-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-8-storage"}' \
+-blockdev '{"driver":"throttle","node-name":"libvirt-9-filter","throttle-group":"throttle-limit0","file":"libvirt-8-format"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-9-filter","id":"virtio-disk0","bootindex":1,"write-cache":"on"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
+-blockdev '{"node-name":"libvirt-5-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-5-storage"}' \
+-blockdev '{"driver":"throttle","node-name":"libvirt-6-filter","throttle-group":"throttle-limit1","file":"libvirt-5-format"}' \
+-blockdev '{"driver":"throttle","node-name":"libvirt-7-filter","throttle-group":"throttle-limit12","file":"libvirt-6-filter"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-7-filter","id":"virtio-disk1","write-cache":"on"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest3","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-2-storage"}' \
+-blockdev '{"driver":"copy-on-read","node-name":"libvirt-CoR-vdc","file":"libvirt-2-format","discard":"unmap"}' \
+-blockdev '{"driver":"throttle","node-name":"libvirt-3-filter","throttle-group":"throttle-limit2","file":"libvirt-CoR-vdc"}' \
+-blockdev '{"driver":"throttle","node-name":"libvirt-4-filter","throttle-group":"throttle-limit12","file":"libvirt-3-filter"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x6","drive":"libvirt-4-filter","id":"virtio-disk2","write-cache":"on"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest4","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x7","drive":"libvirt-1-format","id":"virtio-disk3","write-cache":"on"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
