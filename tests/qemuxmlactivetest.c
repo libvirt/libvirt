@@ -247,6 +247,7 @@ mymain(void)
     DO_TEST_STATUS("blockjob-blockdev");
 
     DO_TEST_STATUS("backup-pull");
+    DO_TEST_STATUS("throttlefilter");
 
     DO_TEST_STATUS("memory-backing-dir");
 
