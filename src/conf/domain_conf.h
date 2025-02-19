@@ -520,6 +520,15 @@ void virDomainIothreadMappingDefFree(virDomainIothreadMappingDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainIothreadMappingDef, virDomainIothreadMappingDefFree);
 
 
+/* Stores information related to a ThrottleFilter resource. */
+struct _virDomainThrottleFilterDef {
+    char *group_name;
+    char *nodename;  /* node name of throttle filter object */
+    /* node name is a qemu driver implementation
+       detail and not a configuration field */
+};
+
+
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
     virStorageSource *src; /* non-NULL.  XXX Allow NULL for empty cdrom? */
@@ -551,6 +560,9 @@ struct _virDomainDiskDef {
     } blockio;
 
     virDomainBlockIoTuneInfo blkdeviotune;
+
+    size_t nthrottlefilters;
+    virDomainThrottleFilterDef **throttlefilters;
 
     char *driverName;
 
@@ -4663,3 +4675,11 @@ virDomainThrottleGroupByName(const virDomainDef *def,
 void
 virDomainThrottleGroupDefCopy(const virDomainThrottleGroupDef *src,
                               virDomainThrottleGroupDef *dst);
+
+void
+virDomainThrottleFilterDefFree(virDomainThrottleFilterDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainThrottleFilterDef, virDomainThrottleFilterDefFree);
+
+virDomainThrottleFilterDef *
+virDomainThrottleFilterFind(const virDomainDiskDef *def,
+                            const char *name);

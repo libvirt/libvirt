@@ -2438,6 +2438,15 @@ virDomainDiskDefFree(virDomainDiskDef *def)
     virObjectUnref(def->privateData);
     g_slist_free_full(def->iothreads, (GDestroyNotify) virDomainIothreadMappingDefFree);
 
+    if (def->throttlefilters) {
+        size_t i;
+
+        for (i = 0; i < def->nthrottlefilters; i++)
+            virDomainThrottleFilterDefFree(def->throttlefilters[i]);
+
+        g_free(def->throttlefilters);
+    }
+
     g_free(def);
 }
 
@@ -3833,6 +3842,17 @@ virDomainThrottleGroupDefArrayFree(virDomainThrottleGroupDef **def,
     for (i = 0; i < nthrottlegroups; i++)
         virDomainThrottleGroupDefFree(def[i]);
 
+    g_free(def);
+}
+
+
+void
+virDomainThrottleFilterDefFree(virDomainThrottleFilterDef *def)
+{
+    if (!def)
+        return;
+    g_free(def->group_name);
+    g_free(def->nodename);
     g_free(def);
 }
 
@@ -8001,6 +8021,50 @@ virDomainDefThrottleGroupsParse(virDomainDef *def,
 }
 
 
+static virDomainThrottleFilterDef *
+virDomainDiskThrottleFilterDefParse(xmlNodePtr node)
+{
+    g_autoptr(virDomainThrottleFilterDef) filter = g_new0(virDomainThrottleFilterDef, 1);
+
+    filter->group_name = virXMLPropStringRequired(node, "group");
+
+    return g_steal_pointer(&filter);
+}
+
+
+static int
+virDomainDiskDefThrottleFiltersParse(virDomainDiskDef *def,
+                                     xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    int n = 0;
+    g_autofree xmlNodePtr *nodes = NULL;
+
+    if ((n = virXPathNodeSet("./throttlefilters/throttlefilter", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n)
+        def->throttlefilters = g_new0(virDomainThrottleFilterDef *, n);
+
+    for (i = 0; i < n; i++) {
+        g_autoptr(virDomainThrottleFilterDef) filter = NULL;
+
+        if (!(filter = virDomainDiskThrottleFilterDefParse(nodes[i]))) {
+            return -1;
+        }
+
+        if (virDomainThrottleFilterFind(def, filter->group_name)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("duplicate filter name '%1$s' found"),
+                           filter->group_name);
+            return -1;
+        }
+        def->throttlefilters[def->nthrottlefilters++] = g_steal_pointer(&filter);
+    }
+    return 0;
+}
+
+
 static int
 virDomainDiskDefMirrorParse(virDomainDiskDef *def,
                             xmlNodePtr cur,
@@ -8501,6 +8565,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
+        return NULL;
+
+    if (virDomainDiskDefThrottleFiltersParse(def, ctxt) < 0)
         return NULL;
 
     def->domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
@@ -22745,6 +22812,31 @@ virDomainThrottleGroupDel(virDomainDef *def,
 }
 
 
+/**
+ * virDomainThrottleFilterFind:
+ * @def: domain disk definition
+ * @name: throttle group name
+ *
+ * Search domain disk to find throttle filter referencing
+ * throttle group with name @name.
+ *
+ * Return a pointer to throttle filter found
+ */
+virDomainThrottleFilterDef *
+virDomainThrottleFilterFind(const virDomainDiskDef *def,
+                            const char *name)
+{
+    size_t i;
+
+    for (i = 0; i < def->nthrottlefilters; i++) {
+        if (STREQ(name, def->throttlefilters[i]->group_name))
+            return def->throttlefilters[i];
+    }
+
+    return NULL;
+}
+
+
 static int
 virDomainEventActionDefFormat(virBuffer *buf,
                               int type,
@@ -23427,6 +23519,21 @@ virDomainIothreadMappingDefFormat(virBuffer *buf,
 
 
 static void
+virDomainDiskDefFormatThrottleFilters(virBuffer *buf,
+                                      virDomainDiskDef *disk)
+{
+    size_t i;
+    g_auto(virBuffer) throttleChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    for (i = 0; i < disk->nthrottlefilters; i++) {
+        g_auto(virBuffer) throttleAttrBuf = VIR_BUFFER_INITIALIZER;
+        virBufferEscapeString(&throttleAttrBuf, " group='%s'", disk->throttlefilters[i]->group_name);
+        virXMLFormatElement(&throttleChildBuf, "throttlefilter", &throttleAttrBuf, NULL);
+    }
+    virXMLFormatElement(buf, "throttlefilters", NULL, &throttleChildBuf);
+}
+
+
+static void
 virDomainDiskDefFormatDriver(virBuffer *buf,
                              virDomainDiskDef *disk)
 {
@@ -23689,6 +23796,8 @@ virDomainDiskDefFormat(virBuffer *buf,
     virBufferAddLit(&childBuf, "/>\n");
 
     virDomainDiskDefFormatIotune(&childBuf, def);
+
+    virDomainDiskDefFormatThrottleFilters(&childBuf, def);
 
     if (def->src->readonly)
         virBufferAddLit(&childBuf, "<readonly/>\n");

@@ -82,6 +82,8 @@ typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
 
 typedef struct _virDomainBlockIoTuneInfo  virDomainThrottleGroupDef;
 
+typedef struct _virDomainThrottleFilterDef  virDomainThrottleFilterDef;
+
 typedef struct _virDomainCheckpointDef virDomainCheckpointDef;
 
 typedef struct _virDomainCheckpointObj virDomainCheckpointObj;

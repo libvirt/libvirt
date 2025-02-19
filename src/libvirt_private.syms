@@ -682,6 +682,8 @@ virDomainTaintMessageTypeFromString;
 virDomainTaintMessageTypeToString;
 virDomainTaintTypeFromString;
 virDomainTaintTypeToString;
+virDomainThrottleFilterDefFree;
+virDomainThrottleFilterFind;
 virDomainThrottleGroupAdd;
 virDomainThrottleGroupByName;
 virDomainThrottleGroupDefCopy;
