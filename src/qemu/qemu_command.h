@@ -124,6 +124,12 @@ qemuBlockStorageSourceChainData *
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
                                                     virStorageSource *backingStore);
 
+qemuBlockThrottleFiltersData *
+qemuBuildThrottleFiltersAttachPrepareBlockdev(virDomainDiskDef *disk);
+
+qemuBlockThrottleFiltersData *
+qemuBuildThrottleFiltersDetachPrepareBlockdev(virDomainDiskDef *disk);
+
 virJSONValue *
 qemuBuildDiskDeviceProps(const virDomainDef *def,
                          virDomainDiskDef *disk,

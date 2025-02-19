@@ -215,6 +215,55 @@ qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
                                        virStorageSource *src,
                                        virStorageSource *templ);
 
+void
+qemuBlockThrottleFilterSetNodename(virDomainThrottleFilterDef *filter,
+                                   char *nodename);
+
+const char *
+qemuBlockThrottleFilterGetNodename(virDomainThrottleFilterDef *filter);
+
+typedef struct qemuBlockThrottleFilterAttachData qemuBlockThrottleFilterAttachData;
+struct qemuBlockThrottleFilterAttachData {
+    virJSONValue *filterProps;
+    const char *filterNodeName;
+    bool filterAttached;
+};
+
+qemuBlockThrottleFilterAttachData *
+qemuBlockThrottleFilterAttachPrepareBlockdev(virDomainThrottleFilterDef *throttlefilter,
+                                             const char *parentNodeName);
+
+void
+qemuBlockThrottleFilterAttachDataFree(qemuBlockThrottleFilterAttachData *data);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockThrottleFilterAttachData,
+                              qemuBlockThrottleFilterAttachDataFree);
+
+void
+qemuBlockThrottleFilterAttachRollback(qemuMonitor *mon,
+                                      qemuBlockThrottleFilterAttachData *data);
+
+struct _qemuBlockThrottleFiltersData {
+    qemuBlockThrottleFilterAttachData **filterdata;
+    size_t nfilterdata;
+};
+
+typedef struct _qemuBlockThrottleFiltersData qemuBlockThrottleFiltersData;
+
+void
+qemuBlockThrottleFiltersDataFree(qemuBlockThrottleFiltersData *data);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockThrottleFiltersData,
+                              qemuBlockThrottleFiltersDataFree);
+
+int
+qemuBlockThrottleFiltersAttach(qemuMonitor *mon,
+                               qemuBlockThrottleFiltersData *data);
+
+void
+qemuBlockThrottleFiltersDetach(qemuMonitor *mon,
+                               qemuBlockThrottleFiltersData *data);
+
 int
 qemuBlockRemoveImageMetadata(virQEMUDriver *driver,
                              virDomainObj *vm,

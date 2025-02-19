@@ -11028,6 +11028,87 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainD
 
 
 /**
+ * qemuBuildThrottleFiltersAttachPrepareBlockdevOne:
+ * @data: filter chain data, which consists of array of filters and size of such array
+ * @throttlefilter: new filter to be added into filter array
+ * @parentNodeName: parent nodename for this new throttlefilter
+ *
+ * Build filter node chain to provide more flexibility for block disk I/O limits
+ */
+static int
+qemuBuildThrottleFiltersAttachPrepareBlockdevOne(qemuBlockThrottleFiltersData *data,
+                                                 virDomainThrottleFilterDef *throttlefilter,
+                                                 const char *parentNodeName)
+{
+    g_autoptr(qemuBlockThrottleFilterAttachData) elem = NULL;
+
+    if (!(elem = qemuBlockThrottleFilterAttachPrepareBlockdev(throttlefilter, parentNodeName)))
+        return -1;
+
+    VIR_APPEND_ELEMENT(data->filterdata, data->nfilterdata, elem);
+    return 0;
+}
+
+
+/**
+ * qemuBuildThrottleFiltersAttachPrepareBlockdev:
+ * @disk: domain disk
+ *
+ * Build filter node chain to provide more flexibility for block disk I/O limits
+ */
+qemuBlockThrottleFiltersData *
+qemuBuildThrottleFiltersAttachPrepareBlockdev(virDomainDiskDef *disk)
+{
+    g_autoptr(qemuBlockThrottleFiltersData) data = NULL;
+    size_t i;
+    const char *parentNodeName = NULL;
+    qemuDomainDiskPrivate *priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    data = g_new0(qemuBlockThrottleFiltersData, 1);
+    /* if copy_on_read is enabled, put throttle chain on top of it */
+    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
+       parentNodeName = priv->nodeCopyOnRead;
+    } else {
+        parentNodeName = qemuBlockStorageSourceGetEffectiveNodename(disk->src);
+
+    }
+    /* build filterdata, which contains all filters info and sequence info through parentNodeName */
+    for (i = 0; i < disk->nthrottlefilters; i++) {
+        if (qemuBuildThrottleFiltersAttachPrepareBlockdevOne(data, disk->throttlefilters[i], parentNodeName) < 0)
+            return NULL;
+        parentNodeName = disk->throttlefilters[i]->nodename;
+    }
+
+    return g_steal_pointer(&data);
+}
+
+
+/**
+ * qemuBuildThrottleFiltersDetachPrepareBlockdev:
+ * @disk: domain disk
+ *
+ * Build filters data for later "blockdev-del"
+ */
+qemuBlockThrottleFiltersData *
+qemuBuildThrottleFiltersDetachPrepareBlockdev(virDomainDiskDef *disk)
+{
+    g_autoptr(qemuBlockThrottleFiltersData) data = g_new0(qemuBlockThrottleFiltersData, 1);
+    size_t i;
+
+    /* build filterdata, which contains filters info and sequence info */
+    for (i = 0; i < disk->nthrottlefilters; i++) {
+        g_autoptr(qemuBlockThrottleFilterAttachData) elem = g_new0(qemuBlockThrottleFilterAttachData, 1);
+        /* ignore other fields since the following info are enough for "blockdev-del" */
+        elem->filterNodeName = qemuBlockThrottleFilterGetNodename(disk->throttlefilters[i]);
+        elem->filterAttached = true;
+
+        VIR_APPEND_ELEMENT(data->filterdata, data->nfilterdata, elem);
+    }
+    return g_steal_pointer(&data);
+}
+
+
+/**
  * qemuBuildStorageSourceChainAttachPrepareBlockdev:
  * @top: storage source chain
  *

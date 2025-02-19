@@ -2237,6 +2237,33 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
 
 
 static int
+virDomainDiskThrottleFilterNodeNamesParse(xmlXPathContextPtr ctxt,
+                                          virDomainDiskDef *def)
+{
+    size_t i;
+    int n = 0;
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autoptr(GHashTable) throttleFiltersMap = virHashNew(g_free);
+
+    if ((n = virXPathNodeSet("./nodenames/nodename[@type='throttle-filter']", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        g_hash_table_insert(throttleFiltersMap, virXMLPropString(nodes[i], "group"), virXMLPropString(nodes[i], "name"));
+    }
+
+    for (i = 0; i < def->nthrottlefilters; i++) {
+        char *nodename = g_hash_table_lookup(throttleFiltersMap, def->throttlefilters[i]->group_name);
+        if (nodename) {
+            qemuBlockThrottleFilterSetNodename(def->throttlefilters[i], g_strdup(nodename));
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDiskPrivateParse(xmlXPathContextPtr ctxt,
                            virDomainDiskDef *disk)
 {
@@ -2244,6 +2271,9 @@ qemuDomainDiskPrivateParse(xmlXPathContextPtr ctxt,
 
     priv->qomName = virXPathString("string(./qom/@name)", ctxt);
     priv->nodeCopyOnRead = virXPathString("string(./nodenames/nodename[@type='copyOnRead']/@name)", ctxt);
+
+    if (virDomainDiskThrottleFilterNodeNamesParse(ctxt, disk) < 0)
+        return -1;
 
     return 0;
 }
@@ -2254,14 +2284,27 @@ qemuDomainDiskPrivateFormat(virDomainDiskDef *disk,
                             virBuffer *buf)
 {
     qemuDomainDiskPrivate *priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    size_t i;
 
     virBufferEscapeString(buf, "<qom name='%s'/>\n", priv->qomName);
 
-    if (priv->nodeCopyOnRead) {
+    if (priv->nodeCopyOnRead || disk->nthrottlefilters > 0) {
         virBufferAddLit(buf, "<nodenames>\n");
         virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<nodename type='copyOnRead' name='%s'/>\n",
-                              priv->nodeCopyOnRead);
+        if (priv->nodeCopyOnRead)
+            virBufferEscapeString(buf, "<nodename type='copyOnRead' name='%s'/>\n",
+                                  priv->nodeCopyOnRead);
+        if (disk->nthrottlefilters > 0) {
+            for (i = 0; i < disk->nthrottlefilters; i++) {
+
+                if (disk->throttlefilters[i]->nodename)
+                    virBufferEscapeString(buf, "<nodename type='throttle-filter' name='%s' ",
+                                          disk->throttlefilters[i]->nodename);
+
+                if (disk->throttlefilters[i]->group_name)
+                    virBufferEscapeString(buf, "group='%s'/>\n", disk->throttlefilters[i]->group_name);
+            }
+        }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</nodenames>\n");
     }
@@ -6292,7 +6335,8 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
  * @disk: disk definition object
  *
  * Returns the pointer to the node-name of the topmost layer used by @disk as
- * backend. Currently returns the nodename of the copy-on-read filter if enabled
+ * backend. Currently returns the nodename of top throttle filter if enabled
+ * or the nodename of the copy-on-read filter if enabled
  * or the nodename of the top image's format driver. Empty disks return NULL.
  * This must be used only with disks instantiated via -blockdev (thus not
  * for SD cards).
@@ -6304,6 +6348,10 @@ qemuDomainDiskGetTopNodename(virDomainDiskDef *disk)
 
     if (virStorageSourceIsEmpty(disk->src))
         return NULL;
+
+    /* If disk has throttles, take top throttle node name */
+    if (disk->nthrottlefilters > 0)
+        return disk->throttlefilters[disk->nthrottlefilters - 1]->nodename;
 
     if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON)
         return priv->nodeCopyOnRead;
@@ -9707,6 +9755,22 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
 }
 
 
+static void
+qemuDomainPrepareThrottleFilterBlockdev(virDomainThrottleFilterDef *filter,
+                                        qemuDomainObjPrivate *priv)
+{
+    g_autofree char *nodenameprefix = NULL;
+
+    /* skip setting throttle filter nodename if it's set by parsing statusxml */
+    if (filter->nodename) {
+        return;
+    }
+    nodenameprefix = g_strdup_printf("libvirt-%u", qemuDomainStorageIDNew(priv));
+
+    qemuBlockThrottleFilterSetNodename(filter, g_strdup_printf("%s-filter", nodenameprefix));
+}
+
+
 int
 qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
                                        virStorageSource *src,
@@ -9730,6 +9794,7 @@ qemuDomainPrepareDiskSourceBlockdev(virDomainDiskDef *disk,
 {
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     virStorageSource *n;
+    size_t i;
 
     if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
         !diskPriv->nodeCopyOnRead)
@@ -9742,6 +9807,10 @@ qemuDomainPrepareDiskSourceBlockdev(virDomainDiskDef *disk,
         if (n->dataFileStore &&
             qemuDomainPrepareStorageSourceBlockdev(disk, n->dataFileStore, priv, cfg) < 0)
             return -1;
+    }
+
+    for (i = 0; i < disk->nthrottlefilters; i++) {
+        qemuDomainPrepareThrottleFilterBlockdev(disk->throttlefilters[i], priv);
     }
 
     return 0;
