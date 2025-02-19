@@ -1914,6 +1914,56 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
     return ret;
 }
 
+
+static int
+testQemuMonitorJSONqemuMonitorJSONUpdateThrottleGroup(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    virDomainBlockIoTuneInfo info;
+    g_autoptr(qemuMonitorTest) test = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
+        return -1;
+
+    info = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, (char *) "limit", 15, 16, 17, 18, 19, 20};
+
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{\"execute\":\"qom-set\","
+                                       " \"arguments\":{\"property\": \"limits\","
+                                       "                \"path\": \"throttle-limit1\","
+                                       "                \"value\":{\"bps-total\": 1,"
+                                       "                           \"bps-read\": 2,"
+                                       "                           \"bps-write\": 3,"
+                                       "                           \"iops-total\": 4,"
+                                       "                           \"iops-read\": 5,"
+                                       "                           \"iops-write\": 6,"
+                                       "                           \"bps-total-max\": 7,"
+                                       "                           \"bps-read-max\": 8,"
+                                       "                           \"bps-write-max\": 9,"
+                                       "                           \"iops-total-max\": 10,"
+                                       "                           \"iops-read-max\": 11,"
+                                       "                           \"iops-write-max\": 12,"
+                                       "                           \"iops-size\": 13,"
+                                       "                           \"bps-total-max-length\": 15,"
+                                       "                           \"bps-read-max-length\": 16,"
+                                       "                           \"bps-write-max-length\": 17,"
+                                       "                           \"iops-total-max-length\": 18,"
+                                       "                           \"iops-read-max-length\": 19,"
+                                       "                           \"iops-write-max-length\": 20}},"
+                                       " \"id\":\"libvirt-1\"}",
+                                       NULL,
+                                       "{ \"return\" : {}}") < 0)
+        return -1;
+
+    if (qemuMonitorJSONUpdateThrottleGroup(qemuMonitorTestGetMonitor(test),
+                                          "throttle-limit1", &info) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 testQemuMonitorJSONqemuMonitorJSONGetTargetArch(const void *opaque)
 {
@@ -3011,6 +3061,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetMigrationStats);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
+    DO_TEST(qemuMonitorJSONUpdateThrottleGroup);
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapabilities);
     DO_TEST(qemuMonitorJSONQueryCPUsFast);
