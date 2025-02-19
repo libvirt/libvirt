@@ -1000,15 +1000,19 @@ As an alternative for *FILE* in case the XML would only contain a CPU model
 with no additional features the CPU model name itself can be passed as *model*.
 Exactly one of *FILE* and *model* must be used.
 
-The XML *FILE* may contain either host or guest CPU definitions describing the
-host CPU model. The host CPU definition is the <cpu> element and its contents
-as printed by ``capabilities`` command. The guest CPU definition may be created
-from the host CPU model found in domain capabilities XML (printed by
-``domcapabilities`` command). In addition to the <cpu> elements, this command
-accepts full capabilities XMLs, or domain capabilities XMLs containing the CPU
-definitions. It is recommended to use only the CPU definitions from domain
-capabilities, as on some architectures using the host CPU definition may either
-fail or provide unexpected results.
+The XML *FILE* should contain guest CPU definitions created from the host CPU
+model found in the ``<mode name="host-model">`` element domain capabilities
+XMLs (printed by the ``domcapabilities`` command on each host). The
+``<mode name="host-model">`` elements themselves or even their ``<cpu>``
+parent  elements found in domain capabilities XMLs are not accepted. The
+elements have to be transformed into actual CPU definitions.
+
+Alternatively this command will automatically extract the CPU definitions when
+provided with domain capabilities XMLs.
+
+For historical reasons the XML *FILE* may also contain host CPU definitions,
+but such usage is strongly discouraged as it will most likely provide incorrect
+results.
 
 When *FILE* contains only a single CPU definition, the command will print the
 same CPU with restrictions imposed by the capabilities of the hypervisor.
