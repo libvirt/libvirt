@@ -2000,6 +2000,32 @@ advertisements to the guest OS. (NB: Only qemu driver support)
    the guest OS itself can choose to circumvent the unavailability of the sleep
    states (e.g. S4 by turning off completely).
 
+Disk Throttle Group Management
+------------------------------
+
+:since:`Since 11.2.0` it is possible to create multiple named throttle groups
+and then reference them within ``throttlefilters``(sub-element of ``disk`` element)
+to form filter chain in QEMU for specific disk. The limits(throttlegroups) are
+shared within domain, hence the same group can be referenced by different filters.
+
+::
+
+   <domain>
+     ...
+     <throttlegroups>
+       <throttlegroup>
+         <group_name>limit0</group_name>
+         <total_bytes_sec>10000000</total_bytes_sec>
+         <read_iops_sec>400000</read_iops_sec>
+         <write_iops_sec>100000</write_iops_sec>
+       </throttlegroup>
+     </throttlegroups>
+     ...
+   </domain>
+
+``throttlegroup``
+   It has the same sub-elements as ``iotune`` (See `Hard drives, floppy disks, CDROMs`_),
+   The difference is that <group_name> is required.
 
 Hypervisor features
 -------------------
