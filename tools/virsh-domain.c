@@ -2648,7 +2648,7 @@ virshBlockJobInfo(vshControl *ctl,
         if (!raw) {
             speed <<= 20;
             if (speed >> 20 != info.bandwidth) {
-                vshError(ctl, _("overflow in converting %1$ld MiB/s to bytes\n"),
+                vshError(ctl, _("overflow in converting %1$ld MiB/s to bytes"),
                          info.bandwidth);
                 return false;
             }
@@ -3831,7 +3831,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
             if (!vol.vol) {
                 vshError(ctl,
-                         _("Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"),
+                         _("Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."),
                          target, source);
                 vshResetLibvirtError();
                 continue;
@@ -3848,7 +3848,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             for (i = 0; i < nvol_list; i++) {
                 if (vol_list[i]) {
                     vshError(ctl,
-                             _("Volume '%1$s' was not found in domain's definition.\n"),
+                             _("Volume '%1$s' was not found in domain's definition."),
                              vol_list[i]);
                     found = true;
                 }
