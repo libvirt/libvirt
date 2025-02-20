@@ -2128,9 +2128,7 @@ vshError(vshControl *ctl, const char *format, ...)
      * printing to stderr will not interleave correctly with stdout
      * unless we flush between every transition between streams.  */
     fflush(stdout);
-    fputs(_("error: "), stderr);
-
-    fprintf(stderr, "%s\n", NULLSTR(str));
+    fprintf(stderr, _("error: %1$s\n"), NULLSTR(str));
     fflush(stderr);
 }
 
