@@ -68,7 +68,7 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
@@ -76,13 +76,13 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by UUID */
     if ((flags & VIRSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID",
                  cmd->def->name, optname);
         network = virNetworkLookupByUUIDString(priv->conn, n);
     }
     /* try it by NAME */
     if (!network && (flags & VIRSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network NAME",
                  cmd->def->name, optname);
         network = virNetworkLookupByName(priv->conn, n);
     }
@@ -106,13 +106,13 @@ virshCommandOptNetworkPort(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
         *name = n;
 
-    vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID",
              cmd->def->name, optname);
     port = virNetworkPortLookupByUUIDString(net, n);
 

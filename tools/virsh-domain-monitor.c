@@ -1224,7 +1224,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 
     /* Check and display whether the domain is persistent or not */
     persistent = virDomainIsPersistent(dom);
-    vshDebug(ctl, VSH_ERR_DEBUG, "Domain persistent flag value: %d\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "Domain persistent flag value: %d",
              persistent);
     if (persistent < 0)
         vshPrint(ctl, "%-15s %s\n", _("Persistent:"), _("unknown"));

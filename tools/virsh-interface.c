@@ -61,7 +61,7 @@ virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
@@ -72,13 +72,13 @@ virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by NAME */
     if (!is_mac && (flags & VIRSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface NAME",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByName(priv->conn, n);
 
     /* try it by MAC */
     } else if (is_mac && (flags & VIRSH_BYMAC)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface MAC\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface MAC",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByMACString(priv->conn, n);
     }

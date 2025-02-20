@@ -165,7 +165,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
             goto cleanup;
         }
         vshDebug(ctl, VSH_ERR_INFO, "%s",
-                 _("Failed to setup keepalive on connection\n"));
+                 _("Failed to setup keepalive on connection"));
         vshResetLibvirtError();
     }
 
@@ -769,7 +769,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         /* parse command */
         ctl->imode = false;
         if (argc - optind == 1) {
-            vshDebug(ctl, VSH_ERR_INFO, "commands: \"%s\"\n", argv[optind]);
+            vshDebug(ctl, VSH_ERR_INFO, "commands: \"%s\"", argv[optind]);
             return vshCommandStringParse(ctl, argv[optind], NULL);
         } else {
             return vshCommandArgvParse(ctl, argc - optind, argv + optind);

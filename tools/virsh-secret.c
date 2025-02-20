@@ -45,7 +45,7 @@ virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_DEBUG,
-             "%s: found option <%s>: %s\n", cmd->def->name, optname, n);
+             "%s: found option <%s>: %s", cmd->def->name, optname, n);
 
     if (name != NULL)
         *name = n;

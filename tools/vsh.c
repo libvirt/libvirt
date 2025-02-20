@@ -542,7 +542,7 @@ vshCmdOptAssign(vshControl *ctl,
     case VSH_OT_BOOL:
         /* nothing to do */
         if (report) {
-            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(bool)\n",
+            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(bool)",
                      cmd->def->name, opt->def->name);
         }
         break;
@@ -550,7 +550,7 @@ vshCmdOptAssign(vshControl *ctl,
     case VSH_OT_STRING:
     case VSH_OT_INT:
         if (report) {
-            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(optdata): %s\n",
+            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(optdata): %s",
                      cmd->def->name, opt->def->name, NULLSTR(val));
         }
 
@@ -559,7 +559,7 @@ vshCmdOptAssign(vshControl *ctl,
 
     case VSH_OT_ARGV:
         if (report) {
-            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(argv: %zu): %s\n",
+            vshDebug(ctl, VSH_ERR_INFO, "%s: %s(argv: %zu): %s",
                      cmd->def->name, opt->def->name, opt->nargv, NULLSTR(val));
         }
 
@@ -1973,7 +1973,7 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
 
     vshOutputLogFile(ctl, level, str);
 
-    fputs(str, stdout);
+    fprintf(stderr, "%s\n", str);
     fflush(stdout);
 }
 

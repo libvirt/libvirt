@@ -41,7 +41,7 @@ virshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
@@ -49,13 +49,13 @@ virshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by UUID */
     if ((flags & VIRSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter UUID",
                  cmd->def->name, optname);
         nwfilter = virNWFilterLookupByUUIDString(priv->conn, n);
     }
     /* try it by NAME */
     if (!nwfilter && (flags & VIRSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter NAME",
                  cmd->def->name, optname);
         nwfilter = virNWFilterLookupByName(priv->conn, n);
     }
@@ -450,13 +450,13 @@ virshCommandOptNWFilterBindingBy(vshControl *ctl,
     if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
         *name = n;
 
-    vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter binding port dev\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter binding port dev",
              cmd->def->name, optname);
     binding = virNWFilterBindingLookupByPortDev(priv->conn, n);
 

@@ -4254,7 +4254,7 @@ virshWatchTimeout(gpointer opaque)
     struct virshWatchData *data = opaque;
 
     /* suspend the domain when migration timeouts. */
-    vshDebug(data->ctl, VSH_ERR_DEBUG, "watchJob: timeout\n");
+    vshDebug(data->ctl, VSH_ERR_DEBUG, "watchJob: timeout");
     if (data->timeout_func)
         (data->timeout_func)(data->ctl, data->dom, data->opaque);
 
@@ -4266,7 +4266,7 @@ static void
 virshWatchSetTimeout(struct virshWatchData *data)
 {
     vshDebug(data->ctl, VSH_ERR_DEBUG,
-             "watchJob: setting timeout of %d secs\n", data->timeout_secs);
+             "watchJob: setting timeout of %d secs", data->timeout_secs);
 
     data->timeout_src = g_timeout_source_new_seconds(data->timeout_secs);
     g_source_set_callback(data->timeout_src,
@@ -4291,7 +4291,7 @@ virshWatchProgress(gpointer opaque)
     pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
 #endif /* !WIN32 */
     vshDebug(data->ctl, VSH_ERR_DEBUG, "%s",
-             "watchJob: progress update\n");
+             "watchJob: progress update");
     ret = virDomainGetJobInfo(data->dom, &jobinfo);
 #ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
@@ -4308,7 +4308,7 @@ virshWatchProgress(gpointer opaque)
             vshTTYDisableInterrupt(data->ctl);
             data->jobStarted = true;
             vshDebug(data->ctl, VSH_ERR_DEBUG,
-                     "watchJob: job started\n");
+                     "watchJob: job started");
         }
 
         if (data->jobStarted) {
@@ -4317,7 +4317,7 @@ virshWatchProgress(gpointer opaque)
                     virshWatchSetTimeout(data);
             } else if (!data->verbose) {
                 vshDebug(data->ctl, VSH_ERR_DEBUG,
-                         "watchJob: disabling callback\n");
+                         "watchJob: disabling callback");
                 return G_SOURCE_REMOVE;
             }
         }
@@ -4339,7 +4339,7 @@ virshWatchInterrupt(GIOChannel *source G_GNUC_UNUSED,
     gsize nread = 0;
 
     vshDebug(data->ctl, VSH_ERR_DEBUG,
-             "watchJob: stdin data %d\n", condition);
+             "watchJob: stdin data %d", condition);
     if (condition & G_IO_IN) {
         g_io_channel_read_chars(data->stdin_ioc,
                                 &retchar,
@@ -4348,7 +4348,7 @@ virshWatchInterrupt(GIOChannel *source G_GNUC_UNUSED,
                                 NULL);
 
         vshDebug(data->ctl, VSH_ERR_DEBUG,
-                 "watchJob: got %zu characters\n", nread);
+                 "watchJob: got %zu characters", nread);
         if (nread == 1 &&
             vshTTYIsInterruptCharacter(data->ctl, retchar)) {
             virDomainAbortJob(data->dom);
@@ -4407,7 +4407,7 @@ virshWatchJob(vshControl *ctl,
     /* don't poll on STDIN if we are not using a terminal */
     if (vshTTYAvailable(ctl)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s",
-                 "watchJob: on TTY, enabling Ctrl-c processing\n");
+                 "watchJob: on TTY, enabling Ctrl-c processing");
 #ifdef WIN32
         data.stdin_ioc = g_io_channel_win32_new_fd(STDIN_FILENO);
 #else
@@ -4429,7 +4429,7 @@ virshWatchJob(vshControl *ctl,
     g_main_loop_run(eventLoop);
 
     vshDebug(ctl, VSH_ERR_DEBUG,
-             "watchJob: job done, status %d\n", *job_err);
+             "watchJob: job done, status %d", *job_err);
     if (*job_err == 0 && verbose) /* print [100 %] */
         virshPrintJobProgress(label, 0, 1);
 
@@ -6118,7 +6118,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
                      _("Optional flags or --rawstats are not supported by the daemon"));
             goto cleanup;
         }
-        vshDebug(ctl, VSH_ERR_DEBUG, "detailed statistics not supported\n");
+        vshDebug(ctl, VSH_ERR_DEBUG, "detailed statistics not supported");
         vshResetLibvirtError();
         rc = virDomainGetJobInfo(dom, &info);
     }
@@ -11158,16 +11158,16 @@ virshMigrateTimeout(vshControl *ctl,
     case VIRSH_MIGRATE_TIMEOUT_DEFAULT: /* unreachable */
     case VIRSH_MIGRATE_TIMEOUT_SUSPEND:
         vshDebug(ctl, VSH_ERR_DEBUG,
-                 "migration timed out; suspending domain\n");
+                 "migration timed out; suspending domain");
         if (virDomainSuspend(dom) < 0)
-            vshDebug(ctl, VSH_ERR_INFO, "suspending domain failed\n");
+            vshDebug(ctl, VSH_ERR_INFO, "suspending domain failed");
         break;
 
     case VIRSH_MIGRATE_TIMEOUT_POSTCOPY:
         vshDebug(ctl, VSH_ERR_DEBUG,
-                 "migration timed out; switching to post-copy\n");
+                 "migration timed out; switching to post-copy");
         if (virDomainMigrateStartPostCopy(dom, 0) < 0)
-            vshDebug(ctl, VSH_ERR_INFO, "switching to post-copy failed\n");
+            vshDebug(ctl, VSH_ERR_INFO, "switching to post-copy failed");
         break;
     }
 }
@@ -11182,10 +11182,10 @@ virshMigrateIteration(virConnectPtr conn G_GNUC_UNUSED,
 
     if (iteration == 2) {
         vshDebug(ctl, VSH_ERR_DEBUG,
-                 "iteration %d finished; switching to post-copy\n",
+                 "iteration %d finished; switching to post-copy",
                  iteration - 1);
         if (virDomainMigrateStartPostCopy(dom, 0) < 0)
-            vshDebug(ctl, VSH_ERR_INFO, "switching to post-copy failed\n");
+            vshDebug(ctl, VSH_ERR_INFO, "switching to post-copy failed");
     }
 }
 

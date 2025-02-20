@@ -109,7 +109,7 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         }
     }
 
-    vshDebug(ctl, VSH_ERR_DEBUG, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_DEBUG, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
@@ -117,19 +117,19 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
 
     /* try it by name */
     if (pool && (flags & VIRSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol name\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol name",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByName(pool, n);
     }
     /* try it by key */
     if (!vol && (flags & VIRSH_BYUUID)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol key\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol key",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByKey(priv->conn, n);
     }
     /* try it by path */
     if (!vol && (flags & VIRSH_BYUUID)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol path\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol path",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByPath(priv->conn, n);
     }
@@ -293,36 +293,36 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         /* Lookup snapshot backing volume.  Try the backing-vol
          *  parameter as a name */
         vshDebug(ctl, VSH_ERR_DEBUG,
-                 "%s: Look up backing store volume '%s' as name\n",
+                 "%s: Look up backing store volume '%s' as name",
                  cmd->def->name, snapshotStrVol);
         snapVol = virStorageVolLookupByName(pool, snapshotStrVol);
         if (snapVol)
                 vshDebug(ctl, VSH_ERR_DEBUG,
-                         "%s: Backing store volume found using '%s' as name\n",
+                         "%s: Backing store volume found using '%s' as name",
                          cmd->def->name, snapshotStrVol);
 
         if (snapVol == NULL) {
             /* Snapshot backing volume not found by name.  Try the
              *  backing-vol parameter as a key */
             vshDebug(ctl, VSH_ERR_DEBUG,
-                     "%s: Look up backing store volume '%s' as key\n",
+                     "%s: Look up backing store volume '%s' as key",
                      cmd->def->name, snapshotStrVol);
             snapVol = virStorageVolLookupByKey(priv->conn, snapshotStrVol);
             if (snapVol)
                 vshDebug(ctl, VSH_ERR_DEBUG,
-                         "%s: Backing store volume found using '%s' as key\n",
+                         "%s: Backing store volume found using '%s' as key",
                          cmd->def->name, snapshotStrVol);
         }
         if (snapVol == NULL) {
             /* Snapshot backing volume not found by key.  Try the
              *  backing-vol parameter as a path */
             vshDebug(ctl, VSH_ERR_DEBUG,
-                     "%s: Look up backing store volume '%s' as path\n",
+                     "%s: Look up backing store volume '%s' as path",
                      cmd->def->name, snapshotStrVol);
             snapVol = virStorageVolLookupByPath(priv->conn, snapshotStrVol);
             if (snapVol)
                 vshDebug(ctl, VSH_ERR_DEBUG,
-                         "%s: Backing store volume found using '%s' as path\n",
+                         "%s: Backing store volume found using '%s' as path",
                          cmd->def->name, snapshotStrVol);
         }
         if (snapVol == NULL) {

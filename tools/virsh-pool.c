@@ -186,7 +186,7 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     if (cmd->skipChecks && !n)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
@@ -194,13 +194,13 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
 
     /* try it by UUID */
     if ((flags & VIRSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool UUID",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByUUIDString(priv->conn, n);
     }
     /* try it by NAME */
     if (!pool && (flags & VIRSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool NAME",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByName(priv->conn, n);
     }
@@ -1211,7 +1211,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         /* Retrieve the persistence status of the pool */
         if (details) {
             persistent = virStoragePoolIsPersistent(list->pools[i]);
-            vshDebug(ctl, VSH_ERR_DEBUG, "Persistent flag value: %d\n",
+            vshDebug(ctl, VSH_ERR_DEBUG, "Persistent flag value: %d",
                      persistent);
             if (persistent < 0)
                 poolInfoTexts[i].persistent = g_strdup(_("unknown"));
@@ -1545,7 +1545,7 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         /* Check and display whether the pool is persistent or not */
         persistent = virStoragePoolIsPersistent(pool);
-        vshDebug(ctl, VSH_ERR_DEBUG, "Pool persistent flag value: %d\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "Pool persistent flag value: %d",
                  persistent);
         if (persistent < 0)
             vshPrint(ctl, "%-15s %s\n", _("Persistent:"),  _("unknown"));

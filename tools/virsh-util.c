@@ -39,7 +39,7 @@ virshLookupDomainInternal(vshControl *ctl,
     /* try it by ID */
     if (flags & VIRSH_BYID) {
         if (virStrToLong_i(name, NULL, 10, &id) == 0 && id >= 0) {
-            vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> looks like ID\n",
+            vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> looks like ID",
                      cmdname);
             dom = virDomainLookupByID(priv->conn, id);
         }
@@ -48,14 +48,14 @@ virshLookupDomainInternal(vshControl *ctl,
     /* try it by UUID */
     if (!dom && (flags & VIRSH_BYUUID) &&
         strlen(name) == VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> trying as domain UUID\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> trying as domain UUID",
                  cmdname);
         dom = virDomainLookupByUUIDString(priv->conn, name);
     }
 
     /* try it by NAME */
     if (!dom && (flags & VIRSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> trying as domain NAME\n",
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> trying as domain NAME",
                  cmdname);
         dom = virDomainLookupByName(priv->conn, name);
     }
@@ -90,7 +90,7 @@ virshCommandOptDomainBy(vshControl *ctl,
     if (vshCommandOptString(ctl, cmd, optname, &n) < 0)
         return NULL;
 
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s",
              cmd->def->name, optname, n);
 
     if (name)
