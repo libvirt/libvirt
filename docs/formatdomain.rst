@@ -3464,10 +3464,27 @@ paravirtualized driver is specified via the ``disk`` element.
       *Note:* ``iothread`` is mutually exclusive with ``iothreads``.
    -  The optional ``iothreads`` sub-element allows specifying multiple IOThreads
       via the ``iothread`` sub-element with attribute ``id``  the disk will use
-      for I/O operations. Optionally the ``iothread`` element can have multiple
-      ``queue`` subelements specifying that given iothread should be used to
-      handle given queues. :since:`Since 10.0.0 (QEMU 9.0, virtio disks only)`.
-      Example::
+      for I/O operations. The virt queues (see ``queues`` attribute below) are
+      automatically distributed among the configured iothreads.
+
+      Optionally the ``iothread`` element can have multiple ``queue``
+      subelements with mandatory ``id`` atribute specifying that the iothread
+      should be used to handle given virt queue. If queue mapping is present
+      the ``queues`` attribute of  ``driver`` must be configured and all
+      configured virt queues must be included in the mapping. The
+      ``virtio-blk`` device exposes request virt queues ``0`` to ``N-1`` where
+      N is the number of queues configured for the device.
+
+      :since:`Since 10.0.0 (QEMU 9.0, virtio disks only)`.
+
+      Examples::
+
+        <driver name='qemu' queues='4'>
+          <iothreads>
+            <iothread id='2'/>
+            <iothread id='3'/>
+          </iothreads>
+        </driver>
 
         <driver name='qemu' queues='3'>
           <iothreads>
