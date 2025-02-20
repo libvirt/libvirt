@@ -657,8 +657,8 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
             break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
-                vshError(ctl, _("option %1$s takes a numeric argument"),
-                         longindex == -1 ? "-d" : "--debug");
+                const char *optStr = longindex == -1 ? "-d" : "--debug";
+                vshError(ctl, _("option %1$s takes a numeric argument"), optStr);
                 exit(EXIT_FAILURE);
             }
             if (debug < VSH_ERR_DEBUG || debug > VSH_ERR_ERROR)

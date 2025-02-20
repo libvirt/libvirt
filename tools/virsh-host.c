@@ -455,7 +455,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
 
         if (rv == 0) {
             vshError(ctl,
-                     "Could not get count of free %uKiB pages, no data returned",
+                     _("Could not get count of free %1$uKiB pages, no data returned"),
                      *pagesize);
             goto cleanup;
         }

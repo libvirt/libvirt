@@ -320,7 +320,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     if (plain) {
         if (fwrite(value, 1, value_size, stdout) != value_size) {
             virSecureErase(value, value_size);
-            vshError(ctl, "failed to write secret");
+            vshError(ctl, "%s", _("failed to write secret"));
             return false;
         }
     } else {

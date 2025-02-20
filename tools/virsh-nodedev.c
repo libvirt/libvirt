@@ -129,7 +129,7 @@ vshFindNodeDevice(vshControl *ctl, const char *value)
     }
 
     if (!dev) {
-        vshError(ctl, "%s '%s'", _("Could not find matching device"), value);
+        vshError(ctl, _("Could not find matching device '%1$s'"), value);
         return NULL;
     }
 
@@ -969,8 +969,8 @@ cmdNodeDeviceEvent(vshControl *ctl, const vshCmd *cmd)
 
     if (device_value) {
         if (!(dev = virNodeDeviceLookupByName(priv->conn, device_value))) {
-            vshError(ctl, "%s '%s'",
-                     _("Could not find matching device"), device_value);
+            vshError(ctl, _("Could not find matching device '%1$s'"),
+                     device_value);
             goto cleanup;
         }
     }

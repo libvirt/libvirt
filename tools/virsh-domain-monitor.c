@@ -452,7 +452,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 
     all = vshCommandOptBool(cmd, "all");
     if (!all && vshCommandOptStringQuiet(ctl, cmd, "device", &device) <= 0) {
-        vshError(ctl, "command 'domblkinfo' requires <device> option");
+        vshError(ctl, "%s", _("command 'domblkinfo' requires <device> option"));
         return false;
     }
 
@@ -604,7 +604,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 
         target = virXPathString("string(./target/@dev)", ctxt);
         if (!target) {
-            vshError(ctl, "unable to query block list");
+            vshError(ctl, "%s", _("unable to query block list"));
             return false;
         }
 
@@ -616,7 +616,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
             if (!(namespace = virXPathString("string(./source/@namespace)", ctxt)) ||
                 !(addrNode = virXPathNode("./source/address", ctxt)) ||
                 virPCIDeviceAddressParseXML(addrNode, &addr) < 0) {
-                vshError(ctl, "Unable to query NVMe disk address");
+                vshError(ctl, "%s", _("Unable to query NVMe disk address"));
                 return false;
             }
 

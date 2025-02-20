@@ -7915,7 +7915,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         goto failed_stats;
 
     if (cpu >= max_id) {
-        vshError(ctl, "Start CPU %d is out of range (min: 0, max: %d)",
+        vshError(ctl, _("Start CPU %1$d is out of range (min: 0, max: %2$d)"),
                  cpu, max_id - 1);
         goto cleanup;
     }
@@ -9787,7 +9787,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
         resultjson = virJSONValueFromString(result);
 
         if (returnval && !resultjson) {
-            vshError(ctl, "failed to parse JSON returned by qemu");
+            vshError(ctl, "%s", _("failed to parse JSON returned by qemu"));
             return false;
         }
     }
@@ -9800,7 +9800,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 
     if (returnval) {
         if (!(formatjson = virJSONValueObjectGet(resultjson, "return"))) {
-            vshError(ctl, "'return' member missing");
+            vshError(ctl, "%s", _("'return' member missing"));
             return false;
         }
     } else {
@@ -10859,7 +10859,7 @@ doMigrate(void *opaque)
 
     if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
         !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))) {
-        vshError(ctl, "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--copy-storage-inc'");
+        vshError(ctl, "%s", _("'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--copy-storage-inc'"));
         goto out;
     }
 
@@ -10918,7 +10918,7 @@ doMigrate(void *opaque)
         g_autofree char **val = NULL;
 
         if (!(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))) {
-            vshError(ctl, "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'");
+            vshError(ctl, "%s", _("'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"));
             goto out;
         }
 
@@ -10939,7 +10939,7 @@ doMigrate(void *opaque)
         g_autofree char **val = NULL;
 
         if (!(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC))) {
-            vshError(ctl, "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--copy-storage-inc'");
+            vshError(ctl, "%s", _("'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--copy-storage-inc'"));
             goto out;
         }
 
