@@ -2111,18 +2111,18 @@ vshTTYMakeRaw(vshControl *ctl G_GNUC_UNUSED,
 }
 
 
-void
-vshError(vshControl *ctl, const char *format, ...)
+static void G_GNUC_PRINTF(3, 0)
+vshPrintStderr(vshControl *ctl,
+               int level,
+               const char *format,
+               va_list ap)
 {
-    va_list ap;
     g_autofree char *str = NULL;
 
-    va_start(ap, format);
     str = g_strdup_vprintf(format, ap);
-    va_end(ap);
 
     if (ctl)
-        vshOutputLogFile(ctl, VSH_ERR_ERROR, str);
+        vshOutputLogFile(ctl, level, str);
 
     /* Most output is to stdout, but if someone ran virsh 2>&1, then
      * printing to stderr will not interleave correctly with stdout
@@ -2130,6 +2130,17 @@ vshError(vshControl *ctl, const char *format, ...)
     fflush(stdout);
     fprintf(stderr, _("error: %1$s\n"), NULLSTR(str));
     fflush(stderr);
+}
+
+
+void
+vshError(vshControl *ctl, const char *format, ...)
+{
+    va_list ap;
+
+    va_start(ap, format);
+    vshPrintStderr(ctl, VSH_ERR_ERROR, format, ap);
+    va_end(ap);
 }
 
 
