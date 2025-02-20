@@ -13,16 +13,16 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2015-02-27 07:08+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
-"kn/)\n"
+"PO-Revision-Date: 2025-02-19 18:38+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Kannada <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/kn/>\n"
 "Language: kn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -23478,7 +23478,7 @@ msgstr "ಪರಿಮಾಣ '%1$s' ಅನ್ನು ತೆರೆಯಲು ಸಾ�
 msgid "cannot parse %1$s CPU data"
 msgstr "ಬಸ್‌ %1$s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot parse %1$s version number in '%3$.*2$s'"
 msgstr "ಆವೃತ್ತಿಯ ಸಂಖ್ಯೆಯಾದ %.s ಅನ್ನು '%.*s' ನಲ್ಲಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 

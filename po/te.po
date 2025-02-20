@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2015-03-05 07:40+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
-"te/)\n"
+"PO-Revision-Date: 2025-02-19 18:38+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Telugu <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/te/>\n"
 "Language: te\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -2084,7 +2084,7 @@ msgstr "కోర్ డంప్ చేయుటకు ముందుగా, �
 msgid "Bhyve version does not support framebuffer"
 msgstr "వ్యక్తిగత devpts ను కెర్నల్ తోడ్పాటునీయదు"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%1$s' has unexpected value '%2$c', expecting '0' or '1'"
@@ -2380,7 +2380,7 @@ msgstr "CPU అమ్మకందారు %1$s యిప్పటికే న�
 msgid "CPU vendor %1$s not found"
 msgstr "CPU అమ్మకందారు %1$s కనుగొనలేదు"
 
-#, c-format
+#, c-format, fuzzy
 msgid "CPU vendor %1$s of model %2$s differs from vendor %3$s"
 msgstr "రీతి %2s యొక్క CPU అమ్మకందారి %1s అమ్మకందారి %3s నుండి వేరుగావుండును"
 
@@ -27933,9 +27933,10 @@ msgstr "ఫైలు"
 msgid "file %1$s does not exist"
 msgstr "ఫైల్ %1$s లేదు"
 
-#, c-format
+#, c-format, fuzzy
 msgid "file '%1$s' for disk '%2$s' requires use of external snapshot mode"
-msgstr "డిస్కు '%2s' కొరకు ఫైల్ '%1s' కు బహిర్గత స్నాప్‌షాట్ రీతి వినియోగం అవసరం"
+msgstr ""
+"డిస్కు '%2s' కొరకు ఫైల్ '%1s' కు బహిర్గత స్నాప్‌షాట్ రీతి వినియోగం అవసరం"
 
 msgid "file containing XML CPU descriptions"
 msgstr "XML CPU వివరణలను కలిగివున్న ఫైలు"
@@ -31102,7 +31103,7 @@ msgstr ""
 msgid "memory not found"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "memory peek request too large for remote protocol, %1$zi > %2$d"
 msgstr "దూరస్థ నియమంకు మెమొరీ పీక్ అభ్యర్ధన మరీ యెక్కువ, %Zi > %d"
 

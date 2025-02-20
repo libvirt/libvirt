@@ -12,16 +12,16 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2015-02-26 09:23+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
-"nl/)\n"
+"PO-Revision-Date: 2025-02-19 18:38+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Dutch <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -4929,7 +4929,7 @@ msgstr "Kon UUID niet instellen"
 msgid "Could not set disk quota"
 msgstr "kon domein toestand niet krijgen"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Could not set limit to %1$lld MHz, expecting positive value or -1 (unlimited)"
 msgstr ""
@@ -31897,7 +31897,7 @@ msgstr ""
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "missing SCSI host capability type for '%1$s'"
 msgstr "ontbrekende SCSI host mogelijkheden type voor '% s'"
 

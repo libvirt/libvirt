@@ -16,16 +16,16 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2015-02-23 12:39+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
-"hi/)\n"
+"PO-Revision-Date: 2025-02-19 18:38+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Hindi <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/hi/>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -1557,10 +1557,11 @@ msgstr ""
 msgid "<domainbackup> must specify TCP port for now"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "<forward dev='%1$s'> must match first <interface dev='%2$s'/> in network %3$s"
-msgstr "<forward dev='%s'> संजाल% s में पहले <interface dev='%s'/> से मेल खाना चाहिए"
+msgstr ""
+"<forward dev='%s'> संजाल% s में पहले <interface dev='%s'/> से मेल खाना चाहिए"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
@@ -1598,7 +1599,7 @@ msgstr ""
 "<virtualport type='%1$s'> संजाल '%2$s' को एक पुल युक्ति का उपयोग करता है, जिसके "
 "लिए समर्थित नहीं."
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "<virtualport type='%1$s'> not supported for network '%2$s' which uses a "
 "macvtap device"
@@ -6743,7 +6744,7 @@ msgstr "VM '%s' ऑटोस्टार्ट में विफल: %s"
 msgid "Failed to autostart VM '%1$s': %2$s"
 msgstr "VM '%1$s' ऑटोस्टार्ट में विफल: %2$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to autostart storage pool '%1$s': %2$s"
 msgstr "भंडारण पूल को स्वतः शुरू करने में '% s' करने में असफ़ल: %s"
 
@@ -14773,7 +14774,7 @@ msgstr "स्रोत मैक पता सेट के साथ %1$s द�
 msgid "SVE disabled, but SVE vector lengths provided"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "Sanlock helper arguments are longer than %1$d: '%2$s'"
 msgstr "Sanlock सहायक तर्क% d से रह रहे हैं: '%s'"
 
@@ -22854,7 +22855,7 @@ msgstr "अज्ञात आलेखी युक्ति प्रकार
 msgid "cannot find existing graphics type '%1$s' device to modify"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot find init path '%1$s' relative to container root"
 msgstr "कंटेनर रूट के सापेक्ष init पथ '% s' नहीं ढूँढ सकता"
 
@@ -23904,7 +23905,7 @@ msgstr "sndbf एक धनात्मक पूर्णांक होना
 msgid "cellNum in %1$s must be less than or equal to %2$d"
 msgstr "%1$s में eventID %2$d से कम होना चाहिए."
 
-#, c-format
+#, c-format, fuzzy
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "% s में cellNum केवल एक नकारात्मक मान के रूप में %d स्वीकार"
 
@@ -24757,7 +24758,7 @@ msgstr ""
 "संजाल '%1$s' के मिलान <portgroup name='%2$s'> में एक portgroup प्रवेश नहीं मिल सकता "
 "है"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "couldn't find an interface entry in network '%1$s' matching <interface "
 "dev='%2$s'>"
@@ -24860,7 +24861,7 @@ msgstr ""
 msgid "cpu topology results in more than %1$u cpus"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "cpuNum in %1$s only accepts %2$d as a negative value"
 msgstr "% s में cpuNum केवल एक नकारात्मक मान के रूप में %d स्वीकार"
 
@@ -37241,7 +37242,7 @@ msgstr ""
 "एक बाहरी निकलता dhcp परिसर प्रविष्टि संजाल '%1$s' में है जो \"<range start='%2$s' "
 "end='%3$s'/>\" से मेल खाता है"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
@@ -38931,7 +38932,7 @@ msgstr "अज्ञात सत्यापन प्रकार %1$s"
 msgid "unknown backend source type '%1$s' for external TPM"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "unknown backend type '%1$s' for egd"
 msgstr "egd के लिए अज्ञात बैकएंड प्रकार '% s'"
 

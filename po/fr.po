@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2024-11-19 12:47+0000\n"
-"Last-Translator: Léane GRASSER <leane.grasser@proton.me>\n"
+"PO-Revision-Date: 2025-02-19 18:38+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -38,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -38274,7 +38274,7 @@ msgstr "la chaîne %1$s dans %2$s ne doit pas être vide"
 msgid "string parameter '%1$s' unsupported"
 msgstr "paramètre string '%1$s' non pris en charge"
 
-#, c-format
+#, c-format, fuzzy
 msgid "string parameter name '%2$.*1$s' too long"
 msgstr "Le nom du paramètre '% *s' est trop long"
 

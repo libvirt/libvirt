@@ -23,8 +23,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2023-06-09 13:20+0000\n"
-"Last-Translator: Malte Linke <malte.linke@outlook.com>\n"
+"PO-Revision-Date: 2025-02-19 18:38+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/de/>\n"
 "Language: de\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -5083,7 +5083,7 @@ msgstr "UUID konnte nicht gesetzt werden"
 msgid "Could not set disk quota"
 msgstr "Datenträgerkontingent konnte nicht gesetzt werden"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Could not set limit to %1$lld MHz, expecting positive value or -1 (unlimited)"
 msgstr ""
@@ -7700,7 +7700,7 @@ msgstr "Abrufen der Anzahl der Fähigkeiten der Einheit gescheitert"
 msgid "Failed to get capacity of lun: %1$s"
 msgstr "Abruf der Option '%s': %s fehlgeschlagen"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to get certificate %1$s distinguished name: %2$s"
 msgstr "Konnte Zertifikats %s eindeutigen Namen nicht erhalten: % s"
 
@@ -8021,7 +8021,7 @@ msgstr "Anlegen von Gerät %1$s fehlgeschlagen"
 msgid "Failed to make directory %1$s readonly"
 msgstr "Anlegen von Verzeichnis %1$s als Readonly fehlgeschlagen"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to make dnsmasq (PID: %1$d) reload config files."
 msgstr ""
 "Konnte nicht dnsmasq (PID:% d) dazu bringen die Konfigurations-Dateien "
@@ -40785,7 +40785,7 @@ msgstr ""
 "virNWFilterDHCPSnoopReq ifname map scheiterte auf der Schnittstelle \"%1$s\" "
 "Schlüssel \"%2$s\""
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
