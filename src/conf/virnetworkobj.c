@@ -2083,7 +2083,6 @@ virNetworkDefSetMetadata(virNetworkDef *def,
 
     case VIR_NETWORK_METADATA_ELEMENT:
         if (metadata) {
-
             /* parse and modify the xml from the user */
             if (!(doc = virXMLParseStringCtxt(metadata, _("(metadata_xml)"), NULL)))
                 return -1;
