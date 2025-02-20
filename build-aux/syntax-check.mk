@@ -401,6 +401,8 @@ msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
 msg_gen_function += virLastErrorPrefixMessage
+msg_gen_function += vshError
+msg_gen_function += vshWarn
 
 # Uncomment the following and run "ninja test" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
@@ -408,7 +410,6 @@ msg_gen_function += virLastErrorPrefixMessage
 # msg_gen_function += fprintf
 # msg_gen_function += testError
 # msg_gen_function += vshPrint
-# msg_gen_function += vshError
 
 space = $(null) $(null)
 func_re= ($(subst $(space),|,$(msg_gen_function)))
