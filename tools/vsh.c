@@ -1968,12 +1968,11 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
         return;
 
     va_start(ap, format);
-    vshOutputLogFile(ctl, level, format, ap);
-    va_end(ap);
-
-    va_start(ap, format);
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
+
+    vshOutputLogFile(ctl, level, str);
+
     fputs(str, stdout);
     fflush(stdout);
 }
@@ -2118,21 +2117,18 @@ vshError(vshControl *ctl, const char *format, ...)
     va_list ap;
     g_autofree char *str = NULL;
 
-    if (ctl != NULL) {
-        va_start(ap, format);
-        vshOutputLogFile(ctl, VSH_ERR_ERROR, format, ap);
-        va_end(ap);
-    }
+    va_start(ap, format);
+    str = g_strdup_vprintf(format, ap);
+    va_end(ap);
+
+    if (ctl)
+        vshOutputLogFile(ctl, VSH_ERR_ERROR, str);
 
     /* Most output is to stdout, but if someone ran virsh 2>&1, then
      * printing to stderr will not interleave correctly with stdout
      * unless we flush between every transition between streams.  */
     fflush(stdout);
     fputs(_("error: "), stderr);
-
-    va_start(ap, format);
-    str = g_strdup_vprintf(format, ap);
-    va_end(ap);
 
     fprintf(stderr, "%s\n", NULLSTR(str));
     fflush(stderr);
@@ -2337,8 +2333,7 @@ vshOpenLogFile(vshControl *ctl)
  * Outputting an error to log file.
  */
 void
-vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
-                 va_list ap)
+vshOutputLogFile(vshControl *ctl, int log_level, const char *msg)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *str = NULL;
@@ -2381,7 +2376,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
             break;
     }
     virBufferAsprintf(&buf, "%s ", lvl);
-    virBufferVasprintf(&buf, msg_format, ap);
+    virBufferAddStr(&buf, msg);
     virBufferTrim(&buf, "\n");
     virBufferAddChar(&buf, '\n');
 

@@ -241,9 +241,7 @@ struct _vshCmdGrp {
 void vshError(vshControl *ctl, const char *format, ...)
     G_GNUC_PRINTF(2, 3);
 void vshOpenLogFile(vshControl *ctl);
-void vshOutputLogFile(vshControl *ctl, int log_level, const char *format,
-                      va_list ap)
-    G_GNUC_PRINTF(3, 0);
+void vshOutputLogFile(vshControl *ctl, int log_level, const char *msg);
 void vshCloseLogFile(vshControl *ctl);
 
 int vshCommandOptInt(vshControl *ctl, const vshCmd *cmd,
