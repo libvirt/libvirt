@@ -30252,6 +30252,8 @@ virDomainDefSetMetadata(virDomainDef *def,
                 return -1;
             }
             new = NULL;
+        } else if (!xmlFirstElementChild(def->metadata)) {
+            g_clear_pointer(&def->metadata, xmlFreeNode);
         }
         break;
 
