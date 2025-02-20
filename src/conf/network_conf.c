@@ -1898,7 +1898,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     /* Extract custom metadata */
-    if ((metadataNode = virXPathNode("./metadata[1]", ctxt)) != NULL) {
+    if ((metadataNode = virXPathNode("./metadata[1]", ctxt)) != NULL &&
+        xmlFirstElementChild(metadataNode)) {
         def->metadata = xmlCopyNode(metadataNode, 1);
         virXMLNodeSanitizeNamespaces(def->metadata);
     }

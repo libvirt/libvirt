@@ -19855,8 +19855,10 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         return NULL;
 
     /* Extract custom metadata */
-    if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL)
+    if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL &&
+        xmlFirstElementChild(node)) {
         def->metadata = xmlCopyNode(node, 1);
+    }
 
     /* we have to make a copy of all of the callback pointers here since
      * we won't have the virCaps structure available during free
