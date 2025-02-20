@@ -235,7 +235,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
     if (base64) {
         /* warn users that the --base64 option passed from command line is wrong */
-        vshError(ctl, _("Passing secret value as command-line argument is insecure!"));
+        vshWarn(ctl, _("Passing secret value as command-line argument is insecure!"));
         secret_val = g_strdup(base64);
         secret_len = strlen(secret_val);
     } else if (filename) {

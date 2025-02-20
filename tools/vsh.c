@@ -2145,6 +2145,17 @@ vshError(vshControl *ctl, const char *format, ...)
 
 
 void
+vshWarn(vshControl *ctl, const char *format, ...)
+{
+    va_list ap;
+
+    va_start(ap, format);
+    vshPrintStderr(ctl, VSH_ERR_WARNING, format, ap);
+    va_end(ap);
+}
+
+
+void
 vshEventLoop(void *opaque)
 {
     vshControl *ctl = opaque;
@@ -2501,7 +2512,7 @@ vshAskReedit(vshControl *ctl,
              const char *msg G_GNUC_UNUSED,
              bool relax_avail G_GNUC_UNUSED)
 {
-    vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not supported on WIN32 platform"));
+    vshWarn(ctl, "%s", _("This function is not supported on WIN32 platform"));
     return 0;
 }
 #endif /* WIN32 */

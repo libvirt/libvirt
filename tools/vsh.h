@@ -240,6 +240,8 @@ struct _vshCmdGrp {
 
 void vshError(vshControl *ctl, const char *format, ...)
     G_GNUC_PRINTF(2, 3);
+void vshWarn(vshControl *ctl, const char *format, ...)
+    G_GNUC_PRINTF(2, 3);
 void vshOpenLogFile(vshControl *ctl);
 void vshOutputLogFile(vshControl *ctl, int log_level, const char *msg);
 void vshCloseLogFile(vshControl *ctl);
