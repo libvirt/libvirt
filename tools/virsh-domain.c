@@ -12307,12 +12307,13 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         return ret;
 
  cleanup:
-    if (!ret) {
-        vshError(ctl, "%s", _("Failed to detach interface"));
-    } else {
+    if (ret) {
         vshPrintExtra(ctl, "%s", _("Interface detached successfully\n"));
+        return true;
     }
-    return ret;
+
+    vshError(ctl, "%s", _("Failed to detach interface"));
+    return false;
 }
 
 

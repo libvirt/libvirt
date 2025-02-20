@@ -1758,11 +1758,13 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
         result = virDomainRevertToSnapshot(snapshot, flags);
     }
 
-    if (result < 0)
+    if (result < 0) {
         vshError(ctl, _("Failed to revert snapshot %1$s"), name);
-    else
-        vshPrintExtra(ctl, _("Domain snapshot %1$s reverted\n"), name);
-    return result >= 0;
+        return false;
+    }
+
+    vshPrintExtra(ctl, _("Domain snapshot %1$s reverted\n"), name);
+    return true;
 }
 
 /*
