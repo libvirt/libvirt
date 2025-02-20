@@ -8933,8 +8933,14 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
         g_autofree char *data = NULL;
         /* get */
         if (!(data = virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT,
-                                          uri, flags)))
-            return false;
+                                          uri, flags))) {
+            if (virGetLastErrorCode() == VIR_ERR_NO_DOMAIN_METADATA) {
+                virResetLastError();
+                data = g_strdup("");
+            } else {
+                return false;
+            }
+        }
 
         vshPrint(ctl, "%s\n", data);
     }

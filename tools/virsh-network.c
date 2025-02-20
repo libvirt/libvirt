@@ -604,8 +604,14 @@ cmdNetworkMetadata(vshControl *ctl, const vshCmd *cmd)
 
         /* get */
         if (!(data = virNetworkGetMetadata(net, VIR_NETWORK_METADATA_ELEMENT,
-                                           uri, flags)))
-            return false;
+                                           uri, flags))) {
+            if (virGetLastErrorCode() == VIR_ERR_NO_NETWORK_METADATA) {
+                virResetLastError();
+                data = g_strdup("");
+            } else {
+                return false;
+            }
+        }
 
         vshPrint(ctl, "%s\n", data);
     }
