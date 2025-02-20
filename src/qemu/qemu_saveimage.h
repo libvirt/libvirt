@@ -20,7 +20,6 @@
 
 #include "virconftypes.h"
 
-#include "qemu_conf.h"
 #include "qemu_domain.h"
 
 /* It would be nice to replace 'Qemud' with 'Qemu' but

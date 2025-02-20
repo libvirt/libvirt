@@ -193,9 +193,9 @@ struct _virQEMUDriverConfig {
     bool securityDefaultConfined;
     bool securityRequireConfined;
 
-    char *saveImageFormat;
-    char *dumpImageFormat;
-    char *snapshotImageFormat;
+    int saveImageFormat;
+    int dumpImageFormat;
+    int snapshotImageFormat;
 
     char *autoDumpPath;
     bool autoDumpBypassCache;

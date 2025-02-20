@@ -36,6 +36,7 @@
 #include "qemu_domain.h"
 #include "qemu_firmware.h"
 #include "qemu_namespace.h"
+#include "qemu_saveimage.h"
 #include "qemu_security.h"
 #include "viruuid.h"
 #include "virconf.h"
@@ -374,9 +375,6 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->slirpHelperName);
     g_free(cfg->dbusDaemonName);
 
-    g_free(cfg->saveImageFormat);
-    g_free(cfg->dumpImageFormat);
-    g_free(cfg->snapshotImageFormat);
     g_free(cfg->autoDumpPath);
 
     g_strfreev(cfg->securityDriverNames);
@@ -626,12 +624,37 @@ static int
 virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
                                  virConf *conf)
 {
-    if (virConfGetValueString(conf, "save_image_format", &cfg->saveImageFormat) < 0)
+    g_autofree char *savestr = NULL;
+    g_autofree char *dumpstr = NULL;
+    g_autofree char *snapstr = NULL;
+
+    if (virConfGetValueString(conf, "save_image_format", &savestr) < 0)
         return -1;
-    if (virConfGetValueString(conf, "dump_image_format", &cfg->dumpImageFormat) < 0)
+    if (savestr && (cfg->saveImageFormat = qemuSaveFormatTypeFromString(savestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid save_image_format '%1$s'"),
+                       savestr);
         return -1;
-    if (virConfGetValueString(conf, "snapshot_image_format", &cfg->snapshotImageFormat) < 0)
+    }
+
+    if (virConfGetValueString(conf, "dump_image_format", &dumpstr) < 0)
         return -1;
+    if (dumpstr && (cfg->dumpImageFormat = qemuSaveFormatTypeFromString(dumpstr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid dump_image_format '%1$s'"),
+                       dumpstr);
+        return -1;
+    }
+
+    if (virConfGetValueString(conf, "snapshot_image_format", &snapstr) < 0)
+        return -1;
+    if (snapstr && (cfg->snapshotImageFormat = qemuSaveFormatTypeFromString(snapstr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid snapshot_image_format '%1$s'"),
+                       snapstr);
+        return -1;
+    }
+
     if (virConfGetValueString(conf, "auto_dump_path", &cfg->autoDumpPath) < 0)
         return -1;
     if (virConfGetValueBool(conf, "auto_dump_bypass_cache", &cfg->autoDumpBypassCache) < 0)
