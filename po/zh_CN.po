@@ -20,7 +20,7 @@
 # Daniel P. Berrange <berrange@redhat.com>, 2022.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Jiri Denemark <jdenemar@redhat.com>, 2023.
-# jianqing yan <yanjianqing@kylinos.cn>, 2024.
+# jianqing yan <yanjianqing@kylinos.cn>, 2024, 2025.
 # zk dc <zkdc2345@qq.com>, 2024.
 # "Daniel P. Berrange" <berrange@redhat.com>, 2025.
 msgid ""
@@ -28,8 +28,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-01-09 09:28+0000\n"
-"PO-Revision-Date: 2025-01-30 11:38+0000\n"
-"Last-Translator: \"Daniel P. Berrange\" <berrange@redhat.com>\n"
+"PO-Revision-Date: 2025-02-20 14:49+0000\n"
+"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -600,7 +600,7 @@ msgstr "此 QEMU 二进制文件不支持%1$s 磁盘"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s 不支持文件存储"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -1690,7 +1690,7 @@ msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "目前只有 'rbd' 磁盘支持 <config> 元素"
 
 msgid "<dataStore> feature available only with qcow2 images"
-msgstr ""
+msgstr "<dataStore> 功能仅适用于 qcow2映像"
 
 msgid "<domainbackup> must specify TCP port for now"
 msgstr "<domainbackup> 现在必须指定 TCP 端口"
@@ -1841,67 +1841,67 @@ msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr "是否接受哈希 '%1$s' 作为主机 '%2$s:%3$d' (%4$s/%5$s) 的 SSH 主机密钥？"
 
 msgid "Access connection"
-msgstr ""
+msgstr "访问连接"
 
 msgid "Access denied"
 msgstr "访问被拒绝"
 
 msgid "Access domain"
-msgstr ""
+msgstr "访问域"
 
 msgid "Access interface"
-msgstr ""
+msgstr "访问接口"
 
 msgid "Access network"
-msgstr ""
+msgstr "访问网络"
 
 msgid "Access network filter"
-msgstr ""
+msgstr "访问网络过滤器"
 
 msgid "Access network port"
-msgstr ""
+msgstr "访问网络端口"
 
 msgid "Access node device"
-msgstr ""
+msgstr "访问结点设备"
 
 msgid "Access secret"
-msgstr ""
+msgstr "访问密钥"
 
 msgid "Access storage pool"
-msgstr ""
+msgstr "访问存储池"
 
 msgid "Access storage volume"
-msgstr ""
+msgstr "访问存储卷"
 
 msgid "Accessing interface requires authorization"
-msgstr ""
+msgstr "访问接口需要授权"
 
 msgid "Accessing network filter requires authorization"
-msgstr ""
+msgstr "访问网络过滤器需要授权"
 
 msgid "Accessing network port requires authorization"
-msgstr ""
+msgstr "访问网络端口需要授权"
 
 msgid "Accessing network requires authorization"
-msgstr ""
+msgstr "访问网络需要授权"
 
 msgid "Accessing node device requires authorization"
-msgstr ""
+msgstr "访问结点设备需要授权"
 
 msgid "Accessing secret requires authorization"
-msgstr ""
+msgstr "访问密钥需要授权"
 
 msgid "Accessing storage pool requires authorization"
-msgstr ""
+msgstr "访问存储池需要授权"
 
 msgid "Accessing storage volume requires authorization"
-msgstr ""
+msgstr "访问存储卷需要授权"
 
 msgid "Accessing the connection requires authorization"
-msgstr ""
+msgstr "访问连接需要授权"
 
 msgid "Accessing the domain requires authorization"
-msgstr ""
+msgstr "访问域需要授权"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -2301,7 +2301,7 @@ msgstr "机器类型'%1$s'不支持 CCW 地址"
 
 #, c-format
 msgid "CH does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "CH 不支持设备分配模式“%1$s”"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
@@ -2899,7 +2899,7 @@ msgid "Cannot detach %1$s device with no alias"
 msgstr "无法分离没有别名的 %1$s 设备"
 
 msgid "Cannot detach platform device"
-msgstr ""
+msgstr "无法卸载平台设备"
 
 msgid "Cannot determine balloon device path"
 msgstr "无法确定布尔值设备路径"
@@ -3077,7 +3077,7 @@ msgid "Cannot get storage controller name"
 msgstr "无法获取存储控制器名称"
 
 msgid "Cannot hotplug platform device"
-msgstr ""
+msgstr "无法热插拔平台设备"
 
 msgid "Cannot initialize thread local for current identity"
 msgstr "无法为当前身份初始化本地线程"
@@ -3792,10 +3792,10 @@ msgid "Checkpoint List"
 msgstr "检查点列表"
 
 msgid "Checkpoint domain"
-msgstr ""
+msgstr "检查点域"
 
 msgid "Checkpointing domain requires authorization"
-msgstr ""
+msgstr "检查点域需要授权"
 
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %1$s"
