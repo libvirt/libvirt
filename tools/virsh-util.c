@@ -383,14 +383,14 @@ virshDomainGetXMLFromDom(vshControl *ctl,
     g_autofree char *desc = NULL;
 
     if (!(desc = virDomainGetXMLDesc(dom, flags))) {
-        vshError(ctl, _("Failed to get domain description xml"));
+        vshError(ctl, "%s", _("Failed to get domain description xml"));
         return -1;
     }
 
     *xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), ctxt);
 
     if (!(*xml)) {
-        vshError(ctl, _("Failed to parse domain description xml"));
+        vshError(ctl, "%s", _("Failed to parse domain description xml"));
         return -1;
     }
 
@@ -408,14 +408,14 @@ virshNetworkGetXMLFromNet(vshControl *ctl,
     g_autofree char *desc = NULL;
 
     if (!(desc = virNetworkGetXMLDesc(net, flags))) {
-        vshError(ctl, _("Failed to get network description xml"));
+        vshError(ctl, "%s", _("Failed to get network description xml"));
         return -1;
     }
 
     *xml = virXMLParseStringCtxt(desc, _("(network_definition)"), ctxt);
 
     if (!(*xml)) {
-        vshError(ctl, _("Failed to parse network description xml"));
+        vshError(ctl, "%s", _("Failed to parse network description xml"));
         return -1;
     }
 

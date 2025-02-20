@@ -783,7 +783,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
                             iface);
 
     if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0) {
-        vshError(ctl, _("Failed to extract interface information"));
+        vshError(ctl, "%s", _("Failed to extract interface information"));
         return false;
     }
 
@@ -795,7 +795,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 
         return false;
     } else if (ninterfaces > 1) {
-        vshError(ctl, _("multiple matching interfaces found"));
+        vshError(ctl, "%s", _("multiple matching interfaces found"));
         return false;
     }
 
@@ -1386,7 +1386,7 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 
     if (doSet || now || rtcSync) {
         if (now && ((seconds = time(NULL)) == (time_t) -1)) {
-            vshError(ctl, _("Unable to get current time"));
+            vshError(ctl, "%s", _("Unable to get current time"));
             return false;
         }
 
@@ -2288,7 +2288,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces, source, 0)) < 0) {
-        vshError(ctl, _("Failed to query for interfaces addresses"));
+        vshError(ctl, "%s", _("Failed to query for interfaces addresses"));
         goto cleanup;
     }
 

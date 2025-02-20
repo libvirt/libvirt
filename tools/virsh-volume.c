@@ -676,7 +676,7 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM;
 
     if (!(st = virStreamNew(priv->conn, 0))) {
-        vshError(ctl, _("cannot create a new stream"));
+        vshError(ctl, "%s", _("cannot create a new stream"));
         return false;
     }
 
@@ -793,7 +793,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     cbData.isBlock = !!S_ISBLK(sb.st_mode);
 
     if (!(st = virStreamNew(priv->conn, 0))) {
-        vshError(ctl, _("cannot create a new stream"));
+        vshError(ctl, "%s", _("cannot create a new stream"));
         goto cleanup;
     }
 

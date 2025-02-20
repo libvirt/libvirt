@@ -975,14 +975,14 @@ cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
         const char *filters = NULL;
         if ((vshCommandOptString(ctl, cmd, "filters", &filters) < 0 ||
              virAdmConnectSetLoggingFilters(priv->conn, filters, 0) < 0)) {
-            vshError(ctl, _("Unable to change daemon logging settings"));
+            vshError(ctl, "%s", _("Unable to change daemon logging settings"));
             return false;
         }
     } else {
         g_autofree char *filters = NULL;
         if (virAdmConnectGetLoggingFilters(priv->conn,
                                            &filters, 0) < 0) {
-            vshError(ctl, _("Unable to get daemon logging filters information"));
+            vshError(ctl, "%s", _("Unable to get daemon logging filters information"));
             return false;
         }
 
@@ -1024,13 +1024,13 @@ cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
         const char *outputs = NULL;
         if ((vshCommandOptString(ctl, cmd, "outputs", &outputs) < 0 ||
              virAdmConnectSetLoggingOutputs(priv->conn, outputs, 0) < 0)) {
-            vshError(ctl, _("Unable to change daemon logging settings"));
+            vshError(ctl, "%s", _("Unable to change daemon logging settings"));
             return false;
         }
     } else {
         g_autofree char *outputs = NULL;
         if (virAdmConnectGetLoggingOutputs(priv->conn, &outputs, 0) < 0) {
-            vshError(ctl, _("Unable to get daemon logging outputs information"));
+            vshError(ctl, "%s", _("Unable to get daemon logging outputs information"));
             return false;
         }
 
@@ -1320,7 +1320,7 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
                 vshError(ctl, _("unsupported option '%1$s'. See --help."), argv[optind - 1]);
             exit(EXIT_FAILURE);
         default:
-            vshError(ctl, _("unknown option"));
+            vshError(ctl, "%s", _("unknown option"));
             exit(EXIT_FAILURE);
         }
         longindex = -1;

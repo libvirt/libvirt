@@ -1140,7 +1140,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
 
     if (count < 0) {
         if (!last_error)
-            vshError(ctl, _("failed to collect snapshot list"));
+            vshError(ctl, "%s", _("failed to collect snapshot list"));
         goto cleanup;
     }
 

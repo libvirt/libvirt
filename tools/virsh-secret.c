@@ -235,7 +235,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
     if (base64) {
         /* warn users that the --base64 option passed from command line is wrong */
-        vshWarn(ctl, _("Passing secret value as command-line argument is insecure!"));
+        vshWarn(ctl, "%s", _("Passing secret value as command-line argument is insecure!"));
         secret_val = g_strdup(base64);
         secret_len = strlen(secret_val);
     } else if (filename) {
@@ -257,7 +257,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         secret_len = strlen(secret_val);
         plain = true;
     } else {
-        vshError(ctl, _("Input secret value is missing"));
+        vshError(ctl, "%s", _("Input secret value is missing"));
         return false;
     }
 

@@ -1146,7 +1146,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
             xmlNodeSetName(nodes[i], (const xmlChar *)"cpu");
             while (nodes[i]->properties) {
                 if (xmlRemoveProp(nodes[i]->properties) < 0) {
-                    vshError(ctl,
+                    vshError(ctl, "%s",
                              _("Cannot extract CPU definition from domain capabilities XML"));
                     return NULL;
                 }

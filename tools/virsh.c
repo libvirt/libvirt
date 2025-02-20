@@ -757,7 +757,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
                 vshError(ctl, _("unsupported option '%1$s'. See --help."), argv[optind - 1]);
             exit(EXIT_FAILURE);
         default:
-            vshError(ctl, _("unknown option"));
+            vshError(ctl, "%s", _("unknown option"));
             exit(EXIT_FAILURE);
         }
         longindex = -1;
