@@ -1676,7 +1676,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
         if ((format = qemuSaveImageGetCompressionProgram(cfg->snapshotImageFormat,
                                                          &compressor,
-                                                         "snapshot", false)) < 0)
+                                                         "snapshot")) < 0)
             goto cleanup;
 
         if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,

@@ -2744,8 +2744,7 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
 
     cfg = virQEMUDriverGetConfig(driver);
     if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                     &compressor,
-                                                     "save", false)) < 0)
+                                                     &compressor, "save")) < 0)
         return -1;
 
     path = qemuDomainManagedSavePath(driver, vm);
@@ -2778,8 +2777,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
 
     cfg = virQEMUDriverGetConfig(driver);
     if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                     &compressor,
-                                                     "save", false)) < 0)
+                                                     &compressor, "save")) < 0)
         goto cleanup;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
@@ -2852,8 +2850,7 @@ qemuDomainSaveParams(virDomainPtr dom,
 
     cfg = virQEMUDriverGetConfig(driver);
     if ((format = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                     &compressor,
-                                                     "save", false)) < 0)
+                                                     &compressor, "save")) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -3064,13 +3061,9 @@ doCoreDump(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) compressor = NULL;
 
-    /* We reuse "save" flag for "dump" here. Then, we can support the same
-     * format in "save" and "dump". This path doesn't need the compression
-     * program to exist and can ignore the return value - it only cares to
-     * get the compressor */
-    ignore_value(qemuSaveImageGetCompressionProgram(cfg->dumpImageFormat,
-                                                    &compressor,
-                                                    "dump", true));
+    if (qemuSaveImageGetCompressionProgram(cfg->dumpImageFormat,
+                                           &compressor, "dump") < 0)
+        goto cleanup;
 
     /* Create an empty file with appropriate ownership.  */
     if (dump_flags & VIR_DUMP_BYPASS_CACHE) {

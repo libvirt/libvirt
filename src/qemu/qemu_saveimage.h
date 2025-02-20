@@ -112,8 +112,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
 int
 qemuSaveImageGetCompressionProgram(const char *imageFormat,
                                    virCommand **compressor,
-                                   const char *styleFormat,
-                                   bool use_raw_on_fail)
+                                   const char *styleFormat)
     ATTRIBUTE_NONNULL(2);
 
 int

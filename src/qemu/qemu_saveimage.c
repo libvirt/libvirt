@@ -513,24 +513,15 @@ qemuSaveImageCreate(virQEMUDriver *driver,
  * @compresspath: Pointer to a character string to store the fully qualified
  *                path from virFindFileInPath.
  * @styleFormat: String representing the style of format (dump, save, snapshot)
- * @use_raw_on_fail: Boolean indicating how to handle the error path. For
- *                   callers that are OK with invalid data or inability to
- *                   find the compression program, just return a raw format
- *                   and let the path remain as NULL.
  *
- * Returns:
- *    virQEMUSaveFormat    - Integer representation of the save image
- *                           format to be used for particular style
- *                           (e.g. dump, save, or snapshot).
- *    QEMU_SAVE_FORMAT_RAW - If there is no qemu.conf imageFormat value or
- *                           no there was an error, then just return RAW
- *                           indicating none.
+ * On success, returns an integer representation of the save image format to be
+ * used for a particular style (e.g. dump, save, or snapshot). Returns -1 on
+ * failure.
  */
 int
 qemuSaveImageGetCompressionProgram(const char *imageFormat,
                                    virCommand **compressor,
-                                   const char *styleFormat,
-                                   bool use_raw_on_fail)
+                                   const char *styleFormat)
 {
     int ret;
     const char *prog;
@@ -540,14 +531,22 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
     if (!imageFormat)
         return QEMU_SAVE_FORMAT_RAW;
 
-    if ((ret = qemuSaveFormatTypeFromString(imageFormat)) < 0)
-        goto error;
+    if ((ret = qemuSaveFormatTypeFromString(imageFormat)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Invalid %1$s image format specified in configuration file"),
+                       styleFormat);
+        return -1;
+    }
 
     if (ret == QEMU_SAVE_FORMAT_RAW)
         return QEMU_SAVE_FORMAT_RAW;
 
-    if (!(prog = virFindFileInPath(imageFormat)))
-        goto error;
+    if (!(prog = virFindFileInPath(imageFormat))) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Compression program for %1$s image format in configuration file isn't available"),
+                       styleFormat);
+        return -1;
+    }
 
     *compressor = virCommandNew(prog);
     virCommandAddArg(*compressor, "-c");
@@ -555,34 +554,6 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
         virCommandAddArg(*compressor, "-3");
 
     return ret;
-
- error:
-    if (ret < 0) {
-        if (use_raw_on_fail)
-            VIR_WARN("Invalid %s image format specified in "
-                     "configuration file, using raw",
-                     styleFormat);
-        else
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Invalid %1$s image format specified in configuration file"),
-                           styleFormat);
-    } else {
-        if (use_raw_on_fail)
-            VIR_WARN("Compression program for %s image format in "
-                     "configuration file isn't available, using raw",
-                     styleFormat);
-        else
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Compression program for %1$s image format in configuration file isn't available"),
-                           styleFormat);
-    }
-
-    /* Use "raw" as the format if the specified format is not valid,
-     * or the compress program is not available. */
-    if (use_raw_on_fail)
-        return QEMU_SAVE_FORMAT_RAW;
-
-    return -1;
 }
 
 
