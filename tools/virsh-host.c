@@ -1093,7 +1093,8 @@ cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
  */
 static char **
 vshExtractCPUDefXMLs(vshControl *ctl,
-                     const char *xmlFile)
+                     const char *xmlFile,
+                     bool hostCPUWarning)
 {
     g_auto(GStrv) cpus = NULL;
     g_autofree char *buffer = NULL;
@@ -1137,6 +1138,8 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     cpus = g_new0(char *, n + 1);
 
     for (i = 0; i < n; i++) {
+        ctxt->node = nodes[i];
+
         /* If the user provided domain capabilities XML, we need to replace
          * <mode ...> element with <cpu>. */
         if (xmlStrEqual(nodes[i]->name, BAD_CAST "mode")) {
@@ -1148,6 +1151,11 @@ vshExtractCPUDefXMLs(vshControl *ctl,
                     return NULL;
                 }
             }
+        }
+
+        if (hostCPUWarning &&
+            virXPathBoolean("boolean(./feature[not(@policy)])", ctxt) == 1) {
+            vshWarn(ctl, "%s", _("using host CPU definition as input may provide incorrect results"));
         }
 
         if (!(cpus[i] = virXMLNodeToString(xml, nodes[i]))) {
@@ -1199,7 +1207,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
-    if (!(cpus = vshExtractCPUDefXMLs(ctl, from)))
+    if (!(cpus = vshExtractCPUDefXMLs(ctl, from, false)))
         return false;
 
     result = virConnectCompareCPU(priv->conn, cpus[0], flags);
@@ -1268,7 +1276,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
 
-    if (!(list = vshExtractCPUDefXMLs(ctl, from)))
+    if (!(list = vshExtractCPUDefXMLs(ctl, from, false)))
         return false;
 
     if (!(result = virConnectBaselineCPU(priv->conn, (const char **)list,
@@ -1612,7 +1620,7 @@ cmdHypervisorCPUCompare(vshControl *ctl,
         vshCommandOptString(ctl, cmd, "machine", &machine) < 0)
         return false;
 
-    if (!(cpus = vshExtractCPUDefXMLs(ctl, from)))
+    if (!(cpus = vshExtractCPUDefXMLs(ctl, from, true)))
         return false;
 
     result = virConnectCompareHypervisorCPU(priv->conn, emulator, arch,
@@ -1736,7 +1744,7 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
     VSH_ALTERNATIVE_OPTIONS_EXPR("file", from, "model", model);
 
     if (from) {
-        if (!(list = vshExtractCPUDefXMLs(ctl, from)))
+        if (!(list = vshExtractCPUDefXMLs(ctl, from, true)))
             return false;
     } else {
         list = g_new0(char *, 2);
