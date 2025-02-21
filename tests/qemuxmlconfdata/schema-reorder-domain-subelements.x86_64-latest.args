@@ -1,0 +1,40 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-passtvhostuu \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-passtvhostuu/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-passtvhostuu/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-passtvhostuu/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=passtvhostuu,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-passtvhostuu/master-key.aes"}' \
+-machine pc-i440fx-7.2,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=on \
+-accel kvm \
+-cpu qemu64 \
+-m size=16777216k \
+-object '{"qom-type":"memory-backend-file","id":"pc.ram","mem-path":"/var/lib/libvirt/qemu/ram/-1-passtvhostuu/pc.ram","share":true,"x-use-canonical-path-for-ramblock-id":false,"size":17179869184}' \
+-overcommit mem-lock=off \
+-smp 16,sockets=16,cores=1,threads=1 \
+-uuid d79698e0-46b2-4459-87ee-7c762990dd6e \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-blockdev '{"driver":"file","filename":"/home/laine/libvirt/images/fedora-34.img","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","multifunction":true,"addr":"0x3","drive":"libvirt-1-storage","id":"virtio-disk0","bootindex":1}' \
+-chardev socket,id=charnet0,path=/var/run/libvirt/qemu/passt/-1-passtvhostuu-net0.socket \
+-netdev '{"type":"vhost-user","chardev":"charnet0","id":"hostnet0"}' \
+-device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:21:de:6c","bus":"pci.0","addr":"0x2"}' \
+-chardev pty,id=charserial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

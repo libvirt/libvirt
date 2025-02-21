@@ -3029,6 +3029,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-scsi-vhost-sgio-invalid");
     DO_TEST_CAPS_LATEST("disk-startuppolicy-optional-drop");
 
+    DO_TEST_CAPS_LATEST("schema-reorder-domain-subelements");
+
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)
         ret = -1;

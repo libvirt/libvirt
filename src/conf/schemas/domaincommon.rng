@@ -32,8 +32,28 @@
 
   <define name="domaincontents">
     <ref name="hvs"/>
+    <optional>
+      <attribute name="id">
+        <ref name="unsignedInt"/>
+      </attribute>
+    </optional>
     <interleave>
-      <ref name="ids"/>
+      <element name="name">
+        <ref name="objectNameWithSlash"/>
+      </element>
+      <optional>
+        <element name="uuid">
+          <ref name="UUID"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="genid">
+          <choice>
+            <ref name="UUID"/>
+            <empty/>
+          </choice>
+        </element>
+      </optional>
       <optional>
         <ref name="title"/>
       </optional>
@@ -679,37 +699,6 @@
     </element>
   </define>
 
-  <!--
-      The Identifiers can be:
-      - an optional id attribute with a number on the domain element
-      - a mandatory name
-      - an optional uuid
-    -->
-  <define name="ids">
-    <optional>
-      <attribute name="id">
-        <ref name="unsignedInt"/>
-      </attribute>
-    </optional>
-    <interleave>
-      <element name="name">
-        <ref name="objectNameWithSlash"/>
-      </element>
-      <optional>
-        <element name="uuid">
-          <ref name="UUID"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="genid">
-          <choice>
-            <ref name="UUID"/>
-            <empty/>
-          </choice>
-        </element>
-      </optional>
-    </interleave>
-  </define>
   <define name="idmap">
     <element name="idmap">
       <interleave>
