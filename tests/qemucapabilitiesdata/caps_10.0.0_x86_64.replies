@@ -20,7 +20,7 @@
       "minor": 2,
       "major": 9
     },
-    "package": "v9.2.0-1967-gb69801dd6b"
+    "package": "v9.2.0-2369-g98c7362b1e"
   },
   "id": "libvirt-2"
 }
@@ -4236,10 +4236,6 @@
       "name": "80",
       "members": [
         {
-          "name": "addr",
-          "type": "364"
-        },
-        {
           "name": "handshake-max-seconds",
           "default": null,
           "type": "int"
@@ -4258,6 +4254,10 @@
           "name": "max-connections",
           "default": null,
           "type": "int"
+        },
+        {
+          "name": "addr",
+          "type": "364"
         }
       ],
       "meta-type": "object"
@@ -24320,6 +24320,10 @@
       "parent": "pci-uhci-usb"
     },
     {
+      "name": "qtest-accel",
+      "parent": "accel"
+    },
+    {
       "name": "Opteron_G5-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -24336,8 +24340,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "qtest-accel",
-      "parent": "accel"
+      "name": "uefi-vars-sysbus",
+      "parent": "sys-bus-device"
     },
     {
       "name": "chardev-wctablet",
@@ -24904,6 +24908,10 @@
       "parent": "sdmmc-common"
     },
     {
+      "name": "qio-channel-null",
+      "parent": "qio-channel"
+    },
+    {
       "name": "pc-q35-4.0.1-machine",
       "parent": "generic-pc-machine"
     },
@@ -24920,8 +24928,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "qio-channel-null",
-      "parent": "qio-channel"
+      "name": "YongFeng-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "Icelake-Server-noTSX-x86_64-cpu",
@@ -25340,6 +25348,10 @@
       "parent": "bus"
     },
     {
+      "name": "tls-creds-x509",
+      "parent": "tls-creds"
+    },
+    {
       "name": "Penryn-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -25378,6 +25390,10 @@
     {
       "name": "xen-evtchn",
       "parent": "sys-bus-device"
+    },
+    {
+      "name": "uefi-vars-x64",
+      "parent": "uefi-vars-sysbus"
     },
     {
       "name": "Opteron_G5-x86_64-cpu",
@@ -25424,8 +25440,8 @@
       "parent": "object"
     },
     {
-      "name": "tls-creds-x509",
-      "parent": "tls-creds"
+      "name": "qio-channel-command",
+      "parent": "qio-channel"
     },
     {
       "name": "isapc-machine",
@@ -25528,8 +25544,8 @@
       "parent": "ide-device"
     },
     {
-      "name": "qio-channel-command",
-      "parent": "qio-channel"
+      "name": "virtio-pmem",
+      "parent": "virtio-device"
     },
     {
       "name": "Snowridge-v2-x86_64-cpu",
@@ -25672,8 +25688,8 @@
       "parent": "megasas-base"
     },
     {
-      "name": "virtio-pmem",
-      "parent": "virtio-device"
+      "name": "YongFeng-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "virtio-iommu-pci",
@@ -26560,10 +26576,6 @@
       "parent": "memory-backend"
     },
     {
-      "name": "accel",
-      "parent": "object"
-    },
-    {
       "name": "i82801",
       "parent": "pci-device"
     },
@@ -26927,7 +26939,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -27005,6 +27017,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27092,6 +27105,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27113,6 +27127,7 @@
     {
       "default-value": false,
       "name": "share-rw",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27187,6 +27202,7 @@
     {
       "default-value": true,
       "name": "seg-max-adjust",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27197,7 +27213,7 @@
     {
       "default-value": "auto",
       "name": "werror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -27208,12 +27224,13 @@
     {
       "default-value": true,
       "name": "report-discard-granularity",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": "auto",
       "name": "rerror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -27225,6 +27242,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27236,6 +27254,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27247,6 +27266,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27338,6 +27358,7 @@
     {
       "default-value": true,
       "name": "x-enable-wce-if-config-wce",
+      "description": "on/off",
       "type": "bool"
     }
   ],
@@ -27372,7 +27393,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -27450,6 +27471,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27532,6 +27554,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27609,6 +27632,7 @@
     {
       "default-value": false,
       "name": "failover",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27687,6 +27711,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27704,6 +27729,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27758,6 +27784,7 @@
     {
       "default-value": true,
       "name": "x-mtu-bypass-backend",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27792,6 +27819,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -27867,7 +27895,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -27945,6 +27973,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28027,6 +28056,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28056,6 +28086,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28083,6 +28114,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28110,6 +28142,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28126,6 +28159,7 @@
     {
       "default-value": true,
       "name": "seg_max_adjust",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28201,7 +28235,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -28261,28 +28295,31 @@
     {
       "default-value": "on",
       "name": "x-pre-copy-dirty-page-tracking",
-      "description": "on/off/auto",
+      "description": "Disable dirty pages tracking during iterative phase (DEBUG)",
       "type": "OnOffAuto"
     },
     {
       "default-value": false,
       "name": "x-no-kvm-intx",
+      "description": "Disable direct VFIO->KVM INTx injection. Allows to trace INTx interrupts (DEBUG)",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "migration-events",
+      "description": "Emit VFIO migration QAPI event when a VFIO device changes its migration state. For management applications",
       "type": "bool"
     },
     {
       "default-value": "on",
       "name": "x-device-dirty-page-tracking",
-      "description": "on/off/auto",
+      "description": "Disable device dirty page tracking and use container-based dirty page tracking (DEBUG)",
       "type": "OnOffAuto"
     },
     {
       "default-value": 4294967295,
       "name": "x-pci-sub-device-id",
+      "description": "Override PCI Subsystem Device ID with provided value (DEBUG)",
       "type": "uint32"
     },
     {
@@ -28292,135 +28329,158 @@
     {
       "default-value": "auto",
       "name": "enable-migration",
-      "description": "on/off/auto",
+      "description": "Enale device migration. Also requires a host VFIO PCI variant or mdev driver with migration support enabled",
       "type": "OnOffAuto"
     },
     {
       "default-value": true,
       "name": "skip-vsc-check",
+      "description": "Skip config space check for Vendor Specific Capability. Setting to false will enforce strict checking of VSC content (DEBUG)",
       "type": "bool"
     },
     {
       "default-value": 4294967295,
       "name": "x-pci-device-id",
+      "description": "Override PCI device ID with provided value (DEBUG)",
       "type": "uint32"
     },
     {
       "default-value": false,
       "name": "x-no-kvm-msi",
+      "description": "Disable direct VFIO->KVM MSI injection. Allows to trace MSI interrupts (DEBUG)",
       "type": "bool"
     },
     {
       "default-value": 0,
       "name": "xres",
+      "description": "Set X display resolution the vGPU should use",
       "type": "uint32"
     },
     {
       "default-value": "off",
       "name": "display",
-      "description": "on/off/auto",
+      "description": "Enable display support for device, ex. vGPU",
       "type": "OnOffAuto"
     },
     {
       "default-value": 4294967295,
       "name": "x-pci-sub-vendor-id",
+      "description": "Override PCI Subsystem Vendor ID with provided value (DEBUG)",
       "type": "uint32"
     },
     {
       "default-value": false,
       "name": "x-no-mmap",
+      "description": "Disable MMAP for device. Allows to trace MMIO accesses (DEBUG)",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-req",
+      "description": "Disable device request notification support (DEBUG)",
       "type": "bool"
     },
     {
       "default-value": "off",
       "name": "x-msix-relocation",
-      "description": "off/auto/bar0/bar1/bar2/bar3/bar4/bar5",
+      "description": "Specify MSI-X MMIO relocation to the end of specified existing BAR or new BAR to avoid virtualization overhead due to adjacent device registers",
       "type": "OffAutoPCIBAR"
-    },
-    {
-      "default-value": true,
-      "name": "x-req",
-      "description": "on/off",
-      "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-no-kvm-ioeventfd",
+      "description": "Disable registration of ioeventfds with KVM (DEBUG)",
       "type": "bool"
     },
     {
       "default-value": 4294967295,
       "name": "x-pci-vendor-id",
+      "description": "Override PCI Vendor ID with provided value (DEBUG)",
       "type": "uint32"
+    },
+    {
+      "default-value": "auto",
+      "name": "x-migration-multifd-transfer",
+      "description": "Transfer this device state via multifd channels when live migrating it",
+      "type": "OnOffAuto"
     },
     {
       "default-value": false,
       "name": "x-no-vfio-ioeventfd",
+      "description": "Disable linking of KVM ioeventfds to VFIO ioeventfds (DEBUG)",
       "type": "bool"
     },
     {
       "name": "x-nv-gpudirect-clique",
-      "description": "NVIDIA GPUDirect Clique ID (0 - 15)",
-      "type": "uint4"
+      "description": "Add NVIDIA GPUDirect capability indicating P2P DMA clique for device [0-15]",
+      "type": "uint8"
     },
     {
       "default-value": 1100,
       "name": "x-intx-mmap-timeout-ms",
+      "description": "When EOI is not provided by KVM/QEMU, wait time (milliseconds) to re-enable device direct access after INTx (DEBUG)",
       "type": "uint32"
     },
     {
       "default-value": 0,
       "name": "x-igd-gms",
+      "description": "Override IGD data stolen memory size (32MiB units)",
       "type": "uint32"
     },
     {
       "name": "sysfsdev",
+      "description": "Host sysfs path of assigned device",
       "type": "str"
     },
     {
       "name": "vf-token",
-      "description": "UUID (aka GUID) or \"auto\" for random value (default)",
+      "description": "Specify UUID VF token. Required for VF when PF is owned by another VFIO driver",
       "type": "str"
     },
     {
       "default-value": 0,
       "name": "yres",
+      "description": "Set Y display resolution the vGPU should use",
       "type": "uint32"
     },
     {
       "default-value": false,
       "name": "x-vga",
-      "description": "on/off",
+      "description": "Expose VGA address spaces for device",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-igd-opregion",
-      "description": "on/off",
+      "description": "Expose host IGD OpRegion to guest",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-no-kvm-msix",
+      "description": "Disable direct VFIO->KVM MSIx injection. Allows to trace MSIx interrupts (DEBUG)",
       "type": "bool"
     },
     {
       "name": "iommufd",
+      "description": "Set host IOMMUFD backend device",
       "type": "link<iommufd>"
     },
     {
       "name": "host",
-      "description": "Address (bus/device/function) of the host device, example: 04:10.0",
+      "description": "Host PCI address [domain:]<bus:slot.function> of assigned device",
       "type": "str"
     },
     {
       "default-value": false,
       "name": "x-no-geforce-quirks",
+      "description": "Disable GeForce quirks (for NVIDIA Quadro/GRID/Tesla). Improves performance",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-balloon-allowed",
+      "description": "Override allowing ballooning with device (DEBUG, DANGER)",
       "type": "bool"
     },
     {
@@ -28469,6 +28529,7 @@
     {
       "default-value": false,
       "name": "share-rw",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28544,7 +28605,7 @@
     {
       "default-value": "auto",
       "name": "werror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -28559,7 +28620,7 @@
     {
       "default-value": "auto",
       "name": "rerror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -28599,6 +28660,7 @@
     {
       "default-value": true,
       "name": "migrate-emulated-scsi-request",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28658,6 +28720,7 @@
     {
       "default-value": false,
       "name": "win2k-install-hack",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28712,6 +28775,7 @@
     {
       "default-value": false,
       "name": "share-rw",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28759,13 +28823,13 @@
     {
       "default-value": "auto",
       "name": "rerror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
       "default-value": "auto",
       "name": "bios-chs-trans",
-      "description": "Logical CHS translation algorithm, auto/none/lba/large/rechs",
+      "description": "Logical CHS translation algorithm  (auto/none/lba/large/rechs)",
       "type": "BiosAtaTranslation"
     },
     {
@@ -28793,7 +28857,7 @@
     {
       "default-value": "auto",
       "name": "werror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -28832,7 +28896,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -28892,6 +28956,7 @@
     {
       "default-value": true,
       "name": "acpi-pci-hotplug-with-bridge-support",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28907,11 +28972,13 @@
     {
       "default-value": true,
       "name": "acpi-root-pci-hotplug",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "smm-enabled",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28922,16 +28989,19 @@
     {
       "default-value": true,
       "name": "memory-hotplug-support",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "smm-compat",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-not-migrate-acpi-index",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -28986,6 +29056,7 @@
     {
       "default-value": true,
       "name": "streams",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29001,6 +29072,7 @@
     {
       "default-value": true,
       "name": "suppress-remote-wake",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29046,12 +29118,13 @@
     {
       "default-value": false,
       "name": "commandlog",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": "auto",
       "name": "rerror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -29068,11 +29141,13 @@
     {
       "default-value": false,
       "name": "removable",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "share-rw",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29123,7 +29198,7 @@
     {
       "default-value": "auto",
       "name": "werror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
       "type": "BlockdevOnError"
     },
     {
@@ -29156,6 +29231,7 @@
     {
       "default-value": "delay",
       "name": "lost_tick_policy",
+      "description": "Policy for handling lost ticks (discard/delay/slew)",
       "type": "LostTickPolicy"
     }
   ],
@@ -29190,7 +29266,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -29255,6 +29331,7 @@
     {
       "default-value": false,
       "name": "global-vmstate",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29336,7 +29413,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -29396,6 +29473,7 @@
     {
       "default-value": false,
       "name": "global-vmstate",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29435,7 +29513,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -29495,6 +29573,7 @@
     {
       "default-value": false,
       "name": "global-vmstate",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29599,7 +29678,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -29677,6 +29756,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29759,6 +29839,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29809,6 +29890,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29837,6 +29919,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29848,6 +29931,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29887,6 +29971,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29922,6 +30007,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -29939,6 +30025,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30021,7 +30108,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -30087,26 +30174,31 @@
     {
       "default-value": false,
       "name": "noreboot",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "smm-enabled",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "x-smi-periodic-timer",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "x-smi-swsmi-timer",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "smm-compat",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30309,7 +30401,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -30387,6 +30479,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30469,6 +30562,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30502,6 +30596,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30535,6 +30630,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30556,11 +30652,13 @@
     {
       "default-value": false,
       "name": "qemu-4-0-config-size",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30612,6 +30710,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30647,6 +30746,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30664,6 +30764,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30697,6 +30798,7 @@
     {
       "default-value": false,
       "name": "qemu-4-0-config-size",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30730,11 +30832,13 @@
     {
       "default-value": true,
       "name": "pt",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "device-iotlb",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30746,26 +30850,31 @@
     {
       "default-value": true,
       "name": "fs1gp",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "stale-tm",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-scalable-mode",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "dma-translation",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "caching-mode",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30787,26 +30896,31 @@
     {
       "default-value": false,
       "name": "x-buggy-eim",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-pasid-mode",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "x-flts",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "dma-drain",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "snoop-control",
+      "description": "on/off",
       "type": "bool"
     }
   ],
@@ -30841,7 +30955,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -30901,6 +31015,7 @@
     {
       "default-value": true,
       "name": "smbase-smram",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30944,6 +31059,7 @@
     {
       "default-value": false,
       "name": "unarmed",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -30990,7 +31106,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -31050,6 +31166,7 @@
     {
       "default-value": false,
       "name": "x-pci-express-writeable-slt-bug",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31065,11 +31182,13 @@
     {
       "default-value": false,
       "name": "x-do-not-expose-native-hotplug-cap",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "hotplug",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31091,6 +31210,7 @@
     {
       "default-value": false,
       "name": "disable-acs",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31117,6 +31237,7 @@
     {
       "default-value": true,
       "name": "x-migrate-msix",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31209,6 +31330,7 @@
     {
       "default-value": true,
       "name": "suppress-remote-wake",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31224,11 +31346,13 @@
     {
       "default-value": false,
       "name": "guest-resets-all",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "guest-reset",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31256,6 +31380,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31291,6 +31416,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31308,6 +31434,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31371,7 +31498,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -31449,6 +31576,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31531,6 +31659,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31557,6 +31686,7 @@
     {
       "default-value": true,
       "name": "x-early-migration",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31581,6 +31711,7 @@
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31614,11 +31745,13 @@
     {
       "default-value": false,
       "name": "prealloc",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31636,11 +31769,13 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": false,
       "name": "dynamic-memslots",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31679,7 +31814,7 @@
       "default-value": -1,
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
+      "type": "str"
     },
     {
       "default-value": 4294967295,
@@ -31757,6 +31892,7 @@
     {
       "default-value": false,
       "name": "x-ignore-backend-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31828,6 +31964,7 @@
     {
       "default-value": false,
       "name": "disable-modern",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31855,6 +31992,7 @@
     {
       "default-value": true,
       "name": "use-disabled-flag",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31866,12 +32004,13 @@
     {
       "default-value": "host",
       "name": "granule",
-      "description": "granule_mode values, 4k, 8k, 16k, 64k, host",
+      "description": "Granule page size (4k/8k/16k/64k/host)",
       "type": "GranuleMode"
     },
     {
       "default-value": false,
       "name": "x-disable-legacy-check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31895,6 +32034,7 @@
     {
       "default-value": true,
       "name": "boot-bypass",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -31906,6 +32046,7 @@
     {
       "default-value": true,
       "name": "use-started",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32228,6 +32369,7 @@
     {
       "default-value": true,
       "name": "x-intel-pt-auto-level",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32269,6 +32411,7 @@
     {
       "default-value": true,
       "name": "vmware-cpuid-freq",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32382,6 +32525,7 @@
     {
       "default-value": true,
       "name": "x-vendor-cpuid-only",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32423,6 +32567,7 @@
     {
       "default-value": false,
       "name": "host-phys-bits",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32515,6 +32660,7 @@
     {
       "default-value": false,
       "name": "x-force-features",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32566,6 +32712,7 @@
     {
       "default-value": false,
       "name": "pmu",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32587,6 +32734,7 @@
     {
       "default-value": false,
       "name": "xen-vapic",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32652,11 +32800,13 @@
     {
       "default-value": true,
       "name": "fill-mtrr-mask",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "x-migrate-smi-count",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32727,6 +32877,7 @@
     {
       "default-value": true,
       "name": "x-amd-topoext-features-only",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32770,6 +32921,7 @@
     {
       "default-value": true,
       "name": "cpuid-0xb",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32809,6 +32961,7 @@
     {
       "default-value": true,
       "name": "x-l1-cache-per-thread",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32900,6 +33053,7 @@
     {
       "default-value": true,
       "name": "tcg-cpuid",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32909,6 +33063,7 @@
     {
       "default-value": false,
       "name": "legacy-multi-node",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -32960,6 +33115,7 @@
     {
       "default-value": true,
       "name": "l3-cache",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33196,6 +33352,7 @@
     {
       "default-value": false,
       "name": "x-hv-synic-kvm-only",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33310,6 +33467,7 @@
     {
       "default-value": true,
       "name": "full-cpuid-auto-level",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33335,6 +33493,7 @@
     {
       "default-value": false,
       "name": "kvm-pv-enforce-cpuid",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33365,6 +33524,7 @@
     {
       "default-value": false,
       "name": "hv-enforce-cpuid",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33414,6 +33574,7 @@
     {
       "default-value": true,
       "name": "kvm",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33423,6 +33584,7 @@
     {
       "default-value": false,
       "name": "hv-passthrough",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33486,6 +33648,7 @@
     {
       "default-value": true,
       "name": "legacy-cache",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33599,6 +33762,7 @@
     {
       "default-value": false,
       "name": "lmce",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33851,6 +34015,7 @@
     {
       "default-value": true,
       "name": "check",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -33976,6 +34141,7 @@
     {
       "default-value": false,
       "name": "enforce",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -34125,11 +34291,13 @@
     {
       "default-value": false,
       "name": "host-cache-info",
+      "description": "on/off",
       "type": "bool"
     },
     {
       "default-value": true,
       "name": "migratable",
+      "description": "on/off",
       "type": "bool"
     },
     {
@@ -35532,6 +35700,55 @@
         "3dnow"
       ],
       "alias-of": "athlon-v1",
+      "static": false,
+      "migration-safe": true,
+      "deprecated": false
+    },
+    {
+      "name": "YongFeng-v1",
+      "typename": "YongFeng-v1-x86_64-cpu",
+      "unavailable-features": [
+        "ss",
+        "pcid",
+        "invpcid",
+        "pku",
+        "spec-ctrl",
+        "xstore",
+        "xstore-en",
+        "xcrypt",
+        "xcrypt-en",
+        "ace2",
+        "phe",
+        "phe-en",
+        "pmm",
+        "pmm-en",
+        "ssb-no"
+      ],
+      "static": false,
+      "migration-safe": true,
+      "deprecated": false
+    },
+    {
+      "name": "YongFeng",
+      "typename": "YongFeng-x86_64-cpu",
+      "unavailable-features": [
+        "ss",
+        "pcid",
+        "invpcid",
+        "pku",
+        "spec-ctrl",
+        "xstore",
+        "xstore-en",
+        "xcrypt",
+        "xcrypt-en",
+        "ace2",
+        "phe",
+        "phe-en",
+        "pmm",
+        "pmm-en",
+        "ssb-no"
+      ],
+      "alias-of": "YongFeng-v1",
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -41146,6 +41363,55 @@
       "typename": "athlon-x86_64-cpu",
       "unavailable-features": [],
       "alias-of": "athlon-v1",
+      "static": false,
+      "migration-safe": true,
+      "deprecated": false
+    },
+    {
+      "name": "YongFeng-v1",
+      "typename": "YongFeng-v1-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "tsc-deadline",
+        "invpcid",
+        "spec-ctrl",
+        "arch-capabilities",
+        "invtsc",
+        "xstore",
+        "xstore-en",
+        "xcrypt",
+        "xcrypt-en",
+        "ace2",
+        "phe",
+        "phe-en",
+        "pmm",
+        "pmm-en"
+      ],
+      "static": false,
+      "migration-safe": true,
+      "deprecated": false
+    },
+    {
+      "name": "YongFeng",
+      "typename": "YongFeng-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "tsc-deadline",
+        "invpcid",
+        "spec-ctrl",
+        "arch-capabilities",
+        "invtsc",
+        "xstore",
+        "xstore-en",
+        "xcrypt",
+        "xcrypt-en",
+        "ace2",
+        "phe",
+        "phe-en",
+        "pmm",
+        "pmm-en"
+      ],
+      "alias-of": "YongFeng-v1",
       "static": false,
       "migration-safe": true,
       "deprecated": false

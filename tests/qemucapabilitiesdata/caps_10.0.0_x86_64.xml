@@ -214,7 +214,7 @@
   <flag name='blockdev-set-active'/>
   <version>9002050</version>
   <microcodeVersion>43100285</microcodeVersion>
-  <package>v9.2.0-1967-gb69801dd6b</package>
+  <package>v9.2.0-2369-g98c7362b1e</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -658,6 +658,40 @@
   <cpu type='kvm' name='athlon' typename='athlon-x86_64-cpu' usable='no'>
     <blocker name='3dnowext'/>
     <blocker name='3dnow'/>
+  </cpu>
+  <cpu type='kvm' name='YongFeng-v1' typename='YongFeng-v1-x86_64-cpu' usable='no'>
+    <blocker name='ss'/>
+    <blocker name='pcid'/>
+    <blocker name='invpcid'/>
+    <blocker name='pku'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='xstore'/>
+    <blocker name='xstore-en'/>
+    <blocker name='xcrypt'/>
+    <blocker name='xcrypt-en'/>
+    <blocker name='ace2'/>
+    <blocker name='phe'/>
+    <blocker name='phe-en'/>
+    <blocker name='pmm'/>
+    <blocker name='pmm-en'/>
+    <blocker name='ssb-no'/>
+  </cpu>
+  <cpu type='kvm' name='YongFeng' typename='YongFeng-x86_64-cpu' usable='no'>
+    <blocker name='ss'/>
+    <blocker name='pcid'/>
+    <blocker name='invpcid'/>
+    <blocker name='pku'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='xstore'/>
+    <blocker name='xstore-en'/>
+    <blocker name='xcrypt'/>
+    <blocker name='xcrypt-en'/>
+    <blocker name='ace2'/>
+    <blocker name='phe'/>
+    <blocker name='phe-en'/>
+    <blocker name='pmm'/>
+    <blocker name='pmm-en'/>
+    <blocker name='ssb-no'/>
   </cpu>
   <cpu type='kvm' name='Westmere-v2' typename='Westmere-v2-x86_64-cpu' usable='no'>
     <blocker name='spec-ctrl'/>
@@ -2558,6 +2592,40 @@
   <cpu type='tcg' name='core2duo' typename='core2duo-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='athlon-v1' typename='athlon-v1-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='athlon' typename='athlon-x86_64-cpu' usable='yes'/>
+  <cpu type='tcg' name='YongFeng-v1' typename='YongFeng-v1-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='invpcid'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='invtsc'/>
+    <blocker name='xstore'/>
+    <blocker name='xstore-en'/>
+    <blocker name='xcrypt'/>
+    <blocker name='xcrypt-en'/>
+    <blocker name='ace2'/>
+    <blocker name='phe'/>
+    <blocker name='phe-en'/>
+    <blocker name='pmm'/>
+    <blocker name='pmm-en'/>
+  </cpu>
+  <cpu type='tcg' name='YongFeng' typename='YongFeng-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='invpcid'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='invtsc'/>
+    <blocker name='xstore'/>
+    <blocker name='xstore-en'/>
+    <blocker name='xcrypt'/>
+    <blocker name='xcrypt-en'/>
+    <blocker name='ace2'/>
+    <blocker name='phe'/>
+    <blocker name='phe-en'/>
+    <blocker name='pmm'/>
+    <blocker name='pmm-en'/>
+  </cpu>
   <cpu type='tcg' name='Westmere-v2' typename='Westmere-v2-x86_64-cpu' usable='no'>
     <blocker name='spec-ctrl'/>
   </cpu>
