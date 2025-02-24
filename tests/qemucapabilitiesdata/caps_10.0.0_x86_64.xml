@@ -214,7 +214,7 @@
   <flag name='blockdev-set-active'/>
   <version>9002050</version>
   <microcodeVersion>43100285</microcodeVersion>
-  <package>v9.2.0-1636-gffaf7f0376</package>
+  <package>v9.2.0-1967-gb69801dd6b</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
