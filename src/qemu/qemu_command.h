@@ -40,35 +40,42 @@
 VIR_ENUM_DECL(qemuVideo);
 VIR_ENUM_DECL(qemuSoundCodec);
 
-virCommand *qemuBuildCommandLine(virDomainObj *vm,
-                                 const char *migrateURI,
-                                 virDomainMomentObj *snapshot,
-                                 virNetDevVPortProfileOp vmop,
-                                 size_t *nnicindexes,
-                                 int **nicindexes);
+virCommand *
+qemuBuildCommandLine(virDomainObj *vm,
+                     const char *migrateURI,
+                     virDomainMomentObj *snapshot,
+                     virNetDevVPortProfileOp vmop,
+                     size_t *nnicindexes,
+                     int **nicindexes);
 
 /* Generate the object properties for pr-manager */
-virJSONValue *qemuBuildPRManagerInfoProps(virStorageSource *src);
-virJSONValue *qemuBuildPRManagedManagerInfoProps(qemuDomainObjPrivate *priv);
+virJSONValue *
+qemuBuildPRManagerInfoProps(virStorageSource *src);
+virJSONValue *
+qemuBuildPRManagedManagerInfoProps(qemuDomainObjPrivate *priv);
 
-virJSONValue *qemuBuildDBusVMStateInfoProps(virQEMUDriver *driver,
-                                              virDomainObj *vm);
+virJSONValue *
+qemuBuildDBusVMStateInfoProps(virQEMUDriver *driver,
+                              virDomainObj *vm);
 
 /* Generate the object properties for a secret */
-int qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
-                             virJSONValue **propsret);
+int
+qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
+                         virJSONValue **propsret);
 
 /* Generate the object properties for a tls-creds-x509 */
-int qemuBuildTLSx509BackendProps(const char *tlspath,
-                                 bool isListen,
-                                 bool verifypeer,
-                                 const char *alias,
-                                 const char *secalias,
-                                 virJSONValue **propsret);
+int
+qemuBuildTLSx509BackendProps(const char *tlspath,
+                             bool isListen,
+                             bool verifypeer,
+                             const char *alias,
+                             const char *secalias,
+                             virJSONValue **propsret);
 
 /* Open a UNIX socket for chardev FD passing */
 int
-qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev) G_NO_INLINE;
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
+    G_NO_INLINE;
 
 virJSONValue *
 qemuBuildChrDeviceProps(const virDomainDef *vmdef,
@@ -93,7 +100,8 @@ qemuBuildNicDevProps(virDomainDef *def,
                      virDomainNetDef *net,
                      virQEMUCaps *qemuCaps);
 
-bool qemuDiskBusIsSD(int bus);
+bool
+qemuDiskBusIsSD(int bus);
 
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
@@ -134,15 +142,16 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
                             virQEMUCaps *qemuCaps,
                             virJSONValue **devprops);
 
-int qemuBuildMemoryBackendProps(virJSONValue **backendProps,
-                                const char *alias,
-                                virQEMUDriverConfig *cfg,
-                                qemuDomainObjPrivate *priv,
-                                const virDomainDef *def,
-                                const virDomainMemoryDef *mem,
-                                bool force,
-                                bool systemMemory,
-                                virBitmap **nodemaskRet);
+int
+qemuBuildMemoryBackendProps(virJSONValue **backendProps,
+                            const char *alias,
+                            virQEMUDriverConfig *cfg,
+                            qemuDomainObjPrivate *priv,
+                            const virDomainDef *def,
+                            const virDomainMemoryDef *mem,
+                            bool force,
+                            bool systemMemory,
+                            virBitmap **nodemaskRet);
 
 virJSONValue *
 qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
@@ -166,8 +175,9 @@ virJSONValue *
 qemuBuildRNGDevProps(const virDomainDef *def,
                      virDomainRNGDef *dev,
                      virQEMUCaps *qemuCaps);
-int qemuBuildRNGBackendProps(virDomainRNGDef *rng,
-                             virJSONValue **props);
+int
+qemuBuildRNGBackendProps(virDomainRNGDef *rng,
+                         virJSONValue **props);
 
 /* Current, best practice */
 virJSONValue *
@@ -210,10 +220,12 @@ qemuBuildZPCIDevProps(virDomainDeviceInfo *dev);
 bool
 qemuDiskConfigBlkdeviotuneEnabled(const virDomainDiskDef *disk);
 
-virJSONValue *qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
+virJSONValue *
+qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
     ATTRIBUTE_NONNULL(1);
 
-virJSONValue *qemuBuildShmemBackendMemProps(virDomainShmemDef *shmem)
+virJSONValue *
+qemuBuildShmemBackendMemProps(virDomainShmemDef *shmem)
     ATTRIBUTE_NONNULL(1);
 
 bool
@@ -254,6 +266,11 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
                            int *cancelfd)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) G_NO_INLINE;
 
-const char * qemuAudioDriverTypeToString(virDomainAudioType type);
-virDomainAudioType qemuAudioDriverTypeFromString(const char *str);
-int qemuVDPAConnect(const char *devicepath) G_NO_INLINE;
+const char *
+qemuAudioDriverTypeToString(virDomainAudioType type);
+virDomainAudioType
+qemuAudioDriverTypeFromString(const char *str);
+
+int
+qemuVDPAConnect(const char *devicepath)
+    G_NO_INLINE;
