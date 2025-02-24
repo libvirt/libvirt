@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-01-09 09:28+0000\n"
+"POT-Creation-Date: 2025-02-24 10:18+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -857,6 +857,22 @@ msgstr ""
 "adresse de réseau dans la définition de route"
 
 #, c-format
+msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to parse and process events"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to process JSON event doc: %2$s"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to read ch events!: %2$s"
+msgstr ""
+
+#, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr "%1$s : Le fichier '%2$s' est trop grand\n"
 
@@ -873,6 +889,10 @@ msgid ""
 msgstr ""
 "%1$s : Famille IPv4 spécifiée pour une passerelle non-IPv4 '%2$s' dans la "
 "définition de l’itinéraire"
+
+#, c-format
+msgid "%1$s: Invalid JSON event doc: %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1320,6 +1340,20 @@ msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "'%1$s' en partant de %2$llu n'a que %3$zd octets disponibles"
 
 msgid ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
 "L'option '--wipe-storage' nécessite '--storage <string>' ou '--remove-all-"
@@ -1508,15 +1542,16 @@ msgstr ""
 "« pool » et « volume » doivent être spécifiés ensemble pour la source du "
 "type de « pool »"
 
+msgid "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "’queues' n'est pris en charge que par le contrôleur virtio-scsi"
 
 msgid ""
-"'reconnect' attribute unsupported 'server' mode for <interface "
-"type='vhostuser'>"
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 msgstr ""
-"L'attribut ’reconnect’ n'est pas pris en charge par le mode ’serveur’ de "
-"l'utilisateur <interface type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1528,6 +1563,9 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
+msgstr ""
+
+msgid "'return' member missing"
 msgstr ""
 
 #, c-format
@@ -3099,6 +3137,9 @@ msgstr "impossible de créer le répertoire de configuration ’%1$s’"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "Impossible de créer des périphériques macvlan sur cette plate-forme"
+
+msgid "Cannot create monitor FIFO"
+msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4692,9 +4733,6 @@ msgstr "Impossible de trouver le domaine avec le nom '%1$s'"
 msgid "Could not find host system specified in '%1$s'"
 msgstr "Impossible de trouver le système hôte spécifié dans '%1$s'"
 
-msgid "Could not find matching device"
-msgstr "Impossible de trouver le périphérique correspondant"
-
 #, c-format
 msgid "Could not find matching device '%1$s'"
 msgstr "Impossible de trouver le périphérique correspondant '%1$s'"
@@ -4818,6 +4856,10 @@ msgstr "Impossible d'obtenir l'accès au pilote ACL tech '%1$s'"
 
 msgid "Could not get checkpoint name"
 msgstr "Impossible d'obtenir le nom du point de contrôle"
+
+#, c-format
+msgid "Could not get count of free %1$uKiB pages, no data returned"
+msgstr ""
 
 msgid "Could not get current time"
 msgstr "Impossible d'obtenir l'heure actuelle"
@@ -6524,10 +6566,6 @@ msgstr "Duplication de la clé de la table de hachage '%1$s'"
 
 msgid "Duplicate info for NUMA latencies"
 msgstr "Informations en double pour les latences NUMA"
-
-#, c-format
-msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -8772,6 +8810,10 @@ msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "Échec de la suppression du volume de stockage '%1$s'(%2$s)"
 
 #, c-format
+msgid "Failed to remove the file: %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to reportluns: %1$s"
 msgstr "Échec de l'enregistrement d'armes à feu : %1$s"
 
@@ -9123,8 +9165,8 @@ msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr ""
 "Échec de la définition de vcpus pour le domaine '%1$d' avec libxenlight"
 
-msgid "Failed to setup keepalive on connection\n"
-msgstr "Impossible paramétrer le keepalive sur la connexion\n"
+msgid "Failed to setup keepalive on connection"
+msgstr ""
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -9164,10 +9206,6 @@ msgstr "Échec du démarrage du domaine '%1$s'"
 #, c-format
 msgid "Failed to start interface %1$s"
 msgstr "Échec du démarrage de l'interface %1$s"
-
-#, c-format
-msgid "Failed to start job on VM '%1$s': %2$s"
-msgstr "Échec du démarrage de la tâche sur la VM '%1$s' : %2$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
@@ -10047,6 +10085,12 @@ msgstr "Erreur E/S"
 msgid "I/O error"
 msgstr "Erreur E/S"
 
+#, c-format
+msgid ""
+"I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
+"message='%5$s'"
+msgstr ""
+
 msgid "I/O size in bytes"
 msgstr "Taille des E/S en octets"
 
@@ -10593,11 +10637,9 @@ msgstr ""
 "périphériques d'extrémité PCI peuvent être réinitialisés"
 
 msgid ""
-"Invalid attempt to set network interface guest-side IP route and/or address "
-"info, not supported by QEMU"
+"Invalid attempt to set network interface guest-side IP address info, not "
+"supported by QEMU"
 msgstr ""
-"Tentative non valide de définir les informations de route et/ou d'adresse IP "
-"de l'interface réseau côté invité, non pris en charge par QEMU"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -12312,6 +12354,10 @@ msgstr "Données client manquantes dans le document JSON"
 msgid "Missing clients data in JSON document"
 msgstr "Données clients manquantes dans le document JSON"
 
+#, c-format
+msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
+msgstr ""
+
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "Données defaultLockspace manquantes dans le fichier JSON"
 
@@ -12564,6 +12610,10 @@ msgstr "Propriété manquante '%1$s' dans la réponse"
 
 msgid "Missing readonly field in JSON state document"
 msgstr "Champ en lecture seule manquant dans le document d'état JSON"
+
+#, c-format
+msgid "Missing ref property on ccw_device in members for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12890,6 +12940,9 @@ msgstr "Le nœud NUMA %1$zu n'est pas disponible"
 
 msgid "NUMA node selections to set"
 msgstr "Sélections de nœuds NUMA à définir"
+
+msgid "NUMA nodes are not supported for virtio-mem-ccw"
+msgstr ""
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr "Les nœuds NUMA sans CPU ne peuvent pas être initiateurs"
@@ -13826,6 +13879,9 @@ msgstr ""
 msgid "Only ide and scsi disk support wwn"
 msgstr "Seuls les disques ide et scsi prennent en charge wwn"
 
+msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
 msgid "Only luks encryption is supported for raw files"
 msgstr "Seul le cryptage luks est pris en charge pour les fichiers bruts"
 
@@ -13901,8 +13957,8 @@ msgstr "Seul le pilote ploop fs est pris en charge par le pilote vz."
 msgid "Only read-only pflash is supported."
 msgstr "Seule la pflash en lecture seule est prise en charge."
 
-msgid "Only scsi disk supports vendor and product"
-msgstr "Seul le disque scsi supporte le vendeur et le produit"
+msgid "Only scsi disk supports 'vendor'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16187,6 +16243,10 @@ msgstr "L'audio spice n'est pas pris en charge sans les graphiques spice"
 msgid "Start"
 msgstr "Démarrer"
 
+#, c-format
+msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
+msgstr ""
+
 msgid "Start a block commit operation."
 msgstr "Lancer une opération de validation de bloc."
 
@@ -16459,10 +16519,8 @@ msgstr "Conflit de source de stockage avec le pool : '%1$s'"
 
 #, c-format
 msgid ""
-"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"
+"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
 msgstr ""
-"Le volume de stockage '%1$s'(%2$s) n'est pas géré par libvirt. Supprimez-le "
-"manuellement.\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr ""
@@ -17646,9 +17704,10 @@ msgstr ""
 "L'attribut \"eoi\" de la caractéristique \"%1$s\" n'est pas pris en charge "
 "pour l'architecture \"%2$s\" ou le type de machine \"%3$s\""
 
-msgid "The 'passt' backend can only be used with interface type='user'"
+msgid ""
+"The 'passt' backend can only be used with interface type='user' or "
+"type='vhostuser'"
 msgstr ""
-"Le backend 'passt' ne peut être utilisé qu'avec l'interface type='user'"
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
@@ -17666,8 +17725,8 @@ msgstr ""
 "le réseau %1$s"
 
 msgid ""
-"The <portForward> element can only be used with <interface type='user'> and "
-"its 'passt' backend"
+"The <portForward> element can only be used with the 'passt' backend of "
+"interface type='user' or type='vhostuser'"
 msgstr ""
 
 msgid ""
@@ -19513,6 +19572,9 @@ msgid "Unable to get physical function status on this platform"
 msgstr ""
 "Impossible d'obtenir le statut de fonction physique sur cette plateforme"
 
+msgid "Unable to get pointer to VirtualBox vtable"
+msgstr ""
+
 msgid "Unable to get remote socket name"
 msgstr "Impossible d'obtenir le nom du socket distant"
 
@@ -19581,6 +19643,9 @@ msgstr "Impossible d'initier le mutex de flux de périphérique"
 
 msgid "Unable to initialize RW lock"
 msgstr "Impossible d'initialiser le verrou RW"
+
+msgid "Unable to initialize VirtualBox C API client"
+msgstr ""
 
 msgid "Unable to initialize audit layer"
 msgstr "Impossible d'initialiser la couche d'audit"
@@ -19928,6 +19993,9 @@ msgstr "Impossible de sonder la fréquence TSC"
 msgid "Unable to process file with flags %1$d"
 msgstr "Impossible de traiter le fichier avec les indicateurs %1$d"
 
+msgid "Unable to query NVMe disk address"
+msgstr ""
+
 msgid "Unable to query TSC scaling support"
 msgstr "Impossible d'interroger le support de mise à l'échelle de TSC"
 
@@ -19991,9 +20059,6 @@ msgstr "Impossible de lire %1$s pour les vérifications du transfert d'ipv6"
 
 msgid "Unable to read TLS confirmation"
 msgstr "Impossible de lire la confirmation TLS"
-
-msgid "Unable to read cache data"
-msgstr "Impossible de lire les données du cache"
 
 msgid "Unable to read container pty"
 msgstr "Impossible de lire le conteneur pty"
@@ -21988,8 +22053,8 @@ msgid "Vol %1$s wiped\n"
 msgstr "Vol %1$s effacé\n"
 
 #, c-format
-msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr "Le volume '%1$s' n'a pas été trouvé dans la définition du domaine.\n"
+msgid "Volume '%1$s' was not found in domain's definition."
+msgstr ""
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -22170,13 +22235,6 @@ msgstr "Mauvais type d'adresse pour le hub USB"
 
 msgid "Wrong length MAC address"
 msgstr "Adresse MAC de longueur incorrecte"
-
-msgid ""
-"Wrong or no <model> 'type' attribute specified with <interface "
-"type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
-msgstr ""
-"L'attribut 'type' de <model> est incorrect ou n'est pas spécifié avec "
-"<interface type='vhostuser'/> vhostuser nécessite le frontal virtio-net*"
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE est actif, mais les données 'bytes' étaient manquantes"
@@ -22464,9 +22522,23 @@ msgstr "après le retour en arrière, changer l'état en pause"
 msgid "after reverting, change state to running"
 msgstr "après le retour en arrière, changer l'état en cours d'exécution"
 
+msgid "aia feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "aia feature is only supported with RISC-V Virt machines"
+msgstr ""
+
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithme=%1$d n'est pas pris en charge"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+msgstr "l'alias '%1$s' de la commande '%2$s' a un type d'alias incorrect"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has missing alias option"
+msgstr "L'alias '%1$s' de la commande '%2$s' n'a pas d'option d'alias"
 
 msgid "all CPU models are accepted"
 msgstr "tous les modèles de CPU sont acceptés"
@@ -22924,6 +22996,9 @@ msgstr ""
 "la largeur de bande %1$llu est supérieure à %2$lu, qui est la valeur "
 "maximale prise en charge par cette API"
 
+msgid "bandwidth (in MiB/s) available for the final phase of migration"
+msgstr ""
+
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
@@ -23162,6 +23237,14 @@ msgstr "lien interface miimon updelay invalid"
 
 msgid "bond interface misses the bond element"
 msgstr "l'interface de liaison manque l'élément de liaison"
+
+#, c-format
+msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+msgstr "bool paramètre '%1$s' de la commande '%2$s' a un compléteur défini"
+
+#, c-format
+msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
+msgstr ""
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -25311,12 +25394,44 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "la commande '%1$s' ne prend pas en charge l’option --%2$s"
 
 #, c-format
+msgid "command '%1$s' has handler set"
+msgstr "la commande '%1$s' a un gestionnaire défini"
+
+#, c-format
+msgid "command '%1$s' has info set"
+msgstr "La commande '%1$s' a des informations définies"
+
+#, c-format
+msgid "command '%1$s' has multiple flags set"
+msgstr "la commande '%1$s' a plusieurs indicateurs définis"
+
+#, c-format
+msgid "command '%1$s' has options set"
+msgstr "la commande '%1$s' a des options définies"
+
+#, c-format
+msgid "command '%1$s' lacks help"
+msgstr "La commande '%1$s' manque d'aide"
+
+#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "la commande '%1$s' nécessite l’option --%2$s"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "la commande '%1$s' nécessite l’option <%2$s>"
+
+msgid "command 'domblkinfo' requires <device> option"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgstr "L'alias de commande '%1$s' pointe vers une commande inexistante '%2$s'"
+
+#, c-format
+msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgstr ""
+"L'alias de commande '%1$s' pointe vers un autre alias de commande '%2$s'"
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
@@ -25376,6 +25491,12 @@ msgstr "option de compatibilité uniquement disponible avec qcow2"
 
 msgid "completed"
 msgstr "terminé"
+
+#, c-format
+msgid ""
+"completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
+"completer is used"
+msgstr ""
 
 msgid "compress level for multithread compression"
 msgstr "niveau de compression pour la compression multithread"
@@ -26692,16 +26813,23 @@ msgid "disk '%1$s' not found in domain"
 msgstr "disque '%1$s' introuvable dans le domaine"
 
 #, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
+"the deleted snapshot"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
+msgstr ""
+
+#, c-format
 msgid "disk '%1$s' specified twice"
 msgstr "disque '%1$s' spécifié deux fois"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "le disque '%1$s' n'a pas été trouvé dans la configuration du domaine"
-
-msgid ""
-"disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "attributs du disque : disk[,checkpoint=type][,bitmap=name]"
@@ -26800,14 +26928,6 @@ msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "mode de disque ioeventfd uniquement pris en charge pour le bus virtio"
 
 #, c-format
-msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
-
-#, c-format
-msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
-
-#, c-format
 msgid "disk iotune field '%1$s' must be an integer"
 msgstr "le champ '%1$s' du disque iotune doit être un nombre entier"
 
@@ -26835,8 +26955,8 @@ msgstr ""
 "tunnel"
 
 #, c-format
-msgid "disk product is more than %1$d characters"
-msgstr "le produit du disque est plus de %1$d caractères"
+msgid "disk product is more than %1$zu characters"
+msgstr ""
 
 msgid "disk product is not printable string"
 msgstr "Le produit du disque n’est pas une chaîne imprimable"
@@ -27337,6 +27457,10 @@ msgstr "iothreadpin à double pour le même iothread '%1$u'"
 msgid "duplicate key '%1$s'"
 msgstr "clé dupliquée '%1$s'"
 
+#, c-format
+msgid "duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 msgid "duplicate native vlan setting"
 msgstr "paramètre vlan natif à double"
 
@@ -27649,8 +27773,9 @@ msgstr "erreur lors de la reprise du domaine"
 msgid "error while suspending the domain"
 msgstr "erreur lors de la suspension du domaine"
 
-msgid "error: "
-msgstr "erreur : "
+#, c-format
+msgid "error: %1$s\n"
+msgstr ""
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "error_policy n'est pas pris en charge avec le disque vhostuser"
@@ -28400,6 +28525,10 @@ msgstr "échec de l'extraction du nom du volume gluster"
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
 msgstr "Impossible de trouver le périphérique USB busnum:devnum pour %1$x:%2$x"
 
+#, c-format
+msgid "failed to find a supported CCW group capability type '%1$s'"
+msgstr ""
+
 msgid "failed to find an empty memory slot"
 msgstr "n'a pas réussi à trouver un emplacement mémoire vide"
 
@@ -28799,6 +28928,9 @@ msgstr "n'a pas réussi à analyser %1$s"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "n'a pas réussi à analyser %1$sversion"
+
+msgid "failed to parse JSON returned by qemu"
+msgstr ""
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -29291,12 +29423,19 @@ msgstr ""
 msgid "failed to write known_host file '%1$s': %2$s"
 msgstr "échec de l'écriture du fichier known_host '%1$s' : %2$s"
 
+#, c-format
+msgid "failed to write log file: %1$s"
+msgstr ""
+
 msgid "failed to write master key file for domain"
 msgstr "échec de l'écriture du fichier de clé principale pour le domaine"
 
 #, c-format
 msgid "failed to write padding to '%1$s'"
 msgstr "échec de l'écriture de padding sur '%1$s'"
+
+msgid "failed to write secret"
+msgstr ""
 
 msgid "failed to write secret file"
 msgstr "échec de l'écriture du fichier secret"
@@ -30948,6 +31087,10 @@ msgid "invalid driver type for version detection"
 msgstr "type de pilote non valide pour la détection de la version"
 
 #, c-format
+msgid "invalid empty data-file definition in '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
 msgstr "action d'échec non valide : '%1$s'\n"
 
@@ -31084,8 +31227,8 @@ msgid "invalid mode"
 msgstr "mode non valide"
 
 #, c-format
-msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr "modèle non valide pour l'interface de type '%1$s' : '%2$s'"
+msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
+msgstr ""
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -31293,6 +31436,10 @@ msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
 msgstr "Type non valide '%1$s' pour le paramètre '%2$s', attendu '%3$s'"
 
 #, c-format
+msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid unique_id supplied for '%1$s'"
 msgstr "id_unique non valide fourni pour '%1$s'"
 
@@ -31415,6 +31562,10 @@ msgstr ""
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d introuvable"
 
+#, c-format
+msgid "iothread '%1$u' not defined in iothreadid"
+msgstr ""
+
 msgid "iothread for the new IOThread"
 msgstr "iothread pour le nouveau IOThread"
 
@@ -31423,6 +31574,14 @@ msgstr "ID de l'IOThread existant"
 
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread n'est pas pris en charge avec le disque vhostuser"
+
+#, c-format
+msgid "iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
@@ -31434,6 +31593,9 @@ msgstr "iothread_id pour l'IOThread à supprimer"
 #, c-format
 msgid "iothreadid %1$d not found"
 msgstr "iothreadid %1$d introuvable"
+
+msgid "iothreads are supported only by 'virtio-scsi' controllers"
+msgstr ""
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune n'est pas pris en charge avec le disque vhostuser"
@@ -32717,6 +32879,12 @@ msgstr "limite de la bande passante de migration en MiB/s"
 msgid "migration canceled"
 msgstr "migration annulée"
 
+#, c-format
+msgid ""
+"migration failed. Message from the source host: %1$s. Message from the "
+"destination host: %2$s"
+msgstr ""
+
 msgid "migration in"
 msgstr "la migration dans"
 
@@ -33260,6 +33428,10 @@ msgstr "Nom d’indicateur manquant dans le cache des capacités de QEMU"
 #, c-format
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "Nom de volume gluster manquant pour le chemin '%1$s'"
+
+#, c-format
+msgid "missing group_device value for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -33993,6 +34165,12 @@ msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
 "Plusieurs périphériques de mémoire trouvés, utilisez --alias ou --node pour "
 "en sélectionner un"
+
+#, c-format
+msgid ""
+"multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
+"not allowed"
+msgstr ""
 
 msgid "multiple stream callbacks not supported"
 msgstr "Les callbacks à flux multiples ne sont pas pris en charge"
@@ -35260,11 +35438,6 @@ msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 "seules les adresses 'dimm' sont prise en charge pour le périphérique pc-dimm"
 
-#, c-format
-msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr ""
-"seules les adresses \"pci\" sont prises en charge par le périphérique %1$s"
-
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 "seules les adresses 'pci' sont prise en charge pour le périphérique de "
@@ -35274,6 +35447,10 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 "seules les adresses 'pci' sont prise en charge pour le périphérique virtio-"
 "pmem"
+
+#, c-format
+msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
+msgstr ""
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr ""
@@ -35608,9 +35785,8 @@ msgid "output to stderr"
 msgstr "sortie vers stderr"
 
 #, c-format
-msgid "overflow in converting %1$ld MiB/s to bytes\n"
+msgid "overflow in converting %1$ld MiB/s to bytes"
 msgstr ""
-"dépassement de capacité lors de la conversion de %1$ld MiB/s en octets\n"
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
@@ -35702,6 +35878,26 @@ msgstr "paramètre '%1$s' non pris en charge"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "le paramètre '%1$s' apparaît plusieurs fois"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+msgstr ""
+"le paramètre '%1$s' de la commande '%2$s' a une option d'alias incorrecte"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
+msgstr ""
+"le paramètre '%1$s' de la commande '%2$s' doit être listé avant les "
+"paramètres optionnels"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' must be listed last"
+msgstr "le paramètre '%1$s' de la commande '%2$s' doit être listé en dernier"
 
 msgid "parameter=value"
 msgstr "paramètre=valeur"
@@ -37060,6 +37256,12 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "nécessite une opération atomique"
 
+#, c-format
+msgid ""
+"required positional argument '%1$s' declared after an optional positional "
+"argument '%2$s' of command '%3$s'"
+msgstr ""
+
 msgid "resctrl locking is not supported on this platform"
 msgstr "Le verrouillage resctrl n'est pas pris en charge sur cette plateforme"
 
@@ -38274,7 +38476,7 @@ msgstr "la chaîne %1$s dans %2$s ne doit pas être vide"
 msgid "string parameter '%1$s' unsupported"
 msgstr "paramètre string '%1$s' non pris en charge"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "string parameter name '%2$.*1$s' too long"
 msgstr "Le nom du paramètre '% *s' est trop long"
 
@@ -38286,6 +38488,11 @@ msgstr "les statistiques sommaires ne sont pas encore prise en charge"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
 msgstr "fournir <cipher> pour la définition du disque du domaine est inutile"
+
+msgid ""
+"support for offline external snapshots while checkpoint exists was not yet "
+"implemented"
+msgstr ""
 
 msgid "suspend a domain"
 msgstr "suspendre un domaine"
@@ -39737,6 +39944,9 @@ msgstr "Impossible d'effectuer le filtrage des instantanés"
 msgid "unable to poll on child"
 msgstr "Impossible d'effectuer un poll sur l'enfant"
 
+msgid "unable to query block list"
+msgstr ""
+
 msgid "unable to query cgroup BPF progs"
 msgstr "Impossible d'interroger les progs BPF du cgroup"
 
@@ -41162,6 +41372,10 @@ msgid "unsupported rtc timer track '%1$s'"
 msgstr "piste de minuterie rtc non prise en charge '%1$s'"
 
 #, c-format
+msgid "unsupported save image format: %1$d"
+msgstr ""
+
+#, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
 msgstr "Schéma non pris en charge %1$s dans l'URI de migration %2$s"
 
@@ -41215,6 +41429,12 @@ msgstr "nombre sans fin"
 
 msgid "unterminated string"
 msgstr "chaîne sans fin"
+
+#, c-format
+msgid ""
+"unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
+"used together with positional"
+msgstr ""
 
 msgid "update device from an XML file"
 msgstr "mettre à jour le périphérique à partir d'un fichier XML"
@@ -41350,6 +41570,9 @@ msgstr ""
 "l'utilisation du nom de cible de disque '%1$s' entre en conflit avec "
 "l'adresse du périphérique hôte SCSI controller='%2$u' bus='%3$u' "
 "target='%4$u' unit='%5$u"
+
+msgid "using host CPU definition as input may provide incorrect results"
+msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
@@ -41871,6 +42094,9 @@ msgstr ""
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem n'est pas pris en charge par ce binaire QEMU"
 
+msgid "virtio-mem-ccw can't use different page size than the boot memory"
+msgstr ""
+
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
@@ -42356,6 +42582,81 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 
+#~ msgid ""
+#~ "'reconnect' attribute unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "L'attribut ’reconnect’ n'est pas pris en charge par le mode ’serveur’ de "
+#~ "l'utilisateur <interface type='vhostuser'>"
+
+#~ msgid "Could not find matching device"
+#~ msgstr "Impossible de trouver le périphérique correspondant"
+
+#~ msgid "Failed to setup keepalive on connection\n"
+#~ msgstr "Impossible paramétrer le keepalive sur la connexion\n"
+
+#, c-format
+#~ msgid "Failed to start job on VM '%1$s': %2$s"
+#~ msgstr "Échec du démarrage de la tâche sur la VM '%1$s' : %2$s"
+
+#~ msgid ""
+#~ "Invalid attempt to set network interface guest-side IP route and/or "
+#~ "address info, not supported by QEMU"
+#~ msgstr ""
+#~ "Tentative non valide de définir les informations de route et/ou d'adresse "
+#~ "IP de l'interface réseau côté invité, non pris en charge par QEMU"
+
+#~ msgid "Only scsi disk supports vendor and product"
+#~ msgstr "Seul le disque scsi supporte le vendeur et le produit"
+
+#, c-format
+#~ msgid ""
+#~ "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it "
+#~ "manually.\n"
+#~ msgstr ""
+#~ "Le volume de stockage '%1$s'(%2$s) n'est pas géré par libvirt. Supprimez-"
+#~ "le manuellement.\n"
+
+#~ msgid "The 'passt' backend can only be used with interface type='user'"
+#~ msgstr ""
+#~ "Le backend 'passt' ne peut être utilisé qu'avec l'interface type='user'"
+
+#~ msgid "Unable to read cache data"
+#~ msgstr "Impossible de lire les données du cache"
+
+#, c-format
+#~ msgid "Volume '%1$s' was not found in domain's definition.\n"
+#~ msgstr ""
+#~ "Le volume '%1$s' n'a pas été trouvé dans la définition du domaine.\n"
+
+#~ msgid ""
+#~ "Wrong or no <model> 'type' attribute specified with <interface "
+#~ "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
+#~ msgstr ""
+#~ "L'attribut 'type' de <model> est incorrect ou n'est pas spécifié avec "
+#~ "<interface type='vhostuser'/> vhostuser nécessite le frontal virtio-net*"
+
+#, c-format
+#~ msgid "disk product is more than %1$d characters"
+#~ msgstr "le produit du disque est plus de %1$d caractères"
+
+#~ msgid "error: "
+#~ msgstr "erreur : "
+
+#, c-format
+#~ msgid "invalid model for interface of type '%1$s': '%2$s'"
+#~ msgstr "modèle non valide pour l'interface de type '%1$s' : '%2$s'"
+
+#, c-format
+#~ msgid "only 'pci' addresses are supported for the %1$s device"
+#~ msgstr ""
+#~ "seules les adresses \"pci\" sont prises en charge par le périphérique %1$s"
+
+#, c-format
+#~ msgid "overflow in converting %1$ld MiB/s to bytes\n"
+#~ msgstr ""
+#~ "dépassement de capacité lors de la conversion de %1$ld MiB/s en octets\n"
+
 #~ msgid "Cannot set a base label with AppArmour"
 #~ msgstr "Impossible de définir une étiquette de base avec AppArmour"
 
@@ -42736,54 +43037,12 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #~ msgstr "[[--%1$s] <string>]..."
 
 #, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-#~ msgstr "l'alias '%1$s' de la commande '%2$s' a un type d'alias incorrect"
-
-#, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
-#~ msgstr "L'alias '%1$s' de la commande '%2$s' n'a pas d'option d'alias"
-
-#, c-format
-#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-#~ msgstr "bool paramètre '%1$s' de la commande '%2$s' a un compléteur défini"
-
-#, c-format
-#~ msgid "command '%1$s' has handler set"
-#~ msgstr "la commande '%1$s' a un gestionnaire défini"
-
-#, c-format
 #~ msgid "command '%1$s' has inconsistent alias"
 #~ msgstr "la commande '%1$s' a un alias incohérent"
 
 #, c-format
-#~ msgid "command '%1$s' has info set"
-#~ msgstr "La commande '%1$s' a des informations définies"
-
-#, c-format
-#~ msgid "command '%1$s' has multiple flags set"
-#~ msgstr "la commande '%1$s' a plusieurs indicateurs définis"
-
-#, c-format
-#~ msgid "command '%1$s' has options set"
-#~ msgstr "la commande '%1$s' a des options définies"
-
-#, c-format
 #~ msgid "command '%1$s' has too many options"
 #~ msgstr "La commande '%1$s' a trop d'options"
-
-#, c-format
-#~ msgid "command '%1$s' lacks help"
-#~ msgstr "La commande '%1$s' manque d'aide"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-#~ msgstr ""
-#~ "L'alias de commande '%1$s' pointe vers une commande inexistante '%2$s'"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-#~ msgstr ""
-#~ "L'alias de commande '%1$s' pointe vers un autre alias de commande '%2$s'"
 
 #~ msgid ""
 #~ "command groups and command are both NULL run vshInit before reloading"
@@ -42837,26 +43096,8 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 #~ msgstr "cartographie manquante dans '%1$s'"
 
 #, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-#~ msgstr ""
-#~ "le paramètre '%1$s' de la commande '%2$s' a une option d'alias incorrecte"
-
-#, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
 #~ msgstr "paramètre '%1$s' de la commande '%2$s' mal utilisé VSH_OFLAG_REQ"
-
-#, c-format
-#~ msgid ""
-#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
-#~ "parameters"
-#~ msgstr ""
-#~ "le paramètre '%1$s' de la commande '%2$s' doit être listé avant les "
-#~ "paramètres optionnels"
-
-#, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
-#~ msgstr ""
-#~ "le paramètre '%1$s' de la commande '%2$s' doit être listé en dernier"
 
 #, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"

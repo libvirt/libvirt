@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-01-09 09:28+0000\n"
+"POT-Creation-Date: 2025-02-24 10:18+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -839,6 +839,22 @@ msgstr ""
 "際にエラーが発生しました"
 
 #, c-format
+msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to parse and process events"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to process JSON event doc: %2$s"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to read ch events!: %2$s"
+msgstr ""
+
+#, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr "%1$s: ファイル '%2$s' が大きすぎます\n"
 
@@ -855,6 +871,10 @@ msgid ""
 msgstr ""
 "%1$s: ルート定義で IPv4 ファミリーが IPv4 以外のゲートウェイ '%2$s' に指定さ"
 "れています"
+
+#, c-format
+msgid "%1$s: Invalid JSON event doc: %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1285,6 +1305,20 @@ msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "%2$llu から始まる '%1$s' が利用できるのは %3$zd バイトのみです"
 
 msgid ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
 "'--wipe-storage' には、'--storage <string>' または '--remove-all-storage' が"
@@ -1460,15 +1494,16 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 "'pool' と 'volume' は 'pool' タイプのソースと同時に指定する必要があります"
 
+msgid "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' は virtio-scsi のみによりサポートされます"
 
 msgid ""
-"'reconnect' attribute unsupported 'server' mode for <interface "
-"type='vhostuser'>"
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 msgstr ""
-"'reconnect' 属性で <interface type='vhostuser'> の 'server' モードはサポート"
-"されません"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1480,6 +1515,9 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
+msgstr ""
+
+msgid "'return' member missing"
 msgstr ""
 
 #, c-format
@@ -2995,6 +3033,9 @@ msgstr "ログディレクトリー '%1$s' を作成できません"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "このプラットフォームにおいて macvlan デバイスを作成できません"
+
+msgid "Cannot create monitor FIFO"
+msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4516,9 +4557,6 @@ msgstr "名前 '%1$s' を持つドメインを見つけられませんでした"
 msgid "Could not find host system specified in '%1$s'"
 msgstr "'%1$s' に指定されているホストシステムを見つけられませんでした"
 
-msgid "Could not find matching device"
-msgstr "一致するデバイスを見つけられませんでした"
-
 #, c-format
 msgid "Could not find matching device '%1$s'"
 msgstr "一致するデバイス '%1$s' を見つけられませんでした"
@@ -4640,6 +4678,10 @@ msgstr "ACL 技術ドライバー '%1$s' へのアクセス権を取得できま
 
 msgid "Could not get checkpoint name"
 msgstr "チェックポイント名を取得できませんでした"
+
+#, c-format
+msgid "Could not get count of free %1$uKiB pages, no data returned"
+msgstr ""
 
 msgid "Could not get current time"
 msgstr "現在の時刻を取得できません"
@@ -6303,10 +6345,6 @@ msgstr "ハッシュテーブルキー '%1$s' を複製します"
 
 msgid "Duplicate info for NUMA latencies"
 msgstr "NUMA レイテンシーの情報を複製します"
-
-#, c-format
-msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -8521,6 +8559,10 @@ msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "ストレージボリューム '%1$s'(%2$s) の削除に失敗しました"
 
 #, c-format
+msgid "Failed to remove the file: %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to reportluns: %1$s"
 msgstr "reportluns に失敗しました: %1$s"
 
@@ -8857,8 +8899,8 @@ msgstr "ターゲット名の設定に失敗しました: %1$s"
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr "libxenlight を用いたドメイン '%1$d' の仮想 CPU 数の設定に失敗しました"
 
-msgid "Failed to setup keepalive on connection\n"
-msgstr "接続時にキープアライブを設定できませんでした\n"
+msgid "Failed to setup keepalive on connection"
+msgstr ""
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -8898,10 +8940,6 @@ msgstr "ドメイン '%1$s' の起動に失敗しました"
 #, c-format
 msgid "Failed to start interface %1$s"
 msgstr "インターフェイス %1$s の開始に失敗しました"
-
-#, c-format
-msgid "Failed to start job on VM '%1$s': %2$s"
-msgstr "仮想マシン '%1$s' においてジョブの開始に失敗しました: %2$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
@@ -9757,6 +9795,12 @@ msgstr "I/O エラー"
 msgid "I/O error"
 msgstr "I/O エラー"
 
+#, c-format
+msgid ""
+"I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
+"message='%5$s'"
+msgstr ""
+
 msgid "I/O size in bytes"
 msgstr "I/O サイズ (バイト単位)"
 
@@ -10290,11 +10334,9 @@ msgstr ""
 "ンドポイントデバイスのみです"
 
 msgid ""
-"Invalid attempt to set network interface guest-side IP route and/or address "
-"info, not supported by QEMU"
+"Invalid attempt to set network interface guest-side IP address info, not "
+"supported by QEMU"
 msgstr ""
-"ネットワークインターフェイスのゲスト側の IP ルートやアドレス情報を設定しよう"
-"とする無効な試みです、QEMU ではサポートされません"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -11958,6 +12000,10 @@ msgstr "JSON ドキュメントに client データがありません"
 msgid "Missing clients data in JSON document"
 msgstr "JSON ドキュメントに clients データがありません"
 
+#, c-format
+msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
+msgstr ""
+
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON ファイルに defaultLockspace データがありません"
 
@@ -12192,6 +12238,10 @@ msgstr "回答でプロパティー '%1$s' がありません"
 
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON 状態ドキュメントに readonly 項目がありません"
+
+#, c-format
+msgid "Missing ref property on ccw_device in members for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12510,6 +12560,9 @@ msgstr "NUMA ノード %1$zu を利用できません"
 
 msgid "NUMA node selections to set"
 msgstr "設定する NUMA ノードのセット"
+
+msgid "NUMA nodes are not supported for virtio-mem-ccw"
+msgstr ""
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr "CPU のない NUMA ノードをイニシエーターにすることはできません"
@@ -13401,6 +13454,9 @@ msgstr "vz ドライバーでは、ハードディスクと cdrom のみがサ�
 msgid "Only ide and scsi disk support wwn"
 msgstr "IDE および SCSI ディスクのみが WWN をサポートします"
 
+msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
 msgid "Only luks encryption is supported for raw files"
 msgstr "raw ファイルでは luks 暗号化のみがサポートされます"
 
@@ -13477,8 +13533,8 @@ msgstr "vz ドライバーでは、ploop fs ドライバーのみがサポート
 msgid "Only read-only pflash is supported."
 msgstr "読み取り専用の pflash のみがサポートされます。"
 
-msgid "Only scsi disk supports vendor and product"
-msgstr "SCSI ディスクのみがベンダーと製品名をサポートします"
+msgid "Only scsi disk supports 'vendor'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15652,6 +15708,10 @@ msgstr "SPICE オーディオは SPICE グラフィックスがない場合は�
 msgid "Start"
 msgstr "起動"
 
+#, c-format
+msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
+msgstr ""
+
 msgid "Start a block commit operation."
 msgstr "ブロックのコミット操作の開始"
 
@@ -15907,10 +15967,8 @@ msgstr "ストレージソースがプールと競合します: '%1$s'"
 
 #, c-format
 msgid ""
-"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"
+"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
 msgstr ""
-"ストレージボリューム '%1$s'(%2$s) が libvirt により管理されていません。手動で"
-"削除してください。\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr ""
@@ -17014,8 +17072,10 @@ msgstr ""
 "'%1$s' 機能の 'eoi' 属性は、アーキテクチャー '%2$s' またはマシンタイプ "
 "'%3$s' ではサポートされません"
 
-msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr "'passt' バックエンドは、interface type='user' でのみ使用できます"
+msgid ""
+"The 'passt' backend can only be used with interface type='user' or "
+"type='vhostuser'"
+msgstr ""
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
@@ -17033,8 +17093,8 @@ msgstr ""
 "用できます"
 
 msgid ""
-"The <portForward> element can only be used with <interface type='user'> and "
-"its 'passt' backend"
+"The <portForward> element can only be used with the 'passt' backend of "
+"interface type='user' or type='vhostuser'"
 msgstr ""
 
 msgid ""
@@ -18842,6 +18902,9 @@ msgid "Unable to get physical function status on this platform"
 msgstr ""
 "このプラットフォームにおいて物理ファンクションのステータスを取得できません"
 
+msgid "Unable to get pointer to VirtualBox vtable"
+msgstr ""
+
 msgid "Unable to get remote socket name"
 msgstr "リモートソケット名を取得できません"
 
@@ -18907,6 +18970,9 @@ msgstr "デバイスストリームミューテックスを初期化できませ
 
 msgid "Unable to initialize RW lock"
 msgstr "RW ロックを初期化できません"
+
+msgid "Unable to initialize VirtualBox C API client"
+msgstr ""
 
 msgid "Unable to initialize audit layer"
 msgstr "監査レイヤーの初期化に失敗しました"
@@ -19248,6 +19314,9 @@ msgstr "TSC 周波数をプローブできません"
 msgid "Unable to process file with flags %1$d"
 msgstr "フラグ %1$d を持つファイルを処理できません"
 
+msgid "Unable to query NVMe disk address"
+msgstr ""
+
 msgid "Unable to query TSC scaling support"
 msgstr "TSC スケーリングサポートをクエリーできません"
 
@@ -19309,9 +19378,6 @@ msgstr "ipv6 転送チェックの用に %1$s を読み取ることができま�
 
 msgid "Unable to read TLS confirmation"
 msgstr "TLS 確認を読み込めません"
-
-msgid "Unable to read cache data"
-msgstr "キャッシュデータを読み取れません"
 
 msgid "Unable to read container pty"
 msgstr "コンテナー PTY を読み込みできません"
@@ -21247,8 +21313,8 @@ msgid "Vol %1$s wiped\n"
 msgstr "ボリューム %1$s が完全消去されました\n"
 
 #, c-format
-msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr "ボリューム '%1$s' がドメインの定義において見つかりませんでした。\n"
+msgid "Volume '%1$s' was not found in domain's definition."
+msgstr ""
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -21424,14 +21490,6 @@ msgstr "USB ハブのアドレスタイプが間違っています"
 
 msgid "Wrong length MAC address"
 msgstr "MAC アドレスの長さが違います"
-
-msgid ""
-"Wrong or no <model> 'type' attribute specified with <interface "
-"type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
-msgstr ""
-"<interface type='vhostuser'/> で <model> 'type' 属性が間違って指定されている"
-"か、または指定されていません。vhostuser には virtio-net* フロントエンドが必要"
-"です"
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE が有効ですが 'bytes' がありませんでした"
@@ -21708,9 +21766,25 @@ msgstr "復帰後、一時停止状態への変更"
 msgid "after reverting, change state to running"
 msgstr "復帰後、実行状態への変更"
 
+msgid "aia feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "aia feature is only supported with RISC-V Virt machines"
+msgstr ""
+
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d はサポートされません"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+msgstr ""
+"コマンド '%1$s' のエイリアス '%2$s' では、エイリアスタイプが一致しません"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has missing alias option"
+msgstr ""
+"コマンド '%1$s' のエイリアス '%2$s' には、エイリアスオプションがありません"
 
 msgid "all CPU models are accepted"
 msgstr "すべての CPU モデルを受け入れます"
@@ -22136,6 +22210,9 @@ msgid ""
 msgstr ""
 "帯域幅 %1$llu は、この API でサポートされる最大値 %2$lu よりも大きいです"
 
+msgid "bandwidth (in MiB/s) available for the final phase of migration"
+msgstr ""
+
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
@@ -22354,6 +22431,16 @@ msgstr "bond インターフェイスの miimon updelay が無効です"
 
 msgid "bond interface misses the bond element"
 msgstr "bond インターフェイスに bond 要素がありません"
+
+#, c-format
+msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+msgstr ""
+"コマンド '%1$s' の bool パラメーター '%2$s' にはコンプリーターセットがありま"
+"す"
+
+#, c-format
+msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
+msgstr ""
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -24370,12 +24457,44 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "コマンド '%1$s' はオプション --%2$s をサポートしていません"
 
 #, c-format
+msgid "command '%1$s' has handler set"
+msgstr "コマンド '%1$s' にはハンドラーが設定されています"
+
+#, c-format
+msgid "command '%1$s' has info set"
+msgstr "コマンド '%1$s' には情報が設定されています"
+
+#, c-format
+msgid "command '%1$s' has multiple flags set"
+msgstr "コマンド '%1$s' には複数のフラグが設定されています"
+
+#, c-format
+msgid "command '%1$s' has options set"
+msgstr "コマンド '%1$s' にはオプションが設定されています"
+
+#, c-format
+msgid "command '%1$s' lacks help"
+msgstr "コマンド '%1$s' にはヘルプがありません"
+
+#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "コマンド '%1$s' には --%2$s オプションが必要です"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "コマンド '%1$s' には <%2$s> オプションが必要です"
+
+msgid "command 'domblkinfo' requires <device> option"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgstr "コマンドエイリアス '%1$s' は、存在しないコマンド '%2$s' を指しています"
+
+#, c-format
+msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgstr ""
+"コマンドエイリアス '%1$s' は、別のコマンドエイリアス '%2$s' を指しています"
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
@@ -24431,6 +24550,12 @@ msgstr "互換性オプションは qcow2 でしか使用できません"
 
 msgid "completed"
 msgstr "完了"
+
+#, c-format
+msgid ""
+"completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
+"completer is used"
+msgstr ""
 
 msgid "compress level for multithread compression"
 msgstr "マルチスレッド圧縮の圧縮レベル"
@@ -25706,16 +25831,23 @@ msgid "disk '%1$s' not found in domain"
 msgstr "ディスク '%1$s' はドメインで見つかりません"
 
 #, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
+"the deleted snapshot"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
+msgstr ""
+
+#, c-format
 msgid "disk '%1$s' specified twice"
 msgstr "ディスク '%1$s' が二重定義されました"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "ディスク '%1$s' はドメイン設定で見つかりませんでした"
-
-msgid ""
-"disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "ディスク属性: disk[,checkpoint=type][,bitmap=name]"
@@ -25813,14 +25945,6 @@ msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "ディスク ioeventfd モードは virtio バスに対してのみサポートされます"
 
 #, c-format
-msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
-
-#, c-format
-msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
-
-#, c-format
 msgid "disk iotune field '%1$s' must be an integer"
 msgstr "ディスク iotune フィールド '%1$s' は整数でなければなりません"
 
@@ -25846,8 +25970,8 @@ msgstr ""
 "ディスクポートアドレスは、トンネルマイグレーションではサポートされていません"
 
 #, c-format
-msgid "disk product is more than %1$d characters"
-msgstr "ディスク製品は %1$d 文字より多いです"
+msgid "disk product is more than %1$zu characters"
+msgstr ""
 
 msgid "disk product is not printable string"
 msgstr "ディスク製品名が表示できない文字列です"
@@ -26340,6 +26464,10 @@ msgstr "同じ iothread '%1$u' の iothreadpin を複製します"
 msgid "duplicate key '%1$s'"
 msgstr "キー '%1$s' を複製します"
 
+#, c-format
+msgid "duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 msgid "duplicate native vlan setting"
 msgstr "ネイティブ VLAN 設定を複製します"
 
@@ -26651,8 +26779,9 @@ msgstr "ドメインを再開中にエラーが発生しました"
 msgid "error while suspending the domain"
 msgstr "ドメインを休止中にエラーが発生しました"
 
-msgid "error: "
-msgstr "エラー: "
+#, c-format
+msgid "error: %1$s\n"
+msgstr ""
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "error_policy は vhostuser ディスクではサポートされません"
@@ -27397,6 +27526,10 @@ msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
 msgstr ""
 "%1$x:%2$x 用の USB デバイス busnum:devnum を見つけることができませんでした"
 
+#, c-format
+msgid "failed to find a supported CCW group capability type '%1$s'"
+msgstr ""
+
 msgid "failed to find an empty memory slot"
 msgstr "空のメモリースロットを見つけることができませんでした"
 
@@ -27785,6 +27918,9 @@ msgstr "%1$s の解析に失敗しました"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion の解析に失敗しました"
+
+msgid "failed to parse JSON returned by qemu"
+msgstr ""
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -28268,12 +28404,19 @@ msgstr "ヘッダーをドメイン保存ファイル '%1$s' に書き込みで�
 msgid "failed to write known_host file '%1$s': %2$s"
 msgstr "known_host ファイル '%1$s' の書き込みに失敗しました: %2$s"
 
+#, c-format
+msgid "failed to write log file: %1$s"
+msgstr ""
+
 msgid "failed to write master key file for domain"
 msgstr "ドメインのマスターキーファイルの書き込みに失敗しました"
 
 #, c-format
 msgid "failed to write padding to '%1$s'"
 msgstr "'%1$s' へのパディングの書き込みに失敗しました"
+
+msgid "failed to write secret"
+msgstr ""
 
 msgid "failed to write secret file"
 msgstr "シークレットファイルの書き込みに失敗しました"
@@ -29880,6 +30023,10 @@ msgid "invalid driver type for version detection"
 msgstr "バージョン検出のための無効なドライバータイプ"
 
 #, c-format
+msgid "invalid empty data-file definition in '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
 msgstr "無効な失敗時アクション: '%1$s'\n"
 
@@ -30015,8 +30162,8 @@ msgid "invalid mode"
 msgstr "無効なモード"
 
 #, c-format
-msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr "タイプ '%1$s' のインターフェイスの無効なモデル:'%2$s'"
+msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
+msgstr ""
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -30225,6 +30372,10 @@ msgstr ""
 "れます"
 
 #, c-format
+msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid unique_id supplied for '%1$s'"
 msgstr "'%1$s' に無効な unique_id が提供されました"
 
@@ -30341,6 +30492,10 @@ msgstr ""
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d が見つかりません"
 
+#, c-format
+msgid "iothread '%1$u' not defined in iothreadid"
+msgstr ""
+
 msgid "iothread for the new IOThread"
 msgstr "新しい IOThread の iothread"
 
@@ -30349,6 +30504,14 @@ msgstr "既存の IOThread の iothread ID"
 
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread は vhostuser ディスクではサポートされません"
+
+#, c-format
+msgid "iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
@@ -30360,6 +30523,9 @@ msgstr "削除する IOThread の iothread_id"
 #, c-format
 msgid "iothreadid %1$d not found"
 msgstr "iothreadid %1$d が見つかりません"
+
+msgid "iothreads are supported only by 'virtio-scsi' controllers"
+msgstr ""
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune は vhostuser ディスクではサポートされません"
@@ -31589,6 +31755,12 @@ msgstr "マイグレーション帯域の MiB/s 単位の制限"
 msgid "migration canceled"
 msgstr "マイグレーションが取り消されました"
 
+#, c-format
+msgid ""
+"migration failed. Message from the source host: %1$s. Message from the "
+"destination host: %2$s"
+msgstr ""
+
 msgid "migration in"
 msgstr "以下の移行"
 
@@ -32109,6 +32281,10 @@ msgstr "QEMU ケイパビリティーキャッシュにフラグ名がありま�
 #, c-format
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "パス '%1$s' の gluster ボリューム名がありません"
+
+#, c-format
+msgid "missing group_device value for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -32817,6 +32993,12 @@ msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
 "複数のメモリーデバイスが見つかった場合は、--alias または --node を使用して 1 "
 "つを選択します"
+
+#, c-format
+msgid ""
+"multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
+"not allowed"
+msgstr ""
 
 msgid "multiple stream callbacks not supported"
 msgstr "複数ストリームのコールバックはサポートされません"
@@ -34055,15 +34237,15 @@ msgstr "外部 TPM デバイスでサポートされるのは 'connect' モー�
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pc-dimm デバイスでサポートされるのは 'dimm' アドレスのみです"
 
-#, c-format
-msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr "%1$s デバイスでサポートされるのは 'pci' アドレスのみです"
-
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "共有メモリーデバイスでサポートされるのは 'pci' アドレスのみです"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "virtio-pmem デバイスでサポートされるのは 'pci' アドレスのみです"
+
+#, c-format
+msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
+msgstr ""
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr ""
@@ -34383,8 +34565,8 @@ msgid "output to stderr"
 msgstr "stderr への出力"
 
 #, c-format
-msgid "overflow in converting %1$ld MiB/s to bytes\n"
-msgstr "%1$ld MiB/s をバイトに変換する際のオーバーフロー\n"
+msgid "overflow in converting %1$ld MiB/s to bytes"
+msgstr ""
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
@@ -34474,6 +34656,28 @@ msgstr "パラメーター '%1$s' はサポートされません"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "パラメーター '%1$s' が複数回現れています"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+msgstr ""
+"コマンド '%1$s' のパラメーター '%2$s' のエイリアスオプションが正しくありませ"
+"ん"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
+msgstr ""
+"コマンド '%1$s' のパラメーター '%2$s' は、オプションのパラメーターの前に記載"
+"する必要があります"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' must be listed last"
+msgstr ""
+"コマンド '%1$s' のパラメーター '%2$s' は、最後に記載されなければなりません"
 
 msgid "parameter=value"
 msgstr "パラメーター=値"
@@ -35750,6 +35954,12 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "原子性の操作の要求"
 
+#, c-format
+msgid ""
+"required positional argument '%1$s' declared after an optional positional "
+"argument '%2$s' of command '%3$s'"
+msgstr ""
+
 msgid "resctrl locking is not supported on this platform"
 msgstr "resctrl ロックはこのプラットフォームではサポートされません"
 
@@ -36933,6 +37143,11 @@ msgstr "要約統計はまだサポートされていません"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
 msgstr "ドメインディスクの定義に <cipher> を提供する必要はありません"
+
+msgid ""
+"support for offline external snapshots while checkpoint exists was not yet "
+"implemented"
+msgstr ""
 
 msgid "suspend a domain"
 msgstr "ドメインの一時停止"
@@ -38327,6 +38542,9 @@ msgstr "スナップショットのフィルターを実行できません"
 
 msgid "unable to poll on child"
 msgstr "子においてポーリングできません"
+
+msgid "unable to query block list"
+msgstr ""
 
 msgid "unable to query cgroup BPF progs"
 msgstr "cgroup BPF progs をクエリーできません"
@@ -39741,6 +39959,10 @@ msgid "unsupported rtc timer track '%1$s'"
 msgstr "サポートされない rtc timer track '%1$s'"
 
 #, c-format
+msgid "unsupported save image format: %1$d"
+msgstr ""
+
+#, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
 msgstr "移行 URI %1$s のサポートされないスキーム %2$s"
 
@@ -39793,6 +40015,12 @@ msgstr "終り方が不適切な数字です"
 
 msgid "unterminated string"
 msgstr "終り方が不適切な文字列です"
+
+#, c-format
+msgid ""
+"unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
+"used together with positional"
+msgstr ""
 
 msgid "update device from an XML file"
 msgstr "XML ファイルによるデバイスの更新"
@@ -39922,6 +40150,9 @@ msgid ""
 msgstr ""
 "ディスクターゲット名 '%1$s' を使用することは、SCSI ホストデバイスアドレス "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u と競合します"
+
+msgid "using host CPU definition as input may provide incorrect results"
+msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
@@ -40428,6 +40659,9 @@ msgstr ""
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、virtio-mem はサポートされません"
 
+msgid "virtio-mem-ccw can't use different page size than the boot memory"
+msgstr ""
+
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
@@ -40901,6 +41135,78 @@ msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
 
+#~ msgid ""
+#~ "'reconnect' attribute unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "'reconnect' 属性で <interface type='vhostuser'> の 'server' モードはサポー"
+#~ "トされません"
+
+#~ msgid "Could not find matching device"
+#~ msgstr "一致するデバイスを見つけられませんでした"
+
+#~ msgid "Failed to setup keepalive on connection\n"
+#~ msgstr "接続時にキープアライブを設定できませんでした\n"
+
+#, c-format
+#~ msgid "Failed to start job on VM '%1$s': %2$s"
+#~ msgstr "仮想マシン '%1$s' においてジョブの開始に失敗しました: %2$s"
+
+#~ msgid ""
+#~ "Invalid attempt to set network interface guest-side IP route and/or "
+#~ "address info, not supported by QEMU"
+#~ msgstr ""
+#~ "ネットワークインターフェイスのゲスト側の IP ルートやアドレス情報を設定しよ"
+#~ "うとする無効な試みです、QEMU ではサポートされません"
+
+#~ msgid "Only scsi disk supports vendor and product"
+#~ msgstr "SCSI ディスクのみがベンダーと製品名をサポートします"
+
+#, c-format
+#~ msgid ""
+#~ "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it "
+#~ "manually.\n"
+#~ msgstr ""
+#~ "ストレージボリューム '%1$s'(%2$s) が libvirt により管理されていません。手"
+#~ "動で削除してください。\n"
+
+#~ msgid "The 'passt' backend can only be used with interface type='user'"
+#~ msgstr "'passt' バックエンドは、interface type='user' でのみ使用できます"
+
+#~ msgid "Unable to read cache data"
+#~ msgstr "キャッシュデータを読み取れません"
+
+#, c-format
+#~ msgid "Volume '%1$s' was not found in domain's definition.\n"
+#~ msgstr "ボリューム '%1$s' がドメインの定義において見つかりませんでした。\n"
+
+#~ msgid ""
+#~ "Wrong or no <model> 'type' attribute specified with <interface "
+#~ "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
+#~ msgstr ""
+#~ "<interface type='vhostuser'/> で <model> 'type' 属性が間違って指定されてい"
+#~ "るか、または指定されていません。vhostuser には virtio-net* フロントエンド"
+#~ "が必要です"
+
+#, c-format
+#~ msgid "disk product is more than %1$d characters"
+#~ msgstr "ディスク製品は %1$d 文字より多いです"
+
+#~ msgid "error: "
+#~ msgstr "エラー: "
+
+#, c-format
+#~ msgid "invalid model for interface of type '%1$s': '%2$s'"
+#~ msgstr "タイプ '%1$s' のインターフェイスの無効なモデル:'%2$s'"
+
+#, c-format
+#~ msgid "only 'pci' addresses are supported for the %1$s device"
+#~ msgstr "%1$s デバイスでサポートされるのは 'pci' アドレスのみです"
+
+#, c-format
+#~ msgid "overflow in converting %1$ld MiB/s to bytes\n"
+#~ msgstr "%1$ld MiB/s をバイトに変換する際のオーバーフロー\n"
+
 #~ msgid "Cannot set a base label with AppArmour"
 #~ msgstr "AppArmour を用いてベースラベルを設定できません"
 
@@ -41258,58 +41564,12 @@ msgstr ""
 #~ msgstr "[[--%1$s] <string>]..."
 
 #, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-#~ msgstr ""
-#~ "コマンド '%1$s' のエイリアス '%2$s' では、エイリアスタイプが一致しません"
-
-#, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
-#~ msgstr ""
-#~ "コマンド '%1$s' のエイリアス '%2$s' には、エイリアスオプションがありません"
-
-#, c-format
-#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-#~ msgstr ""
-#~ "コマンド '%1$s' の bool パラメーター '%2$s' にはコンプリーターセットがあり"
-#~ "ます"
-
-#, c-format
-#~ msgid "command '%1$s' has handler set"
-#~ msgstr "コマンド '%1$s' にはハンドラーが設定されています"
-
-#, c-format
 #~ msgid "command '%1$s' has inconsistent alias"
 #~ msgstr "コマンド '%1$s' には一貫性のないエイリアスがあります"
 
 #, c-format
-#~ msgid "command '%1$s' has info set"
-#~ msgstr "コマンド '%1$s' には情報が設定されています"
-
-#, c-format
-#~ msgid "command '%1$s' has multiple flags set"
-#~ msgstr "コマンド '%1$s' には複数のフラグが設定されています"
-
-#, c-format
-#~ msgid "command '%1$s' has options set"
-#~ msgstr "コマンド '%1$s' にはオプションが設定されています"
-
-#, c-format
 #~ msgid "command '%1$s' has too many options"
 #~ msgstr "コマンド '%1$s' にはオプションが多すぎます"
-
-#, c-format
-#~ msgid "command '%1$s' lacks help"
-#~ msgstr "コマンド '%1$s' にはヘルプがありません"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-#~ msgstr ""
-#~ "コマンドエイリアス '%1$s' は、存在しないコマンド '%2$s' を指しています"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-#~ msgstr ""
-#~ "コマンドエイリアス '%1$s' は、別のコマンドエイリアス '%2$s' を指しています"
 
 #~ msgid ""
 #~ "command groups and command are both NULL run vshInit before reloading"
@@ -41362,28 +41622,9 @@ msgstr ""
 #~ msgstr "'%1$s' にマッピングがありません"
 
 #, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-#~ msgstr ""
-#~ "コマンド '%1$s' のパラメーター '%2$s' のエイリアスオプションが正しくありま"
-#~ "せん"
-
-#, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
 #~ msgstr ""
 #~ "コマンド '%1$s' のパラメーター '%2$s' が VSH_OFLAG_REQ を誤用しました"
-
-#, c-format
-#~ msgid ""
-#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
-#~ "parameters"
-#~ msgstr ""
-#~ "コマンド '%1$s' のパラメーター '%2$s' は、オプションのパラメーターの前に記"
-#~ "載する必要があります"
-
-#, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
-#~ msgstr ""
-#~ "コマンド '%1$s' のパラメーター '%2$s' は、最後に記載されなければなりません"
 
 #, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"

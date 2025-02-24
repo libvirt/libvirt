@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-01-09 09:28+0000\n"
+"POT-Creation-Date: 2025-02-24 10:18+0000\n"
 "PO-Revision-Date: 2024-11-13 20:38+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -832,6 +832,22 @@ msgstr ""
 "sítě v definici trasy"
 
 #, c-format
+msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to parse and process events"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to process JSON event doc: %2$s"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to read ch events!: %2$s"
+msgstr ""
+
+#, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr "%1$s: Soubor „%2$s“ je příliš velký\n"
 
@@ -844,6 +860,10 @@ msgstr "%1$s: v definici trasy zadána generace IPv4 pro ne-IPv4 adresu „%2$s�
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%1$s: V definici trasy zadána generace IPv4 pro ne-IPv4 bránu „%2$s“"
+
+#, c-format
+msgid "%1$s: Invalid JSON event doc: %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1269,6 +1289,20 @@ msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "„%1$s“ začínající od %2$llu má k dispozici pouze %3$zd bajtů"
 
 msgid ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
 "'--wipe-storage' vyžaduje '--storage <řetězec>' nebo '--remove-all-storage'"
@@ -1448,15 +1482,16 @@ msgstr ""
 "je třeba, aby pro zdroj typu 'pool' (fond) bylo zadáno jak 'pool', tak "
 "'volume' (svazek)"
 
+msgid "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' (fronty) jsou podporované pouze řadičem virtio-scsi"
 
 msgid ""
-"'reconnect' attribute unsupported 'server' mode for <interface "
-"type='vhostuser'>"
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 msgstr ""
-"atributem 'reconnect' nepodporovaný režim 'server' pro <interface "
-"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1471,6 +1506,9 @@ msgid ""
 msgstr ""
 "pokud se v prvku memory nachází režim 'restrictive', pak je také v prvku "
 "memnode zapotřebí režimu 'restrictive'"
+
+msgid "'return' member missing"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -2988,6 +3026,9 @@ msgstr "Nedaří se vytvořit složku „%1$s“ pro záznam událostí (log)"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "Na této platformě není možné vytvářet macvlan zařízení"
+
+msgid "Cannot create monitor FIFO"
+msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4551,9 +4592,6 @@ msgstr "Nepodařilo se najít doménu s názvem „%1$s“"
 msgid "Could not find host system specified in '%1$s'"
 msgstr "Nepodařilo se nalézt hostitelský systém určený v „%1$s“"
 
-msgid "Could not find matching device"
-msgstr "Nepodařilo se najít odpovídající zařízení"
-
 #, c-format
 msgid "Could not find matching device '%1$s'"
 msgstr "Nepodařilo se nalézt odpovídající zařízení „%1$s“"
@@ -4675,6 +4713,10 @@ msgstr "Nedaří se získat přístup k ACL tech ovladači „%1$s“"
 
 msgid "Could not get checkpoint name"
 msgstr "Nepodařilo se získat název kontrolního bodu"
+
+#, c-format
+msgid "Could not get count of free %1$uKiB pages, no data returned"
+msgstr ""
 
 msgid "Could not get current time"
 msgstr "Nedaří se získat aktuální čas"
@@ -6340,10 +6382,6 @@ msgstr "Duplicitní klíč „%1$s“ tabulky otisků (hash)"
 
 msgid "Duplicate info for NUMA latencies"
 msgstr "Duplicitní informace ohledně prodlev NUMA"
-
-#, c-format
-msgid "Duplicate mapping for iothread '%1$u'"
-msgstr ""
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -8552,6 +8590,10 @@ msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "Nepodařilo se odebrat svazek úložiště „%1$s“(%2$s)"
 
 #, c-format
+msgid "Failed to remove the file: %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to reportluns: %1$s"
 msgstr "Nepodařilo se nahlásit lun čísla: %1$s"
 
@@ -8886,8 +8928,8 @@ msgstr "Nepodařilo se nastavit název cíle: %1$s"
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr "Nepodařilo se nastavit vcpus pro doménu „%1$d“ s libxenlight"
 
-msgid "Failed to setup keepalive on connection\n"
-msgstr "Nepodařilo se nastavit udržování spojení\n"
+msgid "Failed to setup keepalive on connection"
+msgstr ""
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -8929,10 +8971,6 @@ msgstr "Nepodařilo se spustit doménu „%1$s“"
 #, c-format
 msgid "Failed to start interface %1$s"
 msgstr "Rozhraní %1$s se nepodařilo spustit"
-
-#, c-format
-msgid "Failed to start job on VM '%1$s': %2$s"
-msgstr "Nepodařilo se spustit úlohu na virt. stroji „%1$s“: %2$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
@@ -9779,6 +9817,12 @@ msgstr "Chyba vst./výstupu"
 msgid "I/O error"
 msgstr "chyba vstupu/výstupu"
 
+#, c-format
+msgid ""
+"I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
+"message='%5$s'"
+msgstr ""
+
 msgid "I/O size in bytes"
 msgstr "velikost vstup./výstupu v bajtech"
 
@@ -10312,11 +10356,9 @@ msgstr ""
 "zařízení koncových bodů PCI"
 
 msgid ""
-"Invalid attempt to set network interface guest-side IP route and/or address "
-"info, not supported by QEMU"
+"Invalid attempt to set network interface guest-side IP address info, not "
+"supported by QEMU"
 msgstr ""
-"Neplatný pokus o nastavení IP trasy a/nebo informace o adrese na síťovém "
-"rozhraní na straně hosta – nepodporováno QEMU"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -11977,6 +12019,10 @@ msgstr "V JSON dokumentu chybí data klienta"
 msgid "Missing clients data in JSON document"
 msgstr "V JSON dokumentu chybí data o klientech"
 
+#, c-format
+msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
+msgstr ""
+
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "Chybí defaultLockspace data z JSON souboru"
 
@@ -12221,6 +12267,10 @@ msgstr "V odpovědi chybí vlastnost '%1$s'"
 
 msgid "Missing readonly field in JSON state document"
 msgstr "V JSON stavovém dokumentu chybí kolonka readonly (pouze pro čtení)"
+
+#, c-format
+msgid "Missing ref property on ccw_device in members for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12532,6 +12582,9 @@ msgstr "NUMA uzel %1$z není k dispozici"
 
 msgid "NUMA node selections to set"
 msgstr "Výběr NUMA uzlů, který nastavit"
+
+msgid "NUMA nodes are not supported for virtio-mem-ccw"
+msgstr ""
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr "NUMA uzly bez procesorů nemohou být iniciátory"
@@ -13426,6 +13479,9 @@ msgstr "Ovladač vz podporuje pouze pevné disky a mechaniky optických disků."
 msgid "Only ide and scsi disk support wwn"
 msgstr "wwn je podporováno pouze ide a scsi disky"
 
+msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
 msgid "Only luks encryption is supported for raw files"
 msgstr "u raw souborů je podporováno pouze šifrování luks"
 
@@ -13501,8 +13557,8 @@ msgstr "Ovladačem vz je podporován pouze ovladač souborového systému ploop.
 msgid "Only read-only pflash is supported."
 msgstr "Je podporováno pflash pouze pro čtení."
 
-msgid "Only scsi disk supports vendor and product"
-msgstr "Pouze scsi disk podporuje výrobce a produkt"
+msgid "Only scsi disk supports 'vendor'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15648,6 +15704,10 @@ msgstr "Spice audio není podporováno bez spice grafiky"
 msgid "Start"
 msgstr "Spustit"
 
+#, c-format
+msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
+msgstr ""
+
 msgid "Start a block commit operation."
 msgstr "Zahájit operaci odeslání bloku."
 
@@ -15901,9 +15961,8 @@ msgstr "Zdroj úložiště koliduje s fondem: „%1$s“"
 
 #, c-format
 msgid ""
-"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"
+"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
 msgstr ""
-"Svazek úložiště „%1$s“(%2$s) není spravován libvirt. Odeberte ho ručně.\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr "Smazání svazku úložiště je podporované pouze na zastavených doménách"
@@ -16983,8 +17042,10 @@ msgstr ""
 "Atribut 'eoi' funkce „%1$s“ není pro architekturu „%2$s“ nebo typ stroje "
 "„%3$s“ podporován"
 
-msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr "Podpůrnou vrstvu 'passt' je možné použít pouze s rozhraním type='user'"
+msgid ""
+"The 'passt' backend can only be used with interface type='user' or "
+"type='vhostuser'"
+msgstr ""
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
@@ -17001,11 +17062,9 @@ msgstr ""
 "Prvek <nat> je možné použít pouze když <forward> 'mode' je 'nat' v síti %1$s"
 
 msgid ""
-"The <portForward> element can only be used with <interface type='user'> and "
-"its 'passt' backend"
+"The <portForward> element can only be used with the 'passt' backend of "
+"interface type='user' or type='vhostuser'"
 msgstr ""
-"Prvek <portForward> je možné použít pouze s <interface type='user'> a jeho "
-"podpůrnou vrstvou 'passt'"
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
@@ -18806,6 +18865,9 @@ msgstr "Nedaří se získat události výkonu"
 msgid "Unable to get physical function status on this platform"
 msgstr "Na této platformě se nedaří získat stav fyzické funkce"
 
+msgid "Unable to get pointer to VirtualBox vtable"
+msgstr ""
+
 msgid "Unable to get remote socket name"
 msgstr "Nedaří se získat název soketu na protějšku"
 
@@ -18870,6 +18932,9 @@ msgstr "Nedaří se inicializovat zámek výhradního přístupu k proudu zaří
 
 msgid "Unable to initialize RW lock"
 msgstr "Nedaří se inicializovat zámek pro čtení/zápis"
+
+msgid "Unable to initialize VirtualBox C API client"
+msgstr ""
 
 msgid "Unable to initialize audit layer"
 msgstr "Nedaří se inicializovat auditní vrstvu"
@@ -19214,6 +19279,9 @@ msgstr "Nedaří se zkoumat frekvenci čítače časového razítka (TSC)"
 msgid "Unable to process file with flags %1$d"
 msgstr "Nedaří se zpracovat soubor s příznaky %1$d"
 
+msgid "Unable to query NVMe disk address"
+msgstr ""
+
 msgid "Unable to query TSC scaling support"
 msgstr "Nepodařilo se dotázat na podporu TSC škálování"
 
@@ -19275,9 +19343,6 @@ msgstr "Nedaří se číst %1$s ohledně kontrol ipv6 přeposílání"
 
 msgid "Unable to read TLS confirmation"
 msgstr "Nedaří se číst TLS potvrzení"
-
-msgid "Unable to read cache data"
-msgstr "Nedaří se číst data z mezipaměti"
 
 msgid "Unable to read container pty"
 msgstr "Nedaří se číst z pseudoterminálu kontejneru"
@@ -21201,8 +21266,8 @@ msgid "Vol %1$s wiped\n"
 msgstr "Svazek %1$s vymazán\n"
 
 #, c-format
-msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr "Svazek „%1$s“ nebyl nalezen v definici domény.\n"
+msgid "Volume '%1$s' was not found in domain's definition."
+msgstr ""
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -21376,13 +21441,6 @@ msgstr "Nesprávný typ adresy pro USB rozbočovač"
 
 msgid "Wrong length MAC address"
 msgstr "Nesprávná délka MAC adresy"
-
-msgid ""
-"Wrong or no <model> 'type' attribute specified with <interface "
-"type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
-msgstr ""
-"Nesprávný nebo žádný <model> 'type' atribut zadán s <interface "
-"type='vhostuser'/>. vhostuser vyžaduje nadstavbu virtio-net*"
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE je aktivní, ale data 'bytes' (bajty) chyběla"
@@ -21667,9 +21725,26 @@ msgstr "po navrácení, nastavit stav na pozastavený"
 msgid "after reverting, change state to running"
 msgstr "po navrácení, nastavit stav na spuštěný"
 
+msgid "aia feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "aia feature is only supported with RISC-V Virt machines"
+msgstr ""
+
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d není podporováno"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+msgstr ""
+"alternativní název '%1$s' příkazu'%2$s' má neshodu v typu alternativního "
+"názvu"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has missing alias option"
+msgstr ""
+"alternativní názvu '%1$s' příkazu '%2$s' chybí volba alternativní název"
 
 msgid "all CPU models are accepted"
 msgstr "všechny modely procesorů jsou přijímány"
@@ -22103,6 +22178,9 @@ msgstr ""
 "šířka pásma %1$llu je vyšší než %2$lu což je maximální hodnota, podporovaná "
 "tímto aplikačním programovým rozhraním"
 
+msgid "bandwidth (in MiB/s) available for the final phase of migration"
+msgstr ""
+
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
@@ -22328,6 +22406,14 @@ msgstr ""
 
 msgid "bond interface misses the bond element"
 msgstr "rozhraní typu most postrádá prvek bond"
+
+#, c-format
+msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+msgstr "boolean parametr '%1$s' příkazu '%2$s' má úplnější sadu"
+
+#, c-format
+msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
+msgstr ""
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -24365,12 +24451,46 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "příkaz „%1$s“ nepodporuje volbu --%2$s"
 
 #, c-format
+msgid "command '%1$s' has handler set"
+msgstr "příkaz '%1$s' má nastavenou obsluhu"
+
+#, c-format
+msgid "command '%1$s' has info set"
+msgstr "příkaz '%1$s' má nastavenou informaci"
+
+#, c-format
+msgid "command '%1$s' has multiple flags set"
+msgstr "příkaz '%1$s' má nastaveno vícero příznaků"
+
+#, c-format
+msgid "command '%1$s' has options set"
+msgstr "příkaz '%1$s' má nastaveny volby"
+
+#, c-format
+msgid "command '%1$s' lacks help"
+msgstr "příkaz „%1$s“ postrádá nápovědu"
+
+#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "příkaz „%1$s“ vyžaduje volbu --%2$s"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "příkaz „%1$s“ vyžaduje volbu <%2$s>"
+
+msgid "command 'domblkinfo' requires <device> option"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgstr ""
+"alternativní název příkazu '%1$s' odkazuje na neexistující příkaz '%2$s'"
+
+#, c-format
+msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgstr ""
+"alternativní název příkazu '%1$s' odkazuje na alternativní název jiného "
+"příkazu '%2$s'"
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
@@ -24427,6 +24547,12 @@ msgstr "volba kompatibility je k dispozici pouze s qcow2"
 
 msgid "completed"
 msgstr "dokončeno"
+
+#, c-format
+msgid ""
+"completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
+"completer is used"
+msgstr ""
 
 msgid "compress level for multithread compression"
 msgstr "míra komprese pro vícevláknovou kompresi"
@@ -25705,16 +25831,23 @@ msgid "disk '%1$s' not found in domain"
 msgstr "disk '%1$s' nenalezen v doméně"
 
 #, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
+"the deleted snapshot"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
+msgstr ""
+
+#, c-format
 msgid "disk '%1$s' specified twice"
 msgstr "disk „%1$s“ je zadán dvakrát"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "disk „%1$s“ nebyl nalezen v nastavení domény"
-
-msgid ""
-"disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "atributy disku: disk[,checkpoint=typ][,bitmap=nazev]"
@@ -25810,14 +25943,6 @@ msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "režim disku ioeventfd je podporován pouze pro virtio sběrnici"
 
 #, c-format
-msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
-
-#, c-format
-msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
-
-#, c-format
 msgid "disk iotune field '%1$s' must be an integer"
 msgstr "je třeba, aby kolonka iotune disku „%1$s“ byla celé číslo"
 
@@ -25838,8 +25963,8 @@ msgid "disk port address is not supported by tunnelled migration"
 msgstr "adresa portu disku není tunelovanou migrací podporována"
 
 #, c-format
-msgid "disk product is more than %1$d characters"
-msgstr "produkt u disku přesahuje %1$d znaků"
+msgid "disk product is more than %1$zu characters"
+msgstr ""
 
 msgid "disk product is not printable string"
 msgstr "produkt disku není tisknutelný znak"
@@ -26331,6 +26456,10 @@ msgstr "duplicitní iothreadpin pro stejný iothread „%1$u“"
 msgid "duplicate key '%1$s'"
 msgstr "duplicitní klíč „%1$s“"
 
+#, c-format
+msgid "duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 msgid "duplicate native vlan setting"
 msgstr "duplikovat nastavení přirozené vlan"
 
@@ -26641,8 +26770,9 @@ msgstr "chyba při obnovování chodu domény"
 msgid "error while suspending the domain"
 msgstr "chyba při uspávání domény"
 
-msgid "error: "
-msgstr "chyba: "
+#, c-format
+msgid "error: %1$s\n"
+msgstr ""
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "error_policy není podporováno s diskem vhostuser"
@@ -27379,6 +27509,10 @@ msgstr "nepodařilo se získat název gluster svazku"
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
 msgstr "nepodařilo se najít USB zařízení busnum:devnum pro %1$x:%2$x"
 
+#, c-format
+msgid "failed to find a supported CCW group capability type '%1$s'"
+msgstr ""
+
 msgid "failed to find an empty memory slot"
 msgstr "nepodařilo se nalézt volný slot pro paměť"
 
@@ -27771,6 +27905,9 @@ msgstr "nepodařilo se zpracovat %1$s"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "nepodařilo se zpracovat %1$sversion"
+
+msgid "failed to parse JSON returned by qemu"
+msgstr ""
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -28253,12 +28390,19 @@ msgstr "nepodařilo se zapsat záhlaví do ukládacího souboru domény „%1$s�
 msgid "failed to write known_host file '%1$s': %2$s"
 msgstr "nepodařilo se zapsat do souboru known_host „%1$s“: %2$s"
 
+#, c-format
+msgid "failed to write log file: %1$s"
+msgstr ""
+
 msgid "failed to write master key file for domain"
 msgstr "nepodařilo se zapsat soubor s hlavním klíčem pro doménu"
 
 #, c-format
 msgid "failed to write padding to '%1$s'"
 msgstr "nepodařilo se zapsat zarovnání do „%1$s“"
+
+msgid "failed to write secret"
+msgstr ""
 
 msgid "failed to write secret file"
 msgstr "nepodařilo se zapsat soubor s tajemstvím"
@@ -29880,6 +30024,10 @@ msgid "invalid driver type for version detection"
 msgstr "neplatný typ ovladače pro zjišťování verze"
 
 #, c-format
+msgid "invalid empty data-file definition in '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
 msgstr "neplatná akce selhání: „%1$s“\n"
 
@@ -30015,8 +30163,8 @@ msgid "invalid mode"
 msgstr "neplatný režim"
 
 #, c-format
-msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr "Neplatný model pro rozhraní typu '%1$s': '%2$s'"
+msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
+msgstr ""
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -30226,6 +30374,10 @@ msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
 msgstr "neplatný typ „%1$s“ pro parametr „%2$s“, očekáváno „%3$s“"
 
 #, c-format
+msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid unique_id supplied for '%1$s'"
 msgstr "zadáno neplatné unique_id pro „%1$s“"
 
@@ -30344,6 +30496,10 @@ msgstr ""
 msgid "iothread %1$d not found"
 msgstr "iotherad %1$d nenalezen"
 
+#, c-format
+msgid "iothread '%1$u' not defined in iothreadid"
+msgstr ""
+
 msgid "iothread for the new IOThread"
 msgstr "vlákno vstupu/výstupu pro nové IOThread"
 
@@ -30352,6 +30508,14 @@ msgstr "iothread identifikátor existujícího IOThread"
 
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread není podporováno s vhostuser diskem"
+
+#, c-format
+msgid "iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
@@ -30363,6 +30527,9 @@ msgstr "iothread_id vlákna vstupu/výstupu, které smazat"
 #, c-format
 msgid "iothreadid %1$d not found"
 msgstr "identif. vstup./výstupního vlákna (iothreadid) %1$d nenalezen"
+
+msgid "iothreads are supported only by 'virtio-scsi' controllers"
+msgstr ""
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune není podporováno s vhostuser diskem"
@@ -31624,6 +31791,12 @@ msgstr "omezení šířky pásma pro migraci (v MiB/s)"
 msgid "migration canceled"
 msgstr "migrace zrušena"
 
+#, c-format
+msgid ""
+"migration failed. Message from the source host: %1$s. Message from the "
+"destination host: %2$s"
+msgstr ""
+
 msgid "migration in"
 msgstr "stěhování dovnitř"
 
@@ -32145,6 +32318,10 @@ msgstr "chybí název příznaku v mezipaměti schopností QEMU"
 #, c-format
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "pro umístění „%1$s“ chybí název gluster svazku"
+
+#, c-format
+msgid "missing group_device value for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -32850,6 +33027,12 @@ msgstr "nalezeno vícero odpovídajících rozhraní: %1$s"
 msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
 "nalezeno vícero paměťových zařízení, vyberte jedno pomocí --alias nebo --node"
+
+#, c-format
+msgid ""
+"multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
+"not allowed"
+msgstr ""
 
 msgid "multiple stream callbacks not supported"
 msgstr "vícero zpětných volání proudu naráz není podporováno"
@@ -34088,15 +34271,15 @@ msgstr "v případě externích TPM zařízení je podporován pouze režim 'con
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pro pc-dimm zařízení jsou podporovány pouze 'dimm' adresy"
 
-#, c-format
-msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr "v případě zařízení %1$s jsou podporovány pouze 'pci' adresy"
-
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "pro zařízení sdílené paměti je podporována pouze 'pci' adresa"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "pro zařízení virtio-pmem jsou podporovány pouze 'pci' adresy"
+
+#, c-format
+msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
+msgstr ""
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr ""
@@ -34415,8 +34598,8 @@ msgid "output to stderr"
 msgstr "výstup na standardní chybový"
 
 #, c-format
-msgid "overflow in converting %1$ld MiB/s to bytes\n"
-msgstr "přetečení v převodu %1$ld MiB/s na bajty\n"
+msgid "overflow in converting %1$ld MiB/s to bytes"
+msgstr ""
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
@@ -34502,6 +34685,27 @@ msgstr "parametr „%1$s“ nepodporován"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "parametr „%1$s“ se vyskytuje vícekrát"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+msgstr ""
+"parametr '%1$s' příkazu '%2$s' nemá správnou volbu alternativního názvu"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
+msgstr ""
+"je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden před volitelnými "
+"parametry"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' must be listed last"
+msgstr ""
+"je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden až jako poslední"
 
 msgid "parameter=value"
 msgstr "parametr=hodnota"
@@ -35797,6 +36001,12 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "vyžadovat atomickou operaci"
 
+#, c-format
+msgid ""
+"required positional argument '%1$s' declared after an optional positional "
+"argument '%2$s' of command '%3$s'"
+msgstr ""
+
 msgid "resctrl locking is not supported on this platform"
 msgstr "resctrl zamykání není na této platformě podporováno"
 
@@ -36977,6 +37187,11 @@ msgstr "souhrnné statistiky zatím nejsou podporované"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
 msgstr "zadání <cipher> pro definici disku domény je nezbytné"
+
+msgid ""
+"support for offline external snapshots while checkpoint exists was not yet "
+"implemented"
+msgstr ""
 
 msgid "suspend a domain"
 msgstr "uspat doménu"
@@ -38369,6 +38584,9 @@ msgstr "nedaří se provést filtrování zachycených stavů"
 
 msgid "unable to poll on child"
 msgstr "nedaří se dotazovat na potomkovi"
+
+msgid "unable to query block list"
+msgstr ""
 
 msgid "unable to query cgroup BPF progs"
 msgstr "nepodařilo se dotázat cgroup BPF programy"
@@ -39773,6 +39991,10 @@ msgid "unsupported rtc timer track '%1$s'"
 msgstr "nepodporovaná stopa časovače reálného času „%1$s“"
 
 #, c-format
+msgid "unsupported save image format: %1$d"
+msgstr ""
+
+#, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
 msgstr "nepodporované schéma %1$s v migrační URI %2$s"
 
@@ -39825,6 +40047,12 @@ msgstr "neukončené číslo"
 
 msgid "unterminated string"
 msgstr "neukončený řetězec"
+
+#, c-format
+msgid ""
+"unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
+"used together with positional"
+msgstr ""
 
 msgid "update device from an XML file"
 msgstr "aktualizovat zařízení z XML souboru"
@@ -39955,6 +40183,9 @@ msgid ""
 msgstr ""
 "použití názvu cíle disku „%1$s“ koliduje s SCSI host device adresy "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u"
+
+msgid "using host CPU definition as input may provide incorrect results"
+msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
@@ -40466,6 +40697,9 @@ msgstr ""
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem není podporováno s touto QEMU binárkou"
 
+msgid "virtio-mem-ccw can't use different page size than the boot memory"
+msgstr ""
+
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
@@ -40926,6 +41160,84 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 
+#~ msgid ""
+#~ "'reconnect' attribute unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "atributem 'reconnect' nepodporovaný režim 'server' pro <interface "
+#~ "type='vhostuser'>"
+
+#~ msgid "Could not find matching device"
+#~ msgstr "Nepodařilo se najít odpovídající zařízení"
+
+#~ msgid "Failed to setup keepalive on connection\n"
+#~ msgstr "Nepodařilo se nastavit udržování spojení\n"
+
+#, c-format
+#~ msgid "Failed to start job on VM '%1$s': %2$s"
+#~ msgstr "Nepodařilo se spustit úlohu na virt. stroji „%1$s“: %2$s"
+
+#~ msgid ""
+#~ "Invalid attempt to set network interface guest-side IP route and/or "
+#~ "address info, not supported by QEMU"
+#~ msgstr ""
+#~ "Neplatný pokus o nastavení IP trasy a/nebo informace o adrese na síťovém "
+#~ "rozhraní na straně hosta – nepodporováno QEMU"
+
+#~ msgid "Only scsi disk supports vendor and product"
+#~ msgstr "Pouze scsi disk podporuje výrobce a produkt"
+
+#, c-format
+#~ msgid ""
+#~ "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it "
+#~ "manually.\n"
+#~ msgstr ""
+#~ "Svazek úložiště „%1$s“(%2$s) není spravován libvirt. Odeberte ho ručně.\n"
+
+#~ msgid "The 'passt' backend can only be used with interface type='user'"
+#~ msgstr ""
+#~ "Podpůrnou vrstvu 'passt' je možné použít pouze s rozhraním type='user'"
+
+#~ msgid ""
+#~ "The <portForward> element can only be used with <interface type='user'> "
+#~ "and its 'passt' backend"
+#~ msgstr ""
+#~ "Prvek <portForward> je možné použít pouze s <interface type='user'> a "
+#~ "jeho podpůrnou vrstvou 'passt'"
+
+#~ msgid "Unable to read cache data"
+#~ msgstr "Nedaří se číst data z mezipaměti"
+
+#, c-format
+#~ msgid "Volume '%1$s' was not found in domain's definition.\n"
+#~ msgstr "Svazek „%1$s“ nebyl nalezen v definici domény.\n"
+
+#~ msgid ""
+#~ "Wrong or no <model> 'type' attribute specified with <interface "
+#~ "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
+#~ msgstr ""
+#~ "Nesprávný nebo žádný <model> 'type' atribut zadán s <interface "
+#~ "type='vhostuser'/>. vhostuser vyžaduje nadstavbu virtio-net*"
+
+#, c-format
+#~ msgid "disk product is more than %1$d characters"
+#~ msgstr "produkt u disku přesahuje %1$d znaků"
+
+#~ msgid "error: "
+#~ msgstr "chyba: "
+
+#, c-format
+#~ msgid "invalid model for interface of type '%1$s': '%2$s'"
+#~ msgstr "Neplatný model pro rozhraní typu '%1$s': '%2$s'"
+
+#, c-format
+#~ msgid "only 'pci' addresses are supported for the %1$s device"
+#~ msgstr "v případě zařízení %1$s jsou podporovány pouze 'pci' adresy"
+
+#, c-format
+#~ msgid "overflow in converting %1$ld MiB/s to bytes\n"
+#~ msgstr "přetečení v převodu %1$ld MiB/s na bajty\n"
+
 #~ msgid "Cannot set a base label with AppArmour"
 #~ msgstr "Nedaří se nastavit základní štítek s AppArmour"
 
@@ -41283,58 +41595,12 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #~ msgstr "[[--%1$s] <řetězec>]…"
 
 #, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-#~ msgstr ""
-#~ "alternativní název '%1$s' příkazu'%2$s' má neshodu v typu alternativního "
-#~ "názvu"
-
-#, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
-#~ msgstr ""
-#~ "alternativní názvu '%1$s' příkazu '%2$s' chybí volba alternativní název"
-
-#, c-format
-#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-#~ msgstr "boolean parametr '%1$s' příkazu '%2$s' má úplnější sadu"
-
-#, c-format
-#~ msgid "command '%1$s' has handler set"
-#~ msgstr "příkaz '%1$s' má nastavenou obsluhu"
-
-#, c-format
 #~ msgid "command '%1$s' has inconsistent alias"
 #~ msgstr "příkaz „%1$s“ má nekonzistentní alias"
 
 #, c-format
-#~ msgid "command '%1$s' has info set"
-#~ msgstr "příkaz '%1$s' má nastavenou informaci"
-
-#, c-format
-#~ msgid "command '%1$s' has multiple flags set"
-#~ msgstr "příkaz '%1$s' má nastaveno vícero příznaků"
-
-#, c-format
-#~ msgid "command '%1$s' has options set"
-#~ msgstr "příkaz '%1$s' má nastaveny volby"
-
-#, c-format
 #~ msgid "command '%1$s' has too many options"
 #~ msgstr "příkaz „%1$s“ má příliš mnoho voleb"
-
-#, c-format
-#~ msgid "command '%1$s' lacks help"
-#~ msgstr "příkaz „%1$s“ postrádá nápovědu"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-#~ msgstr ""
-#~ "alternativní název příkazu '%1$s' odkazuje na neexistující příkaz '%2$s'"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-#~ msgstr ""
-#~ "alternativní název příkazu '%1$s' odkazuje na alternativní název jiného "
-#~ "příkazu '%2$s'"
 
 #~ msgid ""
 #~ "command groups and command are both NULL run vshInit before reloading"
@@ -41386,26 +41652,8 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #~ msgstr "chybí mapování v '%1$s'"
 
 #, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-#~ msgstr ""
-#~ "parametr '%1$s' příkazu '%2$s' nemá správnou volbu alternativního názvu"
-
-#, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
 #~ msgstr "parametr '%1$s' příkazu '%2$s' špatně používá VSH_OFLAG_REQ"
-
-#, c-format
-#~ msgid ""
-#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
-#~ "parameters"
-#~ msgstr ""
-#~ "je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden před volitelnými "
-#~ "parametry"
-
-#, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
-#~ msgstr ""
-#~ "je třeba, aby parametr '%1$s' příkazu '%2$s' byl uveden až jako poslední"
 
 #, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"

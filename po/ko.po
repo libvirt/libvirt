@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-01-09 09:28+0000\n"
+"POT-Creation-Date: 2025-02-24 10:18+0000\n"
 "PO-Revision-Date: 2025-01-23 20:28+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -832,6 +832,22 @@ msgstr ""
 "를 네트워크-주소로)"
 
 #, c-format
+msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to parse and process events"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to process JSON event doc: %2$s"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to read ch events!: %2$s"
+msgstr ""
+
+#, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr "%1$s: 파일 '%2$s'가 너무 큽니다\n"
 
@@ -844,6 +860,10 @@ msgstr "%1$s: 경로 정의에 비-IPv4 주소 '%2$s'를 위해 지정되어 있
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%1$s: 경로 정의에 비-IPv4 게이트웨이 '%2$s'에 지정된 IPV4 제품군"
+
+#, c-format
+msgid "%1$s: Invalid JSON event doc: %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1256,6 +1276,20 @@ msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "'%1$s' 시작은(%2$llu에서) 사용 가능한 %3$zd 바이트만을 가지고 있습니다"
 
 msgid ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
 "'--wipe-storage'은 '--storage <string>' 또는 '--remove-all-storage'가 필요합"
@@ -1427,14 +1461,16 @@ msgstr "'peak' 및 'burst'는 'average' 속성이 필요합니다"
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' 유형 소스의 'pool' 및 'volume'을 함께 지정해야 합니다"
 
+msgid "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues'는 virtio-scsi 제어기에서만 지원됩니다"
 
 msgid ""
-"'reconnect' attribute unsupported 'server' mode for <interface "
-"type='vhostuser'>"
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 msgstr ""
-"<interface type='vhostuser'>를 위해 '재연결' 속성이 지원되지 않는 '서버' 방식"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1449,6 +1485,9 @@ msgid ""
 msgstr ""
 "'제한적' 방식은 방식이 memnode 요소에서 '제한적' 일 때 메모리 요소에서 필요합"
 "니다"
+
+msgid "'return' member missing"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -2955,6 +2994,9 @@ msgstr "로그 디렉토리 '%1$s'를 생성 할 수 없음"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "이 기술환경에서 macvlan 장치를 생성 할 수 없음"
+
+msgid "Cannot create monitor FIFO"
+msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4466,9 +4508,6 @@ msgstr "이름 '%1$s'라는 도메인을 찾을 수 없음"
 msgid "Could not find host system specified in '%1$s'"
 msgstr "'%1$s'에 지정된 호스트 시스템을 찾을 수 없습니다"
 
-msgid "Could not find matching device"
-msgstr "일치하는 장치를 찾을 수 없음"
-
 #, c-format
 msgid "Could not find matching device '%1$s'"
 msgstr "일치하는 장치 '%1$s'를 찾을 수 없음"
@@ -4589,6 +4628,10 @@ msgstr "ACL 기술 드라이버 '%1$s'로의 접근를 구할 수 없음"
 
 msgid "Could not get checkpoint name"
 msgstr "점검지점 이름을 가져 올 수 없습니다"
+
+#, c-format
+msgid "Could not get count of free %1$uKiB pages, no data returned"
+msgstr ""
 
 msgid "Could not get current time"
 msgstr "현재 시간을 얻을 수 없음"
@@ -6236,10 +6279,6 @@ msgstr "중복 해시 테이블 키 '%1$s'"
 
 msgid "Duplicate info for NUMA latencies"
 msgstr "NUMA 지연 시간에 대한 중복 정보"
-
-#, c-format
-msgid "Duplicate mapping for iothread '%1$u'"
-msgstr "iothread '%1$u'를 위한 대응이 중복되었습니다"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -8416,6 +8455,10 @@ msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "저장소 볼륨 '%1$s'(%2$s)을 제거하지 못했습니다"
 
 #, c-format
+msgid "Failed to remove the file: %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to reportluns: %1$s"
 msgstr "LUN 보고 실패: %1$s"
 
@@ -8742,8 +8785,8 @@ msgstr "대상 이름 설정 실패: %1$s"
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr "libxenlight와 함께 도메인 '%1$d'를 위해 vcpus를 설정하는데 실패"
 
-msgid "Failed to setup keepalive on connection\n"
-msgstr "연결에 연결유지(keepalive) 구성에 실패하였습니다\n"
+msgid "Failed to setup keepalive on connection"
+msgstr ""
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -8783,10 +8826,6 @@ msgstr "도메인 '%1$s'를 시작하는데 실패히였습니다"
 #, c-format
 msgid "Failed to start interface %1$s"
 msgstr "인터페이스 %1$s의 시작이 실패"
-
-#, c-format
-msgid "Failed to start job on VM '%1$s': %2$s"
-msgstr "VM '%1$s'에서 작업 시작 실패: %2$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
@@ -9619,6 +9658,12 @@ msgstr "I/O 오류"
 msgid "I/O error"
 msgstr "I/O 오류"
 
+#, c-format
+msgid ""
+"I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
+"message='%5$s'"
+msgstr ""
+
 msgid "I/O size in bytes"
 msgstr "I/O 크기(바이트)"
 
@@ -10137,11 +10182,9 @@ msgstr ""
 "수 있습니다"
 
 msgid ""
-"Invalid attempt to set network interface guest-side IP route and/or address "
-"info, not supported by QEMU"
+"Invalid attempt to set network interface guest-side IP address info, not "
+"supported by QEMU"
 msgstr ""
-"QEMU에서 지원하지 않는 네트워크 연결장치 게스트 측 IP 경로 및/또는 주소 정보 "
-"설정에 대한 잘못된 시도"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -11759,6 +11802,10 @@ msgstr "JSON 문서에 클라이언트 자료가 누락되어 있습니다"
 msgid "Missing clients data in JSON document"
 msgstr "JSON 문서에서 클라이언트 자료가 누락되어 있습니다"
 
+#, c-format
+msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
+msgstr ""
+
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON 파일에서 defaultLockspace 자료가 누락"
 
@@ -11993,6 +12040,10 @@ msgstr "답변에 '%1$s' 속성이 없습니다"
 
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON 상태 문서에서 읽기 전용 부분 누락"
+
+#, c-format
+msgid "Missing ref property on ccw_device in members for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12308,6 +12359,9 @@ msgstr "NUMA 노드 %1$zu를 사용할 수 없습니다"
 
 msgid "NUMA node selections to set"
 msgstr "설정한 NUMA 노드 선택"
+
+msgid "NUMA nodes are not supported for virtio-mem-ccw"
+msgstr ""
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr "CPU가 없는 NUMA 노드는 이니시에이터가 될 수 없습니다"
@@ -13186,6 +13240,9 @@ msgstr "vz 드라이버는 하드 디스크와 cdrom만 지원합니다."
 msgid "Only ide and scsi disk support wwn"
 msgstr "오직 ide 및 scsi 디스크만 wwn를 지원합니다"
 
+msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
 msgid "Only luks encryption is supported for raw files"
 msgstr "luks 암호화만 단순 파일을 지원합니다"
 
@@ -13259,8 +13316,8 @@ msgstr "vz 드라이버는 오직 ploop fs 드라이버만 지원합니다."
 msgid "Only read-only pflash is supported."
 msgstr "pflash는 읽기만 지원합니다."
 
-msgid "Only scsi disk supports vendor and product"
-msgstr "오직 scsi 디스크만 공급업체 및 제품을 지원합니다"
+msgid "Only scsi disk supports 'vendor'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15364,6 +15421,10 @@ msgstr "Spice 오디오는 spice 그래픽이 없으면 지원되지 않습니�
 msgid "Start"
 msgstr "시작"
 
+#, c-format
+msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
+msgstr ""
+
 msgid "Start a block commit operation."
 msgstr "블록 커밋 작업을 시작합니다."
 
@@ -15613,10 +15674,8 @@ msgstr "저장소 소스가 풀과 충돌합니다: '%1$s'"
 
 #, c-format
 msgid ""
-"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"
+"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
 msgstr ""
-"저장소 볼륨 '%1$s'(%2$s)는 libvirt에서 관리하지 않습니다. 수동으로 제거하십시"
-"오.\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr "저장소 볼륨 삭제는 중지된 도메인에서만 지원됩니다"
@@ -16371,7 +16430,8 @@ msgstr "대상 호스트 장치 모드 %1$s가 소스 %2$s와 일치하지 않�
 msgid ""
 "Target host device subsystem type %1$s is not compatible with source "
 "subsystem type %2$s"
-msgstr "대상 호스트 장치 하위시스템 유형 %1$s은 원천 하위시스템 유형 %2$s과 호환되지 "
+msgstr ""
+"대상 호스트 장치 하위시스템 유형 %1$s은 원천 하위시스템 유형 %2$s과 호환되지 "
 "않습니다"
 
 #, c-format
@@ -16664,8 +16724,10 @@ msgstr ""
 "'%1$s' 기능의 'eoi' 속성은 아키텍처 '%2$s' 또는 머신 유형 '%3$s'에 대해 지원"
 "되지 않습니다"
 
-msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr "'passt' 백엔드는 연결장치 유형='user'만 사용될 수 있습니다"
+msgid ""
+"The 'passt' backend can only be used with interface type='user' or "
+"type='vhostuser'"
+msgstr ""
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
@@ -16683,11 +16745,9 @@ msgstr ""
 "습니다"
 
 msgid ""
-"The <portForward> element can only be used with <interface type='user'> and "
-"its 'passt' backend"
+"The <portForward> element can only be used with the 'passt' backend of "
+"interface type='user' or type='vhostuser'"
 msgstr ""
-"<portForward> 요소는 <interface type='user'> 및 'passt' 백엔드와 함께만 사용 "
-"될 수 있습니다"
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
@@ -18508,6 +18568,9 @@ msgstr "성능 이벤트를 가져올 수 없습니다"
 msgid "Unable to get physical function status on this platform"
 msgstr "이 기술환경에서 물리적 기능 상태를 가져올 수 없습니다"
 
+msgid "Unable to get pointer to VirtualBox vtable"
+msgstr ""
+
 msgid "Unable to get remote socket name"
 msgstr "원격 소켓 이름을 가져올 수 없습니다"
 
@@ -18572,6 +18635,9 @@ msgstr "장치 스트림 뮤텍스를 초기화 할 수 없습니다"
 
 msgid "Unable to initialize RW lock"
 msgstr "읽기쓰기 잠감을 초기화 할 수 없습니다"
+
+msgid "Unable to initialize VirtualBox C API client"
+msgstr ""
 
 msgid "Unable to initialize audit layer"
 msgstr "감사 계층을 초기화 할 수 없습니다"
@@ -18913,6 +18979,9 @@ msgstr "TSC 주파수를 조사할 수 없음"
 msgid "Unable to process file with flags %1$d"
 msgstr "플래그 %1$d 에 파일을 처리 할 수없습니다"
 
+msgid "Unable to query NVMe disk address"
+msgstr ""
+
 msgid "Unable to query TSC scaling support"
 msgstr "TSC 확장 지원을 쿼리할 수 없습니다"
 
@@ -18974,9 +19043,6 @@ msgstr "ipv6 전달 검사를 위해 %1$s를 읽을 수 없습니다"
 
 msgid "Unable to read TLS confirmation"
 msgstr "TLS 확인을 읽을 수 없음"
-
-msgid "Unable to read cache data"
-msgstr "캐쉬 자료를 읽을 수 없습니다"
 
 msgid "Unable to read container pty"
 msgstr "컨테이너 pty를 읽을 수 없습니다"
@@ -20894,8 +20960,8 @@ msgid "Vol %1$s wiped\n"
 msgstr "볼륨 %1$s를 깨끗이 밀었습니다\n"
 
 #, c-format
-msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr "도메인 정의에서 볼륨 '%1$s'를 찾을 수 없습니다.\n"
+msgid "Volume '%1$s' was not found in domain's definition."
+msgstr ""
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -21066,13 +21132,6 @@ msgstr "USB 허브의 잘못된 주소 유형"
 
 msgid "Wrong length MAC address"
 msgstr "잘못된 MAC 주소 길이"
-
-msgid ""
-"Wrong or no <model> 'type' attribute specified with <interface "
-"type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
-msgstr ""
-"<인터페이스 유형='vhostuser'/>로 지정된 <모델> '유형' 속성이 잘못되었거나 없"
-"습니다. vhostuser에는 virtio-net* 프론트엔드가 필요합니다"
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE이 활성 상태이지만 '바이트' 데이터가 누락되었습니다"
@@ -21339,9 +21398,23 @@ msgstr "되돌린 후 상태를 일시 중지됨으로 변경하십시오"
 msgid "after reverting, change state to running"
 msgstr "되돌린 후 상태를 실행 중으로 변경하십시오"
 
+msgid "aia feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "aia feature is only supported with RISC-V Virt machines"
+msgstr ""
+
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d는 지원되지 않습니다"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 유형이 일치하지 않습니다"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has missing alias option"
+msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 옵션이 없습니다"
 
 msgid "all CPU models are accepted"
 msgstr "모든 CPU 모델이 허용됩니다"
@@ -21755,6 +21828,9 @@ msgid ""
 "by this API"
 msgstr "대역폭 %1$llu가 이 API에서 지원하는 최대값인 %2$lu보다 큽니다"
 
+msgid "bandwidth (in MiB/s) available for the final phase of migration"
+msgstr ""
+
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
 msgstr "대역폭 제어기 id %1$zd가 존재하지 않습니다"
@@ -21965,6 +22041,15 @@ msgstr "본드 인터페이스 miimon updelay가 잘못됨"
 
 msgid "bond interface misses the bond element"
 msgstr "본드 인터페이스에 bond 요소가 빠졌습니다"
+
+#, c-format
+msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+msgstr ""
+"명령 '%1$s'의 불(bool) 매개변수 '%2$s'는 완성자 묶음(set)을 가지고 있습니다"
+
+#, c-format
+msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
+msgstr ""
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -23969,12 +24054,43 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "명령 '%1$s'는 --%2$s 옵션을 지원하지 않음"
 
 #, c-format
+msgid "command '%1$s' has handler set"
+msgstr "명령 '%1$s'는 handler set를 가지고 있습니다"
+
+#, c-format
+msgid "command '%1$s' has info set"
+msgstr "명령 '%1$s'는 정보 설정(set)을 가지고 있습니다"
+
+#, c-format
+msgid "command '%1$s' has multiple flags set"
+msgstr "명령 '%1$s'는 다중 플래그 구성(set)을 가지고 있습니다"
+
+#, c-format
+msgid "command '%1$s' has options set"
+msgstr "명령 '%1$s'는 선택(옵션) 설정(set)을 가지고 있습니다"
+
+#, c-format
+msgid "command '%1$s' lacks help"
+msgstr "명령 '%1$s'에 도움이 부족합니다"
+
+#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "'%1$s' 명령은 --%2$s 옵션이 필요함"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "'%1$s' 명령은 <%2$s> 옵션이 필요함"
+
+msgid "command 'domblkinfo' requires <device> option"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgstr "명령 별칭 '%1$s'는 존재하지 않는 명령 '%2$s'로 지시합니다"
+
+#, c-format
+msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgstr "명령 별칭 '%1$s'는 다른 명령 별칭 '%2$s'를 지시하고 있습니다"
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr "명령 그룹은 NULL이고 다시 적재하기 전에 vshInit를 실행하세요"
@@ -24030,6 +24146,12 @@ msgstr "qcow2에서만 사용할 수 있는 호환성 옵션"
 
 msgid "completed"
 msgstr "완료"
+
+#, c-format
+msgid ""
+"completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
+"completer is used"
+msgstr ""
 
 msgid "compress level for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 수준"
@@ -25278,18 +25400,23 @@ msgid "disk '%1$s' not found in domain"
 msgstr "도메인에서 디스크 '%1$s'을(를) 찾을 수 없습니다"
 
 #, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
+"the deleted snapshot"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
+msgstr ""
+
+#, c-format
 msgid "disk '%1$s' specified twice"
 msgstr "디스크 '%1$s'가 두 번 지정됨"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "도메인 구성에서 디스크 '%1$s'을(를) 찾을 수 없습니다"
-
-msgid ""
-"disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
-"디스크 '대기줄' 계수는 대기줄 대응에 대한 명시적인 io쓰레드를 위해 구성되어야"
-"만 합니다"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "디스크 속성: 디스크[,검사점=유형][,비트맵=이름]"
@@ -25388,14 +25515,6 @@ msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "디스크 ioeventfd 모드는 virtio 버스에 대해서만 지원됩니다"
 
 #, c-format
-msgid "disk iothread queue '%1$u' is already assigned"
-msgstr "디스크 io쓰레드 대기줄 '%1$u' 는 이미 할당 되어 있습니다"
-
-#, c-format
-msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr "범위 밖에 대응하는 디스크 io쓰레드 대기줄 '%1$u'"
-
-#, c-format
 msgid "disk iotune field '%1$s' must be an integer"
 msgstr "디스크 iotune 필드 '%1$s'은(는) 정수여야 합니다"
 
@@ -25416,8 +25535,8 @@ msgid "disk port address is not supported by tunnelled migration"
 msgstr "디스크 포트 주소는 터널링된 이전에서 지원되지 않습니다"
 
 #, c-format
-msgid "disk product is more than %1$d characters"
-msgstr "디스크 제품이 %1$d자를 초과합니다"
+msgid "disk product is more than %1$zu characters"
+msgstr ""
 
 msgid "disk product is not printable string"
 msgstr "디스크 제품은 인쇄 가능한 문자열이 아닙니다"
@@ -25898,6 +26017,10 @@ msgstr "동일한 iothread '%1$u'에 대한 중복 iothreadpin"
 msgid "duplicate key '%1$s'"
 msgstr "중복 키 '%1$s'"
 
+#, c-format
+msgid "duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 msgid "duplicate native vlan setting"
 msgstr "중복된 기본 vlan 설정"
 
@@ -26204,8 +26327,9 @@ msgstr "도메인을 재개하는 동안 오류가 발생했습니다"
 msgid "error while suspending the domain"
 msgstr "도메인을 일시 중단하는 동안 오류가 발생했습니다"
 
-msgid "error: "
-msgstr "오류: "
+#, c-format
+msgid "error: %1$s\n"
+msgstr ""
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "error_policy는 vhostuser 디스크에서 지원되지 않습니다"
@@ -26938,6 +27062,10 @@ msgstr "Gluster 볼륨 이름을 추출하지 못했습니다"
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
 msgstr "USB 장치 busnum:devnum(%1$x:%2$x)을(를) 찾지 못했습니다"
 
+#, c-format
+msgid "failed to find a supported CCW group capability type '%1$s'"
+msgstr ""
+
 msgid "failed to find an empty memory slot"
 msgstr "빈 메모리 슬롯을 찾지 못했습니다"
 
@@ -27324,6 +27452,9 @@ msgstr "%1$s 구문 분석 실패"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "%1$sversion을(를) 구문 분석하지 못했습니다"
+
+msgid "failed to parse JSON returned by qemu"
+msgstr ""
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -27802,12 +27933,19 @@ msgstr "도메인 저장 파일 '%1$s'에 헤더를 쓰지 못했습니다"
 msgid "failed to write known_host file '%1$s': %2$s"
 msgstr "알려진_호스트 파일 '%1$s' 쓰기 실패: %2$s"
 
+#, c-format
+msgid "failed to write log file: %1$s"
+msgstr ""
+
 msgid "failed to write master key file for domain"
 msgstr "도메인에 대한 마스터 키 파일을 쓰지 못했습니다"
 
 #, c-format
 msgid "failed to write padding to '%1$s'"
 msgstr "패딩을 '%1$s'에 쓰지 못했습니다"
+
+msgid "failed to write secret"
+msgstr ""
 
 msgid "failed to write secret file"
 msgstr "비밀 파일에 쓰기 실패"
@@ -29394,6 +29532,10 @@ msgid "invalid driver type for version detection"
 msgstr "버전 감지를 위한 잘못된 드라이버 유형"
 
 #, c-format
+msgid "invalid empty data-file definition in '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
 msgstr "잘못된 오류 동작: '%1$s'\n"
 
@@ -29526,8 +29668,8 @@ msgid "invalid mode"
 msgstr "잘못된 모드"
 
 #, c-format
-msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr "'%1$s' 유형의 인터페이스에 대한 잘못된 모델: '%2$s'"
+msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
+msgstr ""
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -29730,6 +29872,10 @@ msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
 msgstr "매개변수 '%1$s'에 대해 잘못된 유형 '%2$s', '%3$s'가 필요합니다"
 
 #, c-format
+msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid unique_id supplied for '%1$s'"
 msgstr "'%1$s'에 잘못된 고유 ID가 제공되었습니다"
 
@@ -29840,6 +29986,10 @@ msgstr "iommu: dma 전환 최신화는 이와 같은 QEMU 바이너리에서 지
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d를 찾을 수 없습니다"
 
+#, c-format
+msgid "iothread '%1$u' not defined in iothreadid"
+msgstr ""
+
 msgid "iothread for the new IOThread"
 msgstr "새로운 IOThread를 위한 iothread"
 
@@ -29848,6 +29998,14 @@ msgstr "기존 IOThread의 iothread ID"
 
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread는 vhostuser 디스크에서 지원되지 않습니다"
+
+#, c-format
+msgid "iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
@@ -29861,6 +30019,9 @@ msgstr "삭제할 IOThread의 iothread_id"
 #, c-format
 msgid "iothreadid %1$d not found"
 msgstr "iothreadid %1$d를 찾을 수 없습니다"
+
+msgid "iothreads are supported only by 'virtio-scsi' controllers"
+msgstr ""
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune는 vhostuser 디스크에서 지원되지 않습니다"
@@ -31066,6 +31227,12 @@ msgstr "이전 대역폭 제한(MiB/s)"
 msgid "migration canceled"
 msgstr "이전 취소됨"
 
+#, c-format
+msgid ""
+"migration failed. Message from the source host: %1$s. Message from the "
+"destination host: %2$s"
+msgstr ""
+
 msgid "migration in"
 msgstr "이전"
 
@@ -31247,8 +31414,9 @@ msgstr "미디에이션된 기기의 <type> 요소에 대한 'id' 속성이 없�
 msgid ""
 "missing 'name' attribute for a host CPU model deprecated property in QEMU "
 "capabilities cache"
-msgstr "호스트 CPU 모델을 위한 누락된 'name' 속성은 QEMU 기능 캐쉬의 속성에서 "
-"폐기되었습니다"
+msgstr ""
+"호스트 CPU 모델을 위한 누락된 'name' 속성은 QEMU 기능 캐쉬의 속성에서 폐기되"
+"었습니다"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
@@ -31573,6 +31741,10 @@ msgstr "QEMU 기능 캐시에 누락된 플래그 이름"
 #, c-format
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "경로 '%1$s'에 대한 Gluster 볼륨 이름이 없습니다"
+
+#, c-format
+msgid "missing group_device value for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -32248,6 +32420,12 @@ msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
 "다수의 메모리 장치를 찾았으며, --alias 또는 --node를 사용하여 하나를 선택합니"
 "다"
+
+#, c-format
+msgid ""
+"multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
+"not allowed"
+msgstr ""
 
 msgid "multiple stream callbacks not supported"
 msgstr "다중 스트림 콜백이 지원되지 않음"
@@ -33456,7 +33634,8 @@ msgstr "핫플러그가 불가능한 온라인 vcpus는 오름차순으로 주�
 
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
-msgstr "온라인 비-핫플러그형 vcpu는 핫플러그형 vcpu 보다 우선하여 주문하여야 합니다"
+msgstr ""
+"온라인 비-핫플러그형 vcpu는 핫플러그형 vcpu 보다 우선하여 주문하여야 합니다"
 
 msgid "only 'connect' mode is supported for external TPM device"
 msgstr "'connect' 방식만이 외부 TPM을 지원합니다"
@@ -33464,15 +33643,15 @@ msgstr "'connect' 방식만이 외부 TPM을 지원합니다"
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pc-dimm 장치에는 'dimm' 주소만 지원됩니다"
 
-#, c-format
-msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr "'pci' 주소들만 %1$s 장치에 지원됩니다"
-
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "공유 메모리 장치에는 'pci' 주소만 지원됩니다"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "virtio-pmem 장치에는 'pci' 주소만 지원됩니다"
+
+#, c-format
+msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
+msgstr ""
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr "'qcow2 형식의 'block' nvram의 백업만이 초기화 될 수 있습니다"
@@ -33783,8 +33962,8 @@ msgid "output to stderr"
 msgstr "stderr로 출력"
 
 #, c-format
-msgid "overflow in converting %1$ld MiB/s to bytes\n"
-msgstr "%1$ld MiB/s를 바이트로 변환하는 중 오버플로\n"
+msgid "overflow in converting %1$ld MiB/s to bytes"
+msgstr ""
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
@@ -33868,6 +34047,23 @@ msgstr "매개변수 '%1$s'가 지원되지 않습니다"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "매개변수 '%1$s'가 여러 번 발생합니다"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+msgstr "명령 '%1$s'의 매개변수 '%2$s'에 잘못된 별칭 옵션이 있습니다"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
+msgstr "명령 '%1$s'의 매개변수 '%2$s'는 선택적 매개변수 앞에 나열되어야 합니다"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' must be listed last"
+msgstr "명령 '%1$s'의 매개변수 '%2$s'는 마지막에 나열되어야 합니다"
 
 msgid "parameter=value"
 msgstr "매개변수=값"
@@ -35110,6 +35306,12 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "원자적 연산이 필요합니다"
 
+#, c-format
+msgid ""
+"required positional argument '%1$s' declared after an optional positional "
+"argument '%2$s' of command '%3$s'"
+msgstr ""
+
 msgid "resctrl locking is not supported on this platform"
 msgstr "이 기술환경에서는 resctrl 잠금이 지원되지 않습니다"
 
@@ -36257,6 +36459,11 @@ msgstr "요약 통계는 아직 지원되지 않습니다"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
 msgstr "도메인 디스크 정의에 <cipher>를 제공할 필요가 없습니다"
+
+msgid ""
+"support for offline external snapshots while checkpoint exists was not yet "
+"implemented"
+msgstr ""
 
 msgid "suspend a domain"
 msgstr "도메인을 중지함"
@@ -37630,6 +37837,9 @@ msgstr "순간찍기 선별을 수행 할 수 없음"
 msgid "unable to poll on child"
 msgstr "하단에게 투표할 수 없음"
 
+msgid "unable to query block list"
+msgstr ""
+
 msgid "unable to query cgroup BPF progs"
 msgstr "cgroup BPF 프로그램을 쿼리할 수 없습니다"
 
@@ -38695,8 +38905,9 @@ msgstr "인식할 수 없는 명령 이름 '%1$s'"
 #, c-format
 msgid ""
 "unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
-msgstr "인식 못하는 firewall_backend = '%1$s' 는 네트워크 드라이버 config 파일 %2$"
-"s에서 설정합니다"
+msgstr ""
+"인식 못하는 firewall_backend = '%1$s' 는 네트워크 드라이버 config 파일 %2$s에"
+"서 설정합니다"
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
@@ -39031,6 +39242,10 @@ msgid "unsupported rtc timer track '%1$s'"
 msgstr "지원되지 않는 rtc 타이머 트랙 '%1$s'"
 
 #, c-format
+msgid "unsupported save image format: %1$d"
+msgstr ""
+
+#, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
 msgstr "이전 URI %1$s에서 지원되지 않는 계획 %2$s"
 
@@ -39083,6 +39298,12 @@ msgstr "종료되지 않은 숫자"
 
 msgid "unterminated string"
 msgstr "종료되지 않은 문자열"
+
+#, c-format
+msgid ""
+"unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
+"used together with positional"
+msgstr ""
 
 msgid "update device from an XML file"
 msgstr "XML 파일에서 장치를 최신화합니다"
@@ -39215,6 +39436,9 @@ msgid ""
 msgstr ""
 "디스크 대상 이름 '%1$s'를 사용하면 SCSI 호스트 장치 주소 컨트롤러='%2$u' 버스"
 "='%3$u' 대상='%4$u' 장치='%5$u와 충돌합니다"
+
+msgid "using host CPU definition as input may provide incorrect results"
+msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
@@ -39711,6 +39935,9 @@ msgstr "virtio-mem은 dynamicMemslots을 지원하지 않습니다"
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem은 이 QEMU 바이너리에서 지원되지 않습니다"
 
+msgid "virtio-mem-ccw can't use different page size than the boot memory"
+msgstr ""
+
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
@@ -40160,6 +40387,103 @@ msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
 
+#~ msgid ""
+#~ "'reconnect' attribute unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "<interface type='vhostuser'>를 위해 '재연결' 속성이 지원되지 않는 '서버' "
+#~ "방식"
+
+#~ msgid "Could not find matching device"
+#~ msgstr "일치하는 장치를 찾을 수 없음"
+
+#, c-format
+#~ msgid "Duplicate mapping for iothread '%1$u'"
+#~ msgstr "iothread '%1$u'를 위한 대응이 중복되었습니다"
+
+#~ msgid "Failed to setup keepalive on connection\n"
+#~ msgstr "연결에 연결유지(keepalive) 구성에 실패하였습니다\n"
+
+#, c-format
+#~ msgid "Failed to start job on VM '%1$s': %2$s"
+#~ msgstr "VM '%1$s'에서 작업 시작 실패: %2$s"
+
+#~ msgid ""
+#~ "Invalid attempt to set network interface guest-side IP route and/or "
+#~ "address info, not supported by QEMU"
+#~ msgstr ""
+#~ "QEMU에서 지원하지 않는 네트워크 연결장치 게스트 측 IP 경로 및/또는 주소 정"
+#~ "보 설정에 대한 잘못된 시도"
+
+#~ msgid "Only scsi disk supports vendor and product"
+#~ msgstr "오직 scsi 디스크만 공급업체 및 제품을 지원합니다"
+
+#, c-format
+#~ msgid ""
+#~ "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it "
+#~ "manually.\n"
+#~ msgstr ""
+#~ "저장소 볼륨 '%1$s'(%2$s)는 libvirt에서 관리하지 않습니다. 수동으로 제거하"
+#~ "십시오.\n"
+
+#~ msgid "The 'passt' backend can only be used with interface type='user'"
+#~ msgstr "'passt' 백엔드는 연결장치 유형='user'만 사용될 수 있습니다"
+
+#~ msgid ""
+#~ "The <portForward> element can only be used with <interface type='user'> "
+#~ "and its 'passt' backend"
+#~ msgstr ""
+#~ "<portForward> 요소는 <interface type='user'> 및 'passt' 백엔드와 함께만 사"
+#~ "용 될 수 있습니다"
+
+#~ msgid "Unable to read cache data"
+#~ msgstr "캐쉬 자료를 읽을 수 없습니다"
+
+#, c-format
+#~ msgid "Volume '%1$s' was not found in domain's definition.\n"
+#~ msgstr "도메인 정의에서 볼륨 '%1$s'를 찾을 수 없습니다.\n"
+
+#~ msgid ""
+#~ "Wrong or no <model> 'type' attribute specified with <interface "
+#~ "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
+#~ msgstr ""
+#~ "<인터페이스 유형='vhostuser'/>로 지정된 <모델> '유형' 속성이 잘못되었거나 "
+#~ "없습니다. vhostuser에는 virtio-net* 프론트엔드가 필요합니다"
+
+#~ msgid ""
+#~ "disk 'queue' count must be configured for explicit iothread to queue "
+#~ "mapping"
+#~ msgstr ""
+#~ "디스크 '대기줄' 계수는 대기줄 대응에 대한 명시적인 io쓰레드를 위해 구성되"
+#~ "어야만 합니다"
+
+#, c-format
+#~ msgid "disk iothread queue '%1$u' is already assigned"
+#~ msgstr "디스크 io쓰레드 대기줄 '%1$u' 는 이미 할당 되어 있습니다"
+
+#, c-format
+#~ msgid "disk iothread queue '%1$u' mapping out of range"
+#~ msgstr "범위 밖에 대응하는 디스크 io쓰레드 대기줄 '%1$u'"
+
+#, c-format
+#~ msgid "disk product is more than %1$d characters"
+#~ msgstr "디스크 제품이 %1$d자를 초과합니다"
+
+#~ msgid "error: "
+#~ msgstr "오류: "
+
+#, c-format
+#~ msgid "invalid model for interface of type '%1$s': '%2$s'"
+#~ msgstr "'%1$s' 유형의 인터페이스에 대한 잘못된 모델: '%2$s'"
+
+#, c-format
+#~ msgid "only 'pci' addresses are supported for the %1$s device"
+#~ msgstr "'pci' 주소들만 %1$s 장치에 지원됩니다"
+
+#, c-format
+#~ msgid "overflow in converting %1$ld MiB/s to bytes\n"
+#~ msgstr "%1$ld MiB/s를 바이트로 변환하는 중 오버플로\n"
+
 #~ msgid "Cannot set a base label with AppArmour"
 #~ msgstr "AppArmour 와 함께는 기초 레이블을 설정할 수 없습니다"
 
@@ -40581,54 +40905,12 @@ msgstr ""
 #~ msgstr "[[--%1$s] <string>]..."
 
 #, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-#~ msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 유형이 일치하지 않습니다"
-
-#, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
-#~ msgstr "명령 '%1$s'의 별칭 '%2$s'에 별칭 옵션이 없습니다"
-
-#, c-format
-#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-#~ msgstr ""
-#~ "명령 '%1$s'의 불(bool) 매개변수 '%2$s'는 완성자 묶음(set)을 가지고 있습니"
-#~ "다"
-
-#, c-format
-#~ msgid "command '%1$s' has handler set"
-#~ msgstr "명령 '%1$s'는 handler set를 가지고 있습니다"
-
-#, c-format
 #~ msgid "command '%1$s' has inconsistent alias"
 #~ msgstr "명령 '%1$s'에 일치하지 않는 별칭이 있습니다"
 
 #, c-format
-#~ msgid "command '%1$s' has info set"
-#~ msgstr "명령 '%1$s'는 정보 설정(set)을 가지고 있습니다"
-
-#, c-format
-#~ msgid "command '%1$s' has multiple flags set"
-#~ msgstr "명령 '%1$s'는 다중 플래그 구성(set)을 가지고 있습니다"
-
-#, c-format
-#~ msgid "command '%1$s' has options set"
-#~ msgstr "명령 '%1$s'는 선택(옵션) 설정(set)을 가지고 있습니다"
-
-#, c-format
 #~ msgid "command '%1$s' has too many options"
 #~ msgstr "명령 '%1$s'에 옵션이 너무 많습니다"
-
-#, c-format
-#~ msgid "command '%1$s' lacks help"
-#~ msgstr "명령 '%1$s'에 도움이 부족합니다"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-#~ msgstr "명령 별칭 '%1$s'는 존재하지 않는 명령 '%2$s'로 지시합니다"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-#~ msgstr "명령 별칭 '%1$s'는 다른 명령 별칭 '%2$s'를 지시하고 있습니다"
 
 #~ msgid ""
 #~ "command groups and command are both NULL run vshInit before reloading"
@@ -40680,23 +40962,8 @@ msgstr ""
 #~ msgstr "'%1$s'에 누락된 매핑"
 
 #, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-#~ msgstr "명령 '%1$s'의 매개변수 '%2$s'에 잘못된 별칭 옵션이 있습니다"
-
-#, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' misused VSH_OFLAG_REQ"
 #~ msgstr "명령 '%1$s'의 매개변수 '%2$s'가 VSH_OFLAG_REQ를 잘못 사용했습니다"
-
-#, c-format
-#~ msgid ""
-#~ "parameter '%1$s' of command '%2$s' must be listed before optional "
-#~ "parameters"
-#~ msgstr ""
-#~ "명령 '%1$s'의 매개변수 '%2$s'는 선택적 매개변수 앞에 나열되어야 합니다"
-
-#, c-format
-#~ msgid "parameter '%1$s' of command '%2$s' must be listed last"
-#~ msgstr "명령 '%1$s'의 매개변수 '%2$s'는 마지막에 나열되어야 합니다"
 
 #, c-format
 #~ msgid "parameter '%1$s' of command '%2$s' must use VSH_OFLAG_REQ flag"

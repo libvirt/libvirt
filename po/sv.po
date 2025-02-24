@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-01-09 09:28+0000\n"
+"POT-Creation-Date: 2025-02-24 10:18+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -840,6 +840,22 @@ msgstr ""
 "nätverksadress i ruttdefinitionen"
 
 #, c-format
+msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to parse and process events"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to process JSON event doc: %2$s"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to read ch events!: %2$s"
+msgstr ""
+
+#, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr "%1$s: Filen ”%2$s” är för stor\n"
 
@@ -855,6 +871,10 @@ msgid ""
 msgstr ""
 "%1$s: IPv4-familjen angiven för en icke-IPv4-gateway ”%2$s” i "
 "ruttdefinitionen"
+
+#, c-format
+msgid "%1$s: Invalid JSON event doc: %2$s"
+msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1280,6 +1300,20 @@ msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "”%1$s” som börjar vid %2$llu har bara %3$zd byte tillgängligt"
 
 msgid ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
 "”--wipe-storage” kräver ”--storage <sträng>” eller ”--remove-all-storage”"
@@ -1454,15 +1488,16 @@ msgstr "”peak” och ”burst” kräver attributet ”average”"
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "”pool” och ”volume” måste anges tillsammans för källan av typen ”pool”"
 
+msgid "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "”queues” stödjs endast av styrenheten virtio-scsi"
 
 msgid ""
-"'reconnect' attribute unsupported 'server' mode for <interface "
-"type='vhostuser'>"
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 msgstr ""
-"Attributet ”reconnect” ej stött läge ”server” för <interface "
-"type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1477,6 +1512,9 @@ msgid ""
 msgstr ""
 "läget ”restrictive” krävs i minneselementet när läget är ”restrictive” i "
 "memnode-elementet"
+
+msgid "'return' member missing"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -2989,6 +3027,9 @@ msgstr "Kan inte skapa loggkatalogen ”%1$s”"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "Det går inte att skapa macvlan-enheter på denna plattform"
+
+msgid "Cannot create monitor FIFO"
+msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4533,9 +4574,6 @@ msgstr "Kunde inte hitta domänen med namnet ”%1$s”"
 msgid "Could not find host system specified in '%1$s'"
 msgstr "Kunde inte hitta värdsystemet som är specificerat i ”%1$s”"
 
-msgid "Could not find matching device"
-msgstr "Kunde inte hitta en matchande enhet"
-
 #, c-format
 msgid "Could not find matching device '%1$s'"
 msgstr "Kunde inte hitta en matchande enhet ”%1$s”"
@@ -4655,6 +4693,10 @@ msgstr "Kunde inte få åtkomst till ACL-teknikdrivrutinen ”%1$s”"
 
 msgid "Could not get checkpoint name"
 msgstr "Kunde inte få tag i kontrollpunktsnamnet"
+
+#, c-format
+msgid "Could not get count of free %1$uKiB pages, no data returned"
+msgstr ""
 
 msgid "Could not get current time"
 msgstr "Kunde inte ta reda på aktuell tid"
@@ -6326,10 +6368,6 @@ msgstr "Dubblerad hash-tabellnyckel ”%1$s”"
 
 msgid "Duplicate info for NUMA latencies"
 msgstr "Dubblerad information för NUMA-latenser"
-
-#, c-format
-msgid "Duplicate mapping for iothread '%1$u'"
-msgstr "Dubbel avbildning för iothread ”%1$u”"
 
 #, c-format
 msgid "Duplicate security driver %1$s"
@@ -8525,6 +8563,10 @@ msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "Misslyckades med att ta bort lagringsvolymen ”%1$s” (%2$s)"
 
 #, c-format
+msgid "Failed to remove the file: %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to reportluns: %1$s"
 msgstr "Misslyckades med reportluns: %1$s"
 
@@ -8871,8 +8913,8 @@ msgstr "Misslyckades med att sätta målnamnet: %1$s"
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr "Misslyckades med att sätta vcpu:er för domän ”%1$d” med libxenlight"
 
-msgid "Failed to setup keepalive on connection\n"
-msgstr "Misslyckades att ordna livsuppehållande på förbindelsen\n"
+msgid "Failed to setup keepalive on connection"
+msgstr ""
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -8912,10 +8954,6 @@ msgstr "Misslyckades att starta domänen '%1$s'"
 #, c-format
 msgid "Failed to start interface %1$s"
 msgstr "Misslyckades med att starta gränssnittet %1$s"
-
-#, c-format
-msgid "Failed to start job on VM '%1$s': %2$s"
-msgstr "Misslyckades med att starta ett jobb på VM ”%1$s”: %2$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
@@ -9765,6 +9803,12 @@ msgstr "I/O-fel"
 msgid "I/O error"
 msgstr "I/O-fel"
 
+#, c-format
+msgid ""
+"I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
+"message='%5$s'"
+msgstr ""
+
 msgid "I/O size in bytes"
 msgstr "I/O-storlek i byte"
 
@@ -10290,11 +10334,9 @@ msgstr ""
 "ändpunktsenheter kan återställas"
 
 msgid ""
-"Invalid attempt to set network interface guest-side IP route and/or address "
-"info, not supported by QEMU"
+"Invalid attempt to set network interface guest-side IP address info, not "
+"supported by QEMU"
 msgstr ""
-"Felaktigt försök att sätta nätverksgränssnittet gästside-IP-rutt och/eller -"
-"adressinformation, stödjs inte av QEMU"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -11939,6 +11981,10 @@ msgstr "Saknade klientdata i JSON-dokumentet"
 msgid "Missing clients data in JSON document"
 msgstr "Saknade klientdata i JSON-dokumentet"
 
+#, c-format
+msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
+msgstr ""
+
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "Saknade defaultLockspace-data från JSON-filen"
 
@@ -12179,6 +12225,10 @@ msgstr "Saknad egenskap ”%1$s” i svaret"
 
 msgid "Missing readonly field in JSON state document"
 msgstr "Saknat readonly-fält i JSON-tillståndsdokumentet"
+
+#, c-format
+msgid "Missing ref property on ccw_device in members for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12492,6 +12542,9 @@ msgstr "NUMA-nod %1$zu är inte tillgänglig"
 
 msgid "NUMA node selections to set"
 msgstr "NUMA-nodsval att sätta"
+
+msgid "NUMA nodes are not supported for virtio-mem-ccw"
+msgstr ""
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr "NUMA-noder utan CPU:er kan inte vara initierare"
@@ -13382,6 +13435,9 @@ msgstr "Endast hårddiskar och cdrom stödjs av vz-drivrutinen."
 msgid "Only ide and scsi disk support wwn"
 msgstr "Endast ide- och scsi-diskar stödjer wwn"
 
+msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
 msgid "Only luks encryption is supported for raw files"
 msgstr "Endast luks-kryptering stödjs för råa filer"
 
@@ -13454,8 +13510,8 @@ msgstr "Endast ploop-fs-drivrutinen stödjs av vz-drivrutinen."
 msgid "Only read-only pflash is supported."
 msgstr "Endast pflash endast för läsning stödjs."
 
-msgid "Only scsi disk supports vendor and product"
-msgstr "Endast scsi-diskar stödjer leverantör och produkt"
+msgid "Only scsi disk supports 'vendor'"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15574,6 +15630,10 @@ msgstr "Spice-audio stödjs inte utan spice-grafik"
 msgid "Start"
 msgstr "Starta"
 
+#, c-format
+msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
+msgstr ""
+
 msgid "Start a block commit operation."
 msgstr "Starta en blockfastställandeåtgärd."
 
@@ -15837,10 +15897,8 @@ msgstr "Lagringskällan står i konflikt med poolen: ”%1$s”"
 
 #, c-format
 msgid ""
-"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"
+"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
 msgstr ""
-"Lagringsvolymen ”%1$s” (%2$s) hanteras inte av libvirt. Ta bort den "
-"manuellt.\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr "Att radera lagringsvolymer stödjs endast för stoppade domäner"
@@ -16892,8 +16950,10 @@ msgstr ""
 "Attributet ”eoi” hos funktionen ”%1$s” stödjs inte för arkitekturen ”%2$s” "
 "eller maskintypen ”%3$s”"
 
-msgid "The 'passt' backend can only be used with interface type='user'"
-msgstr "Bakänden ”passt” kan endast användas med gränssnittstypen=”user”"
+msgid ""
+"The 'passt' backend can only be used with interface type='user' or "
+"type='vhostuser'"
+msgstr ""
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
@@ -16911,11 +16971,9 @@ msgstr ""
 "nätverket %1$s"
 
 msgid ""
-"The <portForward> element can only be used with <interface type='user'> and "
-"its 'passt' backend"
+"The <portForward> element can only be used with the 'passt' backend of "
+"interface type='user' or type='vhostuser'"
 msgstr ""
-"Elementet <portForward> kan bara användas med <interface type='user'> och "
-"dess bakände ”passt”"
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
@@ -18749,6 +18807,9 @@ msgstr "Kan inte hämta perf-händelser"
 msgid "Unable to get physical function status on this platform"
 msgstr "Kan inte hämta fysisk funktionsstatus på denna plattform"
 
+msgid "Unable to get pointer to VirtualBox vtable"
+msgstr ""
+
 msgid "Unable to get remote socket name"
 msgstr "Kan inte få fjärruttagets namn"
 
@@ -18813,6 +18874,9 @@ msgstr "Kan inte initiera enhetsström-mutex"
 
 msgid "Unable to initialize RW lock"
 msgstr "Kan inte initiera RW-lås"
+
+msgid "Unable to initialize VirtualBox C API client"
+msgstr ""
 
 msgid "Unable to initialize audit layer"
 msgstr "Kan inte initiera granskningslagret"
@@ -19155,6 +19219,9 @@ msgstr "Kan inte känna av TSC-frekvens"
 msgid "Unable to process file with flags %1$d"
 msgstr "Kan inte bearbeta en fil med flaggorna %1$d"
 
+msgid "Unable to query NVMe disk address"
+msgstr ""
+
 msgid "Unable to query TSC scaling support"
 msgstr "Kan inte fråga om TSC-skalningsstöd"
 
@@ -19216,9 +19283,6 @@ msgstr "Kan inte läsa %1$s för ipv6-vidarebefordranskontroller"
 
 msgid "Unable to read TLS confirmation"
 msgstr "Kan inte läsa TLS-bekräftelsen"
-
-msgid "Unable to read cache data"
-msgstr "Kan inte läsa cache-data"
 
 msgid "Unable to read container pty"
 msgstr "Kan inte läsa behållar-pty"
@@ -21149,8 +21213,8 @@ msgid "Vol %1$s wiped\n"
 msgstr "Vol %1$s struken\n"
 
 #, c-format
-msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr "Volymen ”%1$s” finns inte i domänens definition.\n"
+msgid "Volume '%1$s' was not found in domain's definition."
+msgstr ""
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -21323,13 +21387,6 @@ msgstr "Fel adresstyp för USB-navet"
 
 msgid "Wrong length MAC address"
 msgstr "Fel längd på MAC-adressen"
-
-msgid ""
-"Wrong or no <model> 'type' attribute specified with <interface "
-"type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
-msgstr ""
-"Fel eller inget <model>-attribut ”type” angivet med <interface "
-"type='vhostuser'/>. vhostuser kräver framänden virtio-net*"
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE är aktivt, men ”bytes”-data saknades"
@@ -21604,9 +21661,23 @@ msgstr "efter återställning, byt tillstånd till pausad"
 msgid "after reverting, change state to running"
 msgstr "efter återställning, byt tillstånd till körande"
 
+msgid "aia feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "aia feature is only supported with RISC-V Virt machines"
+msgstr ""
+
 #, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "algorithm=%1$d stödjs inte"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+msgstr "aliaset ”%1$s” för kommandot ”%2$s” har aliastyp som inte stämmer"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has missing alias option"
+msgstr "aliaset ”%1$s” för kommandot ”%2$s” saknar ett aliasalternativ"
 
 msgid "all CPU models are accepted"
 msgstr "alla CPU-modeller accepteras"
@@ -22047,6 +22118,9 @@ msgstr ""
 "bandbredden %1$llu är större än %2$lu vilket är det maximala värdet som "
 "stödjs av detta API"
 
+msgid "bandwidth (in MiB/s) available for the final phase of migration"
+msgstr ""
+
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
 msgstr "någon bandbreddstyrenhet med id %1$zd finns inte"
@@ -22268,6 +22342,15 @@ msgstr "miimon-uppfördröjning för bindningsgränssnittet är felaktigt"
 
 msgid "bond interface misses the bond element"
 msgstr "bindningsgränssnittet saknar bindningselementet"
+
+#, c-format
+msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+msgstr ""
+"den booleska parametern ”%1$s” till kommandot ”%2$s” har completterarmängd"
+
+#, c-format
+msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
+msgstr ""
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -24292,12 +24375,43 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "kommandot '%1$s' stöder inte flaggan --%2$s"
 
 #, c-format
+msgid "command '%1$s' has handler set"
+msgstr "kommandot ”%1$s” har en hanterare satt"
+
+#, c-format
+msgid "command '%1$s' has info set"
+msgstr "kommandot ”%1$s” har en information satt"
+
+#, c-format
+msgid "command '%1$s' has multiple flags set"
+msgstr "kommandot ”%1$s” har flera flaggor satta"
+
+#, c-format
+msgid "command '%1$s' has options set"
+msgstr "kommandot ”%1$s” har alternativ satta"
+
+#, c-format
+msgid "command '%1$s' lacks help"
+msgstr "kommandot ”%1$s” saknar hjälp"
+
+#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "kommandot '%1$s' kräver flaggan --%2$s"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "kommandot '%1$s' kräver flaggan <%2$s>"
+
+msgid "command 'domblkinfo' requires <device> option"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgstr "kommandoaliaset ”%1$s” pekar på ett kommando ”%2$s” som inte finns"
+
+#, c-format
+msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgstr "kommandoaliaset ”%1$s” pekar på ett annat kommandoalias ”%2$s”"
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr "kommandogrupperna är NULL kör vshInit före omladdning"
@@ -24354,6 +24468,12 @@ msgstr "kompatibilitetsflaggan är endast tillgänglig med qcow2"
 
 msgid "completed"
 msgstr "färdig"
+
+#, c-format
+msgid ""
+"completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
+"completer is used"
+msgstr ""
 
 msgid "compress level for multithread compression"
 msgstr "kompressionsnivå för multitrådad komprimering"
@@ -25623,18 +25743,23 @@ msgid "disk '%1$s' not found in domain"
 msgstr "disken ”%1$s” finns inte i domänen"
 
 #, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
+"the deleted snapshot"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
+msgstr ""
+
+#, c-format
 msgid "disk '%1$s' specified twice"
 msgstr "disken ”%1$s” angiven två gånger"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "disken ”%1$s” fanns inte i domänkonfigurationen"
-
-msgid ""
-"disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
-"diskens ”queue”-antal måste konfigureras för explicit avbildning från "
-"iothread till queue"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr "diskattribut: disk[,checkpoint=typ][,bitmap=namn]"
@@ -25732,14 +25857,6 @@ msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "disk-ioeventfd-läge stödjs endast för virtio-bussen"
 
 #, c-format
-msgid "disk iothread queue '%1$u' is already assigned"
-msgstr "diskens iothread-kö ”%1$u” är redan tilldelad"
-
-#, c-format
-msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr "avbildningen för diskens iothread-kö ”%1$u” är utanför intervallet"
-
-#, c-format
 msgid "disk iotune field '%1$s' must be an integer"
 msgstr "diskens iotune-fält ”%1$s” måste vara ett heltal"
 
@@ -25760,8 +25877,8 @@ msgid "disk port address is not supported by tunnelled migration"
 msgstr "diskportadressen stödjs inte av tunnlad migrering"
 
 #, c-format
-msgid "disk product is more than %1$d characters"
-msgstr "diskprodukten är mer än %1$d tecken"
+msgid "disk product is more than %1$zu characters"
+msgstr ""
 
 msgid "disk product is not printable string"
 msgstr "diskprodukten är inte en skrivbar sträng"
@@ -26250,6 +26367,10 @@ msgstr "dubblerad iothreadpin för samma iothread ”%1$u”"
 msgid "duplicate key '%1$s'"
 msgstr "dubblerad nyckel ”%1$s”"
 
+#, c-format
+msgid "duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 msgid "duplicate native vlan setting"
 msgstr "dubblerad inbyggd vlan-inställning"
 
@@ -26557,8 +26678,9 @@ msgstr "fel när domänen återupptogs"
 msgid "error while suspending the domain"
 msgstr "fel när domänen sövdes"
 
-msgid "error: "
-msgstr "fel: "
+#, c-format
+msgid "error: %1$s\n"
+msgstr ""
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "error_policy stödjs inte med disken vhostuser"
@@ -27300,6 +27422,10 @@ msgstr "misslyckades att extrahera gluster-volymnamnet"
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
 msgstr "misslyckades att hitta USB-enheten bussnum:enhnum för %1$x:%2$x"
 
+#, c-format
+msgid "failed to find a supported CCW group capability type '%1$s'"
+msgstr ""
+
 msgid "failed to find an empty memory slot"
 msgstr "misslyckades att hitta ett tomt minnesfack"
 
@@ -27689,6 +27815,9 @@ msgstr "misslyckades att tolka %1$s"
 #, c-format
 msgid "failed to parse %1$sversion"
 msgstr "misslyckades att tolka versionen av %1$s"
+
+msgid "failed to parse JSON returned by qemu"
+msgstr ""
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -28173,12 +28302,19 @@ msgstr "misslyckades att skriva ett huvud till domänsparfilen ”%1$s”"
 msgid "failed to write known_host file '%1$s': %2$s"
 msgstr "misslyckades att skriva known_host-filen ”%1$s”: %2$s"
 
+#, c-format
+msgid "failed to write log file: %1$s"
+msgstr ""
+
 msgid "failed to write master key file for domain"
 msgstr "misslyckades att skriva huvudnyckelfilen för domänen"
 
 #, c-format
 msgid "failed to write padding to '%1$s'"
 msgstr "misslyckades att skriva utfyllnad till ”%1$s”"
+
+msgid "failed to write secret"
+msgstr ""
 
 msgid "failed to write secret file"
 msgstr "misslyckades att skriva hemlighetsfilen"
@@ -29789,6 +29925,10 @@ msgid "invalid driver type for version detection"
 msgstr "felaktig drivrutinstyp för versionen upptäckt"
 
 #, c-format
+msgid "invalid empty data-file definition in '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
 msgstr "felaktig åtgärd vid misslyckande: ”%1$s”\n"
 
@@ -29923,8 +30063,8 @@ msgid "invalid mode"
 msgstr "felaktigt läge"
 
 #, c-format
-msgid "invalid model for interface of type '%1$s': '%2$s'"
-msgstr "felaktig modell på gränssnittet av typen ”%1$s”: ”%2$s”"
+msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
+msgstr ""
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -30132,6 +30272,10 @@ msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
 msgstr "felaktig typ ”%1$s” på parametern ”%2$s”, ”%3$s” förväntades"
 
 #, c-format
+msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid unique_id supplied for '%1$s'"
 msgstr "felaktigt unique_id givet för ”%1$s”"
 
@@ -30245,6 +30389,10 @@ msgstr ""
 msgid "iothread %1$d not found"
 msgstr "iothread %1$d finns inte"
 
+#, c-format
+msgid "iothread '%1$u' not defined in iothreadid"
+msgstr ""
+
 msgid "iothread for the new IOThread"
 msgstr "iothread för den nya IOThread"
 
@@ -30253,6 +30401,14 @@ msgstr "iothread-id för befintlig IOThread"
 
 msgid "iothread is not supported with vhostuser disk"
 msgstr "iothread stödjs inte med vhostuser-diskar"
+
+#, c-format
+msgid "iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' mapping out of range"
+msgstr ""
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
@@ -30264,6 +30420,9 @@ msgstr "iothread_id för IOThread att radera"
 #, c-format
 msgid "iothreadid %1$d not found"
 msgstr "iothreadid %1$d finns inte"
+
+msgid "iothreads are supported only by 'virtio-scsi' controllers"
+msgstr ""
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune stödjs inte med vhostuser-diskar"
@@ -31494,6 +31653,12 @@ msgstr "bandbreddsgräns för migrering i MiB/s"
 msgid "migration canceled"
 msgstr "migrationen avbruten"
 
+#, c-format
+msgid ""
+"migration failed. Message from the source host: %1$s. Message from the "
+"destination host: %2$s"
+msgstr ""
+
 msgid "migration in"
 msgstr "migrering in"
 
@@ -32011,6 +32176,10 @@ msgstr "flaggnamn saknas i QEMU-förmågecachen"
 #, c-format
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "glustervolymnamn saknas för sökvägen ”%1$s”"
+
+#, c-format
+msgid "missing group_device value for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -32707,6 +32876,12 @@ msgstr "flera matchande gränssnitt finns: %1$s"
 msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
 "flera minnesenheter finns, använd --alias eller --node för att välja en"
+
+#, c-format
+msgid ""
+"multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
+"not allowed"
+msgstr ""
 
 msgid "multiple stream callbacks not supported"
 msgstr "multipla strömåteranrop stödjs inte"
@@ -33934,15 +34109,15 @@ msgstr "endast läget ”connect” stödjs för en extern TPM-enhet"
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "endast ”dimm”-adresser stödjs för enheten pc-dimm"
 
-#, c-format
-msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr "endast ”pci”-adresser stödjs för enheten %1$s"
-
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "endast ”pci”-adresser stödjs för delat minnes-enheten"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "endast ”pci”-adresser stödjs för virtio-pmem-enheten"
+
+#, c-format
+msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
+msgstr ""
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr "endast ”qcow2”-formaterad ”block”-nvram-bakomliggande kan formateras"
@@ -34253,8 +34428,8 @@ msgid "output to stderr"
 msgstr "skriv ut till standard fel"
 
 #, c-format
-msgid "overflow in converting %1$ld MiB/s to bytes\n"
-msgstr "spill i konvertering av %1$ld MiB/s till byte\n"
+msgid "overflow in converting %1$ld MiB/s to bytes"
+msgstr ""
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
@@ -34338,6 +34513,23 @@ msgstr "parametern ”%1$s” stödjs inte"
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "parametern ”%1$s” förekommer flera gånger"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+msgstr ""
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
+msgstr ""
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' must be listed last"
+msgstr ""
 
 msgid "parameter=value"
 msgstr "parameter=värde"
@@ -35621,6 +35813,12 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "begär en atomär åtgärd"
 
+#, c-format
+msgid ""
+"required positional argument '%1$s' declared after an optional positional "
+"argument '%2$s' of command '%3$s'"
+msgstr ""
+
 msgid "resctrl locking is not supported on this platform"
 msgstr "resctrl-låsning stödjs inte på denna plattform"
 
@@ -36793,6 +36991,11 @@ msgstr "sammanfattningsstatistik stödjs inte ännu"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
 msgstr "att ge <cipher> för domändisksdefinitionen är onödigt"
+
+msgid ""
+"support for offline external snapshots while checkpoint exists was not yet "
+"implemented"
+msgstr ""
 
 msgid "suspend a domain"
 msgstr "suspendera en domän"
@@ -38178,6 +38381,9 @@ msgstr "kan inte utföra filtrering av ögonblicksbilder"
 
 msgid "unable to poll on child"
 msgstr "kan inte polla barnet"
+
+msgid "unable to query block list"
+msgstr ""
 
 msgid "unable to query cgroup BPF progs"
 msgstr "kan inte fråga om cgroup-BPF-program"
@@ -39580,6 +39786,10 @@ msgid "unsupported rtc timer track '%1$s'"
 msgstr "rtc-timerns spårning ”%1$s” stödjs inte"
 
 #, c-format
+msgid "unsupported save image format: %1$d"
+msgstr ""
+
+#, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
 msgstr "schemat %1$s i migrerings-URI:n %2$s stödjs inte"
 
@@ -39632,6 +39842,12 @@ msgstr "oterminerade nummer"
 
 msgid "unterminated string"
 msgstr "oterminerad sträng"
+
+#, c-format
+msgid ""
+"unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
+"used together with positional"
+msgstr ""
 
 msgid "update device from an XML file"
 msgstr "uppdatera en enhet från en XML-fil"
@@ -39765,6 +39981,9 @@ msgid ""
 msgstr ""
 "att använda diskmålnamnet ”%1$s” står i konflikt med SCSI-värdens enhets "
 "adress styrenhet=”%2$u” buss=”%3$u” mål=”%4$u” enhet=”%5$u”"
+
+msgid "using host CPU definition as input may provide incorrect results"
+msgstr ""
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
@@ -40268,6 +40487,9 @@ msgstr "virtio-mem stödjer inte dynamicMemslots"
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem stödjs inte av denna QEMU-binär"
 
+msgid "virtio-mem-ccw can't use different page size than the boot memory"
+msgstr ""
+
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
@@ -40725,6 +40947,103 @@ msgstr "nollkopiering är endast tillgängligt för parallell migrering"
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
 
+#~ msgid ""
+#~ "'reconnect' attribute unsupported 'server' mode for <interface "
+#~ "type='vhostuser'>"
+#~ msgstr ""
+#~ "Attributet ”reconnect” ej stött läge ”server” för <interface "
+#~ "type='vhostuser'>"
+
+#~ msgid "Could not find matching device"
+#~ msgstr "Kunde inte hitta en matchande enhet"
+
+#, c-format
+#~ msgid "Duplicate mapping for iothread '%1$u'"
+#~ msgstr "Dubbel avbildning för iothread ”%1$u”"
+
+#~ msgid "Failed to setup keepalive on connection\n"
+#~ msgstr "Misslyckades att ordna livsuppehållande på förbindelsen\n"
+
+#, c-format
+#~ msgid "Failed to start job on VM '%1$s': %2$s"
+#~ msgstr "Misslyckades med att starta ett jobb på VM ”%1$s”: %2$s"
+
+#~ msgid ""
+#~ "Invalid attempt to set network interface guest-side IP route and/or "
+#~ "address info, not supported by QEMU"
+#~ msgstr ""
+#~ "Felaktigt försök att sätta nätverksgränssnittet gästside-IP-rutt och/"
+#~ "eller -adressinformation, stödjs inte av QEMU"
+
+#~ msgid "Only scsi disk supports vendor and product"
+#~ msgstr "Endast scsi-diskar stödjer leverantör och produkt"
+
+#, c-format
+#~ msgid ""
+#~ "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it "
+#~ "manually.\n"
+#~ msgstr ""
+#~ "Lagringsvolymen ”%1$s” (%2$s) hanteras inte av libvirt. Ta bort den "
+#~ "manuellt.\n"
+
+#~ msgid "The 'passt' backend can only be used with interface type='user'"
+#~ msgstr "Bakänden ”passt” kan endast användas med gränssnittstypen=”user”"
+
+#~ msgid ""
+#~ "The <portForward> element can only be used with <interface type='user'> "
+#~ "and its 'passt' backend"
+#~ msgstr ""
+#~ "Elementet <portForward> kan bara användas med <interface type='user'> och "
+#~ "dess bakände ”passt”"
+
+#~ msgid "Unable to read cache data"
+#~ msgstr "Kan inte läsa cache-data"
+
+#, c-format
+#~ msgid "Volume '%1$s' was not found in domain's definition.\n"
+#~ msgstr "Volymen ”%1$s” finns inte i domänens definition.\n"
+
+#~ msgid ""
+#~ "Wrong or no <model> 'type' attribute specified with <interface "
+#~ "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
+#~ msgstr ""
+#~ "Fel eller inget <model>-attribut ”type” angivet med <interface "
+#~ "type='vhostuser'/>. vhostuser kräver framänden virtio-net*"
+
+#~ msgid ""
+#~ "disk 'queue' count must be configured for explicit iothread to queue "
+#~ "mapping"
+#~ msgstr ""
+#~ "diskens ”queue”-antal måste konfigureras för explicit avbildning från "
+#~ "iothread till queue"
+
+#, c-format
+#~ msgid "disk iothread queue '%1$u' is already assigned"
+#~ msgstr "diskens iothread-kö ”%1$u” är redan tilldelad"
+
+#, c-format
+#~ msgid "disk iothread queue '%1$u' mapping out of range"
+#~ msgstr "avbildningen för diskens iothread-kö ”%1$u” är utanför intervallet"
+
+#, c-format
+#~ msgid "disk product is more than %1$d characters"
+#~ msgstr "diskprodukten är mer än %1$d tecken"
+
+#~ msgid "error: "
+#~ msgstr "fel: "
+
+#, c-format
+#~ msgid "invalid model for interface of type '%1$s': '%2$s'"
+#~ msgstr "felaktig modell på gränssnittet av typen ”%1$s”: ”%2$s”"
+
+#, c-format
+#~ msgid "only 'pci' addresses are supported for the %1$s device"
+#~ msgstr "endast ”pci”-adresser stödjs för enheten %1$s"
+
+#, c-format
+#~ msgid "overflow in converting %1$ld MiB/s to bytes\n"
+#~ msgstr "spill i konvertering av %1$ld MiB/s till byte\n"
+
 #~ msgid "Cannot set a base label with AppArmour"
 #~ msgstr "Kan inte sätta en basetikett för AppArmour"
 
@@ -41143,53 +41462,12 @@ msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
 #~ msgstr "[[--%1$s] <sträng>]…"
 
 #, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
-#~ msgstr "aliaset ”%1$s” för kommandot ”%2$s” har aliastyp som inte stämmer"
-
-#, c-format
-#~ msgid "alias '%1$s' of command '%2$s' has missing alias option"
-#~ msgstr "aliaset ”%1$s” för kommandot ”%2$s” saknar ett aliasalternativ"
-
-#, c-format
-#~ msgid "bool parameter '%1$s' of command '%2$s' has completer set"
-#~ msgstr ""
-#~ "den booleska parametern ”%1$s” till kommandot ”%2$s” har completterarmängd"
-
-#, c-format
-#~ msgid "command '%1$s' has handler set"
-#~ msgstr "kommandot ”%1$s” har en hanterare satt"
-
-#, c-format
 #~ msgid "command '%1$s' has inconsistent alias"
 #~ msgstr "kommandot ”%1$s” har inkonsistent alias"
 
 #, c-format
-#~ msgid "command '%1$s' has info set"
-#~ msgstr "kommandot ”%1$s” har en information satt"
-
-#, c-format
-#~ msgid "command '%1$s' has multiple flags set"
-#~ msgstr "kommandot ”%1$s” har flera flaggor satta"
-
-#, c-format
-#~ msgid "command '%1$s' has options set"
-#~ msgstr "kommandot ”%1$s” har alternativ satta"
-
-#, c-format
 #~ msgid "command '%1$s' has too many options"
 #~ msgstr "kommandot '%1$s' har för många alternativ"
-
-#, c-format
-#~ msgid "command '%1$s' lacks help"
-#~ msgstr "kommandot ”%1$s” saknar hjälp"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-#~ msgstr "kommandoaliaset ”%1$s” pekar på ett kommando ”%2$s” som inte finns"
-
-#, c-format
-#~ msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
-#~ msgstr "kommandoaliaset ”%1$s” pekar på ett annat kommandoalias ”%2$s”"
 
 #~ msgid ""
 #~ "command groups and command are both NULL run vshInit before reloading"

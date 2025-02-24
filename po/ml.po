@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-01-09 09:28+0000\n"
+"POT-Creation-Date: 2025-02-24 10:18+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -694,6 +694,22 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to parse and process events"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to process JSON event doc: %2$s"
+msgstr ""
+
+#, c-format
+msgid "%1$s: Failed to read ch events!: %2$s"
+msgstr ""
+
+#, c-format
 msgid "%1$s: File '%2$s' is too large\n"
 msgstr ""
 
@@ -706,6 +722,10 @@ msgstr "%s IPv4 അല്ലാത്ത '%s' വിലാസത്തില്�
 msgid ""
 "%1$s: IPv4 family specified for non-IPv4 gateway '%2$s' in route definition"
 msgstr "%s IPv4 അല്ലാത്ത '%s' വിലാസത്തില്‍ നല്‍കിയിരിയ്ക്കുന്നു, '%s' നെറ്റ്‌വര്‍ക്കില്‍"
+
+#, c-format
+msgid "%1$s: Invalid JSON event doc: %2$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1112,6 +1132,20 @@ msgstr ""
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr ""
 
+msgid ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
+msgstr ""
+
+msgid ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
+msgstr ""
+
 #, fuzzy
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1290,12 +1324,15 @@ msgstr "'peak', 'burst' എന്നിവയ്ക്കു് 'average' വി
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool', 'volume' എന്നിവ ഒന്നിച്ചു് 'pool' തരത്തിലുള്ള ശ്രോതസ്സില്‍ നല്‍കണം"
 
+msgid "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
 msgid ""
-"'reconnect' attribute unsupported 'server' mode for <interface "
-"type='vhostuser'>"
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 msgstr ""
 
 msgid ""
@@ -1306,6 +1343,9 @@ msgstr ""
 msgid ""
 "'restrictive' mode is required in memory element when mode is 'restrictive' "
 "in memnode element"
+msgstr ""
+
+msgid "'return' member missing"
 msgstr ""
 
 #, c-format
@@ -2793,6 +2833,9 @@ msgstr "'%1$s' ലോഗ് ഡയറക്ടറി തയ്യാറാക്
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ മാക്‌വിലാന്‍ ഉപകരണങ്ങള്‍ ഉണ്ടാക്കാന്‍ സാധ്യമല്ല"
+
+msgid "Cannot create monitor FIFO"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4339,9 +4382,6 @@ msgstr "'%1$s' എന്ന പേരുള്ള ഡൊമെയിന്‍ �
 msgid "Could not find host system specified in '%1$s'"
 msgstr "'%1$s'-ല്‍ നല്‍കിയിരിയ്ക്കുന്ന ഹോസ്റ്റ് സിസ്റ്റം കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "Could not find matching device"
-msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
-
 #, c-format
 msgid "Could not find matching device '%1$s'"
 msgstr "പൊരുത്തപ്പെടുന്ന '%1$s' ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാനായില്ല"
@@ -4468,6 +4508,10 @@ msgstr "ACL ടെക്ക് ഡ്രൈവറിലേക്ക് ഉപയ
 #, fuzzy
 msgid "Could not get checkpoint name"
 msgstr "സ്നാപ്ഷോട്ട് പേര് കിട്ടുന്നില്ല"
+
+#, c-format
+msgid "Could not get count of free %1$uKiB pages, no data returned"
+msgstr ""
 
 msgid "Could not get current time"
 msgstr "നിലവിലുളള സമയം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -6137,10 +6181,6 @@ msgid "Duplicate hash table key '%1$s'"
 msgstr ""
 
 msgid "Duplicate info for NUMA latencies"
-msgstr ""
-
-#, c-format
-msgid "Duplicate mapping for iothread '%1$u'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8357,6 +8397,10 @@ msgstr ""
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
 msgstr "'%1$s'(%2$s) എന്ന വോള്യം നീക്കാന്‍ പറ്റിയില്ല"
 
+#, c-format
+msgid "Failed to remove the file: %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to reportluns: %1$s"
 msgstr "പൂള്‍ %1$s ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8688,9 +8732,8 @@ msgstr "ഇന്റര്‍ഫെയിസ് %1$s ആരംഭിക്കു
 msgid "Failed to set vcpus for domain '%1$d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് vcpuകള്‍ ഡൊമെയിന്‍ '%1$d'ന് സജ്ജീകരിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#, fuzzy
-msgid "Failed to setup keepalive on connection\n"
-msgstr "ഡൊമൈന്‍ വിവരണം ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
+msgid "Failed to setup keepalive on connection"
+msgstr ""
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -8730,10 +8773,6 @@ msgstr ""
 #, c-format
 msgid "Failed to start interface %1$s"
 msgstr "ഇന്റര്‍ഫെയിസ് %1$s ആരംഭിക്കുന്നതില്‍ പരാജയം"
-
-#, c-format
-msgid "Failed to start job on VM '%1$s': %2$s"
-msgstr "വിഎം '%1$s'-ല്‍ ജോലി ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം: %2$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
@@ -9571,6 +9610,12 @@ msgstr "I/O തെറ്റ്"
 msgid "I/O error"
 msgstr "I/O തെറ്റ്"
 
+#, c-format
+msgid ""
+"I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
+"message='%5$s'"
+msgstr ""
+
 msgid "I/O size in bytes"
 msgstr ""
 
@@ -10092,8 +10137,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Invalid attempt to set network interface guest-side IP route and/or address "
-"info, not supported by QEMU"
+"Invalid attempt to set network interface guest-side IP address info, not "
+"supported by QEMU"
 msgstr ""
 
 msgid ""
@@ -11748,6 +11793,10 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ ക്ലയന�
 msgid "Missing clients data in JSON document"
 msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ ക്ലയന്റുകളുടെ ഡേറ്റാ ലഭ്യമല്ല"
 
+#, c-format
+msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
+msgstr ""
+
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON ഫയലില്‍ defaultLockspace ലഭ്യമല്ല"
 
@@ -11989,6 +12038,10 @@ msgstr ""
 
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ റീഡ്ഒണ്‍ലി ഫീള്‍ഡ് ലഭ്യമല്ല"
+
+#, c-format
+msgid "Missing ref property on ccw_device in members for '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12308,6 +12361,9 @@ msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "ക്രമീകരിക്കേണ്ട NUMA നോഡ് തെരഞ്ഞെടുപ്പ്"
+
+msgid "NUMA nodes are not supported for virtio-mem-ccw"
+msgstr ""
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr ""
@@ -13223,6 +13279,9 @@ msgstr ""
 msgid "Only ide and scsi disk support wwn"
 msgstr "ഐഡിഇ, സ്കസി ഡിസ്ക് മാത്രം wwn പിന്തുണയ്ക്കുന്നു"
 
+msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
 #, fuzzy
 msgid "Only luks encryption is supported for raw files"
 msgstr "ഡിവൈസിനു് പ്രക്രിയ പിന്തുണയ്ക്കുന്നില്ല: %s"
@@ -13307,8 +13366,8 @@ msgstr "libxl ഒരു സീരിയല്‍ ഡിവൈസ് മാത്
 msgid "Only read-only pflash is supported."
 msgstr "ഒരു ഫയല്‍സിസ്റ്റം മാത്രം പിന്തുണയ്ക്കുന്നു"
 
-msgid "Only scsi disk supports vendor and product"
-msgstr "scsi ഡിസ്ക് വെണ്ടറും പ്രൊഡക്ടും പിന്തുണയ്ക്കുന്നു"
+msgid "Only scsi disk supports 'vendor'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -15481,6 +15540,10 @@ msgstr ""
 msgid "Start"
 msgstr "ആരംഭിച്ചു"
 
+#, c-format
+msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
+msgstr ""
+
 msgid "Start a block commit operation."
 msgstr "ബ്ലോക്കിന്റെ കമ്മിറ്റ് തുടങ്ങുക."
 
@@ -15727,8 +15790,8 @@ msgstr "പൂളുമായി സംഭരണ ശ്രോതസ്സില�
 
 #, c-format
 msgid ""
-"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually.\n"
-msgstr "'%1$s'(%2$s) സ്റ്റോറേജ് വോള്യം libvrt മാനേജ് ചെയ്യുന്നതല്ല. താങ്കള്‍ മാറ്റിക്കോളു. \n"
+"Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
+msgstr ""
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr "നിര്‍ത്തയ ഡൊമൈനില്‍ മാത്രമേ സ്റ്റോറേജ് വോള്യം നീക്കം ചെയ്യല്‍ പിന്‍തുണയ്ക്കുന്നുള്ളു"
@@ -16780,7 +16843,9 @@ msgid ""
 "'%2$s' or machine type '%3$s'"
 msgstr ""
 
-msgid "The 'passt' backend can only be used with interface type='user'"
+msgid ""
+"The 'passt' backend can only be used with interface type='user' or "
+"type='vhostuser'"
 msgstr ""
 
 msgid ""
@@ -16797,8 +16862,8 @@ msgstr ""
 "ഉപയോഗിയ്ക്കുക"
 
 msgid ""
-"The <portForward> element can only be used with <interface type='user'> and "
-"its 'passt' backend"
+"The <portForward> element can only be used with the 'passt' backend of "
+"interface type='user' or type='vhostuser'"
 msgstr ""
 
 msgid ""
@@ -18622,6 +18687,9 @@ msgstr "മെമ്മറി അവസ്ഥ ലഭ്യമാകുന്ന�
 msgid "Unable to get physical function status on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമിലെ ഭൌതിക ഫങ്ഷനുകളുടെ സ്ഥിതി കാണാന്‍ സാധിച്ചില്ല"
 
+msgid "Unable to get pointer to VirtualBox vtable"
+msgstr ""
+
 msgid "Unable to get remote socket name"
 msgstr "റിമോട്ട് സോക്കറ്റ് നാമം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -18696,6 +18764,9 @@ msgstr "ഡിവൈസ് സ്ട്രീം mutex init ചെയ്യു�
 #, fuzzy
 msgid "Unable to initialize RW lock"
 msgstr "സോക്ക്സ്പെയിസ് %s ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "Unable to initialize VirtualBox C API client"
+msgstr ""
 
 msgid "Unable to initialize audit layer"
 msgstr "ഓഡിറ്റ് ലേയര്‍ ആരംഭിക്കുവാന്‍ സാധ്യമായില്ല"
@@ -19047,6 +19118,9 @@ msgstr "കോട്ടാ പാഴ്സ് ചെയ്യുവാന്‍ 
 msgid "Unable to process file with flags %1$d"
 msgstr "%1$d കൊടികളുള്ള ഫയല്‍ കൈകാര്യം ചെയ്യാന്‍ സാധിയ്ക്കുന്നില്ല"
 
+msgid "Unable to query NVMe disk address"
+msgstr ""
+
 msgid "Unable to query TSC scaling support"
 msgstr ""
 
@@ -19112,10 +19186,6 @@ msgstr ""
 
 msgid "Unable to read TLS confirmation"
 msgstr "ടിഎല്‍എസ് ഉറപ്പാക്കല്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy
-msgid "Unable to read cache data"
-msgstr "കണ്ടെയിനര്‍ pty ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "Unable to read container pty"
 msgstr "കണ്ടെയിനര്‍ pty ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -21040,8 +21110,8 @@ msgid "Vol %1$s wiped\n"
 msgstr "%1$s വോള്യം തുടച്ച് മാറ്റി\n"
 
 #, c-format
-msgid "Volume '%1$s' was not found in domain's definition.\n"
-msgstr "'%1$s' വോള്യം ഡൊമൈനിന്റെ ഡെഫനിഷനില്‍ കാണുന്നില്ല.\n"
+msgid "Volume '%1$s' was not found in domain's definition."
+msgstr ""
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -21216,11 +21286,6 @@ msgstr "എഫ്ഡിസി ഡിസ്കിനു് അപ്രതീക�
 
 msgid "Wrong length MAC address"
 msgstr "തെറ്റായ MAC വിലാസ വ്യാപ്തി"
-
-msgid ""
-"Wrong or no <model> 'type' attribute specified with <interface "
-"type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
-msgstr ""
 
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE സജീവം, പക്ഷേ 'bytes' ഡേറ്റാ ലഭ്യമല്ല"
@@ -21494,9 +21559,23 @@ msgstr "തിരിച്ച് പോയ ശേഷം സ്ഥിതി പ�
 msgid "after reverting, change state to running"
 msgstr "തിരിച്ച് പോയ ശേഷം സ്ഥിതി പ്രവര്‍ത്തിക്കുന്നതായി വെയ്ക്കുക"
 
+msgid "aia feature is not available with this QEMU binary"
+msgstr ""
+
+msgid "aia feature is only supported with RISC-V Virt machines"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "algorithm=%1$d is not supported"
 msgstr "വൈപ്പിങ് ആല്‍ഗോരിഥം %1$d പിന്തുണയ്ക്കുന്നില്ല"
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has mismatched alias type"
+msgstr ""
+
+#, c-format
+msgid "alias '%1$s' of command '%2$s' has missing alias option"
+msgstr ""
 
 #, fuzzy
 msgid "all CPU models are accepted"
@@ -21932,6 +22011,9 @@ msgid ""
 "by this API"
 msgstr ""
 
+msgid "bandwidth (in MiB/s) available for the final phase of migration"
+msgstr ""
+
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
 msgstr ""
@@ -22142,6 +22224,14 @@ msgstr "ബോണ്ട ഇന്റര്‍ഫെയിസ് miimon updelay �
 
 msgid "bond interface misses the bond element"
 msgstr "ബോണ്ട് ഇഡ്ജ് ഇന്റര്‍ല്‍ ബോണ്ട് എലമെന്റ് ലഭ്യമല്ലഫെയിസി"
+
+#, c-format
+msgid "bool parameter '%1$s' of command '%2$s' has completer set"
+msgstr ""
+
+#, c-format
+msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "boot order %1$u is already used by another device"
@@ -24186,12 +24276,43 @@ msgid "command '%1$s' doesn't support option --%2$s"
 msgstr "കമാന്‍ഡ് '%1$s' ഉപാധി --%2$s-നെ പിന്തുണയ്ക്കുന്നില്ല"
 
 #, c-format
+msgid "command '%1$s' has handler set"
+msgstr ""
+
+#, c-format
+msgid "command '%1$s' has info set"
+msgstr ""
+
+#, c-format
+msgid "command '%1$s' has multiple flags set"
+msgstr ""
+
+#, c-format
+msgid "command '%1$s' has options set"
+msgstr ""
+
+#, c-format
+msgid "command '%1$s' lacks help"
+msgstr ""
+
+#, c-format
 msgid "command '%1$s' requires --%2$s option"
 msgstr "കമാന്‍ഡ് '%1$s'-ന് ഉപാധി --%2$s ആവശ്യമുണ്ട്"
 
 #, c-format
 msgid "command '%1$s' requires <%2$s> option"
 msgstr "കമാന്‍ഡ് '%1$s'-ന് ഉപാധി <%2$s> ആവശ്യമുണ്ട്"
+
+msgid "command 'domblkinfo' requires <device> option"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
+msgstr ""
+
+#, c-format
+msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
+msgstr ""
 
 msgid "command groups is NULL run vshInit before reloading"
 msgstr ""
@@ -24251,6 +24372,12 @@ msgstr "qcow2-നൊപ്പം മാത്രം കോംപാറ്റി�
 #, fuzzy
 msgid "completed"
 msgstr "വലി പൂര്‍ത്തിയാക്കിയിരിക്കുന്നു"
+
+#, c-format
+msgid ""
+"completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
+"completer is used"
+msgstr ""
 
 msgid "compress level for multithread compression"
 msgstr ""
@@ -25520,16 +25647,23 @@ msgid "disk '%1$s' not found in domain"
 msgstr "ഡിസ്ക് %1$s ലഭ്യമല്ല"
 
 #, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
+"the deleted snapshot"
+msgstr ""
+
+#, c-format
+msgid ""
+"disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
+msgstr ""
+
+#, c-format
 msgid "disk '%1$s' specified twice"
 msgstr "ഡിസ്ക് '%1$s' രണ്ടാമതും നല്‍കിയിരിയ്ക്കുന്നു"
 
 #, fuzzy, c-format
 msgid "disk '%1$s' was not found in the domain config"
 msgstr "'%1$s' വോള്യം ഡൊമൈനിന്റെ ഡെഫനിഷനില്‍ കാണുന്നില്ല.\n"
-
-msgid ""
-"disk 'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
 msgstr ""
@@ -25625,14 +25759,6 @@ msgstr "ഡിസ്ക് ശൈലി %1$s പിന്തുണയ്ക്�
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "virtio ബസിനു് മാത്രമേ ഡിസ്ക് ioeventfd മോഡ് പിന്തുണയ്ക്കൂ"
 
-#, c-format
-msgid "disk iothread queue '%1$u' is already assigned"
-msgstr ""
-
-#, c-format
-msgid "disk iothread queue '%1$u' mapping out of range"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "disk iotune field '%1$s' must be an integer"
 msgstr "ക്രമീകരണ എന്‍ട്രി '%1$s'  സൂചിപ്പിയ്ക്കേണ്ടതു് ഒരു ഇന്റിജര്‍ മൂല്ല്യം ഉപയോഗിച്ചാവണം"
@@ -25655,7 +25781,7 @@ msgid "disk port address is not supported by tunnelled migration"
 msgstr "ടണല്‍ മൈഗ്രേഷനു് പൈപ്പ് നല്‍കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "disk product is more than %1$d characters"
+msgid "disk product is more than %1$zu characters"
 msgstr ""
 
 msgid "disk product is not printable string"
@@ -26155,6 +26281,10 @@ msgstr ""
 msgid "duplicate key '%1$s'"
 msgstr "FD %d ആവര്‍ത്തിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "duplicate mapping for iothread '%1$u'"
+msgstr ""
+
 msgid "duplicate native vlan setting"
 msgstr "ആവര്‍ത്തിച്ച നേറ്റീവ് vlan സജ്ജീകരണം"
 
@@ -26472,8 +26602,9 @@ msgstr "‍ഡൊമെയിന്‍ വീണ്ടും ആരംഭിയ�
 msgid "error while suspending the domain"
 msgstr "ഡൊമെയിന്‍ സസ്പെന്‍ഡ് ചെയ്യുമ്പോള്‍ പിശക്"
 
-msgid "error: "
-msgstr "പിശക്: "
+#, c-format
+msgid "error: %1$s\n"
+msgstr ""
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr ""
@@ -27209,6 +27340,10 @@ msgstr "stderr ഫയല്‍ ഹാന്‍ഡില്‍ സജ്ജമാ
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
 msgstr "ബസ്:%u ഉപകരണം:%u എന്ന യുഎസ്ബി ഉപകരണം കണ്ടില്ല"
 
+#, c-format
+msgid "failed to find a supported CCW group capability type '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "failed to find an empty memory slot"
 msgstr "%s-നുള്ള പേരന്റ് ഡിവൈസ് കണ്ടുപിടിക്കുന്നതില്‍ പരാജയം"
@@ -27612,6 +27747,9 @@ msgstr "%1$s പാഴ്സ് ചെയ്യുന്നതില്‍ പ�
 #, fuzzy, c-format
 msgid "failed to parse %1$sversion"
 msgstr "%1$s പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+msgid "failed to parse JSON returned by qemu"
+msgstr ""
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -28103,6 +28241,10 @@ msgstr "'%1$s' ഫയല്‍ സൂക്ഷിയ്ക്കുന്നത�
 msgid "failed to write known_host file '%1$s': %2$s"
 msgstr "known_host ഫയല്‍ '%1$s' സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയം: %2$s"
 
+#, c-format
+msgid "failed to write log file: %1$s"
+msgstr ""
+
 #, fuzzy
 msgid "failed to write master key file for domain"
 msgstr "ഡൊമെയിനുള്ള മെമ്മറി പരിധി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -28110,6 +28252,9 @@ msgstr "ഡൊമെയിനുള്ള മെമ്മറി പരിധി 
 #, fuzzy, c-format
 msgid "failed to write padding to '%1$s'"
 msgstr "'%1$s' ഫയലിലേക്ക് സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
+
+msgid "failed to write secret"
+msgstr ""
 
 #, fuzzy
 msgid "failed to write secret file"
@@ -29707,6 +29852,10 @@ msgid "invalid driver type for version detection"
 msgstr "TLS സെഷനുള്ള തെറ്റായ സിഫര്‍ വ്യാപ്തി"
 
 #, c-format
+msgid "invalid empty data-file definition in '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "invalid failure action: '%1$s'\n"
 msgstr "തെറ്റായ പരാജയ പ്രവര്‍ത്തി: '%1$s'\n"
 
@@ -29841,7 +29990,7 @@ msgid "invalid mode"
 msgstr "അസാധുവായ മോഡ്"
 
 #, c-format
-msgid "invalid model for interface of type '%1$s': '%2$s'"
+msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -30050,6 +30199,10 @@ msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്"
 msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
 msgstr "'%2$s' പരാമീറ്ററിനു് '%1$s' എന്ന അസാധുവായ തരം, പ്രതീക്ഷിച്ചതു് '%3$s'"
 
+#, c-format
+msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid unique_id supplied for '%1$s'"
 msgstr "'%1$s'-നു് തെറ്റായ വ്യാപ്തി നല്‍കിയിരിക്കുന്നു"
@@ -30170,6 +30323,10 @@ msgstr ""
 msgid "iothread %1$d not found"
 msgstr "hostdev %s ലഭ്യമായില്ല"
 
+#, c-format
+msgid "iothread '%1$u' not defined in iothreadid"
+msgstr ""
+
 msgid "iothread for the new IOThread"
 msgstr ""
 
@@ -30177,6 +30334,14 @@ msgid "iothread id of existing IOThread"
 msgstr ""
 
 msgid "iothread is not supported with vhostuser disk"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' is already assigned"
+msgstr ""
+
+#, c-format
+msgid "iothread queue '%1$u' mapping out of range"
 msgstr ""
 
 msgid ""
@@ -30189,6 +30354,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "iothreadid %1$d not found"
 msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
+
+msgid "iothreads are supported only by 'virtio-scsi' controllers"
+msgstr ""
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr ""
@@ -31445,6 +31613,12 @@ msgstr "MiB/s ല്‍ ഉള്ള മെഗ്രേഷന്‍ ബാന്
 msgid "migration canceled"
 msgstr "നീക്കുന്നതു് റദ്ദാക്കപ്പെട്ടിരിക്കുന്നു"
 
+#, c-format
+msgid ""
+"migration failed. Message from the source host: %1$s. Message from the "
+"destination host: %2$s"
+msgstr ""
+
 msgid "migration in"
 msgstr ""
 
@@ -31986,6 +32160,10 @@ msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്
 #, fuzzy, c-format
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "ഓഫിനുള്ള ഉപയോക്തൃനാമം ലഭ്യമല്ല"
+
+#, c-format
+msgid "missing group_device value for '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -32688,6 +32866,12 @@ msgid "multiple matching interfaces found: %1$s"
 msgstr "പോരുത്തമുള്ള അനവധി ഇന്റര്‍ഫെയിസുകള്‍ ലഭ്യമായിരിക്കുന്നു: %1$s"
 
 msgid "multiple memory devices found, use --alias or --node to select one"
+msgstr ""
+
+#, c-format
+msgid ""
+"multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
+"not allowed"
 msgstr ""
 
 msgid "multiple stream callbacks not supported"
@@ -33935,14 +34119,14 @@ msgstr ""
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
-#, c-format
-msgid "only 'pci' addresses are supported for the %1$s device"
-msgstr ""
-
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
+msgstr ""
+
+#, c-format
+msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
 msgstr ""
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
@@ -34277,7 +34461,7 @@ msgid "output to stderr"
 msgstr ""
 
 #, c-format
-msgid "overflow in converting %1$ld MiB/s to bytes\n"
+msgid "overflow in converting %1$ld MiB/s to bytes"
 msgstr ""
 
 #, c-format
@@ -34370,6 +34554,23 @@ msgstr "%1$s' എന്ന പരാമീറ്ററിനുള്ള പി�
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
 msgstr "'%1$s' പരാമീറ്റര്‍ ഒന്നിലധികം തവണ വരുന്നുണ്ടു്"
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
+msgstr ""
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%1$s' of command '%2$s' must be listed before optional parameters"
+msgstr ""
+
+#, c-format
+msgid "parameter '%1$s' of command '%2$s' must be listed last"
+msgstr ""
 
 msgid "parameter=value"
 msgstr "പരാമീറ്റര്‍=മൂല്ല്യം"
@@ -35655,6 +35856,12 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "ഏകത്വ പ്രവര്‍ത്തനം വേണം"
 
+#, c-format
+msgid ""
+"required positional argument '%1$s' declared after an optional positional "
+"argument '%2$s' of command '%3$s'"
+msgstr ""
+
 msgid "resctrl locking is not supported on this platform"
 msgstr ""
 
@@ -36830,6 +37037,11 @@ msgid "summary statistics are not supported yet"
 msgstr "ഡിസ്ക് സ്നാപ്പ്ഷോട്ടുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
 msgid "supplying <cipher> for domain disk definition is unnecessary"
+msgstr ""
+
+msgid ""
+"support for offline external snapshots while checkpoint exists was not yet "
+"implemented"
 msgstr ""
 
 msgid "suspend a domain"
@@ -38170,6 +38382,9 @@ msgstr "സ്നാപ്പ്ഷോട്ട് ഫില്‍റ്ററ�
 
 msgid "unable to poll on child"
 msgstr "ചൈള്‍ഡില്‍ പോള്‍ ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+msgid "unable to query block list"
+msgstr ""
 
 #, fuzzy
 msgid "unable to query cgroup BPF progs"
@@ -39589,6 +39804,10 @@ msgstr "പിന്തുണയ്ക്കാത്ത rtc ടൈമര്‍ 
 msgid "unsupported rtc timer track '%1$s'"
 msgstr "പിന്തുണയ്ക്കാത്ത rtc ടൈമര്‍ ട്രാക്ക് '%1$s'"
 
+#, c-format
+msgid "unsupported save image format: %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
 msgstr "പിന്തുണയില്ലാത്ത ക്രമീകരണം: %s"
@@ -39645,6 +39864,12 @@ msgstr "അവസാനിപ്പിക്കാത്ത നംബര്‍"
 
 msgid "unterminated string"
 msgstr "അവസാനിപ്പിക്കാത്ത സ്ട്രിങ്"
+
+#, c-format
+msgid ""
+"unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
+"used together with positional"
+msgstr ""
 
 msgid "update device from an XML file"
 msgstr "ഒരു XML ഫയലില്‍ നിന്നും ഡിവൈസ് പുതുക്കുക"
@@ -39771,6 +39996,9 @@ msgstr ""
 msgid ""
 "using disk target name '%1$s' conflicts with SCSI host device address "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u"
+msgstr ""
+
+msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
 #, c-format
@@ -40267,6 +40495,9 @@ msgstr ""
 msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr ""
 
+msgid "virtio-mem-ccw can't use different page size than the boot memory"
+msgstr ""
+
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
@@ -40717,6 +40948,38 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Could not find matching device"
+#~ msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Failed to setup keepalive on connection\n"
+#~ msgstr "ഡൊമൈന്‍ വിവരണം ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
+
+#, c-format
+#~ msgid "Failed to start job on VM '%1$s': %2$s"
+#~ msgstr "വിഎം '%1$s'-ല്‍ ജോലി ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം: %2$s"
+
+#~ msgid "Only scsi disk supports vendor and product"
+#~ msgstr "scsi ഡിസ്ക് വെണ്ടറും പ്രൊഡക്ടും പിന്തുണയ്ക്കുന്നു"
+
+#, c-format
+#~ msgid ""
+#~ "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it "
+#~ "manually.\n"
+#~ msgstr ""
+#~ "'%1$s'(%2$s) സ്റ്റോറേജ് വോള്യം libvrt മാനേജ് ചെയ്യുന്നതല്ല. താങ്കള്‍ മാറ്റിക്കോളു. \n"
+
+#, fuzzy
+#~ msgid "Unable to read cache data"
+#~ msgstr "കണ്ടെയിനര്‍ pty ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "Volume '%1$s' was not found in domain's definition.\n"
+#~ msgstr "'%1$s' വോള്യം ഡൊമൈനിന്റെ ഡെഫനിഷനില്‍ കാണുന്നില്ല.\n"
+
+#~ msgid "error: "
+#~ msgstr "പിശക്: "
 
 #~ msgid "Cannot set a base label with AppArmour"
 #~ msgstr "AppArmour-നൊപ്പം ഒരു ബെയിസ് ലേബല്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
