@@ -202,10 +202,11 @@ else:
                 stopped_units.append(unit)
 
         if opts.selinux:
+            progname = os.path.basename(prog)
             # if using a wrapper command like 'gdb', setting the selinux
             # context won't work because the wrapper command will not be a
             # valid entrypoint for the virtd_t context
-            if os.path.basename(prog) not in ["libvirtd", *modular_daemons]:
+            if progname not in ["libvirtd", *modular_daemons]:
                 raise Exception("'{}' is not recognized as a valid daemon. "
                                 "Selinux process context can only be set when "
                                 "executing a daemon directly without wrapper "
@@ -216,17 +217,22 @@ else:
                                 "'{}' outside build directory"
                                 .format(progpath))
 
+            if progname == "libvirtd":
+                context = "virtd"
+            else:
+                context = progname
+
             # selinux won't allow us to transition to the virtd_t context from
             # e.g. the user_home_t context (the likely label of the local
             # executable file)
-            if not chcon(progpath, "system_u", "object_r", "virtd_exec_t"):
+            if not chcon(progpath, "system_u", "object_r", f"{context}_exec_t"):
                 raise Exception("Failed to change selinux context of binary")
             dorestorecon = True
 
             args = ['runcon',
                     '-u', 'system_u',
                     '-r', 'system_r',
-                    '-t', 'virtd_t', *args]
+                    '-t', f'{context}_t', *args]
 
         print("Running '%s'..." % str(" ".join(args)))
         ret = subprocess.call(args, env=env)
