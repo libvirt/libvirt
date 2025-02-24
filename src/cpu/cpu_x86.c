@@ -3212,6 +3212,7 @@ virCPUx86UpdateLive(virCPUDef *cpu,
          * behaved before the features were added.
          */
         if (!explicit &&
+            model->addedFeatures &&
             g_strv_contains((const char **) model->addedFeatures, feature->name))
             ignore = true;
 
