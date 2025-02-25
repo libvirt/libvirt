@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-02-24 10:18+0000\n"
-"PO-Revision-Date: 2025-01-23 20:28+0000\n"
+"PO-Revision-Date: 2025-02-25 09:34+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -833,19 +833,19 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
-msgstr ""
+msgstr "%1$s: 사건 관리 FIFO (%2$s) 읽기 끝을 여는 데 실패함!"
 
 #, c-format
 msgid "%1$s: Failed to parse and process events"
-msgstr ""
+msgstr "%1$s: 사건의 구문 분석 및 처리하는 데 실패함"
 
 #, c-format
 msgid "%1$s: Failed to process JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: JSON 문서를 처리하는 데 실패함: %2$s"
 
 #, c-format
 msgid "%1$s: Failed to read ch events!: %2$s"
-msgstr ""
+msgstr "%1$s: ch 사건을 읽는 데 실패함!: %2$s"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
@@ -863,7 +863,7 @@ msgstr "%1$s: 경로 정의에 비-IPv4 게이트웨이 '%2$s'에 지정된 IPV4
 
 #, c-format
 msgid "%1$s: Invalid JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: 잘못된 JSON 사건 문서: %2$s"
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1279,15 +1279,21 @@ msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"'--copy-storage-synchronous-writes'는 '--copy-storage-all', '--copy-storage-"
+"inc' 중의 하나가 필요합니다"
 
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
 msgstr ""
+"''--migrate-disks'는 '--copy-storage-all', '--copy-storage-inc' 중의 하나가 "
+"필요합니다"
 
 msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"'--migrate-disks-detect-zeroes'는 '--copy-storage-all', '--copy-storage-inc' "
+"중의 하나가 필요합니다"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1544,7 +1550,7 @@ msgid "(CPU_definition)"
 msgstr "(CPU 정의)"
 
 msgid "(_migration_cookie)"
-msgstr "(_migration_cookie)"
+msgstr "(_이전_쿠키)"
 
 msgid "(bridge interface definition)"
 msgstr "(브릿지 연결장치 정의)"
