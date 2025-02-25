@@ -2930,7 +2930,7 @@ Success is always reported in this case.
 
 You can limit the types of information that are returned by specifying one or
 more flags.  Available information types flags are *--user*, *--os*,
-*--timezone*, *--hostname*, *--filesystem*, *--disk* and *--interface*.
+*--timezone*, *--hostname*, *--filesystem*, *--disk*, *--interface* and *--load*.
 If an explicitly requested information type is not supported by the guest agent
 at that point, the processes will provide an exit code of 1.
 
@@ -3008,6 +3008,12 @@ returned:
 * ``if.<num>.addr.<num1>.type`` - the IP address type of addr <num1> (e.g. ipv4)
 * ``if.<num>.addr.<num1>.addr`` - the IP address of addr <num1>
 * ``if.<num>.addr.<num1>.prefix`` - the prefix of IP address of addr <num1>
+
+*--load* returns:
+* ``load.1m``  - average load in guest for last 1 minute
+* ``load.5m``  - average load in guest for last 5 minutes
+* ``load.15m`` - average load in guest for last 15 minutes
+
 
 guestvcpus
 ----------
