@@ -1152,9 +1152,15 @@ get_files(vahControl * ctl)
             if (vah_add_file(&buf, mem->source.virtio_pmem.path, "rw") != 0)
                 goto cleanup;
             break;
+        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+            if (vah_add_file(&buf, DEV_SGX_VEPC, "rw") != 0 ||
+                vah_add_file(&buf, DEV_SGX_PROVISION, "r") != 0) {
+                goto cleanup;
+            }
+            break;
+
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
         case VIR_DOMAIN_MEMORY_MODEL_NONE:
         case VIR_DOMAIN_MEMORY_MODEL_LAST:
             break;
