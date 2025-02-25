@@ -19181,7 +19181,8 @@ static const unsigned int qemuDomainGetGuestInfoSupportedTypes =
     VIR_DOMAIN_GUEST_INFO_HOSTNAME |
     VIR_DOMAIN_GUEST_INFO_FILESYSTEM |
     VIR_DOMAIN_GUEST_INFO_DISKS |
-    VIR_DOMAIN_GUEST_INFO_INTERFACES;
+    VIR_DOMAIN_GUEST_INFO_INTERFACES |
+    VIR_DOMAIN_GUEST_INFO_LOAD;
 
 static int
 qemuDomainGetGuestInfoCheckSupport(unsigned int types,
@@ -19468,6 +19469,10 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     qemuAgentDiskInfo **agentdiskinfo = NULL;
     virDomainInterfacePtr *ifaces = NULL;
     size_t nifaces = 0;
+    double load1m = 0;
+    double load5m = 0;
+    double load15m = 0;
+    bool format_load = false;
     size_t i;
 
     virCheckFlags(0, -1);
@@ -19538,6 +19543,14 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
             nifaces = rc;
     }
 
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_LOAD) {
+        rc = qemuAgentGetLoadAvg(agent, &load1m, &load5m, &load15m, report_unsupported);
+        if (rc == -1)
+            goto exitagent;
+        if (rc >= 0)
+            format_load = true;
+    }
+
     qemuDomainObjExitAgent(vm, agent);
     virDomainObjEndAgentJob(vm);
 
@@ -19562,6 +19575,12 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
 
     if (nifaces > 0) {
         virDomainInterfaceFormatParams(ifaces, nifaces, params, nparams, &maxparams);
+    }
+
+    if (format_load) {
+        virTypedParamsAddDouble(params, nparams, &maxparams, "load.1m", load1m);
+        virTypedParamsAddDouble(params, nparams, &maxparams, "load.5m", load5m);
+        virTypedParamsAddDouble(params, nparams, &maxparams, "load.15m", load15m);
     }
 
     ret = 0;
