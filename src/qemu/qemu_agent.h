@@ -195,3 +195,9 @@ int qemuAgentSSHRemoveAuthorizedKeys(qemuAgent *agent,
 int qemuAgentGetDisks(qemuAgent *mon,
                       qemuAgentDiskInfo ***disks,
                       bool report_unsupported);
+
+int qemuAgentGetLoadAvg(qemuAgent *agent,
+                        double *load1m,
+                        double *load5m,
+                        double *load15m,
+                        bool report_unsupported);

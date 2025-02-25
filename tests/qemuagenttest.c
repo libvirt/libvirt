@@ -1356,6 +1356,58 @@ testQemuAgentTimezone(const void *data)
     virTypedParamsFree(params, nparams);
     return ret;
 }
+
+
+static const char testQemuAgentGetLoadAvgResponse[] =
+    "{"
+    "  \"return\": {"
+    "    \"load15m\": 0.03564453125,"
+    "    \"load5m\": 0.064453125,"
+    "    \"load1m\": 0.00390625"
+    "  }"
+    "}";
+
+static int
+testQemuAgentGetLoadAvg(const void *data)
+{
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
+    double load1m = 0;
+    double load5m = 0;
+    double load15m = 0;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-load",
+                               testQemuAgentGetLoadAvgResponse) < 0)
+        return -1;
+
+    if (qemuAgentGetLoadAvg(qemuMonitorTestGetAgent(test),
+                            &load1m, &load5m, &load15m, true) < 0)
+        return -1;
+
+#define VALIDATE_LOAD(value_, expected_) \
+    do { \
+        if (value_ != expected_) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Expected " #value_ " '%.11f', got '%.11f'", \
+                           expected_, value_); \
+            return -1; \
+        } \
+    } while (0)
+
+    VALIDATE_LOAD(load1m, 0.00390625);
+    VALIDATE_LOAD(load5m, 0.064453125);
+    VALIDATE_LOAD(load15m, 0.03564453125);
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -1392,6 +1444,7 @@ mymain(void)
     DO_TEST(Timezone);
     DO_TEST(SSHKeys);
     DO_TEST(GetDisks);
+    DO_TEST(GetLoadAvg);
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 

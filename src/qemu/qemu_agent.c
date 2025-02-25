@@ -2568,3 +2568,49 @@ int qemuAgentGetDisks(qemuAgent *agent,
     g_free(*disks);
     return -1;
 }
+
+
+int
+qemuAgentGetLoadAvg(qemuAgent *agent,
+                    double *load1m,
+                    double *load5m,
+                    double *load15m,
+                    bool report_unsupported)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data = NULL;
+    int rc;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-get-load", NULL)))
+        return -1;
+
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
+
+    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qemu agent didn't return an array of loads"));
+        return -1;
+    }
+
+#define GET_NUMBER_PARAM(param_) \
+    do { \
+        if (param_ && \
+            virJSONValueObjectGetNumberDouble(data, #param_, param_) < 0) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           _("parameter '%1$s' is missing in reply of guest-get-load"), \
+                           #param_); \
+            return -1; \
+        } \
+    } while (0)
+
+    GET_NUMBER_PARAM(load1m);
+    GET_NUMBER_PARAM(load5m);
+    GET_NUMBER_PARAM(load15m);
+
+#undef GET_NUMBER_PARAM
+
+    return 0;
+}
