@@ -82,7 +82,7 @@ endif
 
 runstatedir = get_option('runstatedir')
 if runstatedir == ''
-  runstatedir = localstatedir / 'run'
+  runstatedir = '/run'
 endif
 
 initconfdir = get_option('initconfdir')
