@@ -13292,6 +13292,14 @@ virDomainSetVcpu(virDomainPtr domain,
  *      "if.<num>.addr.<num1>.addr" - the IP address of addr <num1>
  *      "if.<num>.addr.<num1>.prefix" - the prefix of IP address of addr <num1>
  *
+ * VIR_DOMAIN_GUEST_INFO_LOAD:
+ *  Returns load (the number of processes in the runqueue or waiting for disk
+ *  I/O) as double values:
+ *
+ *      "load.1m" - load averaged over 1 minute
+ *      "load.5m" - load averaged over 5 minutes
+ *      "load.15m" - load averaged over 15 minutes
+ *
  * Using 0 for @types returns all information groups supported by the given
  * hypervisor.
  *
