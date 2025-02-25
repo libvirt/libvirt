@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-02-24 10:18+0000\n"
-"PO-Revision-Date: 2025-01-14 14:38+0000\n"
+"PO-Revision-Date: 2025-02-25 14:49+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10\n"
 
 msgid ""
 "\n"
@@ -853,19 +853,19 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
-msgstr ""
+msgstr "%1$s: не вдалося відкрити монітор подій, кінець читання FIFO(%2$s)!"
 
 #, c-format
 msgid "%1$s: Failed to parse and process events"
-msgstr ""
+msgstr "%1$s: не вдалося розібрати і обробити події"
 
 #, c-format
 msgid "%1$s: Failed to process JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: не вдалося обробити документацію до події JSON: %2$s"
 
 #, c-format
 msgid "%1$s: Failed to read ch events!: %2$s"
-msgstr ""
+msgstr "%1$s: не вдалося прочитати ch-події!: %2$s"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
@@ -887,7 +887,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: некоректна документація до події JSON: %2$s"
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1334,15 +1334,21 @@ msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"для того, щоб скористатися '--copy-storage-synchronous-writes' слід вказати "
+"'--copy-storage-all' або '--copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
 msgstr ""
+"для того, щоб скористатися '--migrate-disks', слід вказати '--copy-storage-"
+"all' або '--copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"для того, щоб скористатися '--migrate-disks-detect-zeroes', слід вказати "
+"'--copy-storage-all' або '--copy-storage-inc'"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1528,6 +1534,8 @@ msgstr "для джерела типу «pool» разом з «pool» має б
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
+"для використання явного значення iothread для прив'язки черги слід "
+"налаштувати кількість 'queue'"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "підтримку «queues» передбачено лише для контролерів virtio-scsi"
@@ -1536,6 +1544,8 @@ msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
 "<interface type='vhostuser'>"
 msgstr ""
+"не передбачено підтримки атрибута 'reconnect', якщо mode='server' для "
+"джерела у <interface type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1552,7 +1562,7 @@ msgstr ""
 "memnode використано «restrictive»"
 
 msgid "'return' member missing"
-msgstr ""
+msgstr "пропущено член 'return'"
 
 #, c-format
 msgid ""
@@ -3125,7 +3135,7 @@ msgid "Cannot create macvlan devices on this platform"
 msgstr "На цій платформі неможливо створювати пристрої macvlan"
 
 msgid "Cannot create monitor FIFO"
-msgstr ""
+msgstr "Не вдалося створити FIFO монітора"
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
@@ -4848,6 +4858,7 @@ msgstr "Не вдалося отримати назву контрольної �
 #, c-format
 msgid "Could not get count of free %1$uKiB pages, no data returned"
 msgstr ""
+"Не вдалося отримати кількість вільних сторінок у %1$u КіБ, даних не повернуто"
 
 msgid "Could not get current time"
 msgstr "Помилка при отриманні поточного часу"
@@ -8772,7 +8783,7 @@ msgstr "Не вдалося вилучити том сховища даних «
 
 #, c-format
 msgid "Failed to remove the file: %1$s"
-msgstr ""
+msgstr "Не вдалося вилучити файл: %1$s"
 
 #, c-format
 msgid "Failed to reportluns: %1$s"
@@ -9129,7 +9140,7 @@ msgstr ""
 "допомогою libxenlight"
 
 msgid "Failed to setup keepalive on connection"
-msgstr ""
+msgstr "Не вдалося налаштувати засіб підтримання з'єднання"
 
 #, c-format
 msgid "Failed to shutdown domain '%1$d' with libxenlight"
@@ -10053,6 +10064,8 @@ msgid ""
 "I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
 "message='%5$s'"
 msgstr ""
+"Помилка В-В: диск=«%1$s», індекс=«%2$d», шлях=«%3$s», часова позначка=«%4$s»"
+", повідомлення=«%5$s»"
 
 msgid "I/O size in bytes"
 msgstr "розмір введення-виведення у байтах"
@@ -10595,6 +10608,8 @@ msgid ""
 "Invalid attempt to set network interface guest-side IP address info, not "
 "supported by QEMU"
 msgstr ""
+"Некоректна спроба встановити мережевий інтерфейс щодо інформації щодо адрес "
+"IP на гостьовому боці, немає підтримки у QEMU"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -12291,7 +12306,7 @@ msgstr "У документі JSON не вистачає даних клієнт
 
 #, c-format
 msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
-msgstr ""
+msgstr "Пропущено дані у ccw_device з посиланням «%1$s» у членах для «%2$s»"
 
 msgid "Missing defaultLockspace data from JSON file"
 msgstr ""
@@ -12562,7 +12577,7 @@ msgstr "У документі стану JSON не вистачає поля rea
 
 #, c-format
 msgid "Missing ref property on ccw_device in members for '%1$s'"
-msgstr ""
+msgstr "Пропущено властивість ref у ccw_device у членах для «%1$s»"
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
@@ -12894,7 +12909,7 @@ msgid "NUMA node selections to set"
 msgstr "Набір вузлів NUMA для встановлення"
 
 msgid "NUMA nodes are not supported for virtio-mem-ccw"
-msgstr ""
+msgstr "Підтримки вузлів NUMA для virtio-mem-ccw не передбачено"
 
 msgid "NUMA nodes without CPUs can't be initiator"
 msgstr "Вузли NUMA без процесорів не можуть бути ініціаторами"
@@ -13818,7 +13833,7 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "Підтримку wwn передбачено лише для дисків IDE та SCSI"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
-msgstr ""
+msgstr "Підтримку «product» передбачено лише для дисків ide, sata і scsi"
 
 msgid "Only luks encryption is supported for raw files"
 msgstr "Для простих файлів передбачено підтримку лише шифрування luks"
@@ -13900,7 +13915,7 @@ msgid "Only read-only pflash is supported."
 msgstr "Передбачено підтримку лише читання з pflash."
 
 msgid "Only scsi disk supports 'vendor'"
-msgstr ""
+msgstr "Підтримку 'vendor' передбачено лише для дисків scsi"
 
 #, c-format
 msgid ""
@@ -16145,6 +16160,7 @@ msgstr "Запустити"
 #, c-format
 msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
 msgstr ""
+"Початковий процесор %1$d поза припустимим діапазоном (мін: 0, макс: %2$d)"
 
 msgid "Start a block commit operation."
 msgstr "Розпочати дію з внесення блоку."
@@ -16413,7 +16429,7 @@ msgstr "Джерело даних конфліктує з буфером: «%1$s
 #, c-format
 msgid ""
 "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
-msgstr ""
+msgstr "Том сховища «%1$s»(%2$s) не керується libvirt. Вилучіть його вручну."
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr ""
@@ -17672,6 +17688,8 @@ msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
 "type='vhostuser'"
 msgstr ""
+"Модуль 'passt' можна використовувати лише з інтерфейсами type='user' і "
+"type='vhostuser'"
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
@@ -17692,6 +17710,8 @@ msgid ""
 "The <portForward> element can only be used with the 'passt' backend of "
 "interface type='user' or type='vhostuser'"
 msgstr ""
+"Елемент <portForward> можна використовувати лише з модулем 'passt' "
+"інтерфейсу type='user' або type='vhostuser'"
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
@@ -19578,7 +19598,7 @@ msgid "Unable to get physical function status on this platform"
 msgstr "Неможливо отримати стан фізичної функції на цій платформі"
 
 msgid "Unable to get pointer to VirtualBox vtable"
-msgstr ""
+msgstr "Не вдалося отримати вказівник на vtable VirtualBox"
 
 msgid "Unable to get remote socket name"
 msgstr "Не вдалося отримати назву віддаленого сокета"
@@ -19647,7 +19667,7 @@ msgid "Unable to initialize RW lock"
 msgstr "Не вдалося ініціалізувати блокування RW"
 
 msgid "Unable to initialize VirtualBox C API client"
-msgstr ""
+msgstr "Не вдалося ініціалізувати клієнт програмного інтерфейсу C VirtualBox"
 
 msgid "Unable to initialize audit layer"
 msgstr "Не вдалося ініціалізувати шар інспекції"
@@ -19994,7 +20014,7 @@ msgid "Unable to process file with flags %1$d"
 msgstr "Не вдалося обробити файл з прапорцями %1$d"
 
 msgid "Unable to query NVMe disk address"
-msgstr ""
+msgstr "Не вдалося опитати адресу на диску NVMe"
 
 msgid "Unable to query TSC scaling support"
 msgstr "Не вдалося опитати підтримку масштабування TSC"
@@ -22029,7 +22049,7 @@ msgstr "Том %1$s витерто\n"
 
 #, c-format
 msgid "Volume '%1$s' was not found in domain's definition."
-msgstr ""
+msgstr "Том «%1$s» не було знайдено у визначенні домену."
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
@@ -22495,10 +22515,10 @@ msgid "after reverting, change state to running"
 msgstr "після повернення змінити стан на «запущений»"
 
 msgid "aia feature is not available with this QEMU binary"
-msgstr ""
+msgstr "можливість aia є недоступною з цим виконуваним файлом QEMU"
 
 msgid "aia feature is only supported with RISC-V Virt machines"
-msgstr ""
+msgstr "підтримку можливості aia передбачено лише для віртуальних машин RISC-V"
 
 #, c-format
 msgid "algorithm=%1$d is not supported"
@@ -22963,7 +22983,7 @@ msgstr ""
 "підтримуваним для цього програмного інтерфейсу"
 
 msgid "bandwidth (in MiB/s) available for the final phase of migration"
-msgstr ""
+msgstr "канал (у МіБ/с) доступний на кінцевому кроці перенесення"
 
 #, c-format
 msgid "bandwidth controller id %1$zd does not exist"
@@ -23207,7 +23227,7 @@ msgstr "булевий параметр «%1$s» команди «%2$s» міс�
 
 #, c-format
 msgid "boolean parameter '%1$s' of command '%2$s' must not be positional"
-msgstr ""
+msgstr "булевий параметр «%1$s» команди «%2$s» не повинен бути позиційним"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
@@ -25350,7 +25370,7 @@ msgid "command '%1$s' requires <%2$s> option"
 msgstr "для команди «%1$s» потрібно вказати параметр <%2$s>"
 
 msgid "command 'domblkinfo' requires <device> option"
-msgstr ""
+msgstr "команда 'domblkinfo' потребує параметра <пристрій>"
 
 #, c-format
 msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
@@ -25427,6 +25447,8 @@ msgid ""
 "completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
 "completer is used"
 msgstr ""
+"completer_flags аргументу «%1$s» команди «%2$s» має бути 0, якщо використано "
+"доповнювач"
 
 msgid "compress level for multithread compression"
 msgstr "рівень стискання для багатопотокового стискання"
@@ -26728,11 +26750,15 @@ msgid ""
 "disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
 "the deleted snapshot"
 msgstr ""
+"диск «%1$s», на який посилається знімок «%2$s», не знайдено у визначенні ВМ "
+"вилученого знімка"
 
 #, c-format
 msgid ""
 "disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
 msgstr ""
+"диск «%1$s», на який посилається знімок «%2$s», не знайдено у поточному "
+"визначенні"
 
 #, c-format
 msgid "disk '%1$s' specified twice"
@@ -26871,7 +26897,7 @@ msgstr ""
 
 #, c-format
 msgid "disk product is more than %1$zu characters"
-msgstr ""
+msgstr "запис дискового продукту перевищує %1$zu символів"
 
 msgid "disk product is not printable string"
 msgstr "торговельна назва диска містить спеціальні символи"
@@ -27364,7 +27390,7 @@ msgstr "дублювання ключа «%1$s»"
 
 #, c-format
 msgid "duplicate mapping for iothread '%1$u'"
-msgstr ""
+msgstr "дублювання прив'язки для iothread «%1$u»"
 
 msgid "duplicate native vlan setting"
 msgstr ""
@@ -27690,7 +27716,7 @@ msgstr "помилка під час спроби призупинити роб�
 
 #, c-format
 msgid "error: %1$s\n"
-msgstr ""
+msgstr "помилка: %1$s\n"
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr "підтримки error_policy для дисків vhostuser не передбачено"
@@ -28437,7 +28463,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to find a supported CCW group capability type '%1$s'"
-msgstr ""
+msgstr "не вдалося знайти підтримувану можливість групування CCW типу «%1$s»"
 
 msgid "failed to find an empty memory slot"
 msgstr "не вдалося знайти порожній слот пам'яті"
@@ -28831,7 +28857,7 @@ msgid "failed to parse %1$sversion"
 msgstr "не вдалося обробити версію %1$s"
 
 msgid "failed to parse JSON returned by qemu"
-msgstr ""
+msgstr "не вдалося обробити JSON, який повернуто qemu"
 
 #, c-format
 msgid "failed to parse JSON: %1$s"
@@ -29323,7 +29349,7 @@ msgstr "не вдалося записати файл known_host «%1$s»: %2$s"
 
 #, c-format
 msgid "failed to write log file: %1$s"
-msgstr ""
+msgstr "не вдалося записати файл журналу: %1$s"
 
 msgid "failed to write master key file for domain"
 msgstr "не вдалося записати файл основного ключа домену"
@@ -29333,7 +29359,7 @@ msgid "failed to write padding to '%1$s'"
 msgstr "не вдалося записати доповнення до «%1$s»"
 
 msgid "failed to write secret"
-msgstr ""
+msgstr "не вдалося записати ключ"
 
 msgid "failed to write secret file"
 msgstr "не вдалося записати дані до файла ключів"
@@ -31036,7 +31062,7 @@ msgstr "Некоректний тип для виявлення версії"
 
 #, c-format
 msgid "invalid empty data-file definition in '%1$s'"
-msgstr ""
+msgstr "некоректне порожнє визначення файла даних у «%1$s»"
 
 #, c-format
 msgid "invalid failure action: '%1$s'\n"
@@ -31177,6 +31203,7 @@ msgstr "некоректний режим"
 #, c-format
 msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
 msgstr ""
+"некоректна модель для інтерфейсу типу «%1$s»: «%2$s» -- має бути «virtio»"
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -31384,7 +31411,7 @@ msgstr "некоректний тип «%1$s» для параметра «%2$s�
 
 #, c-format
 msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
-msgstr ""
+msgstr "некоректний тип 'NONE' параметра «%1$s» команди «%2$s»"
 
 #, c-format
 msgid "invalid unique_id supplied for '%1$s'"
@@ -31510,7 +31537,7 @@ msgstr "потоку введення-виведення %1$d не знайде�
 
 #, c-format
 msgid "iothread '%1$u' not defined in iothreadid"
-msgstr ""
+msgstr "iothread «%1$u» не визначено в iothreadid"
 
 msgid "iothread for the new IOThread"
 msgstr "потік для нового потоку введення-виведення"
@@ -31523,11 +31550,11 @@ msgstr "підтримки iothread для дисків vhostuser не пере�
 
 #, c-format
 msgid "iothread queue '%1$u' is already assigned"
-msgstr ""
+msgstr "чергу iothread «%1$u» вже призначено"
 
 #, c-format
 msgid "iothread queue '%1$u' mapping out of range"
-msgstr ""
+msgstr "прив'язка черги iothread «%1$u» поза припустимим діапазоном"
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
@@ -31544,6 +31571,8 @@ msgstr "ідентифікатор потоку введення-виведен�
 
 msgid "iothreads are supported only by 'virtio-scsi' controllers"
 msgstr ""
+"підтримку потоків введення-виведення передбачено лише для контролерів "
+"'virtio-scsi'"
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "підтримки iotune для дисків vhostuser не передбачено"
@@ -32858,6 +32887,8 @@ msgid ""
 "migration failed. Message from the source host: %1$s. Message from the "
 "destination host: %2$s"
 msgstr ""
+"помилка перенесення. Повідомлення від вузла джерела: %1$s. Повідомлення від "
+"вузла призначення: %2$s"
 
 msgid "migration in"
 msgstr "перенесення до"
@@ -33402,7 +33433,7 @@ msgstr "не вказано назви тому gluster для шляху «%1$s
 
 #, c-format
 msgid "missing group_device value for '%1$s'"
-msgstr ""
+msgstr "значення missing group_device для «%1$s»"
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
@@ -34129,6 +34160,8 @@ msgid ""
 "multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
 "not allowed"
 msgstr ""
+"не можна використовувати декілька позиційних аргументів (%1$s, %2$s) команди "
+"«%3$s»"
 
 msgid "multiple stream callbacks not supported"
 msgstr "підтримки кратних зворотних викликів у потоках не передбачено"
@@ -35407,7 +35440,7 @@ msgstr "для пристрою virtio-pmem передбачено підтри�
 
 #, c-format
 msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
-msgstr ""
+msgstr "для пристрою %1$s передбачено підтримку лише адрес only 'pci' і 'ccw'"
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr ""
@@ -35744,7 +35777,7 @@ msgstr "вивести повідомлення до stderr"
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes"
-msgstr ""
+msgstr "переповнення під час перетворення %1$ld МіБ/с на байти"
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
@@ -35844,6 +35877,8 @@ msgstr ""
 #, c-format
 msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
 msgstr ""
+"у параметрі «%1$s» команди «%2$s» неправильно використано прапорець "
+"«required»"
 
 #, c-format
 msgid ""
@@ -37207,6 +37242,8 @@ msgid ""
 "required positional argument '%1$s' declared after an optional positional "
 "argument '%2$s' of command '%3$s'"
 msgstr ""
+"обов'язковий позиційний аргумент «%1$s» оголошено після необов'язкового "
+"позиційного аргументу «%2$s» команди «%3$s»"
 
 msgid "resctrl locking is not supported on this platform"
 msgstr "На цій платформі підтримки блокування resctrl не передбачено"
@@ -38427,6 +38464,8 @@ msgid ""
 "support for offline external snapshots while checkpoint exists was not yet "
 "implemented"
 msgstr ""
+"підтримку автономних зовнішніх знімків при існуванні контрольної точки ще не "
+"реалізовано"
 
 msgid "suspend a domain"
 msgstr "перевести домен в стан очікування"
@@ -39857,7 +39896,7 @@ msgid "unable to poll on child"
 msgstr "не вдалося опитати дочірній процес"
 
 msgid "unable to query block list"
-msgstr ""
+msgstr "не вдалося опитати список блоків"
 
 msgid "unable to query cgroup BPF progs"
 msgstr "не вдалося опитати програми BPF cgroup"
@@ -41275,7 +41314,7 @@ msgstr "непідтримуваний канал таймера RTC «%1$s»"
 
 #, c-format
 msgid "unsupported save image format: %1$d"
-msgstr ""
+msgstr "непідтримуваний формат збереження образів: %1$d"
 
 #, c-format
 msgid "unsupported scheme %1$s in migration URI %2$s"
@@ -41336,6 +41375,8 @@ msgid ""
 "unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
 "used together with positional"
 msgstr ""
+"прапорець unwanted_positional аргументу «%1$s» команди «%2$s» не слід "
+"використовувати разом із позиційним"
 
 msgid "update device from an XML file"
 msgstr "оновити запис пристрою з файла XML"
@@ -41485,6 +41526,8 @@ msgstr ""
 
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
+"використання визначення процесора вузла як вхідних даних може призвести до "
+"неправильних результатів"
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
@@ -42017,6 +42060,8 @@ msgstr "підтримки virtio-mem не передбачено у цьому 
 
 msgid "virtio-mem-ccw can't use different page size than the boot memory"
 msgstr ""
+"virtio-mem-ccw не може використовувати розміру сторінки, який відмінний від "
+"розміру у пам'яті завантаження"
 
 #, c-format
 msgid ""
