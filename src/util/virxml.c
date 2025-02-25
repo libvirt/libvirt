@@ -909,6 +909,8 @@ virXMLNodeGetSubelement(xmlNodePtr node,
  * Find and return a sub-elements node of @node named @name in a GPtrArray
  * populated with the xmlNodePtr objects. Caller is responsible for freeing the
  * array but not the contained xmlNode objects.
+ *
+ * Note: The returned GPtrArray is non-NULL even if @node doesn't contain such sub-elements
  */
 GPtrArray *
 virXMLNodeGetSubelementList(xmlNodePtr node,
