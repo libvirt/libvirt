@@ -7970,19 +7970,21 @@ virDomainIothreadMappingDefParse(xmlNodePtr driverNode,
     if (!(iothreadsNode = virXMLNodeGetSubelement(driverNode, "iothreads")))
         return 0;
 
-    if (!(iothreadNodes = virXMLNodeGetSubelementList(iothreadsNode, "iothread")))
+    iothreadNodes = virXMLNodeGetSubelementList(iothreadsNode, "iothread");
+
+    if (iothreadNodes->len == 0)
         return 0;
 
     for (i = 0; i < iothreadNodes->len; i++) {
         xmlNodePtr iothNode = g_ptr_array_index(iothreadNodes, i);
         g_autoptr(virDomainIothreadMappingDef) iothdef = g_new0(virDomainIothreadMappingDef, 1);
-        g_autoptr(GPtrArray) queueNodes = NULL;
+        g_autoptr(GPtrArray) queueNodes = virXMLNodeGetSubelementList(iothNode, "queue");
 
         if (virXMLPropUInt(iothNode, "id", 10, VIR_XML_PROP_REQUIRED,
                            &iothdef->id) < 0)
             return -1;
 
-        if ((queueNodes = virXMLNodeGetSubelementList(iothNode, "queue"))) {
+        if (queueNodes->len > 0) {
             size_t q;
 
             iothdef->queues = g_new0(unsigned int, queueNodes->len);
