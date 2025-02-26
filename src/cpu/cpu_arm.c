@@ -604,6 +604,8 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     /* parse the corresponding vendor_id bits */
     data->vendor_id = (cpuid >> 24) & 0xff;
 
+    VIR_DEBUG("CPU vendor 0x%02llx, pvr 0x%03llx", data->vendor_id, data->pvr);
+
     features = g_new0(char *, MAX_CPU_FLAGS + 1);
 
     /* shift bit map mask to parse for CPU flags */
@@ -635,8 +637,8 @@ virCPUarmDecode(virCPUDef *cpu,
 
     if (!(model = virCPUarmModelFindByPVR(map, cpuData->pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Cannot find CPU model with PVR 0x%1$03llx"),
-                       cpuData->pvr);
+                       _("Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"),
+                       cpuData->pvr, cpuData->vendor_id);
         return -1;
     }
 
