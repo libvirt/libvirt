@@ -8,7 +8,7 @@
     <type arch='x86_64' machine='xenfv'>hvm</type>
     <loader type='rom' format='raw'>/usr/lib/xen/boot/hvmloader</loader>
     <acpi>
-      <table type='slic'>/sys/firmware/acpi/tables/SLIC</table>
+      <table type='rawset'>/sys/firmware/acpi/tables/SLIC</table>
     </acpi>
     <boot dev='cdrom'/>
   </os>

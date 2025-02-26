@@ -140,7 +140,7 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
             def->os.nacpiTables = 1;
             def->os.acpiTables = g_new0(virDomainOSACPITableDef *, 1);
             def->os.acpiTables[0] = g_new0(virDomainOSACPITableDef, 1);
-            def->os.acpiTables[0]->type = VIR_DOMAIN_OS_ACPI_TABLE_TYPE_SLIC;
+            def->os.acpiTables[0]->type = VIR_DOMAIN_OS_ACPI_TABLE_TYPE_RAWSET;
             def->os.acpiTables[0]->path = g_steal_pointer(&slic);
         }
 
