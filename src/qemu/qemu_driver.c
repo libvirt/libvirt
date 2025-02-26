@@ -19265,59 +19265,32 @@ static void
 qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
                             int nfs,
                             virDomainDef *vmdef,
-                            virTypedParameterPtr *params,
-                            int *nparams, int *maxparams)
+                            virTypedParamList *list)
 {
-    size_t i, j;
+    size_t i;
 
-    /* FIXME: get disk target */
-
-    if (virTypedParamsAddUInt(params, nparams, maxparams,
-                              "fs.count", nfs) < 0)
-        return;
+    virTypedParamListAddUInt(list, nfs, "fs.count");
 
     for (i = 0; i < nfs; i++) {
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.name", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->name) < 0)
-            return;
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.mountpoint", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->mountpoint) < 0)
-            return;
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.fstype", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->fstype) < 0)
-            return;
+        size_t j;
+
+        virTypedParamListAddString(list, fsinfo[i]->name, "fs.%zu.name", i);
+        virTypedParamListAddString(list, fsinfo[i]->mountpoint, "fs.%zu.mountpoint", i);
+        virTypedParamListAddString(list, fsinfo[i]->fstype, "fs.%zu.fstype", i);
 
         /* disk usage values are not returned by older guest agents, so
          * only add the params if the value is set */
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.total-bytes", i);
-        if (fsinfo[i]->total_bytes != -1 &&
-            virTypedParamsAddULLong(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->total_bytes) < 0)
-            return;
+        if (fsinfo[i]->total_bytes != -1)
+            virTypedParamListAddULLong(list, fsinfo[i]->total_bytes, "fs.%zu.total-bytes", i);
+        if (fsinfo[i]->used_bytes != -1)
+            virTypedParamListAddULLong(list, fsinfo[i]->used_bytes, "fs.%zu.used-bytes", i);
 
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.used-bytes", i);
-        if (fsinfo[i]->used_bytes != -1 &&
-            virTypedParamsAddULLong(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->used_bytes) < 0)
-            return;
+        virTypedParamListAddUInt(list, fsinfo[i]->ndisks, "fs.%zu.disk.count", i);
 
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.disk.count", i);
-        if (virTypedParamsAddUInt(params, nparams, maxparams,
-                                  param_name, fsinfo[i]->ndisks) < 0)
-            return;
         for (j = 0; j < fsinfo[i]->ndisks; j++) {
             virDomainDiskDef *diskdef = NULL;
             qemuAgentDiskAddress *d = fsinfo[i]->disks[j];
+
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
                                              &d->pci_controller,
@@ -19325,28 +19298,15 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
                                              d->bus,
                                              d->target,
                                              d->unit);
-            if (diskdef) {
-                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                           "fs.%zu.disk.%zu.alias", i, j);
-                if (diskdef->dst &&
-                    virTypedParamsAddString(params, nparams, maxparams,
-                                            param_name, diskdef->dst) < 0)
-                    return;
-            }
+            if (diskdef && diskdef->dst)
+                virTypedParamListAddString(list, diskdef->dst,
+                                           "fs.%zu.disk.%zu.alias", i, j);
 
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "fs.%zu.disk.%zu.serial", i, j);
-            if (d->serial &&
-                virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, d->serial) < 0)
-                return;
+            if (d->serial)
+                virTypedParamListAddString(list, d->serial, "fs.%zu.disk.%zu.serial", i, j);
 
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "fs.%zu.disk.%zu.device", i, j);
-            if (d->devnode &&
-                virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, d->devnode) < 0)
-                return;
+            if (d->devnode)
+                virTypedParamListAddString(list, d->devnode, "fs.%zu.disk.%zu.device", i, j);
         }
     }
 }
@@ -19504,7 +19464,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         /* we need to convert the agent fsinfo struct to parameters and match
          * it to the vm disk target */
         if (nfs > 0)
-            qemuAgentFSInfoFormatParams(agentfsinfo, nfs, vm->def, params, nparams, &maxparams);
+            qemuAgentFSInfoFormatParams(agentfsinfo, nfs, vm->def, list);
 
         if (ndisks > 0)
             qemuAgentDiskInfoFormatParams(agentdiskinfo, ndisks, vm->def, list);
