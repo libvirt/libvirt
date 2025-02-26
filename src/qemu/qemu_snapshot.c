@@ -2203,6 +2203,8 @@ qemuSnapshotRevertValidate(virDomainObj *vm,
                            virDomainSnapshotDef *snapdef,
                            unsigned int flags)
 {
+    size_t i;
+
     if (!vm->persistent &&
         snapdef->state != VIR_DOMAIN_SNAPSHOT_RUNNING &&
         snapdef->state != VIR_DOMAIN_SNAPSHOT_PAUSED &&
@@ -2227,6 +2229,22 @@ qemuSnapshotRevertValidate(virDomainObj *vm,
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
                            _("snapshot without memory state, removal of existing managed saved state strongly recommended to avoid corruption"));
             return -1;
+        }
+    }
+
+    /* Reverting to external snapshot creates overlay files for every disk and
+     * it would fail for non-file based disks.
+     * See qemuSnapshotRevertExternalPrepare for more details. */
+    if (virDomainSnapshotIsExternal(snap)) {
+        for (i = 0; i < snap->def->dom->ndisks; i++) {
+            virDomainDiskDef *disk = snap->def->dom->disks[i];
+
+            if (disk->src->type != VIR_STORAGE_TYPE_FILE) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("source disk for '%1$s' is not a regular file, reverting to snapshot is not supported"),
+                               disk->dst);
+                return -1;
+            }
         }
     }
 
@@ -2381,6 +2399,9 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
     if (virDomainMomentDefPostParse(&tmpsnapdef->parent) < 0)
         return -1;
 
+    /* Force default location to be external in order to create overlay files
+     * for every disk. In qemuSnapshotRevertValidate we make sure that each
+     * disk is regular file otherwise this would fail. */
     if (virDomainSnapshotAlignDisks(tmpsnapdef, domdef,
                                     VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
                                     false, true) < 0) {
