@@ -7180,7 +7180,11 @@
       <zeroOrMore>
         <element name="table">
           <attribute name="type">
-            <value>slic</value>
+            <choice>
+              <value>raw</value>
+              <value>rawset</value>
+              <value>slic</value>
+            </choice>
           </attribute>
           <ref name="absFilePath"/>
         </element>

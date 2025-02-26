@@ -1459,6 +1459,8 @@ VIR_ENUM_IMPL(virDomainOsDefFirmwareFeature,
 
 VIR_ENUM_IMPL(virDomainOsACPITable,
               VIR_DOMAIN_OS_ACPI_TABLE_TYPE_LAST,
+              "raw",
+              "rawset",
               "slic",
 );
 
@@ -17900,7 +17902,8 @@ virDomainDefParseBootAcpiOptions(virDomainDef *def,
             goto error;
 
         for (j = 0; j < i; j++) {
-            if (tables[j]->type == type) {
+            if (tables[j]->type == type &&
+                type != VIR_DOMAIN_OS_ACPI_TABLE_TYPE_RAW) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("ACPI table type '%1$s' may only appear once"),
                                virDomainOsACPITableTypeToString(type));

@@ -490,9 +490,22 @@ These options apply to any form of booting of the guest OS.
    ...
 
 ``acpi``
-   The ``table`` element contains a fully-qualified path to the ACPI table. The
-   ``type`` attribute contains the ACPI table type (currently only ``slic`` is
-   supported) :since:`Since 1.3.5 (QEMU)` :since:`Since 5.9.0 (Xen)`
+   The ``table`` element contains a fully-qualified path to the ACPI table,
+   with the ``type`` attribute dictating what data must be present in the
+   file:
+
+   * ``raw``: a single ACPI table with header and data, with ACPI
+     signature auto-detected from header (:since:`Since 11.2.0`).
+   * ``rawset``: concatenation of multiple ACPI tables with header
+     and data, each with any ACPI signature, auto-detected from header
+     (:since:`Since 11.2.0`).
+   * ``slic``: a single ACPI table with header and data, providing
+     software licensing information. The ACPI table signature in the
+     header will be forced to ``SLIC`` (:since:`Since 1.3.5 (QEMU)`,
+     mis-interpreted as ``rawset`` :since:`Since 5.9.0 (Xen)`).
+
+   Each type may be used only once, except for ``raw`` which can
+   appear multiple times.
 
 
 SMBIOS System Information
