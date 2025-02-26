@@ -18955,58 +18955,22 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
 }
 
 
-static int
+static void
 qemuGetSEVInfoToParams(virQEMUCaps *qemuCaps,
-                       virTypedParameterPtr *params,
-                       int *nparams,
-                       unsigned int flags)
+                       virTypedParamList *list)
 {
-    int maxpar = 0;
-    int n = 0;
     virSEVCapability *sev = virQEMUCapsGetSEVCapabilities(qemuCaps);
-    virTypedParameterPtr sevParams = NULL;
 
-    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+    virTypedParamListAddString(list, sev->pdh, VIR_NODE_SEV_PDH);
+    virTypedParamListAddString(list, sev->cert_chain, VIR_NODE_SEV_CERT_CHAIN);
 
-    if (virTypedParamsAddString(&sevParams, &n, &maxpar,
-                                VIR_NODE_SEV_PDH, sev->pdh) < 0)
-        return -1;
+    if (sev->cpu0_id != NULL)
+        virTypedParamListAddString(list, sev->cpu0_id, VIR_NODE_SEV_CPU0_ID);
 
-    if (virTypedParamsAddString(&sevParams, &n, &maxpar,
-                                VIR_NODE_SEV_CERT_CHAIN, sev->cert_chain) < 0)
-        goto cleanup;
-
-    if ((sev->cpu0_id != NULL) &&
-       (virTypedParamsAddString(&sevParams, &n, &maxpar,
-                                VIR_NODE_SEV_CPU0_ID, sev->cpu0_id) < 0))
-        goto cleanup;
-
-    if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                              VIR_NODE_SEV_CBITPOS, sev->cbitpos) < 0)
-        goto cleanup;
-
-    if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                              VIR_NODE_SEV_REDUCED_PHYS_BITS,
-                              sev->reduced_phys_bits) < 0)
-        goto cleanup;
-
-    if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                              VIR_NODE_SEV_MAX_GUESTS,
-                              sev->max_guests) < 0)
-        goto cleanup;
-
-    if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                              VIR_NODE_SEV_MAX_ES_GUESTS,
-                              sev->max_es_guests) < 0)
-        goto cleanup;
-
-    *params = g_steal_pointer(&sevParams);
-    *nparams = n;
-    return 0;
-
- cleanup:
-    virTypedParamsFree(sevParams, n);
-    return -1;
+    virTypedParamListAddUInt(list, sev->cbitpos, VIR_NODE_SEV_CBITPOS);
+    virTypedParamListAddUInt(list, sev->reduced_phys_bits, VIR_NODE_SEV_REDUCED_PHYS_BITS);
+    virTypedParamListAddUInt(list, sev->max_guests, VIR_NODE_SEV_MAX_GUESTS);
+    virTypedParamListAddUInt(list, sev->max_es_guests, VIR_NODE_SEV_MAX_ES_GUESTS);
 }
 
 
@@ -19016,8 +18980,11 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
                    int *nparams,
                    unsigned int flags)
 {
+    g_autoptr(virTypedParamList) list = virTypedParamListNew();
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virQEMUCaps) qemucaps = NULL;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
     if (virNodeGetSevInfoEnsureACL(conn) < 0)
         return -1;
@@ -19035,7 +19002,9 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuGetSEVInfoToParams(qemucaps, params, nparams, flags) < 0)
+    qemuGetSEVInfoToParams(qemucaps, list);
+
+    if (virTypedParamListSteal(list, params, nparams) < 0)
         return -1;
 
     return 0;
