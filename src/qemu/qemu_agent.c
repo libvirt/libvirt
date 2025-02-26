@@ -2311,9 +2311,7 @@ qemuAgentGetOSInfo(qemuAgent *agent,
  */
 int
 qemuAgentGetTimezone(qemuAgent *agent,
-                     virTypedParameterPtr *params,
-                     int *nparams,
-                     int *maxparams,
+                     virTypedParamList *list,
                      bool report_unsupported)
 {
     g_autoptr(virJSONValue) cmd = NULL;
@@ -2336,10 +2334,8 @@ qemuAgentGetTimezone(qemuAgent *agent,
         return -1;
     }
 
-    if ((name = virJSONValueObjectGetString(data, "zone")) &&
-        virTypedParamsAddString(params, nparams, maxparams,
-                                "timezone.name", name) < 0)
-        return -1;
+    if ((name = virJSONValueObjectGetString(data, "zone")))
+        virTypedParamListAddString(list, name, "timezone.name");
 
     if ((virJSONValueObjectGetNumberInt(data, "offset", &offset)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2347,9 +2343,7 @@ qemuAgentGetTimezone(qemuAgent *agent,
         return -1;
     }
 
-    if (virTypedParamsAddInt(params, nparams, maxparams,
-                             "timezone.offset", offset) < 0)
-        return -1;
+    virTypedParamListAddInt(list, offset, "timezone.offset");
 
     return 0;
 }

@@ -19408,7 +19408,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE &&
-        qemuAgentGetTimezone(agent, params, nparams, &maxparams, report_unsupported) == -1)
+        qemuAgentGetTimezone(agent, list, report_unsupported) == -1)
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME &&
