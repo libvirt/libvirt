@@ -377,10 +377,6 @@ static virDomainHostdevDef *
 lxcCreateHostdevDef(const char *data)
 {
     virDomainHostdevDef *hostdev = virDomainHostdevDefNew();
-
-    if (!hostdev)
-        return NULL;
-
     hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES;
     hostdev->source.caps.type = VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET;
     hostdev->source.caps.u.net.ifname = g_strdup(data);

@@ -13316,8 +13316,7 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
 
     ctxt->node = node;
 
-    if (!(def = virDomainHostdevDefNew()))
-        goto error;
+    def = virDomainHostdevDefNew();
 
     if (virXMLPropEnumDefault(node, "mode", virDomainHostdevModeTypeFromString,
                               VIR_XML_PROP_NONE,

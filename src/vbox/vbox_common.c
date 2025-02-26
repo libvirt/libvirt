@@ -3087,11 +3087,8 @@ vboxHostDeviceGetXMLDesc(struct _vboxDriver *data, virDomainDef *def, IMachine *
     /* Alloc mem needed for the filters now */
     def->hostdevs = g_new0(virDomainHostdevDef *, def->nhostdevs);
 
-    for (i = 0; i < def->nhostdevs; i++) {
+    for (i = 0; i < def->nhostdevs; i++)
         def->hostdevs[i] = virDomainHostdevDefNew();
-        if (!def->hostdevs[i])
-            goto release_hostdevs;
-    }
 
     for (i = 0; i < deviceFilters.count; i++) {
         PRBool active = PR_FALSE;
@@ -3138,13 +3135,6 @@ vboxHostDeviceGetXMLDesc(struct _vboxDriver *data, virDomainDef *def, IMachine *
     gVBoxAPI.UArray.vboxArrayRelease(&deviceFilters);
     VBOX_RELEASE(USBCommon);
     return;
-
- release_hostdevs:
-    for (i = 0; i < def->nhostdevs; i++)
-        virDomainHostdevDefFree(def->hostdevs[i]);
-    VIR_FREE(def->hostdevs);
-
-    goto release_filters;
 }
 
 
