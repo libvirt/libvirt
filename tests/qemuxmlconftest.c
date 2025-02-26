@@ -2778,6 +2778,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-too-long-port-path-invalid");
 
     DO_TEST_CAPS_LATEST("acpi-table");
+    DO_TEST_CAPS_LATEST("acpi-table-many");
 
     DO_TEST_CAPS_LATEST("intel-iommu");
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");

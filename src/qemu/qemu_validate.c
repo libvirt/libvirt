@@ -744,10 +744,10 @@ qemuValidateDomainDefBoot(const virDomainDef *def,
 
     for (i = 0; i < def->os.nacpiTables; i++) {
         switch (def->os.acpiTables[i]->type) {
+        case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_RAW:
         case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_SLIC:
             break;
 
-        case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_RAW:
         case VIR_DOMAIN_OS_ACPI_TABLE_TYPE_RAWSET:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("ACPI table type '%1$s' is not supported"),

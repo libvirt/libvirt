@@ -495,7 +495,7 @@ These options apply to any form of booting of the guest OS.
    file:
 
    * ``raw``: a single ACPI table with header and data, with ACPI
-     signature auto-detected from header (:since:`Since 11.2.0`).
+     signature auto-detected from header (:since:`Since 11.2.0 (QEMU)`).
    * ``rawset``: concatenation of multiple ACPI tables with header
      and data, each with any ACPI signature, auto-detected from header
      (:since:`Since 11.2.0`).

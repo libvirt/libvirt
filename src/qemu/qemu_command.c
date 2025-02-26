@@ -6038,9 +6038,11 @@ qemuBuildBootCommandLine(virCommand *cmd,
         virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
     for (i = 0; i < def->os.nacpiTables; i++) {
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        const char *sig = qemuACPITableSIGTypeToString(def->os.acpiTables[i]->type);
         virCommandAddArg(cmd, "-acpitable");
-        virBufferAsprintf(&buf, "sig=%s,file=",
-                          qemuACPITableSIGTypeToString(def->os.acpiTables[i]->type));
+        if (*sig != '\0')
+            virBufferAsprintf(&buf, "sig=%s,", sig);
+        virBufferAddLit(&buf, "file=");
         virQEMUBuildBufferEscapeComma(&buf, def->os.acpiTables[i]->path);
         virCommandAddArgBuffer(cmd, &buf);
     }
