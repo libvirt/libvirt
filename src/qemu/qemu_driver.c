@@ -19372,7 +19372,6 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     bool format_load = false;
     size_t i;
     g_autoptr(virTypedParamList) list = virTypedParamListNew();
-    g_autoptr(virTypedParamList) tmplist = NULL;
 
     virCheckFlags(0, -1);
 
@@ -19480,11 +19479,6 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         virTypedParamListAddDouble(list, load5m,  "load.5m");
         virTypedParamListAddDouble(list, load15m, "load.15m");
     }
-
-    /* temporarily allow the old and new construction style to coexist */
-    tmplist = virTypedParamListFromParams(params, *nparams);
-    virTypedParamListConcat(tmplist, &list);
-    list = g_steal_pointer(&tmplist);
 
     if (virTypedParamListSteal(list, params, nparams) < 0)
         goto cleanup;
