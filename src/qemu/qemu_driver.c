@@ -19393,66 +19393,34 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
 static void
 virDomainInterfaceFormatParams(virDomainInterfacePtr *ifaces,
                                int nifaces,
-                               virTypedParameterPtr *params,
-                               int *nparams, int *maxparams)
+                               virTypedParamList *list)
 {
     size_t i;
-    size_t j;
 
-    if (virTypedParamsAddUInt(params, nparams, maxparams,
-                             "if.count", nifaces) < 0)
-        return;
+    virTypedParamListAddUInt(list, nifaces, "if.count");
 
     for (i = 0; i < nifaces; i++) {
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+        size_t j;
 
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "if.%zu.name", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, ifaces[i]->name) < 0)
-            return;
-
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "if.%zu.hwaddr", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, ifaces[i]->hwaddr) < 0)
-            return;
-
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "if.%zu.addr.count", i);
-        if (virTypedParamsAddUInt(params, nparams, maxparams,
-                                  param_name, ifaces[i]->naddrs) < 0)
-            return;
+        virTypedParamListAddString(list, ifaces[i]->name, "if.%zu.name", i);
+        virTypedParamListAddString(list, ifaces[i]->hwaddr, "if.%zu.hwaddr", i);
+        virTypedParamListAddUInt(list, ifaces[i]->naddrs, "if.%zu.addr.count", i);
 
         for (j = 0; j < ifaces[i]->naddrs; j++) {
-            const char *type = NULL;
-
             switch (ifaces[i]->addrs[j].type) {
                 case VIR_IP_ADDR_TYPE_IPV4:
-                    type = "ipv4";
+                    virTypedParamListAddString(list, "ipv4", "if.%zu.addr.%zu.type", i, j);
                     break;
+
                 case VIR_IP_ADDR_TYPE_IPV6:
-                    type = "ipv6";
+                    virTypedParamListAddString(list, "ipv6", "if.%zu.addr.%zu.type", i, j);
                     break;
             }
 
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "if.%zu.addr.%zu.type", i, j);
-            if (virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, type) < 0)
-            return;
-
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "if.%zu.addr.%zu.addr", i, j);
-            if (virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, ifaces[i]->addrs[j].addr) < 0)
-            return;
-
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "if.%zu.addr.%zu.prefix", i, j);
-            if (virTypedParamsAddUInt(params, nparams, maxparams,
-                                      param_name, ifaces[i]->addrs[j].prefix) < 0)
-            return;
+            virTypedParamListAddString(list, ifaces[i]->addrs[j].addr,
+                                       "if.%zu.addr.%zu.addr", i, j);
+            virTypedParamListAddUInt(list, ifaces[i]->addrs[j].prefix,
+                                     "if.%zu.addr.%zu.prefix", i, j);
         }
     }
 }
@@ -19585,7 +19553,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     }
 
     if (nifaces > 0) {
-        virDomainInterfaceFormatParams(ifaces, nifaces, params, nparams, &maxparams);
+        virDomainInterfaceFormatParams(ifaces, nifaces, list);
     }
 
     if (format_load) {
