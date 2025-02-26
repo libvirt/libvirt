@@ -19152,7 +19152,7 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         virReportEnumRangeError(virDomainLaunchSecurity, vm->def->sec->sectype);
-        return -1;
+        goto cleanup;
     }
 
     ret = 0;
