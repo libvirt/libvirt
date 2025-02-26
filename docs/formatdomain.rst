@@ -5170,7 +5170,7 @@ values for both of these, or you can use the ``<ip>`` element
 configure one IPv4 and one IPv6 address that passt's DHCP server can
 provide to the guest.
 
-Unlike SLIRP, when no `<ip>`` address is specified, passt will by
+Unlike SLIRP, when no ``<ip>`` address is specified, passt will by
 default provide the guest with an IP address, DNS server, etc. that
 are identical to those settings on the host itself (through the magic
 of the proxies and a separate network namespace, this doesn't create
