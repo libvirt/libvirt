@@ -13,4 +13,5 @@
   <vendor name='Marvell' value='0x56'/>
   <vendor name='Intel' value='0x69'/>
   <vendor name='Phytium' value='0x70'/>
+  <vendor name='Ampere' value='0xc0'/>
 </cpus>

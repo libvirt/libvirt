@@ -1,0 +1,6 @@
+<cpus>
+  <model name='Ampere-1'>
+    <vendor name='Ampere'/>
+    <pvr value='0xac3'/>
+  </model>
+</cpus>

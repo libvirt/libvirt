@@ -222,5 +222,10 @@
       <include filename='arm_FT-2000plus.xml'/>
       <include filename='arm_Tengyun-S2500.xml'/>
     </group>
+
+    <group name='Ampere-based CPU models'>
+      <include filename='arm_Ampere-1.xml'/>
+      <include filename='arm_Ampere-1a.xml'/>
+    </group>
   </arch>
 </cpus>
