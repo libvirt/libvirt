@@ -19278,6 +19278,15 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
                                             param_name, diskdef->dst) < 0)
                     return;
             }
+
+            if (address->bus_type) {
+                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                           "disk.%zu.guest_bus", i);
+
+                if (virTypedParamsAddString(params, nparams, maxparams,
+                                            param_name, address->bus_type) < 0)
+                    return;
+            }
         }
 
         if (info[i]->alias) {

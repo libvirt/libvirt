@@ -13273,6 +13273,7 @@ virDomainSetVcpu(virDomainPtr domain,
  *      "disk.<num>.alias" - the device alias of the disk (e.g. sda)
  *      "disk.<num>.guest_alias" - optional alias assigned to the disk, on Linux
  *                      this is a name assigned by device mapper
+ *      "disk.<num>.guest_bus" - disk bus as reported by the guest OS
  *
  * VIR_DOMAIN_GUEST_INFO_HOSTNAME:
  *  Returns information about the hostname of the domain. The typed

@@ -2999,6 +2999,7 @@ returned:
 * ``disk.<num>.serial`` -  optional disk serial number
 * ``disk.<num>.alias`` - the device alias of the disk (e.g. sda)
 * ``disk.<num>.guest_alias`` - optional alias assigned to the disk
+* ``disk.<num>.guest_bus`` - bus type as reported by the guest
 
 *--interface* returns:
 * ``if.count`` - the number of interfaces defined on this domain
