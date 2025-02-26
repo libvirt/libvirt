@@ -19210,44 +19210,26 @@ static void
 qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
                               int ndisks,
                               virDomainDef *vmdef,
-                              virTypedParameterPtr *params,
-                              int *nparams, int *maxparams)
+                              virTypedParamList *list)
 {
-    size_t i, j, ndeps;
+    size_t i;
 
-    if (virTypedParamsAddUInt(params, nparams, maxparams,
-                              "disk.count", ndisks) < 0)
-        return;
+    virTypedParamListAddUInt(list, ndisks, "disk.count");
 
     for (i = 0; i < ndisks; i++) {
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
-
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "disk.%zu.name", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, info[i]->name) < 0)
-            return;
-
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "disk.%zu.partition", i);
-        if (virTypedParamsAddBoolean(params, nparams, maxparams,
-                                     param_name, info[i]->partition) < 0)
-            return;
+        virTypedParamListAddString(list, info[i]->name, "disk.%zu.name", i);
+        virTypedParamListAddBoolean(list, info[i]->partition, "disk.%zu.partition", i);
 
         if (info[i]->dependencies) {
-            ndeps = g_strv_length(info[i]->dependencies);
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "disk.%zu.dependency.count", i);
-            if (ndeps &&
-                virTypedParamsAddUInt(params, nparams, maxparams,
-                                      param_name, ndeps) < 0)
-                return;
+            size_t ndeps = g_strv_length(info[i]->dependencies);
+            size_t j;
+
+            if (ndeps > 0)
+                virTypedParamListAddUInt(list, ndeps, "disk.%zu.dependency.count", i);
+
             for (j = 0; j < ndeps; j++) {
-                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                           "disk.%zu.dependency.%zu.name", i, j);
-                if (virTypedParamsAddString(params, nparams, maxparams,
-                                            param_name, info[i]->dependencies[j]) < 0)
-                    return;
+                virTypedParamListAddString(list, info[i]->dependencies[j],
+                                           "disk.%zu.dependency.%zu.name", i, j);
             }
         }
 
@@ -19255,13 +19237,8 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
             qemuAgentDiskAddress *address = info[i]->address;
             virDomainDiskDef *diskdef = NULL;
 
-            if (address->serial) {
-                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                           "disk.%zu.serial", i);
-                if (virTypedParamsAddString(params, nparams, maxparams,
-                                            param_name, address->serial) < 0)
-                    return;
-            }
+            if (address->serial)
+                virTypedParamListAddString(list, address->serial, "disk.%zu.serial", i);
 
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
@@ -19270,32 +19247,16 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
                                              address->bus,
                                              address->target,
                                              address->unit);
-            if (diskdef) {
-                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                           "disk.%zu.alias", i);
-                if (diskdef->dst &&
-                    virTypedParamsAddString(params, nparams, maxparams,
-                                            param_name, diskdef->dst) < 0)
-                    return;
-            }
 
-            if (address->bus_type) {
-                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                           "disk.%zu.guest_bus", i);
+            if (diskdef && diskdef->dst)
+                virTypedParamListAddString(list, diskdef->dst, "disk.%zu.alias", i);
 
-                if (virTypedParamsAddString(params, nparams, maxparams,
-                                            param_name, address->bus_type) < 0)
-                    return;
-            }
+            if (address->bus_type)
+                virTypedParamListAddString(list, address->bus_type, "disk.%zu.guest_bus", i);
         }
 
-        if (info[i]->alias) {
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "disk.%zu.guest_alias", i);
-            if (virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, info[i]->alias) < 0)
-                return;
-        }
+        if (info[i]->alias)
+            virTypedParamListAddString(list, info[i]->alias, "disk.%zu.guest_alias", i);
     }
 }
 
@@ -19546,7 +19507,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
             qemuAgentFSInfoFormatParams(agentfsinfo, nfs, vm->def, params, nparams, &maxparams);
 
         if (ndisks > 0)
-            qemuAgentDiskInfoFormatParams(agentdiskinfo, ndisks, vm->def, params, nparams, &maxparams);
+            qemuAgentDiskInfoFormatParams(agentdiskinfo, ndisks, vm->def, list);
 
  endjob:
         virDomainObjEndJob(vm);
