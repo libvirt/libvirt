@@ -19589,9 +19589,9 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     }
 
     if (format_load) {
-        virTypedParamsAddDouble(params, nparams, &maxparams, "load.1m", load1m);
-        virTypedParamsAddDouble(params, nparams, &maxparams, "load.5m", load5m);
-        virTypedParamsAddDouble(params, nparams, &maxparams, "load.15m", load15m);
+        virTypedParamListAddDouble(list, load1m, "load.1m");
+        virTypedParamListAddDouble(list, load5m,  "load.5m");
+        virTypedParamListAddDouble(list, load15m, "load.15m");
     }
 
     /* temporarily allow the old and new construction style to coexist */
