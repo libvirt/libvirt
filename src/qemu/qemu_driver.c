@@ -19044,15 +19044,13 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
 
 static int
 qemuDomainGetSEVInfo(virDomainObj *vm,
-                     virTypedParameterPtr *params,
-                     int *nparams,
+                     virTypedParamList *list,
                      unsigned int flags)
 {
     int ret = -1;
     int rv;
     g_autofree char *tmp = NULL;
     qemuMonitorSEVInfo info = { };
-    int maxpar = 0;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
@@ -19077,36 +19075,20 @@ qemuDomainGetSEVInfo(virDomainObj *vm,
     if (rv < 0)
         goto endjob;
 
-    if (virTypedParamsAddString(params, nparams, &maxpar,
-                                VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT,
-                                tmp) < 0)
-        goto endjob;
-    if (virTypedParamsAddUInt(params, nparams, &maxpar,
-                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR,
-                              info.apiMajor) < 0)
-        goto endjob;
-    if (virTypedParamsAddUInt(params, nparams, &maxpar,
-                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR,
-                              info.apiMinor) < 0)
-        goto endjob;
-    if (virTypedParamsAddUInt(params, nparams, &maxpar,
-                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID,
-                              info.buildID) < 0)
-        goto endjob;
+    virTypedParamListAddString(list, tmp, VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT);
+    virTypedParamListAddUInt(list, info.apiMajor, VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR);
+    virTypedParamListAddUInt(list, info.apiMinor, VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR);
+    virTypedParamListAddUInt(list, info.buildID, VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID);
 
     switch (info.type) {
     case QEMU_MONITOR_SEV_GUEST_TYPE_SEV:
-        if (virTypedParamsAddUInt(params, nparams, &maxpar,
-                                  VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY,
-                                  info.data.sev.policy) < 0)
-            goto endjob;
+        virTypedParamListAddUInt(list, info.data.sev.policy,
+                                 VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY);
         break;
 
     case QEMU_MONITOR_SEV_GUEST_TYPE_SEV_SNP:
-        if (virTypedParamsAddULLong(params, nparams, &maxpar,
-                                    VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP_POLICY,
-                                    info.data.sev_snp.snp_policy) < 0)
-            goto endjob;
+        virTypedParamListAddULLong(list, info.data.sev_snp.snp_policy,
+                                   VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP_POLICY);
         break;
 
     case QEMU_MONITOR_SEV_GUEST_TYPE_LAST:
@@ -19127,6 +19109,7 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
                                 int *nparams,
                                 unsigned int flags)
 {
+    g_autoptr(virTypedParamList) list = virTypedParamListNew();
     virDomainObj *vm;
     int ret = -1;
 
@@ -19144,7 +19127,7 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     switch (vm->def->sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
-        if (qemuDomainGetSEVInfo(vm, params, nparams, flags) < 0)
+        if (qemuDomainGetSEVInfo(vm, list, flags) < 0)
             goto cleanup;
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
@@ -19154,6 +19137,9 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
         virReportEnumRangeError(virDomainLaunchSecurity, vm->def->sec->sectype);
         goto cleanup;
     }
+
+    if (virTypedParamListSteal(list, params, nparams) < 0)
+        goto cleanup;
 
     ret = 0;
 
