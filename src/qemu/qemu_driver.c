@@ -19356,7 +19356,6 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     virDomainObj *vm = NULL;
     qemuAgent *agent;
     int ret = -1;
-    int maxparams = 0;
     g_autofree char *hostname = NULL;
     unsigned int supportedTypes;
     bool report_unsupported = types != 0;
@@ -19415,9 +19414,8 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         qemuAgentGetHostname(agent, &hostname, report_unsupported) == -1)
         goto exitagent;
 
-    if (hostname &&
-        virTypedParamsAddString(params, nparams, &maxparams, "hostname", hostname) < 0)
-        goto exitagent;
+    if (hostname)
+        virTypedParamListAddString(list, hostname, "hostname");
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
         rc = qemuAgentGetFSInfo(agent, &agentfsinfo, report_unsupported);
