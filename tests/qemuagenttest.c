@@ -1095,69 +1095,64 @@ testQemuAgentUsers(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    virTypedParameterPtr params = NULL;
-    int nparams = 0;
-    int maxparams = 0;
-    int ret = -1;
+    g_autoptr(virTypedParamList) list = virTypedParamListNew();
+    virTypedParameterPtr params;
+    size_t nparams = 0;
     unsigned int count;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-get-users",
                                testQemuAgentUsersResponse) < 0)
-        goto cleanup;
+        return -1;
 
-    /* get users */
-    if (qemuAgentGetUsers(qemuMonitorTestGetAgent(test),
-                          &params, &nparams, &maxparams, true) < 0)
-        goto cleanup;
+    if (qemuAgentGetUsers(qemuMonitorTestGetAgent(test), list, true) < 0)
+        return -1;
+
+    if (virTypedParamListFetch(list, &params, &nparams) < 0)
+        return -1;
 
     if (virTypedParamsGetUInt(params, nparams, "user.count", &count) < 0)
-        goto cleanup;
+        return -1;
     if (count != 2) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected '2' users, got '%u'", count);
-        goto cleanup;
+        return -1;
     }
 
     if (checkUserInfo(params, nparams, 0, "test", NULL, 1561739203584) < 0 ||
         checkUserInfo(params, nparams, 1, "test2", NULL, 1561739229190) < 0)
-        goto cleanup;
+        return -1;
+
+    g_clear_pointer(&list, virTypedParamListFree);
+    list = virTypedParamListNew();
 
     if (qemuMonitorTestAddItem(test, "guest-get-users",
                                testQemuAgentUsersResponse2) < 0)
-        goto cleanup;
+        return -1;
 
-    virTypedParamsFree(params, nparams);
-    params = NULL;
-    nparams = 0;
-    maxparams = 0;
+    if (qemuAgentGetUsers(qemuMonitorTestGetAgent(test), list, true) < 0)
+        return -1;
 
-    /* get users with domain */
-    if (qemuAgentGetUsers(qemuMonitorTestGetAgent(test),
-                          &params, &nparams, &maxparams, true) < 0)
-        goto cleanup;
+    if (virTypedParamListFetch(list, &params, &nparams) < 0)
+        return -1;
 
     if (virTypedParamsGetUInt(params, nparams, "user.count", &count) < 0)
-        goto cleanup;
+        return -1;
     if (count != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected '1' user, got '%u'", count);
-        goto cleanup;
+        return -1;
     }
 
     if (checkUserInfo(params, nparams, 0, "test", "DOMAIN", 1561739203584) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virTypedParamsFree(params, nparams);
-    return ret;
+    return 0;
 }
 
 static const char testQemuAgentOSInfoResponse[] =

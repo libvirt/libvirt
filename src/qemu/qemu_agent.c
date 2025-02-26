@@ -2172,9 +2172,7 @@ qemuAgentSetUserPassword(qemuAgent *agent,
  */
 int
 qemuAgentGetUsers(qemuAgent *agent,
-                  virTypedParameterPtr *params,
-                  int *nparams,
-                  int *maxparams,
+                  virTypedParamList *list,
                   bool report_unsupported)
 {
     g_autoptr(virJSONValue) cmd = NULL;
@@ -2199,13 +2197,10 @@ qemuAgentGetUsers(qemuAgent *agent,
 
     ndata = virJSONValueArraySize(data);
 
-    if (virTypedParamsAddUInt(params, nparams, maxparams,
-                              "user.count", ndata) < 0)
-        return -1;
+    virTypedParamListAddUInt(list, ndata, "user.count");
 
     for (i = 0; i < ndata; i++) {
         virJSONValue *entry = virJSONValueArrayGet(data, i);
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
         const char *strvalue;
         double logintime;
 
@@ -2221,30 +2216,18 @@ qemuAgentGetUsers(qemuAgent *agent,
             return -1;
         }
 
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "user.%zu.name", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, strvalue) < 0)
-            return -1;
+        virTypedParamListAddString(list, strvalue, "user.%zu.name", i);
 
         /* 'domain' is only present for windows guests */
-        if ((strvalue = virJSONValueObjectGetString(entry, "domain"))) {
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "user.%zu.domain", i);
-            if (virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, strvalue) < 0)
-                return -1;
-        }
+        if ((strvalue = virJSONValueObjectGetString(entry, "domain")))
+            virTypedParamListAddString(list, strvalue, "user.%zu.domain", i);
 
         if (virJSONValueObjectGetNumberDouble(entry, "login-time", &logintime) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'login-time' missing in reply of guest-get-users"));
             return -1;
         }
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "user.%zu.login-time", i);
-        if (virTypedParamsAddULLong(params, nparams, maxparams,
-                                    param_name, logintime * 1000) < 0)
-            return -1;
+        virTypedParamListAddULLong(list, logintime * 1000, "user.%zu.login-time", i);
     }
 
     return 0;

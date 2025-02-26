@@ -157,9 +157,7 @@ int qemuAgentSetUserPassword(qemuAgent *mon,
                              bool crypted);
 
 int qemuAgentGetUsers(qemuAgent *mon,
-                      virTypedParameterPtr *params,
-                      int *nparams,
-                      int *maxparams,
+                      virTypedParamList *list,
                       bool report_unsupported);
 
 int qemuAgentGetOSInfo(qemuAgent *mon,

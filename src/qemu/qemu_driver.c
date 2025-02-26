@@ -19400,7 +19400,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
      * 'unsupported' errors and gather as much information as we can. In all
      * other cases, abort on error. */
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_USERS &&
-        qemuAgentGetUsers(agent, params, nparams, &maxparams, report_unsupported) == -1)
+        qemuAgentGetUsers(agent, list, report_unsupported) == -1)
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS &&
