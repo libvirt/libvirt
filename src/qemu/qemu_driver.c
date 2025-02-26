@@ -19404,7 +19404,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS &&
-        qemuAgentGetOSInfo(agent, params, nparams, &maxparams, report_unsupported) == -1)
+        qemuAgentGetOSInfo(agent, list, report_unsupported) == -1)
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE &&

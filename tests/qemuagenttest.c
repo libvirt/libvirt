@@ -1191,30 +1191,31 @@ testQemuAgentOSInfo(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    virTypedParameterPtr params = NULL;
-    int nparams = 0;
-    int maxparams = 0;
-    int ret = -1;
+    g_autoptr(virTypedParamList) list = virTypedParamListNew();
+    virTypedParameterPtr params;
+    size_t nparams;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-get-osinfo",
                                testQemuAgentOSInfoResponse) < 0)
-        goto cleanup;
+        return -1;
 
     /* get osinfo */
-    if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test),
-                           &params, &nparams, &maxparams, true) < 0)
-        goto cleanup;
+    if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test), list, true) < 0)
+        return -1;
+
+    if (virTypedParamListFetch(list, &params, &nparams) < 0)
+        return -1;
 
     if (nparams != 8) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Expected 8 params, got %d", nparams);
-        goto cleanup;
+                       "Expected 8 params, got %zu", nparams);
+        return -1;
     }
 #define VALIDATE_PARAM(param_name_, expected_) \
     do { \
@@ -1222,12 +1223,12 @@ testQemuAgentOSInfo(const void *data)
         if (virTypedParamsGetString(params, nparams, param_name_, &value_) < 0 || \
             value_ == NULL) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "missing param '%s'", param_name_); \
-            goto cleanup; \
+            return -1; \
         } \
         if (STRNEQ(value_, expected_)) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "Expected name '%s', got '%s'", expected_, value_); \
-            goto cleanup; \
+            return -1; \
         } \
     } while (0)
 
@@ -1239,24 +1240,25 @@ testQemuAgentOSInfo(const void *data)
     VALIDATE_PARAM("os.kernel-release", "3.10.0-862.14.4.el7.x86_64");
     VALIDATE_PARAM("os.kernel-version", "#1 SMP Wed Sep 26 15:12:11 UTC 2018");
     VALIDATE_PARAM("os.machine", "x86_64");
-    virTypedParamsFree(params, nparams);
-    params = NULL;
-    nparams = 0;
-    maxparams = 0;
+
+    g_clear_pointer(&list, virTypedParamListFree);
+    list = virTypedParamListNew();
 
     if (qemuMonitorTestAddItem(test, "guest-get-osinfo",
                                testQemuAgentOSInfoResponse2) < 0)
-        goto cleanup;
+        return -1;
 
     /* get users with domain */
-    if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test),
-                           &params, &nparams, &maxparams, true) < 0)
-        goto cleanup;
+    if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test), list, true) < 0)
+        return -1;
+
+    if (virTypedParamListFetch(list, &params, &nparams) < 0)
+        return -1;
 
     if (nparams != 10) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Expected 10 params, got %d", nparams);
-        goto cleanup;
+                       "Expected 10 params, got %zu", nparams);
+        return -1;
     }
 
     VALIDATE_PARAM("os.id", "mswindows");
@@ -1270,11 +1272,7 @@ testQemuAgentOSInfo(const void *data)
     VALIDATE_PARAM("os.kernel-version", "6.1");
     VALIDATE_PARAM("os.machine", "x86_64");
 
-    ret = 0;
-
- cleanup:
-    virTypedParamsFree(params, nparams);
-    return ret;
+    return 0;
 }
 
 static const char testQemuAgentTimezoneResponse1[] =

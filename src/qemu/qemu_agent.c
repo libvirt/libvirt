@@ -2257,9 +2257,7 @@ qemuAgentGetUsers(qemuAgent *agent,
  */
 int
 qemuAgentGetOSInfo(qemuAgent *agent,
-                   virTypedParameterPtr *params,
-                   int *nparams,
-                   int *maxparams,
+                   virTypedParamList *list,
                    bool report_unsupported)
 {
     g_autoptr(virJSONValue) cmd = NULL;
@@ -2284,10 +2282,7 @@ qemuAgentGetOSInfo(qemuAgent *agent,
     do { \
         const char *result; \
         if ((result = virJSONValueObjectGetString(data, agent_string_))) { \
-            if (virTypedParamsAddString(params, nparams, maxparams, \
-                                        param_string_, result) < 0) { \
-                return -1; \
-            } \
+            virTypedParamListAddString(list, result, param_string_); \
         } \
     } while (0)
     OSINFO_ADD_PARAM("id", "os.id");

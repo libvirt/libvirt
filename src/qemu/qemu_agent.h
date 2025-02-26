@@ -163,9 +163,7 @@ int qemuAgentGetUsers(qemuAgent *mon,
                       bool report_unsupported);
 
 int qemuAgentGetOSInfo(qemuAgent *mon,
-                       virTypedParameterPtr *params,
-                       int *nparams,
-                       int *maxparams,
+                       virTypedParamList *list,
                        bool report_unsupported);
 
 int qemuAgentGetTimezone(qemuAgent *mon,
