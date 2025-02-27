@@ -13213,11 +13213,9 @@ virDomainSetVcpu(virDomainPtr domain,
  *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_TIMEZONE:
- *  Returns information about the timezone within the domain. The typed
- *  parameter keys are in this format:
- *
- *      "timezone.name" - the name of the timezone as a string
- *      "timezone.offset" - the offset to UTC in seconds as an int
+ *  Returns information about the timezone within the domain.
+ *  The VIR_DOMAIN_GUEST_INFO_TIMEZONE_* constants define the known typed parameter
+ *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_FILESYSTEM:
  *  Returns information about the filesystems within the domain.  The typed

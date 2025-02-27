@@ -6601,6 +6601,25 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_OS_VARIANT_ID "os.variant-id"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_TIMEZONE_NAME:
+ *
+ * The name of the timezone as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_TIMEZONE_NAME "timezone.name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_TIMEZONE_OFFSET:
+ *
+ * The offset to UTC in seconds as an int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_TIMEZONE_OFFSET "timezone.offset"
+
 /**
  * virDomainGuestInfoTypes:
  *

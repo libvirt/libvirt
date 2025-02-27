@@ -2316,7 +2316,7 @@ qemuAgentGetTimezone(qemuAgent *agent,
     }
 
     if ((name = virJSONValueObjectGetString(data, "zone")))
-        virTypedParamListAddString(list, name, "timezone.name");
+        virTypedParamListAddString(list, name, VIR_DOMAIN_GUEST_INFO_TIMEZONE_NAME);
 
     if ((virJSONValueObjectGetNumberInt(data, "offset", &offset)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2324,7 +2324,7 @@ qemuAgentGetTimezone(qemuAgent *agent,
         return -1;
     }
 
-    virTypedParamListAddInt(list, offset, "timezone.offset");
+    virTypedParamListAddInt(list, offset, VIR_DOMAIN_GUEST_INFO_TIMEZONE_OFFSET);
 
     return 0;
 }
