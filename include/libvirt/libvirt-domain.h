@@ -3848,6 +3848,76 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_TOTAL ".bytes.total"
 
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_CALC_STATUS:
+ *
+ * The status of last memory dirty rate calculation as an int from the
+ * virDomainDirtyRateStatus enum.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_CALC_STATUS "dirtyrate.calc_status"
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_CALC_START_TIME:
+ *
+ * The start time in seconds of the last memory dirty rate calculation as long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_CALC_START_TIME "dirtyrate.calc_start_time"
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_CALC_PERIOD:
+ *
+ * The period in seconds of last memory dirty rate calculation as int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_CALC_PERIOD "dirtyrate.calc_period"
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_MEGABYTES_PER_SECOND:
+ *
+ * The calculated memory dirty rate in MiB/s as long long. It is produced only
+ * if the calc_status is measured.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_MEGABYTES_PER_SECOND "dirtyrate.megabytes_per_second"
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_CALC_MODE:
+ *
+ * The calculation mode used last measurement as string, either of these
+ * 'page-sampling', 'dirty-bitmap' or 'dirty-ring' values returned.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_CALC_MODE "dirtyrate.calc_mode"
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_VCPU_PREFIX:
+ *
+ * The parameter name prefix to access each VCPU entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * VCPU suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_VCPU_PREFIX "dirtyrate.vcpu."
+
+/**
+ * VIR_DOMAIN_STATS_DIRTYRATE_VCPU_SUFFIX_MEGABYTES_PER_SECOND:
+ *
+ * The calculated memory dirty rate for a virtual cpu as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_DIRTYRATE_VCPU_SUFFIX_MEGABYTES_PER_SECOND ".megabytes_per_second"
+
 /**
  * virDomainStatsTypes:
  *

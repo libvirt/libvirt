@@ -17690,21 +17690,26 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver G_GNUC_UNUSED,
         return;
     }
 
-    virTypedParamListAddInt(params, info.status, "dirtyrate.calc_status");
-    virTypedParamListAddLLong(params, info.startTime, "dirtyrate.calc_start_time");
-    virTypedParamListAddInt(params, info.calcTime, "dirtyrate.calc_period");
+    virTypedParamListAddInt(params, info.status,
+                            VIR_DOMAIN_STATS_DIRTYRATE_CALC_STATUS);
+    virTypedParamListAddLLong(params, info.startTime,
+                              VIR_DOMAIN_STATS_DIRTYRATE_CALC_START_TIME);
+    virTypedParamListAddInt(params, info.calcTime,
+                            VIR_DOMAIN_STATS_DIRTYRATE_CALC_PERIOD);
     virTypedParamListAddString(params, qemuMonitorDirtyRateCalcModeTypeToString(info.mode),
-                               "dirtyrate.calc_mode");
+                               VIR_DOMAIN_STATS_DIRTYRATE_CALC_MODE);
 
     if (info.status == VIR_DOMAIN_DIRTYRATE_MEASURED) {
-        virTypedParamListAddLLong(params, info.dirtyRate, "dirtyrate.megabytes_per_second");
+        virTypedParamListAddLLong(params, info.dirtyRate,
+                                  VIR_DOMAIN_STATS_DIRTYRATE_MEGABYTES_PER_SECOND);
 
         if (info.mode == QEMU_MONITOR_DIRTYRATE_CALC_MODE_DIRTY_RING) {
             size_t i;
             for (i = 0; i < info.nvcpus; i++) {
-                virTypedParamListAddULLong(params, info.rates[i].value,
-                                           "dirtyrate.vcpu.%d.megabytes_per_second",
-                                           info.rates[i].idx);
+                virTypedParamListAddULLong(
+                    params, info.rates[i].value,
+                    VIR_DOMAIN_STATS_DIRTYRATE_VCPU_PREFIX "%d" VIR_DOMAIN_STATS_DIRTYRATE_VCPU_SUFFIX_MEGABYTES_PER_SECOND,
+                    info.rates[i].idx);
             }
         }
     }
