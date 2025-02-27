@@ -16770,16 +16770,21 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
         return;
     }
 
-    virTypedParamListAddUInt(params, nresdata, "cpu.cache.monitor.count");
+    virTypedParamListAddUInt(params, nresdata,
+                             VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_COUNT);
 
     for (i = 0; i < nresdata; i++) {
-        virTypedParamListAddString(params, resdata[i]->name, "cpu.cache.monitor.%zu.name", i);
-        virTypedParamListAddString(params, resdata[i]->vcpus, "cpu.cache.monitor.%zu.vcpus", i);
-        virTypedParamListAddUInt(params, resdata[i]->nstats, "cpu.cache.monitor.%zu.bank.count", i);
+        virTypedParamListAddString(params, resdata[i]->name,
+                                   VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_NAME, i);
+        virTypedParamListAddString(params, resdata[i]->vcpus,
+                                   VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_VCPUS, i);
+        virTypedParamListAddUInt(params, resdata[i]->nstats,
+                                 VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_COUNT, i);
 
         for (j = 0; j < resdata[i]->nstats; j++) {
-            virTypedParamListAddUInt(params, resdata[i]->stats[j]->id,
-                                     "cpu.cache.monitor.%zu.bank.%zu.id", i, j);
+            virTypedParamListAddUInt(
+                params, resdata[i]->stats[j]->id,
+                VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_ID, i, j);
 
             /* 'resdata[i]->stats[j]->vals[0]' keeps the value of how many last
              * level cache in bank j currently occupied by the vcpus listed in
@@ -16790,8 +16795,9 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
              * than 4G bytes in size, to keep the 'domstats' interface
              * historically consistent, it is safe to report the value with a
              * truncated 'UInt' data type here. */
-            virTypedParamListAddUInt(params, (unsigned int)resdata[i]->stats[j]->vals[0],
-                                     "cpu.cache.monitor.%zu.bank.%zu.bytes", i, j);
+            virTypedParamListAddUInt(
+                params, (unsigned int)resdata[i]->stats[j]->vals[0],
+                VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_BYTES, i, j);
         }
     }
 
@@ -16814,11 +16820,14 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
         return;
 
     if (virCgroupGetCpuacctUsage(priv->cgroup, &cpu_time) == 0)
-        virTypedParamListAddULLong(params, cpu_time, "cpu.time");
+        virTypedParamListAddULLong(params, cpu_time,
+                                   VIR_DOMAIN_STATS_CPU_TIME);
 
     if (virCgroupGetCpuacctStat(priv->cgroup, &user_time, &sys_time) == 0) {
-        virTypedParamListAddULLong(params, user_time, "cpu.user");
-        virTypedParamListAddULLong(params, sys_time, "cpu.system");
+        virTypedParamListAddULLong(params, user_time,
+                                   VIR_DOMAIN_STATS_CPU_USER);
+        virTypedParamListAddULLong(params, sys_time,
+                                   VIR_DOMAIN_STATS_CPU_SYSTEM);
     }
 }
 
@@ -16925,8 +16934,10 @@ qemuDomainGetStatsCpuHaltPollTime(virDomainObj *dom,
         virHostCPUGetHaltPollTime(dom->pid, &haltPollSuccess, &haltPollFail) < 0)
         return;
 
-    virTypedParamListAddULLong(params, haltPollSuccess, "cpu.haltpoll.success.time");
-    virTypedParamListAddULLong(params, haltPollFail, "cpu.haltpoll.fail.time");
+    virTypedParamListAddULLong(params, haltPollSuccess,
+                               VIR_DOMAIN_STATS_CPU_HALTPOLL_SUCCESS_TIME);
+    virTypedParamListAddULLong(params, haltPollFail,
+                               VIR_DOMAIN_STATS_CPU_HALTPOLL_FAIL_TIME);
 
     return;
 }

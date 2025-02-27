@@ -2815,6 +2815,134 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_STATE_REASON "state.reason"
 
+
+/**
+ * VIR_DOMAIN_STATS_CPU_TIME:
+ *
+ * Total cpu time spent for this domain in nanoseconds as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_TIME "cpu.time"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_USER:
+ *
+ * User cpu time spent in nanoseconds as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_USER "cpu.user"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_SYSTEM:
+ *
+ * System cpu time spent in nanoseconds as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_SYSTEM "cpu.system"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_HALTPOLL_SUCCESS_TIME:
+ *
+ * Halt-polling cpu usage about the VCPU polled until a virtual interrupt was
+ * delivered in nanoseconds as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_HALTPOLL_SUCCESS_TIME "cpu.haltpoll.success.time"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_HALTPOLL_FAIL_TIME:
+ *
+ * Halt-polling cpu usage about the VCPU had to schedule out (either because
+ * the maximum poll time was reached or it needed to yield the CPU) in
+ * nanoseconds as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_HALTPOLL_FAIL_TIME "cpu.haltpoll.fail.time"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_COUNT:
+ *
+ * The number of cache monitors for this domain as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_COUNT "cpu.cache.monitor.count"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX:
+ *
+ * The parameter name prefix to access each cache monitor entry. Concatenate
+ * the prefix, the entry number formatted as an unsigned integer and one of
+ * the cache monitor suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "cpu.cache.monitor."
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_NAME:
+ *
+ * The name of cache monitor as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_VCPUS:
+ *
+ * Vcpu list of cache monitor as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_VCPUS ".vcpus"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_COUNT:
+ *
+ * The number of cache banks in cache monitor as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_COUNT ".bank.count"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_PREFIX:
+ *
+ * The parameter name prefix to access each cache monitor bank entry.
+ * Concatenate the cache monitor prefix, the cache monitor entry number
+ * formatted as an unsigned integer, the bank prefix, the bank entry number
+ * formatted as an unsigned integer and one of the cache monitor bank suffix
+ * parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_PREFIX ".bank."
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_ID:
+ *
+ * Host allocated cache id for the bank as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_ID ".id"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_BYTES:
+ *
+ * The number of bytes of last level cache that the domain is using as an
+ * unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_BYTES ".bytes"
+
 /**
  * virDomainStatsTypes:
  *
