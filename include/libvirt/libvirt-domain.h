@@ -3202,6 +3202,108 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_MAX ".max"
 
+
+/**
+ * VIR_DOMAIN_STATS_NET_COUNT:
+ *
+ * Number of network interfaces on this domain as unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_COUNT "net.count"
+
+/**
+ * VIR_DOMAIN_STATS_NET_PREFIX:
+ *
+ * The parameter name prefix to access each interface entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * network suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_PREFIX "net."
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_NAME:
+ *
+ * Name of the interface as string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_RX_BYTES:
+ *
+ * Bytes received as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_RX_BYTES ".rx.bytes"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_RX_PKTS:
+ *
+ * Packets received as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_RX_PKTS ".rx.pkts"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_RX_ERRS:
+ *
+ * Receive errors as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_RX_ERRS ".rx.errs"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_RX_DROP:
+ *
+ * Receive packets dropped as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_RX_DROP ".rx.drop"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_TX_BYTES:
+ *
+ * Bytes transmitted as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_TX_BYTES ".tx.bytes"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_TX_PKTS:
+ *
+ * Packets transmitted as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_TX_PKTS ".tx.pkts"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_TX_ERRS:
+ *
+ * Transmission errors as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_TX_ERRS ".tx.errs"
+
+/**
+ * VIR_DOMAIN_STATS_NET_SUFFIX_TX_DROP:
+ *
+ * Transmit packets dropped as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_NET_SUFFIX_TX_DROP ".tx.drop"
+
 /**
  * virDomainStatsTypes:
  *

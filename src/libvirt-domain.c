@@ -12276,19 +12276,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  * VIR_DOMAIN_STATS_INTERFACE:
  *     Return network interface statistics (from domain point of view).
- *     The typed parameter keys are in this format:
- *
- *     "net.count" - number of network interfaces on this domain
- *                   as unsigned int.
- *     "net.<num>.name" - name of the interface <num> as string.
- *     "net.<num>.rx.bytes" - bytes received as unsigned long long.
- *     "net.<num>.rx.pkts" - packets received as unsigned long long.
- *     "net.<num>.rx.errs" - receive errors as unsigned long long.
- *     "net.<num>.rx.drop" - receive packets dropped as unsigned long long.
- *     "net.<num>.tx.bytes" - bytes transmitted as unsigned long long.
- *     "net.<num>.tx.pkts" - packets transmitted as unsigned long long.
- *     "net.<num>.tx.errs" - transmission errors as unsigned long long.
- *     "net.<num>.tx.drop" - transmit packets dropped as unsigned long long.
+ *     The VIR_DOMAIN_STATS_NET_* constants define the known typed
+ *     parameter keys.
  *
  * VIR_DOMAIN_STATS_BLOCK:
  *     Return block devices statistics.  By default,

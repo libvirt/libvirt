@@ -17180,7 +17180,8 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
 
 #define QEMU_ADD_NET_PARAM(params, num, name, value) \
     if (value >= 0)\
-        virTypedParamListAddULLong((params), (value), "net.%zu.%s", (num), (name));
+        virTypedParamListAddULLong((params), (value), \
+                                   VIR_DOMAIN_STATS_NET_PREFIX "%zu" VIR_DOMAIN_STATS_NET_SUFFIX_ ## name, (num));
 
 static void
 qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
@@ -17193,7 +17194,8 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
     if (!virDomainObjIsActive(dom))
         return;
 
-    virTypedParamListAddUInt(params, dom->def->nnets, "net.count");
+    virTypedParamListAddUInt(params, dom->def->nnets,
+                             VIR_DOMAIN_STATS_NET_COUNT);
 
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0; i < dom->def->nnets; i++) {
@@ -17206,7 +17208,8 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
 
         actualType = virDomainNetGetActualType(net);
 
-        virTypedParamListAddString(params, net->ifname, "net.%zu.name", i);
+        virTypedParamListAddString(params, net->ifname,
+                                   VIR_DOMAIN_STATS_NET_PREFIX "%zu" VIR_DOMAIN_STATS_NET_SUFFIX_NAME, i);
 
         if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
             if (virNetDevOpenvswitchInterfaceStats(net->ifname, &tmp) < 0) {
@@ -17221,14 +17224,14 @@ qemuDomainGetStatsInterface(virQEMUDriver *driver G_GNUC_UNUSED,
             }
         }
 
-        QEMU_ADD_NET_PARAM(params, i, "rx.bytes", tmp.rx_bytes);
-        QEMU_ADD_NET_PARAM(params, i, "rx.pkts", tmp.rx_packets);
-        QEMU_ADD_NET_PARAM(params, i, "rx.errs", tmp.rx_errs);
-        QEMU_ADD_NET_PARAM(params, i, "rx.drop", tmp.rx_drop);
-        QEMU_ADD_NET_PARAM(params, i, "tx.bytes", tmp.tx_bytes);
-        QEMU_ADD_NET_PARAM(params, i, "tx.pkts", tmp.tx_packets);
-        QEMU_ADD_NET_PARAM(params, i, "tx.errs", tmp.tx_errs);
-        QEMU_ADD_NET_PARAM(params, i, "tx.drop", tmp.tx_drop);
+        QEMU_ADD_NET_PARAM(params, i, RX_BYTES, tmp.rx_bytes);
+        QEMU_ADD_NET_PARAM(params, i, RX_PKTS, tmp.rx_packets);
+        QEMU_ADD_NET_PARAM(params, i, RX_ERRS, tmp.rx_errs);
+        QEMU_ADD_NET_PARAM(params, i, RX_DROP, tmp.rx_drop);
+        QEMU_ADD_NET_PARAM(params, i, TX_BYTES, tmp.tx_bytes);
+        QEMU_ADD_NET_PARAM(params, i, TX_PKTS, tmp.tx_packets);
+        QEMU_ADD_NET_PARAM(params, i, TX_ERRS, tmp.tx_errs);
+        QEMU_ADD_NET_PARAM(params, i, TX_DROP, tmp.tx_drop);
     }
 }
 
