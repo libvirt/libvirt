@@ -19325,30 +19325,35 @@ virDomainInterfaceFormatParams(virDomainInterfacePtr *ifaces,
 {
     size_t i;
 
-    virTypedParamListAddUInt(list, nifaces, "if.count");
+    virTypedParamListAddUInt(list, nifaces, VIR_DOMAIN_GUEST_INFO_IF_COUNT);
 
     for (i = 0; i < nifaces; i++) {
         size_t j;
 
-        virTypedParamListAddString(list, ifaces[i]->name, "if.%zu.name", i);
-        virTypedParamListAddString(list, ifaces[i]->hwaddr, "if.%zu.hwaddr", i);
-        virTypedParamListAddUInt(list, ifaces[i]->naddrs, "if.%zu.addr.count", i);
+        virTypedParamListAddString(list, ifaces[i]->name,
+                                   VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_NAME, i);
+        virTypedParamListAddString(list, ifaces[i]->hwaddr,
+                                   VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_HWADDR, i);
+        virTypedParamListAddUInt(list, ifaces[i]->naddrs,
+                                 VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_COUNT, i);
 
         for (j = 0; j < ifaces[i]->naddrs; j++) {
             switch (ifaces[i]->addrs[j].type) {
                 case VIR_IP_ADDR_TYPE_IPV4:
-                    virTypedParamListAddString(list, "ipv4", "if.%zu.addr.%zu.type", i, j);
+                    virTypedParamListAddString(list, "ipv4",
+                                               VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_TYPE, i, j);
                     break;
 
                 case VIR_IP_ADDR_TYPE_IPV6:
-                    virTypedParamListAddString(list, "ipv6", "if.%zu.addr.%zu.type", i, j);
+                    virTypedParamListAddString(list, "ipv6",
+                                               VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_TYPE, i, j);
                     break;
             }
 
             virTypedParamListAddString(list, ifaces[i]->addrs[j].addr,
-                                       "if.%zu.addr.%zu.addr", i, j);
+                                       VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_ADDR, i, j);
             virTypedParamListAddUInt(list, ifaces[i]->addrs[j].prefix,
-                                     "if.%zu.addr.%zu.prefix", i, j);
+                                     VIR_DOMAIN_GUEST_INFO_IF_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_PREFIX, i, j);
         }
     }
 }

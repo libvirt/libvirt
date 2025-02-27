@@ -6855,6 +6855,94 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_BUS ".guest_bus"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_COUNT:
+ *
+ * The number of interfaces defined on this domain as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_COUNT "if.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_PREFIX:
+ *
+ * The parameter name prefix to access each interface entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * interface suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_PREFIX "if."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_NAME:
+ *
+ * Name in the guest (e.g. ``eth0``) for the interface as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_HWADDR:
+ *
+ * Hardware address in the guest of the interface as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_HWADDR ".hwaddr"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_COUNT:
+ *
+ * The number of IP addresses of interface as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_COUNT ".addr.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX:
+ *
+ * The parameter name prefix to access each address entry. Concatenate the
+ * interface prefix, the interface entry number formatted as an unsigned
+ * integer, the address prefix, the address entry number formatted as an
+ * unsigned integer and one of the address suffix parameters to form a
+ * complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX ".addr."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_TYPE:
+ *
+ * The IP address type (e.g. ipv4) as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_TYPE ".type"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_ADDR:
+ *
+ * The IP address as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_ADDR ".addr"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_PREFIX:
+ *
+ * The prefix of IP address as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_PREFIX ".prefix"
+
 /**
  * virDomainGuestInfoTypes:
  *

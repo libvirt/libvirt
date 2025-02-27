@@ -13233,16 +13233,9 @@ virDomainSetVcpu(virDomainPtr domain,
  *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_INTERFACES:
- *  Returns information about the interfaces within the domain. The typed
- *  parameter keys are in this format:
- *
- *      "if.count" - the number of interfaces defined on this domain
- *      "if.<num>.name" - name in the guest (e.g. ``eth0``) for interface <num>
- *      "if.<num>.hwaddr" - hardware address in the guest for interface <num>
- *      "if.<num>.addr.count - the number of IP addresses of interface <num>
- *      "if.<num>.addr.<num1>.type" - the IP address type of addr <num1> (e.g. ipv4)
- *      "if.<num>.addr.<num1>.addr" - the IP address of addr <num1>
- *      "if.<num>.addr.<num1>.prefix" - the prefix of IP address of addr <num1>
+ *  Returns information about the interfaces within the domain.
+ *  The VIR_DOMAIN_GUEST_INFO_IF_* constants define the known typed parameter
+ *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_LOAD:
  *  Returns load (the number of processes in the runqueue or waiting for disk
