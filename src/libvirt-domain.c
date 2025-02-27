@@ -13239,11 +13239,9 @@ virDomainSetVcpu(virDomainPtr domain,
  *
  * VIR_DOMAIN_GUEST_INFO_LOAD:
  *  Returns load (the number of processes in the runqueue or waiting for disk
- *  I/O) as double values:
- *
- *      "load.1m" - load averaged over 1 minute
- *      "load.5m" - load averaged over 5 minutes
- *      "load.15m" - load averaged over 15 minutes
+ *  I/O).
+ *  The VIR_DOMAIN_GUEST_INFO_LOAD_* constants define the known typed parameter
+ *  keys.
  *
  * Using 0 for @types returns all information groups supported by the given
  * hypervisor.

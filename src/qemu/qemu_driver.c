@@ -19488,9 +19488,9 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     }
 
     if (format_load) {
-        virTypedParamListAddDouble(list, load1m, "load.1m");
-        virTypedParamListAddDouble(list, load5m,  "load.5m");
-        virTypedParamListAddDouble(list, load15m, "load.15m");
+        virTypedParamListAddDouble(list, load1m, VIR_DOMAIN_GUEST_INFO_LOAD_1M);
+        virTypedParamListAddDouble(list, load5m, VIR_DOMAIN_GUEST_INFO_LOAD_5M);
+        virTypedParamListAddDouble(list, load15m, VIR_DOMAIN_GUEST_INFO_LOAD_15M);
     }
 
     if (virTypedParamListSteal(list, params, nparams) < 0)

@@ -6943,6 +6943,34 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_PREFIX ".prefix"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_LOAD_1M:
+ *
+ * The guest load averaged over 1 minute as a double
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_LOAD_1M "load.1m"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_LOAD_5M:
+ *
+ * The guest load averaged over 5 minutes as a double
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_LOAD_5M "load.5m"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_LOAD_15M:
+ *
+ * The guest load averaged over 15 minutes as a double
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_LOAD_15M "load.15m"
+
 /**
  * virDomainGuestInfoTypes:
  *
