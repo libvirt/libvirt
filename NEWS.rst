@@ -85,6 +85,13 @@ v11.1.0 (unreleased)
     adds corresponding devices into a per-domain profile so that AppArmor does
     not deny QEMU access to them.
 
+  * qemu: Fix crash when starting a domain on a host with unknown host CPU
+
+    On hosts where we cannot detect a host CPU model (mostly aarch64 hosts)
+    starting a domain with a custom CPU model caused a crash of virtqemud.
+
+    The bug was introduced in libvirt-10.9.0
+
 
 v11.0.0 (2025-01-15)
 ====================
