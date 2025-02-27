@@ -19206,22 +19206,25 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
 {
     size_t i;
 
-    virTypedParamListAddUInt(list, ndisks, "disk.count");
+    virTypedParamListAddUInt(list, ndisks, VIR_DOMAIN_GUEST_INFO_DISK_COUNT);
 
     for (i = 0; i < ndisks; i++) {
-        virTypedParamListAddString(list, info[i]->name, "disk.%zu.name", i);
-        virTypedParamListAddBoolean(list, info[i]->partition, "disk.%zu.partition", i);
+        virTypedParamListAddString(list, info[i]->name,
+                                   VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_NAME, i);
+        virTypedParamListAddBoolean(list, info[i]->partition,
+                                    VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_PARTITION, i);
 
         if (info[i]->dependencies) {
             size_t ndeps = g_strv_length(info[i]->dependencies);
             size_t j;
 
             if (ndeps > 0)
-                virTypedParamListAddUInt(list, ndeps, "disk.%zu.dependency.count", i);
+                virTypedParamListAddUInt(list, ndeps,
+                                         VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_COUNT, i);
 
             for (j = 0; j < ndeps; j++) {
                 virTypedParamListAddString(list, info[i]->dependencies[j],
-                                           "disk.%zu.dependency.%zu.name", i, j);
+                                           VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_SUFFIX_NAME, i, j);
             }
         }
 
@@ -19230,7 +19233,8 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
             virDomainDiskDef *diskdef = NULL;
 
             if (address->serial)
-                virTypedParamListAddString(list, address->serial, "disk.%zu.serial", i);
+                virTypedParamListAddString(list, address->serial,
+                                           VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_SERIAL, i);
 
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
@@ -19241,14 +19245,17 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
                                              address->unit);
 
             if (diskdef && diskdef->dst)
-                virTypedParamListAddString(list, diskdef->dst, "disk.%zu.alias", i);
+                virTypedParamListAddString(list, diskdef->dst,
+                                           VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_ALIAS, i);
 
             if (address->bus_type)
-                virTypedParamListAddString(list, address->bus_type, "disk.%zu.guest_bus", i);
+                virTypedParamListAddString(list, address->bus_type,
+                                           VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_BUS, i);
         }
 
         if (info[i]->alias)
-            virTypedParamListAddString(list, info[i]->alias, "disk.%zu.guest_alias", i);
+            virTypedParamListAddString(list, info[i]->alias,
+                                       VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_ALIAS, i);
     }
 }
 

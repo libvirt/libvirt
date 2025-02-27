@@ -13228,23 +13228,9 @@ virDomainSetVcpu(virDomainPtr domain,
  *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_DISKS:
- *  Returns information about the disks within the domain.  The typed
- *  parameter keys are in this format:
- *
- *      "disk.count" - the number of disks defined on this domain
- *                      as an unsigned int
- *      "disk.<num>.name" - device node (Linux) or device UNC (Windows)
- *      "disk.<num>.partition" - whether this is a partition or disk
- *      "disk.<num>.dependency.count" - the number of device dependencies
- *                      e.g. for LVs of the LVM this will
- *                      hold the list of PVs, for LUKS encrypted volume this will
- *                      contain the disk where the volume is placed. (Linux)
- *      "disk.<num>.dependency.<num>.name" - a dependency
- *      "disk.<num>.serial" - optional disk serial number (as string)
- *      "disk.<num>.alias" - the device alias of the disk (e.g. sda)
- *      "disk.<num>.guest_alias" - optional alias assigned to the disk, on Linux
- *                      this is a name assigned by device mapper
- *      "disk.<num>.guest_bus" - disk bus as reported by the guest OS
+ *  Returns information about the disks within the domain.
+ *  The VIR_DOMAIN_GUEST_INFO_DISK_* constants define the known typed parameter
+ *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_INTERFACES:
  *  Returns information about the interfaces within the domain. The typed

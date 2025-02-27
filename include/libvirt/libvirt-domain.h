@@ -6745,6 +6745,116 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_DEVICE ".device"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_COUNT:
+ *
+ * The number of disks defined on this domain as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_COUNT "disk.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_PREFIX:
+ *
+ * The parameter name prefix to access each disk entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * disk suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_PREFIX "disk."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_NAME:
+ *
+ * Device node (Linux) or device UNC (Windows) as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_PARTITION:
+ *
+ * Whether this is a partition (true) or disk (false) as a boolean.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_PARTITION ".partition"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_COUNT:
+ *
+ * The number of device dependencies as an unsigned int.
+ *
+ * e.g. for LVs of the LVM this will hold the list of PVs, for LUKS encrypted
+ * volume this will contain the disk where the volume is placed. (Linux).
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_COUNT ".dependency.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_PREFIX:
+ *
+ * The parameter name prefix to access each dependency entry. Concatenate the
+ * disk prefix, the disk entry number formatted as an unsigned integer, the
+ * dependency prefix, the dependency entry number formatted as an unsigned
+ * integer and one of the dependency suffix parameters to form a complete
+ * parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_PREFIX ".dependency."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_SUFFIX_NAME:
+ *
+ * A dependency name as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_DEPENDENCY_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_SERIAL:
+ *
+ * Optional disk serial number as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_SERIAL ".serial"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_ALIAS:
+ *
+ * The device alias of the disk (e.g. sda) as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_ALIAS ".alias"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_ALIAS:
+ *
+ * Optional alias assigned to the disk, on Linux this is a name assigned by
+ * device mapper, as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_ALIAS ".guest_alias"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_BUS:
+ *
+ * Disk bus as reported by the guest OS.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DISK_SUFFIX_GUEST_BUS ".guest_bus"
+
 /**
  * virDomainGuestInfoTypes:
  *
