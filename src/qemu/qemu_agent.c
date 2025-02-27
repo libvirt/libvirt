@@ -2197,7 +2197,7 @@ qemuAgentGetUsers(qemuAgent *agent,
 
     ndata = virJSONValueArraySize(data);
 
-    virTypedParamListAddUInt(list, ndata, "user.count");
+    virTypedParamListAddUInt(list, ndata, VIR_DOMAIN_GUEST_INFO_USER_COUNT);
 
     for (i = 0; i < ndata; i++) {
         virJSONValue *entry = virJSONValueArrayGet(data, i);
@@ -2216,18 +2216,21 @@ qemuAgentGetUsers(qemuAgent *agent,
             return -1;
         }
 
-        virTypedParamListAddString(list, strvalue, "user.%zu.name", i);
+        virTypedParamListAddString(list, strvalue,
+                                   VIR_DOMAIN_GUEST_INFO_USER_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_NAME, i);
 
         /* 'domain' is only present for windows guests */
         if ((strvalue = virJSONValueObjectGetString(entry, "domain")))
-            virTypedParamListAddString(list, strvalue, "user.%zu.domain", i);
+            virTypedParamListAddString(list, strvalue,
+                                       VIR_DOMAIN_GUEST_INFO_USER_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_DOMAIN, i);
 
         if (virJSONValueObjectGetNumberDouble(entry, "login-time", &logintime) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'login-time' missing in reply of guest-get-users"));
             return -1;
         }
-        virTypedParamListAddULLong(list, logintime * 1000, "user.%zu.login-time", i);
+        virTypedParamListAddULLong(list, logintime * 1000,
+                                   VIR_DOMAIN_GUEST_INFO_USER_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_LOGIN_TIME, i);
     }
 
     return 0;

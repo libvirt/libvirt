@@ -6456,6 +6456,55 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
                                     unsigned int flags);
 
 /**
+ * VIR_DOMAIN_GUEST_INFO_USER_COUNT:
+ *
+ * The number of active users on this domain as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_USER_COUNT "user.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_USER_PREFIX:
+ *
+ * The parameter name prefix to access each user entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * user suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_USER_PREFIX "user."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_NAME:
+ *
+ * Username of the user as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_DOMAIN:
+ *
+ * Domain of the user as a string (may only be present on certain guest
+ * types).
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_DOMAIN ".domain"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_LOGIN_TIME:
+ *
+ * The login time of a user in milliseconds since the epoch as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_LOGIN_TIME ".login-time"
+
+/**
  * virDomainGuestInfoTypes:
  *
  * Since: 5.7.0

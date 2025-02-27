@@ -13202,16 +13202,10 @@ virDomainSetVcpu(virDomainPtr domain,
  * (although not necessarily implemented for each hypervisor):
  *
  * VIR_DOMAIN_GUEST_INFO_USERS:
- *  returns information about users that are currently logged in within the
- *  guest domain. The typed parameter keys are in this format:
- *
- *      "user.count" - the number of active users on this domain as an
- *                     unsigned int
- *      "user.<num>.name" - username of the user as a string
- *      "user.<num>.domain" - domain of the user as a string (may only be
- *                            present on certain guest types)
- *      "user.<num>.login-time" - the login time of a user in milliseconds
- *                                since the epoch as unsigned long long
+ *  Return information about users that are currently logged in within the
+ *  guest domain.
+ *  The VIR_DOMAIN_GUEST_INFO_USER_* constants define the known typed parameter
+ *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_OS:
  *  Return information about the operating system running within the guest. The
