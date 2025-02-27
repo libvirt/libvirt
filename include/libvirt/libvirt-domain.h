@@ -3304,6 +3304,178 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_NET_SUFFIX_TX_DROP ".tx.drop"
 
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_COUNT:
+ *
+ * Number of block devices in the subsequent list, as unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_COUNT "block.count"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_PREFIX:
+ *
+ * The parameter name prefix to access each disk entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * block suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_PREFIX "block."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_NAME:
+ *
+ * Name of the block device as string. Matches the target name (vda/sda/hda)
+ * of the block device.  If the backing chain is listed, this name is the same
+ * for all host resources tied to the same guest device.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_BACKINGINDEX:
+ *
+ * The <backingStore> index as unsigned int, only used when backing images are
+ * listed.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_BACKINGINDEX ".backingIndex"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_PATH:
+ *
+ * Source of the block device as a string, if it is a file or block device
+ * (omitted for network sources and drives with no media inserted).
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_PATH ".path"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_REQS:
+ *
+ * Number of read requests as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_REQS ".rd.reqs"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_BYTES:
+ *
+ * Number of read bytes as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_BYTES ".rd.bytes"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_TIMES:
+ *
+ * Total time (ns) spent on reads as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_TIMES ".rd.times"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_REQS:
+ *
+ * Number of write requests as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_REQS ".wr.reqs"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_BYTES:
+ *
+ * Number of written bytes as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_BYTES ".wr.bytes"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_TIMES:
+ *
+ * Total time (ns) spent on writes as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_TIMES ".wr.times"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_REQS:
+ *
+ * Total flush requests as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_REQS ".fl.reqs"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_TIMES:
+ *
+ * Total time (ns) spent on cache flushing as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_TIMES ".fl.times"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_ERRORS:
+ *
+ * Xen only: the 'oo_req' value as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_ERRORS ".errors"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_ALLOCATION:
+ *
+ * Offset of the highest written sector as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_ALLOCATION ".allocation"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_CAPACITY:
+ *
+ * Logical size in bytes of the block device backing image as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_CAPACITY ".capacity"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_PHYSICAL:
+ *
+ * Physical size in bytes of the container of the backing image as unsigned
+ * long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_PHYSICAL ".physical"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_THRESHOLD:
+ *
+ * Current threshold for delivering the VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD
+ * event in bytes as unsigned long long. See virDomainSetBlockThreshold.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_THRESHOLD ".threshold"
+
 /**
  * virDomainStatsTypes:
  *

@@ -12286,43 +12286,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING to @flags will expand the
  *     array to cover backing chains (block.count corresponds to the number
  *     of host resources used together to provide the guest disks).
- *     The typed parameter keys are in this format:
- *
- *     "block.count" - number of block devices in the subsequent list,
- *                     as unsigned int.
- *     "block.<num>.name" - name of the block device <num> as string.
- *                          matches the target name (vda/sda/hda) of the
- *                          block device.  If the backing chain is listed,
- *                          this name is the same for all host resources tied
- *                          to the same guest device.
- *     "block.<num>.backingIndex" - unsigned int giving the <backingStore>
- *                                   index, only used when backing images
- *                                   are listed.
- *     "block.<num>.path" - string describing the source of block device <num>,
- *                          if it is a file or block device (omitted for network
- *                          sources and drives with no media inserted).
- *     "block.<num>.rd.reqs" - number of read requests as unsigned long long.
- *     "block.<num>.rd.bytes" - number of read bytes as unsigned long long.
- *     "block.<num>.rd.times" - total time (ns) spent on reads as
- *                              unsigned long long.
- *     "block.<num>.wr.reqs" - number of write requests as unsigned long long.
- *     "block.<num>.wr.bytes" - number of written bytes as unsigned long long.
- *     "block.<num>.wr.times" - total time (ns) spent on writes as
- *                              unsigned long long.
- *     "block.<num>.fl.reqs" - total flush requests as unsigned long long.
- *     "block.<num>.fl.times" - total time (ns) spent on cache flushing as
- *                              unsigned long long.
- *     "block.<num>.errors" - Xen only: the 'oo_req' value as
- *                            unsigned long long.
- *     "block.<num>.allocation" - offset of the highest written sector
- *                                as unsigned long long.
- *     "block.<num>.capacity" - logical size in bytes of the block device
- *                              backing image as unsigned long long.
- *     "block.<num>.physical" - physical size in bytes of the container of the
- *                              backing image as unsigned long long.
- *     "block.<num>.threshold" - current threshold for delivering the
- *                               VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD
- *                               event in bytes. See virDomainSetBlockThreshold.
+ *     The VIR_DOMAIN_STATS_BLOCK_* constants define the known typed
+ *     parameter keys.
  *
  * VIR_DOMAIN_STATS_PERF:
  *     Return perf event statistics.

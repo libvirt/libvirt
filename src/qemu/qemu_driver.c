@@ -17255,13 +17255,16 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverConfig *cfg,
     }
 
     if (src->allocation)
-        virTypedParamListAddULLong(params, src->allocation, "block.%zu.allocation", block_idx);
+        virTypedParamListAddULLong(params, src->allocation,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_ALLOCATION, block_idx);
 
     if (src->capacity)
-        virTypedParamListAddULLong(params, src->capacity, "block.%zu.capacity", block_idx);
+        virTypedParamListAddULLong(params, src->capacity,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_CAPACITY, block_idx);
 
     if (src->physical)
-        virTypedParamListAddULLong(params, src->physical, "block.%zu.physical", block_idx);
+        virTypedParamListAddULLong(params, src->physical,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_PHYSICAL, block_idx);
 }
 
 
@@ -17289,16 +17292,20 @@ qemuDomainGetStatsOneBlock(virQEMUDriverConfig *cfg,
     if (!stats || !entryname || !(entry = virHashLookup(stats, entryname)))
         return;
 
-    virTypedParamListAddULLong(params, entry->wr_highest_offset, "block.%zu.allocation", block_idx);
+    virTypedParamListAddULLong(params, entry->wr_highest_offset,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_ALLOCATION, block_idx);
 
     if (entry->capacity)
-        virTypedParamListAddULLong(params, entry->capacity, "block.%zu.capacity", block_idx);
+        virTypedParamListAddULLong(params, entry->capacity,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_CAPACITY, block_idx);
 
     if (entry->physical) {
-        virTypedParamListAddULLong(params, entry->physical, "block.%zu.physical", block_idx);
+        virTypedParamListAddULLong(params, entry->physical,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_PHYSICAL, block_idx);
     } else {
         if (qemuDomainStorageUpdatePhysical(cfg, dom, src) == 0) {
-            virTypedParamListAddULLong(params, src->physical, "block.%zu.physical", block_idx);
+            virTypedParamListAddULLong(params, src->physical,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_PHYSICAL, block_idx);
         }
     }
 }
@@ -17316,7 +17323,8 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
         return;
 
     if (entry->write_threshold)
-        virTypedParamListAddULLong(params, entry->write_threshold, "block.%zu.threshold", recordnr);
+        virTypedParamListAddULLong(params, entry->write_threshold,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_THRESHOLD, recordnr);
 }
 
 
@@ -17334,14 +17342,22 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
     if (!stats || !frontendname || !(en = virHashLookup(stats, frontendname)))
         return;
 
-    virTypedParamListAddULLong(par, en->rd_req, "block.%zu.rd.reqs", idx);
-    virTypedParamListAddULLong(par, en->rd_bytes, "block.%zu.rd.bytes", idx);
-    virTypedParamListAddULLong(par, en->rd_total_times, "block.%zu.rd.times", idx);
-    virTypedParamListAddULLong(par, en->wr_req, "block.%zu.wr.reqs", idx);
-    virTypedParamListAddULLong(par, en->wr_bytes, "block.%zu.wr.bytes", idx);
-    virTypedParamListAddULLong(par, en->wr_total_times, "block.%zu.wr.times", idx);
-    virTypedParamListAddULLong(par, en->flush_req, "block.%zu.fl.reqs", idx);
-    virTypedParamListAddULLong(par, en->flush_total_times, "block.%zu.fl.times", idx);
+    virTypedParamListAddULLong(par, en->rd_req,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_REQS, idx);
+    virTypedParamListAddULLong(par, en->rd_bytes,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_BYTES, idx);
+    virTypedParamListAddULLong(par, en->rd_total_times,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_RD_TIMES, idx);
+    virTypedParamListAddULLong(par, en->wr_req,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_REQS, idx);
+    virTypedParamListAddULLong(par, en->wr_bytes,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_BYTES, idx);
+    virTypedParamListAddULLong(par, en->wr_total_times,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_WR_TIMES, idx);
+    virTypedParamListAddULLong(par, en->flush_req,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_REQS, idx);
+    virTypedParamListAddULLong(par, en->flush_total_times,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_TIMES, idx);
 }
 
 
@@ -17351,13 +17367,16 @@ qemuDomainGetStatsBlockExportHeader(virDomainDiskDef *disk,
                                     size_t recordnr,
                                     virTypedParamList *params)
 {
-    virTypedParamListAddString(params, disk->dst, "block.%zu.name", recordnr);
+    virTypedParamListAddString(params, disk->dst,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_NAME, recordnr);
 
     if (virStorageSourceIsLocalStorage(src) && src->path)
-        virTypedParamListAddString(params, src->path, "block.%zu.path", recordnr);
+        virTypedParamListAddString(params, src->path,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_PATH, recordnr);
 
     if (src->id)
-        virTypedParamListAddUInt(params, src->id, "block.%zu.backingIndex", recordnr);
+        virTypedParamListAddUInt(params, src->id,
+                                 VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_BACKINGINDEX, recordnr);
 }
 
 
@@ -17528,7 +17547,8 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
                                           &visited, visitBacking, cfg, dom);
     }
 
-    virTypedParamListAddUInt(params, visited, "block.count");
+    virTypedParamListAddUInt(params, visited,
+                             VIR_DOMAIN_STATS_BLOCK_COUNT);
     virTypedParamListConcat(params, &blockparams);
 }
 
