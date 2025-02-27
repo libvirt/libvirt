@@ -6620,6 +6620,16 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_TIMEZONE_OFFSET "timezone.offset"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_HOSTNAME_HOSTNAME:
+ *
+ * The hostname of the domain as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_HOSTNAME_HOSTNAME "hostname"
+
 /**
  * virDomainGuestInfoTypes:
  *

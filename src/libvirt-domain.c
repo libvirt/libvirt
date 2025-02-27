@@ -13217,6 +13217,11 @@ virDomainSetVcpu(virDomainPtr domain,
  *  The VIR_DOMAIN_GUEST_INFO_TIMEZONE_* constants define the known typed parameter
  *  keys.
  *
+ * VIR_DOMAIN_GUEST_INFO_HOSTNAME:
+ *  Returns information about the hostname of the domain.
+ *  The VIR_DOMAIN_GUEST_INFO_HOSTNAME_* constants define the known typed parameter
+ *  keys.
+ *
  * VIR_DOMAIN_GUEST_INFO_FILESYSTEM:
  *  Returns information about the filesystems within the domain.  The typed
  *  parameter keys are in this format:
@@ -13251,12 +13256,6 @@ virDomainSetVcpu(virDomainPtr domain,
  *      "disk.<num>.guest_alias" - optional alias assigned to the disk, on Linux
  *                      this is a name assigned by device mapper
  *      "disk.<num>.guest_bus" - disk bus as reported by the guest OS
- *
- * VIR_DOMAIN_GUEST_INFO_HOSTNAME:
- *  Returns information about the hostname of the domain. The typed
- *  parameter keys are in this format:
- *
- *      "hostname" - the hostname of the domain
  *
  * VIR_DOMAIN_GUEST_INFO_INTERFACES:
  *  Returns information about the interfaces within the domain. The typed

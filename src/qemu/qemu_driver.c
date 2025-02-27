@@ -19406,7 +19406,8 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         goto exitagent;
 
     if (hostname)
-        virTypedParamListAddString(list, hostname, "hostname");
+        virTypedParamListAddString(list, hostname,
+                                   VIR_DOMAIN_GUEST_INFO_HOSTNAME_HOSTNAME);
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
         rc = qemuAgentGetFSInfo(agent, &agentfsinfo, report_unsupported);
