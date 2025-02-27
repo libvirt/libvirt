@@ -72,6 +72,19 @@ v11.1.0 (unreleased)
 
 * **Bug fixes**
 
+  * tools: ssh-proxy: Check if domain is running before connecting to it
+
+    If domain is not running but has a static CID configured for its VSOCK then
+    the ssh-proxy parsed it anyways. This may have resulted in mistakenly
+    connecting to a different domain. Domain status is checked before parsing
+    its CID.
+
+  * apparmor: Allow SGX if configured
+
+    If domain has ``<memory model='sgx-epc'\>`` configured then libvirt now
+    adds corresponding devices into a per-domain profile so that AppArmor does
+    not deny QEMU access to them.
+
 
 v11.0.0 (2025-01-15)
 ====================
