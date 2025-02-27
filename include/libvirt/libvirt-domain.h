@@ -3700,6 +3700,62 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_PERF_EMULATION_FAULTS "perf.emulation_faults"
 
+
+/**
+ * VIR_DOMAIN_STATS_IOTHREAD_COUNT:
+ *
+ * Maximum number of IOThreads in the subsequent list as unsigned int. Each
+ * IOThread in the list will will use it's iothread_id value as the array
+ * index. There may be fewer array entries than the iothread.count value if
+ * the polling values are not supported.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_IOTHREAD_COUNT "iothread.count"
+
+/**
+ * VIR_DOMAIN_STATS_IOTHREAD_PREFIX:
+ *
+ * The parameter name prefix to access each iothread entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * iothread suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_IOTHREAD_PREFIX "iothread."
+
+/**
+ * VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_MAX_NS:
+ *
+ * Maximum polling time in ns as an unsigned long long. A 0 (zero) means
+ * polling is disabled.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_MAX_NS ".poll-max-ns"
+
+/**
+ * VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_GROW:
+ *
+ * Polling time factor as an unsigned int or unsigned long long if exceeding
+ * range of unsigned int. A 0 (zero) indicates to allow the underlying
+ * hypervisor to choose how to grow the polling time.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_GROW ".poll-grow"
+
+/**
+ * VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_SHRINK:
+ *
+ * Polling time divisor as an unsigned int or unsigned long long if exceeding
+ * range of unsigned int. A 0 (zero) indicates to allow the underlying
+ * hypervisor to choose how to shrink the polling time.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_SHRINK ".poll-shrink"
+
 /**
  * virDomainStatsTypes:
  *

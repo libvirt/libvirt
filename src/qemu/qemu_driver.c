@@ -17576,18 +17576,19 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
     if (niothreads == 0)
         return;
 
-    virTypedParamListAddUInt(params, niothreads, "iothread.count");
+    virTypedParamListAddUInt(params, niothreads,
+                             VIR_DOMAIN_STATS_IOTHREAD_COUNT);
 
     for (i = 0; i < niothreads; i++) {
         if (iothreads[i]->poll_valid) {
             virTypedParamListAddULLong(params, iothreads[i]->poll_max_ns,
-                                       "iothread.%u.poll-max-ns",
+                                       VIR_DOMAIN_STATS_IOTHREAD_PREFIX "%u" VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_MAX_NS,
                                        iothreads[i]->iothread_id);
             virTypedParamListAddUnsigned(params, iothreads[i]->poll_grow,
-                                         "iothread.%u.poll-grow",
+                                         VIR_DOMAIN_STATS_IOTHREAD_PREFIX "%u" VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_GROW,
                                          iothreads[i]->iothread_id);
             virTypedParamListAddUnsigned(params, iothreads[i]->poll_shrink,
-                                         "iothread.%u.poll-shrink",
+                                         VIR_DOMAIN_STATS_IOTHREAD_PREFIX "%u" VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_SHRINK,
                                          iothreads[i]->iothread_id);
         }
     }

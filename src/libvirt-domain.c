@@ -12313,28 +12313,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     which could quickly exceed poll-max-ns; however, a poll-shrink of
  *     10 would cut that polling time more gradually.
  *
- *     The typed parameter keys are in this format:
- *
- *     "iothread.count" - maximum number of IOThreads in the subsequent list
- *                        as unsigned int. Each IOThread in the list will
- *                        will use it's iothread_id value as the <id>. There
- *                        may be fewer <id> entries than the iothread.count
- *                        value if the polling values are not supported.
- *     "iothread.<id>.poll-max-ns" - maximum polling time in ns as an unsigned
- *                                   long long. A 0 (zero) means polling is
- *                                   disabled.
- *     "iothread.<id>.poll-grow" - polling time factor as an unsigned int or
- *                                 unsigned long long if exceeding range of
- *                                 unsigned int.
- *                                 A 0 (zero) indicates to allow the underlying
- *                                 hypervisor to choose how to grow the
- *                                 polling time.
- *     "iothread.<id>.poll-shrink" - polling time divisor as an unsigned int or
- *                                   unsigned long long if exceeding range of
- *                                   unsigned int.
- *                                   A 0 (zero) indicates to allow the underlying
- *                                   hypervisor to choose how to shrink the
- *                                   polling time.
+ *     The VIR_DOMAIN_STATS_IOTHREAD_* constants define the known typed
+ *     parameter keys.
  *
  * VIR_DOMAIN_STATS_MEMORY:
  *     Return memory bandwidth statistics and the usage information. The typed
