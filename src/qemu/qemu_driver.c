@@ -16714,32 +16714,38 @@ qemuDomainGetStatsMemoryBandwidth(virQEMUDriver *driver,
     if (nresdata == 0)
         return;
 
-    virTypedParamListAddUInt(params, nresdata, "memory.bandwidth.monitor.count");
+    virTypedParamListAddUInt(params, nresdata,
+                             VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_COUNT);
 
     for (i = 0; i < nresdata; i++) {
-        virTypedParamListAddString(params, resdata[i]->name, "memory.bandwidth.monitor.%zu.name", i);
-        virTypedParamListAddString(params, resdata[i]->vcpus, "memory.bandwidth.monitor.%zu.vcpus", i);
-        virTypedParamListAddUInt(params, resdata[i]->nstats, "memory.bandwidth.monitor.%zu.node.count", i);
+        virTypedParamListAddString(params, resdata[i]->name,
+                                   VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NAME, i);
+        virTypedParamListAddString(params, resdata[i]->vcpus,
+                                   VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_VCPUS, i);
+        virTypedParamListAddUInt(params, resdata[i]->nstats,
+                                 VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_COUNT, i);
 
         for (j = 0; j < resdata[i]->nstats; j++) {
-            virTypedParamListAddUInt(params, resdata[i]->stats[j]->id,
-                                     "memory.bandwidth.monitor.%zu.node.%zu.id", i, j);
-
+            virTypedParamListAddUInt(
+                params, resdata[i]->stats[j]->id,
+                VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_ID, i, j);
 
             features = resdata[i]->stats[j]->features;
             for (k = 0; features[k]; k++) {
                 if (STREQ(features[k], "mbm_local_bytes")) {
                     /* The accumulative data passing through local memory
                      * controller is recorded with 64 bit counter. */
-                    virTypedParamListAddULLong(params, resdata[i]->stats[j]->vals[k],
-                                               "memory.bandwidth.monitor.%zu.node.%zu.bytes.local", i, j);
+                    virTypedParamListAddULLong(
+                        params, resdata[i]->stats[j]->vals[k],
+                        VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_LOCAL, i, j);
                 }
 
                 if (STREQ(features[k], "mbm_total_bytes")) {
                     /* The accumulative data passing through local and remote
                      * memory controller is recorded with 64 bit counter. */
-                    virTypedParamListAddULLong(params, resdata[i]->stats[j]->vals[k],
-                                               "memory.bandwidth.monitor.%zu.node.%zu.bytes.total", i, j);
+                    virTypedParamListAddULLong(
+                        params, resdata[i]->stats[j]->vals[k],
+                        VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_TOTAL, i, j);
                 }
             }
         }

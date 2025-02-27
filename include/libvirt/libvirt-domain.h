@@ -3756,6 +3756,98 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_SHRINK ".poll-shrink"
 
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_COUNT:
+ *
+ * The number of memory bandwidth monitors for this domain as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_COUNT "memory.bandwidth.monitor.count"
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX:
+ *
+ * The parameter name prefix to access each bandwith monitor entry.
+ * Concatenate the prefix, the entry number formatted as an unsigned integer
+ * and one of the memory bandwith suffix parameters to form a complete
+ * parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "memory.bandwidth.monitor."
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NAME:
+ *
+ * The name of the bandwidth monitor as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_VCPUS:
+ *
+ * The vcpu list of the bandwidth monitor as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_VCPUS ".vcpus"
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_COUNT:
+ *
+ * The number of memory controllers in the bandwidth monitor.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_COUNT ".node.count"
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_PREFIX:
+ *
+ * The parameter name prefix to access each controller entry. Concatenate the
+ * bandwidth monitor prefix, the monitor entry number formatted as an unsigned
+ * integer, the controller prefix, the controller entry number formatted as an
+ * unsigned integer and one of the controller suffix parameters to form a
+ * complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_PREFIX ".node."
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_ID:
+ *
+ * Host allocated memory controller id for the controller as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_ID ".id"
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_LOCAL:
+ *
+ * The accumulative bytes consumed by vcpus passing through the memory
+ * controller in the same processor that the scheduled host CPU belongs to as
+ * an unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_LOCAL ".bytes.local"
+
+/**
+ * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_TOTAL:
+ *
+ * The accumulative bytes consumed by vcpus passing through all memory
+ * controllers, either local or remote, as an unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_TOTAL ".bytes.total"
+
 /**
  * virDomainStatsTypes:
  *

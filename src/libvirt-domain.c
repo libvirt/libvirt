@@ -12319,23 +12319,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * VIR_DOMAIN_STATS_MEMORY:
  *     Return memory bandwidth statistics and the usage information. The typed
  *     parameter keys are in this format:
- *
- *     "memory.bandwidth.monitor.count" - the number of memory bandwidth
- *                                        monitors for this domain
- *     "memory.bandwidth.monitor.<num>.name" - the name of monitor <num>
- *     "memory.bandwidth.monitor.<num>.vcpus" - the vcpu list of monitor <num>
- *     "memory.bandwidth.monitor.<num>.node.count" - the number of memory
- *                                            controller in monitor <num>
- *     "memory.bandwidth.monitor.<num>.node.<index>.id" - host allocated memory
- *                                                 controller id for controller
- *                                                 <index> of monitor <num>
- *     "memory.bandwidth.monitor.<num>.node.<index>.bytes.local" - the
- *                       accumulative bytes consumed by @vcpus that passing
- *                       through the memory controller in the same processor
- *                       that the scheduled host CPU belongs to.
- *     "memory.bandwidth.monitor.<num>.node.<index>.bytes.total" - the total
- *                       bytes consumed by @vcpus that passing through all
- *                       memory controllers, either local or remote controller.
+ *     The VIR_DOMAIN_STATS_MEMORY_* constants define the known typed
+ *     parameter keys.
  *
  * VIR_DOMAIN_STATS_DIRTYRATE:
  *     Return memory dirty rate information. The typed parameter keys are in
