@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='aarch64' machine='borzoi'>hvm</type>
+    <type arch='aarch64' machine='collie'>hvm</type>
     <boot dev='hd'/>
   </os>
   <cpu mode='host-passthrough' check='none'/>

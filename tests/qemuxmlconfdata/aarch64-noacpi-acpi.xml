@@ -5,7 +5,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <!-- machine type doesn't matter as long as it has no ACPI -->
-    <type arch='aarch64' machine='borzoi'>hvm</type>
+    <type arch='aarch64' machine='collie'>hvm</type>
   </os>
   <features>
     <acpi/>

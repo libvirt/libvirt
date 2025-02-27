@@ -1764,7 +1764,7 @@ mymain(void)
      *     - firmware-manual-efi-acpi-aarch64
      *     - firmware-auto-efi-loongarch64
      *
-     *  - negative case for aarch64 with 'borzoi' machine not supporting ACPI
+     *  - negative case for aarch64 with 'collie' machine not supporting ACPI
      *
      *  - s390x has hack to strip ACPI to preserve migration of old configs,
      *    but should produce error when ABI_UPDATE is requested
