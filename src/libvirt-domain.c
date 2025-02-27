@@ -13208,27 +13208,9 @@ virDomainSetVcpu(virDomainPtr domain,
  *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_OS:
- *  Return information about the operating system running within the guest. The
- *  typed parameter keys are in this format:
- *
- *      "os.id" - a string identifying the operating system
- *      "os.name" - the name of the operating system, suitable for presentation
- *                  to a user, as a string
- *      "os.pretty-name" - a pretty name for the operating system, suitable for
- *                         presentation to a user, as a string
- *      "os.version" - the version of the operating system suitable for
- *                     presentation to a user, as a string
- *      "os.version-id" - the version id of the operating system suitable for
- *                        processing by scripts, as a string
- *      "os.kernel-release" - the release of the operating system kernel, as a
- *                            string
- *      "os.kernel-version" - the version of the operating system kernel, as a
- *                            string
- *      "os.machine" - the machine hardware name as a string
- *      "os.variant" - a specific variant or edition of the operating system
- *                     suitable for presentation to a user, as a string
- *      "os.variant-id" - the id for a specific variant or edition of the
- *                        operating system, as a string
+ *  Return information about the operating system running within the guest.
+ *  The VIR_DOMAIN_GUEST_INFO_OS_* constants define the known typed parameter
+ *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_TIMEZONE:
  *  Returns information about the timezone within the domain. The typed

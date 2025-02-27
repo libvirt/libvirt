@@ -6504,6 +6504,103 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_USER_SUFFIX_LOGIN_TIME ".login-time"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_ID:
+ *
+ * A string identifying the operating system.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_ID "os.id"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_NAME:
+ *
+ * The name of the operating system, suitable for presentation to a user, as
+ * a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_NAME "os.name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_PRETTY_NAME:
+ *
+ * A pretty name for the operating system, suitable for presentation to a
+ * user, as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_PRETTY_NAME "os.pretty-name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_VERSION:
+ *
+ * The version of the operating system suitable for presentation to a user,
+ * as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_VERSION "os.version"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_VERSION_ID:
+ *
+ * The version id of the operating system suitable for processing by scripts,
+ * as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_VERSION_ID "os.version-id"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_KERNEL_RELEASE:
+ *
+ * The release of the operating system kernel, as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_KERNEL_RELEASE "os.kernel-release"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_KERNEL_VERSION:
+ *
+ * The version of the operating system kernel, as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_KERNEL_VERSION "os.kernel-version"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_MACHINE:
+ *
+ * The machine hardware name as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_MACHINE "os.machine"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_VARIANT:
+ *
+ * A specific variant or edition of the operating system suitable for
+ * presentation to a user, as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_VARIANT "os.variant"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_OS_VARIANT_ID:
+ *
+ * The id for a specific variant or edition of the operating system, as a
+ * string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_OS_VARIANT_ID "os.variant-id"
+
 /**
  * virDomainGuestInfoTypes:
  *

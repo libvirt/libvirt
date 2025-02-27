@@ -2271,16 +2271,16 @@ qemuAgentGetOSInfo(qemuAgent *agent,
             virTypedParamListAddString(list, result, param_string_); \
         } \
     } while (0)
-    OSINFO_ADD_PARAM("id", "os.id");
-    OSINFO_ADD_PARAM("name", "os.name");
-    OSINFO_ADD_PARAM("pretty-name", "os.pretty-name");
-    OSINFO_ADD_PARAM("version", "os.version");
-    OSINFO_ADD_PARAM("version-id", "os.version-id");
-    OSINFO_ADD_PARAM("machine", "os.machine");
-    OSINFO_ADD_PARAM("variant", "os.variant");
-    OSINFO_ADD_PARAM("variant-id", "os.variant-id");
-    OSINFO_ADD_PARAM("kernel-release", "os.kernel-release");
-    OSINFO_ADD_PARAM("kernel-version", "os.kernel-version");
+    OSINFO_ADD_PARAM("id", VIR_DOMAIN_GUEST_INFO_OS_ID);
+    OSINFO_ADD_PARAM("name", VIR_DOMAIN_GUEST_INFO_OS_NAME);
+    OSINFO_ADD_PARAM("pretty-name", VIR_DOMAIN_GUEST_INFO_OS_PRETTY_NAME);
+    OSINFO_ADD_PARAM("version", VIR_DOMAIN_GUEST_INFO_OS_VERSION);
+    OSINFO_ADD_PARAM("version-id", VIR_DOMAIN_GUEST_INFO_OS_VERSION_ID);
+    OSINFO_ADD_PARAM("machine", VIR_DOMAIN_GUEST_INFO_OS_MACHINE);
+    OSINFO_ADD_PARAM("variant", VIR_DOMAIN_GUEST_INFO_OS_VARIANT);
+    OSINFO_ADD_PARAM("variant-id", VIR_DOMAIN_GUEST_INFO_OS_VARIANT_ID);
+    OSINFO_ADD_PARAM("kernel-release", VIR_DOMAIN_GUEST_INFO_OS_KERNEL_RELEASE);
+    OSINFO_ADD_PARAM("kernel-version", VIR_DOMAIN_GUEST_INFO_OS_KERNEL_VERSION);
 
     return 0;
 }
