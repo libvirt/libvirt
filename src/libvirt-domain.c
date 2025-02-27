@@ -13223,20 +13223,9 @@ virDomainSetVcpu(virDomainPtr domain,
  *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_FILESYSTEM:
- *  Returns information about the filesystems within the domain.  The typed
- *  parameter keys are in this format:
- *
- *      "fs.count" - the number of filesystems defined on this domain
- *                   as an unsigned int
- *      "fs.<num>.mountpoint" - the path to the mount point for the filesystem
- *      "fs.<num>.name" - device name in the guest (e.g. "sda1")
- *      "fs.<num>.fstype" - the type of filesystem
- *      "fs.<num>.total-bytes" - the total size of the filesystem
- *      "fs.<num>.used-bytes" - the number of bytes used in the filesystem
- *      "fs.<num>.disk.count" - the number of disks targeted by this filesystem
- *      "fs.<num>.disk.<num>.alias" - the device alias of the disk (e.g. sda)
- *      "fs.<num>.disk.<num>.serial" - the serial number of the disk
- *      "fs.<num>.disk.<num>.device" - the device node of the disk
+ *  Returns information about the filesystems within the domain.
+ *  The VIR_DOMAIN_GUEST_INFO_FS_* constants define the known typed parameter
+ *  keys.
  *
  * VIR_DOMAIN_GUEST_INFO_DISKS:
  *  Returns information about the disks within the domain.  The typed

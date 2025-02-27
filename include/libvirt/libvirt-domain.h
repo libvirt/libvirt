@@ -6630,6 +6630,121 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
  */
 # define VIR_DOMAIN_GUEST_INFO_HOSTNAME_HOSTNAME "hostname"
 
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_COUNT:
+ *
+ * The number of filesystems defined on this domain as an unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_COUNT "fs.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_PREFIX:
+ *
+ * The parameter name prefix to access each filesystem entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * filesystem suffix parameters to form a complete parameter name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_PREFIX "fs."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_MOUNTPOINT:
+ *
+ * The path to the mount point for the filesystem as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_MOUNTPOINT ".mountpoint"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_NAME:
+ *
+ * Device name in the guest (e.g. "sda1") as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_FSTYPE:
+ *
+ * The type of filesystem as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_FSTYPE ".fstype"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_TOTAL_BYTES:
+ *
+ * The total size of the filesystem as an unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_TOTAL_BYTES ".total-bytes"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_USED_BYTES:
+ *
+ * The number of bytes used in the filesystem as an unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_USED_BYTES ".used-bytes"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_COUNT:
+ *
+ * The number of disks targeted by this filesystem as an int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_COUNT ".disk.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_PREFIX:
+ *
+ * The parameter name prefix to access each disk entry. Concatenate the
+ * filesystem prefix, the filesystem entry number formatted as an unsigned
+ * integer, the disk prefix, the disk entry number formatted as an unsigned
+ * integer and one of the disk suffix parameters to form a complete parameter
+ * name.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_PREFIX ".disk."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_ALIAS:
+ *
+ * The device alias of the disk (e.g. sda) as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_ALIAS ".alias"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_SERIAL:
+ *
+ * The serial number of the disk as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_SERIAL ".serial"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_DEVICE:
+ *
+ * The device node of the disk as a string.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_DEVICE ".device"
+
 /**
  * virDomainGuestInfoTypes:
  *

@@ -19261,23 +19261,29 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
 {
     size_t i;
 
-    virTypedParamListAddUInt(list, nfs, "fs.count");
+    virTypedParamListAddUInt(list, nfs, VIR_DOMAIN_GUEST_INFO_FS_COUNT);
 
     for (i = 0; i < nfs; i++) {
         size_t j;
 
-        virTypedParamListAddString(list, fsinfo[i]->name, "fs.%zu.name", i);
-        virTypedParamListAddString(list, fsinfo[i]->mountpoint, "fs.%zu.mountpoint", i);
-        virTypedParamListAddString(list, fsinfo[i]->fstype, "fs.%zu.fstype", i);
+        virTypedParamListAddString(list, fsinfo[i]->name,
+                                   VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_NAME, i);
+        virTypedParamListAddString(list, fsinfo[i]->mountpoint,
+                                   VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_MOUNTPOINT, i);
+        virTypedParamListAddString(list, fsinfo[i]->fstype,
+                                   VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_FSTYPE, i);
 
         /* disk usage values are not returned by older guest agents, so
          * only add the params if the value is set */
         if (fsinfo[i]->total_bytes != -1)
-            virTypedParamListAddULLong(list, fsinfo[i]->total_bytes, "fs.%zu.total-bytes", i);
+            virTypedParamListAddULLong(list, fsinfo[i]->total_bytes,
+                                       VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_TOTAL_BYTES, i);
         if (fsinfo[i]->used_bytes != -1)
-            virTypedParamListAddULLong(list, fsinfo[i]->used_bytes, "fs.%zu.used-bytes", i);
+            virTypedParamListAddULLong(list, fsinfo[i]->used_bytes,
+                                       VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_USED_BYTES, i);
 
-        virTypedParamListAddUInt(list, fsinfo[i]->ndisks, "fs.%zu.disk.count", i);
+        virTypedParamListAddUInt(list, fsinfo[i]->ndisks,
+                                 VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_COUNT, i);
 
         for (j = 0; j < fsinfo[i]->ndisks; j++) {
             virDomainDiskDef *diskdef = NULL;
@@ -19292,13 +19298,15 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
                                              d->unit);
             if (diskdef && diskdef->dst)
                 virTypedParamListAddString(list, diskdef->dst,
-                                           "fs.%zu.disk.%zu.alias", i, j);
+                                           VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_ALIAS, i, j);
 
             if (d->serial)
-                virTypedParamListAddString(list, d->serial, "fs.%zu.disk.%zu.serial", i, j);
+                virTypedParamListAddString(list, d->serial,
+                                           VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_SERIAL, i, j);
 
             if (d->devnode)
-                virTypedParamListAddString(list, d->devnode, "fs.%zu.disk.%zu.device", i, j);
+                virTypedParamListAddString(list, d->devnode,
+                                           VIR_DOMAIN_GUEST_INFO_FS_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_DEVICE, i, j);
         }
     }
 }
