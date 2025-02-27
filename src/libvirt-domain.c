@@ -12291,72 +12291,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  * VIR_DOMAIN_STATS_PERF:
  *     Return perf event statistics.
- *     The typed parameter keys are in this format:
- *
- *     "perf.cmt" - the usage of l3 cache (bytes) by applications running on
- *                  the platform as unsigned long long. It is produced by cmt
- *                  perf event.
- *     "perf.mbmt" - the total system bandwidth (bytes/s) from one level of
- *                   cache to another as unsigned long long. It is produced
- *                   by mbmt perf event.
- *     "perf.mbml" - the amount of data (bytes/s) sent through the memory
- *                   controller on the socket as unsigned long long. It is
- *                   produced by mbml perf event.
- *     "perf.cache_misses" - the count of cache misses as unsigned long long.
- *                           It is produced by cache_misses perf event.
- *     "perf.cache_references" - the count of cache hits as unsigned long long.
- *                               It is produced by cache_references perf event.
- *     "perf.instructions" - The count of instructions as unsigned long long.
- *                           It is produced by instructions perf event.
- *     "perf.cpu_cycles" - The count of cpu cycles (total/elapsed) as an
- *                         unsigned long long. It is produced by cpu_cycles
- *                         perf event.
- *     "perf.branch_instructions" - The count of branch instructions as
- *                                  unsigned long long. It is produced by
- *                                  branch_instructions perf event.
- *     "perf.branch_misses" - The count of branch misses as unsigned long
- *                            long. It is produced by branch_misses perf event.
- *     "perf.bus_cycles" - The count of bus cycles as unsigned long
- *                         long. It is produced by bus_cycles perf event.
- *     "perf.stalled_cycles_frontend" - The count of stalled cpu cycles in the
- *                                      frontend of the instruction processor
- *                                      pipeline as unsigned long long. It is
- *                                      produced by stalled_cycles_frontend
- *                                      perf event.
- *     "perf.stalled_cycles_backend"  - The count of stalled cpu cycles in the
- *                                      backend of the instruction processor
- *                                      pipeline as unsigned long long. It is
- *                                      produced by stalled_cycles_backend
- *                                      perf event.
- *     "perf.ref_cpu_cycles" - The count of total cpu cycles not affected by
- *                             CPU frequency scaling by applications running
- *                             as unsigned long long. It is produced by the
- *                             ref_cpu_cycles perf event.
- *     "perf.cpu_clock" - The count of cpu clock time as unsigned long long.
- *                        It is produced by the cpu_clock perf event.
- *     "perf.task_clock" - The count of task clock time as unsigned long long.
- *                         It is produced by the task_clock perf event.
- *     "perf.page_faults" - The count of page faults as unsigned long long.
- *                          It is produced by the page_faults perf event
- *     "perf.context_switches" - The count of context switches as unsigned long
- *                               long. It is produced by the context_switches
- *                               perf event.
- *     "perf.cpu_migrations" - The count of cpu migrations, from one logical
- *                             processor to another, as unsigned long
- *                             long. It is produced by the cpu_migrations
- *                             perf event.
- *     "perf.page_faults_min" - The count of minor page faults as unsigned
- *                              long long. It is produced by the
- *                              page_faults_min perf event.
- *     "perf.page_faults_maj" - The count of major page faults as unsigned
- *                              long long. It is produced by the
- *                              page_faults_maj perf event.
- *     "perf.alignment_faults" - The count of alignment faults as unsigned
- *                               long long. It is produced by the
- *                               alignment_faults perf event
- *     "perf.emulation_faults" - The count of emulation faults as unsigned
- *                               long long. It is produced by the
- *                               emulation_faults perf event
+ *     The VIR_DOMAIN_STATS_PERF_* constants define the known typed
+ *     parameter keys.
  *
  * VIR_DOMAIN_STATS_IOTHREAD:
  *     Return IOThread statistics if available. IOThread polling is a

@@ -17603,11 +17603,44 @@ qemuDomainGetStatsPerfOneEvent(virPerf *perf,
                                virTypedParamList *params)
 {
     uint64_t value = 0;
+#define MAP(NAME) \
+    [VIR_PERF_EVENT_ ## NAME] = VIR_DOMAIN_STATS_PERF_ ## NAME
+
+    static const char *keys[] = {
+        MAP(CMT),
+        MAP(MBMT),
+        MAP(MBML),
+        MAP(CPU_CYCLES),
+        MAP(INSTRUCTIONS),
+
+        MAP(CACHE_REFERENCES),
+        MAP(CACHE_MISSES),
+        MAP(BRANCH_INSTRUCTIONS),
+        MAP(BRANCH_MISSES),
+        MAP(BUS_CYCLES),
+
+        MAP(STALLED_CYCLES_FRONTEND),
+        MAP(STALLED_CYCLES_BACKEND),
+        MAP(REF_CPU_CYCLES),
+        MAP(CPU_CLOCK),
+        MAP(TASK_CLOCK),
+
+        MAP(PAGE_FAULTS),
+        MAP(CONTEXT_SWITCHES),
+        MAP(CPU_MIGRATIONS),
+        MAP(PAGE_FAULTS_MIN),
+        MAP(PAGE_FAULTS_MAJ),
+
+        MAP(ALIGNMENT_FAULTS),
+        MAP(EMULATION_FAULTS),
+    };
+#undef MAP
+    G_STATIC_ASSERT(G_N_ELEMENTS(keys) == VIR_PERF_EVENT_LAST);
 
     if (virPerfReadEvent(perf, type, &value) < 0)
         return;
 
-    virTypedParamListAddULLong(params, value, "perf.%s", virPerfEventTypeToString(type));
+    virTypedParamListAddULLong(params, value, "%s", keys[type]);
 }
 
 static void

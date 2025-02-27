@@ -3476,6 +3476,230 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_THRESHOLD ".threshold"
 
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CMT:
+ *
+ * The usage of l3 cache (bytes) by applications running on the platform as
+ * unsigned long long. It is produced by the cmt perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CMT "perf.cmt"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_MBMT:
+ *
+ * The total system bandwidth (bytes/s) from one level of cache to another as
+ * unsigned long long. It is produced by the mbmt perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_MBMT "perf.mbmt"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_MBML:
+ *
+ * The amount of data (bytes/s) sent through the memory controller on the
+ * socket as unsigned long long. It is produced by the mbml perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_MBML "perf.mbml"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CACHE_MISSES:
+ *
+ * The count of cache misses as unsigned long long. It is produced by the
+ * cache_misses perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CACHE_MISSES "perf.cache_misses"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CACHE_REFERENCES:
+ *
+ * The count of cache hits as unsigned long long. It is produced by the
+ * cache_references perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CACHE_REFERENCES "perf.cache_references"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_INSTRUCTIONS:
+ *
+ * The count of instructions as unsigned long long. It is produced by the
+ * instructions perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_INSTRUCTIONS "perf.instructions"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CPU_CYCLES:
+ *
+ * The count of cpu cycles (total/elapsed) as an unsigned long long. It is
+ * produced by the cpu_cycles perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CPU_CYCLES "perf.cpu_cycles"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_BRANCH_INSTRUCTIONS:
+ *
+ * The count of branch instructions as unsigned long long. It is produced by
+ * the branch_instructions perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_BRANCH_INSTRUCTIONS "perf.branch_instructions"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_BRANCH_MISSES:
+ *
+ * The count of branch misses as unsigned long long. It is produced by the
+ * branch_misses perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_BRANCH_MISSES "perf.branch_misses"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_BUS_CYCLES:
+ *
+ * The count of bus cycles as unsigned long long. It is produced by the
+ * bus_cycles perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_BUS_CYCLES "perf.bus_cycles"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_STALLED_CYCLES_FRONTEND:
+ *
+ * The count of stalled cpu cycles in the frontend of the instruction processor
+ * pipeline as unsigned long long. It is produced by the
+ * stalled_cycles_frontend perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_STALLED_CYCLES_FRONTEND "perf.stalled_cycles_frontend"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_STALLED_CYCLES_BACKEND:
+ *
+ * The count of stalled cpu cycles in the backend of the instruction processor
+ * pipeline as unsigned long long. It is produced by the stalled_cycles_backend
+ * perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_STALLED_CYCLES_BACKEND "perf.stalled_cycles_backend"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_REF_CPU_CYCLES:
+ *
+ * The count of total cpu cycles not affected by CPU frequency scaling by
+ * applications running as unsigned long long. It is produced by the
+ * ref_cpu_cycles perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_REF_CPU_CYCLES "perf.ref_cpu_cycles"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CPU_CLOCK:
+ *
+ * The count of cpu clock time as unsigned long long. It is produced by the
+ * cpu_clock perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CPU_CLOCK "perf.cpu_clock"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_TASK_CLOCK:
+ *
+ * The count of task clock time as unsigned long long. It is produced by the
+ * task_clock perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_TASK_CLOCK "perf.task_clock"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_PAGE_FAULTS:
+ *
+ * The count of page faults as unsigned long long. It is produced by the
+ * page_faults perf event
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_PAGE_FAULTS "perf.page_faults"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CONTEXT_SWITCHES:
+ *
+ * The count of context switches as unsigned long long. It is produced by the
+ * context_switches perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CONTEXT_SWITCHES "perf.context_switches"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_CPU_MIGRATIONS:
+ *
+ * The count of cpu migrations, from one logical processor to another, as
+ * unsigned long long. It is produced by the cpu_migrations perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_CPU_MIGRATIONS "perf.cpu_migrations"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_PAGE_FAULTS_MIN:
+ *
+ * The count of minor page faults as unsigned long long. It is produced by the
+ * page_faults_min perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_PAGE_FAULTS_MIN "perf.page_faults_min"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_PAGE_FAULTS_MAJ:
+ *
+ * The count of major page faults as unsigned long long. It is produced by the
+ * page_faults_maj perf event.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_PAGE_FAULTS_MAJ "perf.page_faults_maj"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_ALIGNMENT_FAULTS:
+ *
+ * The count of alignment faults as unsigned long long. It is produced by the
+ * alignment_faults perf event
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_ALIGNMENT_FAULTS "perf.alignment_faults"
+
+/**
+ * VIR_DOMAIN_STATS_PERF_EMULATION_FAULTS:
+ *
+ * The count of emulation faults as unsigned long long. It is produced by the
+ * emulation_faults perf event
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_PERF_EMULATION_FAULTS "perf.emulation_faults"
+
 /**
  * virDomainStatsTypes:
  *
