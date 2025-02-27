@@ -2795,6 +2795,26 @@ struct _virDomainStatsRecord {
     int nparams;
 };
 
+
+/**
+ * VIR_DOMAIN_STATS_STATE_STATE:
+ *
+ * State of the VM, returned as int from virDomainState enum.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_STATE_STATE "state.state"
+
+/**
+ * VIR_DOMAIN_STATS_STATE_REASON:
+ *
+ * Reason for entering given state, returned as int from virDomain*Reason
+ * enum corresponding to given state.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_STATE_REASON "state.reason"
+
 /**
  * virDomainStatsTypes:
  *

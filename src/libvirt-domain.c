@@ -12240,12 +12240,9 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * (although not necessarily implemented for each hypervisor):
  *
  * VIR_DOMAIN_STATS_STATE:
- *     Return domain state and reason for entering that state. The typed
- *     parameter keys are in this format:
- *
- *     "state.state" - state of the VM, returned as int from virDomainState enum
- *     "state.reason" - reason for entering given state, returned as int from
- *                      virDomain*Reason enum corresponding to given state.
+ *     Return domain state and reason for entering that state.
+ *     The VIR_DOMAIN_STATS_STATE_* constants define the known typed
+ *     parameter keys.
  *
  * VIR_DOMAIN_STATS_CPU_TOTAL:
  *     Return CPU statistics and usage information. The typed parameter keys

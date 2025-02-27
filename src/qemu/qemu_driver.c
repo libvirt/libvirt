@@ -16554,8 +16554,10 @@ qemuDomainGetStatsState(virQEMUDriver *driver G_GNUC_UNUSED,
                         virTypedParamList *params,
                         unsigned int privflags G_GNUC_UNUSED)
 {
-    virTypedParamListAddInt(params, dom->state.state, "state.state");
-    virTypedParamListAddInt(params, dom->state.reason, "state.reason");
+    virTypedParamListAddInt(params, dom->state.state,
+                            VIR_DOMAIN_STATS_STATE_STATE);
+    virTypedParamListAddInt(params, dom->state.reason,
+                            VIR_DOMAIN_STATS_STATE_REASON);
 }
 
 
