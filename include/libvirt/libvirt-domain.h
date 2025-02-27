@@ -2943,6 +2943,142 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_BYTES ".bytes"
 
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_CURRENT:
+ *
+ * The memory in kiB currently used as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_CURRENT "balloon.current"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_MAXIMUM:
+ *
+ * The maximum memory in kiB allowed as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_MAXIMUM "balloon.maximum"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_SWAP_IN:
+ *
+ * The amount of data read from swap space (in KiB) as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_SWAP_IN "balloon.swap_in"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_SWAP_OUT:
+ *
+ * The amount of memory written out to swap space (in KiB) as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_SWAP_OUT "balloon.swap_out"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_MAJOR_FAULT:
+ *
+ * The number of page faults when disk IO was required as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_MAJOR_FAULT "balloon.major_fault"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_MINOR_FAULT:
+ *
+ * The number of other page faults as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_MINOR_FAULT "balloon.minor_fault"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_UNUSED:
+ *
+ * The amount of memory left unused by the system (in KiB) as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_UNUSED "balloon.unused"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_AVAILABLE:
+ *
+ * The amount of usable memory as seen by the domain (in KiB) as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_AVAILABLE "balloon.available"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_RSS:
+ *
+ * Resident Set Size of running domain's process (in KiB) as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_RSS "balloon.rss"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_USABLE:
+ *
+ * The amount of memory which can be reclaimed by balloon without causing host
+ * swapping (in KiB) as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_USABLE "balloon.usable"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_LAST_UPDATE:
+ *
+ * Timestamp of the last update of statistics (in seconds) as unsigned long
+ * long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_LAST_UPDATE "balloon.last-update"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_DISK_CACHES:
+ *
+ * The amount of memory that can be reclaimed without additional I/O,
+ * typically disk (in KiB) as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_DISK_CACHES "balloon.disk_caches"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_HUGETLB_PGALLOC:
+ *
+ * The number of successful huge page allocations from inside the domain via
+ * virtio balloon as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_HUGETLB_PGALLOC "balloon.hugetlb_pgalloc"
+
+/**
+ * VIR_DOMAIN_STATS_BALLOON_HUGETLB_PGFAIL:
+ *
+ * The number of failed huge page allocations from inside the domain via
+ * virtio balloon as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_BALLOON_HUGETLB_PGFAIL "balloon.hugetlb_pgfail"
+
 /**
  * virDomainStatsTypes:
  *

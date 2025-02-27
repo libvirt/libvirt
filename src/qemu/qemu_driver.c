@@ -16990,8 +16990,10 @@ qemuDomainGetStatsBalloon(virQEMUDriver *driver G_GNUC_UNUSED,
         cur_balloon = dom->def->mem.cur_balloon;
     }
 
-    virTypedParamListAddULLong(params, cur_balloon, "balloon.current");
-    virTypedParamListAddULLong(params, virDomainDefGetMemoryTotal(dom->def), "balloon.maximum");
+    virTypedParamListAddULLong(params, cur_balloon,
+                               VIR_DOMAIN_STATS_BALLOON_CURRENT);
+    virTypedParamListAddULLong(params, virDomainDefGetMemoryTotal(dom->def),
+                               VIR_DOMAIN_STATS_BALLOON_MAXIMUM);
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
         return;
@@ -17001,23 +17003,23 @@ qemuDomainGetStatsBalloon(virQEMUDriver *driver G_GNUC_UNUSED,
     if (nr_stats < 0)
         return;
 
-#define STORE_MEM_RECORD(TAG, NAME) \
+#define STORE_MEM_RECORD(TAG) \
     if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG) \
-        virTypedParamListAddULLong(params, stats[i].val, "balloon." NAME);
+        virTypedParamListAddULLong(params, stats[i].val,  VIR_DOMAIN_STATS_BALLOON_ ##TAG)
 
     for (i = 0; i < nr_stats; i++) {
-        STORE_MEM_RECORD(SWAP_IN, "swap_in")
-        STORE_MEM_RECORD(SWAP_OUT, "swap_out")
-        STORE_MEM_RECORD(MAJOR_FAULT, "major_fault")
-        STORE_MEM_RECORD(MINOR_FAULT, "minor_fault")
-        STORE_MEM_RECORD(UNUSED, "unused")
-        STORE_MEM_RECORD(AVAILABLE, "available")
-        STORE_MEM_RECORD(RSS, "rss")
-        STORE_MEM_RECORD(LAST_UPDATE, "last-update")
-        STORE_MEM_RECORD(USABLE, "usable")
-        STORE_MEM_RECORD(DISK_CACHES, "disk_caches")
-        STORE_MEM_RECORD(HUGETLB_PGALLOC, "hugetlb_pgalloc")
-        STORE_MEM_RECORD(HUGETLB_PGFAIL, "hugetlb_pgfail")
+        STORE_MEM_RECORD(SWAP_IN);
+        STORE_MEM_RECORD(SWAP_OUT);
+        STORE_MEM_RECORD(MAJOR_FAULT);
+        STORE_MEM_RECORD(MINOR_FAULT);
+        STORE_MEM_RECORD(UNUSED);
+        STORE_MEM_RECORD(AVAILABLE);
+        STORE_MEM_RECORD(RSS);
+        STORE_MEM_RECORD(LAST_UPDATE);
+        STORE_MEM_RECORD(USABLE);
+        STORE_MEM_RECORD(DISK_CACHES);
+        STORE_MEM_RECORD(HUGETLB_PGALLOC);
+        STORE_MEM_RECORD(HUGETLB_PGFAIL);
     }
 
 #undef STORE_MEM_RECORD
