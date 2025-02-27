@@ -12256,43 +12256,23 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  * VIR_DOMAIN_STATS_VCPU:
  *     Return virtual CPU statistics.
- *     Due to VCPU hotplug, the vcpu.<num>.* array could be sparse.
- *     The actual size of the array corresponds to "vcpu.current".
- *     The array size will never exceed "vcpu.maximum".
- *     The typed parameter keys are in this format:
+ *     The VIR_DOMAIN_STATS_VCPU_* constants define the known typed
+ *     parameter keys.
  *
- *     "vcpu.current" - current number of online virtual CPUs as unsigned int.
- *     "vcpu.maximum" - maximum number of online virtual CPUs as unsigned int.
- *     "vcpu.<num>.state" - state of the virtual CPU <num>, as int
- *                          from virVcpuState enum.
- *     "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
- *                         as unsigned long long.
- *     "vcpu.<num>.wait" - time the vCPU <num> wants to run, but the host
- *                         scheduler has something else running ahead of it.
- *     "vcpu.<num>.halted" - virtual CPU <num> is halted, may indicate the
- *                           processor is idle or even disabled, depending
- *                           on the architecture)
- *     "vcpu.<num>.delay" - time the vCPU <num> thread was enqueued by the
- *                          host scheduler, but was waiting in the queue
- *                          instead of running. Exposed to the VM as a steal
- *                          time. (in nanoseconds)
- *
- *    This group of statistics also reports additional hypervisor-originating
- *    per-vCPU stats. The hypervisor-specific statistics in this group have the
- *    following naming scheme:
+ *     This group of statistics also reports additional hypervisor-originating
+ *     per-vCPU stats. The hypervisor-specific statistics in this group have the
+ *     following naming scheme:
  *
  *     "vcpu.<num>.$NAME.$TYPE"
  *
- *       $NAME - name of the statistics field provided by the hypervisor
+ *     Where $NAME is an arbitrary choice of the hypervisor driver, for
+ *     which no API constants are defined.
+ *     The $TYPE values are defined by VIR_DOMAIN_STATS_CUSTOM_TYPE_*
+ *     constants.
  *
- *       $TYPE - Type of the value. The following types are returned:
- *          'cur' - current instant value
- *          'sum' - aggregate value
- *          'max' - peak value
- *
- *      The returned value may be either an unsigned long long or a boolean.
- *      Meaning is hypervisor specific. Please see the disclaimer for the
- *      VIR_DOMAIN_STATS_VM group below.
+ *     The returned value may be either an unsigned long long or a boolean.
+ *     Meaning is hypervisor specific. Please see the disclaimer for the
+ *     VIR_DOMAIN_STATS_VM group below.
  *
  * VIR_DOMAIN_STATS_INTERFACE:
  *     Return network interface statistics (from domain point of view).

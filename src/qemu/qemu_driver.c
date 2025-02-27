@@ -17050,14 +17050,15 @@ qemuDomainAddStatsFromHashTable(GHashTable *stats,
 
         switch (data->type) {
         case QEMU_MONITOR_QUERY_STATS_TYPE_CUMULATIVE:
-            type = "sum";
+            type = VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_SUM;
             break;
+
         case QEMU_MONITOR_QUERY_STATS_TYPE_INSTANT:
-            type = "cur";
+            type = VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_CUR;
             break;
 
         case QEMU_MONITOR_QUERY_STATS_TYPE_PEAK:
-            type = "max";
+            type = VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_MAX;
             break;
 
         case QEMU_MONITOR_QUERY_STATS_TYPE_LOG2_HISTOGRAM:
@@ -17072,14 +17073,14 @@ qemuDomainAddStatsFromHashTable(GHashTable *stats,
             if (virJSONValueGetBoolean(value, &stat) < 0)
                 continue;
 
-            virTypedParamListAddBoolean(params, stat, "%s.%s.%s", prefix, key, type);
+            virTypedParamListAddBoolean(params, stat, "%s.%s%s", prefix, key, type);
         } else {
             unsigned long long stat;
 
             if (virJSONValueGetNumberUlong(value, &stat) < 0)
                 continue;
 
-            virTypedParamListAddULLong(params, stat, "%s.%s.%s", prefix, key, type);
+            virTypedParamListAddULLong(params, stat, "%s.%s%s", prefix, key, type);
         }
     }
 }
@@ -17100,8 +17101,10 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
     qemuDomainObjPrivate *priv = dom->privateData;
     g_autoptr(virJSONValue) queried_stats = NULL;
 
-    virTypedParamListAddUInt(params, virDomainDefGetVcpus(dom->def), "vcpu.current");
-    virTypedParamListAddUInt(params, virDomainDefGetVcpusMax(dom->def), "vcpu.maximum");
+    virTypedParamListAddUInt(params, virDomainDefGetVcpus(dom->def),
+                             VIR_DOMAIN_STATS_VCPU_CURRENT);
+    virTypedParamListAddUInt(params, virDomainDefGetVcpusMax(dom->def),
+                             VIR_DOMAIN_STATS_VCPU_MAXIMUM);
 
     cpuinfo = g_new0(virVcpuInfo, virDomainDefGetVcpus(dom->def));
     cpuwait = g_new0(unsigned long long, virDomainDefGetVcpus(dom->def));
@@ -17132,17 +17135,26 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
     for (i = 0; i < virDomainDefGetVcpus(dom->def); i++) {
         virJSONValue *stat_obj = NULL;
         g_autoptr(GHashTable) stats = NULL;
-        g_autofree char *prefix = g_strdup_printf("vcpu.%u", cpuinfo[i].number);
+        g_autofree char *prefix = g_strdup_printf(VIR_DOMAIN_STATS_VCPU_PREFIX "%u",
+                                                  cpuinfo[i].number);
 
-        virTypedParamListAddInt(params, cpuinfo[i].state, "vcpu.%u.state", cpuinfo[i].number);
+        virTypedParamListAddInt(params, cpuinfo[i].state,
+                                VIR_DOMAIN_STATS_VCPU_PREFIX "%u" VIR_DOMAIN_STATS_VCPU_SUFFIX_STATE,
+                                cpuinfo[i].number);
 
         /* stats below are available only if the VM is alive */
         if (!virDomainObjIsActive(dom))
             continue;
 
-        virTypedParamListAddULLong(params, cpuinfo[i].cpuTime, "vcpu.%u.time", cpuinfo[i].number);
-        virTypedParamListAddULLong(params, cpuwait[i], "vcpu.%u.wait", cpuinfo[i].number);
-        virTypedParamListAddULLong(params, cpudelay[i], "vcpu.%u.delay", cpuinfo[i].number);
+        virTypedParamListAddULLong(params, cpuinfo[i].cpuTime,
+                                   VIR_DOMAIN_STATS_VCPU_PREFIX "%u" VIR_DOMAIN_STATS_VCPU_SUFFIX_TIME,
+                                   cpuinfo[i].number);
+        virTypedParamListAddULLong(params, cpuwait[i],
+                                   VIR_DOMAIN_STATS_VCPU_PREFIX "%u" VIR_DOMAIN_STATS_VCPU_SUFFIX_WAIT,
+                                   cpuinfo[i].number);
+        virTypedParamListAddULLong(params, cpudelay[i],
+                                   VIR_DOMAIN_STATS_VCPU_PREFIX "%u" VIR_DOMAIN_STATS_VCPU_SUFFIX_DELAY,
+                                   cpuinfo[i].number);
 
         /* state below is extracted from the individual vcpu structs */
         if (!(vcpu = virDomainDefGetVcpu(dom->def, cpuinfo[i].number)))
@@ -17152,7 +17164,8 @@ qemuDomainGetStatsVcpu(virQEMUDriver *driver G_GNUC_UNUSED,
 
         if (vcpupriv->halted != VIR_TRISTATE_BOOL_ABSENT) {
             virTypedParamListAddBoolean(params, vcpupriv->halted == VIR_TRISTATE_BOOL_YES,
-                                        "vcpu.%u.halted", cpuinfo[i].number);
+                                        VIR_DOMAIN_STATS_VCPU_PREFIX "%u" VIR_DOMAIN_STATS_VCPU_SUFFIX_HALTED,
+                                        cpuinfo[i].number);
         }
 
         if (!queried_stats)

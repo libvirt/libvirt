@@ -3079,6 +3079,129 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_BALLOON_HUGETLB_PGFAIL "balloon.hugetlb_pgfail"
 
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_CURRENT:
+ *
+ * Current number of online virtual CPUs as unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_CURRENT "vcpu.current"
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_MAXIMUM:
+ *
+ * Maximum number of online virtual CPUs as unsigned int.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_MAXIMUM "vcpu.maximum"
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_PREFIX:
+ *
+ * The parameter name prefix to access each vCPU entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * vCPU suffix parameters to form a complete parameter name.
+ *
+ * Due to VCPU hotplug, the array could be sparse. The actual number of
+ * entries present corresponds to VIR_DOMAIN_STATS_VCPU_CURRENT, while the
+ * array size will never exceed VIR_DOMAIN_STATS_VCPU_MAXIMUM.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_PREFIX "vcpu."
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_SUFFIX_STATE:
+ *
+ * State of the virtual CPU <num>, as int from virVcpuState enum.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_SUFFIX_STATE ".state"
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_SUFFIX_TIME:
+ *
+ * Virtual cpu time spent by virtual CPU as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_SUFFIX_TIME ".time"
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_SUFFIX_WAIT:
+ *
+ * Time the vCPU wants to run, but the host scheduler has something else
+ * running ahead of it as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_SUFFIX_WAIT ".wait"
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_SUFFIX_HALTED:
+ *
+ * Virtual CPU is halted as a boolean, may indicate the processor is idle or
+ * even disabled, depending on the architecture.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_SUFFIX_HALTED ".halted"
+
+/**
+ * VIR_DOMAIN_STATS_VCPU_SUFFIX_DELAY:
+ *
+ * Time the vCPU thread was enqueued by the host scheduler, but was waiting in
+ * the queue instead of running. Exposed to the VM as a steal time. In
+ * nanoseconds as unsigned long long.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VCPU_SUFFIX_DELAY ".delay"
+
+
+/**
+ * VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_CUR:
+ *
+ * Hypervisor specific custom data type for current instant value
+ *
+ * The complete parameter name is formed by concatenating the field prefix,
+ * the array index formatted as an unsigned integer, a hypervisor specific
+ * parameter name, and this data type suffix.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_CUR ".cur"
+
+/**
+ * VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_SUM:
+ *
+ * Hypervisor specific custom data type for aggregate value
+ *
+ * The complete parameter name is formed by concatenating the field prefix,
+ * the array index formatted as an unsigned integer, a hypervisor specific
+ * parameter name, and this data type suffix.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_SUM ".sum"
+
+/**
+ * VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_MAX:
+ *
+ * Hypervisor specific custom data type for peak value.
+ *
+ * The complete parameter name is formed by concatenating the field prefix,
+ * the array index formatted as an unsigned integer, a hypervisor specific
+ * parameter name, and this data type suffix.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_CUSTOM_SUFFIX_TYPE_MAX ".max"
+
 /**
  * virDomainStatsTypes:
  *
