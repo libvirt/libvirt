@@ -3918,6 +3918,18 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_DIRTYRATE_VCPU_SUFFIX_MEGABYTES_PER_SECOND ".megabytes_per_second"
 
+
+/**
+ * VIR_DOMAIN_STATS_VM_PREFIX:
+ *
+ * Concatenate the prefix, a hypervisor specific custom stats name and one
+ * of the VIR_DOMAIN_STATS_CUSTOM_TYPE_* constants to form a complete
+ * parameter name
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_STATS_VM_PREFIX "vm."
+
 /**
  * virDomainStatsTypes:
  *

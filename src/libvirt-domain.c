@@ -12335,14 +12335,12 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  *     "vm.$NAME.$TYPE"
  *
- *       $NAME - name of the statistics field provided by the hypervisor
+ *     Where $NAME is an arbitrary choice of the hypervisor driver, for
+ *     which no API constants are defined.
+ *     The $TYPE values are defined by VIR_DOMAIN_STATS_CUSTOM_TYPE_*
+ *     constants.
  *
- *       $TYPE - Type of the value. The following types are returned:
- *          'cur' - current instant value
- *          'sum' - aggregate value
- *          'max' - peak value
- *
- *      The returned value may be either an unsigned long long or a boolean.
+ *     The returned value may be either an unsigned long long or a boolean.
  *
  *     WARNING:
  *      The stats reported in this group are runtime-collected and
