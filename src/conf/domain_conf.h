@@ -2362,6 +2362,13 @@ struct _virDomainLoaderDef {
     virStorageSource *nvram;
     bool newStyleNVRAM;
     char *nvramTemplate;   /* user override of path to master nvram */
+    /* Historically it was assumed that the format of the template and the
+     * actual nvram image are identical, which is no longer true.
+     *
+     * Note: if 'nvramTemplate' comes from the user and is not overriden by
+     * auto-detection nvramTemplateFormat may be VIR_STORAGE_FILE_NONE. Code
+     * shall assume that the template format matches if it isn't provided.
+     */
     virStorageFileFormat nvramTemplateFormat;
 };
 

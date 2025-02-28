@@ -4709,7 +4709,10 @@ qemuPrepareNVRAMFile(virQEMUDriver *driver,
         return -1;
     }
 
-    if (loader->nvram->format != loader->nvramTemplateFormat) {
+    /* If 'nvramTemplateFormat' is empty it means that it's a user-provided
+     * template which we couldn't verify. Assume the user knows what they're doing */
+    if (loader->nvramTemplateFormat != VIR_STORAGE_FILE_NONE &&
+        loader->nvram->format != loader->nvramTemplateFormat) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("conversion of the nvram template to another target format is not supported"));
         return -1;
