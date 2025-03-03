@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v11.1.0 (unreleased)
+v11.1.0 (2025-03-03)
 ====================
 
 * **Packaging changes**
@@ -19,8 +19,6 @@ v11.1.0 (unreleased)
     into the internal libraries anyways so there's no point in having it
     as a loadable module. The ``storage-file/libvirt_storage_file_fs.so`` module
     no longer exists and its functionality is embedded directly.
-
-* **Security**
 
 * **Removed features**
 
