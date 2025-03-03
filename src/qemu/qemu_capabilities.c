@@ -4438,6 +4438,7 @@ virQEMUCapsParseSEVInfo(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
         return -1;
     }
 
+    sev->cpu0_id = virXPathString("string(./sev/cpu0Id)", ctxt);
 
     /* We probe this every time because the values
      * can change on every reboot via firmware
