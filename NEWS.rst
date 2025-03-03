@@ -17,6 +17,14 @@ v11.2.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add new 'image_format' parameter to virDomainSaveParams
+
+    ``virDomainSaveParams`` now supports an ``image_format`` parameter for
+    specifying the save image format on a per-domain basis. The parameter
+    accepts the same values as the driver-wide ``save_image_format`` setting
+    in ``qemu.conf``. An image format specified via ``virDomainSaveParams``
+    takes precedence over the driver-wide setting.
+
 * **Improvements**
 
 * **Bug fixes**
