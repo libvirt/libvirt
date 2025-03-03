@@ -70,6 +70,7 @@ static int
 fillQemuCaps(virDomainCaps *domCaps,
              const char *name,
              const char *arch,
+             const char *variant,
              const char *machine,
              virQEMUDriverConfig *cfg)
 {
@@ -81,7 +82,7 @@ fillQemuCaps(virDomainCaps *domCaps,
     if (fakeHostCPU(domCaps->arch) < 0)
         return -1;
 
-    path = g_strdup_printf("%s/%s_%s.xml", TEST_QEMU_CAPS_PATH, name, arch);
+    path = g_strdup_printf("%s/%s_%s%s.xml", TEST_QEMU_CAPS_PATH, name, arch, variant);
     if (!(qemuCaps = qemuTestParseCapabilitiesArch(domCaps->arch, path)))
         return -1;
 
@@ -182,6 +183,7 @@ struct testData {
     const char *emulator;
     const char *machine;
     const char *arch;
+    const char *variant;
     virDomainVirtType type;
     enum testCapsType capsType;
     const char *capsName;
@@ -209,8 +211,8 @@ test_virDomainCapsFormat(const void *opaque)
 
     case CAPS_QEMU:
 #if WITH_QEMU
-        if (fillQemuCaps(domCaps, data->capsName, data->arch, data->machine,
-                         data->capsOpaque) < 0)
+        if (fillQemuCaps(domCaps, data->capsName, data->arch, data->variant,
+                         data->machine, data->capsOpaque) < 0)
             return -1;
 #endif
         break;
@@ -259,6 +261,7 @@ doTestQemuInternal(const char *version,
         .emulator = emulator,
         .machine = machine,
         .arch = arch,
+        .variant = variant,
         .type = type,
         .capsType = CAPS_QEMU,
         .capsName = capsName,
@@ -426,6 +429,7 @@ mymain(void)
             .emulator = Emulator, \
             .machine = Machine, \
             .arch = Arch, \
+            .variant = "", \
             .type = Type, \
             .capsType = CapsType, \
         }; \
@@ -440,6 +444,7 @@ mymain(void)
             .emulator = Emulator, \
             .machine = Machine, \
             .arch = Arch, \
+            .variant = "", \
             .type = Type, \
             .capsType = CAPS_LIBXL, \
         }; \
@@ -456,6 +461,7 @@ mymain(void)
             .name = name, \
             .emulator = Emulator, \
             .arch = "x86_64", \
+            .variant = "", \
             .type = Type, \
             .capsType = CAPS_BHYVE, \
             .capsOpaque = BhyveCaps, \
