@@ -25,6 +25,10 @@ v11.2.0 (unreleased)
     in ``qemu.conf``. An image format specified via ``virDomainSaveParams``
     takes precedence over the driver-wide setting.
 
+  * qemu: Added guest load averages to the output of virDomainGetGuestInfo
+
+    This feature will be available with qemu guest agent 10.0 onwards.
+
 * **Improvements**
 
 * **Bug fixes**
