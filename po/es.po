@@ -27,7 +27,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-02-24 10:18+0000\n"
-"PO-Revision-Date: 2025-02-11 12:00+0000\n"
+"PO-Revision-Date: 2025-03-03 21:00+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -36,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10.2\n"
 
 msgid ""
 "\n"
@@ -863,18 +863,19 @@ msgstr ""
 #, c-format
 msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
 msgstr ""
+"%1$s: No se pudo abrir el monitor de eventos FIFO(%2$s) para la lectura!"
 
 #, c-format
 msgid "%1$s: Failed to parse and process events"
-msgstr ""
+msgstr "%1$s: Error al analizar y procesar eventos"
 
 #, c-format
 msgid "%1$s: Failed to process JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: Error al procesar el documento de evento JSON: %2$s"
 
 #, c-format
 msgid "%1$s: Failed to read ch events!: %2$s"
-msgstr ""
+msgstr "%1$s: ¡Error al leer eventos ch!: %2$s"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
@@ -896,7 +897,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: Documento de evento JSON no válido: %2$s"
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1335,15 +1336,21 @@ msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"'--copy-storage-synchronous-writes' requiere una de las siguientes opciones: "
+"'--copy-storage-all' o '--copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
 msgstr ""
+"'--migrate-disks' requiere una de las siguientes opciones: '--copy-storage-"
+"all' o '--copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"'--migrate-disks-detect-zeroes' requiere una de las siguientes opciones "
+"'--copy-storage-all' o '--copy-storage-inc'"
 
 #, fuzzy
 msgid ""
@@ -1544,6 +1551,8 @@ msgstr ""
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
+"Debe asignarse un valor a 'queue' para mapeos explícitos de iothread a cola "
+"(queue)"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "El controlador virtio-scsi solo admite 'queues'"
@@ -1552,6 +1561,8 @@ msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
 "<interface type='vhostuser'>"
 msgstr ""
+"el atributo 'reconnect' no es compatible cuando el origen es del tipo "
+"mode='server' para una interfaz <interface type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
