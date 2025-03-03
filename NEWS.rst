@@ -29,6 +29,12 @@ v11.2.0 (unreleased)
 
     This feature will be available with qemu guest agent 10.0 onwards.
 
+  * qemu: Add support for multiple iothreads for ``virtio-scsi`` controller
+
+    It's now possible to map multiple iotreads to the ``virtio-scsi`` controller
+    or even map them to specific virtqueues similarly to the ``virtio-blk``
+    device allowing for better performance in certain scenarios.
+
 * **Improvements**
 
 * **Bug fixes**
