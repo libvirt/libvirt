@@ -328,13 +328,11 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
 
     if (STREQ(variant, "+hvf"))
         hvf = true;
-    else if (STRNEQ(variant, ""))
-        return 0;
 
     if (STREQ(arch, "x86_64")) {
         /* For x86_64 based on the test variant we test:
          *
-         *   '' (default) variant (KVM):
+         *   '' (default) variant or any other non-listed variant:
          *      - KVM with default machine
          *      - KVM with Q35 machine
          *  '+hvf' variant:
@@ -362,7 +360,7 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
     } else if (STREQ(arch, "aarch64")) {
         /* For aarch64 based on the test variant we test:
          *
-         *   '' (default) variant (KVM):
+         *   '' (default) variant or any other non-listed variant:
          *      - KVM with default machine
          *      - KVM with virt machine
          *
@@ -383,7 +381,8 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
                 ret = -1;
         }
     } else if (STRPREFIX(arch, "riscv") || STRPREFIX(arch, "loongarch64")) {
-        /* For riscv64 or loongarch64 we test two combinations:
+        /* For riscv64 or loongarch64 we test two combinations for any variant:
+         * ('+hvf' is not applicable for this case)
          *
          *   - KVM with virt machine
          *   - TCG with virt machine
