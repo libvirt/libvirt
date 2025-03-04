@@ -2886,18 +2886,17 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-missing-platform-info", "x86_64",
                                   ARG_CAPS_VARIANT, "+amdsev", ARG_END);
 
+    /* The following cases test both the latest "+amdsev" variant as well as
+     * faking support for the capability */
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-direct", "x86_64",
+                                  ARG_CAPS_VARIANT, "+amdsev", ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-direct", "x86_64",
+                                  ARG_QEMU_CAPS, QEMU_CAPS_SEV_GUEST, QEMU_CAPS_LAST);
 
-    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-direct",
-                                  "x86_64",
-                                  ARG_QEMU_CAPS,
-                                  QEMU_CAPS_SEV_GUEST,
-                                  QEMU_CAPS_LAST);
-
-    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-snp",
-                                  "x86_64",
-                                  ARG_QEMU_CAPS,
-                                  QEMU_CAPS_SEV_SNP_GUEST,
-                                  QEMU_CAPS_LAST);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-snp", "x86_64",
+                                  ARG_CAPS_VARIANT, "+amdsev", ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-snp", "x86_64",
+                                  ARG_QEMU_CAPS, QEMU_CAPS_SEV_SNP_GUEST, QEMU_CAPS_LAST);
 
     DO_TEST_CAPS_ARCH_LATEST("launch-security-s390-pv", "s390x");
 
