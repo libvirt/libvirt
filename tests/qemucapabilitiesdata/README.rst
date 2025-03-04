@@ -57,6 +57,10 @@ Known test variants
   Variant of the test data using the Apple OSX Hypervisor Framework acceleration
   for qemu.
 
+``+amdsev``
+
+  Variant of the test data captured on hosts supporting AMD SEV and AMD SEV_ES
+  security framework.
 
 Usage in tests
 ==============
