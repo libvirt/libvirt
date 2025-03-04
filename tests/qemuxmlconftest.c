@@ -2876,8 +2876,17 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-auto", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-iommu", "s390x");
 
+    /* The 'caps_6.0.0_x86_64' test data was doctored to add SEV support prior
+     * to the time when capability variants existed */
     DO_TEST_CAPS_VER("launch-security-sev", "6.0.0");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev", "x86_64",
+                                  ARG_CAPS_VARIANT, "+amdsev", ARG_END);
+
     DO_TEST_CAPS_VER("launch-security-sev-missing-platform-info", "6.0.0");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-missing-platform-info", "x86_64",
+                                  ARG_CAPS_VARIANT, "+amdsev", ARG_END);
+
+
     DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-direct",
                                   "x86_64",
                                   ARG_QEMU_CAPS,
