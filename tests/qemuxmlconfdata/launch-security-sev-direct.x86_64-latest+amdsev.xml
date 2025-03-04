@@ -9,6 +9,7 @@
     <kernel>/vmlinuz</kernel>
     <initrd>/initrd</initrd>
     <cmdline>runme</cmdline>
+    <shim>/shim</shim>
     <boot dev='hd'/>
   </os>
   <cpu mode='custom' match='exact' check='none'>

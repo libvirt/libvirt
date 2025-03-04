@@ -9,6 +9,7 @@
     <kernel>/vmlinuz</kernel>
     <initrd>/initrd</initrd>
     <cmdline>runme</cmdline>
+    <shim>/shim</shim>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

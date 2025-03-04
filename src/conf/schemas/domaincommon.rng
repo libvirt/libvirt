@@ -1553,6 +1553,11 @@
         </element>
       </optional>
       <optional>
+        <element name="shim">
+          <text/>
+        </element>
+      </optional>
+      <optional>
         <element name="dtb">
           <ref name="absFilePath"/>
         </element>

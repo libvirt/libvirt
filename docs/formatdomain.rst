@@ -397,6 +397,7 @@ and full virtualized guests.
      <kernel>/root/f8-i386-vmlinuz</kernel>
      <initrd>/root/f8-i386-initrd</initrd>
      <cmdline>console=ttyS0 ks=http://example.com/f8-i386/os/</cmdline>
+     <shim>/path/to/shim.efi</shim>
      <dtb>/root/ppc.dtb</dtb>
    </os>
    ...
@@ -417,6 +418,10 @@ and full virtualized guests.
    The contents of this element specify arguments to be passed to the kernel (or
    installer) at boot time. This is often used to specify an alternate primary
    console (eg serial port), or the installation media source / kickstart file
+``shim``
+   Use specified fully-qualified path to load an initial UEFI bootloader that
+   handles chaining to a trusted full bootloader under secure boot
+   environments.
 ``dtb``
    The contents of this element specify the fully-qualified path to the
    (optional) device tree binary (dtb) image in the host OS.

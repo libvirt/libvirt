@@ -1733,6 +1733,12 @@ virDomainDefOSValidate(const virDomainDef *def,
         }
     }
 
+    if (def->os.shim && !def->os.kernel) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("shim only allowed with kernel option"));
+        return -1;
+    }
+
     return 0;
 }
 
