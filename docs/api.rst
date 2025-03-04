@@ -26,7 +26,7 @@ name will default to a preselected hypervisor, but it's probably not a
 wise thing to do in most cases. See the `connection URI <uri.html>`__
 page for a full descriptions of the values allowed.
 
-OnDevice the application obtains a
+Once the application obtains a
 `virConnectPtr <html/libvirt-libvirt-host.html#virConnectPtr>`__
 connection to the hypervisor it can then use it to manage the
 hypervisor's available domains and related virtualization resources,
