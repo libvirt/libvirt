@@ -1006,14 +1006,18 @@ testRun(const char *name,
     va_end(ap);
 
     info->infile = g_strdup_printf("%s/qemuxmlconfdata/%s.xml", abs_srcdir, info->name);
+
     if (info->flags & (FLAG_EXPECT_FAILURE | FLAG_EXPECT_PARSE_ERROR)) {
-        info->errfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s.err", abs_srcdir, info->name, suffix);
+        info->errfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s%s.err",
+                                        abs_srcdir, info->name, suffix, info->args.capsvariant);
     } else {
-        info->outfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s.args", abs_srcdir, info->name, suffix);
+        info->outfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s%s.args",
+                                        abs_srcdir, info->name, suffix, info->args.capsvariant);
     }
 
     if (!(info->flags & FLAG_EXPECT_PARSE_ERROR))
-        info->out_xml_inactive = g_strdup_printf("%s/qemuxmlconfdata/%s%s.xml", abs_srcdir, info->name, suffix);
+        info->out_xml_inactive = g_strdup_printf("%s/qemuxmlconfdata/%s%s%s.xml",
+                                                 abs_srcdir, info->name, suffix, info->args.capsvariant);
 
     virTestRunLog(ret, name_parse, testXMLParse, info);
     virTestRunLog(ret, name_xml, testCompareDef2XML, info);

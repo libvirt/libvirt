@@ -754,6 +754,9 @@ testQemuInfoSetArgs(testQemuInfo *info,
         if (info->args.invalidarg)
             break;
     }
+
+    if (!info->args.capsvariant)
+        info->args.capsvariant = "";
 }
 
 
@@ -912,9 +915,6 @@ testQemuInfoInitArgs(testQemuInfo *info)
         return 0;
 
     info->args.newargs = false;
-
-    if (!info->args.capsvariant)
-        info->args.capsvariant = "";
 
     if (info->args.invalidarg) {
         fprintf(stderr, "Invalid argument encountered by 'testQemuInfoSetArgs'\n");
