@@ -2046,6 +2046,10 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
         virSecurityDACRestoreFileLabel(mgr, def->os.initrd) < 0)
         rc = -1;
 
+    if (def->os.shim &&
+        virSecurityDACRestoreFileLabel(mgr, def->os.shim) < 0)
+        rc = -1;
+
     if (def->os.dtb &&
         virSecurityDACRestoreFileLabel(mgr, def->os.dtb) < 0)
         rc = -1;
@@ -2292,6 +2296,12 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
     if (def->os.initrd &&
         virSecurityDACSetOwnership(mgr, NULL,
                                    def->os.initrd,
+                                   user, group, true) < 0)
+        return -1;
+
+    if (def->os.shim &&
+        virSecurityDACSetOwnership(mgr, NULL,
+                                   def->os.shim,
                                    user, group, true) < 0)
         return -1;
 
