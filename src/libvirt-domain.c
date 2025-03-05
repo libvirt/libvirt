@@ -13249,6 +13249,56 @@ virDomainSetVcpu(virDomainPtr domain,
  * This API requires the VM to run. The caller is responsible for calling
  * virTypedParamsFree to free memory returned in @params.
  *
+ * In a number of cases the parameters returned are representing
+ * arrays of data items. In these cases multiple VIR_DOMAIN_GUEST_INFO*
+ * constants will need to be concatenated to form a complete typed
+ * parameter key. The design pattern for handling array entries is
+ * as follows
+ *
+ * - VIR_DOMAIN_GUEST_INFO_nnnnn_COUNT
+ *
+ *   Defines the upper limit on the number of elements that will
+ *   be returned. In some cases the array information may be
+ *   sparsely populated, so it is not considered an error if a
+ *   given element does not exist. Applications should check for
+ *   each possible element upto the declared limit.
+ *
+ * - VIR_DOMAIN_GUEST_INFO_nnnnn_PREFIX
+ *
+ *   Defines the prefix to be used to construct the typed parameter
+ *   key for an array element, including the trailing '.'. The prefix
+ *   must have an array index appended, along with a suffix.
+ *
+ * - VIR_DOMAIN_GUEST_INFO_nnnnn_SUFFIX_mmmmm
+ *
+ *   Defines the suffix for accessing a particular data item within
+ *   the array element, including the leading '.'. The suffix must
+ *   have an array prefix and index prepended.
+ *
+ * As an example, assuming a printf-like formatting approach an
+ * application would construct a key as follows:
+ *
+ *     format(VIR_DOMAIN_GUEST_INFO_FS_PREFIX +
+ *            "%d" +
+ *            VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_NAME,
+ *            index)
+ *
+ * Which, when index==3, would result in the key "fs.3.name"
+ *
+ * In some cases there may be nested arrays, in which case the key
+ * is formed by concatenating multiple prefixes and suffixes with
+ * mutliple array indexes. For example:
+ *
+ *     format(VIR_DOMAIN_GUEST_INFO_FS_PREFIX +
+ *            "%d" +
+ *            VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_PREFIX +
+ *            "%d" +
+ *            VIR_DOMAIN_GUEST_INFO_FS_SUFFIX_DISK_SUFFIX_SERIAL
+ *            fsindex, diskindex)
+ *
+ * Which, when fsindex==3 and diskindex==7, would result in the
+ * key "fs.3.disk.7.serial".
+ *
  * Returns 0 on success, -1 on error.
  *
  * Since: 5.7.0
