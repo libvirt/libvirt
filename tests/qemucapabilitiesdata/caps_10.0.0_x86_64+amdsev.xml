@@ -213,6 +213,7 @@
   <flag name='netdev-stream-reconnect-miliseconds'/>
   <flag name='migrate-incoming.exit-on-error'/>
   <flag name='blockdev-set-active'/>
+  <flag name='shim'/>
   <version>9002050</version>
   <microcodeVersion>43100285</microcodeVersion>
   <package>v9.2.0-2369-g98c7362b1e</package>

@@ -142,6 +142,7 @@
   <flag name='query-cpu-model-expansion.deprecated-props'/>
   <flag name='migrate-incoming.exit-on-error'/>
   <flag name='virtio-mem-ccw'/>
+  <flag name='shim'/>
   <version>9002050</version>
   <microcodeVersion>39100285</microcodeVersion>
   <package>v9.2.0-1203-gd6430c17d7</package>

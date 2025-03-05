@@ -728,6 +728,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "machine.virt.aia", /* QEMU_CAPS_MACHINE_VIRT_AIA */
               "virtio-mem-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW */
               "blockdev-set-active", /* QEMU_CAPS_BLOCKDEV_SET_ACTIVE */
+              "shim", /* QEMU_CAPS_MACHINE_SHIM */
     );
 
 
@@ -1774,6 +1775,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsGeneric[] = {
     { "confidential-guest-support", QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT },
+    { "shim", QEMU_CAPS_MACHINE_SHIM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsGenericPC[] = {
