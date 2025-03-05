@@ -12390,6 +12390,56 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * VIR_CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF and/or
  * VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER for all other states.
  *
+ * In a number of cases the parameters returned are representing
+ * arrays of data items. In these cases multiple VIR_DOMAIN_STATS*
+ * constants will need to be concatenated to form a complete typed
+ * parameter key. The design pattern for handling array entries is
+ * as follows
+ *
+ * - VIR_DOMAIN_STATS_nnnnn_COUNT
+ *
+ *   Defines the upper limit on the number of elements that will
+ *   be returned. In some cases the array information may be
+ *   sparsely populated, so it is not considered an error if a
+ *   given element does not exist. Applications should check for
+ *   each possible element upto the declared limit.
+ *
+ * - VIR_DOMAIN_STATS_nnnnn_PREFIX
+ *
+ *   Defines the prefix to be used to construct the typed parameter
+ *   key for an array element, including the trailing '.'. The prefix
+ *   must have an array index appended, along with a suffix.
+ *
+ * - VIR_DOMAIN_STATS_nnnnn_SUFFIX_mmmmm
+ *
+ *   Defines the suffix for accessing a particular data item within
+ *   the array element, including the leading '.'. The suffix must
+ *   have an array prefix and index prepended.
+ *
+ * As an example, assuming a printf-like formatting approach an
+ * application would construct a key as follows:
+ *
+ *     format(VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX +
+ *            "%d" +
+ *            VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_VCPUS
+ *            index)
+ *
+ * Which, when index==3, would result in the key "cpu.cache.monitor.3.vcpus"
+ *
+ * In some cases there may be nested arrays, in which case the key
+ * is formed by concatenating multiple prefixes and suffixes with
+ * mutliple array indexes. For example:
+ *
+ *     format(VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX +
+ *            "%d" +
+ *            VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_PREFIX +
+ *            "%d" +
+ *            VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_SUFFIX_BYTES
+ *            monindex, bankindex)
+ *
+ * Which, when monindex==3 and bankindex==7, would result in the
+ * key "cpu.cache.monitor.3.bank.7.bytes".
+ *
  * Returns the count of returned statistics structures on success, -1 on error.
  * The requested data are returned in the @retStats parameter. The returned
  * array should be freed by the caller. See virDomainStatsRecordListFree.
