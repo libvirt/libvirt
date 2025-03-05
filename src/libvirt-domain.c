@@ -12440,6 +12440,13 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * Which, when monindex==3 and bankindex==7, would result in the
  * key "cpu.cache.monitor.3.bank.7.bytes".
  *
+ * NB, for the VIR_DOMAIN_STATS_* constants, if the `Since`
+ * tag is set to `11.2.0` this is usually representing the
+ * release when the constant was first introduced to the public
+ * API. Most of these typed parameter keys will have been
+ * introduced in earlier libvirt releases, prior to the definition
+ * of the constants.
+ *
  * Returns the count of returned statistics structures on success, -1 on error.
  * The requested data are returned in the @retStats parameter. The returned
  * array should be freed by the caller. See virDomainStatsRecordListFree.
