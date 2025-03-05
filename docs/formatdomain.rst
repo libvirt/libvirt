@@ -5154,13 +5154,13 @@ destined for the host toward the guest instead), and a socket between
 passt and QEMU forwards that traffic on to the guest (and back out,
 of course).
 
-*(:since:`Since 11.1.0 (QEMU and KVM only)` you may prefer to use the
+:since:`Since 11.1.0 (QEMU and KVM only)` you may prefer to use the
 passt backend with the more efficient and performant type='vhostuser'
 rather than type='user'. All the options related to passt in the
 paragraphs below here also apply when using the passt backend with
 type='vhostuser'; any other details specific to vhostuser are
-described* `here
-<formatdomain.html#vhost-user-connection-with-passt-backend>`__.)
+described `here
+<formatdomain.html#vhost-user-connection-with-passt-backend>`__.
 
 
 Similar to SLIRP, passt has an internal DHCP server that provides a
