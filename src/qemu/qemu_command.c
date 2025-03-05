@@ -6035,6 +6035,8 @@ qemuBuildBootCommandLine(virCommand *cmd,
         virCommandAddArgList(cmd, "-initrd", def->os.initrd, NULL);
     if (def->os.cmdline)
         virCommandAddArgList(cmd, "-append", def->os.cmdline, NULL);
+    if (def->os.shim)
+        virCommandAddArgList(cmd, "-shim", def->os.shim, NULL);
     if (def->os.dtb)
         virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
     for (i = 0; i < def->os.nacpiTables; i++) {
