@@ -13299,6 +13299,13 @@ virDomainSetVcpu(virDomainPtr domain,
  * Which, when fsindex==3 and diskindex==7, would result in the
  * key "fs.3.disk.7.serial".
  *
+ * NB, for the VIR_DOMAIN_GUEST_INFO_* constants, if the `Since`
+ * tag is set to `11.2.0` this is usually representing the
+ * release when the constant was first introduced to the public
+ * API. Most of these typed parameter keys will have been
+ * introduced in earlier libvirt releases, prior to the definition
+ * of the constants.
+ *
  * Returns 0 on success, -1 on error.
  *
  * Since: 5.7.0
