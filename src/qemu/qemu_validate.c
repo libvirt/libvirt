@@ -763,6 +763,13 @@ qemuValidateDomainDefBoot(const virDomainDef *def,
         }
     }
 
+    if (def->os.shim &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_SHIM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("shim is not supported by this QEMU binary"));
+        return -1;
+    }
+
     return 0;
 }
 
