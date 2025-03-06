@@ -26412,6 +26412,16 @@ virDomainGraphicsDefFormatGL(virBuffer *buf,
     virBufferAddLit(buf, "/>\n");
 }
 
+static void
+virDomainGraphicsDefFormatAudio(virBuffer *buf,
+                                unsigned int audioId)
+{
+    if (audioId <= 0)
+        return;
+
+    virBufferAsprintf(buf, "<audio id='%d'/>\n", audioId);
+}
+
 static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
@@ -26629,9 +26639,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
 
         virDomainGraphicsDefFormatGL(buf, def->data.dbus.gl, def->data.dbus.rendernode);
 
-        if (def->data.dbus.audioId > 0)
-            virBufferAsprintf(buf, "<audio id='%d'/>\n",
-                              def->data.dbus.audioId);
+        virDomainGraphicsDefFormatAudio(buf, def->data.dbus.audioId);
 
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -26732,9 +26740,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             children = true;
         }
 
-        if (def->data.vnc.audioId > 0)
-            virBufferAsprintf(buf, "<audio id='%d'/>\n",
-                              def->data.vnc.audioId);
+        virDomainGraphicsDefFormatAudio(buf, def->data.vnc.audioId);
     }
 
     if (children) {
