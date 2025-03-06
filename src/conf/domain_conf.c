@@ -26530,6 +26530,8 @@ virDomainGraphicsDefFormatVNC(virBuffer *attrBuf,
 
     virDomainGraphicsDefFormatListnes(childBuf, def, flags);
 
+    virDomainGraphicsDefFormatAudio(childBuf, def->data.vnc.audioId);
+
     return 0;
 }
 
@@ -26764,9 +26766,6 @@ virDomainGraphicsDefFormat(virBuffer *buf,
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
-
-    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
-        virDomainGraphicsDefFormatAudio(&childBuf, def->data.vnc.audioId);
 
     virXMLFormatElement(buf, "graphics", &attrBuf, &childBuf);
 
