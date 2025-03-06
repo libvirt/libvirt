@@ -26470,7 +26470,7 @@ virDomainGraphicsDefFormatVNC(virBuffer *attrBuf,
 
     if (!glisten) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing listen element for graphics"));
+                       _("missing listen element for VNC graphics"));
         return -1;
     }
 
@@ -26726,7 +26726,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected net type %1$d"), def->type);
+                       _("unexpected graphics type '%1$d'"), def->type);
         return -1;
     }
 
