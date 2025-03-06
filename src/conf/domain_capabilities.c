@@ -75,6 +75,7 @@ virSEVCapabilitiesFree(virSEVCapability *cap)
 
     g_free(cap->pdh);
     g_free(cap->cert_chain);
+    g_free(cap->cpu0_id);
     g_free(cap);
 }
 
