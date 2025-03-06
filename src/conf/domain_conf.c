@@ -26542,13 +26542,73 @@ virDomainGraphicsDefFormatDesktop(virBuffer *attrBuf,
 }
 
 static int
+virDomainGraphicsDefFormatSpice(virBuffer *attrBuf,
+                                virDomainGraphicsDef *def,
+                                unsigned int flags)
+{
+    virDomainGraphicsListenDef *glisten = virDomainGraphicsGetListen(def, 0);
+
+    if (!glisten) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing listen element for spice graphics"));
+        return -1;
+    }
+
+    switch (glisten->type) {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+        if (def->data.spice.port)
+            virBufferAsprintf(attrBuf, " port='%d'", def->data.spice.port);
+
+        if (def->data.spice.tlsPort)
+            virBufferAsprintf(attrBuf, " tlsPort='%d'", def->data.spice.tlsPort);
+
+        virBufferAsprintf(attrBuf, " autoport='%s'",
+                          def->data.spice.autoport ? "yes" : "no");
+
+        virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
+            virBufferAddLit(attrBuf, " autoport='no'");
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+        /* If socket is auto-generated based on config option we don't
+         * add any listen element into migratable XML because the original
+         * listen type is "address".
+         * We need to set autoport to make sure that libvirt on destination
+         * will parse it as listen type "address", without autoport it is
+         * parsed as listen type "none". */
+        if ((flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) &&
+            glisten->fromConfig) {
+            virBufferAddLit(attrBuf, " autoport='yes'");
+        }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+        break;
+    }
+
+    virBufferEscapeString(attrBuf, " keymap='%s'", def->data.spice.keymap);
+
+    if (def->data.spice.defaultMode != VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
+        virBufferAsprintf(attrBuf, " defaultMode='%s'",
+          virDomainGraphicsSpiceChannelModeTypeToString(def->data.spice.defaultMode));
+
+    virDomainGraphicsAuthDefFormatAttr(attrBuf, &def->data.spice.auth, flags);
+
+    return 0;
+}
+
+static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
                            unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
-    virDomainGraphicsListenDef *glisten = virDomainGraphicsGetListen(def, 0);
     const char *type = virDomainGraphicsTypeToString(def->type);
     size_t i;
 
@@ -26579,59 +26639,8 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (!glisten) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing listen element for spice graphics"));
+        if (virDomainGraphicsDefFormatSpice(&attrBuf, def, flags) < 0)
             return -1;
-        }
-
-        switch (glisten->type) {
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-            if (def->data.spice.port)
-                virBufferAsprintf(&attrBuf, " port='%d'",
-                                  def->data.spice.port);
-
-            if (def->data.spice.tlsPort)
-                virBufferAsprintf(&attrBuf, " tlsPort='%d'",
-                                  def->data.spice.tlsPort);
-
-            virBufferAsprintf(&attrBuf, " autoport='%s'",
-                              def->data.spice.autoport ? "yes" : "no");
-
-            virDomainGraphicsListenDefFormatAddr(&attrBuf, glisten, flags);
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
-            if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
-                virBufferAddLit(&attrBuf, " autoport='no'");
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
-            /* If socket is auto-generated based on config option we don't
-             * add any listen element into migratable XML because the original
-             * listen type is "address".
-             * We need to set autoport to make sure that libvirt on destination
-             * will parse it as listen type "address", without autoport it is
-             * parsed as listen type "none". */
-            if ((flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) &&
-                glisten->fromConfig) {
-                virBufferAddLit(&attrBuf, " autoport='yes'");
-            }
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
-            break;
-        }
-
-        virBufferEscapeString(&attrBuf, " keymap='%s'",
-                              def->data.spice.keymap);
-
-        if (def->data.spice.defaultMode != VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
-            virBufferAsprintf(&attrBuf, " defaultMode='%s'",
-              virDomainGraphicsSpiceChannelModeTypeToString(def->data.spice.defaultMode));
-
-        virDomainGraphicsAuthDefFormatAttr(&attrBuf, &def->data.spice.auth, flags);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
