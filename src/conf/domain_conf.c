@@ -26602,6 +26602,14 @@ virDomainGraphicsDefFormatSpice(virBuffer *attrBuf,
     return 0;
 }
 
+static void
+virDomainGraphicsDefFormatEGLHeadless(virBuffer *childBuf,
+                                      virDomainGraphicsDef *def)
+{
+    virDomainGraphicsDefFormatGL(childBuf, VIR_TRISTATE_BOOL_ABSENT,
+                                 def->data.egl_headless.rendernode);
+}
+
 static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
@@ -26644,9 +26652,9 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
-        virDomainGraphicsDefFormatGL(&childBuf, VIR_TRISTATE_BOOL_ABSENT,
-                                     def->data.egl_headless.rendernode);
+        virDomainGraphicsDefFormatEGLHeadless(&childBuf, def);
         break;
+
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
         if (def->data.dbus.p2p)
             virBufferAddLit(&attrBuf, " p2p='yes'");
