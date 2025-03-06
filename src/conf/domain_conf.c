@@ -27037,10 +27037,8 @@ virDomainLoaderDefFormatNvram(virBuffer *buf,
                               unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBufDirect = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBufChild = VIR_BUFFER_INIT_CHILD(buf);
-    virBuffer *childBuf = &childBufDirect;
-    bool childNewline = false;
+    g_auto(virBuffer) directBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     virBufferEscapeString(&attrBuf, " template='%s'", loader->nvramTemplate);
 
@@ -27053,14 +27051,11 @@ virDomainLoaderDefFormatNvram(virBuffer *buf,
         virStorageSource *src = loader->nvram;
 
         if (!loader->newStyleNVRAM) {
-            virBufferEscapeString(&childBufDirect, "%s", src->path);
+            virBufferEscapeString(&directBuf, "%s", src->path);
         } else {
-            childNewline = true;
-            childBuf = &childBufChild;
-
             virBufferAsprintf(&attrBuf, " type='%s'", virStorageTypeToString(src->type));
 
-            if (virDomainDiskSourceFormat(&childBufChild, src, "source", 0,
+            if (virDomainDiskSourceFormat(&childBuf, src, "source", 0,
                                           false, flags, false, false, xmlopt) < 0)
                 return -1;
         }
@@ -27071,7 +27066,10 @@ virDomainLoaderDefFormatNvram(virBuffer *buf,
         }
     }
 
-    virXMLFormatElementInternal(buf, "nvram", &attrBuf, childBuf, false, childNewline);
+    if (virBufferUse(&directBuf) > 0)
+        virXMLFormatElementDirect(buf, "nvram", &attrBuf, &directBuf);
+    else
+        virXMLFormatElement(buf, "nvram", &attrBuf, &childBuf);
 
     return 0;
 }
