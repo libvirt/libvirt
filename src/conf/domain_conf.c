@@ -26340,7 +26340,7 @@ virDomainGraphicsListenDefFormat(virBuffer *buf,
           !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)))) {
         /* address may also be set to show current status when type='network',
          * but we don't want to print that if INACTIVE data is requested. */
-        virBufferAsprintf(&attrBuf, " address='%s'", def->address);
+        virBufferEscapeString(&attrBuf, " address='%s'", def->address);
     }
 
     if (def->network &&
@@ -26429,7 +26429,7 @@ virDomainGraphicsListenDefFormatAddr(virBuffer *buf,
         return;
 
     if (glisten->address)
-        virBufferAsprintf(buf, " listen='%s'", glisten->address);
+        virBufferEscapeString(buf, " listen='%s'", glisten->address);
 }
 
 static void
