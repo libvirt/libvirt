@@ -26492,6 +26492,21 @@ virDomainGraphicsDefFormatVNC(virBuffer *attrBuf,
     return 0;
 }
 
+static void
+virDomainGraphicsDefFormatSDL(virBuffer *attrBuf,
+                              virBuffer *childBuf,
+                              virDomainGraphicsDef *def)
+{
+    virBufferEscapeString(attrBuf, " display='%s'", def->data.sdl.display);
+
+    virBufferEscapeString(attrBuf, " xauth='%s'", def->data.sdl.xauth);
+
+    if (def->data.sdl.fullscreen)
+        virBufferAddLit(attrBuf, " fullscreen='yes'");
+
+    virDomainGraphicsDefFormatGL(childBuf, def->data.sdl.gl, NULL);
+}
+
 static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
@@ -26518,15 +26533,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        virBufferEscapeString(&attrBuf, " display='%s'",
-                              def->data.sdl.display);
-
-        virBufferEscapeString(&attrBuf, " xauth='%s'",
-                              def->data.sdl.xauth);
-        if (def->data.sdl.fullscreen)
-            virBufferAddLit(&attrBuf, " fullscreen='yes'");
-
-        virDomainGraphicsDefFormatGL(&childBuf, def->data.sdl.gl, NULL);
+        virDomainGraphicsDefFormatSDL(&attrBuf, &childBuf, def);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
