@@ -26462,6 +26462,7 @@ virDomainGraphicsDefFormatAudio(virBuffer *buf,
 
 static int
 virDomainGraphicsDefFormatVNC(virBuffer *attrBuf,
+                              virBuffer *childBuf,
                               virDomainGraphicsDef *def,
                               unsigned int flags)
 {
@@ -26527,6 +26528,8 @@ virDomainGraphicsDefFormatVNC(virBuffer *attrBuf,
 
     virDomainGraphicsAuthDefFormatAttr(attrBuf, &def->data.vnc.auth, flags);
 
+    virDomainGraphicsDefFormatListnes(childBuf, def, flags);
+
     return 0;
 }
 
@@ -26547,6 +26550,7 @@ virDomainGraphicsDefFormatSDL(virBuffer *attrBuf,
 
 static void
 virDomainGraphicsDefFormatRDP(virBuffer *attrBuf,
+                              virBuffer *childBuf,
                               virDomainGraphicsDef *def,
                               unsigned int flags)
 {
@@ -26567,6 +26571,8 @@ virDomainGraphicsDefFormatRDP(virBuffer *attrBuf,
         virBufferAddLit(attrBuf, " multiUser='yes'");
 
     virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
+
+    virDomainGraphicsDefFormatListnes(childBuf, def, flags);
 }
 
 static void
@@ -26581,6 +26587,7 @@ virDomainGraphicsDefFormatDesktop(virBuffer *attrBuf,
 
 static int
 virDomainGraphicsDefFormatSpice(virBuffer *attrBuf,
+                                virBuffer *childBuf,
                                 virDomainGraphicsDef *def,
                                 unsigned int flags)
 {
@@ -26637,6 +26644,8 @@ virDomainGraphicsDefFormatSpice(virBuffer *attrBuf,
 
     virDomainGraphicsAuthDefFormatAttr(attrBuf, &def->data.spice.auth, flags);
 
+    virDomainGraphicsDefFormatListnes(childBuf, def, flags);
+
     return 0;
 }
 
@@ -26685,7 +26694,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (virDomainGraphicsDefFormatVNC(&attrBuf, def, flags) < 0)
+        if (virDomainGraphicsDefFormatVNC(&attrBuf, &childBuf, def, flags) < 0)
             return -1;
         break;
 
@@ -26694,7 +26703,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        virDomainGraphicsDefFormatRDP(&attrBuf, def, flags);
+        virDomainGraphicsDefFormatRDP(&attrBuf, &childBuf, def, flags);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
@@ -26702,7 +26711,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (virDomainGraphicsDefFormatSpice(&attrBuf, def, flags) < 0)
+        if (virDomainGraphicsDefFormatSpice(&attrBuf, &childBuf, def, flags) < 0)
             return -1;
         break;
 
@@ -26717,8 +26726,6 @@ virDomainGraphicsDefFormat(virBuffer *buf,
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
-
-    virDomainGraphicsDefFormatListnes(&childBuf, def, flags);
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
         g_auto(virBuffer) spiceBuf = VIR_BUFFER_INITIALIZER;
