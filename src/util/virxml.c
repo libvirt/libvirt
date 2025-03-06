@@ -1721,7 +1721,7 @@ virXMLValidatorFree(virXMLValidator *validator)
  *
  * Both passed buffers are always consumed and freed.
  */
-void
+static void
 virXMLFormatElementInternal(virBuffer *buf,
                             const char *name,
                             virBuffer *attrBuf,

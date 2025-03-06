@@ -3783,7 +3783,6 @@ virXMLExtractNamespaceXML;
 virXMLFormatElement;
 virXMLFormatElementDirect;
 virXMLFormatElementEmpty;
-virXMLFormatElementInternal;
 virXMLFormatMetadata;
 virXMLNewNode;
 virXMLNodeContentString;
