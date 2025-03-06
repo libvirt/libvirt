@@ -3781,6 +3781,7 @@ virXMLBufferCreate;
 virXMLCheckIllegalChars;
 virXMLExtractNamespaceXML;
 virXMLFormatElement;
+virXMLFormatElementDirect;
 virXMLFormatElementEmpty;
 virXMLFormatElementInternal;
 virXMLFormatMetadata;

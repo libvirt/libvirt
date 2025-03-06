@@ -351,6 +351,12 @@ virXMLFormatElementEmpty(virBuffer *buf,
                          virBuffer *attrBuf,
                          virBuffer *childBuf);
 
+void
+virXMLFormatElementDirect(virBuffer *buf,
+                          const char *name,
+                          virBuffer *attrBuf,
+                          virBuffer *childBuf);
+
 int
 virXMLFormatMetadata(virBuffer *buf,
                      xmlNodePtr metadata);

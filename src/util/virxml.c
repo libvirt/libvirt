@@ -1768,6 +1768,20 @@ virXMLFormatElementEmpty(virBuffer *buf,
 
 
 /**
+ * Same as virXMLFormatElement but the child is direct value without
+ * subelements.
+ */
+void
+virXMLFormatElementDirect(virBuffer *buf,
+                          const char *name,
+                          virBuffer *attrBuf,
+                          virBuffer *childBuf)
+{
+    virXMLFormatElementInternal(buf, name, attrBuf, childBuf, false, false);
+}
+
+
+/**
  * virXMLFormatElement
  * @buf: the parent buffer where the element will be placed
  * @name: the name of the element
