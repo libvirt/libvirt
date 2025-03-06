@@ -262,7 +262,7 @@ virNodeDeviceCapVPDFormatCustomField(virBuffer *buf,
     virBufferAsprintf(&attrBuf, " index='%c'", field->idx);
     virBufferEscapeString(&content, "%s", field->value);
 
-    virXMLFormatElementInternal(buf, fieldtype, &attrBuf, &content, false, false);
+    virXMLFormatElementDirect(buf, fieldtype, &attrBuf, &content);
 }
 
 static void

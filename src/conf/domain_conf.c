@@ -27110,7 +27110,7 @@ virDomainLoaderDefFormat(virBuffer *buf,
 
     virBufferEscapeString(&loaderChildBuf, "%s", loader->path);
 
-    virXMLFormatElementInternal(buf, "loader", &loaderAttrBuf, &loaderChildBuf, false, false);
+    virXMLFormatElementDirect(buf, "loader", &loaderAttrBuf, &loaderChildBuf);
 
     if (virDomainLoaderDefFormatNvram(buf, loader, xmlopt, flags) < 0)
         return -1;
@@ -28361,7 +28361,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         virBufferAddLit(&attrBuf, " unit='KiB'");
         virBufferAsprintf(&contentBuf, "%llu", def->mem.max_memory);
 
-        virXMLFormatElementInternal(buf, "maxMemory", &attrBuf, &contentBuf, false, false);
+        virXMLFormatElementDirect(buf, "maxMemory", &attrBuf, &contentBuf);
     }
 
     virBufferAddLit(buf, "<memory");
