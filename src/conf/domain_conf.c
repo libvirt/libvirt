@@ -26531,6 +26531,16 @@ virDomainGraphicsDefFormatRDP(virBuffer *attrBuf,
     virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
 }
 
+static void
+virDomainGraphicsDefFormatDesktop(virBuffer *attrBuf,
+                                  virDomainGraphicsDef *def)
+{
+    virBufferEscapeString(attrBuf, " display='%s'", def->data.desktop.display);
+
+    if (def->data.desktop.fullscreen)
+        virBufferAddLit(attrBuf, " fullscreen='yes'");
+}
+
 static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
@@ -26565,12 +26575,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        virBufferEscapeString(&attrBuf, " display='%s'",
-                              def->data.desktop.display);
-
-        if (def->data.desktop.fullscreen)
-            virBufferAddLit(&attrBuf, " fullscreen='yes'");
-
+        virDomainGraphicsDefFormatDesktop(&attrBuf, def);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
