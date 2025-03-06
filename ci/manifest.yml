@@ -34,46 +34,6 @@ targets:
           paths:
             - libvirt-rpms
 
-  debian-11:
-    jobs:
-      - arch: x86_64
-        builds: false
-
-      - arch: x86_64
-        suffix: -clang
-        builds: false
-
-      - arch: aarch64
-        containers: false
-        builds: false
-
-      - arch: armv6l
-        containers: false
-        builds: false
-
-      - arch: armv7l
-        builds: false
-
-      - arch: i686
-        containers: false
-        builds: false
-
-      - arch: mips64el
-        containers: false
-        builds: false
-
-      - arch: mipsel
-        containers: false
-        builds: false
-
-      - arch: ppc64le
-        containers: false
-        builds: false
-
-      - arch: s390x
-        containers: false
-        builds: false
-
   debian-12:
     jobs:
       - arch: x86_64

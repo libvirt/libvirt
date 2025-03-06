@@ -35,14 +35,6 @@ x86_64-centos-stream-9-container:
     NAME: centos-stream-9
 
 
-x86_64-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11
-
-
 x86_64-debian-12-container:
   extends: .container_job
   allow_failure: false
@@ -108,70 +100,6 @@ x86_64-ubuntu-2404-container:
 
 
 # Cross container jobs
-
-aarch64-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-aarch64
-
-
-armv6l-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-armv6l
-
-
-armv7l-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-armv7l
-
-
-i686-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-i686
-
-
-mips64el-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-mips64el
-
-
-mipsel-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-mipsel
-
-
-ppc64le-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-ppc64le
-
-
-s390x-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-11-cross-s390x
-
 
 aarch64-debian-12-container:
   extends: .container_job
