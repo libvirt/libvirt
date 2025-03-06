@@ -26394,14 +26394,21 @@ virDomainGraphicsListenDefFormatAddr(virBuffer *buf,
 }
 
 static void
-virDomainSpiceGLDefFormat(virBuffer *buf, virDomainGraphicsDef *def)
+virDomainGraphicsDefFormatGL(virBuffer *buf,
+                             virTristateBool gl,
+                             char *rendernode)
 {
-    if (def->data.spice.gl == VIR_TRISTATE_BOOL_ABSENT)
+    if (gl == VIR_TRISTATE_BOOL_ABSENT && !rendernode)
         return;
 
-    virBufferAsprintf(buf, "<gl enable='%s'",
-                      virTristateBoolTypeToString(def->data.spice.gl));
-    virBufferEscapeString(buf, " rendernode='%s'", def->data.spice.rendernode);
+    virBufferAddLit(buf, "<gl");
+
+    if (gl != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(buf, " enable='%s'", virTristateBoolTypeToString(gl));
+
+    if (rendernode)
+        virBufferEscapeString(buf, " rendernode='%s'", rendernode);
+
     virBufferAddLit(buf, "/>\n");
 }
 
@@ -26503,12 +26510,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             children = true;
         }
 
-        if (def->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT) {
-            virBufferAsprintf(buf, "<gl enable='%s'",
-                              virTristateBoolTypeToString(def->data.sdl.gl));
-            virBufferAddLit(buf, "/>\n");
-        }
-
+        virDomainGraphicsDefFormatGL(buf, def->data.sdl.gl, NULL);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
@@ -26606,10 +26608,8 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             children = true;
         }
 
-        virBufferAddLit(buf, "<gl");
-        virBufferEscapeString(buf, " rendernode='%s'",
-                              def->data.egl_headless.rendernode);
-        virBufferAddLit(buf, "/>\n");
+        virDomainGraphicsDefFormatGL(buf, VIR_TRISTATE_BOOL_ABSENT,
+                                     def->data.egl_headless.rendernode);
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
         if (def->data.dbus.p2p)
@@ -26627,12 +26627,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             children = true;
         }
 
-        if (def->data.dbus.gl) {
-            virBufferAsprintf(buf, "<gl enable='%s'",
-                              virTristateBoolTypeToString(def->data.dbus.gl));
-            virBufferEscapeString(buf, " rendernode='%s'", def->data.dbus.rendernode);
-            virBufferAddLit(buf, "/>\n");
-        }
+        virDomainGraphicsDefFormatGL(buf, def->data.dbus.gl, def->data.dbus.rendernode);
 
         if (def->data.dbus.audioId > 0)
             virBufferAsprintf(buf, "<audio id='%d'/>\n",
@@ -26727,7 +26722,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             virBufferAsprintf(buf, "<filetransfer enable='%s'/>\n",
                               virTristateBoolTypeToString(def->data.spice.filetransfer));
 
-        virDomainSpiceGLDefFormat(buf, def);
+        virDomainGraphicsDefFormatGL(buf, def->data.spice.gl, def->data.spice.rendernode);
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
