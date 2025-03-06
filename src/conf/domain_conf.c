@@ -26507,6 +26507,30 @@ virDomainGraphicsDefFormatSDL(virBuffer *attrBuf,
     virDomainGraphicsDefFormatGL(childBuf, def->data.sdl.gl, NULL);
 }
 
+static void
+virDomainGraphicsDefFormatRDP(virBuffer *attrBuf,
+                              virDomainGraphicsDef *def,
+                              unsigned int flags)
+{
+    virDomainGraphicsListenDef *glisten = virDomainGraphicsGetListen(def, 0);
+
+    if (def->data.rdp.port)
+        virBufferAsprintf(attrBuf, " port='%d'", def->data.rdp.port);
+    else if (def->data.rdp.autoport)
+        virBufferAddLit(attrBuf, " port='0'");
+
+    if (def->data.rdp.autoport)
+        virBufferAddLit(attrBuf, " autoport='yes'");
+
+    if (def->data.rdp.replaceUser)
+        virBufferAddLit(attrBuf, " replaceUser='yes'");
+
+    if (def->data.rdp.multiUser)
+        virBufferAddLit(attrBuf, " multiUser='yes'");
+
+    virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
+}
+
 static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
@@ -26537,23 +26561,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        if (def->data.rdp.port)
-            virBufferAsprintf(&attrBuf, " port='%d'",
-                              def->data.rdp.port);
-        else if (def->data.rdp.autoport)
-            virBufferAddLit(&attrBuf, " port='0'");
-
-        if (def->data.rdp.autoport)
-            virBufferAddLit(&attrBuf, " autoport='yes'");
-
-        if (def->data.rdp.replaceUser)
-            virBufferAddLit(&attrBuf, " replaceUser='yes'");
-
-        if (def->data.rdp.multiUser)
-            virBufferAddLit(&attrBuf, " multiUser='yes'");
-
-        virDomainGraphicsListenDefFormatAddr(&attrBuf, glisten, flags);
-
+        virDomainGraphicsDefFormatRDP(&attrBuf, def, flags);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
