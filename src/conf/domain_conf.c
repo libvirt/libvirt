@@ -26591,7 +26591,9 @@ virDomainGraphicsDefFormatSpice(virBuffer *attrBuf,
                                 virDomainGraphicsDef *def,
                                 unsigned int flags)
 {
+    g_auto(virBuffer) spiceBuf = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDef *glisten = virDomainGraphicsGetListen(def, 0);
+    size_t i;
 
     if (!glisten) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -26646,6 +26648,43 @@ virDomainGraphicsDefFormatSpice(virBuffer *attrBuf,
 
     virDomainGraphicsDefFormatListnes(childBuf, def, flags);
 
+    for (i = 0; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; i++) {
+        int mode = def->data.spice.channels[i];
+        if (mode == VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
+            continue;
+
+        virBufferAsprintf(&spiceBuf, " name='%s' mode='%s'",
+                          virDomainGraphicsSpiceChannelNameTypeToString(i),
+                          virDomainGraphicsSpiceChannelModeTypeToString(mode));
+
+        virXMLFormatElement(childBuf, "channel", &spiceBuf, NULL);
+    }
+
+#define FORMAT_SPICE_FEATURE(name, attr, value, toStringFunc) \
+    if (value) { \
+        virBufferAsprintf(&spiceBuf, " " attr "='%s'", toStringFunc(value)); \
+    } \
+    virXMLFormatElement(childBuf, name, &spiceBuf, NULL);
+
+    FORMAT_SPICE_FEATURE("image", "compression", def->data.spice.image,
+                         virDomainGraphicsSpiceImageCompressionTypeToString);
+    FORMAT_SPICE_FEATURE("jpeg", "compression", def->data.spice.jpeg,
+                         virDomainGraphicsSpiceJpegCompressionTypeToString);
+    FORMAT_SPICE_FEATURE("zlib", "compression", def->data.spice.zlib,
+                         virDomainGraphicsSpiceZlibCompressionTypeToString);
+    FORMAT_SPICE_FEATURE("playback", "compression", def->data.spice.playback,
+                         virTristateSwitchTypeToString);
+    FORMAT_SPICE_FEATURE("streaming", "mode", def->data.spice.streaming,
+                         virDomainGraphicsSpiceStreamingModeTypeToString);
+    FORMAT_SPICE_FEATURE("mouse", "mode", def->data.spice.mousemode,
+                         virDomainMouseModeTypeToString);
+    FORMAT_SPICE_FEATURE("clipboard", "copypaste", def->data.spice.copypaste,
+                         virTristateBoolTypeToString);
+    FORMAT_SPICE_FEATURE("filetransfer", "enable", def->data.spice.filetransfer,
+                         virTristateBoolTypeToString);
+
+    virDomainGraphicsDefFormatGL(childBuf, def->data.spice.gl, def->data.spice.rendernode);
+
     return 0;
 }
 
@@ -26682,7 +26721,6 @@ virDomainGraphicsDefFormat(virBuffer *buf,
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     const char *type = virDomainGraphicsTypeToString(def->type);
-    size_t i;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -26725,47 +26763,6 @@ virDomainGraphicsDefFormat(virBuffer *buf,
 
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
-    }
-
-    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        g_auto(virBuffer) spiceBuf = VIR_BUFFER_INITIALIZER;
-
-        for (i = 0; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; i++) {
-            int mode = def->data.spice.channels[i];
-            if (mode == VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
-                continue;
-
-            virBufferAsprintf(&spiceBuf, " name='%s' mode='%s'",
-                              virDomainGraphicsSpiceChannelNameTypeToString(i),
-                              virDomainGraphicsSpiceChannelModeTypeToString(mode));
-
-            virXMLFormatElement(&childBuf, "channel", &spiceBuf, NULL);
-        }
-
-#define FORMAT_SPICE_FEATURE(name, attr, value, toStringFunc) \
-    if (value) { \
-        virBufferAsprintf(&spiceBuf, " " attr "='%s'", toStringFunc(value)); \
-    } \
-    virXMLFormatElement(&childBuf, name, &spiceBuf, NULL);
-
-        FORMAT_SPICE_FEATURE("image", "compression", def->data.spice.image,
-                             virDomainGraphicsSpiceImageCompressionTypeToString);
-        FORMAT_SPICE_FEATURE("jpeg", "compression", def->data.spice.jpeg,
-                             virDomainGraphicsSpiceJpegCompressionTypeToString);
-        FORMAT_SPICE_FEATURE("zlib", "compression", def->data.spice.zlib,
-                             virDomainGraphicsSpiceZlibCompressionTypeToString);
-        FORMAT_SPICE_FEATURE("playback", "compression", def->data.spice.playback,
-                             virTristateSwitchTypeToString);
-        FORMAT_SPICE_FEATURE("streaming", "mode", def->data.spice.streaming,
-                             virDomainGraphicsSpiceStreamingModeTypeToString);
-        FORMAT_SPICE_FEATURE("mouse", "mode", def->data.spice.mousemode,
-                             virDomainMouseModeTypeToString);
-        FORMAT_SPICE_FEATURE("clipboard", "copypaste", def->data.spice.copypaste,
-                             virTristateBoolTypeToString);
-        FORMAT_SPICE_FEATURE("filetransfer", "enable", def->data.spice.filetransfer,
-                             virTristateBoolTypeToString);
-
-        virDomainGraphicsDefFormatGL(&childBuf, def->data.spice.gl, def->data.spice.rendernode);
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
