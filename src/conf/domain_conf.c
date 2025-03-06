@@ -26610,6 +26610,23 @@ virDomainGraphicsDefFormatEGLHeadless(virBuffer *childBuf,
                                  def->data.egl_headless.rendernode);
 }
 
+static void
+virDomainGraphicsDefFormatDBus(virBuffer *attrBuf,
+                               virBuffer *childBuf,
+                               virDomainGraphicsDef *def)
+{
+    if (def->data.dbus.p2p)
+        virBufferAddLit(attrBuf, " p2p='yes'");
+
+    if (def->data.dbus.address)
+        virBufferAsprintf(attrBuf, " address='%s'", def->data.dbus.address);
+
+    virDomainGraphicsDefFormatGL(childBuf, def->data.dbus.gl,
+                                 def->data.dbus.rendernode);
+
+    virDomainGraphicsDefFormatAudio(childBuf, def->data.dbus.audioId);
+}
+
 static int
 virDomainGraphicsDefFormat(virBuffer *buf,
                            virDomainGraphicsDef *def,
@@ -26656,18 +26673,9 @@ virDomainGraphicsDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
-        if (def->data.dbus.p2p)
-            virBufferAddLit(&attrBuf, " p2p='yes'");
-        if (def->data.dbus.address)
-            virBufferAsprintf(&attrBuf, " address='%s'",
-                              def->data.dbus.address);
-
-        virDomainGraphicsDefFormatGL(&childBuf, def->data.dbus.gl,
-                                     def->data.dbus.rendernode);
-
-        virDomainGraphicsDefFormatAudio(&childBuf, def->data.dbus.audioId);
-
+        virDomainGraphicsDefFormatDBus(&attrBuf, &childBuf, def);
         break;
+
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
