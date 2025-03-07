@@ -1583,7 +1583,6 @@ mymain(void)
     /* 'gluster' protocol backend was deprecated in qemu-9.2 */
     DO_TEST_CAPS_VER("disk-network-gluster", "9.1.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
-    DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-rbd-encryption", "6.0.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-rbd-encryption-layering", "7.2.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption-layering");
@@ -2219,7 +2218,6 @@ mymain(void)
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "6.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "6.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "7.0.0");
@@ -2228,7 +2226,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "6.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "6.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "7.0.0");
@@ -2237,7 +2234,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "6.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "6.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "7.0.0");
@@ -2246,7 +2242,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "6.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "6.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "7.0.0");
@@ -2255,7 +2250,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "6.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "6.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "7.0.0");
@@ -2264,7 +2258,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "8.1.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "6.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "6.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "6.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "7.0.0");
@@ -2854,13 +2847,8 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-auto", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-iommu", "s390x");
 
-    /* The 'caps_6.0.0_x86_64' test data was doctored to add SEV support prior
-     * to the time when capability variants existed */
-    DO_TEST_CAPS_VER("launch-security-sev", "6.0.0");
     DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev", "x86_64",
                                   ARG_CAPS_VARIANT, "+amdsev", ARG_END);
-
-    DO_TEST_CAPS_VER("launch-security-sev-missing-platform-info", "6.0.0");
     DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-sev-missing-platform-info", "x86_64",
                                   ARG_CAPS_VARIANT, "+amdsev", ARG_END);
 
@@ -2958,9 +2946,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("async-teardown");
     DO_TEST_CAPS_ARCH_LATEST("s390-async-teardown", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("s390-async-teardown-no-attrib", "s390x");
-    DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("s390-async-teardown", "s390x", "6.0.0");
     DO_TEST_CAPS_ARCH_LATEST("s390-async-teardown-disabled", "s390x");
-    DO_TEST_CAPS_ARCH_VER("s390-async-teardown-disabled", "s390x", "6.0.0");
 
     DO_TEST_CAPS_LATEST("boot-menu-disable-with-timeout");
     DO_TEST_CAPS_LATEST("channel-unix-source-path");
