@@ -76,11 +76,11 @@ virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b)
  *                     If src is NULL, dst will have nTags set to 0.
  *                     dst is assumed to be empty on entry.
  */
-int
+void
 virNetDevVlanCopy(virNetDevVlan *dst, const virNetDevVlan *src)
 {
     if (!src || src->nTags == 0)
-        return 0;
+        return;
 
     dst->tag = g_new0(unsigned int, src->nTags);
     dst->trunk = src->trunk;
@@ -88,5 +88,4 @@ virNetDevVlanCopy(virNetDevVlan *dst, const virNetDevVlan *src)
     dst->nativeMode = src->nativeMode;
     dst->nativeTag = src->nativeTag;
     memcpy(dst->tag, src->tag, src->nTags * sizeof(*src->tag));
-    return 0;
 }

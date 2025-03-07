@@ -3973,8 +3973,7 @@ networkAllocatePort(virNetworkObj *obj,
         else if (netdef->vlan.nTags > 0)
             vlan = &netdef->vlan;
 
-        if (vlan && virNetDevVlanCopy(&port->vlan, vlan) < 0)
-            return -1;
+        virNetDevVlanCopy(&port->vlan, vlan);
     }
 
     if (!port->trustGuestRxFilters) {

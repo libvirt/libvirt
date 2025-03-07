@@ -30561,8 +30561,7 @@ virDomainNetDefToNetworkPort(virDomainDef *dom,
     if (virNetDevBandwidthCopy(&port->bandwidth, iface->bandwidth) < 0)
         return NULL;
 
-    if (virNetDevVlanCopy(&port->vlan, &iface->vlan) < 0)
-        return NULL;
+    virNetDevVlanCopy(&port->vlan, &iface->vlan);
 
     port->isolatedPort = iface->isolatedPort;
     port->trustGuestRxFilters = iface->trustGuestRxFilters;
@@ -30639,8 +30638,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
     if (virNetDevBandwidthCopy(&actual->bandwidth, port->bandwidth) < 0)
         goto error;
 
-    if (virNetDevVlanCopy(&actual->vlan, &port->vlan) < 0)
-        goto error;
+    virNetDevVlanCopy(&actual->vlan, &port->vlan);
 
     actual->isolatedPort = port->isolatedPort;
     actual->class_id = port->class_id;
@@ -30757,8 +30755,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
     if (virNetDevBandwidthCopy(&port->bandwidth, actual->bandwidth) < 0)
         return NULL;
 
-    if (virNetDevVlanCopy(&port->vlan, &actual->vlan) < 0)
-        return NULL;
+    virNetDevVlanCopy(&port->vlan, &actual->vlan);
 
     port->isolatedPort = actual->isolatedPort;
     port->class_id = actual->class_id;
