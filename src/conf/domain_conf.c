@@ -9940,9 +9940,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        def->sourceDev = virXMLPropString(source_node, "dev");
-        break;
-
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
@@ -10056,6 +10053,11 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         virDomainNetBackendParseXML(backend_node, def) < 0) {
         return NULL;
     }
+
+    if (def->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+        def->sourceDev = virXMLPropString(source_node, "dev");
+    }
+
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
     if (linkstate != NULL) {

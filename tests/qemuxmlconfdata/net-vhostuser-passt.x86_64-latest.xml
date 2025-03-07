@@ -33,6 +33,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='vhostuser'>
       <mac address='00:11:22:33:44:55'/>
+      <source dev='eth42'/>
       <ip address='172.17.2.0' family='ipv4' prefix='24'/>
       <ip address='2001:db8:ac10:fd01::feed' family='ipv6'/>
       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10'>
@@ -63,6 +64,7 @@
     </interface>
     <interface type='vhostuser'>
       <mac address='00:11:22:33:44:11'/>
+      <source dev='eth43'/>
       <model type='virtio'/>
       <backend type='passt'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>

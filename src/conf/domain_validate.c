@@ -2190,10 +2190,16 @@ virDomainNetDefValidate(const virDomainNetDef *net)
     if (net->type != VIR_DOMAIN_NET_TYPE_USER &&
         net->type != VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("The 'passt' backend can only be used with interface type='user' or type='vhostuser'"));
             return -1;
         }
+    }
+
+    if (net->sourceDev && net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("The 'dev' attribute of the <source> element can only be used with <interface> type='user' or type='vhostuser' if the <backend> type='passt'"));
+        return -1;
     }
 
     if (net->nPortForwards > 0) {
