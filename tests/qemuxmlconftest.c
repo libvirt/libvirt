@@ -1591,8 +1591,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption-luks-any");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-encryption-wrong");
     DO_TEST_CAPS_LATEST("disk-network-rbd-no-colon");
-    /* qemu-6.0 is the last qemu version supporting sheepdog */
-    DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-sheepdog");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
     DO_TEST_CAPS_LATEST("disk-network-source-curl");
     DO_TEST_CAPS_LATEST("disk-network-nfs");

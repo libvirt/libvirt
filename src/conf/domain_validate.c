@@ -476,6 +476,13 @@ virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
 {
     virStorageType actualType = virStorageSourceGetActualType(src);
 
+    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_SHEEPDOG) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'sheepdog' protocol is no longer supported by any hypervisor driver"));
+        return -1;
+    }
+
     if (src->type == VIR_STORAGE_TYPE_NETWORK && src->auth) {
         virStorageAuthDef *authdef = src->auth;
         int actUsage;
